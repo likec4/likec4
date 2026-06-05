@@ -112,6 +112,10 @@ export class Rpc extends ADisposable {
     let isFirstBuild = true
 
     this.onDispose(
+      Disposable.create(() => {
+        notifyModelParsed.cancel()
+        notifyProjectsUpdate.cancel()
+      }),
       // ----------
       likec4Services.ModelBuilder.onModelParsed((projectId) => notifyModelParsed.call(projectId)),
       // ----------
@@ -122,6 +126,7 @@ export class Rpc extends ADisposable {
         if (cleanCaches) {
           logger.debug`cleanCaches: ${cleanCaches}`
           if (projectId) {
+            workspace.ManualLayouts.clearCaches()
             await workspace.ProjectsManager.rebuildProject(projectId as ProjectId)
           } else {
             await workspace.WorkspaceManager.rebuildAll()
@@ -381,9 +386,6 @@ export class Rpc extends ADisposable {
         return {
           projectsView,
         }
-      }),
-      Disposable.create(() => {
-        notifyModelParsed.cancel()
       }),
     )
 

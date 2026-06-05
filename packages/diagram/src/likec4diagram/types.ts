@@ -236,6 +236,7 @@ export namespace Types {
     & {
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
+      isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
     }
   >
@@ -263,6 +264,7 @@ export namespace Types {
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox
+      isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
     }
   >

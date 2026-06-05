@@ -8,16 +8,15 @@ import {
   getConsoleSink,
   loggable,
 } from '@likec4/log'
-import isInsideContainer from 'is-inside-container'
 import { argv, exit, stdout } from 'node:process'
 import { clamp, pipe } from 'remeda'
-import { isCI, isDevelopment, isTest } from 'std-env'
+import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import pkg from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
-import checkUpdateCmd, { notifyAvailableUpdate } from './check-update'
+import checkUpdateCmd from './check-update'
 import codegenCmd from './codegen'
 import exportCmd from './export'
 import formatCmd from './format'
@@ -57,10 +56,6 @@ function applyLoggerConfig(logLevel: ConfigureLanguageServerLoggerOptions['logLe
  * Configures logger from --verbose, then parses yargs and runs the handler.
  */
 async function main() {
-  if (!isTest && !isCI && !isInsideContainer()) {
-    await notifyAvailableUpdate()
-  }
-
   const y = pipe(
     yargs(hideBin(argv)),
     serveCmd,

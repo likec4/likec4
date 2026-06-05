@@ -1,7 +1,6 @@
 import { type AILayoutProvider, type AILayoutRequest, enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { loggable } from '@likec4/log'
-import { defineService, toValue, useCommand, useOutputChannel } from 'reactive-vscode'
-import { ref } from 'reactive-vscode'
+import { defineService, ref, toValue, useCommand, useOutputChannel } from 'reactive-vscode'
 import { hasAtLeast, once } from 'remeda'
 import * as vscode from 'vscode'
 import { hasAI } from '../const.ts'
@@ -82,21 +81,21 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
             if (err instanceof vscode.CancellationError || token.isCancellationRequested) {
               return null
             }
+            output.show(true)
             logger.warn(loggable(err))
             return null
           })
 
+          if (token.isCancellationRequested) {
+            logger.info('AI layout enhancement cancelled by user')
+            return
+          }
+
           if (!hints) {
-            if (token.isCancellationRequested) {
-              return
-            }
+            output.show(true)
             vscode.window.showWarningMessage(
               'AI could not generate layout suggestions for this view.',
             )
-            return
-          }
-          if (token.isCancellationRequested) {
-            logger.info('AI layout enhancement cancelled by user')
             return
           }
 
@@ -166,7 +165,6 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
 
 const useAIOutputChannel = defineService(() => {
   const out = useOutputChannel('LikeC4 AI Layout')
-  out.show()
   return out
 })
 
@@ -175,21 +173,17 @@ async function selectModel(output: vscode.OutputChannel): Promise<vscode.Languag
     output.appendLine('Language model API not available')
     return null
   }
-  // if (selectedModelId.value) {
-  //   const models = await vscode.lm.selectChatModels({
-  //     id: selectedModelId.value,
-  //   })
-  //   if (hasAtLeast(models, 1)) {
-  //     return models[0]
-  //   }
-  // }
-
-  const models = await vscode.lm.selectChatModels()
+  const models = await Promise.resolve()
+    .then(() => vscode.lm.selectChatModels())
+    .catch((error) => {
+      output.appendLine('Failed to select chat models')
+      output.appendLine(loggable(error))
+      return [] as vscode.LanguageModelChat[]
+    })
 
   if (!hasAtLeast(models, 1)) {
-    throw new Error(
-      'No language models available. Please ensure GitHub Copilot or another LM provider is installed.',
-    )
+    output.appendLine('No language models available. Please ensure GitHub Copilot or another LM provider is installed.')
+    return null
   }
 
   output.appendLine(`Available models:`)
@@ -237,7 +231,6 @@ class VscodeAILayoutProvider implements AILayoutProvider<vscode.CancellationToke
     cancelToken: vscode.CancellationToken,
   ): Promise<string> {
     const channel = useAIOutputChannel()
-    channel.show()
     channel.clear()
     const model = await selectModel(channel)
 
@@ -246,6 +239,8 @@ class VscodeAILayoutProvider implements AILayoutProvider<vscode.CancellationToke
         'No language model selected. Please ensure GitHub Copilot or another LM provider is installed.',
       )
     }
+
+    channel.show()
 
     channel.appendLine(`
 PICKED MODEL:

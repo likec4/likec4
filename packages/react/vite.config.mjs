@@ -1,12 +1,26 @@
 import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import { resolve } from 'node:path'
 import process from 'node:process'
-import { esmExternalRequirePlugin } from 'rolldown/plugins'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import { $ } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
+
+$.quiet = false
+$.verbose = true
+$.preferLocal = true
+$.env = {
+  ...$.env,
+  NODE_ENV: 'production',
+}
+
+const externals = Object
+  .keys({
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies,
+  })
+  .filter((dep) => dep !== 'use-sync-external-store')
 
 /**
  * @type {import('postcss').AcceptedPlugin}
@@ -40,10 +54,14 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
+    tsconfigPaths: true,
+    conditions: ['sources', 'module', 'import', 'default'],
+    dedupe: [
+      'react',
+      'react-dom',
+    ],
     alias: {
-      // '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
-      // '@likec4/diagram': resolve('../diagram/src/index.ts'),
-      '@likec4/styles': resolve('./styled-system'),
+      'use-sync-external-store/shim/with-selector.js': 'use-sync-external-store/shim/with-selector',
     },
   },
   css: {
@@ -56,6 +74,10 @@ export default defineConfig({
   },
   build: {
     minify: true,
+    target: 'esnext',
+    cssCodeSplit: true,
+    cssMinify: true,
+    assetsInlineLimit: 1024 * 1024 * 2, // 2Mb
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
@@ -65,36 +87,37 @@ export default defineConfig({
         keepNames: true,
         entryFileNames: '[name].mjs',
       },
+      treeshake: {
+        moduleSideEffects: 'no-external',
+      },
       external: [
-        ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
-        ...Object.keys(packageJson.peerDependencies || {}).map((dep) => new RegExp(`^${dep}(/.*)?$`)),
-      ],
-      plugins: [
-        esmExternalRequirePlugin({
-          external: [
-            'react',
-            'react-dom',
-          ],
-        }),
+        ...externals.map((dep) => new RegExp(`^${dep}(\\/.*)?$`)),
+        'use-sync-external-store/shim',
+        'use-sync-external-store/shim/with-selector',
       ],
     },
   },
   plugins: [
+    {
+      name: 'likec4-react',
+      async buildStart() {
+        this.info('buildStart')
+        await $`pandacss codegen`
+      },
+    },
     react(),
     babel({
-      presets: [reactCompilerPreset({
-        target: '18',
-      })],
+      presets: [reactCompilerPreset()],
     }),
     dts({
       bundleTypes: {
         bundledPackages: [
           '@likec4/diagram',
           '@likec4/diagram/custom',
+          '@likec4/styles/*',
           '@react-hookz/web',
           'xstate',
-          '@xstate/react',
-          '@xstate/store',
+          '@xstate/*',
         ],
       },
 

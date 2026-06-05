@@ -5,8 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { LikeC4VitePlugin } from '@likec4/vite-plugin'
-import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
@@ -15,6 +13,7 @@ import type { BuildEnvironmentOptions, InlineConfig, Logger } from 'vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
+import { LikeC4VitePlugin } from '../vite-plugin'
 import { viteAliases } from './aliases'
 import { relativeToCwd, viteAppRoot, viteLogger } from './utils'
 
@@ -55,7 +54,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
   if (base !== '/') {
     customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
-
   const webcomponentPrefix = cfg.webcomponentPrefix ?? 'likec4'
   const title = cfg.title ?? 'LikeC4'
 
@@ -88,9 +86,6 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
       minify: true,
       copyPublicDir: true,
       chunkSizeWarningLimit: 2 * 1024, // ~2MB
-      modulePreload: {
-        polyfill: false,
-      },
       ...(!isSingleFile && {
         rolldownOptions: {
           input: [
@@ -99,22 +94,11 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
             resolve(root, 'src', 'fonts.css'),
             resolve(root, 'src', 'style.css'),
           ],
-          output: {
-            codeSplitting: {
-              groups: [
-                {
-                  name: 'likec4-core',
-                  test: /(likec4[\\/]core|core[\\/]dist|immer)/,
-                },
-              ],
-            },
-          },
         },
       } satisfies BuildEnvironmentOptions),
     },
     customLogger: customLogger as Logger,
     plugins: [
-      react(),
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
         appConfig: {

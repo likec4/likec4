@@ -15,15 +15,9 @@
     "src",
     "src/**/*.json"
   ],
-  "exclude": [
-    "src/react-dom-server-mock.ts"
-  ],
   "references": [
     {
       "path": "../core/"
-    },
-    {
-      "path": "../../styled-system/preset/"
     },
     {
       "path": "../../styled-system/styles/"

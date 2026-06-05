@@ -1,8 +1,8 @@
-import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
+import { LikeC4VitePlugin } from '../vite-plugin'
 import { viteAliases } from './aliases'
 import { viteAppRoot } from './utils'
 

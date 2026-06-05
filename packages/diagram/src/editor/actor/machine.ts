@@ -2,8 +2,13 @@ import type { ActorRef, SnapshotFrom, StateMachine } from 'xstate'
 import { machine } from './setup'
 import { editor } from './state.editor'
 import { syncQueue } from './state.sync-queue'
-import type { EditorActorEvent } from './types'
-import type { EditorActorContext, EditorActorEmitedEvent, EditorActorInput, EditorActorStateTag } from './types'
+import type {
+  EditorActorContext,
+  EditorActorEmitedEvent,
+  EditorActorEvent,
+  EditorActorInput,
+  EditorActorStateTag,
+} from './types'
 
 const _editorActorLogic = machine.createMachine({
   id: 'editor',
@@ -11,6 +16,7 @@ const _editorActorLogic = machine.createMachine({
     viewId: input.viewId,
     editing: null,
     history: null,
+    redo: null,
     pending: null,
     syncQueue: [],
     processing: null,

@@ -10,8 +10,8 @@ import {
   useMutationObserverTarget,
 } from '@mantine/hooks'
 import { useState } from 'react'
-import { first, isFunction, isString } from 'remeda'
-import { useCallbackRef } from '../hooks'
+import { first, isFunction, isString, once } from 'remeda'
+import { useCallbackRef } from '../hooks/useCallbackRef'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
 
@@ -45,22 +45,24 @@ export function appendFontToDocument(injectFontCss: boolean, styleNonce?: string
       style.setAttribute('nonce', nonce)
     }
 
-    style.appendChild(document.createTextNode(scopeStylesToShadowRoot(fontsCss)))
+    style.appendChild(document.createTextNode(fontsCss))
     document.head.appendChild(style)
   }
 }
+
 /**
  * Creates a CSS string with styles scoped to the shadow root
+ * @returns CSS string for the shadow root
  */
-export function createShadowRootStyles() {
+export const shadowRootCSS = once(() => {
   return scopeStylesToShadowRoot(inlinedStyles)
-}
+})
 /**
  * Creates a CSSStyleSheet with styles scoped to the shadow root
  */
-export function createShadowRootStylesheets() {
+export function createShadowRootStylesheets(csstext: string) {
   const css = new CSSStyleSheet()
-  css.replaceSync(createShadowRootStyles())
+  css.replaceSync(csstext)
   return [css] as [CSSStyleSheet]
 }
 

@@ -1,7 +1,7 @@
 import { type DiagramNode, type Icon, type LayoutedView, type ProjectId, type ViewId, exact } from '@likec4/core'
 import { onNextTick, stringHash } from '@likec4/core/utils'
 import JSON5 from 'json5'
-import { type Disposable, SimpleCache, URI, UriUtils } from 'langium'
+import { Disposable, SimpleCache, URI, UriUtils } from 'langium'
 import pLimit from 'p-limit'
 import { indexBy, prop } from 'remeda'
 import {
@@ -11,7 +11,7 @@ import {
 } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import { safeCall } from '../utils'
+import { ADisposable, safeCall } from '../utils'
 import type { Project } from '../workspace/ProjectsManager'
 import type {
   LikeC4ManualLayouts,
@@ -55,7 +55,7 @@ export const WithLikeC4ManualLayouts: LikeC4ManualLayoutsModuleContext = {
 
 const RELATIVE_PATH_PREFIX = 'file://./'
 
-export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
+export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4ManualLayouts {
   protected cache: SimpleCache<ProjectId, ManualLayoutsSnapshot | null>
 
   private listeners: ManualLayoutUpdateListener[] = []
@@ -63,12 +63,22 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   #limit = pLimit(1)
 
   constructor(private services: LikeC4SharedServices) {
+    super()
     this.cache = new SimpleCache()
 
+    this.onDispose(
+      Disposable.create(() => {
+        this.listeners.length = 0
+        this.cache.clear()
+      }),
+    )
+
     onNextTick(() => {
-      services.workspace.ProjectsManager.onProjectsUpdate(() => {
-        this.clearCaches()
-      })
+      this.onDispose(
+        services.workspace.ProjectsManager.onProjectsUpdate(() => {
+          this.clearCaches()
+        }),
+      )
     })
   }
 
@@ -276,7 +286,9 @@ export class DefaultLikeC4ManualLayouts implements LikeC4ManualLayouts {
   }
 
   private triggerUpdate(event: ManualLayoutUpdateEvent): void {
-    for (const listener of this.listeners) {
+    // Copy to avoid modification during iteration
+    const listeners = [...this.listeners]
+    for (const listener of listeners) {
       safeCall(() => listener(event))
     }
   }

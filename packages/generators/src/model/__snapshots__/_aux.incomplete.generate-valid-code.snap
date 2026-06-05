@@ -1,0 +1,46 @@
+import type { Aux, SpecAux } from 'likec4/model';
+
+export type $Specs = SpecAux<
+  // Element kinds
+  | "actor"
+  | "component"
+  | "system",
+  // Deployment kinds
+  never,
+  // Relationship kinds
+  never,
+  // Tags
+  never,
+  // Metadata keys
+  never
+>
+
+export type $Aux = Aux<
+  "computed",
+  // Elements
+  | "alice"
+  | "bob"
+  | "cloud"
+  | "cloud.backend"
+  | "cloud.frontend"
+  | "cloud.backend.api"
+  | "cloud.backend.db",
+  // Deployments
+  never,
+  // Views
+  | "view1",
+  // Project ID
+  "aux-test",
+  $Specs
+>
+
+export type $ElementId = $Aux['ElementId']
+export type $DeploymentId = $Aux['DeploymentId']
+export type $ViewId = $Aux['ViewId']
+
+export type $ElementKind = $Aux['ElementKind']
+export type $RelationKind = $Aux['RelationKind']
+export type $DeploymentKind = $Aux['DeploymentKind']
+export type $Tag = $Aux['Tag']
+export type $Tags = readonly $Aux['Tag'][]
+export type $MetadataKey = $Aux['MetadataKey']

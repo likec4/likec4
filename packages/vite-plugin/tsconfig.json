@@ -26,13 +26,14 @@
         "../core/src/index.ts"
       ],
       "likec4/react": [
-        "../react/dist/"
+        "../react/src/index.ts"
       ]
     }
   },
   "include": [
     "src",
-    "build.config.ts",
+    "*.ts",
+    "*.mts",
     "package.json"
   ],
   "references": [
@@ -41,9 +42,6 @@
     },
     {
       "path": "../config/"
-    },
-    {
-      "path": "../diagram/tsconfig.src.json"
     },
     {
       "path": "../language-server/"
@@ -59,6 +57,12 @@
     },
     {
       "path": "../log/"
+    },
+    {
+      "path": "../react/"
+    },
+    {
+      "path": "../../devops/"
     }
   ]
 }

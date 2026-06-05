@@ -19,7 +19,7 @@ import type {
   ViewPadding,
 } from './LikeC4Diagram.props'
 import { Overlay } from './overlays/overlay/Overlay'
-import { ShadowRoot } from './shadowroot/ShadowRoot'
+import { ShadowRoot } from './shadowroot'
 import { stopPropagation } from './utils'
 import { pickViewBounds } from './utils/view-bounds'
 export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {

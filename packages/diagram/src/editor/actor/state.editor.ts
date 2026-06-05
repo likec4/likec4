@@ -1,5 +1,4 @@
-import { assign } from 'xstate'
-import { pushHistory, saveBeforeEditing, scheduleSync } from './actions'
+import { pushHistory, saveBeforeEditing } from './actions'
 import { machine } from './setup'
 
 const to = {
@@ -13,7 +12,7 @@ const stopHotkey = () => machine.stopChild('hotkey')
 
 const ensureHotKey = () =>
   machine.enqueueActions(({ check, enqueue, self }) => {
-    const hasUndo = check('can undo')
+    const hasUndo = check('can undo') || check('can redo')
     const hotkey = self.getSnapshot().children['hotkey']
     if (!hasUndo && hotkey) {
       enqueue.stopChild(hotkey)
@@ -38,29 +37,31 @@ const idle = machine.createStateConfig({
   },
 })
 
+const clearEditing = () =>
+  machine.assign({
+    editing: null,
+  })
+
 const moving = machine.createStateConfig({
   ...idOf(to.moving),
   entry: [
-    saveBeforeEditing,
+    saveBeforeEditing(),
     stopHotkey(),
+  ],
+  exit: [
+    ensureHotKey(),
   ],
   on: {
     'edit.move.end': {
-      actions: [
-        pushHistory(),
-        scheduleSync(),
-      ],
+      actions: pushHistory(),
       ...to.idle,
     },
     'edit.move.cancel': {
-      actions: [
-        assign({
-          editing: null,
-        }),
-      ],
+      actions: clearEditing(),
       ...to.idle,
     },
-    'undo': {
+    'cancel': {
+      actions: clearEditing(),
       ...to.idle,
     },
   },
@@ -73,9 +74,6 @@ export const editor = machine.createStateConfig({
     moving,
   },
   on: {
-    'cancel': {
-      ...to.idle,
-    },
     '*': {
       actions: ensureHotKey(),
     },

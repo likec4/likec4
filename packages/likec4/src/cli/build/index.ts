@@ -11,6 +11,7 @@ import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { createLikeC4Logger } from '../../logger'
 import { viteBuild } from '../../vite/vite-build'
+import { notifyAvailableUpdate } from '../check-update/utils'
 import { ensureReact } from '../ensure-libs'
 import {
   base,
@@ -45,6 +46,11 @@ const buildCmd = (yargs: yargs.Argv) => {
           .option('use-hash-history', useHashHistory)
           .option('use-dot', useDotBin)
           .option('webcomponent-prefix', webcomponentPrefix)
+          .option('build-webcomponent', {
+            type: 'boolean',
+            default: true,
+            describe: 'enable/disable webcomponent build',
+          })
           .option('title', title)
           .option('output-single-file', outputSingleFile)
           .option('public', publicDir)
@@ -66,9 +72,10 @@ const buildCmd = (yargs: yargs.Argv) => {
           useHashHistory: args['use-hash-history'] ?? false,
           useDotBin: args['use-dot'],
           webcomponentPrefix: args['webcomponent-prefix'],
+          buildWebcomponent: args['build-webcomponent'],
           outputSingleFile: args['output-single-file'] ?? false,
         }
-
+        await notifyAvailableUpdate()
         await ensureReact()
 
         const logger = createLikeC4Logger('c4:build')
@@ -86,6 +93,7 @@ const buildCmd = (yargs: yargs.Argv) => {
           useHashHistory: params.outputSingleFile || params.useHashHistory,
           customLogger: logger,
           webcomponentPrefix: params.webcomponentPrefix,
+          buildWebcomponent: params.buildWebcomponent,
           title: args.title,
           theme: args.theme,
           languageServices,

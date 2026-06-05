@@ -1,10 +1,9 @@
-import { useIsomorphicLayoutEffect } from '@react-hookz/web'
+import { shallowEqual } from 'fast-equals'
 import {
   type HTMLAttributes,
   type PropsWithChildren,
-  createContext,
   memo,
-  useContext,
+  useEffectEvent,
   useLayoutEffect,
   useRef,
   useState,
@@ -13,9 +12,10 @@ import { createPortal } from 'react-dom'
 import { isDefined } from 'remeda'
 import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
+import { ShadowRootContext } from '../context/ShadowRootContext'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
-import { appendFontToDocument, createShadowRootStyles, createShadowRootStylesheets, useColorScheme } from './styles.css'
+import { appendFontToDocument, createShadowRootStylesheets, shadowRootCSS, useColorScheme } from './styles'
 
 function useShadowRootStyle(
   instanceId: string,
@@ -66,16 +66,6 @@ function useShadowRootStyle(
 `.trim()
 }
 
-const ShadowRootContext = createContext<ShadowRoot | null>(null)
-
-export function useShadowRoot(): ShadowRoot {
-  const context = useContext(ShadowRootContext)
-  if (!context) {
-    throw new Error('useShadowRoot must be used within a ShadowRoot')
-  }
-  return context
-}
-
 type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
   injectFontCss?: boolean | undefined
   styleNonce?: string | (() => string) | undefined
@@ -101,7 +91,7 @@ export function ShadowRoot({
   const cssstyle = useShadowRootStyle(id, keepAspectRatio)
   const mantineRootRef = useRef<HTMLDivElement>(null)
 
-  useIsomorphicLayoutEffect(
+  useLayoutEffect(
     () => appendFontToDocument(injectFontCss, styleNonce),
     [],
   )
@@ -117,7 +107,7 @@ export function ShadowRoot({
     }
     return ''
   })
-  const [nonce] = useState(getStyleNonce)
+  const nonce = getStyleNonce()
 
   return (
     <>
@@ -156,7 +146,7 @@ const MemoizedStyle = memo<{
     type="text/css"
     {...({ nonce })}
     dangerouslySetInnerHTML={{ __html: cssstyle }} />
-))
+), shallowEqual)
 MemoizedStyle.displayName = 'MemoizedStyle'
 
 const ShadowRootHostPortal = ({ children, root }: PropsWithChildren<{ root: ShadowRoot }>) => {
@@ -167,23 +157,37 @@ const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) 
   const hostRef = useRef<HTMLDivElement>(null)
   const [root, setRoot] = useState<globalThis.ShadowRoot | null>(null)
 
-  useLayoutEffect(() => {
-    const host = hostRef.current
-    if (!host) {
-      setRoot(null)
-      return
-    }
+  const styles = shadowRootCSS()
+
+  const updateShadowRoot = useEffectEvent((styles: string) => {
     setRoot(current => {
-      try {
-        if (host.shadowRoot) {
-          host.shadowRoot.adoptedStyleSheets[0]!.replaceSync(createShadowRootStyles())
-          return host.shadowRoot
+      const host = hostRef.current
+      if (!host) {
+        return null
+      }
+      if (host.shadowRoot) {
+        try {
+          if (host.shadowRoot.adoptedStyleSheets?.length !== 1) {
+            console.error(
+              'Shadow root has unexpected number of style sheets (expected 1, got %d)',
+              host.shadowRoot.adoptedStyleSheets?.length ?? 0,
+            )
+            return host.shadowRoot
+          }
+          host.shadowRoot.adoptedStyleSheets[0]!.replaceSync(styles)
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            console.error(error)
+          }
         }
+        return host.shadowRoot
+      }
+      try {
         const shadowRoot = host.attachShadow({
           mode: 'open',
           delegatesFocus: false,
         })
-        shadowRoot.adoptedStyleSheets = createShadowRootStylesheets()
+        shadowRoot.adoptedStyleSheets = createShadowRootStylesheets(styles)
         return shadowRoot
       } catch (error) {
         if (import.meta.env.DEV) {
@@ -192,15 +196,19 @@ const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) 
         return current
       }
     })
-  }, [])
+  })
+
+  useLayoutEffect(() => {
+    updateShadowRoot(styles)
+  }, [styles])
 
   return (
     <div {...props} ref={hostRef}>
       {root && (
         <ShadowRootHostPortal root={root}>
-          <ShadowRootContext.Provider value={root}>
+          <ShadowRootContext value={root}>
             {children}
-          </ShadowRootContext.Provider>
+          </ShadowRootContext>
         </ShadowRootHostPortal>
       )}
     </div>

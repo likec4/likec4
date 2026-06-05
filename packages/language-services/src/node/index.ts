@@ -68,6 +68,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
   if (userDocuments.length === 0) {
     logger.error(`no LikeC4 sources found`)
     if (options?.throwIfInvalid) {
+      await langium.likec4.likec4.LanguageServices.dispose()
       throw new Error(`no LikeC4 sources found`)
     }
   }
@@ -83,7 +84,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
  * @returns A Promise that resolves to a LikeC4 instance
  */
 export async function fromWorkdir(options?: FromWorkspaceOptions): Promise<LikeC4> {
-  return fromWorkspace('.', options)
+  return await fromWorkspace('.', options)
 }
 
 /**
@@ -127,6 +128,6 @@ export async function fromSources(sources: Record<string, string>, options?: Ini
  * @param options - Optional configuration options
  * @returns A Promise that resolves to a LikeC4 instance
  */
-export async function fromSource(source: string, options?: InitOptions): Promise<LikeC4> {
+export function fromSource(source: string, options?: InitOptions): Promise<LikeC4> {
   return fromSources({ 'source.c4': source }, options)
 }

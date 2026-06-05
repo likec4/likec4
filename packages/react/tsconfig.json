@@ -5,12 +5,24 @@
     "jsx": "react-jsx",
     "module": "preserve",
     "moduleResolution": "bundler",
+    "target": "esnext",
+    "verbatimModuleSyntax": true,
+    "composite": true,
     "lib": [
       "ESNext",
       "DOM"
     ],
-    "rootDir": "src"
+    "allowJs": true,
+    "paths": {
+      "@likec4/styles/*": [
+        "./styled-system/*/index.mjs"
+      ]
+    }
   },
+  "include": [
+    "src",
+    "styled-system"
+  ],
   "references": [
     {
       "path": "../core/"

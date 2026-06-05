@@ -1,4 +1,5 @@
 import type * as yargs from 'yargs'
+import { notifyAvailableUpdate } from '../check-update/utils'
 import { ensureReact } from '../ensure-libs'
 import {
   allowedHost,
@@ -13,6 +14,7 @@ import {
   useHashHistory,
   webcomponentPrefix,
 } from '../options'
+import { showSupportUsMessage } from '../support-message'
 import { handler } from './serve'
 
 const serveCmd = (yargs: yargs.Argv) => {
@@ -47,6 +49,10 @@ const serveCmd = (yargs: yargs.Argv) => {
             },
           }),
       handler: async args => {
+        await notifyAvailableUpdate()
+        // Show support message after 5 seconds
+        setTimeout(showSupportUsMessage, 5000).unref()
+
         await ensureReact()
         await handler({
           path: args.path,

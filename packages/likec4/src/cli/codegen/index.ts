@@ -97,6 +97,10 @@ const codegenCmd = (yargs: yargs.Argv) => {
                   normalize: true,
                   coerce: resolve,
                 })
+                .option('skip-layout', {
+                  type: 'boolean',
+                  desc: 'Skip layout (produce compute-only model, faster)',
+                })
                 .option('use-dot', useDotBin)
                 .option('use-core-package', useCorePackage),
             handler: async args => {
@@ -106,6 +110,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
                 useCorePackage: args.useCorePackage,
                 outfile: args.outfile,
                 project: args.project,
+                skipLayout: args.skipLayout ?? false,
               })
               showSupportUsMessage()
             },

@@ -92,6 +92,7 @@
     "ufo": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
+    "vscode-uri": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode"
   },
   "devDependencies": {

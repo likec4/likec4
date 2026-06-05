@@ -20,7 +20,6 @@ import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { path, project, useDotBin } from '../../options'
-import { showSupportUsMessage } from '../../support-message'
 import { takeScreenshot } from './takeScreenshot'
 
 /** CLI args for export png command (single type for handler and runExportPng). */
@@ -401,7 +400,6 @@ export function pngCmd(yargs: Argv) {
           description: args.description,
         } satisfies PngExportArgs,
       )
-      showSupportUsMessage()
     },
   })
 }

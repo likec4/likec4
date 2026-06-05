@@ -205,9 +205,7 @@ export async function viteBuild({
   // Static website
   await build({
     ...config,
-    customLogger: config.customLogger as Logger,
     publicDir,
-    mode: 'production',
   })
 
   if (outputSingleFile) {

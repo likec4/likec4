@@ -18,6 +18,7 @@ import {
   type RefAttributes,
   createContext,
   useContext,
+  useMemo,
 } from 'react'
 import type { ElementIconRenderer } from '../LikeC4Diagram.props'
 
@@ -100,25 +101,21 @@ export function IconRenderer({
     return null
   }
   let icon: ReactNode
-  if (
-    element.icon.startsWith('http://') || element.icon.startsWith('https://') || element.icon.startsWith('data:image')
-  ) {
-    // For SVG data URLs, try to inline the SVG so that CSS color inheritance works (for iconColor support)
-    const svgContent = element.icon.startsWith('data:image/svg+xml')
-      ? decodeSvgDataUrl(element.icon)
-      : null
-
-    if (svgContent) {
-      // Inline the SVG content directly
-      // This allows CSS `color` property to affect `currentColor` in the SVG
-      // Using display: contents so the span doesn't affect flexbox layout
-      icon = <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svgContent }} />
-    } else {
-      // For non-SVG images (PNG, etc.) or failed SVG decoding, use img tag
+  switch (true) {
+    case element.icon.startsWith('data:image/svg+xml'):
+      icon = <SvgDataUrlIcon dataUrl={element.icon} alt={element.title} />
+      break
+    case element.icon.startsWith('http://'):
+    case element.icon.startsWith('https://'):
+    case element.icon.startsWith('data:image'):
       icon = <img src={element.icon} alt={element.title} />
-    }
-  } else if (RenderIcon) {
-    icon = <RenderIcon node={element} />
+      break
+    case !!RenderIcon:
+      icon = <RenderIcon node={element} />
+      break
+    default:
+      icon = null
+      break
   }
 
   if (!icon) {
@@ -184,4 +181,15 @@ export function IconOrShapeRenderer({
     )
   }
   return <IconRenderer element={element} className={className} style={style} />
+}
+
+function SvgDataUrlIcon({ dataUrl, ...props }: { dataUrl: string; alt?: string }) {
+  const svgContent = useMemo(() => decodeSvgDataUrl(dataUrl), [dataUrl])
+  if (!svgContent) {
+    return null
+  }
+  // Inline the SVG content directly
+  // This allows CSS `color` property to affect `currentColor` in the SVG
+  // Using display: contents so the span doesn't affect flexbox layout
+  return <span {...props} style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svgContent }} />
 }

@@ -3,28 +3,39 @@ import {
   compareNatural,
   sortNaturalByFqn,
 } from '@likec4/core/utils'
-import { keys, map, pipe, values } from 'remeda'
+import { filter, isEmptyish, isTruthy, keys, map, pipe, sort, unique, values } from 'remeda'
 
-function toUnion(elements: string[]) {
-  if (elements.length === 0) {
+/**
+ * Converts an array of strings or a record keys to a TypeScript union type string
+ * Handles empty arrays/records by returning 'never'
+ */
+function toUnion(elements: string[] | Record<string, unknown> | undefined) {
+  if (isEmptyish(elements)) {
     return 'never'
   }
-  let union = elements
-    .sort(compareNatural)
-    .map(v => `  | ${JSON.stringify(v)}`)
-  return union.join('\n').trimStart()
-}
-
-function elementIdToUnion(_elements: Record<string, { id: string }>) {
-  const elements = values(_elements)
-  if (elements.length === 0) {
-    return 'never'
+  if (typeof elements === 'object' && !Array.isArray(elements)) {
+    elements = keys(elements)
   }
   let union = pipe(
     elements,
+    unique(),
+    sort(compareNatural),
+    map(v => `  | ${JSON.stringify(v)}`),
+  )
+  return union.join('\n').trimStart()
+}
+
+function elementIdToUnion(elements: Record<string, { id: string }>) {
+  let union = pipe(
+    elements,
+    values(),
+    filter(i => !!i && isTruthy(i.id)),
     sortNaturalByFqn,
     map(v => `  | ${JSON.stringify(v.id)}`),
   )
+  if (union.length === 0) {
+    return 'never'
+  }
   return union.join('\n').trimStart()
 }
 
@@ -35,15 +46,15 @@ import type { Aux, SpecAux } from '${useCorePackage ? '@likec4/core/types' : 'li
 
 export type $Specs = SpecAux<
   // Element kinds
-  ${toUnion(keys(model.specification.elements))},
+  ${toUnion(model.specification.elements)},
   // Deployment kinds
-  ${toUnion(keys(model.specification.deployments ?? {}))},
+  ${toUnion(model.specification.deployments)},
   // Relationship kinds
-  ${toUnion(keys(model.specification.relationships ?? {}))},
+  ${toUnion(model.specification.relationships)},
   // Tags
-  ${toUnion(keys(model.specification.tags ?? {}))},
+  ${toUnion(model.specification.tags)},
   // Metadata keys
-  ${toUnion(model.specification.metadataKeys ?? [])}
+  ${toUnion(model.specification.metadataKeys)}
 >
 
 export type $Aux = Aux<
@@ -53,7 +64,7 @@ export type $Aux = Aux<
   // Deployments
   ${elementIdToUnion(model.$data.deployments.elements)},
   // Views
-  ${toUnion(keys(model.$data.views))},
+  ${toUnion(model.$data.views)},
   // Project ID
   ${JSON.stringify(model.projectId)},
   $Specs

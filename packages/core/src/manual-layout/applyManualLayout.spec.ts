@@ -547,6 +547,33 @@ describe('applyManualLayout', () => {
       expect(edges.edge1.drifts).toBeUndefined()
     })
 
+    it('should keep manual label position and isLabelCustomized without drift', () => {
+      const { snapshot, layouted } = prepareFixtures({
+        edges: {
+          // Re-layout produced a different label position
+          'edge1': e => {
+            e.labelBBox!.x += 250
+            e.labelBBox!.y += 250
+          },
+        },
+      })
+
+      // The user had manually positioned this label (persisted in the manual snapshot)
+      const snapshotEdge = snapshot.edges.find(e => e.id === 'edge1')!
+      snapshotEdge.isLabelCustomized = true
+      const expectedLabelBBox = { ...snapshotEdge.labelBBox! }
+
+      const result = applyManualLayout(layouted, snapshot)
+      const edge1 = result.edges.find(e => e.id === 'edge1')!
+
+      // Manual position + flag are kept; the re-layouted position is ignored
+      expect(edge1.isLabelCustomized).toBe(true)
+      expect(edge1.labelBBox).toEqual(expectedLabelBBox)
+      // Moving a label is never a drift
+      expect(edge1.drifts).toBeUndefined()
+      expect(result.drifts).toBeUndefined()
+    })
+
     it('should detect label-added drift when labelBBox added', () => {
       const {
         snapshot: layouted, // swap,

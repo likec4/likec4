@@ -85,6 +85,10 @@ export function createViewChange(
     } else {
       _updated.labelBBox = null
     }
+    // Persist the manual label position flag only when set, to keep snapshots clean
+    if (data.isLabelCustomized !== undefined) {
+      _updated.isLabelCustomized = data.isLabelCustomized
+    }
     if (hasAtLeast(controlPoints, 1)) {
       _updated.controlPoints = map(controlPoints, v => ({
         x: Math.round(v.x),

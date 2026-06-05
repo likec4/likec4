@@ -7,12 +7,13 @@
 
 import type { ProjectId } from '@likec4/core'
 import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
-import { type LangiumDocument, type Stream, DocumentState, UriUtils } from 'langium'
+import { type LangiumDocument, type Stream, Disposable, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4DocumentProps, type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { ADisposable } from '../utils'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
 import { DeploymentViewParser } from './parser/DeploymentViewParser'
@@ -46,53 +47,58 @@ const logger = rootLogger.getChild('parser')
 
 const isError = (d: Diagnostic) => d.severity === DiagnosticSeverity.Error
 
-export class LikeC4ModelParser {
+export class LikeC4ModelParser extends ADisposable {
   protected cachedParsers = new DefaultWeakMap((doc: LangiumDocument) => this.createParser(doc))
 
   constructor(private services: LikeC4Services) {
-    services.shared.workspace.DocumentBuilder.onDocumentPhase(
-      DocumentState.Linked,
-      async doc => {
-        if (this.cachedParsers.has(doc)) {
-          logger.trace('Linked: clear cached parser {projectId} document {doc}', {
-            projectId: doc.likec4ProjectId,
-            doc: UriUtils.basename(doc.uri),
-          })
-          this.cachedParsers.delete(doc)
-        }
-      },
-    )
+    super()
 
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.Linked,
-      async docs => {
-        for (const doc of docs) {
-          if (services.shared.workspace.ProjectsManager.isExcluded(doc)) {
-            continue
+    this.onDispose(
+      Disposable.create(() => {
+        this.cachedParsers.clear()
+      }),
+      services.shared.workspace.DocumentBuilder.onDocumentPhase(
+        DocumentState.Linked,
+        async doc => {
+          if (this.cachedParsers.has(doc)) {
+            logger.trace('Linked: clear cached parser {projectId} document {doc}', {
+              projectId: doc.likec4ProjectId,
+              doc: UriUtils.basename(doc.uri),
+            })
+            this.cachedParsers.delete(doc)
           }
-          try {
-            // Force create parser for linked document (if not yet created)
-            this.parse(doc)
-          } catch (error) {
-            logWarnError(error)
+        },
+      ),
+      services.shared.workspace.DocumentBuilder.onBuildPhase(
+        DocumentState.Linked,
+        async docs => {
+          for (const doc of docs) {
+            if (services.shared.workspace.ProjectsManager.isExcluded(doc)) {
+              continue
+            }
+            try {
+              // Force create parser for linked document (if not yet created)
+              this.parse(doc)
+            } catch (error) {
+              logWarnError(error)
+            }
           }
-        }
-      },
-    )
-
-    // We need to clean up cached parser when document is validated and has errors
-    // Because after that parser takes into account validation results
-    services.shared.workspace.DocumentBuilder.onDocumentPhase(
-      DocumentState.Validated,
-      async doc => {
-        if (doc.diagnostics?.some(isError) && this.cachedParsers.has(doc)) {
-          logger.trace('Validated: clear cached parser {projectId} document {doc} because of errors', {
-            projectId: doc.likec4ProjectId,
-            doc: UriUtils.basename(doc.uri),
-          })
-          this.cachedParsers.delete(doc)
-        }
-      },
+        },
+      ),
+      // We need to clean up cached parser when document is validated and has errors
+      // Because after that parser takes into account validation results
+      services.shared.workspace.DocumentBuilder.onDocumentPhase(
+        DocumentState.Validated,
+        async doc => {
+          if (doc.diagnostics?.some(isError) && this.cachedParsers.has(doc)) {
+            logger.trace('Validated: clear cached parser {projectId} document {doc} because of errors', {
+              projectId: doc.likec4ProjectId,
+              doc: UriUtils.basename(doc.uri),
+            })
+            this.cachedParsers.delete(doc)
+          }
+        },
+      ),
     )
   }
 

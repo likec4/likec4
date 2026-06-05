@@ -1,5 +1,5 @@
 import type { Disposable } from 'langium'
-import { logWarnError } from '../logger'
+import { logger, logWarnError } from '../logger'
 
 export abstract class ADisposable implements Disposable {
   protected toDispose: Disposable[] = []
@@ -24,7 +24,7 @@ export abstract class ADisposable implements Disposable {
 
   protected throwIfDisposed(): void {
     if (this.isDisposed) {
-      throw new Error('This has already been disposed')
+      logger.warn('this has already been disposed')
     }
   }
 }

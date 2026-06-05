@@ -17,6 +17,7 @@ import { useRef } from 'react'
 import { ChatContext } from './ChatContext'
 import { ChatInput } from './ChatInput'
 import { ChatMessages } from './ChatMessage'
+import { SemanticLayoutLog } from './SemanticLayoutLog'
 import { useChat } from './useChat'
 
 type Position = { left?: number; top?: number; right?: number; bottom?: number }
@@ -60,54 +61,57 @@ export default function AIChatComponent() {
   })
 
   return (
-    <AnimatePresence>
-      {!isCollapsed && (
-        <FloatingWindow
-          w={300}
-          pos="fixed"
-          className={css({
-            rounded: 'md',
-            padding: 'xs',
-            shadow: 'md',
-            layerStyle: 'likec4.panel',
-          })}
-          constrainToViewport
-          constrainOffset={8}
-          excludeDragHandleSelector=".chat-input"
-          initialPosition={initialPosition.current}
-          onPositionChange={onPositionChange}
-        >
-          <AIChatWindowContent onClose={() => setCollapsed(true)} />
-        </FloatingWindow>
-      )}
-      {isCollapsed && (
-        <m.div
-          key={'collapsed'}
-          initial={{ opacity: 0.1, translateX: '10%' }}
-          animate={{ opacity: 1, translateX: 0 }}
-          exit={{
-            translateX: '50%',
-            opacity: 0.1,
-          }}
-          style={{
-            position: 'fixed',
-            right: 8,
-            bottom: 60,
-            zIndex: 1000,
-          }}
-        >
-          <Tooltip label="Show AI Assistant" color="dark" fz={'xs'}>
-            <ActionIcon
-              size={'lg'}
-              variant="gradient"
-              onClick={() => setCollapsed(false)}
-            >
-              <IconSparkles stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-        </m.div>
-      )}
-    </AnimatePresence>
+    <>
+      <AnimatePresence>
+        {!isCollapsed && (
+          <FloatingWindow
+            w={300}
+            pos="fixed"
+            className={css({
+              rounded: 'md',
+              padding: 'xs',
+              shadow: 'md',
+              layerStyle: 'likec4.panel',
+            })}
+            constrainToViewport
+            constrainOffset={8}
+            excludeDragHandleSelector=".chat-input"
+            initialPosition={initialPosition.current}
+            onPositionChange={onPositionChange}
+          >
+            <AIChatWindowContent onClose={() => setCollapsed(true)} />
+          </FloatingWindow>
+        )}
+        {isCollapsed && (
+          <m.div
+            key={'collapsed'}
+            initial={{ opacity: 0.1, translateX: '10%' }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{
+              translateX: '50%',
+              opacity: 0.1,
+            }}
+            style={{
+              position: 'fixed',
+              right: 8,
+              bottom: 60,
+              zIndex: 1000,
+            }}
+          >
+            <Tooltip label="Show AI Assistant" color="dark" fz={'xs'}>
+              <ActionIcon
+                size={'lg'}
+                variant="gradient"
+                onClick={() => setCollapsed(false)}
+              >
+                <IconSparkles stroke={1.5} />
+              </ActionIcon>
+            </Tooltip>
+          </m.div>
+        )}
+      </AnimatePresence>
+      <SemanticLayoutLog />
+    </>
   )
 }
 
