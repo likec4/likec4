@@ -237,8 +237,8 @@ catalogs:
     "@xstate/store": 3.17.5
     xstate: 5.32.0
   xyflow:
-    "@xyflow/react": 12.10.2
-    "@xyflow/system": 0.0.76
+    "@xyflow/react": 12.11.0
+    "@xyflow/system": 0.0.77
   zag:
     "@zag-js/collection": ^1.33.1
     "@zag-js/react": ^1.33.1
