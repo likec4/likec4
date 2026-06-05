@@ -218,8 +218,8 @@ catalogs:
     vite-plugin-node-polyfills: ^0.26.0
     vite-tsconfig-paths: ^6.1.1
   vitest:
-    "@vitest/ui": 4.1.7
-    vitest: 4.1.7
+    "@vitest/ui": 4.1.8
+    vitest: 4.1.8
   vscode:
     "@types/vscode": ^1.115.0
     vscode: npm:@types/vscode@1.115.0
