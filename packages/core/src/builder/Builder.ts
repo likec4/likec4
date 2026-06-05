@@ -334,6 +334,63 @@ function validateSpec({ tags, elements, deployments, relationships, ...specifica
   }
 }
 
+/**
+ * The shape of a {@link Specification} this module reads when checking
+ * compatibility — only the name-bearing slots that affect {@link Types.FromSpecification}.
+ */
+interface SpecificationShape {
+  elements?: string[] | Record<string, unknown>
+  deployments?: string[] | Record<string, unknown>
+  relationships?: string[] | Record<string, unknown>
+  tags?: string[] | Record<string, unknown>
+  metadataKeys?: readonly string[]
+}
+
+const specKeysOf = (value: string[] | Record<string, unknown> | undefined): readonly string[] =>
+  isNullish(value) ? [] : isArray(value) ? value : Object.keys(value)
+
+/**
+ * Asserts that `declared` is a subset of `loaded`: every element / deployment /
+ * relationship kind, tag and metadata key declared must be present in the loaded
+ * specification. The reverse is allowed — the loaded specification may contain
+ * extra kinds/tags that are not declared (you simply won't get typed helpers for
+ * them).
+ *
+ * Styles and other per-kind props are intentionally ignored — only the *names*
+ * that feed {@link Types.FromSpecification} are compared.
+ *
+ * Used by `LikeC4.toTypedBuilder` to back its typed cast with a runtime check:
+ * if a declared kind is missing from the loaded model, the produced types would
+ * lie, so we throw instead.
+ *
+ * @throws Error listing every declared-but-missing entry.
+ */
+export function assertSpecificationCompatible(
+  declared: BuilderSpecification,
+  loaded: SpecificationShape,
+): void {
+  const missing: string[] = []
+  const compare = (label: string, declaredKeys: readonly string[], loadedKeys: ReadonlySet<string>) => {
+    for (const key of declaredKeys) {
+      if (!loadedKeys.has(key)) {
+        missing.push(`${label} "${key}"`)
+      }
+    }
+  }
+
+  compare('element kind', specKeysOf(declared.elements), new Set(specKeysOf(loaded.elements)))
+  compare('deployment kind', specKeysOf(declared.deployments), new Set(specKeysOf(loaded.deployments)))
+  compare('relationship kind', specKeysOf(declared.relationships), new Set(specKeysOf(loaded.relationships)))
+  compare('tag', specKeysOf(declared.tags), new Set(specKeysOf(loaded.tags)))
+  compare('metadata key', declared.metadataKeys ?? [], new Set(loaded.metadataKeys ?? []))
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Specification mismatch — declared but not present in the loaded model:\n  - ${missing.join('\n  - ')}`,
+    )
+  }
+}
+
 function toMarkdownOrString(input: string | MarkdownOrString | null | undefined): MarkdownOrString | null {
   if (isNullish(input)) {
     return null

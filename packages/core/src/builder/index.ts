@@ -1,5 +1,5 @@
 export type * from './_types'
-export { Builder } from './Builder'
+export { assertSpecificationCompatible, Builder } from './Builder'
 export type * from './Builder.deployment'
 export type * from './Builder.deploymentModel'
 export type * from './Builder.element'

@@ -1,5 +1,5 @@
-import { Builder } from '@likec4/core/builder'
-import type { AnyTypes, BuilderMode } from '@likec4/core/builder'
+import { assertSpecificationCompatible, Builder } from '@likec4/core/builder'
+import type { AnyTypes, BuilderMode, BuilderSpecification, Types } from '@likec4/core/builder'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
 import { generate as generateLikeC4Source } from '@likec4/generators/likec4'
@@ -177,6 +177,58 @@ Please specify a project folder`)
   async toBuilder(mode: BuilderMode = 'editable', project?: string | undefined): Promise<Builder<AnyTypes>> {
     const parsed = await this.parsedModel(project)
     return Builder.fromParsed(parsed.$data, mode)
+  }
+
+  /**
+   * Like {@link toBuilder}, but validates the given `specification` against the
+   * loaded model and returns a **typed** builder.
+   *
+   * Use this when your code authors the model with the same specification as the
+   * DSL: pass that spec and get a `Builder<Types.FromSpecification<Spec>>` with
+   * autocomplete on element / deployment / relationship kinds, tags and metadata
+   * keys — replacing the unchecked `as unknown as Builder<...>` cast.
+   *
+   * Validation is **subset-based**: every kind / tag / metadata key you declare
+   * must exist in the loaded model (otherwise the produced types would lie and we
+   * throw). The loaded model may contain *extra* kinds you didn't declare — you
+   * simply won't get typed helpers for them.
+   *
+   * Like {@link toBuilder}, the builder is `editable` by default — pass
+   * `mode: 'strict'` for the throw-on-duplicate builder.
+   *
+   * Note: existing FQNs and view ids from the loaded model are still NOT part of
+   * the static type set (only kinds/tags/metadata keys are) — see
+   * {@link Builder.fromParsed}.
+   *
+   * @example
+   * ```ts
+   * const specification = {
+   *   elements: ['actor', 'system', 'component'],
+   *   tags: ['external'],
+   * } as const
+   *
+   * const builder = await likec4.toTypedBuilder({ specification })
+   * const enriched = builder
+   *   .model(({ system, component }, _) =>
+   *     _(system('monitoring').with(component('grafana'))),
+   *   )
+   *   .toLikeC4Model()
+   * ```
+   */
+  async toTypedBuilder<const Spec extends BuilderSpecification>(
+    options: {
+      /** The specification your code expects — validated against the loaded model. */
+      specification: Spec
+      /** Duplicate handling, defaults to `'editable'` (see {@link toBuilder}). */
+      mode?: BuilderMode
+      /** Project name to seed from (for multi-project workspaces). */
+      project?: string
+    },
+  ): Promise<Builder<Types.FromSpecification<Spec>>> {
+    const { specification, mode = 'editable', project } = options
+    const parsed = await this.parsedModel(project)
+    assertSpecificationCompatible(specification, parsed.$data.specification)
+    return Builder.fromParsed(parsed.$data, mode) as unknown as Builder<Types.FromSpecification<Spec>>
   }
 
   /**
