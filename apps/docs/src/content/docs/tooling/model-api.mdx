@@ -784,10 +784,38 @@ const dsl = generateLikeC4(data)              // from @likec4/generators/likec4
 await writeFile('./generated/model.c4', dsl)  // or use writeDSL on the LikeC4 instance
 ```
 
+### `LikeC4.toTypedBuilder()` — get a *typed* Builder
+
+When the parsed model comes from a workspace, element kinds and FQNs are only known at runtime — so the
+builder returned by `LikeC4.toBuilder()` has loose types (`Builder<AnyTypes>`). If your code authors the
+model with the **same specification** as the DSL, pass that spec to `toTypedBuilder` and get a builder
+typed by it — with autocomplete on element/deployment/relationship kinds, tags and metadata keys:
+
+```ts
+const builder = await likec4.toTypedBuilder({
+  specification: {
+    elements: ['actor', 'system', 'component'],
+    tags: ['external'],
+  },
+})
+
+// `system` / `component` are statically known — no cast needed.
+builder.model(({ system, component }, _) =>
+  _(system('monitoring').with(component('grafana'))),
+)
+```
+
+The given specification is **validated** against the loaded model (subset semantics): every kind / tag /
+metadata key you declare must exist in the loaded model, otherwise the call throws — so the types can't
+silently drift away from the DSL. The loaded model may contain *extra* kinds you didn't declare; you
+just won't get typed helpers for them. `mode` defaults to `'editable'`, same as `toBuilder`.
+
 :::caution
-**Type safety when loading from disk.** When the parsed model comes from a workspace, the element kinds
-and FQNs are only known at runtime — so the builder returned by `LikeC4.toBuilder()` has loose types.
-Callers who know the spec statically can supply it explicitly:
+**Existing FQNs stay untyped.** `toTypedBuilder` types the *kinds*, not the FQNs — `findElement('cloud.api')`
+and cross-references like `rel('cloud.api', 'cloud.ui')` are still only validated at builder-mutation
+time, not by the compiler.
+
+If you can't (or don't want to) pass a spec, the escape hatch is still an explicit cast on `toBuilder()`:
 
 ```ts
 import type { Builder, Types } from "@likec4/core/builder"
@@ -795,9 +823,6 @@ import type { Builder, Types } from "@likec4/core/builder"
 type MySpec = { elements: ['actor', 'system', 'component'] }
 const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>
 ```
-
-Cross-references to existing FQNs (e.g. `rel('cloud.api', 'cloud.ui')`) can't be statically validated
-either way — they're checked at builder-mutation time.
 :::
 
 :::tip

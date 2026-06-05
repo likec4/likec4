@@ -106,6 +106,46 @@ describe('LikeC4.toBuilder / toDSL / writeDSL', () => {
     ).toThrow(/already exists/)
   })
 
+  it('toTypedBuilder() returns a typed builder when the spec is a subset of the loaded model', async () => {
+    const likec4 = await fromSource(sampleSource)
+    const builder = await likec4.toTypedBuilder({
+      specification: {
+        elements: ['actor', 'system', 'component'],
+      },
+    })
+
+    // `system` / `component` are statically known here — no `as any` needed.
+    const enriched = builder
+      .model(({ system, component }, _) =>
+        _(
+          system('monitoring').with(
+            component('grafana'),
+          ),
+        )
+      )
+      .toLikeC4Model()
+
+    expect(enriched.element('monitoring.grafana').id).toBe('monitoring.grafana')
+  })
+
+  it('toTypedBuilder() allows the loaded model to have extra kinds (subset semantics)', async () => {
+    const likec4 = await fromSource(sampleSource)
+    // Declare only `system` — the loaded model also has `actor` and `component`.
+    await expect(likec4.toTypedBuilder({ specification: { elements: ['system'] } }))
+      .resolves.toBeDefined()
+  })
+
+  it('toTypedBuilder() throws when declaring a kind absent from the loaded model', async () => {
+    const likec4 = await fromSource(sampleSource)
+    await expect(
+      likec4.toTypedBuilder({
+        specification: {
+          elements: ['actor', 'system', 'component', 'database'],
+        },
+      }),
+    ).rejects.toThrow(/element kind "database"/)
+  })
+
   it('renders the parsed model back to DSL via toDSL()', async () => {
     const likec4 = await fromSource(sampleSource)
     const dsl = await likec4.toDSL()
