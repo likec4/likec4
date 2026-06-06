@@ -257,15 +257,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (!model) {
       throw new Error('Failed to compute model, empty project?')
     }
-    const layouted = await this.views.layoutAllViews(projectId, cancelToken)
+    // Use `diagrams()` rather than `layoutAllViews()` so that manual layouts are applied.
+    // `layoutAllViews()` returns fresh auto-layouts only, while `diagrams()` merges manual
+    // layouts via `withLayoutType(..., 'manual')`. See https://github.com/likec4/likec4/issues/2553
+    const diagrams = await this.views.diagrams(projectId, cancelToken)
     return LikeC4Model.create({
       ...model.$data,
       _stage: 'layouted' as const,
-      views: pipe(
-        layouted,
-        map(prop('diagram')),
-        indexBy(prop('id')),
-      ),
+      views: indexBy(diagrams, prop('id')),
     })
   }
 
