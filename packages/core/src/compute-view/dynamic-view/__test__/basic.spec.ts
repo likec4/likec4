@@ -1,5 +1,7 @@
-import { last } from 'remeda'
+import { last, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
+import { Builder } from '../../../builder/Builder'
+import { invariant } from '../../../utils'
 import { $include } from '../../element-view/__test__/fixture'
 import { $step, compute } from './fixture'
 
@@ -429,5 +431,113 @@ describe('dynamic-view', () => {
       },
     ])
     expect(last(edges)).not.toHaveProperty('dir')
+  })
+
+  it('should compute steps flow', () => {
+    const view = Builder
+      .specification({
+        elements: ['el'],
+      })
+      .model(({ el }, _) =>
+        _(
+          el('A'),
+          el('B'),
+          el('C'),
+        )
+      )
+      .views(({ dynamicView, $step }, _) =>
+        _(
+          dynamicView('test').with(
+            $step('A -> B'),
+            $step.loop(
+              'B -> B',
+              $step('A -> B'),
+              $step.trycatch({
+                try: [
+                  'B -> C',
+                  $step.opt(
+                    'A -> A',
+                  ),
+                ],
+                catch: [
+                  'B -> A',
+                ],
+              }),
+              $step.alt(
+                $step.when('B -> A'),
+                $step.when('B -> C'),
+              ),
+              $step('B -> B'),
+            ),
+          ),
+        )
+      )
+      .toLikeC4Model()
+      .view('test')
+      .$view
+    invariant(view._type === 'dynamic')
+
+    expect(map(view.edges, prop('id'))).toEqual([
+      'step-01',
+      'step-02.loop.01',
+      'step-02.loop.02',
+      'step-02.loop.03.try.01',
+      'step-02.loop.03.try.02.opt.01',
+      'step-02.loop.03.catch.01',
+      'step-02.loop.04.alt.01.01',
+      'step-02.loop.04.alt.02.01',
+      'step-02.loop.05',
+    ])
+    expect(view.steps).toMatchInlineSnapshot(`
+      [
+        "step-01",
+        {
+          "_type": "loop",
+          "id": "step-02",
+          "steps": [
+            "step-02.loop.01",
+            "step-02.loop.02",
+            {
+              "_type": "try",
+              "catch": [
+                "step-02.loop.03.catch.01",
+              ],
+              "id": "step-02.loop.03",
+              "try": [
+                "step-02.loop.03.try.01",
+                {
+                  "_type": "opt",
+                  "id": "step-02.loop.03.try.02",
+                  "steps": [
+                    "step-02.loop.03.try.02.opt.01",
+                  ],
+                },
+              ],
+            },
+            {
+              "_type": "alt",
+              "branches": [
+                {
+                  "_type": "branch:when",
+                  "id": "step-02.loop.04.alt.01",
+                  "steps": [
+                    "step-02.loop.04.alt.01.01",
+                  ],
+                },
+                {
+                  "_type": "branch:when",
+                  "id": "step-02.loop.04.alt.02",
+                  "steps": [
+                    "step-02.loop.04.alt.02.01",
+                  ],
+                },
+              ],
+              "id": "step-02.loop.04",
+            },
+            "step-02.loop.05",
+          ],
+        },
+      ]
+    `)
   })
 })

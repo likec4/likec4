@@ -142,6 +142,39 @@ export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseC
   readonly [_type]: 'deployment'
 }
 
+type ComputedStepsBranches =
+  | {
+    readonly [_type]: 'loop' | 'opt' | 'par'
+    readonly id: scalar.StepPath
+    steps: ComputedStepsFlow
+  }
+  | {
+    readonly [_type]: 'try'
+    readonly id: scalar.StepPath
+    try: ComputedStepsFlow
+    catch?: ComputedStepsFlow
+    finally?: ComputedStepsFlow
+  }
+  | {
+    readonly [_type]: 'alt'
+    readonly id: scalar.StepPath
+    branches: Array<{
+      readonly [_type]: 'when' | 'else' | 'if'
+      readonly id: scalar.StepPath
+      steps: ComputedStepsFlow
+    }>
+  }
+
+export type ComputedStepsBranch<T extends ComputedStepsBranches['_type'] = ComputedStepsBranches['_type']> = Extract<
+  ComputedStepsBranches,
+  { [_type]: T }
+>
+
+export type ComputedStepsFlow = Array<
+  | scalar.StepPath
+  | ComputedStepsBranches
+>
+
 export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'dynamic'
   /**
@@ -150,4 +183,6 @@ export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComp
    * - `sequence`: display as a sequence diagram
    */
   readonly variant: DynamicViewDisplayVariant
+
+  readonly steps: Readonly<ComputedStepsFlow>
 }

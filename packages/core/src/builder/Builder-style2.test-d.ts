@@ -168,24 +168,50 @@ test('Builder types - style 2', () => {
       _(
         dynamicView('dynamic-a').with(
           $step('cloud.backend', 'cloud'),
+          $step.loop(
+            'alice -> alice',
+            'bob -> bob',
+            $step('alice -> cloud.backend'),
+            $step.opt(
+              'cloud.frontend -> cloud.frontend',
+            ),
+          ),
           // @ts-expect-error
           $step('a -> b'),
           $step.trycatch({
             try: [
               'alice -> bob',
+              'alice -> cloud.backend',
+              $step('bob', 'cloud'),
             ],
             catch: [
               $step.loop(
+                $step('bob', 'cloud'),
                 'bob -> alice',
+                'bob -> cloud.backend',
                 // @ts-expect-error
                 'a -> b',
               ),
             ],
+            finally: [
+              $step('cloud -> cloud.backend'),
+            ],
           }),
-          // $step('alice', 'cloud.backend', {
-          //   with: {},
-          // }),
-          // $style('alice', {}),
+          $step.alt(
+            $step.when(
+              'alice -> cloud',
+              $step('alice -> cloud.backend'),
+            ),
+            $step.if(
+              'bob -> alice',
+              'bob -> bob',
+            ),
+            // @ts-expect-error
+            $step.else('a -> b'),
+          ),
+          $step('cloud.backend', 'bob'),
+          // @ts-expect-error
+          $step('a -> b'),
         ),
         dynamicView(
           'dynamic-b',
@@ -194,7 +220,7 @@ test('Builder types - style 2', () => {
             $step('cloud.backend -> alice'),
             $step.loop(
               'cloud.backend.api -> cloud',
-              'cloud.backend.api -> cloud.backend.api',
+              'cloud.backend.api -> cloud.backend',
               $step('cloud.backend -> cloud.backend.db'),
               'cloud.backend.db -> cloud.backend.api',
             ),

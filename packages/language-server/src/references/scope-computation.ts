@@ -190,6 +190,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
             if (isTruthy(spec.tag.name)) {
               docExports.push(
                 this.descriptions.createDescription(spec.tag, spec.tag.name, document),
+                this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document),
               )
             }
             continue
@@ -198,6 +199,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
             if (isTruthy(spec.kind.name)) {
               docExports.push(
                 this.descriptions.createDescription(spec.kind, spec.kind.name, document),
+                this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document),
               )
             }
             continue

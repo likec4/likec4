@@ -111,13 +111,14 @@ Tags:
 
 Model:
   name='model' '{'
-    elements+=(
-      ExtendElement |
-      ExtendRelation |
-      Relation<true> |
-      Element
-    )*
+    elements+=(ModelElement)*
   '}'
+;
+
+ModelElement:
+  ExtendElementOrRelation |
+  Relation<true> |
+  Element
 ;
 
 Element:
@@ -155,8 +156,22 @@ ElementProperty:
 ElementStringProperty:
   key=('title' | 'description' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
 
-ExtendElement:
-  'extend' element=StrictFqnElementRef body=ExtendElementBody
+ExtendElementOrRelation:
+  'extend' (
+    {infer ExtendRelation}
+      source=FqnRef
+      (
+        dotKind=RelationKindDotRef |
+        '-[' kind=[RelationshipKind] ']->' |
+        '->'
+      )
+      target=FqnRef
+      title=String?
+      body=ExtendRelationBody |
+    {infer ExtendElement}
+      element=StrictFqnElementRef
+      body=ExtendElementBody
+  )
 ;
 
 ExtendElementBody:  '{'
@@ -174,18 +189,6 @@ ExtendElementProperty:
   LinkProperty |
   MetadataProperty;
 
-ExtendRelation:
-  'extend' source=FqnRef
-  (
-    dotKind=RelationKindDotRef |
-    '-[' kind=[RelationshipKind] ']->' |
-    '->'
-  )
-  target=FqnRef
-  title=String?
-  body=ExtendRelationBody
-;
-
 ExtendRelationBody: '{'
   tags=Tags?
   props+=ExtendRelationProperty*
@@ -200,24 +203,43 @@ ExtendRelationProperty:
 ElementRef:
   modelElement=FqnRef;
 
-StrictFqnElementRef:
-  el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
+interface StrictFqnElementRef {
+  parent?: StrictFqnElementRef;
+  el: @Element;
+}
+
+StrictFqnElementRef returns StrictFqnElementRef:
+  el=[Element:Id] ({StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
 
 type ModelReferenceable = Element | Imported;
 type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
+
+interface FqnRef {
+  parent?: FqnRef;
+  value: @Referenceable;
+}
+
+interface StrictFqnRef {
+  parent?: StrictFqnRef;
+  value: @Referenceable;
+}
+
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
 //  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
 //  - If parent is DeployedInstance, then it can reference  nested  Element
 //  - If parent is Element, then it can reference  nested  Element
 //  Mix of DeploymentRef and ElementRef
-FqnRef: value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+FqnRef returns FqnRef:
+  value=[Referenceable:Id] ({FqnRef.parent=current} StickyDot value=[Referenceable:Id])*
+;
 
 
 // Strict reference allows only direct children of parent
-StrictFqnRef:
-  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+StrictFqnRef returns StrictFqnRef:
+  value=[Referenceable:Id] ({StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*
+;
 
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
@@ -754,9 +776,11 @@ WhereRelation:
   {infer WhereRelationTag} 'tag' EqOperator value=TagRef |
   {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
   {infer WhereRelationMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
-  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=TagRef |
-  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id] |
-  {infer WhereRelationParticipantMetadata} participant=Participant StickyDot 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
+  participant=Participant StickyDot (
+    {infer WhereRelationParticipantTag} 'tag' EqOperator value=TagRef |
+    {infer WhereRelationParticipantKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id] |
+    {infer WhereRelationParticipantMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
+  )
 ;
 type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
 type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
@@ -1027,12 +1051,12 @@ ArrowProperty:
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
 
-TagRef :
-  Hash tag=[Tag:Id]
+TagRef:
+  tag=[Tag:HashId]
 ;
 
-RelationKindDotRef :
-  Dot kind=[RelationshipKind:Id]
+RelationKindDotRef:
+  kind=[RelationshipKind:DotId]
 ;
 
 LineOptions returns string:
@@ -1129,6 +1153,12 @@ Id returns string:
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
 
+DotId returns string:
+  DotPrefix Id;
+
+HashId returns string:
+  Hash Id;
+
 fragment EqOperator:
   (
     operator=(Eq | NotEqual) |
@@ -1171,11 +1201,13 @@ terminal URI_ALIAS: /@[a-zA-Z0-9_-]*\/[^\s]+/;
 
 terminal DotUnderscore: /\b\._(?![_a-zA-Z])/;
 terminal DotWildcard: /\b\.\*{1,2}/;
+// terminal HashPrefix: /\B#\b/;
 terminal Hash: '#';
 
 // No space allowed before dot
 terminal StickyDot: /\b\./;
-terminal Dot: '.';
+// terminal Dot: '.';
+terminal DotPrefix: /\B\./;
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;

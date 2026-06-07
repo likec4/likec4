@@ -198,7 +198,7 @@ describe('dynamic views - flow blocks', () => {
               system.frontend -> system.backend 'frontend uses backend'
             }
             when 'Condition 2' {
-              system.frontend <- system.backend
+              user -> system.frontend
             }
             else {
               system.frontend -> system.backend
@@ -248,6 +248,32 @@ describe('dynamic views - flow blocks', () => {
           system.frontend
               -> system.backend
               -> system.frontend
+        }
+      }
+    `).toBeValid()
+  })
+
+  it('nested blocks', async ({ expectView }) => {
+    await expectView(`
+      dynamic view index1 {
+        loop {
+          try {
+            alt {
+              when 'Condition 1' {
+                system.frontend -> system.backend
+              }
+              when 'Condition 2' {
+                user -> system.frontend
+              }
+              else {
+                opt {
+                  user -> system
+                }
+              }
+            }
+          } finally {
+            system.frontend <- system.backend
+          }
         }
       }
     `).toBeValid()

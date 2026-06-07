@@ -5,10 +5,31 @@ import * as assert from 'node:assert'
 import { entries, flatMap, join, once, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { LiteralUnion } from 'type-fest'
+import { test } from 'vitest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { type LanguageServicesContext, createLanguageServices } from '../module'
+
+export const testServices = test.extend<{
+  t: ReturnType<typeof createTestServices>
+  create: (options?: Parameters<typeof createTestServices>[0]) => ReturnType<typeof createTestServices>
+}>({
+  t: async ({}, use) => {
+    const services = createTestServices()
+    await use(services)
+    services[Symbol.dispose]()
+  },
+  create: async ({}, use) => {
+    const toDispose: Array<ReturnType<typeof createTestServices>> = []
+    await use((options) => {
+      const services = createTestServices(options)
+      toDispose.push(services)
+      return services
+    })
+    toDispose.forEach(services => services[Symbol.dispose]())
+  },
+})
 
 export function createTestServices(options?: {
   workspace?: string
@@ -189,7 +210,12 @@ export function createTestServices(options?: {
     resetState,
     format,
     [Symbol.dispose]: () => {
-      services.likec4.LanguageServices.dispose()
+      services.likec4.LanguageServices.dispose().catch(err => {
+        console.error(err)
+      })
+    },
+    [Symbol.asyncDispose]: async () => {
+      await services.likec4.LanguageServices.dispose()
     },
   }
 }

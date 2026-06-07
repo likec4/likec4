@@ -244,7 +244,8 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
       }
       if (ast.isElementTagExpression(astNode)) {
         invariant(astNode.tag.tag.ref, `Tag ${astNode.$cstNode?.text} is not resolved`)
-        let elementTag = astNode.tag.tag.$refText
+        let elementTag = astNode.tag.tag.ref.name
+
         return {
           elementTag: elementTag as c4.Tag,
           isEqual: astNode.isEqual,

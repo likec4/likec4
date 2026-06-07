@@ -1,12 +1,11 @@
 import type { ViewId } from '@likec4/core'
 import { prop } from 'remeda'
-import { describe, it } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe } from 'vitest'
+import { testServices as it } from '../../test'
 
 describe('LikeC4ModelBuilder -- globals', () => {
-  it('local styles are applied to all views', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('local styles are applied to all views', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -30,7 +29,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
@@ -40,9 +39,8 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
 
-  it('local styles are overwritten by internal view styles', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('local styles are overwritten by internal view styles', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -70,7 +68,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
@@ -80,9 +78,8 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
 
-  it('global style is applied to a view', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style is applied to a view', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -105,14 +102,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
     `)
     expect(diagnostics).toHaveLength(0)
 
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
-  it('global style is overridden by further styles', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style is overridden by further styles', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -137,14 +133,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('red')
   })
 
-  it('global style overrides previous styles', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style overrides previous styles', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -169,14 +164,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
-  it('global style is not applied if not defined', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style is not applied if not defined', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -201,14 +195,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(diagnostics).toHaveLength(1)
     expect(diagnostics[0]?.severity).toBe(1)
 
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
   })
 
-  it('the first global style with duplicated name is applied', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('the first global style with duplicated name is applied', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
         tag element_tag
@@ -236,14 +229,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBeGreaterThan(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
-  it('global style group is applied to a view', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group is applied to a view', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -267,14 +259,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
-  it('global style group can be filtered on tags', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group can be filtered on tags', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
         tag deprecated
@@ -304,15 +295,14 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
     expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('muted')
   })
 
-  it('global style group entreis are applied in order', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group entreis are applied in order', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
         tag deprecated
@@ -342,15 +332,14 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
     expect(indexView.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
 
-  it('global style group is overwritten by further styles', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group is overwritten by further styles', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -378,15 +367,14 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('secondary')
     expect(indexView.nodes.find(n => n.id === 'sys1')?.style.opacity).toBe(10)
   })
 
-  it('global style group overwrites previous styles', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group overwrites previous styles', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -415,15 +403,14 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics).toHaveLength(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
     expect(indexView.nodes.find(n => n.id === 'sys1')?.style.opacity).toBe(50)
   })
 
-  it('global style group is not applied if missing', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group is not applied if missing', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -451,14 +438,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBeGreaterThan(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('secondary')
   })
 
-  it('global style group can be applied with a global style', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group can be applied with a global style', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -489,7 +475,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     const sys1 = indexView.nodes.find(n => n.id === 'sys1')!
     expect(sys1.color).toBe('red')
@@ -499,9 +485,8 @@ describe('LikeC4ModelBuilder -- globals', () => {
     })
   })
 
-  it('global style group should not share a name with a global style', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global style group should not share a name with a global style', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -529,14 +514,13 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBeGreaterThan(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
   })
 
-  it('local styles can apply global styles', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('local styles can apply global styles', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -563,7 +547,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('amber')
 
@@ -571,9 +555,8 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('amber')
   })
 
-  it('local styles can apply global style groups', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('local styles can apply global style groups', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -602,7 +585,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('amber')
 
@@ -610,9 +593,8 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('amber')
   })
 
-  it('local styles are applied in order', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('local styles are applied in order', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
       }
@@ -644,7 +626,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
 
@@ -652,9 +634,8 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(sys2View.nodes.find(n => n.id === 'sys2')?.color).toBe('green')
   })
 
-  it('global predicate groups are applied', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global predicate groups are applied', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
         tag deprecated
@@ -679,15 +660,14 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
     expect(indexView).toBeDefined()
     expect(indexView.nodes.map(prop('id'))).toEqual(['sys1', 'sys2'])
   })
 
-  it('global dynamic predicate groups are applied', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+  it('global dynamic predicate groups are applied', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
       specification {
         element component
         tag important
@@ -713,7 +693,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
       }
     `)
     expect(diagnostics.length).toBe(0)
-    const model = await buildModel()
+    const model = await t.buildModel()
     const dynamicView = model?.views['dynamic_view' as ViewId]!
     expect(dynamicView).toBeDefined()
     expect(dynamicView.nodes.find(n => n.id === 'sys1')).toBeDefined()

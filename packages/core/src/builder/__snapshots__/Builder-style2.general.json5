@@ -410,6 +410,20 @@
           "title": "customer",
         },
       ],
+      "steps": [
+        "step-01",
+        "step-02",
+        {
+          "_type": "par",
+          "id": "step-03",
+          "steps": [
+            "step-03.par.01",
+            "step-03.par.02",
+            "step-03.par.03",
+            "step-03.par.04",
+          ],
+        },
+      ],
       "tags": [],
       "title": "Dynamic View A",
       "variant": "diagram",

@@ -1,5 +1,257 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Builder (style 2) > general > should build likec4 model 1`] = `
+{
+  "_stage": "parsed",
+  "deployments": {
+    "elements": {
+      "dev": {
+        "id": "dev",
+        "kind": "env",
+        "style": {
+          "size": "lg",
+        },
+        "title": "dev",
+      },
+      "dev.local": {
+        "id": "dev.local",
+        "kind": "node",
+        "style": {},
+        "title": "local",
+      },
+      "prod": {
+        "id": "prod",
+        "kind": "env",
+        "style": {
+          "size": "lg",
+        },
+        "title": "prod",
+      },
+      "prod.eu": {
+        "id": "prod.eu",
+        "kind": "node",
+        "style": {},
+        "title": "eu",
+      },
+      "prod.eu.ui": {
+        "element": "cloud.ui",
+        "id": "prod.eu.ui",
+        "style": {},
+      },
+    },
+    "relations": {},
+  },
+  "elements": {
+    "cloud": {
+      "id": "cloud",
+      "kind": "system",
+      "style": {
+        "size": "lg",
+        "textSize": "sm",
+      },
+      "title": "cloud",
+    },
+    "cloud.backend": {
+      "id": "cloud.backend",
+      "kind": "component",
+      "style": {},
+      "title": "backend",
+    },
+    "cloud.ui": {
+      "id": "cloud.ui",
+      "kind": "component",
+      "style": {},
+      "title": "ui",
+    },
+    "customer": {
+      "id": "customer",
+      "kind": "actor",
+      "style": {},
+      "tags": [
+        "tag3",
+      ],
+      "title": "customer",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {
+    "rel1": {
+      "id": "rel1",
+      "kind": "like",
+      "source": {
+        "model": "customer",
+      },
+      "target": {
+        "model": "cloud.ui",
+      },
+      "title": null,
+    },
+  },
+  "specification": {
+    "customColors": {},
+    "deployments": {
+      "env": {
+        "style": {
+          "size": "lg",
+        },
+      },
+      "node": {},
+    },
+    "elements": {
+      "actor": {
+        "tags": [
+          "tag3",
+        ],
+      },
+      "component": {},
+      "system": {
+        "style": {
+          "size": "lg",
+          "textSize": "sm",
+        },
+      },
+    },
+    "relationships": {
+      "like": {
+        "technology": "thumbs up",
+      },
+    },
+    "tags": {
+      "tag1": {
+        "color": "#FFF",
+      },
+      "tag2": {
+        "color": "tomato",
+      },
+      "tag3": {
+        "color": "grass",
+      },
+    },
+  },
+  "views": {
+    "cloud": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "cloud",
+      "rules": [
+        {
+          "include": [
+            {
+              "source": {
+                "wildcard": true,
+              },
+              "target": {
+                "ref": {
+                  "model": "cloud",
+                },
+                "selector": "descendants",
+              },
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": null,
+      "viewOf": "cloud.ui",
+    },
+    "deployment": {
+      "_stage": "parsed",
+      "_type": "deployment",
+      "description": null,
+      "id": "deployment",
+      "rules": [
+        {
+          "include": [
+            {
+              "ref": {
+                "deployment": "prod",
+              },
+              "selector": "descendants",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "Deployment",
+    },
+    "dynamic-a": {
+      "_stage": "parsed",
+      "_type": "dynamic",
+      "description": null,
+      "id": "dynamic-a",
+      "rules": [],
+      "steps": [
+        {
+          "source": "cloud",
+          "tail": "odiamond",
+          "target": "cloud",
+          "title": "Step 1",
+        },
+        {
+          "source": "cloud",
+          "target": "cloud",
+        },
+        {
+          "_type": "par",
+          "steps": [
+            {
+              "source": "cloud.backend",
+              "target": "cloud.backend",
+            },
+            {
+              "navigateTo": "cloud",
+              "source": "cloud.ui",
+              "target": "cloud",
+              "title": "Step 2",
+            },
+            {
+              "source": "cloud.ui",
+              "target": "cloud",
+            },
+            {
+              "source": "cloud",
+              "target": "customer",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "Dynamic View A",
+    },
+    "index": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "index",
+      "rules": [
+        {
+          "include": [
+            {
+              "ref": {
+                "model": "cloud",
+              },
+              "selector": "children",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "Index",
+    },
+  },
+}
+`;
+
 exports[`Builder (style 2) > general > should build parsed model 1`] = `
 {
   "_stage": "parsed",

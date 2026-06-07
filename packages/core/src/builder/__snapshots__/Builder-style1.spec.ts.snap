@@ -360,3 +360,225 @@ exports[`Builder (style1) > should build viewOf  1`] = `
   },
 }
 `;
+
+exports[`Builder (style1) > should build viewOf  2`] = `
+{
+  "_stage": "parsed",
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "c1": {
+      "id": "c1",
+      "kind": "component",
+      "style": {},
+      "title": "c1",
+    },
+    "c2": {
+      "id": "c2",
+      "kind": "component",
+      "style": {},
+      "title": "c2",
+    },
+    "c3": {
+      "id": "c3",
+      "kind": "component",
+      "style": {},
+      "title": "c3",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {},
+  "specification": {
+    "customColors": {},
+    "deployments": {},
+    "elements": {
+      "component": {},
+    },
+    "relationships": {},
+    "tags": {},
+  },
+  "views": {
+    "1": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "1",
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "View 1",
+    },
+    "2": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "2",
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+        {
+          "include": [
+            {
+              "ref": {
+                "model": "c2",
+              },
+              "selector": "children",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "view 2",
+    },
+    "3": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "3",
+      "rules": [
+        {
+          "include": [
+            {
+              "ref": {
+                "model": "c3",
+              },
+              "selector": "expanded",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "",
+    },
+  },
+}
+`;
+
+exports[`Builder (style1) > should build viewOf  3`] = `
+{
+  "_stage": "parsed",
+  "deployments": {
+    "elements": {},
+    "relations": {},
+  },
+  "elements": {
+    "c1": {
+      "id": "c1",
+      "kind": "component",
+      "style": {},
+      "title": "c1",
+    },
+    "c2": {
+      "id": "c2",
+      "kind": "component",
+      "style": {},
+      "title": "c2",
+    },
+    "c2.c3": {
+      "id": "c2.c3",
+      "kind": "component",
+      "style": {},
+      "title": "c3",
+    },
+    "c2.c3.c4": {
+      "id": "c2.c3.c4",
+      "kind": "component",
+      "style": {},
+      "title": "c4",
+    },
+  },
+  "globals": {
+    "dynamicPredicates": {},
+    "predicates": {},
+    "styles": {},
+  },
+  "imports": {},
+  "project": {
+    "id": "from-builder",
+  },
+  "projectId": "from-builder",
+  "relations": {},
+  "specification": {
+    "customColors": {},
+    "deployments": {},
+    "elements": {
+      "component": {},
+    },
+    "relationships": {},
+    "tags": {},
+  },
+  "views": {
+    "1": {
+      "_stage": "parsed",
+      "_type": "element",
+      "description": null,
+      "id": "1",
+      "rules": [
+        {
+          "include": [
+            {
+              "wildcard": true,
+            },
+          ],
+        },
+        {
+          "include": [
+            {
+              "inout": {
+                "ref": {
+                  "model": "c2.c3",
+                },
+                "selector": "children",
+              },
+            },
+          ],
+        },
+        {
+          "exclude": [
+            {
+              "source": {
+                "ref": {
+                  "model": "c1",
+                },
+                "selector": "expanded",
+              },
+              "target": {
+                "ref": {
+                  "model": "c2.c3",
+                },
+                "selector": "children",
+              },
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "View 1",
+      "viewOf": "c1",
+    },
+  },
+}
+`;

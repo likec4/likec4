@@ -18,8 +18,8 @@ export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
 export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
   return async ({ expect }) => {
     expect.hasAssertions()
-    const { validate } = createTestServices()
-    const { diagnostics } = await validate(likec4(strings, ...expr))
+    using t = createTestServices()
+    const { diagnostics } = await t.validate(likec4(strings, ...expr))
     const errors = diagnostics.map(d => d.message).join('\n')
     expect(errors).toEqual('')
   }
@@ -28,8 +28,8 @@ export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFun
 export function invalid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
   return async ({ expect }) => {
     expect.hasAssertions()
-    const { validate } = createTestServices()
-    const { diagnostics } = await validate(likec4(strings, ...expr))
+    using t = createTestServices()
+    const { diagnostics } = await t.validate(likec4(strings, ...expr))
     const errors = diagnostics.map(d => d.message).join('\n')
     expect(errors).not.toEqual('')
   }

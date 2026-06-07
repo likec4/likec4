@@ -34,7 +34,6 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Step
       source: source as Fqn,
       target: target as Fqn,
       astPath: '',
-      id: '' as StepPath,
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
     }
@@ -45,7 +44,6 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Step
       source: source as Fqn,
       target: target as Fqn,
       astPath: '',
-      id: '' as StepPath,
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
       isBackward: true,

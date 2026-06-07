@@ -118,7 +118,7 @@ const isValidatableAstNode = isAnyOf(
 type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
 const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
-  let nd = node as LikeC4AstNode['$container']
+  let nd = node as LikeC4AstNode | LikeC4AstNode['$container']
   while (nd && !ast.isLikeC4Grammar(nd)) {
     if (isValidatableAstNode(nd)) {
       return nd
@@ -138,9 +138,11 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
       continue
     }
     invalidNodes.add(node)
-    const container = findInvalidContainer(node)
-    if (container) {
-      invalidNodes.add(container)
+    if (!isValidatableAstNode(node)) {
+      const container = findInvalidContainer(node.$container)
+      if (container) {
+        invalidNodes.add(container)
+      }
     }
   }
   const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)

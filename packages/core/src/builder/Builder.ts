@@ -149,7 +149,7 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Adds views
    *
    * @example
-   *  builder.views(({ view, viewOf, deploymentView, $include, $style, $rules }, _) =>
+   *  builder.views(({ view, viewOf, deploymentView, dynamicView, $step, $include, $style, $rules }, _) =>
    *    _(
    *      view('view1').with(
    *        $include('a -> b'),
@@ -176,6 +176,13 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    *      ),
    *      deploymentView('deploymentView1').with(
    *        $include('a -> b')
+   *      ),
+   *      dynamicView('dynamicView1').with(
+   *        $step('a -> b'),
+   *        $step.alt(
+   *          $step.when('b -> c'),
+   *          $step.else('b -> e'),
+   *        ),
    *      ),
    *    )
    *  )

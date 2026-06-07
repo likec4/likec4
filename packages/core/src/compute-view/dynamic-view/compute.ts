@@ -1,4 +1,5 @@
 import { findLast, isTruthy, map, pipe, reduce } from 'remeda'
+import type { Simplify } from 'type-fest'
 import type { ElementModel, LikeC4Model } from '../../model'
 import {
   type AnyAux,
@@ -6,6 +7,8 @@ import {
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
+  type ComputedStepsBranch,
+  type ComputedStepsFlow,
   type ParsedDynamicView as DynamicView,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -18,7 +21,7 @@ import {
   stepGuards,
   StepPath,
 } from '../../types'
-import { intersection, invariant, nonexhaustive, nonNullable, toArray, union } from '../../utils'
+import { intersection, invariant, nonexhaustive, nonNullable, Stack, toArray, union } from '../../utils'
 import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -99,6 +102,35 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       return acc
     }, [] as Element<A>[])
 
+    const rootFlow: ComputedStepsFlow = []
+    const flowStack = new Stack<ComputedStepsFlow>()
+    flowStack.push(rootFlow)
+
+    const addToFlow = <const T extends ComputedStepsFlow[number]>(
+      item: T,
+    ): T extends { _type: ComputedStepsBranch[_type] } ? Simplify<Partial<ComputedStepsBranch<T['_type']>> & T> : T => {
+      flowStack.peek()!.push(item)
+      return item as any
+    }
+
+    const processSteps = (opts: {
+      steps: readonly Step.Any<A>[]
+      pushTo: ComputedStepsFlow
+      prefix: StepPath
+    }) => {
+      flowStack.push(opts.pushTo)
+      reduce(
+        opts.steps,
+        (acc, s) => processStep(s, acc, opts.prefix),
+        1,
+      )
+      flowStack.pop()
+    }
+
+    const stepId = (...segments: Array<string | number | undefined>): StepPath => {
+      return `step-${StepPath(...segments)}` as StepPath
+    }
+
     // Process steps
     const processStep = (step: Step.Any<A>, stepNum: number, prefix?: StepPath): number => {
       switch (true) {
@@ -111,52 +143,71 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         case stepGuards.isLoop(step):
         case stepGuards.isOpt(step):
         case stepGuards.isParallel(step): {
-          const newPrefix = StepPath(prefix, stepNum, step._type)
-          reduce(
-            step.steps,
-            (acc, s) => processStep(s, acc, newPrefix),
-            1,
-          )
+          const branch = addToFlow({
+            _type: step._type,
+            id: stepId(prefix, stepNum),
+            steps: [] as ComputedStepsFlow,
+          })
+          processSteps({
+            steps: step.steps,
+            pushTo: branch.steps,
+            prefix: StepPath(prefix, stepNum, step._type),
+          })
           return stepNum + 1
         }
         case stepGuards.isTry(step): {
-          let newPrefix = StepPath(prefix, stepNum, 'try')
-          reduce(
-            step.try.steps,
-            (acc, s) => processStep(s, acc, newPrefix),
-            1,
-          )
+          const branch = addToFlow({
+            _type: step._type,
+            id: stepId(prefix, stepNum),
+            try: [] as ComputedStepsFlow,
+          })
+          processSteps({
+            steps: step.try.steps,
+            pushTo: branch.try,
+            prefix: StepPath(prefix, stepNum, 'try'),
+          })
           if (step.catch) {
-            newPrefix = StepPath(prefix, stepNum, 'catch')
-            reduce(
-              step.catch.steps,
-              (acc, s) => processStep(s, acc, newPrefix),
-              1,
-            )
+            branch.catch = []
+            processSteps({
+              steps: step.catch.steps,
+              pushTo: branch.catch,
+              prefix: StepPath(prefix, stepNum, 'catch'),
+            })
           }
           if (step.finally) {
-            newPrefix = StepPath(prefix, stepNum, 'finally')
-            reduce(
-              step.finally.steps,
-              (acc, s) => processStep(s, acc, newPrefix),
-              1,
-            )
+            branch.finally = []
+            processSteps({
+              steps: step.finally.steps,
+              pushTo: branch.finally,
+              prefix: StepPath(prefix, stepNum, 'finally'),
+            })
           }
           return stepNum + 1
         }
         case stepGuards.isAlt(step): {
+          const alt = addToFlow({
+            _type: step._type,
+            id: stepId(prefix, stepNum),
+            branches: [],
+          })
           step.branches.forEach((branch, branchIndex) => {
-            const newPrefix = StepPath(prefix, stepNum, `alt`, branchIndex + 1, branch._type)
-            reduce(
-              branch.steps,
-              (acc, s) => processStep(s, acc, newPrefix),
-              1,
-            )
+            const branchPath = StepPath(prefix, stepNum, `alt`, branchIndex + 1)
+            const branchItem = {
+              _type: branch._type,
+              id: stepId(branchPath),
+              steps: [] as ComputedStepsFlow,
+            }
+            alt.branches.push(branchItem)
+            processSteps({
+              steps: branch.steps,
+              pushTo: branchItem.steps,
+              prefix: branchPath,
+            })
           })
           return stepNum + 1
         }
         case stepGuards.isStep(step): {
-          const id = `step-${StepPath(prefix, stepNum)}` as StepPath
+          const id = addToFlow(stepId(prefix, stepNum))
 
           const {
             source: stepSource,
@@ -292,6 +343,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       [_type]: 'dynamic',
       [_stage]: 'computed',
       variant: view.variant ?? 'diagram',
+      steps: rootFlow,
       autoLayout: {
         direction: autoLayoutRule?.direction ?? 'LR',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),

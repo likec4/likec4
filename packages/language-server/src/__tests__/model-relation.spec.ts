@@ -1,7 +1,7 @@
 import { describe, test } from 'vitest'
 import { invalid, valid } from './asserts'
 
-describe('model relation', () => {
+describe.concurrent('model relation', () => {
   test(
     'valid',
     valid`
@@ -299,10 +299,46 @@ describe('model relation', () => {
     }
     model {
       person user1
+      person user2 {
+        user1 -[async]-> this
+      }
+      person user3 {
+        -[async]-> user1
+      }
+      user2 -[async]-> user3
+    }`,
+  )
+
+  test(
+    'relationship with kind via dot',
+    valid`
+    specification {
+      element person
+      relationship async
+    }
+    model {
+      person user1
+      person user2 {
+        user1 .async this
+      }
+      person user3 {
+        .async user1
+      }
+      user2 .async user3
+    }`,
+  )
+
+  test(
+    'relationship with kind via dot invalid',
+    invalid`
+    specification {
+      element person
+      relationship async
+    }
+    model {
+      person user1
       person user2
-      person user3
-      user1 -> user2
-      user1 -[async]-> user3
+      user2.async user3
     }`,
   )
 

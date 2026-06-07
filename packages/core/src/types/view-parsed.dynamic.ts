@@ -15,7 +15,6 @@ import type {
 import type { ElementViewRuleStyle } from './view-parsed.element'
 
 export interface Step<A extends AnyAux = AnyAux> {
-  readonly id: scalar.StepPath
   readonly source: aux.StrictFqn<A>
   readonly target: aux.StrictFqn<A>
   readonly title?: string | null
@@ -96,7 +95,6 @@ export namespace Step {
    */
   export interface Series<A extends AnyAux = AnyAux> {
     readonly [_type]: 'series'
-    readonly id: scalar.StepPath
     readonly steps: NonEmptyReadonlyArray<Step<A>>
   }
 
@@ -105,7 +103,6 @@ export namespace Step {
    */
   export interface Parallel<A extends AnyAux = AnyAux> extends WithSteps<A> {
     readonly [_type]: 'par'
-    readonly id: scalar.StepPath
     readonly title?: string
   }
 
@@ -114,7 +111,6 @@ export namespace Step {
    */
   export interface Try<A extends AnyAux = AnyAux> {
     readonly [_type]: 'try'
-    readonly id: scalar.StepPath
     /**
      * Try section
      */
@@ -140,7 +136,6 @@ export namespace Step {
    */
   export interface Opt<A extends AnyAux = AnyAux> extends WithSteps<A> {
     readonly [_type]: 'opt'
-    readonly id: scalar.StepPath
     readonly title?: string
   }
 
@@ -149,7 +144,6 @@ export namespace Step {
    */
   export interface Loop<A extends AnyAux = AnyAux> extends WithSteps<A> {
     readonly [_type]: 'loop'
-    readonly id: scalar.StepPath
     readonly title?: string
   }
 
@@ -158,7 +152,6 @@ export namespace Step {
    */
   export interface Alt<A extends AnyAux = AnyAux> {
     readonly [_type]: 'alt'
-    readonly id: scalar.StepPath
     readonly title?: string
     readonly branches: NonEmptyReadonlyArray<AltBranch<A>>
   }
@@ -167,8 +160,7 @@ export namespace Step {
    * Branch block (if/else/if, when, opt)
    */
   export interface AltBranch<A extends AnyAux = AnyAux> extends WithSteps<A> {
-    readonly [_type]: `branch:${'when' | 'if' | 'else'}`
-    readonly id: scalar.StepPath
+    readonly [_type]: 'when' | 'if' | 'else'
     readonly title?: string
   }
 }

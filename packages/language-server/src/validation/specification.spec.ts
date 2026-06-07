@@ -1,7 +1,7 @@
 import { afterEach, describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe.sequential('specification checks', () => {
+describe('specification checks', () => {
   const { validate, parse, validateAll, resetState } = createTestServices()
 
   afterEach(async () => {

@@ -360,7 +360,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       invariant(isNonEmptyArray(steps), 'Dynamic step chain must have at least one step')
       return {
         [c4._type]: 'series',
-        id: pathInsideDynamicView(node),
         steps,
       }
     }
@@ -446,7 +445,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       }
       const astPath = pathInsideDynamicView(astnode)
       const step: Writable<Omit<c4.Step, 'source'>> = {
-        id: astPath,
         target: this.resolveFqn(targetEl),
         astPath: astPath,
       }
@@ -528,26 +526,25 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const kind = node.kind === 'parallel' ? 'par' : node.kind
       invariant(
         kind === 'loop' || kind === 'par' || kind === 'opt',
-        'Expected loop, par, or opt',
+        `Expected loop, par, or opt, got "${kind}"`,
       )
       const steps = this.parseSteps(node.steps)
       invariant(isNonEmptyArray(steps), 'Parallel steps must have at least one step')
       return c4.exact({
         [c4._type]: kind,
-        id: pathInsideDynamicView(node),
         title: node.title,
         steps,
       })
     }
 
     parseTryStep(node: ast.TryStep): c4.Step.Try {
+      invariant(this.isValid(node))
       if (ast.isFinallyBlock(node)) {
         const step = this.parseTryStep(node.tryCatch)
         const finallySteps = this.parseSteps(node.finally.steps)
         if (isNonEmptyArray(finallySteps)) {
           return {
             ...step,
-            id: pathInsideDynamicView(node),
             finally: c4.exact({
               title: node.title,
               steps: finallySteps,
@@ -562,7 +559,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         if (isNonEmptyArray(catchSteps)) {
           return {
             ...step,
-            id: pathInsideDynamicView(node),
             catch: c4.exact({
               title: node.title,
               steps: catchSteps,
@@ -576,7 +572,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       invariant(isNonEmptyArray(steps), 'Try steps must have at least one step')
       return {
         [c4._type]: 'try',
-        id: pathInsideDynamicView(node),
         try: c4.exact({
           title: node.title,
           steps,
@@ -591,13 +586,12 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           kind === 'if'
             || kind === 'else'
             || kind === 'when',
-          'Invalid branch kind',
+          `Expected "if", "else", or "when", got "${kind}"`,
         )
         const steps = this.parseSteps(step.steps)
         invariant(isNonEmptyArray(steps), 'Branch steps must have at least one step')
         return c4.exact({
-          [c4._type]: `branch:${kind}`,
-          id: pathInsideDynamicView(step),
+          [c4._type]: kind,
           title: step.title,
           steps,
         })
@@ -605,7 +599,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       invariant(isNonEmptyArray(branches), 'Alt must have at least one branch')
       return c4.exact({
         [c4._type]: 'alt',
-        id: pathInsideDynamicView(node),
         title: node.title,
         branches,
       })
