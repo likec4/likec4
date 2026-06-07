@@ -171,7 +171,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       },
     )
 
-    this.on(node, ast.isDynamicViewStep, (n, f) => {
+    this.on(node, ast.isStepOrSeries, (n, f) => {
       f.keywords('->', '<-').surround(FormattingOptions.oneSpace)
 
       f.property('dotKind')
@@ -188,10 +188,10 @@ export class LikeC4Formatter extends AbstractFormatter {
       f.properties('title').prepend(FormattingOptions.oneSpace)
 
       const wrapToNextLine =
-        // Dynamic step chain with multiline source
-        (ast.isDynamicStepChain(n) && isMultiline(n.$cstNode))
-        // This is the beginning of the series
-        || (ast.isDynamicStepSingle(n) && ast.isDynamicStepChain(n.$container) && isMultiline(n.$container.$cstNode!))
+        // Step series with multiline source
+        (ast.isStepSeries(n) && isMultiline(n.$cstNode))
+        // This is a step in the series
+        || (ast.isStep(n) && ast.isStepSeries(n.$container) && isMultiline(n.$container.$cstNode!))
 
       if (!wrapToNextLine) {
         return
@@ -255,7 +255,8 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isCustomElementProperties(node)
       || ast.isCustomRelationProperties(node)
       || ast.isElementStyleProperty(node)
-      || ast.isDynamicViewParallelSteps(node)
+      || ast.isStepsBlock(node)
+      || ast.isAltSteps(node)
       || ast.isModelDeployments(node)
       || ast.isDeploymentNodeBody(node)
       || ast.isDeploymentRelationBody(node)
@@ -747,7 +748,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       ?.properties('title', 'technology')
     region = region ?? this.on(node, ast.isViewRuleGroup)
       ?.properties('title')
-    region = region ?? this.on(node, ast.isDynamicViewStep)
+    region = region ?? this.on(node, ast.isStepStatement)
       ?.properties('title')
     region = region ?? this.on(node, ast.isDeploymentNode)
       ?.properties('title')

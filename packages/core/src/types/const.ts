@@ -26,7 +26,8 @@ export const _stage = '_stage'
 export type _stage = typeof _stage
 
 /**
- * Property name to store type information, used to identify the type of the view
+ * Property name to store type information, used to identify the type
+ * (of the view or view element)
  *
  * @internal
  */
@@ -39,3 +40,10 @@ export type _type = typeof _type
  */
 export const _layout = '_layout'
 export type _layout = typeof _layout
+
+/**
+ * Property name to store version information (for migration purposes)
+ * @internal
+ */
+export const _v = '_v'
+export type _v = typeof _v

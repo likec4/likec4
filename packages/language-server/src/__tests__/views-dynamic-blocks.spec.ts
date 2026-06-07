@@ -207,15 +207,49 @@ describe('dynamic views - flow blocks', () => {
         }
       `).toBeValid()
     })
+  })
 
-    it('branch as top level block', async ({ expectView }) => {
-      await expectView(`
-        dynamic view index1 {
-          opt {
-            system.frontend -> system.backend 'frontend uses backend'
-          }
+  it('opt block', async ({ expectView }) => {
+    await expectView(`
+      dynamic view index1 {
+        opt {
+          system.frontend -> system.backend 'frontend uses backend'
         }
-      `).toBeValid()
-    })
+      }
+    `).toBeValid()
+  })
+
+  it('loop block', async ({ expectView }) => {
+    await expectView(`
+      dynamic view index1 {
+        loop {
+          system.frontend -> system.backend 'frontend uses backend'
+        }
+      }
+    `).toBeValid()
+  })
+
+  it('par block', async ({ expectView }) => {
+    await expectView(`
+      dynamic view index1 {
+        par {
+          system.frontend -> system.backend 'frontend uses backend'
+        }
+      }
+    `).toBeValid()
+  })
+
+  it('parallel block', async ({ expectView }) => {
+    await expectView(`
+      dynamic view index1 {
+        parallel {
+          system.frontend
+              -> system.backend
+          system.frontend
+              -> system.backend
+              -> system.frontend
+        }
+      }
+    `).toBeValid()
   })
 })

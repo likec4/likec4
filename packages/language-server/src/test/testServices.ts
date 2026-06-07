@@ -188,6 +188,9 @@ export function createTestServices(options?: {
     buildLikeC4Model,
     resetState,
     format,
+    [Symbol.dispose]: () => {
+      services.likec4.LanguageServices.dispose()
+    },
   }
 }
 
@@ -275,6 +278,10 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     buildModel,
     buildLikeC4Model,
     resetState,
+
+    [Symbol.asyncDispose]: async () => {
+      await services.likec4.LanguageServices.dispose()
+    },
   }
 }
 

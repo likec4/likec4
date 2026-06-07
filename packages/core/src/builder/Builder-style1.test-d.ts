@@ -20,6 +20,8 @@ test('Builder types - style 1', () => {
     },
     views: {
       deploymentView,
+      dynamicView,
+      $step,
       views,
       view,
       viewOf,
@@ -170,13 +172,18 @@ test('Builder types - style 1', () => {
           // @ts-expect-error
           $include('pr'),
         ),
+        dynamicView('dynamic').with(
+          $step('cloud.backend -> cloud.backend.api'),
+          // @ts-expect-error
+          $step('a', 'b'),
+        ),
       ),
     )
 
   expectTypeOf(b1.Types.Fqn).toEqualTypeOf<
     'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
   >()
-  expectTypeOf(b1.Types.ViewId).toEqualTypeOf<'view' | 'view-of' | 'deployment'>()
+  expectTypeOf(b1.Types.ViewId).toEqualTypeOf<'view' | 'view-of' | 'deployment' | 'dynamic'>()
   expectTypeOf(b1.Types.DeploymentFqn).toEqualTypeOf<
     'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
   >()
@@ -192,7 +199,7 @@ test('Builder types - style 1', () => {
         'parsed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment',
+        'view' | 'view-of' | 'deployment' | 'dynamic',
         'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',
@@ -212,7 +219,7 @@ test('Builder types - style 1', () => {
         'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment',
+        'view' | 'view-of' | 'deployment' | 'dynamic',
         'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',

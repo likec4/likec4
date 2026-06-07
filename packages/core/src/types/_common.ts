@@ -87,7 +87,17 @@ export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true
 
 type ExactObject<T, InputType = unknown> =
   & {
-    [KeyType in keyof T]: undefined extends T[KeyType] ? T[KeyType] | undefined : T[KeyType]
+    [KeyType in keyof T]:
+      // dprint-ignore
+      undefined extends T[KeyType]
+        ? T[KeyType] | undefined
+        : T[KeyType]
+    // dprint-ignore
+    // IsNever<T[KeyType]> extends true
+    //   ? never
+    //   : undefined extends T[KeyType]
+    //     ? T[KeyType] | undefined
+    //     : T[KeyType]
   }
   & Record<Exclude<keyof InputType, KeysOfUnion<T>>, never>
 

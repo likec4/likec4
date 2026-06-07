@@ -325,7 +325,7 @@ DynamicViewBody: '{'
   tags=Tags?
   props+=DynamicViewProperty*
   (
-    steps+=(DynFlowStep) |
+    steps+=StepStatement |
     rules+=DynamicViewRule
   )*
 '}'
@@ -415,112 +415,113 @@ DynamicViewRule:
 // -----------------------------------------------
 // Dynamic view flow steps
 // -----------------------------------------------
-DynFlowStep:
-  DynFlowBlock |
-  DynamicViewStep  // rename
+type StepStatement =
+  StepOrSeries |
+  TryStep |
+  AltSteps |
+  BranchSteps
 ;
 
-// Flow block - can contain nested steps
-DynFlowBlock:
-  DynFlowParallel |
-  DynFlowAlt |
-  DynFlowBranch | // allow single branch as flow step
-  DynFlowTry;
-
-
-DynFlowParallel:
-  ('parallel'|'par') '{'
-    // Accept nested ParallelSteps so we can report a clear validation error
-    // instead of leaving the user with a cryptic parser error. See #988.
-    (steps+=(DynFlowStep))*
-  '}'
+StepStatement returns StepStatement:
+  StepOrSeries | // rename
+  TryStep |
+  AltSteps |
+  BranchSteps<false>
 ;
 
-// -----------------------------------------------
-// Dynamic view block body - nested statements container
-DynFlowNested:
-  '{'
-    steps+=DynFlowStep*
-   '}'
+interface StepsBlock {
+  steps: StepStatement[]
+}
+
+fragment StepsBlockFragment:
+  '{' steps+=StepStatement* '}'
+;
+
+StepsBlock returns StepsBlock:
+  StepsBlockFragment
 ;
 
 // -----------------------------------------------
 // Dynamic view TRY block
 
-interface DynFlowTry_Only {
-  try: DynFlowNested
+interface TryBlock extends StepsBlock  {
   /// Optional title for the try block
   title?: string
 }
 
-interface DynFlowTry_Catch {
-  try: DynFlowTry_Only
-  /// Optional title for the catch block
+interface CatchBlock {
+  try: TryBlock
+  // Optional title for the catch block
   title?: string
-  catch: DynFlowNested
+  catch: StepsBlock
 }
 
-interface DynFlowTry_Finally {
-  tryCatch: DynFlowTry_Only | DynFlowTry_Catch
-  finally: DynFlowNested
+interface FinallyBlock {
+  tryCatch: TryBlock | CatchBlock
+  // Optional title for the finally block
+  title?: string
+  finally: StepsBlock
 }
 
-type DynFlowTry =
-  DynFlowTry_Only |
-  DynFlowTry_Catch |
-  DynFlowTry_Finally;
+type TryStep =
+  TryBlock |
+  CatchBlock |
+  FinallyBlock;
 
-DynFlowTry returns DynFlowTry:
-  DynFlowTry_Finally;
+TryStep returns TryStep:
+  FinallyBlock;
 
-DynFlowTry_Finally returns DynFlowTry_Finally:
-  DynFlowTry_Catch ({DynFlowTry_Finally.tryCatch=current} 'finally' finally=DynFlowNested)?
-;
-
-DynFlowTry_Catch returns DynFlowTry_Catch:
-  DynFlowTry_Only ({DynFlowTry_Catch.try=current}
-     'catch' title=String?
-     catch=DynFlowNested
+FinallyBlock returns FinallyBlock:
+  CatchBlock ({FinallyBlock.tryCatch=current}
+    'finally' title=String?
+    finally=StepsBlock
   )?
 ;
 
-DynFlowTry_Only returns DynFlowTry_Only:
-  'try' title=String? try=DynFlowNested
+CatchBlock returns CatchBlock:
+  TryBlock ({CatchBlock.try=current}
+    'catch' title=String?
+    catch=StepsBlock
+  )?
+;
+
+TryBlock returns TryBlock:
+  'try' title=String? StepsBlockFragment
 ;
 
 // -----------------------------------------------
 // Dynamic view ALT block
 
-interface DynFlowBranch {
-  kind: 'when' | 'if' | 'else' | 'opt'
+interface BranchSteps extends StepsBlock {
+  kind: 'when' | 'if' | 'else' | 'opt' | 'par' | 'parallel' | 'loop'
   /// Optional title for the branch
   title?: string
-  flow: DynFlowNested
 }
 
-interface DynFlowAlt {
+interface AltSteps {
   title?: string
-  branches: DynFlowBranch[]
+  branches: BranchSteps[]
 }
 
-DynFlowAlt returns DynFlowAlt:
-  'alt' title=String? ('{' branches+=DynFlowBranch* '}')?
+AltSteps returns AltSteps:
+  'alt' title=String? '{' branches+=BranchSteps<true>* '}'
 ;
 
-DynFlowBranch returns DynFlowBranch:
-  kind=('when' | 'if' | 'else' | 'opt') title=String? flow=DynFlowNested
+BranchSteps<isInsideAlt> returns BranchSteps:
+  (<isInsideAlt> kind=('when' | 'if' | 'else') | <!isInsideAlt> kind=('opt' | 'par' | 'parallel' | 'loop'))
+  title=String? StepsBlockFragment
 ;
 
 // -----------------------------------------------
 // Dynamic view step (from previous model)
 
-fragment DynamicViewStepTarget:
+fragment StepTarget:
   target=ElementRef
   title=String?
   custom=CustomRelationProperties?
 ;
 
-interface AbstractDynamicStep {
+interface AbstractStep {
   kind?: @RelationshipKind;
   dotKind?: RelationKindDotRef;
   target: ElementRef;
@@ -528,32 +529,40 @@ interface AbstractDynamicStep {
   custom?: CustomRelationProperties;
 }
 
-interface DynamicStepSingle extends AbstractDynamicStep {
+/**
+ * A single step in a dynamic view flow
+ * source -> target
+ */
+interface Step extends AbstractStep {
   source: ElementRef;
   isBackward?: boolean;
 }
 
-interface DynamicStepChain extends AbstractDynamicStep {
-  source: DynamicStepSingle | DynamicStepChain;
+/**
+ * A series of steps in a dynamic view flow
+ * source -> target1 -> target2 -> ...
+ */
+interface StepSeries extends AbstractStep {
+  source: Step | StepSeries;
 }
 
-type DynamicViewStep = DynamicStepSingle | DynamicStepChain;
+type StepOrSeries = Step | StepSeries;
 
-DynamicViewStep returns DynamicViewStep:
-  DynamicStepChain;
+StepOrSeries returns StepOrSeries:
+  StepSeries;
 
-DynamicStepChain returns DynamicStepSingle:
-  DynamicStepSingle
-  ({DynamicStepChain.source=current}
+StepSeries returns StepSeries:
+  Step
+  ({StepSeries.source=current}
     ('->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
-    DynamicViewStepTarget
+    StepTarget
   )*
 ;
 
-DynamicStepSingle returns DynamicStepSingle:
+Step returns Step:
   source=ElementRef
   (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
-  DynamicViewStepTarget
+  StepTarget
 ;
 
 ViewRulePredicate:

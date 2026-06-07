@@ -1,4 +1,4 @@
-import { isEmptyish, isString, isTruthy } from 'remeda'
+import { isEmptyish, isNumber, isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
 
@@ -159,4 +159,14 @@ export function extractStep(id: EdgeId): number {
     throw new Error(`Invalid step edge id: ${id}`)
   }
   return parseFloat(id.slice('step-'.length))
+}
+
+export type StepPath = Tagged<EdgeId, 'StepPath'>
+
+export function StepPath(...segments: Array<string | number | undefined>): StepPath {
+  const filtered = segments
+    .filter(isTruthy)
+    .map(v => isNumber(v) ? String(v).padStart(2, '0') : v)
+  invariant(filtered.length > 0, 'StepPath must have at least one segment')
+  return filtered.join('.') as StepPath
 }

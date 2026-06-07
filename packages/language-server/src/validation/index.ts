@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type Guard, type GuardedBy, isAnyOf } from '@likec4/core/types'
+import { type GuardedBy, isAnyOf } from '@likec4/core/types'
 import { onNextTick } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
-import { type AstNode, DocumentState } from 'langium'
+import { DocumentState } from 'langium'
 import { isNullish } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
@@ -21,10 +21,10 @@ import {
   extendDeploymentChecks,
 } from './deployment-checks'
 import {
+  branchSteps,
   dynamicViewDisplayVariant,
-  dynamicViewParallelSteps,
-  dynamicViewStepChain,
-  dynamicViewStepSingle,
+  stepSeries,
+  stepSingle,
 } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
@@ -71,9 +71,7 @@ const isValidatableAstNode = isAnyOf(
   ast.isRelationExprWith,
   ast.isFqnExpr,
   ast.isRelationExpr,
-  ast.isDynamicViewParallelSteps,
-  ast.isDynamicStepChain,
-  ast.isDynamicStepSingle,
+  ast.isStepStatement,
   ast.isDeploymentViewRule,
   ast.isDeploymentViewRulePredicate,
   ast.isExpressionV2,
@@ -174,9 +172,9 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalPredicateGroup: checkGlobalPredicate(services),
     GlobalDynamicPredicateGroup: checkGlobalPredicate(services),
     GlobalStyleId: checkGlobalStyleId(services),
-    DynamicStepSingle: dynamicViewStepSingle(services),
-    DynamicStepChain: dynamicViewStepChain(services),
-    DynamicViewParallelSteps: dynamicViewParallelSteps(services),
+    Step: stepSingle(services),
+    StepSeries: stepSeries(services),
+    BranchSteps: branchSteps(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),

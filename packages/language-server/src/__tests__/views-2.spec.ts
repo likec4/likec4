@@ -1,3 +1,4 @@
+// oxlint-disable vitest/expect-expect
 import { type TestContext, describe, it } from 'vitest'
 import { createTestServices } from '../test'
 

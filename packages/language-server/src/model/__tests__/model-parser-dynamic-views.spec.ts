@@ -1,9 +1,9 @@
-import { invariant, isDynamicStepsSeries } from '@likec4/core'
+import { invariant, stepGuards } from '@likec4/core'
 import { describe, it } from 'vitest'
-import type { ParsedAstView } from '../../ast'
+import type { ParsedAstDynamicView, ParsedAstView } from '../../ast'
 import { createTestServices } from '../../test'
 
-function source(viewSource: TemplateStringsArray) {
+function source(viewSource: string | TemplateStringsArray) {
   return `
   specification {
     element element
@@ -21,7 +21,15 @@ function source(viewSource: TemplateStringsArray) {
 `
 }
 
-describe('LikeC4ModelParser - dynamic views', () => {
+async function parseView(viewSource: string): Promise<ParsedAstDynamicView> {
+  using t = createTestServices()
+  const { document } = await t.validate(source(viewSource))
+  const { c4Views: [view] } = t.services.likec4.ModelParser.parse(document)
+  invariant(view && view?._type === 'dynamic', 'Expected dynamic view')
+  return view
+}
+
+describe.concurrent('LikeC4ModelParser - dynamic views', () => {
   it('parses custom properties', async ({ expect }) => {
     const { validate, services } = createTestServices()
     const { document } = await validate(source`
@@ -51,6 +59,7 @@ describe('LikeC4ModelParser - dynamic views', () => {
             "md": "# Markdown",
           },
           "head": "diamond",
+          "id": "/steps@0",
           "line": "dotted",
           "source": "A",
           "tail": "open",
@@ -81,64 +90,76 @@ describe('LikeC4ModelParser - dynamic views', () => {
       `
       [
         {
-          "__series": [
+          "_type": "series",
+          "id": "/steps@0",
+          "steps": [
             {
               "astPath": "/steps@0/source/source",
+              "id": "/steps@0/source/source",
               "source": "A",
               "target": "B",
             },
             {
               "astPath": "/steps@0/source",
+              "id": "/steps@0/source",
               "source": "B",
               "target": "C",
             },
             {
               "astPath": "/steps@0",
+              "id": "/steps@0",
               "source": "C",
               "target": "D",
             },
           ],
-          "seriesId": "/steps@0",
         },
         {
-          "__parallel": [
+          "_type": "par",
+          "id": "/steps@1",
+          "steps": [
             {
-              "__series": [
+              "_type": "series",
+              "id": "/steps@1/steps@0",
+              "steps": [
                 {
                   "astPath": "/steps@1/steps@0/source",
+                  "id": "/steps@1/steps@0/source",
                   "source": "A",
                   "target": "C",
                 },
                 {
                   "astPath": "/steps@1/steps@0",
+                  "id": "/steps@1/steps@0",
                   "source": "C",
                   "target": "B",
                 },
               ],
-              "seriesId": "/steps@1/steps@0",
             },
             {
               "astPath": "/steps@1/steps@1",
+              "id": "/steps@1/steps@1",
               "source": "B",
               "target": "D",
             },
             {
-              "__series": [
+              "_type": "series",
+              "id": "/steps@1/steps@2",
+              "steps": [
                 {
                   "astPath": "/steps@1/steps@2/source",
+                  "id": "/steps@1/steps@2/source",
                   "source": "A",
                   "target": "D",
                 },
                 {
                   "astPath": "/steps@1/steps@2",
+                  "id": "/steps@1/steps@2",
                   "source": "D",
                   "target": "C",
                 },
               ],
-              "seriesId": "/steps@1/steps@2",
             },
           ],
-          "parallelId": "/steps@1",
         },
       ]
     `,
@@ -149,8 +170,8 @@ describe('LikeC4ModelParser - dynamic views', () => {
     function series(view: ParsedAstView): string[] {
       invariant(view._type === 'dynamic')
       const [series] = view.steps
-      invariant(isDynamicStepsSeries(series))
-      return series.__series.map(s => `${s.source} -> ${s.target}${s.isBackward ? ' isBackward' : ''}`)
+      invariant(stepGuards.isSeries(series))
+      return series.steps.map(s => `${s.source} -> ${s.target}${s.isBackward ? ' isBackward' : ''}`)
     }
     const { validate, services } = createTestServices()
     const { document } = await validate(source`
@@ -208,21 +229,24 @@ describe('LikeC4ModelParser - dynamic views', () => {
     expect(view.steps).toMatchInlineSnapshot(`
       [
         {
-          "__series": [
+          "_type": "series",
+          "id": "/steps@0",
+          "steps": [
             {
               "astPath": "/steps@0/source",
+              "id": "/steps@0/source",
               "source": "A",
               "target": "B",
               "title": "title 1",
             },
             {
               "astPath": "/steps@0",
+              "id": "/steps@0",
               "source": "B",
               "target": "C",
               "title": "title 2",
             },
           ],
-          "seriesId": "/steps@0",
         },
       ]
     `)
@@ -246,22 +270,25 @@ describe('LikeC4ModelParser - dynamic views', () => {
     expect(view.steps).toMatchInlineSnapshot(`
       [
         {
-          "__series": [
+          "_type": "series",
+          "id": "/steps@0",
+          "steps": [
             {
               "astPath": "/steps@0/source",
               "color": "red",
+              "id": "/steps@0/source",
               "source": "A",
               "target": "B",
               "title": "title 1",
             },
             {
               "astPath": "/steps@0",
+              "id": "/steps@0",
               "source": "B",
               "target": "C",
               "title": "title 2",
             },
           ],
-          "seriesId": "/steps@0",
         },
       ]
     `)
@@ -281,24 +308,98 @@ describe('LikeC4ModelParser - dynamic views', () => {
     expect(view.steps).toMatchInlineSnapshot(`
       [
         {
-          "__series": [
+          "_type": "series",
+          "id": "/steps@0",
+          "steps": [
             {
               "astPath": "/steps@0/source",
+              "id": "/steps@0/source",
               "kind": "uses",
               "source": "A",
               "target": "B",
             },
             {
               "astPath": "/steps@0",
+              "id": "/steps@0",
               "kind": "uses",
               "source": "B",
               "target": "C",
               "title": "title 2",
             },
           ],
-          "seriesId": "/steps@0",
         },
       ]
+    `)
+  })
+
+  it('parses try step', async ({ expect }) => {
+    const view = await parseView(`
+        dynamic view index {
+          try {
+            A -[uses]-> B
+          } catch {
+            B -[uses]-> C
+          }
+        }
+    `)
+    expect(view.steps).toHaveLength(1)
+    expect(view.steps[0]).toMatchInlineSnapshot(`
+      {
+        "_type": "try",
+        "catch": {
+          "steps": [
+            {
+              "astPath": "/steps@0/catch/steps@0",
+              "id": "/steps@0/catch/steps@0",
+              "kind": "uses",
+              "source": "B",
+              "target": "C",
+            },
+          ],
+        },
+        "id": "/steps@0",
+        "try": {
+          "steps": [
+            {
+              "astPath": "/steps@0/try/steps@0",
+              "id": "/steps@0/try/steps@0",
+              "kind": "uses",
+              "source": "A",
+              "target": "B",
+            },
+          ],
+        },
+      }
+    `)
+  })
+
+  it('parses try step with empty catch and finally', async ({ expect }) => {
+    const view = await parseView(`
+        dynamic view index {
+          try {
+            A -[uses]-> B
+          } catch {
+          } finally {
+          }
+        }
+    `)
+    expect(view.steps).toHaveLength(1)
+    expect(view.steps[0]).toMatchInlineSnapshot(`
+      {
+        "_type": "try",
+        "id": "/steps@0/tryCatch/try",
+        "try": {
+          "steps": [
+            {
+              "astPath": "/steps@0/tryCatch/try/steps@0",
+              "id": "/steps@0/tryCatch/try/steps@0",
+              "kind": "uses",
+              "source": "A",
+              "target": "B",
+            },
+          ],
+        },
+      }
     `)
   })
 })

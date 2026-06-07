@@ -1,11 +1,13 @@
 import { partition } from 'remeda'
+import { Builder } from '../../../builder/Builder'
 import type {
-  DynamicStep,
   DynamicViewIncludeRule,
   DynamicViewRule,
   ElementViewPredicate,
   Fqn,
   ParsedDynamicView as DynamicView,
+  Step,
+  StepPath,
   ViewId,
 } from '../../../types'
 import { type $Aux, type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
@@ -22,9 +24,9 @@ const emptyView = {
 }
 
 type StepExpr = `${FakeElementIds} ${'->' | '<-'} ${FakeElementIds}`
-type StepProps = Omit<DynamicStep, 'source' | 'target' | 'isBackward'>
+type StepProps = Omit<Step, 'source' | 'target' | 'isBackward'>
 
-export function $step(expr: StepExpr, props?: string | Partial<StepProps>): DynamicStep {
+export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Step {
   const title = typeof props === 'string' ? props : props?.title
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
@@ -32,6 +34,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
       source: source as Fqn,
       target: target as Fqn,
       astPath: '',
+      id: '' as StepPath,
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
     }
@@ -42,6 +45,7 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
       source: source as Fqn,
       target: target as Fqn,
       astPath: '',
+      id: '' as StepPath,
       ...(typeof props === 'object' ? props : {}),
       title: title ?? null,
       isBackward: true,
@@ -51,9 +55,9 @@ export function $step(expr: StepExpr, props?: string | Partial<StepProps>): Dyna
 }
 
 export function compute(
-  stepsAndRules: (DynamicStep<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
+  stepsAndRules: (Step<$Aux> | ElementViewPredicate<$Aux> | DynamicViewIncludeRule<$Aux>)[],
 ) {
-  const [steps, rules] = partition(stepsAndRules, (s): s is DynamicStep => 'source' in s)
+  const [steps, rules] = partition(stepsAndRules, (s): s is Step => 'source' in s)
   let view = computeDynamicView(
     fakeModel,
     {
@@ -67,3 +71,24 @@ export function compute(
     edgeIds: view.edges.map((edge) => edge.id) as string[],
   })
 }
+
+const builder = Builder
+  .specification({
+    elements: ['component'],
+  })
+  .model(({ component }, _) =>
+    _(
+      component('A').with(
+        component('a1'),
+        component('a2'),
+      ),
+      component('B').with(
+        component('b1'),
+        component('b2'),
+      ),
+      component('C').with(
+        component('c1'),
+        component('c2'),
+      ),
+    )
+  )

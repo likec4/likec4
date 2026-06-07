@@ -184,6 +184,50 @@ exports[`Builder (style 2) > general > should build parsed model 1`] = `
       "tags": [],
       "title": "Deployment",
     },
+    "dynamic-a": {
+      "_stage": "parsed",
+      "_type": "dynamic",
+      "description": null,
+      "id": "dynamic-a",
+      "rules": [],
+      "steps": [
+        {
+          "source": "cloud",
+          "tail": "odiamond",
+          "target": "cloud",
+          "title": "Step 1",
+        },
+        {
+          "source": "cloud",
+          "target": "cloud",
+        },
+        {
+          "_type": "par",
+          "steps": [
+            {
+              "source": "cloud.backend",
+              "target": "cloud.backend",
+            },
+            {
+              "navigateTo": "cloud",
+              "source": "cloud.ui",
+              "target": "cloud",
+              "title": "Step 2",
+            },
+            {
+              "source": "cloud.ui",
+              "target": "cloud",
+            },
+            {
+              "source": "cloud",
+              "target": "customer",
+            },
+          ],
+        },
+      ],
+      "tags": [],
+      "title": "Dynamic View A",
+    },
     "index": {
       "_stage": "parsed",
       "_type": "element",

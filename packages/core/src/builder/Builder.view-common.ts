@@ -8,6 +8,7 @@ import type {
   Expression,
   ModelRelationExpr,
   NonEmptyArray,
+  Step,
   WhereOperator,
 } from '../types'
 import { ModelFqnExpr } from '../types'
@@ -21,6 +22,7 @@ export interface LikeC4ViewBuilder<
   ElementExpr extends string = ViewPredicate.ElementExpr<Fqn>,
   Expr extends string = ViewPredicate.AllExpression<ElementExpr>,
 > {
+  Fqn: Fqn
   Types: Types
   ElementExpr: ElementExpr
   Expr: Expr
@@ -29,6 +31,7 @@ export interface LikeC4ViewBuilder<
   include(...exprs: TypedExpr[]): this
   exclude(...exprs: TypedExpr[]): this
   style(rule: ViewRuleStyle<any>): this
+  step(step: Omit<Step.Any, 'id'>): this
   autoLayout(layout: AutoLayoutDirection, margins: { rank: number; node: number } | undefined): this
 }
 
@@ -84,17 +87,19 @@ export namespace ViewPredicate {
     or?: never
   }
 
-  export type Custom<Types extends AnyTypes> = {
-    where?: ViewPredicate.WhereOperator<Types>
-    with?: Simplify<
-      Omit<
-        ModelFqnExpr.Custom['custom'] & ModelRelationExpr.Custom['customRelation'],
-        'expr' | 'relation' | 'navigateTo'
-      > & {
-        navigateTo?: Types['ViewId']
-      }
-    >
-  }
+  export type Custom<Types> = Types extends AnyTypes ? {
+      where?: ViewPredicate.WhereOperator<Types>
+      with?: Simplify<
+        Omit<
+          ModelFqnExpr.Custom['custom'] & ModelRelationExpr.Custom['customRelation'],
+          'expr' | 'relation' | 'navigateTo'
+        > & {
+          kind?: Types['RelationshipKind']
+          navigateTo?: Types['ViewId']
+        }
+      >
+    }
+    : never
 }
 
 function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<Any> {

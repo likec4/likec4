@@ -6,7 +6,7 @@ import type { LikeC4Services } from '../module'
 import { elementRef } from '../utils/elementRef'
 import { tryOrLog } from './_shared'
 
-export const dynamicViewStepSingle = (services: LikeC4Services): ValidationCheck<ast.DynamicStepSingle> => {
+export const stepSingle = (services: LikeC4Services): ValidationCheck<ast.Step> => {
   const fqnIndex = services.likec4.FqnIndex
   return tryOrLog((el, accept) => {
     const sourceEl: ast.Element | undefined = elementRef(el.source)
@@ -35,11 +35,11 @@ export const dynamicViewStepSingle = (services: LikeC4Services): ValidationCheck
   })
 }
 
-export const dynamicViewStepChain = (services: LikeC4Services): ValidationCheck<ast.DynamicStepChain> => {
+export const stepSeries = (services: LikeC4Services): ValidationCheck<ast.StepSeries> => {
   const fqnIndex = services.likec4.FqnIndex
   return tryOrLog((el, accept) => {
     const source = el.source
-    if (ast.isDynamicStepSingle(source) && source.isBackward) {
+    if (ast.isStep(source) && source.isBackward) {
       accept('error', 'Invalid chain after backward step', {
         node: el,
       })
@@ -56,16 +56,16 @@ export const dynamicViewStepChain = (services: LikeC4Services): ValidationCheck<
   })
 }
 
-export const dynamicViewParallelSteps = (
+export const branchSteps = (
   _services: LikeC4Services,
-): ValidationCheck<ast.DynamicViewParallelSteps> => {
+): ValidationCheck<ast.BranchSteps> => {
+  const isParallel = (astNode: ast.BranchSteps) => astNode.kind === 'par' || astNode.kind === 'parallel'
+
   return tryOrLog((el, accept) => {
-    for (const step of el.steps) {
-      if (ast.isDynamicViewParallelSteps(step)) {
-        accept('error', 'Nested parallel blocks are not allowed', {
-          node: step,
-        })
-      }
+    if (isParallel(el) && ast.isBranchSteps(el.$container) && isParallel(el.$container)) {
+      accept('error', 'Nested parallel blocks are not allowed', {
+        node: el,
+      })
     }
   })
 }

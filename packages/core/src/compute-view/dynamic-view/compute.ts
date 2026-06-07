@@ -1,23 +1,24 @@
-import { findLast, isTruthy, map, pipe } from 'remeda'
+import { findLast, isTruthy, map, pipe, reduce } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
-import type { AnyAux, aux, DynamicStep, DynamicStepsSeries, scalar } from '../../types'
 import {
+  type AnyAux,
+  type aux,
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
   type ParsedDynamicView as DynamicView,
   type RelationshipArrowType,
   type RelationshipLineType,
-  type StepEdgeId,
+  type scalar,
+  type Step,
   _stage,
   _type,
   exact,
-  isDynamicStepsParallel,
-  isDynamicStepsSeries,
   isViewRuleAutoLayout,
-  stepEdgeId,
+  stepGuards,
+  StepPath,
 } from '../../types'
-import { intersection, invariant, nonNullable, toArray, union } from '../../utils'
+import { intersection, invariant, nonexhaustive, nonNullable, toArray, union } from '../../utils'
 import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
@@ -31,7 +32,7 @@ type Element<A extends AnyAux> = ElementModel<A>
 
 namespace DynamicViewCompute {
   export interface Step<A extends AnyAux> {
-    id: StepEdgeId
+    id: StepPath
     source: Element<A>
     target: Element<A>
     title?: string
@@ -52,7 +53,7 @@ namespace DynamicViewCompute {
   }
 }
 
-class DynamicViewCompute<A extends AnyAux> {
+class DynamicViewCompute<A extends AnyAux = AnyAux> {
   // Intermediate state
   private steps = [] as DynamicViewCompute.Step<A>[]
 
@@ -99,85 +100,130 @@ class DynamicViewCompute<A extends AnyAux> {
     }, [] as Element<A>[])
 
     // Process steps
-    const processStep = (step: DynamicStep<A> | DynamicStepsSeries<A>, stepNum: number, prefix?: number): number => {
-      if (isDynamicStepsSeries(step)) {
-        for (const s of step.__series) {
-          stepNum = processStep(s, stepNum, prefix)
+    const processStep = (step: Step.Any<A>, stepNum: number, prefix?: StepPath): number => {
+      switch (true) {
+        case stepGuards.isSeries(step): {
+          for (const s of step.steps) {
+            stepNum = processStep(s, stepNum, prefix)
+          }
+          return stepNum
         }
-        return stepNum
+        case stepGuards.isLoop(step):
+        case stepGuards.isOpt(step):
+        case stepGuards.isParallel(step): {
+          const newPrefix = StepPath(prefix, stepNum, step._type)
+          reduce(
+            step.steps,
+            (acc, s) => processStep(s, acc, newPrefix),
+            1,
+          )
+          return stepNum + 1
+        }
+        case stepGuards.isTry(step): {
+          let newPrefix = StepPath(prefix, stepNum, 'try')
+          reduce(
+            step.try.steps,
+            (acc, s) => processStep(s, acc, newPrefix),
+            1,
+          )
+          if (step.catch) {
+            newPrefix = StepPath(prefix, stepNum, 'catch')
+            reduce(
+              step.catch.steps,
+              (acc, s) => processStep(s, acc, newPrefix),
+              1,
+            )
+          }
+          if (step.finally) {
+            newPrefix = StepPath(prefix, stepNum, 'finally')
+            reduce(
+              step.finally.steps,
+              (acc, s) => processStep(s, acc, newPrefix),
+              1,
+            )
+          }
+          return stepNum + 1
+        }
+        case stepGuards.isAlt(step): {
+          step.branches.forEach((branch, branchIndex) => {
+            const newPrefix = StepPath(prefix, stepNum, `alt`, branchIndex + 1, branch._type)
+            reduce(
+              branch.steps,
+              (acc, s) => processStep(s, acc, newPrefix),
+              1,
+            )
+          })
+          return stepNum + 1
+        }
+        case stepGuards.isStep(step): {
+          const id = `step-${StepPath(prefix, stepNum)}` as StepPath
+
+          const {
+            source: stepSource,
+            target: stepTarget,
+            title: stepTitle,
+            isBackward: _isBackward, // omit
+            navigateTo: stepNavigateTo,
+            notation: _notation, // omit
+            ...rest
+          } = step as Step<A>
+
+          const source = this.model.element(stepSource)
+          const sourceColumn = actors.indexOf(source)
+          invariant(sourceColumn >= 0, `Source ${stepSource} not found`)
+          const target = this.model.element(stepTarget)
+          const targetColumn = actors.indexOf(target)
+          invariant(targetColumn >= 0, `Target ${stepTarget} not found`)
+
+          if (compounds.includes(source) || compounds.includes(target)) {
+            console.error(`Step ${source.id} -> ${target.id} because it involves a compound`)
+            // return stepNum
+          }
+
+          const {
+            title,
+            relations,
+            navigateTo: derivedNavigateTo,
+            ...derived
+          } = findRelations(source, target, this.view.id)
+
+          const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id
+            ? stepNavigateTo
+            : derivedNavigateTo
+
+          // If step has kind, use defaults from specification for missing properties
+          const kindSpec = step.kind
+            ? this.model.specification.relationships[step.kind]
+            : undefined
+          this.steps.push(exact({
+            ...derived,
+            ...(!step.technology && !derived.technology && kindSpec?.technology && { technology: kindSpec.technology }),
+            ...(!step.color && !derived.color && kindSpec?.color && { color: kindSpec.color }),
+            ...(!step.line && !derived.line && kindSpec?.line && { line: kindSpec.line }),
+            ...(!step.head && kindSpec?.head && { head: kindSpec.head }),
+            ...(!step.tail && kindSpec?.tail && { tail: kindSpec.tail }),
+            ...rest,
+            id,
+            source,
+            target,
+            navigateTo,
+            title: stepTitle ?? title,
+            relations: relations ?? [],
+            isBackward: sourceColumn > targetColumn,
+          }))
+
+          return stepNum + 1
+        }
+        default:
+          nonexhaustive(step)
       }
-      const id = prefix ? stepEdgeId(prefix, stepNum) : stepEdgeId(stepNum)
-
-      const {
-        source: stepSource,
-        target: stepTarget,
-        title: stepTitle,
-        isBackward: _isBackward, // omit
-        navigateTo: stepNavigateTo,
-        notation: _notation, // omit
-        ...rest
-      } = step
-
-      const source = this.model.element(stepSource)
-      const sourceColumn = actors.indexOf(source)
-      invariant(sourceColumn >= 0, `Source ${stepSource} not found`)
-      const target = this.model.element(stepTarget)
-      const targetColumn = actors.indexOf(target)
-      invariant(targetColumn >= 0, `Target ${stepTarget} not found`)
-
-      if (compounds.includes(source) || compounds.includes(target)) {
-        console.error(`Step ${source.id} -> ${target.id} because it involves a compound`)
-        // return stepNum
-      }
-
-      const {
-        title,
-        relations,
-        navigateTo: derivedNavigateTo,
-        ...derived
-      } = findRelations(source, target, this.view.id)
-
-      const navigateTo = isTruthy(stepNavigateTo) && stepNavigateTo !== this.view.id
-        ? stepNavigateTo
-        : derivedNavigateTo
-
-      // If step has kind, use defaults from specification for missing properties
-      const kindSpec = step.kind
-        ? this.model.specification.relationships[step.kind]
-        : undefined
-      this.steps.push(exact({
-        ...derived,
-        ...(!step.technology && !derived.technology && kindSpec?.technology && { technology: kindSpec.technology }),
-        ...(!step.color && !derived.color && kindSpec?.color && { color: kindSpec.color }),
-        ...(!step.line && !derived.line && kindSpec?.line && { line: kindSpec.line }),
-        ...(!step.head && kindSpec?.head && { head: kindSpec.head }),
-        ...(!step.tail && kindSpec?.tail && { tail: kindSpec.tail }),
-        ...rest,
-        id,
-        source,
-        target,
-        navigateTo,
-        title: stepTitle ?? title,
-        relations: relations ?? [],
-        isBackward: sourceColumn > targetColumn,
-      }))
-
-      return stepNum + 1
     }
 
-    let stepNum = 1
-    for (const step of viewSteps) {
-      if (isDynamicStepsParallel(step)) {
-        let nestedStepNum = 1
-        for (const s of step.__parallel) {
-          nestedStepNum = processStep(s, nestedStepNum, stepNum)
-        }
-        // Increment stepNum after processing all parallel steps
-        stepNum++
-        continue
-      }
-      stepNum = processStep(step, stepNum)
-    }
+    reduce(
+      viewSteps,
+      (acc, s) => processStep(s, acc),
+      1,
+    )
 
     const nodesMap = buildComputedNodes(
       this.model.$styles,

@@ -3,7 +3,9 @@ import {
   type AutoLayoutDirection,
   type LikeC4View,
   type ParsedDeploymentView as DeploymentView,
+  type ParsedDynamicView as DynamicView,
   type ParsedElementView as ElementView,
+  type Step,
   type ViewRuleAutoLayout,
   _type,
   exact,
@@ -17,8 +19,13 @@ import type {
   $rules,
   $style,
 } from './Builder.view-common'
-import { $includeAncestors } from './Builder.view-deployment'
-import { type AddDeploymentViewHelper, type DeploymentViewBuilder, $deploymentExpr } from './Builder.view-deployment'
+import {
+  type AddDeploymentViewHelper,
+  type DeploymentViewBuilder,
+  $deploymentExpr,
+  $includeAncestors,
+} from './Builder.view-deployment'
+import type { $step, AddDynamicViewHelper, DynamicViewBuilder } from './Builder.view-dynamic'
 import {
   type AddViewHelper,
   type AddViewOfHelper,
@@ -348,10 +355,12 @@ export type ViewsHelpers = {
   view: AddViewHelper
   viewOf: AddViewOfHelper
   deploymentView: AddDeploymentViewHelper
+  dynamicView: AddDynamicViewHelper
   $include: typeof $include
   $exclude: typeof $exclude
   $style: typeof $style
   $rules: typeof $rules
+  $step: typeof $step
   $autoLayout: typeof $autoLayout
   $includeAncestors: typeof $includeAncestors
 }
@@ -370,8 +379,9 @@ export type ViewsBuilderFunction<A extends AnyTypes, B extends AnyTypes> = (
 
 export function mkViewBuilder(view: Writable<DeploymentView<any>>): DeploymentViewBuilder<AnyTypes>
 export function mkViewBuilder(view: Writable<ElementView<any>>): ElementViewBuilder<AnyTypes>
+export function mkViewBuilder(view: Writable<DynamicView<any>>): DynamicViewBuilder<AnyTypes>
 export function mkViewBuilder(
-  view: Writable<ElementView<any> | DeploymentView<any>>,
+  view: Writable<ElementView<any> | DeploymentView<any> | DynamicView<any>>,
 ) {
   // 1. Define all shared methods in a base object
   const baseBuilder = {
@@ -385,10 +395,6 @@ export function mkViewBuilder(
         }) satisfies ViewRuleAutoLayout,
       )
       return this // <-- Use 'this' for chaining
-    },
-    exclude(...exprs: any[]) {
-      view.rules.push({ exclude: exprs })
-      return this
     },
     include(...exprs: any[]) {
       view.rules.push({ include: exprs })
@@ -412,14 +418,36 @@ export function mkViewBuilder(
     },
   }
 
+  if (view[_type] === 'element') {
+    return Object.assign(baseBuilder, {
+      exclude(...exprs: any[]) {
+        view.rules.push({ exclude: exprs })
+        return this
+      },
+    })
+  }
+
   // 2. Conditionally attach Deployment-specific methods
   if (view[_type] === 'deployment') {
     return Object.assign(baseBuilder, {
+      exclude(...exprs: any[]) {
+        view.rules.push({ exclude: exprs })
+        return this
+      },
       includeAncestors(value: boolean) {
         view.rules.push({ includeAncestors: value })
         return this
       },
-    }) as any // Type assertion needed for the overloads
+    })
+  }
+
+  if (view[_type] === 'dynamic') {
+    return Object.assign(baseBuilder, {
+      step(step: Omit<Step.Any, 'id'>) {
+        view.steps.push(step as Step.Any)
+        return this
+      },
+    })
   }
 
   // 3. Return the standard Element builder

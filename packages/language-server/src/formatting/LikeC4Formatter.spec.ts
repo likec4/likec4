@@ -8,7 +8,7 @@
 import { describe, it } from 'vitest'
 import { createTestServices } from '../test'
 
-describe('formating', () => {
+describe.concurrent('formating', () => {
   describe('formats imports', () => {
     it(
       'formats import rules',
@@ -2041,6 +2041,6 @@ describe('formating', () => {
 })
 
 async function format(source: TemplateStringsArray | string) {
-  const { format } = createTestServices()
-  return await format(typeof source === 'string' ? source : source.join(''))
+  using t = createTestServices()
+  return await t.format(typeof source === 'string' ? source : source.join(''))
 }

@@ -6,19 +6,17 @@ import {
   type Any,
   type aux,
   type Color,
-  type DynamicStep,
   type DynamicViewRule,
-  type DynamicViewStep,
   type MarkdownOrString,
   type NonEmptyArray,
   type RelationshipLineType,
+  type Step,
   type ViewRuleGlobalStyle,
   exact,
-  isDynamicStepsParallel,
-  isDynamicStepsSeries,
   isViewRulePredicate,
+  stepGuards,
 } from '../../types'
-import { compareRelations, isNonEmptyArray } from '../../utils'
+import { compareRelations, isNonEmptyArray, nonexhaustive } from '../../utils'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 
 export function elementsFromIncludeProperties<A extends Any>(
@@ -41,31 +39,54 @@ export function elementsFromIncludeProperties<A extends Any>(
   return explicits
 }
 
-export const flattenSteps = <A extends Any>(s: DynamicViewStep<A>): DynamicStep<A> | DynamicStep<A>[] => {
-  if (isDynamicStepsParallel(s)) {
-    // Parallel steps are flattened by taking the first step of each parallel step and the rest of the steps
-    const heads = [] as DynamicStep<A>[]
-    const tails = [] as DynamicStep<A>[]
-    for (const step of s.__parallel) {
-      if (isDynamicStepsSeries(step)) {
-        const [head, ...tail] = step.__series
-        heads.push(head)
-        tails.push(...tail)
-      } else {
-        heads.push(step)
-      }
+export const flattenSteps = <A extends Any>(s: Step.Any<A>): Step<A>[] => {
+  switch (true) {
+    case stepGuards.isStep(s): {
+      return [s]
     }
-    return [...heads, ...tails]
+    case stepGuards.isParallel(s): {
+      // Parallel steps are flattened by taking the first step of each parallel step and the rest of the steps
+      const heads = [] as Step<A>[]
+      const tails = [] as Step<A>[]
+      for (const nested of s.steps) {
+        if (stepGuards.isSeries(nested)) {
+          const [head, ...tail] = nested.steps
+          heads.push(head)
+          tails.push(...tail)
+        } else {
+          heads.push(...flattenSteps(nested))
+        }
+      }
+      return [...heads, ...tails]
+    }
+    case stepGuards.isSeries(s): {
+      return [...s.steps]
+    }
+    case stepGuards.isLoop(s):
+    case stepGuards.isOpt(s): {
+      return flatMap(s.steps, flattenSteps)
+    }
+    case stepGuards.isTry(s): {
+      return flatMap([
+        ...s.try.steps,
+        ...(s.catch?.steps ?? []),
+        ...(s.finally?.steps ?? []),
+      ], flattenSteps)
+    }
+    case stepGuards.isAlt(s): {
+      return pipe(
+        s.branches,
+        flatMap((branch) => flatMap(branch.steps, flattenSteps)),
+      )
+    }
+    default:
+      nonexhaustive(s)
   }
-  if (isDynamicStepsSeries(s)) {
-    return [...s.__series]
-  }
-  return s
 }
 
 export function elementsFromSteps<A extends Any>(
   model: LikeC4Model<A>,
-  steps: DynamicViewStep<A>[],
+  steps: Step.Any<A>[],
 ): Set<ElementModel<A>> {
   const actors = [] as Array<ElementModel<A>>
 
