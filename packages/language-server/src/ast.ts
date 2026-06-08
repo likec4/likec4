@@ -73,18 +73,7 @@ export interface ParsedAstSpecification {
     color?: c4.ColorLiteral
   }>
   elements: Record<c4.ElementKind, c4.ElementSpecification>
-  relationships: Record<
-    c4.RelationshipKind,
-    {
-      technology?: string
-      notation?: string
-      color?: c4.Color
-      line?: c4.RelationshipLineType
-      head?: c4.RelationshipArrowType
-      tail?: c4.RelationshipArrowType
-      multiple?: boolean
-    }
-  >
+  relationships: Record<c4.RelationshipKind, c4.RelationshipSpecification>
   colors: Record<
     c4.CustomColor,
     {
