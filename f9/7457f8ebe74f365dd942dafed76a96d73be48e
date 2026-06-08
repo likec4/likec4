@@ -1,0 +1,21 @@
+packages/diagram/src/base/BaseXYFlow.tsx
+  s_9d49268b9f9845::t_445b98d39be0ec 103-129,234-235
+packages/diagram/src/base/keyboardZoom.spec.ts
+  s_9d49268b9f9845::t_21b95132a082a8 5-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f97457f8ebe74f365dd942dafed76a96d73be48e",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
