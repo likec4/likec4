@@ -1,0 +1,32 @@
+packages/diagram/src/base/keyboardZoom.ts
+  s_9d49268b9f9845::t_dc2738986dcd24 7-12,15,19-33
+  s_9d49268b9f9845::t_a39b460ffd7c90 1-6,13-14,16-18,34
+e2e/tests/accessible-zoom.spec.ts
+  s_9d49268b9f9845::t_a39b460ffd7c90 1-31
+packages/diagram/src/base/BaseXYFlow.tsx
+  s_9d49268b9f9845::t_dc2738986dcd24 9,20,96-107,109-110,112-113,115-118,223-224
+  s_9d49268b9f9845::t_1319b75034ef2e 13,89,108,111,114
+.changeset/fix-keyboard-diagram-zoom.md
+  s_9d49268b9f9845::t_ce71f4e8b75fb8 1-7
+packages/diagram/src/base/keyboardZoom.spec.ts
+  s_9d49268b9f9845::t_a39b460ffd7c90 1-7,28-81
+  s_9d49268b9f9845::t_e062ba34c27815 8-27
+apps/docs/src/content/docs/tooling/react.mdx
+  s_9d49268b9f9845::t_dc2738986dcd24 34-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d99caf5d1f733650f196ee8eb0caca8739a90e07",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
