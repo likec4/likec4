@@ -1,0 +1,20 @@
+docs/superpowers/specs/2026-06-08-likec4-quick-win-issues-design.md
+  s_9d49268b9f9845::t_fb4e42d5fc69bc 1-27,29-133,137-149,152,155-184,188-195
+  s_9d49268b9f9845::t_c620de4aed8f66 28,134-136,150-151,153-154,185-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3fa3aa4284aaffcfe88a040d1f6770cf93eeef59",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
