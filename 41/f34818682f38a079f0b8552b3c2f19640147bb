@@ -1,0 +1,20 @@
+e2e/tests/accessible-zoom.spec.ts
+  s_9d49268b9f9845::t_c76cd159a66b37 10-49,52,56-57
+  s_9d49268b9f9845::t_0c77e052043fd1 51,53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "41f34818682f38a079f0b8552b3c2f19640147bb",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
