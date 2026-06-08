@@ -1,0 +1,22 @@
+packages/language-server/src/views/LikeC4Views.spec.ts
+  s_9d49268b9f9845::t_8f5f93019a4a4a 125
+  s_9d49268b9f9845::t_b0e3d98891291b 107-121,126-131
+packages/language-server/src/LikeC4LanguageServices.ts
+  s_9d49268b9f9845::t_4c99bd88b95a08 261-270,275
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a51ca79ba56b0a0d03dcd5839eae2b360a471894",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
