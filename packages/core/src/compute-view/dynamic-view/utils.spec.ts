@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder/Builder'
 import type { LikeC4Model } from '../../model'
@@ -15,6 +22,17 @@ describe('findRelations', () => {
       relationships: {
         requests: {
           technology: 'HTTP Request',
+          color: 'blue',
+          line: 'solid',
+          head: 'open',
+          tail: 'diamond',
+        },
+        responds: {
+          technology: 'Webhook Response',
+          color: 'red',
+          line: 'dashed',
+          head: 'normal',
+          tail: 'odot',
         },
       },
       tags: {},
@@ -101,6 +119,57 @@ describe('findRelations', () => {
 
     expect(result).toMatchObject({
       technology: 'HTTP Request',
+    })
+  })
+
+  it('should return style from single relationship kind specification', () => {
+    const model = baseModel
+      .model(({ rel }, _) =>
+        _(
+          rel('shopify', 'webhook', {
+            kind: 'requests',
+          }),
+        )
+      )
+      .toLikeC4Model()
+    const shopify = model.element('shopify')
+    const webhook = model.element('webhook')
+
+    const result = findRelations(shopify, webhook, viewId)
+
+    expect(result).toMatchObject({
+      kind: 'requests',
+      technology: 'HTTP Request',
+      color: 'blue',
+      line: 'solid',
+      head: 'open',
+      tail: 'diamond',
+    })
+  })
+
+  it('should prefer explicit relationship arrow styles over kind specification', () => {
+    const model = baseModel
+      .model(({ rel }, _) =>
+        _(
+          rel('shopify', 'webhook', {
+            kind: 'requests',
+            head: 'normal',
+            tail: 'odot',
+          }),
+        )
+      )
+      .toLikeC4Model()
+    const shopify = model.element('shopify')
+    const webhook = model.element('webhook')
+
+    const result = findRelations(shopify, webhook, viewId)
+
+    expect(result).toMatchObject({
+      kind: 'requests',
+      color: 'blue',
+      line: 'solid',
+      head: 'normal',
+      tail: 'odot',
     })
   })
 
@@ -227,6 +296,58 @@ describe('findRelations', () => {
       technology: 'HTTP Request',
       kind: 'requests',
     })
+    expect(result.relations).toHaveLength(2)
+  })
+
+  it('should return style when multiple relationships share the same kind specification', () => {
+    const model = baseModel
+      .model(({ rel }, _) =>
+        _(
+          rel('a.child1', 'b.child1', {
+            kind: 'requests',
+          }),
+          rel('a.child2', 'b.child2', {
+            kind: 'requests',
+          }),
+        )
+      )
+      .toLikeC4Model()
+
+    const result = testFindRelationsOnModel(model)
+
+    expect(result).toMatchObject({
+      kind: 'requests',
+      technology: 'HTTP Request',
+      color: 'blue',
+      line: 'solid',
+      head: 'open',
+      tail: 'diamond',
+    })
+    expect(result.relations).toHaveLength(2)
+  })
+
+  it('should not return style when multiple relationships have different kind specifications', () => {
+    const model = baseModel
+      .model(({ rel }, _) =>
+        _(
+          rel('a.child1', 'b.child1', {
+            kind: 'requests',
+          }),
+          rel('a.child2', 'b.child2', {
+            kind: 'responds',
+          }),
+        )
+      )
+      .toLikeC4Model()
+
+    const result = testFindRelationsOnModel(model)
+
+    expect(result).not.toHaveProperty('kind')
+    expect(result).not.toHaveProperty('technology')
+    expect(result).not.toHaveProperty('color')
+    expect(result).not.toHaveProperty('line')
+    expect(result).not.toHaveProperty('head')
+    expect(result).not.toHaveProperty('tail')
     expect(result.relations).toHaveLength(2)
   })
 })
