@@ -59,9 +59,13 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private createWatcher(folder: string): FSWatcher {
     logger.debug`create watcher for folder: ${folder}`
 
+    const projectsManager = this.services.workspace.ProjectsManager
+
     let watcher = chokidar.watch(folder, {
       ignored: [
         path => insideNodeModulesOrRepo(path),
+        // Honor the project's `exclude` so the watcher skips excluded subtrees.
+        path => projectsManager.isExcluded(URI.file(path)),
         (path, stats) => !!stats && stats.isFile() && !isAnyLikeC4File(path),
       ],
       followSymlinks: true,
