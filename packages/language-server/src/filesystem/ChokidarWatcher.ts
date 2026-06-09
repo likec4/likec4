@@ -59,9 +59,17 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private createWatcher(folder: string): FSWatcher {
     logger.debug`create watcher for folder: ${folder}`
 
+    const projectsManager = this.services.workspace.ProjectsManager
+
     let watcher = chokidar.watch(folder, {
       ignored: [
         path => insideNodeModulesOrRepo(path),
+        // Honor the project's `exclude` patterns (likec4.config.json) so the
+        // watcher does not descend into large excluded subtrees. Without this,
+        // the watcher walks the entire workspace regardless of `exclude` and
+        // can crash with `EMFILE: too many open files, watch` on big repos,
+        // where the .c4 sources are a small fraction of the tree.
+        path => projectsManager.isExcluded(URI.file(path)),
         (path, stats) => !!stats && stats.isFile() && !isAnyLikeC4File(path),
       ],
       followSymlinks: true,
