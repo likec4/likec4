@@ -1,0 +1,21 @@
+packages/diagram/src/base/keyboardZoom.spec.ts
+  s_9d49268b9f9845::t_29a423860831d8 86-92
+apps/docs/src/content/docs/tooling/react.mdx
+  s_9d49268b9f9845::t_19b9156b5d4ba3 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c35632e99b83da61786a83370055603392aa4491",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
