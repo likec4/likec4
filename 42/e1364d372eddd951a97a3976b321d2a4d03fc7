@@ -1,0 +1,19 @@
+apps/docs/src/content/docs/tooling/react.mdx
+  s_9d49268b9f9845::t_dd7930c04c7d3b 48-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "42e1364d372eddd951a97a3976b321d2a4d03fc7",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
