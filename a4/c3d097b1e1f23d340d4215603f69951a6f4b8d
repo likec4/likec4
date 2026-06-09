@@ -1,0 +1,25 @@
+packages/core/src/compute-view/dynamic-view/utils.ts
+  s_9d49268b9f9845::t_bcb84f0b399dc3 21,130-131,141-142,145,152-156,187-193,195-200,209-210,225-226
+packages/core/src/compute-view/dynamic-view/__test__/step-fields.spec.ts
+  s_9d49268b9f9845::t_3ef26e128e0260 340-373
+packages/core/src/compute-view/dynamic-view/utils.spec.ts
+  s_9d49268b9f9845::t_805f8bf99dc9bf 27-28,118-142,268-291
+.changeset/fix-dynamic-relationship-kind-styles.md
+  s_9d49268b9f9845::t_8ef6b89f47ee8c 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a4c3d097b1e1f23d340d4215603f69951a6f4b8d",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
