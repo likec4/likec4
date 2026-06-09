@@ -1,0 +1,19 @@
+packages/diagram/src/base/keyboardZoom.spec.ts
+  s_9d49268b9f9845::t_5ad6d234c5b9d5 5-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "45239fa4d59a45251ed85aa3b3a56ec0383663c2",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
