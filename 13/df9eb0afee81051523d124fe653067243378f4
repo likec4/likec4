@@ -1,0 +1,25 @@
+apps/docs/src/content/docs/tooling/react.mdx
+  s_9d49268b9f9845::t_e66e376d48d3eb 43-44
+packages/diagram/src/base/keyboardZoom.spec.ts
+  s_9d49268b9f9845::t_73adf7910de5b5 64
+e2e/tests/accessible-zoom.spec.ts
+  s_9d49268b9f9845::t_37940428c3da96 40-45
+.changeset/fix-keyboard-diagram-zoom.md
+  s_9d49268b9f9845::t_bd3c4a7c8a8534 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "13df9eb0afee81051523d124fe653067243378f4",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
