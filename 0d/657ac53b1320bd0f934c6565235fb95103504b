@@ -1,0 +1,19 @@
+packages/core/src/compute-view/dynamic-view/utils.ts
+  s_9d49268b9f9845::t_31732b2950d090 141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0d657ac53b1320bd0f934c6565235fb95103504b",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
