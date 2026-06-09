@@ -1,0 +1,26 @@
+packages/language-server/src/LikeC4LanguageServices.ts
+  s_9d49268b9f9845::t_a44f36c22eff21 269-273
+packages/language-server/src/views/LikeC4Views.spec.ts
+  s_9d49268b9f9845::t_f5e9c481f8340d 141
+  s_9d49268b9f9845::t_59e649ba0df78d 149
+  s_9d49268b9f9845::t_c61098e191f2d5 173,185,190
+  s_9d49268b9f9845::t_fc38d7c43dbc96 11,15-18,87-140,146-148,150-172,174-184,186-189
+.changeset/fix-layouted-model-manual-layouts.md
+  s_9d49268b9f9845::t_d08ce471f750da 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3ff9317dfb69748241ec7574777bf5a9509c1ca6",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
