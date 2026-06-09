@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import {
   type LayoutedView,
@@ -257,13 +264,23 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (!model) {
       throw new Error('Failed to compute model, empty project?')
     }
-    const layouted = await this.views.layoutAllViews(projectId, cancelToken)
+    const diagrams = await this.views.diagrams(projectId, cancelToken)
+    const layoutedViews = diagrams.map(diagram => {
+      if (diagram._layout === 'manual' && model.findManualLayout(diagram.id) && diagram.drifts === undefined) {
+        return {
+          ...diagram,
+          // `undefined` means the view model should calculate drifts.
+          // `null` marks an applied manual layout with no drifts to calculate.
+          drifts: null,
+        }
+      }
+      return diagram
+    })
     return LikeC4Model.create({
       ...model.$data,
       _stage: 'layouted' as const,
       views: pipe(
-        layouted,
-        map(prop('diagram')),
+        layoutedViews,
         indexBy(prop('id')),
       ),
     })
