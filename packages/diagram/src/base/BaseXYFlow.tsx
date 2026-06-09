@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { cx } from '@likec4/styles/css'
 import { useMantineColorScheme } from '@mantine/core'
 import {
@@ -6,17 +13,18 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
-import { useMemo } from 'react'
+import { type KeyboardEvent, useMemo } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
-import { useIsZoomTooSmall, useXYStoreApi } from '../hooks/useXYFlow'
+import { useIsZoomTooSmall, useXYFlow, useXYStoreApi } from '../hooks/useXYFlow'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import { roundDpr } from '../utils/roundDpr'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { Base } from './Base'
 import { MaxZoom, MinZoom } from './const'
+import { getKeyboardZoomAction } from './keyboardZoom'
 import type { BaseEdge, BaseNode } from './types'
 
 export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge> = Simplify<
@@ -85,11 +93,39 @@ export function BaseXYFlow<
 
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
+  const xyflow = useXYFlow()
   const xystore = useXYStoreApi()
   const { colorScheme } = useMantineColorScheme()
   if (!colorMode) {
     colorMode = colorScheme === 'auto' ? 'system' : colorScheme
   }
+
+  const tabIndex = props.tabIndex ?? (zoomable ? 0 : undefined)
+  const hasAccessibleName = props['aria-label'] !== undefined || props['aria-labelledby'] !== undefined
+  const ariaLabel = hasAccessibleName || tabIndex === undefined ? props['aria-label'] : 'Interactive diagram'
+
+  const onKeyDown = useCallbackRef((event: KeyboardEvent<HTMLDivElement>) => {
+    props.onKeyDown?.(event)
+    if (event.defaultPrevented || !zoomable) {
+      return
+    }
+    const action = getKeyboardZoomAction(event.nativeEvent)
+    if (!action) {
+      return
+    }
+    event.preventDefault()
+    switch (action) {
+      case 'zoom-in':
+        void xyflow.zoomIn()
+        return
+      case 'zoom-out':
+        void xyflow.zoomOut()
+        return
+      case 'reset':
+        void xyflow.fitView(fitViewOptions)
+        return
+    }
+  })
 
   return (
     <ReactFlow<NodeType, EdgeType>
@@ -195,6 +231,9 @@ export function BaseXYFlow<
       onNodeDoubleClick={stopPropagation}
       onEdgeDoubleClick={stopPropagation}
       {...props}
+      aria-label={ariaLabel}
+      tabIndex={tabIndex}
+      onKeyDown={onKeyDown}
     >
       {isBgWithPattern && <Background background={background} />}
       {onViewportResize && <ViewportResizeHanlder onViewportResize={onViewportResize} />}
