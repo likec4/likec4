@@ -162,6 +162,7 @@ For example, this command can be used in CI to compare diagrams with ones from t
 
 ```sh
 likec4 export png -o ./assets
+likec4 export png -o ./assets --background "#fff"
 likec4 export jpg -o ./assets --quality 90
 ```
 
@@ -170,6 +171,7 @@ If you plan to use it in CI, refer to the [Playwright documentation](https://pla
 or consider [LikeC4 GitHub Actions](/tooling/github)
 
 Use `likec4 export jpg` to export JPEG files. It supports the same screenshot options, plus `--quality`.
+JPEG files default to the selected theme body color when `--background` is omitted.
 
 :::note
 Exporting to PNG or JPEG requires Playwright.
@@ -187,6 +189,7 @@ You will be prompted with a command to install if it's not found.
 | `--seq, --sequence`     | use sequence layout for dynamic views                                                                         |
 | `--flat, --flatten`     | Flatten all images in outdir, ignoring source structure                                                       |
 | `-f, --filter`          | include views with ids matching given patterns<br/>(multiple patterns are combined with OR)                   |
+| `--background`          | CSS background color for exported images. PNG defaults to transparent; JPEG defaults to the selected theme body color |
 | `--quality, -q`         | JPEG quality from 1 to 100 (default is 80); only used by `likec4 export jpg`                                  |
 | `-i, --ignore`          | continue if export fails for some views                                                                       |
 | `-t, --timeout`         | timeout for playwright in seconds, default is 15                                                              |
