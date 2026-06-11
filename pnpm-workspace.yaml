@@ -179,7 +179,7 @@ catalogs:
     chroma-js: 3.2.0
     citty: ^0.2.2
     consola: ^3.4.2
-    date-fns: ^4.1.0
+    date-fns: ^4.4.0
     defu: ^6.1.7
     esm-env: ^1.2.2
     fast-equals: ^6.0.0
