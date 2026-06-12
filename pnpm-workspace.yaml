@@ -101,7 +101,7 @@ catalogs:
     postcss: 8.5.15
     tailwindcss: ^4.1.18
   esbuild:
-    esbuild: 0.28.0
+    esbuild: 0.28.1
     esbuild-node-externals: 1.22.0
     esbuild-plugins-node-modules-polyfill: 1.8.1
     esbuild-wasm: 0.28.0
