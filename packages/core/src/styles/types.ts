@@ -37,7 +37,12 @@ export type ColorLiteral =
   | `rgb(${number},${number},${number})`
   | `rgba(${number},${number},${number},${number})`
 
-export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
+export const RelationshipLineTypes = [
+  'dashed',
+  'solid',
+  'dotted',
+] as const
+export type RelationshipLineType = TupleToUnion<typeof RelationshipLineTypes>
 
 // reference: https://graphviz.org/docs/attr-types/arrowType/
 export const RelationshipArrowTypes = [

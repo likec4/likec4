@@ -28,7 +28,7 @@ const it = test.extend<{
   },
 })
 
-describe.concurrent('formating', () => {
+describe('formating', () => {
   describe('formats imports', () => {
     it(
       'formats import rules',
@@ -925,7 +925,7 @@ describe.concurrent('formating', () => {
         title 'text'
         }
         
-           parallel {
+        parallel {
         
         PA
         -> PB { }
@@ -961,6 +961,73 @@ describe.concurrent('formating', () => {
 
                 // Should be single line
                 PD -> PE { } -> PF
+              }
+            }
+          }"
+        `))
+
+    it('formats try-catch dynamic steps', async ({ expect, format }) =>
+      await expect(format`
+        views {
+        dynamic view index {
+        
+                   try 'Try block'     {        
+        A -> B
+        -> C } 
+        
+        catch   'Catch block' 
+        
+        {        
+        }         finally 'Finally' { B 
+                 
+                  -> C  opt 'Optional step' {
+          D ->
+                E        
+                  }
+            
+                  par         {
+          D ->
+                E
+                A       -> F 
+                  }            
+                   }
+                  alt {  when '---' { A -> B }
+                  if {
+                  }
+            else {
+              A -> B      }}
+        }
+        }`)
+        .resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+
+              try 'Try block' {
+                A
+                  -> B
+                  -> C
+              }
+              catch 'Catch block' {
+              } finally 'Finally' {
+                B -> C
+                opt 'Optional step' {
+                  D -> E
+                }
+
+                par {
+                  D -> E
+                  A -> F
+                }
+              }
+              alt {
+                when '---' { A -> B }
+                if {
+                }
+                else {
+                  A -> B
+                }
               }
             }
           }"

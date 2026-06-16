@@ -1,6 +1,6 @@
 import type { Expression, FqnExpr, ViewId, WhereOperator } from '@likec4/core'
 import { dedent } from 'strip-indent'
-import { describe, expect as viExpect, it } from 'vitest'
+import { type Assertion, describe, expect as viExpect, it } from 'vitest'
 import type { schemas } from '../schemas'
 import {
   materialize,
@@ -11,7 +11,7 @@ import { expression, fqnExprAny, whereOperator } from './expressions'
 /**
  * Returns expect function to execute operations on the given context
  */
-function expectWhereOperator(operator: WhereOperator<any>) {
+function expectWhereOperator(operator: WhereOperator<any>): Assertion<string> {
   const exec = withctx(operator)
   return viExpect(
     materialize(exec(whereOperator())),

@@ -1,22 +1,14 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { map, prop, take } from 'remeda'
-import { describe, test } from 'vitest'
-import { createMultiProjectTestServices, createTestServices } from '../test'
+import { describe } from 'vitest'
+import { createMultiProjectTestServices, testFileScope as test } from '../test'
 
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
   return map(list, prop(property))
 }
 
 const it = test
-  .extend('t', { scope: 'file' }, async ({}, { onCleanup }) => {
-    const t = createTestServices()
-    onCleanup(() => t[Symbol.dispose]())
-    return t
-  })
-  .extend('completion', async ({ t }, { onCleanup }) => {
-    onCleanup(async () => {
-      await t.resetState()
-    })
+  .extend('completion', async ({ t }) => {
     return langiumExpectCompletion(t.services)
   })
 
@@ -691,6 +683,86 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
+  it('should suggest blocks in dynamic view', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+        relationship uses
+      }
+      model {
+        component a
+        component b
+      }
+      views {
+        dynamic view { // should also suggest dynamic views
+          <|>a <|>-> b
+          t<|>ry {
+          } <|>
+          alt {
+            <|>
+          }
+        }        
+      }
+    `
+
+    await completion({
+      text,
+      index: 0,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'a',
+          'b',
+          'opt',
+          'par',
+          'loop',
+          'alt',
+          'try',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'uses',
+        '.uses',
+      ],
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: [
+        'try',
+      ],
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 3,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'catch',
+          'finally',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 4,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'when',
+          'if',
+          'else',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+  })
+
   it('should suggest tags', async ({ expect, completion }) => {
     const text = `
       specification {
@@ -702,7 +774,10 @@ describe('LikeC4CompletionProvider', () => {
         c1 = component
         c2 = component {
           #<|>deprecated
-          -> c1 #<|>
+          -> c1 <|>
+        }
+        c1 -> c2 {
+          <|>#<|>
         }
       }
 
@@ -723,13 +798,40 @@ describe('LikeC4CompletionProvider', () => {
       index: 1,
       assert: completions => {
         expect(completions.items).not.to.be.empty
-        const first = take(completions.items, 2)
+        const first = take(completions.items, 4)
         expect(pluck('label', first)).toEqual([
+          'deprecated',
           '#deprecated',
+          'experimental',
           '#experimental',
         ])
       },
       disposeAfterCheck: true,
+    })
+    // c1 -> c2 {
+    //  <|>#
+    await completion({
+      text,
+      index: 2,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const first = take(completions.items, 4)
+        expect(pluck('label', first)).toEqual([
+          'deprecated',
+          '#deprecated',
+          'experimental',
+          '#experimental',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 3,
+      expectedItems: [
+        '#deprecated',
+        '#experimental',
+      ],
     })
   })
 

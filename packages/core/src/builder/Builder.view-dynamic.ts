@@ -69,6 +69,21 @@ export interface AddDynamicViewHelper {
   }
 }
 
+/**
+ * Adds a step to a dynamic view
+ * @example
+ * ```ts
+ * $step('alice -> bob')
+ * $step('alice -> bob', { title: 'Alice calls Bob' })
+ * $step('alice', 'bob')
+ * $step('alice', 'bob', 'Alice calls Bob')
+ * $step('alice', 'bob', { title: 'Alice calls Bob' })
+ * ```
+ * @see $step.series - Sequential steps
+ * @see $step.parallel - Parallel steps
+ * @see $step.try - Try-catch block
+ * @see $step.alt - Alternative steps
+ */
 export function $step<
   B extends LikeC4ViewBuilder<AnyTypes, any, any>,
   Fqn extends B['Types']['Fqn'],
@@ -144,7 +159,77 @@ function accumulateSteps<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   return steps
 }
 
-$step.trycatch = <
+/**
+ * Creates a series of sequential steps
+ * (as targeted for testing purposes, limited support for now - no titles, no returns)
+ * @example
+ * ```ts
+ * // A -> B -> C -> D
+ * $step.series(
+ *   'A',
+ *   '-> B',
+ *   '-> C',
+ *   '-> D'
+ * )
+ * ```
+ */
+$step.series = <
+  B extends LikeC4ViewBuilder<AnyTypes, any, any>,
+  Fqn extends B['Types']['Fqn'],
+>(
+  ...series: [Fqn, `-> ${Fqn}`, ...`-> ${Fqn}`[]]
+): (b: B) => B => {
+  return (b) => {
+    const [head, ...tail] = series
+
+    const { steps } = reduce(
+      tail,
+      (acc, step) => {
+        const target = (step as string).substring('-> '.length) as Fqn
+        acc.steps.push({
+          source: acc.source,
+          target,
+          astPath: '',
+        })
+        acc.source = target
+        return acc
+      },
+      {
+        source: head,
+        steps: [] as Step[],
+      },
+    )
+    invariant(isNonEmptyArray(steps), 'At least one step is required')
+    return b.step({
+      _type: 'series',
+      steps,
+    })
+  }
+}
+
+/**
+ * Creates a try-catch-finally block
+ * (as targeted for testing purposes, limited support for now - no titles, no returns)
+ * @example
+ * ```ts
+ * $step.try({
+ *  // required
+ *  try: [
+ *    'A -> B',
+ *    $step('B -> C'), // any step builder
+ *  ],
+ *  // optional
+ *  catch: [
+ *    'C -> D',
+ *  ],
+ *  // optional
+ *  finally: [
+ *    'D -> E',
+ *  ],
+ * })
+ * ```
+ */
+$step.try = <
   B extends LikeC4ViewBuilder<AnyTypes, any, any>,
   Fqn extends B['Types']['Fqn'],
   Pair extends `${Fqn} -> ${Fqn}`,
@@ -183,7 +268,7 @@ $step.trycatch = <
   }
 }
 
-function makeOperator(type: Step.Any['_type']) {
+function makeStepBuilder(type: Step.Any['_type']) {
   return <
     B extends LikeC4ViewBuilder<AnyTypes, any, any>,
     Fqn extends B['Types']['Fqn'],
@@ -204,10 +289,74 @@ function makeOperator(type: Step.Any['_type']) {
   }
 }
 
-$step.parallel = makeOperator('par')
-$step.loop = makeOperator('loop')
-$step.opt = makeOperator('opt')
+/**
+ * Creates a parallel step
+ * @example
+ * ```ts
+ * $step.parallel(
+ *   'A -> B',
+ *   $step.series(
+ *     'C',
+ *     '-> D',
+ *     '-> E',
+ *   ),
+ * )
+ * ```
+ */
+$step.parallel = makeStepBuilder('par')
 
+/**
+ * Creates a loop step
+ * @example
+ * ```ts
+ * $step.loop(
+ *   'A -> B',
+ *   $step.series(
+ *     'C',
+ *     '-> D',
+ *     '-> E',
+ *   ),
+ * )
+ * ```
+ */
+$step.loop = makeStepBuilder('loop')
+
+/**
+ * Creates an optional step
+ * @example
+ * ```ts
+ * $step.opt(
+ *   'A -> B',
+ *   $step.series(
+ *     'C',
+ *     '-> D',
+ *     '-> E',
+ *   ),
+ * )
+ * ```
+ */
+$step.opt = makeStepBuilder('opt')
+
+/**
+ * Creates a step with alternative branches
+ * @example
+ * ```ts
+ * $step.alt(
+ *   $step.when(
+ *     'A -> B'
+ *   ),
+ *   $step.if(
+ *     'C -> D'
+ *   ),
+ *   $step.else(
+ *     'E -> F'
+ *   )
+ * )
+ * ```
+ * @see $step.when - When branch
+ * @see $step.if - If branch
+ * @see $step.else - Else branch
+ */
 $step.alt = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   ...stepOps: Array<
     (b: AltBranchBuilder<NoInfer<B>['Types']>) => any
@@ -233,7 +382,7 @@ $step.alt = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   }
 }
 
-function makeBranchOperator(type: 'when' | 'if' | 'else') {
+function makeBranchBuilder(type: 'when' | 'if' | 'else') {
   return <B extends AltBranchBuilder<AnyTypes>, F extends B['Types']['Fqn'], Pair extends `${F} -> ${F}`>(
     ...stepOps: Array<
       | (
@@ -252,6 +401,41 @@ function makeBranchOperator(type: 'when' | 'if' | 'else') {
   }
 }
 
-$step.when = makeBranchOperator('when')
-$step.else = makeBranchOperator('else')
-$step.if = makeBranchOperator('if')
+/**
+ * Creates a when branch for alternative steps
+ * @example
+ * ```ts
+ * $step.alt(
+ *   $step.when(
+ *     'A -> B'
+ *   )
+ * )
+ * ```
+ */
+$step.when = makeBranchBuilder('when')
+
+/**
+ * Creates an if branch for alternative steps
+ * @example
+ * ```ts
+ * $step.alt(
+ *   $step.if(
+ *     'A -> B'
+ *   )
+ * )
+ * ```
+ */
+$step.if = makeBranchBuilder('if')
+
+/**
+ * Creates an else branch for alternative steps
+ * @example
+ * ```ts
+ * $step.alt(
+ *   $step.else(
+ *     'A -> B'
+ *   )
+ * )
+ * ```
+ */
+$step.else = makeBranchBuilder('else')

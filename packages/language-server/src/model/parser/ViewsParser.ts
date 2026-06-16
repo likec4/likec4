@@ -337,16 +337,16 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseStepStatement(node: ast.StepStatement): c4.AnyStep {
       switch (true) {
-        case ast.isStep(node):
-          return this.parseStep(node)
-        case ast.isStepSeries(node):
-          return this.parseStepSeries(node)
         case ast.isBranchSteps(node):
           return this.parseOptOrParallel(node)
         case ast.isTryStep(node):
           return this.parseTryStep(node)
         case ast.isAltSteps(node):
           return this.parseAltSteps(node)
+        case ast.isStepSeries(node):
+          return this.parseStepSeries(node)
+        case ast.isStep(node):
+          return this.parseStep(node)
         default:
           nonexhaustive(node)
       }

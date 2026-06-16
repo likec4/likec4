@@ -54,7 +54,8 @@ describe('dynamic-view', () => {
         relations: [],
       },
     ])
-    expect([edges[0], edges[1]]).have.not.a.property('dir')
+    expect(edges[0]).not.toHaveProperty('dir')
+    expect(edges[1]).not.toHaveProperty('dir')
   })
 
   it('should build compounds', () => {
@@ -452,7 +453,7 @@ describe('dynamic-view', () => {
             $step.loop(
               'B -> B',
               $step('A -> B'),
-              $step.trycatch({
+              $step.try({
                 try: [
                   'B -> C',
                   $step.opt(
@@ -518,14 +519,14 @@ describe('dynamic-view', () => {
               "_type": "alt",
               "branches": [
                 {
-                  "_type": "branch:when",
+                  "_type": "when",
                   "id": "step-02.loop.04.alt.01",
                   "steps": [
                     "step-02.loop.04.alt.01.01",
                   ],
                 },
                 {
-                  "_type": "branch:when",
+                  "_type": "when",
                   "id": "step-02.loop.04.alt.02",
                   "steps": [
                     "step-02.loop.04.alt.02.01",

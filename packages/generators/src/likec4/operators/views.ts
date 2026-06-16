@@ -14,6 +14,7 @@ import {
   guard,
   indent,
   inlineText,
+  lazy,
   lines,
   merge,
   print,
@@ -23,6 +24,7 @@ import {
   separateComma,
   space,
   spaceBetween,
+  text,
   withctx,
   zodOp,
 } from './base'
@@ -36,7 +38,6 @@ import {
   styleProperties,
   tagsProperty,
   technologyProperty,
-  titleProperty,
 } from './properties'
 
 const viewTitleProperty = <A extends { title?: string | null | undefined }>(): Op<A> =>
@@ -252,14 +253,21 @@ export const deploymentView = zodOp(schemas.views.deploymentView.partial({ _type
 
 // --- Dynamic View ---
 
-export const dynamicStep = zodOp(schemas.views.dynamicStep)(
+const stepTarget = zodOp(schemas.views.dynamicStep.partial({ source: true }))(
   spaceBetween(
-    print(v => v.source),
-    print(v => v.isBackward ? '<-' : '->'),
-    print(v => v.target),
+    print(v => {
+      if (v.isBackward) {
+        return '<-'
+      }
+      if (v.kind) {
+        return `-[${v.kind}]->`
+      }
+      return '->'
+    }),
+    printProperty('target'),
+    property('title', text()),
     body(
       lines(
-        titleProperty(),
         technologyProperty(),
         descriptionProperty(),
         notesProperty(),
@@ -274,23 +282,129 @@ export const dynamicStep = zodOp(schemas.views.dynamicStep)(
   ),
 )
 
-export const dynamicStepsSeries = zodOp(schemas.views.dynamicStepsSeries)(({ ctx, exec }) => {
-  throw new Error('Not implemented')
+const stepSingle = zodOp(schemas.views.dynamicStep)(
+  spaceBetween(
+    printProperty('source'),
+    stepTarget(),
+  ),
+)
+
+const bodyWithSteps = <A extends { steps: Array<schemas.views.dynamicViewStep.Data> }>(): Op<A> =>
+  property(
+    'steps',
+    body(
+      foreachNewLine(
+        lazy(() => stepAny()),
+      ),
+    ),
+  )
+
+const stepBlock = zodOp(schemas.views.dynamicStepBlock)(
+  spaceBetween(
+    printProperty('_type'),
+    property('title', text()),
+    bodyWithSteps(),
+  ),
+)
+
+const stepSeries = zodOp(schemas.views.dynamicStepSeries)(
+  merge(
+    select(
+      v => v.steps[0]!,
+      printProperty('source'),
+    ),
+    indent(
+      property(
+        'steps',
+        foreachNewLine(
+          stepTarget(),
+        ),
+      ),
+    ),
+  ),
+)
+
+const stepTry = zodOp(schemas.views.dynamicStepTry)(
+  spaceBetween(
+    select(
+      v => v.try,
+      spaceBetween(
+        print('try'),
+        property('title', text()),
+        bodyWithSteps(),
+      ),
+    ),
+    select(
+      v => v.catch,
+      spaceBetween(
+        print('catch'),
+        property('title', text()),
+        bodyWithSteps(),
+      ),
+    ),
+    select(
+      v => v.finally,
+      spaceBetween(
+        print('finally'),
+        property('title', text()),
+        bodyWithSteps(),
+      ),
+    ),
+  ),
+)
+
+const stepAltBranch = zodOp(schemas.views.dynamicStepAltBranch)(
+  spaceBetween(
+    printProperty('_type'),
+    property('title', text()),
+    bodyWithSteps(),
+  ),
+)
+
+const stepAlt = zodOp(schemas.views.dynamicStepAlt)(
+  spaceBetween(
+    print('alt'),
+    property('title', text()),
+    body(
+      property(
+        'branches',
+        foreachNewLine(
+          stepAltBranch(),
+        ),
+      ),
+    ),
+  ),
+)
+
+const stepAny = zodOp(schemas.views.dynamicViewStep)(({ ctx, exec }) => {
+  if (ctx.source && ctx.target) {
+    return exec(ctx, stepSingle())
+  }
+  invariant(ctx._type, 'Step must have a type')
+  switch (ctx._type) {
+    case 'loop':
+    case 'opt':
+    case 'par':
+      return exec(ctx, stepBlock())
+    case 'alt':
+      return exec(ctx, stepAlt())
+    case 'series':
+      return exec(ctx, stepSeries())
+    case 'try':
+      return exec(ctx, stepTry())
+    default:
+      nonexhaustive(ctx)
+  }
 })
 
-export const dynamicStepsParallel = zodOp(schemas.views.dynamicStepsParallel)(({ ctx, exec }) => {
-  throw new Error('Not implemented')
-})
-
-export const dynamicViewStep = zodOp(schemas.views.dynamicViewStep)(({ ctx, exec }) => {
-  if ('__series' in ctx) {
-    return exec(ctx, dynamicStepsSeries())
-  }
-  if ('__parallel' in ctx) {
-    return exec(ctx, dynamicStepsParallel())
-  }
-  return exec(ctx, dynamicStep())
-})
+export const step = {
+  single: stepSingle,
+  block: stepBlock,
+  alt: stepAlt,
+  series: stepSeries,
+  try: stepTry,
+  any: stepAny,
+} as const
 
 export const dynamicViewIncludeRule = zodOp(schemas.views.dynamicViewIncludeRule)(({ ctx, exec }) => {
   if (!hasAtLeast(ctx.include, 1)) {
@@ -352,7 +466,7 @@ export const dynamicView = zodOp(schemas.views.dynamicView.partial({ _type: true
         property(
           'steps',
           foreachNewLine(
-            dynamicViewStep(),
+            step.any(),
           ),
         ),
         property(

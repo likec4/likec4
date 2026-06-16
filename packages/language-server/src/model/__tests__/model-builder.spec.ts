@@ -14,9 +14,9 @@ import {
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe } from 'vitest'
-import { createTestServices, testServices } from '../../test'
+import { createTestServices, test } from '../../test'
 
-const it = testServices
+const it = test
 
 describe('LikeC4ModelBuilder', () => {
   it('builds model with colors and shapes', async ({ expect, t }) => {

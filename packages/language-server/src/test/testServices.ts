@@ -5,31 +5,10 @@ import * as assert from 'node:assert'
 import { entries, flatMap, join, once, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { LiteralUnion } from 'type-fest'
-import { test } from 'vitest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { type LanguageServicesContext, createLanguageServices } from '../module'
-
-export const testServices = test.extend<{
-  t: ReturnType<typeof createTestServices>
-  create: (options?: Parameters<typeof createTestServices>[0]) => ReturnType<typeof createTestServices>
-}>({
-  t: async ({}, use) => {
-    const services = createTestServices()
-    await use(services)
-    services[Symbol.dispose]()
-  },
-  create: async ({}, use) => {
-    const toDispose: Array<ReturnType<typeof createTestServices>> = []
-    await use((options) => {
-      const services = createTestServices(options)
-      toDispose.push(services)
-      return services
-    })
-    toDispose.forEach(services => services[Symbol.dispose]())
-  },
-})
 
 export function createTestServices(options?: {
   workspace?: string
@@ -119,8 +98,11 @@ export function createTestServices(options?: {
       diagnostics,
       warnings,
       errors,
-      print: () =>
-        pipe(
+      get error(): string {
+        return errors.join('\n')
+      },
+      get formattedError(): string {
+        return pipe(
           diagnostics,
           flatMap(validationError => {
             const line = validationError.range.start.line
@@ -138,7 +120,8 @@ export function createTestServices(options?: {
               })
           }),
           join('\n'),
-        ),
+        )
+      },
     }
   }
 
@@ -209,6 +192,9 @@ export function createTestServices(options?: {
     buildLikeC4Model,
     resetState,
     format,
+    get likec4() {
+      return services.likec4
+    },
     [Symbol.dispose]: () => {
       services.likec4.LanguageServices.dispose().catch(err => {
         console.error(err)

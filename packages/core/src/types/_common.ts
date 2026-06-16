@@ -81,6 +81,11 @@ export interface Link {
 }
 
 /**
+ * @see {@link LiteralUnion} from type-fest (https://github.com/sindresorhus/type-fest/blob/main/source/literal-union.d.ts)
+ */
+export type OrString = string & Record<never, never>
+
+/**
  * Coalesce `V` to a string if it is `any`
  */
 export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V

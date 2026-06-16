@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { nonexhaustive } from '@likec4/core'
+import { isAnyOf, nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
   type CompositeCstNode,
@@ -17,6 +17,7 @@ import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } f
 import { filter, isTruthy } from 'remeda'
 import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
 import * as ast from '../generated/ast'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import * as utils from './utils'
 import { isMultiline } from './utils'
@@ -105,6 +106,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatRelationExpression(node)
     this.formatAutolayoutProperty(node)
     this.formatWithPredicate(node)
+    this.formatSteps(node)
 
     // Common
     this.formatViewRuleStyle(node)
@@ -449,7 +451,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   }
 
   protected formatExtendElement(node: AstNode) {
-    this.on(node, ast.isExtendElement, (n, f) => {
+    this.on(node, ast.isExtendElementOrRelation, (n, f) => {
       f.keywords('extend').append(FormattingOptions.oneSpace)
     })
   }
@@ -680,6 +682,48 @@ export class LikeC4Formatter extends AbstractFormatter {
     })
   }
 
+  protected formatSteps(node: AstNode) {
+    this.on(
+      node,
+      isAnyOf(
+        ast.isAltSteps,
+        ast.isTryBlock,
+        ast.isCatchBlock,
+        ast.isFinallyBlock,
+      ),
+      (n, f) => {
+        f.keywords('try', 'alt')
+          .append(FormattingOptions.oneSpace)
+        f.property('title').surround(FormattingOptions.oneSpace)
+
+        if (ast.isCatchBlock(n)) {
+          const keyword = f.keyword('catch')
+          // catch on the same line as try?
+          if (utils.isSameLine(n.try.$cstNode, keyword.nodes[0])) {
+            keyword.prepend(FormattingOptions.oneSpace)
+          } else {
+            keyword.prepend(Formatting.newLine())
+          }
+          keyword.append(FormattingOptions.oneSpace)
+        }
+        if (ast.isFinallyBlock(n)) {
+          const keyword = f.keyword('finally')
+          // finally on the same line as try or catch ?
+          if (utils.isSameLine(n.tryCatch.$cstNode, keyword.nodes[0])) {
+            keyword.prepend(FormattingOptions.oneSpace)
+          } else {
+            keyword.prepend(Formatting.newLine())
+          }
+          keyword.append(FormattingOptions.oneSpace)
+        }
+      },
+    )
+    this.on(node, ast.isBranchSteps, (n, f) => {
+      f.property('kind').append(FormattingOptions.oneSpace)
+      f.property('title').surround(FormattingOptions.oneSpace)
+    })
+  }
+
   private findPredicateExpressionRoot(node: AstNode): AstNode | undefined {
     let parent = node.$container
     while (true) {
@@ -703,7 +747,11 @@ export class LikeC4Formatter extends AbstractFormatter {
   ): NodeFormatter<T> | undefined {
     const formatter = predicate(node) ? this.getNodeFormatter(node) : undefined
 
-    format && formatter && format(node as T, formatter)
+    try {
+      format && formatter && format(node as T, formatter)
+    } catch (error) {
+      logger.warn(`Error formatting node ${node.$type}`, { error })
+    }
 
     return formatter
   }

@@ -139,7 +139,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
     }
     invalidNodes.add(node)
     if (!isValidatableAstNode(node)) {
-      const container = findInvalidContainer(node.$container)
+      const container = findInvalidContainer(node)
       if (container) {
         invalidNodes.add(container)
       }

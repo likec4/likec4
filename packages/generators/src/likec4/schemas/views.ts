@@ -3,13 +3,11 @@ import * as z from 'zod/v4'
 import type {
   AnyViewRuleStyle,
   FqnExpr,
-  ViewAutoLayout,
   ViewRuleGlobalPredicateRef,
   ViewRuleGlobalStyle,
   ViewRulePredicate,
   ViewRuleRank,
-} from '@likec4/core'
-import { isNonNullish, pickBy } from 'remeda'
+} from '@likec4/core/types'
 import * as common from './common'
 import * as schemas from './expression'
 
@@ -25,7 +23,6 @@ export const viewRuleAutoLayout = z
     nodeSep: z.number().optional(),
     rankSep: z.number().optional(),
   })
-  .transform(v => v as ViewAutoLayout)
 
 export const deploymentViewRuleIncludeAncestors = z
   .strictObject({
@@ -115,7 +112,6 @@ export const elementViewRule = z
 
 const viewProps = z.object({
   id: common.viewId,
-  _stage: z.literal('parsed').default('parsed'),
   title: z.string().nullish(),
   description: common.markdownOrString.nullish(),
   tags: common.tags.nullish(),
@@ -135,12 +131,6 @@ export const elementView = viewProps
     extends: common.viewId.nullish(),
     rules: z.array(elementViewRule).optional().default([]),
   })
-// .transform(v => ({
-//   ...pickBy(v, isNonNullish),
-//   title: v.title ?? null,
-//   description: v.description ?? null,
-//   rules: v.rules,
-// }))
 
 // ---- Deployment View Schema ----
 
@@ -163,17 +153,12 @@ export const deploymentView = viewProps
     _type: z.literal('deployment'),
     rules: z.array(deploymentViewRule).optional().default([]),
   })
-// .transform(v => ({
-//   ...pickBy(v, isNonNullish),
-//   title: v.title ?? null,
-//   description: v.description ?? null,
-//   rules: v.rules,
-// }))
 
 // ---- Dynamic View Schema ----
 
 export const dynamicStep = z
   .object({
+    _type: z.never().exactOptional(),
     source: common.fqn,
     target: common.fqn,
     title: z.string().nullish().default(null),
@@ -191,36 +176,120 @@ export const dynamicStep = z
     // __parallel: z.never().optional(),
     // __series: z.never().optional(),
   })
-  .readonly()
-  .transform(pickBy(isNonNullish))
 
-export const dynamicStepsSeries = z
+/**
+ * @internal to reduce type inference
+ */
+export interface ZStepInput extends z.input<typeof dynamicStep> {
+}
+
+/**
+ * @internal to reduce type inference
+ */
+export interface ZStepOutput extends z.output<typeof dynamicStep> {
+}
+
+type Arr<T, isReadonly extends boolean> = isReadonly extends true ? readonly T[] : T[]
+
+type StepRecursive<S extends {}, isReadonly extends boolean = false> =
+  | S
+  | {
+    source?: never
+    target?: never
+  }
+    & (
+      | {
+        _type: 'series'
+        steps: Arr<S, isReadonly>
+      }
+      | {
+        _type: 'par' | 'loop' | 'opt'
+        title?: string | undefined
+        steps: Arr<StepRecursive<S, isReadonly>, isReadonly>
+      }
+      | {
+        _type: 'try'
+        try: {
+          title?: string | undefined
+          steps: Arr<StepRecursive<S, isReadonly>, isReadonly>
+        }
+        catch?: undefined | {
+          title?: string | undefined
+          steps: Arr<StepRecursive<S, isReadonly>, isReadonly>
+        }
+        finally?: undefined | {
+          title?: string | undefined
+          steps: Arr<StepRecursive<S, isReadonly>, isReadonly>
+        }
+      }
+      | {
+        _type: 'alt'
+        title?: string | undefined
+        branches: Arr<{
+          _type: 'when' | 'if' | 'else'
+          title?: string | undefined
+          steps: Arr<StepRecursive<S, isReadonly>, isReadonly>
+        }, isReadonly>
+      }
+    )
+
+const withSteps = z.object({
+  title: z.string().optional(),
+  source: z.never().exactOptional(),
+  target: z.never().exactOptional(),
+  get steps(): z.ZodArray<typeof dynamicViewStep> {
+    return z.array(dynamicViewStep).nonempty('must have at least one step')
+  },
+})
+
+export const dynamicStepSeries = z
   .object({
-    // source: z.never().optional(),
-    // target: z.never().optional(),
-    seriesId: z.string().optional(),
-    __series: z.array(z.any()).readonly(),
-    // __parallel: z.never().optional(),
-    // __series: z.array(dynamicStep).nonempty(),
+    _type: z.literal('series'),
+    steps: z.array(dynamicStep).nonempty('must have at least one step'),
   })
   .readonly()
-  .transform(pickBy(isNonNullish))
 
-export const dynamicStepsParallel = z.object({
-  // source: z.never().optional(),
-  // target: z.never().optional(),
-  // __series: z.never().optional(),
-  parallelId: z.string().optional(),
-  __parallel: z.array(z.any()).readonly(),
-  // __parallel: z.array(z.union([dynamicStep, dynamicStepsSeries])).nonempty(),
-})
+export const dynamicStepBlock = withSteps
+  .extend({
+    _type: z.literal(['par', 'loop', 'opt']),
+  })
   .readonly()
-  .transform(pickBy(isNonNullish))
 
-export const dynamicViewStep = z.union([
+export const dynamicStepTry = z
+  .object({
+    _type: z.literal('try'),
+    try: withSteps,
+    catch: withSteps.optional(),
+    finally: withSteps.optional(),
+  })
+  .readonly()
+
+export const dynamicStepAltBranch = withSteps
+  .extend({
+    _type: z.literal(['when', 'if', 'else']),
+  })
+  .readonly()
+
+export const dynamicStepAlt = z
+  .object({
+    _type: z.literal('alt'),
+    title: z.string().optional(),
+    branches: z.array(dynamicStepAltBranch).nonempty('alt block must have at least one branch'),
+  })
+  .readonly()
+
+export interface ZDynamicViewStep extends
+  z.ZodType<
+    StepRecursive<ZStepOutput>,
+    StepRecursive<ZStepInput, true>
+  > {}
+
+export const dynamicViewStep: ZDynamicViewStep = z.union([
   dynamicStep,
-  dynamicStepsSeries,
-  dynamicStepsParallel,
+  dynamicStepAlt,
+  dynamicStepSeries,
+  dynamicStepBlock,
+  dynamicStepTry,
 ])
 
 export const dynamicViewIncludeRule = z.strictObject({
@@ -263,65 +332,3 @@ export const anyView = z.union([
 ])
 
 export const views = z.record(common.viewId, anyView)
-
-// export const views = z.union([
-//   viewsRecord,
-//   z.array(anyView)
-// ]).transform(v => {
-//   if (Array.isArray(v)) {
-//     return indexBy(v, v => v.id) as z.output<typeof viewsRecord>
-//   }
-//   return v
-// })
-
-// export type ElementViewInput = z.input<typeof elementView>
-// export type ElementViewData = z.infer<typeof elementView>
-
-// // ============ Top-Level Schema ============
-
-// export const LikeC4DataSchema = z
-//   .object({
-//     elements: z.union([
-//       z.record(fqn, ElementDataSchema),
-//       z.array(ElementDataSchema)
-//         .transform(indexBy(i => i.id)),
-//     ]),
-//     relations: z.union([
-//       z.record(id, RelationshipSchema),
-//       z.array(RelationshipSchema)
-//         .transform(
-//           indexBy((r, idx) =>
-//             r.id as string ?? stringHash(`${r.source.model}, ${r.target.model}, ${r.kind ?? ''}, ${idx}`)
-//           ),
-//         ),
-//     ]),
-//     views: z.union([
-//       z.record(viewId, elementView),
-//       z.array(elementView)
-//         .transform(indexBy(v => v.id as string)),
-//     ]),
-//     project: z.object({
-//       id: z.string(),
-//       styles: LikeC4StylesConfigSchema.nullish(),
-//     }),
-//     specification: SpecificationSchema,
-//   })
-//   .partial()
-//   .readonly()
-// export type LikeC4DataInput = z.input<typeof LikeC4DataSchema>
-// export type LikeC4Data = z.infer<typeof LikeC4DataSchema>
-
-// interface BaseLikeC4ModelData<A extends Any> {
-//   [_stage]: A['Stage']
-//   projectId: aux.ProjectId<A>
-//   project: LikeC4Project
-//   specification: Specification<A>
-//   elements: Record<aux.ElementId<A>, Element<A>>
-//   deployments: {
-//     elements: Record<aux.DeploymentId<A>, DeploymentElement<A>>
-//     relations: Record<scalar.RelationId, DeploymentRelationship<A>>
-//   }
-//   relations: Record<scalar.RelationId, Relationship<A>>
-//   globals: ModelGlobals
-//   imports: Record<string, NonEmptyArray<Element<A>>>
-// }

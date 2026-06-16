@@ -1,5 +1,6 @@
 // oxlint-disable vitest/expect-expect
 import { describe, test } from 'vitest'
+import type { URI } from 'vscode-uri'
 import { createTestServices } from '../test'
 
 const model = `
@@ -52,31 +53,36 @@ const it = test.extend<{
   }
 }>({
   t: [async ({}, use) => {
-    const t = createTestServices()
+    using t = createTestServices()
     await t.validate(model, 'model.c4')
     await use(t)
-    t[Symbol.dispose]()
   }, { scope: 'file' }],
   view: async ({ t, task }, use) => {
+    const cleanup = [] as Array<URI>
     await use({
       async valid(view) {
-        const { errors, warnings } = await t.validate(`
+        const { errors, warnings, document } = await t.validate(`
           views {
             ${view}
           }
         `)
+        cleanup.push(document.uri)
         task.context.expect(errors.join('\n'), 'errors').to.be.empty
         task.context.expect(warnings.join('\n'), 'warnings').to.be.empty
       },
       async invalid(view) {
-        const { errors } = await t.validate(`
+        const { errors, document } = await t.validate(`
           views {
             ${view}
           }
         `)
+        cleanup.push(document.uri)
         task.context.expect(errors, 'errors').not.to.be.empty
       },
     })
+    if (cleanup.length > 0) {
+      await t.services.shared.workspace.DocumentBuilder.update([], cleanup)
+    }
   },
   valid: async ({ view }, use) => {
     await use(async (rules) => {
@@ -97,17 +103,22 @@ const it = test.extend<{
     })
   },
   onlyWarnings: async ({ t, task }, use) => {
+    const cleanup = [] as Array<URI>
     await use(async (rules) => {
-      const { errors, warnings } = await t.validate(`
+      const { errors, warnings, document } = await t.validate(`
         views {
           view {
             ${rules}
           }
         }
       `)
+      cleanup.push(document.uri)
       task.context.expect(errors.join('\n'), 'errors').to.be.empty
       task.context.expect(warnings.join('\n'), 'warnings').not.to.be.empty
     })
+    if (cleanup.length > 0) {
+      await t.services.shared.workspace.DocumentBuilder.update([], cleanup)
+    }
   },
 })
 

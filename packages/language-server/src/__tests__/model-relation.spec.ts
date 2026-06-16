@@ -1,10 +1,8 @@
-import { describe, test } from 'vitest'
-import { invalid, valid } from './asserts'
+import { describe } from 'vitest'
+import { test } from './asserts'
 
-describe.concurrent('model relation', () => {
-  test(
-    'valid',
-    valid`
+describe('model relation', () => {
+  test('valid').valid`
       specification {
         element person
       }
@@ -13,12 +11,9 @@ describe.concurrent('model relation', () => {
         person user2
         user1 -> user2
       }
-      `,
-  )
+      `
 
-  test(
-    'fail if defined in model without source',
-    invalid`
+  test('fail if defined in model without source').invalid`
       specification {
         element person
       }
@@ -26,36 +21,27 @@ describe.concurrent('model relation', () => {
         user1 = person "user1" {
         }
         -> user1
-      }`,
-  )
+      }`
 
-  test(
-    'fail if defined in model with it',
-    invalid`
+  test('fail if defined in model with it').invalid`
       specification {
         element person
       }
       model {
         person user1 {}
         it -> user1
-      }`,
-  )
+      }`
 
-  test(
-    'fail if defined in model with this',
-    invalid`
+  test('fail if defined in model with this').invalid`
       specification {
         element person
       }
       model {
         person user1 {}
         this -> user1
-      }`,
-  )
+      }`
 
-  test(
-    'valid sourceless in extend',
-    valid`
+  test('valid sourceless in extend').valid`
       specification {
         element person
       }
@@ -65,12 +51,9 @@ describe.concurrent('model relation', () => {
         extend user1 {
           -> user2
         }
-      }`,
-  )
+      }`
 
-  test(
-    'valid this in extend',
-    valid`
+  test('valid this in extend').valid`
       specification {
         element person
       }
@@ -80,12 +63,9 @@ describe.concurrent('model relation', () => {
         extend user1 {
           user2 -> this
         }
-      }`,
-  )
+      }`
 
-  test(
-    'valid it in extend',
-    valid`
+  test('valid it in extend').valid`
       specification {
         element person
       }
@@ -95,12 +75,9 @@ describe.concurrent('model relation', () => {
         extend user1 {
           it -> user2
         }
-      }`,
-  )
+      }`
 
-  test(
-    'valid it',
-    valid`
+  test('valid it').valid`
       specification {
         element person
       }
@@ -109,12 +86,9 @@ describe.concurrent('model relation', () => {
           it -> user2
         }
         person user2
-      }`,
-  )
+      }`
 
-  test(
-    'valid it as target',
-    valid`
+  test('valid it as target').valid`
       specification {
         element person
       }
@@ -123,12 +97,9 @@ describe.concurrent('model relation', () => {
           user2 -> it
         }
         person user2
-      }`,
-  )
+      }`
 
-  test(
-    'valid this',
-    valid`
+  test('valid this').valid`
       specification {
         element person
       }
@@ -137,12 +108,9 @@ describe.concurrent('model relation', () => {
           this -> user2
         }
         person user2
-      }`,
-  )
+      }`
 
-  test(
-    'valid this as target',
-    valid`
+  test('valid this as target').valid`
       specification {
         element person
       }
@@ -151,12 +119,9 @@ describe.concurrent('model relation', () => {
           user2 -> this
         }
         person user2
-      }`,
-  )
+      }`
 
-  test(
-    'valid 2',
-    valid`
+  test('valid 2').valid`
       specification {
         element person
       }
@@ -165,12 +130,9 @@ describe.concurrent('model relation', () => {
         person user2 {
           -> user1
         }
-      }`,
-  )
+      }`
 
-  test(
-    'valid 3',
-    valid`
+  test('valid 3').valid`
       specification {
         element person
       }
@@ -179,12 +141,9 @@ describe.concurrent('model relation', () => {
           -> user2
         }
         person user2
-      }`,
-  )
+      }`
 
-  test(
-    'valid 4',
-    valid`
+  test('valid 4').valid`
       specification {
         element person
         element component
@@ -203,12 +162,9 @@ describe.concurrent('model relation', () => {
           }
         }
         user -> api
-      }`,
-  )
+      }`
 
-  test(
-    'relation with title',
-    valid`
+  test('relation with title').valid`
       specification {
         element person
       }
@@ -218,12 +174,9 @@ describe.concurrent('model relation', () => {
           -> user1 'calls'
         }
         user1 -> user2 'responds to'
-      }`,
-  )
+      }`
 
-  test(
-    'relation with tags',
-    valid`
+  test('relation with tags').valid`
       specification {
         element person
         tag one
@@ -241,12 +194,9 @@ describe.concurrent('model relation', () => {
             #one #two, #three;
           }
         }
-      }`,
-  )
+      }`
 
-  test(
-    'relation with properties',
-    valid`
+  test('relation with properties').valid`
     specification {
       element person
     }
@@ -265,12 +215,9 @@ describe.concurrent('model relation', () => {
         technology: 'technology';
         description 'description'
       }
-    }`,
-  )
+    }`
 
-  test(
-    'relation with property and links',
-    valid`
+  test('relation with property and links').valid`
     specification {
       element person
     }
@@ -282,12 +229,9 @@ describe.concurrent('model relation', () => {
           link https://path
         }
       }
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with kind',
-    valid`
+  test('relationship with kind').valid`
     specification {
       element person
       relationship async {
@@ -306,12 +250,9 @@ describe.concurrent('model relation', () => {
         -[async]-> user1
       }
       user2 -[async]-> user3
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with kind via dot',
-    valid`
+  test('relationship with kind via dot').valid`
     specification {
       element person
       relationship async
@@ -325,12 +266,9 @@ describe.concurrent('model relation', () => {
         .async user1
       }
       user2 .async user3
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with kind via dot invalid',
-    invalid`
+  test('relationship with kind via dot invalid').invalid`
     specification {
       element person
       relationship async
@@ -339,12 +277,9 @@ describe.concurrent('model relation', () => {
       person user1
       person user2
       user2.async user3
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with style',
-    valid`
+  test('relationship with style').valid`
     specification {
       element person
     }
@@ -359,12 +294,9 @@ describe.concurrent('model relation', () => {
           tail none
         }
       }
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with metadata',
-    valid`
+  test('relationship with metadata').valid`
     specification {
       element component
     }
@@ -377,12 +309,9 @@ describe.concurrent('model relation', () => {
           path '/users/:id'
         }
       }
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with technology',
-    valid`
+  test('relationship with technology').valid`
     specification {
       element component
 
@@ -397,12 +326,9 @@ describe.concurrent('model relation', () => {
       client2 -> server {
         technology 'graphql'
       }
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with navigateTo',
-    valid`
+  test('relationship with navigateTo').valid`
     specification {
       element component
 
@@ -419,12 +345,9 @@ describe.concurrent('model relation', () => {
     views {
       dynamic view targetView {
       }
-    }`,
-  )
+    }`
 
-  test(
-    'relationship with invalid navigateTo',
-    invalid`
+  test('relationship with invalid navigateTo').invalid`
     specification {
       element component
 
@@ -441,6 +364,5 @@ describe.concurrent('model relation', () => {
     views {
       view targetView {
       }
-    }`,
-  )
+    }`
 })

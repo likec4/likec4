@@ -450,8 +450,19 @@ exports[`Builder (style 2) > general > should build parsed model 1`] = `
           "title": "Step 1",
         },
         {
-          "source": "cloud",
-          "target": "cloud",
+          "_type": "series",
+          "steps": [
+            {
+              "astPath": "",
+              "source": "customer",
+              "target": "cloud.ui",
+            },
+            {
+              "astPath": "",
+              "source": "cloud.ui",
+              "target": "cloud.backend",
+            },
+          ],
         },
         {
           "_type": "par",

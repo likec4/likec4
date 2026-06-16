@@ -1,8 +1,8 @@
 import type { ProjectId } from '@likec4/core'
 import { describe, expect } from 'vitest'
-import { createMultiProjectTestServices, testServices } from '../test'
+import { createMultiProjectTestServices, test } from '../test'
 
-const it = testServices
+const it = test
   .extend(
     'setupServices',
     async ({ create, task }) => {

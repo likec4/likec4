@@ -1,7 +1,3 @@
-import type {
-  ElementSpecification,
-  RelationshipSpecification,
-} from '@likec4/core/types'
 import { isNonNullish, mapToObj, pickBy } from 'remeda'
 import * as z from 'zod/v4'
 import * as common from './common'

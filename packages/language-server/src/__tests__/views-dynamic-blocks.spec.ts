@@ -1,4 +1,5 @@
 import { describe, test } from 'vitest'
+import type { URI } from 'vscode-uri'
 import { createTestServices } from '../test'
 
 const model = `
@@ -36,50 +37,50 @@ const model = `
 `
 
 const it = test.extend<{
-  $test: {
-    expectView: (v: string) => {
-      toBeValid: () => Promise<void>
-      toBeInvalid: () => Promise<void>
-    }
+  $file: {
+    t: ReturnType<typeof createTestServices>
   }
 }>({
-  expectView: [async ({ annotate, task }, use) => {
-    const expectView = (view: string) => {
-      const validate = async () => {
-        const srv = createTestServices()
-        await srv.validate(model, 'model.c4')
-        const result = await srv.validate(`
+  t: [async ({}, use) => {
+    using srv = createTestServices()
+    await srv.validate(model)
+    await use(srv)
+  }, { scope: 'file' }],
+}).extend('expectView', async ({ t, task }, { onCleanup }) => {
+  const cleanup: URI[] = []
+  onCleanup(async () => {
+    await t.services.shared.workspace.DocumentBuilder.update([], cleanup)
+  })
+  return (view: string) => {
+    const validate = async () => {
+      const result = await t.validate(`
             views {
               ${view}
             }
             `)
-        await srv.services.likec4.LanguageServices.dispose()
-        return result
-      }
-      return ({
-        toBeInvalid: async () => {
-          const { diagnostics } = await validate()
-          if (diagnostics.length === 0) {
-            return task.context.expect.assert.fail('Expected validation errors but none were found')
-          }
-        },
-        toBeValid: async () => {
-          const { print } = await validate()
-          const msg = print()
-          if (msg) {
-            await annotate(msg)
-            return task.context.expect.assert.fail('View validation failed')
-          }
-        },
-      })
+      cleanup.push(result.document.uri)
+      return result
     }
-
-    await use(expectView)
-  }, { scope: 'test' }],
+    return ({
+      toBeInvalid: async () => {
+        const { diagnostics } = await validate()
+        if (diagnostics.length === 0) {
+          return task.context.expect.assert.fail('Expected validation errors but none were found')
+        }
+      },
+      toBeValid: async () => {
+        const { formattedError } = await validate()
+        if (formattedError) {
+          await task.context.annotate(formattedError)
+          return task.context.expect.assert.fail('View validation failed')
+        }
+      },
+    })
+  }
 })
 
 describe('dynamic views - flow blocks', () => {
-  describe('try', () => {
+  describe('try-catch-finally', () => {
     it('valid try only', async ({ expectView }) => {
       await expectView(`
         dynamic view index1 {
@@ -159,6 +160,17 @@ describe('dynamic views - flow blocks', () => {
       `).toBeValid()
     })
 
+    it('invalid catch', async ({ expectView }) => {
+      await expectView(`
+        dynamic view index1 {
+          user -> system.frontend 'User uses System'
+          catch {
+            system.frontend -> system.backend
+          }
+        }
+      `).toBeInvalid()
+    })
+
     it('invalid catch after finally', async ({ expectView }) => {
       await expectView(`
         dynamic view index1 {
@@ -171,6 +183,18 @@ describe('dynamic views - flow blocks', () => {
             system.frontend <- system.backend
           } catch {
             system.frontend -> system.backend
+          }
+        }
+      `).toBeInvalid()
+    })
+
+    it('invalid try inside alt', async ({ expectView }) => {
+      await expectView(`
+        dynamic view index1 {
+          alt {
+            try {
+              system.frontend -> system.backend
+            }
           }
         }
       `).toBeInvalid()
@@ -212,7 +236,7 @@ describe('dynamic views - flow blocks', () => {
   it('opt block', async ({ expectView }) => {
     await expectView(`
       dynamic view index1 {
-        opt {
+        opt ' srsrs' {
           system.frontend -> system.backend 'frontend uses backend'
         }
       }

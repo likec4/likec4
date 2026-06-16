@@ -74,6 +74,11 @@ export namespace schemas {
       export type Input = z.input<typeof schemas.views.elementView>
       export type Data = z.output<typeof schemas.views.elementView>
     }
+
+    export namespace dynamicViewStep {
+      export type Input = z.input<typeof schemas.views.dynamicViewStep>
+      export type Data = z.output<typeof schemas.views.dynamicViewStep>
+    }
   }
 
   export namespace likec4data {

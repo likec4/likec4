@@ -178,7 +178,7 @@ test('Builder types - style 2', () => {
           ),
           // @ts-expect-error
           $step('a -> b'),
-          $step.trycatch({
+          $step.try({
             try: [
               'alice -> bob',
               'alice -> cloud.backend',

@@ -1,5 +1,5 @@
 import type * as c4 from '@likec4/core'
-import { type ProjectId, type Tag, splitGlobalFqn } from '@likec4/core'
+import { type Tag, splitGlobalFqn } from '@likec4/core'
 import { LikeC4Styles } from '@likec4/core/styles'
 import { ifilter, invariant, toArray } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
@@ -328,7 +328,7 @@ export class LikeC4ModelLocator {
     }
     const astPath = this.services.workspace.AstNodeLocator.getAstNodePath(viewAst.body) + params.astPath
     const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, astPath)
-    if (!node || !ast.isDynamicViewStep(node)) {
+    if (!node || !ast.isStepOrSeries(node)) {
       logger.warn(`Failed to locate dynamic view step ${astPath} in view ${params.view}`)
       return null
     }

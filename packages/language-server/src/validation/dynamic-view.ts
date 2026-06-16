@@ -1,7 +1,8 @@
-import { isAncestor } from '@likec4/core'
+import { isSameHierarchy } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { isEmpty } from 'remeda'
 import { ast } from '../ast'
+import { isAltSteps } from '../generated/ast'
 import type { LikeC4Services } from '../module'
 import { elementRef } from '../utils/elementRef'
 import { tryOrLog } from './_shared'
@@ -27,7 +28,7 @@ export const stepSingle = (services: LikeC4Services): ValidationCheck<ast.Step> 
       })
     }
 
-    if (source && target && (isAncestor(source, target) || isAncestor(target, source))) {
+    if (source && target && (isSameHierarchy(source, target) && source !== target)) {
       accept('error', 'Invalid parent-child relationship', {
         node: el,
       })
@@ -61,11 +62,33 @@ export const branchSteps = (
 ): ValidationCheck<ast.BranchSteps> => {
   const isParallel = (astNode: ast.BranchSteps) => astNode.kind === 'par' || astNode.kind === 'parallel'
 
+  const isAltBranch = (astNode: ast.BranchSteps) =>
+    astNode.kind === 'else' || astNode.kind === 'if' || astNode.kind === 'when'
+
   return tryOrLog((el, accept) => {
     if (isParallel(el) && ast.isBranchSteps(el.$container) && isParallel(el.$container)) {
       accept('error', 'Nested parallel blocks are not allowed', {
         node: el,
+        property: 'kind',
       })
+    }
+
+    if (isAltBranch(el)) {
+      if (!isAltSteps(el.$container)) {
+        accept('error', `"${el.kind}" alternative branch must be inside "alt"`, {
+          node: el,
+          property: 'kind',
+        })
+      }
+    } else if (isAltSteps(el.$container)) {
+      accept(
+        'error',
+        `"${el.kind}" can not be used as an alternative branch, only "if", "when" or "else" are allowed`,
+        {
+          node: el,
+          property: 'kind',
+        },
+      )
     }
   })
 }

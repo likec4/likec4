@@ -120,7 +120,11 @@ describe('Builder (style 2)', () => {
                 tail: 'odiamond',
               },
             }),
-            $step('cloud -> cloud'),
+            $step.series(
+              'customer',
+              '-> cloud.ui',
+              '-> cloud.backend',
+            ),
             $step.parallel(
               'cloud.backend -> cloud.backend',
               $step('cloud.ui -> cloud', {

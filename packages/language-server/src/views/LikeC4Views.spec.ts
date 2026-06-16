@@ -1,12 +1,11 @@
 import { deepEqual } from 'fast-equals'
 import { indexBy } from 'remeda'
-import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { describe } from 'vitest'
+import { testFileScope as it } from '../test'
 
 describe('LikeC4Views', () => {
-  it('diagrams returns cached result', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    await validate(`
+  it('diagrams returns cached result', async ({ expect, t }) => {
+    await t.validate(`
       specification {
         element component
       }
@@ -21,15 +20,14 @@ describe('LikeC4Views', () => {
         }
       }
     `)
-    const diagrams1 = await services.likec4.Views.diagrams()
-    const diagrams2 = await services.likec4.Views.diagrams()
+    const diagrams1 = await t.services.likec4.Views.diagrams()
+    const diagrams2 = await t.services.likec4.Views.diagrams()
     expect(diagrams2 !== diagrams1).toBe(true)
     expect(deepEqual(diagrams1, diagrams2)).toBe(true)
   })
 
-  it('diagrams returns cached result if there are no changes', async ({ expect }) => {
-    const { parse, validateAll, services } = createTestServices()
-    await parse(`
+  it('diagrams returns cached result if there are no changes', async ({ expect, t }) => {
+    await t.parse(`
       specification {
         element component
       }
@@ -51,21 +49,21 @@ describe('LikeC4Views', () => {
       }
     `)
 
-    const first = await validateAll()
+    const first = await t.validateAll()
     expect(first.errors).toHaveLength(0)
 
-    const diagrams1 = await services.likec4.Views.diagrams().then(d => indexBy(d, v => v.id as 'index' | 'sys2'))
+    const diagrams1 = await t.services.likec4.Views.diagrams().then(d => indexBy(d, v => v.id as 'index' | 'sys2'))
     // add model
-    await parse(`
+    await t.parse(`
       model {
         component sys3
       }
     `)
 
-    const second = await validateAll()
+    const second = await t.validateAll()
     expect(second.errors).toHaveLength(0)
 
-    const diagrams2 = await services.likec4.Views.diagrams().then(d => indexBy(d, v => v.id as 'index' | 'sys2'))
+    const diagrams2 = await t.services.likec4.Views.diagrams().then(d => indexBy(d, v => v.id as 'index' | 'sys2'))
 
     // index view has changed
     expect(diagrams1.index).not.toStrictEqual(diagrams2.index)

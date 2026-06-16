@@ -1,7 +1,7 @@
 import type { ViewId } from '@likec4/core'
 import { prop } from 'remeda'
 import { describe } from 'vitest'
-import { testServices as it } from '../../test'
+import { test as it } from '../../test'
 
 describe('LikeC4ModelBuilder -- globals', () => {
   it('local styles are applied to all views', async ({ expect, t }) => {

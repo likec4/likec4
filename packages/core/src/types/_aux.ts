@@ -1,5 +1,5 @@
 import type { IfNever, IsLiteral, IsNever } from 'type-fest'
-import type { Coalesce, Link } from './_common'
+import type { Coalesce, Link, OrString } from './_common'
 import type { ModelStage } from './const'
 import type * as scalar from './scalar'
 /**
@@ -298,10 +298,6 @@ export type WithNotation = {
   readonly notation?: string | null
 }
 
-/**
- * @see {@link LiteralUnion} from type-fest (https://github.com/sindresorhus/type-fest/blob/main/source/literal-union.d.ts)
- */
-export type OrString = string & Record<never, never>
 /**
  * Allows any string value, but still auto-completes to the possible values in IDE
  */

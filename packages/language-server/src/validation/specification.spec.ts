@@ -1,14 +1,8 @@
-import { afterEach, describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { describe } from 'vitest'
+import { testFileScope as it } from '../test'
 
 describe('specification checks', () => {
-  const { validate, parse, validateAll, resetState } = createTestServices()
-
-  afterEach(async () => {
-    await resetState()
-  })
-
-  it('specification rule checks', async ({ expect }) => {
+  it('specification rule checks', async ({ expect, validate }) => {
     const { warnings, errors } = await validate(`
       specification {
         element component
@@ -23,7 +17,7 @@ describe('specification checks', () => {
     expect(warnings).to.have.members(['Prefer one specification per document'])
   })
 
-  it('model rule checks', async ({ expect }) => {
+  it('model rule checks', async ({ expect, validate }) => {
     const { errors, warnings } = await validate(`
       specification {}
       model {}
@@ -34,7 +28,7 @@ describe('specification checks', () => {
     expect(warnings).to.have.members(['Prefer one model per document'])
   })
 
-  it('elementKindChecks: unique in one document', async ({ expect }) => {
+  it('elementKindChecks: unique in one document', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       specification {
         element component
@@ -49,7 +43,7 @@ describe('specification checks', () => {
     }
   })
 
-  it('elementKindChecks is not reserved word', async ({ expect }) => {
+  it('elementKindChecks is not reserved word', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
     specification {
       element this
@@ -62,20 +56,20 @@ describe('specification checks', () => {
     }
   })
 
-  it('elementKindChecks: unique across documents', async ({ expect }) => {
-    await parse(`
+  it('elementKindChecks: unique across documents', async ({ expect, t }) => {
+    await t.parse(`
       specification {
         element component
         element user
       }
     `)
-    await parse(`
+    await t.parse(`
       specification {
         element user
       }
     `)
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect(diagnostics).toHaveLength(2)
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(1)
@@ -83,7 +77,7 @@ describe('specification checks', () => {
     }
   })
 
-  it('deploymentNodeKindChecks: unique in one document', async ({ expect }) => {
+  it('deploymentNodeKindChecks: unique in one document', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       specification {
         deploymentNode component
@@ -98,7 +92,7 @@ describe('specification checks', () => {
     }
   })
 
-  it('deploymentNodeKindChecks is not reserved word', async ({ expect }) => {
+  it('deploymentNodeKindChecks is not reserved word', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
     specification {
       deploymentNode this
@@ -111,20 +105,20 @@ describe('specification checks', () => {
     }
   })
 
-  it('deploymentNodeKindChecks: unique across documents', async ({ expect }) => {
-    await parse(`
+  it('deploymentNodeKindChecks: unique across documents', async ({ expect, t }) => {
+    await t.parse(`
       specification {
         deploymentNode component
         deploymentNode user
       }
     `)
-    await parse(`
+    await t.parse(`
       specification {
         deploymentNode user
       }
     `)
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect(diagnostics).toHaveLength(2)
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(1)
@@ -132,7 +126,7 @@ describe('specification checks', () => {
     }
   })
 
-  it('tagChecks: unique in one document', async ({ expect }) => {
+  it('tagChecks: unique in one document', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
     specification {
       tag tag1
@@ -147,20 +141,20 @@ describe('specification checks', () => {
     }
   })
 
-  it('tagChecks: unique across documents', async ({ expect }) => {
-    await parse(`
+  it('tagChecks: unique across documents', async ({ expect, t }) => {
+    await t.parse(`
       specification {
         tag tag1
         tag tag2
       }
     `)
-    await parse(`
+    await t.parse(`
       specification {
         tag tag1
       }
     `)
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect(diagnostics).toHaveLength(2)
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(1)
@@ -168,7 +162,7 @@ describe('specification checks', () => {
     }
   })
 
-  it('relationshipChecks: unique in one document', async ({ expect }) => {
+  it('relationshipChecks: unique in one document', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       specification {
         relationship async
@@ -183,27 +177,27 @@ describe('specification checks', () => {
     }
   })
 
-  it('relationshipChecks: unique across documents', async ({ expect }) => {
-    await parse(`
+  it('relationshipChecks: unique across documents', async ({ expect, t }) => {
+    await t.parse(`
       specification {
         relationship async
         relationship foo
       }
     `)
-    await parse(`
+    await t.parse(`
       specification {
         relationship async
       }
     `)
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect(diagnostics).toHaveLength(2)
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(1)
       expect(diagnostic.message, 'diagnostic message').toBe('Duplicate RelationshipKind \'async\'')
     }
   })
-  it('relationshipChecks is not reserved', async ({ expect }) => {
+  it('relationshipChecks is not reserved', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       specification {
         relationship this

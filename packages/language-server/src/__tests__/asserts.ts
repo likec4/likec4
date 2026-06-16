@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import stripIndent from 'strip-indent'
 import type { TestFunction } from 'vitest'
-import { test as viTest } from 'vitest'
-import { createTestServices } from '../test'
+import { createTestServices, testFileScope as it } from '../test'
 
 export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   const result = ['']
@@ -14,6 +13,8 @@ export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   }
   return stripIndent(result.join(''))
 }
+
+it.prototype
 
 export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
   return async ({ expect }) => {
@@ -35,16 +36,19 @@ export function invalid(strings: TemplateStringsArray, ...expr: string[]): TestF
   }
 }
 
-const runValidTest = valid
-const runInvalidTest = invalid
-
 export function test(name: string) {
   return {
     valid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest(`valid: ${name}`, runValidTest(strings, ...expr))
+      it(`valid: ${name}`, async ({ expect, t }) => {
+        const { formattedError } = await t.validate(likec4(strings, ...expr))
+        expect(formattedError).toEqual('')
+      })
     },
     invalid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest(`invalid: ${name}`, runInvalidTest(strings, ...expr))
+      it(`invalid: ${name}`, async ({ expect, t }) => {
+        const { formattedError } = await t.validate(likec4(strings, ...expr))
+        expect(formattedError).not.toEqual('')
+      })
     },
   }
 }

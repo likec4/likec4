@@ -199,8 +199,11 @@ ExtendRelationProperty:
   LinkProperty |
   MetadataProperty;
 
-// Hack, to strictly enforce resolution of model elements
-ElementRef:
+// Hack, to strictly enforce resolution of model elements ONLY (in active scope)
+interface ElementRef {
+  modelElement: FqnRef;
+}
+ElementRef returns ElementRef:
   modelElement=FqnRef;
 
 interface StrictFqnElementRef {
@@ -313,7 +316,9 @@ ModelViews:
 
 type LikeC4View = ElementView | DynamicView | DeploymentView;
 LikeC4ViewRule returns LikeC4View:
-  ElementView | DynamicView | DeploymentView;
+  DynamicView |
+  DeploymentView |
+  ElementView;
 
 ElementView:
   'view' name=Id? (
@@ -445,10 +450,10 @@ type StepStatement =
 ;
 
 StepStatement returns StepStatement:
-  StepOrSeries | // rename
-  TryStep |
+  BranchSteps |
   AltSteps |
-  BranchSteps<false>
+  TryStep |
+  StepOrSeries
 ;
 
 interface StepsBlock {
@@ -459,9 +464,29 @@ fragment StepsBlockFragment:
   '{' steps+=StepStatement* '}'
 ;
 
+// -----------------------------------------------
+// Semantic group of dynamic view steps (flow branch)
+
+interface BranchSteps extends StepsBlock {
+  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else'
+  /// Optional title for the branch
+  title?: string
+}
+
+// Must be defined before "StepsBlock"
+BranchSteps returns BranchSteps:
+  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else')
+  title=String? StepsBlockFragment
+;
+
+/**
+ * Represents a block of step statements, i.e. { ... }
+ */
 StepsBlock returns StepsBlock:
   StepsBlockFragment
 ;
+
+
 
 // -----------------------------------------------
 // Dynamic view TRY block
@@ -514,25 +539,15 @@ TryBlock returns TryBlock:
 // -----------------------------------------------
 // Dynamic view ALT block
 
-interface BranchSteps extends StepsBlock {
-  kind: 'when' | 'if' | 'else' | 'opt' | 'par' | 'parallel' | 'loop'
-  /// Optional title for the branch
-  title?: string
-}
-
 interface AltSteps {
   title?: string
   branches: BranchSteps[]
 }
 
 AltSteps returns AltSteps:
-  'alt' title=String? '{' branches+=BranchSteps<true>* '}'
+  'alt' title=String? '{' branches+=BranchSteps* '}'
 ;
 
-BranchSteps<isInsideAlt> returns BranchSteps:
-  (<isInsideAlt> kind=('when' | 'if' | 'else') | <!isInsideAlt> kind=('opt' | 'par' | 'parallel' | 'loop'))
-  title=String? StepsBlockFragment
-;
 
 // -----------------------------------------------
 // Dynamic view step (from previous model)
@@ -576,14 +591,14 @@ StepOrSeries returns StepOrSeries:
 StepSeries returns StepSeries:
   Step
   ({StepSeries.source=current}
-    ('->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
+    (dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
     StepTarget
   )*
 ;
 
 Step returns Step:
   source=ElementRef
-  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
+  (isBackward?='<-' | dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
   StepTarget
 ;
 
@@ -716,7 +731,7 @@ DirectedRelationExpr infers RelationExpr:
 
 OutgoingRelationExpr:
   from=FqnExpr
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | dotKind=RelationKindDotRef)
+  (isBidirectional?='<->' | dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind:Id] ']->')
 ;
 
 FqnExpressions:
@@ -743,9 +758,9 @@ WhereElementNegation:
   'not' value=WhereElementExpression;
 
 WhereElement:
+  {infer WhereElementMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
   {infer WhereElementTag} 'tag' EqOperator value=TagRef |
-  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind] |
-  {infer WhereElementMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
+  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]
 ;
 
 MetadataFilterValue returns string:
@@ -773,14 +788,12 @@ WhereRelationNegation:
   'not' value=WhereRelationExpression;
 
 WhereRelation:
-  {infer WhereRelationTag} 'tag' EqOperator value=TagRef |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
+  {infer WhereRelationParticipantMetadata} participant=Participant StickyDot 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
+  {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id] |
+  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=TagRef |
   {infer WhereRelationMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
-  participant=Participant StickyDot (
-    {infer WhereRelationParticipantTag} 'tag' EqOperator value=TagRef |
-    {infer WhereRelationParticipantKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id] |
-    {infer WhereRelationParticipantMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
-  )
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
+  {infer WhereRelationTag} 'tag' EqOperator value=TagRef
 ;
 type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
 type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
@@ -1207,7 +1220,7 @@ terminal Hash: '#';
 // No space allowed before dot
 terminal StickyDot: /\b\./;
 // terminal Dot: '.';
-terminal DotPrefix: /\B\./;
+terminal DotPrefix: '.';
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;
