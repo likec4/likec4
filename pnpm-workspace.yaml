@@ -54,7 +54,7 @@ catalog:
   pako: ^2.1.0
   playwright: 1.60.0
   tsx: 4.22.4
-  turbo: 2.9.16
+  turbo: 2.9.18
   typescript: 6.0.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -101,12 +101,12 @@ catalogs:
     postcss: 8.5.15
     tailwindcss: ^4.1.18
   esbuild:
-    esbuild: 0.28.0
+    esbuild: 0.28.1
     esbuild-node-externals: 1.22.0
     esbuild-plugins-node-modules-polyfill: 1.8.1
-    esbuild-wasm: 0.28.0
+    esbuild-wasm: 0.28.1
   esbuild-wasm:
-    esbuild: npm:esbuild-wasm@0.28.0
+    esbuild: npm:esbuild-wasm@0.28.1
   externals:
     "@hpcc-js/wasm-graphviz": 1.21.6
     "@types/picomatch": ^4.0.3
@@ -120,10 +120,10 @@ catalogs:
     zod: ^4.4.3
   hono:
     "@hono/mcp": ^0.3.0
-    "@hono/node-server": ^1.19.14
+    "@hono/node-server": ^2.0.5
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.8.0
-    hono: ^4.12.14
+    hono: ^4.12.25
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
@@ -247,3 +247,4 @@ minimumReleaseAgeExclude:
   - '@astrojs/react@5.0.7'
   - '@astrojs/starlight@0.39.3'
   - astro@6.4.3
+  - '@hono/node-server@2.0.5'
