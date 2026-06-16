@@ -1,4 +1,15 @@
-import { first, flatMap, hasAtLeast, isDeepEqual, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
+import {
+  first,
+  flatMap,
+  hasAtLeast,
+  isDeepEqual,
+  isTruthy,
+  map,
+  only,
+  pipe,
+  reduce,
+  unique,
+} from 'remeda'
 import type { ElementModel } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { LikeC4Model } from '../../model/LikeC4Model'
@@ -10,6 +21,7 @@ import {
   type MarkdownOrString,
   type NonEmptyArray,
   type RelationshipLineType,
+  type scalar,
   type Step,
   type ViewRuleGlobalStyle,
   exact,
@@ -220,4 +232,34 @@ export function findRelations<A extends Any>(
     technology: only([...commonProperties.technology]),
     description: only(commonProperties.description),
   })
+}
+
+/**
+ * Returns the ids of all ancestor subflows that enclose the given step path,
+ * ordered from the outermost flow to the innermost (closest) one.
+ *
+ * A {@link scalar.StepPath} is a `.`-joined chain of segments where every
+ * subflow segment carries a `NN:type` suffix (e.g. `02:opt`, `03:try`,
+ * `01:block`), while a plain step segment is just its number (`NN`). Every
+ * prefix that ends in such a `:`-bearing segment is therefore an ancestor flow.
+ *
+ * The path itself is never included — a flow is not its own ancestor — so
+ * passing a flow id returns only the flows above it.
+ *
+ * @example
+ * flowAncestors('step-01.02:opt.03:try.04' as StepPath)
+ * // => ['step-01.02:opt', 'step-01.02:opt.03:try']
+ */
+export function flowAncestors(path: scalar.EdgeId | scalar.StepPath): scalar.StepPath[] {
+  const segments = path.split('.')
+  const ancestors: scalar.StepPath[] = []
+  const prefix: string[] = []
+  // Skip the last segment: it is the path itself, not an ancestor.
+  for (const segment of segments.slice(0, -1)) {
+    prefix.push(segment)
+    if (segment.includes(':')) {
+      ancestors.push(prefix.join('.') as scalar.StepPath)
+    }
+  }
+  return ancestors
 }

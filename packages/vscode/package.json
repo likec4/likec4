@@ -81,7 +81,11 @@
           ".likec4rc",
           ".likec4.config.json",
           "likec4.config.json"
-        ]
+        ],
+        "icon": {
+          "light": "data/icon-256-light.png",
+          "dark": "data/icon-256-dark.png"
+        }
       },
       {
         "id": "json5",

@@ -1,7 +1,8 @@
 import { invariant, stepGuards } from '@likec4/core'
-import { describe, it } from 'vitest'
+import { describe } from 'vitest'
+import type { URI } from 'vscode-uri'
 import type { ParsedAstDynamicView, ParsedAstView } from '../../ast'
-import { createTestServices } from '../../test'
+import { testFileScope } from '../../test'
 
 function source(viewSource: string | TemplateStringsArray) {
   return `
@@ -21,17 +22,27 @@ function source(viewSource: string | TemplateStringsArray) {
 `
 }
 
-async function parseView(viewSource: string): Promise<ParsedAstDynamicView> {
-  using t = createTestServices()
-  const { document } = await t.validate(source(viewSource))
-  const { c4Views: [view] } = t.services.likec4.ModelParser.parse(document)
-  invariant(view && view?._type === 'dynamic', 'Expected dynamic view')
-  return view
-}
+const it = testFileScope
+  .extend('parseView', async ({ t }, { onCleanup }) => {
+    const cleanup = [] as URI[]
 
-describe.concurrent('LikeC4ModelParser - dynamic views', () => {
-  it('parses custom properties', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+    onCleanup(async () => {
+      for (const uri of cleanup) {
+        await t.removeDocument(uri)
+      }
+    })
+
+    return async function parseView(viewSource: string): Promise<ParsedAstDynamicView> {
+      const { document } = await t.validate(source(viewSource))
+      cleanup.push(document.uri)
+      const { c4Views: [view] } = t.services.likec4.ModelParser.parse(document)
+      invariant(view && view?._type === 'dynamic', 'Expected dynamic view')
+      return view
+    }
+  })
+
+describe('LikeC4ModelParser - dynamic views', () => {
+  it('parses custom properties', async ({ expect, t, validate }) => {
     const { document } = await validate(source`
         dynamic view index {
           A -> B {
@@ -46,7 +57,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
           }
         }
     `)
-    const { c4Views } = services.likec4.ModelParser.parse(document)
+    const { c4Views } = t.likec4.ModelParser.parse(document)
     expect(c4Views).toHaveLength(1)
     const view = c4Views[0]
     invariant(view?._type === 'dynamic')
@@ -69,8 +80,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     `)
   })
 
-  it('parses chained steps', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('parses chained steps', async ({ expect, t, validate }) => {
     const { document } = await validate(source`
         dynamic view index {
           A -> B -> C -> D
@@ -81,7 +91,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
           }
         }
     `)
-    const { c4Views } = services.likec4.ModelParser.parse(document)
+    const { c4Views } = t.likec4.ModelParser.parse(document)
     expect(c4Views).toHaveLength(1)
     const view = c4Views[0]
     invariant(view?._type === 'dynamic')
@@ -153,14 +163,13 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     )
   })
 
-  it('derives backward step from chain', async ({ expect }) => {
+  it('derives backward step from chain', async ({ expect, t, validate }) => {
     function series(view: ParsedAstView): string[] {
       invariant(view._type === 'dynamic')
       const [series] = view.steps
       invariant(stepGuards.isSeries(series))
       return series.steps.map(s => `${s.source} -> ${s.target}${s.isBackward ? ' isBackward' : ''}`)
     }
-    const { validate, services } = createTestServices()
     const { document } = await validate(source`
         dynamic view v1 {
           A -> B -> A
@@ -172,7 +181,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
           A -> B -> C -> D -> B -> A -> D -> C
         }
     `)
-    const { c4Views } = services.likec4.ModelParser.parse(document)
+    const { c4Views } = t.likec4.ModelParser.parse(document)
     const [v1, v2, v3] = c4Views
     invariant(v1?.id === 'v1')
     expect(series(v1)).toEqual([
@@ -202,14 +211,13 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     ])
   })
 
-  it('parses chained steps with titles', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('parses chained steps with titles', async ({ expect, t, validate }) => {
     const { document } = await validate(source`
         dynamic view index {
           A -> B "title 1" -> C "title 2"
         }
     `)
-    const { c4Views } = services.likec4.ModelParser.parse(document)
+    const { c4Views } = t.likec4.ModelParser.parse(document)
     expect(c4Views).toHaveLength(1)
     const view = c4Views[0]
     invariant(view?._type === 'dynamic')
@@ -236,8 +244,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     `)
   })
 
-  it('parses chained steps with body', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('parses chained steps with body', async ({ expect, t, validate }) => {
     const { document } = await validate(source`
         dynamic view index {
           A -> B {
@@ -247,7 +254,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
             -> C "title 2"
         }
     `)
-    const { c4Views } = services.likec4.ModelParser.parse(document)
+    const { c4Views } = t.likec4.ModelParser.parse(document)
     expect(c4Views).toHaveLength(1)
     const view = c4Views[0]
     invariant(view?._type === 'dynamic')
@@ -275,14 +282,13 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     `)
   })
 
-  it('parses chain of kinded steps', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('parses chain of kinded steps', async ({ expect, t, validate }) => {
     const { document } = await validate(source`
         dynamic view index {
           A -[uses]-> B .uses C "title 2"
         }
     `)
-    const { c4Views } = services.likec4.ModelParser.parse(document)
+    const { c4Views } = t.likec4.ModelParser.parse(document)
     expect(c4Views).toHaveLength(1)
     const view = c4Views[0]
     invariant(view?._type === 'dynamic')
@@ -310,13 +316,16 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     `)
   })
 
-  it('parses try step', async ({ expect }) => {
+  it('parses try step', async ({ expect, parseView }) => {
     const view = await parseView(`
         dynamic view index {
           try {
             A -[uses]-> B
-          } catch {
-            B -[uses]-> C
+          }
+          catch 'On Error' {
+            B .uses C "error handler" {
+              color red
+            }
           }
         }
     `)
@@ -328,11 +337,14 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
           "steps": [
             {
               "astPath": "/steps@0/catch/steps@0",
+              "color": "red",
               "kind": "uses",
               "source": "B",
               "target": "C",
+              "title": "error handler",
             },
           ],
+          "title": "On Error",
         },
         "try": {
           "steps": [
@@ -348,7 +360,7 @@ describe.concurrent('LikeC4ModelParser - dynamic views', () => {
     `)
   })
 
-  it('parses try step with empty catch and finally', async ({ expect }) => {
+  it('parses try step with empty catch and finally', async ({ expect, parseView }) => {
     const view = await parseView(`
         dynamic view index {
           try {

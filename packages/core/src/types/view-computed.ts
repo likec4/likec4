@@ -154,7 +154,7 @@ export type ComputedFlowBase = {
   /**
    * Whether this flow should be visible by default
    */
-  readonly visible?: true
+  readonly visible?: boolean
 }
 
 type PossibleSubFlows =

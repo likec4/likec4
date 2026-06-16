@@ -137,7 +137,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         visible: flowStack.peek()!.visible,
         actors: new Set(),
         flow: [],
-        path: StepPath(path, props._type),
+        path: StepPath(path),
         ...props,
       }
     }
@@ -193,6 +193,10 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       return `step-${StepPath(...segments)}` as StepPath
     }
 
+    const flowId = (path: StepPath | undefined, number: number, _type: string): StepPath => {
+      return stepId(path, `${String(number).padStart(2, '0')}:${_type}`)
+    }
+
     // Process steps
     const processStep = (step: Step.Any<A>, stepNum: number, prefix?: StepPath): number => {
       switch (true) {
@@ -209,7 +213,8 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
             steps: step.steps,
             newflow: newFlow({
               _type: step._type,
-              id: stepId(prefix, stepNum),
+              id: flowId(prefix, stepNum, step._type),
+              visible: true,
             }),
           })
           return stepNum + 1
@@ -217,18 +222,20 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         case stepGuards.isTry(step): {
           const { path } = pushFlow(newFlow({
             _type: 'try',
-            id: stepId(prefix, stepNum),
+            id: flowId(prefix, stepNum, 'try'),
+            visible: true,
           }))
           // addStepToFlow({
           //   id: stepId(prefix, stepNum),
-          //   step: step,
+          //   step: step,'
           // })
+          let localstep = 1
           processSteps({
             steps: step.try.steps,
             newflow: newFlow({
               _type: 'try-block',
-              id: stepId(path, 'block'),
-              path: StepPath(path, 'block'),
+              id: flowId(path, localstep++, 'block'),
+              visible: true,
             }),
           })
           if (step.catch) {
@@ -236,8 +243,8 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
               steps: step.catch.steps,
               newflow: newFlow({
                 _type: 'try-catch',
-                id: stepId(path, 'catch'),
-                path: StepPath(path, 'catch'),
+                id: flowId(path, localstep++, 'catch'),
+                visible: false,
               }),
             })
           }
@@ -246,8 +253,8 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
               steps: step.finally.steps,
               newflow: newFlow({
                 _type: 'try-finally',
-                id: stepId(path, 'finally'),
-                path: StepPath(path, 'finally'),
+                id: flowId(path, localstep, 'finally'),
+                visible: false,
               }),
             })
           }
@@ -257,29 +264,17 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         case stepGuards.isAlt(step): {
           const { path } = pushFlow(newFlow({
             _type: 'alt',
-            id: stepId(prefix, stepNum),
+            id: flowId(prefix, stepNum, 'alt'),
+            visible: true,
           }))
-          // const alt = addStepToFlow({
-          //   // _type: step._type,
-          //   id: stepId(prefix, stepNum),
-          //   step: step,
-          //   // branches: [],
-          // })
           step.branches.forEach((branch, branchIndex) => {
-            const index = `${branchIndex + 1}`.padStart(2, '0')
-            // const branchPath = StepPath(path, index)
-            // const branchItem = {
-            //   _type: branch._type,
-            //   id: stepId(branchPath),
-            //   steps: [] as ComputedStepsFlow,
-            // }
-            // alt.branches.push(branchItem)
+            // const branchId = `${branchIndex + 1}`.padStart(2, '0')
             processSteps({
               steps: branch.steps,
               newflow: newFlow({
                 _type: `alt-${branch._type}`,
-                id: stepId(path, index),
-                path: StepPath(path, index, branch._type),
+                id: flowId(path, branchIndex + 1, branch._type),
+                visible: branchIndex === 0,
               }),
             })
           })
@@ -434,6 +429,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
           id: sub.id,
           actors: [...sub.actors].map(e => e.id as scalar.NodeId),
           flow: sub.flow.map(flowStep),
+          ...sub.visible && ({ visible: true }),
         } as ComputedDynamicView.AnySubFlow
       }
       return {

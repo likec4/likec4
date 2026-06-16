@@ -4,12 +4,11 @@ import {
   ModelRelationExpr,
 } from '@likec4/core'
 import { indexBy, values } from 'remeda'
-import { describe, it } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe } from 'vitest'
+import { createTestServices, testFileScope as it } from '../../test'
 
 describe('LikeC4ModelParser', () => {
-  it('parses strings with escaped quotes', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('parses strings with escaped quotes', async ({ expect, validate, t }) => {
     const { document } = await validate(`
         specification {
           element el1 {
@@ -26,7 +25,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-    const doc = services.likec4.ModelParser.parse(document)
+    const doc = t.likec4.ModelParser.parse(document)
     expect(doc.c4Specification).toMatchObject({
       elements: {
         el1: {
@@ -41,8 +40,7 @@ describe('LikeC4ModelParser', () => {
     })
   })
 
-  it('parses strings with triple quotes', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('parses strings with triple quotes', async ({ expect, validate, t }) => {
     const { document } = await validate(`
         specification {
           element element
@@ -66,7 +64,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-    const doc = services.likec4.ModelParser.parse(document)
+    const doc = t.likec4.ModelParser.parse(document)
     expect(doc.c4Elements).toMatchObject([
       {
         id: 'el1',
@@ -84,8 +82,7 @@ describe('LikeC4ModelParser', () => {
   })
 
   describe('specification', () => {
-    it('parses custom colors', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses custom colors', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           color customcolor1 #00ffff
@@ -94,7 +91,7 @@ describe('LikeC4ModelParser', () => {
           color customcolor4 rgba(201 200 6 80%)
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
         colors: {
           customcolor1: {
@@ -113,8 +110,7 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
-    it('parses custom colors', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses custom colors', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           color customcolor1 #00ffff
@@ -123,7 +119,7 @@ describe('LikeC4ModelParser', () => {
           color customcolor4 rgba(201 200 6 80%)
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
         colors: {
           customcolor1: {
@@ -142,8 +138,7 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
-    it('parses summary, title, description', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses summary, title, description', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           element system {
@@ -158,7 +153,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
         elements: {
           system: {
@@ -177,8 +172,7 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
-    it('parses tags specification', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses tags specification', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           tag tag1
@@ -196,7 +190,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Specification).toMatchObject({
         elements: {
           tagged: {
@@ -225,8 +219,7 @@ describe('LikeC4ModelParser', () => {
   })
 
   describe('logical model', () => {
-    it('parses styles', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses styles', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           element system {
@@ -252,7 +245,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Elements).toHaveLength(3)
       expect(doc.c4Specification).toMatchObject({
         elements: {
@@ -291,10 +284,9 @@ describe('LikeC4ModelParser', () => {
       ])
     })
 
-    it('parses relative icons', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses relative icons', async ({ expect, validate, t }) => {
       // vscode-vfs://host/virtual/src/somefolder/index.c4
-      const { document } = await validate(
+      const { document } = await t.validate(
         `
           specification {
             element component
@@ -315,7 +307,7 @@ describe('LikeC4ModelParser', () => {
         `,
         'somefolder/index.c4',
       )
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Elements).toEqual([
         {
           'id': 'c1',
@@ -338,8 +330,7 @@ describe('LikeC4ModelParser', () => {
       ])
     })
 
-    it('parses title and ignores if same as name', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses title and ignores if same as name', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           element el1
@@ -354,7 +345,7 @@ describe('LikeC4ModelParser', () => {
           el_2_2 = el2 "el2"
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Elements[0]).toMatchObject({
         'id': 'el_1',
         'kind': 'el1',
@@ -378,8 +369,7 @@ describe('LikeC4ModelParser', () => {
       expect(doc.c4Elements[3]).toHaveProperty('title', 'el2')
     })
 
-    it('parses summary, title, description', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('parses summary, title, description', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
           element el
@@ -404,7 +394,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       expect(doc.c4Elements[0]).toMatchObject({
         title: 'el1 title',
         summary: { txt: 'el1 summary' },
@@ -422,8 +412,7 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
-    it('transforms multi-line view title to single line', async ({ expect }) => {
-      const { validate, services } = createTestServices()
+    it('transforms multi-line view title to single line', async ({ expect, validate, t }) => {
       const { document, errors } = await validate(`
         specification {
           element component
@@ -458,7 +447,7 @@ describe('LikeC4ModelParser', () => {
         }
       `)
       expect(errors).toEqual([])
-      const doc = services.likec4.ModelParser.parse(document)
+      const doc = t.likec4.ModelParser.parse(document)
       const views = indexBy(doc.c4Views, ({ id }) => id as 'v1' | 'v2' | 'v3')
 
       expect(views.v1).toBeDefined()
@@ -471,7 +460,7 @@ describe('LikeC4ModelParser', () => {
       expect(views.v3!.title, ` markdown to single line`).toEqual('**Line 1** Line 2')
     })
 
-    it('parses sourceless relation in extended', async ({ expect }) => {
+    it('parses sourceless relation in extended', async ({ expect, validate, t }) => {
       const { validateAll, buildModel, addDocument, removeDocument } = createTestServices()
       await addDocument(`
         specification {
@@ -556,7 +545,7 @@ describe('LikeC4ModelParser', () => {
   })
 
   describe('relation predicate', () => {
-    it('combined of "with" and "where"', async ({ expect }) => {
+    it('combined of "with" and "where"', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -572,7 +561,7 @@ describe('LikeC4ModelParser', () => {
         }
         `)
 
-      const doc = services.likec4.ModelParser.parse(langiumDocument)!
+      const doc = t.likec4.ModelParser.parse(langiumDocument)!
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
@@ -600,7 +589,7 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
-    it('"where"', async ({ expect }) => {
+    it('"where"', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
           specification {
@@ -616,7 +605,7 @@ describe('LikeC4ModelParser', () => {
           }
           `)
 
-      const doc = services.likec4.ModelParser.parse(langiumDocument)!
+      const doc = t.likec4.ModelParser.parse(langiumDocument)!
 
       const rules = doc?.c4Views?.[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
@@ -645,7 +634,7 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
-    it('"with"', async ({ expect }) => {
+    it('"with"', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -661,7 +650,7 @@ describe('LikeC4ModelParser', () => {
         }
       `)
 
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
 
       const rules = doc.c4Views[0]?.rules!
       const includeRule = rules[0] as ViewRulePredicate
@@ -682,7 +671,7 @@ describe('LikeC4ModelParser', () => {
     })
 
     describe('inline kind', () => {
-      it('adds condition on kind', async ({ expect }) => {
+      it('adds condition on kind', async ({ expect, validate, t }) => {
         const { parse, services } = createTestServices()
         const langiumDocument = await parse(`
           specification {
@@ -698,7 +687,7 @@ describe('LikeC4ModelParser', () => {
           }
         `)
 
-        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        const doc = t.likec4.ModelParser.parse(langiumDocument)
 
         const rules = doc.c4Views[0]?.rules!
         const includeRule = rules[0] as ViewRulePredicate
@@ -718,7 +707,7 @@ describe('LikeC4ModelParser', () => {
           },
         })
       })
-      it('can be conbined with "where"', async ({ expect }) => {
+      it('can be conbined with "where"', async ({ expect, validate, t }) => {
         const { parse, services } = createTestServices()
         const langiumDocument = await parse(`
           specification {
@@ -735,7 +724,7 @@ describe('LikeC4ModelParser', () => {
           }
         `)
 
-        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        const doc = t.likec4.ModelParser.parse(langiumDocument)
 
         const rules = doc.c4Views[0]?.rules!
         const includeRule = rules[0] as ViewRulePredicate
@@ -759,7 +748,7 @@ describe('LikeC4ModelParser', () => {
           },
         })
       })
-      it('can be conbined with "with"', async ({ expect }) => {
+      it('can be conbined with "with"', async ({ expect, validate, t }) => {
         const { parse, services } = createTestServices()
         const langiumDocument = await parse(`
           specification {
@@ -776,7 +765,7 @@ describe('LikeC4ModelParser', () => {
           }
         `)
 
-        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        const doc = t.likec4.ModelParser.parse(langiumDocument)
 
         const rules = doc.c4Views[0]?.rules!
         const includeRule = rules[0] as ViewRulePredicate
@@ -805,7 +794,7 @@ describe('LikeC4ModelParser', () => {
   })
 
   describe('deployment model', () => {
-    it('parses styles of specification ', async ({ expect }) => {
+    it('parses styles of specification ', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -818,7 +807,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Specification).toMatchObject({
         elements: {
           component: {},
@@ -835,7 +824,7 @@ describe('LikeC4ModelParser', () => {
       expect(doc.c4Specification.deployments).not.toHaveProperty(['node', 'style', 'multiple'])
     })
 
-    it('parses styles', async ({ expect }) => {
+    it('parses styles', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -867,7 +856,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Deployments).toMatchObject([
         {
           'id': 'n1',
@@ -908,7 +897,7 @@ describe('LikeC4ModelParser', () => {
       ])
     })
 
-    it('parses deployment relation', async ({ expect }) => {
+    it('parses deployment relation', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -944,7 +933,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4DeploymentRelations).toHaveLength(4)
       expect(doc.c4DeploymentRelations).toEqual([
         {
@@ -997,7 +986,7 @@ describe('LikeC4ModelParser', () => {
       ])
     })
 
-    it('parses targets of deployment view rule style', async ({ expect }) => {
+    it('parses targets of deployment view rule style', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -1015,7 +1004,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
       expect(doc.c4Views[0]!.rules).toEqual([{
         style: {
@@ -1043,7 +1032,7 @@ describe('LikeC4ModelParser', () => {
       }])
     })
 
-    it('parses element view rank rules', async ({ expect }) => {
+    it('parses element view rank rules', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -1065,7 +1054,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
       const ranks = doc.c4Views[0]!.rules.filter(rule => 'rank' in rule)
       expect(ranks).toEqual([
@@ -1097,7 +1086,7 @@ describe('LikeC4ModelParser', () => {
       ])
     })
 
-    it('scope: prioritizes deployment nodes', async ({ expect }) => {
+    it('scope: prioritizes deployment nodes', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -1121,7 +1110,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
       expect(doc.c4Views[0]!.rules).toEqual([{
         include: [{
@@ -1138,7 +1127,7 @@ describe('LikeC4ModelParser', () => {
       }])
     })
 
-    it('scope: prioritizes deployment instances', async ({ expect }) => {
+    it('scope: prioritizes deployment instances', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -1159,7 +1148,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
       expect(doc.c4Views[0]!.rules).toEqual([{
         include: [{
@@ -1176,7 +1165,7 @@ describe('LikeC4ModelParser', () => {
       }])
     })
 
-    it('scope: resolves to model', async ({ expect }) => {
+    it('scope: resolves to model', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         specification {
@@ -1197,7 +1186,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
       expect(doc.c4Views[0]!.rules).toEqual([{
         include: [{
@@ -1215,7 +1204,7 @@ describe('LikeC4ModelParser', () => {
     })
 
     describe('should parse predicates', () => {
-      it('relations', async ({ expect }) => {
+      it('relations', async ({ expect, validate, t }) => {
         const { parse, services } = createTestServices()
         const langiumDocument = await parse(`
         specification {
@@ -1241,7 +1230,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        const doc = t.likec4.ModelParser.parse(langiumDocument)
         expect(doc.c4Views).toHaveLength(1)
         expect(doc.c4Views[0]!.rules).toEqual([{
           include: [{
@@ -1260,7 +1249,7 @@ describe('LikeC4ModelParser', () => {
           }],
         }])
       })
-      it('relation with dot-kind', async ({ expect }) => {
+      it('relation with dot-kind', async ({ expect, validate, t }) => {
         const { parse, services } = createTestServices()
         const langiumDocument = await parse(`
         specification {
@@ -1285,7 +1274,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        const doc = t.likec4.ModelParser.parse(langiumDocument)
         expect(doc.c4Views).toHaveLength(1)
         expect(doc.c4Views[0]!.rules).toEqual([{
           include: [{
@@ -1313,7 +1302,7 @@ describe('LikeC4ModelParser', () => {
           }],
         }])
       })
-      it('relation with inline kind', async ({ expect }) => {
+      it('relation with inline kind', async ({ expect, validate, t }) => {
         const { parse, services } = createTestServices()
         const langiumDocument = await parse(`
         specification {
@@ -1338,7 +1327,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-        const doc = services.likec4.ModelParser.parse(langiumDocument)
+        const doc = t.likec4.ModelParser.parse(langiumDocument)
         expect(doc.c4Views).toHaveLength(1)
         expect(doc.c4Views[0]!.rules).toEqual([{
           include: [{
@@ -1370,7 +1359,7 @@ describe('LikeC4ModelParser', () => {
   })
 
   describe('global rules', () => {
-    it('parses styles', async ({ expect }) => {
+    it('parses styles', async ({ expect, validate, t }) => {
       const { parse, services } = createTestServices()
       const langiumDocument = await parse(`
         global {
@@ -1386,7 +1375,7 @@ describe('LikeC4ModelParser', () => {
           }
         }
       `)
-      const doc = services.likec4.ModelParser.parse(langiumDocument)
+      const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Globals).toMatchObject({
         styles: {
           style_group_name: [

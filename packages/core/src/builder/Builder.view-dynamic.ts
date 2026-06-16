@@ -232,25 +232,24 @@ $step.series = <
 $step.try = <
   B extends LikeC4ViewBuilder<AnyTypes, any, any>,
   Fqn extends B['Types']['Fqn'],
-  Pair extends `${Fqn} -> ${Fqn}`,
 >(
   opts: {
     try: Array<
       (
         | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-        | Pair
+        | `${Fqn} -> ${Fqn}`
       )
     >
     catch?: Array<
       (
         | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-        | Pair
+        | `${Fqn} -> ${Fqn}`
       )
     >
     finally?: Array<
       (
         | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-        | Pair
+        | `${Fqn} -> ${Fqn}`
       )
     >
   },
