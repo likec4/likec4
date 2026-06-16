@@ -49,13 +49,11 @@ export const flattenSteps = <A extends Any>(s: Step.Any<A>): Step<A>[] => {
       const heads = [] as Step<A>[]
       const tails = [] as Step<A>[]
       for (const nested of s.steps) {
-        if (stepGuards.isSeries(nested)) {
-          const [head, ...tail] = nested.steps
+        const [head, ...tail] = flattenSteps(nested)
+        if (head) {
           heads.push(head)
-          tails.push(...tail)
-        } else {
-          heads.push(...flattenSteps(nested))
         }
+        tails.push(...tail)
       }
       return [...heads, ...tails]
     }
@@ -95,6 +93,7 @@ export function elementsFromSteps<A extends Any>(
     if (!actors.includes(source)) {
       const indexOfTarget = actors.indexOf(target)
       if (indexOfTarget > 0) {
+        // place source before target
         actors.splice(indexOfTarget, 0, source)
         return
       } else {

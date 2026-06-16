@@ -444,6 +444,7 @@ describe('dynamic-view', () => {
           el('A'),
           el('B'),
           el('C'),
+          el('D'),
         )
       )
       .views(({ dynamicView, $step }, _) =>
@@ -470,6 +471,7 @@ describe('dynamic-view', () => {
               ),
               $step('B -> B'),
             ),
+            $step('D -> A'),
           ),
         )
       )
@@ -478,67 +480,112 @@ describe('dynamic-view', () => {
       .$view
     invariant(view._type === 'dynamic')
 
+    expect(view.flow).toMatchInlineSnapshot(`
+      {
+        "actors": [
+          "A",
+          "B",
+          "D",
+        ],
+        "flow": [
+          "step-01",
+          {
+            "_type": "loop",
+            "actors": [
+              "B",
+              "A",
+            ],
+            "flow": [
+              "step-02.loop.01",
+              "step-02.loop.02",
+              {
+                "_type": "try",
+                "actors": [],
+                "flow": [
+                  {
+                    "_type": "try-block",
+                    "actors": [
+                      "B",
+                      "C",
+                    ],
+                    "flow": [
+                      "step-02.loop.03.try.block.01",
+                      {
+                        "_type": "opt",
+                        "actors": [
+                          "A",
+                        ],
+                        "flow": [
+                          "step-02.loop.03.try.block.02.opt.01",
+                        ],
+                        "id": "step-02.loop.03.try.block.02",
+                      },
+                    ],
+                    "id": "step-02.loop.03.try.block",
+                  },
+                  {
+                    "_type": "try-catch",
+                    "actors": [
+                      "B",
+                      "A",
+                    ],
+                    "flow": [
+                      "step-02.loop.03.try.catch.01",
+                    ],
+                    "id": "step-02.loop.03.try.catch",
+                  },
+                ],
+                "id": "step-02.loop.03",
+              },
+              {
+                "_type": "alt",
+                "actors": [],
+                "flow": [
+                  {
+                    "_type": "alt-when",
+                    "actors": [
+                      "B",
+                      "A",
+                    ],
+                    "flow": [
+                      "step-02.loop.04.alt.01.when.01",
+                    ],
+                    "id": "step-02.loop.04.alt.01",
+                  },
+                  {
+                    "_type": "alt-when",
+                    "actors": [
+                      "B",
+                      "C",
+                    ],
+                    "flow": [
+                      "step-02.loop.04.alt.02.when.01",
+                    ],
+                    "id": "step-02.loop.04.alt.02",
+                  },
+                ],
+                "id": "step-02.loop.04",
+              },
+              "step-02.loop.05",
+            ],
+            "id": "step-02",
+          },
+          "step-03",
+        ],
+      }
+    `)
+
     expect(map(view.edges, prop('id'))).toEqual([
       'step-01',
       'step-02.loop.01',
       'step-02.loop.02',
-      'step-02.loop.03.try.01',
-      'step-02.loop.03.try.02.opt.01',
-      'step-02.loop.03.catch.01',
-      'step-02.loop.04.alt.01.01',
-      'step-02.loop.04.alt.02.01',
+      'step-02.loop.03.try.block.01',
+      'step-02.loop.03.try.block.02.opt.01',
+      'step-02.loop.03.try.catch.01',
+      'step-02.loop.04.alt.01.when.01',
+      'step-02.loop.04.alt.02.when.01',
       'step-02.loop.05',
+      'step-03',
     ])
-    expect(view.steps).toMatchInlineSnapshot(`
-      [
-        "step-01",
-        {
-          "_type": "loop",
-          "id": "step-02",
-          "steps": [
-            "step-02.loop.01",
-            "step-02.loop.02",
-            {
-              "_type": "try",
-              "catch": [
-                "step-02.loop.03.catch.01",
-              ],
-              "id": "step-02.loop.03",
-              "try": [
-                "step-02.loop.03.try.01",
-                {
-                  "_type": "opt",
-                  "id": "step-02.loop.03.try.02",
-                  "steps": [
-                    "step-02.loop.03.try.02.opt.01",
-                  ],
-                },
-              ],
-            },
-            {
-              "_type": "alt",
-              "branches": [
-                {
-                  "_type": "when",
-                  "id": "step-02.loop.04.alt.01",
-                  "steps": [
-                    "step-02.loop.04.alt.01.01",
-                  ],
-                },
-                {
-                  "_type": "when",
-                  "id": "step-02.loop.04.alt.02",
-                  "steps": [
-                    "step-02.loop.04.alt.02.01",
-                  ],
-                },
-              ],
-              "id": "step-02.loop.04",
-            },
-            "step-02.loop.05",
-          ],
-        },
-      ]
-    `)
   })
 })

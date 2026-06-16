@@ -1,5 +1,5 @@
-import { findLast, isTruthy, map, pipe, reduce } from 'remeda'
-import type { Simplify } from 'type-fest'
+import { findLast, isString, isTruthy, map, pipe, reduce } from 'remeda'
+import type { SetRequired } from 'type-fest'
 import type { ElementModel, LikeC4Model } from '../../model'
 import {
   type AnyAux,
@@ -7,8 +7,6 @@ import {
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
-  type ComputedStepsBranch,
-  type ComputedStepsFlow,
   type ParsedDynamicView as DynamicView,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -102,29 +100,93 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       return acc
     }, [] as Element<A>[])
 
-    const rootFlow: ComputedStepsFlow = []
-    const flowStack = new Stack<ComputedStepsFlow>()
-    flowStack.push(rootFlow)
-
-    const addToFlow = <const T extends ComputedStepsFlow[number]>(
-      item: T,
-    ): T extends { _type: ComputedStepsBranch[_type] } ? Simplify<Partial<ComputedStepsBranch<T['_type']>> & T> : T => {
-      flowStack.peek()!.push(item)
-      return item as any
+    type ComputingFlow = {
+      actors: Set<Element<A>>
+      visible: boolean
+      id: StepPath
+      _type: ComputedDynamicView.AnySubFlow['_type']
+      flow: Array<StepPath | ComputingFlow>
+      path: StepPath
+      // steps: { id: StepPath; step: Step.Any }[]
+      // subflows: ComputingFlow[]
     }
 
-    const processSteps = (opts: {
+    const rootFlow: ComputingFlow = {
+      actors: new Set(),
+      visible: true,
+      flow: [],
+      id: null as unknown as StepPath,
+      _type: null as unknown as ComputedDynamicView.AnySubFlow['_type'],
+      path: null as unknown as StepPath,
+    }
+    const flowStack = new Stack<ComputingFlow>()
+    flowStack.push(rootFlow)
+
+    const addStepToFlow = <P extends { id: StepPath }>(p: P): P => {
+      flowStack.peek()!.flow.push(p.id)
+      return p
+    }
+
+    const addActorToFlow = (actor: Element<A>) => {
+      flowStack.peek()!.actors.add(actor)
+    }
+
+    const newFlow = (props: SetRequired<Partial<ComputingFlow>, 'id' | '_type'>): ComputingFlow => {
+      const path = props.id.startsWith('step-') ? props.id.substring('step-'.length) : props.id
+      return {
+        visible: flowStack.peek()!.visible,
+        actors: new Set(),
+        flow: [],
+        path: StepPath(path, props._type),
+        ...props,
+      }
+    }
+
+    const pushFlow = (flow: ComputingFlow): ComputingFlow => {
+      flowStack.push(flow)
+      return flow
+    }
+
+    const popFlow = () => {
+      const flow = flowStack.pop()
+      if (flow && flow !== rootFlow && flow.flow.length > 0) {
+        const parentFlow = flowStack.peek()!
+        parentFlow.flow.push(flow)
+      }
+      return flow
+    }
+
+    const processSteps = ({ steps, newflow, prefix }: {
       steps: readonly Step.Any<A>[]
-      pushTo: ComputedStepsFlow
+      newflow: ComputingFlow
+      prefix?: StepPath
+    } | {
+      steps: readonly Step.Any<A>[]
+      newflow?: ComputingFlow
       prefix: StepPath
     }) => {
-      flowStack.push(opts.pushTo)
+      if (newflow) {
+        pushFlow(newflow)
+        prefix ??= newflow.path
+      }
+      if (prefix && prefix.startsWith('step-')) {
+        prefix = prefix.substring('step-'.length) as StepPath
+      }
       reduce(
-        opts.steps,
-        (acc, s) => processStep(s, acc, opts.prefix),
+        steps,
+        (acc, s) => processStep(s, acc, prefix),
         1,
       )
-      flowStack.pop()
+      if (newflow) {
+        popFlow()
+        // const parentFlow = flowStack.peek()!
+        // parentFlow.flow.push(newflow)
+        // if (flow.visible && flow.actors.size > 0) {
+        //   for (const actor of flow.actors) {
+        //     parentFlow.actors.add(actor)
+        //   }
+        // }
+      }
     }
 
     const stepId = (...segments: Array<string | number | undefined>): StepPath => {
@@ -143,71 +205,92 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         case stepGuards.isLoop(step):
         case stepGuards.isOpt(step):
         case stepGuards.isParallel(step): {
-          const branch = addToFlow({
-            _type: step._type,
-            id: stepId(prefix, stepNum),
-            steps: [] as ComputedStepsFlow,
-          })
           processSteps({
             steps: step.steps,
-            pushTo: branch.steps,
-            prefix: StepPath(prefix, stepNum, step._type),
+            newflow: newFlow({
+              _type: step._type,
+              id: stepId(prefix, stepNum),
+            }),
           })
           return stepNum + 1
         }
         case stepGuards.isTry(step): {
-          const branch = addToFlow({
-            _type: step._type,
+          const { path } = pushFlow(newFlow({
+            _type: 'try',
             id: stepId(prefix, stepNum),
-            try: [] as ComputedStepsFlow,
-          })
+          }))
+          // addStepToFlow({
+          //   id: stepId(prefix, stepNum),
+          //   step: step,
+          // })
           processSteps({
             steps: step.try.steps,
-            pushTo: branch.try,
-            prefix: StepPath(prefix, stepNum, 'try'),
+            newflow: newFlow({
+              _type: 'try-block',
+              id: stepId(path, 'block'),
+              path: StepPath(path, 'block'),
+            }),
           })
           if (step.catch) {
-            branch.catch = []
             processSteps({
               steps: step.catch.steps,
-              pushTo: branch.catch,
-              prefix: StepPath(prefix, stepNum, 'catch'),
+              newflow: newFlow({
+                _type: 'try-catch',
+                id: stepId(path, 'catch'),
+                path: StepPath(path, 'catch'),
+              }),
             })
           }
           if (step.finally) {
-            branch.finally = []
             processSteps({
               steps: step.finally.steps,
-              pushTo: branch.finally,
-              prefix: StepPath(prefix, stepNum, 'finally'),
+              newflow: newFlow({
+                _type: 'try-finally',
+                id: stepId(path, 'finally'),
+                path: StepPath(path, 'finally'),
+              }),
             })
           }
+          popFlow()
           return stepNum + 1
         }
         case stepGuards.isAlt(step): {
-          const alt = addToFlow({
-            _type: step._type,
+          const { path } = pushFlow(newFlow({
+            _type: 'alt',
             id: stepId(prefix, stepNum),
-            branches: [],
-          })
+          }))
+          // const alt = addStepToFlow({
+          //   // _type: step._type,
+          //   id: stepId(prefix, stepNum),
+          //   step: step,
+          //   // branches: [],
+          // })
           step.branches.forEach((branch, branchIndex) => {
-            const branchPath = StepPath(prefix, stepNum, `alt`, branchIndex + 1)
-            const branchItem = {
-              _type: branch._type,
-              id: stepId(branchPath),
-              steps: [] as ComputedStepsFlow,
-            }
-            alt.branches.push(branchItem)
+            const index = `${branchIndex + 1}`.padStart(2, '0')
+            // const branchPath = StepPath(path, index)
+            // const branchItem = {
+            //   _type: branch._type,
+            //   id: stepId(branchPath),
+            //   steps: [] as ComputedStepsFlow,
+            // }
+            // alt.branches.push(branchItem)
             processSteps({
               steps: branch.steps,
-              pushTo: branchItem.steps,
-              prefix: branchPath,
+              newflow: newFlow({
+                _type: `alt-${branch._type}`,
+                id: stepId(path, index),
+                path: StepPath(path, index, branch._type),
+              }),
             })
           })
+          popFlow()
           return stepNum + 1
         }
         case stepGuards.isStep(step): {
-          const id = addToFlow(stepId(prefix, stepNum))
+          const id = addStepToFlow({
+            id: stepId(prefix, stepNum),
+            step: step,
+          }).id
 
           const {
             source: stepSource,
@@ -225,6 +308,9 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
           const target = this.model.element(stepTarget)
           const targetColumn = actors.indexOf(target)
           invariant(targetColumn >= 0, `Target ${stepTarget} not found`)
+
+          addActorToFlow(source)
+          addActorToFlow(target)
 
           if (compounds.includes(source) || compounds.includes(target)) {
             console.error(`Step ${source.id} -> ${target.id} because it involves a compound`)
@@ -260,7 +346,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
             navigateTo,
             title: stepTitle ?? title,
             relations: relations ?? [],
-            isBackward: sourceColumn > targetColumn,
+            isBackward: targetColumn < sourceColumn,
           }))
 
           return stepNum + 1
@@ -338,12 +424,30 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
 
     const nodeNotations = buildElementNotations(nodes)
 
+    function buildFlow(): ComputedDynamicView.Flow {
+      function flowStep(step: StepPath | ComputingFlow): StepPath | ComputedDynamicView.AnySubFlow {
+        return isString(step) ? step : subflow(step)
+      }
+      function subflow(sub: ComputingFlow): ComputedDynamicView.AnySubFlow {
+        return {
+          _type: sub._type,
+          id: sub.id,
+          actors: [...sub.actors].map(e => e.id as scalar.NodeId),
+          flow: sub.flow.map(flowStep),
+        } as ComputedDynamicView.AnySubFlow
+      }
+      return {
+        actors: [...rootFlow.actors].map(e => e.id as scalar.NodeId),
+        flow: rootFlow.flow.map(flowStep) as ComputedDynamicView.SubFlows,
+      }
+    }
+
     return calcViewLayoutHash({
       ...view,
       [_type]: 'dynamic',
       [_stage]: 'computed',
       variant: view.variant ?? 'diagram',
-      steps: rootFlow,
+      flow: buildFlow(),
       autoLayout: {
         direction: autoLayoutRule?.direction ?? 'LR',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),

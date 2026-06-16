@@ -994,8 +994,8 @@ describe('formating', () => {
                   alt {  when '---' { A -> B }
                   if {
                   }
-            else {
-              A -> B      }}
+            else 
+              {  A -> B      }}
         }
         }`)
         .resolves
