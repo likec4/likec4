@@ -3,8 +3,8 @@ import {
   type DiagramNode,
   type LayoutedDynamicView,
   type NodeId,
-  getParallelStepsPrefix,
   isStepEdgeId,
+  parentFlow,
 } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import type { NodeHandle } from '@xyflow/system'
@@ -32,7 +32,9 @@ export function sequenceViewToXY(
   view: LayoutedDynamicView,
 ): {
   bounds: BBox
-  xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
+  xynodes: Array<
+    Types.SequenceActorNode | Types.SequenceSubflowArea | Types.ViewGroupNode
+  >
   xyedges: Array<Types.SequenceStepEdge>
 } {
   const actors = [] as Array<DiagramNode>
@@ -86,7 +88,7 @@ export function sequenceViewToXY(
 
     const isSelfLoop = source === target
     const isBack = sourceColumn > targetColumn
-    const parallelPrefix = getParallelStepsPrefix(edge.id)
+    const parallelPrefix = parentFlow(edge.id)
 
     let isContinuing = false
     if (prevStep && prevStep.target == source && prevStep.parallelPrefix === parallelPrefix) {
@@ -147,7 +149,7 @@ export function sequenceViewToXY(
     bounds,
     xynodes: [
       ...layout.getCompoundBoxes().map((box, i) => toCompoundArea(box, i, view)),
-      ...layout.getParallelBoxes().map(box => toSeqParallelArea(box, view)),
+      // ...layout.getParallelBoxes().map(box => toSeqParallelArea(box, view)),
       ...actors.map(actor =>
         toSeqActorNode({
           actor,
@@ -158,7 +160,7 @@ export function sequenceViewToXY(
         })
       ),
     ],
-    xyedges: steps.map(({ id, edge, ...step }): Types.SequenceStepEdge => ({
+    xyedges: steps.map(({ id, edge, ...step }, index): Types.SequenceStepEdge => ({
       id: id,
       type: 'seq-step',
       data: {
@@ -174,6 +176,7 @@ export function sequenceViewToXY(
           width: step.label?.width ?? edge.labelBBox?.width ?? 32,
           height: step.label?.height ?? edge.labelBBox?.height ?? 32,
         },
+        index,
         labelXY: null,
         points: edge.points,
         color: edge.color ?? 'gray',

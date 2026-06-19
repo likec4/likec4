@@ -133,7 +133,6 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
         height: '100%',
         border: 'default',
         rounded: 'sm',
-        borderWidth: 1,
         '--_color': {
           base: 'var(--likec4-palette-stroke)',
           _dark: '[color-mix(in oklab, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',
@@ -150,6 +149,35 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
       }}
     >
       PARALLEL
+    </Box>
+  )
+}
+
+export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
+  return (
+    <Box
+      data-likec4-color={props.data.color}
+      css={{
+        width: '100%',
+        height: '100%',
+        border: 'default',
+        rounded: 'sm',
+        '--_color': {
+          base: 'var(--likec4-palette-stroke)',
+          _dark: '[color-mix(in oklab, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',
+        },
+        borderColor: '[var(--_color)/30]',
+        backgroundColor: 'var(--likec4-palette-fill)/15',
+        pointerEvents: 'none',
+        paddingLeft: '2',
+        paddingTop: '0.5',
+        fontSize: 'xs',
+        fontWeight: 'bold',
+        letterSpacing: '.75px',
+        color: '[var(--_color)/75]',
+      }}
+    >
+      {props.data.flowPath}
     </Box>
   )
 }

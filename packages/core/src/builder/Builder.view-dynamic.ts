@@ -85,21 +85,19 @@ export interface AddDynamicViewHelper {
  * @see $step.alt - Alternative steps
  */
 export function $step<
-  B extends LikeC4ViewBuilder<AnyTypes, any, any>,
-  Fqn extends B['Types']['Fqn'],
-  Pair extends `${Fqn} -> ${Fqn}`,
+  B extends LikeC4ViewBuilder<any, any, any>,
 >(
   ...args:
-    | [step: NoInfer<Pair>]
+    | [step: `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`]
     | [
-      step: NoInfer<Pair>,
+      step: `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`,
       props: { title?: string } & ViewPredicate.Custom<NoInfer<B>['Types']>,
     ]
-    | [source: NoInfer<Fqn>, target: NoInfer<Fqn>]
-    | [source: NoInfer<Fqn>, target: NoInfer<Fqn>, props: string]
+    | [source: B['Types']['Fqn'], target: B['Types']['Fqn']]
+    | [source: B['Types']['Fqn'], target: B['Types']['Fqn'], props: string]
     | [
-      source: NoInfer<Fqn>,
-      target: NoInfer<Fqn>,
+      source: B['Types']['Fqn'],
+      target: B['Types']['Fqn'],
       props: { title?: string } & ViewPredicate.Custom<NoInfer<B>['Types']>,
     ]
 ): (b: B) => B {
@@ -270,12 +268,10 @@ $step.try = <
 function makeStepBuilder(type: Step.Any['_type']) {
   return <
     B extends LikeC4ViewBuilder<AnyTypes, any, any>,
-    Fqn extends B['Types']['Fqn'],
-    Pair extends `${Fqn} -> ${Fqn}`,
   >(
     ...stepOps: Array<
       | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-      | NoInfer<Pair>
+      | `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`
     >
   ): (b: B) => any => {
     return (b) => {
@@ -382,12 +378,12 @@ $step.alt = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 }
 
 function makeBranchBuilder(type: 'when' | 'if' | 'else') {
-  return <B extends AltBranchBuilder<AnyTypes>, F extends B['Types']['Fqn'], Pair extends `${F} -> ${F}`>(
+  return <B extends AltBranchBuilder<AnyTypes>>(
     ...stepOps: Array<
       | (
         ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
       )
-      | Pair
+      | `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`
     >
   ): (b: B) => B => {
     return (b) => {

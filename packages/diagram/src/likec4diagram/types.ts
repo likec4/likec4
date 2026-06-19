@@ -5,11 +5,13 @@ import type {
   DiagramEdge,
   DiagramNode,
   DiagramNodeDriftReason,
+  DynamicViewFlow,
   ExclusiveUnion,
   Fqn,
   IconUrl,
   MarkdownOrString,
   NonEmptyReadonlyArray,
+  StepPath,
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
@@ -107,6 +109,14 @@ export namespace Types {
     }
   >
 
+  export type SequenceSubflowAreaData = Simplify<
+    & LeafNodeData
+    & {
+      flowType: DynamicViewFlow.SubFlowType
+      flowPath: StepPath
+    }
+  >
+
   export type SequenceParallelAreaData = Simplify<
     & LeafNodeData
     & {
@@ -184,6 +194,7 @@ export namespace Types {
 
   export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
   export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
+  export type SequenceSubflowArea = BaseNode<SequenceSubflowAreaData, 'seq-subflow'>
 
   export type CompoundElementNode = BaseNode<CompoundElementNodeData, 'compound-element'>
   export type CompoundDeploymentNode = BaseNode<CompoundDeploymentNodeData, 'compound-deployment'>
@@ -197,6 +208,7 @@ export namespace Types {
     | ViewGroupNode
     | SequenceActorNode
     | SequenceParallelArea
+    | SequenceSubflowArea
 
   export type NodeType = AnyNode['type']
 
@@ -208,6 +220,7 @@ export namespace Types {
     ViewGroupNodeData: ViewGroupNodeData
     SequenceActorNodeData: SequenceActorNodeData
     SequenceParallelAreaData: SequenceParallelAreaData
+    SequenceSubflowAreaData: SequenceSubflowAreaData
   }>
 
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
@@ -234,6 +247,8 @@ export namespace Types {
       >
     >
     & {
+      // Index in array
+      index: number
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       isLabelCustomized?: boolean | undefined
@@ -261,6 +276,8 @@ export namespace Types {
       >
     >
     & {
+      // Index in array
+      index: number
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox

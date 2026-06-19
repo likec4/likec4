@@ -41,6 +41,7 @@ const mockDiagramDynamicView = {
     actors: [],
     compounds: [],
     parallelAreas: [],
+    subflows: [],
     steps: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
   },
@@ -63,6 +64,7 @@ const mockSequenceDynamicView = {
   sequenceLayout: {
     actors: [],
     compounds: [],
+    subflows: [],
     parallelAreas: [],
     steps: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },

@@ -240,6 +240,7 @@ export function diagramToXY(opts: {
     }
   }
 
+  let index = 0
   for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
@@ -276,6 +277,7 @@ export function diagramToXY(opts: {
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
         drifts: edge.drifts ?? null,
+        index: index++,
       },
       interactionWidth: 20,
     })

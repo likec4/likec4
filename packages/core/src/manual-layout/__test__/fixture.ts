@@ -1,5 +1,5 @@
 import { type WritableDraft, produce } from 'immer'
-import { filter, indexBy, isTruthy, map, pipe } from 'remeda'
+import { filter, indexBy, isTruthy, map, pipe, prop } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import type { Types } from '../../builder/_types'
 import { Builder } from '../../builder/Builder'
@@ -245,7 +245,7 @@ function patch<A>(obj: A, patcher?: ((draft: WritableDraft<NoInfer<A>>) => void)
  * })
  */
 export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
-  snapshot: ViewManualLayoutSnapshot
+  snapshot: ViewManualLayoutSnapshot<'element'>
   snapshotNodes: Record<ExistingNodes, DiagramNode>
   snapshotEdges: Record<ExistingEdges, DiagramEdge>
   layouted: LayoutedElementView
@@ -349,12 +349,14 @@ export function prepareFixtures<const N, E>(patcher?: Patches<N, E>): {
     }
   }
 
+  const byId = prop('id')
+
   return {
     snapshot,
-    snapshotNodes: indexBy(snapshot.nodes, n => n.id),
-    snapshotEdges: indexBy(snapshot.edges, e => e.id),
+    snapshotNodes: indexBy(snapshot.nodes, byId),
+    snapshotEdges: indexBy(snapshot.edges, byId),
     layouted,
-    layoutedNodes: indexBy(layouted.nodes, n => n.id) as any,
-    layoutedEdges: indexBy(layouted.edges, e => e.id) as any,
+    layoutedNodes: indexBy(layouted.nodes, byId),
+    layoutedEdges: indexBy(layouted.edges, byId),
   } as any
 }

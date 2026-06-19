@@ -1,5 +1,6 @@
 import type { Simplify } from 'type-fest'
-import type { BBox } from '../geometry'
+import type { BBox } from '../geometry/bbox'
+import type { IsAnyOrNever } from './_common'
 import type { _stage, _type } from './const'
 import type * as scalar from './scalar'
 import type {
@@ -7,6 +8,7 @@ import type {
   ViewType,
   ViewWithNotation,
 } from './view-common'
+import type { DynamicViewFlow } from './view-dynamic-flow'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
 
 export type LayoutedViewDriftReason =
@@ -41,29 +43,11 @@ export type DiagramEdgeDriftReason =
   | 'source-changed'
   | 'target-changed'
 
-type ViewManualLayoutSnapshotPerType =
-  | {
-    readonly [_type]: 'element'
-    readonly viewOf?: scalar.Fqn
-    readonly extends?: scalar.ViewId
-  }
-  | {
-    readonly [_type]: 'deployment'
-  }
-  | {
-    readonly [_type]: 'dynamic'
-    readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
-  }
-
-export type ViewManualLayoutSnapshot<
-  Type extends ViewType = ViewType,
-> = Simplify<
-  & ViewManualLayoutSnapshotPerType
+type ViewManualLayoutSnapshotPerType = Simplify<
   & {
     readonly id: scalar.ViewId
     readonly title: string | null
     readonly description: scalar.MarkdownOrString | null
-    readonly [_type]: Type
     readonly [_stage]: 'layouted'
     // Object hash of previous layout
     readonly hash: string
@@ -73,4 +57,76 @@ export type ViewManualLayoutSnapshot<
     readonly autoLayout: ViewAutoLayout
   }
   & ViewWithNotation
+  & (
+    | {
+      readonly [_type]: 'element'
+      readonly viewOf?: scalar.Fqn
+      readonly extends?: scalar.ViewId
+    }
+    | {
+      readonly [_type]: 'deployment'
+    }
+    | {
+      readonly [_type]: 'dynamic'
+      readonly flow?: DynamicViewFlow
+      readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
+    }
+  )
 >
+
+/**
+ * Snapshot of a view's manual layout.
+ *
+ * When Type is `any`, returns the union of all possible snapshot types.
+ * When Type is a specific view type, returns the corresponding snapshot type.
+ */
+// export type ViewManualLayoutSnapshot = ViewManualLayoutSnapshotPerType
+export type ViewManualLayoutSnapshot<Type extends ViewType = ViewType> =
+  // dprint-ignore
+  IsAnyOrNever<Type> extends true
+    ? never
+    : Type extends infer T extends string
+      ? Extract<ViewManualLayoutSnapshotPerType, { [_type]: T }>
+      : ViewManualLayoutSnapshotPerType
+
+// type a = ViewManualLayoutSnapshot<never>
+
+// // dprint-ignore
+// ViewManualLayoutSnapshotPerType extends infer M extends { [_type]: string}
+//   ? Type extends M[_type]
+//     ? Simplify<
+//       & M
+//       & {
+//         readonly id: scalar.ViewId
+//         readonly title: string | null
+//         readonly description: scalar.MarkdownOrString | null
+//         readonly [_stage]: 'layouted'
+//         // Object hash of previous layout
+//         readonly hash: string
+//         readonly nodes: ReadonlyArray<DiagramNode>
+//         readonly edges: ReadonlyArray<DiagramEdge>
+//         readonly bounds: BBox
+//         readonly autoLayout: ViewAutoLayout
+//       }
+//       & ViewWithNotation
+//     >
+//     : never
+//   : never
+
+// Simplify<
+//   & ViewManualLayoutSnapshotPerType
+//   & {
+//     readonly id: scalar.ViewId
+//     readonly title: string | null
+//     readonly description: scalar.MarkdownOrString | null
+//     readonly [_type]: Type
+//     readonly [_stage]: 'layouted'
+//     // Object hash of previous layout
+//     readonly hash: string
+//     readonly nodes: ReadonlyArray<DiagramNode>
+//     readonly edges: ReadonlyArray<DiagramEdge>
+//     readonly bounds: BBox
+//     readonly autoLayout: ViewAutoLayout
+//   }
+//   & ViewWithNotation
+// >

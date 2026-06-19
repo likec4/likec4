@@ -1,3 +1,5 @@
+import type { IsAnyOrNever } from './_common'
+
 /**
  * Determines the stage of the model:
  * 1. `parsed` - parsed from DSL or returned from Builder
@@ -25,6 +27,14 @@ export function isOnStage<T extends { [_stage]: ModelStage }, S extends ModelSta
 export const _stage = '_stage'
 export type _stage = typeof _stage
 
+export type inferStage<A> =
+  // dprint-ignore
+  A extends { ['_stage']: infer S extends ModelStage }
+   ? IsAnyOrNever<S> extends true
+     ? never
+     : S
+   : never
+
 /**
  * Property name to store type information, used to identify the type
  * (of the view or view element)
@@ -33,6 +43,14 @@ export type _stage = typeof _stage
  */
 export const _type = '_type'
 export type _type = typeof _type
+
+export type inferType<A> =
+  // dprint-ignore
+  A extends { ['_type']: infer T }
+    ? IsAnyOrNever<T> extends true
+      ? never
+      : T
+    : never
 
 /**
  * Property name to store layout type information, used to identify the type of the layout*

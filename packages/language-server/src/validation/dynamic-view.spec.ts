@@ -14,9 +14,7 @@ const it = test.extend<{
 })
   .extend('validate', async ({ t }, { onCleanup }) => {
     onCleanup(() => t.resetState())
-    return async (source: TemplateStringsArray | string) => {
-      return await t.validate(typeof source === 'string' ? source : source.join(''))
-    }
+    return t.validate
   })
 
 describe('DynamicView Checks', () => {

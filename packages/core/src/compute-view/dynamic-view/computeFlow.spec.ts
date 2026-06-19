@@ -6,10 +6,8 @@ import { invariant } from '../../utils'
 import { computeFlow } from './computeFlow'
 
 /**
- * Flow with all kinds of subflows. Default visibility (from `compute`):
- * - `loop`, `try`, `try-block`, `opt`, `alt` and the first `alt` branch are
- *   visible by default
- * - `try-catch` and non-first `alt` branches are hidden until requested
+ * Flow with all kinds of subflows. Everything is visible by default; passing
+ * `subflows` only narrows the branches of the `alt`/`try` it selects into.
  */
 function fixtureView(): ComputedDynamicView {
   const view = Builder
@@ -58,109 +56,110 @@ const sp = (...ids: string[]) => ids as StepPath[]
 const edgeIds = (view: ComputedDynamicView, subflows: StepPath[] = []) =>
   map(computeFlow({ view, subflows }).edges, prop('id'))
 
+const allEdges = [
+  'step-01',
+  'step-02:loop.01',
+  'step-02:loop.02',
+  'step-02:loop.03:try.01:block.01',
+  'step-02:loop.03:try.01:block.02:opt.01',
+  'step-02:loop.03:try.02:catch.01',
+  'step-02:loop.04:alt.01:when.01',
+  'step-02:loop.04:alt.02:when.01',
+  'step-02:loop.05',
+  'step-03',
+]
+
 describe('computeFlow', () => {
-  it('shows default-visible steps when no subflows are selected', () => {
+  it('shows every step when no subflows are selected', () => {
     const view = fixtureView()
     const { nodes, edges } = computeFlow({ view, subflows: [] })
 
-    // Everything except the hidden `catch` and the non-first `alt` branch
-    expect(map(edges, prop('id'))).toEqual([
-      'step-01',
-      'step-02:loop.01',
-      'step-02:loop.02',
-      'step-02:loop.03:try.01:block.01',
-      'step-02:loop.03:try.01:block.02:opt.01',
-      // `step-02:loop.04:alt.01:when.01` — first branch is visible by default
-      'step-02:loop.04:alt.01:when.01',
-      'step-02:loop.05',
-      'step-03',
-    ])
-    // All four actors participate in default-visible steps
+    // All branches/sections are visible by default
+    expect(map(edges, prop('id'))).toEqual(allEdges)
     expect(map(nodes, prop('id'))).toEqual(['A', 'B', 'C', 'D'])
   })
 
-  it('ignores section `visible` flags once a `try` section is explicitly selected', () => {
+  it('shows every step when subflows is omitted', () => {
     const view = fixtureView()
-    // Requesting only the (hidden) `catch` suppresses the default-visible
-    // `try-block`: a `try` shows only its explicitly requested sections.
+    expect(map(computeFlow({ view }).edges, prop('id'))).toEqual(allEdges)
+  })
+
+  it('narrows a `try` to the requested section, leaving other containers untouched', () => {
+    const view = fixtureView()
+    // Selecting `catch` hides the sibling `try-block`, but the unrelated `alt`
+    // still shows both of its branches.
     expect(edgeIds(view, sp('step-02:loop.03:try.02:catch'))).toEqual([
       'step-01',
       'step-02:loop.01',
       'step-02:loop.02',
-      // no `step-02:loop.03:try.01:block.*` — try-block suppressed
+      // try-block hidden (sibling of selected `catch`)
       'step-02:loop.03:try.02:catch.01',
       'step-02:loop.04:alt.01:when.01',
+      'step-02:loop.04:alt.02:when.01',
       'step-02:loop.05',
       'step-03',
     ])
   })
 
-  it('shows `try-block` alongside `catch` when both sections are requested', () => {
+  it('narrows a `try` to the `try-block`, hiding the `catch`', () => {
     const view = fixtureView()
-    expect(edgeIds(view, sp('step-02:loop.03:try.01:block', 'step-02:loop.03:try.02:catch'))).toEqual([
+    expect(edgeIds(view, sp('step-02:loop.03:try.01:block'))).toEqual([
       'step-01',
       'step-02:loop.01',
       'step-02:loop.02',
       'step-02:loop.03:try.01:block.01',
       'step-02:loop.03:try.01:block.02:opt.01',
-      'step-02:loop.03:try.02:catch.01',
+      // catch hidden (sibling of selected `try-block`)
       'step-02:loop.04:alt.01:when.01',
+      'step-02:loop.04:alt.02:when.01',
       'step-02:loop.05',
       'step-03',
     ])
   })
 
-  it('ignores branch `visible` flags once an `alt` branch is explicitly selected', () => {
+  it('narrows an `alt` to the requested branch, leaving other containers untouched', () => {
     const view = fixtureView()
-    // Requesting only the (hidden) second branch hides the default-visible
-    // first branch: an `alt` shows only its explicitly requested branches.
+    // Selecting the second branch hides the first; the unrelated `try` still
+    // shows all of its sections.
     expect(edgeIds(view, sp('step-02:loop.04:alt.02:when'))).toEqual([
       'step-01',
       'step-02:loop.01',
       'step-02:loop.02',
       'step-02:loop.03:try.01:block.01',
       'step-02:loop.03:try.01:block.02:opt.01',
-      // no `step-02:loop.04:alt.01:when.01` — first branch suppressed
+      'step-02:loop.03:try.02:catch.01',
+      // first branch hidden (sibling of selected second branch)
       'step-02:loop.04:alt.02:when.01',
       'step-02:loop.05',
       'step-03',
     ])
   })
 
-  it('shows multiple `alt` branches when several are explicitly requested', () => {
+  it('shows multiple `alt` branches when several are requested', () => {
     const view = fixtureView()
-    expect(edgeIds(view, sp('step-02:loop.04:alt.01:when', 'step-02:loop.04:alt.02:when'))).toEqual([
-      'step-01',
-      'step-02:loop.01',
-      'step-02:loop.02',
-      'step-02:loop.03:try.01:block.01',
-      'step-02:loop.03:try.01:block.02:opt.01',
-      'step-02:loop.04:alt.01:when.01',
-      'step-02:loop.04:alt.02:when.01',
-      'step-02:loop.05',
-      'step-03',
-    ])
+    expect(edgeIds(view, sp('step-02:loop.04:alt.01:when', 'step-02:loop.04:alt.02:when'))).toEqual(allEdges)
   })
 
   it('narrows node inEdges/outEdges to the visible subset', () => {
     const view = fixtureView()
 
-    // C only receives `B -> C` in the (visible) try-block and in the (hidden)
-    // second alt branch.
+    // By default C receives `B -> C` both in the try-block and in the second
+    // alt branch.
     const cDefault = computeFlow({ view, subflows: [] }).nodes.find(n => n.id === 'C')!
-    expect(cDefault.inEdges).toEqual(['step-02:loop.03:try.01:block.01'])
-    expect(cDefault.outEdges).toEqual([])
-
-    const cWithAlt = computeFlow({ view, subflows: sp('step-02:loop.04:alt.02:when') })
-      .nodes.find(n => n.id === 'C')!
-    expect(cWithAlt.inEdges).toEqual([
+    expect(cDefault.inEdges).toEqual([
       'step-02:loop.03:try.01:block.01',
       'step-02:loop.04:alt.02:when.01',
     ])
+    expect(cDefault.outEdges).toEqual([])
+
+    // Selecting the first alt branch hides the second, dropping its edge into C.
+    const cWithAlt = computeFlow({ view, subflows: sp('step-02:loop.04:alt.01:when') })
+      .nodes.find(n => n.id === 'C')!
+    expect(cWithAlt.inEdges).toEqual(['step-02:loop.03:try.01:block.01'])
   })
 
-  it('gates a nested subflow behind its hidden ancestor', () => {
-    // `catch` is hidden by default and contains a default-visible `opt`.
+  it('keeps parent sections visible when a nested subflow is requested', () => {
+    // try at root: block ['A -> B'], catch ['B -> A', opt('A -> A')]
     const view = Builder
       .specification({ elements: ['el'] })
       .model(({ el }, _) => _(el('A'), el('B')))
@@ -182,17 +181,21 @@ describe('computeFlow', () => {
       .$view
     invariant(view._type === 'dynamic')
 
-    // Only the try-block is visible by default
-    expect(edgeIds(view)).toEqual(['step-01:try.01:block.01'])
+    // Everything visible by default
+    expect(edgeIds(view)).toEqual([
+      'step-01:try.01:block.01',
+      'step-01:try.02:catch.01',
+      'step-01:try.02:catch.02:opt.01',
+    ])
 
-    // Requesting the nested `opt` alone reaches nothing: selecting a subflow
-    // inside the `try` switches it to explicit-only mode (suppressing the
-    // try-block), yet `catch` itself was not requested, so the `opt` nested
-    // within it is never reached.
-    expect(edgeIds(view, sp('step-01:try.02:catch.02'))).toEqual([])
+    // Requesting the nested `opt` keeps its parent `catch` section visible
+    // (it encloses the request), while the sibling `try-block` is hidden.
+    expect(edgeIds(view, sp('step-01:try.02:catch.02:opt'))).toEqual([
+      'step-01:try.02:catch.01',
+      'step-01:try.02:catch.02:opt.01',
+    ])
 
-    // Requesting `catch` shows its leaf step and the default-visible `opt`
-    // inside it; the try-block is suppressed (explicit-only).
+    // Requesting `catch` directly yields the same result.
     expect(edgeIds(view, sp('step-01:try.02:catch'))).toEqual([
       'step-01:try.02:catch.01',
       'step-01:try.02:catch.02:opt.01',

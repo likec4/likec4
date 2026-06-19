@@ -4,62 +4,69 @@ import {
   map,
   pipe,
 } from 'remeda'
-import {
-  type Any,
-  type ComputedDynamicView,
-  type ComputedEdge,
-  type ComputedNode,
-  type scalar,
+import type {
+  ComputedDynamicView,
+  DynamicViewFlow,
+  LayoutedDynamicView,
+  scalar,
 } from '../../types'
 
 /**
  * Result of {@link computeFlow}: the subset of the dynamic view that should be
  * rendered for a given selection of visible subflows.
  */
-export interface ComputeFlowResult<A extends Any = Any> {
-  readonly nodes: ComputedNode<A>[]
-  readonly edges: ComputedEdge<A>[]
+export interface ComputeFlowResult<V extends ComputedDynamicView<any> | LayoutedDynamicView<any>> {
+  /**
+   * The subflows that were explicitly requested to be visible.
+   */
+  readonly subflows: readonly scalar.StepPath[]
+  readonly nodes: V['nodes']
+  readonly edges: V['edges']
 }
 
 /**
  * Walks the recursive flow tree of a {@link ComputedDynamicView} and resolves
  * which steps (edges) and actors (nodes) must be shown.
  *
- * A step (leaf {@link scalar.StepPath}) is shown when the flow that contains it
- * is shown. A subflow (`opt`, `alt`, `try`, ...) is shown when it is either
- * visible by default (`visible === true`) or explicitly requested via
- * `subflows`. Visibility is hierarchical: a nested subflow is only evaluated
- * when its whole ancestor chain is shown, so requesting a deeply nested subflow
- * requires its ancestors to be visible (by default or explicitly) as well.
+ * By default (no `subflows`) everything is visible — every step, every loop/opt
+ * and every branch of every `alt`/`try`. Passing `subflows` only narrows the
+ * branches/sections of `alt`/`try` containers:
  *
- * Special case for `alt` and `try`: once any of its branches/sections is
- * explicitly requested (the `alt`/`try` id is a prefix of some requested
- * subflow), the `visible` flag on its branches/sections is ignored and only the
- * explicitly requested ones are shown (so the default-visible branch or
- * `try-block` is hidden unless it too was requested).
+ * - A container whose branches are not mentioned in `subflows` keeps showing all
+ *   of them (default), independent of any selection made in other containers.
+ * - Once any branch within a container is requested (the container id is a
+ *   prefix of a requested subflow), that container shows only the branches on a
+ *   requested path — i.e. branches that are themselves requested or that enclose
+ *   a requested nested subflow.
+ *
+ * The last rule means selecting a deeply nested branch keeps all of its parent
+ * branches visible (they enclose the requested subflow), while the parents'
+ * unrelated siblings are hidden.
  *
  * @param opts.view - The computed dynamic view to resolve.
- * @param opts.subflows - Ids of subflows that are explicitly made visible.
+ * @param opts.subflows - Ids of subflows requested to be visible (empty = all).
  * @returns The visible nodes and edges, preserving the order of `view.nodes`
  *   and `view.edges`. Each node's `children`/`inEdges`/`outEdges` are narrowed
  *   to the visible subset to keep the result internally consistent.
  */
-export function computeFlow<A extends Any>(opts: {
-  view: ComputedDynamicView<A>
-  subflows: readonly scalar.StepPath[]
-}): ComputeFlowResult<A> {
-  const { view, subflows } = opts
+export function computeFlow<V extends ComputedDynamicView<any> | LayoutedDynamicView<any>>(opts: {
+  view: V
+  subflows?: readonly scalar.StepPath[]
+}): ComputeFlowResult<V> {
+  const { view, subflows = [] } = opts
+  if (!view.flow) {
+    throw new Error(`view '${view.id}' is outdated and has no flow. Please refresh the view.`)
+  }
   const explicitlyVisible = new Set<string>(subflows)
 
   // Step paths (edge ids) and actors (node ids) that must be shown.
   const visibleSteps = new Set<string>()
   const visibleActors = new Set<scalar.NodeId>(view.flow.actors)
 
-  const isSubFlowVisible = (subflow: ComputedDynamicView.AnySubFlow): boolean =>
-    subflow.visible === true || explicitlyVisible.has(subflow.id)
-
   // Whether any explicitly requested subflow is nested within `parentId`,
-  // i.e. `parentId` is a prefix of a requested subflow path.
+  // i.e. `parentId` is a prefix of a requested subflow path. Used both to
+  // detect whether a container was selected into, and to keep a branch visible
+  // because it encloses a requested nested subflow.
   const hasRequestedDescendant = (parentId: scalar.StepPath): boolean => {
     const prefix = `${parentId}.`
     for (const requested of explicitlyVisible) {
@@ -70,40 +77,58 @@ export function computeFlow<A extends Any>(opts: {
     return false
   }
 
-  // The `flow` of `try`/`alt` holds section/branch subflows (`try-block`,
-  // `alt-when`, ...) which are not part of `ComputedSubFlow`, so the walk
-  // accepts any subflow shape.
-  //
-  // `explicitOnly` switches a subflow's children to "requested only" mode,
-  // ignoring their `visible` flag. It is enabled for the branches/sections of
-  // an `alt`/`try` as soon as one of them is explicitly selected.
-  const walk = (
-    flow: ReadonlyArray<scalar.StepPath | ComputedDynamicView.AnySubFlow>,
-    explicitOnly = false,
-  ): void => {
+  // Steps, loops, opts and pars are always visible; only the branches of an
+  // `alt`/`try` are narrowed once that container has been selected into.
+  const walk = (flow: ReadonlyArray<scalar.StepPath | DynamicViewFlow.AnySubFlow>): void => {
     for (const item of flow) {
       if (isString(item)) {
         // Leaf step: shown because the enclosing flow is shown
         visibleSteps.add(item)
         continue
       }
-      const visible = explicitOnly ? explicitlyVisible.has(item.id) : isSubFlowVisible(item)
-      if (!visible) {
-        continue
-      }
       for (const actor of item.actors) {
         visibleActors.add(actor)
       }
-      // `alt` branches and `try` sections are mutually-exclusive selectors:
-      // selecting any one of them overrides the default-visible one.
-      const selectsBranches = item._type === 'alt' || item._type === 'try'
-      walk(item.flow, selectsBranches && hasRequestedDescendant(item.id))
+      if (item._type === 'alt' || item._type === 'try') {
+        walkBranches(item)
+      } else {
+        // loop / opt / par — always traversed in full
+        walk(item.flow)
+      }
     }
   }
-  walk(view.flow.flow)
+
+  // The `flow` of an `alt`/`try` holds branch/section subflows (`alt-when`,
+  // `try-block`, ...). All branches are visible by default; if the container
+  // was selected into, only branches on a requested path remain.
+  const walkBranches = (container: DynamicViewFlow.SubFlow.Alt | DynamicViewFlow.SubFlow.Try): void => {
+    const hasSelection = hasRequestedDescendant(container.id)
+    for (const branch of container.flow) {
+      const visible = !hasSelection
+        || explicitlyVisible.has(branch.id)
+        || hasRequestedDescendant(branch.id)
+      if (!visible) {
+        continue
+      }
+      for (const actor of branch.actors) {
+        visibleActors.add(actor)
+      }
+      walk(branch.flow)
+    }
+  }
+  walk(view.flow.steps)
+
+  // If all edges are visible
+  if (visibleSteps.size === view.edges.length) {
+    return {
+      edges: view.edges,
+      nodes: view.nodes,
+      subflows,
+    }
+  }
 
   // Edges that correspond to visible steps (preserve view order)
-  const edges = filter(view.edges, e => visibleSteps.has(e.id)) as ComputedEdge<A>[]
+  const edges = filter(view.edges, e => visibleSteps.has(e.id))
   const visibleEdgeIds = new Set<scalar.EdgeId>(map(edges, e => e.id))
 
   // Include visible actors and their ancestors (compound nodes), so the
@@ -121,7 +146,7 @@ export function computeFlow<A extends Any>(opts: {
   const nodes = pipe(
     view.nodes,
     filter(n => visibleNodes.has(n.id)),
-    map((n): ComputedNode<A> => ({
+    map((n): V['nodes'][number] => ({
       ...n,
       children: n.children.filter(c => visibleNodes.has(c)),
       inEdges: n.inEdges.filter(e => visibleEdgeIds.has(e)),
@@ -129,5 +154,9 @@ export function computeFlow<A extends Any>(opts: {
     })),
   )
 
-  return { nodes, edges }
+  return {
+    subflows,
+    nodes,
+    edges,
+  }
 }

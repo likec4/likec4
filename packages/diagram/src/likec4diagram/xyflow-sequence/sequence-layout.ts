@@ -7,6 +7,7 @@ import type {
   NodeId,
   ViewId,
 } from '@likec4/core/types'
+import { isArray } from 'remeda'
 import type { Writable } from 'type-fest'
 import type { Types } from '../types'
 import {
@@ -23,12 +24,14 @@ export function sequenceLayoutToXY(
   view: LayoutedDynamicView,
   currentViewId: ViewId | undefined,
 ): {
-  xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
+  xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
 } {
-  const { actors, steps, compounds, parallelAreas, bounds } = view.sequenceLayout
+  const { actors, steps, compounds, parallelAreas, subflows, bounds } = view.sequenceLayout
 
-  const xynodes = [] as Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.ViewGroupNode>
+  const xynodes = [] as Array<
+    Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode
+  >
   const xyedges = [] as Array<Types.SequenceStepEdge>
 
   const getNode = (id: NodeId): DiagramNode => {
@@ -39,20 +42,30 @@ export function sequenceLayoutToXY(
     xynodes.push(toCompoundArea(compound, getNode(compound.origin), view))
   }
 
-  for (const parallelArea of parallelAreas) {
-    xynodes.push(toSeqParallelArea(parallelArea, view))
+  // In manual layouts, subflows are emtpy
+  if (isArray(subflows)) {
+    for (const subflow of subflows) {
+      xynodes.push(toSeqSubflowArea(subflow, view))
+    }
+  } else {
+    for (const parallelArea of parallelAreas) {
+      xynodes.push(toSeqParallelArea(parallelArea, view))
+    }
   }
+
+  //
 
   for (const actor of actors) {
     xynodes.push(toSeqActorNode(actor, getNode(actor.id), bounds, view))
   }
 
+  let stepIndex = 0
   for (const step of steps) {
     const edge = view.edges.find((e) => e.id === step.id)
     if (!edge) {
       throw new Error(`Edge ${step.id} not found`)
     }
-    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id))
+    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id, stepIndex++))
   }
 
   return {
@@ -155,6 +168,54 @@ function toSeqParallelArea(
   }
 }
 
+function toSeqSubflowArea(
+  { id, _type, zIndex, x, y, width, height }: LayoutedDynamicView.Sequence.SubflowArea,
+  view: LayoutedDynamicView,
+): Types.SequenceSubflowArea {
+  return {
+    id: `subflow-${id}` as NodeId,
+    type: 'seq-subflow',
+    data: {
+      id: `subflow-${id}` as NodeId,
+      title: _type,
+      technology: null,
+      color: SeqParallelAreaColor.default,
+      shape: 'rectangle',
+      style: {},
+      tags: [],
+      x,
+      y,
+      level: 0,
+      icon: null,
+      width,
+      height,
+      description: null,
+      viewId: view.id,
+      flowType: _type,
+      flowPath: id,
+      drifts: null,
+      // Ignore notes for Parallel Area nodes
+      notes: undefined,
+    },
+    zIndex: SeqZIndex.parallel + zIndex * 5,
+    position: {
+      x,
+      y,
+    },
+    draggable: false,
+    deletable: false,
+    selectable: false,
+    focusable: false,
+    style: {
+      pointerEvents: 'none',
+    },
+    width,
+    initialWidth: width,
+    height,
+    initialHeight: height,
+  }
+}
+
 function toSeqActorNode(
   { id, x, y, width, height, ports }: LayoutedDynamicView.Sequence.Actor,
   actor: DiagramNode,
@@ -203,6 +264,7 @@ function toSeqStepEdge(
   { id, labelBBox, sourceHandle, targetHandle }: LayoutedDynamicView.Sequence.Step,
   edge: DiagramEdge,
   currentViewId: ViewId,
+  index: number,
 ): Types.SequenceStepEdge {
   return {
     id,
@@ -220,6 +282,7 @@ function toSeqStepEdge(
         width: labelBBox?.width ?? edge.labelBBox?.width ?? 32,
         height: labelBBox?.height ?? edge.labelBBox?.height ?? 32,
       },
+      index,
       labelXY: null,
       points: edge.points,
       color: edge.color,

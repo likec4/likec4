@@ -40,15 +40,6 @@ export interface Step<A extends AnyAux = AnyAux> {
   readonly astPath: string
 }
 
-// Get the prefix of the parallel steps
-// i.e. step-01.1 -> step-01.
-export function getParallelStepsPrefix(id: string): string | null {
-  if (isStepEdgeId(id) && id.includes('.')) {
-    return id.slice(0, id.indexOf('.') + 1)
-  }
-  return null
-}
-
 export type AnyStep<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Step: Step<A>
   Series: Step.Series<A>

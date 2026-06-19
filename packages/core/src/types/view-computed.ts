@@ -20,6 +20,7 @@ import type {
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
+import type { DynamicViewFlow } from './view-dynamic-flow'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
 export type ComputedNodeStyle = Simplify<
@@ -142,88 +143,6 @@ export interface ComputedDeploymentView<A extends AnyAux = AnyAux> extends BaseC
   readonly [_type]: 'deployment'
 }
 
-export type ComputedFlowBase = {
-  /**
-   * Prefix for step IDs in this flow (undefined for top-level flow)
-   */
-  readonly id: scalar.StepPath
-  /**
-   * Actors that are active in this flow
-   */
-  readonly actors: readonly scalar.NodeId[]
-  /**
-   * Whether this flow should be visible by default
-   */
-  readonly visible?: boolean
-}
-
-type PossibleSubFlows =
-  | {
-    readonly [_type]:
-      | 'loop'
-      | 'opt'
-      | 'par'
-    /**
-     * Allowed sub-flows for this statement
-     */
-    readonly flow: ComputedSubFlows
-  }
-  // Nested flows (for nested statements like try-catch, try-finally, etc.)
-  | {
-    readonly [_type]:
-      | 'try-block'
-      | 'try-catch'
-      | 'try-finally'
-      | 'alt-when'
-      | 'alt-else'
-      | 'alt-if'
-    /**
-     * Allowed sub-flows for this statement
-     */
-    readonly flow: ComputedSubFlows
-  }
-  | {
-    readonly [_type]: 'try'
-    /**
-     * Allowed sub-flows for try statement
-     */
-    readonly flow: readonly SelectSubFlow<'try-block' | 'try-catch' | 'try-finally'>[]
-  }
-  | {
-    readonly [_type]: 'alt'
-
-    /**
-     * Allowed sub-flows for alt statement
-     */
-    readonly flow: readonly SelectSubFlow<'alt-when' | 'alt-else' | 'alt-if'>[]
-  }
-
-type SelectSubFlow<T extends PossibleSubFlows['_type']> = Simplify<
-  ComputedFlowBase & PossibleSubFlows & { readonly [_type]: T }
->
-
-export type ComputedSubFlow = SelectSubFlow<'alt' | 'try' | 'loop' | 'opt' | 'par'>
-
-export type ComputedSubFlows = ReadonlyArray<
-  | scalar.StepPath
-  | ComputedSubFlow
->
-
-/**
- * Root flow definition for dynamic view
- */
-export interface ComputedDynamicViewFlow {
-  /**
-   * Actors that are active in this flow
-   */
-  readonly actors: readonly scalar.NodeId[]
-
-  /**
-   * Steps in the flow
-   */
-  readonly flow: ComputedSubFlows
-}
-
 export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
   readonly [_type]: 'dynamic'
   /**
@@ -233,21 +152,8 @@ export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComp
    */
   readonly variant: DynamicViewDisplayVariant
 
-  readonly flow: ComputedDynamicViewFlow
-}
-
-export namespace ComputedDynamicView {
-  export type Flow = ComputedDynamicViewFlow
-  export type SubFlow = ComputedSubFlow
-  export type SubFlows = ComputedSubFlows
-
-  export type AnySubFlow = SelectSubFlow<PossibleSubFlows['_type']>
-
-  export namespace SubFlow {
-    export type Alt = SelectSubFlow<'alt-when' | 'alt-else' | 'alt-if'>
-    export type Try = SelectSubFlow<'try-block' | 'try-catch' | 'try-finally'>
-    export type Loop = SelectSubFlow<'loop'>
-    export type Opt = SelectSubFlow<'opt'>
-    export type Par = SelectSubFlow<'par'>
-  }
+  /**
+   * All known flows in this dynamic view
+   */
+  readonly flow: DynamicViewFlow
 }

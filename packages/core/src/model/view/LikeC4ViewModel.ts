@@ -3,13 +3,14 @@ import { applyManualLayout, calcDriftsFromSnapshot } from '../../manual-layout'
 import type { LikeC4Styles } from '../../styles'
 import type {
   Any,
-  AnyView,
   BBox,
   ComputedView,
   DynamicViewDisplayVariant,
+  inferType,
   IteratorLike,
   LayoutedView,
   Link,
+  ProcessedView,
   scalar,
   ViewManualLayoutSnapshot,
   ViewWithType,
@@ -31,11 +32,9 @@ import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
-export type ViewsIterator<A extends Any, V extends $View<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
+export type ViewsIterator<A extends Any, V extends ProcessedView<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>
 
-export type InferViewType<V> = V extends AnyView<any> ? V[_type] : never
-
-export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
+export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $View<A>> implements WithTags<A> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -49,7 +48,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
   readonly #includeDeployments = new Set<aux.DeploymentFqn<A>>()
   readonly #includeRelations = new Set<scalar.RelationId>()
   readonly #allTags = new DefaultMap((_key: aux.Tag<A>) => new Set<NodeModel<A, V> | EdgeModel<A, V>>())
-  readonly #manualLayoutSnapshot: ViewManualLayoutSnapshot | undefined
+  readonly #manualLayoutSnapshot: ViewManualLayoutSnapshot<inferType<V>> | undefined
 
   public readonly id: aux.StrictViewId<A>
 
@@ -86,7 +85,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends $View<A> = $View<A>>
     this.#view = view
     this.id = view.id
     this.folder = folder
-    this.#manualLayoutSnapshot = manualLayoutSnapshot
+    this.#manualLayoutSnapshot = manualLayoutSnapshot as ViewManualLayoutSnapshot<inferType<V>>
 
     for (const node of this.#view.nodes) {
       const el = new NodeModel<A, V>(this, Object.freeze(node))
@@ -456,7 +455,7 @@ export namespace LikeC4ViewModel {
 
   export type Layouted<A> = A extends AnyLayouted ? LikeC4ViewModel<A, LayoutedView<A>> : never
 
-  export interface ElementView<A extends Any, V extends $View<A> = $View<A>>
+  export interface ElementView<A extends Any, V extends ProcessedView<A> = $View<A>>
     extends LikeC4ViewModel<A, ViewWithType<V, 'element'>>
   {
     readonly mode: never
@@ -469,13 +468,14 @@ export namespace LikeC4ViewModel {
     readonly viewOf: ElementModel<A>
   }
 
-  export interface DeploymentView<A extends Any, V extends $View<A> = $View<A>>
+  export interface DeploymentView<A extends Any, V extends ProcessedView<A> = $View<A>>
     extends LikeC4ViewModel<A, ViewWithType<V, 'deployment'>>
   {
     readonly mode: never
   }
 
-  export interface DynamicView<A extends Any, V extends $View<A>> extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
+  export interface DynamicView<A extends Any, V extends ProcessedView<A> = $View<A>>
+    extends LikeC4ViewModel<A, ViewWithType<V, 'dynamic'>>
   {
     readonly mode: DynamicViewDisplayVariant
     readonly viewOf: never

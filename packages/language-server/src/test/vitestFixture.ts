@@ -49,12 +49,10 @@ export const testFileScope = _test.extend<{
   },
 })
   .extend('validate', async ({ t }) => {
-    return async (source: TemplateStringsArray | string) => {
-      return await t.validate(typeof source === 'string' ? source : source.join(''))
-    }
+    return t.validate
   })
 export type TestFileScope = typeof testFileScope
 export type FileScopeTestFunction = TestFunction<{
   t: TestServices
-  validate: (source: TemplateStringsArray | string) => Promise<void>
+  validate: TestServices['validate']
 }>

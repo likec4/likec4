@@ -207,6 +207,7 @@ export function nodeRef(node: Types.Node): Fqn | DeploymentFqn | null {
     case 'compound-deployment':
       return node.data.modelFqn ?? node.data.deploymentFqn
     case 'seq-parallel':
+    case 'seq-subflow':
     case 'view-group':
       return null
     default:

@@ -1,12 +1,23 @@
-import type {
-  BBox,
-  DiagramNode,
-  NonEmptyArray,
+import {
+  type BBox,
+  type DiagramNode,
+  type DynamicViewFlow,
+  type DynamicViewFlowOps,
+  type NonEmptyArray,
+  flowAncestors,
+  hasProp,
+  StepPath,
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import * as kiwi from '@lume/kiwi'
-import { last, map, only } from 'remeda'
-import type { Compound, ParallelRect, Step } from './_types'
+import {
+  filter,
+  hasAtLeast,
+  last,
+  map,
+  only,
+} from 'remeda'
+import type { Compound, Rect, Step } from './_types'
 import {
   ACTOR_GAP,
   COLUMN_GAP,
@@ -15,24 +26,27 @@ import {
   PORT_HEIGHT,
   STEP_LABEL_MARGIN,
 } from './const'
-import { findParallelRects } from './utils'
+import { rectFromSteps } from './utils'
 
 // const SELF_LOOP_ADDITIONAL_HEIGHT = 50
 
 type CompareOperator = '<=' | '==' | '>='
 type Operator = CompareOperator | `${CompareOperator} 0`
 
-interface CompoundRect {
-  node: DiagramNode
-  from: ActorBox
-  to: ActorBox
-  depth: number
+interface Bounding {
   // Top-left
   x1: kiwi.Expression | kiwi.Variable
   y1: kiwi.Expression | kiwi.Variable
   // Bottom-right
   x2: kiwi.Expression | kiwi.Variable
   y2: kiwi.Expression | kiwi.Variable
+}
+
+interface CompoundRect extends Bounding {
+  node: DiagramNode
+  from: ActorBox
+  to: ActorBox
+  depth: number
   // bottowRow
   bottom: kiwi.Variable
 }
@@ -68,6 +82,8 @@ interface ActorBox {
 }
 
 export class SequenceViewLayouter {
+  #flow: DynamicViewFlowOps
+
   #solver = new kiwi.Solver()
 
   #actors: NonEmptyArray<ActorBox>
@@ -78,29 +94,27 @@ export class SequenceViewLayouter {
   #viewportBottom: kiwi.Variable
   #rowsTop: kiwi.Variable
   #rows = [] as Array<{
-    y: kiwi.Variable
+    offsetTop: kiwi.Variable
+    y: kiwi.Expression
     height: kiwi.Variable
     bottom: kiwi.Expression
     lastHeight: number
   }>
 
-  #parallelBoxes = [] as Array<{
-    parallelPrefix: string
-    x1: kiwi.Expression
-    y1: kiwi.Expression | kiwi.Variable
-    x2: kiwi.Expression
-    y2: kiwi.Expression | kiwi.Variable
-  }>
+  #subflows = new Map<StepPath, Bounding>()
 
   constructor({
     actors,
     steps,
     compounds,
+    flow,
   }: {
     actors: NonEmptyArray<DiagramNode>
     steps: Array<Step>
     compounds: Array<Compound>
+    flow: DynamicViewFlowOps
   }) {
+    this.#flow = flow
     this.#rowsTop = this.newVar(FIRST_STEP_OFFSET)
     this.#viewportRight = this.newVar(0)
     this.#viewportBottom = this.newVar(0)
@@ -121,9 +135,7 @@ export class SequenceViewLayouter {
       this.addStep(step)
     }
 
-    for (const parallelRect of findParallelRects(steps)) {
-      this.addParallelRect(parallelRect)
-    }
+    this.createSubflowAreas(steps)
 
     const firstActor = this.#actors[0]
     this.constraint(firstActor.offset.left, '==', 0, kiwi.Strength.strong)
@@ -157,13 +169,15 @@ export class SequenceViewLayouter {
     this.#solver.updateVariables()
   }
 
-  getParallelBoxes(): Array<BBox & { parallelPrefix: string }> {
-    return this.#parallelBoxes.map(({ parallelPrefix, x1, y1, x2, y2 }) => ({
-      parallelPrefix,
-      x: x1.value(),
-      y: y1.value(),
-      width: x2.value() - x1.value(),
-      height: y2.value() - y1.value(),
+  getSubflowAreas(): Array<{ subflow: DynamicViewFlow.AnySubFlow; box: BBox }> {
+    return [...this.#subflows.entries()].map(([id, { x1, y1, x2, y2 }]) => ({
+      subflow: this.#flow.lookup(id),
+      box: {
+        x: x1.value(),
+        y: y1.value(),
+        width: x2.value() - x1.value(),
+        height: y2.value() - y1.value(),
+      },
     }))
   }
 
@@ -212,6 +226,167 @@ export class SequenceViewLayouter {
       width: this.#viewportRight.value(),
       height: this.#viewportBottom.value(), // Max Y,
     }
+  }
+
+  private createSubflowAreas(steps: ReadonlyArray<Step>) {
+    const nested = filter(steps, hasProp('parent'))
+    if (!hasAtLeast(nested, 1)) {
+      return
+    }
+    // Parents
+    const ancestors = new Set<StepPath>()
+    for (const step of nested) {
+      flowAncestors(step.id).forEach(a => ancestors.add(a))
+    }
+
+    const selectSteps = (id: StepPath) => filter(nested, s => s.id.startsWith(id))
+
+    this.#flow.walkthrough({
+      // initialData: {
+      //   prevStep: null as Step | null,
+      // },
+      // step: ({ data, step }) => {
+      //   data.prevStep = steps.find(s => s.id === step) ?? data.prevStep
+      // },
+      subflow: {
+        'try': ({ subflow, parent, previous }) => {
+          const steps = selectSteps(subflow.id)
+          if (!hasAtLeast(steps, 1)) {
+            return false
+          }
+          return ({ visited }) => {
+            // const { trySteps, catchSteps, finallySteps } = this.#flow.unwindTry({ flow: visited })
+            const bbox = this.wrapAroundRect(rectFromSteps(steps))
+            this.#subflows.set(subflow.id, bbox)
+          }
+        },
+        'try-block': true,
+        'try-catch': true,
+        'try-finally': true,
+        default: ({ subflow, parent, previous }) => {
+          if (!ancestors.has(subflow.id)) {
+            return false
+          }
+          const steps = selectSteps(subflow.id)
+          if (!hasAtLeast(steps, 1)) {
+            return false
+          }
+          // Wrap all steps
+          const bbox = this.wrapAroundRect(rectFromSteps(steps))
+          this.#subflows.set(subflow.id, bbox)
+
+          // If we are nested flow, position relative to parent or previous sibling
+          if (parent) {
+            if (previous && this.#flow.guards.isSubFlow(previous)) {
+              const prevBbox = this.#subflows.get(previous.id)
+              if (prevBbox) {
+                this.put(bbox.y1).after(prevBbox.y2, 16)
+              }
+            }
+            // we are first subflow
+            else if (!previous) {
+              const parentBbox = this.#subflows.get(parent.id)
+              if (parentBbox) {
+                this.put(parentBbox.y1).before(bbox.y1, 16)
+              }
+            }
+          }
+
+          return ({ visited }) => {
+            const nested = this.#flow.nested(subflow.id).flatMap(s => this.#subflows.get(s.id) ?? [])
+            // Fit nested subflows
+            nested.forEach((n, i, all) => {
+              this.put(bbox.x1).before(n.x1, 16)
+              this.put(bbox.x2).after(n.x2, 16)
+              // Margin bottom
+              if (i === all.length - 1) {
+                this.put(bbox.y2).after(n.y2, 16)
+              }
+            })
+          }
+        },
+      },
+    })
+
+    // const walk = (subflow: DynamicViewFlow.AnySubFlow): Bounding | null => {
+    //   const steps = selectSteps(subflow.id)
+    //   if (!hasAtLeast(steps, 1)) {
+    //     return null
+    //   }
+    //   if (subflow._type === 'loop') {
+    //     flowHelpers.nested(subflow).map(s => s.)
+    //   }
+
+    //   const nested = this.#flow.nested(subflow.id).flatMap(s => walk(s) ?? [])
+
+    //   const bbox = this.wrapAroundRect(rectFromSteps(steps))
+    //   this.#subflows.set(subflow.id, bbox)
+
+    //   nested.forEach((n, i, all) => {
+    //     if (i == 0) {
+    //       this.put(bbox.y1).before(n.y1, 32)
+    //     }
+    //     this.put(bbox.x1).before(n.x1, 16)
+    //     this.put(bbox.x2).after(n.x2, 16)
+
+    //     if (i === all.length - 1) {
+    //       this.put(bbox.y2).after(n.y2, 16)
+    //     }
+
+    //     if (i > 0) {
+    //       let prev = all[i - 1]!
+    //       this.put(n.y1).after(prev.y2, 16)
+    //     }
+    //   })
+
+    //   return bbox
+    // }
+
+    // for (const id of toplevel) {
+    //   walk(flow.lookup(id))
+    // }
+
+    // pipe(
+    //   [...ancestors],
+    //   map(a => flow.lookup(a)),
+    //   sortNaturalByFqn('desc'),
+    //   forEach(sub => {
+    //     // const steps = sub.flow.flatMap(s => isString(s) ? stepsById[s] ?? [] : [])
+    //     const steps = selectSteps(sub.id)
+    //     const rect = rectFromSteps(steps)
+    //     const bbox = this.addSubflowRect({
+    //       ...rect,
+    //       subflow: sub,
+    //     })
+
+    //     this.#flowOps.nested(sub.id).flatMap(s => this.#subflows.get(s.id) ?? []).forEach(
+    //       (n, i, all) => {
+    //         this.wrapNested(bbox, n)
+    //         if (i > 0) {
+    //           let prev = all[i - 1]!
+    //           this.put(n.y1).after(prev.y2, 16)
+    //         }
+    //       },
+    //     )
+    //   }),
+    // )
+
+    // pipe(
+    //   nested,
+    //   // First we add subflows with steps only
+    //   filter(s => !ancestors.has(s.parent)),
+    //   groupByProp('parent'),
+    //   mapValues((st, parent) => {
+    //     return {
+    //       id: parent as StepPath,
+    //       steps: st,
+    //       ...rectFromSteps(st),
+    //     }
+    //   }),
+    //   forEachObj((subflow) => {
+    //     this.addSubflowRect(subflow.id, subflow)
+    //   }),
+    // )
   }
 
   private actorBox(actor: DiagramNode | string | number): ActorBox {
@@ -302,39 +477,108 @@ export class SequenceViewLayouter {
     return this
   }
 
-  private addParallelRect({
-    parallelPrefix,
+  private addSubflowRect({
+    subflow,
     min,
     max,
-  }: ParallelRect) {
-    const x1 = this.actorBox(min.column).centerX.minus(30)
-    const x2 = this.actorBox(max.column).centerX.plus(30)
-    const firstRow = this.#rows[min.row]
-    const lastRow = this.#rows[max.row]
-    invariant(firstRow && lastRow, `parallel box invalid minRow=${min.row} maxRow=${max.row}`)
+  }: Rect & {
+    subflow: DynamicViewFlow.AnySubFlow
+  }) {
+    invariant(!this.#subflows.has(subflow.id))
+    const bbox = this.wrapAroundRect({ min, max })
+    // const x1 = this.actorBox(min.column).centerX.minus(30)
+    // const x2 = this.actorBox(max.column).centerX.plus(30)
+    // const firstRow = this.#rows[min.row]
+    // const lastRow = this.#rows[max.row]
+    // invariant(firstRow && lastRow, `Subflow box invalid minRow=${min.row} maxRow=${max.row}`)
 
-    const y1 = this.newVar(0)
-    this.put(y1).before(firstRow.y, 40)
-    const y2 = lastRow.bottom
+    // const y1 = this.newVar(0)
+    // this.put(y1).before(firstRow.y, 40)
+    // const y2 = this.newVar(0)
+    // this.constraint(y2, '==', lastRow.bottom, kiwi.Strength.medium)
+
+    // // margin top
+    // const rowBefore = min.row > 0 && this.#rows[min.row - 1]
+    // if (rowBefore) {
+    //   this.put(y1).after(rowBefore.bottom, 16)
+    // }
+
+    // const rowAfter = max.row < this.#rows.length - 1 && this.#rows[max.row + 1]
+    // if (rowAfter) {
+    //   this.put(y2).before(rowAfter.y, 16)
+    // }
+    // this.#flowOps.lookup
+    // subflow.flow
+
+    this.#subflows.set(subflow.id, bbox)
+    return bbox
+    // let parent = parentFlow(subflow.id)
+    // let parentArea = parent && this.#subflows.get(parent)
+    // if (parentArea) {
+    //   // this.put(parentArea.x1).before(x1, 16)
+    //   this.put(parentArea.y1).before(y1, 16)
+    //   // this.put(parentArea.x2).after(x2, 16)
+    //   this.put(parentArea.y2).after(y2, 8)
+    // }
+  }
+
+  private wrapAroundRect(rect: Rect) {
+    const bounds = this.getRectBounds(rect)
+    const { min, max } = rect
+    const x1 = this.newVar()
+    this.put(x1).before(bounds.x1, 30)
+    const x2 = this.newVar()
+    this.put(x2, kiwi.Strength.strong).after(bounds.x2, 30)
+
+    const y1 = this.newVar()
+    this.put(y1).before(bounds.y1, 40)
+    const y2 = this.newVar()
+    this.constraint(y2, '==', bounds.y2, kiwi.Strength.medium)
 
     // margin top
     const rowBefore = min.row > 0 && this.#rows[min.row - 1]
     if (rowBefore) {
-      this.put(y1).after(rowBefore.bottom, 16)
+      this.require(y1, '>=', rowBefore.bottom)
     }
 
     const rowAfter = max.row < this.#rows.length - 1 && this.#rows[max.row + 1]
     if (rowAfter) {
-      this.put(y2).before(rowAfter.y, 16)
+      this.put(y2).before(rowAfter.y, 24)
     }
 
-    this.#parallelBoxes.push({
-      parallelPrefix,
+    // this.put(y1).after(bounds.minY, 20)
+    // this.put(y1).before(bounds.y1, 20)
+
+    // this.put(y2).after(bounds.y2)
+    // this.put(y2).before(bounds.maxY)
+
+    return {
       x1,
       y1,
       x2,
       y2,
-    })
+    }
+  }
+
+  private getRectBounds({ min, max }: Rect) {
+    const firstRow = this.#rows[min.row]
+    const lastRow = this.#rows[max.row]
+    invariant(firstRow && lastRow, `Subflow box invalid minRow=${min.row} maxRow=${max.row}`)
+
+    // // margin top
+    // const rowBefore = min.row > 0 ? this.#rows[min.row - 1] : undefined
+    // const rowAfter = max.row < this.#rows.length - 1 ? this.#rows[max.row + 1] : undefined
+
+    return {
+      // We need to fit the subflow box to the rows it spans, but with some margin
+      // minY: firstRow.y.minus(firstRow.offsetTop),
+      x1: this.actorBox(min.column).centerX,
+      y1: firstRow.y,
+      x2: this.actorBox(max.column).centerX,
+      y2: lastRow.bottom,
+      // margin bottom
+      // maxY: rowAfter?.y.minus(rowAfter.offsetTop) ?? this.#viewportBottom.minus(10),
+    }
   }
 
   private addCompound(compound: Compound): NonEmptyArray<CompoundRect> {
@@ -432,6 +676,8 @@ export class SequenceViewLayouter {
       const prevRowY = this.#rows.length > 0 && this.#rows[this.#rows.length - 1]?.bottom ||
         this.#rowsTop.plus(FIRST_STEP_OFFSET)
 
+      // const offsetTop = this.newVar(0)
+
       const y = this.newVar(this.#rows.length * MIN_ROW_HEIGHT)
       this.put(y).after(prevRowY)
 
@@ -439,6 +685,7 @@ export class SequenceViewLayouter {
       this.require(height, '>=', MIN_ROW_HEIGHT)
 
       this.#rows.push({
+        // offsetTop,
         y,
         height,
         bottom: y.plus(height),
@@ -458,8 +705,8 @@ export class SequenceViewLayouter {
     this.#solver.addEditVariable(v, kiwi.Strength.weak)
     if (typeof initialValue === 'number') {
       this.#solver.suggestValue(v, initialValue)
-      this.constraint(v, '>=', 0, kiwi.Strength.strong)
     }
+    this.constraint(v, '>=', 0, kiwi.Strength.strong)
     return v
   }
 
@@ -470,7 +717,7 @@ export class SequenceViewLayouter {
   private require(
     left: kiwi.Expression | kiwi.Variable,
     op: Operator,
-    right: kiwi.Expression | kiwi.Variable | number | undefined = undefined,
+    right?: kiwi.Expression | kiwi.Variable | number | undefined,
   ) {
     this.constraint(left, op, right, kiwi.Strength.required)
     switch (op) {

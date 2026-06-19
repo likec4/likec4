@@ -1,10 +1,12 @@
 import {
   type StepEdgeId,
-  getParallelStepsPrefix,
   invariant,
   isStepEdgeId,
   nonNullable,
 } from '@likec4/core'
+import {
+  parentFlow,
+} from '@likec4/core/types'
 import { clamp, first } from 'remeda'
 import { assertEvent } from 'xstate'
 import { assign, enqueueActions, raise } from 'xstate/actions'
@@ -102,7 +104,7 @@ export const walkthrough = machine.createStateConfig({
         const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
         return {
           stepId,
-          parallelPrefix: getParallelStepsPrefix(stepId),
+          parallelPrefix: parentFlow(stepId),
         }
       },
     }),
@@ -166,7 +168,7 @@ export const walkthrough = machine.createStateConfig({
           return {
             activeWalkthrough: {
               stepId: nextStepId,
-              parallelPrefix: getParallelStepsPrefix(nextStepId),
+              parallelPrefix: parentFlow(nextStepId),
             },
           }
         }),
@@ -191,7 +193,7 @@ export const walkthrough = machine.createStateConfig({
             return {
               activeWalkthrough: {
                 stepId,
-                parallelPrefix: getParallelStepsPrefix(stepId),
+                parallelPrefix: parentFlow(stepId),
               },
             }
           }),

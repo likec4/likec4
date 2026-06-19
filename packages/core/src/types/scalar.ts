@@ -142,18 +142,27 @@ export function EdgeId(id: string): EdgeId {
   return id as any
 }
 
-export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
-export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
+// export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
+/**
+ * @deprecated Use {@link StepPath} instead
+ */
+export type StepEdgeId = Tagged<string, 'EdgeId'>
 export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
   const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
   return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
 }
 export const StepEdgeKind = '@step'
 
+/**
+ * @deprecated Use {@link StepPath} instead
+ */
 export function isStepEdgeId(id: string): id is StepEdgeId {
   return id.startsWith('step-')
 }
 
+/**
+ * @deprecated Use {@link StepPath} instead
+ */
 export function extractStep(id: EdgeId): number {
   if (!isStepEdgeId(id)) {
     throw new Error(`Invalid step edge id: ${id}`)
@@ -163,10 +172,45 @@ export function extractStep(id: EdgeId): number {
 
 export type StepPath = Tagged<EdgeId, 'StepPath'>
 
-export function StepPath(...segments: Array<string | number | undefined>): StepPath {
+/**
+ * Path to a step, also acting as EdgeId
+ *
+ * Format: step-{segment1}.{segment2}...{segmentN}
+ * Where segment can be:
+ * - {index} (index in array, 1-based, represents A -> B)
+ * - {index}:{kind} (subflow of a kind, 1-based, i.e. "03:loop" - 3rd step starts a loop)
+ *
+ * @example
+ * ```
+ * dynamic view {
+ *   A -> B          // step-01
+ *   alt {           // step-02:alt - step 2 is alt subflow
+ *     when {        // step-02:alt.01:when - step 1 in alt is when subflow
+ *       try {       // step-02:alt.01:when.01:try - step 1 in when is try subflow
+ *         B -> C    // step-02:alt.01:when.01:try.01:block.01 - step 1 in try block
+ *       } catch {
+ *         B -> D    // step-02:alt.01:when.01:try.02:catch.01
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param segments - Array of segments, where each segment can be:
+ *   - string: literal segment
+ *   - number: index segment (will be padded to 2 digits)
+ *   - [number, string]: index:kind segment (will be padded to 2 digits)
+ *   - undefined: will be filtered out
+ */
+export function StepPath(...segments: Array<string | number | [number, string] | undefined>): StepPath {
   const filtered = segments
-    .filter(isTruthy)
-    .map(v => isNumber(v) ? String(v).padStart(2, '0') : v)
+    .filter(v => v !== undefined && v !== '')
+    .map(v => {
+      if (Array.isArray(v) && v.length === 2) {
+        return `${v[0].toString().padStart(2, '0')}:${v[1]}`
+      }
+      return isNumber(v) ? v.toString().padStart(2, '0') : v
+    })
   invariant(filtered.length > 0, 'StepPath must have at least one segment')
   return filtered.join('.') as StepPath
 }

@@ -16,7 +16,7 @@ import { applyManualLayout } from './applyManualLayout'
  *
  * @returns The autoLayouted view with calculated drifts if any.
  */
-export function calcDriftsFromSnapshot<V extends LayoutedView>(
+export function calcDriftsFromSnapshot<V extends LayoutedView<any>>(
   autoLayouted: V,
   snapshot: ViewManualLayoutSnapshot,
 ): V {

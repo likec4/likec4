@@ -1,5 +1,6 @@
+import { computeFlow } from '@likec4/core/compute-view'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView, NodeId } from '@likec4/core/types'
-import { getParallelStepsPrefix, isStepEdgeId } from '@likec4/core/types'
+import { dynamicViewFlow, parentFlow } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
 import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
@@ -17,6 +18,13 @@ type Port = {
 }
 
 export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicView.Sequence.Layout {
+  const flow = dynamicViewFlow(view)
+
+  const compFlow = computeFlow({
+    view,
+    subflows: flow.paths,
+  })
+
   const actorNodes = new Set<DiagramNode>()
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
@@ -28,7 +36,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     target: DiagramNode
   }>
 
-  for (const edge of view.edges.filter(e => isStepEdgeId(e.id))) {
+  for (const edge of compFlow.edges) {
     const source = getNode(edge.source)
     const target = getNode(edge.target)
 
@@ -59,10 +67,10 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
 
     const isSelfLoop = source === target
     const isBack = sourceColumn > targetColumn
-    const parallelPrefix = getParallelStepsPrefix(edge.id)
+    const parent = parentFlow(edge.id)
 
     let isContinuing = false
-    if (prevStep && prevStep.target == source && prevStep.parallelPrefix === parallelPrefix) {
+    if (prevStep && prevStep.target == source && prevStep.parent === parent) {
       isContinuing = prevStep.isSelfLoop !== isSelfLoop || prevStep.isBack === isBack
     }
 
@@ -83,7 +91,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
       edge,
       isSelfLoop,
       isBack,
-      parallelPrefix,
+      parent,
       offset: isContinuing ? (prevStep?.offset ?? 0) + CONTINUOUS_OFFSET : 0,
       source,
       target,
@@ -104,6 +112,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     actors,
     steps,
     compounds: buildCompounds(actors, view.nodes),
+    flow,
   })
 
   const bounds = layout.getViewBounds()
@@ -122,6 +131,13 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     flat(),
   )
 
+  const subflows = layout.getSubflowAreas().map(({ subflow, box }) => ({
+    id: subflow.id,
+    ...box,
+    _type: subflow._type,
+    zIndex: flow.level(subflow.id),
+  }))
+
   return {
     actors: actors.map(actor => toSeqActor({ actor, ports: actorPorts.get(actor), layout })),
     compounds,
@@ -136,7 +152,8 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
         },
       }),
     })),
-    parallelAreas: layout.getParallelBoxes(),
+    parallelAreas: [],
+    subflows,
     bounds,
   }
 }

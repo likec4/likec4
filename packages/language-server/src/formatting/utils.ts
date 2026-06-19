@@ -34,14 +34,14 @@ export function isSameLine(a: CstNode | undefined, b: CstNode | undefined): bool
   if (!a || !b) {
     return false
   }
-  const [prev, next] = a.offset < b.offset ? [a, b] : [b, a]
+  const [prev, next] = a.range.start.line < b.range.start.line ? [a, b] : [b, a]
   return prev.range.end.line === next.range.start.line
 }
 
-export function linesBetween(a: CstNode | undefined | null, b: CstNode | undefined | null): number {
+export function linesDifference(a: CstNode | undefined | null, b: CstNode | undefined | null): number {
   if (!a || !b) {
     return 0
   }
-  const [prev, next] = a.offset < b.offset ? [a, b] : [b, a]
-  return next.range.start.line - prev.range.end.line
+  const [prev, next] = a.range.start.line < b.range.start.line ? [a, b] : [b, a]
+  return Math.max(0, next.range.start.line - prev.range.end.line)
 }

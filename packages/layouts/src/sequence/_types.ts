@@ -1,4 +1,4 @@
-import type { BBox, DiagramEdge, DiagramNode, EdgeId, NodeId, ViewId } from '@likec4/core/types'
+import type { BBox, DiagramEdge, DiagramNode, EdgeId, NodeId, StepPath, ViewId } from '@likec4/core/types'
 
 export type Step = {
   id: EdgeId
@@ -19,7 +19,7 @@ export type Step = {
   }
   isSelfLoop: boolean
   isBack: boolean
-  parallelPrefix: string | null
+  parent: StepPath | null
   offset: number // offset for continuing edges
   edge: DiagramEdge
 }
@@ -31,9 +31,7 @@ export type Compound = {
 
   nested: Compound[]
 }
-
-export type ParallelRect = {
-  parallelPrefix: string
+export type Rect = {
   min: {
     column: number
     row: number
@@ -42,6 +40,10 @@ export type ParallelRect = {
     column: number
     row: number
   }
+}
+
+export type ParallelRect = Rect & {
+  parallelPrefix: string
 }
 
 export interface SequenceActorStepPort {

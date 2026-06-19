@@ -34,6 +34,7 @@ const builtinNodes = {
   'view-group': BuiltinNodes.ViewGroupNode,
   'seq-actor': BuiltinNodes.SequenceActorNode,
   'seq-parallel': BuiltinNodes.SequenceParallelArea,
+  'seq-subflow': BuiltinNodes.SequenceSubflowArea,
 }
 function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   if (!nodeTypes || isEmpty(nodeTypes)) {
@@ -47,6 +48,7 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
     'view-group': nodeTypes.viewGroup ?? builtinNodes['view-group'],
     'seq-actor': nodeTypes.seqActor ?? builtinNodes['seq-actor'],
     'seq-parallel': nodeTypes.seqParallel ?? builtinNodes['seq-parallel'],
+    'seq-subflow': nodeTypes.seqSubflow ?? builtinNodes['seq-subflow'],
   }
 }
 

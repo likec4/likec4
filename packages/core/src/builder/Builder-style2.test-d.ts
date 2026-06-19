@@ -174,6 +174,7 @@ test('Builder types - style 2', () => {
             $step('alice -> cloud.backend'),
             $step.opt(
               'cloud.frontend -> cloud.frontend',
+              'cloud -> cloud.backend',
             ),
           ),
           // @ts-expect-error

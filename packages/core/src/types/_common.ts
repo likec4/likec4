@@ -1,7 +1,9 @@
 import { omitBy } from 'remeda'
 import type {
   IsAny,
+  IsNever,
   KeysOfUnion,
+  Or,
   Simplify,
   UnionToIntersection,
 } from 'type-fest'
@@ -114,3 +116,5 @@ type ExactObject<T, InputType = unknown> =
 export function exact<Expected, T extends ExactObject<Expected, T>>(a: T): Expected {
   return omitBy(a, v => v === undefined) as Expected
 }
+
+export type IsAnyOrNever<T> = Or<IsAny<T>, IsNever<T>>

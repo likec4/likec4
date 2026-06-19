@@ -447,31 +447,34 @@ describe('dynamic-view', () => {
           el('D'),
         )
       )
-      .views(({ dynamicView, $step }, _) =>
+      .views(({ dynamicView, $step, $rules }, _) =>
         _(
-          dynamicView('test').with(
-            $step('A -> B'),
-            $step.loop(
-              'B -> B',
+          dynamicView(
+            'test',
+            $rules(
               $step('A -> B'),
-              $step.try({
-                try: [
-                  'B -> C',
-                  $step.opt(
-                    'A -> A',
-                  ),
-                ],
-                catch: [
-                  'B -> A',
-                ],
-              }),
-              $step.alt(
-                $step.when('B -> A'),
-                $step.when('B -> C'),
+              $step.loop(
+                'B -> B',
+                $step('A -> B'),
+                $step.try({
+                  try: [
+                    'B -> C',
+                    $step.opt(
+                      'A -> A',
+                    ),
+                  ],
+                  catch: [
+                    'B -> A',
+                  ],
+                }),
+                $step.alt(
+                  $step.when('B -> A'),
+                  $step.when('B -> C'),
+                ),
+                $step('B -> B'),
               ),
-              $step('B -> B'),
+              $step('D -> A'),
             ),
-            $step('D -> A'),
           ),
         )
       )
@@ -487,7 +490,7 @@ describe('dynamic-view', () => {
           "B",
           "D",
         ],
-        "flow": [
+        "steps": [
           "step-01",
           {
             "_type": "loop",
@@ -519,11 +522,9 @@ describe('dynamic-view', () => {
                           "step-02:loop.03:try.01:block.02:opt.01",
                         ],
                         "id": "step-02:loop.03:try.01:block.02:opt",
-                        "visible": true,
                       },
                     ],
                     "id": "step-02:loop.03:try.01:block",
-                    "visible": true,
                   },
                   {
                     "_type": "try-catch",
@@ -538,7 +539,6 @@ describe('dynamic-view', () => {
                   },
                 ],
                 "id": "step-02:loop.03:try",
-                "visible": true,
               },
               {
                 "_type": "alt",
@@ -554,7 +554,6 @@ describe('dynamic-view', () => {
                       "step-02:loop.04:alt.01:when.01",
                     ],
                     "id": "step-02:loop.04:alt.01:when",
-                    "visible": true,
                   },
                   {
                     "_type": "alt-when",
@@ -569,12 +568,10 @@ describe('dynamic-view', () => {
                   },
                 ],
                 "id": "step-02:loop.04:alt",
-                "visible": true,
               },
               "step-02:loop.05",
             ],
             "id": "step-02:loop",
-            "visible": true,
           },
           "step-03",
         ],

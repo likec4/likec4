@@ -5,10 +5,12 @@ import type {
   Any,
   Aux,
   AuxFromDump,
+  AuxFromLikeC4ModelData,
   ComputedLikeC4ModelData,
   Element,
   IteratorLike,
   LayoutedLikeC4ModelData,
+  LikeC4ModelData,
   LikeC4ModelDump,
   LikeC4Project,
   ModelGlobals,
@@ -113,9 +115,10 @@ export class LikeC4Model<A extends Any = Any> {
   static create<T extends AnyParsed>(model: ParsedLikeC4ModelData<T>): LikeC4Model<T>
   static create<T extends AnyComputed>(model: ComputedLikeC4ModelData<T>): LikeC4Model<T>
   static create<T extends AnyLayouted>(model: LayoutedLikeC4ModelData<T>): LikeC4Model<T>
-  // static create<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
-  // static create<T extends Any>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
-  // static create<T extends Any>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
+  static create<T extends Any>(model: ParsedLikeC4ModelData<T>): LikeC4Model.Parsed<T>
+  static create<T extends Any>(model: ComputedLikeC4ModelData<T>): LikeC4Model.Computed<T>
+  static create<T extends Any>(model: LayoutedLikeC4ModelData<T>): LikeC4Model.Layouted<T>
+  static create<M extends LikeC4ModelData<any>>(model: M): LikeC4Model<AuxFromLikeC4ModelData<M>>
   static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T>
   static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T> {
     return new LikeC4Model(model)

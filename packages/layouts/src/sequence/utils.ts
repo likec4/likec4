@@ -1,7 +1,32 @@
 import type { DiagramNode } from '@likec4/core/types'
-import { isAncestor, nonNullable, Stack } from '@likec4/core/utils'
+import { invariant, isAncestor, nonNullable, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
-import type { Compound, ParallelRect, Step } from './_types'
+import type { Compound, ParallelRect, Rect, Step } from './_types'
+
+export function rectFromSteps(steps: Array<Step>): Rect {
+  invariant(steps.length > 0)
+  return steps.reduce(
+    (acc, step) => {
+      acc.min.column = Math.min(acc.min.column, step.from.column, step.to.column)
+      acc.min.row = Math.min(acc.min.row, step.from.row, step.to.row)
+
+      acc.max.column = Math.max(acc.max.column, step.from.column, step.to.column)
+      acc.max.row = Math.max(acc.max.row, step.from.row, step.to.row)
+
+      return acc
+    },
+    {
+      min: {
+        column: Infinity,
+        row: Infinity,
+      },
+      max: {
+        column: -Infinity,
+        row: -Infinity,
+      },
+    } as Rect,
+  )
+}
 
 /**
  * From steps find boxes that must be marked as parallel on the layout
@@ -9,30 +34,12 @@ import type { Compound, ParallelRect, Step } from './_types'
 export function findParallelRects(steps: Array<Step>): Array<ParallelRect> {
   return pipe(
     steps,
-    groupBy(s => s.parallelPrefix ?? undefined),
+    groupBy(s => s.parent ?? undefined),
     mapValues((steps, parallelPrefix) => {
-      return steps.reduce(
-        (acc, step) => {
-          acc.min.column = Math.min(acc.min.column, step.from.column, step.to.column)
-          acc.min.row = Math.min(acc.min.row, step.from.row, step.to.row)
-
-          acc.max.column = Math.max(acc.max.column, step.from.column, step.to.column)
-          acc.max.row = Math.max(acc.max.row, step.from.row, step.to.row)
-
-          return acc
-        },
-        {
-          parallelPrefix,
-          min: {
-            column: Infinity,
-            row: Infinity,
-          },
-          max: {
-            column: -Infinity,
-            row: -Infinity,
-          },
-        } as ParallelRect,
-      )
+      return {
+        ...rectFromSteps(steps),
+        parallelPrefix,
+      }
     }),
     values(),
   )
