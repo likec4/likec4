@@ -1,4 +1,5 @@
 import { loggable } from '@likec4/log'
+import react from '@vitejs/plugin-react'
 import getPort, { portNumbers } from 'get-port'
 import isInsideContainer from 'is-inside-container'
 import { mkdtemp } from 'node:fs/promises'
@@ -118,6 +119,10 @@ export async function viteDev({
   if (hmr && resolvedHmrPort !== undefined) {
     const source = hmrPort ? ' (explicit)' : env['HMR_PORT'] ? ' (env)' : ' (auto-discovered)'
     logger.info(`Enabling HMR: localhost:${resolvedHmrPort}${source}`)
+    config.plugins = [
+      react(),
+      ...config.plugins,
+    ]
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${resolvedHmrPort} is published from container`))
     }
@@ -136,7 +141,27 @@ export async function viteDev({
     mode: hmr ? 'development' : config.mode,
     publicDir,
     optimizeDeps: {
-      force: true,
+      holdUntilCrawlEnd: false,
+      ignoreOutdatedRequests: true,
+      // Pre-bundle known dependencies
+      include: [
+        'react',
+        'react-dom',
+        'react/compiler-runtime',
+        'react/jsx-runtime',
+        'react-dom/client',
+        'use-sync-external-store/shim/with-selector',
+        'likec4/vite-plugin/internal',
+        '@likec4/core/styles',
+        '@likec4/core/geometry',
+        '@likec4/core/utils',
+        '@likec4/core/compute-view',
+        '@likec4/core/types',
+        '@likec4/core/model',
+        '@likec4/core',
+        'likec4/react',
+        'likec4/model',
+      ],
     },
     server: {
       host,
@@ -155,6 +180,8 @@ export async function viteDev({
     },
   })
 
+  await server.listen()
+
   if (buildWebcomponent) {
     const webcomponentConfig = viteWebcomponentConfig({
       webcomponentPrefix,
@@ -163,7 +190,7 @@ export async function viteDev({
       base: config.base,
     })
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
-    build({
+    await build({
       ...webcomponentConfig,
       logLevel: 'warn',
     }).catch(err => {
@@ -173,8 +200,6 @@ export async function viteDev({
   } else {
     logger.info(`Skip webcomponent build`)
   }
-
-  await server.listen()
 
   return server
 }

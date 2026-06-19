@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.57.0",
+  "version": "1.58.0",
   "private": true,
   "scripts": {
     "update-theme-c4": "tsx scripts/generate-theme-c4.mts",
@@ -25,8 +25,11 @@
     "@expressive-code/plugin-collapsible-sections": "catalog:astro",
     "@expressive-code/plugin-line-numbers": "catalog:astro",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
+    "@likec4/core": "workspace:*",
     "@likec4/config": "workspace:*",
     "@likec4/react": "workspace:*",
+    "@likec4/icons": "workspace:*",
+    "@likec4/vite-plugin": "workspace:*",
     "@tailwindcss/vite": "catalog:css",
     "@types/picomatch": "catalog:externals",
     "@types/react": "catalog:react",
@@ -46,7 +49,9 @@
     "tailwindcss": "catalog:css",
     "tsx": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:vite",
     "wrangler": "catalog:cloudflare"
+  },
+  "overrides": {
+    "vite": "^7"
   }
 }

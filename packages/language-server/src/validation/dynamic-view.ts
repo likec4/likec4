@@ -56,6 +56,20 @@ export const dynamicViewStepChain = (services: LikeC4Services): ValidationCheck<
   })
 }
 
+export const dynamicViewParallelSteps = (
+  _services: LikeC4Services,
+): ValidationCheck<ast.DynamicViewParallelSteps> => {
+  return tryOrLog((el, accept) => {
+    for (const step of el.steps) {
+      if (ast.isDynamicViewParallelSteps(step)) {
+        accept('error', 'Nested parallel blocks are not allowed', {
+          node: step,
+        })
+      }
+    }
+  })
+}
+
 export const dynamicViewDisplayVariant = (
   _services: LikeC4Services,
 ): ValidationCheck<ast.DynamicViewDisplayVariantProperty> => {

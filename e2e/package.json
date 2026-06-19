@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@11.2.2",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
@@ -19,7 +19,7 @@
   "dependencies": {
     "@likec4/core": "file:../packages/core/package.tgz",
     "@likec4/icons": "file:../packages/icons/package.tgz",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.60.0",
     "@types/node": "~22.19.17",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

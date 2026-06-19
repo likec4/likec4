@@ -3,8 +3,10 @@ import {
   useMutationObserverTarget,
 } from '@mantine/hooks'
 import { useState } from 'react'
-import { first } from 'remeda'
+import { first, isFunction, isString, once } from 'remeda'
 import { useCallbackRef } from '../hooks/useCallbackRef'
+import fontsCss from '../styles-font.css?inline'
+import inlinedStyles from '../styles.css?inline'
 
 export function scopeStylesToShadowRoot(styles: string): string {
   return styles
@@ -17,6 +19,44 @@ export function scopeStylesToShadowRoot(styles: string): string {
      * but `.likec4-overlay-body { }` must stay unchanged.
      */
     .replaceAll(/(^|[{},;]|\*\/)(\s*)body(?=\s*[{,])/g, '$1$2.likec4-shadow-root')
+}
+
+export function appendFontToDocument(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
+  if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
+    const style = document.createElement('style')
+    style.setAttribute('type', 'text/css')
+    style.setAttribute('data-likec4-font', '')
+
+    let nonce: string | undefined
+    if (isString(styleNonce)) {
+      nonce = styleNonce
+    }
+    if (isFunction(styleNonce)) {
+      nonce = styleNonce()
+    }
+    if (nonce) {
+      style.setAttribute('nonce', nonce)
+    }
+
+    style.appendChild(document.createTextNode(fontsCss))
+    document.head.appendChild(style)
+  }
+}
+
+/**
+ * Creates a CSS string with styles scoped to the shadow root
+ * @returns CSS string for the shadow root
+ */
+export const shadowRootCSS = once(() => {
+  return scopeStylesToShadowRoot(inlinedStyles)
+})
+/**
+ * Creates a CSSStyleSheet with styles scoped to the shadow root
+ */
+export function createShadowRootStylesheets(csstext: string) {
+  const css = new CSSStyleSheet()
+  css.replaceSync(csstext)
+  return [css] as [CSSStyleSheet]
 }
 
 const getComputedColorScheme = (): ColorScheme | null => {

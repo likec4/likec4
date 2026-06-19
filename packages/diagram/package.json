@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagram",
-  "version": "1.57.0",
+  "version": "1.58.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -23,7 +23,9 @@
     "!**/__*/**",
     "!**/*.d.ts.map"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "type": "module",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -64,7 +66,9 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "pretypecheck": "pandacss codegen",
     "typecheck": "tsc --build --verbose",
+    "prebuild": "pandacss codegen",
     "build": "vite build -m production",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
@@ -91,8 +95,6 @@
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "@xstate/store-react": "catalog:xstate",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "@zag-js/collection": "catalog:zag",
     "@zag-js/react": "catalog:zag",
     "@zag-js/tree-view": "catalog:zag",
@@ -103,14 +105,15 @@
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
-    "xstate": "catalog:xstate"
-  },
-  "peerDependencies": {
-    "react": "^18.x || ^19.x",
-    "react-dom": "^18.x || ^19.x"
+    "xstate": "catalog:xstate",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
+    "@tabler/icons-react": "catalog:react"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
@@ -125,12 +128,9 @@
     "@vitejs/plugin-react": "catalog:vite",
     "oxlint": "catalog:",
     "postcss": "catalog:css",
-    "react": "catalog:react",
-    "react-compiler-runtime": "catalog:react",
-    "react-dom": "catalog:react",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "vite-plugin-dts": "5.0.0-beta.6",
+    "vite-plugin-dts": "5.0.2",
     "vitest": "catalog:vitest",
     "zx": "catalog:"
   }

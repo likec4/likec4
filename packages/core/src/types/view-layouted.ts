@@ -54,6 +54,12 @@ export interface DiagramEdge<A extends AnyAux = AnyAux> extends ComputedEdge<A> 
   labelBBox?: BBox | null
 
   /**
+   * Whether the label position was manually set by the user.
+   * When set, the label keeps its position and is not auto-centered on the edge.
+   */
+  isLabelCustomized?: boolean
+
+  /**
    * List of reasons causing edge drift
    */
   drifts?: NonEmptyReadonlyArray<DiagramEdgeDriftReason> | null

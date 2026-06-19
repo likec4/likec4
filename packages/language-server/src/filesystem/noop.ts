@@ -98,6 +98,9 @@ export class NoopLikeC4ManualLayouts implements LikeC4ManualLayouts {
       dispose: () => {},
     }
   }
+
+  dispose(): void {
+  }
 }
 
 export const NoFileSystemWatcher: FileSystemWatcherModuleContext = {

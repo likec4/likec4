@@ -2,7 +2,7 @@
   "name": "@likec4/react",
   "description": "LikeC4 React bundle",
   "private": true,
-  "version": "1.57.0",
+  "version": "1.58.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -18,30 +18,34 @@
   },
   "type": "module",
   "sideEffects": false,
+  "types": "dist/index.d.mts",
+  "module": "dist/index.mjs",
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "sources": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "prebuild": "pandacss codegen",
+    "pretypecheck": "pandacss codegen",
+    "typecheck": "tsc -b --verbose",
     "build": "vite build",
     "clean": "likec4ops clean"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "react-compiler-runtime": "catalog:react",
-    "use-sync-external-store": "catalog:react",
-    "type-fest": "catalog:externals"
-  },
-  "peerDependencies": {
-    "react": "^18.x || ^19.x",
-    "react-dom": "^18.x || ^19.x"
+    "immer": "catalog:utils",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "use-sync-external-store": "catalog:react"
   },
   "devDependencies": {
+    "type-fest": "catalog:externals",
     "@babel/core": "catalog:react",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
@@ -53,22 +57,21 @@
     "@react-hookz/web": "catalog:react",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "@rolldown/plugin-babel": "catalog:vite",
     "@vitejs/plugin-react": "catalog:vite",
     "babel-plugin-react-compiler": "catalog:react",
     "xstate": "catalog:xstate",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
     "rolldown": "catalog:tsdown",
     "oxlint": "catalog:",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
     "vite-plugin-dts": "catalog:vite",
     "vite": "catalog:vite",
     "tsx": "catalog:",
     "turbo": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "zx": "catalog:"
   }
 }

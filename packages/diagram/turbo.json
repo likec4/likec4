@@ -7,10 +7,11 @@
     "build": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/styles#generate"
+        "@likec4/styles#build"
       ],
       "outputs": [
         "dist/**",
+        "styled-system/**",
         "*.css",
         "panda.buildinfo.json"
       ],

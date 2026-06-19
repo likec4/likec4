@@ -119,3 +119,6 @@ export {
 } from './search/Search'
 
 export { SearchControl } from './components/SearchControl'
+
+export { DefaultMantineProvider } from './context/DefaultMantineProvider'
+export { FramerMotionConfig } from './context/FramerMotionConfig'

@@ -1,5 +1,6 @@
 import { invariant } from '@likec4/core'
 import { loggable } from '@likec4/log'
+import isInsideContainer from 'is-inside-container'
 import ky from 'ky'
 import spawn from 'nano-spawn'
 import { isEmptyish } from 'remeda'
@@ -15,15 +16,14 @@ const ONE_DAY = 1000 * 60 * 60 * 24
 const ENV_CHECK_UPDATE = 'check-update'
 
 export async function notifyAvailableUpdate() {
-  if (isCI || isTest || nodeENV === ENV_CHECK_UPDATE) {
+  if (isCI || isTest || nodeENV === ENV_CHECK_UPDATE || isInsideContainer()) {
     return
   }
   const store = getConfigStore()
-  const lastUpdateCheck = store.get('lastUpdateCheck')
-  if (!lastUpdateCheck) {
-    await checkAvailableUpdate(false)
+  if (!store) {
     return
   }
+  const lastUpdateCheck = store.get('lastUpdateCheck')
   const latestVersion = store.get('latestVersion')
   const shouldUpdate = isEmptyish(latestVersion) || isEmptyish(lastUpdateCheck) ||
     (lastUpdateCheck + ONE_DAY < Date.now())
@@ -43,7 +43,9 @@ export async function notifyAvailableUpdate() {
     } catch {
       // ignore error
     }
+    return
   }
+
   if (latestVersion && semverGt(latestVersion, pkg.version)) {
     boxen([
       `Update available: `,
@@ -58,12 +60,12 @@ export async function notifyAvailableUpdate() {
 export async function checkAvailableUpdate(reportUpToDate = true) {
   try {
     const store = getConfigStore()
-    store.set({
+    store?.set({
       lastUpdateCheck: Date.now(),
     })
     const latest = await fetchLatestVersion()
     invariant(latest, 'No version found in latest npm')
-    store.set({
+    store?.set({
       lastUpdateCheck: Date.now(),
       latestVersion: latest,
     })
@@ -74,7 +76,10 @@ export async function checkAvailableUpdate(reportUpToDate = true) {
         k.reset(' → '),
         k.green(latest),
       ].join(''))
-    } else if (reportUpToDate) {
+      return
+    }
+
+    if (reportUpToDate) {
       boxen(k.dim(`Up to date: `) + ' ' + k.green(pkg.version))
     }
   } catch (error) {

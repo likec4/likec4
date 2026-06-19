@@ -1,11 +1,14 @@
 import { invariant } from '@likec4/core'
-import { isNot } from 'remeda'
-import { assign, enqueueActions, sendTo } from 'xstate'
+import { findLast } from 'remeda'
+import { assign, enqueueActions, log, sendTo } from 'xstate'
 import { typedSystem } from '../../likec4diagram/state/utils'
 import {
+  cancelSync,
+  clearQueue,
+  deleteNodesAndEdges,
   makeSnapshot,
   pushToSyncQueue,
-  reschedule,
+  redo,
   scheduleSync,
   undo,
 } from './actions'
@@ -31,6 +34,9 @@ const idle = machine.createStateConfig({
     ...to.pending,
   },
   on: {
+    'delete.nodes-edges': {
+      actions: deleteNodesAndEdges(),
+    },
     'change.sync-snapshot': {
       actions: pushToSyncQueue(),
       ...to.pending,
@@ -41,8 +47,16 @@ const idle = machine.createStateConfig({
     },
     'undo': {
       actions: undo(),
-      reenter: true,
+    },
+    'redo': {
+      actions: redo(),
+    },
+    'cancel': {
+      actions: cancelSync(),
       ...to.idle,
+    },
+    'view.synched': {
+      actions: log('in idle got view.synched'),
     },
   },
 })
@@ -64,22 +78,31 @@ const pending = machine.createStateConfig({
       actions: pushToSyncQueue(),
       ...to.process,
     },
+    'delete.nodes-edges': {
+      actions: deleteNodesAndEdges(),
+      reenter: true,
+      ...to.pending,
+    },
     // When editing starts, we suspend the queue
     'edit.move.start': {
       ...to.suspended,
     },
     'undo': {
+      reenter: true,
       actions: undo(),
+      ...to.pending,
+    },
+    'redo': {
+      reenter: true,
+      actions: redo(),
+      ...to.pending,
+    },
+    'cancel': {
+      actions: clearQueue(),
       ...to.idle,
     },
     'view.synched': {
-      guard: 'has pending',
-      actions: () => {
-        if (import.meta.env.DEV) {
-          console.log('view.synched')
-        }
-      },
-      ...to.process,
+      actions: log('in pending got view.synched'),
     },
   },
   after: {
@@ -88,9 +111,7 @@ const pending = machine.createStateConfig({
         guard: 'has pending',
         ...to.process,
       },
-      {
-        ...to.idle,
-      },
+      to.idle,
     ],
   },
 })
@@ -101,36 +122,23 @@ const pending = machine.createStateConfig({
 const suspended = machine.createStateConfig({
   ...idOf(to.suspended),
   on: {
-    'undo': {
-      actions: undo(),
-      ...to.idle,
-    },
-    'edit.*': {
-      ...to.pending,
-    },
-    'change.*': {
-      actions: reschedule(),
-    },
+    // idle redirects to pending if any
+    'edit.*': to.idle,
     'cancel': {
+      actions: [
+        clearQueue(),
+        cancelSync(),
+      ],
       ...to.idle,
     },
   },
 })
 
 const peekFromQueue = () =>
-  machine.assign(({ system, context: { syncQueue, processing } }) => {
-    if (processing) {
-      if (import.meta.env.DEV) {
-        console.log('Processing already in progress')
-      }
-      return {}
-    }
+  machine.assign(({ system, context: { syncQueue } }) => {
     let [head, ...tail] = syncQueue
     if (head === 'sync-snapshot') {
       head = makeSnapshot(system).change
-    }
-    if (import.meta.env.DEV) {
-      console.log('peekFromQueue', { head, tail, syncQueue })
     }
     return {
       processing: head ?? null,
@@ -147,17 +155,13 @@ const clearProcessing = () => ({
  */
 const process = machine.createStateConfig({
   ...idOf(to.process),
-  initial: 'enter',
+  initial: 'peekFromQueue',
   tags: ['busy'],
   states: {
-    enter: {
+    peekFromQueue: {
       entry: peekFromQueue(),
       // Decide what to do next
       always: [
-        {
-          guard: ({ context: { processing } }) => !processing,
-          ...to.idle,
-        },
         {
           guard: ({ context: { processing } }) => processing === 'apply-latest-to-manual',
           target: 'applyLatestToManual',
@@ -167,7 +171,17 @@ const process = machine.createStateConfig({
           target: 'applySemanticLayout',
         },
         {
+          guard: ({ context: { processing } }) => isViewChange(processing),
           target: 'executeChanges',
+        },
+        {
+          guard: 'has pending',
+          reenter: true,
+          ...to.process,
+        },
+        {
+          actions: clearQueue(),
+          ...to.idle,
         },
       ],
     },
@@ -176,6 +190,9 @@ const process = machine.createStateConfig({
      */
     applyLatestToManual: machine.createStateConfig({
       initial: 'call',
+      entry: assign(({ system }) => ({
+        processing: makeSnapshot(system).change,
+      })),
       states: {
         // Fetch latest and manual layouts
         // Apply changes, send update to diagram
@@ -183,9 +200,10 @@ const process = machine.createStateConfig({
           invoke: {
             src: 'applyLatest',
             input: ({ context }) => {
-              const current = context.history?.head.change.layout
+              const current = context.processing
+              invariant(isViewChange(current) && current.op === 'save-view-snapshot')
               return ({
-                current: current?._layout === 'manual' ? current : undefined,
+                current: current.layout,
                 viewId: context.viewId,
               })
             },
@@ -196,26 +214,38 @@ const process = machine.createStateConfig({
                   type: 'update.view',
                   view: event.output.updated,
                 }),
-                { delay: 10 },
+                { delay: 20 },
               ),
               target: 'wait',
             },
             onError: {
-              actions: [
-                ({ event }) => {
-                  console.error(event.error)
-                },
-              ],
+              actions: assign(({ event }) => {
+                console.error('applyLatestToManual onError', { error: event.error })
+                return {
+                  processing: null,
+                  syncQueue: [],
+                }
+              }),
               ...to.idle,
             },
           },
         },
         // Now we wait 500ms, take new snapshot and send sync
         wait: {
-          entry: assign(clearProcessing),
+          on: {
+            // Ignore all events during window to prevent
+            // race conditions between view updates and sync operations
+            '*': {
+              actions: log(({ event }) => `wait: ignoring event ${event.type}`),
+            },
+          },
           after: {
             '500ms': {
-              actions: scheduleSync(),
+              actions: [
+                clearQueue(),
+                assign({ redo: null }),
+                scheduleSync(),
+              ],
               ...to.idle,
             },
           },
@@ -236,12 +266,10 @@ const process = machine.createStateConfig({
           target: 'decideNext',
         },
         onError: {
-          actions: [
-            ({ event }) => {
-              console.error(event.error)
-            },
-          ],
-          target: 'decideNext',
+          actions: ({ event }) => {
+            console.error('applySemanticLayout onError', { error: event.error })
+          },
+          target: 'failure',
         },
       },
     }),
@@ -267,25 +295,49 @@ const process = machine.createStateConfig({
             if (import.meta.env.DEV) {
               console.log('executeChanges onDone', { event })
             }
+            const requested = event.output.requested
             enqueue.assign({
               processing: null,
-              syncQueue: context.syncQueue.filter(isNot(isViewChange)),
+              syncQueue: context.syncQueue.filter(change => !isViewChange(change) || !requested.includes(change)),
             })
-          }),
-          target: 'decideNext',
-        },
-        onError: {
-          actions: assign(({ event }) => {
-            console.error('executeChanges onError', { error: event.error })
-            return {
-              processing: null,
-              syncQueue: [],
+
+            const lastSyncSnapshot = findLast(
+              event.output.applied,
+              c => c.op === 'save-view-snapshot',
+            )
+            if (lastSyncSnapshot) {
+              enqueue.sendTo(
+                typedSystem.diagramActor,
+                {
+                  type: 'update.view-bounds',
+                  bounds: lastSyncSnapshot.layout.bounds,
+                },
+              )
             }
           }),
-          ...to.idle,
+          target: 'waitViewSynced',
+        },
+        onError: {
+          actions: ({ event }) => {
+            console.error('executeChanges onError', { error: event.error })
+          },
+          target: 'failure',
         },
       },
     }),
+
+    // This state blocks further changes until the view is fully synced
+    waitViewSynced: {
+      on: {
+        'view.synched': {
+          target: 'decideNext',
+        },
+      },
+      after: {
+        // Fallback: if view.synched doesn't come, proceed after 2 second
+        2000: 'decideNext',
+      },
+    },
 
     decideNext: {
       entry: assign(clearProcessing),
@@ -293,26 +345,31 @@ const process = machine.createStateConfig({
         // If there are pending operations, enter the process state
         {
           guard: 'has pending',
-          target: 'enter',
+          reenter: true,
+          ...to.process,
         },
         // Otherwise, stay idle
-        {
-          ...to.idle,
-        },
+        to.idle,
       ],
+    },
+
+    failure: {
+      always: {
+        actions: clearQueue(),
+        ...to.idle,
+      },
     },
   },
   on: {
-    'change.*': {
-      actions: reschedule(),
-    },
-    'view.synched': {
-      actions: () => {
-        if (import.meta.env.DEV) {
-          console.log('view.synched')
-        }
-      },
-    },
+    // 'change.*': {
+    //   actions: log(({ event }) => `ignore ${event.type} in process state`),
+    // },
+    // 'undo': {
+    //   actions: log('ignore undo in process state'),
+    // },
+    // 'view.synched': {
+    //   actions: log('im in process and got view.synched'),
+    // },
   },
 })
 

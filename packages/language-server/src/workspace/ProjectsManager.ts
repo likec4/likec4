@@ -39,7 +39,7 @@ import {
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import { safeCall } from '../utils'
+import { ADisposable, safeCall } from '../utils'
 
 const logger = mainLogger.getChild('projects')
 
@@ -228,7 +228,7 @@ function parseRegisterOptions(
   return { configUri, folder, folderUri }
 }
 
-export class ProjectsManager {
+export class ProjectsManager extends ADisposable {
   /**
    * The global project ID used for all documents
    * that are not part of a specific project.
@@ -307,6 +307,13 @@ export class ProjectsManager {
   })
 
   constructor(protected services: LikeC4SharedServices) {
+    super()
+    this.onDispose(
+      Disposable.create(() => {
+        this.resetCaches()
+        this.#updateListeners.length = 0
+      }),
+    )
     logger.trace`created`
   }
 
@@ -846,7 +853,7 @@ export class ProjectsManager {
   }
 
   private notifyListeners() {
-    for (const listener of this.#updateListeners) {
+    for (const listener of [...this.#updateListeners]) {
       try {
         listener()
       } catch (e) {

@@ -2,10 +2,10 @@ name: bootstrap
 description: Init Node.js, caches and install dependencies
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: 🛠️ Setup pnpm
-      uses: pnpm/action-setup@v5
+      uses: pnpm/action-setup@v6
       env:
         NODE_ENV: development
 
@@ -13,15 +13,15 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version-file: .tool-versions
-        cache: "pnpm"
+        cache: 'pnpm'
 
     - name: 🛠️ Cache for turbo
-      uses: rharkor/caching-for-turbo@v2.3.11
+      uses: rharkor/caching-for-turbo@v2.4.2
       with:
-        cache-prefix: "turbo_cache_${{ runner.arch }}"
+        cache-prefix: 'turbo_cache_${{ runner.arch }}'
 
     - run: pnpm install --prefer-offline
       shell: sh
       env:
-        HUSKY: "0"
+        HUSKY: '0'
         NODE_ENV: development

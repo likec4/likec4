@@ -15,6 +15,7 @@ import type {
 import { type Logger, rootLogger } from '@likec4/log'
 import { flatMap, hasAtLeast, join, map, pipe, prop } from 'remeda'
 import k from 'tinyrainbow'
+import type { URI } from 'vscode-uri'
 
 export interface LikeC4Langium {
   shared: LikeC4SharedServices
@@ -45,21 +46,21 @@ export class LikeC4 {
   /**
    * File system path to the workspace root
    */
-  get workspace() {
+  get workspace(): string {
     return this.langium.shared.workspace.WorkspaceManager.workspaceUri.fsPath
   }
 
   /**
    * URI of the workspace root
    */
-  get workspaceURI() {
+  get workspaceURI(): URI {
     return this.langium.shared.workspace.WorkspaceManager.workspaceUri
   }
 
   /**
    * URL of the workspace root
    */
-  get workspaceURL() {
+  get workspaceURL(): URL {
     return this.langium.shared.workspace.WorkspaceManager.workspaceURL
   }
 
@@ -270,10 +271,12 @@ Please specify a project folder`)
   }
 
   /**
-   * @returns a function to dispose the listener
+   * Subscribe to model updates
+   * @param listener Function called when the model is updated - receives the project ID that was updated
+   * @returns A function to dispose the listener
    */
-  onModelUpdate(listener: () => void): () => void {
-    const sib = this.modelBuilder.onModelParsed(() => listener())
+  onModelUpdate(listener: (projectId: ProjectId) => void): () => void {
+    const sib = this.modelBuilder.onModelParsed((projectId) => listener(projectId))
     return () => {
       sib.dispose()
     }

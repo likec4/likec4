@@ -1,5 +1,17 @@
 # likec4
 
+## 1.57.1
+
+### Patch Changes
+
+- [#3032](https://github.com/likec4/likec4/pull/3032) [`5cd3a43`](https://github.com/likec4/likec4/commit/5cd3a43269962d36d635d11c780f6a09a96b524d) Thanks [@davydkov](https://github.com/davydkov)! - Fix `export png`/`export jpg` failing in the Docker image with `browserType.launch: Executable doesn't exist`. The bundled Playwright and the installed Chromium browsers are now kept in sync. Fixes [#2961](https://github.com/likec4/likec4/issues/2961)
+
+- [#3030](https://github.com/likec4/likec4/pull/3030) [`55dc799`](https://github.com/likec4/likec4/commit/55dc79971ca2fcb60a776399f0d624e2b0a42ca0) Thanks [@MichaelMcCodington](https://github.com/MichaelMcCodington)! - Fix favicon 404 in `likec4 build --output-single-file`. The single-file build inlines JS/CSS but left the favicon `<link rel="icon">` as an external reference to a hashed asset, which the post-build cleanup then removed — leaving a dangling reference that 404s wherever the standalone HTML is served. The favicon is now inlined as a base64 data URI before cleanup, so the single HTML file stays self-contained. Only `--output-single-file` is affected; the regular multi-file build is unchanged.
+
+- Updated dependencies [[`f2c0b57`](https://github.com/likec4/likec4/commit/f2c0b57485e912e85a986d5f89408a6039538ecc), [`8ad28c7`](https://github.com/likec4/likec4/commit/8ad28c777c76f294483c352180c7e3ea037eddfd), [`75e1510`](https://github.com/likec4/likec4/commit/75e1510def804bf9931bf222b03d1034e1181d04)]:
+  - @likec4/core@1.57.1
+  - @likec4/icons@1.46.4
+
 ## 1.57.0
 
 ### Minor Changes

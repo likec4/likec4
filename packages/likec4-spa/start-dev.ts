@@ -5,7 +5,7 @@ import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import { type ArgsDef, defineCommand, runMain } from 'citty'
+import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
 import { createServer } from 'vite'
 

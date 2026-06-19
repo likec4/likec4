@@ -44,7 +44,7 @@ jobs:
           pnpm package-vsix
 
       - name: 📦 upload vsix
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: likec4.vsix
           if-no-files-found: error

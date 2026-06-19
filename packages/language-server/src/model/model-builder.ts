@@ -26,6 +26,7 @@ import {
   identity,
   indexBy,
   isArray,
+  isEmptyish,
   map,
   pipe,
   piped,
@@ -65,14 +66,14 @@ export interface LikeC4ModelBuilder extends Disposable {
 }
 
 export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4ModelBuilder {
-  private projects: ProjectsManager
-  private parser: LikeC4ModelParser
-  private listeners: ModelParsedListener[] = []
-  private cache: ProjectModelCache
-  private DocumentBuilder: DocumentBuilder
-  private manualLayouts: LikeC4ManualLayouts
-  private mutex: WorkspaceLock
-  private lastSeen: LastSeenArtifacts
+  private readonly projects: ProjectsManager
+  private readonly parser: LikeC4ModelParser
+  private readonly listeners: ModelParsedListener[] = []
+  private readonly cache: ProjectModelCache
+  private readonly DocumentBuilder: DocumentBuilder
+  private readonly manualLayouts: LikeC4ManualLayouts
+  private readonly mutex: WorkspaceLock
+  private readonly lastSeen: LastSeenArtifacts
 
   constructor(protected services: LikeC4Services) {
     super()
@@ -86,6 +87,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
     this.onDispose(
       this.cache,
+      Disposable.create(() => {
+        this.listeners.length = 0
+      }),
       this.DocumentBuilder.onUpdate((_changed, deleted) => {
         if (deleted.length > 0) {
           this.notifyListeners(deleted)
@@ -308,18 +312,21 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         groupBy((doc) => this.projects.ownerProjectId(doc)),
         entries(),
       )
+      if (isEmptyish(groupedByProject)) {
+        return
+      }
     } else {
       groupedByProject = [
         [arg, []],
       ]
     }
-    for (const listener of this.listeners) {
-      try {
-        for (const [projectId, docs] of groupedByProject) {
+    for (const listener of [...this.listeners]) {
+      for (const [projectId, docs] of groupedByProject) {
+        try {
           listener(projectId, docs)
+        } catch (e) {
+          builderLogger.warn(loggable(e))
         }
-      } catch (e) {
-        builderLogger.warn(loggable(e))
       }
     }
   }

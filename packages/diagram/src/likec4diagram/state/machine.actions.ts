@@ -330,8 +330,10 @@ export const emitEdgeClick = () =>
 
 export const triggerChange = (viewChange?: ViewChange) =>
   machine.enqueueActions(({ event, enqueue }) => {
-    let change = viewChange
-    if (!change) {
+    let change: ViewChange
+    if (viewChange) {
+      change = { ...viewChange }
+    } else {
       assertEvent(event, 'trigger.change')
       change = event.change
     }

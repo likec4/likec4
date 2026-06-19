@@ -257,14 +257,15 @@ function toFilterable<M extends AnyAux>(
   relationEndpoint: ElementModel<M> | DeploymentRelationEndpoint<M>,
   connectionEndpoint: DeploymentRelationEndpoint<M>,
 ): Filterable<M> {
-  if (isElementModel<M>(relationEndpoint)) { // Element itself. Extend with tags of the deployed instance (TODO)
+  if (isElementModel<M>(relationEndpoint)) {
     const deployedInstance = isDeploymentElementModel<M>(connectionEndpoint) && isDeployedInstance(connectionEndpoint)
       ? connectionEndpoint
       : null
     return {
       kind: relationEndpoint.kind,
       tags: [...relationEndpoint.tags, ...(deployedInstance?.tags ?? [])],
-      metadata: relationEndpoint.metadata,
+      // Deployed instance metadata intentionally replaces, not merges with, model element metadata.
+      metadata: deployedInstance?.metadata ?? relationEndpoint.metadata,
     }
   }
   if (isNestedElementOfDeployedInstanceModel(relationEndpoint)) { // Nested element. Has no own instance. No need to extend

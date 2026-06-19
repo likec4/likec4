@@ -10,7 +10,7 @@ import { IconSearch } from '@tabler/icons-react'
 import { isMacOs } from '@xyflow/system'
 import * as classes from './SearchControl.css'
 
-interface SearchControlProps extends UnstyledButtonProps, ElementProps<'button'> {}
+interface SearchControlProps extends Omit<UnstyledButtonProps, 'className'>, ElementProps<'button'> {}
 
 export function SearchControl({ className, ...others }: SearchControlProps) {
   const isMac = isMacOs()

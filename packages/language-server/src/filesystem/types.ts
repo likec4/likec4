@@ -100,7 +100,7 @@ export type ManualLayoutUpdateEvent =
   }
 export type ManualLayoutUpdateListener = (event: ManualLayoutUpdateEvent) => void
 
-export interface LikeC4ManualLayouts {
+export interface LikeC4ManualLayouts extends Disposable {
   /**
    * Reads a single layouted view from the file system by its URI.
    * Used by the language server to get the current layout state.

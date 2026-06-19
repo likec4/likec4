@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "1.57.0",
+  "version": "1.58.0",
   "private": true,
   "pricing": "Free",
   "publisher": "likec4",
@@ -356,7 +356,7 @@
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
     "@types/vscode": "catalog:vscode",
-    "@vscode/extension-telemetry": "^1.5.1",
+    "@vscode/extension-telemetry": "^1.5.2",
     "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",

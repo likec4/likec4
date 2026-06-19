@@ -1,8 +1,8 @@
-import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
+import { LikeC4VitePlugin } from '../vite-plugin'
 import { viteAliases } from './aliases'
 import { relativeToCwd, viteAppRoot } from './utils'
 
@@ -49,11 +49,9 @@ export async function viteReactConfig({
         external: [
           'likec4/react',
           'likec4/model',
-          'react',
-          'react-dom',
-          'react/jsx-runtime',
-          'react/jsx-dev-runtime',
-          'react-dom/client',
+          /^react(\/.*)?$/,
+          /^react-dom(\/.*)?$/,
+          /^use-sync-external-store(\/.*)?$/,
           /@likec4\/core.*/,
         ],
       },

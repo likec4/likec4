@@ -45,10 +45,16 @@ export function useEditorActorLogic(): EditorActorLogic & {
       if (import.meta.env.DEV) {
         console.debug('Executing change', { input })
       }
+      const applied = [] as typeof input.changes
       for (const change of input.changes) {
-        await promisify(() => port.handleChange(input.viewId, change))
+        try {
+          await promisify(() => port.handleChange(input.viewId, change))
+          applied.push(change)
+        } catch (error) {
+          console.error('Failed to execute change', { change, error })
+        }
       }
-      return {}
+      return { requested: input.changes, applied }
     },
   )
 

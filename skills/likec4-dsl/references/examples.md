@@ -226,8 +226,10 @@ views {
     // By metadata
     include cloud.* where metadata.region is "eu"
 
-    // Relationship filtering
+    // Relationship filtering, including own vs endpoint metadata
     include cloud.* -> amazon.* where source.tag is #critical
+    exclude * -> * where metadata.protocol is "http"
+    exclude * -> * where target.metadata.zone is "restricted"
 
     // Wildcard with expansion
     include cloud._                  // direct children only

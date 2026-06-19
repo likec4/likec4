@@ -21,22 +21,10 @@
       "dependsOn": [
         "^generate"
       ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "scripts/**",
-        "generate.ts",
-        "preset.ts",
-        "vars.ts",
-        "langium-config.json"
-      ],
       "outputs": [
         "src/generated/**",
         "src/generated-lib/**",
         "src/meta.ts",
-        "dist/**",
-        "lib/**",
-        "preset/**",
-        "vars/**",
         "all.js",
         "all.d.ts",
         "schema.json"
@@ -95,7 +83,7 @@
         "build"
       ],
       "outputs": [
-        "*.tgz"
+        "package.tgz"
       ],
       "outputLogs": "new-only"
     },

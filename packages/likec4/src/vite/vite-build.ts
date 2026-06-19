@@ -1,7 +1,7 @@
-import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs'
+import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { extname, join, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type { SetOptional } from 'type-fest'
 import type { Logger } from 'vite'
@@ -30,6 +30,64 @@ export function removeAllButPreserved(outDir: string, preserved: readonly string
   }
 }
 
+const FaviconMimeByExt: Record<string, string> = {
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.png': 'image/png',
+  '.gif': 'image/gif',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+}
+
+/**
+ * Makes the `--output-single-file` build truly self-contained: rewrites the
+ * favicon `<link rel="icon" href="…">` in `index.html` to a base64 data URI.
+ *
+ * Vite intentionally does not inline favicons (and `vite-plugin-singlefile`
+ * only inlines `<script>`/`<style>`), so the link stays an external reference
+ * to a hashed asset — which the subsequent `removeAllButPreserved` cleanup then
+ * deletes, leaving a dangling reference that 404s. Inlining the asset here, just
+ * before cleanup, keeps the single HTML file portable.
+ *
+ * Operates on likec4's own generated `index.html`, which has a single
+ * `<link rel="icon">`. No-op when there is no such link, the href is remote
+ * (`http(s)`/`//`) or already a `data:` URI, or the referenced file is missing.
+ */
+export function inlineSingleFileFavicon(outDir: string): void {
+  const indexHtml = resolve(outDir, 'index.html')
+  if (!existsSync(indexHtml)) {
+    return
+  }
+  const html = readFileSync(indexHtml, 'utf8')
+
+  const linkTag = /<link\b[^>]*\brel=(["'])icon\1[^>]*>/i.exec(html)?.[0]
+  if (!linkTag) {
+    return
+  }
+  const hrefPattern = /\bhref=(["'])([^"']*)\1/i
+  const href = hrefPattern.exec(linkTag)?.[2]
+  if (!href || href.startsWith('data:') || /^(https?:)?\/\//i.test(href)) {
+    return
+  }
+
+  const assetPath = resolve(outDir, href.replace(/^\.?\//, ''))
+  if (!existsSync(assetPath)) {
+    return
+  }
+  const mime = FaviconMimeByExt[extname(assetPath).toLowerCase()] ?? 'application/octet-stream'
+  const dataUri = `data:${mime};base64,${readFileSync(assetPath).toString('base64')}`
+
+  const inlinedTag = linkTag.replace(hrefPattern, (_m, quote: string) => `href=${quote}${dataUri}${quote}`)
+  writeFileSync(indexHtml, html.replace(linkTag, inlinedTag))
+}
+
+/**
+ * Runs the production Vite build of the LikeC4 static site into the configured
+ * `outDir`: validates the project's views, optionally builds the web-component
+ * bundle (skipped for single-file output), and emits the app. For
+ * `--output-single-file` it inlines the favicon and strips the temporary Vite
+ * assets, leaving a self-contained `index.html` (also copied to `404.html`).
+ */
 export async function viteBuild({
   buildWebcomponent = true,
   webcomponentPrefix = 'likec4',
@@ -147,9 +205,7 @@ export async function viteBuild({
   // Static website
   await build({
     ...config,
-    customLogger: config.customLogger as Logger,
     publicDir,
-    mode: 'production',
   })
 
   if (outputSingleFile) {
@@ -157,6 +213,9 @@ export async function viteBuild({
       config.customLogger.warn(k.yellow('outDir was not empty, skipping cleanup'))
       return
     }
+    // Inline the favicon before cleanup removes the asset it references,
+    // so the single HTML file stays self-contained (no dangling 404).
+    inlineSingleFileFavicon(config.build.outDir)
     removeAllButPreserved(config.build.outDir, ['index.html', ...userPublicEntries])
   }
 

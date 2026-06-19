@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.57.0",
+  "version": "1.58.0",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -12,6 +12,7 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "typecheck": "tsc --build --verbose",
+    "prebuild": "panda codegen",
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",

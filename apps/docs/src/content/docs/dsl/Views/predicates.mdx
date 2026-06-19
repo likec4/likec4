@@ -487,6 +487,21 @@ include
     where target.metadata.environment is "staging"
 ```
 
+The same metadata filters work with `exclude` predicates:
+
+```likec4
+// remove relationships with protocol="http"
+exclude * -> *
+  where metadata.protocol is "http"
+
+// remove relationships targeting staging elements
+exclude * -> *
+  where target.metadata.environment is "staging"
+```
+
+In deployment views, `source.metadata.*` and `target.metadata.*` follow the deployment metadata rules.
+Metadata defined on a deployed instance replaces the metadata from its model element.
+
 ## Global predicate groups
 
 If you find yourself repeating the same predicates in multiple views, you can define them as global group:

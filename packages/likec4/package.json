@@ -1,7 +1,7 @@
 {
   "name": "likec4",
   "description": "Toolchain for your architecture diagrams",
-  "version": "1.57.0",
+  "version": "1.58.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -133,12 +133,11 @@
     "immer": "catalog:utils",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "vite-plugin-singlefile": "^2.3.2",
+    "vite-plugin-singlefile": "^2.3.3",
     "vite": "catalog:vite",
     "yargs": "17.7.2",
     "nano-spawn": "catalog:externals",
-    "use-sync-external-store": "catalog:react",
-    "react-compiler-runtime": "catalog:react"
+    "use-sync-external-store": "catalog:react"
   },
   "peerDependencies": {
     "@tanstack/ai": "catalog:ai",
@@ -147,8 +146,8 @@
     "@tanstack/ai-openai": "catalog:ai",
     "@tanstack/ai-ollama": "catalog:ai",
     "@tanstack/ai-openrouter": "catalog:ai",
-    "react": "^18.x || ^19.x",
-    "react-dom": "^18.x || ^19.x"
+    "react": "^19.x",
+    "react-dom": "^19.x"
   },
   "peerDependenciesMeta": {
     "@tanstack/ai": {
@@ -198,7 +197,7 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.7.1",
     "@types/yargs": "^17.0.33",
-    "autoprefixer": "^10.4.27",
+    "autoprefixer": "^10.5.0",
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",
     "boxen": "^8.0.1",
@@ -227,7 +226,7 @@
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
-    "semver": "^7.7.4",
+    "semver": "^7.8.1",
     "strip-indent": "catalog:utils",
     "tinyrainbow": "catalog:utils",
     "tsx": "catalog:",

@@ -8,7 +8,6 @@ import type { Argv } from 'yargs'
 import { type ViteLogger, createLikeC4Logger, startTimer } from '../../../logger'
 import { LikeC4Model } from '../../../model'
 import { path, project, useDotBin } from '../../options'
-import { showSupportUsMessage } from '../../support-message'
 
 const ERR_PROJECT_NOT_FOUND = 'project not found'
 const ERR_NO_PROJECTS = 'No projects found'
@@ -103,7 +102,7 @@ export function jsonCmd(yargs: Argv) {
           'use-dot': useDotBin,
           'skip-layout': {
             type: 'boolean',
-            desc: 'skip layouting (only compute model)',
+            desc: 'skip layout (produce compute-only model, faster)',
           },
           'pretty': {
             type: 'boolean',
@@ -130,7 +129,6 @@ export function jsonCmd(yargs: Argv) {
         },
         logger,
       )
-      showSupportUsMessage()
     },
   })
 }

@@ -42,6 +42,8 @@ export function diagramToXY(opts: {
 
   const viewLayoutDir = view.autoLayout?.direction ?? 'TB'
 
+  const deletable = view._type !== 'dynamic'
+
   type TraverseItem = {
     node: DiagramNode
     parent: DiagramNode | null
@@ -100,7 +102,7 @@ export function diagramToXY(opts: {
 
     const base = {
       id,
-      deletable: false,
+      deletable,
       position,
       zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       style: {
@@ -237,6 +239,7 @@ export function diagramToXY(opts: {
       }
     }
   }
+
   for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
@@ -254,7 +257,7 @@ export function diagramToXY(opts: {
       target: ns + target,
       zIndex: ZIndexes.Edge,
       hidden: !visiblePredicate(edge),
-      deletable: false,
+      deletable,
       data: {
         id: edge.id,
         label: edge.label,
@@ -263,6 +266,7 @@ export function diagramToXY(opts: {
         navigateTo: edge.navigateTo,
         controlPoints: edge.controlPoints ?? null,
         labelBBox: edge.labelBBox ?? null,
+        isLabelCustomized: edge.isLabelCustomized ?? false,
         labelXY: null,
         points: edge.points,
         color: edge.color ?? 'gray',

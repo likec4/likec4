@@ -13,6 +13,14 @@ export const controlPointsContainer = css({
   zIndex: '[100]',
 })
 
+export const labelDraggable = css({
+  // `!` overrides the cursor set by the edgeLabel recipe
+  cursor: 'grab!',
+  _active: {
+    cursor: 'grabbing!',
+  },
+})
+
 export const controlPoint = css({
   fill: `[var(--xy-edge-stroke)]`,
   stroke: `transparent`,

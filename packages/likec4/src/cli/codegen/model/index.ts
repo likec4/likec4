@@ -16,6 +16,11 @@ type HandlerParams = {
    */
   path: string
   /**
+   * Whether to skip layouting (i.e. only compute)
+   * @default false
+   */
+  skipLayout: boolean
+  /**
    * Whether to use `@likec4/core` package in types
    * @default false
    */
@@ -25,7 +30,7 @@ type HandlerParams = {
 }
 
 /** Generates LikeC4 model TypeScript (parsed + computed) for the project. */
-export async function modelHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
+export async function modelHandler({ path, useDotBin, useCorePackage, outfile, project, skipLayout }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   await using languageServices = await fromWorkspace(path, {
@@ -38,15 +43,19 @@ export async function modelHandler({ path, useDotBin, useCorePackage, outfile, p
     logger.info(`${k.dim('project')} ${k.green(projectId)}`)
   }
 
-  logger.info(`${k.dim('format')} ${k.green('model')}`)
+  logger.info(`${k.dim('format')} ${k.green('model')} ${skipLayout ? k.cyan('(compute only)') : ''}`)
 
-  const model = await languageServices.layoutedModel(projectId)
-
-  for (const view of model.views()) {
-    if (view.hasLayoutDrifts) {
-      logger.warn(
-        k.yellow('layout drift detected, view:') + ' ' + k.red(view.id),
-      )
+  let model
+  if (skipLayout) {
+    model = await languageServices.computedModel(projectId)
+  } else {
+    model = await languageServices.layoutedModel(projectId)
+    for (const view of model.views()) {
+      if (view.hasLayoutDrifts) {
+        logger.warn(
+          k.yellow('layout drift detected, view:') + ' ' + k.red(view.id),
+        )
+      }
     }
   }
 

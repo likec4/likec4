@@ -15,9 +15,6 @@
     "src",
     "src/**/*.json"
   ],
-  "exclude": [
-    "src/react-dom-server-mock.ts"
-  ],
   "references": [
     {
       "path": "../core/"

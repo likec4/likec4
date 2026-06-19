@@ -20,7 +20,7 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } from '@likec4/layouts'
 import type { AILayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
-import { type WorkspaceCache, interruptAndCheck } from 'langium'
+import { type WorkspaceCache, Disposable, interruptAndCheck } from 'langium'
 import { isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
 import { type Storage, createStorage, prefixStorage } from 'unstorage'
@@ -28,7 +28,7 @@ import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
 import type { LikeC4Services } from '../module'
-import { performanceMark } from '../utils'
+import { ADisposable, performanceMark } from '../utils'
 
 export type GraphvizOut = {
   readonly dot: string
@@ -55,7 +55,7 @@ export type LayoutViewParams = {
   /** Optional AI-generated layout hints */
   layoutHints?: AILayoutHints | undefined
 }
-export interface LikeC4Views {
+export interface LikeC4Views extends Disposable {
   readonly layouter: GraphvizLayouter
   /**
    * Returns computed views (i.e. views with predicates computed)
@@ -112,7 +112,7 @@ export interface LikeC4Views {
 
 const viewsLogger = rootLogger.getChild('views')
 
-export class DefaultLikeC4Views implements LikeC4Views {
+export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
   #storage: Storage
   #projectStorages = new DefaultMap((projectId: ProjectId) =>
     new ProjectStorage({
@@ -125,18 +125,25 @@ export class DefaultLikeC4Views implements LikeC4Views {
   private ModelBuilder: LikeC4ModelBuilder
 
   constructor(private services: LikeC4Services) {
+    super()
     this.ModelBuilder = services.likec4.ModelBuilder
     this.#storage = createStorage()
-    // this.cache = new ProjectViewsCache(services)
-    services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
-      viewsLogger.info`force clean cache`
-      this.#storage.clear()
-    })
-    services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
-      if (this.#projectStorages.has(projectId) && viewId) {
-        this.projectStorage(projectId).clearView(viewId)
-      }
-    })
+
+    this.onDispose(
+      this.#storage,
+      Disposable.create(() => {
+        this.#projectStorages.clear()
+      }),
+      services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
+        viewsLogger.info`force clean cache`
+        this.#storage.clear()
+      }),
+      services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
+        if (this.#projectStorages.has(projectId) && viewId) {
+          this.projectStorage(projectId).clearView(viewId)
+        }
+      }),
+    )
   }
 
   get layouter(): QueueGraphvizLayoter {

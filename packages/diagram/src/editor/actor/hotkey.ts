@@ -2,7 +2,7 @@ import { getHotkeyHandler } from '@mantine/hooks'
 import type { AnyEventObject, CallbackActorLogic, NonReducibleUnknown } from 'xstate'
 import { fromCallback } from 'xstate'
 
-export type HotKeyEvent = { type: 'undo' }
+export type HotKeyEvent = { type: 'undo' | 'redo' }
 
 export interface HotkeyActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, HotKeyEvent> {}
 
@@ -13,6 +13,12 @@ export const hotkey: HotkeyActorLogic = fromCallback(({ sendBack }: {
     ['mod + z', (event: KeyboardEvent) => {
       event.stopPropagation()
       sendBack({ type: 'undo' })
+    }, {
+      preventDefault: true,
+    }],
+    ['mod + shift + z', (event: KeyboardEvent) => {
+      event.stopPropagation()
+      sendBack({ type: 'redo' })
     }, {
       preventDefault: true,
     }],

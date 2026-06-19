@@ -417,8 +417,15 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   async dispose(): Promise<void> {
     try {
       logger.debug('disposing LikeC4LanguageServices')
+      this.services.likec4.FqnIndex.dispose()
+      this.services.likec4.DeploymentsIndex.dispose()
+      this.services.likec4.ModelParser.dispose()
       this.services.likec4.ModelBuilder.dispose()
+      this.services.likec4.Views.dispose()
+      this.services.likec4.LastSeen.dispose()
       this.services.Rpc.dispose()
+      this.services.shared.workspace.ManualLayouts.dispose()
+      this.services.shared.workspace.ProjectsManager.dispose()
       await this.services.shared.workspace.FileSystemWatcher.dispose()
     } catch (e) {
       logger.error(loggable(e))

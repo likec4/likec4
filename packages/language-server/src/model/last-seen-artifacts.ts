@@ -1,24 +1,33 @@
 import type * as c4 from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LikeC4Styles } from '@likec4/core/styles'
+import { Disposable } from 'langium'
 import type { LikeC4Services } from '../module'
+import { ADisposable } from '../utils'
 import { MergedSpecification } from './builder/MergedSpecification'
 
 /**
  * Provides access to "last seen artifacts" for a given project,
  * (Results of the last successful parsing)
  */
-export class LastSeenArtifacts {
+export class LastSeenArtifacts extends ADisposable {
   #specs = new Map<c4.ProjectId, MergedSpecification>()
   #styles = new Map<c4.ProjectId, LikeC4Styles>()
   #models = new Map<c4.ProjectId, LikeC4Model.Computed>()
 
   constructor(services: LikeC4Services) {
-    services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
+    super()
+
+    const clearCache = () => {
       this.#specs.clear()
       this.#styles.clear()
       this.#models.clear()
-    })
+    }
+
+    this.onDispose(
+      services.shared.workspace.WorkspaceManager.onForceCleanCache(clearCache),
+      Disposable.create(clearCache),
+    )
   }
 
   /**
