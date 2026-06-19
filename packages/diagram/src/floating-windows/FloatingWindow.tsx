@@ -1,7 +1,7 @@
 import { css, cx } from '@likec4/styles/css'
-import { Box, createStyleContext, HStack, isCssProperty } from '@likec4/styles/jsx'
+import { createStyleContext, HStack, isCssProperty } from '@likec4/styles/jsx'
 import { floatingWindow } from '@likec4/styles/recipes'
-import { CloseButton, ScrollAreaAutosize } from '@mantine/core'
+import { CloseButton } from '@mantine/core'
 import {
   type HTMLMotionProps,
   isValidMotionProp,
@@ -9,10 +9,9 @@ import {
   useAnimate,
   useDragControls,
   useMotionValue,
-  usePresence,
   useTransform,
 } from 'motion/react'
-import { type PropsWithChildren, forwardRef, useEffect, useState } from 'react'
+import { type PropsWithChildren, useState } from 'react'
 import { clamp } from 'remeda'
 import { useRootContainerRef } from '../context'
 import { roundDpr } from '../utils'
@@ -140,7 +139,7 @@ export function FloatingWindow({
       }}
       className={cx(
         css({
-          layerStyle: 'likec4.floatingWindow',
+          // layerStyle: 'likec4.floatingWindow',
         }),
         isDragging && 'noselect',
       )}

@@ -13,5 +13,10 @@
   "include": [
     "*.ts",
     "src/"
+  ],
+  "references": [
+    {
+      "path": "../../devops/"
+    }
   ]
 }

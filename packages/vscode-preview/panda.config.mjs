@@ -1,4 +1,4 @@
-import { defineConfig } from '@likec4/style-preset'
+import { defineConfig } from '@likec4/style-preset/dev'
 
 export default defineConfig({
   include: [

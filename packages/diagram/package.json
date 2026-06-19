@@ -112,8 +112,7 @@
     "type-fest": "catalog:externals",
     "xstate": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
-    "@tabler/icons-react": "catalog:react"
+    "@xyflow/system": "catalog:xyflow"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
