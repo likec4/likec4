@@ -1,6 +1,6 @@
 import { filter, isBoolean, isFunction, isTruthy, map, pipe } from 'remeda'
 import type { IsEqual, Simplify } from 'type-fest'
-import { invariant, nonNullable } from '../utils'
+import { DefaultWeakMap, invariant, nonNullable } from '../utils'
 import type { IsAnyOrNever, IterableContainer } from './_common'
 import * as scalar from './scalar'
 import type { ProcessedDynamicView } from './view'
@@ -127,10 +127,23 @@ export const flowGuards = {
   isAlt: (step: unknown): step is DynamicViewFlow.SubFlow.Alt => {
     return isSubFlow(step) && step._type === 'alt'
   },
-  isStepOr:
-    <T extends AnySubflow>(guard: (s: AnySubflow) => s is T) => (step: unknown): step is scalar.StepPath | T => {
-      return flowGuards.isStepPath(step) || (flowGuards.isSubFlow(step) && guard(step))
+
+  isAltBranch: (step: unknown): step is DynamicViewFlow.SubFlow.AltBranch => {
+    return isSubFlow(step) && flowGuards.type.isTryBranch(step._type)
+  },
+
+  isTryBranch: (step: unknown): step is DynamicViewFlow.SubFlow.Try.Any => {
+    return isSubFlow(step) && flowGuards.type.isTryBranch(step._type)
+  },
+
+  type: {
+    isAltBranch: (value: string): value is DynamicViewFlow.SubFlow.AltBranch['_type'] => {
+      return value.startsWith('alt-')
     },
+    isTryBranch: (value: string): value is DynamicViewFlow.SubFlow.Try.Any['_type'] => {
+      return value.startsWith('try-')
+    },
+  },
 }
 
 export const flowHelpers = {
@@ -161,7 +174,7 @@ export const flowHelpers = {
   /**
    * Returns nested subflows (excluding steps)
    */
-  nested: <N extends AnySubflow>(subflow: { flow: IterableContainer<scalar.StepPath | N> }): N[] => {
+  nested: <N extends { _type: string }>(subflow: { flow: IterableContainer<scalar.StepPath | N> }): N[] => {
     return filter(subflow.flow, flowGuards.isSubFlow) as N[]
   },
 }
@@ -279,7 +292,7 @@ type SubflowHookCtx<T extends SubflowType = SubflowType> = {
 }
 
 type OnLeave<T extends SubflowType = SubflowType> = (onleave: {
-  visited: SubFlows[T]['flow']
+  visited: Array<NestedFlowOf<T>>
 }) => void
 
 type SubflowHookResult<T extends SubflowType = SubflowType> = {
@@ -330,6 +343,7 @@ type WalkCallback<V extends ProcessedDynamicView<any>> = {
 
 /**
  * Walks through the dynamic view flow and calls the callback for each step and subflow.
+ * (Tree walker)
  *
  * @param view - The dynamic view to walk through
  * @param callback - The callback to call for each step and subflow
@@ -421,7 +435,7 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
     if (result === false) {
       return false
     }
-    let next, onLeave
+    let next: AnySubflow['flow'], onLeave: SubflowHookResult<SubflowType>['onLeave']
     if (result === true) {
       next = subflow.flow
     } else if (isFunction(result)) {
@@ -446,11 +460,11 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
     return true
   }
 
-  function walk<T extends AnySubflow['flow']>(
-    steps: T,
+  function walk(
+    steps: AnySubflow['flow'],
     parent: SubflowHookCtx | null,
     level = 0,
-  ): T {
+  ): Array<NestedFlowOf<SubflowType>> {
     let index = 1
     let previous: DynamicViewFlow.AnyStep | null = null
     const visited = [] as DynamicViewFlow.AnyStep[]
@@ -465,11 +479,44 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
         previous = step
       }
     }
-    return visited as unknown as T
+    return visited as unknown as Array<NestedFlowOf<SubflowType>>
   }
 
   walk(view.flow.steps, null, 0)
 }
+
+/**
+ * Creates a map of  hooks for the given subflow types.
+ * Each hook will be called when the corresponding subflow is entered.
+ * @example
+ * ```ts
+ * walkthrough({
+ *   view,
+ *   subflow: {
+ *     ...walkthrough.onSubflows(['try', 'alt'], ({subflow}) => {
+ *       //  ...
+ *       // subflow is typed
+ *     }),
+ *   },
+ * })
+ * ```
+ */
+function onSubflows<const T extends SubflowType & string>(
+  types: T,
+  callback: SubflowHook<NoInfer<T>>,
+): { [K in T]: SubflowHook<K> }
+function onSubflows<const T extends readonly [SubflowType, ...SubflowType[]]>(
+  types: T,
+  callback: SubflowHook<NoInfer<T>[number]>,
+): { [K in T[number]]: SubflowHook<K> }
+function onSubflows(
+  types: SubflowType | SubflowType[],
+  callback: SubflowHook<SubflowType>,
+) {
+  types = Array.isArray(types) ? types : [types]
+  return Object.fromEntries(map(types, t => [t, callback]))
+}
+walkthroughFlow.onSubflows = onSubflows
 
 /**
  * Creates a DynamicViewFlowOps instance from a dynamic view.
@@ -480,10 +527,13 @@ export function dynamicViewFlow<V extends ProcessedDynamicView<any>>(view: V): D
 }
 
 export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDynamicView> {
-  static from<V extends ProcessedDynamicView<any>>(view: V) {
-    return new DynamicViewFlowOps(view)
+  private static cache = new DefaultWeakMap((view: ProcessedDynamicView<any>) => new DynamicViewFlowOps(view))
+
+  public static from<V extends ProcessedDynamicView<any>>(view: V): DynamicViewFlowOps<V> {
+    return this.cache.get(view) as DynamicViewFlowOps<V>
   }
 
+  public readonly unwindTry = flowHelpers.unwindTry
   public readonly guards = flowGuards
 
   protected readonly flow: DynamicViewFlow
@@ -493,10 +543,10 @@ export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDy
   // private subflows = new DefaultWeakMap<scalar.StepPath, GenericSubFlow>(id => this.createSubFlowOps(id))
 
   private constructor(
-    protected readonly view: V,
+    public readonly view: V,
   ) {
     if (!view.flow) {
-      throw new Error(`Dynamic view ${view.id} does not have a flow`)
+      throw new Error(`Dynamic view "${view.id}" does not have a flow, probably it is a stale snapshot`)
     }
     this.flow = view.flow
     walkthroughFlow(view, {
@@ -509,8 +559,6 @@ export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDy
       },
     })
   }
-
-  public unwindTry = flowHelpers.unwindTry
 
   /**
    * Returns all known step paths in the flow
@@ -552,7 +600,20 @@ export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDy
     return subflow.flow.filter(flowGuards.isSubFlow)
   }
 
+  /**
+   * Checks if has nested subflows
+   */
+  hasSubflows(check: AnySubflow | scalar.StepPath): boolean {
+    const subflow = typeof check === 'string' ? this.lookup(check) : check
+    return subflow.flow.some(flowGuards.isSubFlow)
+  }
+
+  /**
+   * @see Sequence Layout
+   */
   walkthrough(callback: WalkCallback<V>) {
     walkthroughFlow(this.view, callback)
   }
+
+  public onSubflows = onSubflows
 }

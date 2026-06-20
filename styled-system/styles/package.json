@@ -26,7 +26,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "generate": "obuild",
+    "generate": "panda codegen",
     "emit-pkg": "panda emit-pkg --base dist",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -74,13 +74,6 @@
       "default": {
         "types": "./preset/preset.d.mts",
         "default": "./preset/preset.mjs"
-      }
-    },
-    "./vars": {
-      "sources": "./vars.ts",
-      "default": {
-        "types": "./vars/vars.d.mts",
-        "default": "./vars/vars.mjs"
       }
     },
     "./dev": {

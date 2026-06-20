@@ -255,4 +255,108 @@ export const colors = defineSemanticTokens.colors({
       },
     },
   },
+
+  sequence: {
+    opt: {
+      DEFAULT: {
+        description: 'Background color for optional step',
+        value: 'rgba(92, 143, 246, 0.07)',
+      },
+      border: {
+        description: 'Border color for optional step',
+        value: 'rgba(92, 143, 246, 0.3)',
+      },
+      text: {
+        description: 'Text color for optional step',
+        value: 'rgba(92, 143, 246, 1)',
+      },
+    },
+    // alt: {
+    //   DEFAULT: {
+    //     description: 'Background color for alternative step',
+    //     value: 'rgba(197, 139, 242, 0.07)',
+    //   },
+    //   border: {
+    //     description: 'Border color for alternative step',
+    //     value: 'rgba(197, 139, 242, 0.3)',
+    //   },
+    //   text: {
+    //     description: 'Text color for alternative step',
+    //     value: 'rgba(197, 139, 242, 1)',
+    //   },
+    // },
+    loop: {
+      DEFAULT: {
+        description: 'Background color for loop step',
+        value: 'rgba(91, 199, 179, 0.1)',
+      },
+      text: {
+        description: 'Loop step',
+        value: 'rgb(91, 199, 179)',
+      },
+      border: {
+        description: 'Border color for loop step',
+        value: 'rgba(91, 199, 179, 0.4)',
+      },
+    },
+    break: {
+      DEFAULT: {
+        description: 'Background color for loop step',
+        value: {
+          base: alpha(mantine.colors.red[8], 15),
+          _dark: alpha(mantine.colors.red[8], 10),
+        },
+      },
+      text: {
+        description: 'Loop step',
+        value: mantine.colors.red.lightColor,
+      },
+      border: {
+        description: 'Border color for loop step',
+        value: alpha(mantine.colors.red[7], 20),
+      },
+    },
+    //    break: {
+    //   DEFAULT: {
+    //     description: 'Background color for loop step',
+    //     value: 'rgba(240, 140, 140, 0.07)',
+    //   },
+    //   text: {
+    //     description: 'Loop step',
+    //     value: 'rgb(240, 140, 140)',
+    //   },
+    //   border: {
+    //     description: 'Border color for loop step',
+    //     value: 'rgba(240, 140, 140, 0.3)',
+    //   },
+    // },
+    par: {
+      DEFAULT: {
+        description: 'Background color for parallel step',
+        value: 'rgba(122, 184, 255, 0.07)',
+      },
+      text: {
+        description: 'Parallel step',
+        value: 'rgb(122, 184, 255)',
+      },
+      border: {
+        description: 'Border color for loop step',
+        value: 'rgba(122, 184, 255, 0.3)',
+      },
+    },
+    alt: {
+      DEFAULT: {
+        description: 'Background color for parallel step',
+        value: alpha(mantine.colors.violet[9], 70),
+      },
+      text: {
+        description: 'Parallel step',
+        value: mantine.colors.violet[3],
+      },
+      border: {
+        description: 'Border color for loop step',
+        value: alpha(mantine.colors.violet[9], 50),
+      },
+    },
+  },
 })

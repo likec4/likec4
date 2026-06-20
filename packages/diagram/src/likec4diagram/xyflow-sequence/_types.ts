@@ -1,4 +1,25 @@
-import type { DiagramEdge, DiagramNode, EdgeId } from '@likec4/core/types'
+import type { BBox, DiagramEdge, DiagramNode, EdgeId, NodeId, StepPath, ViewId } from '@likec4/core/types'
+
+export type SpacingValue =
+  | number
+  | Partial<
+    {
+      top: number
+      left: number
+      right: number
+      bottom: number
+      x: number
+      y: number
+    }
+  >
+
+export type Spacing = SpacingValue | {
+  padding?: SpacingValue
+  /**
+   * Margin only works between rows
+   */
+  margin?: number | { top: number; bottom: number }
+}
 
 export type Step = {
   id: EdgeId
@@ -19,7 +40,7 @@ export type Step = {
   }
   isSelfLoop: boolean
   isBack: boolean
-  parallelPrefix: string | null
+  parent: StepPath | null
   offset: number // offset for continuing edges
   edge: DiagramEdge
 }
@@ -31,9 +52,7 @@ export type Compound = {
 
   nested: Compound[]
 }
-
-export type ParallelRect = {
-  parallelPrefix: string
+export type Rect = {
   min: {
     column: number
     row: number
@@ -42,4 +61,52 @@ export type ParallelRect = {
     column: number
     row: number
   }
+}
+
+export type ParallelRect = Rect & {
+  parallelPrefix: string
+}
+
+export interface SequenceActorStepPort {
+  id: string
+  cx: number // center x
+  cy: number // center y
+  height: number
+  type: 'target' | 'source'
+  position: 'left' | 'right' | 'top' | 'bottom'
+}
+
+export interface SequenceActor {
+  id: NodeId
+  x: number
+  y: number
+  width: number
+  height: number
+  ports: Array<SequenceActorStepPort>
+}
+
+export interface SequenceCompound {
+  id: NodeId // auto-generated
+  origin: NodeId
+  x: number
+  y: number
+  width: number
+  height: number
+  depth: number
+}
+
+export interface SequenceParallelArea {
+  parallelPrefix: string
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export interface SequenceViewLayout {
+  id: ViewId
+  actors: Array<SequenceActor>
+  compounds: Array<SequenceCompound>
+  parallelAreas: Array<SequenceParallelArea>
+  bounds: BBox
 }

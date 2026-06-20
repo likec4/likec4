@@ -40,7 +40,7 @@
       "path": "../diagram/tsconfig.src.json"
     },
     {
-      "path": "../../styled-system/styles/"
+      "path": "../../styled-system/preset/"
     }
   ]
 }

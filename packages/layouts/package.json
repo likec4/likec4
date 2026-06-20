@@ -82,6 +82,7 @@
     "@lume/kiwi": "catalog:utils",
     "fast-equals": "catalog:utils",
     "indent-string": "catalog:utils",
+    "defu": "catalog:utils",
     "json5": "catalog:utils",
     "khroma": "catalog:utils",
     "nano-spawn": "catalog:externals",

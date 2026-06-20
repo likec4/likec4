@@ -9,7 +9,8 @@ export {
   ElementNode,
   ViewGroupNode,
 } from './nodes'
-export { SequenceActorNode, SequenceParallelArea, SequenceSubflowArea } from './SequenceActorNode'
+export { SequenceActorNode, SequenceParallelArea } from './SequenceActorNode'
+export { SequenceSubflowArea } from './SequenceSubFlows'
 
 export { NodeDrifts, type NodeDriftsProps } from './NodeDrifts'
 

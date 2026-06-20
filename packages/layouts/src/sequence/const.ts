@@ -1,4 +1,5 @@
 import type { ThemeColor } from '@likec4/core/types'
+import type { Paddings } from './_types'
 
 // minimum space between actors
 export const ACTOR_GAP = 60
@@ -35,3 +36,9 @@ export const SeqParallelAreaColor = {
   default: 'gray',
   active: 'amber',
 } satisfies Record<string, ThemeColor>
+
+export const SUBFLOW_PADDING = {
+  top: 40,
+  x: 20,
+  y: 20,
+} satisfies Paddings

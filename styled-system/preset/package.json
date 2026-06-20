@@ -25,29 +25,28 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./defaults": {
+        "types": "./dist/defaults/index.d.mts",
+        "import": "./dist/defaults/index.mjs",
+        "default": "./dist/defaults/index.mjs"
+      },
+      "./src": "./src/index.ts"
+    }
   },
   "files": [
     "dist",
     "src"
   ],
   "exports": {
-    ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
-      }
-    },
-    "./defaults": {
-      "sources": "./src/defaults/index.ts",
-      "default": {
-        "types": "./dist/defaults/index.d.mts",
-        "import": "./dist/defaults/index.mjs",
-        "default": "./dist/defaults/index.mjs"
-      }
-    },
+    ".": "./src/index.ts",
+    "./defaults": "./src/defaults/index.ts",
     "./src": "./src/index.ts"
   },
   "dependencies": {

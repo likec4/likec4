@@ -11,7 +11,6 @@ import type {
   IconUrl,
   MarkdownOrString,
   NonEmptyReadonlyArray,
-  StepPath,
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
@@ -113,7 +112,6 @@ export namespace Types {
     & LeafNodeData
     & {
       flowType: DynamicViewFlow.SubFlowType
-      flowPath: StepPath
     }
   >
 

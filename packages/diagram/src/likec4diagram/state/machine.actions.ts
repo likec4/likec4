@@ -300,14 +300,17 @@ export const emitInitialized = () =>
   })
 
 export const emitNodeClick = () =>
-  machine.emit(({ context, event }) => {
+  machine.enqueueActions(({ context, event, enqueue }) => {
     assertEvent(event, 'xyflow.nodeClick')
-    const node = nonNullable(findDiagramNode(context, event.node.id), `Node ${event.node.id} not found in diagram`)
-    return {
+    const node = findDiagramNode(context, event.node.id)
+    if (!node) {
+      return
+    }
+    enqueue.emit({
       type: 'nodeClick',
       node,
       xynode: event.node,
-    }
+    })
   })
 
 export const emitNavigateTo = (params?: { viewId: ViewId }) =>

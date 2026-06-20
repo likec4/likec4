@@ -1,11 +1,13 @@
 import { nonNullable } from '@likec4/core'
-import type {
-  BBox,
-  DiagramEdge,
-  DiagramNode,
-  LayoutedDynamicView,
+import {
+  type BBox,
+  type DiagramEdge,
+  type DiagramNode,
+  type DynamicViewFlowOps,
+  type LayoutedDynamicView,
+  type ViewId,
+  dynamicViewFlow,
   NodeId,
-  ViewId,
 } from '@likec4/core/types'
 import { isArray } from 'remeda'
 import type { Writable } from 'type-fest'
@@ -14,6 +16,7 @@ import {
   SeqParallelAreaColor,
   SeqZIndex,
 } from './const'
+import { calcSequenceLayout } from './sequence-view'
 
 /**
  * Converts a sequence layout to XY flow nodes and edges.
@@ -27,7 +30,8 @@ export function sequenceLayoutToXY(
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
 } {
-  const { actors, steps, compounds, parallelAreas, subflows, bounds } = view.sequenceLayout
+  const flow = dynamicViewFlow(view)
+  const { actors, steps, compounds, parallelAreas, subflows, bounds } = calcSequenceLayout(view)
 
   const xynodes = [] as Array<
     Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode
@@ -45,7 +49,7 @@ export function sequenceLayoutToXY(
   // In manual layouts, subflows are emtpy
   if (isArray(subflows)) {
     for (const subflow of subflows) {
-      xynodes.push(toSeqSubflowArea(subflow, view))
+      xynodes.push(toSeqSubflowArea(subflow, view, flow))
     }
   } else {
     for (const parallelArea of parallelAreas) {
@@ -149,7 +153,7 @@ function toSeqParallelArea(
       // Ignore notes for Parallel Area nodes
       notes: undefined,
     },
-    zIndex: SeqZIndex.parallel,
+    zIndex: SeqZIndex.subflows,
     position: {
       x,
       y,
@@ -169,15 +173,17 @@ function toSeqParallelArea(
 }
 
 function toSeqSubflowArea(
-  { id, _type, zIndex, x, y, width, height }: LayoutedDynamicView.Sequence.SubflowArea,
+  { id: ID, _type, zIndex, x, y, width, height }: LayoutedDynamicView.Sequence.SubflowArea,
   view: LayoutedDynamicView,
+  flow: DynamicViewFlowOps,
 ): Types.SequenceSubflowArea {
+  const id = NodeId(ID)
   return {
-    id: `subflow-${id}` as NodeId,
+    id,
     type: 'seq-subflow',
     data: {
-      id: `subflow-${id}` as NodeId,
-      title: _type,
+      id,
+      title: flow.lookup(ID).title ?? '',
       technology: null,
       color: SeqParallelAreaColor.default,
       shape: 'rectangle',
@@ -185,19 +191,18 @@ function toSeqSubflowArea(
       tags: [],
       x,
       y,
-      level: 0,
+      level: flow.level(ID),
       icon: null,
       width,
       height,
       description: null,
       viewId: view.id,
       flowType: _type,
-      flowPath: id,
       drifts: null,
       // Ignore notes for Parallel Area nodes
       notes: undefined,
     },
-    zIndex: SeqZIndex.parallel + zIndex * 5,
+    zIndex: SeqZIndex.subflows + zIndex,
     position: {
       x,
       y,
@@ -206,9 +211,9 @@ function toSeqSubflowArea(
     deletable: false,
     selectable: false,
     focusable: false,
-    style: {
-      pointerEvents: 'none',
-    },
+    // style: {
+    //   pointerEvents: 'none',
+    // },
     width,
     initialWidth: width,
     height,
@@ -296,7 +301,7 @@ function toSeqStepEdge(
     deletable: false,
     selectable: true,
     focusable: false,
-    zIndex: 20,
+    zIndex: SeqZIndex.step,
     interactionWidth: 40,
     source: edge.source,
     sourceHandle,

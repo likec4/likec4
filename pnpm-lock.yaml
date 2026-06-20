@@ -1673,6 +1673,9 @@ importers:
       '@lume/kiwi':
         specifier: catalog:utils
         version: 0.4.4
+      defu:
+        specifier: catalog:utils
+        version: 6.1.7
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0

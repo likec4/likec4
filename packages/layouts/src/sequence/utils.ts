@@ -1,7 +1,15 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { invariant, isAncestor, nonNullable, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
-import type { Compound, ParallelRect, Rect, Step } from './_types'
+import type { Compound, Paddings, ParallelRect, Rect, Step } from './_types'
+
+export function normalizePaddings(paddings: Paddings): { left: number; right: number; top: number; bottom: number } {
+  const left = paddings.left ?? paddings.x ?? 0
+  const right = paddings.right ?? paddings.x ?? 0
+  const top = paddings.top ?? paddings.y ?? 0
+  const bottom = paddings.bottom ?? paddings.y ?? 0
+  return { left, right, top, bottom }
+}
 
 export function rectFromSteps(steps: Array<Step>): Rect {
   invariant(steps.length > 0)

@@ -1,5 +1,16 @@
 import type { BBox, DiagramEdge, DiagramNode, EdgeId, NodeId, StepPath, ViewId } from '@likec4/core/types'
 
+export type Paddings = Partial<
+  {
+    top: number
+    left: number
+    right: number
+    bottom: number
+    x: number
+    y: number
+  }
+>
+
 export type Step = {
   id: EdgeId
   from: {
