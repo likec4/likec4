@@ -207,6 +207,9 @@ export const tokens = defineTokens({
     xl: {
       value: '32px',
     },
+    pill: {
+      value: '999px',
+    },
   },
   colors,
   fontWeights: {

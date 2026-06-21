@@ -1,16 +1,19 @@
-import { nonNullable } from '@likec4/core'
+import { invariant, nonNullable } from '@likec4/core'
 import {
   type BBox,
   type DiagramEdge,
   type DiagramNode,
   type DynamicViewFlowOps,
   type LayoutedDynamicView,
+  type StepPath,
   type ViewId,
+  type XYPoint,
   dynamicViewFlow,
+  flowGuards,
   NodeId,
 } from '@likec4/core/types'
-import { isArray } from 'remeda'
-import type { Writable } from 'type-fest'
+import { flatMap, isArray } from 'remeda'
+import type { SetOptional, SetRequired, Writable } from 'type-fest'
 import type { Types } from '../types'
 import {
   SeqParallelAreaColor,
@@ -48,9 +51,7 @@ export function sequenceLayoutToXY(
 
   // In manual layouts, subflows are emtpy
   if (isArray(subflows)) {
-    for (const subflow of subflows) {
-      xynodes.push(toSeqSubflowArea(subflow, view, flow))
-    }
+    xynodes.push(...flatMap(subflows, s => mapSubflows(s, view, flow, subflows) ?? []))
   } else {
     for (const parallelArea of parallelAreas) {
       xynodes.push(toSeqParallelArea(parallelArea, view))
@@ -172,55 +173,6 @@ function toSeqParallelArea(
   }
 }
 
-function toSeqSubflowArea(
-  { id: ID, _type, zIndex, x, y, width, height }: LayoutedDynamicView.Sequence.SubflowArea,
-  view: LayoutedDynamicView,
-  flow: DynamicViewFlowOps,
-): Types.SequenceSubflowArea {
-  const id = NodeId(ID)
-  return {
-    id,
-    type: 'seq-subflow',
-    data: {
-      id,
-      title: flow.lookup(ID).title ?? '',
-      technology: null,
-      color: SeqParallelAreaColor.default,
-      shape: 'rectangle',
-      style: {},
-      tags: [],
-      x,
-      y,
-      level: flow.level(ID),
-      icon: null,
-      width,
-      height,
-      description: null,
-      viewId: view.id,
-      flowType: _type,
-      drifts: null,
-      // Ignore notes for Parallel Area nodes
-      notes: undefined,
-    },
-    zIndex: SeqZIndex.subflows + zIndex,
-    position: {
-      x,
-      y,
-    },
-    draggable: false,
-    deletable: false,
-    selectable: false,
-    focusable: false,
-    // style: {
-    //   pointerEvents: 'none',
-    // },
-    width,
-    initialWidth: width,
-    height,
-    initialHeight: height,
-  }
-}
-
 function toSeqActorNode(
   { id, x, y, width, height, ports }: LayoutedDynamicView.Sequence.Actor,
   actor: DiagramNode,
@@ -307,5 +259,144 @@ function toSeqStepEdge(
     sourceHandle,
     target: edge.target,
     targetHandle,
+  }
+}
+
+const exclude = [
+  'try-block',
+  'try-catch',
+  'try-finally',
+  'alt-when',
+  'alt-else',
+  'alt-if',
+] as const
+const isExcluded = (v: unknown): v is (typeof exclude)[number] => exclude.includes(v as any)
+
+function mapSubflows(
+  { _type, ...subflow }: LayoutedDynamicView.Sequence.SubflowArea,
+  view: LayoutedDynamicView,
+  flow: DynamicViewFlowOps,
+  all: readonly LayoutedDynamicView.Sequence.SubflowArea[],
+): Types.SequenceSubflowArea | undefined {
+  if (isExcluded(_type)) {
+    return undefined
+  }
+  const { id: ID, x, y, width, height } = subflow
+  return {
+    id: ID,
+    type: 'seq-subflow',
+    data: subflowAreaData({ ...subflow, _type }, view, flow, all),
+    zIndex: SeqZIndex.subflows,
+    position: {
+      x,
+      y,
+    },
+    draggable: false,
+    deletable: false,
+    selectable: false,
+    focusable: false,
+    // style: {
+    //   pointerEvents: 'none',
+    // },
+    width,
+    initialWidth: width,
+    height,
+    initialHeight: height,
+  }
+}
+
+function subflowAreaData(
+  subflow: LayoutedDynamicView.Sequence.SubflowArea & { _type: Types.SequenceSubflowAreaData['flowType'] },
+  view: LayoutedDynamicView,
+  flow: DynamicViewFlowOps,
+  all: readonly LayoutedDynamicView.Sequence.SubflowArea[],
+): Types.SequenceSubflowAreaData {
+  const { id: ID, _type, x, y, width, height } = subflow
+  const id = NodeId(ID)
+
+  const flowData = _type === 'try'
+    ? composeTryData(subflow, flow, all)
+    : _type === 'alt'
+    ? composeAltData(subflow, flow, all)
+    : { flowType: _type }
+
+  return {
+    id,
+    title: flow.lookup(ID).title ?? '',
+    technology: null,
+    color: SeqParallelAreaColor.default,
+    shape: 'rectangle',
+    style: {},
+    tags: [],
+    x,
+    y,
+    level: flow.level(ID),
+    icon: null,
+    width,
+    height,
+    description: null,
+    viewId: view.id,
+    drifts: null,
+    // Ignore notes for Parallel Area nodes
+    notes: undefined,
+    ...flowData,
+  }
+}
+
+const toSequenceBranch = (
+  parent: XYPoint,
+  flow: DynamicViewFlowOps,
+  area: LayoutedDynamicView.Sequence.SubflowArea,
+) => ({
+  id: area.id,
+  title: flow.lookup(area.id).title ?? undefined,
+  x: area.x - parent.x,
+  y: area.y - parent.y,
+  width: area.width,
+  height: area.height,
+})
+
+function composeTryData(
+  { id, ...parent }: Pick<LayoutedDynamicView.Sequence.SubflowArea, 'id' | 'x' | 'y'>,
+  flow: DynamicViewFlowOps,
+  all: readonly LayoutedDynamicView.Sequence.SubflowArea[],
+) {
+  const findArea = (id: StepPath) => all.find((area) => area.id === id)
+
+  const blocks = flow.unwindTry(flow.lookup(id, 'try'))
+  const tryBlockArea = nonNullable(findArea(blocks.tryBlock.id))
+  const catchBlockArea = blocks.catchBlock ? findArea(blocks.catchBlock.id) : undefined
+  const finallyBlockArea = blocks.finallyBlock ? findArea(blocks.finallyBlock.id) : undefined
+  return {
+    flowType: 'try' as const,
+    tryBlock: toSequenceBranch(parent, flow, tryBlockArea),
+    catchBlock: catchBlockArea ? toSequenceBranch(parent, flow, catchBlockArea) : undefined,
+    finallyBlock: finallyBlockArea ? toSequenceBranch(parent, flow, finallyBlockArea) : undefined,
+  }
+}
+
+function composeAltData(
+  { id, ...parent }: Pick<LayoutedDynamicView.Sequence.SubflowArea, 'id' | 'x' | 'y'>,
+  flow: DynamicViewFlowOps,
+  all: readonly LayoutedDynamicView.Sequence.SubflowArea[],
+) {
+  const findArea = (areaId: StepPath) => all.find((area) => area.id === areaId)
+
+  const truncateType = <T extends string>(s: `alt-${T}`): T => s.substring('alt-'.length) as any as T
+
+  const branches = flow.nested(id).flatMap(f => {
+    const area = findArea(f.id)
+    if (area) {
+      invariant(flowGuards.type.isAltBranch(area._type))
+      return {
+        ...toSequenceBranch(parent, flow, area),
+        _type: truncateType(area._type),
+      }
+    }
+    return []
+  })
+  return {
+    flowType: 'alt' as const,
+    branches,
   }
 }

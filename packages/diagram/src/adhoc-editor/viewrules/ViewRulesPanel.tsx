@@ -50,7 +50,7 @@ export function ViewRulesPanel({
                     px: '2',
                     flexWrap: 'nowrap',
                     rounded: 'sm',
-                    colorPalette: 'teal',
+                    // colorPalette: 'teal',
                     // colorPalette: rule.type === 'include' ? 'green' : 'red',
                     gap: '2',
                     border: 'default',
@@ -136,6 +136,6 @@ function ExpressionRef({ expr }: { expr: ModelFqnExpr.Ref<any> }) {
 const PredicatIcon = styled('div', {
   base: {
     display: 'contents',
-    color: 'colorPalette.9',
+    // color: 'colorPalette.9',
   },
 })

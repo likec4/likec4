@@ -199,12 +199,12 @@ export const globalCss: ExtendableGlobalCss = {
             _print: 'normal!',
           },
         },
-        '&:has(.react-flow__node-seq-parallel) :where(.react-flow__edges > svg)': {
+        '&:has(.react-flow__node-seq-subflow) :where(.react-flow__edges > svg)': {
           mixBlendMode: {
             _light: 'color-burn',
           },
         },
-        '& .react-flow__node-seq-parallel': {
+        '& .react-flow__node-seq-subflow': {
           mixBlendMode: {
             _dark: 'luminosity',
             _light: 'color-burn',

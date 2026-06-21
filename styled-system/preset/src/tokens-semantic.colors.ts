@@ -286,34 +286,109 @@ export const colors = defineSemanticTokens.colors({
     //   },
     // },
     loop: {
-      DEFAULT: {
-        description: 'Background color for loop step',
-        value: 'rgba(91, 199, 179, 0.1)',
-      },
-      text: {
-        description: 'Loop step',
-        value: 'rgb(91, 199, 179)',
-      },
-      border: {
-        description: 'Border color for loop step',
-        value: 'rgba(91, 199, 179, 0.4)',
-      },
-    },
-    break: {
+      // DEFAULT: {
+      //   description: 'Background color for loop step',
+      //   value: 'rgba(91, 199, 179, 0.1)',
+      // },
+      // text: {
+      //   description: 'Loop step',
+      //   value: 'rgb(91, 199, 179)',
+      // },
+      // border: {
+      //   description: 'Border color for loop step',
+      //   value: 'rgba(91, 199, 179, 0.4)',
+      // },
       DEFAULT: {
         description: 'Background color for loop step',
         value: {
-          base: alpha(mantine.colors.red[8], 15),
-          _dark: alpha(mantine.colors.red[8], 10),
+          base: alpha(mantine.colors.teal[9], 5),
+          _dark: alpha(mantine.colors.teal[8], 10),
         },
       },
       text: {
         description: 'Loop step',
-        value: mantine.colors.red.lightColor,
+        value: {
+          base: mantine.colors.dark[9],
+          _dark: alpha(mantine.colors.teal[2], 95),
+        },
       },
       border: {
         description: 'Border color for loop step',
-        value: alpha(mantine.colors.red[7], 20),
+        value: {
+          base: alpha(mantine.colors.teal[9], 90),
+          _dark: alpha(mantine.colors.teal[8], 70),
+        },
+      },
+      header: {
+        description: 'Background color for parallel step',
+        value: alpha(mantine.colors.teal[8], 40),
+      },
+      badge: {
+        description: 'Background color for parallel step',
+        value: alpha(mantine.colors.teal[8], 20),
+      },
+    },
+    try: {
+      block: {
+        DEFAULT: {
+          description: 'Background color for loop step',
+          value: {
+            base: alpha(mantine.colors.yellow[9], 5),
+            _dark: alpha(mantine.colors.yellow[8], 5),
+          },
+        },
+        text: {
+          description: 'Loop step',
+          value: {
+            base: mantine.colors.orange[9],
+            _dark: alpha(mantine.colors.orange[1], 70),
+          },
+        },
+        border: {
+          description: 'Border color for loop step',
+          value: {
+            base: alpha(mantine.colors.yellow[9], 90),
+            _dark: alpha(mantine.colors.yellow[7], 40),
+          },
+        },
+        header: {
+          description: 'Background color for parallel step',
+          value: {
+            base: alpha(mantine.colors.yellow[9], 60),
+            _dark: alpha(mantine.colors.orange[8], 40),
+          },
+        },
+        badge: {
+          description: 'Background color for parallel step',
+          value: alpha(mantine.colors.yellow[8], 20),
+        },
+      },
+      catch: {
+        DEFAULT: {
+          description: 'Background color for loop step',
+          value: {
+            base: alpha(mantine.colors.red[9], 5),
+            _dark: alpha(mantine.colors.red[8], 5),
+          },
+        },
+        text: {
+          description: 'Loop step',
+          value: {
+            base: alpha(mantine.colors.red[9], 90),
+            _dark: alpha(mantine.colors.red[3], 90),
+          },
+        },
+        border: {
+          description: 'Border color for loop step',
+          value: {
+            base: alpha(mantine.colors.red[9], 90),
+            _dark: alpha(mantine.colors.red[7], 40),
+          },
+        },
+        badge: {
+          description: 'Background color for parallel step',
+          value: alpha(mantine.colors.red[8], 20),
+        },
       },
     },
     //    break: {
@@ -347,15 +422,38 @@ export const colors = defineSemanticTokens.colors({
     alt: {
       DEFAULT: {
         description: 'Background color for parallel step',
-        value: alpha(mantine.colors.violet[9], 70),
+        value: {
+          base: alpha(mantine.colors.violet[9], 5),
+          _dark: alpha(mantine.colors.violet[8], 10),
+        },
+      },
+      header: {
+        description: 'Background color for parallel step',
+        value: {
+          base: alpha(mantine.colors.violet[8], 50),
+          _dark: alpha(mantine.colors.violet[8], 40),
+        },
       },
       text: {
         description: 'Parallel step',
-        value: mantine.colors.violet[3],
+        value: {
+          base: alpha(mantine.colors.violet[9], 90),
+          _dark: alpha(mantine.colors.violet[2], 90),
+        },
       },
       border: {
         description: 'Border color for loop step',
-        value: alpha(mantine.colors.violet[9], 50),
+        value: {
+          base: alpha(mantine.colors.violet[6], 80),
+          _dark: alpha(mantine.colors.violet[5], 40),
+        },
+      },
+      badge: {
+        description: 'Background color for alt variant',
+        value: {
+          base: alpha(mantine.colors.violet[7], 20),
+          _dark: alpha(mantine.colors.violet[8], 40),
+        },
       },
     },
   },

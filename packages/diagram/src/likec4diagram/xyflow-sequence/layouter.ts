@@ -280,7 +280,7 @@ export class SequenceViewLayouter {
         top: 30,
         right: 40,
         bottom: 0,
-        left: 100,
+        left: 90,
       },
       margin: 0,
     }
@@ -383,9 +383,9 @@ export class SequenceViewLayouter {
 
             return hasNoSubflows || onLeaveExpand(bbox, {
               padding: {
-                bottom: 0,
-                left: 20,
-                right: 20,
+                bottom: 30,
+                left: 30,
+                right: 30,
               },
             })
           },
@@ -412,9 +412,10 @@ export class SequenceViewLayouter {
           if (!parent) {
             constraintOnTheLeft(bbox, rect)
           }
+
           return onLeaveExpand(bbox, {
             padding: {
-              top: subflow._type === 'try' ? 0 : 32,
+              top: 16,
               left: 0,
               right: 0,
             },
@@ -437,7 +438,7 @@ export class SequenceViewLayouter {
             return onLeaveExpand(bbox, {
               padding: {
                 top: 50,
-                left: 50,
+                left: 30,
                 bottom: 30,
                 right: 30,
               },

@@ -21,6 +21,9 @@
     },
     {
       "path": "../../styled-system/styles/"
+    },
+    {
+      "path": "../../styled-system/preset/"
     }
   ]
 }

@@ -51,7 +51,17 @@ export default /* @__PURE__ */ definePreset({
   patterns,
   utilities,
   theme: {
-    extend: theme,
+    extend: {
+      ...theme,
+      colorPalette: {
+        include: [
+          'sequence.*',
+        ],
+        exclude: [
+          'mantine.*',
+        ],
+      },
+    },
   },
 })
 

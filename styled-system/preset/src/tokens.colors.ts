@@ -8,4 +8,6 @@ export const colors = defineTokens.colors({
   // For fill: none
   none: { value: 'none' },
   inherit: { value: 'inherit' },
+  current: { value: 'current' },
+  currentColor: { value: 'currentColor' },
 })

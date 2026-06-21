@@ -11,6 +11,7 @@ import type {
   IconUrl,
   MarkdownOrString,
   NonEmptyReadonlyArray,
+  StepPath,
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
@@ -108,12 +109,32 @@ export namespace Types {
     }
   >
 
-  export type SequenceSubflowAreaData = Simplify<
+  export type SequenceSubflowAreaData =
     & LeafNodeData
-    & {
-      flowType: DynamicViewFlow.SubFlowType
-    }
-  >
+    & (
+      | {
+        flowType: 'try'
+        tryBlock: SequenceSubflowBranch
+        catchBlock: undefined | SequenceSubflowBranch
+        finallyBlock: undefined | SequenceSubflowBranch
+      }
+      | {
+        flowType: 'alt'
+        branches: Array<SequenceSubflowBranch & { _type: 'when' | 'else' | 'if' }>
+      }
+      | {
+        flowType: Exclude<DynamicViewFlow.SubFlow['_type'], 'try' | 'alt'>
+      }
+    )
+
+  type SequenceSubflowBranch = {
+    id: StepPath
+    title: string | undefined
+    x: number
+    y: number
+    width: number
+    height: number
+  }
 
   export type SequenceParallelAreaData = Simplify<
     & LeafNodeData
