@@ -409,9 +409,15 @@ function emitMarkerIndented(
     case 'note': {
       const actors = marker.actors.map(a => actorName(a)).join(',')
       switch (marker.placement) {
-        case 'over':
-          out.append(`${pad}Note over ${actors}: ${escapeLabel(marker.text)}`, NL)
+        case 'over': {
+          // Mermaid `Note over` spans at most two participants; for 3+ actors emit
+          // the first and last so the note still renders across the intended range.
+          const overActors = marker.actors.length > 2
+            ? `${actorName(marker.actors[0]!)},${actorName(marker.actors[marker.actors.length - 1]!)}`
+            : actors
+          out.append(`${pad}Note over ${overActors}: ${escapeLabel(marker.text)}`, NL)
           break
+        }
         case 'left':
           out.append(`${pad}Note left of ${actors}: ${escapeLabel(marker.text)}`, NL)
           break

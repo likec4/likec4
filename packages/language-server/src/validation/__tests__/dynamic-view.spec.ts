@@ -306,6 +306,16 @@ describe('check #6 – create before first use', () => {
     `))
     expect(warnings).toContain('create appears after the first use of this actor in the view')
   })
+
+  it('[negative] create after use as a mid-chain participant reports warning', async ({ expect }) => {
+    const { validate } = createTestServices()
+    // c2 is an intermediate participant of the chain (c1 -> c2 -> c3), used before `create c2`
+    const { warnings } = await validate(doc(`
+      c1 -> c2 -> c3 'chained'
+      create c2
+    `))
+    expect(warnings).toContain('create appears after the first use of this actor in the view')
+  })
 })
 
 // ---------------------------------------------------------------------------

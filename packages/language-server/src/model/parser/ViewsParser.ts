@@ -360,13 +360,11 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
           elements: this.tryMap('views', b.body.elements, e => this.parseDynamicElement(e)),
         }))
         invariant(isNonEmptyArray(branches), 'Dynamic parallel steps must have at least one branch')
-        // Flatten all branch elements into __parallel for back-compat consumers
-        const flatSteps = branches.flatMap(b => b.elements).filter(
+        // Flatten all branch elements into __parallel for back-compat consumers.
+        // Branch-only parallels may yield an empty projection — that is allowed.
+        const __parallel = branches.flatMap(b => b.elements).filter(
           (e): e is c4.DynamicStep | c4.DynamicStepsSeries => c4.isDynamicStep(e) || c4.isDynamicStepsSeries(e),
         )
-        const __parallel = isNonEmptyArray(flatSteps)
-          ? flatSteps
-          : ([] as unknown as c4.NonEmptyReadonlyArray<c4.DynamicStep | c4.DynamicStepsSeries>)
         return {
           parallelId,
           __parallel,

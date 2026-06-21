@@ -347,7 +347,7 @@ autonumber 1 1
     Api->>Notifier: notify
   end
   Note right of Api: Payment confirmed
-  Web->>Done: order confirmation
+  User->>Web: order confirmation
   deactivate User
 "
 `;

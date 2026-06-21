@@ -73,9 +73,16 @@ function useChatTools() {
 
         const toNodeData = mapToNodeData(xystore.getState())
 
-        // Filter out sequence overlay nodes (seq-frame, seq-note, seq-activation) which have no
-        // title/shape/color/icon — only interactive element/deployment/compound/actor nodes carry model data.
-        const overlayTypes = new Set<string>(['seq-frame', 'seq-note', 'seq-activation'])
+        // Filter out sequence overlay nodes (no title/shape/color/icon) — only interactive
+        // element/deployment/compound/actor/parallel nodes carry model data. Keep this in sync
+        // with Types.SequenceOverlayNodeType in @likec4/diagram.
+        const overlayTypes = new Set<string>([
+          'seq-frame',
+          'seq-frame-bg',
+          'seq-lifeline',
+          'seq-note',
+          'seq-activation',
+        ])
         const interactiveNodes = xynodes.filter(
           (n): n is Types.Node<Types.InteractiveNodeType> => !overlayTypes.has(n.type),
         )

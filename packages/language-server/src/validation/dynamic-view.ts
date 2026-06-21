@@ -65,6 +65,20 @@ export function* walkDynamicView(view: ast.DynamicView): Generator<WalkEntry> {
   }
 }
 
+/**
+ * Yields every actor ElementRef referenced by a step, recursing through chains so
+ * `A -> B -> C` yields A, B and C — not just the final target.
+ */
+function* stepActorRefs(step: ast.DynamicViewStep): Generator<ast.ElementRef> {
+  if (ast.isDynamicStepSingle(step)) {
+    yield step.source
+    yield step.target
+  } else if (ast.isDynamicStepChain(step)) {
+    yield* stepActorRefs(step.source)
+    yield step.target
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Check #1: Actor existence for note/activate/deactivate/create/destroy
 // ---------------------------------------------------------------------------
@@ -230,19 +244,11 @@ export const checkDynamicCreateBeforeFirstUse = (
       }
       if (ast.isDynamicViewStep(element)) {
         let usedHere = false
-        if (ast.isDynamicStepSingle(element)) {
-          const srcEl = elementRef(element.source)
-          const src = srcEl && fqnIndex.getFqn(srcEl)
-          const tgtEl = elementRef(element.target)
-          const tgt = tgtEl && fqnIndex.getFqn(tgtEl)
-          if (src === fqn || tgt === fqn) {
+        for (const ref of stepActorRefs(element)) {
+          const el = elementRef(ref)
+          if (el && fqnIndex.getFqn(el) === fqn) {
             usedHere = true
-          }
-        } else if (ast.isDynamicStepChain(element)) {
-          const tgtEl = elementRef(element.target)
-          const tgt = tgtEl && fqnIndex.getFqn(tgtEl)
-          if (tgt === fqn) {
-            usedHere = true
+            break
           }
         }
         if (usedHere && firstUseIndex === -1) {
@@ -286,16 +292,12 @@ export const checkDynamicDestroyIsLastUse = (
         // any reference after destroy
         let referencedHere = false
         if (ast.isDynamicViewStep(element)) {
-          if (ast.isDynamicStepSingle(element)) {
-            const srcEl = elementRef(element.source)
-            const src = srcEl && fqnIndex.getFqn(srcEl)
-            const tgtEl = elementRef(element.target)
-            const tgt = tgtEl && fqnIndex.getFqn(tgtEl)
-            if (src === fqn || tgt === fqn) referencedHere = true
-          } else if (ast.isDynamicStepChain(element)) {
-            const tgtEl = elementRef(element.target)
-            const tgt = tgtEl && fqnIndex.getFqn(tgtEl)
-            if (tgt === fqn) referencedHere = true
+          for (const ref of stepActorRefs(element)) {
+            const el = elementRef(ref)
+            if (el && fqnIndex.getFqn(el) === fqn) {
+              referencedHere = true
+              break
+            }
           }
         } else if (ast.isDynamicActivate(element) || ast.isDynamicDeactivate(element) || ast.isDynamicCreate(element)) {
           const aEl = elementRef(element.actor)

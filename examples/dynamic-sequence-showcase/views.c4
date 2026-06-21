@@ -72,19 +72,19 @@ views {
     deactivate api
     note right of api 'Payment confirmed'
 
-    create notifier
-    api -> notifier 'request fulfillment'
-    notifier <- notifier 'order created'
+    create fulfillment
+    api -> fulfillment 'request fulfillment'
+    fulfillment <- fulfillment 'order created'
 
-    activate notifier
+    activate fulfillment
     group 'shipment preparation' {
-      notifier -> db 'lock inventory'
+      fulfillment -> db 'lock inventory'
       db <- db 'reserved'
-      notifier <- db 'success'
+      fulfillment <- db 'success'
     }
-    deactivate notifier
+    deactivate fulfillment
 
-    destroy notifier
+    destroy fulfillment
 
     user <- web 'show order confirmation'
     deactivate web

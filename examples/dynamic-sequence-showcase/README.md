@@ -15,4 +15,4 @@ The view exercises:
 - Participant lifecycle (`create`/`destroy`)
 - Automatic step numbering (`autonumber`)
 
-View `specification.c4` for the model and `views.c4` for the sequence diagram.
+View `model.c4` for the model and `views.c4` for the sequence diagram.

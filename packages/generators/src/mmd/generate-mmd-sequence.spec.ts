@@ -668,7 +668,7 @@ test('showcase — all constructs end-to-end (paste into mermaid.live to verify)
     makeEdge('e10', 'payment', 'api', 'declined'), // inside repeat > critical branch 2
     makeEdge('e11', 'api', 'db', 'insert'), // inside parallel branch 1
     makeEdge('e12', 'api', 'notifier', 'notify'), // inside parallel branch 2
-    makeEdge('user', 'web', 'done', 'order confirmation'), // top-level after all frames
+    makeEdge('e13', 'user', 'web', 'order confirmation'), // top-level after all frames
   ]
 
   const frames: ComputedFrame[] = [
@@ -787,7 +787,7 @@ test('showcase — all constructs end-to-end (paste into mermaid.live to verify)
       afterStep: 'e12' as any,
     },
     { kind: 'destroy', id: 'mk-destroy-notifier', actor: 'notifier' as any, afterStep: 'e12' as any },
-    { kind: 'deactivate', id: 'mk-deact-user', actor: 'user' as any, afterStep: 'user' as any },
+    { kind: 'deactivate', id: 'mk-deact-user', actor: 'user' as any, afterStep: 'e13' as any },
   ]
 
   const view = makeDynamicView({

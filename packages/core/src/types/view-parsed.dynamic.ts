@@ -48,7 +48,9 @@ export interface DynamicStepsSeries<A extends AnyAux = AnyAux> {
 
 export interface DynamicStepsParallel<A extends AnyAux = AnyAux> {
   readonly parallelId: string
-  readonly __parallel: NonEmptyReadonlyArray<DynamicStep<A> | DynamicStepsSeries<A>>
+  // Branch-only parallels (labeled branches with no flat steps) project to an empty
+  // legacy `__parallel`; this is the steps-only back-compat view, so it is not NonEmpty.
+  readonly __parallel: ReadonlyArray<DynamicStep<A> | DynamicStepsSeries<A>>
   readonly branches?: NonEmptyReadonlyArray<{
     label?: string
     elements: DynamicViewElement<A>[]

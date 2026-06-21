@@ -339,7 +339,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(activate|and|autonumber|autoLayout|border|branch|break|browser|bucket|color|component|create|critical|crow|cylinder|dashed|deactivate|description|destroy|diamond|document|dot|dotted|dynamic|deployment|else|global|group|element|environment|exclude|extend|extends|head|icon|icons|if|include|includeAncestors|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|note|notes|odiamond|odot|of|on|onormal|opacity|open|optional|or|over|parallel|par|person|predicateGroup|predicate|queue|rank|rectangle|relationship|repeat|shape|solid|specification|step|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with|zone|vm)\\b"
+      "match": "\\b(activate|and|autonumber|autoLayout|border|branch|break|browser|bucket|color|component|create|critical|crow|cylinder|dashed|deactivate|description|destroy|diamond|document|dot|dotted|dynamic|deployment|else|global|group|element|environment|exclude|extend|extends|from|head|icon|icons|if|include|includeAncestors|it|kind|left|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|note|notes|odiamond|odot|of|on|onormal|opacity|open|optional|or|over|parallel|par|person|predicateGroup|predicate|queue|rank|rectangle|relationship|repeat|right|shape|solid|specification|step|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with|zone|vm)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",
