@@ -75,7 +75,7 @@ describe('frames + markers: individual constructs', () => {
         kind: 'if',
         id: 'if-1',
         condition: 'authorized',
-        then: { id: 'then-1', elements: [s('customer', 'cloud.frontend.dashboard')] },
+        thenBranch: { id: 'then-1', elements: [s('customer', 'cloud.frontend.dashboard')] },
         elseIfs: [],
         else: { id: 'else-1', elements: [s('customer', 'cloud.backend.graphql')] },
       }),
@@ -105,7 +105,7 @@ describe('frames + markers: individual constructs', () => {
         kind: 'if',
         id: 'if-2',
         condition: 'role',
-        then: { id: 'then-2', elements: [s('customer', 'cloud.frontend.dashboard')] },
+        thenBranch: { id: 'then-2', elements: [s('customer', 'cloud.frontend.dashboard')] },
         elseIfs: [
           {
             condition: 'isAdmin',
@@ -423,7 +423,7 @@ describe('frames + markers: end-to-end showcase', () => {
         kind: 'if',
         id: 'if-showcase',
         condition: 'logged in',
-        then: { id: 'then-s', elements: [s('customer', 'cloud.frontend.dashboard')] },
+        thenBranch: { id: 'then-s', elements: [s('customer', 'cloud.frontend.dashboard')] },
         elseIfs: [],
         else: { id: 'else-s', elements: [s('customer', 'cloud.backend.graphql')] },
       }),
@@ -532,7 +532,7 @@ describe('frames + markers: invariants', () => {
         kind: 'if',
         id: 'inv-if',
         condition: 'cond',
-        then: {
+        thenBranch: {
           id: 'inv-then',
           elements: [
             s('customer', 'cloud.frontend.dashboard'),

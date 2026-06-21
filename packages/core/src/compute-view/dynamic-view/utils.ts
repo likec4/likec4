@@ -74,7 +74,7 @@ function flattenNewElement<A extends Any>(element: DynamicViewElement<A>): Dynam
 
   switch (true) {
     case isDynamicIfBlock(element): {
-      collectBody([...element.then.elements])
+      collectBody([...element.thenBranch.elements])
       for (const ei of element.elseIfs) collectBody([...ei.body.elements])
       if (element.else) collectBody([...element.else.elements])
       break
@@ -214,7 +214,7 @@ export function elementsFromSteps<A extends Any>(
           break
         }
         case isDynamicIfBlock(el): {
-          collectMarkerActors(el.then.elements)
+          collectMarkerActors(el.thenBranch.elements)
           for (const ei of el.elseIfs) collectMarkerActors(ei.body.elements)
           if (el.else) collectMarkerActors(el.else.elements)
           break

@@ -97,7 +97,7 @@ export interface DynamicIfBlock<A extends AnyAux = AnyAux> {
   readonly kind: 'if'
   id: string
   condition: string
-  then: DynamicBlockBody<A>
+  thenBranch: DynamicBlockBody<A>
   elseIfs: ReadonlyArray<{ condition: string; body: DynamicBlockBody<A> }>
   else?: DynamicBlockBody<A>
 }

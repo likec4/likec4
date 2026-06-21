@@ -453,7 +453,7 @@ class DynamicViewCompute<A extends AnyAux> {
 
         type BranchDef = { condition?: string; elements: DynamicViewElement<A>[] }
         const allBranches: BranchDef[] = [
-          { condition: element.condition, elements: [...element.then.elements] },
+          { condition: element.condition, elements: [...element.thenBranch.elements] },
           ...element.elseIfs.map(ei => ({ condition: ei.condition, elements: [...ei.body.elements] })),
           ...(element.else ? [{ elements: [...element.else.elements] }] : []),
         ]

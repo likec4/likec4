@@ -54,7 +54,7 @@ describe('LikeC4ModelParser – dynamic view blocks', () => {
           "elseIfs": [],
           "id": "/steps@0",
           "kind": "if",
-          "then": {
+          "thenBranch": {
             "elements": [
               {
                 "astPath": "/steps@0/thenBranch/elements@0",
@@ -94,7 +94,7 @@ describe('LikeC4ModelParser – dynamic view blocks', () => {
           "elseIfs": [],
           "id": "/steps@0",
           "kind": "if",
-          "then": {
+          "thenBranch": {
             "elements": [
               {
                 "astPath": "/steps@0/thenBranch/elements@0",
@@ -150,7 +150,7 @@ describe('LikeC4ModelParser – dynamic view blocks', () => {
           ],
           "id": "/steps@0",
           "kind": "if",
-          "then": {
+          "thenBranch": {
             "elements": [
               {
                 "astPath": "/steps@0/thenBranch/elements@0",
@@ -599,7 +599,7 @@ describe('LikeC4ModelParser – dynamic view blocks', () => {
           "elseIfs": [],
           "id": "/steps@0",
           "kind": "if",
-          "then": {
+          "thenBranch": {
             "elements": [
               {
                 "body": {
@@ -780,7 +780,7 @@ describe('LikeC4ModelParser – dynamic view blocks', () => {
           "elseIfs": [],
           "id": "/steps@2",
           "kind": "if",
-          "then": {
+          "thenBranch": {
             "elements": [
               {
                 "astPath": "/steps@2/thenBranch/elements@0",

@@ -434,7 +434,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         kind: 'if',
         id: pathInsideDynamicView(n),
         condition: n.condition,
-        then: this.parseDynamicBlockBody(n.thenBranch),
+        thenBranch: this.parseDynamicBlockBody(n.thenBranch),
         elseIfs: n.elseIfBranches.map(b => ({
           condition: b.condition,
           body: this.parseDynamicBlockBody(b.body),
