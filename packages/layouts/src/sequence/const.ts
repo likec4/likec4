@@ -41,6 +41,16 @@ export const SeqZIndex = {
   step: 20,
 }
 
+// Height of a note box (must match NOTE_HEIGHT in SequenceNote renderer and layouter.ts)
+export const NOTE_HEIGHT = 32
+
+/**
+ * Vertical space reserved per frame header band (kind-badge + condition text).
+ * Must exceed the maximum upward extent of step-edge autonumber badges above
+ * the first content row so the frame chrome never overlaps the first step arrow.
+ */
+export const FRAME_HEADER_HEIGHT = 80
+
 export const SeqParallelAreaColor = {
   default: 'gray',
   active: 'amber',

@@ -331,24 +331,24 @@ When using `variant sequence`, the dynamic view renders as a UML-style sequence 
 
 ### Keyword reference
 
-| LikeC4 Syntax | Mermaid Emission | Description |
-|---|---|---|
-| `if cond { … } else if cond { … } else { … }` | `alt`, `else` | Conditional branching: alt block for if, else if, and fallback else |
-| `optional cond { … }` | `opt` | Optional block: content only occurs if condition true |
-| `repeat label { … }` | `loop label` | Loop with label; executes block repeatedly (up to label's bound) |
-| `parallel { branch 'a' { … } branch 'b' { … } }` | `par a`, `and b`, `end` | Multi-branch parallel execution, each branch labeled |
-| `parallel { stepA stepB }` | `par`, `and`, `end` | Legacy flat parallel (all steps concurrent, no branch labels) |
-| `group 'label' { … }` | `rect` | Grouping/boxing of steps for visual organization |
-| `note over A, B 'text'` | `Note over A,B: text` | Note spanning multiple actors |
-| `note left of A 'text'` | `Note left of A: text` | Note left of a single actor |
-| `note right of A 'text'` | `Note right of A: text` | Note right of a single actor |
-| `activate A` | `activate A` | Participant A starts processing (lifeline thickens) |
-| `deactivate A` | `deactivate A` | Participant A finishes processing (lifeline thins) |
-| `create A` | `create participant A` | Participant A enters mid-flow (lifeline starts here) |
-| `destroy A` | `destroy A` | Participant A removed from flow (lifeline ends) |
-| `critical 'label' { … } on 'fallback' { … }*` | `critical label`, `option fallback`, `end` | Critical path with optional fallback handlers |
-| `break cond { … }` | `break cond` | Break out of current frame on condition |
-| `autonumber` / `autonumber from N step M` | `autonumber [N [M]]` | Enable automatic step numbering (optionally starting at N, incrementing by M) |
+| LikeC4 Syntax                                    | Mermaid Emission                           | Description                                                                   |
+| ------------------------------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| `if cond { … } else if cond { … } else { … }`    | `alt`, `else`                              | Conditional branching: alt block for if, else if, and fallback else           |
+| `optional cond { … }`                            | `opt`                                      | Optional block: content only occurs if condition true                         |
+| `repeat label { … }`                             | `loop label`                               | Loop with label; executes block repeatedly (up to label's bound)              |
+| `parallel { branch 'a' { … } branch 'b' { … } }` | `par a`, `and b`, `end`                    | Multi-branch parallel execution, each branch labeled                          |
+| `parallel { stepA stepB }`                       | `par`, `and`, `end`                        | Legacy flat parallel (all steps concurrent, no branch labels)                 |
+| `group 'label' { … }`                            | `rect`                                     | Grouping/boxing of steps for visual organization                              |
+| `note over A, B 'text'`                          | `Note over A,B: text`                      | Note spanning multiple actors                                                 |
+| `note left of A 'text'`                          | `Note left of A: text`                     | Note left of a single actor                                                   |
+| `note right of A 'text'`                         | `Note right of A: text`                    | Note right of a single actor                                                  |
+| `activate A`                                     | `activate A`                               | Participant A starts processing (lifeline thickens)                           |
+| `deactivate A`                                   | `deactivate A`                             | Participant A finishes processing (lifeline thins)                            |
+| `create A`                                       | `create participant A`                     | Participant A enters mid-flow (lifeline starts here)                          |
+| `destroy A`                                      | `destroy A`                                | Participant A removed from flow (lifeline ends)                               |
+| `critical 'label' { … } on 'fallback' { … }*`    | `critical label`, `option fallback`, `end` | Critical path with optional fallback handlers                                 |
+| `break cond { … }`                               | `break cond`                               | Break out of current frame on condition                                       |
+| `autonumber` / `autonumber from N step M`        | `autonumber [N [M]]`                       | Enable automatic step numbering (optionally starting at N, incrementing by M) |
 
 ### Mini-examples
 
@@ -530,6 +530,7 @@ dynamic view numbered-steps {
 When a `dynamic view` has `variant: sequence`, the LikeC4 Mermaid exporter routes the view through the `sequenceDiagram` generator instead of the default flowchart renderer. All control-flow blocks are linearized and emitted as equivalent Mermaid `sequenceDiagram` keywords per the keyword-reference table above.
 
 To visualize a sequence-variant dynamic view:
+
 1. Build the project: `likec4 build`
 2. Export to Mermaid: generated `.mmd` file contains valid `sequenceDiagram` syntax
 3. Paste into [Mermaid Live Editor](https://mermaid.live) to render

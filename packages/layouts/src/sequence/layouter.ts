@@ -21,24 +21,13 @@ import {
   ACTOR_GAP,
   COLUMN_GAP,
   FIRST_STEP_OFFSET,
+  FRAME_HEADER_HEIGHT,
   MIN_ROW_HEIGHT,
+  NOTE_HEIGHT,
   PORT_HEIGHT,
   STEP_LABEL_MARGIN,
 } from './const'
 import { findParallelRects } from './utils'
-
-/**
- * Vertical space reserved per frame header band (kind-badge + condition text).
- * Must exceed the maximum upward extent of step-edge autonumber badges above
- * the first content row so the frame chrome never overlaps the first step arrow.
- * Empirically the badge top sits ~36 graph-units above the row.y; using 48
- * leaves a comfortable 12 graph-unit gap between the badge and the frame chrome.
- *
- * This constant is used both by the Cassowary constraint that pushes the first
- * content row down (finalizeFrameConstraints) and by the BBox computation in
- * getFrameBoxes so the two sides always stay in sync.
- */
-const FRAME_HEADER_HEIGHT = 80
 
 // const SELF_LOOP_ADDITIONAL_HEIGHT = 50
 
@@ -431,7 +420,6 @@ export class SequenceViewLayouter {
     // Collect rows that have a note ending just before them (afterRow = minRow - 1).
     // Notes render at afterRow.bottom with height NOTE_HEIGHT; the frame header must
     // clear the note bottom, so we add NOTE_HEIGHT to the clearance for those rows.
-    const NOTE_HEIGHT = 32
     const notedRows = new Set<number>()
     for (const note of this.#pendingNotes) {
       if (note.afterRow !== null) {
@@ -625,12 +613,11 @@ export class SequenceViewLayouter {
    * Returns resolved note boxes.
    */
   getNotes(): SequenceNote[] {
-    const NOTE_HEIGHT = 32
     const NOTE_DEFAULT_WIDTH = 120
     const NOTE_GAP = 8
     const viewStartY = 0
 
-    return this.#pendingNotes.map((n) => {
+    return this.#pendingNotes.flatMap((n) => {
       let y: number
       if (n.afterRow !== null) {
         const rowData = this.#rows[n.afterRow]
@@ -641,11 +628,9 @@ export class SequenceViewLayouter {
         y = viewStartY
       }
 
-      // Determine actor columns for placement
-      const actorIndices = n.actors.map(actorId => {
-        const idx = this.#actors.findIndex(a => a.actor.id === actorId)
-        return idx >= 0 ? idx : 0
-      })
+      // Determine actor columns for placement; drop notes whose actors are not in the layout
+      const actorIndices = n.actors.map(actorId => this.#actors.findIndex(a => a.actor.id === actorId))
+      if (actorIndices.some(idx => idx < 0)) return []
       const minCol = Math.min(...actorIndices)
       const maxCol = Math.max(...actorIndices)
 
@@ -673,7 +658,7 @@ export class SequenceViewLayouter {
         }
       }
 
-      return {
+      return [{
         id: n.id,
         placement: n.placement,
         actors: n.actors as ReadonlyArray<NodeId>,
@@ -683,7 +668,7 @@ export class SequenceViewLayouter {
         width,
         height: NOTE_HEIGHT,
         afterStepId: n.afterStepId as EdgeId | null,
-      }
+      }]
     })
   }
 

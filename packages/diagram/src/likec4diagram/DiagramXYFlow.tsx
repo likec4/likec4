@@ -240,7 +240,9 @@ export function LikeC4DiagramXYFlow({
       onDelete={useCallbackRef(({ nodes, edges }) => {
         diagram.editorActor().send({
           type: 'delete.nodes-edges',
-          nodeIds: nodes.map(node => node.data.id),
+          // Overlay sequence nodes (seq-frame/note/activation/…) carry no `data.id`;
+          // ReactFlow's top-level `node.id` is the canonical id for every node kind.
+          nodeIds: nodes.map(node => node.id as NodeId),
           edgeIds: edges.map(edge => edge.data.id),
         })
       })}

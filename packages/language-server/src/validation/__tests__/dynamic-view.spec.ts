@@ -124,6 +124,84 @@ describe('check #2 – mixed flat/branch in parallel', () => {
     `))
     expect(errors).toContain('parallel block cannot mix flat steps and labeled branches')
   })
+
+  it('[negative] mixed flat + labeled parallel nested inside a block reports error', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(doc(`
+      if 'cond' {
+        parallel {
+          c1 -> c2 'flat'
+          branch 'a' { c2 -> c3 'labeled' }
+        }
+      }
+    `))
+    expect(errors).toContain('parallel block cannot mix flat steps and labeled branches')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Check #988 — nested parallel blocks are not allowed (steps OR branch/block path)
+// ---------------------------------------------------------------------------
+describe('check #988 – nested parallel blocks', () => {
+  it('[negative] parallel nested via flat steps reports error', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(doc(`
+      parallel {
+        c1 -> c2 'step'
+        parallel { c2 -> c3 'inner' }
+      }
+    `))
+    expect(errors).toContain('Nested parallel blocks are not allowed')
+  })
+
+  it('[negative] parallel nested via a labeled branch reports error', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(doc(`
+      parallel {
+        branch 'a' {
+          parallel { c1 -> c2 'inner' }
+        }
+      }
+    `))
+    expect(errors).toContain('Nested parallel blocks are not allowed')
+  })
+
+  it('[negative] parallel nested via an if inside a branch reports error', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(doc(`
+      parallel {
+        branch 'a' {
+          if 'cond' {
+            parallel { c1 -> c2 'inner' }
+          }
+        }
+      }
+    `))
+    expect(errors).toContain('Nested parallel blocks are not allowed')
+  })
+
+  it('[negative] only one error per nested parallel', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(doc(`
+      parallel {
+        branch 'a' {
+          parallel { c1 -> c2 'inner' }
+        }
+      }
+    `))
+    expect(errors.filter(e => e === 'Nested parallel blocks are not allowed')).toHaveLength(1)
+  })
+
+  it('[positive] labeled branches without nested parallel produce no error', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(doc(`
+      parallel {
+        branch 'a' { c1 -> c2 'step' }
+        branch 'b' { c2 -> c3 'step' }
+      }
+    `))
+    expect(errors.filter(e => e.includes('Nested parallel'))).toEqual([])
+  })
 })
 
 // ---------------------------------------------------------------------------

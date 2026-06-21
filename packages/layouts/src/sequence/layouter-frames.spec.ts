@@ -409,6 +409,92 @@ describe('SequenceFrame layout', () => {
     expect(sep).toBeGreaterThan(0)
     expect(sep).toBeLessThan(frame.height)
   })
+
+  it('if-frame: empty then-branch + non-empty else-branch — frame minRow >= 1, not 0', () => {
+    const A = makeActor('A')
+    const B = makeActor('B')
+
+    // Only else-branch steps exist in the layout; then-branch is empty (no step IDs map to rows).
+    const view = makeView(
+      [A, B],
+      [
+        { id: 'step-3', source: A, target: B },
+        { id: 'step-4', source: B, target: A },
+      ],
+      [
+        {
+          id: 'if-empty-then',
+          kind: 'if',
+          depth: 0,
+          branches: [
+            {
+              label: 'if condition',
+              // these step IDs are NOT in the layout — empty then-branch
+              stepIds: ['step-1', 'step-2'] as any[],
+              markerIds: [],
+            },
+            {
+              label: 'else',
+              stepIds: ['step-3', 'step-4'] as any[],
+              markerIds: [],
+            },
+          ],
+        },
+      ],
+    )
+
+    const layout = calcSequenceLayout(view)
+    expect(layout.frames).toHaveLength(1)
+
+    const frame = layout.frames[0]!
+    // Frame y must be above step-3 row but well below the actor-header band.
+    // With empty then-branch, minRow must derive from the else steps (row >= 1),
+    // not from the (0,0) sentinel — so the frame top cannot be at y=0.
+    expect(frame.y).toBeGreaterThan(0)
+    expect(frame.height).toBeGreaterThan(0)
+    expect(frame.width).toBeGreaterThan(0)
+  })
+
+  it('if-frame: non-empty then-branch + empty else-branch — mirror case also has frame minRow >= 1', () => {
+    const A = makeActor('A')
+    const B = makeActor('B')
+
+    const view = makeView(
+      [A, B],
+      [
+        { id: 'step-1', source: A, target: B },
+        { id: 'step-2', source: B, target: A },
+      ],
+      [
+        {
+          id: 'if-empty-else',
+          kind: 'if',
+          depth: 0,
+          branches: [
+            {
+              label: 'if condition',
+              stepIds: ['step-1', 'step-2'] as any[],
+              markerIds: [],
+            },
+            {
+              label: 'else',
+              // these step IDs are NOT in the layout — empty else-branch
+              stepIds: ['step-99', 'step-100'] as any[],
+              markerIds: [],
+            },
+          ],
+        },
+      ],
+    )
+
+    const layout = calcSequenceLayout(view)
+    expect(layout.frames).toHaveLength(1)
+
+    const frame = layout.frames[0]!
+    expect(frame.y).toBeGreaterThan(0)
+    expect(frame.height).toBeGreaterThan(0)
+    expect(frame.width).toBeGreaterThan(0)
+  })
 })
 
 // ---------------------------------------------------------------------------

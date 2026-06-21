@@ -1,6 +1,7 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { ComputedDynamicView, ComputedEdge, ComputedFrame, ComputedMarker } from '@likec4/core/types'
 import type { aux } from '@likec4/core/types'
+import { invariant } from '@likec4/core/utils'
 import { CompositeGeneratorNode, NL, toString } from 'langium/generate'
 
 // ---------------------------------------------------------------------------
@@ -431,7 +432,7 @@ function emitMarkerIndented(
       // step lines (which reference the FQN) resolve to this declaration.
       const fqn = actorName(marker.actor)
       const title = nodeTitleMap.get(marker.actor) ?? fqn
-      out.append(`${pad}create participant ${fqn} as ${title}`, NL)
+      out.append(`${pad}create participant ${fqn} as ${escapeLabel(title)}`, NL)
       break
     }
     case 'destroy':
@@ -445,6 +446,7 @@ function emitMarkerIndented(
 // ---------------------------------------------------------------------------
 
 export function generateMermaidSequence(viewmodel: LikeC4ViewModel<aux.Unknown>): string {
+  invariant(viewmodel.$view._type === 'dynamic', 'generateMermaidSequence requires a dynamic view')
   const view = viewmodel.$view as ComputedDynamicView
   const { nodes, edges } = view
 
@@ -543,7 +545,7 @@ export function generateMermaidSequence(viewmodel: LikeC4ViewModel<aux.Unknown>)
   // Participant declarations (skip actors introduced via `create`)
   for (const node of nodes) {
     if (!createdActors.has(node.id)) {
-      out.append(`  participant ${actorName(node.id)} as ${node.title}`, NL)
+      out.append(`  participant ${actorName(node.id)} as ${escapeLabel(node.title)}`, NL)
     }
   }
 

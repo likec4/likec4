@@ -140,21 +140,22 @@ export function calcSequenceLayout(
   const computedFrames = computedView?.frames ?? view.frames
   if (computedFrames && computedFrames.length > 0) {
     for (const frame of computedFrames) {
-      // Collect all step edge IDs in all branches of this frame
-      const branches = frame.branches.map(branch => {
+      // Collect all step edge IDs in all branches of this frame.
+      // Skip branches that have no mapped rows — emitting (0,0) would drag
+      // the frame's minRow into the actor-header band and distort the frame box.
+      const branches = frame.branches.flatMap(branch => {
         const rowsInBranch: number[] = []
         for (const stepId of branch.stepIds) {
           const r = stepRowMap.get(stepId)
           if (r !== undefined) rowsInBranch.push(r)
         }
-        const rowStart = rowsInBranch.length > 0 ? Math.min(...rowsInBranch) : 0
-        const rowEnd = rowsInBranch.length > 0 ? Math.max(...rowsInBranch) : 0
-        return {
+        if (rowsInBranch.length === 0) return []
+        return [{
           label: branch.label,
           condition: branch.condition,
-          rowStart,
-          rowEnd,
-        }
+          rowStart: Math.min(...rowsInBranch),
+          rowEnd: Math.max(...rowsInBranch),
+        }]
       })
 
       // Find column range across all steps in this frame

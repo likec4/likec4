@@ -1,6 +1,6 @@
 import { findLast, isTruthy, map, pipe } from 'remeda'
 import type { ElementModel, LikeC4Model } from '../../model'
-import type { AnyAux, aux, DynamicStep, DynamicStepsSeries, scalar } from '../../types'
+import type { AnyAux, aux, DynamicStep, scalar } from '../../types'
 import {
   type Color,
   type ComputedDynamicView,
@@ -33,7 +33,7 @@ import {
   stepEdgeId,
 } from '../../types'
 import { intersection, invariant, nonNullable, toArray, union } from '../../utils'
-import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
+import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
@@ -100,7 +100,6 @@ type WalkContext<A extends AnyAux> = {
   lastStepId: aux.EdgeId | null // last emitted step in current scope (for markers)
   // Refs needed inside the walker
   actors: Element<A>[]
-  compounds: Element<A>[]
 }
 
 class DynamicViewCompute<A extends AnyAux> {
@@ -141,25 +140,12 @@ class DynamicViewCompute<A extends AnyAux> {
       sortParentsFirst,
     )
 
-    // Identify compounds
-    const compounds = actors.reduce((acc, actor, index, all) => {
-      for (let i = index + 1; i < all.length; i++) {
-        const other = all[i]!
-        if (isAncestor(actor, other)) {
-          acc.push(actor)
-          break
-        }
-      }
-      return acc
-    }, [] as Element<A>[])
-
     const ctx: WalkContext<A> = {
       pathStack: [],
       frameStack: [],
       currentBranch: null,
       lastStepId: null,
       actors,
-      compounds,
     }
 
     let topLevelCounter = 1
@@ -171,16 +157,16 @@ class DynamicViewCompute<A extends AnyAux> {
         // Legacy flat-children parallel: keep `step-NN.M` for back-compat
         let parallelStep = 1
         for (const s of element.__parallel) {
-          const id = stepEdgeId(topNN, parallelStep) as unknown as aux.EdgeId
+          const id = stepEdgeId(topNN, parallelStep) as aux.EdgeId
           if (isDynamicStepsSeries(s)) {
             for (const sub of s.__series) {
               if (isDynamicStep(sub)) {
-                this.emitStep(sub, id, actors, compounds)
+                this.emitStep(sub, id, actors)
                 ctx.lastStepId = id
               }
             }
           } else if (isDynamicStep(s)) {
-            this.emitStep(s, id, actors, compounds)
+            this.emitStep(s, id, actors)
             ctx.lastStepId = id
           }
           parallelStep++
@@ -204,7 +190,7 @@ class DynamicViewCompute<A extends AnyAux> {
       const sourceNode = nonNullable(nodesMap.get(source.id as scalar.NodeId), `Source node ${source.id} not found`)
       const targetNode = nonNullable(nodesMap.get(target.id as scalar.NodeId), `Target node ${target.id} not found`)
       const edge: ComputedEdge<A> = {
-        id: id as unknown as aux.EdgeId,
+        id: id as aux.EdgeId,
         parent: commonAncestor(source.id, target.id) as scalar.NodeId | null,
         source: sourceNode.id,
         target: targetNode.id,
@@ -290,7 +276,6 @@ class DynamicViewCompute<A extends AnyAux> {
     step: DynamicStep<A>,
     id: aux.EdgeId,
     actors: Element<A>[],
-    compounds: Element<A>[],
   ): void {
     const {
       source: stepSource,
@@ -308,10 +293,6 @@ class DynamicViewCompute<A extends AnyAux> {
     const target = this.model.element(stepTarget)
     const targetColumn = actors.indexOf(target)
     invariant(targetColumn >= 0, `Target ${stepTarget} not found`)
-
-    if (compounds.includes(source) || compounds.includes(target)) {
-      console.error(`Step ${source.id} -> ${target.id} because it involves a compound`)
-    }
 
     const {
       title,
@@ -336,7 +317,7 @@ class DynamicViewCompute<A extends AnyAux> {
       ...(!step.head && kindSpec?.head && { head: kindSpec.head }),
       ...(!step.tail && kindSpec?.tail && { tail: kindSpec.tail }),
       ...rest,
-      id: id as unknown as StepEdgeId,
+      id: id as StepEdgeId,
       source,
       target,
       navigateTo,
@@ -366,7 +347,7 @@ class DynamicViewCompute<A extends AnyAux> {
       // ── plain step ──────────────────────────────────────────────────────
       case isDynamicStep(element): {
         const id = buildStepId(topNN, ctx.pathStack) as aux.EdgeId
-        this.emitStep(element, id, ctx.actors, ctx.compounds)
+        this.emitStep(element, id, ctx.actors)
         ctx.lastStepId = id
         ctx.currentBranch?.stepIds.push(id)
         return
@@ -386,17 +367,17 @@ class DynamicViewCompute<A extends AnyAux> {
           // Legacy path — only reached for nested parallels without branches
           let parallelStep = 1
           for (const s of element.__parallel) {
-            const id = stepEdgeId(topNN, parallelStep) as unknown as aux.EdgeId
+            const id = stepEdgeId(topNN, parallelStep) as aux.EdgeId
             if (isDynamicStepsSeries(s)) {
               for (const sub of s.__series) {
                 if (isDynamicStep(sub)) {
-                  this.emitStep(sub, id, ctx.actors, ctx.compounds)
+                  this.emitStep(sub, id, ctx.actors)
                   ctx.lastStepId = id
                   ctx.currentBranch?.stepIds.push(id)
                 }
               }
             } else if (isDynamicStep(s)) {
-              this.emitStep(s, id, ctx.actors, ctx.compounds)
+              this.emitStep(s, id, ctx.actors)
               ctx.lastStepId = id
               ctx.currentBranch?.stepIds.push(id)
             }
@@ -667,7 +648,7 @@ class DynamicViewCompute<A extends AnyAux> {
           kind: 'note',
           id: element.id,
           placement: element.placement,
-          actors: element.actors.map(fqn => fqn as unknown as scalar.NodeId),
+          actors: element.actors.map(fqn => fqn as scalar.NodeId),
           text: element.text,
           ...(ctx.lastStepId !== null && { afterStep: ctx.lastStepId }),
         }
@@ -681,7 +662,7 @@ class DynamicViewCompute<A extends AnyAux> {
         const marker: ComputedMarker<A> = {
           kind: 'activate',
           id: element.id,
-          actor: element.actor as unknown as scalar.NodeId,
+          actor: element.actor as scalar.NodeId,
           ...(ctx.lastStepId !== null && { afterStep: ctx.lastStepId }),
         }
         this.markers.push(marker)
@@ -694,7 +675,7 @@ class DynamicViewCompute<A extends AnyAux> {
         const marker: ComputedMarker<A> = {
           kind: 'deactivate',
           id: element.id,
-          actor: element.actor as unknown as scalar.NodeId,
+          actor: element.actor as scalar.NodeId,
           ...(ctx.lastStepId !== null && { afterStep: ctx.lastStepId }),
         }
         this.markers.push(marker)
@@ -707,7 +688,7 @@ class DynamicViewCompute<A extends AnyAux> {
         const marker: ComputedMarker<A> = {
           kind: 'create',
           id: element.id,
-          actor: element.actor as unknown as scalar.NodeId,
+          actor: element.actor as scalar.NodeId,
           ...(ctx.lastStepId !== null && { afterStep: ctx.lastStepId }),
         }
         this.markers.push(marker)
@@ -720,7 +701,7 @@ class DynamicViewCompute<A extends AnyAux> {
         const marker: ComputedMarker<A> = {
           kind: 'destroy',
           id: element.id,
-          actor: element.actor as unknown as scalar.NodeId,
+          actor: element.actor as scalar.NodeId,
           ...(ctx.lastStepId !== null && { afterStep: ctx.lastStepId }),
         }
         this.markers.push(marker)

@@ -471,12 +471,15 @@ export const dynamicViewParallelSteps = (
   _services: LikeC4Services,
 ): ValidationCheck<ast.DynamicViewParallelSteps> => {
   return tryOrLog((el, accept) => {
-    for (const step of el.steps) {
-      if (ast.isDynamicViewParallelSteps(step)) {
-        accept('error', 'Nested parallel blocks are not allowed', {
-          node: step,
-        })
-      }
+    // #988: a parallel block must not be nested inside another parallel — whether
+    // reached via a flat `steps` child or through a labeled `branch` body (possibly
+    // via intervening if/optional/repeat/group/critical/break blocks). Checking the
+    // parallel's own ancestors and reporting from the inner node yields exactly one
+    // diagnostic per nested parallel, regardless of nesting depth or path.
+    if (AstUtils.getContainerOfType(el.$container, ast.isDynamicViewParallelSteps)) {
+      accept('error', 'Nested parallel blocks are not allowed', {
+        node: el,
+      })
     }
   })
 }
