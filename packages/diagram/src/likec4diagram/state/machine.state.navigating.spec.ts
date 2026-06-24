@@ -42,6 +42,9 @@ const mockDiagramDynamicView = {
     compounds: [],
     parallelAreas: [],
     steps: [],
+    frames: [],
+    activations: [],
+    notes: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
   },
 } satisfies LayoutedDynamicView
@@ -65,6 +68,9 @@ const mockSequenceDynamicView = {
     compounds: [],
     parallelAreas: [],
     steps: [],
+    frames: [],
+    activations: [],
+    notes: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
   },
 } satisfies LayoutedDynamicView

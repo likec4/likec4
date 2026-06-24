@@ -245,7 +245,11 @@ export const dynamicView = viewProps
   .extend({
     _type: z.literal('dynamic'),
     variant: dynamicViewVariant.optional(),
-    steps: z.array(dynamicViewStep).optional(),
+    // Accept z.any() (readonly) to accommodate both legacy DynamicViewStep and new DynamicViewElement
+    // block types (DynamicIfBlock, DynamicOptionalBlock, etc.) introduced by the sequence-parity feature.
+    // ParsedDynamicView.steps is ReadonlyArray<DynamicViewElement> — readonly() ensures structural compat.
+    // The generator only processes known step shapes at runtime; unknown block types are ignored.
+    steps: z.array(z.any()).readonly().optional(),
     rules: z.array(dynamicViewRule).optional(),
   })
 // .transform(v => ({

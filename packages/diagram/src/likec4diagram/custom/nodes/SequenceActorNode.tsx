@@ -1,16 +1,7 @@
-import type { Fqn } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { Handle, Position } from '@xyflow/react'
-import { isTruthy } from 'remeda'
-import { ElementData, ElementNodeContainer, ElementShape } from '../../../base-primitives'
-import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import type { Types } from '../../types'
-import { ElementActions } from './ElementActions'
-import { NodeDrifts } from './NodeDrifts'
-import { NodeNotes } from './NodeNotes'
-import { ElementDetailsButtonWithHandler } from './nodes'
-import { ElementToolbar } from './toolbar/ElementToolbar'
 
 const positionMap = {
   left: Position.Left,
@@ -67,58 +58,56 @@ const ActorStepPort = ({
     </>
   )
 }
-const hasModelFqn = <D extends Types.NodeProps>(node: D): node is D & { data: { modelFqn: Fqn } } =>
-  'modelFqn' in node.data && isTruthy(node.data.modelFqn)
+
+const cardCss = css({
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 'sm',
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  overflow: 'hidden',
+  cursor: 'default',
+  userSelect: 'none',
+})
+
+const titleCss = css({
+  fontSize: 'sm',
+  fontWeight: 'medium',
+  lineHeight: '1.2',
+  textAlign: 'center',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  paddingX: '2',
+  maxWidth: '100%',
+})
 
 export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
-  const { enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } = useEnabledFeatures()
-  const data = props.data
   const {
-    id,
-    positionAbsoluteY,
     data: {
-      viewHeight,
-      hovered: isHovered = false,
+      color,
+      title,
       ports,
     },
   } = props
 
   return (
     <>
-      <Box
-        data-likec4-color={'gray'}
-        className={css({
-          position: 'absolute',
-          rounded: 'xs',
-          top: '1',
-          pointerEvents: 'none',
-          transition: 'fast',
-          translateX: '-1/2',
-          translate: 'auto',
-        })}
+      <div
+        data-likec4-color={color}
+        className={cardCss}
         style={{
-          backgroundColor: 'var(--likec4-palette-stroke)',
-          opacity: isHovered ? 0.6 : 0.4,
-          left: '50%',
-          width: isHovered ? 3 : 2,
-          height: viewHeight - positionAbsoluteY,
-          zIndex: -1,
-          pointerEvents: 'none',
+          backgroundColor: 'var(--likec4-palette-fill)',
+          borderColor: 'var(--likec4-palette-stroke)',
+          color: 'var(--likec4-palette-hiContrast)',
         }}
-      />
-      <ElementNodeContainer nodeProps={props}>
-        {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
-        <ElementShape {...props} />
-        <ElementData {...props} />
-        {hasModelFqn(props) && (
-          <>
-            <ElementActions {...props} />
-            {enableElementDetails && <ElementDetailsButtonWithHandler id={id} data={data} />}
-            {!enableReadOnly && <ElementToolbar {...props} />}
-          </>
-        )}
-        {enableNotes && <NodeNotes {...props} />}
-      </ElementNodeContainer>
+      >
+        <span className={titleCss}>{title}</span>
+      </div>
       {ports.map(p => <ActorStepPort key={p.id} port={p} data={props.data} />)}
     </>
   )

@@ -9,7 +9,7 @@ import type {
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
-import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { ComputedEdge, ComputedFrame, ComputedMarker, ComputedNode } from './view-computed'
 import type { DiagramEdgeDriftReason, DiagramNodeDriftReason, LayoutedViewDriftReason } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
@@ -120,6 +120,23 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
    * Sequence layout of this dynamic view
    */
   readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
+
+  /**
+   * Autonumber configuration, copied from ComputedDynamicView at layout time.
+   */
+  readonly autonumber?: { enabled: boolean; start?: number; step?: number }
+
+  /**
+   * Control-flow frames (if/else, parallel, repeat, …).
+   * Copied from ComputedDynamicView at layout time.
+   */
+  readonly frames?: ReadonlyArray<ComputedFrame>
+
+  /**
+   * Lifecycle/annotation markers (activate, deactivate, create, destroy, note).
+   * Copied from ComputedDynamicView at layout time.
+   */
+  readonly markers?: ReadonlyArray<ComputedMarker<A>>
 }
 
 export namespace LayoutedDynamicView {
@@ -170,6 +187,49 @@ export namespace LayoutedDynamicView {
       readonly targetHandle: string
     }
 
+    export interface FrameBranch {
+      readonly label?: string | undefined
+      readonly condition?: string | undefined
+      readonly rowStart: number
+      readonly rowEnd: number
+      readonly separatorYs: ReadonlyArray<number>
+    }
+
+    export interface Frame {
+      readonly id: string
+      readonly kind: 'if' | 'optional' | 'repeat' | 'parallel' | 'group' | 'critical' | 'break'
+      readonly label?: string | undefined
+      readonly condition?: string | undefined
+      readonly depth: number
+      readonly parent?: string | undefined
+      readonly x: number
+      readonly y: number
+      readonly width: number
+      readonly height: number
+      readonly branches: ReadonlyArray<FrameBranch>
+    }
+
+    export interface Activation {
+      readonly actor: aux.NodeId
+      readonly startStepId: aux.EdgeId | null
+      readonly endStepId: aux.EdgeId | null
+      readonly startY: number
+      readonly endY: number
+      readonly depth: number
+    }
+
+    export interface Note {
+      readonly id: string
+      readonly placement: 'over' | 'left' | 'right'
+      readonly actors: ReadonlyArray<aux.NodeId>
+      readonly text: string
+      readonly x: number
+      readonly y: number
+      readonly width: number
+      readonly height: number
+      readonly afterStepId: aux.EdgeId | null
+    }
+
     export interface Layout {
       readonly actors: ReadonlyArray<Actor>
       /**
@@ -177,7 +237,11 @@ export namespace LayoutedDynamicView {
        */
       readonly steps: ReadonlyArray<Step>
       readonly compounds: ReadonlyArray<Compound>
+      /** @deprecated use frames instead */
       readonly parallelAreas: ReadonlyArray<ParallelArea>
+      readonly frames: ReadonlyArray<Frame>
+      readonly activations: ReadonlyArray<Activation>
+      readonly notes: ReadonlyArray<Note>
       readonly bounds: BBox
     }
   }

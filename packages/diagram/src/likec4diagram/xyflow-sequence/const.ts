@@ -24,11 +24,22 @@ export const FIRST_STEP_OFFSET = 30
 // A -> B -> C (continuous)
 export const CONTINUOUS_OFFSET = 22
 
+// Stacking order (back → front):
+//   compound(0) → lifeline(1) → legacyParallel(2)
+//   → frameBg(4, minus depth) → activation(7)
+//   → step(20) → stepLabel(21)
+//   → note(25) → frameChrome(28) → actor(40)
 export const SeqZIndex = {
   compound: 0,
-  parallel: 1,
-  actor: 10,
+  lifeline: 1,
+  legacyParallel: 2,
+  frameBg: 4,
+  activation: 7,
   step: 20,
+  stepLabel: 21,
+  note: 25,
+  frameChrome: 28,
+  actor: 40,
 }
 
 export const SeqParallelAreaColor = {

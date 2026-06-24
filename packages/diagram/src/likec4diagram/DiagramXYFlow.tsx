@@ -20,6 +20,7 @@ import type { DiagramContext } from './state/types'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
+import { SequenceActorHeaderPanel } from './xyflow-sequence/components/SequenceActorHeaderPanel'
 
 const edgeTypes = {
   relationship: BuiltinEdges.RelationshipEdge,
@@ -34,6 +35,11 @@ const builtinNodes = {
   'view-group': BuiltinNodes.ViewGroupNode,
   'seq-actor': BuiltinNodes.SequenceActorNode,
   'seq-parallel': BuiltinNodes.SequenceParallelArea,
+  'seq-frame': BuiltinNodes.SequenceFrameNode,
+  'seq-frame-bg': BuiltinNodes.SequenceFrameBgNode,
+  'seq-lifeline': BuiltinNodes.SequenceLifelineNode,
+  'seq-note': BuiltinNodes.SequenceNoteNode,
+  'seq-activation': BuiltinNodes.SequenceActivationNode,
 }
 function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   if (!nodeTypes || isEmpty(nodeTypes)) {
@@ -47,6 +53,11 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
     'view-group': nodeTypes.viewGroup ?? builtinNodes['view-group'],
     'seq-actor': nodeTypes.seqActor ?? builtinNodes['seq-actor'],
     'seq-parallel': nodeTypes.seqParallel ?? builtinNodes['seq-parallel'],
+    'seq-frame': builtinNodes['seq-frame'],
+    'seq-frame-bg': builtinNodes['seq-frame-bg'],
+    'seq-lifeline': builtinNodes['seq-lifeline'],
+    'seq-note': builtinNodes['seq-note'],
+    'seq-activation': builtinNodes['seq-activation'],
   }
 }
 
@@ -229,7 +240,9 @@ export function LikeC4DiagramXYFlow({
       onDelete={useCallbackRef(({ nodes, edges }) => {
         diagram.editorActor().send({
           type: 'delete.nodes-edges',
-          nodeIds: nodes.map(node => node.data.id),
+          // Overlay sequence nodes (seq-frame/note/activation/…) carry no `data.id`;
+          // ReactFlow's top-level `node.id` is the canonical id for every node kind.
+          nodeIds: nodes.map(node => node.id as NodeId),
           edgeIds: edges.map(edge => edge.data.id),
         })
       })}
@@ -292,6 +305,8 @@ export function LikeC4DiagramXYFlow({
       {...(nodesDraggable && layoutConstraints)}
       {...props}
       {...reactFlowProps}>
+      {/* Sticky actor-column header — only renders in sequence variant */}
+      <SequenceActorHeaderPanel />
       {children}
     </BaseXYFlow>
   )

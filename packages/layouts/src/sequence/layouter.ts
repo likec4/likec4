@@ -1,17 +1,29 @@
 import type {
   BBox,
   DiagramNode,
+  EdgeId,
+  NodeId,
   NonEmptyArray,
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import * as kiwi from '@lume/kiwi'
 import { last, map, only } from 'remeda'
-import type { Compound, ParallelRect, Step } from './_types'
+import type {
+  Compound,
+  ParallelRect,
+  SequenceActivation,
+  SequenceFrame,
+  SequenceFrameBranch,
+  SequenceNote,
+  Step,
+} from './_types'
 import {
   ACTOR_GAP,
   COLUMN_GAP,
   FIRST_STEP_OFFSET,
+  FRAME_HEADER_HEIGHT,
   MIN_ROW_HEIGHT,
+  NOTE_HEIGHT,
   PORT_HEIGHT,
   STEP_LABEL_MARGIN,
 } from './const'
@@ -91,6 +103,49 @@ export class SequenceViewLayouter {
     x2: kiwi.Expression
     y2: kiwi.Expression | kiwi.Variable
   }>
+
+  // Frame layout records — populated by addFrame calls AFTER solver.updateVariables()
+  #pendingFrames = [] as Array<{
+    id: string
+    kind: 'if' | 'optional' | 'repeat' | 'parallel' | 'group' | 'critical' | 'break'
+    label?: string | undefined
+    condition?: string | undefined
+    depth: number
+    parent?: string | undefined
+    minCol: number
+    maxCol: number
+    branches: Array<{
+      label?: string | undefined
+      condition?: string | undefined
+      rowStart: number
+      rowEnd: number
+    }>
+  }>
+
+  // Activation records — populated externally before getActivations() is called
+  #pendingActivations = [] as Array<{
+    actor: string
+    startStepId: string | null
+    endStepId: string | null
+    startRow: number | null
+    endRow: number | null
+    startYOverride: number | null
+    endYOverride: number | null
+    depth: number
+  }>
+
+  // Note records — populated externally before getNotes() is called
+  #pendingNotes = [] as Array<{
+    id: string
+    placement: 'over' | 'left' | 'right'
+    actors: ReadonlyArray<string>
+    text: string
+    afterStepId: string | null
+    afterRow: number | null
+  }>
+
+  // Step ID → row index reverse map (populated by addStepRow)
+  #stepRowMap = new Map<string, number>()
 
   constructor({
     actors,
@@ -212,6 +267,432 @@ export class SequenceViewLayouter {
       width: this.#viewportRight.value(),
       height: this.#viewportBottom.value(), // Max Y,
     }
+  }
+
+  /**
+   * Register a frame for layout.
+   * Must be called AFTER all steps have been added (so #rows is populated).
+   * Actual BBox values are resolved lazily in getFrameBoxes().
+   */
+  registerFrame(frame: {
+    id: string
+    kind: 'if' | 'optional' | 'repeat' | 'parallel' | 'group' | 'critical' | 'break'
+    label?: string | undefined
+    condition?: string | undefined
+    depth: number
+    parent?: string | undefined
+    minCol: number
+    maxCol: number
+    branches: Array<{
+      label?: string | undefined
+      condition?: string | undefined
+      rowStart: number
+      rowEnd: number
+    }>
+  }): void {
+    this.#pendingFrames.push(frame)
+  }
+
+  /**
+   * Register an activation bar for later resolution.
+   */
+  registerActivation(activation: {
+    actor: string
+    startStepId: string | null
+    endStepId: string | null
+    startRow: number | null
+    endRow: number | null
+    startYOverride: number | null
+    endYOverride: number | null
+    depth: number
+  }): void {
+    this.#pendingActivations.push(activation)
+  }
+
+  /**
+   * Register a note for later resolution.
+   */
+  registerNote(note: {
+    id: string
+    placement: 'over' | 'left' | 'right'
+    actors: ReadonlyArray<string>
+    text: string
+    afterStepId: string | null
+    afterRow: number | null
+  }): void {
+    this.#pendingNotes.push(note)
+  }
+
+  /**
+   * Record the mapping from step edge ID to its row index.
+   * Called by sequence-view.ts when building steps.
+   */
+  recordStepRow(stepId: string, row: number): void {
+    this.#stepRowMap.set(stepId, row)
+  }
+
+  /**
+   * Add solver constraints that push the row AFTER each registered note
+   * down by noteHeight + labelOffset + margin so the following step's label
+   * does not overlap the note box.
+   *
+   * Must be called after all registerNote() calls and BEFORE reading any
+   * layout values (getFrameBoxes / getActivations / getNotes / getViewBounds).
+   * Calls updateVariables() internally to re-solve.
+   *
+   * @param noteHeight - pixel height of a note box (default 32)
+   * @param labelOffset - renderer LABEL_OFFSET for non-self-loop steps (default 16)
+   * @param margin - extra clearance beyond labelOffset (default 8)
+   */
+  finalizeNoteConstraints(noteHeight = 32, labelOffset = 16, margin = 8): void {
+    const requiredGap = noteHeight + labelOffset + margin
+
+    for (const note of this.#pendingNotes) {
+      if (note.afterRow === null) continue
+      const afterRowData = this.#rows[note.afterRow]
+      if (!afterRowData) continue
+
+      // The row immediately after the note's afterRow must start at least
+      // (noteHeight + labelOffset + margin) below the afterRow's bottom so the
+      // following step's label (rendered at nextRow.y + labelOffset) clears the note.
+      const nextRow = this.#rows[note.afterRow + 1]
+      if (nextRow) {
+        this.require(nextRow.y, '>=', afterRowData.bottom.plus(requiredGap))
+      }
+    }
+
+    this.#solver.updateVariables()
+  }
+
+  /**
+   * Add solver constraints that push each frame's first content row down by
+   * enough space to clear the frame header band(s) stacked above it.
+   *
+   * For a frame at depth D with N same-row ancestor frames, the total header
+   * clearance needed is FRAME_HEADER_HEIGHT * (1 + N).  This ensures none of
+   * the stacked badge+condition bands overlap each other or the step arrows
+   * in the first content row.
+   *
+   * Must be called AFTER all registerFrame() calls and BEFORE
+   * finalizeNoteConstraints() / reading layout values.
+   * Calls updateVariables() internally to re-solve.
+   */
+  finalizeFrameConstraints(): void {
+    // Build per-frame minRow and parent map for same-row ancestor counting
+    const frameMinRow = new Map<string, number>()
+    for (const f of this.#pendingFrames) {
+      const allRows = f.branches.flatMap(b => [b.rowStart, b.rowEnd])
+      frameMinRow.set(f.id, Math.min(...allRows))
+    }
+    const frameById = new Map(this.#pendingFrames.map(f => [f.id, f]))
+
+    // For each frame, compute maxDescendantDepth at same minRow
+    // (same logic as getFrameBoxes so the clearance matches the stacking)
+    const maxDescSameRowDepth = new Map<string, number>()
+    for (const f of this.#pendingFrames) {
+      if (!maxDescSameRowDepth.has(f.id)) {
+        maxDescSameRowDepth.set(f.id, f.depth)
+      }
+      const myMinRow = frameMinRow.get(f.id)!
+      let parentId = f.parent
+      while (parentId) {
+        const parent = frameById.get(parentId)
+        if (!parent) break
+        if (frameMinRow.get(parentId) === myMinRow) {
+          const prev = maxDescSameRowDepth.get(parentId) ?? parent.depth
+          maxDescSameRowDepth.set(parentId, Math.max(prev, f.depth))
+        }
+        parentId = parent.parent
+      }
+    }
+
+    // Group frames by minRow and pick the maximum extraBands value per row.
+    // We push the row down by the outermost frame's total header clearance.
+    const clearanceByRow = new Map<number, number>()
+    for (const f of this.#pendingFrames) {
+      const minRow = frameMinRow.get(f.id)!
+      const extraBands = (maxDescSameRowDepth.get(f.id) ?? f.depth) - f.depth
+      const clearance = FRAME_HEADER_HEIGHT * (1 + extraBands)
+      const prev = clearanceByRow.get(minRow) ?? 0
+      clearanceByRow.set(minRow, Math.max(prev, clearance))
+    }
+
+    // Collect rows that have a note ending just before them (afterRow = minRow - 1).
+    // Notes render at afterRow.bottom with height NOTE_HEIGHT; the frame header must
+    // clear the note bottom, so we add NOTE_HEIGHT to the clearance for those rows.
+    const notedRows = new Set<number>()
+    for (const note of this.#pendingNotes) {
+      if (note.afterRow !== null) {
+        notedRows.add(note.afterRow + 1)
+      }
+    }
+
+    // Add constraints: each frame's first row must start at least `clearance`
+    // below the preceding row's bottom, guaranteeing header band(s) fit above.
+    // When a note occupies the gap between prevRow and firstRow, add NOTE_HEIGHT
+    // so the frame header starts below the note's bottom edge.
+    for (const [minRow, clearance] of clearanceByRow) {
+      if (minRow === 0) continue // first row has no preceding row
+      const prevRow = this.#rows[minRow - 1]
+      const firstRow = this.#rows[minRow]
+      if (prevRow && firstRow) {
+        const noteExtra = notedRows.has(minRow) ? NOTE_HEIGHT : 0
+        this.require(firstRow.y, '>=', prevRow.bottom.plus(clearance + noteExtra))
+      }
+    }
+
+    this.#solver.updateVariables()
+  }
+
+  /**
+   * Returns the resolved BBox for each registered frame.
+   *
+   * Depth-based inset: each nesting level adds FRAME_DEPTH_INSET px horizontally
+   * so nested frames are visibly inset. Header bands for same-minRow ancestors
+   * are stacked vertically so they never overlap each other or the first step row.
+   */
+  getFrameBoxes(): SequenceFrame[] {
+    // HEADER_HEIGHT: vertical space reserved per header band (badge + condition text).
+    // Must match FRAME_HEADER_HEIGHT used in finalizeFrameConstraints so the row
+    // gap added by the solver exactly accommodates the stacked header bands.
+    const HEADER_HEIGHT = FRAME_HEADER_HEIGHT
+    const PADDING = 12
+    const DEPTH_INSET = 8
+
+    // --- Pre-compute per-frame minRow ---
+    const frameMinRow = new Map<string, number>()
+    for (const f of this.#pendingFrames) {
+      const allRows = f.branches.flatMap(b => [b.rowStart, b.rowEnd])
+      frameMinRow.set(f.id, Math.min(...allRows))
+    }
+
+    // Build parent-lookup map for ancestor traversal
+    const frameById = new Map(this.#pendingFrames.map(f => [f.id, f]))
+
+    // For each frame, compute the maximum depth found among all descendants
+    // (via parent chain) that share the same minRow. Outermost frames at the
+    // same first-row get the most upward extension so their header band sits
+    // above all child header bands; innermost get exactly HEADER_HEIGHT above firstRow.y.
+    const maxDescSameRowDepth = new Map<string, number>()
+    for (const f of this.#pendingFrames) {
+      if (!maxDescSameRowDepth.has(f.id)) {
+        maxDescSameRowDepth.set(f.id, f.depth)
+      }
+      const myMinRow = frameMinRow.get(f.id)!
+      let parentId = f.parent
+      while (parentId) {
+        const parent = frameById.get(parentId)
+        if (!parent) break
+        if (frameMinRow.get(parentId) === myMinRow) {
+          const prev = maxDescSameRowDepth.get(parentId) ?? parent.depth
+          maxDescSameRowDepth.set(parentId, Math.max(prev, f.depth))
+        }
+        parentId = parent.parent
+      }
+    }
+
+    return this.#pendingFrames.map((f) => {
+      // Each nesting depth REDUCES width by DEPTH_INSET on each side
+      // so deeper frames are visibly inset within their parent
+      const inset = f.depth * DEPTH_INSET
+      // Number of extra header bands this frame must reserve above firstRow.y:
+      // (maxDescendantDepthAtSameRow - f.depth) gives how many same-row child
+      // frames nest below this one and need their own header bands.
+      const extraBands = (maxDescSameRowDepth.get(f.id) ?? f.depth) - f.depth
+
+      const leftActorBox = this.actorBox(f.minCol)
+      const rightActorBox = this.actorBox(f.maxCol)
+
+      // depth=0: x = centerX - 30 - PADDING (outermost, widest)
+      // depth=1: x = centerX - 30 - PADDING + DEPTH_INSET (narrower, shifted right)
+      const x = Math.round(leftActorBox.centerX.value() - 30 - PADDING + inset)
+      const right = Math.round(rightActorBox.centerX.value() + 30 + PADDING - inset)
+
+      // Collect all row indices across all branches
+      const allRows = f.branches.flatMap(b => [b.rowStart, b.rowEnd])
+      const minRow = Math.min(...allRows)
+      const maxRow = Math.max(...allRows)
+
+      const firstRowData = this.#rows[minRow]
+      const lastRowData = this.#rows[maxRow]
+      invariant(firstRowData && lastRowData, `frame ${f.id} references invalid rows ${minRow}..${maxRow}`)
+
+      // Frame y is placed ABOVE the first body-step row by HEADER_HEIGHT per band:
+      //   1 band for this frame's own header + extraBands for any same-minRow children.
+      // This stacks header bands vertically so parent badges always sit above child
+      // badges and neither overlaps the first step arrow below firstRow.y.
+      const y = Math.round(firstRowData.y.value() - HEADER_HEIGHT * (1 + extraBands))
+      // Bottom padding shrinks with depth so a deeper (inner) frame always ends
+      // strictly before its parent frame, preserving containment.
+      const bottom = Math.round(lastRowData.bottom.value() + PADDING - f.depth * DEPTH_INSET)
+
+      // Branch separators — stored as an offset RELATIVE to frame.y so that
+      // FrameNode's `top: sepY` CSS always positions the dashed line at the
+      // correct absolute Y regardless of frame.y value.
+      //
+      // Position: 8 px above the NEXT branch's first row (rather than the
+      // midpoint between rows). This guarantees the separator appears just
+      // above the branch content and stays below any nested child-frame header
+      // that extends FRAME_HEADER_HEIGHT above the branch's first row.
+      const BRANCH_SEP_GAP = 8
+      const branches: SequenceFrameBranch[] = f.branches.map((branch, i) => {
+        const separatorYs: number[] = []
+        if (i < f.branches.length - 1) {
+          const nextFirstRow = this.#rows[f.branches[i + 1]!.rowStart]
+          if (nextFirstRow) {
+            const sepYAbs = Math.round(nextFirstRow.y.value() - BRANCH_SEP_GAP)
+            // Convert to offset relative to the frame node's top (frame.y)
+            separatorYs.push(sepYAbs - y)
+          }
+        }
+        return {
+          label: branch.label,
+          condition: branch.condition,
+          rowStart: branch.rowStart,
+          rowEnd: branch.rowEnd,
+          separatorYs,
+        }
+      })
+
+      return {
+        id: f.id,
+        kind: f.kind,
+        label: f.label,
+        condition: f.condition,
+        depth: f.depth,
+        parent: f.parent,
+        x,
+        y,
+        width: right - x,
+        height: bottom - y,
+        branches,
+      }
+    })
+  }
+
+  /**
+   * Returns resolved activation bars.
+   */
+  getActivations(): SequenceActivation[] {
+    const viewStartY = 0
+    const viewEndY = this.#viewportBottom.value()
+
+    return this.#pendingActivations.map((a) => {
+      let startY: number
+      if (a.startYOverride !== null) {
+        startY = a.startYOverride
+      } else if (a.startRow !== null) {
+        const rowData = this.#rows[a.startRow]
+        startY = rowData ? Math.round(rowData.y.value()) : viewStartY
+      } else {
+        startY = viewStartY
+      }
+
+      let endY: number
+      if (a.endYOverride !== null) {
+        endY = a.endYOverride
+      } else if (a.endRow !== null) {
+        const rowData = this.#rows[a.endRow]
+        endY = rowData ? Math.round(rowData.bottom.value()) : viewEndY
+      } else {
+        endY = viewEndY
+      }
+
+      return {
+        actor: a.actor as NodeId,
+        startStepId: a.startStepId as EdgeId | null,
+        endStepId: a.endStepId as EdgeId | null,
+        startY,
+        endY,
+        depth: a.depth,
+      }
+    })
+  }
+
+  /**
+   * Returns resolved note boxes.
+   */
+  getNotes(): SequenceNote[] {
+    const NOTE_DEFAULT_WIDTH = 120
+    const NOTE_GAP = 8
+    const viewStartY = 0
+
+    return this.#pendingNotes.flatMap((n) => {
+      let y: number
+      if (n.afterRow !== null) {
+        const rowData = this.#rows[n.afterRow]
+        // Place the note AFTER the step row (at its bottom) so it does not
+        // overlap the arrow/label of the step it annotates.
+        y = rowData ? Math.round(rowData.bottom.value()) : viewStartY
+      } else {
+        y = viewStartY
+      }
+
+      // Determine actor columns for placement; drop notes whose actors are not in the layout
+      const actorIndices = n.actors.map(actorId => this.#actors.findIndex(a => a.actor.id === actorId))
+      if (actorIndices.some(idx => idx < 0)) return []
+      const minCol = Math.min(...actorIndices)
+      const maxCol = Math.max(...actorIndices)
+
+      const leftBox = this.actorBox(minCol)
+      const rightBox = this.actorBox(maxCol)
+
+      let x: number
+      let width: number
+
+      switch (n.placement) {
+        case 'over': {
+          x = Math.round(leftBox.x.value())
+          width = Math.round(rightBox.x.value() + rightBox.width - x)
+          break
+        }
+        case 'left': {
+          width = NOTE_DEFAULT_WIDTH
+          x = Math.round(leftBox.x.value() - NOTE_GAP - width)
+          break
+        }
+        case 'right': {
+          x = Math.round(rightBox.x.value() + rightBox.width + NOTE_GAP)
+          width = NOTE_DEFAULT_WIDTH
+          break
+        }
+      }
+
+      return [{
+        id: n.id,
+        placement: n.placement,
+        actors: n.actors as ReadonlyArray<NodeId>,
+        text: n.text,
+        x,
+        y,
+        width,
+        height: NOTE_HEIGHT,
+        afterStepId: n.afterStepId as EdgeId | null,
+      }]
+    })
+  }
+
+  /** Row data accessor — used by sequence-view.ts for activation/note Y resolution */
+  getRowY(rowIndex: number): number {
+    const r = this.#rows[rowIndex]
+    return r ? Math.round(r.y.value()) : 0
+  }
+
+  getRowBottom(rowIndex: number): number {
+    const r = this.#rows[rowIndex]
+    return r ? Math.round(r.bottom.value()) : 0
+  }
+
+  getViewStartY(): number {
+    return 0
+  }
+
+  getViewEndY(): number {
+    return Math.round(this.#viewportBottom.value())
+  }
+
+  getStepRow(stepId: string): number | undefined {
+    return this.#stepRowMap.get(stepId)
   }
 
   private actorBox(actor: DiagramNode | string | number): ActorBox {
@@ -545,23 +1026,4 @@ export class SequenceViewLayouter {
       },
     }
   }
-
-  // private recalcActorsRect() {
-  //   this.#actorsRect = this.#columnRects.reduce((acc, rect, index, all) => {
-  //     if (index === 0) {
-  //       acc.minX = rect.min.x.value()
-  //     }
-  //     if (index === all.length - 1) {
-  //       acc.maxX = rect.max.x.value()
-  //     }
-  //     acc.minY = Math.min(acc.minY, rect.min.y.value())
-  //     acc.maxY = Math.max(acc.maxY, rect.max.y.value())
-  //     return acc
-  //   }, {
-  //     minX: Infinity,
-  //     minY: Infinity,
-  //     maxX: -Infinity,
-  //     maxY: -Infinity,
-  //   })
-  // }
 }

@@ -18,11 +18,21 @@ export const STEP_LABEL_MARGIN = 50
 // offset from actor box
 export const FIRST_STEP_OFFSET = 30
 
+// Actor card dimensions in the sequence view.
+// Overrides graphviz-computed node sizes to keep cards compact and
+// leave more horizontal room for step arrows and labels.
+export const SEQ_ACTOR_WIDTH = 56
+export const SEQ_ACTOR_HEIGHT = 34
+
 // offset for continuing steps
 // A -> B,
 //      C -> D (sequential)
 // A -> B -> C (continuous)
 export const CONTINUOUS_OFFSET = 22
+
+// Vertical label offset applied by the renderer for non-self-loop steps.
+// Must match LABEL_OFFSET in SequenceStepEdge.tsx so layout gap math is accurate.
+export const LABEL_OFFSET = 16
 
 export const SeqZIndex = {
   compound: 0,
@@ -30,6 +40,16 @@ export const SeqZIndex = {
   actor: 10,
   step: 20,
 }
+
+// Height of a note box (must match NOTE_HEIGHT in SequenceNote renderer and layouter.ts)
+export const NOTE_HEIGHT = 32
+
+/**
+ * Vertical space reserved per frame header band (kind-badge + condition text).
+ * Must exceed the maximum upward extent of step-edge autonumber badges above
+ * the first content row so the frame chrome never overlaps the first step arrow.
+ */
+export const FRAME_HEADER_HEIGHT = 80
 
 export const SeqParallelAreaColor = {
   default: 'gray',

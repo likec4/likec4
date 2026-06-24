@@ -283,6 +283,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const variant = find(props, ast.isDynamicViewDisplayVariantProperty)?.value
 
+      // Parse autonumber property if present
+      const autonumberProp = find(props, ast.isDynamicAutonumberProperty)
+      const autonumber = autonumberProp ? this.parseAutonumberProperty(autonumberProp) : undefined
+
       return {
         [c4._type]: 'dynamic',
         id: id as c4.ViewId,
@@ -292,17 +296,12 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         tags,
         links: isNonEmptyArray(links) ? links : null,
         variant,
+        ...(autonumber !== undefined ? { autonumber } : {}),
         rules: [
           ...additionalStyles,
           ...this.tryMap('views', body.rules, n => this.parseDynamicViewRule(n)),
         ],
-        steps: this.tryMap('views', body.steps, n => {
-          if (ast.isDynamicViewParallelSteps(n)) {
-            return this.parseDynamicParallelSteps(n)
-          } else {
-            return this.parseDynamicStep(n)
-          }
-        }),
+        steps: this.tryMap('views', body.steps, n => this.parseDynamicElement(n)),
       }
     }
 
@@ -339,15 +338,246 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseDynamicParallelSteps(node: ast.DynamicViewParallelSteps): c4.DynamicStepsParallel {
       const parallelId = pathInsideDynamicView(node)
-      // Nested parallel blocks are already flagged by the validator (#988);
-      // skip them here so we don't bubble a confusing internal error.
-      const stepNodes = node.steps.filter((s): s is ast.DynamicViewStep => !ast.isDynamicViewParallelSteps(s))
-      const __parallel = this.tryMap('views', stepNodes, s => this.parseDynamicStep(s))
+
+      // Nested parallel blocks are accepted by the grammar so the validator (#988)
+      // can flag them with a clear message; drop them from flat steps here.
+      const flatStepNodes = node.steps.filter((s): s is ast.DynamicViewStep => !ast.isDynamicViewParallelSteps(s))
+      const hasBranches = node.branches.length > 0
+      const hasLegacySteps = flatStepNodes.length > 0
+
+      if (hasBranches && hasLegacySteps) {
+        // Validator (WI-4) catches this — here we prefer branches at runtime
+        this.logError(
+          'parallel block mixes flat steps and labeled branches — branches take precedence',
+          node,
+          'views',
+        )
+      }
+
+      if (hasBranches) {
+        const branches = node.branches.map(b => ({
+          ...(b.label !== undefined ? { label: b.label } : {}),
+          elements: this.tryMap('views', b.body.elements, e => this.parseDynamicElement(e)),
+        }))
+        invariant(isNonEmptyArray(branches), 'Dynamic parallel steps must have at least one branch')
+        // Flatten all branch elements into __parallel for back-compat consumers.
+        // Branch-only parallels may yield an empty projection — that is allowed.
+        const __parallel = branches.flatMap(b => b.elements).filter(
+          (e): e is c4.DynamicStep | c4.DynamicStepsSeries => c4.isDynamicStep(e) || c4.isDynamicStepsSeries(e),
+        )
+        return {
+          parallelId,
+          __parallel,
+          branches: branches as unknown as c4.NonEmptyReadonlyArray<
+            { label?: string; elements: c4.DynamicViewElement[] }
+          >,
+        }
+      }
+
+      // Legacy flat form: parallel { stepA stepB }
+      const __parallel = this.tryMap('views', flatStepNodes, s => this.parseDynamicStep(s))
       invariant(isNonEmptyArray(__parallel), 'Dynamic parallel steps must have at least one step')
       return {
         parallelId,
         __parallel,
       }
+    }
+
+    /**
+     * Top-level dispatcher: converts any DynamicViewElement AST node to its parsed-model counterpart.
+     * Returns undefined when the node cannot be resolved (mirrors tryMap/tryParse idiom).
+     */
+    parseDynamicElement(n: ast.DynamicViewElement): c4.DynamicViewElement | undefined {
+      switch (true) {
+        case ast.isDynamicViewStep(n):
+          return this.parseDynamicStep(n)
+        case ast.isDynamicViewParallelSteps(n):
+          return this.parseDynamicParallelSteps(n)
+        case ast.isDynamicIfBlock(n):
+          return this.parseDynamicIfBlock(n)
+        case ast.isDynamicOptionalBlock(n):
+          return this.parseDynamicOptionalBlock(n)
+        case ast.isDynamicRepeatBlock(n):
+          return this.parseDynamicRepeatBlock(n)
+        case ast.isDynamicGroupBlock(n):
+          return this.parseDynamicGroupBlock(n)
+        case ast.isDynamicCriticalBlock(n):
+          return this.parseDynamicCriticalBlock(n)
+        case ast.isDynamicBreakBlock(n):
+          return this.parseDynamicBreakBlock(n)
+        case ast.isDynamicNote(n):
+          return this.parseDynamicNote(n)
+        case ast.isDynamicActivate(n):
+          return this.parseDynamicActivate(n)
+        case ast.isDynamicDeactivate(n):
+          return this.parseDynamicDeactivate(n)
+        case ast.isDynamicCreate(n):
+          return this.parseDynamicCreate(n)
+        case ast.isDynamicDestroy(n):
+          return this.parseDynamicDestroy(n)
+        default:
+          nonexhaustive(n)
+      }
+    }
+
+    parseDynamicBlockBody(n: ast.DynamicBlockBody): c4.DynamicBlockBody {
+      return {
+        id: pathInsideDynamicView(n),
+        elements: this.tryMap('views', n.elements, e => this.parseDynamicElement(e)),
+      }
+    }
+
+    parseDynamicIfBlock(n: ast.DynamicIfBlock): c4.DynamicIfBlock {
+      return {
+        kind: 'if',
+        id: pathInsideDynamicView(n),
+        condition: n.condition,
+        thenBranch: this.parseDynamicBlockBody(n.thenBranch),
+        elseIfs: n.elseIfBranches.map(b => ({
+          condition: b.condition,
+          body: this.parseDynamicBlockBody(b.body),
+        })),
+        ...(n.elseBranch ? { else: this.parseDynamicBlockBody(n.elseBranch) } : {}),
+      }
+    }
+
+    parseDynamicOptionalBlock(n: ast.DynamicOptionalBlock): c4.DynamicOptionalBlock {
+      return {
+        kind: 'optional',
+        id: pathInsideDynamicView(n),
+        condition: n.condition,
+        body: this.parseDynamicBlockBody(n.body),
+      }
+    }
+
+    parseDynamicRepeatBlock(n: ast.DynamicRepeatBlock): c4.DynamicRepeatBlock {
+      return {
+        kind: 'repeat',
+        id: pathInsideDynamicView(n),
+        ...(n.label !== undefined ? { label: n.label } : {}),
+        body: this.parseDynamicBlockBody(n.body),
+      }
+    }
+
+    parseDynamicGroupBlock(n: ast.DynamicGroupBlock): c4.DynamicGroupBlock {
+      return {
+        kind: 'group',
+        id: pathInsideDynamicView(n),
+        label: n.label,
+        body: this.parseDynamicBlockBody(n.body),
+      }
+    }
+
+    parseDynamicCriticalBlock(n: ast.DynamicCriticalBlock): c4.DynamicCriticalBlock {
+      return {
+        kind: 'critical',
+        id: pathInsideDynamicView(n),
+        label: n.label,
+        body: this.parseDynamicBlockBody(n.body),
+        fallbacks: n.fallbacks.map(f => ({
+          label: f.label,
+          body: this.parseDynamicBlockBody(f.body),
+        })),
+      }
+    }
+
+    parseDynamicBreakBlock(n: ast.DynamicBreakBlock): c4.DynamicBreakBlock {
+      return {
+        kind: 'break',
+        id: pathInsideDynamicView(n),
+        condition: n.condition,
+        body: this.parseDynamicBlockBody(n.body),
+      }
+    }
+
+    parseDynamicNote(n: ast.DynamicNote): c4.DynamicNote | undefined {
+      const resolvedActors: c4.Fqn[] = []
+      for (const actorRef of n.actors) {
+        const el = elementRef(actorRef)
+        if (!el) {
+          return undefined
+        }
+        resolvedActors.push(this.resolveFqn(el))
+      }
+      if (!isNonEmptyArray(resolvedActors)) {
+        return undefined
+      }
+      return {
+        kind: 'note',
+        id: pathInsideDynamicView(n),
+        placement: n.placement,
+        actors: resolvedActors as c4.NonEmptyReadonlyArray<c4.Fqn>,
+        text: n.text,
+      }
+    }
+
+    parseDynamicActivate(n: ast.DynamicActivate): c4.DynamicActivate | undefined {
+      const el = elementRef(n.actor)
+      if (!el) {
+        return undefined
+      }
+      return {
+        kind: 'activate',
+        id: pathInsideDynamicView(n),
+        actor: this.resolveFqn(el),
+      }
+    }
+
+    parseDynamicDeactivate(n: ast.DynamicDeactivate): c4.DynamicDeactivate | undefined {
+      const el = elementRef(n.actor)
+      if (!el) {
+        return undefined
+      }
+      return {
+        kind: 'deactivate',
+        id: pathInsideDynamicView(n),
+        actor: this.resolveFqn(el),
+      }
+    }
+
+    parseDynamicCreate(n: ast.DynamicCreate): c4.DynamicCreate | undefined {
+      const el = elementRef(n.actor)
+      if (!el) {
+        return undefined
+      }
+      return {
+        kind: 'create',
+        id: pathInsideDynamicView(n),
+        actor: this.resolveFqn(el),
+      }
+    }
+
+    parseDynamicDestroy(n: ast.DynamicDestroy): c4.DynamicDestroy | undefined {
+      const el = elementRef(n.actor)
+      if (!el) {
+        return undefined
+      }
+      return {
+        kind: 'destroy',
+        id: pathInsideDynamicView(n),
+        actor: this.resolveFqn(el),
+      }
+    }
+
+    parseAutonumberProperty(prop: ast.DynamicAutonumberProperty): { enabled: boolean; start?: number; step?: number } {
+      // 'from N step M' form — always enabled
+      if (prop.start !== undefined) {
+        return {
+          enabled: true,
+          start: prop.start,
+          ...(prop.increment !== undefined ? { step: prop.increment } : {}),
+        }
+      }
+      // Distinguish `autonumber` (bare, no token) from `autonumber false`
+      // by checking whether an explicit BOOLEAN keyword appears in the source.
+      const sourceText = prop.$cstNode?.text ?? ''
+      const hasExplicitBool = /\btrue\b|\bfalse\b/.test(sourceText)
+      if (!hasExplicitBool) {
+        // bare `autonumber` → enable with defaults
+        return { enabled: true }
+      }
+      // explicit `autonumber true` or `autonumber false`
+      return { enabled: prop.enabled }
     }
 
     /**
@@ -524,8 +754,39 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
   }
 }
 
-function pathInsideDynamicView(_node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps): string {
-  let node: ast.AbstractDynamicStep | ast.DynamicViewParallelSteps | ast.DynamicViewBody = _node
+function pathInsideDynamicView(
+  _node:
+    | ast.AbstractDynamicStep
+    | ast.DynamicViewParallelSteps
+    | ast.DynamicBlockBody
+    | ast.DynamicIfBlock
+    | ast.DynamicOptionalBlock
+    | ast.DynamicRepeatBlock
+    | ast.DynamicGroupBlock
+    | ast.DynamicCriticalBlock
+    | ast.DynamicBreakBlock
+    | ast.DynamicNote
+    | ast.DynamicActivate
+    | ast.DynamicDeactivate
+    | ast.DynamicCreate
+    | ast.DynamicDestroy,
+): string {
+  let node:
+    | ast.AbstractDynamicStep
+    | ast.DynamicViewParallelSteps
+    | ast.DynamicBlockBody
+    | ast.DynamicIfBlock
+    | ast.DynamicOptionalBlock
+    | ast.DynamicRepeatBlock
+    | ast.DynamicGroupBlock
+    | ast.DynamicCriticalBlock
+    | ast.DynamicBreakBlock
+    | ast.DynamicNote
+    | ast.DynamicActivate
+    | ast.DynamicDeactivate
+    | ast.DynamicCreate
+    | ast.DynamicDestroy
+    | ast.DynamicViewBody = _node
   let path = []
   while (!ast.isDynamicViewBody(node)) {
     if (isNumber(node.$containerIndex)) {
@@ -536,7 +797,7 @@ function pathInsideDynamicView(_node: ast.AbstractDynamicStep | ast.DynamicViewP
     path.unshift(
       `/${node.$containerProperty ?? '__invalid__'}`,
     )
-    node = node.$container
+    node = node.$container as typeof node | ast.DynamicViewBody
   }
 
   return path.join('')

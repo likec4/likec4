@@ -1,3 +1,7 @@
+import { ActivationBar } from '../xyflow-sequence/components/ActivationBar'
+import { FrameBgNode, FrameNode } from '../xyflow-sequence/components/FrameNode'
+import { LifelineNode } from '../xyflow-sequence/components/LifelineNode'
+import { NoteNode } from '../xyflow-sequence/components/NoteNode'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { SequenceStepEdge } from './edges/SequenceStepEdge'
 import {
@@ -18,6 +22,11 @@ export const BuiltinNodes = {
   ViewGroupNode,
   SequenceActorNode,
   SequenceParallelArea,
+  SequenceFrameNode: FrameNode,
+  SequenceFrameBgNode: FrameBgNode,
+  SequenceLifelineNode: LifelineNode,
+  SequenceNoteNode: NoteNode,
+  SequenceActivationNode: ActivationBar,
 }
 
 export const BuiltinEdges = {

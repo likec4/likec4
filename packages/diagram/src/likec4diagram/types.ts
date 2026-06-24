@@ -114,6 +114,42 @@ export namespace Types {
     }
   >
 
+  export type SequenceFrameKind = 'if' | 'optional' | 'repeat' | 'parallel' | 'group' | 'critical' | 'break'
+
+  export type SequenceFrameBranch = {
+    label?: string | undefined
+    condition?: string | undefined
+    separatorYs: ReadonlyArray<number>
+  }
+
+  export type SequenceFrameNodeData = {
+    kind: SequenceFrameKind
+    label?: string | undefined
+    condition?: string | undefined
+    depth: number
+    parent?: string | undefined
+    branches: ReadonlyArray<SequenceFrameBranch>
+    viewId: ViewId
+    /** Overlay nodes have no interactive drifts */
+    readonly drifts: null
+  }
+
+  export type SequenceNoteNodeData = {
+    placement: 'over' | 'left' | 'right'
+    text: string
+    viewId: ViewId
+    /** Overlay nodes have no interactive drifts */
+    readonly drifts: null
+  }
+
+  export type SequenceActivationNodeData = {
+    actor: string
+    depth: number
+    viewId: ViewId
+    /** Overlay nodes have no interactive drifts */
+    readonly drifts: null
+  }
+
   export type CompoundNodeData = Simplify<
     & BaseNodeData
     & NonOptional<
@@ -182,8 +218,27 @@ export namespace Types {
   export type ElementNode = BaseNode<ElementNodeData, 'element'>
   export type DeploymentElementNode = BaseNode<DeploymentElementNodeData, 'deployment'>
 
+  export type SequenceFrameBgNodeData = {
+    kind: SequenceFrameKind
+    depth: number
+    viewId: ViewId
+    /** Overlay nodes have no interactive drifts */
+    readonly drifts: null
+  }
+
+  export type SequenceLifelineNodeData = {
+    viewId: ViewId
+    /** Overlay nodes have no interactive drifts */
+    readonly drifts: null
+  }
+
   export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
   export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
+  export type SequenceFrameNode = BaseNode<SequenceFrameNodeData, 'seq-frame'>
+  export type SequenceFrameBgNode = BaseNode<SequenceFrameBgNodeData, 'seq-frame-bg'>
+  export type SequenceLifelineNode = BaseNode<SequenceLifelineNodeData, 'seq-lifeline'>
+  export type SequenceNoteNode = BaseNode<SequenceNoteNodeData, 'seq-note'>
+  export type SequenceActivationNode = BaseNode<SequenceActivationNodeData, 'seq-activation'>
 
   export type CompoundElementNode = BaseNode<CompoundElementNodeData, 'compound-element'>
   export type CompoundDeploymentNode = BaseNode<CompoundDeploymentNodeData, 'compound-deployment'>
@@ -197,8 +252,24 @@ export namespace Types {
     | ViewGroupNode
     | SequenceActorNode
     | SequenceParallelArea
+    | SequenceFrameNode
+    | SequenceFrameBgNode
+    | SequenceLifelineNode
+    | SequenceNoteNode
+    | SequenceActivationNode
 
   export type NodeType = AnyNode['type']
+
+  /**
+   * Overlay (non-interactive) sequence node types — have no model fqn, no id in data.
+   */
+  export type SequenceOverlayNodeType = 'seq-frame' | 'seq-frame-bg' | 'seq-lifeline' | 'seq-note' | 'seq-activation'
+
+  /**
+   * Interactive node types that have full LeafNodeData / CompoundNodeData fields.
+   * Used as the default for untyped NodeProps to preserve existing callers.
+   */
+  export type InteractiveNodeType = Exclude<NodeType, SequenceOverlayNodeType>
 
   export type NodeData = ExclusiveUnion<{
     ElementNodeData: ElementNodeData
@@ -211,7 +282,11 @@ export namespace Types {
   }>
 
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
-  export type NodeProps<Type extends NodeType = NodeType> = BaseNodeProps<Node<Type>>
+  /**
+   * Without a type argument resolves to interactive nodes only,
+   * preserving callers that access data.id / data.drifts / etc.
+   */
+  export type NodeProps<Type extends NodeType = InteractiveNodeType> = BaseNodeProps<Node<Type>>
 
   export type RelationshipEdgeData = Simplify<
     & BaseEdgeData
@@ -266,6 +341,14 @@ export namespace Types {
       labelBBox: BBox
       isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
+      /**
+       * Sequence step number shown in the edge-label badge.
+       * - a number → render that number (driven by `autonumber from N step M`)
+       * - `null`   → render no number (autonumber disabled)
+       * Overrides the default `extractStep(id)`, which is wrong for nested frame
+       * ids (`step-03.alt.1.2` → 3 for every nested step).
+       */
+      stepNumber: number | null
     }
   >
 

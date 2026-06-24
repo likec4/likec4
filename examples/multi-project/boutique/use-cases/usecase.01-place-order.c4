@@ -30,30 +30,41 @@ views "Use Cases" {
     boutique.checkout -> boutique.db {
       title 'persists order'
     }
-    boutique.checkout -> boutique.shipping {
-      title 'reserves inventory'
-      notes '
-        Reserving inventory is an asynchronous process that may take a few seconds.
-      '
-    }
-    boutique.checkout <- boutique.shipping 'confirms inventory reservation' {
-      notes '
-        The shipping service confirms that the inventory has been reserved.
-      '
-    }
-    parallel {
-      boutique.checkout -> boutique.cart 'marks cart as purchased' {
+    if 'inventory available' {
+      boutique.checkout -> boutique.shipping {
+        title 'reserves inventory'
         notes '
-          The cart is marked as immutable to prevent further changes.
+          Reserving inventory is an asynchronous process that may take a few seconds.
         '
       }
+      boutique.checkout <- boutique.shipping 'confirms inventory reservation' {
+        notes '
+          The shipping service confirms that the inventory has been reserved.
+        '
+      }
+    } else {
+      boutique.checkout -> boutique.shipping 'request backorder' {
+        notes '
+          Item is out of stock; customer placed a backorder.
+        '
+      }
+    }
+    optional 'customer opted-in for notifications' {
       boutique.checkout -> boutique.email 'sends order confirmation'
+    }
+    parallel { branch 'payment' {
       boutique.checkout -> boutique.payments 'creates payment' {
         notes '
           Initiates online payment processing.
         '
       }
-    }
+    } branch 'cart update' {
+      boutique.checkout -> boutique.cart 'marks cart as purchased' {
+        notes '
+          The cart is marked as immutable to prevent further changes.
+        '
+      }
+    } }
     boutique.payments -> payment-gateway 'processes payment'
     payment-gateway -> payment-gateway 'processes payment with customer' {
       notes '

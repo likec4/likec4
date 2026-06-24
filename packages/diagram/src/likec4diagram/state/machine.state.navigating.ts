@@ -193,9 +193,10 @@ export const navigating = machine.createStateConfig({
             x: elFrom.internals.positionAbsolute.x,
             y: elFrom.internals.positionAbsolute.y,
           })
+          const toNodeData = toNode.data as { x?: number; y?: number }
           const toPoint = xyflow.flowToScreenPosition({
-            x: toNode.data.x,
-            y: toNode.data.y,
+            x: toNodeData.x ?? 0,
+            y: toNodeData.y ?? 0,
           })
 
           xystore.getState().panBy({

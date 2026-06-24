@@ -324,3 +324,217 @@ Use `variant sequence` when the prompt explicitly asks for UML-style sequence re
 - Using forward arrows where the prompt explicitly asks for response arrows back out
 - Spreading one requested parallel fan-out across multiple `parallel` blocks
 - Omitting required hop-local tokens such as `technology` or `navigateTo`
+
+## Sequence-flow constructs (variant: sequence)
+
+When using `variant sequence`, the dynamic view renders as a UML-style sequence diagram with support for advanced control-flow blocks. All steps are laid out top-to-bottom on actor lifelines, with time progressing downward.
+
+### Keyword reference
+
+| LikeC4 Syntax                                    | Mermaid Emission                           | Description                                                                   |
+| ------------------------------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| `if cond { … } else if cond { … } else { … }`    | `alt`, `else`                              | Conditional branching: alt block for if, else if, and fallback else           |
+| `optional cond { … }`                            | `opt`                                      | Optional block: content only occurs if condition true                         |
+| `repeat label { … }`                             | `loop label`                               | Loop with label; executes block repeatedly (up to label's bound)              |
+| `parallel { branch 'a' { … } branch 'b' { … } }` | `par a`, `and b`, `end`                    | Multi-branch parallel execution, each branch labeled                          |
+| `parallel { stepA stepB }`                       | `par`, `and`, `end`                        | Legacy flat parallel (all steps concurrent, no branch labels)                 |
+| `group 'label' { … }`                            | `rect`                                     | Grouping/boxing of steps for visual organization                              |
+| `note over A, B 'text'`                          | `Note over A,B: text`                      | Note spanning multiple actors                                                 |
+| `note left of A 'text'`                          | `Note left of A: text`                     | Note left of a single actor                                                   |
+| `note right of A 'text'`                         | `Note right of A: text`                    | Note right of a single actor                                                  |
+| `activate A`                                     | `activate A`                               | Participant A starts processing (lifeline thickens)                           |
+| `deactivate A`                                   | `deactivate A`                             | Participant A finishes processing (lifeline thins)                            |
+| `create A`                                       | `create participant A`                     | Participant A enters mid-flow (lifeline starts here)                          |
+| `destroy A`                                      | `destroy A`                                | Participant A removed from flow (lifeline ends)                               |
+| `critical 'label' { … } on 'fallback' { … }*`    | `critical label`, `option fallback`, `end` | Critical path with optional fallback handlers                                 |
+| `break cond { … }`                               | `break cond`                               | Break out of current frame on condition                                       |
+| `autonumber` / `autonumber from N step M`        | `autonumber [N [M]]`                       | Enable automatic step numbering (optionally starting at N, incrementing by M) |
+
+### Mini-examples
+
+#### Conditional branching
+
+```likec4
+dynamic view payment-flow {
+  variant sequence
+  
+  customer -> service 'submit payment'
+  if 'card valid' {
+    service -> bank 'charge'
+    service <- bank 'approved'
+  } else if 'expired' {
+    service <- bank 'decline: expired'
+  } else {
+    service <- bank 'decline: insufficient funds'
+  }
+}
+```
+
+#### Optional block
+
+```likec4
+dynamic view checkout {
+  variant sequence
+  
+  customer -> api 'place order'
+  optional 'express shipping available' {
+    customer -> api 'select express'
+    api -> warehouse 'priority shipment'
+  }
+  customer <- api 'order confirmed'
+}
+```
+
+#### Repeat with label
+
+```likec4
+dynamic view retry-logic {
+  variant sequence
+  
+  client -> service 'request data'
+  repeat 'retry 3 times' {
+    service -> db 'query'
+    service <- db 'timeout / retry'
+  }
+  client <- service 'success'
+}
+```
+
+#### Labeled parallel branches
+
+```likec4
+dynamic view fan-out {
+  variant sequence
+  
+  coordinator -> service 'start batch'
+  parallel { branch 'read cache' {
+    service -> cache 'get'
+    service <- cache 'hit / miss'
+  } branch 'fetch fresh' {
+    service -> api 'fetch'
+    service <- api 'data'
+  } }
+  coordinator <- service 'merged result'
+}
+```
+
+#### Group
+
+```likec4
+dynamic view grouped-steps {
+  variant sequence
+  
+  user -> app 'login'
+  group 'authentication' {
+    app -> auth 'validate'
+    auth -> db 'lookup user'
+    auth <- db 'user data'
+    app <- auth 'token'
+  }
+  user <- app 'logged in'
+}
+```
+
+#### Critical with fallbacks
+
+```likec4
+dynamic view payment-guarantee {
+  variant sequence
+  
+  service -> payment-provider 'charge'
+  critical 'payment ok' {
+    payment-provider -> bank 'authorize'
+    service <- payment-provider 'success'
+  } on 'provider timeout' {
+    service -> fallback-handler 'handle timeout'
+    service <- fallback-handler 'queued for retry'
+  }
+}
+```
+
+#### Break on condition
+
+```likec4
+dynamic view early-exit {
+  variant sequence
+  
+  process -> validator 'check input'
+  break 'invalid input' {
+    validator <- validator 'error'
+    process <- validator 'reject'
+  }
+  process -> handler 'continue processing'
+}
+```
+
+#### Notes (all placements)
+
+```likec4
+dynamic view notes-example {
+  variant sequence
+  
+  a -> b 'send'
+  note over a, b 'Both see this'
+  note left of a 'On the left'
+  a <- b 'respond'
+  note right of b 'On the right'
+}
+```
+
+#### Activation tracking
+
+```likec4
+dynamic view active-tracking {
+  variant sequence
+  
+  client -> server 'request'
+  activate server
+  note over server 'Processing…'
+  server -> db 'query'
+  server <- db 'result'
+  deactivate server
+  client <- server 'response'
+}
+```
+
+#### Create and destroy
+
+```likec4
+dynamic view lifecycle {
+  variant sequence
+  
+  controller -> service 'init'
+  create worker 'new worker'
+  controller -> worker 'task'
+  worker <- worker 'done'
+  destroy worker
+}
+```
+
+#### Autonumber
+
+```likec4
+dynamic view numbered-steps {
+  variant sequence
+  autonumber from 1 step 1
+  
+  a -> b 'first'
+  b <- b 'processing'
+  a <- b 'second'
+  // Steps are automatically numbered 1, 2, 3, …
+}
+```
+
+### Mermaid export
+
+When a `dynamic view` has `variant: sequence`, the LikeC4 Mermaid exporter routes the view through the `sequenceDiagram` generator instead of the default flowchart renderer. All control-flow blocks are linearized and emitted as equivalent Mermaid `sequenceDiagram` keywords per the keyword-reference table above.
+
+To visualize a sequence-variant dynamic view:
+
+1. Build the project: `likec4 build`
+2. Export to Mermaid: generated `.mmd` file contains valid `sequenceDiagram` syntax
+3. Paste into [Mermaid Live Editor](https://mermaid.live) to render
+
+### Complete example
+
+See [`examples/dynamic-sequence-showcase/`](../../../examples/dynamic-sequence-showcase/) for a full worked example exercising all constructs in a single e-commerce checkout flow.

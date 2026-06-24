@@ -212,4 +212,32 @@ views {
     autoLayout TopBottom
   }
 
+  dynamic view data-sync-with-cache {
+    title 'Data Sync with Cache Refresh'
+    description 'Demonstrates parallel branches for synchronized read and asynchronous cache refresh'
+
+    customer -> cloud.graphql 'request data'
+    parallel { branch 'sync read' {
+      cloud.graphql -> cloud.next.backend 'query'
+      cloud.next.backend -> amazon.aurora 'fetch'
+      cloud.next.backend <- amazon.aurora 'return'
+      cloud.graphql <- cloud.next.backend 'data'
+    } branch 'cache refresh' {
+      cloud.graphql -> cloud.next.events 'trigger refresh'
+      cloud.next.events -> amazon.lambdas.fn_enrich 'process'
+      amazon.lambdas.fn_enrich -> amazon.aurora 'update cache'
+    } }
+    customer <- cloud.graphql 'response'
+
+    include cloud, amazon, ui, customer
+
+    style customer {
+      color green
+    }
+    style cloud.* {
+      opacity 60%
+    }
+    autoLayout TopBottom
+  }
+
 }

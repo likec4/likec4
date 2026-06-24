@@ -3,6 +3,7 @@ import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
+import { generateMermaidSequence } from './generate-mmd-sequence'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
@@ -55,6 +56,15 @@ const mmdshape = ({ shape, title }: Node): string => {
 
 export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const view = viewmodel.$view
+
+  // Router: delegate sequence-variant dynamic views to the dedicated sequenceDiagram emitter.
+  // `_type` is the literal string '_type'; dynamic views carry `variant` on the same object.
+  // Double-cast through `unknown` to satisfy exactOptionalPropertyTypes.
+  const viewAny = view as unknown as Record<string, unknown>
+  if (viewAny['_type'] === 'dynamic' && viewAny['variant'] === 'sequence') {
+    return generateMermaidSequence(viewmodel)
+  }
+
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 

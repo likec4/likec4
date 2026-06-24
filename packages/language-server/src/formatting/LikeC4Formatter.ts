@@ -95,6 +95,7 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     // Views
     this.formatView(node)
+    this.formatDynamicSequenceConstructs(node)
     this.formatViewRuleGroup(node)
     this.formatViewRuleGlobalStyle(node)
     this.formatViewRuleGlobalPredicate(node)
@@ -256,6 +257,16 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isCustomRelationProperties(node)
       || ast.isElementStyleProperty(node)
       || ast.isDynamicViewParallelSteps(node)
+      || ast.isDynamicBlockBody(node)
+      || ast.isDynamicIfBlock(node)
+      || ast.isDynamicElseIfBranch(node)
+      || ast.isDynamicOptionalBlock(node)
+      || ast.isDynamicRepeatBlock(node)
+      || ast.isDynamicGroupBlock(node)
+      || ast.isDynamicCriticalBlock(node)
+      || ast.isDynamicCriticalFallback(node)
+      || ast.isDynamicBreakBlock(node)
+      || ast.isDynamicParallelBranch(node)
       || ast.isModelDeployments(node)
       || ast.isDeploymentNodeBody(node)
       || ast.isDeploymentRelationBody(node)
@@ -320,6 +331,109 @@ export class LikeC4Formatter extends AbstractFormatter {
 
     this.on(node, ast.isDeploymentView)
       ?.keywords('deployment', 'view').append(FormattingOptions.oneSpace)
+  }
+
+  protected formatDynamicSequenceConstructs(node: AstNode) {
+    // if … else if … else
+    this.on(node, ast.isDynamicIfBlock, (n, f) => {
+      f.keyword('if').append(FormattingOptions.oneSpace)
+      f.property('condition').append(FormattingOptions.oneSpace)
+      // 'else if' branches — 'else' precedes each DynamicElseIfBranch node
+      // The 'else' keyword between thenBranch closing brace and elseIfBranch
+      // and the final 'else' before elseBranch are handled at the sibling-keyword level.
+      // We use surround so there is always one space around 'else'.
+      f.keywords('else').surround(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDynamicElseIfBranch, (n, f) => {
+      f.keyword('if').append(FormattingOptions.oneSpace)
+      f.property('condition').append(FormattingOptions.oneSpace)
+    })
+
+    // optional 'condition' { … }
+    this.on(node, ast.isDynamicOptionalBlock, (n, f) => {
+      f.keyword('optional').append(FormattingOptions.oneSpace)
+      f.property('condition').append(FormattingOptions.oneSpace)
+    })
+
+    // repeat 'label'? { … }
+    this.on(node, ast.isDynamicRepeatBlock, (n, f) => {
+      f.keyword('repeat').append(FormattingOptions.oneSpace)
+      if (n.label !== undefined) {
+        f.property('label').append(FormattingOptions.oneSpace)
+      }
+    })
+
+    // group 'label' { … }
+    this.on(node, ast.isDynamicGroupBlock, (n, f) => {
+      f.keyword('group').append(FormattingOptions.oneSpace)
+      f.property('label').append(FormattingOptions.oneSpace)
+    })
+
+    // critical 'label' { … } on 'fallback' { … }
+    this.on(node, ast.isDynamicCriticalBlock, (n, f) => {
+      f.keyword('critical').append(FormattingOptions.oneSpace)
+      f.property('label').append(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDynamicCriticalFallback, (n, f) => {
+      f.keyword('on').surround(FormattingOptions.oneSpace)
+      f.property('label').append(FormattingOptions.oneSpace)
+    })
+
+    // break 'condition' { … }
+    this.on(node, ast.isDynamicBreakBlock, (n, f) => {
+      f.keyword('break').append(FormattingOptions.oneSpace)
+      f.property('condition').append(FormattingOptions.oneSpace)
+    })
+
+    // parallel { branch 'label'? { … } }
+    this.on(node, ast.isDynamicParallelBranch, (n, f) => {
+      f.keyword('branch').append(FormattingOptions.oneSpace)
+      if (n.label !== undefined) {
+        f.property('label').append(FormattingOptions.oneSpace)
+      }
+    })
+
+    // note over A, B 'text' / note left of A 'text' / note right of A 'text'
+    this.on(node, ast.isDynamicNote, (n, f) => {
+      f.keyword('note').append(FormattingOptions.oneSpace)
+      if (n.placement === 'over') {
+        f.keyword('over').append(FormattingOptions.oneSpace)
+        // commas between actors: no space before, one space after
+        f.keyword(',')
+          .prepend(FormattingOptions.noSpace)
+          .append(FormattingOptions.oneSpace)
+      } else {
+        // 'left' or 'right' followed by 'of'
+        f.keywords('left', 'right').append(FormattingOptions.oneSpace)
+        f.keyword('of').append(FormattingOptions.oneSpace)
+      }
+      f.property('text').prepend(FormattingOptions.oneSpace)
+    })
+
+    // activate actor / deactivate actor / create actor / destroy actor
+    this.on(node, ast.isDynamicActivate, (n, f) => {
+      f.keyword('activate').append(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDynamicDeactivate, (n, f) => {
+      f.keyword('deactivate').append(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDynamicCreate, (n, f) => {
+      f.keyword('create').append(FormattingOptions.oneSpace)
+    })
+
+    this.on(node, ast.isDynamicDestroy, (n, f) => {
+      f.keyword('destroy').append(FormattingOptions.oneSpace)
+    })
+
+    // autonumber / autonumber true|false / autonumber from N step M
+    this.on(node, ast.isDynamicAutonumberProperty, (n, f) => {
+      // 'from' and 'step' keywords are only present when start/increment exist
+      f.keywords('from', 'step').surround(FormattingOptions.oneSpace)
+    })
   }
 
   protected formatLeafProperty(node: AstNode) {
@@ -757,6 +871,26 @@ export class LikeC4Formatter extends AbstractFormatter {
       ?.properties('title', 'technology')
     region = region ?? this.on(node, ast.isLinkProperty)
       ?.properties('title')
+    region = region ?? this.on(node, ast.isDynamicIfBlock)
+      ?.properties('condition')
+    region = region ?? this.on(node, ast.isDynamicElseIfBranch)
+      ?.properties('condition')
+    region = region ?? this.on(node, ast.isDynamicOptionalBlock)
+      ?.properties('condition')
+    region = region ?? this.on(node, ast.isDynamicRepeatBlock)
+      ?.properties('label')
+    region = region ?? this.on(node, ast.isDynamicGroupBlock)
+      ?.properties('label')
+    region = region ?? this.on(node, ast.isDynamicCriticalBlock)
+      ?.properties('label')
+    region = region ?? this.on(node, ast.isDynamicCriticalFallback)
+      ?.properties('label')
+    region = region ?? this.on(node, ast.isDynamicBreakBlock)
+      ?.properties('condition')
+    region = region ?? this.on(node, ast.isDynamicParallelBranch)
+      ?.properties('label')
+    region = region ?? this.on(node, ast.isDynamicNote)
+      ?.properties('text')
 
     if (region) {
       this.extendedFormattingCommands.push({ type: 'normalizeQuotes', region })

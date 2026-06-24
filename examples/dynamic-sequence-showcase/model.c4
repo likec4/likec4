@@ -1,0 +1,11 @@
+model {
+  user = actor 'User' 'Initiates the payment flow'
+  web = system 'Web' 'Frontend application'
+  api = system 'API' 'Main backend service'
+  auth = system 'Auth' 'Authentication service'
+  payment = system 'Payment' 'Payment processor'
+  db = system 'Database' 'Data persistence'
+  notifier = system 'Notifier' 'Notification service'
+  cache = system 'Cache' 'Distributed cache'
+  fulfillment = system 'Fulfillment' 'On-demand fulfillment worker (created/destroyed per order)'
+}

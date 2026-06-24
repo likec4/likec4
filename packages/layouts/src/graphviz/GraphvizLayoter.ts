@@ -140,7 +140,7 @@ export class GraphvizLayouter implements Disposable {
         Object.assign(
           diagram,
           {
-            sequenceLayout: calcSequenceLayout(diagram),
+            sequenceLayout: calcSequenceLayout(diagram, isDynamicView(view) ? view : undefined),
           } satisfies Partial<LayoutedDynamicView<A>>,
         )
       }
