@@ -66,8 +66,12 @@ export function isTagColorSpecified(spec: string | TagSpecification): spec is { 
 }
 
 export interface RelationshipSpecification {
+  title?: string
+  // long description
+  description?: scalar.MarkdownOrString
   technology?: string
   notation?: string
+  links?: NonEmptyArray<Link>
   color?: Color
   line?: RelationshipLineType
   head?: RelationshipArrowType

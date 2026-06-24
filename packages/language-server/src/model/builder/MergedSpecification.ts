@@ -186,6 +186,7 @@ export class MergedSpecification {
     kind,
     links,
     id,
+    title,
     ...model
   }: ParsedAstRelation): c4.Relationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
@@ -194,6 +195,8 @@ export class MergedSpecification {
         ...spec,
         ...model,
         ...(links && { links }),
+        // Relation has no own title -> inherit from specification (if any)
+        title: isEmptyish(title) ? (spec.title ?? title) : title,
         source,
         target,
         kind,
@@ -203,6 +206,7 @@ export class MergedSpecification {
     return {
       ...(links && { links }),
       ...model,
+      title,
       source,
       target,
       id,

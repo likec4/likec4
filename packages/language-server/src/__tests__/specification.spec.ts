@@ -408,6 +408,59 @@ describe('specification', () => {
         }
       }`
 
+    test('spec with relationshipkind defining title').valid`
+      specification {
+        relationship async {
+          title "Asynchronous"
+        }
+        relationship sync {
+          title: "Synchronous";
+        }
+      }`
+
+    test('spec with relationshipkind defining description').valid`
+      specification {
+        relationship async {
+          description "Asynchronous communication"
+        }
+      }`
+
+    test('spec with relationshipkind defining link').valid`
+      specification {
+        relationship async {
+          link https://example.com/async
+        }
+      }`
+
+    test('spec with relationshipkind defining title, description, link, technology, notation and style').valid`
+      specification {
+        relationship async {
+          title "Asynchronous"
+          description "Asynchronous communication"
+          link https://example.com/async
+          technology "Kafka"
+          notation "Async"
+          color red
+          line dotted
+        }
+        // Different order
+        relationship sync {
+          line solid
+          notation "Sync"
+          technology "REST"
+          link https://example.com/sync
+          description "Synchronous communication"
+          title "Synchronous"
+        }
+      }`
+
+    test('invalid relationshipkind with empty title').invalid`
+      specification {
+        relationship async {
+          title
+        }
+      }`
+
     test('spec with invalid relationshipkind color').invalid`
       specification {
         relationship async {

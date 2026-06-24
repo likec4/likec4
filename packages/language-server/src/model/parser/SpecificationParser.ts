@@ -1,7 +1,7 @@
 import * as c4 from '@likec4/core'
 import { exact } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
-import { filter, isNonNullish, isNullish, isTruthy, mapToObj, omitBy, pipe } from 'remeda'
+import { filter, isTruthy, mapToObj, pipe } from 'remeda'
 import { ast, parseMarkdownAsString, toRelationshipStyle } from '../../ast'
 import { type Base, removeIndent } from './Base'
 
@@ -35,7 +35,8 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       }
 
       const relations_specs = specifications.flatMap(s => s.relationships.filter(this.isValid))
-      for (const { kind, props } of relations_specs) {
+      for (const relSpec of relations_specs) {
+        const { kind, props } = relSpec
         try {
           const kindName = kind.name as c4.RelationshipKind
           if (!isTruthy(kindName)) {
@@ -45,12 +46,15 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             this.logError(`Relationship kind "${kindName}" is already defined`, kind, 'specification')
             continue
           }
+          const links = this.parseLinks(relSpec)
           const bodyProps = pipe(
             props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
-            filter(p => this.isValid(p) && isNonNullish(p.value)),
-            mapToObj(p => [p.key, removeIndent(parseMarkdownAsString(p.value))!] satisfies [string, string]),
-            omitBy(isNullish),
+            filter(p => this.isValid(p)),
+            mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
           )
+          // `summary` is not supported on relationship kinds (model relations have no summary)
+          const { summary: _summary, ...baseProps } = this.parseBaseProps(bodyProps)
+          const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
           const multipleProps = props.filter(ast.isMultipleProperty)
           if (multipleProps.length > 1) {
             this.logError(
@@ -60,11 +64,13 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             )
           }
           const multipleProp = multipleProps[0]
-          c4Specification.relationships[kindName] = {
-            ...bodyProps,
+          c4Specification.relationships[kindName] = exact({
+            ...baseProps,
+            notation,
+            ...(links && c4.isNonEmptyArray(links) && { links }),
             ...toRelationshipStyle(props.filter(ast.isRelationshipStyleProperty), this.isValid),
             ...(multipleProp && { multiple: multipleProp.value }),
-          }
+          })
         } catch (e) {
           this.logError(e, kind, 'specification')
         }

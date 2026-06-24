@@ -51,15 +51,34 @@ specification {
 
 ## Relationship
 
+Relationship kinds may define properties (`title`, `description`, `technology`, `notation`, links) and visual styles:
+
 ```likec4
 specification {
   relationship async {
+    title 'Asynchronous'
+    description 'Communication over a message broker'
+    technology 'Kafka'
+    notation 'Async'
+    link https://example.com/async
     multiple true
     line dotted
     color amber
   }
   relationship subscribes
   relationship is-downstream-of
+}
+```
+
+These properties are inherited by every relationship of that kind, unless the relationship overrides them:
+
+```likec4
+model {
+  // inherits the title and style defined for the 'async' kind
+  ui .async backend
+
+  // overrides the title, keeps the inherited style
+  ui .async db 'reads from'
 }
 ```
 

@@ -82,6 +82,7 @@ SpecificationColor:
 SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind ('{'
     props+=(
+      LinkProperty |
       RelationshipStyleProperty |
       SpecificationRelationshipStringProperty |
       MultipleProperty
@@ -90,7 +91,7 @@ SpecificationRelationshipKind:
 ;
 
 SpecificationRelationshipStringProperty:
-  key=('technology' | 'notation') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
 
 // Imports -------------------------------------
 
