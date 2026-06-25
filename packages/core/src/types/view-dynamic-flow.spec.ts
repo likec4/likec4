@@ -5,7 +5,7 @@ import { invariant } from '../utils'
 import { type ViewId, StepPath } from './scalar'
 import { isDynamicView } from './view'
 import type { ComputedDynamicView } from './view-computed'
-import { flowAncestors, parentFlow, walkthroughFlow } from './view-dynamic-flow'
+import { flowAncestors, flowHelpers, parentFlow, walkthroughFlow } from './view-dynamic-flow'
 
 const viewId = 'index' as ViewId<'index'>
 
@@ -345,5 +345,165 @@ describe('walkthroughFlow', () => {
         "alt-else",
       ]
     `)
+  })
+})
+
+describe('flowHelpers.isBefore', () => {
+  // `isBefore` is "before *or equal*": it returns true when `step` sorts at or
+  // ahead of `other` in the natural, hierarchical ordering of step paths.
+  it('returns true for two equal steps (before-or-equal)', () => {
+    expect(flowHelpers.isBefore(sp('step-01'), sp('step-01'))).toBe(true)
+  })
+
+  it('returns true when a step precedes a later sibling', () => {
+    expect(flowHelpers.isBefore(sp('step-01'), sp('step-02'))).toBe(true)
+  })
+
+  it('returns false when a step follows an earlier sibling', () => {
+    expect(flowHelpers.isBefore(sp('step-02'), sp('step-01'))).toBe(false)
+  })
+
+  it('orders numbers naturally, not lexicographically', () => {
+    // Lexicographically "10" < "2", but natural ordering puts 2 before 10.
+    expect(flowHelpers.isBefore(sp('step-01.2'), sp('step-01.10'))).toBe(true)
+    expect(flowHelpers.isBefore(sp('step-01.10'), sp('step-01.2'))).toBe(false)
+  })
+
+  it('treats a parent flow as before any step nested within it', () => {
+    expect(flowHelpers.isBefore(sp('step-02:opt'), sp('step-02:opt.01'))).toBe(true)
+  })
+
+  it('treats a nested step as not before its parent flow', () => {
+    expect(flowHelpers.isBefore(sp('step-02:opt.01'), sp('step-02:opt'))).toBe(false)
+  })
+
+  it('compares hierarchically across sibling branches', () => {
+    const whenStep = sp('step-02:opt.02:alt.01:when.01')
+    const elseStep = sp('step-02:opt.02:alt.02:else.01')
+    expect(flowHelpers.isBefore(whenStep, elseStep)).toBe(true)
+    expect(flowHelpers.isBefore(elseStep, whenStep)).toBe(false)
+  })
+
+  it('places a top-level step before a step nested in a later subflow', () => {
+    expect(flowHelpers.isBefore(sp('step-01'), sp('step-02:opt.01'))).toBe(true)
+  })
+
+  it('places a whole subflow subtree before a following top-level step', () => {
+    expect(flowHelpers.isBefore(sp('step-02:opt.02:alt.02:else.01'), sp('step-03'))).toBe(true)
+  })
+
+  it('accepts subflows / steps given as `{ id }` objects', () => {
+    expect(flowHelpers.isBefore({ id: sp('step-01') }, { id: sp('step-02') })).toBe(true)
+    expect(flowHelpers.isBefore({ id: sp('step-02') }, { id: sp('step-01') })).toBe(false)
+  })
+
+  it('accepts a mix of string and `{ id }` arguments', () => {
+    expect(flowHelpers.isBefore(sp('step-01'), { id: sp('step-02') })).toBe(true)
+    expect(flowHelpers.isBefore({ id: sp('step-02') }, sp('step-01'))).toBe(false)
+  })
+})
+
+describe('flowHelpers.isInside', () => {
+  // `isInside` is prefix-based: a step is "inside" a flow when its path starts
+  // with the flow's id. The data-first form takes the flow first
+  // (`isInside(flow, step)`); the curried form takes the step first
+  // (`isInside(step)(flow)`). Both answer "is `step` inside `flow`?".
+  it('returns true for a step directly inside a flow', () => {
+    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, sp('step-02:opt.01'))).toBe(true)
+  })
+
+  it('returns true for a deeply nested step inside an outer flow', () => {
+    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, sp('step-02:opt.02:alt.01:when.01'))).toBe(true)
+  })
+
+  it('returns true for a step inside its innermost flow', () => {
+    expect(
+      flowHelpers.isInside({ id: sp('step-02:opt.02:alt.01:when') }, sp('step-02:opt.02:alt.01:when.01')),
+    ).toBe(true)
+  })
+
+  it('returns false for an unrelated top-level step', () => {
+    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, sp('step-01'))).toBe(false)
+  })
+
+  it('returns false for a step in a sibling branch', () => {
+    expect(
+      flowHelpers.isInside({ id: sp('step-02:opt.02:alt.01:when') }, sp('step-02:opt.02:alt.02:else.01')),
+    ).toBe(false)
+  })
+
+  it('is reflexive — a flow is inside itself', () => {
+    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, { id: sp('step-02:opt') })).toBe(true)
+  })
+
+  it('accepts the step given as an `{ id }` object', () => {
+    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, { id: sp('step-02:opt.01') })).toBe(true)
+  })
+
+  it('supports the curried (data-last) form: isInside(step)(flow)', () => {
+    const stepInsideOpt = flowHelpers.isInside(sp('step-02:opt.01'))
+    expect(stepInsideOpt({ id: sp('step-02:opt') })).toBe(true)
+    expect(stepInsideOpt({ id: sp('step-03:opt') })).toBe(false)
+  })
+})
+
+describe('flowHelpers — against a computed view', () => {
+  // A flow rich in nesting (alt > when > try{block, catch, finally{loop}}) so
+  // the helpers are exercised against real, generated step paths rather than
+  // hand-written strings.
+  const view = baseModel
+    .views(({ dynamicView, $step }, _) =>
+      _(
+        dynamicView('flow').with(
+          $step('a.child1 -> a.child2'),
+          $step.alt(
+            $step.when(
+              $step.try({
+                try: [$step('a.child2 -> b.child1')],
+                catch: [$step('a.child2 -> b.child2')],
+                finally: [$step.loop($step('a.child2 -> b.child2'))],
+              }),
+            ),
+          ),
+        ),
+      )
+    )
+    .toLikeC4Model()
+    .view('flow')
+    .$view
+  invariant(isDynamicView(view))
+
+  // Document order, as produced by the depth-first walkthrough.
+  const order: StepPath[] = []
+  walkthroughFlow(view, {
+    step: ({ step }) => {
+      order.push(step)
+    },
+  })
+
+  it('isBefore agrees with walkthrough (document) order for every pair of steps', () => {
+    invariant(order.length > 1, 'expected several steps in the flow')
+    for (let i = 0; i < order.length; i++) {
+      for (let j = 0; j < order.length; j++) {
+        expect(flowHelpers.isBefore(order[i]!, order[j]!)).toBe(i <= j)
+      }
+    }
+  })
+
+  it('isInside is true for a step and each of its ancestor flows', () => {
+    let nestedChecks = 0
+    for (const step of order) {
+      for (const ancestor of flowAncestors(step)) {
+        expect(flowHelpers.isInside({ id: ancestor }, step)).toBe(true)
+        nestedChecks++
+      }
+    }
+    invariant(nestedChecks > 0, 'expected the flow to contain nested steps')
+  })
+
+  it('isInside is false for a step and a flow that is not its ancestor', () => {
+    const blockStep = sp('step-02:alt.01:when.01:try.01:block.01')
+    expect(flowHelpers.isInside({ id: sp('step-02:alt.01:when.01:try.02:catch') }, blockStep)).toBe(false)
+    expect(flowHelpers.isInside({ id: sp('step-02:alt') }, sp('step-01'))).toBe(false)
   })
 })

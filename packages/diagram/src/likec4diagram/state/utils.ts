@@ -1,13 +1,14 @@
 import { BBox } from '@likec4/core/geometry'
-import type {
-  DeploymentFqn,
-  DiagramEdge,
-  DiagramNode,
-  DiagramView,
-  Fqn,
-  XYPoint,
+import {
+  type DeploymentFqn,
+  type DiagramEdge,
+  type DiagramNode,
+  type DiagramView,
+  type Fqn,
+  type XYPoint,
+  isDynamicView,
 } from '@likec4/core/types'
-import { nonexhaustive, nonNullable } from '@likec4/core/utils'
+import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getViewportForBounds } from '@xyflow/system'
 import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
@@ -130,6 +131,8 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
 const MARGIN = 32
 export function activeSequenceBounds(params: { context: Context }): { bounds: BBox; duration: number } {
   const activeWalkthrough = nonNullable(params.context.activeWalkthrough)
+  const view = params.context.view
+  invariant(isDynamicView(view))
 
   const stepEdge = nonNullable(params.context.xyedges.find(e => e.id === activeWalkthrough.stepId))
   const xystate = params.context.xystore.getState()
@@ -138,31 +141,28 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
   const targetNode = nonNullable(xystate.nodeLookup.get(stepEdge.target))
 
   const actorsBounds = getNodesBounds([sourceNode, targetNode], xystate)
+  const edgeBounds = getEdgeBounds(stepEdge, xystate)
+  let stepBounds = edgeBounds
+    ? BBox.merge(edgeBounds, actorsBounds)
+    : actorsBounds
 
-  let stepBounds: BBox | undefined | null
-  if (activeWalkthrough.parallelPrefix) {
-    const parallelArea = params.context.xynodes.find(n =>
-      n.type === 'seq-parallel' && n.data.parallelPrefix === activeWalkthrough.parallelPrefix
-    )
-    if (parallelArea) {
-      stepBounds = {
-        x: parallelArea.position.x,
-        y: parallelArea.position.y,
-        ...getNodeDimensions(parallelArea),
-      }
+  if (activeWalkthrough.activeFlow) {
+    const flowArea = view.sequenceLayout.subflows.find(f => f.id === activeWalkthrough.activeFlow)
+    if (flowArea) {
+      stepBounds = BBox.merge(stepBounds, {
+        x: flowArea.x,
+        y: flowArea.y,
+        width: flowArea.width,
+        height: Math.min(
+          stepBounds.y + stepBounds.height + 100 - flowArea.y,
+          flowArea.height,
+        ),
+      })
     }
   }
 
-  stepBounds ??= getEdgeBounds(stepEdge, xystate)
-
-  if (stepBounds) {
-    stepBounds = BBox.merge(stepBounds, actorsBounds)
-  } else {
-    stepBounds = actorsBounds
-  }
-
   return {
-    duration: 350,
+    duration: 500,
     bounds: BBox.expand(
       stepBounds,
       MARGIN,

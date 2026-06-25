@@ -111,6 +111,7 @@ export const DefaultTagColors = [
   'yellow',
   'violet',
 ] as const
+export type DefaultTagColors = typeof DefaultTagColors[number]
 
 export const DefaultTagColorValues = {
   tomato: tomato.tomato9,
@@ -130,6 +131,6 @@ export const DefaultTagColorValues = {
   violet: violet.violet9,
 } as const
 
-export function isDefaultTagColor(color: string): color is keyof typeof DefaultTagColorValues {
-  return color in DefaultTagColorValues
+export function isDefaultTagColor(color: unknown): color is DefaultTagColors {
+  return typeof color === 'string' && color in DefaultTagColorValues
 }

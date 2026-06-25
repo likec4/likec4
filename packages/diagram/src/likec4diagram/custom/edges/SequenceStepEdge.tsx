@@ -38,8 +38,15 @@ export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
       break
   }
 
+  const { state } = props.data
+
   return (
-    <EdgeContainer {...props}>
+    <EdgeContainer
+      {...props}
+      {...state && {
+        'data-seq-edge-state': state,
+      }}
+    >
       <EdgePath
         edgeProps={props}
         svgPath={path}

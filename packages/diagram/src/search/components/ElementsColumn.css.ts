@@ -50,9 +50,9 @@ export const elementId = css({
   whiteSpace: 'nowrap',
   padding: '[1px 5px]',
   borderRadius: 'sm',
-  background: `mantine.colors.dark[9]/30`,
+  background: `mantine.dark[9]/30`,
   _light: {
-    background: `mantine.colors.gray[3]/20`,
+    background: `mantine.gray[3]/20`,
   },
 })
 

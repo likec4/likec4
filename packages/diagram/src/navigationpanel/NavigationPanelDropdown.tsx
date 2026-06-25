@@ -232,14 +232,14 @@ const foundedViewClass = hstack({
   py: 'xxs',
   _hover: {
     backgroundColor: {
-      base: 'mantine.colors.gray[1]',
-      _dark: 'mantine.colors.dark[5]',
+      base: 'mantine.gray[1]',
+      _dark: 'mantine.dark[5]',
     },
   },
   _focus: {
     outline: 'none',
-    color: 'mantine.colors.primary.lightColor!',
-    backgroundColor: 'mantine.colors.primary.lightHover!',
+    color: 'mantine.primary.lightColor!',
+    backgroundColor: 'mantine.primary.lightHover!',
   },
 })
 const inheritColor = css({
@@ -265,8 +265,8 @@ function FoundedView(
         css({
           '& > mark': {
             backgroundColor: {
-              base: 'mantine.colors.yellow[2]/90',
-              _dark: 'mantine.colors.yellow[5]/80',
+              base: 'mantine.yellow[2]/90',
+              _dark: 'mantine.yellow[5]/80',
               _groupFocus: '[transparent]',
             },
             color: {
@@ -561,15 +561,15 @@ function SearchInput(props: {
         wrapper: css({
           flexGrow: 1,
           backgroundColor: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[5]/80',
+            base: 'mantine.gray[1]',
+            _dark: 'mantine.dark[5]/80',
             _hover: {
-              base: 'mantine.colors.gray[2]',
-              _dark: 'mantine.colors.dark[4]',
+              base: 'mantine.gray[2]',
+              _dark: 'mantine.dark[4]',
             },
             _focus: {
-              base: 'mantine.colors.gray[2]',
-              _dark: 'mantine.colors.dark[4]',
+              base: 'mantine.gray[2]',
+              _dark: 'mantine.dark[4]',
             },
           },
           rounded: 'sm',

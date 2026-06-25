@@ -4,16 +4,16 @@
     "//"
   ],
   "tasks": {
-    "generate": {
+    "sources": {
       "dependsOn": [
-        "@likec4/style-preset#generate"
+        "^sources"
       ],
       "outputs": [
-        "preset/**",
-        "vars/**",
-        "dist/**",
-        "lib/**"
+        "dist/**"
       ]
+    },
+    "generate": {
+      "dependsOn": ["sources"]
     }
   }
 }

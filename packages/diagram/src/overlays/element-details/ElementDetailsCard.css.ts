@@ -115,27 +115,27 @@ export const viewButton = css({
   transition: 'fast',
   border: `1px dashed`,
   borderColor: 'default.border',
-  [viewTitleColor]: '{colors.mantine.colors.dark[1]}',
+  [viewTitleColor]: '{colors.mantine.dark[1]}',
   _hover: {
     background: 'default.hover',
-    [iconColor]: '{colors.mantine.colors.dark[1]}',
+    [iconColor]: '{colors.mantine.dark[1]}',
     [viewTitleColor]: '{colors.default.color}',
   },
   _dark: {
-    background: 'mantine.colors.dark[6]',
+    background: 'mantine.dark[6]',
   },
   _light: {
-    [iconColor]: '{colors.mantine.colors.gray[6]}',
-    [viewTitleColor]: '{colors.mantine.colors.gray[7]}',
+    [iconColor]: '{colors.mantine.gray[6]}',
+    [viewTitleColor]: '{colors.mantine.gray[7]}',
     _hover: {
-      [iconColor]: '{colors.mantine.colors.gray[7]}',
+      [iconColor]: '{colors.mantine.gray[7]}',
     },
   },
 
   '& .mantine-ThemeIcon-root': {
     transition: 'fast',
-    // color: fallbackVar(iconColor, 'mantine.colors.dark[2])',
-    color: `[var(${iconColor}, {colors.mantine.colors.dark[2]})]`,
+    // color: fallbackVar(iconColor, 'mantine.dark[2])',
+    color: `[var(${iconColor}, {colors.mantine.dark[2]})]`,
     '--ti-size': '22px',
     _hover: {
       color: 'default.color',
@@ -153,7 +153,7 @@ export const viewButton = css({
 
 export const viewButtonTitle = css({
   transition: 'fast',
-  color: `[var(${viewTitleColor}, {colors.mantine.colors.gray[7]})]`,
+  color: `[var(${viewTitleColor}, {colors.mantine.gray[7]})]`,
   fontSize: '15px',
   fontWeight: 'medium',
   lineHeight: '1.4',
@@ -170,13 +170,13 @@ export const tabsRoot = css({
 
 export const tabsList = css({
   // flex: '0',
-  background: 'mantine.colors.gray[1]',
+  background: 'mantine.gray[1]',
   borderRadius: 'sm',
   flexWrap: 'nowrap',
   gap: '1.5', // 6px
   padding: '1',
   _dark: {
-    background: 'mantine.colors.dark[7]',
+    background: 'mantine.dark[7]',
   },
 })
 
@@ -187,11 +187,11 @@ export const tabsTab = css({
   padding: '[6px 8px]',
   transition: 'fast',
   borderRadius: 'sm',
-  color: 'mantine.colors.gray[7]',
+  color: 'mantine.gray[7]',
   _hover: {
     transitionTimingFunction: 'out',
     color: 'default.color',
-    background: 'mantine.colors.gray[3]',
+    background: 'mantine.gray[3]',
   },
   ['&[data-active]']: {
     transition: 'none',
@@ -200,15 +200,15 @@ export const tabsTab = css({
     color: 'default.color',
   },
   _dark: {
-    color: 'mantine.colors.dark[1]',
+    color: 'mantine.dark[1]',
     _hover: {
       color: 'white',
-      background: 'mantine.colors.dark[6]',
+      background: 'mantine.dark[6]',
     },
 
     [`&:is([data-active])`]: {
       color: 'white',
-      background: 'mantine.colors.dark[5]',
+      background: 'mantine.dark[5]',
     },
   },
 })
@@ -252,7 +252,7 @@ export const resizeHandle = css({
   width: '14px',
   height: '14px',
   border: `3.5px solid`,
-  borderColor: 'mantine.colors.dark[3]',
+  borderColor: 'mantine.dark[3]',
   borderTop: 'none',
   borderLeft: 'none',
   borderRadius: 'xs',
@@ -262,6 +262,6 @@ export const resizeHandle = css({
   cursor: 'se-resize',
   _hover: {
     borderWidth: '4px',
-    borderColor: 'mantine.colors.dark[1]',
+    borderColor: 'mantine.dark[1]',
   },
 })

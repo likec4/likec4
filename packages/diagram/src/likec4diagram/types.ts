@@ -109,33 +109,59 @@ export namespace Types {
     }
   >
 
-  export type SequenceSubflowAreaData =
+  /**
+   * Represents subflow area in the diagram
+   * `try` and `alt` flows have special handling in the diagram
+   */
+  export type SequenceSubflowData =
     & LeafNodeData
+    & {
+      flowId: StepPath
+      title: string | undefined
+      /**
+       * If set - this subflow (or one of its branches) is active
+       */
+      activeBranch?: StepPath | undefined
+      state?: 'processed' | 'active' | 'skipped' | 'pending' | undefined
+    }
     & (
-      | {
-        flowType: 'try'
-        tryBlock: SequenceSubflowBranch
-        catchBlock: undefined | SequenceSubflowBranch
-        finallyBlock: undefined | SequenceSubflowBranch
-      }
-      | {
-        flowType: 'alt'
-        branches: Array<SequenceSubflowBranch & { _type: 'when' | 'else' | 'if' }>
-      }
+      | SequenceSubflowData.Try
+      | SequenceSubflowData.Alt
       | {
         flowType: Exclude<DynamicViewFlow.SubFlow['_type'], 'try' | 'alt'>
+        hasSubflows: boolean
       }
     )
 
-  type SequenceSubflowBranch = {
-    id: StepPath
-    title: string | undefined
-    x: number
-    y: number
-    width: number
-    height: number
+  export namespace SequenceSubflowData {
+    export type Branch = {
+      flowId: StepPath
+      title: string | undefined
+      x: number
+      y: number
+      width: number
+      height: number
+      hasSubflows: boolean
+    }
+
+    export type Try = {
+      flowType: 'try'
+      tryBlock: Branch
+      catchBlock: undefined | Branch
+      finallyBlock: undefined | Branch
+      hasSubflows: boolean
+    }
+
+    export type Alt = {
+      flowType: 'alt'
+      branches: Array<Branch & { flowType: 'alt-when' | 'alt-else' | 'alt-if' }>
+      hasSubflows: boolean
+    }
   }
 
+  /**
+   * @deprecated Use {@link SequenceSubflowData} instead
+   */
   export type SequenceParallelAreaData = Simplify<
     & LeafNodeData
     & {
@@ -213,7 +239,7 @@ export namespace Types {
 
   export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
   export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
-  export type SequenceSubflowArea = BaseNode<SequenceSubflowAreaData, 'seq-subflow'>
+  export type SequenceSubflowArea = BaseNode<SequenceSubflowData, 'seq-subflow'>
 
   export type CompoundElementNode = BaseNode<CompoundElementNodeData, 'compound-element'>
   export type CompoundDeploymentNode = BaseNode<CompoundDeploymentNodeData, 'compound-deployment'>
@@ -239,7 +265,7 @@ export namespace Types {
     ViewGroupNodeData: ViewGroupNodeData
     SequenceActorNodeData: SequenceActorNodeData
     SequenceParallelAreaData: SequenceParallelAreaData
-    SequenceSubflowAreaData: SequenceSubflowAreaData
+    SequenceSubflowAreaData: SequenceSubflowData
   }>
 
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
@@ -280,7 +306,6 @@ export namespace Types {
     & NonOptional<
       Pick<
         DiagramEdge,
-        | 'id'
         | 'label'
         | 'technology'
         | 'points'
@@ -295,8 +320,14 @@ export namespace Types {
       >
     >
     & {
+      id: StepPath
+      state?: 'processed' | 'active' | 'skipped' | 'pending' | undefined
       // Index in array
       index: number
+      parentFlow: null | {
+        id: StepPath
+        type: DynamicViewFlow.SubFlowType
+      }
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox

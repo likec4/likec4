@@ -76,10 +76,10 @@ const icon = css.raw({
     color: 'text',
   },
   _groupFocusWithin: {
-    color: 'mantine.colors.primary.lightColor!',
+    color: 'mantine.primary.lightColor!',
   },
   _groupFocusVisible: {
-    color: 'mantine.colors.primary.lightColor!',
+    color: 'mantine.primary.lightColor!',
   },
 
   '& :where(.likec4-shape-icon, .likec4-element-icon)': {
@@ -140,27 +140,27 @@ const control = css.raw({
   backgroundColor: {
     base: 'transparent',
     _hover: {
-      base: 'mantine.colors.gray[1]',
-      _dark: 'mantine.colors.dark[5]',
+      base: 'mantine.gray[1]',
+      _dark: 'mantine.dark[5]',
     },
-    _focusWithin: 'mantine.colors.primary.lightHover!',
-    _focusVisible: 'mantine.colors.primary.lightHover!',
+    _focusWithin: 'mantine.primary.lightHover!',
+    _focusVisible: 'mantine.primary.lightHover!',
   },
   color: {
     base: 'text',
     _hover: 'text.bright',
-    _focusWithin: 'mantine.colors.primary.lightColor!',
-    _focusVisible: 'mantine.colors.primary.lightColor!',
+    _focusWithin: 'mantine.primary.lightColor!',
+    _focusVisible: 'mantine.primary.lightColor!',
   },
   // _hover: {
   //   backgroundColor: {
-  //     base: 'mantine.colors.gray[1]',
-  //     _dark: 'mantine.colors.dark[5]',
+  //     base: 'mantine.gray[1]',
+  //     _dark: 'mantine.dark[5]',
   //   },
   // },
   _focusVisible: {
     outline: 'none',
-    // backgroundColor: 'mantine.colors.primary.lightHover!',
+    // backgroundColor: 'mantine.primary.lightHover!',
   },
 })
 
@@ -198,7 +198,7 @@ const tree = sva({
       // '& label': {
       //   color: 'text',
       //   _groupFocusVisible: {
-      //     backgroundColor: 'mantine.colors.primary.lightHover!',
+      //     backgroundColor: 'mantine.primary.lightHover!',
       //   },
       //   // backgroundColor: 'transparent',
       // },
@@ -214,7 +214,7 @@ const tree = sva({
       ...icon,
     },
     label: {
-      cursor: 'inherit',
+      cursor: '[inherit]',
       color: 'inherit',
       userSelect: 'none',
       textStyle: 'xxs',

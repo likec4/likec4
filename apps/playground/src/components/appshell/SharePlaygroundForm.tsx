@@ -129,7 +129,7 @@ export function SharePlaygroundForm() {
                   <UnstyledButton
                     className={css({
                       fontSize: 'x-small',
-                      color: 'mantine.colors.dimmed',
+                      color: 'mantine.dimmed',
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
@@ -143,7 +143,7 @@ export function SharePlaygroundForm() {
                     disabled={pincode.length < 4}
                     className={css({
                       fontSize: 'x-small',
-                      color: 'mantine.colors.dimmed',
+                      color: 'mantine.dimmed',
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
@@ -248,7 +248,7 @@ export function SharePlaygroundForm() {
                       cursor: 'pointer',
                       // borderColor: 'transparent',
                       // backgroundColor: 'transparent',
-                      color: 'mantine.colors.green',
+                      color: 'mantine.green',
                       fontSize: 'xs',
                       userSelect: 'all',
                     }),

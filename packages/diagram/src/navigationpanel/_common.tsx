@@ -36,8 +36,8 @@ export const BreadcrumbsSeparator = () => (
         '@/md': 'flex',
       },
       color: {
-        base: 'mantine.colors.gray[5]',
-        _dark: 'mantine.colors.dark[3]',
+        base: 'mantine.gray[5]',
+        _dark: 'mantine.dark[3]',
       },
     })}>
     <IconChevronRight />

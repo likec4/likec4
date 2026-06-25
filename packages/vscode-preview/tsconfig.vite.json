@@ -9,10 +9,5 @@
   "include": [
     "*.config.ts",
     "package.json"
-  ],
-  "references": [
-    {
-      "path": "../../styled-system/styles/"
-    }
   ]
 }

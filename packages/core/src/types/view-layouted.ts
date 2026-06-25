@@ -184,7 +184,7 @@ export namespace LayoutedDynamicView {
     }
 
     export interface Step {
-      readonly id: scalar.EdgeId
+      readonly id: scalar.StepPath
       readonly labelBBox?: { width: number; height: number } | undefined
       readonly sourceHandle: string
       readonly targetHandle: string

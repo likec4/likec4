@@ -228,16 +228,13 @@ export const assignDynamicViewVariant = () =>
   })
 
 // Mouse event handlers with parameters
-export const onNodeMouseEnter = (params?: { node: Types.Node }) =>
+export const onNodeMouseEnter = () =>
   machine.assign(({ context, event }) => {
-    let node = params?.node
-    if (!node) {
-      assertEvent(event, 'xyflow.nodeMouseEnter')
-      node = event.node
-    }
+    assertEvent(event, 'xyflow.nodeMouseEnter')
+    const hoveredNodeId = event.node.id
     return {
       xynodes: context.xynodes.map(n => {
-        if (n.id === node.id) {
+        if (n.id === hoveredNodeId) {
           return Base.setHovered(n, true)
         }
         return n
@@ -245,16 +242,13 @@ export const onNodeMouseEnter = (params?: { node: Types.Node }) =>
     }
   })
 
-export const onNodeMouseLeave = (params?: { node: Types.Node }) =>
+export const onNodeMouseLeave = () =>
   machine.assign(({ context, event }) => {
-    let node = params?.node
-    if (!node) {
-      assertEvent(event, 'xyflow.nodeMouseLeave')
-      node = event.node
-    }
+    assertEvent(event, 'xyflow.nodeMouseLeave')
+    const leftNodeId = event.node.id
     return {
       xynodes: context.xynodes.map(n => {
-        if (n.id === node.id) {
+        if (n.id === leftNodeId) {
           return Base.setHovered(n, false)
         }
         return n

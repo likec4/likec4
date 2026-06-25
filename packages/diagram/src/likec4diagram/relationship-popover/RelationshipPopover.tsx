@@ -494,8 +494,8 @@ const Relationship = forwardRef<
         rounded: 'sm',
         backgroundColor: {
           _hover: {
-            base: 'mantine.colors.gray[1]',
-            _dark: 'mantine.colors.dark[5]/70',
+            base: 'mantine.gray[1]',
+            _dark: 'mantine.dark[5]/70',
           },
         },
       })}
@@ -606,8 +606,8 @@ const Relationship = forwardRef<
               py: '1.5',
               borderLeft: '2px dotted',
               borderLeftColor: {
-                base: 'mantine.colors.gray[3]',
-                _dark: 'mantine.colors.dark[4]',
+                base: 'mantine.gray[3]',
+                _dark: 'mantine.dark[4]',
               },
             }}
           >

@@ -1,4 +1,5 @@
 import {
+  type BBox,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -26,7 +27,7 @@ import type { Types } from '../types'
  * @returns An object containing an array of XY flow nodes and an array of XY flow edges.
  */
 export function diagramToXY(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type' | 'autoLayout'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'bounds' | 'edges' | '_type' | 'autoLayout'>
   currentViewId: ViewId | undefined
   where: WhereOperator | null
 }): {

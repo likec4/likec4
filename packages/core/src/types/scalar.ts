@@ -172,6 +172,9 @@ export function extractStep(id: EdgeId): number {
 
 export type StepPath = Tagged<EdgeId, 'StepPath'>
 
+export function isStepPath(id: string): id is StepPath {
+  return id.startsWith('step-')
+}
 /**
  * Path to a step, also acting as EdgeId
  *

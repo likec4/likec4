@@ -18,20 +18,34 @@ export function convertToXYFlow({ dynamicViewVariant, ...params }: ConvertToXYFl
   const view = params.view
   const isDynamic = view._type === 'dynamic'
 
-  const { xynodes, xyedges } = isDynamic && dynamicViewVariant === 'sequence'
-    ? sequenceLayoutToXY(view, params.currentViewId)
-    : diagramToXY({ ...params })
+  if (isDynamic && dynamicViewVariant !== 'sequence') {
+    const { xynodes, xyedges } = diagramToXY(params)
+    return {
+      view: view.variant !== 'diagram' ?
+        {
+          ...view,
+          variant: 'diagram',
+        } :
+        view,
+      xynodes,
+      xyedges,
+    }
+  }
 
-  if (isDynamic && view.variant !== dynamicViewVariant) {
+  if (isDynamic && dynamicViewVariant === 'sequence') {
+    const { xynodes, xyedges, layout } = sequenceLayoutToXY(view, params.currentViewId)
     return {
       view: {
         ...view,
+        sequenceLayout: layout,
         variant: dynamicViewVariant,
       },
       xynodes,
       xyedges,
     }
   }
+
+  const { xynodes, xyedges } = diagramToXY(params)
 
   return {
     view,

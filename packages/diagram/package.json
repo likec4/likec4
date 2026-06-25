@@ -66,9 +66,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "pretypecheck": "pandacss codegen",
     "typecheck": "tsc --build --verbose",
-    "prebuild": "pandacss codegen",
     "build": "vite build -m production",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",

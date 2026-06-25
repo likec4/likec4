@@ -152,39 +152,3 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
     </Box>
   )
 }
-
-export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
-  console.log('SequenceSubflowArea', props.data)
-  const isHovered = props.data.hovered === true
-  return (
-    <Box
-      data-likec4-hovered={isHovered}
-      data-likec4-color={props.data.color}
-      css={{
-        width: '100%',
-        height: '100%',
-        border: 'default',
-        borderColor: 'sequence.alt.border',
-        rounded: 'sm',
-        // '--_color': {
-        //   base: 'var(--likec4-palette-stroke)',
-        //   _dark: '[color-mix(in oklab, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',
-        // },
-        // borderColor: '[var(--_color)/30]',
-        backgroundColor: {
-          base: 'sequence.alt',
-          // _whenHovered: 'sequence.alt/30',
-        },
-        // pointerEvents: 'none',
-        paddingLeft: '2',
-        paddingTop: '0.5',
-        fontSize: 'xs',
-        fontWeight: 'bold',
-        letterSpacing: '.75px',
-        // color: '[var(--_color)/75]',
-      }}
-    >
-      {props.data.title}
-    </Box>
-  )
-}

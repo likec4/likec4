@@ -12,6 +12,7 @@
   },
   "exports": {
     ".": "./likec4ops.ts",
+    "./utils": "./utils.ts",
     "./vitest": "./vitest.ts",
     "./tsdown": "./tsdown.ts"
   },

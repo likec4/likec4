@@ -1,3 +1,7 @@
+import {
+  useColorScheme as usePreferredColorScheme,
+  useMutationObserverTarget,
+} from '@mantine/hooks'
 import { shallowEqual } from 'fast-equals'
 import {
   type HTMLAttributes,
@@ -10,12 +14,14 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { isDefined } from 'remeda'
+import { first, isFunction, isString, once } from 'remeda'
 import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { ShadowRootContext } from '../context/ShadowRootContext'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
-import { appendFontToDocument, createShadowRootStylesheets, shadowRootCSS, useColorScheme } from './styles'
+import fontsCss from '../styles-font.css?inline'
+import inlinedStyles from '../styles.css?inline'
 
 function useShadowRootStyle(
   instanceId: string,
@@ -213,4 +219,86 @@ const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) 
       )}
     </div>
   )
+}
+
+function scopeStylesToShadowRoot(styles: string): string {
+  return styles
+    // Order matters: rewrite the longest root selector before the plain `:root` token.
+    .replaceAll(/:where\(\s*:root\s*,\s*:host\s*\)/g, `:where(.likec4-shadow-root)`)
+    .replaceAll(':root', `.likec4-shadow-root`)
+    /**
+     * Replace only top-level body selectors, for example
+     * `body { }` should be replaced with `.likec4-shadow-root { }`
+     * but `.likec4-overlay-body { }` must stay unchanged.
+     */
+    .replaceAll(/(^|[{},;]|\*\/)(\s*)body(?=\s*[{,])/g, '$1$2.likec4-shadow-root')
+}
+
+function appendFontToDocument(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
+  if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
+    const style = document.createElement('style')
+    style.setAttribute('type', 'text/css')
+    style.setAttribute('data-likec4-font', '')
+
+    let nonce: string | undefined
+    if (isString(styleNonce)) {
+      nonce = styleNonce
+    }
+    if (isFunction(styleNonce)) {
+      nonce = styleNonce()
+    }
+    if (nonce) {
+      style.setAttribute('nonce', nonce)
+    }
+
+    style.appendChild(document.createTextNode(fontsCss))
+    document.head.appendChild(style)
+  }
+}
+
+/**
+ * Creates a CSS string with styles scoped to the shadow root
+ * @returns CSS string for the shadow root
+ */
+const shadowRootCSS = once(() => {
+  return scopeStylesToShadowRoot(inlinedStyles)
+})
+/**
+ * Creates a CSSStyleSheet with styles scoped to the shadow root
+ */
+function createShadowRootStylesheets(csstext: string) {
+  const css = new CSSStyleSheet()
+  css.replaceSync(csstext)
+  return [css] as [CSSStyleSheet]
+}
+
+const getComputedColorScheme = (): ColorScheme | null => {
+  try {
+    const htmlScheme = window.getComputedStyle(document.documentElement).colorScheme ?? ''
+    const colorScheme = first(htmlScheme.split(' '))
+    if (colorScheme === 'light' || colorScheme === 'dark') {
+      return colorScheme
+    }
+  } catch {
+    // noop
+  }
+  return null
+}
+
+const getDocumentElement = () => document.documentElement
+type ColorScheme = 'light' | 'dark'
+function useColorScheme(explicit?: ColorScheme): ColorScheme {
+  const preferred = usePreferredColorScheme()
+  const [computed, setComputed] = useState(getComputedColorScheme)
+  useMutationObserverTarget(
+    useCallbackRef(() => setComputed(getComputedColorScheme)),
+    {
+      attributes: true,
+      childList: false,
+      subtree: false,
+    },
+    getDocumentElement,
+  )
+
+  return explicit ?? computed ?? preferred
 }

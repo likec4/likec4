@@ -1,5 +1,5 @@
 import { defineTokens } from '@pandacss/dev'
-import { tokens as generated } from './generated.ts'
+import { tokens as generated } from '../generated.ts'
 
 export const colors = defineTokens.colors({
   mantine: generated.colors.mantine,
@@ -10,4 +10,10 @@ export const colors = defineTokens.colors({
   inherit: { value: 'inherit' },
   current: { value: 'current' },
   currentColor: { value: 'currentColor' },
+  white: {
+    value: '#fff',
+  },
+  black: {
+    value: '#000',
+  },
 })

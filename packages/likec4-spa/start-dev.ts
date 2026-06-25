@@ -6,6 +6,7 @@ import babel from '@rolldown/plugin-babel'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { defineCommand, runMain } from 'citty'
+import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { createServer } from 'vite'
 
@@ -56,7 +57,7 @@ const main = defineCommand({
         allowedHosts: true,
       },
       resolve: {
-        conditions: ['sources', 'module', 'import', 'default'],
+        conditions: ['sources', 'import', 'default'],
         alias: {
           // Local paths for dev
           'likec4/react': resolve('../react/src/index.ts'),

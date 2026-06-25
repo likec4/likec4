@@ -14,15 +14,15 @@ export const fqn = css({
 
 export const relationshipStat = css({
   _light: {
-    background: 'mantine.colors.gray[1]',
+    background: 'mantine.gray[1]',
     '&[data-missing': {},
   },
   [`&[data-missing]`]: {
-    color: 'mantine.colors.orange[4]',
-    background: `mantine.colors.orange[8]/15`,
-    borderColor: `mantine.colors.orange[5]/20`,
+    color: 'mantine.orange[4]',
+    background: `mantine.orange[8]/15`,
+    borderColor: `mantine.orange[5]/20`,
     _light: {
-      color: 'mantine.colors.orange[8]',
+      color: 'mantine.orange[8]',
     },
   },
 })
@@ -36,8 +36,8 @@ export const xyflow = css({
   border: 'default',
   borderRadius: 'sm',
   _light: {
-    borderColor: 'mantine.colors.gray[3]',
-    background: 'mantine.colors.gray[1]',
+    borderColor: 'mantine.gray[3]',
+    background: 'mantine.gray[1]',
   },
 })
 
@@ -56,7 +56,7 @@ export const panelScope = css({
   },
   _light: {
     '& .mantine-SegmentedControl-root': {
-      background: 'mantine.colors.gray[3]',
+      background: 'mantine.gray[3]',
     },
   },
 })
@@ -69,13 +69,13 @@ export const edgeNum = css({
   minWidth: '24px',
   textAlign: 'center',
   borderRadius: 'sm',
-  background: 'mantine.colors.dark[7]',
+  background: 'mantine.dark[7]',
   color: 'default.color',
   [`&[data-zero]`]: {
     color: 'text.dimmed',
   },
   [`&[data-missing]`]: {
-    color: 'mantine.colors.orange[4]',
-    background: `mantine.colors.orange[8]/20`,
+    color: 'mantine.orange[4]',
+    background: `mantine.orange[8]/20`,
   },
 })

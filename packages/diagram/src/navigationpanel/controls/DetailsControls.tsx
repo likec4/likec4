@@ -234,8 +234,8 @@ const ViewBadge = ({
             overflow: 'visible',
             px: '1',
             color: {
-              _dark: 'mantine.colors.gray[4]',
-              _light: 'mantine.colors.gray[8]',
+              _dark: 'mantine.gray[4]',
+              _light: 'mantine.gray[8]',
             },
           }),
           label: css({

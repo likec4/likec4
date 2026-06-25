@@ -25,11 +25,15 @@
       ],
       "$/*": [
         "./src/*"
+      ],
+      "@likec4/styles/*": [
+        "./styled-system/*"
       ]
     }
   },
   "include": [
-    "src/"
+    "src/",
+    "styled-system/"
   ],
   "references": [
     {
@@ -52,9 +56,6 @@
     },
     {
       "path": "../../packages/log/"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

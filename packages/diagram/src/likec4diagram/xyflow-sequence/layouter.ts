@@ -154,15 +154,19 @@ export class SequenceViewLayouter {
 
     this.#actors = this.addActors(actors)
 
+    let lastCompound: CompoundRect | undefined
     for (const compound of compounds) {
       const result = this.addCompound(compound)
       // first element is the top level compound
-      const toplevel = result[0]
+      const toplevel = lastCompound = result[0]
       // ensure that the top level compound is at the top
       this.constraint(toplevel.y1, '==', 0, Strength.strong)
       this.put(this.#viewportBottom, Strength.strong).after(toplevel.bottom)
-      this.put(this.#rowsTop, Strength.strong).after(toplevel.y2)
+      this.require(this.#rowsTop).after(toplevel.y2)
       this.#compounds.push(...result)
+    }
+    if (lastCompound) {
+      this.require(this.#viewportRight).after(lastCompound.x2, 16)
     }
 
     const [firstActor, ...restActors] = this.#actors
@@ -171,9 +175,9 @@ export class SequenceViewLayouter {
 
     const lastActor = restActors.reduce((prev, actor) => {
       this.put(actor.x).after(prev.right, ACTOR_GAP)
-      this.put(actor.offset.left, Strength.strong).after(prev.offset.right, COLUMN_GAP)
+      this.put(prev.offset.right, Strength.strong).before(actor.offset.left, COLUMN_GAP)
       this.constraint(actor.centerY, '==', prev.centerY, Strength.strong)
-      this.put(this.#rowsTop, Strength.strong).after(actor.offset.bottom)
+      this.require(this.#rowsTop).after(actor.offset.bottom)
       return actor
     }, firstActor)
 
@@ -182,9 +186,9 @@ export class SequenceViewLayouter {
     }
     this.createSubflowAreas(steps)
 
-    this.require(this.#viewportRight, '>=', lastActor.offset.right)
+    this.require(this.#viewportRight).after(lastActor.offset.right)
     const mostBottom = last(this.#rows)?.outer.bottom ?? this.#rowsTop
-    this.require(this.#viewportBottom, '>=', mostBottom.plus(16))
+    this.put(this.#viewportBottom).after(mostBottom, 16)
 
     if (compounds.length > 0) {
       for (const compound of this.#compounds) {
@@ -196,7 +200,7 @@ export class SequenceViewLayouter {
           maxRow = Math.max(maxRow, actorBox.maxRow)
         }
         const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
-        this.put(compound.bottom).after(lastRow.outer.bottom, 16)
+        this.put(compound.bottom).after(lastRow.outer.bottom)
       }
     }
 
@@ -487,10 +491,10 @@ export class SequenceViewLayouter {
         right = this.newVar(0),
         bottom = this.newVar(0)
 
-      this.put(top, Strength.strong).before(y)
-      this.put(left, Strength.strong).before(x)
-      this.put(right, Strength.strong).after(actorBox.right)
-      this.put(bottom, Strength.strong).after(actorBox.bottom)
+      this.put(y, Strength.strong).after(top)
+      this.put(x, Strength.strong).after(left)
+      this.put(actorBox.right, Strength.strong).before(right)
+      this.put(actorBox.bottom, Strength.strong).before(bottom)
 
       return {
         ...actorBox,
@@ -624,18 +628,20 @@ export class SequenceViewLayouter {
     let y1, y2
     switch (true) {
       case !!onlyChild: {
-        y1 = onlyChild.y1.minus(PADDING_TOP)
-        y2 = onlyChild.y2.plus(PADDING)
-        this.put(bottom).after(onlyChild.bottom, PADDING)
+        y1 = this.newVar(0)
+        y2 = this.newVar(0)
+        this.put(onlyChild.y1).after(y1, PADDING_TOP)
+        this.put(onlyChild.y2).before(y2, PADDING)
+        this.put(onlyChild.bottom).before(bottom, PADDING)
         break
       }
       // Compound with single actor
       case to === from: {
         y1 = this.newVar(0)
         y2 = this.newVar(0)
-        this.put(y1).before(from.offset.top, PADDING_TOP_FROM_ACTOR)
-        this.put(y2).after(from.offset.bottom, PADDING)
-        this.put(bottom).after(y2)
+        this.put(from.offset.top).after(y1, PADDING_TOP_FROM_ACTOR)
+        this.put(from.offset.bottom).before(y2, PADDING)
+        this.put(y2).before(bottom)
         break
       }
       // Compound nested compound, offset from it
@@ -643,9 +649,9 @@ export class SequenceViewLayouter {
         y1 = this.newVar(0)
         y2 = this.newVar(0)
         for (const child of children) {
-          this.put(y1).before(child.y1, PADDING)
-          this.put(y2).after(child.y2, PADDING)
-          this.put(bottom).after(child.bottom, PADDING)
+          this.put(child.y1).after(y1, PADDING)
+          this.put(child.y2).before(y2, PADDING)
+          this.put(child.bottom).before(bottom, PADDING)
         }
         break
       }
@@ -654,10 +660,10 @@ export class SequenceViewLayouter {
         y2 = this.newVar(0)
         for (var col = from.column; col <= to.column; col++) {
           const offset = this.actorBox(col).offset
-          this.put(y1).before(offset.top, PADDING_TOP_FROM_ACTOR)
-          this.put(y2).after(offset.bottom, PADDING)
+          this.put(offset.top).after(y1, PADDING_TOP_FROM_ACTOR)
+          this.put(offset.bottom).before(y2, PADDING)
         }
-        this.put(bottom).after(y2)
+        this.put(y2).before(bottom)
         break
       }
     }

@@ -12,12 +12,10 @@ import {
 export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorString = error instanceof Error ? error.message : 'Unknown error'
   const dialogRef = useRef<HTMLDialogElement>(null)
-  useEffect(() => {
-    dialogRef.current?.showModal()
-  }, [])
 
   return (
     <dialog
+      open
       ref={dialogRef}
       className={css({
         margin: '0',

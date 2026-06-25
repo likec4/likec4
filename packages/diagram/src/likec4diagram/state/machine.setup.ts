@@ -13,6 +13,7 @@ import type {
   NodeId,
   NodeNotation as ElementNotation,
   StepEdgeId,
+  StepPath,
   ViewChange,
   ViewId,
   WhereOperator,
@@ -128,8 +129,8 @@ export interface Context extends Input {
   // If Dynamic View
   dynamicViewVariant: DynamicViewDisplayVariant
   activeWalkthrough: null | {
-    stepId: StepEdgeId
-    parallelPrefix: string | null
+    stepId: StepPath
+    activeFlow: StepPath | null
   }
 }
 
@@ -186,7 +187,7 @@ export type Events =
   | { type: 'focus.node'; nodeId: NodeId; autoUnfocus?: boolean }
   | { type: 'focus.autoUnfocus' }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
-  | { type: 'walkthrough.start'; stepId?: StepEdgeId }
+  | { type: 'walkthrough.start'; stepId?: StepPath }
   | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
   | { type: 'walkthrough.end' }
   | { type: 'highlight.node'; nodeId: NodeId }

@@ -16,7 +16,6 @@ export const navigationPanel = defineSlotRecipe({
       width: '100%',
       gap: 'xxs',
       height: 'auto',
-      overflow: 'hidden',
       maxHeight: [
         'calc(100vh)',
         'calc(100cqh)',

@@ -1,10 +1,18 @@
-import { filter, isBoolean, isFunction, isTruthy, map, pipe } from 'remeda'
+import { filter, find, first, firstBy, isBoolean, isFunction, isTruthy, map, pipe, purry } from 'remeda'
 import type { IsEqual, Simplify } from 'type-fest'
-import { DefaultWeakMap, invariant, nonNullable } from '../utils'
+import {
+  compareNatural,
+  compareNaturalHierarchically,
+  DefaultWeakMap,
+  invariant,
+  isString,
+  nonNullable,
+} from '../utils'
 import type { IsAnyOrNever, IterableContainer } from './_common'
 import * as scalar from './scalar'
 import type { ProcessedDynamicView } from './view'
 import type { LayoutedDynamicView } from './view-layouted'
+import type { AnyStep } from './view-parsed.dynamic'
 
 type WithFlowBase<Dict extends {}> = {
   [T in keyof Dict]: Simplify<
@@ -110,10 +118,13 @@ export interface DynamicViewFlow {
   readonly steps: DynamicViewFlowSteps
 }
 
-function isSubFlow<S extends DynamicViewFlow.AnyStep>(step: S): step is Extract<S, AnySubflow>
+function isSubFlow<T extends AnyStep>(step: T): step is Extract<T, AnySubflow>
 function isSubFlow(step: unknown): step is AnySubflow
 function isSubFlow(step: any) {
-  return typeof step === 'object' && step != null && '_type' in step
+  return typeof step === 'object' && step != null
+    && isString(step['id'])
+    && isString(step['_type'])
+    && Array.isArray(step['flow'])
 }
 
 export const flowGuards = {
@@ -136,6 +147,12 @@ export const flowGuards = {
     return isSubFlow(step) && flowGuards.type.isTryBranch(step._type)
   },
 
+  isStepOr:
+    <S extends AnySubflow = AnySubflow>(predicate: (step: AnySubflow) => step is S) =>
+    (step: unknown): step is scalar.StepPath | S => {
+      return flowGuards.isStepPath(step) || (isSubFlow(step) && predicate(step))
+    },
+
   type: {
     isAltBranch: (value: string): value is DynamicViewFlow.SubFlow.AltBranch['_type'] => {
       return value.startsWith('alt-')
@@ -144,6 +161,48 @@ export const flowGuards = {
       return value.startsWith('try-')
     },
   },
+}
+function _isInside(flow: { id: scalar.StepPath }, step: scalar.StepPath | { id: scalar.StepPath }): boolean {
+  const stepId = flowGuards.isStepPath(step) ? step : step.id
+  return stepId.startsWith(flow.id)
+}
+
+type StepPathOrFlow = scalar.StepPath | { readonly id: scalar.StepPath }
+
+/**
+ * Returns a function that checks if a step is inside a flow, or checks if a step is inside a flow directly
+ */
+function isInside(step: StepPathOrFlow): (flow: { readonly id: scalar.StepPath }) => boolean
+/**
+ * Checks if a step is inside a flow
+ */
+function isInside<S extends StepPathOrFlow, F extends { readonly id: scalar.StepPath }>(
+  flow: F,
+  step: S,
+): boolean
+function isInside(...args: unknown[]) {
+  return purry(_isInside, args)
+}
+
+function _isBefore(
+  step: StepPathOrFlow,
+  other: StepPathOrFlow,
+): boolean {
+  const stepId = flowGuards.isStepPath(step) ? step : step.id
+  const otherId = flowGuards.isStepPath(other) ? other : other.id
+  return compareNaturalHierarchically()(stepId, otherId) <= 0
+}
+
+/**
+ * Returns a function that checks if a step is before other step,
+ */
+function isBefore(other: StepPathOrFlow): (step: StepPathOrFlow) => boolean
+/**
+ * Checks if a step is before another step
+ */
+function isBefore(step: StepPathOrFlow, other: StepPathOrFlow): boolean
+function isBefore(...args: unknown[]) {
+  return purry(_isBefore, args)
 }
 
 export const flowHelpers = {
@@ -165,6 +224,26 @@ export const flowHelpers = {
   },
 
   /**
+   * Returns first step in subflow
+   */
+  firstStep: <F extends AnySubflow>(subflow: F): scalar.StepPath | null => {
+    for (const s of subflow.flow) {
+      const step = flowGuards.isStepPath(s) ? s : (
+        flowGuards.isSubFlow(s) ? flowHelpers.firstStep(s) : null
+      )
+
+      if (step) {
+        return step
+      }
+    }
+    return null
+  },
+
+  hasSteps: <F extends AnySubflow>(subflow: F): boolean => {
+    return !!flowHelpers.firstStep(subflow)
+  },
+
+  /**
    * Returns only step paths from a subflow (excluding nested subflows)
    */
   stepsOnly: (subflow: { flow: IterableContainer<scalar.StepPath> }): scalar.StepPath[] => {
@@ -177,6 +256,12 @@ export const flowHelpers = {
   nested: <N extends { _type: string }>(subflow: { flow: IterableContainer<scalar.StepPath | N> }): N[] => {
     return filter(subflow.flow, flowGuards.isSubFlow) as N[]
   },
+
+  /**
+   * Checks if step is before other step
+   */
+  isBefore,
+  isInside,
 }
 
 export namespace DynamicViewFlow {
@@ -258,7 +343,10 @@ export function flowAncestors(path: scalar.EdgeId | scalar.StepPath): scalar.Ste
  * parentFlow('step-02:opt.03:try' as StepPath)    // => 'step-02:opt'
  * parentFlow('step-04' as StepPath)               // => null
  */
-export function parentFlow(path: scalar.EdgeId | scalar.StepPath): scalar.StepPath | null {
+export function parentFlow(path: scalar.EdgeId | scalar.StepPath | undefined | null): scalar.StepPath | null {
+  if (!path) {
+    return null
+  }
   const lastDot = path.lastIndexOf('.')
   if (lastDot === -1) {
     return null
@@ -267,7 +355,7 @@ export function parentFlow(path: scalar.EdgeId | scalar.StepPath): scalar.StepPa
   return parentPath.includes(':') ? parentPath : null
 }
 
-type StepCtx<V extends ProcessedDynamicView<any>> = {
+type StepCtx<V extends ProcessedDynamicView<any>, R = DynamicViewFlow.AnyStep> = {
   readonly step: scalar.StepPath
   readonly edge: V['edges'][number]
   readonly source: V['nodes'][number]
@@ -280,15 +368,19 @@ type StepCtx<V extends ProcessedDynamicView<any>> = {
   }
   readonly level: number
   readonly parent: SubflowHookCtx | null
+
+  readonly stopAndReturn: (step?: R | undefined) => never
 }
 
-type SubflowHookCtx<T extends SubflowType = SubflowType> = {
+type SubflowHookCtx<T extends SubflowType = SubflowType, R = DynamicViewFlow.AnyStep> = {
   readonly id: scalar.StepPath
   readonly type: T
   readonly subflow: Subflow<T>
   readonly previous: SubFlows[ParentOf<T>]['flow'][number] | null
   readonly parent: SubflowHookCtx<ParentOf<T>> | null
   readonly level: number
+
+  readonly stopAndReturn: (step?: R | undefined) => never
 }
 
 type OnLeave<T extends SubflowType = SubflowType> = (onleave: {
@@ -311,7 +403,7 @@ type SubflowHookResult<T extends SubflowType = SubflowType> = {
   onLeave?: OnLeave<T>
 }
 
-interface SubflowHook<T extends SubflowType = SubflowType> {
+interface SubflowHook<T extends SubflowType = SubflowType, R = DynamicViewFlow.AnyStep> {
   /**
    * Callback function that is called on entry to each subflow.
    *
@@ -322,23 +414,23 @@ interface SubflowHook<T extends SubflowType = SubflowType> {
    * @returns {OnLeave} - Continue walking with onLeave callback
    * @returns {SubflowHookResult<T>} - Continue walking with custom configuration
    */
-  (ctx: SubflowHookCtx<T>): boolean | void | OnLeave<T> | SubflowHookResult<T>
+  (ctx: SubflowHookCtx<T, R>): boolean | void | OnLeave<T> | SubflowHookResult<T>
 }
 
-type SubflowHooksPerType = Partial<
+type SubflowHookPerType<R> = Partial<
   Simplify<
     & {
-      [K in SubflowType]: SubflowHook<K> | boolean
+      [K in SubflowType]: SubflowHook<K, R> | boolean
     }
     & {
-      default: SubflowHook<SubflowType>
+      default: SubflowHook<SubflowType, R>
     }
   >
 >
 
-type WalkCallback<V extends ProcessedDynamicView<any>> = {
-  step?: (ctx: StepCtx<V>) => void
-  subflow?: SubflowHook<SubflowType> | SubflowHooksPerType
+type WalkCallback<V extends ProcessedDynamicView<any>, R = DynamicViewFlow.AnyStep> = {
+  step?: (ctx: StepCtx<V, R>) => void
+  subflow?: SubflowHook<SubflowType, R> | SubflowHookPerType<R>
 }
 
 /**
@@ -366,10 +458,30 @@ type WalkCallback<V extends ProcessedDynamicView<any>> = {
  * })
  * ```
  */
-export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
+class StopError {
+  constructor(public readonly result: AnySubflow | scalar.StepPath) {}
+}
+
+export function walkthroughFlow<R extends DynamicViewFlow.AnyStep = DynamicViewFlow.AnyStep>(
+  callback: WalkCallback<ProcessedDynamicView<any>, R>,
+): (view: ProcessedDynamicView<any>) => R | undefined
+export function walkthroughFlow<
+  V extends ProcessedDynamicView<any> = ProcessedDynamicView<any>,
+  R extends DynamicViewFlow.AnyStep = DynamicViewFlow.AnyStep,
+>(
   view: V,
-  callback: WalkCallback<V>,
+  callback: WalkCallback<V, R>,
+): R | undefined
+export function walkthroughFlow(
+  ...args: [WalkCallback<any>] | [
+    ProcessedDynamicView<any>,
+    WalkCallback<any>,
+  ]
 ) {
+  if (args.length === 1) {
+    return (view: ProcessedDynamicView<any>) => walkthroughFlow(view, args[0])
+  }
+  const [view, callback] = args
   if (!view.flow) {
     throw new Error(`Dynamic view ${view.id} does not have a flow`)
   }
@@ -398,6 +510,9 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
         global: stepnum++,
       },
       parent,
+      stopAndReturn: (arg) => {
+        throw new StopError(arg ?? step)
+      },
     })
   }
 
@@ -430,6 +545,9 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
       parent,
       previous,
       level,
+      stopAndReturn: (arg) => {
+        throw new StopError(arg ?? subflow)
+      },
     }
     const result = callSubflow(ctx) ?? true
     if (result === false) {
@@ -482,7 +600,15 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
     return visited as unknown as Array<NestedFlowOf<SubflowType>>
   }
 
-  walk(view.flow.steps, null, 0)
+  try {
+    walk(view.flow.steps, null, 0)
+  } catch (e) {
+    if (e instanceof StopError) {
+      return e.result
+    }
+    throw e
+  }
+  return undefined
 }
 
 /**
@@ -501,14 +627,14 @@ export function walkthroughFlow<V extends ProcessedDynamicView<any>>(
  * })
  * ```
  */
-function onSubflows<const T extends SubflowType & string>(
+function onSubflows<const T extends SubflowType & string, R = DynamicViewFlow.AnyStep>(
   types: T,
-  callback: SubflowHook<NoInfer<T>>,
-): { [K in T]: SubflowHook<K> }
-function onSubflows<const T extends readonly [SubflowType, ...SubflowType[]]>(
+  callback: SubflowHook<NoInfer<T>, NoInfer<R>>,
+): { [K in T]: SubflowHook<K, R> }
+function onSubflows<const T extends readonly [SubflowType, ...SubflowType[]], R = DynamicViewFlow.AnyStep>(
   types: T,
-  callback: SubflowHook<NoInfer<T>[number]>,
-): { [K in T[number]]: SubflowHook<K> }
+  callback: SubflowHook<NoInfer<T>[number], NoInfer<R>>,
+): { [K in T[number]]: SubflowHook<K, R> }
 function onSubflows(
   types: SubflowType | SubflowType[],
   callback: SubflowHook<SubflowType>,
@@ -534,6 +660,9 @@ export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDy
   }
 
   public readonly unwindTry = flowHelpers.unwindTry
+  public readonly isBefore = flowHelpers.isBefore
+  public readonly isInside = flowHelpers.isInside
+  public readonly onSubflows = onSubflows
   public readonly guards = flowGuards
 
   protected readonly flow: DynamicViewFlow
@@ -575,6 +704,16 @@ export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDy
   }
 
   /**
+   * Returns the parent subflow of the given step path, or undefined if the step is not nested.
+   * @param id The step path to find the parent for.
+   * @returns The parent subflow, or undefined if the step is not nested.
+   */
+  parent(id: scalar.StepPath | scalar.EdgeId): DynamicViewFlow.SubFlow.Any | undefined {
+    const parent = parentFlow(id)
+    return parent ? this.lookup(parent) : undefined
+  }
+
+  /**
    * Lookup a subflow by its path.
    * @param id The path of the subflow to lookup.
    * @param assertType Optional type to assert the subflow type. If provided, throws if the subflow is not of the given type.
@@ -604,16 +743,79 @@ export class DynamicViewFlowOps<V extends ProcessedDynamicView<any> = LayoutedDy
    * Checks if has nested subflows
    */
   hasSubflows(check: AnySubflow | scalar.StepPath): boolean {
-    const subflow = typeof check === 'string' ? this.lookup(check) : check
-    return subflow.flow.some(flowGuards.isSubFlow)
+    const subflow = typeof check === 'string' ? this.byId.get(check) : check
+    return subflow?.flow.some(flowGuards.isSubFlow) ?? false
   }
 
   /**
    * @see Sequence Layout
    */
-  walkthrough(callback: WalkCallback<V>) {
-    walkthroughFlow(this.view, callback)
+  walkthrough<R extends DynamicViewFlow.AnyStep = DynamicViewFlow.AnyStep>(
+    callback: WalkCallback<V, R>,
+  ): R | undefined {
+    return walkthroughFlow(this.view, callback)
   }
 
-  public onSubflows = onSubflows
+  /**
+   * Returns all steps that come before the given step in the flow.
+   * @param step The step to find predecessors for.
+   * @returns An array of step paths that come before the given step.
+   */
+  stepsBefore(step: scalar.StepPath): scalar.StepPath[] {
+    return stepsBefore(this.view, step)
+  }
+}
+
+/**
+ * Returns all steps that come before the given step in the flow.
+ */
+export function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepPath): scalar.StepPath[] {
+  const ops = dynamicViewFlow(view)
+
+  const inside = isInside(_step)
+
+  const result: scalar.StepPath[] = []
+
+  ops.walkthrough({
+    step: ({ step, stopAndReturn }) => {
+      if (step === _step) {
+        stopAndReturn()
+      }
+      result.push(step)
+    },
+    subflow: ({ subflow, stopAndReturn }) => {
+      if (subflow.id === _step) {
+        return stopAndReturn()
+      }
+      if (subflow._type === 'alt' || subflow._type === 'try') {
+        const branches = [...subflow.flow]
+        if (inside(subflow)) {
+          return {
+            next: find(branches, f => inside(f)),
+          }
+        }
+
+        return {
+          next: first(branches),
+        }
+      }
+      return true
+    },
+    // subflow: {
+    //   ...walkthroughFlow.onSubflows(['alt', 'try'], ({ subflow, stopAndReturn }) => {
+    //     if (subflow.id === _step) {
+    //       return stopAndReturn()
+    //     }
+    //     const branches = [...subflow.flow]
+    //     const next = find([...subflow.flow], f => inside(f))
+    //       ?? first(filter(branches, flowHelpers.hasSteps))
+    //     if (next) {
+    //       return { next }
+    //     }
+    //     return false
+    //   }),
+
+    // },
+  })
+  return result
 }

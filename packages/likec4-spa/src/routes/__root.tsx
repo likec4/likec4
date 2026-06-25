@@ -11,6 +11,7 @@ import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack
 import { defaultTheme } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
 import { map } from 'remeda'
+import { ErrorBoundary } from '../components/ErrorComponent'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
 
 export type Context = {
@@ -65,7 +66,9 @@ function RootComponent() {
       {...(forceColorScheme && { forceColorScheme })}
     >
       <FramerMotionConfig>
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </FramerMotionConfig>
     </DefaultMantineProvider>
   )

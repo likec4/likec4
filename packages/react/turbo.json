@@ -7,7 +7,6 @@
     "build": {
       "dependsOn": [
         "@likec4/diagram#typecheck",
-        "@likec4/styles#build",
         "sources"
       ],
       "outputs": [

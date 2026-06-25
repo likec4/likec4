@@ -1,6 +1,5 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
-/// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
   BBox,
   invariant,
@@ -149,12 +148,16 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     })
   })
 
-export const fitFocusedBounds = () =>
+export const fitFocusedBounds = (params?: { duration?: number }) =>
   machine.createAction(({ context }) => {
     const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewVariant === 'sequence'
-    const { bounds, duration = 450 } = isActiveSequenceWalkthrough
+    let { bounds, duration = 450 } = isActiveSequenceWalkthrough
       ? activeSequenceBounds({ context })
       : focusedBounds({ context })
+
+    // Priority from params
+    duration = params?.duration ?? duration
+
     const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
     const maxZoom = Math.max(1, transform[2])

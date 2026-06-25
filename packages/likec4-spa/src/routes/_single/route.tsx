@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { loadModel } from 'likec4:model'
-import { ErrorBoundary } from 'react-error-boundary'
-import { Fallback } from '../../components/Fallback'
+import { ErrorComponent } from '../../components/ErrorComponent'
 import { ViewOutlet } from '../../components/ViewOutlet'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
 import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
@@ -20,19 +19,18 @@ export const Route = createFileRoute('/_single')({
     }
   },
   component: RouteComponent,
+  errorComponent: ErrorComponent,
 })
 
 function RouteComponent() {
   const { $likec4model, projectId } = Route.useLoaderData()
   return (
     <ViewOutlet>
-      <ErrorBoundary FallbackComponent={Fallback}>
-        <LikeC4IconRendererContext projectId={projectId}>
-          <LikeC4ModelContext likec4model={$likec4model}>
-            <Outlet />
-          </LikeC4ModelContext>
-        </LikeC4IconRendererContext>
-      </ErrorBoundary>
+      <LikeC4IconRendererContext projectId={projectId}>
+        <LikeC4ModelContext likec4model={$likec4model}>
+          <Outlet />
+        </LikeC4ModelContext>
+      </LikeC4IconRendererContext>
     </ViewOutlet>
   )
 }
