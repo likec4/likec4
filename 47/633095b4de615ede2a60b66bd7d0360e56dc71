@@ -1,0 +1,27 @@
+.changeset/fix-relationship-export-styles.md
+  s_9d49268b9f9845::t_0d1f4b97f72fc8 1-5
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_94eabab14b8045 8,68-86,180-193
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_9d49268b9f9845::t_ea02904a5be6c2 57-211
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_9d49268b9f9845::t_fec7370d3c98aa 39-42
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_9d49268b9f9845::t_fed089c39c7e25 9-24,27,38,212-231,243,386,398-400,410-413
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "47633095b4de615ede2a60b66bd7d0360e56dc71",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
