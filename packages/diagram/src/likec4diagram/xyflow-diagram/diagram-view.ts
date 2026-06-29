@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   type DiagramEdge,
   type DiagramNode,
@@ -15,7 +22,54 @@ import {
 } from '@likec4/core'
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
+import { readableText } from '../../utils'
 import type { Types } from '../types'
+
+function sentence(parts: Array<string | null | undefined>): string {
+  return parts.filter((part): part is string => !!part).map(part => part.endsWith('.') ? part : `${part}.`).join(' ')
+}
+
+function nodeAriaLabel(node: DiagramNode): string {
+  const title = readableText(node.title) ?? node.id
+  const description = readableText(node.description)
+  const notes = readableText(node.notes)
+
+  if (node.kind === GroupElementKind) {
+    const childCount = node.children.length
+    return sentence([
+      title,
+      'Group',
+      `Contains ${childCount} ${childCount === 1 ? 'node' : 'nodes'}`,
+      notes && `Notes: ${notes}`,
+    ])
+  }
+
+  return sentence([
+    title,
+    `Node kind: ${node.kind}`,
+    node.technology && `Technology: ${node.technology}`,
+    description && `Description: ${description}`,
+    notes && `Notes: ${notes}`,
+    node.navigateTo && `Opens view ${node.navigateTo}`,
+  ])
+}
+
+function edgeAriaLabel(edge: DiagramEdge, source: DiagramNode, target: DiagramNode): string {
+  const sourceTitle = readableText(source.title) ?? source.id
+  const targetTitle = readableText(target.title) ?? target.id
+  const label = readableText(edge.label)
+  const description = readableText(edge.description)
+  const notes = readableText(edge.notes)
+
+  return sentence([
+    `Relationship from ${sourceTitle} to ${targetTitle}`,
+    label && `Label: ${label}`,
+    edge.technology && `Technology: ${edge.technology}`,
+    description && `Description: ${description}`,
+    notes && `Notes: ${notes}`,
+    edge.navigateTo && `Opens view ${edge.navigateTo}`,
+  ])
+}
 
 /**
  * Convert a diagram view to XY flow nodes and edges.
@@ -109,6 +163,7 @@ export function diagramToXY(opts: {
         width: node.width,
         height: node.height,
       },
+      ariaLabel: nodeAriaLabel(node),
       initialWidth: node.width,
       initialHeight: node.height,
       hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
@@ -255,6 +310,7 @@ export function diagramToXY(opts: {
       type: 'relationship',
       source: ns + source,
       target: ns + target,
+      ariaLabel: edgeAriaLabel(edge, nodeById(source), nodeById(target)),
       zIndex: ZIndexes.Edge,
       hidden: !visiblePredicate(edge),
       deletable,

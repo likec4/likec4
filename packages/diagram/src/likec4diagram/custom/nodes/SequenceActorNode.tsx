@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
@@ -109,7 +116,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
       <ElementNodeContainer nodeProps={props}>
         {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
         <ElementShape {...props} />
-        <ElementData {...props} />
+        <ElementData {...props} aria-hidden />
         {hasModelFqn(props) && (
           <>
             <ElementActions {...props} />

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { getSmoothStepPath } from '@xyflow/system'
 import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePath } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
@@ -56,6 +63,7 @@ export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
         <EdgeLabel edgeProps={props}>
           {enableNavigateTo && navigateTo && (
             <EdgeActionButton
+              ariaLabel="Navigate to view"
               onClick={e => {
                 e.stopPropagation()
                 diagram.navigateTo(navigateTo)

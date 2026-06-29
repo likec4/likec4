@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { cx } from '@likec4/styles/css'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
@@ -13,6 +20,7 @@ import { compoundActionBtn } from './actionbtns.css'
 type CompoundActionButtonProps = Simplify<
   BaseNodeProps & {
     icon?: ReactNode
+    ariaLabel?: string
     onClick: (e: ReactMouseEvent) => void
   }
 >
@@ -39,15 +47,18 @@ const variants = {
 }
 
 export function CompoundActionButton({
+  selected = false,
   data: {
     hovered: isHovered = false,
   },
   icon,
+  ariaLabel = 'Navigate to view',
   onClick,
 }: CompoundActionButtonProps) {
   // Debounce first "isHovered"
   const debounced = useDebouncedValue(isHovered, isHovered ? 130 : 0)
   const isHoverDebounced = debounced[0] && isHovered
+  const isActionVisible = selected || isHoverDebounced
 
   let variant: keyof typeof variants = isHoverDebounced ? 'hovered' : 'normal'
 
@@ -70,7 +81,9 @@ export function CompoundActionButton({
           }),
           actionBtn({ variant: 'transparent' }),
         )}
-        tabIndex={-1}
+        tabIndex={isActionVisible ? 0 : -1}
+        inert={isActionVisible ? undefined : true}
+        aria-label={ariaLabel}
         // Otherwise node receives click event and is selected
         onClick={onClick}
         onDoubleClick={stopPropagation}

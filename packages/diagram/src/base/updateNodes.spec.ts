@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { type NodeHandle, Position } from '@xyflow/system'
 import { describe, expect, it } from 'vitest'
 import type { BaseNode } from './types'
@@ -395,6 +402,30 @@ describe('updateNodes', () => {
 
       expect(result).not.toBe(current)
       expect(result[0]?.selectable).toBe(false)
+      // preserves existing node data
+      expect(result[0]?.data).toBe(current[0]?.data)
+    })
+
+    it('updates ariaLabel property', () => {
+      const current = [createNode('node1', { ariaLabel: 'Old label' })]
+      const update = [createNode('node1', { ariaLabel: 'New label' })]
+
+      const result = updateNodes(current, update)
+
+      expect(result).not.toBe(current)
+      expect(result[0]?.ariaLabel).toBe('New label')
+      // preserves existing node data
+      expect(result[0]?.data).toBe(current[0]?.data)
+    })
+
+    it('updates ariaRole property', () => {
+      const current = [createNode('node1', { ariaRole: 'group' })]
+      const update = [createNode('node1', { ariaRole: 'button' })]
+
+      const result = updateNodes(current, update)
+
+      expect(result).not.toBe(current)
+      expect(result[0]?.ariaRole).toBe('button')
       // preserves existing node data
       expect(result[0]?.data).toBe(current[0]?.data)
     })
