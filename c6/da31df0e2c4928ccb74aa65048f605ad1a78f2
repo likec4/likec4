@@ -1,0 +1,165 @@
+packages/core/src/compute-view/relationships-view/index.ts
+  s_9d49268b9f9845::t_cdb11be910e52f 10-16
+  s_9d49268b9f9845::t_9b17803944c335 1-7
+packages/likec4-spa/src/routes/__root.tsx
+  s_9d49268b9f9845::t_a88bdc7026e1ad 37
+packages/likec4-spa/src/relationship-export.ts
+  s_9d49268b9f9845::t_5a6cdabd29a74e 20
+  s_9d49268b9f9845::t_4785fa1f2f2a46 12-13,23-35
+  s_9d49268b9f9845::t_1ba595f36dc657 1-11,14-19,21-22,36-102,118-138
+  s_9d49268b9f9845::t_ffd2aa14997177 109-117
+  s_9d49268b9f9845::t_b99e84f84ca332 103-108
+.changeset/relationship-browser-exports.md
+  s_9d49268b9f9845::t_57d58f8b5f759c 1-4,6-8
+  s_9d49268b9f9845::t_5b795312e4eb60 5
+packages/likec4-spa/src/routes/_single/view.$viewId.mmd.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,17-19,23-28
+  s_9d49268b9f9845::t_0ab6781583a135 1-7
+packages/likec4-spa/src/pages/export-page-params.spec.ts
+  s_9d49268b9f9845::t_180a9f4fbf508b 6,21-36
+  s_9f20aa6c024f54::t_76d4ce7fc1b9e3 37-38
+packages/likec4-spa/src/routes/project.$projectId/view.$viewId.puml.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,17-19,23-28
+  s_9d49268b9f9845::t_e99081d7d5e82d 1-7
+packages/diagram/src/likec4diagram/state/machine.actions.ts
+  s_9d49268b9f9845::t_2acf9dac66612d 752
+  s_9d49268b9f9845::t_4378443d25ded9 1-7
+packages/diagram/src/overlays/relationships-browser/RelationshipsBrowser.tsx
+  s_9d49268b9f9845::t_d19f3799d067ac 19,45,67,85-87,89,154,166-168,170,221-226,314,333-338,344,353,357-360,366,381
+  s_9d49268b9f9845::t_9ba9a9bd05ad98 15,42,88,169
+  s_9d49268b9f9845::t_3b277495c5f31c 1-7
+packages/likec4-spa/src/relationship-export.spec.ts
+  s_9d49268b9f9845::t_d80d283101e244 1-9,11-12,15-47,60-82,84-87,90,92-95,118-119
+  s_9d49268b9f9845::t_79fcf5708c7f97 10,107-116
+  s_9d49268b9f9845::t_f7bffd1765c6da 83,91
+  s_9d49268b9f9845::t_c2430868031e04 14,96-106
+  s_9d49268b9f9845::t_5a6cdabd29a74e 88-89
+  s_9d49268b9f9845::t_77fc50b02ffe41 13,48-59
+  s_9d49268b9f9845::t_6d889f8c8b1680 117
+  s_9d49268b9f9845::t_40a64cb340b516 120
+packages/likec4-spa/src/pages/export-page-params.ts
+  s_9d49268b9f9845::t_4a7a3d7c669396 5-25
+packages/likec4-spa/src/routes/_single/view.$viewId.puml.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,17-19,23-28
+  s_9d49268b9f9845::t_2222b5519dba22 1-7
+packages/likec4-spa/package.json
+  s_9d49268b9f9845::t_1ba595f36dc657 36
+  s_9d49268b9f9845::t_b99e84f84ca332 34
+packages/likec4/package.json
+  s_9d49268b9f9845::t_a2e8ad662dc393 126
+packages/diagram/src/likec4diagram/DiagramUI.tsx
+  s_9d49268b9f9845::t_d19f3799d067ac 13,25-27,29,49-53
+  s_9d49268b9f9845::t_9ba9a9bd05ad98 9,28
+  s_9d49268b9f9845::t_7299ee51e2882f 1-7
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_e4499f910e56bf 11,119-128
+  s_9d49268b9f9845::t_64df02cdb4195d 1-7,129-130
+packages/diagram/src/overlays/relationships-browser/RelationshipsBrowser.spec.ts
+  s_9d49268b9f9845::t_37bb0340b0b6b5 5-20
+  s_9d49268b9f9845::t_5ea4424df097b2 1-4
+packages/core/src/compute-view/relationships-view/layout.spec.ts
+  s_9d49268b9f9845::t_3245f5ec4995b3 36-37,42-43
+  s_9d49268b9f9845::t_5ab488c6e7ed46 5-35,38-41,44-45
+  s_9d49268b9f9845::t_f4f9f21160bffd 1-4
+packages/likec4-spa/src/pages/ExportPage.tsx
+  s_9d49268b9f9845::t_ef3c49e3681ee6 13,18,20-21,123-125,136-145,149
+packages/diagram/src/overlays/Overlays.tsx
+  s_9d49268b9f9845::t_5e0ad4160a1dcd 1-7
+  s_9d49268b9f9845::t_9ba9a9bd05ad98 12,65
+  s_9d49268b9f9845::t_d19f3799d067ac 18,60-64,66,117-119
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_9d49268b9f9845::t_acb33a38c61e02 49
+  s_9d49268b9f9845::t_709683e71fc1d7 5-27,29,33-48,50-57
+  s_9d49268b9f9845::t_8beaad444e3897 28,31-32
+  s_9d49268b9f9845::t_45ee5f065f577f 30
+  s_9d49268b9f9845::t_07ceb33f744d19 1-4
+packages/diagram/src/likec4diagram/state/diagram-api.ts
+  s_9d49268b9f9845::t_2acf9dac66612d 92,211-212
+  s_9d49268b9f9845::t_3db3a6ada59316 1-7
+packages/core/src/compute-view/index.ts
+  s_9d49268b9f9845::t_1ba595f36dc657 16-23
+  s_9d49268b9f9845::t_74bb98b9f598c7 1-7,24-27
+packages/likec4-spa/src/relationship-source-route.ts
+  s_9d49268b9f9845::t_a4d353be0cc773 1-52
+apps/docs/src/content/docs/dsl/Config/index.mdx
+  s_9d49268b9f9845::t_57d58f8b5f759c 261
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_9d49268b9f9845::t_cdb11be910e52f 1-57
+packages/diagram/src/LikeC4Diagram.props.ts
+  s_9d49268b9f9845::t_d19f3799d067ac 49-54,267-271
+packages/likec4-spa/src/searchParams.ts
+  s_9d49268b9f9845::t_a88bdc7026e1ad 27-29
+  s_9d49268b9f9845::t_d9e56ef917e3fb 1-7
+packages/likec4-spa/src/routes/project.$projectId/view.$viewId.mmd.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,17-19,23-28
+  s_9d49268b9f9845::t_dcf83366ef4395 1-7
+packages/diagram/src/LikeC4Diagram.tsx
+  s_9d49268b9f9845::t_398666ea0a59b6 1-7
+  s_9d49268b9f9845::t_d19f3799d067ac 97,220
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_9d49268b9f9845::t_3245f5ec4995b3 177,382,385
+  s_9d49268b9f9845::t_a3d22188d96934 9,12-22,367-381,383-384,386-412,420-423
+  s_9d49268b9f9845::t_c7b1e1a498fac7 1-7,178-179,341,424-425
+packages/likec4-spa/src/searchParams.spec.ts
+  s_9d49268b9f9845::t_cd40738c3c5097 9,20-27
+  s_9d49268b9f9845::t_dcdb6dcfbf016a 1-7,28-30
+packages/likec4-spa/src/pages/ViewReact.tsx
+  s_9d49268b9f9845::t_b420776be18a79 105
+  s_9d49268b9f9845::t_fb6e6a4156cda1 24
+  s_9d49268b9f9845::t_2acf9dac66612d 118,121
+  s_9d49268b9f9845::t_1a095975ecb4d2 81
+packages/likec4-spa/src/pages/RelationshipExportMenu.tsx
+  s_9d49268b9f9845::t_91a1796ab36ee4 1-5,10-77,79-83,85-165
+  s_9d49268b9f9845::t_a6cc9b754735c0 6-9
+  s_9d49268b9f9845::t_d0ad48d8d9759e 84
+  s_9d49268b9f9845::t_fc654fc5f455c0 78
+packages/likec4-spa/src/routes/_single/view.$viewId.d2.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,17-19,23-28
+  s_9d49268b9f9845::t_2704c5a1428891 1-7
+packages/likec4-spa/src/routes/project.$projectId/view.$viewId.dot.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,16-18,22-25
+  s_9d49268b9f9845::t_61285664ddfa0a 1-7
+packages/likec4-spa/src/routes/project.$projectId/view.$viewId.d2.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,15-17,21-26
+  s_9d49268b9f9845::t_f447656f29a7d5 1-7
+packages/likec4-spa/src/routes/_single/view.$viewId.dot.tsx
+  s_9d49268b9f9845::t_a4d353be0cc773 11-12,17-19,23-26
+  s_9d49268b9f9845::t_c836fd7923e15f 1-7
+packages/diagram/src/index.ts
+  s_9d49268b9f9845::t_1a095975ecb4d2 27
+packages/likec4-spa/src/pages/ViewEditor.tsx
+  s_9d49268b9f9845::t_11b159087071d1 17,92
+packages/diagram/src/likec4diagram/state/machine.setup.ts
+  s_9d49268b9f9845::t_2acf9dac66612d 184
+  s_9d49268b9f9845::t_32b2de65add08f 1-7
+packages/likec4-spa/src/routes/_single/export.$viewId.tsx
+  s_9d49268b9f9845::t_2a8000cd4e82c4 9,13,16
+packages/likec4-spa/src/routes/project.$projectId/export.$viewId.tsx
+  s_9d49268b9f9845::t_4522be7db17b35 9,13,16
+pnpm-lock.yaml
+  s_9d49268b9f9845::t_da6142f0acd4a1 1789-1791,2075-2077,2081-2083
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c6da31df0e2c4928ccb74aa65048f605ad1a78f2",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    },
+    "s_9f20aa6c024f54": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019eef01-d79d-7943-8c09-f6fb4b0c97fe",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
