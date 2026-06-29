@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 // @ts-nocheck
 
 import 'zx/globals'
@@ -20,7 +27,7 @@ const likec4 = await LikeC4.fromWorkspace('src', {
   throwIfInvalid: true,
 })
 
-assert.deepEqual(likec4.projects().sort(), ['e2e', 'issue-2282'])
+assert.deepEqual(likec4.projects().sort(), ['e2e', 'export-config', 'export-disabled', 'issue-2282'])
 
 // Check e2e workspace
 const computedModel = likec4.syncComputedModel('e2e')
