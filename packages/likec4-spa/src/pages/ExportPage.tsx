@@ -13,7 +13,7 @@ import { LoadingOverlay } from '@mantine/core'
 import { useStore } from '@nanostores/react'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentView, useCurrentViewId, useTransparentBackground } from '../hooks'
 import { createRelationshipExportView, normalizeRelationshipScope } from '../relationship-export'
@@ -126,14 +126,17 @@ export function ExportPage() {
 
   useTransparentBackground(!isJpeg)
 
-  const exportDiagram = relationships
-    ? createRelationshipExportView({
+  const exportDiagram = useMemo(() => {
+    if (!relationships) {
+      return diagram
+    }
+    return createRelationshipExportView({
       model,
       baseViewId: viewId,
       subjectId: relationships,
       scope: normalizeRelationshipScope(relationshipScope),
     })
-    : diagram
+  }, [diagram, model, relationshipScope, relationships, viewId])
 
   if (!exportDiagram) {
     return <div>Loading...</div>

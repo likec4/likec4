@@ -43,6 +43,17 @@ function projectViewUrl(projectId: string, viewId: string, extra?: Record<string
   return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${qs ? `?${qs}` : ''}`
 }
 
+function projectSourceUrl(
+  projectId: string,
+  viewId: string,
+  format: string,
+  extra?: Record<string, string>,
+): string {
+  const params = extra ? new URLSearchParams(extra) : undefined
+  const qs = params?.toString()
+  return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${format}/${qs ? `?${qs}` : ''}`
+}
+
 function viewUrl(viewId: string, extra?: Record<string, string>): string {
   return projectViewUrl(PROJECT, viewId, extra)
 }
@@ -178,6 +189,17 @@ test.describe('webapp.exportFormats configuration', () => {
     }
 
     await gotoAndWaitForCanvas(page, projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
+  })
+
+  test('blocks disabled relationship source export routes', async ({ page }) => {
+    await page.goto(
+      projectSourceUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, 'd2', {
+        relationships: 'app',
+        relationshipScope: 'view',
+      }),
+    )
+
+    await expect(page.getByText(/does not exist or contains errors/)).toBeVisible()
   })
 
   test('removes export entry points when every webapp export format is disabled', async ({ page }) => {

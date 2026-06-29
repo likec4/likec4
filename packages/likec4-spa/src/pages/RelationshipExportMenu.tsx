@@ -58,6 +58,11 @@ export function RelationshipExportMenu({
   })
 
   const handleDrawioExport = async () => {
+    const popup = window.open('', '_blank')
+    if (!popup) {
+      return
+    }
+    popup.opener = null
     try {
       setIsDrawioLoading(true)
       const url = await generateRelationshipDrawioEditUrl({
@@ -66,8 +71,9 @@ export function RelationshipExportMenu({
         subjectId: subjectId as never,
         scope,
       })
-      window.open(url, '_blank', 'noopener,noreferrer')
+      popup.location.href = url
     } catch (error) {
+      popup.close()
       console.error('Failed to export relationship view to Draw.io:', error)
     } finally {
       setIsDrawioLoading(false)
