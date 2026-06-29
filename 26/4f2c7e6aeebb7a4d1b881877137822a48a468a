@@ -1,0 +1,32 @@
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_9d49268b9f9845::t_d55169533c6b45 184
+  s_9d49268b9f9845::t_59f1be3a70eb20 9,177-183,185-196,413
+packages/core/src/compute-view/relationships-view/layout.spec.ts
+  s_9d49268b9f9845::t_b924975d29bfa8 44
+e2e/tests/search-params.spec.ts
+  s_575b3a209aada4::t_0b1980cf8f5d26 141-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "264f2c7e6aeebb7a4d1b881877137822a48a468a",
+  "prompts": {},
+  "sessions": {
+    "s_575b3a209aada4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e4a48-e306-7ec1-beee-26d2d4bf5835",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    },
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
