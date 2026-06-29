@@ -1,0 +1,26 @@
+packages/likec4-spa/src/pages/ExportPage.tsx
+  s_9d49268b9f9845::t_6f3ee2dd924dce 16,129,133-140,146-150
+packages/likec4-spa/src/relationship-source-route.ts
+  s_9d49268b9f9845::t_91b39d78a9339e 7-8,17-24,31,48
+packages/likec4-spa/src/pages/RelationshipExportMenu.tsx
+  s_9d49268b9f9845::t_845d1d08985161 61-65,74,76
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_de32e26a01f6d1 46-56,211-219
+  s_9d49268b9f9845::t_37f66c56a6a991 220-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "6ab0b7e09367a736d34c82ccede71694cda819ad",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
