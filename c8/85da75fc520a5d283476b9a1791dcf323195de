@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-06-29-relationship-export-visual-parity-design.md
+  s_ad882f84cc80fb::t_4181ca11e6ad2c 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c885da75fc520a5d283476b9a1791dcf323195de",
+  "prompts": {},
+  "sessions": {
+    "s_ad882f84cc80fb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1273-7faa-7141-9820-ec04de1160ec",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
