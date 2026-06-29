@@ -1,0 +1,48 @@
+.changeset/fix-relationship-export-styles.md
+  s_9d49268b9f9845::t_18dfc738f5624f 5
+  s_9d49268b9f9845::t_acd0a98e406255 2-4
+  s_9d49268b9f9845::t_6880f1861a42a4 1
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_9d49268b9f9845::t_87206afa978114 180-218
+  s_9d49268b9f9845::t_71b9a70798dd48 71-73,76-78,80-84,86,88,91-92,96-100,104-106,108-109,112,115,117-118,122-123,126-128,135-137,139-147,149-154,156-158,160-161,164,166,168-170,173-175,221,224-226,228-274,276-279,281-282,284-285,287-288,290-293,303-305,308,313-314
+  s_274cc4c0764fe5::t_e73de4ed8d0d7b 57-70,74-75,79,85,87,89-90,93-95,101-103,107,110-111,113-114,116,119-121,124-125,129-134,138,148,155,159,162-163,165,167,171-172,176-179,219-220,222-223,227,275,280,283,286,289,294-302,306-307,309-312
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_9d49268b9f9845::t_2642b2321e6314 385-388,400-404,414
+  s_ad882f84cc80fb::t_8adf0036d6a7ac 9-24,27,38,212-230,242
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_9d49268b9f9845::t_66cfea50db7390 39-42
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_a6eacdb6fbbdfb 8,68-86,180-193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "e301ca72f681c45efd2f9204acd89def557acaba",
+  "prompts": {},
+  "sessions": {
+    "s_274cc4c0764fe5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019efe39-a778-7a63-91df-f8b6be586666",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    },
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    },
+    "s_ad882f84cc80fb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1273-7faa-7141-9820-ec04de1160ec",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
