@@ -1,0 +1,83 @@
+packages/vite-plugin/src/virtuals/d2.ts
+  s_9d49268b9f9845::t_a4455e1cb0f73b 57,69
+  s_9d49268b9f9845::t_bb4203acdb71fc 1-7
+packages/config/src/schema.ts
+  s_9d49268b9f9845::t_a2b316dd88a858 56-83,159
+packages/vite-plugin/src/virtuals/export-formats.spec.ts
+  s_9d49268b9f9845::t_b76d211987b942 5,30
+  s_9d49268b9f9845::t_b494c2dd96e6b6 6-29,31-35
+  s_9d49268b9f9845::t_a24ad66368660e 1-4
+packages/vite-plugin/src/virtuals/projects.spec.ts
+  s_9d49268b9f9845::t_1dbc0bbf8bd91f 65-66
+  s_9d49268b9f9845::t_a4455e1cb0f73b 34-36
+  s_9d49268b9f9845::t_35c4c59113acb8 5-33,37-64,67-68
+  s_9d49268b9f9845::t_34413d457a3e81 1-4
+packages/vite-plugin/src/modules.d.ts
+  s_9d49268b9f9845::t_68c2f6ad98327e 9,19
+  s_9d49268b9f9845::t_c1828c774dc2e8 1-7
+packages/likec4-spa/src/export-formats.ts
+  s_9d49268b9f9845::t_8b46ad1457e2e5 1-40
+  s_9d49268b9f9845::t_c962f3750dd17e 41-48
+packages/likec4-spa/src/export-formats.spec.ts
+  s_9d49268b9f9845::t_b76d211987b942 5,34
+  s_9d49268b9f9845::t_79562a38b641be 6-33,35-41
+  s_9d49268b9f9845::t_8b18b4d1b964fd 1-4
+packages/vite-plugin/src/virtuals/export-formats.ts
+  s_9d49268b9f9845::t_fdc4808ad546c3 1-21
+apps/docs/src/content/docs/dsl/Config/index.mdx
+  s_9d49268b9f9845::t_68fd0fdc61d344 242-261
+packages/vite-plugin/src/virtuals/dot.ts
+  s_9d49268b9f9845::t_a4455e1cb0f73b 94,107
+  s_9d49268b9f9845::t_f7b2261fc68b64 1-7
+packages/vite-plugin/src/plugin.ts
+  s_9d49268b9f9845::t_3568d15b56ef05 256
+  s_9d49268b9f9845::t_859d3c19603ea5 1-7,29
+.changeset/webapp-export-formats.md
+  s_9d49268b9f9845::t_12c57650e6aa29 1-8
+packages/vite-plugin/src/virtuals/mmd.ts
+  s_9d49268b9f9845::t_a4455e1cb0f73b 59,71
+  s_9d49268b9f9845::t_521ae97b64bb3b 1-7
+packages/vite-plugin/src/virtuals/_shared.ts
+  s_9d49268b9f9845::t_e6f4266a98fbb1 126-129,136-137
+  s_9d49268b9f9845::t_a4455e1cb0f73b 8,17,62,93-97,104-108
+  s_9d49268b9f9845::t_18b639f4845b34 1-7
+packages/config/src/schema.spec.ts
+  s_9d49268b9f9845::t_638386234a3b0f 93-147
+  s_9d49268b9f9845::t_8f51c50bd61f03 1-7
+packages/config/src/index.ts
+  s_9d49268b9f9845::t_fdc4808ad546c3 16-17,22-23
+  s_9d49268b9f9845::t_696453b1404265 1-7,24
+packages/vite-plugin/src/virtuals/puml.ts
+  s_9d49268b9f9845::t_a4455e1cb0f73b 58,70
+  s_9d49268b9f9845::t_30038bcb70b4c3 1-7
+packages/likec4-spa/src/components/view-page/Header.tsx
+  s_9d49268b9f9845::t_5a3c9df7f18caf 126
+  s_9d49268b9f9845::t_68c2f6ad98327e 26-29,107,143-217
+  s_9d49268b9f9845::t_1669fbaab7a3d3 1-7,123-125
+packages/likec4-spa/src/pages/ExportPage.tsx
+  s_9d49268b9f9845::t_68c2f6ad98327e 16-18,121,128-129
+  s_9d49268b9f9845::t_0023da287f7132 122-123,127
+  s_9d49268b9f9845::t_e138670732e284 130
+packages/vite-plugin/src/virtuals/projects.ts
+  s_9d49268b9f9845::t_a4455e1cb0f73b 8,14,20,65
+  s_9d49268b9f9845::t_9db57679ff199d 1-7
+packages/vite-plugin/src/virtuals/drawio.ts
+  s_9d49268b9f9845::t_a4455e1cb0f73b 57,69
+  s_9d49268b9f9845::t_4a86df4815a7a0 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c09babc5acfddb6e5d0c50f63540a484f10a0c22",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
