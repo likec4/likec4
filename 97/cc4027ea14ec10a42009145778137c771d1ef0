@@ -1,0 +1,48 @@
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_9d49268b9f9845::t_a46d02697d5796 71-72,74-84,86,88,91-92,95-100,104-109,111-112,115,117-118,121-123,126-129,132-154,156-161,163-166,168-170,172-226,228-230,233-237,239-240,242-245,255-258,260,265-266
+  s_ad882f84cc80fb::t_de8a8f47c34389 57-70,73,85,87,89-90,93-94,101-103,110,113-114,116,119-120,124-125,130-131,155,162,167,171,227,231-232,238,241,246-254,259,261-264
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_d9d3fa42abe06b 187-191
+  s_9d49268b9f9845::t_108ed2e4f302cb 184-186
+  s_9d49268b9f9845::t_f76f7cb0cb9399 192-193
+  s_9d49268b9f9845::t_c80ca0d00be2d1 8,68-86,180-183
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_9d49268b9f9845::t_a3a9b487cbbd5b 220-230,242,385-388
+  s_9d49268b9f9845::t_eccfc28e829bfe 9-24,27,38,212-219,400-402,412
+.changeset/fix-relationship-export-styles.md
+  s_274cc4c0764fe5::t_6d20b90185da9c 1-5
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_9d49268b9f9845::t_a319389edf185a 39-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "97cc4027ea14ec10a42009145778137c771d1ef0",
+  "prompts": {},
+  "sessions": {
+    "s_274cc4c0764fe5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019efe39-a778-7a63-91df-f8b6be586666",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    },
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    },
+    "s_ad882f84cc80fb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1273-7faa-7141-9820-ec04de1160ec",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
