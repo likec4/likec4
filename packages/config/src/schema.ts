@@ -53,6 +53,34 @@ export const ManualLayoutsConfigSchema = z
 
 export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
 
+export const WebappExportFormats = ['png', 'jpg', 'dot', 'd2', 'mmd', 'puml', 'drawio'] as const
+
+export const WebappExportFormatSchema = z.enum(WebappExportFormats)
+
+export type WebappExportFormat = z.infer<typeof WebappExportFormatSchema>
+
+export const WebappConfigSchema = z
+  .strictObject({
+    exportFormats: z.array(WebappExportFormatSchema)
+      .refine(
+        (formats) => new Set(formats).size === formats.length,
+        { message: 'Export formats cannot contain duplicates' },
+      )
+      .default([...WebappExportFormats])
+      .meta({
+        description: [
+          'Webapp export formats enabled in the generated application.',
+          'Omit to enable all export formats. Use an empty array to disable webapp exports.',
+        ].join('\n'),
+      }),
+  })
+  .meta({
+    id: 'WebappConfig',
+    description: 'Configuration for the generated web application',
+  })
+
+export type WebappConfig = z.infer<typeof WebappConfigSchema>
+
 export const LandingPageSchema = z
   .union([
     z.strictObject({
@@ -128,6 +156,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
   landingPage: LandingPageSchema.optional(),
+  webapp: WebappConfigSchema.optional(),
 })
   .meta({
     id: 'LikeC4ProjectConfig',

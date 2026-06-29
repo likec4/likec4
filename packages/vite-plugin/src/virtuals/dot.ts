@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { mapToObj } from 'remeda'
 import { logGenerating } from '../logger'
@@ -84,6 +91,7 @@ function code(
 }
 
 export const projectDotSourcesModule: ProjectVirtualModule = {
+  exportFormat: 'dot',
   ...generateMatches('dot'),
   async load({ likec4, project }) {
     logGenerating('dot', project.id)
@@ -96,4 +104,4 @@ export const projectDotSourcesModule: ProjectVirtualModule = {
   },
 }
 
-export const dotModule = generateCombinedProjects('dot', 'loadDotSources')
+export const dotModule = generateCombinedProjects('dot', 'loadDotSources', 'dot')

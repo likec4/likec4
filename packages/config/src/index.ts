@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 export type {
   GeneratorFn,
   GeneratorFnContext,
@@ -6,10 +13,15 @@ export type {
   LikeC4ProjectConfigInput,
   LikeC4ProjectJsonConfig,
   LocateResult,
+  WebappConfig,
+  WebappExportFormat,
 } from './schema'
 
 export {
   LikeC4ProjectConfigOps,
+  WebappConfigSchema,
+  WebappExportFormats,
+  WebappExportFormatSchema,
 } from './schema'
 
 export type {
