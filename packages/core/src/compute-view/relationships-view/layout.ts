@@ -6,10 +6,25 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { concat, filter, find, forEachObj, groupBy, hasAtLeast, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
-import type { ElementModel } from '../../model/ElementModel'
+import {
+  concat,
+  filter,
+  find,
+  forEachObj,
+  groupBy,
+  hasAtLeast,
+  map,
+  mapToObj,
+  omit,
+  pipe,
+  prop,
+  reduce,
+  tap,
+} from 'remeda'
+import type { ElementModel, LikeC4ViewModel } from '../../model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import {
+  type AnyAux,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -20,7 +35,7 @@ import {
   type Point,
   exact,
 } from '../../types'
-import { invariant, sortParentsFirst } from '../../utils'
+import { ifind, invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import type { RelationshipsViewData } from './_types'
@@ -194,8 +209,25 @@ function toStraightBezierSpline(points: Point[]): NonEmptyArray<Point> {
   return spline
 }
 
-export function layoutRelationshipsView(
-  data: RelationshipsViewData<any>,
+function inheritedScopedNodeStyle<M extends AnyAux>(
+  scope: LikeC4ViewModel<M> | null,
+  element: ElementModel<M>,
+) {
+  const inheritFromNode = scope?.findNodeWithElement(element.id) ?? null
+  const scopedAncestor = scope && !inheritFromNode
+    ? ifind(element.ancestors(), ancestor => !!scope.findNodeWithElement(ancestor.id))?.id ?? null
+    : null
+  const inheritFromAncestor = scopedAncestor ? scope?.findNodeWithElement(scopedAncestor) ?? null : null
+
+  return {
+    inheritFromNode,
+    inheritFromNodeOrAncestor: inheritFromNode ?? inheritFromAncestor,
+  }
+}
+
+export function layoutRelationshipsView<M extends AnyAux>(
+  data: RelationshipsViewData<M>,
+  scope: LikeC4ViewModel<M> | null = null,
 ): Pick<DiagramView, 'nodes' | 'edges' | 'bounds'> {
   const g = createGraph()
 
@@ -207,7 +239,7 @@ export function layoutRelationshipsView(
     name: string
     source: string // node id
     target: string // node id
-    relations: RelationshipModel[]
+    relations: RelationshipModel<M>[]
   }>
 
   pipe(
@@ -350,7 +382,10 @@ export function layoutRelationshipsView(
     // }
     const children = (g.children(id) as NodeId[] | undefined ?? []).filter(c => !c.endsWith(PortSuffix))
 
-    const { color, icon, shape, ...style } = element.style
+    const { inheritFromNode, inheritFromNodeOrAncestor } = inheritedScopedNodeStyle(scope, element)
+    const inheritedStyle = inheritFromNode
+      ? { ...element.style, ...inheritFromNode.style }
+      : { ...element.style, ...inheritFromNodeOrAncestor?.style, ...element.$element.style }
 
     return exact({
       id: id as NodeId,
@@ -362,9 +397,11 @@ export function layoutRelationshipsView(
       technology: element.technology,
       tags: [],
       links: null,
-      color,
-      icon,
-      shape,
+      color: inheritFromNode
+        ? inheritFromNode.color
+        : element.$element.style.color ?? inheritFromNodeOrAncestor?.color ?? element.color,
+      icon: inheritFromNode ? inheritFromNode.icon : element.icon,
+      shape: inheritFromNode?.shape ?? element.shape,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -374,7 +411,7 @@ export function layoutRelationshipsView(
         width: width,
         height: height,
       },
-      style,
+      style: omit(inheritedStyle, ['color', 'shape', 'icon']),
       inEdges: [],
       outEdges: [],
       depth: children.length > 0 ? nodeDepth(id) : 0,

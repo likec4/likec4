@@ -36,7 +36,10 @@ export function computeRelationshipViewExport<M extends AnyAux>({
 
   const subject = model.element(subjectId)
   const relationships = computeRelationshipsView(subjectId, model, baseViewId, scope)
-  const layouted = layoutRelationshipsView(relationships)
+  const layouted = layoutRelationshipsView(
+    relationships,
+    scope === 'view' ? baseView : null,
+  )
 
   return exact({
     _stage: 'layouted',
