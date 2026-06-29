@@ -1,0 +1,33 @@
+e2e/src/export-config/.likec4rc
+  s_9d49268b9f9845::t_bdd7162055a583 1-7
+e2e/bootstrap.mjs
+  s_9d49268b9f9845::t_bdd7162055a583 1-7
+  s_9d49268b9f9845::t_6be06f20ce2184 30
+e2e/src/export-disabled/.likec4rc
+  s_9d49268b9f9845::t_6be06f20ce2184 1-7
+e2e/src/export-disabled/source.c4
+  s_9d49268b9f9845::t_6be06f20ce2184 1-21
+e2e/src/export-config/source.c4
+  s_9d49268b9f9845::t_bdd7162055a583 1-21
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_6be06f20ce2184 27,177-191
+  s_9d49268b9f9845::t_bdd7162055a583 26,31,33,36-40,43-47,134-151,153-176
+  s_9d49268b9f9845::t_5200aaad87fe13 152
+  s_9d49268b9f9845::t_aaed022b94beb5 1-7,192-193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c1d6197dff068c68a0119612e08bddb6241416e1",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
