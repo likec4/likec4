@@ -1,0 +1,23 @@
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_69f417e0b3688a::t_c59f85022a507f 57-209
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_69f417e0b3688a::t_1358fb42652954 39-42
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_69f417e0b3688a::t_c7d6afdedfde79 9-24,37,211-227,230,385,397-399,409-412
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "48409d37007b401cee8374a5a8e569ca45321262",
+  "prompts": {},
+  "sessions": {
+    "s_69f417e0b3688a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f14dc-42e4-7ef3-9c69-bd4b5d620809",
+        "model": "unknown"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
