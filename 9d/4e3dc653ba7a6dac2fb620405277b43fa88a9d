@@ -1,0 +1,52 @@
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_79bcefc63b83ff 8,68-86,180-191
+  s_9d49268b9f9845::t_99cd202957dd85 192-193
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_9d49268b9f9845::t_782a1fa28589a0 74-76,92,96,101-102,135,150
+  s_9d49268b9f9845::t_29e51d045665c9 95,130-134
+  s_9d49268b9f9845::t_dd00c8db0bd4b3 89,113
+  s_9d49268b9f9845::t_58b8dffa18fc57 71-73
+  s_9d49268b9f9845::t_d714ee0d8a64df 77-79,86-88
+  s_9d49268b9f9845::t_906cac9be99105 90-91
+  s_9d49268b9f9845::t_f4501740966cf4 93-94
+  s_9d49268b9f9845::t_71e3ab66ba667b 97-100
+  s_9d49268b9f9845::t_e62de0ee7ba274 103-105,110-112
+  s_9d49268b9f9845::t_789f74a354e6de 114-116,127-129
+  s_9d49268b9f9845::t_1fd1bf28ef4990 136-138,147-149
+  s_9d49268b9f9845::t_f4b9a47e7afa3b 151-153
+  s_9d49268b9f9845::t_1912f4d33122b7 57-70,80-85,106-109,117-126,139-146,154-211
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_9d49268b9f9845::t_50c4e5478f2c05 27,38,212-231
+  s_9d49268b9f9845::t_63de9071e9ac91 9-23,399-400,410-411
+  s_9d49268b9f9845::t_dedb63fe228fe9 243
+  s_9d49268b9f9845::t_4993bddc72a607 24
+  s_9d49268b9f9845::t_7b95cab87fed70 398
+  s_9d49268b9f9845::t_3cc5c35fe4c45d 412-413
+  s_9d49268b9f9845::t_e09bfc844e043b 386
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_69f417e0b3688a::t_db8883aa5e35ef 39-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "9d4e3dc653ba7a6dac2fb620405277b43fa88a9d",
+  "prompts": {},
+  "sessions": {
+    "s_69f417e0b3688a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f14dc-42e4-7ef3-9c69-bd4b5d620809",
+        "model": "unknown"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    },
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
