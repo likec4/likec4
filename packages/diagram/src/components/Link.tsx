@@ -104,7 +104,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
               width="12"
               style={{ verticalAlign: 'middle', marginRight: '4px' }} />
           )}
-          {value.title ? value.title : isGithub ? url.replace(GITHUB_PREFIX, '') : url}
+          {value.title ?? (isGithub ? url.replace(GITHUB_PREFIX, '') : url)}
         </styled.a>
       </Badge>
     )
