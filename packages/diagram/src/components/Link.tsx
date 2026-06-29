@@ -22,7 +22,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
         radius="sm"
         size="sm"
         tt="none"
-        leftSection={value.title ? <>{value.title}</> : null}
+        leftSection={null}
         rightSection={
           <CopyButton value={url} timeout={1500}>
             {({ copy, copied }) => (
@@ -98,13 +98,13 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
               _hover: 'underline',
             },
           }}>
-          {isGithub && (
+          {!value.title && isGithub && (
             <GithubIcon
               height="12"
               width="12"
               style={{ verticalAlign: 'middle', marginRight: '4px' }} />
           )}
-          {isGithub ? url.replace(GITHUB_PREFIX, '') : url}
+          {value.title ? value.title : isGithub ? url.replace(GITHUB_PREFIX, '') : url}
         </styled.a>
       </Badge>
     )
