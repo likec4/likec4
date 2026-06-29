@@ -1,5 +1,7 @@
 e2e/tests/diagram-a11y.spec.ts
   s_5faab91b7bb946::t_c76c5c91a9291e 33-35
+packages/diagram/src/base/BaseXYFlow.tsx
+  s_9d49268b9f9845::t_fdd146ac378a25 30-81,136-139,220-221,223-226,293-298
 ---
 {
   "schema_version": "authorship/3.0.0",
@@ -14,6 +16,14 @@ e2e/tests/diagram-a11y.spec.ts
         "model": "claude-opus-4-8"
       },
       "human_author": null
+    },
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
     }
   }
 }
