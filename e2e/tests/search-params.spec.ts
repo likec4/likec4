@@ -138,6 +138,15 @@ test.describe('?relationships= search parameter', () => {
     await expect(page.getByText(/Cloud System/)).toBeVisible()
   })
 
+  test('?relationships=<fqn> renders relationship image export route', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+
+    await expect(page.getByText('Oops, something went wrong')).toHaveCount(0)
+    await expect(page.getByText('all points should be consumed')).toHaveCount(0)
+    await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+    await expect(page.locator('.react-flow__edge').first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+  })
+
   test('absent ?relationships= does not open overlay', async ({ page }) => {
     await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW))
     await expect(page.locator(RELATIONSHIPS_BROWSER)).toHaveCount(0)

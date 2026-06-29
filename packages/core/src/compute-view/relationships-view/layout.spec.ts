@@ -41,5 +41,6 @@ describe('layoutRelationshipsView', () => {
     })
     expect(edge.relations).toHaveLength(2)
     expect(edge.points.length).toBeGreaterThan(0)
+    expect((edge.points.length - 1) % 3).toBe(0)
   })
 })

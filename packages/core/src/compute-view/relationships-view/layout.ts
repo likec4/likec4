@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { concat, filter, find, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
+import { concat, filter, find, forEachObj, groupBy, hasAtLeast, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import type { ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
 import {
@@ -172,6 +172,26 @@ function applyDagreLayout(g: G) {
       height,
     }
   }
+}
+
+function toStraightBezierSpline(points: Point[]): NonEmptyArray<Point> {
+  invariant(hasAtLeast(points, 2), 'relationship edge should have at least two points')
+  const [start, ...rest] = points
+  const spline: NonEmptyArray<Point> = [start]
+
+  for (const end of rest) {
+    const previous = spline[spline.length - 1]
+    invariant(previous, 'relationship edge spline should have a previous point')
+    const dx = end[0] - previous[0]
+    const dy = end[1] - previous[1]
+    spline.push(
+      [previous[0] + dx / 3, previous[1] + dy / 3],
+      [previous[0] + dx * 2 / 3, previous[1] + dy * 2 / 3],
+      end,
+    )
+  }
+
+  return spline
 }
 
 export function layoutRelationshipsView(
@@ -390,7 +410,7 @@ export function layoutRelationshipsView(
       head: onlyRelation?.head,
       tail: onlyRelation?.tail,
       navigateTo: onlyRelation?.navigateTo?.id ?? null,
-      points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
+      points: toStraightBezierSpline(edge.points.map(p => [p.x, p.y])),
       labelBBox: null,
     }))
     return acc
