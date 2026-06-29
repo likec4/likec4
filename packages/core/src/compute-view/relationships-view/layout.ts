@@ -1,8 +1,25 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { concat, filter, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
+import { concat, filter, find, forEachObj, groupBy, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
 import type { ElementModel } from '../../model/ElementModel'
 import type { RelationshipModel } from '../../model/RelationModel'
-import { type DiagramNode, type DiagramView, type Fqn, type NodeId, exact } from '../../types'
+import {
+  type DiagramEdge,
+  type DiagramNode,
+  type DiagramView,
+  type EdgeId,
+  type Fqn,
+  type NodeId,
+  type NonEmptyArray,
+  type Point,
+  exact,
+} from '../../types'
 import { invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
@@ -157,7 +174,9 @@ function applyDagreLayout(g: G) {
   }
 }
 
-export function layoutRelationshipsView(data: RelationshipsViewData): Pick<DiagramView, 'nodes' | 'edges' | 'bounds'> {
+export function layoutRelationshipsView(
+  data: RelationshipsViewData<any>,
+): Pick<DiagramView, 'nodes' | 'edges' | 'bounds'> {
   const g = createGraph()
 
   const incomers = createNodes('in', data.incomers, g),
@@ -319,7 +338,7 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       title: element.title,
       x: position.x,
       y: position.y,
-      description: element.$element.summary ?? element.$element.description ?? null,
+      description: element.summary.$source ?? null,
       technology: element.technology,
       tags: [],
       links: null,
@@ -345,6 +364,52 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
     })
   })
 
+  const diagramEdges = g.edges().reduce((acc, e) => {
+    const edge = g.edge(e)
+    const ename = e.name
+    if (!ename) {
+      return acc
+    }
+    const edgeData = find(edges, edge => edge.name === ename)
+    invariant(edgeData, `Edge ${ename} has no relationship data`)
+    const onlyRelation = edgeData.relations.length === 1 ? edgeData.relations[0] : null
+    const edgeId = edgeData.name as EdgeId
+
+    acc.push(exact({
+      id: edgeId,
+      parent: null,
+      source: edgeData.source as NodeId,
+      target: edgeData.target as NodeId,
+      label: onlyRelation ? onlyRelation.title ?? 'untitled' : `${edgeData.relations.length} relationships`,
+      description: onlyRelation?.description.$source ?? null,
+      technology: onlyRelation?.technology ?? null,
+      relations: edgeData.relations.map(r => r.id),
+      kind: onlyRelation?.kind ?? undefined,
+      color: onlyRelation?.color ?? 'gray',
+      line: onlyRelation?.line ?? 'dashed',
+      head: onlyRelation?.head,
+      tail: onlyRelation?.tail,
+      navigateTo: onlyRelation?.navigateTo?.id ?? null,
+      points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
+      labelBBox: null,
+    }))
+    return acc
+  }, [] as DiagramEdge[])
+
+  const nodeEdges = new Map<NodeId, { inEdges: EdgeId[]; outEdges: EdgeId[] }>()
+  const edgesOf = (nodeId: NodeId) => {
+    let edges = nodeEdges.get(nodeId)
+    if (!edges) {
+      edges = { inEdges: [], outEdges: [] }
+      nodeEdges.set(nodeId, edges)
+    }
+    return edges
+  }
+  for (const edge of diagramEdges) {
+    edgesOf(edge.source).outEdges.push(edge.id)
+    edgesOf(edge.target).inEdges.push(edge.id)
+  }
+
   return {
     bounds: {
       x: 0,
@@ -352,7 +417,11 @@ export function layoutRelationshipsView(data: RelationshipsViewData): Pick<Diagr
       width: g.graph().width ?? 100,
       height: g.graph().height ?? 100,
     },
-    nodes,
-    edges: [],
+    nodes: nodes.map(node => ({
+      ...node,
+      inEdges: nodeEdges.get(node.id)?.inEdges ?? [],
+      outEdges: nodeEdges.get(node.id)?.outEdges ?? [],
+    })),
+    edges: diagramEdges,
   }
 }

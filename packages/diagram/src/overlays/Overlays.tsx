@@ -1,13 +1,21 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { nonexhaustive } from '@likec4/core'
 import { useSelector } from '@xstate/react'
 import { animate } from 'motion'
 import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
-import { useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { isNonNullish } from 'remeda'
 import type { AnyActorRef } from 'xstate'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context'
 import { useDiagram } from '../hooks'
+import type { RelationshipBrowserActionProps } from '../LikeC4Diagram.props'
 import { ElementDetails } from './element-details/ElementDetails'
 import { Overlay } from './overlay/Overlay'
 import type { OverlaysActorRef, OverlaysActorSnapshot } from './overlaysActor'
@@ -49,7 +57,13 @@ const compareSelectOverlays = <T extends ReturnType<typeof selectOverlays>>(a: T
   })
 }
 
-export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActorRef }) {
+export function Overlays({
+  overlaysActorRef,
+  renderRelationshipBrowserActions,
+}: {
+  overlaysActorRef: OverlaysActorRef
+  renderRelationshipBrowserActions?: ((props: RelationshipBrowserActionProps) => ReactNode) | undefined
+}) {
   const diagram = useDiagram()
 
   const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
@@ -100,7 +114,9 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
             key={overlay.actorRef.sessionId}
             overlayLevel={index}
             onClose={() => close(overlay.actorRef)}>
-            <RelationshipsBrowser actorRef={overlay.actorRef} />
+            <RelationshipsBrowser
+              actorRef={overlay.actorRef}
+              renderActions={renderRelationshipBrowserActions} />
           </Overlay>
         )
       case 'relationshipDetails':

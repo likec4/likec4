@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Group, Tooltip as MantineTooltip } from '@mantine/core'
 import { useClipboard, useStateHistory } from '@mantine/hooks'
@@ -5,10 +12,11 @@ import { IconAlertTriangle, IconCheck, IconChevronLeft, IconChevronRight, IconLi
 import { Panel, ReactFlowProvider, useReactFlow, useStoreApi } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, LayoutGroup, m } from 'motion/react'
-import { memo, useEffect, useRef, useState } from 'react'
+import { type ReactNode, memo, useEffect, useRef, useState } from 'react'
 import type { SnapshotFrom } from 'xstate'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
+import type { RelationshipBrowserActionProps } from '../../LikeC4Diagram.props'
 import type { RelationshipsBrowserTypes } from './_types'
 import type { RelationshipsBrowserActorRef } from './actor'
 import { CompoundNode, ElementNode, EmptyNode, RelationshipEdge } from './custom'
@@ -31,9 +39,10 @@ const edgeTypes = {
 }
 export type RelationshipsBrowserProps = {
   actorRef: RelationshipsBrowserActorRef
+  renderActions?: ((props: RelationshipBrowserActionProps) => ReactNode) | undefined
 }
 
-export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
+export function RelationshipsBrowser({ actorRef, renderActions }: RelationshipsBrowserProps) {
   // const actorRef = useDiagramActorState(s => s.children.relationshipsBrowser)
   // if (actorRef == null) {
   //   return null
@@ -55,7 +64,7 @@ export function RelationshipsBrowser({ actorRef }: RelationshipsBrowserProps) {
       <ReactFlowProvider {...initialRef.current}>
         <LayoutGroup id={actorRef.sessionId} inherit={false}>
           <AnimatePresence>
-            <RelationshipsBrowserXYFlow />
+            <RelationshipsBrowserXYFlow renderActions={renderActions} />
           </AnimatePresence>
         </LayoutGroup>
       </ReactFlowProvider>
@@ -73,7 +82,11 @@ const selectorEq = (a: ReturnType<typeof selector>, b: ReturnType<typeof selecto
   shallowEqual(a.nodes, b.nodes) &&
   shallowEqual(a.edges, b.edges)
 
-const RelationshipsBrowserXYFlow = memo(() => {
+const RelationshipsBrowserXYFlow = memo(({
+  renderActions,
+}: {
+  renderActions?: ((props: RelationshipBrowserActionProps) => ReactNode) | undefined
+}) => {
   const browser = useRelationshipsBrowser()
   const {
     isActive,
@@ -138,7 +151,7 @@ const RelationshipsBrowserXYFlow = memo(() => {
       pannable
       zoomable
     >
-      <RelationshipsBrowserInner />
+      <RelationshipsBrowserInner renderActions={renderActions} />
     </BaseXYFlow>
   )
 })
@@ -150,7 +163,11 @@ const selector2 = (state: SnapshotFrom<RelationshipsBrowserActorRef>) => ({
   closeable: state.context.closeable,
 })
 
-const RelationshipsBrowserInner = memo(() => {
+const RelationshipsBrowserInner = memo(({
+  renderActions,
+}: {
+  renderActions?: ((props: RelationshipBrowserActionProps) => ReactNode) | undefined
+}) => {
   const browser = useRelationshipsBrowser()
   const {
     subjectId,
@@ -201,7 +218,12 @@ const RelationshipsBrowserInner = memo(() => {
       {closeable && (
         <Panel position="top-right">
           <Group gap={4} wrap={'nowrap'}>
-            <CopyLinkButton subjectId={subjectId} />
+            {renderActions?.({
+              subjectId: subjectId as never,
+              viewId: viewId as never,
+              scope,
+            })}
+            <CopyLinkButton subjectId={subjectId} scope={scope} />
             <ActionIcon
               variant="default"
               color="gray"
@@ -289,6 +311,7 @@ const TopLeftPanel = ({
  */
 type CopyLinkButtonProps = {
   subjectId: string
+  scope: 'view' | 'global'
 }
 
 const Tooltip = MantineTooltip.withProps({
@@ -307,13 +330,18 @@ const Tooltip = MantineTooltip.withProps({
  * Handles both browser history routing and hash-based routing.
  * Preserves base paths when app is hosted under a sub-path.
  */
-function buildRelationshipUrl(subjectId: string): string {
-  const currentUrl = new URL(window.location.href)
+export function buildRelationshipUrlFromHref(
+  href: string,
+  subjectId: string,
+  scope: 'view' | 'global',
+): string {
+  const currentUrl = new URL(href)
 
   // Hash-based routing: /#/view/name or /base/path/index.html#/view/name
   if (currentUrl.hash.startsWith('#/')) {
     const hashUrl = new URL(currentUrl.hash.substring(1), currentUrl.origin)
     hashUrl.searchParams.set('relationships', subjectId)
+    hashUrl.searchParams.set('relationshipScope', scope)
 
     const cleanPath = hashUrl.pathname.replace(/\/$/, '')
 
@@ -322,7 +350,12 @@ function buildRelationshipUrl(subjectId: string): string {
 
   // Standard browser history routing
   currentUrl.searchParams.set('relationships', subjectId)
+  currentUrl.searchParams.set('relationshipScope', scope)
   return currentUrl.href
+}
+
+function buildRelationshipUrl(subjectId: string, scope: 'view' | 'global'): string {
+  return buildRelationshipUrlFromHref(window.location.href, subjectId, scope)
 }
 
 /**
@@ -330,7 +363,7 @@ function buildRelationshipUrl(subjectId: string): string {
  * Shows visual feedback for both success and failure states.
  * Note: Clipboard API requires HTTPS or localhost. This is a browser security restriction, not a code issue.
  */
-const CopyLinkButton = ({ subjectId }: CopyLinkButtonProps) => {
+const CopyLinkButton = ({ subjectId, scope }: CopyLinkButtonProps) => {
   const clipboard = useClipboard({ timeout: 2000 })
   const [copyError, setCopyError] = useState(false)
   const errorTimeoutRef = useRef<number | null>(null)
@@ -345,7 +378,7 @@ const CopyLinkButton = ({ subjectId }: CopyLinkButtonProps) => {
       errorTimeoutRef.current = null
     }
 
-    const url = buildRelationshipUrl(subjectId)
+    const url = buildRelationshipUrl(subjectId, scope)
 
     // Check if we're NOT in a secure context (HTTP on non-localhost)
     // Clipboard API requires HTTPS or localhost

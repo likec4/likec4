@@ -46,6 +46,12 @@ export type ElementIconRendererProps = {
 
 export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
+export type RelationshipBrowserActionProps<A extends Any = Unknown> = {
+  subjectId: Fqn<A>
+  viewId: ViewId<A>
+  scope: 'view' | 'global'
+}
+
 export type LikeC4ColorScheme = 'light' | 'dark'
 
 export type OverrideReactFlowProps = Pick<
@@ -258,6 +264,11 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * @default true
    */
   enableNotes?: boolean | undefined
+
+  /**
+   * Render host-specific actions in the relationship browser toolbar.
+   */
+  renderRelationshipBrowserActions?: ((props: RelationshipBrowserActionProps<A>) => ReactNode) | undefined
 
   /**
    * Improve performance by hiding certain elements and reducing visual effects (disable mix-blend, shadows, animations)

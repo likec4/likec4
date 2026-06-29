@@ -24,6 +24,7 @@ export type {
   OnNodeClick,
   OnOpenSource,
   PaddingWithUnit,
+  RelationshipBrowserActionProps,
   ViewPadding,
   ViewPaddings,
   WhereOperator,

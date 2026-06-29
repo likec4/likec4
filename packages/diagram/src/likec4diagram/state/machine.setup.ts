@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   nonexhaustive,
 } from '@likec4/core'
@@ -174,7 +181,7 @@ export type Events =
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
-  | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'open.relationshipsBrowser'; fqn: Fqn; scope?: 'view' | 'global' | undefined }
   | { type: 'open.search'; search?: string }
   // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined; focusOnElement?: Fqn | undefined }

@@ -126,6 +126,18 @@ test.describe('?relationships= search parameter', () => {
     await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
   })
 
+  test('?relationships=<fqn> export menu opens relationship source route', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+
+    await page.getByRole('button', { name: 'Export relationship view' }).click()
+    await expect(page.getByRole('menu')).toBeVisible({ timeout: TIMEOUT_MENU })
+
+    await page.getByRole('menuitem', { name: 'Export as .d2' }).click()
+    await expect(page).toHaveURL(/\/project\/e2e\/view\/index\/d2\/\?relationships=cloud&relationshipScope=view$/)
+    await expect(page.getByText(/direction: right/)).toBeVisible()
+    await expect(page.getByText(/Cloud System/)).toBeVisible()
+  })
+
   test('absent ?relationships= does not open overlay', async ({ page }) => {
     await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW))
     await expect(page.locator(RELATIONSHIPS_BROWSER)).toHaveCount(0)

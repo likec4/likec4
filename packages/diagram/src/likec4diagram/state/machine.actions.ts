@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
@@ -742,7 +749,7 @@ export const openOverlay = () =>
             type: 'open.relationshipsBrowser',
             subject: event.fqn,
             viewId: context.view.id,
-            scope: 'view' as const,
+            scope: event.scope ?? 'view',
             closeable: true,
             enableChangeScope: true,
             enableSelectSubject: true,

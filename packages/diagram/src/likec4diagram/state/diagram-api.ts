@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as t from '@likec4/core/types'
 import type {
   DynamicViewDisplayVariant,
@@ -82,7 +89,7 @@ export interface DiagramApi<A extends Any = Unknown> {
   /**
    * Open relationships browser
    */
-  openRelationshipsBrowser(fqn: Fqn<A>): void
+  openRelationshipsBrowser(fqn: Fqn<A>, scope?: 'view' | 'global'): void
   /**
    * If running in editor, trigger opening source file
    */
@@ -201,8 +208,8 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
     fitDiagram: (duration = 350) => {
       actorRef.current.send({ type: 'xyflow.fitDiagram', duration })
     },
-    openRelationshipsBrowser: (fqn) => {
-      actorRef.current.send({ type: 'open.relationshipsBrowser', fqn })
+    openRelationshipsBrowser: (fqn, scope) => {
+      actorRef.current.send({ type: 'open.relationshipsBrowser', fqn, scope })
     },
     openSource: (params: OpenSourceParams<Unknown>) => {
       actorRef.current.send({ type: 'open.source', ...params })

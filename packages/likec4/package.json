@@ -123,6 +123,7 @@
   "dependencies": {
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@vitejs/plugin-react": "catalog:vite",
     "bundle-require": "catalog:externals",
@@ -185,7 +186,6 @@
     "@likec4/vite-plugin": "workspace:*",
     "@likec4/react": "workspace:*",
     "@likec4/spa": "workspace:*",
-    "@likec4/generators": "workspace:*",
     "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
