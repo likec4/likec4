@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { useLikeC4Projects } from '@likec4/diagram'
 import {
   Button,
@@ -16,6 +23,10 @@ import {
   useMatches,
 } from '@tanstack/react-router'
 import { memo, useCallback, useState } from 'react'
+import {
+  enabledWebappExportFormats,
+  isWebappExportFormatEnabled,
+} from '../../export-formats'
 import { useCurrentProject, useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { NavigationPanel } from './NavigationPanel'
@@ -93,6 +104,7 @@ function ExportButton() {
   const [isDrawioLoading, setIsDrawioLoading] = useState(false)
   const project = useCurrentProject()
   const viewId = useCurrentViewId()
+  const enabledFormats = enabledWebappExportFormats(project)
 
   const handleDrawioExport = useCallback(async () => {
     try {
@@ -107,6 +119,10 @@ function ExportButton() {
       setIsDrawioLoading(false)
     }
   }, [project.id, viewId])
+
+  if (enabledFormats.length === 0) {
+    return null
+  }
 
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
@@ -124,67 +140,81 @@ function ExportButton() {
 
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
-        <MenuItem
-          renderRoot={(props) => (
-            <Link
-              target="_blank"
-              to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
-              search={enableDownload}
-              {...props} />
-          )}
-        >
-          Export as .png
-        </MenuItem>
-        <MenuItem
-          renderRoot={(props) => (
-            <Link
-              target="_blank"
-              to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
-              search={enableJpegDownload}
-              {...props} />
-          )}
-        >
-          Export as .jpg
-        </MenuItem>
-        <MenuItem
-          renderRoot={(props) => (
-            <Link
-              to={isInsideProject ? '/project/$projectId/view/$viewId/dot/' : '/view/$viewId/dot/'}
-              search
-              {...props} />
-          )}
-        >
-          Export as .dot
-        </MenuItem>
-        <MenuItem
-          renderRoot={(props) => (
-            <Link
-              to={isInsideProject ? '/project/$projectId/view/$viewId/d2' : '/view/$viewId/d2'}
-              search
-              {...props} />
-          )}
-        >
-          Export as .d2
-        </MenuItem>
-        <MenuItem
-          renderRoot={(props) => (
-            <Link
-              to={isInsideProject ? '/project/$projectId/view/$viewId/mmd' : '/view/$viewId/mmd'}
-              search
-              {...props} />
-          )}>
-          Export as .mmd
-        </MenuItem>
-        <MenuItem
-          renderRoot={(props) => (
-            <Link
-              to={isInsideProject ? '/project/$projectId/view/$viewId/puml' : '/view/$viewId/puml'}
-              search
-              {...props} />
-          )}>
-          Export as .puml
-        </MenuItem>
-        <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
+        {isWebappExportFormatEnabled(project, 'png') && (
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                target="_blank"
+                to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
+                search={enableDownload}
+                {...props} />
+            )}
+          >
+            Export as .png
+          </MenuItem>
+        )}
+        {isWebappExportFormatEnabled(project, 'jpg') && (
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                target="_blank"
+                to={isInsideProject ? '/project/$projectId/export/$viewId/' : '/export/$viewId/'}
+                search={enableJpegDownload}
+                {...props} />
+            )}
+          >
+            Export as .jpg
+          </MenuItem>
+        )}
+        {isWebappExportFormatEnabled(project, 'dot') && (
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                to={isInsideProject ? '/project/$projectId/view/$viewId/dot/' : '/view/$viewId/dot/'}
+                search
+                {...props} />
+            )}
+          >
+            Export as .dot
+          </MenuItem>
+        )}
+        {isWebappExportFormatEnabled(project, 'd2') && (
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                to={isInsideProject ? '/project/$projectId/view/$viewId/d2' : '/view/$viewId/d2'}
+                search
+                {...props} />
+            )}
+          >
+            Export as .d2
+          </MenuItem>
+        )}
+        {isWebappExportFormatEnabled(project, 'mmd') && (
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                to={isInsideProject ? '/project/$projectId/view/$viewId/mmd' : '/view/$viewId/mmd'}
+                search
+                {...props} />
+            )}>
+            Export as .mmd
+          </MenuItem>
+        )}
+        {isWebappExportFormatEnabled(project, 'puml') && (
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                to={isInsideProject ? '/project/$projectId/view/$viewId/puml' : '/view/$viewId/puml'}
+                search
+                {...props} />
+            )}>
+            Export as .puml
+          </MenuItem>
+        )}
+        {isWebappExportFormatEnabled(project, 'drawio') && (
+          <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
+        )}
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>
         {

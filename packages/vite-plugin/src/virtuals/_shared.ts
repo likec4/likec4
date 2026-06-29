@@ -1,4 +1,11 @@
-import type { LikeC4ProjectConfig } from '@likec4/config'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import type { LikeC4ProjectConfig, WebappExportFormat } from '@likec4/config'
 import type { LikeC4Project, NonEmptyArray, ProjectId } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import type { URI } from 'langium'
@@ -7,6 +14,7 @@ import { joinURL } from 'ufo'
 import type { Rolldown } from 'vite'
 import { type ViteLogger, logGenerating } from '../logger'
 import type { AIOptions } from '../plugin'
+import { isWebappExportFormatEnabled } from './export-formats'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 export { k }
@@ -51,6 +59,7 @@ export interface VirtualModule {
  * Project scoped virtual module
  */
 export interface ProjectVirtualModule {
+  exportFormat?: WebappExportFormat
   matches: (id: string) => ProjectId | null
   virtualId: (projectId: ProjectId) => string
   load(
@@ -81,14 +90,22 @@ export function generateMatches(moduleId: string, extension = '.js') {
   }
 }
 
-export function generateCombinedProjects(moduleId: string, fnName: string): VirtualModule {
+export function generateCombinedProjects(
+  moduleId: string,
+  fnName: string,
+  exportFormat?: WebappExportFormat,
+): VirtualModule {
   return {
     id: `likec4:${moduleId}`,
     virtualId: 'likec4:plugin/' + moduleId + '.js',
     async load({ projects }) {
       logGenerating(moduleId)
 
-      const cases = projects.map(({ id }) => {
+      const enabledProjects = exportFormat
+        ? projects.filter(({ config }) => isWebappExportFormatEnabled(config, exportFormat))
+        : projects
+
+      const cases = enabledProjects.map(({ id }) => {
         const idLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))
         const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
           JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
@@ -106,12 +123,18 @@ export async function ${fnName}(projectId) {
   if (!fn) {
     const projects = Object.keys(${fnName}Fn)
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
+    ${
+        exportFormat
+          ? `throw new Error('Project does not enable ${exportFormat} export: ' + projectId)`
+          : `
     if (projects.length === 0) {
       throw new Error('No projects found, invalid state')
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
     fn = ${fnName}Fn[projectId]
+    `
+      }
   }
   return await fn()
 }

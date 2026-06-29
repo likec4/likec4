@@ -13,7 +13,9 @@ import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
 import { useRef } from 'react'
-import { useCurrentView, useTransparentBackground } from '../hooks'
+import { NotFound } from '../components/NotFound'
+import { isImageExportFormatEnabled } from '../export-formats'
+import { useCurrentProject, useCurrentView, useTransparentBackground } from '../hooks'
 import {
   computeExportPageLayout,
   EXPORT_DESCRIPTION_BODY_TOP_GAP,
@@ -116,9 +118,15 @@ async function downloadAsJpeg({
 export function ExportPage() {
   const [diagram] = useCurrentView()
   const { format } = useSearch({ strict: false })
-  const isJpeg = format === 'jpeg'
+  const project = useCurrentProject()
+  const imageFormat = format ?? 'png'
+  const isJpeg = imageFormat === 'jpeg'
 
   useTransparentBackground(!isJpeg)
+
+  if (!isImageExportFormatEnabled(project, imageFormat)) {
+    return <NotFound />
+  }
 
   if (!diagram) {
     return <div>Loading...</div>
