@@ -58,6 +58,10 @@ export function relationshipEdgeLabelMaxWidth(sourceX: number, targetX: number):
   )
 }
 
+export function compoundPortTop(index: number, count: number): string {
+  return `${((index + 1) / (count + 1)) * 100}%`
+}
+
 export type StaticRelationshipsBrowserView =
   & ReturnType<typeof useRelationshipsView>
   & ReturnType<typeof viewToNodesEdge>
@@ -232,7 +236,7 @@ function CompoundPorts({ data }: CompoundPortsProps) {
           position={Position.Left}
           style={{
             visibility: 'hidden',
-            top: `${20 * (i + 1)}px`,
+            top: compoundPortTop(i, data.ports.in.length),
           }} />
       ))}
       {data.ports.out.map((id, i) => (
@@ -243,7 +247,7 @@ function CompoundPorts({ data }: CompoundPortsProps) {
           position={Position.Right}
           style={{
             visibility: 'hidden',
-            top: `${20 * (i + 1)}px`,
+            top: compoundPortTop(i, data.ports.out.length),
           }} />
       ))}
     </>
