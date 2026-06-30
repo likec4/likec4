@@ -14,6 +14,7 @@ packages/diagram/src/StaticRelationshipsBrowser.tsx
 packages/likec4-spa/src/pages/ExportPage.tsx
   s_9d49268b9f9845::t_833c68df586f71 9-15,22,26,136,140-149,154-266
   s_9d49268b9f9845::t_c850b88fbf295f 150
+  s_9d49268b9f9845::t_dcc2096b341e48 137-138
 ---
 {
   "schema_version": "authorship/3.0.0",
