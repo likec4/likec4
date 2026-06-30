@@ -209,6 +209,85 @@ function toStraightBezierSpline(points: Point[]): NonEmptyArray<Point> {
   return spline
 }
 
+type Bounds = Pick<DiagramNode, 'x' | 'y' | 'width' | 'height'>
+type BoundsSide = 'top' | 'bottom' | 'left' | 'right'
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function clampPointToBounds([x, y]: Point, { x: minX, y: minY, width, height }: Bounds): Point {
+  return [
+    clamp(x, minX, minX + width),
+    clamp(y, minY, minY + height),
+  ]
+}
+
+function overflowSide([x, y]: Point, { x: minX, y: minY, width, height }: Bounds): BoundsSide | null {
+  const maxX = minX + width
+  const maxY = minY + height
+  switch (true) {
+    case y < minY:
+      return 'top'
+    case y > maxY:
+      return 'bottom'
+    case x < minX:
+      return 'left'
+    case x > maxX:
+      return 'right'
+    default:
+      return null
+  }
+}
+
+function overlapsSide([x, y]: Point, { x: minX, y: minY, width, height }: Bounds, side: BoundsSide) {
+  const maxX = minX + width
+  const maxY = minY + height
+  switch (side) {
+    case 'top':
+      return y < minY && x >= minX && x <= maxX
+    case 'bottom':
+      return y > maxY && x >= minX && x <= maxX
+    case 'left':
+      return x < minX && y >= minY && y <= maxY
+    case 'right':
+      return x > maxX && y >= minY && y <= maxY
+  }
+}
+
+function clampPointToSide([x, y]: Point, { x: minX, y: minY, width, height }: Bounds, side: BoundsSide): Point {
+  switch (side) {
+    case 'top':
+      return [x, minY]
+    case 'bottom':
+      return [x, minY + height]
+    case 'left':
+      return [minX, y]
+    case 'right':
+      return [minX + width, y]
+  }
+}
+
+function clampTerminalSegmentToBounds(points: Point[], bounds: Bounds, terminal: 'start' | 'end') {
+  const terminalIndex = terminal === 'start' ? 0 : points.length - 1
+  const side = overflowSide(points[terminalIndex]!, bounds)
+  points[terminalIndex] = clampPointToBounds(points[terminalIndex]!, bounds)
+  if (!side) {
+    return
+  }
+
+  if (terminal === 'start') {
+    for (let i = 1; i < points.length && overlapsSide(points[i]!, bounds, side); i++) {
+      points[i] = clampPointToSide(points[i]!, bounds, side)
+    }
+    return
+  }
+
+  for (let i = points.length - 2; i >= 0 && overlapsSide(points[i]!, bounds, side); i--) {
+    points[i] = clampPointToSide(points[i]!, bounds, side)
+  }
+}
+
 function inheritedScopedNodeStyle<M extends AnyAux>(
   scope: LikeC4ViewModel<M> | null,
   element: ElementModel<M>,
@@ -421,6 +500,8 @@ export function layoutRelationshipsView<M extends AnyAux>(
     })
   })
 
+  const nodesById = new Map(nodes.map(node => [node.id, node]))
+
   const diagramEdges = g.edges().reduce((acc, e) => {
     const edge = g.edge(e)
     const ename = e.name
@@ -431,6 +512,14 @@ export function layoutRelationshipsView<M extends AnyAux>(
     invariant(edgeData, `Edge ${ename} has no relationship data`)
     const onlyRelation = edgeData.relations.length === 1 ? edgeData.relations[0] : null
     const edgeId = edgeData.name as EdgeId
+    const source = nodesById.get(edgeData.source as NodeId)
+    const target = nodesById.get(edgeData.target as NodeId)
+    invariant(source, `Edge ${ename} has no source node ${edgeData.source}`)
+    invariant(target, `Edge ${ename} has no target node ${edgeData.target}`)
+
+    const points = edge.points.map(p => [p.x, p.y] as Point)
+    clampTerminalSegmentToBounds(points, source, 'start')
+    clampTerminalSegmentToBounds(points, target, 'end')
 
     acc.push(exact({
       id: edgeId,
@@ -447,7 +536,7 @@ export function layoutRelationshipsView<M extends AnyAux>(
       head: onlyRelation?.head,
       tail: onlyRelation?.tail,
       navigateTo: onlyRelation?.navigateTo?.id ?? null,
-      points: toStraightBezierSpline(edge.points.map(p => [p.x, p.y])),
+      points: toStraightBezierSpline(points),
       labelBBox: null,
     }))
     return acc
