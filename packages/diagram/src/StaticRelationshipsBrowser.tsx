@@ -48,6 +48,16 @@ import {
 type StaticRelationshipsBrowserNode = RelationshipsBrowserTypes.AnyNode
 type StaticRelationshipsBrowserEdge = RelationshipsBrowserTypes.Edge
 
+const RELATIONSHIP_LABEL_HORIZONTAL_PADDING = 70
+const RELATIONSHIP_LABEL_MAX_WIDTH = 250
+
+export function relationshipEdgeLabelMaxWidth(sourceX: number, targetX: number): number {
+  return Math.min(
+    Math.max(Math.abs(targetX - sourceX) - RELATIONSHIP_LABEL_HORIZONTAL_PADDING, 0),
+    RELATIONSHIP_LABEL_MAX_WIDTH,
+  )
+}
+
 export type StaticRelationshipsBrowserView =
   & ReturnType<typeof useRelationshipsView>
   & ReturnType<typeof viewToNodesEdge>
@@ -276,7 +286,7 @@ const StaticRelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((pr
           translate: 'translate(-50%, 0)',
         }}
         style={{
-          maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
+          maxWidth: relationshipEdgeLabelMaxWidth(props.sourceX, props.targetX),
         }}
       >
         <EdgeLabel

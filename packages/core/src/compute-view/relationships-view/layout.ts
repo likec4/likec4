@@ -479,7 +479,7 @@ export function layoutRelationshipsView<M extends AnyAux>(
     })
   })
 
-  const nodesById = new Map(nodes.map(node => [node.id, node]))
+  const nodesById = new Map<NodeId, DiagramNode>(nodes.map(node => [node.id, node]))
 
   const diagramEdges = g.edges().reduce((acc, e) => {
     const edge = g.edge(e)
@@ -491,21 +491,23 @@ export function layoutRelationshipsView<M extends AnyAux>(
     invariant(edgeData, `Edge ${ename} has no relationship data`)
     const onlyRelation = edgeData.relations.length === 1 ? edgeData.relations[0] : null
     const edgeId = edgeData.name as EdgeId
-    const source = nodesById.get(edgeData.source as NodeId)
-    const target = nodesById.get(edgeData.target as NodeId)
+    const sourceId = edgeData.source as NodeId
+    const targetId = edgeData.target as NodeId
+    const source = nodesById.get(sourceId)
+    const target = nodesById.get(targetId)
     invariant(source, `Edge ${ename} has no source node ${edgeData.source}`)
     invariant(target, `Edge ${ename} has no target node ${edgeData.target}`)
 
     // Keep exported geometry valid for direct LayoutedView consumers, even though current source generators ignore it.
-    const points = edge.points.map(p => [p.x, p.y] as Point)
+    const points = edge.points.map<Point>(p => [p.x, p.y])
     clampTerminalSegmentToBounds(points, source, 'start')
     clampTerminalSegmentToBounds(points, target, 'end')
 
     acc.push(exact({
       id: edgeId,
       parent: null,
-      source: edgeData.source as NodeId,
-      target: edgeData.target as NodeId,
+      source: sourceId,
+      target: targetId,
       label: onlyRelation ? onlyRelation.title ?? 'untitled' : `${edgeData.relations.length} relationships`,
       description: onlyRelation?.description.$source ?? null,
       technology: onlyRelation?.technology ?? null,

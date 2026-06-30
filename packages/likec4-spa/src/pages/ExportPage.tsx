@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
+import { type Fqn, type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
 import {
   LikeC4Diagram,
   pickViewBounds,
@@ -41,6 +41,10 @@ type PaletteCssVars =
     '--likec4-palette-fill' | '--likec4-palette-stroke' | '--likec4-palette-hiContrast' | '--likec4-palette-loContrast',
     string
   >
+
+function isRelationshipSubject(value: unknown): value is Fqn {
+  return typeof value === 'string' && value.length > 0
+}
 
 /**
  * Downloads a generated object URL or data URL through a temporary browser link.
@@ -133,8 +137,8 @@ export function ExportPage() {
 
   useTransparentBackground(!isJpeg)
 
-  if (relationships) {
-    if (!model.findElement(relationships as never)) {
+  if (isRelationshipSubject(relationships)) {
+    if (!model.findElement(relationships)) {
       return <NotFound />
     }
     return (

@@ -4,13 +4,22 @@
 
 import { omit } from 'remeda'
 import type { ElementModel, LikeC4ViewModel } from '../../model'
-import type { AnyAux } from '../../types'
+import type { AnyAux, Color, ElementShape, ElementStyle, IconUrl } from '../../types'
 import { ifind } from '../../utils'
+
+export type ResolvedRelationshipNodeStyle<M extends AnyAux> = {
+  existsInCurrentView: boolean
+  color: Color
+  icon: IconUrl | null
+  shape: ElementShape
+  style: Omit<ElementStyle, 'color' | 'shape' | 'icon'>
+  inheritedNode: ReturnType<LikeC4ViewModel<M>['findNodeWithElement']>
+}
 
 export function resolveRelationshipNodeStyle<M extends AnyAux>(
   scope: LikeC4ViewModel<M> | null,
   element: ElementModel<M>,
-) {
+): ResolvedRelationshipNodeStyle<M> {
   const scopedNode = scope?.findNodeWithElement(element.id) ?? null
   const scopedAncestor = scope && !scopedNode
     ? ifind(element.ancestors(), ancestor => !!scope.findNodeWithElement(ancestor.id)) ?? null
