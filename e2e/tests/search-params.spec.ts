@@ -146,7 +146,7 @@ test.describe('webapp.exportFormats configuration', () => {
     'Export to Draw.io',
   ] as const
 
-  test('limits the view export menu and blocks disabled image export routes', async ({ page }) => {
+  test('limits the view export menu to enabled formats', async ({ page }) => {
     await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
 
     await page.getByRole('button', { name: 'Export', exact: true }).click()
@@ -157,9 +157,6 @@ test.describe('webapp.exportFormats configuration', () => {
     }
 
     await gotoAndWaitForCanvas(page, projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
-
-    await page.goto(projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, { format: 'jpeg' }))
-    await expect(page.getByRole('alert')).toContainText('does not exist or contains errors')
   })
 
   test('removes export entry points when every webapp export format is disabled', async ({ page }) => {

@@ -60,7 +60,7 @@ test('webcomponent expanded overlay uses the shadow-root theme background (#2965
     hasUnscopedRootHostSelector: false,
   })
 
-  await frame.locator(CANVAS_SELECTOR).first().click()
+  await frame.locator('.react-flow__node').first().click()
 
   const overlayBody = frame.locator('dialog[open] .likec4-overlay-body').first()
   await expect(overlayBody).toBeVisible({ timeout: TIMEOUT_CANVAS })
