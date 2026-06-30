@@ -1,0 +1,21 @@
+e2e/tests/webcomponent-overlay.spec.ts
+  s_9d49268b9f9845::t_d910b4fd222741 63
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_961b46751d5c1a 149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "d34d20075a1bc48113e03ff00bd19dd55de731f1",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
