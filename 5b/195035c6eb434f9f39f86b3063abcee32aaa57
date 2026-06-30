@@ -1,0 +1,19 @@
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_84f0bb7df26251 149,162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "5b195035c6eb434f9f39f86b3063abcee32aaa57",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
