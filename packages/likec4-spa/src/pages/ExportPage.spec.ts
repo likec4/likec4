@@ -19,7 +19,10 @@ const testState = vi.hoisted(() => ({
   },
   search: {
     format: 'png',
+    relationships: undefined as string | undefined,
+    relationshipScope: undefined as string | undefined,
   },
+  model: {},
 }))
 
 vi.mock('@likec4/diagram', () => ({
@@ -51,6 +54,10 @@ vi.mock('@mantine/core', () => ({
   LoadingOverlay: React.forwardRef<HTMLDivElement>((props, ref) => React.createElement('div', { ...props, ref })),
 }))
 
+vi.mock('@nanostores/react', () => ({
+  useStore: () => testState.model,
+}))
+
 vi.mock('@tanstack/react-router', () => ({
   useSearch: () => testState.search,
 }))
@@ -62,13 +69,31 @@ vi.mock('../components/NotFound', () => ({
 vi.mock('../hooks', () => ({
   useCurrentProject: () => testState.project,
   useCurrentView: () => [testState.diagram],
+  useCurrentViewId: () => testState.diagram.id,
   useTransparentBackground: vi.fn(),
+}))
+
+vi.mock('../context/safeCtx', () => ({
+  useLikeC4ModelAtom: () => ({}),
+}))
+
+vi.mock('../relationship-export', async importOriginal => ({
+  ...(await importOriginal<typeof import('../relationship-export')>()),
+  createRelationshipExportView: ({ subjectId }: { subjectId: string }) => {
+    if (subjectId === 'missing') {
+      throw new Error('Unknown element')
+    }
+    return testState.diagram
+  },
+  normalizeRelationshipScope: (scope: string | undefined) => scope ?? 'view',
 }))
 
 describe('ExportPage', () => {
   beforeEach(() => {
     testState.project.exportFormats = ['drawio']
     testState.search.format = 'png'
+    testState.search.relationships = undefined
+    testState.search.relationshipScope = undefined
   })
 
   it('keeps the image export route available when webapp image downloads are disabled', () => {
@@ -76,5 +101,14 @@ describe('ExportPage', () => {
 
     expect(markup).toContain('data-testid="export-page"')
     expect(markup).not.toContain('data-testid="not-found"')
+  })
+
+  it('renders not found for an unknown relationship export subject', () => {
+    testState.search.relationships = 'missing'
+
+    const markup = renderToStaticMarkup(React.createElement(ExportPage))
+
+    expect(markup).toContain('data-testid="not-found"')
+    expect(markup).not.toContain('data-testid="export-page"')
   })
 })

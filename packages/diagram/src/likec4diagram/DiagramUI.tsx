@@ -1,8 +1,16 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { useRerender } from '@react-hookz/web'
-import { memo, useCallback } from 'react'
+import { type ReactNode, memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { selectDiagramActor, useDiagramSnapshot } from '../hooks/useDiagram'
+import type { RelationshipBrowserActionProps } from '../LikeC4Diagram.props'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
@@ -14,7 +22,11 @@ const selectChildren = selectDiagramActor(s => ({
   search: s.children.search ?? null,
 }))
 
-export const LikeC4DiagramUI = memo(() => {
+export const LikeC4DiagramUI = memo(({
+  renderRelationshipBrowserActions,
+}: {
+  renderRelationshipBrowserActions?: ((props: RelationshipBrowserActionProps) => ReactNode) | undefined
+}) => {
   const {
     enableControls,
     enableNotations,
@@ -34,7 +46,11 @@ export const LikeC4DiagramUI = memo(() => {
   return (
     <ErrorBoundary onReset={handleReset}>
       {enableControls && <NavigationPanel />}
-      {actors.overlays && <Overlays overlaysActorRef={actors.overlays} />}
+      {actors.overlays && (
+        <Overlays
+          overlaysActorRef={actors.overlays}
+          renderRelationshipBrowserActions={renderRelationshipBrowserActions} />
+      )}
       {enableNotations && <NotationPanel />}
       {enableSearch && actors.search && <Search searchActorRef={actors.search} />}
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}

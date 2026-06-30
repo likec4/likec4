@@ -34,6 +34,7 @@ export const Route = createRootRouteWithContext<Context>()({
         theme: undefined,
         dynamic: 'diagram',
         relationships: undefined,
+        relationshipScope: undefined,
         focusOnElement: undefined,
       }),
     ],

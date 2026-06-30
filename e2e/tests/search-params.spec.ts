@@ -43,6 +43,17 @@ function projectViewUrl(projectId: string, viewId: string, extra?: Record<string
   return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${qs ? `?${qs}` : ''}`
 }
 
+function projectSourceUrl(
+  projectId: string,
+  viewId: string,
+  format: string,
+  extra?: Record<string, string>,
+): string {
+  const params = extra ? new URLSearchParams(extra) : undefined
+  const qs = params?.toString()
+  return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${format}/${qs ? `?${qs}` : ''}`
+}
+
 function viewUrl(viewId: string, extra?: Record<string, string>): string {
   return projectViewUrl(PROJECT, viewId, extra)
 }
@@ -126,6 +137,40 @@ test.describe('?relationships= search parameter', () => {
     await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
   })
 
+  test('?relationships=<fqn> export menu opens relationship source route', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+
+    await page.getByRole('button', { name: 'Export relationship view' }).click()
+    await expect(page.getByRole('menu')).toBeVisible({ timeout: TIMEOUT_MENU })
+
+    await page.getByRole('menuitem', { name: 'Export as .d2' }).click()
+    await expect
+      .poll(() => {
+        const url = new URL(page.url())
+        return {
+          pathname: url.pathname.replace(/\/$/, ''),
+          relationships: url.searchParams.get('relationships'),
+          relationshipScope: url.searchParams.get('relationshipScope'),
+        }
+      })
+      .toEqual({
+        pathname: '/project/e2e/view/index/d2',
+        relationships: 'cloud',
+        relationshipScope: 'view',
+      })
+    await expect(page.getByText(/direction: right/)).toBeVisible()
+    await expect(page.getByText(/Cloud System/)).toBeVisible()
+  })
+
+  test('?relationships=<fqn> renders relationship image export route', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+
+    await expect(page.getByText('Oops, something went wrong')).toHaveCount(0)
+    await expect(page.getByText('all points should be consumed')).toHaveCount(0)
+    await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+    await expect(page.locator('.react-flow__edge').first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+  })
+
   test('absent ?relationships= does not open overlay', async ({ page }) => {
     await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW))
     await expect(page.locator(RELATIONSHIPS_BROWSER)).toHaveCount(0)
@@ -157,6 +202,17 @@ test.describe('webapp.exportFormats configuration', () => {
     }
 
     await gotoAndWaitForCanvas(page, projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
+  })
+
+  test('blocks disabled relationship source export routes', async ({ page }) => {
+    await page.goto(
+      projectSourceUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, 'd2', {
+        relationships: 'app',
+        relationshipScope: 'view',
+      }),
+    )
+
+    await expect(page.getByText(/does not exist or contains errors/)).toBeVisible()
   })
 
   test('removes export entry points when every webapp export format is disabled', async ({ page }) => {

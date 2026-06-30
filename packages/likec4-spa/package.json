@@ -31,7 +31,9 @@
     "vitest:ui": "vitest --no-isolate --ui"
   },
   "dependencies": {
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
     "immer": "catalog:utils",
     "react": "catalog:react",
     "react-dom": "catalog:react",

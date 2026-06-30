@@ -10,10 +10,14 @@ import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
 import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
+import { useStore } from '@nanostores/react'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
-import { useRef } from 'react'
-import { useCurrentView, useTransparentBackground } from '../hooks'
+import { useMemo, useRef } from 'react'
+import { NotFound } from '../components/NotFound'
+import { useLikeC4ModelAtom } from '../context/safeCtx'
+import { useCurrentView, useCurrentViewId, useTransparentBackground } from '../hooks'
+import { createRelationshipExportView, normalizeRelationshipScope } from '../relationship-export'
 import {
   computeExportPageLayout,
   EXPORT_DESCRIPTION_BODY_TOP_GAP,
@@ -115,17 +119,40 @@ async function downloadAsJpeg({
  */
 export function ExportPage() {
   const [diagram] = useCurrentView()
-  const { format } = useSearch({ strict: false })
+  const viewId = useCurrentViewId()
+  const { format, relationships, relationshipScope } = useSearch({ strict: false })
+  const model = useStore(useLikeC4ModelAtom())
   const imageFormat = format ?? 'png'
   const isJpeg = imageFormat === 'jpeg'
 
   useTransparentBackground(!isJpeg)
 
-  if (!diagram) {
+  const exportDiagram = useMemo(() => {
+    if (!relationships) {
+      return diagram
+    }
+    try {
+      return createRelationshipExportView({
+        model,
+        baseViewId: viewId,
+        subjectId: relationships,
+        scope: normalizeRelationshipScope(relationshipScope),
+      })
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  }, [diagram, model, relationshipScope, relationships, viewId])
+
+  if (relationships && !exportDiagram) {
+    return <NotFound />
+  }
+
+  if (!exportDiagram) {
     return <div>Loading...</div>
   }
 
-  return <GuardedExportPage diagram={diagram} isJpeg={isJpeg} />
+  return <GuardedExportPage diagram={exportDiagram} isJpeg={isJpeg} />
 }
 
 /**

@@ -21,6 +21,7 @@ import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useRef } from 'react'
 import { NotFound } from '../components/NotFound'
 import { useCurrentView } from '../hooks'
+import { RelationshipExportMenu } from './RelationshipExportMenu'
 
 export function ViewReact() {
   const navigate = useNavigate()
@@ -77,6 +78,7 @@ export function ViewReact() {
       enableCompareWithLatest
       enableNotations={hasNotations}
       nodesSelectable
+      renderRelationshipBrowserActions={props => <RelationshipExportMenu {...props} />}
       onNavigateTo={onNavigateTo}
       onLayoutTypeChange={setLayoutType}
       onLogoClick={() => {
@@ -100,7 +102,7 @@ export function ViewReact() {
 export function OpenRelationshipBrowserFromUrl() {
   const router = useRouter()
   const diagram = useDiagram()
-  const { relationships } = useSearch({
+  const { relationships, relationshipScope } = useSearch({
     from: '__root__',
   })
   const processedRef = useRef<Fqn | null>(null)
@@ -113,10 +115,10 @@ export function OpenRelationshipBrowserFromUrl() {
       if (!isMounted() || processedRef.current === fqn) return
       try {
         processedRef.current = fqn
-        diagram.openRelationshipsBrowser(fqn)
+        diagram.openRelationshipsBrowser(fqn, relationshipScope)
         await router.buildAndCommitLocation({
           search: (s: Record<string, unknown>) => {
-            const { relationships: _, ...rest } = s
+            const { relationships: _, relationshipScope: _scope, ...rest } = s
             return rest
           },
           replace: true,

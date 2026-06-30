@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Any } from '@likec4/core/types'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
@@ -87,6 +94,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   where,
   reactFlowProps,
   renderNodes,
+  renderRelationshipBrowserActions,
   children,
 }: LikeC4DiagramProps<A>): JSX.Element {
   const id = useId()
@@ -209,7 +217,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                           >
                             {children}
                           </LikeC4DiagramXYFlow>
-                          <LikeC4DiagramUI />
+                          <LikeC4DiagramUI renderRelationshipBrowserActions={renderRelationshipBrowserActions} />
                         </CurrentViewModelProvider>
                       </DiagramActorProvider>
                     </XYFlowProvider>
