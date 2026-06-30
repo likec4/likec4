@@ -1,0 +1,21 @@
+packages/likec4-spa/src/pages/ExportPage.tsx
+  s_9d49268b9f9845::t_f99087bf2712a5 16
+packages/likec4-spa/src/pages/ExportPage.spec.ts
+  s_9d49268b9f9845::t_2f660cdcb1d73f 1-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "24125fb9afb80d67c50363bf797e4c5f241a801b",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
