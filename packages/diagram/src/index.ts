@@ -87,6 +87,14 @@ export type { Types } from './likec4diagram/types'
 
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 
+export {
+  StaticRelationshipsBrowser,
+  type StaticRelationshipsBrowserInstance,
+  type StaticRelationshipsBrowserProps,
+  type StaticRelationshipsBrowserView,
+  useStaticRelationshipsBrowserView,
+} from './StaticRelationshipsBrowser'
+
 export { LikeC4View } from './LikeC4View'
 
 export type { LikeC4BrowserProps, LikeC4ViewProps } from './LikeC4View'

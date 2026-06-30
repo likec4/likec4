@@ -6,18 +6,24 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
-import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
+import {
+  LikeC4Diagram,
+  pickViewBounds,
+  StaticRelationshipsBrowser,
+  useLikeC4Styles,
+  useStaticRelationshipsBrowserView,
+} from '@likec4/diagram'
 import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useStore } from '@nanostores/react'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentView, useCurrentViewId, useTransparentBackground } from '../hooks'
-import { createRelationshipExportView, normalizeRelationshipScope } from '../relationship-export'
+import { normalizeRelationshipScope } from '../relationship-export'
 import {
   computeExportPageLayout,
   EXPORT_DESCRIPTION_BODY_TOP_GAP,
@@ -127,32 +133,137 @@ export function ExportPage() {
 
   useTransparentBackground(!isJpeg)
 
-  const exportDiagram = useMemo(() => {
-    if (!relationships) {
-      return diagram
+  if (relationships) {
+    if (!model.findElement(relationships as never)) {
+      return <NotFound />
     }
-    try {
-      return createRelationshipExportView({
-        model,
-        baseViewId: viewId,
-        subjectId: relationships,
-        scope: normalizeRelationshipScope(relationshipScope),
-      })
-    } catch (error) {
-      console.error(error)
-      return null
-    }
-  }, [diagram, model, relationshipScope, relationships, viewId])
-
-  if (relationships && !exportDiagram) {
-    return <NotFound />
+    return (
+      <RelationshipExportPage
+        subjectId={relationships}
+        viewId={viewId}
+        scope={normalizeRelationshipScope(relationshipScope)}
+        isJpeg={isJpeg}
+      />
+    )
   }
 
-  if (!exportDiagram) {
+  if (!diagram) {
     return <div>Loading...</div>
   }
 
-  return <GuardedExportPage diagram={exportDiagram} isJpeg={isJpeg} />
+  return <GuardedExportPage diagram={diagram} isJpeg={isJpeg} />
+}
+
+/**
+ * Renders relationship-browser image exports through the same visual path as the interactive relationship browser.
+ */
+function RelationshipExportPage({
+  subjectId,
+  viewId,
+  scope,
+  isJpeg,
+}: {
+  subjectId: Parameters<typeof useStaticRelationshipsBrowserView>[0]
+  viewId: Parameters<typeof useStaticRelationshipsBrowserView>[1]
+  scope: Parameters<typeof useStaticRelationshipsBrowserView>[2]
+  isJpeg: boolean
+}) {
+  const {
+    padding = 20,
+    download = false,
+    quality,
+  } = useSearch({
+    strict: false,
+  })
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const loadingOverlayRef = useRef<HTMLDivElement>(null)
+  const downloadedRef = useRef(false)
+  const browserView = useStaticRelationshipsBrowserView(subjectId, viewId, scope)
+  const bounds = browserView.bounds
+  const layout = computeExportPageLayout({
+    bounds,
+    padding,
+    description: null,
+    notationEntries: 0,
+  })
+  const filename = `${viewId}-relationships-${subjectId}`
+
+  const downloadDiagram = () => {
+    const viewport = viewportRef.current
+    if (!download || !viewport || downloadedRef.current) {
+      return
+    }
+    const loadingOverlay = loadingOverlayRef.current
+    if (loadingOverlay) {
+      loadingOverlay.style.display = 'none'
+    }
+    downloadedRef.current = true
+    if (isJpeg) {
+      void downloadAsJpeg({
+        filename,
+        viewport,
+        quality: quality ?? 0.8,
+      })
+    } else {
+      void downloadAsPng({
+        pngFilename: filename,
+        viewport,
+      })
+    }
+  }
+
+  return (
+    <Box
+      ref={viewportRef}
+      data-testid="export-page"
+      css={{
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        padding: '0',
+        margin: '0',
+        overflow: 'hidden',
+        zIndex: 2,
+      }}
+      style={{
+        marginRight: 'auto',
+        marginBottom: 'auto',
+        minWidth: layout.width,
+        width: layout.width,
+        minHeight: layout.height,
+        height: layout.height,
+        background: isJpeg ? 'var(--mantine-color-body)' : 'transparent',
+      }}>
+      {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
+      <Box
+        data-testid="export-diagram-area"
+        css={{
+          position: 'absolute',
+          overflow: 'hidden',
+        }}
+        style={{
+          top: layout.diagram.top,
+          left: layout.diagram.left,
+          width: layout.diagram.width,
+          height: layout.height - layout.diagram.top,
+        }}>
+        <StaticRelationshipsBrowser
+          view={browserView}
+          background={isJpeg ? 'solid' : 'dots'}
+          initialViewport={{
+            x: Math.round(-bounds.x + padding),
+            y: Math.round(-bounds.y + padding),
+            zoom: 1,
+          }}
+          onInitialized={() => {
+            if (download) {
+              window.setTimeout(downloadDiagram, 500)
+            }
+          }}
+        />
+      </Box>
+    </Box>
+  )
 }
 
 /**

@@ -81,6 +81,12 @@ async function visibleNodeVisualAttributes(container: Locator): Promise<Record<s
     size: await container.getAttribute('data-likec4-shape-size'),
     spacing: await container.getAttribute('data-likec4-spacing'),
     textSize: await container.getAttribute('data-likec4-text-size'),
+    paletteFill: await container.evaluate(element =>
+      getComputedStyle(element).getPropertyValue('--likec4-palette-fill').trim()
+    ),
+    paletteStroke: await container.evaluate(element =>
+      getComputedStyle(element).getPropertyValue('--likec4-palette-stroke').trim()
+    ),
   }
 }
 
@@ -202,6 +208,16 @@ test.describe('?relationships= search parameter', () => {
     expect(await exportCustomer.getAttribute('data-likec4-shape-size')).toBe(browserVisuals.size)
     expect(await exportCustomer.getAttribute('data-likec4-spacing')).toBe(browserVisuals.spacing)
     expect(await exportCustomer.getAttribute('data-likec4-text-size')).toBe(browserVisuals.textSize)
+    expect(
+      await exportCustomer.evaluate(element =>
+        getComputedStyle(element).getPropertyValue('--likec4-palette-fill').trim()
+      ),
+    ).toBe(browserVisuals.paletteFill)
+    expect(
+      await exportCustomer.evaluate(element =>
+        getComputedStyle(element).getPropertyValue('--likec4-palette-stroke').trim()
+      ),
+    ).toBe(browserVisuals.paletteStroke)
   })
 
   test('?relationships=<fqn> image export keeps relationship browser graph detail', async ({ page }) => {
@@ -223,6 +239,17 @@ test.describe('?relationships= search parameter', () => {
       await expect(page.locator('[data-testid="export-page"] .react-flow__node', { hasText: nodeTitle }))
         .toHaveCount(1)
     }
+  })
+
+  test('?relationships=<fqn> image export renders relationship browser edge labels', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    const browserLabels = page.locator(`${RELATIONSHIPS_BROWSER} .likec4-edge-label`)
+    await expect.poll(() => browserLabels.count()).toBeGreaterThan(0)
+    const browserLabelCount = await browserLabels.count()
+
+    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    await expect(page.locator(`[data-testid="export-page"] ${RELATIONSHIPS_BROWSER}`)).toHaveCount(1)
+    await expect(page.locator('[data-testid="export-page"] .likec4-edge-label')).toHaveCount(browserLabelCount)
   })
 
   test('absent ?relationships= does not open overlay', async ({ page }) => {
