@@ -15,7 +15,6 @@ import {
   hasAtLeast,
   map,
   mapToObj,
-  omit,
   pipe,
   prop,
   reduce,
@@ -35,10 +34,11 @@ import {
   type Point,
   exact,
 } from '../../types'
-import { ifind, invariant, sortParentsFirst } from '../../utils'
+import { invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import type { RelationshipsViewData } from './_types'
+import { resolveRelationshipNodeStyle } from './resolve-node-style'
 import { treeFromElements } from './utils'
 
 /**
@@ -288,22 +288,6 @@ function clampTerminalSegmentToBounds(points: Point[], bounds: Bounds, terminal:
   }
 }
 
-function inheritedScopedNodeStyle<M extends AnyAux>(
-  scope: LikeC4ViewModel<M> | null,
-  element: ElementModel<M>,
-) {
-  const inheritFromNode = scope?.findNodeWithElement(element.id) ?? null
-  const scopedAncestor = scope && !inheritFromNode
-    ? ifind(element.ancestors(), ancestor => !!scope.findNodeWithElement(ancestor.id))?.id ?? null
-    : null
-  const inheritFromAncestor = scopedAncestor ? scope?.findNodeWithElement(scopedAncestor) ?? null : null
-
-  return {
-    inheritFromNode,
-    inheritFromNodeOrAncestor: inheritFromNode ?? inheritFromAncestor,
-  }
-}
-
 export function layoutRelationshipsView<M extends AnyAux>(
   data: RelationshipsViewData<M>,
   scope: LikeC4ViewModel<M> | null = null,
@@ -461,10 +445,7 @@ export function layoutRelationshipsView<M extends AnyAux>(
     // }
     const children = (g.children(id) as NodeId[] | undefined ?? []).filter(c => !c.endsWith(PortSuffix))
 
-    const { inheritFromNode, inheritFromNodeOrAncestor } = inheritedScopedNodeStyle(scope, element)
-    const inheritedStyle = inheritFromNode
-      ? { ...element.style, ...inheritFromNode.style }
-      : { ...element.style, ...inheritFromNodeOrAncestor?.style, ...element.$element.style }
+    const resolvedStyle = resolveRelationshipNodeStyle(scope, element)
 
     return exact({
       id: id as NodeId,
@@ -476,11 +457,9 @@ export function layoutRelationshipsView<M extends AnyAux>(
       technology: element.technology,
       tags: [],
       links: null,
-      color: inheritFromNode
-        ? inheritFromNode.color
-        : element.$element.style.color ?? inheritFromNodeOrAncestor?.color ?? element.color,
-      icon: inheritFromNode ? inheritFromNode.icon : element.icon,
-      shape: inheritFromNode?.shape ?? element.shape,
+      color: resolvedStyle.color,
+      icon: resolvedStyle.icon,
+      shape: resolvedStyle.shape,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -490,7 +469,7 @@ export function layoutRelationshipsView<M extends AnyAux>(
         width: width,
         height: height,
       },
-      style: omit(inheritedStyle, ['color', 'shape', 'icon']),
+      style: resolvedStyle.style,
       inEdges: [],
       outEdges: [],
       depth: children.length > 0 ? nodeDepth(id) : 0,
@@ -517,6 +496,7 @@ export function layoutRelationshipsView<M extends AnyAux>(
     invariant(source, `Edge ${ename} has no source node ${edgeData.source}`)
     invariant(target, `Edge ${ename} has no target node ${edgeData.target}`)
 
+    // Keep exported geometry valid for direct LayoutedView consumers, even though current source generators ignore it.
     const points = edge.points.map(p => [p.x, p.y] as Point)
     clampTerminalSegmentToBounds(points, source, 'start')
     clampTerminalSegmentToBounds(points, target, 'end')

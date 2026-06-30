@@ -1,6 +1,14 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   type RelationshipsViewData,
   computeRelationshipsView,
+  resolveRelationshipNodeStyle,
   treeFromElements,
 } from '@likec4/core/compute-view'
 import type {
@@ -10,7 +18,6 @@ import type {
   EdgeId,
   ElementKind,
   Fqn,
-  IconUrl,
   MarkdownOrString,
   NodeId,
   NonEmptyArray,
@@ -37,7 +44,6 @@ import {
   groupBy,
   map,
   mapToObj,
-  omit,
   only,
   pipe,
   prop,
@@ -505,11 +511,7 @@ export function layoutRelationshipsView(
 
     const navigateTo = scope ? ifind(element.scopedViews(), v => v.id !== scope.id)?.id ?? null : null
 
-    const inheritFromNode = scope?.findNodeWithElement(element.id)
-    const scopedAncestor = scope && !inheritFromNode
-      ? ifind(element.ancestors(), a => !!scope.findNodeWithElement(a.id))?.id
-      : null
-    const inheritFromNodeOrAncestor = inheritFromNode ?? (scopedAncestor && scope?.findNodeWithElement(scopedAncestor))
+    const resolvedStyle = resolveRelationshipNodeStyle(scope, element)
 
     return {
       id: id as NodeId,
@@ -521,9 +523,9 @@ export function layoutRelationshipsView(
       technology: element.technology,
       tags: [...element.tags],
       links: null,
-      color: inheritFromNodeOrAncestor?.color ?? element.color,
-      shape: inheritFromNode?.shape ?? element.shape,
-      icon: inheritFromNode?.icon ?? element.icon ?? 'none' as IconUrl,
+      color: resolvedStyle.color,
+      shape: resolvedStyle.shape,
+      icon: resolvedStyle.icon,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -533,10 +535,7 @@ export function layoutRelationshipsView(
         width: width,
         height: height,
       },
-      style: omit({
-        ...(inheritFromNode ?? inheritFromNodeOrAncestor)?.style,
-        ...element.$element.style,
-      }, ['color', 'shape', 'icon']),
+      style: resolvedStyle.style,
       navigateTo,
       ...(children.length > 0 && { depth: nodeDepth(id) }),
       children,
@@ -547,7 +546,7 @@ export function layoutRelationshipsView(
         in: sortedPorts(id, 'in', inPorts),
         out: sortedPorts(id, 'out', outPorts),
       },
-      existsInCurrentView: !!inheritFromNode,
+      existsInCurrentView: resolvedStyle.existsInCurrentView,
     }
   })
 
