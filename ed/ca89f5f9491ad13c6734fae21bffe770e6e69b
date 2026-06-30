@@ -1,0 +1,45 @@
+e2e/tests/webcomponent-overlay.spec.ts
+  s_9d49268b9f9845::t_606cb27dad12fb 63
+e2e/tests/search-params.spec.ts
+  s_9d49268b9f9845::t_b4382600ef7d75 8,68-86,180-214
+packages/core/src/compute-view/relationships-view/export-view.spec.ts
+  s_274cc4c0764fe5::t_ddc84cfcdb74d7 57-314
+packages/core/src/compute-view/relationships-view/export-view.ts
+  s_9d49268b9f9845::t_696f71d373f95f 39-42
+packages/core/src/compute-view/relationships-view/layout.ts
+  s_ad882f84cc80fb::t_03c8925ffbdc53 9-24,27,38,212-230,242,385-388,400-404,414
+.changeset/fix-relationship-export-styles.md
+  s_9d49268b9f9845::t_ba56de5e91d9aa 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "edca89f5f9491ad13c6734fae21bffe770e6e69b",
+  "prompts": {},
+  "sessions": {
+    "s_274cc4c0764fe5": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019efe39-a778-7a63-91df-f8b6be586666",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    },
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    },
+    "s_ad882f84cc80fb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f1273-7faa-7141-9820-ec04de1160ec",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Christoph Keller <ckeller@nvidia.com>"
+    }
+  }
+}
