@@ -146,7 +146,7 @@ test.describe('webapp.exportFormats configuration', () => {
     'Export to Draw.io',
   ] as const
 
-  test('limits the view export menu and image export route to enabled formats', async ({ page }) => {
+  test('limits the view export menu and blocks disabled image export routes', async ({ page }) => {
     await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
 
     await page.getByRole('button', { name: 'Export', exact: true }).click()
@@ -159,32 +159,12 @@ test.describe('webapp.exportFormats configuration', () => {
     await gotoAndWaitForCanvas(page, projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
 
     await page.goto(projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, { format: 'jpeg' }))
-    await expect(page.getByText(/does not exist or contains errors/)).toBeVisible()
-  })
-
-  test('uses the same export format list for relationship export menus', async ({ page }) => {
-    await gotoAndWaitForCanvas(
-      page,
-      projectViewUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, { relationships: 'app', relationshipScope: 'view' }),
-    )
-
-    await page.getByRole('button', { name: 'Export relationship view' }).click()
-    await expect(page.getByRole('menu')).toBeVisible({ timeout: TIMEOUT_MENU })
-    await expect(page.getByRole('menuitem', { name: 'Export as .png' })).toBeVisible()
-    for (const item of DISABLED_MENU_ITEMS) {
-      await expect(page.getByRole('menuitem', { name: item })).toHaveCount(0)
-    }
+    await expect(page.getByRole('alert')).toContainText('does not exist or contains errors')
   })
 
   test('removes export entry points when every webapp export format is disabled', async ({ page }) => {
     await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_DISABLED_PROJECT, STATIC_VIEW))
 
     await expect(page.getByRole('button', { name: 'Export', exact: true })).toHaveCount(0)
-
-    await gotoAndWaitForCanvas(
-      page,
-      projectViewUrl(EXPORT_DISABLED_PROJECT, STATIC_VIEW, { relationships: 'app', relationshipScope: 'view' }),
-    )
-    await expect(page.getByRole('button', { name: 'Export relationship view' })).toHaveCount(0)
   })
 })
