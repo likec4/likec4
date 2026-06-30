@@ -144,7 +144,20 @@ test.describe('?relationships= search parameter', () => {
     await expect(page.getByRole('menu')).toBeVisible({ timeout: TIMEOUT_MENU })
 
     await page.getByRole('menuitem', { name: 'Export as .d2' }).click()
-    await expect(page).toHaveURL(/\/project\/e2e\/view\/index\/d2\/\?relationships=cloud&relationshipScope=view$/)
+    await expect
+      .poll(() => {
+        const url = new URL(page.url())
+        return {
+          pathname: url.pathname.replace(/\/$/, ''),
+          relationships: url.searchParams.get('relationships'),
+          relationshipScope: url.searchParams.get('relationshipScope'),
+        }
+      })
+      .toEqual({
+        pathname: '/project/e2e/view/index/d2',
+        relationships: 'cloud',
+        relationshipScope: 'view',
+      })
     await expect(page.getByText(/direction: right/)).toBeVisible()
     await expect(page.getByText(/Cloud System/)).toBeVisible()
   })
