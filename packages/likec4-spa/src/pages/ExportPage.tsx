@@ -14,6 +14,7 @@ import { useStore } from '@nanostores/react'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
 import { useMemo, useRef } from 'react'
+import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentView, useCurrentViewId, useTransparentBackground } from '../hooks'
 import { createRelationshipExportView, normalizeRelationshipScope } from '../relationship-export'
@@ -130,13 +131,22 @@ export function ExportPage() {
     if (!relationships) {
       return diagram
     }
-    return createRelationshipExportView({
-      model,
-      baseViewId: viewId,
-      subjectId: relationships,
-      scope: normalizeRelationshipScope(relationshipScope),
-    })
+    try {
+      return createRelationshipExportView({
+        model,
+        baseViewId: viewId,
+        subjectId: relationships,
+        scope: normalizeRelationshipScope(relationshipScope),
+      })
+    } catch (error) {
+      console.error(error)
+      return null
+    }
   }, [diagram, model, relationshipScope, relationships, viewId])
+
+  if (relationships && !exportDiagram) {
+    return <NotFound />
+  }
 
   if (!exportDiagram) {
     return <div>Loading...</div>

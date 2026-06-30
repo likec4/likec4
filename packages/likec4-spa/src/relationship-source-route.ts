@@ -3,6 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { ProjectId } from '@likec4/core/types'
+import { notFound } from '@tanstack/react-router'
 import { loadModel } from 'likec4:model'
 import { projects } from 'likec4:projects'
 import { isWebappExportFormatEnabled } from './export-formats'
@@ -28,8 +29,11 @@ export async function loadRelationshipTextSource(
   viewId: string,
   search: RelationshipExportSearch,
 ): Promise<string | null> {
-  if (!search.relationships || !isRelationshipSourceExportEnabled(projectId, format)) {
+  if (!search.relationships) {
     return null
+  }
+  if (!isRelationshipSourceExportEnabled(projectId, format)) {
+    throw notFound()
   }
   const { $likec4model } = await loadModel(projectId)
   return await generateRelationshipExportSource(format, {
@@ -45,8 +49,11 @@ export async function loadRelationshipDotSource(
   viewId: string,
   search: RelationshipExportSearch,
 ): Promise<{ dot: string; dotSvg: string } | null> {
-  if (!search.relationships || !isRelationshipSourceExportEnabled(projectId, 'dot')) {
+  if (!search.relationships) {
     return null
+  }
+  if (!isRelationshipSourceExportEnabled(projectId, 'dot')) {
+    throw notFound()
   }
   const { $likec4model } = await loadModel(projectId)
   const dot = await generateRelationshipExportSource('dot', {
