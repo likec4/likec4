@@ -24,5 +24,6 @@ test('static build embed pages show relationship popup on edge hover (#2962)', a
   await relationship.hover()
 
   await expect(page.getByText(RELATIONSHIP_POPOVER_TEXT)).toBeVisible()
-  await expect(page.getByRole('button', { name: /browse relationships/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^browse relationships$/i })).toHaveCount(1)
+  await expect(page.getByRole('button', { name: /^browse relationships$/i })).toBeVisible()
 })

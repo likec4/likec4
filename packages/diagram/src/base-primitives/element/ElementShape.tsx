@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { nonexhaustive } from '@likec4/core'
 import type { ComputedNodeStyle, ElementShape, ShapeSize } from '@likec4/core/types'
 import { elementShapeRecipe } from '@likec4/styles/recipes'
@@ -368,9 +375,13 @@ export function ElementShape(
   const borderStyle = data.style?.border ?? 'none'
   const withBorder = borderStyle !== 'none'
 
+  // The shape is purely decorative — the node's text is exposed through its
+  // accessible label, so hide the shape from assistive technologies to avoid
+  // announcing it as an unlabeled image.
   if (data.shape === 'rectangle') {
     return (
       <div
+        aria-hidden
         style={{
           borderStyle,
         }}
@@ -393,11 +404,11 @@ export function ElementShape(
   return (
     <>
       {isMultiple && (
-        <svg className={className} data-likec4-shape-multiple="true" viewBox={`0 0 ${w} ${h}`}>
+        <svg aria-hidden className={className} data-likec4-shape-multiple="true" viewBox={`0 0 ${w} ${h}`}>
           <ShapeSvg shape={data.shape} size={data.style?.size} w={w} h={h} />
         </svg>
       )}
-      <svg className={className} viewBox={`0 0 ${w} ${h}`}>
+      <svg aria-hidden className={className} viewBox={`0 0 ${w} ${h}`}>
         <ShapeSvgOutline shape={data.shape} w={w} h={h} />
         <ShapeSvg shape={data.shape} size={data.style?.size} w={w} h={h} />
       </svg>
