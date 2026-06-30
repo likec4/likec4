@@ -6,10 +6,24 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import { concat, filter, find, forEachObj, groupBy, hasAtLeast, map, mapToObj, pipe, prop, reduce, tap } from 'remeda'
-import type { ElementModel } from '../../model/ElementModel'
+import {
+  concat,
+  filter,
+  find,
+  forEachObj,
+  groupBy,
+  hasAtLeast,
+  map,
+  mapToObj,
+  pipe,
+  prop,
+  reduce,
+  tap,
+} from 'remeda'
+import type { ElementModel, LikeC4ViewModel } from '../../model'
 import type { RelationshipModel } from '../../model/RelationModel'
 import {
+  type AnyAux,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -24,6 +38,7 @@ import { invariant, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
 import type { RelationshipsViewData } from './_types'
+import { resolveRelationshipNodeStyle } from './resolve-node-style'
 import { treeFromElements } from './utils'
 
 /**
@@ -194,8 +209,88 @@ function toStraightBezierSpline(points: Point[]): NonEmptyArray<Point> {
   return spline
 }
 
-export function layoutRelationshipsView(
-  data: RelationshipsViewData<any>,
+type Bounds = Pick<DiagramNode, 'x' | 'y' | 'width' | 'height'>
+type BoundsSide = 'top' | 'bottom' | 'left' | 'right'
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function clampPointToBounds([x, y]: Point, { x: minX, y: minY, width, height }: Bounds): Point {
+  return [
+    clamp(x, minX, minX + width),
+    clamp(y, minY, minY + height),
+  ]
+}
+
+function overflowSide([x, y]: Point, { x: minX, y: minY, width, height }: Bounds): BoundsSide | null {
+  const maxX = minX + width
+  const maxY = minY + height
+  switch (true) {
+    case y < minY:
+      return 'top'
+    case y > maxY:
+      return 'bottom'
+    case x < minX:
+      return 'left'
+    case x > maxX:
+      return 'right'
+    default:
+      return null
+  }
+}
+
+function overlapsSide([x, y]: Point, { x: minX, y: minY, width, height }: Bounds, side: BoundsSide) {
+  const maxX = minX + width
+  const maxY = minY + height
+  switch (side) {
+    case 'top':
+      return y < minY && x >= minX && x <= maxX
+    case 'bottom':
+      return y > maxY && x >= minX && x <= maxX
+    case 'left':
+      return x < minX && y >= minY && y <= maxY
+    case 'right':
+      return x > maxX && y >= minY && y <= maxY
+  }
+}
+
+function clampPointToSide([x, y]: Point, { x: minX, y: minY, width, height }: Bounds, side: BoundsSide): Point {
+  switch (side) {
+    case 'top':
+      return [x, minY]
+    case 'bottom':
+      return [x, minY + height]
+    case 'left':
+      return [minX, y]
+    case 'right':
+      return [minX + width, y]
+  }
+}
+
+function clampTerminalSegmentToBounds(points: Point[], bounds: Bounds, terminal: 'start' | 'end') {
+  const terminalIndex = terminal === 'start' ? 0 : points.length - 1
+  const side = overflowSide(points[terminalIndex]!, bounds)
+  points[terminalIndex] = clampPointToBounds(points[terminalIndex]!, bounds)
+  if (!side) {
+    return
+  }
+
+  if (terminal === 'start') {
+    for (let i = 1; i < points.length && overlapsSide(points[i]!, bounds, side); i++) {
+      points[i] = clampPointToSide(points[i]!, bounds, side)
+    }
+    return
+  }
+
+  for (let i = points.length - 2; i >= 0 && overlapsSide(points[i]!, bounds, side); i--) {
+    points[i] = clampPointToSide(points[i]!, bounds, side)
+  }
+}
+
+export function layoutRelationshipsView<M extends AnyAux>(
+  data: RelationshipsViewData<M>,
+  scope: LikeC4ViewModel<M> | null = null,
 ): Pick<DiagramView, 'nodes' | 'edges' | 'bounds'> {
   const g = createGraph()
 
@@ -207,7 +302,7 @@ export function layoutRelationshipsView(
     name: string
     source: string // node id
     target: string // node id
-    relations: RelationshipModel[]
+    relations: RelationshipModel<M>[]
   }>
 
   pipe(
@@ -350,7 +445,7 @@ export function layoutRelationshipsView(
     // }
     const children = (g.children(id) as NodeId[] | undefined ?? []).filter(c => !c.endsWith(PortSuffix))
 
-    const { color, icon, shape, ...style } = element.style
+    const resolvedStyle = resolveRelationshipNodeStyle(scope, element)
 
     return exact({
       id: id as NodeId,
@@ -362,9 +457,9 @@ export function layoutRelationshipsView(
       technology: element.technology,
       tags: [],
       links: null,
-      color,
-      icon,
-      shape,
+      color: resolvedStyle.color,
+      icon: resolvedStyle.icon,
+      shape: resolvedStyle.shape,
       modelRef: element.id,
       kind: element.kind,
       level: nodeLevel(id),
@@ -374,7 +469,7 @@ export function layoutRelationshipsView(
         width: width,
         height: height,
       },
-      style,
+      style: resolvedStyle.style,
       inEdges: [],
       outEdges: [],
       depth: children.length > 0 ? nodeDepth(id) : 0,
@@ -383,6 +478,8 @@ export function layoutRelationshipsView(
       height,
     })
   })
+
+  const nodesById = new Map<NodeId, DiagramNode>(nodes.map(node => [node.id, node]))
 
   const diagramEdges = g.edges().reduce((acc, e) => {
     const edge = g.edge(e)
@@ -394,12 +491,23 @@ export function layoutRelationshipsView(
     invariant(edgeData, `Edge ${ename} has no relationship data`)
     const onlyRelation = edgeData.relations.length === 1 ? edgeData.relations[0] : null
     const edgeId = edgeData.name as EdgeId
+    const sourceId = edgeData.source as NodeId
+    const targetId = edgeData.target as NodeId
+    const source = nodesById.get(sourceId)
+    const target = nodesById.get(targetId)
+    invariant(source, `Edge ${ename} has no source node ${edgeData.source}`)
+    invariant(target, `Edge ${ename} has no target node ${edgeData.target}`)
+
+    // Keep exported geometry valid for direct LayoutedView consumers, even though current source generators ignore it.
+    const points = edge.points.map<Point>(p => [p.x, p.y])
+    clampTerminalSegmentToBounds(points, source, 'start')
+    clampTerminalSegmentToBounds(points, target, 'end')
 
     acc.push(exact({
       id: edgeId,
       parent: null,
-      source: edgeData.source as NodeId,
-      target: edgeData.target as NodeId,
+      source: sourceId,
+      target: targetId,
       label: onlyRelation ? onlyRelation.title ?? 'untitled' : `${edgeData.relations.length} relationships`,
       description: onlyRelation?.description.$source ?? null,
       technology: onlyRelation?.technology ?? null,
@@ -410,7 +518,7 @@ export function layoutRelationshipsView(
       head: onlyRelation?.head,
       tail: onlyRelation?.tail,
       navigateTo: onlyRelation?.navigateTo?.id ?? null,
-      points: toStraightBezierSpline(edge.points.map(p => [p.x, p.y])),
+      points: toStraightBezierSpline(points),
       labelBBox: null,
     }))
     return acc

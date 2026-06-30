@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 import { canvas } from '../helpers/selectors'
 import { TIMEOUT_CANVAS, TIMEOUT_MENU } from '../helpers/timeouts'
@@ -63,6 +63,31 @@ const COLOR_SCHEME_ATTR = 'data-mantine-color-scheme'
 async function gotoAndWaitForCanvas(page: Page, url: string): Promise<void> {
   await page.goto(url)
   await expect(canvas(page)).toBeVisible({ timeout: TIMEOUT_CANVAS })
+}
+
+async function visibleNodeContainer(page: Page, rootSelector: string, nodeText: string): Promise<Locator> {
+  const node = page.locator(`${rootSelector} .react-flow__node`, { hasText: nodeText }).first()
+  await expect(node).toBeVisible({ timeout: TIMEOUT_CANVAS })
+
+  const container = node.locator('[data-likec4-color]').first()
+  await expect(container).toBeVisible({ timeout: TIMEOUT_CANVAS })
+  return container
+}
+
+async function visibleNodeVisualAttributes(container: Locator): Promise<Record<string, string | null>> {
+  return {
+    color: await container.getAttribute('data-likec4-color'),
+    shape: await container.getAttribute('data-likec4-shape'),
+    size: await container.getAttribute('data-likec4-shape-size'),
+    spacing: await container.getAttribute('data-likec4-spacing'),
+    textSize: await container.getAttribute('data-likec4-text-size'),
+    paletteFill: await container.evaluate(element =>
+      getComputedStyle(element).getPropertyValue('--likec4-palette-fill').trim()
+    ),
+    paletteStroke: await container.evaluate(element =>
+      getComputedStyle(element).getPropertyValue('--likec4-palette-stroke').trim()
+    ),
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -169,6 +194,62 @@ test.describe('?relationships= search parameter', () => {
     await expect(page.getByText('all points should be consumed')).toHaveCount(0)
     await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
     await expect(page.locator('.react-flow__edge').first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+  })
+
+  test('?relationships=<fqn> image export keeps relationship browser node styling', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    const browserCustomer = await visibleNodeContainer(page, RELATIONSHIPS_BROWSER, 'Cloud System Customer')
+    const browserVisuals = await visibleNodeVisualAttributes(browserCustomer)
+
+    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    const exportCustomer = await visibleNodeContainer(page, '[data-testid="export-page"]', 'Cloud System Customer')
+    expect(await exportCustomer.getAttribute('data-likec4-color')).toBe(browserVisuals.color)
+    expect(await exportCustomer.getAttribute('data-likec4-shape')).toBe(browserVisuals.shape)
+    expect(await exportCustomer.getAttribute('data-likec4-shape-size')).toBe(browserVisuals.size)
+    expect(await exportCustomer.getAttribute('data-likec4-spacing')).toBe(browserVisuals.spacing)
+    expect(await exportCustomer.getAttribute('data-likec4-text-size')).toBe(browserVisuals.textSize)
+    expect(
+      await exportCustomer.evaluate(element =>
+        getComputedStyle(element).getPropertyValue('--likec4-palette-fill').trim()
+      ),
+    ).toBe(browserVisuals.paletteFill)
+    expect(
+      await exportCustomer.evaluate(element =>
+        getComputedStyle(element).getPropertyValue('--likec4-palette-stroke').trim()
+      ),
+    ).toBe(browserVisuals.paletteStroke)
+  })
+
+  test('?relationships=<fqn> image export keeps relationship browser graph detail', async ({ page }) => {
+    const detailedNodes = [
+      'Customer Dashboard',
+      'Legacy Backend Services',
+      'PostgreSQL',
+      'Raw Data',
+    ] as const
+
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    for (const nodeTitle of detailedNodes) {
+      await expect(page.locator(`${RELATIONSHIPS_BROWSER} .react-flow__node`, { hasText: nodeTitle }))
+        .toHaveCount(1)
+    }
+
+    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    for (const nodeTitle of detailedNodes) {
+      await expect(page.locator('[data-testid="export-page"] .react-flow__node', { hasText: nodeTitle }))
+        .toHaveCount(1)
+    }
+  })
+
+  test('?relationships=<fqn> image export renders relationship browser edge labels', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    const browserLabels = page.locator(`${RELATIONSHIPS_BROWSER} .likec4-edge-label`)
+    await expect.poll(() => browserLabels.count()).toBeGreaterThan(0)
+    const browserLabelCount = await browserLabels.count()
+
+    await gotoAndWaitForCanvas(page, exportUrl(STATIC_VIEW, { relationships: 'cloud', relationshipScope: 'view' }))
+    await expect(page.locator(`[data-testid="export-page"] ${RELATIONSHIPS_BROWSER}`)).toHaveCount(1)
+    await expect(page.locator('[data-testid="export-page"] .likec4-edge-label')).toHaveCount(browserLabelCount)
   })
 
   test('absent ?relationships= does not open overlay', async ({ page }) => {

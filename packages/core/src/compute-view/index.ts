@@ -18,6 +18,7 @@ export {
   computeRelationshipViewExport,
   layoutRelationshipsView,
   relationshipViewExportId,
+  resolveRelationshipNodeStyle,
   treeFromElements,
 } from './relationships-view'
 export type {

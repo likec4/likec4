@@ -22,7 +22,9 @@ const testState = vi.hoisted(() => ({
     relationships: undefined as string | undefined,
     relationshipScope: undefined as string | undefined,
   },
-  model: {},
+  model: {
+    findElement: (id: string) => id === 'missing' ? null : {},
+  },
 }))
 
 vi.mock('@likec4/diagram', () => ({

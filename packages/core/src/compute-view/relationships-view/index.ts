@@ -14,4 +14,5 @@ export {
   type RelationshipViewExportScope,
 } from './export-view'
 export { layoutRelationshipsView } from './layout'
+export { resolveRelationshipNodeStyle } from './resolve-node-style'
 export { treeFromElements } from './utils'
