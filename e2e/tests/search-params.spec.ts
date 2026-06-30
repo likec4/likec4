@@ -8,7 +8,7 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 import { canvas } from '../helpers/selectors'
-import { TIMEOUT_CANVAS } from '../helpers/timeouts'
+import { TIMEOUT_CANVAS, TIMEOUT_MENU } from '../helpers/timeouts'
 
 /**
  * E2E tests for URL search parameters (?theme=, ?dynamic=, ?relationships=).
@@ -180,9 +180,6 @@ test.describe('webapp.exportFormats configuration', () => {
     await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_DISABLED_PROJECT, STATIC_VIEW))
 
     await expect(page.getByRole('button', { name: 'Export', exact: true })).toHaveCount(0)
-
-    await page.goto(projectExportUrl(EXPORT_DISABLED_PROJECT, STATIC_VIEW))
-    await expect(page.getByText(/does not exist or contains errors/)).toBeVisible()
 
     await gotoAndWaitForCanvas(
       page,

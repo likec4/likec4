@@ -23,10 +23,7 @@ import {
   useMatches,
 } from '@tanstack/react-router'
 import { memo, useCallback, useState } from 'react'
-import {
-  enabledWebappExportFormats,
-  isWebappExportFormatEnabled,
-} from '../../export-formats'
+import { enabledWebappExportFormats } from '../../export-formats'
 import { useCurrentProject, useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { NavigationPanel } from './NavigationPanel'
@@ -104,7 +101,7 @@ function ExportButton() {
   const [isDrawioLoading, setIsDrawioLoading] = useState(false)
   const project = useCurrentProject()
   const viewId = useCurrentViewId()
-  const enabledFormats = enabledWebappExportFormats(project)
+  const enabledFormats = new Set(enabledWebappExportFormats(project))
 
   const handleDrawioExport = useCallback(async () => {
     try {
@@ -120,7 +117,7 @@ function ExportButton() {
     }
   }, [project.id, viewId])
 
-  if (enabledFormats.length === 0) {
+  if (enabledFormats.size === 0) {
     return null
   }
 
@@ -140,7 +137,7 @@ function ExportButton() {
 
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
-        {isWebappExportFormatEnabled(project, 'png') && (
+        {enabledFormats.has('png') && (
           <MenuItem
             renderRoot={(props) => (
               <Link
@@ -153,7 +150,7 @@ function ExportButton() {
             Export as .png
           </MenuItem>
         )}
-        {isWebappExportFormatEnabled(project, 'jpg') && (
+        {enabledFormats.has('jpg') && (
           <MenuItem
             renderRoot={(props) => (
               <Link
@@ -166,7 +163,7 @@ function ExportButton() {
             Export as .jpg
           </MenuItem>
         )}
-        {isWebappExportFormatEnabled(project, 'dot') && (
+        {enabledFormats.has('dot') && (
           <MenuItem
             renderRoot={(props) => (
               <Link
@@ -178,7 +175,7 @@ function ExportButton() {
             Export as .dot
           </MenuItem>
         )}
-        {isWebappExportFormatEnabled(project, 'd2') && (
+        {enabledFormats.has('d2') && (
           <MenuItem
             renderRoot={(props) => (
               <Link
@@ -190,7 +187,7 @@ function ExportButton() {
             Export as .d2
           </MenuItem>
         )}
-        {isWebappExportFormatEnabled(project, 'mmd') && (
+        {enabledFormats.has('mmd') && (
           <MenuItem
             renderRoot={(props) => (
               <Link
@@ -201,7 +198,7 @@ function ExportButton() {
             Export as .mmd
           </MenuItem>
         )}
-        {isWebappExportFormatEnabled(project, 'puml') && (
+        {enabledFormats.has('puml') && (
           <MenuItem
             renderRoot={(props) => (
               <Link
@@ -212,7 +209,7 @@ function ExportButton() {
             Export as .puml
           </MenuItem>
         )}
-        {isWebappExportFormatEnabled(project, 'drawio') && (
+        {enabledFormats.has('drawio') && (
           <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
         )}
         <MenuItem disabled>Export to Miro</MenuItem>
