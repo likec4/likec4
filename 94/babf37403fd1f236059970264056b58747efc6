@@ -1,0 +1,26 @@
+packages/likec4-spa/src/relationship-source-route.spec.ts
+  s_9d49268b9f9845::t_bc7838a558b91b 37-39
+  s_9d49268b9f9845::t_1b4a9028cf6900 1-36,40-60
+packages/likec4-spa/src/pages/ExportPage.spec.ts
+  s_9d49268b9f9845::t_ff647c0e308515 22-23,25,57-60,72,76-90,95-96,105-113
+packages/likec4-spa/src/pages/ExportPage.tsx
+  s_9d49268b9f9845::t_d950ec29b5216a 17,134-144,147-150
+packages/likec4-spa/src/relationship-source-route.ts
+  s_9d49268b9f9845::t_8603fb1d3d4c73 6,32,35-37,52,55-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.4",
+  "base_commit_sha": "94babf37403fd1f236059970264056b58747efc6",
+  "prompts": {},
+  "sessions": {
+    "s_9d49268b9f9845": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e3160-e22f-7933-b103-972b757381b8",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
