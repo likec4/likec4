@@ -9,8 +9,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "generate": "tsdown",
-    "build": "tsdown",
+    "sources": "tsdown",
     "typecheck": "tsc --noEmit",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
