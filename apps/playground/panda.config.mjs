@@ -1,4 +1,4 @@
-import { defineConfig } from '@likec4/style-preset/dev'
+import { defineConfig } from '@likec4/styles/dev'
 
 export default defineConfig({
   clean: true,
