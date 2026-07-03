@@ -6,13 +6,12 @@ import { edgeLabel } from '@likec4/styles/recipes'
 import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type ReactNode, forwardRef } from 'react'
-import { isNumber, isTruthy } from 'remeda'
+import { isTruthy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
 
 type Data = UndefinedOnPartialDeep<
-  & { index?: number }
-  & Pick<
+  Pick<
     DiagramEdge,
     | 'label'
     | 'technology'
@@ -24,6 +23,8 @@ type EdgeLabelProps =
   & {
     children?: ReactNode
     edgeProps: BaseEdgePropsWithData<Data>
+    isSequenceStep?: boolean
+    stepNum?: number
     pointerEvents?: 'all' | 'none'
   }
 
@@ -34,12 +35,13 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       data: {
         label,
         technology,
-        index,
         hovered: isHovered = false,
       },
       selected = false,
       selectable = false,
     },
+    isSequenceStep: isStepEdge = false,
+    stepNum,
     pointerEvents = 'all',
     className,
     children,
@@ -47,8 +49,6 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   },
   ref,
 ) => {
-  const stepNum = isStepEdgeId(id) ? (isNumber(index) ? index + 1 : extractStep(id)) : null
-  const isStepEdge = stepNum !== null
   const hasLabel = isTruthy(label) || isTruthy(technology)
 
   return (
@@ -70,7 +70,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       }}
       {...rest}
     >
-      {stepNum !== null && (
+      {isStepEdge && stepNum && (
         <Box className={'likec4-edge-label__step-number'}>
           {stepNum}
         </Box>

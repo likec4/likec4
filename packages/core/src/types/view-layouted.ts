@@ -176,7 +176,6 @@ export namespace LayoutedDynamicView {
     export interface SubflowArea {
       readonly id: scalar.StepPath
       readonly _type: DynamicViewFlow.SubFlowType
-      readonly zIndex: number
       readonly x: number
       readonly y: number
       readonly width: number

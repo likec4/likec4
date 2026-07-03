@@ -47,7 +47,7 @@ const updateActiveWalkthroughState = () =>
     }
     invariant(isDynamicView(context.view))
     let processedSteps
-    if (step.data.index > 0) {
+    if (step.data.stepnum > 1) {
       const flowOps = dynamicViewFlow(context.view)
       processedSteps = new Set(flowOps.stepsBefore(stepId))
     } else {
@@ -70,7 +70,7 @@ const updateActiveWalkthroughState = () =>
             dimmed: false,
           })
         }
-        if (edge.data.index <= step.data.index) {
+        if (edge.type === 'seq-step' && edge.data.stepnum <= step.data.stepnum) {
           return Base.setData(edge, {
             active: false,
             state: 'skipped',
@@ -133,7 +133,7 @@ const clearWalkthroughState = () =>
 const emitWalkthroughStarted = () =>
   machine.emit(({ context }) => {
     const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
-    invariant(edge, 'Invalid walkthrough state')
+    invariant(edge && edge.type === 'seq-step', 'Invalid walkthrough state')
     return {
       type: 'walkthroughStarted',
       edge,
@@ -149,7 +149,7 @@ const emitWalkthroughStopped = () =>
 const emitWalkthroughStep = () =>
   machine.emit(({ context }) => {
     const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
-    invariant(edge, 'Invalid walkthrough state')
+    invariant(edge && edge.type === 'seq-step', 'Invalid walkthrough state')
     return {
       type: 'walkthroughStep',
       edge,
@@ -184,8 +184,8 @@ export const walkthrough = machine.createStateConfig({
   ],
   exit: [
     stopHotKeyActor(),
-    returnViewportBefore(),
     clearWalkthroughState(),
+    returnViewportBefore(),
     emitWalkthroughStopped(),
   ],
   on: {
@@ -240,9 +240,9 @@ export const walkthrough = machine.createStateConfig({
       },
       {
         actions: [
-          assign(({ context, event }) => {
+          assign(({ event }) => {
+            invariant(event.edge.type === 'seq-step', `Expected seq-step edge, but got "${event.edge.type}"`)
             const stepId = event.edge.data.id
-            invariant(context.xyedges.find(e => e.data.id === stepId) && isStepPath(stepId))
             return {
               activeWalkthrough: {
                 stepId,

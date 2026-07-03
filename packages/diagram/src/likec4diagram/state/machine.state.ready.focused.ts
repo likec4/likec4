@@ -13,7 +13,6 @@ import {
   focusOnNodesAndEdges,
   openElementDetails,
   openSourceOfFocusedOrLastClickedNode,
-  resetLastClickedNode,
   returnViewportBefore,
   startAutoUnfocusTimer,
   startHotKeyActor,

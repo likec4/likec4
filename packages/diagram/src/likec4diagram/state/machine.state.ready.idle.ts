@@ -1,4 +1,4 @@
-import type { StepEdgeId } from '@likec4/core'
+import type { StepPath } from '@likec4/core'
 import { raise } from 'xstate/actions'
 import { and, or } from 'xstate/guards'
 import {
@@ -100,7 +100,7 @@ export const idle = machine.createStateConfig({
         resetLastClickedNode(),
         raise(({ event }) => ({
           type: 'walkthrough.start',
-          stepId: event.edge.id as StepEdgeId,
+          stepId: event.edge.data.id as StepPath,
         })),
         emitEdgeClick(),
       ],

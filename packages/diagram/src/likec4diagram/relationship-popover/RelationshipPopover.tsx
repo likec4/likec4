@@ -44,18 +44,18 @@ import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagram, useDiagramContext, useOnDiagramEvent } from '../../hooks/useDiagram'
+import { selectDiagramActorContext, useDiagram, useDiagramSnapshot, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { roundDpr } from '../../utils'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
 import { Endpoint, RelationshipTitle } from './components'
 
-function selectDiagramContext(c: DiagramContext) {
+const selector = selectDiagramActorContext(c => {
   let selected: EdgeId | null = null
   for (const edge of c.xyedges) {
     if (edge.selected) {
+      // If only one edge is selected
       if (selected) {
         selected = null
         break
@@ -67,15 +67,28 @@ function selectDiagramContext(c: DiagramContext) {
     viewId: c.view.id,
     selected,
   }
-}
+})
 
 export const RelationshipPopover = memo(() => {
   const likec4model = useLikeC4Model()
   const actorRef = useActorRef(RelationshipPopoverActorLogic)
   const diagram = useDiagram()
-  const { viewId, selected } = useDiagramContext(selectDiagramContext)
+  const { viewId, selected } = useDiagramSnapshot(selector)
 
   const openedEdgeId = useSelector(actorRef, s => s.hasTag('opened') ? s.context.edgeId : null)
+
+  const { diagramEdge, sourceNode, targetNode } = useDiagramSnapshot(
+    useCallback(({ context: ctx }) => {
+      const diagramEdge = openedEdgeId ? findDiagramEdge(ctx, openedEdgeId) : null
+      const sourceNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.source) : null
+      const targetNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.target) : null
+      return ({
+        diagramEdge,
+        sourceNode,
+        targetNode,
+      })
+    }, [openedEdgeId]),
+  )
 
   useOnDiagramEvent('navigateTo', () => {
     actorRef.send({ type: 'close' })
@@ -122,21 +135,6 @@ export const RelationshipPopover = memo(() => {
       diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
     }
   }, [actorRef, diagram, openedEdgeId])
-
-  const { diagramEdge, sourceNode, targetNode } = useDiagramContext(
-    ctx => {
-      const diagramEdge = openedEdgeId ? findDiagramEdge(ctx, openedEdgeId) : null
-      const sourceNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.source) : null
-      const targetNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.target) : null
-      return ({
-        diagramEdge,
-        sourceNode,
-        targetNode,
-      })
-    },
-    shallowEqual,
-    [openedEdgeId],
-  )
 
   if (!diagramEdge || !sourceNode || !targetNode || isEmpty(diagramEdge.relations)) {
     return null

@@ -403,45 +403,45 @@ describe('flowHelpers.isBefore', () => {
   })
 })
 
-describe('flowHelpers.isInside', () => {
-  // `isInside` is prefix-based: a step is "inside" a flow when its path starts
+describe('flowHelpers.includes', () => {
+  // `includes` is prefix-based: a step is "inside" a flow when its path starts
   // with the flow's id. The data-first form takes the flow first
-  // (`isInside(flow, step)`); the curried form takes the step first
-  // (`isInside(step)(flow)`). Both answer "is `step` inside `flow`?".
+  // (`includes(flow, step)`); the curried form takes the step first
+  // (`includes(step)(flow)`). Both answer "is `step` inside `flow`?".
   it('returns true for a step directly inside a flow', () => {
-    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, sp('step-02:opt.01'))).toBe(true)
+    expect(flowHelpers.includes({ id: sp('step-02:opt') }, sp('step-02:opt.01'))).toBe(true)
   })
 
   it('returns true for a deeply nested step inside an outer flow', () => {
-    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, sp('step-02:opt.02:alt.01:when.01'))).toBe(true)
+    expect(flowHelpers.includes({ id: sp('step-02:opt') }, sp('step-02:opt.02:alt.01:when.01'))).toBe(true)
   })
 
   it('returns true for a step inside its innermost flow', () => {
     expect(
-      flowHelpers.isInside({ id: sp('step-02:opt.02:alt.01:when') }, sp('step-02:opt.02:alt.01:when.01')),
+      flowHelpers.includes({ id: sp('step-02:opt.02:alt.01:when') }, sp('step-02:opt.02:alt.01:when.01')),
     ).toBe(true)
   })
 
   it('returns false for an unrelated top-level step', () => {
-    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, sp('step-01'))).toBe(false)
+    expect(flowHelpers.includes({ id: sp('step-02:opt') }, sp('step-01'))).toBe(false)
   })
 
   it('returns false for a step in a sibling branch', () => {
     expect(
-      flowHelpers.isInside({ id: sp('step-02:opt.02:alt.01:when') }, sp('step-02:opt.02:alt.02:else.01')),
+      flowHelpers.includes({ id: sp('step-02:opt.02:alt.01:when') }, sp('step-02:opt.02:alt.02:else.01')),
     ).toBe(false)
   })
 
   it('is reflexive — a flow is inside itself', () => {
-    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, { id: sp('step-02:opt') })).toBe(true)
+    expect(flowHelpers.includes({ id: sp('step-02:opt') }, { id: sp('step-02:opt') })).toBe(true)
   })
 
   it('accepts the step given as an `{ id }` object', () => {
-    expect(flowHelpers.isInside({ id: sp('step-02:opt') }, { id: sp('step-02:opt.01') })).toBe(true)
+    expect(flowHelpers.includes({ id: sp('step-02:opt') }, { id: sp('step-02:opt.01') })).toBe(true)
   })
 
-  it('supports the curried (data-last) form: isInside(step)(flow)', () => {
-    const stepInsideOpt = flowHelpers.isInside(sp('step-02:opt.01'))
+  it('supports the curried (data-last) form: includes(step)(flow)', () => {
+    const stepInsideOpt = flowHelpers.includes(sp('step-02:opt.01'))
     expect(stepInsideOpt({ id: sp('step-02:opt') })).toBe(true)
     expect(stepInsideOpt({ id: sp('step-03:opt') })).toBe(false)
   })
@@ -490,20 +490,20 @@ describe('flowHelpers — against a computed view', () => {
     }
   })
 
-  it('isInside is true for a step and each of its ancestor flows', () => {
+  it('includes is true for a step and each of its ancestor flows', () => {
     let nestedChecks = 0
     for (const step of order) {
       for (const ancestor of flowAncestors(step)) {
-        expect(flowHelpers.isInside({ id: ancestor }, step)).toBe(true)
+        expect(flowHelpers.includes({ id: ancestor }, step)).toBe(true)
         nestedChecks++
       }
     }
     invariant(nestedChecks > 0, 'expected the flow to contain nested steps')
   })
 
-  it('isInside is false for a step and a flow that is not its ancestor', () => {
+  it('includes is false for a step and a flow that is not its ancestor', () => {
     const blockStep = sp('step-02:alt.01:when.01:try.01:block.01')
-    expect(flowHelpers.isInside({ id: sp('step-02:alt.01:when.01:try.02:catch') }, blockStep)).toBe(false)
-    expect(flowHelpers.isInside({ id: sp('step-02:alt') }, sp('step-01'))).toBe(false)
+    expect(flowHelpers.includes({ id: sp('step-02:alt.01:when.01:try.02:catch') }, blockStep)).toBe(false)
+    expect(flowHelpers.includes({ id: sp('step-02:alt') }, sp('step-01'))).toBe(false)
   })
 })

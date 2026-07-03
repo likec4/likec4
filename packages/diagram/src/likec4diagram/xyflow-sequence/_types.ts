@@ -22,7 +22,7 @@ export type Spacing = SpacingValue | {
 }
 
 export type Step = {
-  id: EdgeId
+  id: StepPath
   from: {
     column: number
     row: number

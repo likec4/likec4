@@ -207,7 +207,7 @@ export class SequenceViewLayouter {
     this.#solver.updateVariables()
   }
 
-  getSubflowAreas(): Array<{ subflow: DynamicViewFlow.AnySubFlow; box: BBox }> {
+  getSubflowAreas(): Array<{ subflow: DynamicViewFlow.SubFlow.Any; box: BBox }> {
     return [...this.#subflows.entries()].map(([id, { x1, y1, x2, y2 }]) => ({
       subflow: this.#flow.lookup(id),
       box: {

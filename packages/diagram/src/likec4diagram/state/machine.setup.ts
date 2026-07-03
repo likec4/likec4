@@ -12,7 +12,6 @@ import type {
   LayoutType,
   NodeId,
   NodeNotation as ElementNotation,
-  StepEdgeId,
   StepPath,
   ViewChange,
   ViewId,
@@ -54,7 +53,7 @@ export interface NavigationHistoryEntry {
   // If Dynamic View
   dynamicViewVariant?: DynamicViewDisplayVariant | null
   // If there was an active walkthrough
-  activeWalkthrough?: null | StepEdgeId
+  activeWalkthrough?: null | StepPath
 }
 
 export interface NavigationHistory {
@@ -211,8 +210,8 @@ export type EmittedEvents =
   | { type: 'edgeClick'; edge: DiagramEdge; xyedge: Types.Edge }
   | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
-  | { type: 'walkthroughStarted'; edge: Types.Edge }
-  | { type: 'walkthroughStep'; edge: Types.Edge }
+  | { type: 'walkthroughStarted'; edge: Types.Edge<'seq-step'> }
+  | { type: 'walkthroughStep'; edge: Types.Edge<'seq-step'> }
   | { type: 'walkthroughStopped' }
   | { type: 'onLayoutTypeChange'; layoutType: LayoutType }
 

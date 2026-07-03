@@ -9,11 +9,11 @@ import {
   type ViewId,
   type XYPoint,
   dynamicViewFlow,
-  flowGuards,
+  hasProp,
   NodeId,
 } from '@likec4/core/types'
 import { flatMap, isArray } from 'remeda'
-import type { Writable } from 'type-fest'
+import type { SetNonNullable, SetRequired, Writable } from 'type-fest'
 import type { Types } from '../types'
 import {
   SeqParallelAreaColor,
@@ -23,8 +23,9 @@ import { calcSequenceLayout } from './sequence-view'
 
 type Ctx = {
   view: Omit<LayoutedDynamicView, 'sequenceLayout' | 'flow'>
-  flow: DynamicViewFlowOps
+  flow: DynamicViewFlowOps | undefined
   layout: LayoutedDynamicView.Sequence.Layout
+  subflowArea: (id: StepPath) => LayoutedDynamicView.Sequence.SubflowArea | undefined
 }
 
 /**
@@ -39,13 +40,14 @@ export function sequenceLayoutToXY(
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
   layout: LayoutedDynamicView.Sequence.Layout
-  bounds: BBox
 } {
-  const flow = dynamicViewFlow(view)
+  const flow = hasProp(view, 'flow') ? dynamicViewFlow(view) : undefined
+  const layout = flow ? calcSequenceLayout(view, flow) : view.sequenceLayout
   const ctx: Ctx = {
     view,
     flow,
-    layout: calcSequenceLayout(view),
+    layout,
+    subflowArea: (id: StepPath) => layout.subflows.find((area) => area.id === id),
   }
   const { actors, steps, compounds, parallelAreas, subflows, bounds } = ctx.layout
 
@@ -62,8 +64,8 @@ export function sequenceLayoutToXY(
     xynodes.push(toCompoundArea(compound, getNode(compound.origin), view))
   }
 
-  // In manual layouts, subflows are emtpy
-  if (isArray(subflows)) {
+  // In manual snapshots, subflows are emtpy
+  if (isArray(subflows) && hasProp(ctx, 'flow')) {
     xynodes.push(...flatMap(subflows, s => mapSubflows(s, ctx) ?? []))
   } else {
     for (const parallelArea of parallelAreas) {
@@ -77,20 +79,20 @@ export function sequenceLayoutToXY(
     xynodes.push(toSeqActorNode(actor, getNode(actor.id), bounds, view))
   }
 
-  let stepIndex = 0
+  let stepnum = 1
   for (const step of steps) {
     const edge = view.edges.find((e) => e.id === step.id)
     if (!edge) {
-      throw new Error(`Edge ${step.id} not found`)
+      console.error(`Step Edge "${step.id}" not found`)
+      continue
     }
-    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id, stepIndex++, ctx))
+    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id, stepnum++, ctx))
   }
 
   return {
     xynodes,
     xyedges,
-    layout: ctx.layout,
-    bounds,
+    layout,
   }
 }
 
@@ -122,7 +124,7 @@ function toCompoundArea(
       // Ignore notes for Compound nodes
       notes: undefined,
     },
-    // zIndex: SeqZIndex.compound,
+    zIndex: SeqZIndex.compound,
     position: {
       x,
       y,
@@ -236,10 +238,10 @@ function toSeqStepEdge(
   { id, labelBBox, sourceHandle, targetHandle }: LayoutedDynamicView.Sequence.Step,
   edge: DiagramEdge,
   currentViewId: ViewId,
-  index: number,
+  stepnum: number,
   { flow }: Ctx,
 ): Types.SequenceStepEdge {
-  const parent = flow.parent(id)
+  let parent = flow?.parent(id)
   return {
     id,
     type: 'seq-step',
@@ -256,7 +258,7 @@ function toSeqStepEdge(
         width: labelBBox?.width ?? edge.labelBBox?.width ?? 32,
         height: labelBBox?.height ?? edge.labelBBox?.height ?? 32,
       },
-      index,
+      stepnum,
       labelXY: null,
       points: edge.points,
       color: edge.color,
@@ -285,33 +287,25 @@ function toSeqStepEdge(
   }
 }
 
-const exclude = [
-  'try-block',
-  'try-catch',
-  'try-finally',
-  'alt-when',
-  'alt-else',
-  'alt-if',
-] as const
-const isExcluded = (v: unknown): v is (typeof exclude)[number] => exclude.includes(v as any)
+type CtxWithFlow = SetNonNullable<Ctx, 'flow'>
 
 function mapSubflows(
   { _type, ...subflow }: LayoutedDynamicView.Sequence.SubflowArea,
-  ctx: Ctx,
+  ctx: CtxWithFlow,
 ): Types.SequenceSubflowArea | undefined {
-  if (isExcluded(_type)) {
+  // Exclude these subflow areas from rendering
+  // (we render them inside parents)
+  if (ctx.flow.guards.type.isAltOrTryBranch(_type)) {
     return undefined
   }
   const { id: ID, x, y, width, height } = subflow
+  const data = subflowAreaData({ ...subflow, _type }, ctx)
   return {
     id: ID,
     type: 'seq-subflow',
-    data: subflowAreaData({ ...subflow, _type }, ctx),
-    zIndex: SeqZIndex.subflows,
-    position: {
-      x,
-      y,
-    },
+    data,
+    zIndex: SeqZIndex.subflows + data.level,
+    position: { x, y },
     draggable: false,
     deletable: false,
     selectable: false,
@@ -328,21 +322,23 @@ function mapSubflows(
 
 function subflowAreaData(
   subflow: LayoutedDynamicView.Sequence.SubflowArea & { _type: Types.SequenceSubflowData['flowType'] },
-  { layout: { subflows }, view, flow }: Ctx,
+  ctx: CtxWithFlow,
 ): Types.SequenceSubflowData {
   const { id: ID, _type, x, y, width, height } = subflow
   const id = NodeId(ID)
 
-  const flowData = _type === 'try'
-    ? composeTryData(subflow, flow, subflows)
-    : _type === 'alt'
-    ? composeAltData(subflow, flow, subflows)
-    : { flowType: _type, hasSubflows: flow.hasSubflows(ID) }
+  const flowData =
+    // dprint-ignore
+    _type === 'try'
+      ? composeTryData(subflow, ctx)
+      : _type === 'alt'
+        ? composeAltData(subflow, ctx)
+        : { flowType: _type, hasSubflows: ctx.flow.hasSubflows(ID) }
 
   return {
     id,
     flowId: ID,
-    title: flow.lookup(ID).title ?? '',
+    title: ctx.flow.lookup(ID).title ?? '',
     technology: null,
     color: SeqParallelAreaColor.default,
     shape: 'rectangle',
@@ -350,14 +346,13 @@ function subflowAreaData(
     tags: [],
     x,
     y,
-    level: flow.level(ID),
+    level: ctx.flow.level(ID),
     icon: null,
     width,
     height,
     description: null,
-    viewId: view.id,
+    viewId: ctx.view.id,
     drifts: null,
-    // Ignore notes for Parallel Area nodes
     notes: undefined,
     ...flowData,
   }
@@ -379,37 +374,36 @@ const toSequenceBranch = (
 
 function composeTryData(
   { id, ...parent }: Pick<LayoutedDynamicView.Sequence.SubflowArea, 'id' | 'x' | 'y'>,
-  flow: DynamicViewFlowOps,
-  all: readonly LayoutedDynamicView.Sequence.SubflowArea[],
+  { flow, subflowArea }: CtxWithFlow,
 ): Types.SequenceSubflowData.Try {
-  const findArea = (id: StepPath) => all.find((area) => area.id === id)
-
   const blocks = flow.unwindTry(flow.lookup(id, 'try'))
-  const tryBlockArea = nonNullable(findArea(blocks.tryBlock.id))
-  const catchBlockArea = blocks.catchBlock ? findArea(blocks.catchBlock.id) : undefined
-  const finallyBlockArea = blocks.finallyBlock ? findArea(blocks.finallyBlock.id) : undefined
+
+  const tryBlockArea = nonNullable(subflowArea(blocks.tryBlock.id))
+  const tryBlock = toSequenceBranch(parent, flow, tryBlockArea)
+
+  const catchBlockArea = blocks.catchBlock ? subflowArea(blocks.catchBlock.id) : undefined
+  const catchBlock = catchBlockArea ? toSequenceBranch(parent, flow, catchBlockArea) : undefined
+
+  const finallyBlockArea = blocks.finallyBlock ? subflowArea(blocks.finallyBlock.id) : undefined
+  const finallyBlock = finallyBlockArea ? toSequenceBranch(parent, flow, finallyBlockArea) : undefined
+
   return {
     flowType: 'try' as const,
-    tryBlock: toSequenceBranch(parent, flow, tryBlockArea),
-    catchBlock: catchBlockArea ? toSequenceBranch(parent, flow, catchBlockArea) : undefined,
-    finallyBlock: finallyBlockArea ? toSequenceBranch(parent, flow, finallyBlockArea) : undefined,
-    hasSubflows: flow.hasSubflows(blocks.tryBlock) ||
-      (!!blocks.catchBlock && flow.hasSubflows(blocks.catchBlock)) ||
-      (!!blocks.finallyBlock && flow.hasSubflows(blocks.finallyBlock)),
+    tryBlock,
+    catchBlock,
+    finallyBlock,
+    hasSubflows: tryBlock.hasSubflows || catchBlock?.hasSubflows || finallyBlock?.hasSubflows || false,
   }
 }
 
 function composeAltData(
   { id, ...parent }: Pick<LayoutedDynamicView.Sequence.SubflowArea, 'id' | 'x' | 'y'>,
-  flow: DynamicViewFlowOps,
-  all: readonly LayoutedDynamicView.Sequence.SubflowArea[],
+  { flow, subflowArea }: CtxWithFlow,
 ): Types.SequenceSubflowData.Alt {
-  const findArea = (areaId: StepPath) => all.find((area) => area.id === areaId)
-
-  const branches = flow.nested(id).flatMap(f => {
-    const area = findArea(f.id)
+  const branches = flow.subflows(id).flatMap(f => {
+    const area = subflowArea(f.id)
     if (area) {
-      invariant(flowGuards.type.isAltBranch(area._type))
+      invariant(flow.guards.type.isAltBranch(area._type))
       return {
         ...toSequenceBranch(parent, flow, area),
         flowType: area._type,

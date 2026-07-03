@@ -1,6 +1,6 @@
 import { computeFlow } from '@likec4/core/compute-view'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView, NodeId } from '@likec4/core/types'
-import { dynamicViewFlow, parentFlow } from '@likec4/core/types'
+import { dynamicViewFlow, parentFlow, StepPath } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
 import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
@@ -142,7 +142,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     actors: actors.map(actor => toSeqActor({ actor, ports: actorPorts.get(actor), layout })),
     compounds,
     steps: map(steps, s => ({
-      id: s.id,
+      id: s.id as StepPath,
       sourceHandle: s.id + '_source',
       targetHandle: s.id + '_target',
       ...s.label && ({

@@ -32,7 +32,7 @@ export function createViewChange(
       console.error(`Internal node not found for ${node.id}`)
       return node
     }
-    const xynodedata = xynodes.find(n => n.id === node.id)?.data ?? internal.data
+    const xynodedata = xynodes.find(n => n.data.id === node.id)?.data ?? internal.data
     const position = internal.internals.positionAbsolute
     const { width, height } = getNodeDimensions(internal)
 

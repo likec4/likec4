@@ -79,7 +79,7 @@ export function computeFlow<V extends ComputedDynamicView<any> | LayoutedDynamic
 
   // Steps, loops, opts and pars are always visible; only the branches of an
   // `alt`/`try` are narrowed once that container has been selected into.
-  const walk = (flow: ReadonlyArray<scalar.StepPath | DynamicViewFlow.AnySubFlow>): void => {
+  const walk = (flow: ReadonlyArray<DynamicViewFlow.AnyStep>): void => {
     for (const item of flow) {
       if (isString(item)) {
         // Leaf step: shown because the enclosing flow is shown

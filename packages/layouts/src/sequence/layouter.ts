@@ -171,7 +171,7 @@ export class SequenceViewLayouter {
     this.#solver.updateVariables()
   }
 
-  getSubflowAreas(): Array<{ subflow: DynamicViewFlow.AnySubFlow; box: BBox }> {
+  getSubflowAreas(): Array<{ subflow: DynamicViewFlow.SubFlow.Any; box: BBox }> {
     return [...this.#subflows.entries()].map(([id, { x1, y1, x2, y2 }]) => ({
       subflow: this.#flow.lookup(id),
       box: {
@@ -312,7 +312,7 @@ export class SequenceViewLayouter {
       },
     })
 
-    // const walk = (subflow: DynamicViewFlow.AnySubFlow): Bounding | null => {
+    // const walk = (subflow: DynamicViewFlow.SubFlow.Any): Bounding | null => {
     //   const steps = selectSteps(subflow.id)
     //   if (!hasAtLeast(steps, 1)) {
     //     return null
@@ -486,7 +486,7 @@ export class SequenceViewLayouter {
     min,
     max,
   }: Rect & {
-    subflow: DynamicViewFlow.AnySubFlow
+    subflow: DynamicViewFlow.SubFlow.Any
   }) {
     invariant(!this.#subflows.has(subflow.id))
     const bbox = this.wrapAroundRect({ min, max })

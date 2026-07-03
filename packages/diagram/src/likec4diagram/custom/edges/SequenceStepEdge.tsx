@@ -38,7 +38,7 @@ export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
       break
   }
 
-  const { state } = props.data
+  const { state, stepnum } = props.data
 
   return (
     <EdgeContainer
@@ -60,7 +60,7 @@ export function SequenceStepEdge(props: Types.EdgeProps<'seq-step'>) {
           translate: isBack ? 'translate(-100%, 0)' : undefined,
         }}
       >
-        <EdgeLabel edgeProps={props}>
+        <EdgeLabel edgeProps={props} isSequenceStep stepNum={stepnum}>
           {enableNavigateTo && navigateTo && (
             <EdgeActionButton
               onClick={e => {

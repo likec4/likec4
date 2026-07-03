@@ -7,7 +7,6 @@ import {
   type Color,
   type ComputedDynamicView,
   type ComputedEdge,
-  type DynamicViewFlow,
   type ParsedDynamicView as DynamicView,
   type RelationshipArrowType,
   type RelationshipLineType,
@@ -20,8 +19,9 @@ import {
   stepGuards,
   StepPath,
 } from '../../types'
+import type { DynamicViewFlow } from '../../types/view-dynamic-flow.ts'
 import { imap, intersection, invariant, nonexhaustive, nonNullable, Stack, toArray, union } from '../../utils'
-import { ancestorsFqn, commonAncestor, parentFqn } from '../../utils/fqn'
+import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
@@ -86,6 +86,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         explicits,
       ),
       toArray(),
+      sortParentsFirst,
     )
 
     const rootFlow: ComputingFlow = {
@@ -443,12 +444,12 @@ const mapSubflow = piped(
   map(step => isString(step) ? step : subflow(step)),
 )
 
-function subflow(sub: ComputingFlow): DynamicViewFlow.AnySubFlow {
+function subflow(sub: ComputingFlow): DynamicViewFlow.SubFlow.Any {
   let base = {
     id: sub.id,
     actors: mapActors(sub.actors),
     ...sub.title && { title: sub.title },
-  } satisfies Partial<DynamicViewFlow.AnySubFlow>
+  } satisfies Partial<DynamicViewFlow.SubFlow.Any>
 
   if (sub._type === 'try') {
     const [tryBlock, catchBlock, finallyBlock] = mapSubflow(sub.flow)
@@ -485,7 +486,7 @@ function subflow(sub: ComputingFlow): DynamicViewFlow.AnySubFlow {
     ...base,
     flow: mapSubflow(sub.flow),
     _type: sub._type,
-  } as DynamicViewFlow.AnySubFlow
+  } as DynamicViewFlow.SubFlow.Any
 }
 
 function validateComputingFlow(root: ComputingFlow): DynamicViewFlow {

@@ -9,6 +9,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
+    "generate": "tsdown",
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
     "pack": "pnpm pack",

@@ -292,8 +292,6 @@ export namespace Types {
       >
     >
     & {
-      // Index in array
-      index: number
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       isLabelCustomized?: boolean | undefined
@@ -322,8 +320,7 @@ export namespace Types {
     & {
       id: StepPath
       state?: 'processed' | 'active' | 'skipped' | 'pending' | undefined
-      // Index in array
-      index: number
+      stepnum: number
       parentFlow: null | {
         id: StepPath
         type: DynamicViewFlow.SubFlowType

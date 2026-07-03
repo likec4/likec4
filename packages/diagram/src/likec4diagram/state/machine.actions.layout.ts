@@ -20,7 +20,7 @@ import {
 } from 'xstate'
 import { MinZoom } from '../../base'
 import { calcEdgeBounds } from '../../utils/view-bounds'
-import { machine } from './machine.setup'
+import { type Context, machine } from './machine.setup'
 import {
   activeSequenceBounds,
   focusedBounds,
@@ -113,6 +113,28 @@ export const centerOnNodeOrEdge = () =>
     }
   })
 
+function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
+  const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
+
+  const maxZoom = Math.max(1, transform[2])
+  const viewport = getViewportForBounds(
+    bounds,
+    width,
+    height,
+    MinZoom,
+    maxZoom,
+    context.fitViewPadding,
+  )
+  viewport.x = Math.round(viewport.x)
+  viewport.y = Math.round(viewport.y)
+
+  const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
+
+  panZoom?.setViewport(viewport, animationProps).catch((err) => {
+    console.error('Error during fitDiagram panZoom setViewport', { err })
+  })
+}
+
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
   machine.createAction(({ context, event }) => {
     let bounds: BBox | undefined, duration: number | undefined
@@ -126,26 +148,7 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     // Default values
     bounds ??= viewBounds(context)
     duration ??= 450
-
-    const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
-
-    const maxZoom = Math.max(1, transform[2])
-    const viewport = getViewportForBounds(
-      bounds,
-      width,
-      height,
-      MinZoom,
-      maxZoom,
-      context.fitViewPadding,
-    )
-    viewport.x = Math.round(viewport.x)
-    viewport.y = Math.round(viewport.y)
-
-    const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
-
-    panZoom?.setViewport(viewport, animationProps).catch((err) => {
-      console.error('Error during fitDiagram panZoom setViewport', { err })
-    })
+    fitBoundsInViewport(context, bounds, duration)
   })
 
 export const fitFocusedBounds = (params?: { duration?: number }) =>
@@ -157,25 +160,7 @@ export const fitFocusedBounds = (params?: { duration?: number }) =>
 
     // Priority from params
     duration = params?.duration ?? duration
-
-    const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
-
-    const maxZoom = Math.max(1, transform[2])
-    const viewport = getViewportForBounds(
-      bounds,
-      width,
-      height,
-      MinZoom,
-      maxZoom,
-      context.fitViewPadding,
-    )
-    viewport.x = Math.round(viewport.x)
-    viewport.y = Math.round(viewport.y)
-
-    const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
-    panZoom?.setViewport(viewport, animationProps).catch((err) => {
-      console.error('Error during fitFocusedBounds panZoom setViewport', { err })
-    })
+    fitBoundsInViewport(context, bounds, duration)
   })
 
 const DEFAULT_DELAY = 30
