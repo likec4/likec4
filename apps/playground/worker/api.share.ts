@@ -4,7 +4,7 @@ import type { TagSpecification } from '@likec4/core/types'
 import { isArray, mapToObj } from 'remeda'
 import * as z from 'zod/v4'
 import { SharePlaygroundReqSchema, sharesKV } from './kv'
-import { type SharedPlayground, factory } from './types'
+import { factory } from './types'
 
 const CheckPincodeSchema = z.object({
   pincode: z.string(),
@@ -30,7 +30,8 @@ export const apiShareRoute = factory.createApp()
       )
     }
 
-    return c.json<SharedPlayground>(value)
+    // as unknown to fight with "TS7056: The inferred type of this node exceeds"
+    return c.json(value as unknown)
   })
   .post(
     '/:shareId/check-pincode',

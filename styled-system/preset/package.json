@@ -10,7 +10,7 @@
   "sideEffects": false,
   "scripts": {
     "sources": "tsdown",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",

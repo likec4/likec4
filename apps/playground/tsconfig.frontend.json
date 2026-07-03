@@ -3,7 +3,6 @@
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "src",
     "tsBuildInfoFile": "lib/frontend.tsbuildinfo",
     "target": "esnext",
     "useDefineForClassFields": true,

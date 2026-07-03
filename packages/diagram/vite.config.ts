@@ -81,7 +81,7 @@ export default defineConfig({
       name: 'ship-panda',
       buildStart() {
         this.info('pandacss codegen')
-        execSync('pnpm pandacss codegen', {
+        execSync('pnpm pandacss codegen --clean', {
           stdio: 'inherit',
           cwd: process.cwd(),
         })

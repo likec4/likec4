@@ -12,7 +12,7 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "typecheck": "tsc --build --verbose",
-    "prebuild": "pandacss codegen",
+    "prebuild": "pandacss codegen --clean",
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",

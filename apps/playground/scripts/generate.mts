@@ -1,6 +1,6 @@
 import { existsSync, writeFileSync } from 'node:fs'
 import { platform } from 'node:os'
-import { $ as _$, quotePowerShell, usePowerShell } from 'zx'
+import { $ as _$, fs, quotePowerShell, usePowerShell } from 'zx'
 
 const isWindows = platform() === 'win32'
 // On Windows, zx needs PowerShell (no bash by default in v8+)
@@ -16,6 +16,7 @@ const $ = _$({
 
 await $`tsr generate`
 
+await fs.emptyDir('styled-system')
 await $`pandacss codegen`
 
 const envTemplate = `
