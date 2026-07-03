@@ -1,5 +1,5 @@
 import { isPlainObject, isString, reduce } from 'remeda'
-import type { Expression, NonEmptyArray, Step } from '../types'
+import type { Expression, Fqn, NonEmptyArray, Step } from '../types'
 import { invariant, isNonEmptyArray } from '../utils'
 import type { AnyTypes, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
@@ -42,7 +42,7 @@ export interface AddDynamicViewHelper {
     T extends AnyTypes,
   >(
     id: Id,
-    builder: DynamicViewRulesBuilder<T>,
+    builder: DynamicViewRulesBuilder<NoInfer<T>>,
   ): {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
@@ -62,13 +62,28 @@ export interface AddDynamicViewHelper {
     T extends AnyTypes,
   >(
     id: Id,
-    propsOrTitle: NoInfer<T['NewViewProps']> | string | undefined,
-    builder: (b: DynamicViewBuilder<T>) => DynamicViewBuilder<T>,
-  ): AddDynamicViewRules<Id> & {
+    propsOrTitle: NoInfer<T>['NewViewProps'] | string | undefined,
+    builder: DynamicViewRulesBuilder<NoInfer<T>>,
+  ): {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 }
 
+type $StepArg<T extends AnyTypes> = `${T['Fqn']} -> ${T['Fqn']}`
+
+type $StepArgs<B extends { Types: AnyTypes }> =
+  | [step: $StepArg<B['Types']>]
+  | [
+    step: $StepArg<B['Types']>,
+    props: { title?: string } & ViewPredicate.Custom<B['Types']>,
+  ]
+  | [source: B['Types']['Fqn'], target: B['Types']['Fqn']]
+  | [source: B['Types']['Fqn'], target: B['Types']['Fqn'], props: string]
+  | [
+    source: B['Types']['Fqn'],
+    target: B['Types']['Fqn'],
+    props: { title?: string } & ViewPredicate.Custom<B['Types']>,
+  ]
 /**
  * Adds a step to a dynamic view
  * @example
@@ -85,21 +100,21 @@ export interface AddDynamicViewHelper {
  * @see $step.alt - Alternative steps
  */
 export function $step<
-  B extends LikeC4ViewBuilder<any, any, any>,
+  B extends LikeC4ViewBuilder<AnyTypes, any, any>,
 >(
-  ...args:
-    | [step: `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`]
-    | [
-      step: `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`,
-      props: { title?: string } & ViewPredicate.Custom<NoInfer<B>['Types']>,
-    ]
-    | [source: B['Types']['Fqn'], target: B['Types']['Fqn']]
-    | [source: B['Types']['Fqn'], target: B['Types']['Fqn'], props: string]
-    | [
-      source: B['Types']['Fqn'],
-      target: B['Types']['Fqn'],
-      props: { title?: string } & ViewPredicate.Custom<NoInfer<B>['Types']>,
-    ]
+  ...args: $StepArgs<NoInfer<B>>
+  // | [step: `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`]
+  // | [
+  //   step: `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`,
+  //   props: { title?: string } & ViewPredicate.Custom<NoInfer<B>['Types']>,
+  // ]
+  // | [source: B['Types']['Fqn'], target: B['Types']['Fqn']]
+  // | [source: B['Types']['Fqn'], target: B['Types']['Fqn'], props: string]
+  // | [
+  //   source: B['Types']['Fqn'],
+  //   target: B['Types']['Fqn'],
+  //   props: { title?: string } & ViewPredicate.Custom<NoInfer<B>['Types']>,
+  // ]
 ): (b: B) => B {
   let [source, target, propsOrTitle] = args
   if (isString(target)) {
@@ -157,6 +172,7 @@ function accumulateSteps<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   return steps
 }
 
+type $StepSeries<T extends string> = [T, `-> ${T}`, ...`-> ${T}`[]]
 /**
  * Creates a series of sequential steps
  * (as targeted for testing purposes, limited support for now - no titles, no returns)
@@ -171,19 +187,16 @@ function accumulateSteps<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
  * )
  * ```
  */
-$step.series = <
-  B extends LikeC4ViewBuilder<AnyTypes, any, any>,
-  Fqn extends B['Types']['Fqn'],
->(
-  ...series: [Fqn, `-> ${Fqn}`, ...`-> ${Fqn}`[]]
+$step.series = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
+  ...series: $StepSeries<NoInfer<B>['Types']['Fqn']>
 ): (b: B) => B => {
+  const afterArrow = '-> '.length
   return (b) => {
     const [head, ...tail] = series
-
     const { steps } = reduce(
       tail,
       (acc, step) => {
-        const target = (step as string).substring('-> '.length) as Fqn
+        const target = (step as string).substring(afterArrow) as Fqn
         acc.steps.push({
           source: acc.source,
           target,
@@ -205,6 +218,17 @@ $step.series = <
   }
 }
 
+type $StepOp<T extends AnyTypes> =
+  | ((b: LikeC4ViewBuilder<T, any, any>) => any)
+  | `${T['Fqn']} -> ${T['Fqn']}`
+
+type $StepOps<B extends { Types: AnyTypes }> = Array<$StepOp<B['Types']>>
+
+type $StepTry<OPS> = {
+  try: OPS
+  catch?: OPS
+  finally?: OPS
+}
 /**
  * Creates a try-catch-finally block
  * (as targeted for testing purposes, limited support for now - no titles, no returns)
@@ -229,28 +253,8 @@ $step.series = <
  */
 $step.try = <
   B extends LikeC4ViewBuilder<AnyTypes, any, any>,
-  Fqn extends B['Types']['Fqn'],
 >(
-  opts: {
-    try: Array<
-      (
-        | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-        | `${Fqn} -> ${Fqn}`
-      )
-    >
-    catch?: Array<
-      (
-        | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-        | `${Fqn} -> ${Fqn}`
-      )
-    >
-    finally?: Array<
-      (
-        | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-        | `${Fqn} -> ${Fqn}`
-      )
-    >
-  },
+  opts: $StepTry<$StepOps<NoInfer<B>>>,
 ): (b: B) => B => {
   return (b) => {
     const tryBlock = { steps: accumulateSteps(opts.try) }
@@ -265,15 +269,10 @@ $step.try = <
   }
 }
 
-function makeStepBuilder(type: Step.Any['_type']) {
-  return <
-    B extends LikeC4ViewBuilder<AnyTypes, any, any>,
-  >(
-    ...stepOps: Array<
-      | ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-      | `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`
-    >
-  ): (b: B) => any => {
+function blockBuilder(type: Step.Any['_type']): <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
+  ...stepOps: $StepOps<NoInfer<B>>
+) => (b: B) => any {
+  return (...stepOps) => {
     return (b) => {
       const steps = accumulateSteps(stepOps)
       return b.step({
@@ -298,7 +297,7 @@ function makeStepBuilder(type: Step.Any['_type']) {
  * )
  * ```
  */
-$step.parallel = makeStepBuilder('par')
+$step.parallel = blockBuilder('par')
 
 /**
  * Creates a loop step
@@ -314,7 +313,7 @@ $step.parallel = makeStepBuilder('par')
  * )
  * ```
  */
-$step.loop = makeStepBuilder('loop')
+$step.loop = blockBuilder('loop')
 
 /**
  * Creates an optional step
@@ -330,7 +329,7 @@ $step.loop = makeStepBuilder('loop')
  * )
  * ```
  */
-$step.opt = makeStepBuilder('opt')
+$step.opt = blockBuilder('opt')
 
 /**
  * Creates a step with alternative branches
@@ -377,15 +376,12 @@ $step.alt = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   }
 }
 
-function makeBranchBuilder(type: 'when' | 'if' | 'else') {
-  return <B extends AltBranchBuilder<AnyTypes>>(
-    ...stepOps: Array<
-      | (
-        ((b: LikeC4ViewBuilder<NoInfer<B>['Types'], any, any>) => any)
-      )
-      | `${B['Types']['Fqn']} -> ${B['Types']['Fqn']}`
-    >
-  ): (b: B) => B => {
+function branchBuilder(
+  type: 'when' | 'if' | 'else',
+): <B extends AltBranchBuilder<AnyTypes>>(
+  ...stepOps: $StepOps<NoInfer<B>>
+) => (b: B) => B {
+  return (...stepOps) => {
     return (b) => {
       const steps = accumulateSteps(stepOps)
       return b.addBranch({
@@ -407,7 +403,7 @@ function makeBranchBuilder(type: 'when' | 'if' | 'else') {
  * )
  * ```
  */
-$step.when = makeBranchBuilder('when')
+$step.when = branchBuilder('when')
 
 /**
  * Creates an if branch for alternative steps
@@ -420,7 +416,7 @@ $step.when = makeBranchBuilder('when')
  * )
  * ```
  */
-$step.if = makeBranchBuilder('if')
+$step.if = branchBuilder('if')
 
 /**
  * Creates an else branch for alternative steps
@@ -433,4 +429,4 @@ $step.if = makeBranchBuilder('if')
  * )
  * ```
  */
-$step.else = makeBranchBuilder('else')
+$step.else = branchBuilder('else')

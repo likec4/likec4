@@ -87,19 +87,18 @@ export namespace ViewPredicate {
     or?: never
   }
 
-  export type Custom<Types> = Types extends AnyTypes ? {
-      where?: ViewPredicate.WhereOperator<Types>
-      with?: Simplify<
-        Omit<
-          ModelFqnExpr.Custom['custom'] & ModelRelationExpr.Custom['customRelation'],
-          'expr' | 'relation' | 'navigateTo'
-        > & {
-          kind?: Types['RelationshipKind']
-          navigateTo?: Types['ViewId']
-        }
-      >
-    }
-    : never
+  export type Custom<Types extends AnyTypes> = {
+    where?: ViewPredicate.WhereOperator<Types>
+    with?: Simplify<
+      Omit<
+        ModelFqnExpr.Custom['custom'] & ModelRelationExpr.Custom['customRelation'],
+        'expr' | 'relation' | 'navigateTo'
+      > & {
+        kind?: Types['RelationshipKind']
+        navigateTo?: Types['ViewId']
+      }
+    >
+  }
 }
 
 function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator<Any> {
@@ -168,12 +167,14 @@ function parseWhere(where: ViewPredicate.WhereOperator<AnyTypes>): WhereOperator
   throw new Error(`Unknown where operator: ${where}`)
 }
 
-function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
-  ...args:
-    | [B['Expr']]
-    | [B['TypedExpr']]
-    | [B['Expr'], ViewPredicate.Custom<B['Types']>]
-    | [B['Expr'], B['Expr'], ...B['Expr'][]]
+type $IncludeArgs<B extends LikeC4ViewBuilder<any, any, any>> =
+  | [B['Expr']]
+  | [B['TypedExpr']]
+  | [B['Expr'], ViewPredicate.Custom<B['Types']>]
+  | [B['Expr'], B['Expr'], ...B['Expr'][]]
+
+function $include<B extends LikeC4ViewBuilder<any, any, any>>(
+  ...args: $IncludeArgs<NoInfer<B>>
 ): (b: B) => B {
   return (b) => {
     if (args.length === 2 && typeof args[1] !== 'string' && ('where' in args[1] || 'with' in args[1])) {
@@ -216,12 +217,14 @@ function $include<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   }
 }
 
-function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
-  ...args:
-    | [B['Expr']]
-    | [B['TypedExpr']]
-    | [B['Expr'], ViewPredicate.Custom<B['Types']>]
-    | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
+type $ExcludeArgs<B extends LikeC4ViewBuilder<any, any, any>> =
+  | [B['Expr']]
+  | [B['TypedExpr']]
+  | [B['Expr'], ViewPredicate.Custom<B['Types']>]
+  | [B['TypedExpr'], ViewPredicate.Custom<B['Types']>]
+
+function $exclude<B extends LikeC4ViewBuilder<any, any, any>>(
+  ...args: $ExcludeArgs<NoInfer<B>>
 ): (b: B) => B {
   return (b) => {
     let expr = b.$expr(args[0]) as Expression
@@ -254,7 +257,7 @@ function $exclude<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
  *    )
  *  )
  */
-function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
+function $style<B extends LikeC4ViewBuilder<any, any, any>>(
   element: B['ElementExpr'] | B['TypedExpr'] | NonEmptyArray<B['ElementExpr']>,
   { notation, ...style }: ViewRuleStyle<any>['style'] & { notation?: string },
 ): (b: B) => B {
@@ -268,7 +271,7 @@ function $style<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     })
 }
 
-function $autoLayout<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
+function $autoLayout<B extends LikeC4ViewBuilder<any, any, any>>(
   layout: AutoLayoutDirection,
   margins?: { rank: number; node: number },
 ): (b: B) => B {
@@ -276,7 +279,7 @@ function $autoLayout<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
 }
 
 type Op<T> = (b: T) => T
-function $rules<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(...rules: Op<B>[]): (b: B) => B {
+function $rules<B extends LikeC4ViewBuilder<any, any, any>>(...rules: Array<(b: B) => B>): (b: B) => B {
   return (b) => rules.reduce((b, rule) => rule(b), b)
 }
 

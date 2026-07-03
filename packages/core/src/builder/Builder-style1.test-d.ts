@@ -100,13 +100,17 @@ test('Builder types - style 1', () => {
           'view',
           // @ts-expect-error
           $include('wrong'),
-        ), // rules inside
+        ),
+        // rules inside
         view(
           'view',
-          // @ts-expect-error #tag22 is not defined
-          $include('cloud.backend', {
-            where: 'tag is #tag22',
-          }),
+          $rules(
+            $include('* -> *'),
+            // @ts-expect-error #tag22 is not defined
+            $include('cloud.backend', {
+              where: 'tag is #tag22',
+            }),
+          ),
         ),
         // using with
         view('view').with(
@@ -144,7 +148,14 @@ test('Builder types - style 1', () => {
         viewOf(
           'view-of',
           'cloud.backend.api',
-          { title: 'asdasd' },
+          {
+            title: 'asdasd',
+            tags: [
+              'tag1',
+              // @ts-expect-error
+              'tag22',
+            ],
+          },
           $rules(
             $include('* -> *'),
             // @ts-expect-error

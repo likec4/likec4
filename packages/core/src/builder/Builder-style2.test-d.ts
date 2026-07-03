@@ -104,7 +104,10 @@ test('Builder types - style 2', () => {
     // Test Element View Of
     .views(({ viewOf, $rules, $include }, _) =>
       _(
-        viewOf('view-of', 'cloud.backend'),
+        viewOf('view-of', 'cloud.backend').with(
+          // @ts-expect-error
+          $include('wrong'),
+        ),
         // @ts-expect-error
         viewOf('view-of', 'wrong'),
         viewOf(
@@ -122,29 +125,28 @@ test('Builder types - style 2', () => {
             // @ts-expect-error
             $include('wrong'),
           ),
-        ).with(
-          $include('* -> alice.*'),
-          // @ts-expect-error
-          $include('wrong'),
         ),
         viewOf(
           'view-of',
           // @ts-expect-error
           'cloud.backensd.api',
           'Title',
-        ).with(
-          $include('* -> alice.*'),
-          // @ts-expect-error
-          $include('wrong'),
+          $rules(
+            $include('* -> alice.*'),
+            // @ts-expect-error
+            $include('wrong'),
+          ),
         ),
       )
     )
     // Test Deployment View
-    .views(({ deploymentView, $rules, $include }, _) =>
+    .views(({ deploymentView, $rules, $include, $exclude }, _) =>
       _(
         deploymentView(
           'deployment',
           $rules(
+            $include('prod.*'),
+            $exclude('dev.vm1._'),
             // @ts-expect-error
             $include('pr'),
           ),
@@ -158,6 +160,7 @@ test('Builder types - style 2', () => {
           ),
         ),
         deploymentView('deployment').with(
+          $include('prod.*'),
           // @ts-expect-error
           $include('pr'),
         ),
@@ -205,6 +208,9 @@ test('Builder types - style 2', () => {
             ),
             $step.if(
               'bob -> alice',
+              $step.loop(
+                $step('alice -> cloud'),
+              ),
               'bob -> bob',
             ),
             // @ts-expect-error
@@ -216,6 +222,13 @@ test('Builder types - style 2', () => {
         ),
         dynamicView(
           'dynamic-b',
+          {
+            tags: [
+              'tag2',
+              // @ts-expect-error
+              'tag12',
+            ],
+          },
           $rules(
             $step('cloud.backend', 'alice'),
             $step('cloud.backend -> alice'),
@@ -224,6 +237,13 @@ test('Builder types - style 2', () => {
               'cloud.backend.api -> cloud.backend',
               $step('cloud.backend -> cloud.backend.db'),
               'cloud.backend.db -> cloud.backend.api',
+            ),
+            $step.series(
+              'alice',
+              '-> cloud.frontend',
+              // @ts-expect-error
+              '-> B',
+              '-> cloud.backend.api',
             ),
             $step.parallel(
               'cloud.backend -> cloud.backend.db',

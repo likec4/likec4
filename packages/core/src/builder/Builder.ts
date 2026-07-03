@@ -149,43 +149,85 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Adds views
    *
    * @example
-   *  builder.views(({ view, viewOf, deploymentView, dynamicView, $step, $include, $style, $rules }, _) =>
-   *    _(
-   *      view('view1').with(
-   *        $include('a -> b'),
+   * ```ts
+   * // Element views
+   * builder.views(({ view, viewOf, $include, $style, $rules }, _) =>
+   *   _(
+   *     view('view1').with(
+   *       $include('a -> b'),
+   *     ),
+   *     view('view2', {
+   *       title: 'View 2',
+   *     }).with(
+   *       $include('*')
+   *     ),
+   *     view(
+   *       'view3',
+   *       {
+   *         title: 'View 3',
+   *       },
+   *       $rules(
+   *         $include('*'),
+   *         $style(['*', 'alice'], {
+   *           color: 'red',
+   *         }),
+   *       ),
+   *     ),
+   *     viewOf('viewOfA', 'a', $rules(
+   *       $include('*')
+   *     )),
+   *   )
+   * )
+   * ```
+   *
+   * @example
+   * ```ts
+   * // Deployment views
+   * builder.views(({ deploymentView, $include, $style, $rules }, _) =>
+   *   _(
+   *     deploymentView('deploymentView1').with(
+   *       $include('a -> b')
+   *     ),
+   *     deploymentView(
+   *       'deploymentView2'
+   *       { title: 'View 2' },
+   *       $rules(
+   *         $include('*'),
+   *         $style(['*', 'alice'], {
+   *           color: 'red',
+   *         }),
+   *       ),
+   *     ),
+   *   )
+   * )
+   * ```
+   *
+   * @example
+   * ```ts
+   * // Dynamic views
+   * builder.views(({ dynamicView, $step, $rules }, _) =>
+   *   _(
+   *     dynamicView('dynamicView1').with(
+   *       $step('a -> b'),
+   *       $step.alt(
+   *         $step.when('b -> c'),
+   *         $step.else('b -> e'),
+   *       ),
+   *     ),
+   *     dynamicView(
+   *       'dynamic-b',
+   *       $rules(
+   *         $step('a', 'b'),
+   *         $step('a -> b'),
+   *         $step.loop(
+   *           'a -> b',
+   *           $step.opt('a -> b'),
+   *         ),
+   *       ),
    *      ),
-   *      view('view2', {
-   *        title: 'View 2',
-   *      }).with(
-   *        $include('*')
-   *      ),
-   *      view(
-   *        'view3',
-   *        {
-   *          title: 'View 3',
-   *        },
-   *        $rules(
-   *          $include('*'),
-   *          $style(['*', 'alice'], {
-   *            color: 'red',
-   *          }),
-   *        ),
-   *      ),
-   *      viewOf('viewOfA', 'a').with(
-   *        $include('*')
-   *      ),
-   *      deploymentView('deploymentView1').with(
-   *        $include('a -> b')
-   *      ),
-   *      dynamicView('dynamicView1').with(
-   *        $step('a -> b'),
-   *        $step.alt(
-   *          $step.when('b -> c'),
-   *          $step.else('b -> e'),
-   *        ),
-   *      ),
-   *    )
-   *  )
+   *   )
+   * )
+   * ```
    */
   views<Out extends AnyTypes>(
     callback: ViewsBuilderFunction<T, Out>,
