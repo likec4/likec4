@@ -1,18 +1,28 @@
 import type { BBox, DiagramEdge, DiagramNode, EdgeId, NodeId, StepPath, ViewId } from '@likec4/core/types'
 
-export type Paddings = Partial<
-  {
-    top: number
-    left: number
-    right: number
-    bottom: number
-    x: number
-    y: number
-  }
->
+export type SpacingValue =
+  | number
+  | Partial<
+    {
+      top: number
+      left: number
+      right: number
+      bottom: number
+      x: number
+      y: number
+    }
+  >
+
+export type Spacing = SpacingValue | {
+  padding?: SpacingValue
+  /**
+   * Margin only works between rows
+   */
+  margin?: number | { top: number; bottom: number }
+}
 
 export type Step = {
-  id: EdgeId
+  id: StepPath
   from: {
     column: number
     row: number

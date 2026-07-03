@@ -42,7 +42,11 @@ export function sequenceLayoutToXY(
   layout: LayoutedDynamicView.Sequence.Layout
 } {
   const flow = hasProp(view, 'flow') ? dynamicViewFlow(view) : undefined
+
+  // We calculate sequence layout here only for development purposes
+  // In production, the layout will be already calculated and stored in the view
   const layout = flow ? calcSequenceLayout(view, flow) : view.sequenceLayout
+
   const ctx: Ctx = {
     view,
     flow,
@@ -308,7 +312,7 @@ function mapSubflows(
     position: { x, y },
     draggable: false,
     deletable: false,
-    selectable: false,
+    // selectable: false,
     focusable: false,
     // style: {
     //   pointerEvents: 'none',

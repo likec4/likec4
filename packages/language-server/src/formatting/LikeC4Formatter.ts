@@ -718,7 +718,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         }
       },
     )
-    this.on(node, ast.isBranchSteps, (n, f) => {
+    this.on(node, ast.isSubflowStep, (n, f) => {
       f.property('kind').append(FormattingOptions.oneSpace)
       f.property('title').surround(FormattingOptions.oneSpace)
     })

@@ -5,20 +5,24 @@ import {
   type DynamicViewFlowOps,
   type NonEmptyArray,
   flowAncestors,
+  flowGuards,
   hasProp,
   StepPath,
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
 import * as kiwi from '@lume/kiwi'
-import { defu } from 'defu'
+import defu from 'defu'
 import {
   filter,
+  first,
+  flatMap,
   hasAtLeast,
   last,
   map,
   only,
+  pipe,
 } from 'remeda'
-import type { Compound, Paddings, Rect, Step } from './_types'
+import type { Compound, Rect, Spacing, Step } from './_types'
 import {
   ACTOR_GAP,
   COLUMN_GAP,
@@ -26,16 +30,15 @@ import {
   MIN_ROW_HEIGHT,
   PORT_HEIGHT,
   STEP_LABEL_MARGIN,
-  SUBFLOW_PADDING,
 } from './const'
-import { normalizePaddings, rectFromSteps } from './utils'
+import { normalizeSpacing, rectFromSteps } from './utils'
 
 // const SELF_LOOP_ADDITIONAL_HEIGHT = 50
 
 type CompareOperator = '<=' | '==' | '>='
 type Operator = CompareOperator | `${CompareOperator} 0`
 
-interface Bounding {
+interface BBoxVars {
   // Top-left
   x1: kiwi.Expression | kiwi.Variable
   y1: kiwi.Expression | kiwi.Variable
@@ -44,7 +47,7 @@ interface Bounding {
   y2: kiwi.Expression | kiwi.Variable
 }
 
-interface CompoundRect extends Bounding {
+interface CompoundRect extends BBoxVars {
   node: DiagramNode
   from: ActorBox
   to: ActorBox
@@ -83,6 +86,14 @@ interface ActorBox {
   maxRow: number
 }
 
+const Strength = {
+  required: kiwi.Strength.required,
+  strong: kiwi.Strength.strong,
+  medium: kiwi.Strength.medium,
+  soft: kiwi.Strength.create(0, 0.8, 1.0),
+  weak: kiwi.Strength.weak,
+}
+
 export class SequenceViewLayouter {
   #flow: DynamicViewFlowOps
 
@@ -95,15 +106,35 @@ export class SequenceViewLayouter {
   #viewportRight: kiwi.Variable
   #viewportBottom: kiwi.Variable
   #rowsTop: kiwi.Variable
+  /**
+   * Each row has inner and outer bounds
+   *
+   * ------ outer-top -------
+   * [ subflow stack begins ]
+   * ------ inner-top -------
+   *      [ A ---> B ]
+   * ---- inner-bottom ------
+   * [ subflow stack ends ]
+   * ---- outer-bottom ------
+   */
   #rows = [] as Array<{
-    marginTop: kiwi.Variable
-    y: kiwi.Variable | kiwi.Expression
     height: kiwi.Variable
-    bottom: kiwi.Expression
-    lastHeight: number
+    topGap: kiwi.Variable
+    bottomGap: kiwi.Variable
+    // Inner bounds for step
+    inner: {
+      top: kiwi.Variable | kiwi.Expression
+      bottom: kiwi.Expression
+    }
+    // Outer bounds for subflow stacks around the row
+    outer: {
+      top: kiwi.Variable | kiwi.Expression
+      bottom: kiwi.Variable | kiwi.Expression
+    }
+    updateGaps: (value: { top?: number; bottom?: number }) => void
   }>
 
-  #subflows = new Map<StepPath, Bounding>()
+  #subflows = new Map<StepPath, BBoxVars>()
 
   constructor({
     actors,
@@ -123,35 +154,41 @@ export class SequenceViewLayouter {
 
     this.#actors = this.addActors(actors)
 
+    let lastCompound: CompoundRect | undefined
     for (const compound of compounds) {
       const result = this.addCompound(compound)
-      const toplevel = result[0]
+      // first element is the top level compound
+      const toplevel = lastCompound = result[0]
       // ensure that the top level compound is at the top
-      this.constraint(toplevel.y1, '==', 0, kiwi.Strength.strong)
-      this.put(this.#viewportBottom).after(toplevel.bottom)
-      this.put(this.#rowsTop).after(toplevel.y2)
+      this.constraint(toplevel.y1, '==', 0, Strength.strong)
+      this.put(this.#viewportBottom, Strength.strong).after(toplevel.bottom)
+      this.require(this.#rowsTop).after(toplevel.y2)
       this.#compounds.push(...result)
     }
+    if (lastCompound) {
+      this.require(this.#viewportRight).after(lastCompound.x2, 16)
+    }
+
+    const [firstActor, ...restActors] = this.#actors
+    this.constraint(firstActor.offset.left, '==', 0, Strength.strong)
+    this.put(this.#rowsTop, Strength.strong).after(firstActor.offset.bottom)
+
+    const lastActor = restActors.reduce((prev, actor) => {
+      this.put(actor.x).after(prev.right, ACTOR_GAP)
+      this.put(prev.offset.right, Strength.strong).before(actor.offset.left, COLUMN_GAP)
+      this.constraint(actor.centerY, '==', prev.centerY, Strength.strong)
+      this.require(this.#rowsTop).after(actor.offset.bottom)
+      return actor
+    }, firstActor)
 
     for (const step of steps) {
       this.addStep(step)
     }
-
     this.createSubflowAreas(steps)
 
-    const firstActor = this.#actors[0]
-    this.constraint(firstActor.offset.left, '==', 0, kiwi.Strength.strong)
-
-    const lastActor = this.#actors.reduce((prev, actor) => {
-      this.put(actor.x).after(prev.right, ACTOR_GAP)
-      this.put(actor.offset.left, kiwi.Strength.strong).after(prev.offset.right, COLUMN_GAP)
-      this.constraint(actor.centerY, '==', prev.centerY, kiwi.Strength.strong)
-      this.put(this.#rowsTop).after(actor.offset.bottom)
-      return actor
-    })
-
-    this.put(this.#viewportRight).after(lastActor.offset.right)
-    this.put(this.#viewportBottom).after(last(this.#rows)?.bottom ?? this.#rowsTop)
+    this.require(this.#viewportRight).after(lastActor.offset.right)
+    const mostBottom = last(this.#rows)?.outer.bottom ?? this.#rowsTop
+    this.put(this.#viewportBottom).after(mostBottom, 16)
 
     if (compounds.length > 0) {
       for (const compound of this.#compounds) {
@@ -163,8 +200,7 @@ export class SequenceViewLayouter {
           maxRow = Math.max(maxRow, actorBox.maxRow)
         }
         const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
-        this.put(compound.bottom).after(lastRow.bottom, 16)
-        this.put(this.#viewportBottom).after(compound.bottom)
+        this.put(compound.bottom).after(lastRow.outer.bottom)
       }
     }
 
@@ -207,11 +243,11 @@ export class SequenceViewLayouter {
   getPortCenter(step: Step, type: 'source' | 'target') {
     const { column, row } = type === 'source' ? step.from : step.to
     const x = this.actorBox(column).centerX
-    const { y } = nonNullable(this.#rows[row])
+    const { inner } = nonNullable(this.#rows[row])
 
     return {
       cx: x.value(),
-      cy: y.value() + PORT_HEIGHT / 2 + step.offset,
+      cy: inner.top.value() + 40 + step.offset,
       height: type === 'source' ? 40 : 24,
     }
   }
@@ -243,154 +279,178 @@ export class SequenceViewLayouter {
 
     const selectSteps = (id: StepPath) => filter(nested, s => s.id.startsWith(id))
 
+    const spacing = {
+      padding: {
+        top: 30,
+        right: 40,
+        bottom: 0,
+        left: 90,
+      },
+      margin: 0,
+    }
+
+    const spacingTopSubflow = {
+      ...spacing,
+      margin: 16,
+    }
+
+    /**
+     * Expands the parent bounding box to fit all subflows and their nested steps.
+     */
+    const fitSubflows = ({
+      parentBbox,
+      steps,
+      stretch = false,
+      padding,
+    }: {
+      parentBbox: BBoxVars
+      steps: ReadonlyArray<DynamicViewFlow.AnyStep>
+      // if true, stretch subflows to fill the parent bbox
+      stretch?: boolean
+      padding?: Partial<{
+        top: number
+        left: number
+        right: number
+        bottom: number
+      }>
+    }) => {
+      const boxes = pipe(
+        steps,
+        filter(flowGuards.isSubFlow),
+        flatMap(b => this.#subflows.get(b.id) ?? []),
+      )
+      if (!hasAtLeast(boxes, 1)) {
+        return
+      }
+      const p = defu(padding, spacing.padding)
+      this.require(first(boxes).y1).after(parentBbox.y1, p.top)
+      this.require(last(boxes).y2).before(parentBbox.y2, p.bottom)
+
+      const stretchToWidth = stretch ? parentBbox.x2.minus(parentBbox.x1).minus(p.left + p.right) : undefined
+
+      boxes.forEach(box => {
+        if (stretchToWidth) {
+          this.require(box.x1).after(parentBbox.x1, p.left)
+          this.require(box.x2).before(parentBbox.x2, p.right)
+          this.constraint(
+            stretchToWidth,
+            '==',
+            box.x2.minus(box.x1),
+            Strength.strong,
+          )
+        } else {
+          this.require(box.x1).after(parentBbox.x1, p.left)
+          this.require(box.x2).before(parentBbox.x2, p.right)
+        }
+      })
+    }
+
+    const onLeaveExpand =
+      (parentBbox: BBoxVars, opts?: Omit<Parameters<typeof fitSubflows>[0], 'parentBbox' | 'steps'>) =>
+      ({ visited }: { visited: ReadonlyArray<DynamicViewFlow.AnyStep> }) =>
+        fitSubflows({
+          parentBbox,
+          steps: visited,
+          ...opts,
+        })
+
+    /**
+     * Subflow has
+     */
+    const constraintOnTheLeft = (bbox: BBoxVars, rect: Rect) => {
+      if (rect.min.column > 0) {
+        this.require(this.actorBox(rect.min.column - 1).centerX).before(bbox.x1, 100)
+      }
+    }
+
     this.#flow.walkthrough({
-      // initialData: {
-      //   prevStep: null as Step | null,
-      // },
-      // step: ({ data, step }) => {
-      //   data.prevStep = steps.find(s => s.id === step) ?? data.prevStep
-      // },
       subflow: {
-        'try': ({ subflow, parent, previous }) => {
-          const steps = selectSteps(subflow.id)
-          if (!hasAtLeast(steps, 1)) {
-            return false
-          }
-          return ({ visited }) => {
-            // const { trySteps, catchSteps, finallySteps } = this.#flow.unwindTry({ flow: visited })
-            const bbox = this.wrapAroundRect(rectFromSteps(steps))
+        /**
+         * Subflows 'opt', 'loop', 'par'
+         */
+        ...this.#flow.onSubflows(
+          ['opt', 'loop', 'par'],
+          ({ subflow, parent }) => {
+            const steps = selectSteps(subflow.id)
+            if (!ancestors.has(subflow.id) || !hasAtLeast(steps, 1)) {
+              return false
+            }
+
+            const hasNoSubflows = !this.#flow.hasSubflows(subflow)
+            const rect = rectFromSteps(steps)
+            const bbox = this.wrapAroundRect(rect, !parent ? spacingTopSubflow : defu({ margin: 10 }, spacing))
+
             this.#subflows.set(subflow.id, bbox)
-          }
-        },
-        'try-block': true,
-        'try-catch': true,
-        'try-finally': true,
-        default: ({ subflow, parent, previous }) => {
-          if (!ancestors.has(subflow.id)) {
-            return false
-          }
+            if (!parent) {
+              constraintOnTheLeft(bbox, rect)
+            }
+
+            return hasNoSubflows || onLeaveExpand(bbox, {
+              padding: {
+                bottom: 30,
+                left: 30,
+                right: 30,
+              },
+            })
+          },
+        ),
+        /**
+         * Subflows with swimlines (stretch nested subflows)
+         */
+        ...this.#flow.onSubflows(['alt', 'try'], ({ subflow, previous, parent }) => {
           const steps = selectSteps(subflow.id)
           if (!hasAtLeast(steps, 1)) {
             return false
           }
-          // Wrap all steps
-          const bbox = this.wrapAroundRect(rectFromSteps(steps))
+
+          const rect = rectFromSteps(steps)
+          const bbox = this.wrapAroundRect(rect, !parent ? { margin: 10, padding: 0 } : 0)
           this.#subflows.set(subflow.id, bbox)
 
-          return true
+          const previousSubflow = !parent && flowGuards.isSubFlow(previous)
+            ? this.#subflows.get(previous.id)
+            : undefined
+          if (previousSubflow) {
+            this.constraint(previousSubflow.y2.plus(20), '<=', bbox.y1)
+          }
+          if (!parent) {
+            constraintOnTheLeft(bbox, rect)
+          }
 
-          // // If we are nested flow, position relative to parent or previous sibling
-          // if (parent) {
-          //   if (previous && this.#flow.guards.isSubFlow(previous)) {
-          //     const prevBbox = this.#subflows.get(previous.id)
-          //     if (prevBbox) {
-          //       this.put(bbox.y1).after(prevBbox.y2, 16)
-          //     }
-          //   }
-          //   // we are first subflow
-          //   else if (!previous) {
-          //     const parentBbox = this.#subflows.get(parent.id)
-          //     if (parentBbox) {
-          //       this.put(parentBbox.y1).before(bbox.y1, 16)
-          //     }
-          //   }
-          // }
-
-          // return ({ visited }) => {
-          //   const nested = this.#flow.nested(subflow.id).flatMap(s => this.#subflows.get(s.id) ?? [])
-          //   // Fit nested subflows
-          //   nested.forEach((n, i, all) => {
-          //     this.put(bbox.x1, kiwi.Strength.medium).before(n.x1, 16)
-          //     this.put(bbox.x2, kiwi.Strength.medium).after(n.x2, 16)
-          //     // Margin bottom
-          //     if (i === all.length - 1) {
-          //       this.put(bbox.y2).after(n.y2, 16)
-          //     }
-          //   })
-          // }
-        },
+          return onLeaveExpand(bbox, {
+            padding: {
+              top: 16,
+              left: 0,
+              right: 0,
+            },
+            stretch: true,
+          })
+        }),
+        /**
+         * Subflows as swimlines (have no space between)
+         */
+        ...this.#flow.onSubflows(
+          ['alt-when', 'alt-else', 'alt-if', 'try-block', 'try-catch', 'try-finally'],
+          ({ subflow }) => {
+            const steps = selectSteps(subflow.id)
+            if (!ancestors.has(subflow.id) || !hasAtLeast(steps, 1)) {
+              return false
+            }
+            // Wrap all steps
+            const bbox = this.wrapAroundRect(rectFromSteps(steps), { ...spacing, margin: 0 })
+            this.#subflows.set(subflow.id, bbox)
+            return onLeaveExpand(bbox, {
+              padding: {
+                top: 50,
+                left: 30,
+                bottom: 30,
+                right: 30,
+              },
+            })
+          },
+        ),
       },
     })
-
-    // const walk = (subflow: DynamicViewFlow.SubFlow.Any): Bounding | null => {
-    //   const steps = selectSteps(subflow.id)
-    //   if (!hasAtLeast(steps, 1)) {
-    //     return null
-    //   }
-    //   if (subflow._type === 'loop') {
-    //     flowHelpers.nested(subflow).map(s => s.)
-    //   }
-
-    //   const nested = this.#flow.nested(subflow.id).flatMap(s => walk(s) ?? [])
-
-    //   const bbox = this.wrapAroundRect(rectFromSteps(steps))
-    //   this.#subflows.set(subflow.id, bbox)
-
-    //   nested.forEach((n, i, all) => {
-    //     if (i == 0) {
-    //       this.put(bbox.y1).before(n.y1, 32)
-    //     }
-    //     this.put(bbox.x1).before(n.x1, 16)
-    //     this.put(bbox.x2).after(n.x2, 16)
-
-    //     if (i === all.length - 1) {
-    //       this.put(bbox.y2).after(n.y2, 16)
-    //     }
-
-    //     if (i > 0) {
-    //       let prev = all[i - 1]!
-    //       this.put(n.y1).after(prev.y2, 16)
-    //     }
-    //   })
-
-    //   return bbox
-    // }
-
-    // for (const id of toplevel) {
-    //   walk(flow.lookup(id))
-    // }
-
-    // pipe(
-    //   [...ancestors],
-    //   map(a => flow.lookup(a)),
-    //   sortNaturalByFqn('desc'),
-    //   forEach(sub => {
-    //     // const steps = sub.flow.flatMap(s => isString(s) ? stepsById[s] ?? [] : [])
-    //     const steps = selectSteps(sub.id)
-    //     const rect = rectFromSteps(steps)
-    //     const bbox = this.addSubflowRect({
-    //       ...rect,
-    //       subflow: sub,
-    //     })
-
-    //     this.#flowOps.nested(sub.id).flatMap(s => this.#subflows.get(s.id) ?? []).forEach(
-    //       (n, i, all) => {
-    //         this.wrapNested(bbox, n)
-    //         if (i > 0) {
-    //           let prev = all[i - 1]!
-    //           this.put(n.y1).after(prev.y2, 16)
-    //         }
-    //       },
-    //     )
-    //   }),
-    // )
-
-    // pipe(
-    //   nested,
-    //   // First we add subflows with steps only
-    //   filter(s => !ancestors.has(s.parent)),
-    //   groupByProp('parent'),
-    //   mapValues((st, parent) => {
-    //     return {
-    //       id: parent as StepPath,
-    //       steps: st,
-    //       ...rectFromSteps(st),
-    //     }
-    //   }),
-    //   forEachObj((subflow) => {
-    //     this.addSubflowRect(subflow.id, subflow)
-    //   }),
-    // )
   }
 
   private actorBox(actor: DiagramNode | string | number): ActorBox {
@@ -431,10 +491,10 @@ export class SequenceViewLayouter {
         right = this.newVar(0),
         bottom = this.newVar(0)
 
-      this.put(top, kiwi.Strength.strong).before(y)
-      this.put(left, kiwi.Strength.strong).before(x)
-      this.put(right, kiwi.Strength.strong).after(actorBox.right)
-      this.put(bottom, kiwi.Strength.strong).after(actorBox.bottom)
+      this.put(y, Strength.strong).after(top)
+      this.put(x, Strength.strong).after(left)
+      this.put(actorBox.right, Strength.strong).before(right)
+      this.put(actorBox.bottom, Strength.strong).before(bottom)
 
       return {
         ...actorBox,
@@ -464,13 +524,16 @@ export class SequenceViewLayouter {
 
     const width = (step.label?.width ?? 100) + STEP_LABEL_MARGIN
 
-    if (left !== right) {
-      this.constraint(left.centerX.plus(width), '<=', right.centerX)
-    } else {
-      this.constraint(left.centerX.plus(width), '<=', left.offset.right)
+    // Add constraint only if actors are adjacent
+    if (Math.abs(target.column - source.column) <= 1) {
+      if (left !== right) {
+        this.constraint(left.centerX.plus(width), '<=', right.centerX)
+      } else {
+        this.constraint(left.centerX.plus(width), '<=', left.offset.right)
+      }
     }
 
-    let height = step.label?.height ? step.label.height + STEP_LABEL_MARGIN + PORT_HEIGHT / 2 : MIN_ROW_HEIGHT
+    let height = step.label?.height ? step.label.height + STEP_LABEL_MARGIN + PORT_HEIGHT : MIN_ROW_HEIGHT
     height = Math.max(height, MIN_ROW_HEIGHT) + step.offset
 
     this.ensureRow(step.from.row, height)
@@ -481,95 +544,27 @@ export class SequenceViewLayouter {
     return this
   }
 
-  private addSubflowRect({
-    subflow,
-    min,
-    max,
-  }: Rect & {
-    subflow: DynamicViewFlow.SubFlow.Any
-  }) {
-    invariant(!this.#subflows.has(subflow.id))
-    const bbox = this.wrapAroundRect({ min, max })
-    // const x1 = this.actorBox(min.column).centerX.minus(30)
-    // const x2 = this.actorBox(max.column).centerX.plus(30)
-    // const firstRow = this.#rows[min.row]
-    // const lastRow = this.#rows[max.row]
-    // invariant(firstRow && lastRow, `Subflow box invalid minRow=${min.row} maxRow=${max.row}`)
-
-    // const y1 = this.newVar(0)
-    // this.put(y1).before(firstRow.y, 40)
-    // const y2 = this.newVar(0)
-    // this.constraint(y2, '==', lastRow.bottom, kiwi.Strength.medium)
-
-    // // margin top
-    // const rowBefore = min.row > 0 && this.#rows[min.row - 1]
-    // if (rowBefore) {
-    //   this.put(y1).after(rowBefore.bottom, 16)
-    // }
-
-    // const rowAfter = max.row < this.#rows.length - 1 && this.#rows[max.row + 1]
-    // if (rowAfter) {
-    //   this.put(y2).before(rowAfter.y, 16)
-    // }
-    // this.#flowOps.lookup
-    // subflow.flow
-
-    this.#subflows.set(subflow.id, bbox)
-    return bbox
-    // let parent = parentFlow(subflow.id)
-    // let parentArea = parent && this.#subflows.get(parent)
-    // if (parentArea) {
-    //   // this.put(parentArea.x1).before(x1, 16)
-    //   this.put(parentArea.y1).before(y1, 16)
-    //   // this.put(parentArea.x2).after(x2, 16)
-    //   this.put(parentArea.y2).after(y2, 8)
-    // }
-  }
-
-  private wrapAroundRect(rect: Rect, paddings?: Paddings) {
-    const p = normalizePaddings(
-      defu(
-        paddings,
-        SUBFLOW_PADDING,
-      ),
-    )
+  private wrapAroundRect(rect: Rect, spacing?: Spacing): BBoxVars {
+    const { padding: p, margin: m } = normalizeSpacing(spacing ?? 16)
     const bounds = this.getRectBounds(rect)
-    const x1 = this.newVar()
-    this.put(x1).before(bounds.x1.minus(p.left))
-    // if (p.left > 0) {
-    //   this.put(x1, kiwi.Strength.medium).after(bounds.x1.minus(p.left))
-    // }
-    const x2 = this.newVar()
-    this.put(x2, kiwi.Strength.strong).after(bounds.x2, p.right)
-    // if (p.right > 0) {
-    //   this.put(x2, kiwi.Strength.medium).before(bounds.x2.plus(p.right))
-    // }
 
-    const y1 = this.newVar()
-    this.put(y1).after(bounds.minY)
-    this.put(y1).before(bounds.y1.minus(p.top))
-    // if (p.top > 0) {
-    //   this.put(y1, kiwi.Strength.medium).after(bounds.y1)
-    // }
-    const y2 = this.newVar()
-    this.constraint(y2, '==', bounds.y2, kiwi.Strength.medium)
+    const x1 = this.newVar(0)
+    this.put(bounds.x1).after(x1, p.left)
+    const x2 = this.newVar(0)
+    this.put(bounds.x2).before(x2, p.right)
 
-    // // margin top
-    // const rowBefore = min.row > 0 && this.#rows[min.row - 1]
-    // if (rowBefore) {
-    //   this.require(y1, '>=', rowBefore.bottom)
-    // }
+    const y1 = this.newVar(0)
+    this.require(y1).after(bounds.minY, m.top)
+    this.put(bounds.y1).after(y1, p.top)
 
-    // const rowAfter = max.row < this.#rows.length - 1 && this.#rows[max.row + 1]
-    // if (rowAfter) {
-    //   this.put(y2).before(rowAfter.y, 24)
-    // }
+    const y2 = this.newVar(0)
+    this.put(bounds.y2).before(y2, p.bottom)
+    this.require(y2).before(bounds.maxY, m.bottom)
 
-    // this.put(y1).after(bounds.minY, 20)
-    // this.put(y1).before(bounds.y1, 20)
-
-    // this.put(y2).after(bounds.y2)
-    // this.put(y2).before(bounds.maxY)
+    bounds.updateGaps({
+      top: p.top + m.top,
+      bottom: p.bottom + m.bottom,
+    })
 
     return {
       x1,
@@ -583,23 +578,26 @@ export class SequenceViewLayouter {
     const firstRow = this.#rows[min.row]
     const lastRow = this.#rows[max.row]
     invariant(firstRow && lastRow, `Subflow box invalid minRow=${min.row} maxRow=${max.row}`)
-
-    // // margin top
-    const rowBefore = min.row > 0 ? this.#rows[min.row - 1]?.bottom : undefined
-    // const rowAfter = max.row < this.#rows.length - 1 ? this.#rows[max.row + 1] : undefined
-
     return {
       // We need to fit the subflow box to the rows it spans, but with some margin
-      minY: rowBefore ?? this.#rowsTop,
+      minY: firstRow.outer.top,
       x1: this.actorBox(min.column).centerX,
-      y1: firstRow.y,
+      y1: firstRow.inner.top,
       x2: this.actorBox(max.column).centerX,
-      y2: lastRow.bottom,
+      y2: lastRow.inner.bottom,
       // margin bottom
-      // maxY: rowAfter?.y.minus(rowAfter.offsetTop) ?? this.#viewportBottom.minus(10),
+      maxY: lastRow.outer.bottom,
+      updateGaps: ({ top, bottom }: { top?: number; bottom?: number }) => {
+        top && firstRow.updateGaps({ top })
+        bottom && lastRow.updateGaps({ bottom })
+      },
     }
   }
 
+  /**
+   * Recursively adds a compound and its nested compounds to the layout.
+   * Also updates offsets of the actor boxes to accommodate the compound.
+   */
   private addCompound(compound: Compound): NonEmptyArray<CompoundRect> {
     const PADDING = 32
     const PADDING_TOP = 40
@@ -630,18 +628,20 @@ export class SequenceViewLayouter {
     let y1, y2
     switch (true) {
       case !!onlyChild: {
-        y1 = onlyChild.y1.minus(PADDING_TOP)
-        y2 = onlyChild.y2.plus(PADDING)
-        this.put(bottom).after(onlyChild.bottom, PADDING)
+        y1 = this.newVar(0)
+        y2 = this.newVar(0)
+        this.put(onlyChild.y1).after(y1, PADDING_TOP)
+        this.put(onlyChild.y2).before(y2, PADDING)
+        this.put(onlyChild.bottom).before(bottom, PADDING)
         break
       }
       // Compound with single actor
       case to === from: {
         y1 = this.newVar(0)
         y2 = this.newVar(0)
-        this.put(y1).before(from.offset.top, PADDING_TOP_FROM_ACTOR)
-        this.put(y2).after(from.offset.bottom, PADDING)
-        this.put(bottom).after(y2)
+        this.put(from.offset.top).after(y1, PADDING_TOP_FROM_ACTOR)
+        this.put(from.offset.bottom).before(y2, PADDING)
+        this.put(y2).before(bottom)
         break
       }
       // Compound nested compound, offset from it
@@ -649,9 +649,9 @@ export class SequenceViewLayouter {
         y1 = this.newVar(0)
         y2 = this.newVar(0)
         for (const child of children) {
-          this.put(y1).before(child.y1, PADDING)
-          this.put(y2).after(child.y2, PADDING)
-          this.put(bottom).after(child.bottom, PADDING)
+          this.put(child.y1).after(y1, PADDING)
+          this.put(child.y2).before(y2, PADDING)
+          this.put(child.bottom).before(bottom, PADDING)
         }
         break
       }
@@ -660,10 +660,10 @@ export class SequenceViewLayouter {
         y2 = this.newVar(0)
         for (var col = from.column; col <= to.column; col++) {
           const offset = this.actorBox(col).offset
-          this.put(y1).before(offset.top, PADDING_TOP_FROM_ACTOR)
-          this.put(y2).after(offset.bottom, PADDING)
+          this.put(offset.top).after(y1, PADDING_TOP_FROM_ACTOR)
+          this.put(offset.bottom).before(y2, PADDING)
         }
-        this.put(bottom).after(y2)
+        this.put(y2).before(bottom)
         break
       }
     }
@@ -692,41 +692,78 @@ export class SequenceViewLayouter {
 
   private ensureRow(row: number, rowHeight: number) {
     while (row >= this.#rows.length) {
-      const prevRowY = this.#rows.length > 0 && this.#rows[this.#rows.length - 1]?.bottom ||
-        this.#rowsTop // .plus(FIRST_STEP_OFFSET)
+      const prevRowY = last(this.#rows)?.outer.bottom || this.#rowsTop
+      const outerTop = prevRowY
 
-      const marginTop = this.newVar(0)
+      const topGap = this.newVar(0)
+      let topGapConstraint = this.require(topGap, '>= 0')
 
-      const y = this.newVar(this.#rows.length * MIN_ROW_HEIGHT)
-      // this.constraint(y, '>=', prevRowY, kiwi.Strength.weak)
-      this.put(y).after(prevRowY.plus(marginTop))
+      const bottomGap = this.newVar(0)
+      let bottomGapConstraint = this.require(bottomGap, '>= 0')
 
-      const height = this.newVar(MIN_ROW_HEIGHT)
-      this.require(height, '>=', MIN_ROW_HEIGHT)
+      const innerTop = this.newVar(0)
+      this.require(innerTop).after(outerTop)
+      this.put(innerTop, Strength.strong).before(outerTop.plus(topGap))
+
+      // If this is the row we are adding, use the provided rowHeight, otherwise use MIN_ROW_HEIGHT
+      const lastHeight = row === this.#rows.length ?
+        rowHeight
+        : this.#rows.length === 0
+        ? 20 // First row
+        : MIN_ROW_HEIGHT
+      const height = this.newVar(lastHeight)
+      this.require(height, '>=', lastHeight)
+
+      const innerBottom = innerTop.plus(height)
+
+      const outerBottom = this.newVar(0)
+      this.require(outerBottom).after(innerBottom)
+      this.put(outerBottom, Strength.strong).before(innerBottom.plus(topGap))
 
       this.#rows.push({
-        marginTop,
-        y,
+        inner: {
+          top: innerTop,
+          bottom: innerBottom,
+        },
+        outer: {
+          top: outerTop,
+          bottom: outerBottom,
+        },
+        bottomGap,
+        topGap,
         height,
-        bottom: y.plus(height),
-        lastHeight: MIN_ROW_HEIGHT,
+        updateGaps: ({ top, bottom }) => {
+          if (top && top > topGap.value()) {
+            topGap.setValue(top)
+            this.#solver.removeConstraint(topGapConstraint)
+            this.#solver.suggestValue(topGap, top)
+            topGapConstraint = this.require(topGap, '>=', top)
+          }
+          if (bottom && bottom > bottomGap.value()) {
+            bottomGap.setValue(bottom)
+            this.#solver.removeConstraint(bottomGapConstraint)
+            this.#solver.suggestValue(bottomGap, bottom)
+            bottomGapConstraint = this.require(bottomGap, '>=', bottom)
+          }
+        },
       })
     }
     const rowVar = nonNullable(this.#rows[row])
-    if (rowHeight > rowVar.lastHeight) {
-      rowVar.lastHeight = rowHeight
-      this.require(rowVar.height, '>=', rowHeight)
+    if (rowHeight > rowVar.height.value()) {
+      rowVar.height.setValue(rowHeight)
       this.#solver.suggestValue(rowVar.height, rowHeight)
+      this.require(rowVar.height, '>=', rowHeight)
     }
   }
 
   private newVar(initialValue?: number) {
     const v = new kiwi.Variable()
-    this.#solver.addEditVariable(v, kiwi.Strength.weak)
+    this.#solver.addEditVariable(v, Strength.weak)
     if (typeof initialValue === 'number') {
+      v.setValue(initialValue)
       this.#solver.suggestValue(v, initialValue)
     }
-    this.constraint(v, '>=', 0, kiwi.Strength.strong)
+    this.constraint(v, '>=', 0, Strength.weak)
     return v
   }
 
@@ -737,19 +774,52 @@ export class SequenceViewLayouter {
   private require(
     left: kiwi.Expression | kiwi.Variable,
     op: Operator,
-    right?: kiwi.Expression | kiwi.Variable | number | undefined,
+  ): kiwi.Constraint
+  private require(
+    left: kiwi.Expression | kiwi.Variable,
+    op: Operator,
+    right: kiwi.Expression | kiwi.Variable | number | undefined,
+  ): kiwi.Constraint
+  private require(left: kiwi.Expression | kiwi.Variable): {
+    before: (right: kiwi.Expression | kiwi.Variable, gap?: number) => kiwi.Constraint
+    after: (right: kiwi.Expression | kiwi.Variable, gap?: number) => kiwi.Constraint
+  }
+  private require(
+    ...args:
+      | [kiwi.Expression | kiwi.Variable]
+      | [left: kiwi.Expression | kiwi.Variable, op: Operator]
+      | [
+        left: kiwi.Expression | kiwi.Variable,
+        op: Operator,
+        right: kiwi.Expression | kiwi.Variable | number | undefined,
+      ]
   ) {
-    this.constraint(left, op, right, kiwi.Strength.required)
+    if (args.length == 1) {
+      const [left] = args
+      return {
+        before: (right: kiwi.Expression | kiwi.Variable, gap: number = 0) => {
+          let other = gap ? right.minus(gap) : right
+          return this.constraint(left, '<=', other, Strength.required)
+        },
+        after: (right: kiwi.Expression | kiwi.Variable, gap: number = 0) => {
+          let other = gap ? right.plus(gap) : right
+          return this.constraint(left, '>=', other, Strength.required)
+        },
+      }
+    }
+    const [left, op, right] = args
+    const constraint = this.constraint(left, op, right, Strength.required)
     switch (op) {
       case '<=':
       case '>=':
-        this.constraint(left, '==', right, kiwi.Strength.weak)
+        this.constraint(left, '==', right, Strength.weak)
         break
       case '<= 0':
       case '>= 0':
-        this.constraint(left, '== 0', undefined, kiwi.Strength.weak)
+        this.constraint(left, '== 0', undefined, Strength.weak)
         break
     }
+    return constraint
   }
 
   /**
@@ -759,7 +829,7 @@ export class SequenceViewLayouter {
     left: kiwi.Expression | kiwi.Variable,
     op: Operator,
     right: kiwi.Expression | kiwi.Variable | number | undefined = undefined,
-    strength = kiwi.Strength.medium,
+    strength = Strength.medium,
   ) {
     let operator: kiwi.Operator
     switch (op) {
@@ -790,11 +860,13 @@ export class SequenceViewLayouter {
       default:
         nonexhaustive(op)
     }
-    this.#solver.addConstraint(new kiwi.Constraint(left, operator, right ?? 0, strength))
+    const constraint = new kiwi.Constraint(left, operator, right ?? 0, strength)
+    this.#solver.addConstraint(constraint)
+    return constraint
   }
 
-  private put(variable: kiwi.Variable | kiwi.Expression, strength = kiwi.Strength.required) {
-    const eqStrength = strength === kiwi.Strength.required ? kiwi.Strength.medium : kiwi.Strength.weak
+  private put(variable: kiwi.Variable | kiwi.Expression, strength = Strength.required) {
+    const eqStrength = strength === Strength.required ? Strength.soft : Strength.weak
     return {
       before: (other: kiwi.Variable | kiwi.Expression, gap?: number) => {
         if (gap) {
@@ -812,23 +884,4 @@ export class SequenceViewLayouter {
       },
     }
   }
-
-  // private recalcActorsRect() {
-  //   this.#actorsRect = this.#columnRects.reduce((acc, rect, index, all) => {
-  //     if (index === 0) {
-  //       acc.minX = rect.min.x.value()
-  //     }
-  //     if (index === all.length - 1) {
-  //       acc.maxX = rect.max.x.value()
-  //     }
-  //     acc.minY = Math.min(acc.minY, rect.min.y.value())
-  //     acc.maxY = Math.max(acc.maxY, rect.max.y.value())
-  //     return acc
-  //   }, {
-  //     minX: Infinity,
-  //     minY: Infinity,
-  //     maxX: -Infinity,
-  //     maxY: -Infinity,
-  //   })
-  // }
 }

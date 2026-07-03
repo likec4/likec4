@@ -1,6 +1,11 @@
-import { computeFlow } from '@likec4/core/compute-view'
-import type { DiagramEdge, DiagramNode, LayoutedDynamicView, NodeId } from '@likec4/core/types'
-import { dynamicViewFlow, parentFlow, StepPath } from '@likec4/core/types'
+import type {
+  DiagramEdge,
+  DiagramNode,
+  LayoutedDynamicView,
+  NodeId,
+  StepPath,
+} from '@likec4/core/types'
+import { dynamicViewFlow, parentFlow } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
 import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
@@ -20,11 +25,6 @@ type Port = {
 export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicView.Sequence.Layout {
   const flow = dynamicViewFlow(view)
 
-  const compFlow = computeFlow({
-    view,
-    subflows: flow.paths,
-  })
-
   const actorNodes = new Set<DiagramNode>()
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
@@ -36,7 +36,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     target: DiagramNode
   }>
 
-  for (const edge of compFlow.edges) {
+  for (const edge of view.edges) {
     const source = getNode(edge.source)
     const target = getNode(edge.target)
 
@@ -57,11 +57,9 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
 
   const steps = [] as Array<Step>
 
-  let row = 0
+  let row = 0, prevStep: Step | undefined
 
   for (const { edge, source, target } of preparedSteps) {
-    const prevStep = steps.at(-1)
-
     let sourceColumn = actors.indexOf(source)
     let targetColumn = actors.indexOf(target)
 
@@ -79,7 +77,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     }
 
     const step: Step = {
-      id: edge.id,
+      id: edge.id as StepPath,
       from: {
         column: sourceColumn,
         row,
@@ -106,6 +104,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     steps.push(step)
     actorPorts.get(source).push({ step, row, type: 'source', position: isBack && !isSelfLoop ? 'left' : 'right' })
     actorPorts.get(target).push({ step, row, type: 'target', position: isBack || isSelfLoop ? 'right' : 'left' })
+    prevStep = step
   }
 
   const layout = new SequenceViewLayouter({
@@ -131,18 +130,17 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     flat(),
   )
 
-  const subflows = layout.getSubflowAreas().map(({ subflow, box }) => ({
+  const subflows = layout.getSubflowAreas().map(({ subflow, box }): LayoutedDynamicView.Sequence.SubflowArea => ({
     id: subflow.id,
     ...box,
     _type: subflow._type,
-    zIndex: flow.level(subflow.id),
   }))
 
   return {
     actors: actors.map(actor => toSeqActor({ actor, ports: actorPorts.get(actor), layout })),
     compounds,
     steps: map(steps, s => ({
-      id: s.id as StepPath,
+      id: s.id,
       sourceHandle: s.id + '_source',
       targetHandle: s.id + '_target',
       ...s.label && ({

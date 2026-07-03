@@ -355,7 +355,7 @@ export class SequenceViewLayouter {
         })
 
     /**
-     * Top level constraint for subflows
+     * Ensure space on the left of the subflow to accommodate the previous actor
      */
     const constraintOnTheLeft = (bbox: BBoxVars, rect: Rect) => {
       if (rect.min.column > 0) {
@@ -365,35 +365,6 @@ export class SequenceViewLayouter {
 
     this.#flow.walkthrough({
       subflow: {
-        /**
-         * Subflows 'opt', 'loop', 'par'
-         */
-        ...this.#flow.onSubflows(
-          ['opt', 'loop', 'par'],
-          ({ subflow, parent }) => {
-            const steps = selectSteps(subflow.id)
-            if (!ancestors.has(subflow.id) || !hasAtLeast(steps, 1)) {
-              return false
-            }
-
-            const hasNoSubflows = !this.#flow.hasSubflows(subflow)
-            const rect = rectFromSteps(steps)
-            const bbox = this.wrapAroundRect(rect, !parent ? spacingTopSubflow : defu({ margin: 10 }, spacing))
-
-            this.#subflows.set(subflow.id, bbox)
-            if (!parent) {
-              constraintOnTheLeft(bbox, rect)
-            }
-
-            return hasNoSubflows || onLeaveExpand(bbox, {
-              padding: {
-                bottom: 30,
-                left: 30,
-                right: 30,
-              },
-            })
-          },
-        ),
         /**
          * Subflows with swimlines (stretch nested subflows)
          */
@@ -419,7 +390,7 @@ export class SequenceViewLayouter {
 
           return onLeaveExpand(bbox, {
             padding: {
-              top: 16,
+              top: 20,
               left: 0,
               right: 0,
             },
@@ -449,6 +420,33 @@ export class SequenceViewLayouter {
             })
           },
         ),
+        /**
+         * Subflows 'opt', 'loop', 'par', 'break'
+         */
+        default: ({ subflow, parent }) => {
+          const steps = selectSteps(subflow.id)
+          if (!ancestors.has(subflow.id) || !hasAtLeast(steps, 1)) {
+            return false
+          }
+          invariant(!this.#flow.guards.isAltOrTryBranch(subflow), 'AltOrTryBranch must be handled separately')
+
+          const hasNoSubflows = !this.#flow.hasSubflows(subflow)
+          const rect = rectFromSteps(steps)
+          const bbox = this.wrapAroundRect(rect, !parent ? spacingTopSubflow : defu({ margin: 10 }, spacing))
+
+          this.#subflows.set(subflow.id, bbox)
+          if (!parent) {
+            constraintOnTheLeft(bbox, rect)
+          }
+
+          return hasNoSubflows || onLeaveExpand(bbox, {
+            padding: {
+              bottom: 30,
+              left: 30,
+              right: 30,
+            },
+          })
+        },
       },
     })
   }

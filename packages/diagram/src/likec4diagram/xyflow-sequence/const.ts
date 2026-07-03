@@ -16,7 +16,7 @@ export const PORT_HEIGHT = 24
 export const STEP_LABEL_MARGIN = 50
 
 // offset from actor box
-export const FIRST_STEP_OFFSET = 20
+export const FIRST_STEP_OFFSET = 30
 
 // offset for continuing steps
 // A -> B,

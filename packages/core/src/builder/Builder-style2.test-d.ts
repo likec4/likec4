@@ -196,6 +196,11 @@ test('Builder types - style 2', () => {
                 // @ts-expect-error
                 'a -> b',
               ),
+              $step.break(
+                $step('cloud -> bob', {
+                  title: 'Send error',
+                }),
+              ),
             ],
             finally: [
               $step('cloud -> cloud.backend'),

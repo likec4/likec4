@@ -75,8 +75,8 @@ const recipe = sva({
         borderTop: 'none',
       },
     }),
-    header: hstack.raw({
-      color: 'colorPalette.text',
+    header: css.raw(typeLabelStyle, hstack.raw(), {
+      paddingInline: '2',
       background: 'colorPalette.header!',
     }),
     'swimline-type': css.raw(typeLabelStyle, {
@@ -141,6 +141,11 @@ const recipe = sva({
           colorPalette: 'subflow.loop',
         },
       },
+      break: {
+        root: {
+          colorPalette: 'subflow.try.catch',
+        },
+      },
       try: {
         root: {
           colorPalette: 'subflow.try.block',
@@ -194,6 +199,7 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
       subflow = <TrySubflow data={data} />
       break
     case 'par':
+    case 'break':
     case 'loop':
     case 'opt':
       subflow = <GenericSubflow data={data} />
@@ -260,6 +266,7 @@ function AltSubflow({
         style={{
           height: firstBranchOffset,
         }}>
+        ALT
       </Header>
       {branches.map(b => (
         <Swimline
@@ -294,7 +301,7 @@ function TrySubflow({
   const tryBlockState = branchState(tryBlock)
   return (
     <SubflowRoot subflow={'try'}>
-      <Header {...tryBlockState} style={{ height: tryBlock.y }}></Header>
+      <Header {...tryBlockState} style={{ height: tryBlock.y }}>CRITICAL</Header>
       <Swimline
         {...tryBlockState}
         css={{
@@ -348,7 +355,7 @@ function TrySubflow({
 
 function GenericSubflow({
   data,
-}: SubflowNodeProps<'par' | 'opt' | 'loop'>) {
+}: SubflowNodeProps<'par' | 'opt' | 'loop' | 'break'>) {
   return (
     <SubflowRoot
       subflow={data.flowType}

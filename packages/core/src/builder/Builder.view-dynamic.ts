@@ -332,6 +332,17 @@ $step.loop = blockBuilder('loop')
 $step.opt = blockBuilder('opt')
 
 /**
+ * Creates a break step, to indicate a stop of the sequence within the flow
+ * @example
+ * ```ts
+ * $step.break(
+ *   'A -> B'
+ * )
+ * ```
+ */
+$step.break = blockBuilder('break')
+
+/**
  * Creates a step with alternative branches
  * @example
  * ```ts

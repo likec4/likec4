@@ -446,11 +446,11 @@ type StepStatement =
   StepOrSeries |
   TryStep |
   AltSteps |
-  BranchSteps
+  SubflowStep
 ;
 
 StepStatement returns StepStatement:
-  BranchSteps |
+  SubflowStep |
   AltSteps |
   TryStep |
   StepOrSeries
@@ -467,15 +467,15 @@ fragment StepsBlockFragment:
 // -----------------------------------------------
 // Semantic group of dynamic view steps (flow branch)
 
-interface BranchSteps extends StepsBlock {
-  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else'
+interface SubflowStep extends StepsBlock {
+  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
   /// Optional title for the branch
   title?: string
 }
 
 // Must be defined before "StepsBlock"
-BranchSteps returns BranchSteps:
-  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else')
+SubflowStep returns SubflowStep:
+  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break')
   title=String? StepsBlockFragment
 ;
 
@@ -541,11 +541,11 @@ TryBlock returns TryBlock:
 
 interface AltSteps {
   title?: string
-  branches: BranchSteps[]
+  branches: SubflowStep[]
 }
 
 AltSteps returns AltSteps:
-  'alt' title=String? '{' branches+=BranchSteps* '}'
+  'alt' title=String? '{' branches+=SubflowStep* '}'
 ;
 
 

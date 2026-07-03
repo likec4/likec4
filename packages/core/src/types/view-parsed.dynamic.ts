@@ -48,6 +48,7 @@ export type AnyStep<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Loop: Step.Loop<A>
   Try: Step.Try<A>
   Alt: Step.Alt<A>
+  Break: Step.Break<A>
 }>
 
 export const stepGuards = {
@@ -71,6 +72,9 @@ export const stepGuards = {
   },
   isAlt: <A extends AnyAux>(step: AnyStep<A> | undefined | null): step is Step.Alt<A> => {
     return !!step && _type in step && step[_type] === 'alt'
+  },
+  isBreak: <A extends AnyAux>(step: AnyStep<A> | undefined | null): step is Step.Break<A> => {
+    return !!step && _type in step && step[_type] === 'break'
   },
 }
 
@@ -127,6 +131,14 @@ export namespace Step {
    */
   export interface Opt<A extends AnyAux = AnyAux> extends WithSteps<A> {
     readonly [_type]: 'opt'
+    readonly title?: string
+  }
+
+  /**
+   * Break block
+   */
+  export interface Break<A extends AnyAux = AnyAux> extends WithSteps<A> {
+    readonly [_type]: 'break'
     readonly title?: string
   }
 

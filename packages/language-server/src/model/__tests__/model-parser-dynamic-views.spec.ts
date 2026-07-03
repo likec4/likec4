@@ -387,4 +387,50 @@ describe('LikeC4ModelParser - dynamic views', () => {
       }
     `)
   })
+
+  it('parses break step', async ({ expect, parseView }) => {
+    const view = await parseView(`
+        dynamic view index {
+          try {
+            A -[uses]-> B
+          } catch {
+            break 'Notify' {             
+              B -> A 'oops'
+            }          
+          }
+        }
+    `)
+    expect(view.steps).toHaveLength(1)
+    expect(view.steps[0]).toMatchInlineSnapshot(`
+      {
+        "_type": "try",
+        "catch": {
+          "steps": [
+            {
+              "_type": "break",
+              "steps": [
+                {
+                  "astPath": "/steps@0/catch/steps@0/steps@0",
+                  "source": "B",
+                  "target": "A",
+                  "title": "oops",
+                },
+              ],
+              "title": "Notify",
+            },
+          ],
+        },
+        "try": {
+          "steps": [
+            {
+              "astPath": "/steps@0/try/steps@0",
+              "kind": "uses",
+              "source": "A",
+              "target": "B",
+            },
+          ],
+        },
+      }
+    `)
+  })
 })

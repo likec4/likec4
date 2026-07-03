@@ -38,7 +38,7 @@ type WithFlowBase<Dict extends {}> = {
 type SubFlows = WithFlowBase<
   & {
     // Top-level flows
-    [T in 'loop' | 'opt' | 'par']: {
+    [T in 'loop' | 'opt' | 'par' | 'break']: {
       readonly flow: DynamicViewFlowSteps
     }
   }
@@ -90,11 +90,11 @@ type ParentOf<T extends SubflowType> =
           : Exclude<SubflowType, 'alt' | 'try'>
 
 /**
- * Sub-flows that can be used in dynamic view flows: `alt`, `try`, `loop`, `opt`, `par`
+ * Sub-flows that can be used in dynamic view flows: `alt`, `try`, `loop`, `opt`, `par`, `break`
  *
  * (excluding branch flows like `try-block`, `alt-when`, etc. - as they exist only within their parent)
  */
-export type DynamicViewSubFlow = Subflow<'alt' | 'try' | 'loop' | 'opt' | 'par'>
+export type DynamicViewSubFlow = Subflow<'alt' | 'try' | 'loop' | 'opt' | 'par' | 'break'>
 
 /**
  * Generic step in a dynamic view flow
@@ -175,6 +175,7 @@ export namespace DynamicViewFlow {
     export type Loop = Subflow<'loop'>
     export type Opt = Subflow<'opt'>
     export type Par = Subflow<'par'>
+    export type Break = Subflow<'break'>
   }
 }
 

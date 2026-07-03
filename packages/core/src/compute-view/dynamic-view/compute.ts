@@ -209,6 +209,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
         }
         case stepGuards.isLoop(step):
         case stepGuards.isOpt(step):
+        case stepGuards.isBreak(step):
         case stepGuards.isParallel(step): {
           processSteps({
             steps: step.steps,

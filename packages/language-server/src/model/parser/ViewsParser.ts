@@ -337,8 +337,8 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
     parseStepStatement(node: ast.StepStatement): c4.AnyStep {
       switch (true) {
-        case ast.isBranchSteps(node):
-          return this.parseOptOrParallel(node)
+        case ast.isSubflowStep(node):
+          return this.parseSubflowStep(node)
         case ast.isTryStep(node):
           return this.parseTryStep(node)
         case ast.isAltSteps(node):
@@ -522,19 +522,29 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return step
     }
 
-    parseOptOrParallel(node: ast.BranchSteps): c4.Step.Loop | c4.Step.Parallel | c4.Step.Opt {
+    parseSubflowStep(node: ast.SubflowStep): c4.Step.Opt | c4.Step.Break | c4.Step.Loop | c4.Step.Parallel {
       const kind = node.kind === 'parallel' ? 'par' : node.kind
-      invariant(
-        kind === 'loop' || kind === 'par' || kind === 'opt',
-        `Expected loop, par, or opt, got "${kind}"`,
-      )
-      const steps = this.parseSteps(node.steps)
-      invariant(isNonEmptyArray(steps), 'Parallel steps must have at least one step')
-      return c4.exact({
-        [c4._type]: kind,
-        title: node.title,
-        steps,
-      })
+      switch (kind) {
+        case 'break':
+        case 'loop':
+        case 'opt':
+        case 'par': {
+          const steps = this.parseSteps(node.steps)
+          invariant(isNonEmptyArray(steps), 'Parallel steps must have at least one step')
+          return c4.exact({
+            [c4._type]: kind,
+            title: node.title,
+            steps,
+          })
+        }
+        case 'else':
+        case 'if':
+        case 'when': {
+          throw new Error(`Unsupported kind: ${kind}`)
+        }
+        default:
+          nonexhaustive(kind)
+      }
     }
 
     parseTryStep(node: ast.TryStep): c4.Step.Try {

@@ -470,6 +470,9 @@ describe('dynamic-view', () => {
                 $step.alt(
                   $step.when('B -> A'),
                   $step.when('B -> C'),
+                  $step.else(
+                    $step.break('B -> A'),
+                  ),
                 ),
                 $step('B -> B'),
               ),
@@ -566,6 +569,24 @@ describe('dynamic-view', () => {
                     ],
                     "id": "step-02:loop.04:alt.02:when",
                   },
+                  {
+                    "_type": "alt-else",
+                    "actors": [],
+                    "flow": [
+                      {
+                        "_type": "break",
+                        "actors": [
+                          "B",
+                          "A",
+                        ],
+                        "flow": [
+                          "step-02:loop.04:alt.03:else.01:break.01",
+                        ],
+                        "id": "step-02:loop.04:alt.03:else.01:break",
+                      },
+                    ],
+                    "id": "step-02:loop.04:alt.03:else",
+                  },
                 ],
                 "id": "step-02:loop.04:alt",
               },
@@ -587,6 +608,7 @@ describe('dynamic-view', () => {
       'step-02:loop.03:try.02:catch.01',
       'step-02:loop.04:alt.01:when.01',
       'step-02:loop.04:alt.02:when.01',
+      'step-02:loop.04:alt.03:else.01:break.01',
       'step-02:loop.05',
       'step-03',
     ])

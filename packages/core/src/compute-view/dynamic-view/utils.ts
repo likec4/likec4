@@ -71,6 +71,7 @@ export const flattenSteps = <A extends Any>(s: Step.Any<A>): Step<A>[] => {
     case stepGuards.isSeries(s): {
       return [...s.steps]
     }
+    case stepGuards.isBreak(s):
     case stepGuards.isLoop(s):
     case stepGuards.isOpt(s): {
       return flatMap(s.steps, flattenSteps)
