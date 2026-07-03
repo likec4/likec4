@@ -77,13 +77,13 @@ catalogs:
     ws: ^8.21.0
   astro:
     "@astrojs/check": 0.9.9
-    "@astrojs/react": 5.0.7
+    "@astrojs/react": 6.0.1
     "@astrojs/starlight": 0.41.2
     "@astrojs/starlight-tailwind": 5.0.0
     "@expressive-code/plugin-collapsible-sections": 0.44.0
     "@expressive-code/plugin-line-numbers": 0.44.0
-    astro: 6.4.8
-    astro-og-canvas: 0.11.1
+    astro: 7.0.6
+    astro-og-canvas: 0.13.0
     astro-skills: 0.1.0
     shiki: 4.1.0
     starlight-heading-badges: 0.8.0
@@ -98,13 +98,13 @@ catalogs:
     "@pandacss/preset-panda": ^1.11.4
     "@radix-ui/colors": ^3.0.0
     "@pandacss/types": ^1.11.4
-    "@tailwindcss/vite": ^4.1.18
+    "@tailwindcss/vite": ^4.3.2
     postcss: 8.5.15
-    tailwindcss: ^4.1.18
+    tailwindcss: ^4.3.2
   esbuild:
     esbuild: 0.28.1
     esbuild-node-externals: 1.23.1
-    esbuild-plugins-node-modules-polyfill: 1.8.1
+    esbuild-plugins-node-modules-polyfill: 1.8.2
     esbuild-wasm: 0.28.1
   esbuild-wasm:
     esbuild: npm:esbuild-wasm@0.28.1
@@ -115,7 +115,7 @@ catalogs:
     chokidar: ^5.0.0
     fdir: 6.4.0
     nano-spawn: ^2.1.0
-    picomatch: ^4.0.4
+    picomatch: ^4.0.5
     std-env: ^4.1.0
     type-fest: ^4.41.0
     zod: ^4.4.3
@@ -245,9 +245,9 @@ catalogs:
     "@zag-js/tree-view": ^1.33.1
 
 minimumReleaseAgeExclude:
-  - '@astrojs/react@5.0.7'
+  - '@astrojs/react@5.0.7 || 6.0.1'
   - '@astrojs/starlight@0.39.3'
-  - astro@6.4.3
+  - astro@6.4.3 || 7.0.6
   - '@mantine/colors-generator@9.4.0'
   - '@mantine/core@9.4.0'
   - '@mantine/hooks@9.4.0'
@@ -257,3 +257,6 @@ minimumReleaseAgeExclude:
   - '@mantine/vanilla-extract@9.4.0'
   - '@hono/node-server@2.0.6 || 2.0.8'
   - tsx@4.22.5
+  - '@astrojs/internal-helpers@0.10.1'
+  - '@astrojs/markdown-satteri@0.3.3'
+  - picomatch@4.0.5
