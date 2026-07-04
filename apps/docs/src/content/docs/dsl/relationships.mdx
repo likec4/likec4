@@ -108,6 +108,24 @@ or from a business perspective (delegation, informing, accountability, etc.).
 
 You can define whichever relationship types best fit your context.
 
+A relationship kind can also define default properties — `title`, `description`, `technology`, `notation` and [links](#links) — inherited by every relationship of that kind (a relationship may override any of them):
+
+```likec4
+specification {
+  relationship async {
+    title 'Asynchronous'
+    technology 'Kafka'
+  }
+}
+model {
+  // inherits title 'Asynchronous' and technology 'Kafka'
+  system1 .async system2
+
+  // overrides the title, keeps the inherited technology
+  system1 .async system3 'publishes events'
+}
+```
+
 <Aside type='tip'>
   With kinds you can customize the styling of the relationships, see [styling](/dsl/styling#relationship)
 </Aside>

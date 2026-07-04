@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../../builder/Builder'
 import type { LikeC4Model } from '../../../model'
@@ -330,6 +337,40 @@ describe('Dynamic view step fields', () => {
       })
     })
 
+    it('should inherit styles from model relationship kind specification', () => {
+      const model = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            action: {
+              color: 'green',
+              line: 'solid',
+              head: 'open',
+              tail: 'diamond',
+            },
+          },
+        })
+        .model(({ el, rel }, _) =>
+          _(
+            el('shopify'),
+            el('webhook'),
+            rel('shopify', 'webhook', {
+              kind: 'action',
+            }),
+          )
+        )
+        .toLikeC4Model()
+
+      const edge = computeEdgeFromStep(model)
+
+      expect(edge).toMatchObject({
+        color: 'green',
+        line: 'solid',
+        head: 'open',
+        tail: 'diamond',
+      })
+    })
+
     it('should combine technology and styles from specification', () => {
       const model = Builder
         .specification({
@@ -362,6 +403,39 @@ describe('Dynamic view step fields', () => {
         line: 'solid',
         head: 'open',
         tail: 'diamond',
+      })
+    })
+
+    it('should inherit specification styles from model relationship kind', () => {
+      const model = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            requests: {
+              technology: 'HTTP Request',
+              color: 'blue',
+              line: 'solid',
+            },
+          },
+        })
+        .model(({ el, rel }, _) =>
+          _(
+            el('shopify'),
+            el('webhook'),
+            rel('shopify', 'webhook', {
+              kind: 'requests',
+            }),
+          )
+        )
+        .toLikeC4Model()
+
+      const edge = computeEdgeFromStep(model)
+
+      expect(edge).toMatchObject({
+        kind: 'requests',
+        technology: 'HTTP Request',
+        color: 'blue',
+        line: 'solid',
       })
     })
   })

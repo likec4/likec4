@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { expect, test } from '@playwright/test'
 import { canvas } from '../helpers/selectors'
 import { TIMEOUT_CANVAS } from '../helpers/timeouts'
@@ -13,8 +20,11 @@ test('markdown image in description renders in element details (#2505)', async (
   await page.goto('/project/e2e/view/index/')
   await expect(canvas(page)).toBeVisible({ timeout: TIMEOUT_CANVAS })
 
-  // Click the cloud node's details button
-  await page.locator('[data-id="cloud"] .details-button button').click()
+  const cloud = page.locator('[data-id="cloud"]')
+  await cloud.hover()
+  const detailsButton = cloud.getByRole('button', { name: 'Open details' })
+  await detailsButton.focus()
+  await page.keyboard.press('Enter')
 
   // Wait for the element details dialog
   const dialog = page.locator('dialog[open]')

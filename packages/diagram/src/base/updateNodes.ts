@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq, shallowEqual as isShallowEqual } from 'fast-equals'
 import { hasSubObject, isDefined, pickBy } from 'remeda'
@@ -54,6 +61,8 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
       && eq(existing.selectable, update.selectable ?? existing.selectable)
       && eq(existing.focusable, update.focusable ?? existing.focusable)
       && eq(existing.draggable, update.draggable ?? existing.draggable)
+      && eq(existing.ariaLabel, update.ariaLabel ?? existing.ariaLabel)
+      && eq(existing.ariaRole, update.ariaRole ?? existing.ariaRole)
       && eq(existing.dragHandle, update.dragHandle)
       && eq(existing.className, update.className)
       && eq(existing.zIndex, update.zIndex ?? existing.zIndex)
