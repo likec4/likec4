@@ -240,10 +240,6 @@ catalogs:
   xyflow:
     "@xyflow/react": 12.11.0
     "@xyflow/system": 0.0.77
-  zag:
-    "@zag-js/collection": ^1.33.1
-    "@zag-js/react": ^1.33.1
-    "@zag-js/tree-view": ^1.33.1
 
 minimumReleaseAgeExclude:
   - '@astrojs/react@5.0.7 || 6.0.1'

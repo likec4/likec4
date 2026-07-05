@@ -40,7 +40,6 @@ export default defineConfig({
     lib: {
       entry: [
         'src/index.ts',
-        'src/adhoc-editor/index.ts',
         'src/custom/index.ts',
         'src/styles-font.css',
         'src/styles-min.css',

@@ -42,14 +42,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./adhoc-editor": {
-      "sources": "./src/adhoc-editor/index.ts",
-      "default": {
-        "types": "./dist/adhoc-editor/index.d.ts",
-        "import": "./dist/adhoc-editor/index.js",
-        "default": "./dist/adhoc-editor/index.js"
-      }
-    },
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -91,9 +83,6 @@
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
     "@xstate/store-react": "catalog:xstate",
-    "@zag-js/collection": "catalog:zag",
-    "@zag-js/react": "catalog:zag",
-    "@zag-js/tree-view": "catalog:zag",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
     "defu": "catalog:utils",
