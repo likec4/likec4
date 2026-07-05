@@ -8,7 +8,7 @@ import type {
   ViewType,
   ViewWithNotation,
 } from './view-common'
-import type { DynamicViewFlow } from './view-dynamic-flow'
+import type { DynamicViewFlowData } from './view-dynamic-flow'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
 
 export type LayoutedViewDriftReason =
@@ -68,7 +68,7 @@ type ViewManualLayoutSnapshotPerType = Simplify<
     }
     | {
       readonly [_type]: 'dynamic'
-      readonly flow?: DynamicViewFlow
+      readonly flow?: DynamicViewFlowData
       readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
     }
   )
@@ -88,45 +88,3 @@ export type ViewManualLayoutSnapshot<Type extends ViewType = ViewType> =
     : Type extends infer T extends string
       ? Extract<ViewManualLayoutSnapshotPerType, { [_type]: T }>
       : ViewManualLayoutSnapshotPerType
-
-// type a = ViewManualLayoutSnapshot<never>
-
-// // dprint-ignore
-// ViewManualLayoutSnapshotPerType extends infer M extends { [_type]: string}
-//   ? Type extends M[_type]
-//     ? Simplify<
-//       & M
-//       & {
-//         readonly id: scalar.ViewId
-//         readonly title: string | null
-//         readonly description: scalar.MarkdownOrString | null
-//         readonly [_stage]: 'layouted'
-//         // Object hash of previous layout
-//         readonly hash: string
-//         readonly nodes: ReadonlyArray<DiagramNode>
-//         readonly edges: ReadonlyArray<DiagramEdge>
-//         readonly bounds: BBox
-//         readonly autoLayout: ViewAutoLayout
-//       }
-//       & ViewWithNotation
-//     >
-//     : never
-//   : never
-
-// Simplify<
-//   & ViewManualLayoutSnapshotPerType
-//   & {
-//     readonly id: scalar.ViewId
-//     readonly title: string | null
-//     readonly description: scalar.MarkdownOrString | null
-//     readonly [_type]: Type
-//     readonly [_stage]: 'layouted'
-//     // Object hash of previous layout
-//     readonly hash: string
-//     readonly nodes: ReadonlyArray<DiagramNode>
-//     readonly edges: ReadonlyArray<DiagramEdge>
-//     readonly bounds: BBox
-//     readonly autoLayout: ViewAutoLayout
-//   }
-//   & ViewWithNotation
-// >

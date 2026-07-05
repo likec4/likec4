@@ -241,7 +241,7 @@ export class ProjectsManager extends ADisposable {
    * Configured default project ID.
    * (it is used in CLI and Vite plugin)
    */
-  #defaultProjectId: ProjectId | undefined = undefined
+  #defaultProjectId = undefined as ProjectId | undefined
 
   /**
    * Workspace-level exclude matcher from VS Code settings (likec4.exclude).
@@ -357,6 +357,7 @@ export class ProjectsManager extends ADisposable {
       }
       logger.debug`set workspace exclude patterns: ${normalizedPatterns}`
       this.#workspaceExclude = picomatch(normalizedPatterns, { dot: true })
+      this.resetCaches()
     } catch (e) {
       logger.warn('Failed to set workspace exclude patterns', { error: e })
       this.#workspaceExclude = undefined

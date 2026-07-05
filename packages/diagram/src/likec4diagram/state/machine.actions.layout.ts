@@ -153,7 +153,8 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
 
 export const fitFocusedBounds = (params?: { duration?: number }) =>
   machine.createAction(({ context }) => {
-    const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewVariant === 'sequence'
+    const isActiveWalkthrough = !!context.activeWalkthrough
+    const isActiveSequenceWalkthrough = isActiveWalkthrough && context.dynamicViewVariant === 'sequence'
     let { bounds, duration = 450 } = isActiveSequenceWalkthrough
       ? activeSequenceBounds({ context })
       : focusedBounds({ context })

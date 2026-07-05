@@ -29,6 +29,10 @@ export function useXYStore<StateSlice = unknown>(
   )
 }
 
+export function selectXYStore<StateSlice = unknown>(selector: (state: XYStoreState) => StateSlice) {
+  return selector
+}
+
 export function useXYStoreApi(): XYStoreApi {
   return useStoreApi<Types.AnyNode, Types.AnyEdge>()
 }

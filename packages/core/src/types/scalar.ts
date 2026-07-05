@@ -1,4 +1,4 @@
-import { isEmptyish, isNumber, isString, isTruthy } from 'remeda'
+import { hasAtLeast, isEmptyish, isNumber, isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
 
@@ -142,38 +142,12 @@ export function EdgeId(id: string): EdgeId {
   return id as any
 }
 
-// export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
-/**
- * @deprecated Use {@link StepPath} instead
- */
-export type StepEdgeId = Tagged<string, 'EdgeId'>
-export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
-  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
-}
 export const StepEdgeKind = '@step'
 
-/**
- * @deprecated Use {@link StepPath} instead
- */
-export function isStepEdgeId(id: string): id is StepEdgeId {
-  return id.startsWith('step-')
-}
+export type StepPath = Tagged<Tagged<`step-${string}`, 'EdgeId'>, 'StepPath'>
 
-/**
- * @deprecated Use {@link StepPath} instead
- */
-export function extractStep(id: EdgeId): number {
-  if (!isStepEdgeId(id)) {
-    throw new Error(`Invalid step edge id: ${id}`)
-  }
-  return parseFloat(id.slice('step-'.length))
-}
-
-export type StepPath = Tagged<EdgeId, 'StepPath'>
-
-export function isStepPath(id: string): id is StepPath {
-  return id.startsWith('step-')
+export function isStepPath(id: unknown): id is StepPath {
+  return typeof id === 'string' && id.startsWith('step-')
 }
 /**
  * Path to a step, also acting as EdgeId
@@ -208,12 +182,21 @@ export function isStepPath(id: string): id is StepPath {
 export function StepPath(...segments: Array<string | number | [number, string] | undefined>): StepPath {
   const filtered = segments
     .filter(v => v !== undefined && v !== '')
-    .map(v => {
+    .map((v, i) => {
       if (Array.isArray(v) && v.length === 2) {
-        return `${v[0].toString().padStart(2, '0')}:${v[1]}`
+        invariant(isTruthy(v[1]), `StepPath segment kind can not be empty "${v[0]}:${v[1]}"`)
+        return `${v[0].toString(10).padStart(2, '0')}:${v[1]}`
       }
-      return isNumber(v) ? v.toString().padStart(2, '0') : v
+      if (isNumber(v)) {
+        return v.toString(10).padStart(2, '0')
+      }
+      // drop 'step-' prefix if present in segments after the first
+      if (i > 0 && v?.startsWith('step-')) {
+        return v.substring(5)
+      }
+      return v
     })
-  invariant(filtered.length > 0, 'StepPath must have at least one segment')
-  return filtered.join('.') as StepPath
+  invariant(hasAtLeast(filtered, 1), 'StepPath must have at least one segment')
+  const p = filtered.join('.')
+  return (!p.startsWith('step-') ? `step-${p}` : p) as StepPath
 }

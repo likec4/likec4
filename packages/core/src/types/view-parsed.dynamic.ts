@@ -4,7 +4,6 @@ import type { ExclusiveUnion, NonEmptyReadonlyArray } from './_common'
 import { _type } from './const'
 import type { ModelFqnExpr } from './expression-model'
 import * as scalar from './scalar'
-import { isStepEdgeId } from './scalar'
 import type { Color, RelationshipArrowType, RelationshipLineType } from './styles'
 import type {
   BaseParsedViewProperties,

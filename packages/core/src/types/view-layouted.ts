@@ -11,7 +11,7 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
-import type { DynamicViewFlow } from './view-dynamic-flow'
+import type { DynamicViewFlowSteps } from './view-dynamic-flow'
 import type { DiagramEdgeDriftReason, DiagramNodeDriftReason, LayoutedViewDriftReason } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
@@ -119,9 +119,12 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
   readonly variant: DynamicViewDisplayVariant
 
   /**
-   * All known flows in this dynamic view
+   * Represents the complete flow structure for dynamic views, as a sequence of steps.
+   * Can include nested flows, branches, loops, and conditional statements.
+   *
+   * (this can be undefined if read from manual snapshot)
    */
-  readonly flow?: DynamicViewFlow
+  readonly flow?: DynamicViewFlowSteps
 
   /**
    * Sequence layout of this dynamic view
@@ -173,9 +176,12 @@ export namespace LayoutedDynamicView {
       readonly height: number
     }
 
+    /**
+     * Represents an area around some flow control block
+     * (the rest my be read from `view.flow`)
+     */
     export interface SubflowArea {
       readonly id: scalar.StepPath
-      readonly _type: DynamicViewFlow.SubFlowType
       readonly x: number
       readonly y: number
       readonly width: number

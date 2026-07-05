@@ -9,7 +9,7 @@ import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { selectDiagramActorContext, useDiagram, useDiagramContext, useDiagramSnapshot } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
 
@@ -89,37 +89,37 @@ function StartWalkthroughButton() {
 const DynamicViewModeSwitcher = forwardRef<HTMLDivElement, {
   value: DynamicViewDisplayVariant
   onChange: (variant: DynamicViewDisplayVariant) => void
-}>(({ value, onChange }, ref) => {
-  return (
-    <m.div ref={ref} layout="position">
-      <SegmentedControl
-        size="xs"
-        value={value}
-        onChange={variant => {
-          invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
-          onChange(variant)
-        }}
-        classNames={{
-          label: css({
-            fontSize: 'xxs',
-          }),
-        }}
-        data={[
-          {
-            value: 'diagram',
-            label: 'Diagram',
-          },
-          {
-            value: 'sequence',
-            label: 'Sequence',
-          },
-        ]} />
-    </m.div>
-  )
-})
+}>(({ value, onChange }, ref) => (
+  <m.div ref={ref} layout="position">
+    <SegmentedControl
+      size="xs"
+      value={value}
+      onChange={variant => {
+        invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
+        onChange(variant)
+      }}
+      classNames={{
+        label: css({
+          fontSize: 'xxs',
+        }),
+      }}
+      data={[
+        {
+          value: 'diagram',
+          label: 'Diagram',
+        },
+        {
+          value: 'sequence',
+          label: 'Sequence',
+        },
+      ]} />
+  </m.div>
+))
+
+const selectDynamicViewVariant = selectDiagramActorContext(c => c.dynamicViewVariant)
 
 export function DynamicViewControls() {
-  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
+  const dynamicViewVariant = useDiagramSnapshot(selectDynamicViewVariant)
   const diagram = useDiagram()
   return (
     <AnimatePresence>

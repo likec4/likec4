@@ -21,10 +21,10 @@ import {
   extendDeploymentChecks,
 } from './deployment-checks'
 import {
-  branchSteps,
   dynamicViewDisplayVariant,
   stepSeries,
   stepSingle,
+  subflowStep,
 } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
@@ -176,7 +176,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalStyleId: checkGlobalStyleId(services),
     Step: stepSingle(services),
     StepSeries: stepSeries(services),
-    BranchSteps: branchSteps(services),
+    SubflowStep: subflowStep(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),

@@ -19,9 +19,9 @@ import {
   stepGuards,
   StepPath,
 } from '../../types'
-import type { DynamicViewFlow } from '../../types/view-dynamic-flow.ts'
-import { imap, intersection, invariant, nonexhaustive, nonNullable, Stack, toArray, union } from '../../utils'
-import { ancestorsFqn, commonAncestor, isAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
+import type { DynamicViewFlow, DynamicViewFlowSteps } from '../../types/view-dynamic-flow'
+import { intersection, invariant, nonexhaustive, nonNullable, Stack, toArray, union } from '../../utils'
+import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
@@ -94,26 +94,25 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       flow: [],
       id: null as unknown as StepPath,
       _type: null as unknown as DynamicViewFlow.SubFlowType,
-      path: null as unknown as StepPath,
     }
     const flowStack = new Stack<ComputingFlow>()
     flowStack.push(rootFlow)
 
-    const addStepToFlow = <P extends { id: StepPath }>(p: P): P => {
-      flowStack.peek()!.flow.push(p.id)
+    const flowStackHead = () => flowStack.peek() ?? rootFlow
+
+    const addToFlow = <P extends StepPath | ComputingFlow>(p: P): P => {
+      flowStackHead().flow.push(p)
       return p
     }
 
     const addActorToFlow = (actor: Element<A>) => {
-      flowStack.peek()!.actors.add(actor)
+      flowStackHead().actors.add(actor)
     }
 
     const newFlow = (props: SetRequired<Partial<ComputingFlow>, 'id' | '_type'>): ComputingFlow => {
-      const path = props.id.startsWith('step-') ? props.id.substring('step-'.length) : props.id
       return {
         actors: new Set(),
         flow: [],
-        path: StepPath(path),
         ...props,
       }
     }
@@ -126,8 +125,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
     const popFlow = () => {
       const flow = flowStack.pop()
       if (flow && flow !== rootFlow && flow.flow.length > 0) {
-        const parentFlow = flowStack.peek()!
-        parentFlow.flow.push(flow)
+        addToFlow(flow)
       }
       return flow
     }
@@ -136,34 +134,19 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       steps: readonly Step.Any<A>[]
       newflow: ComputingFlow
       prefix?: StepPath
-    } | {
-      steps: readonly Step.Any<A>[]
-      newflow?: ComputingFlow
-      prefix: StepPath
     }) => {
-      if (newflow) {
-        pushFlow(newflow)
-        prefix ??= newflow.path
-      }
-      if (prefix && prefix.startsWith('step-')) {
-        prefix = prefix.substring('step-'.length) as StepPath
-      }
+      pushFlow(newflow)
+      prefix ??= newflow.id
       reduce(
         steps,
         (acc, s) => processStep(s, acc, prefix),
         1,
       )
-      if (newflow) {
-        popFlow()
-      }
-    }
-
-    const stepId = (...segments: Array<string | number | [number, string] | undefined>): StepPath => {
-      return `step-${StepPath(...segments)}` as StepPath
+      popFlow()
     }
 
     const flowId = (path: StepPath | undefined, index: number, type: string): StepPath => {
-      return stepId(path, [index, type])
+      return StepPath(path, [index, type])
     }
 
     const processTryStep = (step: Step.Try<A>, path: StepPath) => {
@@ -222,18 +205,18 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
           return stepNum + 1
         }
         case stepGuards.isTry(step): {
-          const { path } = pushFlow(
+          const { id } = pushFlow(
             newFlow({
               _type: 'try',
               id: flowId(prefix, stepNum, 'try'),
             }),
           )
-          processTryStep(step, path)
+          processTryStep(step, id)
           popFlow()
           return stepNum + 1
         }
         case stepGuards.isAlt(step): {
-          const { path } = pushFlow(
+          const { id: path } = pushFlow(
             newFlow({
               _type: 'alt',
               id: flowId(prefix, stepNum, 'alt'),
@@ -255,10 +238,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
           return stepNum + 1
         }
         case stepGuards.isStep(step): {
-          const { id } = addStepToFlow({
-            id: stepId(prefix, stepNum),
-            step: step,
-          })
+          const id = addToFlow(StepPath(prefix, stepNum))
 
           const {
             source: stepSource,
@@ -392,7 +372,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
       [_type]: 'dynamic',
       [_stage]: 'computed',
       variant: view.variant ?? 'diagram',
-      flow: validateComputingFlow(rootFlow),
+      flow: toFlowSteps(rootFlow),
       autoLayout: {
         direction: autoLayoutRule?.direction ?? 'LR',
         ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
@@ -431,14 +411,8 @@ type ComputingFlow = {
   id: StepPath
   _type: DynamicViewFlow.SubFlowType
   flow: Array<StepPath | ComputingFlow>
-  path: StepPath
   title?: string | undefined
 }
-
-const mapActors = piped(
-  imap((element: ElementModel<any>) => element.id as scalar.NodeId),
-  toArray(),
-)
 
 const mapSubflow = piped(
   identity()<ComputingFlow['flow']>,
@@ -448,7 +422,6 @@ const mapSubflow = piped(
 function subflow(sub: ComputingFlow): DynamicViewFlow.SubFlow.Any {
   let base = {
     id: sub.id,
-    actors: mapActors(sub.actors),
     ...sub.title && { title: sub.title },
   } satisfies Partial<DynamicViewFlow.SubFlow.Any>
 
@@ -460,9 +433,9 @@ function subflow(sub: ComputingFlow): DynamicViewFlow.SubFlow.Any {
     invariant(tryBlock._type === 'try-block', 'Try block is required')
 
     const block: Writable<DynamicViewFlow.SubFlow.Try> = {
-      ...base,
       _type: sub._type,
       flow: [tryBlock],
+      ...base,
     }
 
     if (finallyBlock) {
@@ -484,31 +457,28 @@ function subflow(sub: ComputingFlow): DynamicViewFlow.SubFlow.Any {
   }
 
   return {
-    ...base,
     flow: mapSubflow(sub.flow),
     _type: sub._type,
+    ...base,
   } as DynamicViewFlow.SubFlow.Any
 }
 
-function validateComputingFlow(root: ComputingFlow): DynamicViewFlow {
-  return {
-    actors: mapActors(root.actors),
-    steps: root.flow.map(v => {
-      if (isString(v)) {
-        return v
-      }
-      const s = subflow(v)
-      if (
-        s._type === 'alt-else' ||
-        s._type === 'alt-if' ||
-        s._type === 'alt-when' ||
-        s._type === 'try-block' ||
-        s._type === 'try-catch' ||
-        s._type === 'try-finally'
-      ) {
-        throw new Error(`Unsupported root-level subflow type: ${s._type}`)
-      }
-      return s
-    }),
-  }
+function toFlowSteps(root: ComputingFlow): DynamicViewFlowSteps {
+  return root.flow.map(v => {
+    if (isString(v)) {
+      return v
+    }
+    const s = subflow(v)
+    if (
+      s._type === 'alt-else' ||
+      s._type === 'alt-if' ||
+      s._type === 'alt-when' ||
+      s._type === 'try-block' ||
+      s._type === 'try-catch' ||
+      s._type === 'try-finally'
+    ) {
+      throw new Error(`Unsupported root-level subflow type: ${s._type}`)
+    }
+    return s
+  })
 }

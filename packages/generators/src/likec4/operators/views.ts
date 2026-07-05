@@ -384,6 +384,7 @@ const stepAny = zodOp(schemas.views.dynamicViewStep)(({ ctx, exec }) => {
   switch (ctx._type) {
     case 'loop':
     case 'opt':
+    case 'break':
     case 'par':
       return exec(ctx, stepBlock())
     case 'alt':

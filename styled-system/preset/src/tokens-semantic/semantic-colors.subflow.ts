@@ -19,10 +19,7 @@ export const { subflow } = defineSemanticTokens.colors({
         },
       },
       border: {
-        value: {
-          base: alpha(mantine.colors.indigo[7], 65),
-          _dark: alpha(mantine.colors.indigo[7], 65),
-        },
+        value: alpha(mantine.colors.indigo[7], 65),
       },
       label: {
         value: alpha(mantine.colors.indigo[7], 20),
@@ -41,7 +38,7 @@ export const { subflow } = defineSemanticTokens.colors({
       },
       text: {
         value: {
-          base: mantine.colors.dark[9],
+          base: mantine.colors.teal[9],
           _dark: alpha(mantine.colors.teal[2], 95),
         },
       },

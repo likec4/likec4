@@ -5,6 +5,7 @@ import type { XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
+import { isNumber } from 'remeda'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -283,6 +284,13 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     }
   }
 
+  const sequenceStepData = isNumber(props.data.stepnum) ?
+    {
+      isSequenceStep: true,
+      stepNum: props.data.stepnum,
+    } :
+    undefined
+
   return (
     <>
       <EdgeContainer
@@ -317,6 +325,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
             <EdgeLabel
               pointerEvents="all"
               className={enabledEditing ? edgesCss.labelDraggable : undefined}
+              {...sequenceStepData}
               edgeProps={props}>
               {navigateTo && (
                 <EdgeActionButton

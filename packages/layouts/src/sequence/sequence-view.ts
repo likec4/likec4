@@ -133,7 +133,6 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
   const subflows = layout.getSubflowAreas().map(({ subflow, box }): LayoutedDynamicView.Sequence.SubflowArea => ({
     id: subflow.id,
     ...box,
-    _type: subflow._type,
   }))
 
   return {

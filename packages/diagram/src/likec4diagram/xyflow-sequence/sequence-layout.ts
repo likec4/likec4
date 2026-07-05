@@ -3,12 +3,13 @@ import {
   type BBox,
   type DiagramEdge,
   type DiagramNode,
-  type DynamicViewFlowOps,
   type LayoutedDynamicView,
   type StepPath,
   type ViewId,
   type XYPoint,
+  DynamicViewFlow,
   dynamicViewFlow,
+  flowHelpers,
   hasProp,
   NodeId,
 } from '@likec4/core/types'
@@ -23,7 +24,7 @@ import { calcSequenceLayout } from './sequence-view'
 
 type Ctx = {
   view: Omit<LayoutedDynamicView, 'sequenceLayout' | 'flow'>
-  flow: DynamicViewFlowOps | undefined
+  flow: DynamicViewFlow | undefined
   layout: LayoutedDynamicView.Sequence.Layout
   subflowArea: (id: StepPath) => LayoutedDynamicView.Sequence.SubflowArea | undefined
 }
@@ -294,16 +295,17 @@ function toSeqStepEdge(
 type CtxWithFlow = SetNonNullable<Ctx, 'flow'>
 
 function mapSubflows(
-  { _type, ...subflow }: LayoutedDynamicView.Sequence.SubflowArea,
+  area: LayoutedDynamicView.Sequence.SubflowArea,
   ctx: CtxWithFlow,
 ): Types.SequenceSubflowArea | undefined {
+  const subflow = ctx.flow.lookup(area.id)
   // Exclude these subflow areas from rendering
   // (we render them inside parents)
-  if (ctx.flow.guards.type.isAltOrTryBranch(_type)) {
+  if (ctx.flow.guards.isAltOrTryBranch(subflow)) {
     return undefined
   }
-  const { id: ID, x, y, width, height } = subflow
-  const data = subflowAreaData({ ...subflow, _type }, ctx)
+  const { id: ID, x, y, width, height } = area
+  const data = subflowAreaData(area, subflow, ctx)
   return {
     id: ID,
     type: 'seq-subflow',
@@ -325,19 +327,20 @@ function mapSubflows(
 }
 
 function subflowAreaData(
-  subflow: LayoutedDynamicView.Sequence.SubflowArea & { _type: Types.SequenceSubflowData['flowType'] },
+  area: LayoutedDynamicView.Sequence.SubflowArea,
+  subflow: DynamicViewFlow.SubFlow,
   ctx: CtxWithFlow,
 ): Types.SequenceSubflowData {
-  const { id: ID, _type, x, y, width, height } = subflow
+  const { id: ID, x, y, width, height } = area
   const id = NodeId(ID)
 
   const flowData =
     // dprint-ignore
-    _type === 'try'
-      ? composeTryData(subflow, ctx)
-      : _type === 'alt'
-        ? composeAltData(subflow, ctx)
-        : { flowType: _type, hasSubflows: ctx.flow.hasSubflows(ID) }
+    ctx.flow.guards.isTry(subflow)
+      ? composeTryData(area, subflow, ctx)
+      : ctx.flow.guards.isAlt(subflow)
+        ? composeAltData(area, subflow, ctx)
+        : { flowType: subflow._type, hasSubflows: ctx.flow.hasSubflows(ID) }
 
   return {
     id,
@@ -364,32 +367,33 @@ function subflowAreaData(
 
 const toSequenceBranch = (
   parent: XYPoint,
-  flow: DynamicViewFlowOps,
+  branch: DynamicViewFlow.SubFlow.Alt.Branch | DynamicViewFlow.SubFlow.Try.Any,
   area: LayoutedDynamicView.Sequence.SubflowArea,
 ): Types.SequenceSubflowData.Branch => ({
   flowId: area.id,
-  title: flow.lookup(area.id).title ?? undefined,
+  title: branch.title ?? undefined,
   x: area.x - parent.x,
   y: area.y - parent.y,
   width: area.width,
   height: area.height,
-  hasSubflows: flow.hasSubflows(area.id),
+  hasSubflows: flowHelpers.hasSubflows(branch),
 })
 
 function composeTryData(
-  { id, ...parent }: Pick<LayoutedDynamicView.Sequence.SubflowArea, 'id' | 'x' | 'y'>,
+  parent: XYPoint,
+  tryflow: DynamicViewFlow.SubFlow.Try,
   { flow, subflowArea }: CtxWithFlow,
 ): Types.SequenceSubflowData.Try {
-  const blocks = flow.unwindTry(flow.lookup(id, 'try'))
+  const blocks = flow.unwindTry(tryflow)
 
   const tryBlockArea = nonNullable(subflowArea(blocks.tryBlock.id))
-  const tryBlock = toSequenceBranch(parent, flow, tryBlockArea)
+  const tryBlock = toSequenceBranch(parent, blocks.tryBlock, tryBlockArea)
 
   const catchBlockArea = blocks.catchBlock ? subflowArea(blocks.catchBlock.id) : undefined
-  const catchBlock = catchBlockArea ? toSequenceBranch(parent, flow, catchBlockArea) : undefined
+  const catchBlock = catchBlockArea ? toSequenceBranch(parent, blocks.catchBlock!, catchBlockArea) : undefined
 
   const finallyBlockArea = blocks.finallyBlock ? subflowArea(blocks.finallyBlock.id) : undefined
-  const finallyBlock = finallyBlockArea ? toSequenceBranch(parent, flow, finallyBlockArea) : undefined
+  const finallyBlock = finallyBlockArea ? toSequenceBranch(parent, blocks.finallyBlock!, finallyBlockArea) : undefined
 
   return {
     flowType: 'try' as const,
@@ -401,16 +405,16 @@ function composeTryData(
 }
 
 function composeAltData(
-  { id, ...parent }: Pick<LayoutedDynamicView.Sequence.SubflowArea, 'id' | 'x' | 'y'>,
+  parent: XYPoint,
+  altflow: DynamicViewFlow.SubFlow.Alt,
   { flow, subflowArea }: CtxWithFlow,
 ): Types.SequenceSubflowData.Alt {
-  const branches = flow.subflows(id).flatMap(f => {
+  const branches = flow.subflows(altflow).flatMap(f => {
     const area = subflowArea(f.id)
     if (area) {
-      invariant(flow.guards.type.isAltBranch(area._type))
       return {
-        ...toSequenceBranch(parent, flow, area),
-        flowType: area._type,
+        ...toSequenceBranch(parent, f, area),
+        flowType: f._type,
       }
     }
     return []

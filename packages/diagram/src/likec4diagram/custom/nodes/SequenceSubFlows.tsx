@@ -1,8 +1,9 @@
 import { nonexhaustive } from '@likec4/core'
 import type { StepPath } from '@likec4/core/types'
 import { css, sva } from '@likec4/styles/css'
-import { createStyleContext, isCssProperty, styled } from '@likec4/styles/jsx'
+import { createStyleContext, HStack, isCssProperty, styled } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
+import { token } from '@likec4/styles/tokens'
 import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
 import * as m from 'motion/react-m'
 import type { JSX } from 'react'
@@ -11,9 +12,9 @@ import type { Types } from '../../types'
 
 const typeLabelStyle = css.raw({
   color: 'colorPalette.text',
-  fontSize: '[9px]',
+  fontSize: '[8px]',
   fontWeight: 'extrabold',
-  lineHeight: 'xs',
+  lineHeight: 'md',
   letterSpacing: 'tight',
   textTransform: 'uppercase',
 })
@@ -35,10 +36,8 @@ const recipe = sva({
         opacity: '0.5',
       },
     },
-    'flow-type': css.raw(typeLabelStyle, withBorder, {
-      position: 'absolute',
-      top: '0',
-      left: '0',
+    'flow-type': css.raw(typeLabelStyle, withBorder, { // position: 'absolute',
+      alignSelf: 'stretch',
       paddingInline: '2',
       paddingBlock: '1',
       background: 'colorPalette.label',
@@ -102,10 +101,9 @@ const recipe = sva({
       },
     }),
     'title': {
-      color: [
-        'colorPalette.text',
-      ],
-      textStyle: 'sm',
+      color: 'colorPalette.text',
+      textStyle: 'xs',
+      placeSelf: 'anchor-center',
       fontWeight: 'medium',
     },
   },
@@ -353,20 +351,27 @@ function TrySubflow({
   )
 }
 
-function GenericSubflow({
-  data,
-}: SubflowNodeProps<'par' | 'opt' | 'loop' | 'break'>) {
+type GenericSubflowProps = SubflowNodeProps<'par' | 'opt' | 'loop' | 'break'>
+function GenericSubflow({ data }: GenericSubflowProps) {
   return (
     <SubflowRoot
       subflow={data.flowType}
       {...subflowActiveState(data)}
       filled>
-      <SubflowTypeLabel>{data.flowType}</SubflowTypeLabel>
-      {data.title && (
-        <Content paddingTop={'1'} paddingLeft={'16'}>
-          <Title>{data.title}</Title>
-        </Content>
-      )}
+      <HStack>
+        <SubflowTypeLabel>
+          {data.flowType}
+        </SubflowTypeLabel>
+        {data.title && <Title>{data.title}</Title>}
+      </HStack>
     </SubflowRoot>
   )
 }
+
+// import { IconRepeat } from '@tabler/icons-react'
+// function SubflowIcon({ flowType }: { flowType: GenericSubflowProps['data']['flowType'] }) {
+//   if (flowType === 'loop') {
+//     return <IconRepeat />
+//   }
+//   return null
+// }

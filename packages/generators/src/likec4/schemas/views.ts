@@ -203,7 +203,7 @@ type StepRecursive<S extends {}, isReadonly extends boolean = false> =
         steps: Arr<S, isReadonly>
       }
       | {
-        _type: 'par' | 'loop' | 'opt'
+        _type: 'par' | 'loop' | 'opt' | 'break'
         title?: string | undefined
         steps: Arr<StepRecursive<S, isReadonly>, isReadonly>
       }
@@ -251,7 +251,7 @@ export const dynamicStepSeries = z
 
 export const dynamicStepBlock = withSteps
   .extend({
-    _type: z.literal(['par', 'loop', 'opt']),
+    _type: z.literal(['par', 'loop', 'opt', 'break']),
   })
   .readonly()
 

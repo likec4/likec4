@@ -1,4 +1,4 @@
-import type { StepPath } from '@likec4/core'
+import { type StepPath, dynamicViewFlow, invariant, isDynamicView, nonNullable } from '@likec4/core'
 import { raise } from 'xstate/actions'
 import { and, or } from 'xstate/guards'
 import {
@@ -19,6 +19,34 @@ export const idle = machine.createStateConfig({
   id: targetState.idle.slice(1),
   on: {
     'xyflow.nodeClick': [
+      {
+        description: 'Handle sequence subflow click in sequence variant',
+        guard: and([
+          'is dynamic view in sequence variant',
+          ({ event }) => event.node.type === 'seq-subflow',
+          'click: same node',
+        ]),
+        actions: raise(({ event: { node }, context }) => {
+          invariant(node.type === 'seq-subflow')
+          invariant(isDynamicView(context.view))
+          const flow = dynamicViewFlow(context.view)
+          const stepId = flow.firstStep(node.data.flowId) ?? flow.firstStep()
+          return ({
+            type: 'walkthrough.start',
+            stepId,
+          })
+        }),
+      },
+      {
+        description: 'Handle sequence subflow click in sequence variant',
+        guard: and([
+          'is dynamic view in sequence variant',
+          ({ event }) => event.node.type === 'seq-subflow',
+        ]),
+        actions: [
+          assignLastClickedNode(),
+        ],
+      },
       {
         guard: and([
           'enabled: Readonly',

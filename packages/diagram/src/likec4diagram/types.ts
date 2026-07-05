@@ -296,6 +296,12 @@ export namespace Types {
       labelXY: XYPosition | null
       isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
+      /**
+       * When dynamic view in "diagram" variant
+       * Edges are RelationshipEdgeData - stepnum is used to determine the step number
+       * (backward compatibility)
+       */
+      stepnum?: number
     }
   >
 
@@ -319,7 +325,7 @@ export namespace Types {
     >
     & {
       id: StepPath
-      state?: 'processed' | 'active' | 'skipped' | 'pending' | undefined
+      state?: 'processed' | 'active' | 'skipped' | 'pending' | null
       stepnum: number
       parentFlow: null | {
         id: StepPath

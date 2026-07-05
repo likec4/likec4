@@ -1,13 +1,12 @@
-import { computeFlow } from '@likec4/core/compute-view'
 import type {
   DiagramEdge,
   DiagramNode,
-  DynamicViewFlowOps,
+  DynamicViewFlow,
   LayoutedDynamicView,
   NodeId,
   StepPath,
 } from '@likec4/core/types'
-import { dynamicViewFlow, parentFlow } from '@likec4/core/types'
+import { parentFlow } from '@likec4/core/types'
 import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
 import { flat, groupByProp, hasAtLeast, map, mapValues, pipe, values } from 'remeda'
 import type { SequenceActor, SequenceActorStepPort, Step } from './_types'
@@ -26,7 +25,7 @@ type Port = {
 
 export function calcSequenceLayout(
   view: LayoutedDynamicView,
-  flow: DynamicViewFlowOps,
+  flow: DynamicViewFlow,
 ): LayoutedDynamicView.Sequence.Layout {
   // const { edges } = computeFlow({
   //   view,
@@ -141,7 +140,6 @@ export function calcSequenceLayout(
   const subflows = layout.getSubflowAreas().map(({ subflow, box }): LayoutedDynamicView.Sequence.SubflowArea => ({
     id: subflow.id,
     ...box,
-    _type: subflow._type,
   }))
 
   return {

@@ -325,35 +325,21 @@
           "target": "customer",
         },
       ],
-      "flow": {
-        "actors": [
-          "cloud",
-          "customer",
-          "cloud.ui",
-          "cloud.backend",
-        ],
-        "steps": [
-          "step-01",
-          "step-02",
-          "step-03",
-          {
-            "_type": "par",
-            "actors": [
-              "cloud.backend",
-              "cloud.ui",
-              "cloud",
-              "customer",
-            ],
-            "flow": [
-              "step-04:par.01",
-              "step-04:par.02",
-              "step-04:par.03",
-              "step-04:par.04",
-            ],
-            "id": "step-04:par",
-          },
-        ],
-      },
+      "flow": [
+        "step-01",
+        "step-02",
+        "step-03",
+        {
+          "_type": "par",
+          "flow": [
+            "step-04:par.01",
+            "step-04:par.02",
+            "step-04:par.03",
+            "step-04:par.04",
+          ],
+          "id": "step-04:par",
+        },
+      ],
       "hash": "zL3vGEBYx5SJfL_SeA1m7AceR1zlKXMfyftGrFVybeI",
       "id": "dynamic-a",
       "nodes": [

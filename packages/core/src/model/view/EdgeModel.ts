@@ -8,9 +8,7 @@ import {
   type RelationshipLineType,
   type RichTextOrEmpty,
   type scalar,
-  type StepEdgeId,
-  extractStep,
-  isStepEdgeId,
+  isStepPath,
   RichText,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
@@ -67,10 +65,6 @@ export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
     return this.$edge.tags ?? []
   }
 
-  get stepNumber(): number | null {
-    return this.isStep() ? extractStep(this.id) : null
-  }
-
   get navigateTo(): LikeC4ViewModel<A> | null {
     return this.$edge.navigateTo ? this.$viewModel.$model.view(this.$edge.navigateTo) : null
   }
@@ -91,8 +85,8 @@ export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
     return this.$edge.tail
   }
 
-  public isStep(): this is EdgeModel.StepEdge<A, V> {
-    return isStepEdgeId(this.id)
+  public isStep(): boolean {
+    return isStepPath(this.$edge.id)
   }
 
   public relationships(type: 'model'): IteratorLike<RelationshipModel<A>>
@@ -126,10 +120,6 @@ export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
 }
 
 namespace EdgeModel {
-  export interface StepEdge<A extends Any, V extends ProcessedView<A>> extends EdgeModel<A, V> {
-    readonly id: StepEdgeId
-    readonly stepNumber: number
-  }
   export interface WithParent<A extends Any, V extends ProcessedView<A>> extends EdgeModel<A, V> {
     readonly parent: NodeModel<A, V>
   }

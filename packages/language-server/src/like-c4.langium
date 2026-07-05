@@ -385,8 +385,6 @@ type AnyProperty =
   ElementProperty |
   RelationProperty |
   RelationshipStyleProperty |
-  NotationProperty |
-  NotesProperty |
   NavigateToProperty |
   StyleProperty
 ;

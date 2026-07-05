@@ -1,4 +1,3 @@
-import { extractStep, isStepEdgeId } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'

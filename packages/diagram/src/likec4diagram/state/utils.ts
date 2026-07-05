@@ -79,18 +79,18 @@ export function viewBounds(
 }
 
 export function focusedBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
-  const knownAbsolutes = new Map<string, XYPoint>()
+  // const knownAbsolutes = new Map<string, XYPoint>()
 
   const b = params.context.xynodes.reduce((acc, node) => {
-    let position = node.position
-    if (node.parentId) {
-      const parent = knownAbsolutes.get(node.parentId) ?? { x: 0, y: 0 }
-      position = {
-        x: position.x + parent.x,
-        y: position.y + parent.y,
-      }
-    }
-    knownAbsolutes.set(node.id, position)
+    let position = node.data
+    // if (node.parentId) {
+    //   const parent = knownAbsolutes.get(node.parentId) ?? { x: 0, y: 0 }
+    //   position = {
+    //     x: position.x + parent.x,
+    //     y: position.y + parent.y,
+    //   }
+    // }
+    // knownAbsolutes.set(node.id, position)
 
     if (node.hidden || node.data.dimmed) {
       return acc
@@ -134,32 +134,34 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
   const view = params.context.view
   invariant(isDynamicView(view))
 
-  const stepEdge = nonNullable(params.context.xyedges.find(e => e.id === activeWalkthrough.stepId))
+  const stepEdge = nonNullable(params.context.xyedges.find(e => e.data.id === activeWalkthrough.stepId))
   const xystate = params.context.xystore.getState()
+
+  const edgeBounds = getEdgeBounds(stepEdge, xystate)
+
+  if (edgeBounds && params.context.dynamicViewVariant === 'sequence') {
+    const h = stepEdge.data.labelBBox?.height ?? 80
+    const [top, bottom] = stepEdge.data.dir !== 'back' ? [h, 20] : [20, h]
+    return {
+      duration: 500,
+      bounds: BBox.expand(
+        edgeBounds,
+        {
+          left: 50,
+          right: 50,
+          top,
+          bottom,
+        },
+      ),
+    }
+  }
 
   const sourceNode = nonNullable(xystate.nodeLookup.get(stepEdge.source))
   const targetNode = nonNullable(xystate.nodeLookup.get(stepEdge.target))
-
   const actorsBounds = getNodesBounds([sourceNode, targetNode], xystate)
-  const edgeBounds = getEdgeBounds(stepEdge, xystate)
   let stepBounds = edgeBounds
     ? BBox.merge(edgeBounds, actorsBounds)
     : actorsBounds
-
-  if (activeWalkthrough.activeFlow) {
-    const flowArea = view.sequenceLayout.subflows.find(f => f.id === activeWalkthrough.activeFlow)
-    if (flowArea) {
-      stepBounds = BBox.merge(stepBounds, {
-        x: flowArea.x,
-        y: flowArea.y,
-        width: flowArea.width,
-        height: Math.min(
-          stepBounds.y + stepBounds.height + 100 - flowArea.y,
-          flowArea.height,
-        ),
-      })
-    }
-  }
 
   return {
     duration: 500,
@@ -188,7 +190,7 @@ function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
   })
 
   if (!edgePosition) {
-    return null
+    return edge.data.labelBBox ?? null
   }
 
   return BBox.fromPoints([

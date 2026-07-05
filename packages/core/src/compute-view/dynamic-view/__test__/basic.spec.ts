@@ -487,116 +487,79 @@ describe('dynamic-view', () => {
     invariant(view._type === 'dynamic')
 
     expect(view.flow).toMatchInlineSnapshot(`
-      {
-        "actors": [
-          "A",
-          "B",
-          "D",
-        ],
-        "steps": [
-          "step-01",
-          {
-            "_type": "loop",
-            "actors": [
-              "B",
-              "A",
-            ],
-            "flow": [
-              "step-02:loop.01",
-              "step-02:loop.02",
-              {
-                "_type": "try",
-                "actors": [],
-                "flow": [
-                  {
-                    "_type": "try-block",
-                    "actors": [
-                      "B",
-                      "C",
-                    ],
-                    "flow": [
-                      "step-02:loop.03:try.01:block.01",
-                      {
-                        "_type": "opt",
-                        "actors": [
-                          "A",
-                        ],
-                        "flow": [
-                          "step-02:loop.03:try.01:block.02:opt.01",
-                        ],
-                        "id": "step-02:loop.03:try.01:block.02:opt",
-                      },
-                    ],
-                    "id": "step-02:loop.03:try.01:block",
-                  },
-                  {
-                    "_type": "try-catch",
-                    "actors": [
-                      "B",
-                      "A",
-                    ],
-                    "flow": [
-                      "step-02:loop.03:try.02:catch.01",
-                    ],
-                    "id": "step-02:loop.03:try.02:catch",
-                  },
-                ],
-                "id": "step-02:loop.03:try",
-              },
-              {
-                "_type": "alt",
-                "actors": [],
-                "flow": [
-                  {
-                    "_type": "alt-when",
-                    "actors": [
-                      "B",
-                      "A",
-                    ],
-                    "flow": [
-                      "step-02:loop.04:alt.01:when.01",
-                    ],
-                    "id": "step-02:loop.04:alt.01:when",
-                  },
-                  {
-                    "_type": "alt-when",
-                    "actors": [
-                      "B",
-                      "C",
-                    ],
-                    "flow": [
-                      "step-02:loop.04:alt.02:when.01",
-                    ],
-                    "id": "step-02:loop.04:alt.02:when",
-                  },
-                  {
-                    "_type": "alt-else",
-                    "actors": [],
-                    "flow": [
-                      {
-                        "_type": "break",
-                        "actors": [
-                          "B",
-                          "A",
-                        ],
-                        "flow": [
-                          "step-02:loop.04:alt.03:else.01:break.01",
-                        ],
-                        "id": "step-02:loop.04:alt.03:else.01:break",
-                      },
-                    ],
-                    "id": "step-02:loop.04:alt.03:else",
-                  },
-                ],
-                "id": "step-02:loop.04:alt",
-              },
-              "step-02:loop.05",
-            ],
-            "id": "step-02:loop",
-          },
-          "step-03",
-        ],
-      }
+      [
+        "step-01",
+        {
+          "_type": "loop",
+          "flow": [
+            "step-02:loop.01",
+            "step-02:loop.02",
+            {
+              "_type": "try",
+              "flow": [
+                {
+                  "_type": "try-block",
+                  "flow": [
+                    "step-02:loop.03:try.01:block.01",
+                    {
+                      "_type": "opt",
+                      "flow": [
+                        "step-02:loop.03:try.01:block.02:opt.01",
+                      ],
+                      "id": "step-02:loop.03:try.01:block.02:opt",
+                    },
+                  ],
+                  "id": "step-02:loop.03:try.01:block",
+                },
+                {
+                  "_type": "try-catch",
+                  "flow": [
+                    "step-02:loop.03:try.02:catch.01",
+                  ],
+                  "id": "step-02:loop.03:try.02:catch",
+                },
+              ],
+              "id": "step-02:loop.03:try",
+            },
+            {
+              "_type": "alt",
+              "flow": [
+                {
+                  "_type": "alt-when",
+                  "flow": [
+                    "step-02:loop.04:alt.01:when.01",
+                  ],
+                  "id": "step-02:loop.04:alt.01:when",
+                },
+                {
+                  "_type": "alt-when",
+                  "flow": [
+                    "step-02:loop.04:alt.02:when.01",
+                  ],
+                  "id": "step-02:loop.04:alt.02:when",
+                },
+                {
+                  "_type": "alt-else",
+                  "flow": [
+                    {
+                      "_type": "break",
+                      "flow": [
+                        "step-02:loop.04:alt.03:else.01:break.01",
+                      ],
+                      "id": "step-02:loop.04:alt.03:else.01:break",
+                    },
+                  ],
+                  "id": "step-02:loop.04:alt.03:else",
+                },
+              ],
+              "id": "step-02:loop.04:alt",
+            },
+            "step-02:loop.05",
+          ],
+          "id": "step-02:loop",
+        },
+        "step-03",
+      ]
     `)
 
     expect(map(view.edges, prop('id'))).toEqual([

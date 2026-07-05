@@ -59,9 +59,8 @@ export function computeFlow<V extends ComputedDynamicView<any> | LayoutedDynamic
   }
   const explicitlyVisible = new Set<string>(subflows)
 
-  // Step paths (edge ids) and actors (node ids) that must be shown.
+  // Step paths (edge ids) and that must be shown.
   const visibleSteps = new Set<string>()
-  const visibleActors = new Set<scalar.NodeId>(view.flow.actors)
 
   // Whether any explicitly requested subflow is nested within `parentId`,
   // i.e. `parentId` is a prefix of a requested subflow path. Used both to
@@ -86,9 +85,6 @@ export function computeFlow<V extends ComputedDynamicView<any> | LayoutedDynamic
         visibleSteps.add(item)
         continue
       }
-      for (const actor of item.actors) {
-        visibleActors.add(actor)
-      }
       if (item._type === 'alt' || item._type === 'try') {
         walkBranches(item)
       } else {
@@ -110,13 +106,10 @@ export function computeFlow<V extends ComputedDynamicView<any> | LayoutedDynamic
       if (!visible) {
         continue
       }
-      for (const actor of branch.actors) {
-        visibleActors.add(actor)
-      }
       walk(branch.flow)
     }
   }
-  walk(view.flow.steps)
+  walk(view.flow)
 
   // If all edges are visible
   if (visibleSteps.size === view.edges.length) {
@@ -129,14 +122,19 @@ export function computeFlow<V extends ComputedDynamicView<any> | LayoutedDynamic
 
   // Edges that correspond to visible steps (preserve view order)
   const edges = filter(view.edges, e => visibleSteps.has(e.id))
-  const visibleEdgeIds = new Set<scalar.EdgeId>(map(edges, e => e.id))
+  const visibleActors = new Set<scalar.NodeId>()
+  const visibleEdgeIds = new Set<scalar.EdgeId>(map(edges, e => {
+    visibleActors.add(e.source)
+    visibleActors.add(e.target)
+    return e.id
+  }))
 
   // Include visible actors and their ancestors (compound nodes), so the
   // resulting node tree stays connected up to the roots.
   const nodesById = new Map(view.nodes.map(n => [n.id, n]))
   const visibleNodes = new Set<scalar.NodeId>()
   for (const actor of visibleActors) {
-    let current: scalar.NodeId | null = actor
+    let current = actor as scalar.NodeId | null
     while (current && !visibleNodes.has(current)) {
       visibleNodes.add(current)
       current = nodesById.get(current)?.parent ?? null

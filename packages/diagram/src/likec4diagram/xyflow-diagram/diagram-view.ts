@@ -10,6 +10,8 @@ import {
   type WhereOperator,
   GroupElementKind,
   invariant,
+  isDynamicView,
+  isStepPath,
   nonNullable,
   Queue,
   whereOperatorAsPredicate,
@@ -42,7 +44,9 @@ export function diagramToXY(opts: {
     nodeLookup = new Map<Fqn, DiagramNode>()
 
   const viewLayoutDir = view.autoLayout?.direction ?? 'TB'
+  const isDynamic = view._type === 'dynamic'
 
+  //
   const deletable = view._type !== 'dynamic'
 
   type TraverseItem = {
@@ -248,6 +252,8 @@ export function diagramToXY(opts: {
     }
   }
 
+  let stepnum = 1
+
   for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
@@ -284,6 +290,9 @@ export function diagramToXY(opts: {
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
         drifts: edge.drifts ?? null,
+        ...(isDynamic && isStepPath(edge.id) && {
+          stepnum: stepnum++,
+        }),
       },
       interactionWidth: 20,
     })

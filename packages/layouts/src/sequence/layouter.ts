@@ -2,7 +2,6 @@ import {
   type BBox,
   type DiagramNode,
   type DynamicViewFlow,
-  type DynamicViewFlowOps,
   type NonEmptyArray,
   flowAncestors,
   flowGuards,
@@ -95,7 +94,7 @@ const Strength = {
 }
 
 export class SequenceViewLayouter {
-  #flow: DynamicViewFlowOps
+  #flow: DynamicViewFlow
 
   #solver = new kiwi.Solver()
 
@@ -145,7 +144,7 @@ export class SequenceViewLayouter {
     actors: NonEmptyArray<DiagramNode>
     steps: Array<Step>
     compounds: Array<Compound>
-    flow: DynamicViewFlowOps
+    flow: DynamicViewFlow
   }) {
     this.#flow = flow
     this.#rowsTop = this.newVar(FIRST_STEP_OFFSET)

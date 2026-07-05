@@ -57,16 +57,16 @@ export const stepSeries = (services: LikeC4Services): ValidationCheck<ast.StepSe
   })
 }
 
-export const branchSteps = (
+export const subflowStep = (
   _services: LikeC4Services,
-): ValidationCheck<ast.BranchSteps> => {
-  const isParallel = (astNode: ast.BranchSteps) => astNode.kind === 'par' || astNode.kind === 'parallel'
+): ValidationCheck<ast.SubflowStep> => {
+  const isParallel = (astNode: ast.SubflowStep) => astNode.kind === 'par' || astNode.kind === 'parallel'
 
-  const isAltBranch = (astNode: ast.BranchSteps) =>
+  const isAltBranch = (astNode: ast.SubflowStep) =>
     astNode.kind === 'else' || astNode.kind === 'if' || astNode.kind === 'when'
 
   return tryOrLog((el, accept) => {
-    if (isParallel(el) && ast.isBranchSteps(el.$container) && isParallel(el.$container)) {
+    if (isParallel(el) && ast.isSubflowStep(el.$container) && isParallel(el.$container)) {
       accept('error', 'Nested parallel blocks are not allowed', {
         node: el,
         property: 'kind',

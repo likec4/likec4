@@ -187,7 +187,8 @@ export type Events =
   | { type: 'focus.autoUnfocus' }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepPath }
-  | { type: 'walkthrough.step'; direction: 'next' | 'previous' }
+  | { type: 'walkthrough.step'; direction: 'next' | 'previous'; stepId?: never }
+  | { type: 'walkthrough.step'; stepId: StepPath; direction?: never }
   | { type: 'walkthrough.end' }
   | { type: 'highlight.node'; nodeId: NodeId }
   | { type: 'highlight.edge'; edgeId: EdgeId }
@@ -210,8 +211,8 @@ export type EmittedEvents =
   | { type: 'edgeClick'; edge: DiagramEdge; xyedge: Types.Edge }
   | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
-  | { type: 'walkthroughStarted'; edge: Types.Edge<'seq-step'> }
-  | { type: 'walkthroughStep'; edge: Types.Edge<'seq-step'> }
+  | { type: 'walkthroughStarted'; edge: Types.Edge }
+  | { type: 'walkthroughStep'; edge: Types.Edge }
   | { type: 'walkthroughStopped' }
   | { type: 'onLayoutTypeChange'; layoutType: LayoutType }
 
@@ -295,6 +296,8 @@ export const machine = setup({
       context.features.enableRelationshipDetails,
     'not readonly': ({ context }) => !isReadOnly(context),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
+    'is dynamic view in sequence variant': ({ context }) =>
+      context.view._type === 'dynamic' && context.dynamicViewVariant === 'sequence',
     'is same view': ({ context, event }) => {
       assertEvent(event, ['update.view', 'navigate.to'])
       if (event.type === 'update.view') {
