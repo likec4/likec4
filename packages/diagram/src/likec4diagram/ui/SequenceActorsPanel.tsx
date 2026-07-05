@@ -107,7 +107,7 @@ function SequenceActor({ id }: { id: string }) {
     const xynode = node.internals.userNode
     invariant(xynode.type === 'seq-actor')
 
-    const scale = clamp(0.6 * tScale, {
+    const scale = clamp(0.55 * tScale, {
       min: 0.2,
       max: 0.6,
     })
