@@ -27,12 +27,12 @@ import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 /**
  * Duplicate-handling mode for a {@link Builder}.
  *
- * - `strict` (default): re-declaring an FQN that already exists throws.
- * - `editable`: re-declaring an existing FQN with the **same kind** replaces the
+ * - `editable` (default): re-declaring an existing FQN with the **same kind** replaces the
  *   existing entry (so `.with(...)` can both edit and descend). Different-kind
  *   redeclaration still throws.
+ * - `strict`: re-declaring an FQN that already exists throws.
  *
- * Typically set when seeding a builder from a loaded model — see
+ * Pass `'strict'` when duplicates should be treated as programmer errors — see
  * {@link Builder.fromParsed} and `LikeC4.toBuilder`.
  */
 export type BuilderMode = 'strict' | 'editable'

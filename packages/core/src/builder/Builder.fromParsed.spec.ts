@@ -150,10 +150,10 @@ describe('Builder.fromParsed', () => {
     })
   })
 
-  it('returns a builder that can edit existing elements in editable mode', () => {
+  it('returns a builder that can edit existing elements in editable mode (default)', () => {
     const original = seedBuilder.build()
     const enriched = Builder
-      .fromParsed<typeof seedSpec['Types']>(original, 'editable')
+      .fromParsed<typeof seedSpec['Types']>(original)
       .model(({ component, system }, _) =>
         _(
           component('cloud.api', { title: 'Updated' }),
@@ -171,11 +171,11 @@ describe('Builder.fromParsed', () => {
     })
   })
 
-  it('throws when re-declaring an existing element in strict mode (default)', () => {
+  it('throws when re-declaring an existing element in strict mode', () => {
     const original = seedBuilder.build()
     expect(() =>
       Builder
-        .fromParsed<typeof seedSpec['Types']>(original)
+        .fromParsed<typeof seedSpec['Types']>(original, 'strict')
         .model(({ component }, _) =>
           _(
             component('cloud.api', { title: 'Updated' }),

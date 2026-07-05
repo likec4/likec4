@@ -414,7 +414,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
   _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
-  _mode: BuilderMode = 'strict',
+  _mode: BuilderMode = 'editable',
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -1155,7 +1155,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 }
 function fromParsedImpl<T extends AnyTypes = AnyTypes>(
   data: ParsedLikeC4ModelData<Any>,
-  mode: BuilderMode = 'strict',
+  mode: BuilderMode = 'editable',
 ): Builder<T> {
   const { specification } = data
   const seedSpec = {
@@ -1298,14 +1298,14 @@ export const Builder = {
    *   promise: the caller takes responsibility for the cast.
    *
    * The optional `mode` controls duplicate handling (see {@link BuilderMode}):
-   * - `strict` (default): re-declaring an existing FQN throws.
-   * - `editable`: re-declaring an existing FQN with the same kind replaces it,
-   *   so loaded elements can be edited in place.
+   * - `editable` (default): re-declaring an existing FQN with the same kind
+   *   replaces it, so loaded elements can be edited in place.
+   * - `strict`: re-declaring an existing FQN throws.
    *
    * @example
    * ```ts
    * const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
-   * const builder = Builder.fromParsed((await likec4.parsedModel()).$data, 'editable')
+   * const builder = Builder.fromParsed((await likec4.parsedModel()).$data)
    * const enriched = builder
    *   .model(({ system, component, relTo }, _) =>
    *     _(system('monitoring').with(component('grafana'))),
