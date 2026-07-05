@@ -187,14 +187,24 @@ export class MergedSpecification {
     links,
     id,
     title,
+    tags,
     ...model
   }: ParsedAstRelation): c4.Relationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
-      const { multiple: _multiple, ...spec } = this.specs.relationships[kind]
+      const { multiple: _multiple, tags: specTags, ...spec } = this.specs.relationships[kind]
+      if (specTags && isNonEmptyArray(specTags)) {
+        tags = tags
+          ? unique([
+            ...specTags,
+            ...tags,
+          ])
+          : specTags
+      }
       return {
         ...spec,
         ...model,
         ...(links && { links }),
+        ...(tags && { tags }),
         // Relation has no own title -> inherit from specification (if any)
         title: isEmptyish(title) ? (spec.title ?? title) : title,
         source,
@@ -206,6 +216,7 @@ export class MergedSpecification {
     return {
       ...(links && { links }),
       ...model,
+      ...(tags && { tags }),
       title,
       source,
       target,
@@ -266,15 +277,25 @@ export class MergedSpecification {
     kind,
     links,
     id,
+    tags,
     ...model
   }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
     if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
       const spec = this.specs.relationships[kind as c4.RelationshipKind]!
-      const { multiple: _multiple, ...restSpec } = spec
+      const { multiple: _multiple, tags: specTags, ...restSpec } = spec
+      if (specTags && isNonEmptyArray(specTags)) {
+        tags = tags
+          ? unique([
+            ...specTags,
+            ...tags,
+          ])
+          : specTags
+      }
       return {
         ...restSpec,
         ...model,
         ...(links && { links }),
+        ...(tags && { tags }),
         source,
         target,
         kind,
@@ -284,6 +305,7 @@ export class MergedSpecification {
     return {
       ...(links && { links }),
       ...model,
+      ...(tags && { tags }),
       source,
       target,
       id,

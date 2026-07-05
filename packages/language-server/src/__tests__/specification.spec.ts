@@ -461,6 +461,30 @@ describe('specification', () => {
         }
       }`
 
+    test('spec with relationshipkind defining tags').valid`
+      specification {
+        tag tcp
+        tag deprecated
+        relationship async {
+          #tcp
+        }
+        relationship legacy {
+          #tcp #deprecated
+        }
+      }`
+
+    test('spec with relationshipkind defining tags and other properties').valid`
+      specification {
+        tag tcp
+        relationship async {
+          #tcp
+          title "Asynchronous"
+          technology "Kafka"
+          color red
+          line dotted
+        }
+      }`
+
     test('spec with invalid relationshipkind color').invalid`
       specification {
         relationship async {
