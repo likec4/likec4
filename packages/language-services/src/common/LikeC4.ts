@@ -1,5 +1,8 @@
+import { assertSpecificationCompatible, Builder } from '@likec4/core/builder'
+import type { AnyTypes, BuilderMode, BuilderSpecification, Types } from '@likec4/core/builder'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
+import { generate as generateLikeC4Source } from '@likec4/generators/likec4'
 import type {
   FormatOptions,
   LikeC4LanguageServices,
@@ -123,6 +126,128 @@ Please specify a project folder`)
   async computedModel(project?: string | undefined): Promise<LikeC4Model.Computed> {
     const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
     return await this.modelBuilder.computeModel(projectId)
+  }
+
+  /**
+   * Returns the parsed model — elements, relations, views, deployments, globals
+   * and imports as parsed from DSL, BEFORE view computation or layout.
+   *
+   * Use this when you need to inspect the raw parsed shape, or as input to
+   * {@link toBuilder} for programmatic enrichment.
+   */
+  async parsedModel(project?: string | undefined): Promise<LikeC4Model.Parsed> {
+    const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
+    const parsed = await this.modelBuilder.parseModel(projectId)
+    if (!parsed) {
+      throw new Error(`Failed to parse model for project "${projectId}"`)
+    }
+    return parsed
+  }
+
+  /**
+   * Returns a {@link Builder} seeded with the parsed model of the given project.
+   *
+   * This unblocks programmatic enrichment — you can chain `.model(...)`,
+   * `.deployment(...)` and `.views(...)` on the returned builder to add new
+   * elements, relations and views on top of what was loaded from DSL.
+   *
+   * The builder is `editable` by default: re-declaring an element that already
+   * exists (same FQN, same kind) edits it in place rather than throwing — which
+   * is what you usually want when patching a loaded model. Pass `'strict'` to
+   * get the strict builder where duplicate FQNs always throw (see
+   * {@link BuilderMode}).
+   *
+   * Type-safety note: the returned builder is `Builder<AnyTypes>` — element
+   * kinds, FQNs, view ids and tags are only known at runtime. See
+   * {@link Builder.fromParsed} for details.
+   *
+   * @example
+   * ```ts
+   * const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+   * const enriched = (await likec4.toBuilder())
+   *   .model(({ system, component }, _) =>
+   *     _(system('monitoring').with(component('grafana'))),
+   *   )
+   *   .toLikeC4Model()
+   *
+   * // Strict builder — re-declaring an existing FQN throws:
+   * const strict = await likec4.toBuilder('strict')
+   * ```
+   */
+  async toBuilder(mode: BuilderMode = 'editable', project?: string | undefined): Promise<Builder<AnyTypes>> {
+    const parsed = await this.parsedModel(project)
+    return Builder.fromParsed(parsed.$data, mode)
+  }
+
+  /**
+   * Like {@link toBuilder}, but validates the given `specification` against the
+   * loaded model and returns a **typed** builder.
+   *
+   * Use this when your code authors the model with the same specification as the
+   * DSL: pass that spec and get a `Builder<Types.FromSpecification<Spec>>` with
+   * autocomplete on element / deployment / relationship kinds, tags and metadata
+   * keys — replacing the unchecked `as unknown as Builder<...>` cast.
+   *
+   * Validation is **subset-based**: every kind / tag / metadata key you declare
+   * must exist in the loaded model (otherwise the produced types would lie and we
+   * throw). The loaded model may contain *extra* kinds you didn't declare — you
+   * simply won't get typed helpers for them.
+   *
+   * Like {@link toBuilder}, the builder is `editable` by default — pass
+   * `mode: 'strict'` for the throw-on-duplicate builder.
+   *
+   * Note: existing FQNs and view ids from the loaded model are still NOT part of
+   * the static type set (only kinds/tags/metadata keys are) — see
+   * {@link Builder.fromParsed}.
+   *
+   * @example
+   * ```ts
+   * const specification = {
+   *   elements: ['actor', 'system', 'component'],
+   *   tags: ['external'],
+   * } as const
+   *
+   * const builder = await likec4.toTypedBuilder({ specification })
+   * const enriched = builder
+   *   .model(({ system, component }, _) =>
+   *     _(system('monitoring').with(component('grafana'))),
+   *   )
+   *   .toLikeC4Model()
+   * ```
+   */
+  async toTypedBuilder<const Spec extends BuilderSpecification>(
+    options: {
+      /** The specification your code expects — validated against the loaded model. */
+      specification: Spec
+      /** Duplicate handling, defaults to `'editable'` (see {@link toBuilder}). */
+      mode?: BuilderMode
+      /** Project name to seed from (for multi-project workspaces). */
+      project?: string
+    },
+  ): Promise<Builder<Types.FromSpecification<Spec>>> {
+    const { specification, mode = 'editable', project } = options
+    const parsed = await this.parsedModel(project)
+    assertSpecificationCompatible(specification, parsed.$data.specification)
+    return Builder.fromParsed(parsed.$data, mode) as unknown as Builder<Types.FromSpecification<Spec>>
+  }
+
+  /**
+   * Renders the parsed model of the given project back to LikeC4 DSL source.
+   *
+   * The output is a single, formatted `.c4` string containing the specification,
+   * model, deployment and views blocks. This round-trip is intentionally LOSSY:
+   * comments, source positions and original formatting are not preserved.
+   *
+   * Useful for "load + patch + emit" workflows where the source of truth is
+   * external (e.g. a service catalogue or Terraform state) and DSL files are
+   * regenerated wholesale.
+   *
+   * To write the output to disk, use the `writeDSL` helper from
+   * `@likec4/language-services/node`.
+   */
+  async toDSL(project?: string | undefined): Promise<string> {
+    const parsed = await this.parsedModel(project)
+    return generateLikeC4Source(parsed.$data as Parameters<typeof generateLikeC4Source>[0])
   }
 
   projects(): NonEmptyArray<ProjectId> {
