@@ -101,8 +101,8 @@ function createTestActor(initialView: DiagramView) {
   const actor = createActor(
     diagramMachine.provide({
       actors: {
-        // mediaPrintActorLogic uses window.addEventListener — replace with no-op for tests
-        mediaPrintActorLogic: fromCallback(() => () => {}),
+        // mediaPrint actor uses window.addEventListener — replace with no-op for tests
+        mediaPrint: fromCallback(() => () => {}),
       },
     }),
     {

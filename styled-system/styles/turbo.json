@@ -5,12 +5,7 @@
   ],
   "tasks": {
     "sources": {
-      "dependsOn": [
-        "^sources"
-      ],
-      "outputs": [
-        "dist/**"
-      ]
+      "cache": false
     },
     "generate": {
       "dependsOn": ["sources"]

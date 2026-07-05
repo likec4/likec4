@@ -22,19 +22,25 @@ import type { MouseEvent } from 'react'
 import { isTruthy, mapValues } from 'remeda'
 import type { PartialDeep } from 'type-fest'
 import {
+  type ActorRefFromLogic,
+  type StateMachine,
+  type StateValue,
   assertEvent,
   setup,
 } from 'xstate'
-import type { EnabledFeatures, TogglableFeature } from '../../context/DiagramFeatures'
+import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
+import { navigationPanelActorLogic } from '../../navigationpanel/actor'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
+import { defineActors } from '../../utils/defineActors'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
+import { DiagramToggledFeaturesPersistence } from './persistence'
 
 /**
  * Navigation history entry represents a current view state,
@@ -133,6 +139,45 @@ export interface Context extends Input {
   }
 }
 
+export function Context({ input }: { input: Input }): Context {
+  return {
+    ...input,
+    xynodes: [],
+    xyedges: [],
+    features: {
+      ...DefaultFeatures,
+      ...input.features,
+    },
+    toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
+      enableReadOnly: true,
+      enableCompareWithLatest: false,
+    },
+    initialized: {
+      xydata: false,
+      xyflow: false,
+    },
+    viewportChangedManually: false,
+    lastOnNavigate: null,
+    lastClickedNode: null,
+    focusedNode: null,
+    autoUnfocusTimer: false,
+    activeElementDetails: null,
+    viewportBefore: null,
+    viewportOnManualLayout: null,
+    viewportOnAutoLayout: null,
+    navigationHistory: {
+      currentIndex: 0,
+      history: [],
+    },
+    viewport: { x: 0, y: 0, zoom: 1 },
+    xyflow: null,
+    dynamicViewVariant: input.dynamicViewVariant ?? (
+      input.view._type === 'dynamic' ? input.view.variant : 'diagram'
+    ) ?? 'diagram',
+    activeWalkthrough: null,
+  }
+}
+
 export type Events =
   | HotKeyEvent
   | MediaPrintEvent
@@ -213,7 +258,7 @@ export type EmittedEvents =
   | { type: 'edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
   | { type: 'walkthroughStarted'; edge: Types.Edge }
-  | { type: 'walkthroughStep'; edge: Types.Edge }
+  | { type: 'walkthroughStep'; edge: Types.Edge; stepId: StepPath }
   | { type: 'walkthroughStopped' }
   | { type: 'onLayoutTypeChange'; layoutType: LayoutType }
 
@@ -255,27 +300,31 @@ export const deriveToggledFeatures = (context: Context): Required<ToggledFeature
 
 const isReadOnly = (context: Context) => deriveToggledFeatures(context).enableReadOnly
 
+const actors = defineActors({
+  hotkey: hotkeyActorLogic,
+  // Overlays actor manages overlay-related state and interactions
+  overlays: overlaysActorLogic,
+  // Search actor handles search functionality
+  search: searchActorLogic,
+  // Media print actor manages print-related state
+  mediaPrint: mediaPrintActorLogic,
+  // Editor actor manages editor-related state and interactions
+  editor: editorActorLogic,
+  // Navigation panel actor manages navigation panel state and interactions
+  navigationPanel: navigationPanelActorLogic,
+})
+
 export const machine = setup({
   types: {
     context: {} as Context,
     input: {} as Input,
     children: {} as {
-      hotkey: 'hotkeyActorLogic'
-      overlays: 'overlaysActorLogic'
-      search: 'searchActorLogic'
-      mediaPrint: 'mediaPrintActorLogic'
-      editor: 'editorActor'
+      [K in keyof typeof actors]: K
     },
     events: {} as Events,
     emitted: {} as EmittedEvents,
   },
-  actors: {
-    hotkeyActorLogic,
-    overlaysActorLogic,
-    searchActorLogic,
-    mediaPrintActorLogic,
-    editorActor: editorActorLogic,
-  },
+  actors,
   guards: {
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: Editor': ({ context }) => context.features.enableEditor,
@@ -287,6 +336,7 @@ export const machine = setup({
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
     'enabled: OpenSource': ({ context }) => context.features.enableVscode,
     'enabled: DynamicViewWalkthrough': ({ context }) => context.features.enableDynamicViewWalkthrough,
+    'enabled: NavigationPanel': ({ context }) => context.features.enableControls, // TODO rename legacy
     'focus.node: autoUnfocus': ({ event }) => {
       assertEvent(event, 'focus.node')
       return event.autoUnfocus === true
@@ -349,6 +399,46 @@ export const machine = setup({
     },
   },
 })
+
+type ChildrenActors = typeof actors
+type ActorLogicMap = {
+  [K in keyof ChildrenActors]: ActorRefFromLogic<ChildrenActors[K]> | undefined
+}
+type ChildrenActor = {
+  [K in keyof ChildrenActors]: {
+    id: K
+    logic: ChildrenActors[K]
+    src: K
+  }
+}[keyof ChildrenActors]
+
+/**
+ * Here is a trick to reduce inference types
+ */
+export interface BaseDiagramMachineLogic<
+  Actors extends Partial<ActorLogicMap> = ActorLogicMap,
+  State extends StateValue = never,
+> extends
+  StateMachine<
+    Context,
+    Events,
+    Actors & Omit<ActorLogicMap, keyof Actors>,
+    ChildrenActor,
+    never,
+    never,
+    never,
+    State,
+    never,
+    Input,
+    never,
+    EmittedEvents,
+    never,
+    never
+  >
+{
+}
+
+export type BaseDiagramActorRef = ActorRefFromLogic<BaseDiagramMachineLogic>
 
 export const targetState = {
   idle: '#idle',

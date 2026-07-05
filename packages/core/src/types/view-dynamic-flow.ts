@@ -801,8 +801,25 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
     if (!subflow) {
       return nonNullable(flowHelpers.firstStep(this.view.flow), 'No steps found in flow')
     }
-    const f = this.lookup(asStepPath(subflow))
-    return flowHelpers.firstStep(f)
+    const path = asStepPath(subflow)
+    if (this.isStep(path)) {
+      return path
+    }
+    return flowHelpers.firstStep(this.lookup(path))
+  }
+
+  /**
+   * Checks if the given path is a step (i.e `A -> B>)
+   */
+  isStep(path: scalar.StepPath): boolean {
+    return !this.byId.has(path) && this.levelById.has(path)
+  }
+
+  /**
+   * Checks if the given path is a flow
+   */
+  isSubflow(path: scalar.StepPath): boolean {
+    return this.byId.has(path)
   }
 
   /**
@@ -882,7 +899,7 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
    * @param step The step to find predecessors for.
    * @returns An array of step paths that come before the given step.
    */
-  stepsPathsBefore(step: scalar.StepPath): scalar.StepPath[] {
+  stepPathsBefore(step: scalar.StepPath): scalar.StepPath[] {
     return stepsBefore(this.view, step).map(asStepPath)
   }
 }

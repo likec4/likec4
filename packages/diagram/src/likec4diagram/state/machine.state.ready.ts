@@ -14,6 +14,7 @@ import {
   emitOpenSource,
   emitOpenSourceOfView,
   emitPaneClick,
+  ensureAllActors,
   ensureEditorActor,
   ensureOverlaysActor,
   ensureSearchActor,
@@ -52,17 +53,19 @@ import { typedSystem } from './utils'
 export const ready = machine.createStateConfig({
   initial: 'idle',
   entry: [
-    spawnChild('mediaPrintActorLogic', { id: 'mediaPrint' }),
-    ensureEditorActor(),
-    ensureOverlaysActor(),
-    ensureSearchActor(),
+    spawnChild('mediaPrint', { id: 'mediaPrint' }),
+    ensureAllActors(),
   ],
   exit: [
     cancelFitDiagram(),
-    stopChild('mediaPrint'),
     closeAllOverlays(),
-    closeSearch(),
-    stopEditorActor(),
+    stopChild('mediaPrint'),
+    stopChild(typedSystem.overlaysActor),
+    stopChild(typedSystem.editorActor),
+    stopChild(typedSystem.searchActor),
+    // WE don't stop navigation actor - otherwise
+    // UI will be re-rendered and panel will be closed
+    // stopChild(typedSystem.navigationActor),
   ],
   states: {
     idle,
@@ -88,6 +91,7 @@ export const ready = machine.createStateConfig({
       ],
     },
     'layout.resetManualLayout': {
+      guard: 'not readonly',
       actions: [
         cancelEditing(),
         disableCompareWithLatest(),

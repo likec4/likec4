@@ -44,14 +44,14 @@ import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { selectDiagramActorContext, useDiagram, useDiagramSnapshot, useOnDiagramEvent } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { roundDpr } from '../../utils'
 import { findDiagramEdge, findDiagramNode } from '../state/utils'
 import { RelationshipPopoverActorLogic } from './actor'
 import { Endpoint, RelationshipTitle } from './components'
 
-const selector = selectDiagramActorContext(c => {
+const selector = selectDiagramContext(c => {
   let selected: EdgeId | null = null
   for (const edge of c.xyedges) {
     if (edge.selected) {
@@ -73,22 +73,9 @@ export const RelationshipPopover = memo(() => {
   const likec4model = useLikeC4Model()
   const actorRef = useActorRef(RelationshipPopoverActorLogic)
   const diagram = useDiagram()
-  const { viewId, selected } = useDiagramSnapshot(selector)
+  const { viewId, selected } = useDiagramSelector(selector)
 
   const openedEdgeId = useSelector(actorRef, s => s.hasTag('opened') ? s.context.edgeId : null)
-
-  const { diagramEdge, sourceNode, targetNode } = useDiagramSnapshot(
-    useCallback(({ context: ctx }) => {
-      const diagramEdge = openedEdgeId ? findDiagramEdge(ctx, openedEdgeId) : null
-      const sourceNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.source) : null
-      const targetNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.target) : null
-      return ({
-        diagramEdge,
-        sourceNode,
-        targetNode,
-      })
-    }, [openedEdgeId]),
-  )
 
   useOnDiagramEvent('navigateTo', () => {
     actorRef.send({ type: 'close' })
@@ -135,6 +122,20 @@ export const RelationshipPopover = memo(() => {
       diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
     }
   }, [actorRef, diagram, openedEdgeId])
+
+  const { diagramEdge, sourceNode, targetNode } = useDiagramSelector(
+    useCallback(({ context: ctx }) => {
+      const diagramEdge = openedEdgeId ? findDiagramEdge(ctx, openedEdgeId) : null
+      const sourceNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.source) : null
+      const targetNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.target) : null
+      return ({
+        diagramEdge,
+        sourceNode,
+        targetNode,
+      })
+    }, [openedEdgeId]),
+    shallowEqual,
+  )
 
   if (!diagramEdge || !sourceNode || !targetNode || isEmpty(diagramEdge.relations)) {
     return null
@@ -581,7 +582,7 @@ const Relationship = forwardRef<
       {r.kind && (
         <HStack gap="2">
           <Label>kind</Label>
-          <Text size="xs" className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: 0 })}>{r.kind}</Text>
+          <Text size="xs" className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: '0' })}>{r.kind}</Text>
         </HStack>
       )}
       {r.technology && (
@@ -589,7 +590,7 @@ const Relationship = forwardRef<
           <Label>technology</Label>
           <Text
             size="xs"
-            className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: 0 })}
+            className={css({ userSelect: 'all', wordBreak: 'break-word', minWidth: '0' })}
           >
             {r.technology}
           </Text>
@@ -602,7 +603,8 @@ const Relationship = forwardRef<
             css={{
               paddingLeft: '2.5',
               py: '1.5',
-              borderLeft: '2px dotted',
+              borderLeftWidth: '2',
+              borderLeftStyle: 'dotted',
               borderLeftColor: {
                 base: 'mantine.gray[3]',
                 _dark: 'mantine.dark[4]',

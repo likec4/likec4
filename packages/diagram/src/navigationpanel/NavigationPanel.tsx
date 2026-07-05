@@ -1,19 +1,19 @@
+import { isDynamicView } from '@likec4/core/types'
 import { VStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import {
   Popover,
   PopoverTarget,
 } from '@mantine/core'
-import { useActorRef, useSelector } from '@xstate/react'
+import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
-import { useDiagram } from '../hooks/safeContext'
 import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
-import { useDiagramContext } from '../hooks/useDiagram'
+import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
-import { type NavigationPanelActorRef, type NavigationPanelActorSnapshot, navigationPanelActorLogic } from './actor'
+import type { NavigationPanelActorRef, NavigationPanelActorSnapshot } from './actor'
 import { ComparePanel } from './comparepanel'
 import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
@@ -22,26 +22,15 @@ import { NavigationPanelDropdown } from './NavigationPanelDropdown'
 import { ActiveWalkthroughControls } from './walkthrough'
 import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
-export const NavigationPanel = memo(() => {
-  const diagram = useDiagram()
-  const view = useCurrentView()
-  const viewModel = useOptionalCurrentViewModel()
+const select = selectDiagramContext(s => ({
+  view: s.view,
+  isSequenceView: isDynamicView(s.view) && s.dynamicViewVariant === 'sequence',
+  isActiveWalkthrough: !!s.activeWalkthrough,
+}))
 
-  const actorRef = useActorRef(
-    navigationPanelActorLogic,
-    {
-      input: {
-        view,
-        viewModel,
-      },
-    },
-  )
-  useEffect(() => {
-    const subscription = actorRef.on('navigateTo', (event) => {
-      diagram.navigateTo(event.viewId)
-    })
-    return () => subscription.unsubscribe()
-  }, [actorRef, diagram])
+export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
+  const { isActiveWalkthrough, isSequenceView, view } = useDiagramSelector(select)
+  const viewModel = useOptionalCurrentViewModel()
 
   useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
@@ -76,7 +65,7 @@ export const NavigationPanel = memo(() => {
         },
       }}>
       <NavigationPanelActorContextProvider value={actorRef}>
-        <NavigationPanelImpl actor={actorRef} />
+        <NavigationPanelImpl actor={actorRef} mode={isActiveWalkthrough ? 'walkthrough' : 'default'} />
         <ComparePanel />
         <WalkthroughPanel />
         <EditorPanel />
@@ -87,7 +76,7 @@ export const NavigationPanel = memo(() => {
 NavigationPanel.displayName = 'NavigationPanel'
 
 const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
-const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
+const NavigationPanelImpl = ({ actor, mode }: { actor: NavigationPanelActorRef; mode: 'default' | 'walkthrough' }) => {
   const opened = useSelector(actor, stateHasActiveTag)
   const portalProps = useMantinePortalProps()
 
@@ -103,20 +92,21 @@ const NavigationPanelImpl = ({ actor }: { actor: NavigationPanelActorRef }) => {
       clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
       onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}
     >
-      <NavigationPanelPopoverTarget actor={actor} />
+      <NavigationPanelPopoverTarget actor={actor} mode={mode} />
       {opened && <NavigationPanelDropdown />}
     </Popover>
   )
 }
-const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRef }) => {
-  const isActiveWalkthrough = useDiagramContext(c => c.activeWalkthrough !== null)
 
+const NavigationPanelPopoverTarget = (
+  { actor, mode }: { actor: NavigationPanelActorRef; mode: 'default' | 'walkthrough' },
+) => {
   return (
     <LayoutGroup>
       <PopoverTarget>
         <m.div
           layout
-          layoutDependency={isActiveWalkthrough}
+          layoutDependency={mode}
           className={hstack({
             layerStyle: 'likec4.panel',
             position: 'relative',
@@ -127,8 +117,8 @@ const NavigationPanelPopoverTarget = ({ actor }: { actor: NavigationPanelActorRe
           })}
           onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
         >
-          <AnimatePresence>
-            {isActiveWalkthrough ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
+          <AnimatePresence propagate>
+            {mode === 'walkthrough' ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
           </AnimatePresence>
         </m.div>
       </PopoverTarget>

@@ -92,18 +92,6 @@ const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
     }),
   })
 })
-// const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
-//   a.enableReadOnly === b.enableReadOnly &&
-//   a.initialized === b.initialized &&
-//   a.pannable === b.pannable &&
-//   a.zoomable === b.zoomable &&
-//   a.nodesDraggable === b.nodesDraggable &&
-//   a.nodesSelectable === b.nodesSelectable &&
-//   a.enableFitView === b.enableFitView &&
-//   shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
-//   a.nodes === b.nodes &&
-//   a.edges === b.edges &&
-//   shallowEqual(a.viewport ?? null, b.viewport ?? null)
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Simplify<
@@ -150,7 +138,7 @@ export function LikeC4DiagramXYFlow({
     $isPanning = $panning,
     isPanning = useTimeout(() => {
       $isPanning.set(true)
-    }, isReducedGraphics ? 200 : 800),
+    }, isReducedGraphics ? 200 : 1000),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       $isPanning.set(false)

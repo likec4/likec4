@@ -57,7 +57,7 @@ const updateActiveWalkthroughState = () =>
     let processedSteps
     if (context.view.flow && context.dynamicViewVariant == 'sequence') {
       const flow = dynamicViewFlow(context.view)
-      processedSteps = new Set(flow.stepsPathsBefore(stepId))
+      processedSteps = new Set(flow.stepPathsBefore(stepId))
     } else {
       processedSteps = new Set()
     }
@@ -160,13 +160,15 @@ const emitWalkthroughStopped = () =>
 
 const emitWalkthroughStep = () =>
   machine.emit(({ context }) => {
+    const stepId = nonNullable(context.activeWalkthrough?.stepId)
     const edge = nonNullable(
-      context.xyedges.find(x => x.data.id === context.activeWalkthrough?.stepId),
-      'Walkthrough step not found',
+      context.xyedges.find(x => x.data.id === stepId),
+      `Walkthrough step edge ${stepId} not found`,
     )
     return {
       type: 'walkthroughStep',
       edge,
+      stepId,
     }
   })
 
@@ -222,7 +224,7 @@ export const walkthrough = machine.createStateConfig({
     },
     'walkthrough.step': {
       actions: [
-        assign(({ context, event }) => {
+        enqueueActions(({ enqueue, context, event }) => {
           let predicate: Predicate<Types.AnyEdge>
           if (event.direction) {
             const { stepId } = nonNullable(context.activeWalkthrough, 'walkthrough.step: activeWalkthrough is null')
@@ -233,18 +235,19 @@ export const walkthrough = machine.createStateConfig({
             predicate = (edge) => edge.data.id === event.stepId
           }
           const nextStepId = context.xyedges.find(predicate)?.data.id
-          return isStepPath(nextStepId) ?
-            {
-              activeWalkthrough: {
-                stepId: nextStepId,
-                activeFlow: parentFlow(nextStepId),
-              },
-            } :
-            {}
+          if (!isStepPath(nextStepId) || context.activeWalkthrough?.stepId === nextStepId) {
+            return
+          }
+          enqueue.assign({
+            activeWalkthrough: {
+              stepId: nextStepId,
+              activeFlow: parentFlow(nextStepId),
+            },
+          })
+          enqueue(updateActiveWalkthroughState())
+          enqueue(fitFocusedBounds())
+          enqueue(emitWalkthroughStep())
         }),
-        updateActiveWalkthroughState(),
-        fitFocusedBounds(),
-        emitWalkthroughStep(),
       ],
     },
     'xyflow.edgeClick': [

@@ -25,6 +25,7 @@
     "emit-pkg": "pandacss emit-pkg --base dist",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
+    "build": "",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz"

@@ -90,6 +90,7 @@
     "@react-hookz/web": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
+    "@xstate/store-react": "catalog:xstate",
     "@zag-js/collection": "catalog:zag",
     "@zag-js/react": "catalog:zag",
     "@zag-js/tree-view": "catalog:zag",

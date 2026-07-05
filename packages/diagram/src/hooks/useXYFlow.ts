@@ -24,7 +24,7 @@ export function useXYStore<StateSlice = unknown>(
   equalityFn?: (a: NoInfer<StateSlice>, b: NoInfer<StateSlice>) => boolean,
 ): StateSlice {
   return useStore(
-    useCallbackRef(selector as any),
+    selector as any,
     equalityFn ?? shallowEqual,
   )
 }

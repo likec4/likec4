@@ -44,13 +44,13 @@ export function DiagramActorProvider({
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const editorActor = useEditorActorLogic()
+  const editor = useEditorActorLogic()
   const features = useEnabledFeatures()
 
   const actor = useActorRef(
     diagramMachine.provide({
       actors: {
-        editorActor,
+        editor,
       },
     }),
     {

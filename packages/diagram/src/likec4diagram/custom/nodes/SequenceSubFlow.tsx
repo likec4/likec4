@@ -10,7 +10,7 @@ import type { Types } from '../../types'
 const typeLabelStyle = css.raw({
   color: 'colorPalette.text',
   fontSize: '[9px]',
-  fontWeight: '[700]',
+  fontWeight: 'bold',
   lineHeight: 'xs',
   letterSpacing: 'tight',
   textTransform: 'uppercase',
@@ -85,9 +85,12 @@ const recipe = sva({
     }),
     title: {
       flex: '1',
-      color: 'colorPalette.text',
-      fontSize: 'xs',
-      fontWeight: 'semibold',
+      color: {
+        base: `[oklch(from {colors.colorPalette.text} calc(l - 0.2) calc(c - 0.2) h / 80%)]`,
+        _dark: `[oklch(from {colors.colorPalette.text} calc(l - 0.1)  calc(c - 0.1) h / 90%)]`,
+      },
+      fontSize: 'xxs',
+      fontWeight: 'normal',
     },
   },
   variants: {
@@ -101,7 +104,9 @@ const recipe = sva({
           alignSelf: 'stretch',
           alignContent: 'center',
         },
-        title: {},
+        title: {
+          paddingTop: '0.5',
+        },
       },
       branch: {
         root: css.raw(withBody, {
@@ -145,11 +150,6 @@ const Title = withContext('div', 'title')
 export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
   const { data } = props
   const isDimmed = data.dimmed ?? false
-  // const variant = flowGuards.type.isAltOrTryBranch(data.flowType)
-  //   ? 'branch'
-  //   : (data.flowType === 'alt' || data.flowType === 'try')
-  //   ? 'withbranches'
-  //   : 'subflow'
 
   let colorClassname
   let variant: 'subflow' | 'withbranches' | 'branch'
@@ -159,7 +159,12 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
     case 'loop':
     case 'opt': {
       variant = 'subflow'
-      colorClassname = css({ colorPalette: `subflow.${data.flowType}` })
+      // PandaCSS Static analyzer fails here
+      colorClassname = data.flowType == 'par'
+        ? css({ colorPalette: 'subflow.par' })
+        : data.flowType == 'loop'
+        ? css({ colorPalette: 'subflow.loop' })
+        : css({ colorPalette: 'subflow.opt' })
       body = <FlowType>{data.flowType}</FlowType>
       break
     }

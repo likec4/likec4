@@ -1,9 +1,8 @@
 import { isDynamicView } from '@likec4/core'
 import { useRerender } from '@react-hookz/web'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
-import { useCallbackRef } from '../hooks'
 import { selectDiagramActor, useDiagramSnapshot } from '../hooks/useDiagram'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
@@ -14,7 +13,11 @@ import { LayoutDriftFrame, NotationPanel, SequenceActorsPanel } from './ui'
 const selectChildren = selectDiagramActor(s => ({
   overlays: s.children.overlays ?? null,
   search: s.children.search ?? null,
+  navigation: s.children.navigationPanel ?? null,
   isSequenceView: isDynamicView(s.context.view) && s.context.dynamicViewVariant === 'sequence',
+  // isActiveWalkthrough: s.matches({
+  //   ready: 'walkthrough',
+  // }),
 }))
 
 export const LikeC4DiagramUI = memo(() => {
@@ -29,15 +32,18 @@ export const LikeC4DiagramUI = memo(() => {
   const rerender = useRerender()
   const { isSequenceView, ...actors } = useDiagramSnapshot(selectChildren)
 
-  const handleReset = useCallbackRef(() => {
-    console.warn('DiagramUI: resetting error boundary and rerendering...')
+  const handleReset = useCallback(() => {
+    if (import.meta.env.DEV) {
+      console.warn('DiagramUI: resetting error boundary and rerendering...')
+    }
     rerender()
-  })
+  }, [])
 
   return (
     <ErrorBoundary onReset={handleReset}>
       {isSequenceView && <SequenceActorsPanel />}
-      {enableControls && <NavigationPanel />}
+      {/* {isSequenceView && isActiveWalkthrough && <WalkthroughPanel />} */}
+      {enableControls && actors.navigation && <NavigationPanel actorRef={actors.navigation} />}
       {actors.overlays && <Overlays overlaysActorRef={actors.overlays} />}
       {enableNotations && <NotationPanel />}
       {enableSearch && actors.search && <Search searchActorRef={actors.search} />}
