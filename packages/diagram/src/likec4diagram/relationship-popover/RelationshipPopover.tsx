@@ -10,13 +10,12 @@ import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
+import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'
 import {
   ActionIcon,
   Button,
   Divider,
-  Notification,
   ScrollAreaAutosize,
   Text,
   Tooltip as MantineTooltip,
@@ -381,26 +380,6 @@ const RelationshipPopoverInternal = ({
         )}
       </VStack>
     </ScrollAreaAutosize>
-  )
-}
-
-const EdgeDrifts = ({ diagramEdge }: { diagramEdge: DiagramEdge }) => {
-  const drifts = diagramEdge.drifts
-  if (!drifts || drifts.length === 0) {
-    return null
-  }
-  return (
-    <Notification
-      color="orange"
-      withBorder={false}
-      withCloseButton={false}
-      title="Changes:">
-      {drifts.map((drift) => (
-        <Txt mt={'1'} size="xs" key={drift}>
-          - {drift}
-        </Txt>
-      ))}
-    </Notification>
   )
 }
 

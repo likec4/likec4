@@ -1,4 +1,4 @@
-import { type StepPath, dynamicViewFlow, invariant, isDynamicView, nonNullable } from '@likec4/core'
+import { type StepPath, dynamicViewFlow, invariant, isDynamicView } from '@likec4/core'
 import { raise } from 'xstate/actions'
 import { and, not, or } from 'xstate/guards'
 import {

@@ -3,7 +3,7 @@ import type { Argv } from 'yargs'
 
 import { configureLanguageServerLogger, startLanguageServer } from '@likec4/language-server'
 import { createConnection, ProposedFeatures } from 'vscode-languageserver/node'
-import { logLevel, path, useDotBin, verbose, verboseLogLevel } from '../options'
+import { logLevel, useDotBin, verbose, verboseLogLevel } from '../options'
 
 export default function<T>(yargs: Argv<T>) {
   return yargs

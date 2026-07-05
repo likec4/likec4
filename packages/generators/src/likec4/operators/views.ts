@@ -99,13 +99,13 @@ export const viewRuleStyle = zodOp(schemas.views.viewRuleStyle)(
     ),
   ),
 )
-export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(({ ctx, exec }) => {
+export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(({ ctx: _ctx, exec: _exec }) => {
   throw new Error('not implemented')
 })
-export const viewRuleGlobalStyle = zodOp(schemas.views.viewRuleGlobalStyle)(({ ctx, exec }) => {
+export const viewRuleGlobalStyle = zodOp(schemas.views.viewRuleGlobalStyle)(({ ctx: _ctx, exec: _exec }) => {
   throw new Error('not implemented')
 })
-export const viewRuleGlobalPredicate = zodOp(schemas.views.viewRuleGlobalPredicate)(({ ctx, exec }) => {
+export const viewRuleGlobalPredicate = zodOp(schemas.views.viewRuleGlobalPredicate)(({ ctx: _ctx, exec: _exec }) => {
   throw new Error('not implemented')
 })
 
@@ -139,7 +139,7 @@ export const deploymentViewRuleIncludeAncestors = zodOp(schemas.views.deployment
   ),
 )
 
-export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(({ ctx, exec }) => {
+export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(({ ctx: _ctx, exec: _exec }) => {
   throw new Error('not implemented')
 })
 

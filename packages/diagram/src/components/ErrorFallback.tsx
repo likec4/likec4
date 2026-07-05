@@ -2,7 +2,7 @@ import { css } from '@likec4/styles/css'
 import { HStack, VStack } from '@likec4/styles/jsx'
 import { Button, ScrollAreaAutosize, Text, ThemeIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import {
   type ErrorBoundaryProps,
   type FallbackProps,

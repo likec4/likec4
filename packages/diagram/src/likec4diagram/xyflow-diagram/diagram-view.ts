@@ -6,7 +6,6 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import {
-  type BBox,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -17,7 +16,6 @@ import {
   type WhereOperator,
   GroupElementKind,
   invariant,
-  isDynamicView,
   isStepPath,
   nonNullable,
   Queue,

@@ -54,11 +54,6 @@ function NodeNotesInternal({ data }: Pick<NodeNotesProps, 'data'> & {
     min: 250,
     max: 500,
   })
-  const height = clamp(data.height ?? 0, {
-    min: 200,
-    max: 600,
-  })
-
   const [expanded, handlers] = useDisclosure(false, {})
 
   const id = stringHash(data.id + (markdown.md ?? markdown.txt))

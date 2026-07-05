@@ -4,20 +4,17 @@ import {
 } from '@likec4/core'
 import {
   type Predicate,
-  type StepPath,
   dynamicViewFlow,
-  flowGuards,
   flowHelpers,
   isDynamicView,
   isStepPath,
   parentFlow,
 } from '@likec4/core/types'
-import { clamp, filter, find, first, firstBy, isNumber, isTruthy, map, omit, pipe, takeFirstBy } from 'remeda'
+import { firstBy, isNumber } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
 import { assign, raise } from 'xstate/actions'
 import { Base } from '../../base'
 import type { Types } from '../types'
-import { lastClickedNode } from './assign'
 import {
   assignLastClickedNode,
   assignViewportBefore,

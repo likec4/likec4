@@ -20,7 +20,7 @@ const alias = {
   // '@likec4/language-server': path.resolve(__dirname, '../../packages/language-server/src'),
 } satisfies AliasOptions
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command: _command }) => ({
   resolve: {
     alias,
     conditions: ['sources'],

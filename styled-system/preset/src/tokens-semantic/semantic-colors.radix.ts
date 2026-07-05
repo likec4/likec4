@@ -22,8 +22,6 @@ import {
   redDark,
   ruby,
   rubyDark,
-  slate,
-  slateDark,
   teal,
   tealDark,
   tomato,

@@ -3,14 +3,11 @@
 // Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
-import type { Config } from '@pandacss/dev'
 import { defineGlobalStyles } from '@pandacss/dev'
 import { keys, mapToObj } from 'remeda'
 import { __v, vars } from './const.ts'
 import { defaultTheme } from './defaults/index.ts'
 import { alpha } from './helpers.ts'
-
-type ExtendableGlobalCss = NonNullable<Config['globalCss']>
 
 const sizeConditions = {
   ...mapToObj(keys(defaultTheme.textSizes), (size) =>

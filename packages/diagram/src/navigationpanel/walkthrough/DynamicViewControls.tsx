@@ -9,7 +9,7 @@ import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { selectDiagramActorContext, useDiagram, useDiagramContext, useDiagramSnapshot } from '../../hooks/useDiagram'
+import { selectDiagramActorContext, useDiagram, useDiagramSnapshot } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
 

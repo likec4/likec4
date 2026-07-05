@@ -5,11 +5,10 @@ import {
   type DiagramNode,
   type DiagramView,
   type Fqn,
-  type XYPoint,
   isDynamicView,
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
-import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getViewportForBounds } from '@xyflow/system'
+import { type Viewport, getEdgePosition, getNodesBounds, getViewportForBounds } from '@xyflow/system'
 import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { EditorActorRef } from '../../editor/actor/machine'

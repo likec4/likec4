@@ -1,4 +1,4 @@
-import { invariant, nonNullable } from '@likec4/core'
+import { nonNullable } from '@likec4/core'
 import {
   type BBox,
   type DiagramEdge,
@@ -10,12 +10,11 @@ import {
   DynamicViewFlow,
   dynamicViewFlow,
   flowGuards,
-  flowHelpers,
   hasProp,
   NodeId,
 } from '@likec4/core/types'
-import { findLast, flatMap, isArray } from 'remeda'
-import type { SetNonNullable, SetRequired, Writable } from 'type-fest'
+import { isArray } from 'remeda'
+import type { SetNonNullable, Writable } from 'type-fest'
 import type { Types } from '../types'
 import {
   SeqParallelAreaColor,
@@ -302,7 +301,7 @@ function createSubflowNodes(
 
   let lastLeftNode = undefined as Types.SequenceSubflowArea | undefined
   ctx.flow.walk({
-    subflow: ({ subflow, previous, parent }) => {
+    subflow: ({ subflow, previous, parent: _parent }) => {
       const area = ctx.subflowArea(subflow.id)
       if (!area) {
         return false

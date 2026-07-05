@@ -278,7 +278,6 @@ function $autoLayout<B extends LikeC4ViewBuilder<any, any, any>>(
   return (b) => b.autoLayout(layout, margins)
 }
 
-type Op<T> = (b: T) => T
 function $rules<B extends LikeC4ViewBuilder<any, any, any>>(...rules: Array<(b: B) => B>): (b: B) => B {
   return (b) => rules.reduce((b, rule) => rule(b), b)
 }

@@ -1,6 +1,4 @@
-import { type Config, defineUtility } from '@pandacss/dev'
-
-type ExtendableUtilityConfig = NonNullable<Config['utilities']>
+import { defineUtility } from '@pandacss/dev'
 
 const durationValues = [
   'fastest',

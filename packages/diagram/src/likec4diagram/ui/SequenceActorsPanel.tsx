@@ -102,7 +102,7 @@ function SequenceActor({ id }: { id: string }) {
       }
     }
     const { width, height } = getNodeDimensions(node)
-    const [tx, ty, tScale] = state.transform
+    const [tx, , tScale] = state.transform
 
     const xynode = node.internals.userNode
     invariant(xynode.type === 'seq-actor')

@@ -9,7 +9,6 @@ import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
-import { useCurrentView } from '../hooks/useCurrentView'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
@@ -29,7 +28,7 @@ const select = selectDiagramContext(s => ({
 }))
 
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
-  const { isActiveWalkthrough, isSequenceView, view } = useDiagramSelector(select)
+  const { isActiveWalkthrough, view } = useDiagramSelector(select)
   const viewModel = useOptionalCurrentViewModel()
 
   useEffect(() => {

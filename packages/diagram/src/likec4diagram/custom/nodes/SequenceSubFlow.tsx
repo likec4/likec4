@@ -1,4 +1,4 @@
-import { flowGuards, invariant, nonexhaustive } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core'
 import { css, sva } from '@likec4/styles/css'
 import { createStyleContext, isCssProperty } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -229,9 +229,4 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
       </Content>
     </SubflowRoot>
   )
-}
-
-function SubflowTry({ data }: Types.NodeProps<'seq-subflow'>) {
-  invariant(data.flowType === 'try')
-  return
 }

@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import { type ValidationCheck, AstUtils } from 'langium'
+import { type ValidationCheck } from 'langium'
 import { isNumber, isString } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'

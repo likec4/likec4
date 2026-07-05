@@ -163,7 +163,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
   protected getElementsSymbol(
     el: ast.Element | ast.Relation | ast.ExtendElement,
-    parentFqn?: string,
+    _parentFqn?: string,
   ): DocumentSymbol[] {
     try {
       if (ast.isExtendElement(el)) {
