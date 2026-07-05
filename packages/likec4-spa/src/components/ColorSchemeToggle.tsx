@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { NTuple } from '@likec4/core'
 import { ActionIcon, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { IconMoonStars, IconSun } from '@tabler/icons-react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
@@ -52,6 +53,11 @@ export function ColorSchemeToggle() {
       setColorScheme(next)
     }
   }
+  const [sun, moon] = (
+    computedColorScheme === 'dark'
+      ? ['block', 'none']
+      : ['none', 'block']
+  ) as NTuple<'block' | 'none', 2>
 
   return (
     <ActionIcon
@@ -61,8 +67,8 @@ export function ColorSchemeToggle() {
       onClick={toggle}
       aria-label="Toggle color scheme"
     >
-      <IconMoonStars stroke={1.5} display={computedColorScheme === 'light' ? 'block' : 'none'} />
-      <IconSun stroke={1.5} display={computedColorScheme === 'dark' ? 'block' : 'none'} />
+      <IconSun stroke={1.5} style={{ display: sun }} />
+      <IconMoonStars stroke={1.5} style={{ display: moon }} />
     </ActionIcon>
   )
 }

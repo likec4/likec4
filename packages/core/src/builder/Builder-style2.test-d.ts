@@ -104,7 +104,10 @@ test('Builder types - style 2', () => {
     // Test Element View Of
     .views(({ viewOf, $rules, $include }, _) =>
       _(
-        viewOf('view-of', 'cloud.backend'),
+        viewOf('view-of', 'cloud.backend').with(
+          // @ts-expect-error
+          $include('wrong'),
+        ),
         // @ts-expect-error
         viewOf('view-of', 'wrong'),
         viewOf(
@@ -122,29 +125,28 @@ test('Builder types - style 2', () => {
             // @ts-expect-error
             $include('wrong'),
           ),
-        ).with(
-          $include('* -> alice.*'),
-          // @ts-expect-error
-          $include('wrong'),
         ),
         viewOf(
           'view-of',
           // @ts-expect-error
           'cloud.backensd.api',
           'Title',
-        ).with(
-          $include('* -> alice.*'),
-          // @ts-expect-error
-          $include('wrong'),
+          $rules(
+            $include('* -> alice.*'),
+            // @ts-expect-error
+            $include('wrong'),
+          ),
         ),
       )
     )
     // Test Deployment View
-    .views(({ deploymentView, $rules, $include }, _) =>
+    .views(({ deploymentView, $rules, $include, $exclude }, _) =>
       _(
         deploymentView(
           'deployment',
           $rules(
+            $include('prod.*'),
+            $exclude('dev.vm1._'),
             // @ts-expect-error
             $include('pr'),
           ),
@@ -158,8 +160,104 @@ test('Builder types - style 2', () => {
           ),
         ),
         deploymentView('deployment').with(
+          $include('prod.*'),
           // @ts-expect-error
           $include('pr'),
+        ),
+      )
+    )
+    // Test Dynamic View
+    .views(({ dynamicView, $step, $rules }, _) =>
+      _(
+        dynamicView('dynamic-a').with(
+          $step('cloud.backend', 'cloud'),
+          $step.loop(
+            'alice -> alice',
+            'bob -> bob',
+            $step('alice -> cloud.backend'),
+            $step.opt(
+              'cloud.frontend -> cloud.frontend',
+              'cloud -> cloud.backend',
+            ),
+          ),
+          // @ts-expect-error
+          $step('a -> b'),
+          $step.try({
+            try: [
+              'alice -> bob',
+              'alice -> cloud.backend',
+              $step('bob', 'cloud'),
+            ],
+            catch: [
+              $step.loop(
+                $step('bob', 'cloud'),
+                'bob -> alice',
+                'bob -> cloud.backend',
+                // @ts-expect-error
+                'a -> b',
+              ),
+              $step.break(
+                $step('cloud -> bob', {
+                  title: 'Send error',
+                }),
+              ),
+            ],
+            finally: [
+              $step('cloud -> cloud.backend'),
+            ],
+          }),
+          $step.alt(
+            $step.when(
+              'alice -> cloud',
+              $step('alice -> cloud.backend'),
+            ),
+            $step.if(
+              'bob -> alice',
+              $step.loop(
+                $step('alice -> cloud'),
+              ),
+              'bob -> bob',
+            ),
+            // @ts-expect-error
+            $step.else('a -> b'),
+          ),
+          $step('cloud.backend', 'bob'),
+          // @ts-expect-error
+          $step('a -> b'),
+        ),
+        dynamicView(
+          'dynamic-b',
+          {
+            tags: [
+              'tag2',
+              // @ts-expect-error
+              'tag12',
+            ],
+          },
+          $rules(
+            $step('cloud.backend', 'alice'),
+            $step('cloud.backend -> alice'),
+            $step.loop(
+              'cloud.backend.api -> cloud',
+              'cloud.backend.api -> cloud.backend',
+              $step('cloud.backend -> cloud.backend.db'),
+              'cloud.backend.db -> cloud.backend.api',
+            ),
+            $step.series(
+              'alice',
+              '-> cloud.frontend',
+              // @ts-expect-error
+              '-> B',
+              '-> cloud.backend.api',
+            ),
+            $step.parallel(
+              'cloud.backend -> cloud.backend.db',
+              $step('alice -> cloud.frontend'),
+              'cloud.backend.db -> cloud.backend.api',
+            ),
+            // @ts-expect-error
+            $step('a -> b'),
+          ),
         ),
       )
     )
@@ -168,7 +266,7 @@ test('Builder types - style 2', () => {
     'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend'
   >()
   expectTypeOf(b1.Types.ViewId).toEqualTypeOf<
-    'view' | 'view-of' | 'deployment' | 'one-view-per-block'
+    'view' | 'view-of' | 'deployment' | 'one-view-per-block' | 'dynamic-a' | 'dynamic-b'
   >()
   expectTypeOf(b1.Types.DeploymentFqn).toEqualTypeOf<
     'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong'
@@ -181,7 +279,7 @@ test('Builder types - style 2', () => {
         'parsed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block' | 'dynamic-a' | 'dynamic-b',
         'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',
@@ -200,7 +298,7 @@ test('Builder types - style 2', () => {
         'parsed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block' | 'dynamic-a' | 'dynamic-b',
         'project-a', // <----
         SpecAux<
           'actor' | 'system' | 'component',
@@ -219,7 +317,7 @@ test('Builder types - style 2', () => {
         'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block' | 'dynamic-a' | 'dynamic-b',
         'project-a', // <----
         SpecAux<
           'actor' | 'system' | 'component',
@@ -238,7 +336,7 @@ test('Builder types - style 2', () => {
         'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block' | 'dynamic-a' | 'dynamic-b',
         'inline-project-a', // <----
         SpecAux<
           'actor' | 'system' | 'component',
@@ -258,7 +356,7 @@ test('Builder types - style 2', () => {
         'computed',
         'alice' | 'bob' | 'cloud' | 'cloud.backend' | 'cloud.backend.api' | 'cloud.backend.db' | 'cloud.frontend',
         'prod' | 'dev' | 'prod.vm1' | 'prod.vm2' | 'dev.vm1' | 'dev.vm2' | 'dev.api' | 'dev.wrong',
-        'view' | 'view-of' | 'deployment' | 'one-view-per-block',
+        'view' | 'view-of' | 'deployment' | 'one-view-per-block' | 'dynamic-a' | 'dynamic-b',
         'from-builder',
         SpecAux<
           'actor' | 'system' | 'component',

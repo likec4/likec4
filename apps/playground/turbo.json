@@ -5,6 +5,10 @@
   ],
   "tasks": {
     "generate": {
+      "dependsOn": [
+        "sources",
+        "^generate"
+      ],
       "outputs": [
         "src/routeTree.gen.ts",
         "worker-configuration.d.ts",

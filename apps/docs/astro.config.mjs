@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import skills from 'astro-skills'
 import { defineConfig } from 'astro/config'
 import starlightHeadingBadges from 'starlight-heading-badges'
-import starlightImageZoom from 'starlight-image-zoom'
+// import starlightImageZoom from 'starlight-image-zoom'
 import starlightLinksValidator from 'starlight-links-validator'
 
 const version = process.env.npm_package_version || 'latest'
@@ -19,7 +19,7 @@ export default defineConfig({
     react(),
     starlight({
       plugins: [
-        starlightImageZoom(),
+        // starlightImageZoom(),
         starlightHeadingBadges(),
         starlightLinksValidator({
           exclude: [

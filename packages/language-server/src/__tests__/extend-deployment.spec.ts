@@ -1,5 +1,5 @@
-import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { describe } from 'vitest'
+import { testFileScope as it } from '../test'
 
 describe('extend-deployment scope', () => {
   const document1 = `
@@ -34,13 +34,12 @@ describe('extend-deployment scope', () => {
       }
     }`
 
-  it('should parse correctly', async ({ expect }) => {
-    const { addDocument, validateAll } = createTestServices()
-    await addDocument(document1)
-    await addDocument(document2)
-    await addDocument(document3)
+  it('should parse correctly', async ({ expect, t }) => {
+    await t.addDocument(document1, 'model.c4')
+    await t.addDocument(document2, 'deploy.c4')
+    await t.addDocument(document3, 'deploy2.c4')
 
-    const { errors } = await validateAll()
+    const { errors } = await t.validateAll()
 
     expect(errors).toEqual([])
   })

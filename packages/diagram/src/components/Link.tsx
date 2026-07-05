@@ -62,8 +62,8 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
             backgroundColor: {
               base: 'transparent',
               _hover: {
-                base: 'mantine.colors.gray[1]',
-                _dark: 'mantine.colors.dark[5]',
+                base: 'mantine.gray[1]',
+                _dark: 'mantine.dark[5]',
               },
             },
           }),

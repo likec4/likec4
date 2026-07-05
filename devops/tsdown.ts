@@ -93,7 +93,18 @@ export function outputOptions(outputOptions?: Rolldown.OutputOptions): Rolldown.
       chunkFileNames: 'chunks/[name].mjs',
       codeSplitting: {
         groups: [
-          nodeModulesCodeSplitting(),
+          {
+            test: /node_modules/,
+            name: (moduleId: string) => {
+              const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
+                ?.groups
+                ?.['package']
+                || 'common'
+              const isDts = /\.d\.[cm]?ts$/.test(moduleId)
+              return `libs/${pkgName}${isDts ? '.d' : ''}`
+            },
+            priority: 10,
+          },
         ],
       },
     } satisfies Rolldown.OutputOptions,

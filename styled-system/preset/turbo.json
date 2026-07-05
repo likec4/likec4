@@ -4,11 +4,12 @@
     "//"
   ],
   "tasks": {
-    "generate": {
+    "sources": {
+      "dependsOn": [
+        "^sources"
+      ],
       "outputs": [
-        "src/generated.ts",
-        "dist/**",
-        "lib/**"
+        "dist/**"
       ]
     }
   }

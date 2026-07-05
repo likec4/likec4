@@ -16,13 +16,5 @@
   "include": [
     "src/",
     "src/**/*.json"
-  ],
-  "references": [
-    {
-      "path": "../../styled-system/preset/"
-    },
-    {
-      "path": "../../styled-system/styles/"
-    }
   ]
 }

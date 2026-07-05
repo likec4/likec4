@@ -16,7 +16,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
-import { difference } from '@likec4/core/utils'
+import { difference, isString } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy } from 'remeda'
@@ -45,6 +45,11 @@ import {
 } from './utils'
 
 export * from './machine.actions.layout'
+
+export const resetSelection = () =>
+  machine.raise({
+    type: 'xyflow.resetSelection',
+  })
 
 export const disableCompareWithLatest = () =>
   machine.assign(({ context }) => {
@@ -228,16 +233,13 @@ export const assignDynamicViewVariant = () =>
   })
 
 // Mouse event handlers with parameters
-export const onNodeMouseEnter = (params?: { node: Types.Node }) =>
+export const onNodeMouseEnter = () =>
   machine.assign(({ context, event }) => {
-    let node = params?.node
-    if (!node) {
-      assertEvent(event, 'xyflow.nodeMouseEnter')
-      node = event.node
-    }
+    assertEvent(event, 'xyflow.nodeMouseEnter')
+    const hoveredNodeId = isString(event.node) ? event.node : event.node.id
     return {
       xynodes: context.xynodes.map(n => {
-        if (n.id === node.id) {
+        if (n.id === hoveredNodeId) {
           return Base.setHovered(n, true)
         }
         return n
@@ -245,16 +247,13 @@ export const onNodeMouseEnter = (params?: { node: Types.Node }) =>
     }
   })
 
-export const onNodeMouseLeave = (params?: { node: Types.Node }) =>
+export const onNodeMouseLeave = () =>
   machine.assign(({ context, event }) => {
-    let node = params?.node
-    if (!node) {
-      assertEvent(event, 'xyflow.nodeMouseLeave')
-      node = event.node
-    }
+    assertEvent(event, 'xyflow.nodeMouseLeave')
+    const leftNodeId = isString(event.node) ? event.node : event.node.id
     return {
       xynodes: context.xynodes.map(n => {
-        if (n.id === node.id) {
+        if (n.id === leftNodeId) {
           return Base.setHovered(n, false)
         }
         return n
@@ -300,14 +299,17 @@ export const emitInitialized = () =>
   })
 
 export const emitNodeClick = () =>
-  machine.emit(({ context, event }) => {
+  machine.enqueueActions(({ context, event, enqueue }) => {
     assertEvent(event, 'xyflow.nodeClick')
-    const node = nonNullable(findDiagramNode(context, event.node.id), `Node ${event.node.id} not found in diagram`)
-    return {
+    const node = findDiagramNode(context, event.node.id)
+    if (!node) {
+      return
+    }
+    enqueue.emit({
       type: 'nodeClick',
       node,
       xynode: event.node,
-    }
+    })
   })
 
 export const emitNavigateTo = (params?: { viewId: ViewId }) =>
@@ -592,7 +594,7 @@ export const ensureEditorActor = () =>
       return
     }
     if (hasEditor && !editor) {
-      enqueue.spawnChild('editorActor', {
+      enqueue.spawnChild('editor', {
         id: 'editor',
         systemId: 'editor',
         input: {
@@ -792,7 +794,7 @@ export const ensureOverlaysActor = () =>
     const enabled = check('enabled: Overlays')
     const running = typedSystem(system).overlaysActorRef
     if (enabled && !running) {
-      enqueue.spawnChild('overlaysActorLogic', {
+      enqueue.spawnChild('overlays', {
         id: 'overlays',
         systemId: 'overlays',
         syncSnapshot: true,
@@ -808,6 +810,30 @@ export const ensureOverlaysActor = () =>
   })
 
 /**
+ * Ensure that the navigation panel actor is running or stopped based on the current state
+ */
+export const ensureNavigationPanelActor = () =>
+  machine.enqueueActions(({ enqueue, check, system, context }) => {
+    const enabled = check('enabled: NavigationPanel')
+    const running = typedSystem(system).navigationActorRef
+    if (enabled && !running) {
+      enqueue.spawnChild('navigationPanel', {
+        id: 'navigationPanel',
+        systemId: 'navigationPanel',
+        input: {
+          view: context.view,
+          viewModel: null,
+        },
+        syncSnapshot: true,
+      })
+      return
+    }
+    if (!enabled && running) {
+      enqueue.stopChild(running)
+    }
+  })
+
+/**
  * Ensure that the search actor is running or stopped based on the current feature flags
  */
 export const ensureSearchActor = () =>
@@ -815,7 +841,7 @@ export const ensureSearchActor = () =>
     const enabled = check('enabled: Search')
     const running = typedSystem(system).searchActorRef
     if (enabled && !running) {
-      enqueue.spawnChild('searchActorLogic', {
+      enqueue.spawnChild('search', {
         id: 'search',
         systemId: 'search',
         syncSnapshot: true,
@@ -873,7 +899,8 @@ export const onEdgeMouseLeave = () =>
 
 export const reraise = () => machine.raise(({ event }) => event, { delay: 50 })
 
-export const startHotKeyActor = () => machine.spawnChild('hotkeyActorLogic', { id: 'hotkey' })
+export const startHotKeyActor = () =>
+  machine.spawnChild('hotkey', { id: 'hotkey', systemId: 'hotkey', syncSnapshot: true })
 export const stopHotKeyActor = () => machine.stopChild('hotkey')
 
 /**
@@ -1047,3 +1074,14 @@ export const updateView = () =>
       }
     },
   )
+
+/**
+ * Ensures all child actors are started/stopped as needed
+ */
+export const ensureAllActors = () =>
+  machine.enqueueActions(({ enqueue }) => {
+    enqueue(ensureEditorActor())
+    enqueue(ensureOverlaysActor())
+    enqueue(ensureSearchActor())
+    enqueue(ensureNavigationPanelActor())
+  })

@@ -2,7 +2,7 @@ import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
 import { type LangiumDocument, DocumentState, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
-import { entries, once } from 'remeda'
+import { entries, flatMap, join, once, pipe } from 'remeda'
 import stripIndent from 'strip-indent'
 import type { LiteralUnion } from 'type-fest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -98,6 +98,30 @@ export function createTestServices(options?: {
       diagnostics,
       warnings,
       errors,
+      get error(): string {
+        return errors.join('\n')
+      },
+      get formattedError(): string {
+        return pipe(
+          diagnostics,
+          flatMap(validationError => {
+            const line = validationError.range.start.line
+            const messages = validationError.message.split('\n')
+            if (messages.length > 5) {
+              messages.length = 5
+              messages.push('...')
+            }
+            return messages
+              .map((message, i) => {
+                if (i === 0) {
+                  return `Line ${line}: ${message}`
+                }
+                return ' '.repeat(10) + message
+              })
+          }),
+          join('\n'),
+        )
+      },
     }
   }
 
@@ -168,6 +192,17 @@ export function createTestServices(options?: {
     buildLikeC4Model,
     resetState,
     format,
+    get likec4() {
+      return services.likec4
+    },
+    [Symbol.dispose]: () => {
+      services.likec4.LanguageServices.dispose().catch(err => {
+        console.error(err)
+      })
+    },
+    [Symbol.asyncDispose]: async () => {
+      await services.likec4.LanguageServices.dispose()
+    },
   }
 }
 
@@ -255,6 +290,10 @@ export async function createMultiProjectTestServices<const Projects extends Reco
     buildModel,
     buildLikeC4Model,
     resetState,
+
+    [Symbol.asyncDispose]: async () => {
+      await services.likec4.LanguageServices.dispose()
+    },
   }
 }
 

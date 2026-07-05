@@ -24,6 +24,9 @@
       "path": "../../packages/core/"
     },
     {
+      "path": "../../packages/react/"
+    },
+    {
       "path": "../../packages/vite-plugin/"
     },
     {

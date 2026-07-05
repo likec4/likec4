@@ -44,6 +44,7 @@ import {
   type ModelRelation,
   type NonEmptyArray,
   type ParsedDeploymentView as DeploymentView,
+  type ParsedDynamicView as DynamicView,
   type RelationId,
   _stage,
   _type,
@@ -67,8 +68,9 @@ import type {
 import type { AddElement } from './Builder.element'
 import type { AddElementHelpers, ModelBuilder, ModelBuilderFunction, ModelHelpers } from './Builder.model'
 import { $autoLayout, $exclude, $include, $rules, $style } from './Builder.view-common'
-import { $includeAncestors } from './Builder.view-deployment'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
+import { $includeAncestors } from './Builder.view-deployment'
+import { type DynamicViewRulesBuilder, $step } from './Builder.view-dynamic'
 import type { ElementViewRulesBuilder } from './Builder.view-element'
 import { type ViewsBuilder, type ViewsBuilderFunction, type ViewsHelpers, mkViewBuilder } from './Builder.views'
 import type { BuilderMethods } from './Builder.with'
@@ -147,36 +149,85 @@ export interface Builder<T extends AnyTypes> extends BuilderMethods<T> {
    * Adds views
    *
    * @example
-   *  builder.views(({ view, viewOf, deploymentView, $include, $style, $rules }, _) =>
-   *    _(
-   *      view('view1').with(
-   *        $include('a -> b'),
+   * ```ts
+   * // Element views
+   * builder.views(({ view, viewOf, $include, $style, $rules }, _) =>
+   *   _(
+   *     view('view1').with(
+   *       $include('a -> b'),
+   *     ),
+   *     view('view2', {
+   *       title: 'View 2',
+   *     }).with(
+   *       $include('*')
+   *     ),
+   *     view(
+   *       'view3',
+   *       {
+   *         title: 'View 3',
+   *       },
+   *       $rules(
+   *         $include('*'),
+   *         $style(['*', 'alice'], {
+   *           color: 'red',
+   *         }),
+   *       ),
+   *     ),
+   *     viewOf('viewOfA', 'a', $rules(
+   *       $include('*')
+   *     )),
+   *   )
+   * )
+   * ```
+   *
+   * @example
+   * ```ts
+   * // Deployment views
+   * builder.views(({ deploymentView, $include, $style, $rules }, _) =>
+   *   _(
+   *     deploymentView('deploymentView1').with(
+   *       $include('a -> b')
+   *     ),
+   *     deploymentView(
+   *       'deploymentView2'
+   *       { title: 'View 2' },
+   *       $rules(
+   *         $include('*'),
+   *         $style(['*', 'alice'], {
+   *           color: 'red',
+   *         }),
+   *       ),
+   *     ),
+   *   )
+   * )
+   * ```
+   *
+   * @example
+   * ```ts
+   * // Dynamic views
+   * builder.views(({ dynamicView, $step, $rules }, _) =>
+   *   _(
+   *     dynamicView('dynamicView1').with(
+   *       $step('a -> b'),
+   *       $step.alt(
+   *         $step.when('b -> c'),
+   *         $step.else('b -> e'),
+   *       ),
+   *     ),
+   *     dynamicView(
+   *       'dynamic-b',
+   *       $rules(
+   *         $step('a', 'b'),
+   *         $step('a -> b'),
+   *         $step.loop(
+   *           'a -> b',
+   *           $step.opt('a -> b'),
+   *         ),
+   *       ),
    *      ),
-   *      view('view2', {
-   *        title: 'View 2',
-   *      }).with(
-   *        $include('*')
-   *      ),
-   *      view(
-   *        'view3',
-   *        {
-   *          title: 'View 3',
-   *        },
-   *        $rules(
-   *          $include('*'),
-   *          $style(['*', 'alice'], {
-   *            color: 'red',
-   *          }),
-   *        ),
-   *      ),
-   *      viewOf('viewOfA', 'a').with(
-   *        $include('*')
-   *      ),
-   *      deploymentView('deploymentView1').with(
-   *        $include('a -> b')
-   *      ),
-   *    )
-   *  )
+   *   )
+   * )
+   * ```
    */
   views<Out extends AnyTypes>(
     callback: ViewsBuilderFunction<T, Out>,
@@ -763,11 +814,44 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
 
           return add
         },
+        dynamicView: (
+          id: string,
+          _props?: T['NewViewProps'] | string | DynamicViewRulesBuilder<any>,
+          _builder?: DynamicViewRulesBuilder<any>,
+        ) => {
+          const [generic, builder] = createGenericView(id, _props, _builder)
+          const view: Writable<DynamicView> = {
+            ...generic,
+            [_type]: 'dynamic',
+            rules: [],
+            steps: [],
+          }
+
+          const add = (b: ViewsBuilder<any>): ViewsBuilder<any> => {
+            b.__addView(view)
+            if (builder) {
+              builder(mkViewBuilder(view))
+            }
+            return b
+          }
+
+          add.with = (...ops: DynamicViewRulesBuilder<any>[]) => (b: ViewsBuilder<any>) => {
+            add(b)
+            const elementViewBuilder = mkViewBuilder(view)
+            for (const op of ops) {
+              op(elementViewBuilder)
+            }
+            return b
+          }
+
+          return add
+        },
         $autoLayout,
         $exclude,
         $include,
         $rules,
         $style,
+        $step,
         $includeAncestors,
       },
       deployment: {

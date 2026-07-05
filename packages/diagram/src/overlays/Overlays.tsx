@@ -1,5 +1,4 @@
 import { nonexhaustive } from '@likec4/core'
-import { useSelector } from '@xstate/react'
 import { animate } from 'motion'
 import { AnimatePresence, LayoutGroup, useReducedMotionConfig } from 'motion/react'
 import { useEffect } from 'react'
@@ -9,50 +8,58 @@ import { ErrorBoundary } from '../components/ErrorFallback'
 import { DiagramFeatures } from '../context'
 import { useDiagram } from '../hooks'
 import { ElementDetails } from './element-details/ElementDetails'
+import { OverlaysActorContext, selectOverlaysSnapshot, useSelectOverlaysActor } from './hooks'
 import { Overlay } from './overlay/Overlay'
-import type { OverlaysActorRef, OverlaysActorSnapshot } from './overlaysActor'
+import type { OverlaysActorRef } from './overlaysActor'
 import { RelationshipDetails } from './relationship-details/RelationshipDetails'
 import { RelationshipsBrowser } from './relationships-browser/RelationshipsBrowser'
 
-const selectOverlays = (s: OverlaysActorSnapshot) => {
-  return s.context.overlays.map((overlay) => {
-    switch (overlay.type) {
-      case 'relationshipsBrowser':
-        return s.children[overlay.id]
-          ? {
-            type: overlay.type,
-            actorRef: s.children[overlay.id]!,
-          }
-          : null
-      case 'relationshipDetails':
-        return s.children[overlay.id]
-          ? {
-            type: overlay.type,
-            actorRef: s.children[overlay.id]!,
-          }
-          : null
-      case 'elementDetails':
-        return s.children[overlay.id]
-          ? {
-            type: overlay.type,
-            actorRef: s.children[overlay.id]!,
-          }
-          : null
-      default:
-        nonexhaustive(overlay)
-    }
-  }).filter(isNonNullish)
+type OverlaysProps = {
+  overlaysActorRef: OverlaysActorRef
 }
-const compareSelectOverlays = <T extends ReturnType<typeof selectOverlays>>(a: T, b: T) => {
-  return a.length === b.length && a.every((overlay, i) => {
-    return overlay.actorRef === b[i]!.actorRef
-  })
-}
+export const Overlays = ({ overlaysActorRef }: OverlaysProps) => (
+  <OverlaysActorContext value={overlaysActorRef}>
+    <OverlaysSurface overlaysActorRef={overlaysActorRef} />
+  </OverlaysActorContext>
+)
 
-export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActorRef }) {
+const selectOverlays = selectOverlaysSnapshot(
+  s => {
+    return s.context.overlays.map((overlay) => {
+      switch (overlay.type) {
+        case 'relationshipsBrowser':
+          return s.children[overlay.id]
+            ? {
+              type: overlay.type,
+              actorRef: s.children[overlay.id]!,
+            }
+            : null
+        case 'relationshipDetails':
+          return s.children[overlay.id]
+            ? {
+              type: overlay.type,
+              actorRef: s.children[overlay.id]!,
+            }
+            : null
+        case 'elementDetails':
+          return s.children[overlay.id]
+            ? {
+              type: overlay.type,
+              actorRef: s.children[overlay.id]!,
+            }
+            : null
+        default:
+          nonexhaustive(overlay)
+      }
+    }).filter(isNonNullish)
+  },
+  (a, b) => !!a && !!b && a.length === b.length && a.every((overlay, i) => overlay.actorRef === b[i]!.actorRef),
+)
+
+function OverlaysSurface({ overlaysActorRef }: OverlaysProps) {
   const diagram = useDiagram()
 
-  const overlays = useSelector(overlaysActorRef, selectOverlays, compareSelectOverlays)
+  const overlays = useSelectOverlaysActor(selectOverlays)
   const isMotionReduced = useReducedMotionConfig() ?? false
 
   const isActiveOverlay = overlays.some((overlay) => overlay.type === 'elementDetails')
@@ -128,7 +135,7 @@ export function Overlays({ overlaysActorRef }: { overlaysActorRef: OverlaysActor
     <DiagramFeatures.Overlays>
       <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
         <LayoutGroup>
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence propagate mode="popLayout">
             {overlaysReact}
           </AnimatePresence>
         </LayoutGroup>

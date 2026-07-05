@@ -1,5 +1,4 @@
 import type { ProjectId } from '@likec4/core'
-import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { completable } from '@modelcontextprotocol/sdk/server/completable'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'

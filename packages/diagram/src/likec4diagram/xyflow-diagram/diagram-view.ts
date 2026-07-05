@@ -16,6 +16,7 @@ import {
   type WhereOperator,
   GroupElementKind,
   invariant,
+  isStepPath,
   nonNullable,
   Queue,
   whereOperatorAsPredicate,
@@ -80,7 +81,7 @@ function edgeAriaLabel(edge: DiagramEdge, source: DiagramNode, target: DiagramNo
  * @returns An object containing an array of XY flow nodes and an array of XY flow edges.
  */
 export function diagramToXY(opts: {
-  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type' | 'autoLayout'>
+  view: Pick<DiagramView, 'id' | 'nodes' | 'bounds' | 'edges' | '_type' | 'autoLayout'>
   currentViewId: ViewId | undefined
   where: WhereOperator | null
 }): {
@@ -95,7 +96,9 @@ export function diagramToXY(opts: {
     nodeLookup = new Map<Fqn, DiagramNode>()
 
   const viewLayoutDir = view.autoLayout?.direction ?? 'TB'
+  const isDynamic = view._type === 'dynamic'
 
+  //
   const deletable = view._type !== 'dynamic'
 
   type TraverseItem = {
@@ -172,22 +175,80 @@ export function diagramToXY(opts: {
       }),
     } satisfies Omit<Types.Node, 'data' | 'type'>
 
-    const compoundData = {
-      viewId: view.id,
-      id: node.id,
-      title: node.title,
-      color: node.color,
-      shape: node.shape,
-      style: node.style,
-      depth: node.depth ?? 0,
-      icon: node.icon ?? 'none',
-      tags: node.tags ?? null,
-      x: node.x,
-      y: node.y,
-      drifts: node.drifts ?? null,
-      notes: node.notes,
-      viewLayoutDir,
-    } satisfies Types.CompoundNodeData
+    const modelFqn = node.modelRef ?? null
+    const deploymentFqn = node.deploymentRef ?? null
+    const navigateTo = { navigateTo: node.navigateTo ?? null }
+
+    /**
+     * Compound nodes
+     */
+    if (isCompound) {
+      const compoundData = {
+        viewId: view.id,
+        id: node.id,
+        title: node.title,
+        color: node.color,
+        shape: node.shape,
+        style: node.style,
+        depth: node.depth ?? 0,
+        icon: node.icon ?? 'none',
+        tags: node.tags ?? null,
+        x: node.x,
+        y: node.y,
+        drifts: node.drifts ?? null,
+        notes: node.notes,
+        viewLayoutDir,
+      } satisfies Types.CompoundNodeData
+
+      switch (true) {
+        case node.kind === GroupElementKind: {
+          xynodes.push({
+            ...base,
+            type: 'view-group',
+            data: {
+              isViewGroup: true,
+              ...compoundData,
+            },
+          })
+          break
+        }
+        case !!deploymentFqn: {
+          xynodes.push(
+            {
+              ...base,
+              type: 'compound-deployment',
+              data: {
+                ...compoundData,
+                ...navigateTo,
+                deploymentFqn,
+                modelFqn,
+              },
+            } satisfies Types.CompoundDeploymentNode,
+          )
+          break
+        }
+        default: {
+          invariant(!!modelFqn, 'ModelRef expected')
+          xynodes.push(
+            {
+              ...base,
+              type: 'compound-element',
+              data: {
+                ...compoundData,
+                ...navigateTo,
+                modelFqn,
+              },
+            } satisfies Types.CompoundElementNode,
+          )
+        }
+      }
+      continue
+    }
+
+    if (!modelFqn && !deploymentFqn) {
+      console.error('Invalid node', node)
+      throw new Error('Element should have either modelRef or deploymentRef')
+    }
 
     const leafNodeData = {
       viewId: view.id,
@@ -211,58 +272,7 @@ export function diagramToXY(opts: {
       viewLayoutDir,
     } satisfies Types.LeafNodeData
 
-    if (node.kind === GroupElementKind) {
-      xynodes.push({
-        ...base,
-        type: 'view-group',
-        data: {
-          isViewGroup: true,
-          ...compoundData,
-        },
-      })
-      continue
-    }
-
-    const modelFqn = node.modelRef ?? null
-    const deploymentFqn = node.deploymentRef ?? null
-    if (!modelFqn && !deploymentFqn) {
-      console.error('Invalid node', node)
-      throw new Error('Element should have either modelRef or deploymentRef')
-    }
-
-    const navigateTo = { navigateTo: node.navigateTo ?? null }
-
     switch (true) {
-      case isCompound && !!deploymentFqn: {
-        xynodes.push(
-          {
-            ...base,
-            type: 'compound-deployment',
-            data: {
-              ...compoundData,
-              ...navigateTo,
-              deploymentFqn,
-              modelFqn,
-            },
-          } satisfies Types.CompoundDeploymentNode,
-        )
-        break
-      }
-      case isCompound: {
-        invariant(!!modelFqn, 'ModelRef expected')
-        xynodes.push(
-          {
-            ...base,
-            type: 'compound-element',
-            data: {
-              ...compoundData,
-              ...navigateTo,
-              modelFqn,
-            },
-          } satisfies Types.CompoundElementNode,
-        )
-        break
-      }
       case !!deploymentFqn: {
         xynodes.push(
           {
@@ -294,6 +304,8 @@ export function diagramToXY(opts: {
       }
     }
   }
+
+  let stepnum = 1
 
   for (const edge of view.edges) {
     const source = edge.source
@@ -332,6 +344,9 @@ export function diagramToXY(opts: {
         tail: edge.tail ?? 'none',
         astPath: edge.astPath,
         drifts: edge.drifts ?? null,
+        ...(isDynamic && isStepPath(edge.id) && {
+          stepnum: stepnum++,
+        }),
       },
       interactionWidth: 20,
     })

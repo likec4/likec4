@@ -85,6 +85,7 @@
         "**/__*/**"
       ],
       "rules": {
+        "vitest/expect-expect": "off",
         "import/consistent-type-specifier-style": "off",
         "typescript/no-unsafe-member-access": "off",
         "typescript/no-unnecessary-type-assertion": "off",

@@ -13,12 +13,14 @@ import {
 } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
-import { describe, it } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe } from 'vitest'
+import { createTestServices, test } from '../../test'
+
+const it = test
 
 describe('LikeC4ModelBuilder', () => {
-  it('builds model with colors and shapes', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with colors and shapes', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -83,8 +85,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(elements['system']).not.toHaveProperty('color')
   })
 
-  it('builds model with description, summary and technology', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with description, summary and technology', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -156,8 +158,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
-  it('builds model with tags', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with tags', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -201,8 +203,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.elements['system1']).not.to.have.property('tags')
   })
 
-  it('builds model with metadata', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with metadata', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -232,8 +234,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with group metadata key', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with group metadata key', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element system
@@ -277,8 +279,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.nodes.map(node => node.id)).toStrictEqual(['test'])
   })
 
-  it('builds model with array metadata using array syntax', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with array metadata using array syntax', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -308,8 +310,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with mixed array and single metadata values', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with mixed array and single metadata values', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -342,8 +344,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with mixed array and single of same name and merges metadata values', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with mixed array and single of same name and merges metadata values', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -376,8 +378,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with icon', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with icon', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { errors, warnings } = await validate(`
     specification {
       element component
@@ -441,8 +443,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with default values', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with default values', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { errors, warnings } = await validate(`
     specification {
       element component
@@ -513,8 +515,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.elements['component1']).not.to.have.property('links')
   })
 
-  it('builds model and give default name for index view', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model and give default name for index view', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element system
@@ -540,8 +542,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.edges).to.be.an('array').that.is.empty
   })
 
-  it('builds model with extend', async ({ expect }) => {
-    const { addDocument, validateAll, buildModel } = createTestServices()
+  it('builds model with extend', async ({ expect, t }) => {
+    const { addDocument, validateAll, buildModel } = t
     await addDocument(`
       specification {
         element component
@@ -615,9 +617,9 @@ describe('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
-  it('builds model and views with links', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
-    const { diagnostics, document } = await validate(`
+  it('builds model and views with links', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
     specification {
       element component
       tag v2
@@ -700,8 +702,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with relative links inside virtual workspace', async ({ expect }) => {
-    const { addDocument, validateAll, buildModel } = createTestServices({ workspace: 'vscode-vfs://host/virtual' })
+  it('builds model with relative links inside virtual workspace', async ({ expect, create }) => {
+    const { addDocument, validateAll, buildModel } = create({ workspace: 'vscode-vfs://host/virtual' })
     // vscode-vfs://host/virtual/src/index.c4
     await addDocument(
       `
@@ -781,8 +783,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('build model and views have correct relative paths', async ({ expect }) => {
-    const { addDocument, validateAll, buildModel } = createTestServices({ workspace: 'vscode-vfs://host/virtual' })
+  it('build model and views have correct relative paths', async ({ expect, create }) => {
+    const { addDocument, validateAll, buildModel } = create({ workspace: 'vscode-vfs://host/virtual' })
     // vscode-vfs://host/virtual/src/index.c4
     await addDocument(
       `
@@ -883,8 +885,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with relationship spec and tag', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with relationship spec and tag', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element person
@@ -914,8 +916,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
-  it('builds model with relationship spec with technology', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with relationship spec with technology', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element person
@@ -946,8 +948,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
-  it('builds model with relationship spec with title, description and link', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with relationship spec with title, description and link', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element person
@@ -981,8 +983,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('relationship own properties override specification defaults', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('relationship own properties override specification defaults', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element person
@@ -1010,8 +1012,8 @@ describe('LikeC4ModelBuilder', () => {
   })
 
   // Deployment relations inherit spec title automatically (parser omits unset title)
-  it('builds deployment relationship inheriting title from specification', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds deployment relationship inheriting title from specification', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -1042,8 +1044,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with styled relationship', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with styled relationship', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element person
@@ -1083,8 +1085,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
-  it('builds model with relationship with properties', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds model with relationship with properties', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element person
@@ -1125,8 +1127,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model and view with customized element', async ({ expect }) => {
-    const { validate, buildModel, services } = createTestServices()
+  it('builds model and view with customized element', async ({ expect, t }) => {
+    const { validate, buildModel, services } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -1187,8 +1189,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model and dynamic view with notes', async ({ expect }) => {
-    const { validate, buildModel, services } = createTestServices()
+  it('builds model and dynamic view with notes', async ({ expect, t }) => {
+    const { validate, buildModel, services } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -1265,8 +1267,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds relations with metadata', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds relations with metadata', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -1302,8 +1304,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds relations with array metadata', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds relations with array metadata', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -1341,8 +1343,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds relations with title, description and technology', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds relations with title, description and technology', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -1416,8 +1418,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(relations[2]).not.toHaveProperty('technology')
   })
 
-  it('builds elements with custom size', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds elements with custom size', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     await validate(`
     specification {
       element component
@@ -1481,8 +1483,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('includes both sides of inout relation', async ({ expect }) => {
-    const { validate, services } = createTestServices()
+  it('includes both sides of inout relation', async ({ expect, t }) => {
+    const { validate, services } = t
     const { errors, warnings } = await validate(`
       specification {
           element sys
@@ -1521,8 +1523,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.edges.map(x => [x.id, x.color])).toStrictEqual([['sys1:sys2', 'red'], ['sys2:sys3', 'green']])
   })
 
-  it('assigns tag colors', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('assigns tag colors', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { errors, warnings } = await validate(`
       specification {
         element system
@@ -1559,8 +1561,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('outputs metadata keys from elements and relations', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('outputs metadata keys from elements and relations', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     await validate(`
     specification {
       deploymentNode node
@@ -1610,8 +1612,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds relationship spec with multiple', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('builds relationship spec with multiple', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     const { diagnostics } = await validate(`
     specification {
       element system
@@ -1636,8 +1638,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('parses include with multiple true', async ({ expect }) => {
-    const { parse, services } = await createTestServices()
+  it('parses include with multiple true', async ({ expect, t }) => {
+    const { parse, services } = t
     const langiumDocument = await parse(`
       specification {
         element e
@@ -1667,8 +1669,8 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('parses include with multiple false', async ({ expect }) => {
-    const { parse, services } = await createTestServices()
+  it('parses include with multiple false', async ({ expect, t }) => {
+    const { parse, services } = t
     const langiumDocument = await parse(`
       specification {
         element e

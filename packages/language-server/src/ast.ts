@@ -168,7 +168,7 @@ export interface ParsedAstDynamicView {
   description: c4.MarkdownOrString | null
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
-  steps: c4.DynamicViewStep[]
+  steps: c4.Step.Any[]
   rules: Array<c4.DynamicViewRule>
   variant: c4.DynamicViewDisplayVariant | undefined
 }

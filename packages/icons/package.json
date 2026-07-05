@@ -74,8 +74,7 @@
     "generate": "pnpm node scripts/generate.mjs",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
-    "postpack": "cp likec4-icons-$npm_package_version.tgz package.tgz || true",
-    "lint:package": "pnpx publint ./package.tgz"
+    "postpack": "likec4ops postpack"
   },
   "peerDependencies": {
     "react": "^18.x || ^19.x",
@@ -91,7 +90,6 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "typescript": "catalog:",
-    "wireit": "catalog:",
     "zx": "catalog:"
   }
 }

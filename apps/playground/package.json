@@ -73,6 +73,7 @@
     "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@likec4/style-preset": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",

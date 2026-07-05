@@ -1,4 +1,6 @@
-import { type TestContext, describe, it } from 'vitest'
+// oxlint-disable vitest/expect-expect
+import { describe, test } from 'vitest'
+import type { URI } from 'vscode-uri'
 import { createTestServices } from '../test'
 
 const model = `
@@ -36,59 +38,92 @@ const model = `
   }
 `
 
-async function mkTestServices({ expect }: TestContext) {
-  expect.hasAssertions()
-  const { validate } = createTestServices()
-  await validate(model, 'model.c4')
-
-  const validateView = (view: string) =>
-    validate(`
-      views {
-        ${view}
-      }
-    `)
-
-  const validateRules = (rules: string) =>
-    validateView(`
-      view {
-        ${rules}
-      }
-    `)
-
-  return {
-    view: {
-      valid: async (view: string) => {
-        const { errors, warnings } = await validateView(view)
-        expect(errors.concat(warnings).join('\n')).toEqual('')
-      },
-      invalid: async (view: string) => {
-        const { errors } = await validateView(view)
-        expect(errors).not.toEqual([])
-      },
-    },
-    valid: async (rules: string) => {
-      const { errors, warnings } = await validateRules(rules)
-      expect(errors.join('\n'), 'errors').to.be.empty
-      expect(warnings.join('\n'), 'warnings').to.be.empty
-    },
-    onlyWarnings: async (rules: string) => {
-      const { errors, warnings } = await validateRules(rules)
-      expect(errors.join('\n'), 'errors').to.be.empty
-      expect(warnings.join('\n'), 'warnings').not.to.be.empty
-    },
-    invalid: async (rules: string) => {
-      const { errors, warnings } = await validateRules(rules)
-      expect(errors.join('\n'), 'errors').not.to.be.empty
-      expect(warnings.join('\n'), 'warnings').to.be.empty
-    },
+const it = test.extend<{
+  $file: {
+    t: ReturnType<typeof createTestServices>
   }
-}
+  $test: {
+    valid: (rules: string) => Promise<void>
+    onlyWarnings: (rules: string) => Promise<void>
+    invalid: (rules: string) => Promise<void>
+    view: {
+      valid: (view: string) => Promise<void>
+      invalid: (view: string) => Promise<void>
+    }
+  }
+}>({
+  t: [async ({}, use) => {
+    using t = createTestServices()
+    await t.validate(model, 'model.c4')
+    await use(t)
+  }, { scope: 'file' }],
+  view: async ({ t, task }, use) => {
+    const cleanup = [] as Array<URI>
+    await use({
+      async valid(view) {
+        const { errors, warnings, document } = await t.validate(`
+          views {
+            ${view}
+          }
+        `)
+        cleanup.push(document.uri)
+        task.context.expect(errors.join('\n'), 'errors').to.be.empty
+        task.context.expect(warnings.join('\n'), 'warnings').to.be.empty
+      },
+      async invalid(view) {
+        const { errors, document } = await t.validate(`
+          views {
+            ${view}
+          }
+        `)
+        cleanup.push(document.uri)
+        task.context.expect(errors, 'errors').not.to.be.empty
+      },
+    })
+    if (cleanup.length > 0) {
+      await t.services.shared.workspace.DocumentBuilder.update([], cleanup)
+    }
+  },
+  valid: async ({ view }, use) => {
+    await use(async (rules) => {
+      await view.valid(`
+        view {
+          ${rules}
+        }
+      `)
+    })
+  },
+  invalid: async ({ view }, use) => {
+    await use(async (rules) => {
+      await view.invalid(`
+        view {
+          ${rules}
+        }
+      `)
+    })
+  },
+  onlyWarnings: async ({ t, task }, use) => {
+    const cleanup = [] as Array<URI>
+    await use(async (rules) => {
+      const { errors, warnings, document } = await t.validate(`
+        views {
+          view {
+            ${rules}
+          }
+        }
+      `)
+      cleanup.push(document.uri)
+      task.context.expect(errors.join('\n'), 'errors').to.be.empty
+      task.context.expect(warnings.join('\n'), 'warnings').not.to.be.empty
+    })
+    if (cleanup.length > 0) {
+      await t.services.shared.workspace.DocumentBuilder.update([], cleanup)
+    }
+  },
+})
 
 describe('views2', () => {
-  it('valid views', async ctx => {
-    const {
-      view: { valid, invalid },
-    } = await mkTestServices(ctx)
+  it('valid views', async ({ view: { valid, invalid } }) => {
     await valid(`
       view index {
       }
@@ -107,10 +142,7 @@ describe('views2', () => {
     `)
   })
 
-  it('view scope', async ctx => {
-    const {
-      view: { valid, invalid },
-    } = await mkTestServices(ctx)
+  it('view scope', async ({ view: { valid, invalid } }) => {
     // inambiqutes "of"
     await invalid(`
       view of system {
@@ -130,10 +162,7 @@ describe('views2', () => {
     `)
   })
 
-  it('view properties', async ctx => {
-    const {
-      view: { valid },
-    } = await mkTestServices(ctx)
+  it('view properties', async ({ view: { valid } }) => {
     await valid(`
       view {
         title 'Index'
@@ -154,10 +183,7 @@ describe('views2', () => {
     `)
   })
 
-  it('autoLayout and rules order', async ctx => {
-    const {
-      view: { valid },
-    } = await mkTestServices(ctx)
+  it('autoLayout and rules order', async ({ view: { valid } }) => {
     await valid(`
       view {
         include *
@@ -175,8 +201,7 @@ describe('views2', () => {
   })
 
   describe('include', () => {
-    it('element', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+    it('element', async ({ valid, invalid }) => {
       await valid(`
         include *
       `)
@@ -219,8 +244,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element._', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+    it('element._', async ({ valid, invalid }) => {
       await valid(`
         include system._
         include
@@ -244,8 +268,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element with { }', async ctx => {
-      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
+    it('element with { }', async ({ valid, invalid, onlyWarnings }) => {
       await invalid(`
         exclude system.backend.api with { }
       `)
@@ -273,8 +296,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element {... props}', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+    it('element {... props}', async ({ valid, invalid }) => {
       await invalid(`
         include system.backend with  {
           title
@@ -308,15 +330,14 @@ describe('views2', () => {
       `)
     })
 
-    it('element [navigateTo]', async ctx => {
-      const { view } = await mkTestServices(ctx)
+    it('element [navigateTo]', async ({ view }) => {
       await view.valid(`
-        view index {
+        view someview {
           include *
         }
-        view index2 {
+        view someview2 {
           include system.backend.api with {
-            navigateTo index
+            navigateTo someview
           }
         }
       `)
@@ -337,8 +358,7 @@ describe('views2', () => {
       `)
     })
 
-    it('-> element', async ctx => {
-      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
+    it('-> element', async ({ valid, onlyWarnings }) => {
       await onlyWarnings(`
         include -> *
       `)
@@ -360,8 +380,7 @@ describe('views2', () => {
       `)
     })
 
-    it('-> element ->', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+    it('-> element ->', async ({ valid, invalid }) => {
       await valid(`
         include -> * ->
       `)
@@ -388,9 +407,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element -> element', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
-
+    it('element -> element', async ({ valid, invalid }) => {
       await valid(`
         include * -> *
       `)
@@ -426,9 +443,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element -> element with { ... }', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
-
+    it('element -> element with { ... }', async ({ valid, invalid }) => {
       await valid(`
         include * -> * with {
           title 'aa'
@@ -478,9 +493,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element <-> element', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
-
+    it('element <-> element', async ({ valid, invalid }) => {
       await valid(`
         include * <-> *
       `)
@@ -516,9 +529,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element ->', async ctx => {
-      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
-
+    it('element ->', async ({ valid, invalid, onlyWarnings }) => {
       await onlyWarnings(`
         include * ->,
       `)
@@ -545,9 +556,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element.kind', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
-
+    it('element.kind', async ({ valid, invalid }) => {
       await valid(`
         include element.kind = component
       `)
@@ -583,9 +592,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element where metadata', async ctx => {
-      const { valid } = await mkTestServices(ctx)
-
+    it('element where metadata', async ({ valid }) => {
       await valid(`
         include * where metadata.env is "production"
       `)
@@ -620,9 +627,7 @@ describe('views2', () => {
       `)
     })
 
-    it('relation where metadata', async ctx => {
-      const { valid } = await mkTestServices(ctx)
-
+    it('relation where metadata', async ({ valid }) => {
       await valid(`
         include * -> * where metadata.protocol is "grpc"
       `)
@@ -642,9 +647,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element.tag', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
-
+    it('element.tag', async ({ valid, invalid }) => {
       await valid(`
         include element.tag = #next
       `)
@@ -682,8 +685,7 @@ describe('views2', () => {
   })
 
   describe('style', () => {
-    it('element', async ctx => {
-      const { valid } = await mkTestServices(ctx)
+    it('element', async ({ valid }) => {
       await valid(`
         style * {
           color secondary
@@ -704,8 +706,7 @@ describe('views2', () => {
       `)
     })
 
-    it('element.kind/tag', async ctx => {
-      const { valid } = await mkTestServices(ctx)
+    it('element.kind/tag', async ({ valid }) => {
       await valid(`
         style element.kind == component {
           color secondary
@@ -718,8 +719,7 @@ describe('views2', () => {
       `)
     })
 
-    it('with notation', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+    it('with notation', async ({ valid, invalid }) => {
       await invalid(`
         style * {
           notation
@@ -736,8 +736,7 @@ describe('views2', () => {
   })
 
   describe('groups', () => {
-    it('parse group', async ctx => {
-      const { valid } = await mkTestServices(ctx)
+    it('parse group', async ({ valid }) => {
       await valid(`
         include *
         group {
@@ -759,8 +758,7 @@ describe('views2', () => {
       `)
     })
 
-    it('parse nested groups', async ctx => {
-      const { valid } = await mkTestServices(ctx)
+    it('parse nested groups', async ({ valid }) => {
       await valid(`
         group {
           color red

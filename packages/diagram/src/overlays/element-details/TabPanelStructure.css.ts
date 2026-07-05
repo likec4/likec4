@@ -15,10 +15,10 @@ export const elementLabel = css({
   py: 'xs',
   alignItems: 'center',
   cursor: 'pointer',
-  color: 'mantine.colors.gray[7]',
+  color: 'mantine.gray[7]',
 
   _dark: {
-    color: 'mantine.colors.dark[1]',
+    color: 'mantine.dark[1]',
   },
   '& > *': {
     transition: 'fast',

@@ -6,7 +6,7 @@ packages:
   - "!packages/create-likec4"
 
 allowBuilds:
-  '@google/genai': true
+  '@google/genai': false
   '@openrouter/sdk': false
   '@tailwindcss/oxide': true
   dprint: true
@@ -47,14 +47,14 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  memfs: ^4.57.3
+  memfs: ^4.57.8
   nano-staged: ^1.0.2
-  oxlint: 1.68.0
-  oxlint-tsgolint: 0.23.0
+  oxlint: 1.72.0
+  oxlint-tsgolint: 0.24.0
   pako: ^2.1.0
   playwright: 1.60.0
-  tsx: 4.22.4
-  turbo: 2.9.16
+  tsx: 4.22.5
+  turbo: 2.9.18
   typescript: 6.0.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -77,36 +77,37 @@ catalogs:
     ws: ^8.21.0
   astro:
     "@astrojs/check": 0.9.9
-    "@astrojs/react": 5.0.7
-    "@astrojs/starlight": 0.39.3
+    "@astrojs/react": 6.0.1
+    "@astrojs/starlight": 0.41.2
     "@astrojs/starlight-tailwind": 5.0.0
-    "@expressive-code/plugin-collapsible-sections": 0.42.0
-    "@expressive-code/plugin-line-numbers": 0.42.0
-    astro: 6.4.3
-    astro-og-canvas: 0.11.1
+    "@expressive-code/plugin-collapsible-sections": 0.44.0
+    "@expressive-code/plugin-line-numbers": 0.44.0
+    astro: 7.0.6
+    astro-og-canvas: 0.13.0
     astro-skills: 0.1.0
     shiki: 4.1.0
-    starlight-heading-badges: 0.7.0
-    starlight-image-zoom: 0.14.2
-    starlight-links-validator: 0.24.0
+    starlight-heading-badges: 0.8.0
+    starlight-image-zoom: 0.15.0
+    starlight-links-validator: 0.25.2
     starlight-package-managers: 0.12.0
   cloudflare:
     "@cloudflare/vite-plugin": ~1.39.0
     wrangler: ~4.95.0
   css:
-    "@pandacss/dev": ^1.11.1
-    "@pandacss/preset-panda": ^1.11.1
-    "@pandacss/types": ^1.11.1
-    "@tailwindcss/vite": ^4.1.18
+    "@pandacss/dev": ^1.11.4
+    "@pandacss/preset-panda": ^1.11.4
+    "@radix-ui/colors": ^3.0.0
+    "@pandacss/types": ^1.11.4
+    "@tailwindcss/vite": ^4.3.2
     postcss: 8.5.15
-    tailwindcss: ^4.1.18
+    tailwindcss: ^4.3.2
   esbuild:
-    esbuild: 0.28.0
-    esbuild-node-externals: 1.22.0
-    esbuild-plugins-node-modules-polyfill: 1.8.1
-    esbuild-wasm: 0.28.0
+    esbuild: 0.28.1
+    esbuild-node-externals: 1.23.1
+    esbuild-plugins-node-modules-polyfill: 1.8.2
+    esbuild-wasm: 0.28.1
   esbuild-wasm:
-    esbuild: npm:esbuild-wasm@0.28.0
+    esbuild: npm:esbuild-wasm@0.28.1
   externals:
     "@hpcc-js/wasm-graphviz": 1.22.2
     "@types/picomatch": ^4.0.3
@@ -114,27 +115,27 @@ catalogs:
     chokidar: ^5.0.0
     fdir: 6.4.0
     nano-spawn: ^2.1.0
-    picomatch: ^4.0.4
+    picomatch: ^4.0.5
     std-env: ^4.1.0
     type-fest: ^4.41.0
     zod: ^4.4.3
   hono:
     "@hono/mcp": ^0.3.0
-    "@hono/node-server": ^1.19.14
+    "@hono/node-server": ^2.0.8
     "@hono/oauth-providers": ^0.8.5
     "@hono/zod-validator": ^0.8.0
-    hono: ^4.12.14
+    hono: ^4.12.27
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 9.2.2
-    "@mantine/core": 9.2.2
-    "@mantine/hooks": 9.2.2
-    "@mantine/modals": 9.2.2
-    "@mantine/notifications": 9.2.2
-    "@mantine/vanilla-extract": 9.2.2
+    "@mantine/colors-generator": 9.4.1
+    "@mantine/core": 9.4.1
+    "@mantine/hooks": 9.4.1
+    "@mantine/modals": 9.4.1
+    "@mantine/notifications": 9.4.1
+    "@mantine/vanilla-extract": 9.4.1
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
   obuild:
@@ -146,12 +147,12 @@ catalogs:
     "@nanostores/react": 1.1.0
     "@react-hookz/web": ^25.2.0
     "@tabler/icons-react": 3.44.0
-    "@types/react": 19.2.16
+    "@types/react": 19.2.17
     "@types/react-dom": 19.2.3
     "@babel/core": ^7.29.7
     babel-plugin-react-compiler: ^1.0.0
     clsx: ^2.1.1
-    motion: ^12.36.0
+    motion: ^12.42.2
     nanostores: 1.3.0
     react: 19.2.7
     react-dom: 19.2.7
@@ -167,15 +168,15 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
-    tsdown: ^0.22.1
-    "@tsdown/css": ^0.22.1
-    rolldown: ^1.0.3
+    tsdown: ^0.22.3
+    "@tsdown/css": ^0.22.3
+    rolldown: ^1.1.4
   utils:
     "@logtape/logtape": ^2.1.1
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001793
+    caniuse-lite: ^1.0.30001800
     chroma-js: 3.2.0
     citty: ^0.2.2
     consola: ^3.4.2
@@ -183,7 +184,7 @@ catalogs:
     defu: ^6.1.7
     esm-env: ^1.2.2
     fast-equals: ^6.0.0
-    immer: ^11.1.8
+    immer: ^11.1.9
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
@@ -209,16 +210,16 @@ catalogs:
     unstorage: ^1.17.5
   vite:
     "@rolldown/plugin-babel": ^0.2.3
-    "@vitejs/plugin-react": ^6.0.2
+    "@vitejs/plugin-react": ^6.0.3
     birpc: ^4.0.0
-    rollup: ^4.60.4
-    vite: ^8.0.14
-    vite-plugin-dts: ^5.0.2
-    vite-plugin-node-polyfills: ^0.26.0
+    rollup: ^4.62.2
+    vite: ^8.1.3
+    vite-plugin-dts: ^5.0.3
+    vite-plugin-node-polyfills: ^0.28.0
     vite-tsconfig-paths: ^6.1.1
   vitest:
-    "@vitest/ui": 4.1.8
-    vitest: 4.1.8
+    "@vitest/ui": 4.1.9
+    vitest: 4.1.9
   vscode:
     "@types/vscode": ^1.115.0
     vscode: npm:@types/vscode@1.115.0
@@ -233,17 +234,26 @@ catalogs:
     vscode-uri: 3.1.0
   xstate:
     "@xstate/react": 6.1.0
-    "@xstate/store": 3.17.5
-    xstate: 5.32.0
+    "@xstate/store": 4.2.1
+    "@xstate/store-react": 2.0.0
+    xstate: 5.32.4
   xyflow:
     "@xyflow/react": 12.11.0
     "@xyflow/system": 0.0.77
-  zag:
-    "@zag-js/collection": ^1.33.1
-    "@zag-js/react": ^1.33.1
-    "@zag-js/tree-view": ^1.33.1
 
 minimumReleaseAgeExclude:
-  - '@astrojs/react@5.0.7'
+  - '@astrojs/react@5.0.7 || 6.0.1'
   - '@astrojs/starlight@0.39.3'
-  - astro@6.4.3
+  - astro@6.4.3 || 7.0.6
+  - '@mantine/colors-generator@9.4.0'
+  - '@mantine/core@9.4.0'
+  - '@mantine/hooks@9.4.0'
+  - '@mantine/modals@9.4.0'
+  - '@mantine/notifications@9.4.0'
+  - '@mantine/store@9.4.0'
+  - '@mantine/vanilla-extract@9.4.0'
+  - '@hono/node-server@2.0.6 || 2.0.8'
+  - tsx@4.22.5
+  - '@astrojs/internal-helpers@0.10.1'
+  - '@astrojs/markdown-satteri@0.3.3'
+  - picomatch@4.0.5

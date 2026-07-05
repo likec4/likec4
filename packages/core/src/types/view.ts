@@ -1,4 +1,5 @@
 import { isTruthy } from 'remeda'
+import type { IsAny, IsNever, Or } from 'type-fest'
 import type * as aux from './_aux'
 import type { Any } from './_aux'
 import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
@@ -42,6 +43,10 @@ export type ProcessedView<A extends Any = Any> =
   | ComputedView<A>
   | LayoutedView<A>
 
+export type ProcessedDynamicView<A extends Any = Any> =
+  | ComputedDynamicView<A>
+  | LayoutedDynamicView<A>
+
 /**
  * @alias DiagramView
  */
@@ -58,7 +63,15 @@ export type AnyView<A extends Any = Any> =
   | LayoutedDynamicView<A>
 
 export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
-export type ViewWithType<V extends AnyView<Any>, T extends ViewType> = Extract<V, { [_type]: T }>
+export type ViewWithType<V extends AnyView<any>, T extends ViewType> = Extract<V, { [_type]: T }>
+
+export type InferViewAux<V> =
+  // dprint-ignore
+  V extends AnyView<infer A extends Any>
+    ? Or<IsAny<A>, IsNever<A>> extends true
+      ? never
+      : A
+  : never
 
 export type ViewRule<A extends Any = Any> = ParsedView<A>['rules'][number]
 export type ViewRulePredicate<A extends Any = Any> = Extract<

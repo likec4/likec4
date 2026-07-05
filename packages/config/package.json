@@ -69,6 +69,9 @@
     "@likec4/log": "workspace:*",
     "json5": "catalog:utils",
     "zod": "catalog:externals",
+    "remeda": "catalog:utils",
+    "defu": "catalog:utils",
+    "ufo": "catalog:utils",
     "type-fest": "catalog:externals"
   },
   "peerDependencies": {
@@ -87,9 +90,6 @@
     "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
-    "remeda": "catalog:utils",
-    "defu": "catalog:utils",
-    "ufo": "catalog:utils",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

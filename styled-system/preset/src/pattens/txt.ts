@@ -22,8 +22,8 @@ export const txt = definePattern({
       value: 'lineHeights',
     },
     size: {
-      type: 'enum',
-      value: ['xxs', 'xs', 'sm', 'md', 'lg', 'xl'],
+      type: 'token',
+      value: 'fontSizes',
     },
     likec4color: {
       type: 'enum',
@@ -41,14 +41,21 @@ export const txt = definePattern({
     if (dimmed && likec4color) {
       throw new Error('dimmed and likec4color are mutually exclusive')
     }
+    const hasNoTextStyle = rest['textStyle'] == null
     return {
-      userSelect: 'all',
       cursor: 'default',
-      textStyle: dimmed ? `dimmed.${size}` : size,
       ...(inline && { display: 'inline-block' }),
-      ...(lh && { lineHeight: lh }),
       ...(likec4color && { 'data-likec4-color': likec4color }),
       ...(noUserSelect && { userSelect: 'none' }),
+      ...(lh && { lineHeight: lh }),
+      ...(hasNoTextStyle ?
+        {
+          textStyle: dimmed ? `dimmed.${size}` : size,
+        } :
+        {
+          fontSize: size,
+          color: dimmed ? 'text.dimmed' : 'text',
+        }),
       ...rest,
     }
   },

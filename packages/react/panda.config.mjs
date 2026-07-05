@@ -2,10 +2,11 @@ import { defineConfig } from '@likec4/styles/dev'
 
 export default defineConfig({
   include: [
-    './src/*.ts',
+    'src/*.ts',
     '../diagram/src/**/*.{ts,tsx}',
+    '../likec4-spa/src/**/*.{ts,tsx}',
   ],
   clean: true,
-  outdir: './styled-system',
-  cssVarRoot: ':where(:host,.likec4-shadow-root)',
+  outdir: 'styled-system',
+  // cssVarRoot: ':where(:host,.likec4-shadow-root)',
 })

@@ -242,7 +242,7 @@ describe('LikeC4Model', () => {
     ])
   })
 
-  it('should not include views if built from parsed data ', ({ expect }) => {
+  it('should not include views if built from parsed data', ({ expect }) => {
     const m = LikeC4Model.create(parsed)
     expect([...m.views()].map(prop('id'))).toEqual([])
 

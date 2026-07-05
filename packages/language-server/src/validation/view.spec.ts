@@ -1,9 +1,8 @@
-import { describe, it } from 'vitest'
-import { createMultiProjectTestServices, createTestServices } from '../test'
+import { describe } from 'vitest'
+import { createMultiProjectTestServices, testFileScope as it } from '../test'
 
 describe('viewChecks', () => {
-  it('should report duplicate view names', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report duplicate view names', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       views {
         view v1 {
@@ -19,8 +18,7 @@ describe('viewChecks', () => {
     }
   })
 
-  it('should report duplicate view names for dynamic', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report duplicate view names for dynamic', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       views {
         dynamic view v2 {
@@ -82,8 +80,7 @@ describe('viewChecks', () => {
     expect(warnings).toHaveLength(0)
   })
 
-  it('should report duplicate view names between dynamic and element', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report duplicate view names between dynamic and element', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       views {
         dynamic view v3 {

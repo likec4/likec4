@@ -1,12 +1,9 @@
-import type {
-  ActorSystem,
-} from 'xstate'
-import type { EditorActorRef } from '../../editor/actor/machine'
+import type { ActorSystem } from 'xstate'
+import type { BaseEditorActorRef } from '../../editor/actor/setup'
+import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
-import type {
-  DiagramMachineRef,
-} from './machine'
+import type { DiagramMachineRef } from './machine'
 
 export type NodeWithData = { id: string; data: Record<string, unknown> }
 
@@ -15,7 +12,8 @@ export type System = ActorSystem<{
     diagram: DiagramMachineRef
     overlays: OverlaysActorRef
     search: SearchActorRef
-    editor: EditorActorRef
+    editor: BaseEditorActorRef
+    navigationPanel: NavigationPanelActorRef
   }
 }>
 

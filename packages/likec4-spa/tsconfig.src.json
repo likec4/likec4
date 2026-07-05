@@ -38,9 +38,6 @@
     },
     {
       "path": "../diagram/tsconfig.src.json"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

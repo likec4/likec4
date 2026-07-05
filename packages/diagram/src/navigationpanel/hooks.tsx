@@ -1,41 +1,15 @@
 import type { ViewId } from '@likec4/core'
-import { useSelector as useXstateSelector } from '@xstate/react'
-import { shallowEqual } from 'fast-equals'
-import { createContext, useContext, useMemo } from 'react'
-import type {
-  NavigationPanelActorContext,
-  NavigationPanelActorEvent,
-  NavigationPanelActorRef,
-  NavigationPanelActorSnapshot,
-} from './actor'
+import { useMemo } from 'react'
+import { createSafeContextForActor } from '../hooks/safeContext'
+import type { NavigationPanelActorEvent, NavigationPanelActorRef } from './actor'
 
-const NavigationPanelActorSafeContext = createContext<NavigationPanelActorRef>(null as any)
-NavigationPanelActorSafeContext.displayName = 'NavigationPanelActorSafeContext'
-
-export const NavigationPanelActorContextProvider = NavigationPanelActorSafeContext.Provider
-
-export const useNavigationActorRef = (): NavigationPanelActorRef => {
-  const ctx = useContext(NavigationPanelActorSafeContext)
-  if (ctx === null) {
-    throw new Error('NavigationPanelActorRef is not found in the context')
-  }
-  return ctx
-}
-
-export function useNavigationActorSnapshot<T = unknown>(
-  selector: (context: NavigationPanelActorSnapshot) => T,
-  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-): T {
-  const actorRef = useNavigationActorRef()
-  return useXstateSelector(actorRef, selector, compare)
-}
-
-export function useNavigationActorContext<T = unknown>(
-  selector: (context: NavigationPanelActorContext) => T,
-  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-): T {
-  return useNavigationActorSnapshot(snapshot => selector(snapshot.context), compare)
-}
+export const {
+  ContextProvider: NavigationPanelActorContextProvider,
+  selectContext: selectNavigationContext,
+  selectSnapshot: selectNavigationSnapshot,
+  useActorRef: useNavigationActorRef,
+  useActorSelector: useNavigationActorSelector,
+} = createSafeContextForActor<NavigationPanelActorRef>('NavigationPanel')
 
 export interface NavigationActor {
   readonly actorRef: NavigationPanelActorRef

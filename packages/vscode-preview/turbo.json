@@ -6,9 +6,9 @@
   "tasks": {
     "build": {
       "dependsOn": [
+        "^sources",
         "@likec4/core#build",
-        "@likec4/style-preset#build",
-        "@likec4/styles#build"
+        "@likec4/styles#generate"
       ],
       "outputs": [
         "dist/**",

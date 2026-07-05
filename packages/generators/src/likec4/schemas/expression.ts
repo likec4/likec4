@@ -1,17 +1,60 @@
+import type { scalar } from '@likec4/core'
 import * as z from 'zod/v4'
 import * as common from './common'
 
-export const refModel = z.strictObject({
+export interface ZRefModel extends
+  z.ZodType<{
+    model: scalar.Fqn
+    project?: string | undefined
+    deployment?: never
+  }, {
+    model: string
+    project?: string | undefined
+  }> {}
+export const refModel: ZRefModel = z.strictObject({
   model: common.fqn,
   project: z.string().optional(),
 })
 
-export const refDeployment = z.strictObject({
+export interface ZRefDeployment extends
+  z.ZodType<{
+    deployment: scalar.Fqn
+    element?: scalar.Fqn | undefined | null
+    model?: never
+  }, {
+    deployment: string
+    element?: string | undefined | null
+  }> {}
+export const refDeployment: ZRefDeployment = z.strictObject({
   deployment: common.fqn,
   element: common.fqn.nullish(),
 })
 
-export const fqnRef = z.union([
+export namespace ZFqnRef {
+  export type In =
+    | {
+      model: string
+      project?: string | undefined
+    }
+    | {
+      deployment: string
+      element?: string | undefined | null
+    }
+  export type Out =
+    | {
+      model: scalar.Fqn
+      project?: string | undefined
+      deployment?: never
+    }
+    | {
+      model?: never
+      deployment: scalar.Fqn
+      element?: scalar.Fqn | undefined | null
+    }
+}
+
+export interface ZFqnRef extends z.ZodType<ZFqnRef.Out, ZFqnRef.In> {}
+export const fqnRef: ZFqnRef = z.union([
   refModel,
   refDeployment,
 ])
@@ -31,6 +74,7 @@ function equalOp<T extends z.ZodType>(schema: T) {
 }
 
 export const whereTag = z.object({ tag: equalOp(common.tag) })
+
 export const whereKind = z.object({ kind: equalOp(common.kind) })
 export const whereMetadata = z.object({
   metadata: z.object({
@@ -39,34 +83,63 @@ export const whereMetadata = z.object({
   }),
 })
 
+const whereTagKindMetadata = z.union([
+  whereTag,
+  whereKind,
+  whereMetadata,
+])
+namespace ZWhereTagKindMetadata {
+  export type In = z.input<typeof whereTagKindMetadata>
+  export type Out = z.output<typeof whereTagKindMetadata>
+}
+
 export const whereParticipant = z.object({
   participant: z.literal(['source', 'target']),
-  operator: z.union([
-    whereTag,
-    whereKind,
-    whereMetadata,
-  ]),
+  operator: whereTagKindMetadata,
 })
 
+namespace ZWhereParticipant {
+  export type In = z.input<typeof whereParticipant>
+  export type Out = z.output<typeof whereParticipant>
+}
+
 export const whereAnd = z.object({
-  get and(): z.ZodArray<typeof whereOperator> {
+  get and(): z.ZodArray<ZWhereOperator> {
     return z.array(whereOperator)
   },
 })
 
 export const whereNot = z.object({
-  get not() {
+  get not(): ZWhereOperator {
     return whereOperator
   },
 })
 
 export const whereOr = z.object({
-  get or(): z.ZodArray<typeof whereOperator> {
+  get or(): z.ZodArray<ZWhereOperator> {
     return z.array(whereOperator)
   },
 })
 
-export const whereOperator = z.union([
+/**
+ * @internal reduce type inference
+ */
+export namespace ZWhereOperator {
+  export type In =
+    | ZWhereTagKindMetadata.In
+    | ZWhereParticipant.In
+    | { and: ZWhereOperator.In[] }
+    | { or: ZWhereOperator.In[] }
+    | { not: ZWhereOperator.In }
+  export type Out =
+    | ZWhereTagKindMetadata.Out
+    | ZWhereParticipant.Out
+    | { and: ZWhereOperator.Out[] }
+    | { or: ZWhereOperator.Out[] }
+    | { not: ZWhereOperator.Out }
+}
+export interface ZWhereOperator extends z.ZodType<ZWhereOperator.Out, ZWhereOperator.In> {}
+export const whereOperator: ZWhereOperator = z.union([
   whereTag,
   whereKind,
   whereMetadata,

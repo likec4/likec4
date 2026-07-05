@@ -6,12 +6,12 @@ export const input = css({
   background: {
     base: 'transparent',
     _focusWithin: {
-      base: `mantine.colors.gray[4]/55 !important`,
-      _dark: `mantine.colors.dark[5]/55 !important`,
+      base: `mantine.gray[4]/55 !important`,
+      _dark: `mantine.dark[5]/55 !important`,
     },
     _groupHover: {
-      base: 'mantine.colors.gray[3]/35',
-      _dark: 'mantine.colors.dark[5]/35',
+      base: 'mantine.gray[3]/35',
+      _dark: 'mantine.dark[5]/35',
     },
   },
 })

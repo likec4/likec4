@@ -6,7 +6,7 @@ import { type DiagramEdge, type DiagramNode, type DiagramView, GroupElementKind,
 import { describe, expect, it } from 'vitest'
 import { diagramToXY } from './diagram-view'
 
-type TestView = Pick<DiagramView, 'id' | 'nodes' | 'edges' | '_type' | 'autoLayout'>
+type TestView = Pick<DiagramView, 'id' | 'nodes' | 'edges' | 'bounds' | '_type' | 'autoLayout'>
 
 function testNode(id: string, overrides: Partial<DiagramNode> = {}): DiagramNode {
   const nodeId = scalar.NodeId(id)
@@ -69,6 +69,7 @@ function testView(nodes: DiagramNode[], edges: DiagramEdge[]): TestView {
     _type: 'element',
     id: scalar.ViewId('index'),
     autoLayout: { direction: 'TB' },
+    bounds: { x: 0, y: 0, width: 1000, height: 1000 },
     nodes,
     edges,
   }

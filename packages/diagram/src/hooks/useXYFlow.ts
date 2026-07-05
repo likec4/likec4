@@ -10,7 +10,6 @@ import {
 import { shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import type { Types } from '../likec4diagram/types'
-import { useCallbackRef } from './useCallbackRef'
 
 export type XYFlowInstance = ReactFlowInstance<Types.AnyNode, Types.AnyEdge>
 export function useXYFlow(): XYFlowInstance {
@@ -24,9 +23,13 @@ export function useXYStore<StateSlice = unknown>(
   equalityFn?: (a: NoInfer<StateSlice>, b: NoInfer<StateSlice>) => boolean,
 ): StateSlice {
   return useStore(
-    useCallbackRef(selector as any),
+    selector as any,
     equalityFn ?? shallowEqual,
   )
+}
+
+export function selectXYStore<StateSlice = unknown>(selector: (state: XYStoreState) => StateSlice) {
+  return selector
 }
 
 export function useXYStoreApi(): XYStoreApi {

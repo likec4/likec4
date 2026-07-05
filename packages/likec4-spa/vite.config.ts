@@ -109,6 +109,7 @@ export default defineConfig({
       name: 'likec4-spa',
       async buildStart() {
         this.info('buildStart')
+        await fs.emptyDir('styled-system')
         await $`pandacss codegen`
       },
       writeBundle(opts) {

@@ -31,17 +31,11 @@ function _update<N extends BaseNode>(current: N[], updated: N[]): N[] {
     let data = isSameData ? existing.data : update.data
     if (!isSameData) {
       // Preserve hovered and dimmed states if not specified in update
-      if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
-        data = {
-          ...data,
-          hovered: existing.data.hovered,
-        }
+      if (isDefined(existing.data.hovered) && !isDefined(data.hovered)) {
+        data = Object.assign({ hovered: existing.data.hovered }, data)
       }
-      if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
-        data = {
-          ...data,
-          dimmed: existing.data.dimmed,
-        }
+      if (isDefined(existing.data.dimmed) && !isDefined(data.dimmed)) {
+        data = Object.assign({ dimmed: existing.data.dimmed }, data)
       }
     }
 

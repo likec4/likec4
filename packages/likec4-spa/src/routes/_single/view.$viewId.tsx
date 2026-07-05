@@ -1,12 +1,10 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { Fallback } from '../../components/Fallback'
+import { ErrorComponent } from '../../components/ErrorComponent'
 import { Header } from '../../components/view-page/Header'
 
 export const Route = createFileRoute('/_single/view/$viewId')({
   component: ViewLayout,
-  errorComponent: ({ error, reset }) => {
-    return <Fallback error={error} resetErrorBoundary={reset} />
-  },
+  errorComponent: ErrorComponent,
 })
 
 function ViewLayout() {

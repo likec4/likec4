@@ -2,25 +2,17 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "target": "es2024",
-    "allowImportingTsExtensions": true,
-    "composite": true,
     "lib": [
-      "esnext",
-      "dom"
+      "ES2024",
+      "DOM"
     ],
     "types": [
-      "react",
       "node"
-    ],
-    "skipLibCheck": true
+    ]
   },
-  "include": [
-    "*.ts"
-  ],
   "references": [
     {
-      "path": "../preset/tsconfig.json"
+      "path": "../../devops/"
     }
   ]
 }

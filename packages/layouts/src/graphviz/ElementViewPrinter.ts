@@ -5,7 +5,7 @@ import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
-import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
+import { DotPrinter } from './DotPrinter'
 import { isCompound, toArrowType } from './utils'
 
 const rankLogger = createLogger('dot.rank')

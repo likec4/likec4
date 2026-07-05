@@ -34,7 +34,9 @@ const Root = withProvider(m.div as ForwardRefComponent<'div', HTMLMotionProps<'d
 const Body = withContext(m.div as ForwardRefComponent<'div', HTMLMotionProps<'div'>>, 'body', {
   shouldForwardProp,
 })
-const Logo = withContext(LogoButton, 'logo')
+const Logo = withContext(LogoButton, 'logo', {
+  shouldForwardProp,
+})
 
 const Label = withContext(m.div as ForwardRefComponent<'div', HTMLMotionProps<'div'>>, 'label', {
   shouldForwardProp,

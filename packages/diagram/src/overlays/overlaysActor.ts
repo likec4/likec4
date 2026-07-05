@@ -10,7 +10,6 @@ import {
   fromCallback,
   setup,
 } from 'xstate'
-import { not } from 'xstate/guards'
 import { elementDetailsLogic } from './element-details/actor'
 import { relationshipDetailsLogic } from './relationship-details/actor'
 import { relationshipsBrowserLogic } from './relationships-browser/actor'

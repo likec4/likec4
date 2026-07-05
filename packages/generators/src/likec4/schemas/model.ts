@@ -49,9 +49,15 @@ export const element = z
     if (shape || color || icon) {
       rest = produce(rest, draft => {
         draft.style = rest.style || {}
-        draft.style.shape = shape ?? rest.style?.shape
-        draft.style.color = color ?? rest.style?.color
-        draft.style.icon = icon ?? rest.style?.icon
+        if (shape) {
+          draft.style.shape = shape
+        }
+        if (color) {
+          draft.style.color = color
+        }
+        if (icon) {
+          draft.style.icon = icon
+        }
       })
     }
     return pickBy(rest, isNonNullish)
@@ -106,22 +112,4 @@ export const schema = z
       ])
       .transform(v => isArray(v) ? indexBy(v, genRelationshipId) as unknown as z.output<typeof relationships> : v)
       .optional(),
-    //     isArray(v) ?
-    //       indexBy(
-    //         v,
-    //         (r, idx) => r.id as string ?? stringHash(`${r.source.model}, ${r.target.model}, ${r.kind ?? ''}, ${idx}`),
-    //       ) :
-    //       v
-    //   )
-    //   .optional(),
-    // views: z.union([
-    //   z.record(viewId, ElementViewSchema),
-    //   z.array(ElementViewSchema)
-    //     .transform(indexBy(v => v.id as string)),
-    // ]),
-    // project: z.object({
-    //   id: z.string(),
-    //   styles: LikeC4StylesConfigSchema.nullish(),
-    // }),
-    // specification: SpecificationSchema,
   })

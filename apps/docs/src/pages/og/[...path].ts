@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content'
 const collectionEntries = await getCollection('docs')
 
 export const { getStaticPaths, GET } = await OGImageRoute({
-  param: 'path',
+  // param: 'path',
 
   /** Paths for all of our Markdown content we want to generate OG images for. */
   pages: import.meta.env.SKIP_OG ? {} : Object.fromEntries(collectionEntries.map(({ id, data }) => [id, data])),

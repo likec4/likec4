@@ -1,5 +1,5 @@
-import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { describe } from 'vitest'
+import { it } from './_it-spec'
 
 describe('deployment checks', () => {
   const model = `
@@ -23,8 +23,7 @@ describe('deployment checks', () => {
   `
 
   describe('deployment relations checks', () => {
-    it('should not report invalid relation', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should not report invalid relation', async ({ expect, validate }) => {
       const { errors } = await validate(`${model}
       deployment {
         a1.a2 -> n2.a2
@@ -34,8 +33,7 @@ describe('deployment checks', () => {
       expect(errors).toEqual([])
     })
 
-    it('should report invalid relation: parent -> child', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid relation: parent -> child', async ({ expect, validate }) => {
       const { errors } = await validate(`${model}
       deployment {
         n1 -> n2
@@ -46,8 +44,7 @@ describe('deployment checks', () => {
       ])
     })
 
-    it('should report invalid relation: child -> parent', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid relation: child -> parent', async ({ expect, validate }) => {
       const { errors } = await validate(`${model}
       deployment {
         n2.a2 -> n1
@@ -60,8 +57,7 @@ describe('deployment checks', () => {
   })
 
   describe('extend deployment checks', () => {
-    it('should not report valid target', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should not report valid target', async ({ expect, validate }) => {
       const { errors } = await validate(`${model}
         deployment {
           extend n1.n2 {
@@ -71,8 +67,7 @@ describe('deployment checks', () => {
       expect(errors).toEqual([])
     })
 
-    it('should report invalid target - expects fully-qualified-name', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid target - expects fully-qualified-name', async ({ expect, validate }) => {
       const { errors } = await validate(`${model}
         deployment {
           extend n2 {
@@ -85,8 +80,7 @@ describe('deployment checks', () => {
       ])
     })
 
-    it('should report invalid target - deployed instance', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid target - deployed instance', async ({ expect, validate }) => {
       const { errors } = await validate(`${model}
         deployment {
           extend n1.a1 {

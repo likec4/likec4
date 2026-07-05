@@ -9,7 +9,7 @@ export const viewButton = cx(
     flexWrap: 'nowrap',
     display: 'flex',
     // '& .mantine-ThemeIcon-root': {
-    //   color: `[var(${iconColor}, {colors.mantine.colors.dark[2]})]`,
+    //   color: `[var(${iconColor}, {colors.mantine.dark[2]})]`,
     //   '--ti-size': '24px',
     // },
     '&[data-disabled] .mantine-ThemeIcon-root': {

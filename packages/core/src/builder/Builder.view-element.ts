@@ -13,9 +13,9 @@ export interface ElementViewBuilder<T extends AnyTypes>
 export type ElementViewRulesBuilder<T extends AnyTypes> = (b: ElementViewBuilder<T>) => ElementViewBuilder<T>
 
 export interface AddViewRules<Id extends string> {
-  with<S extends AnyTypes>(
-    ...rules: ElementViewRulesBuilder<S>[]
-  ): (builder: ViewsBuilder<S>) => ViewsBuilder<Types.AddView<S, Id>>
+  with<B extends ViewsBuilder<any>>(
+    ...rules: Array<((b: ElementViewBuilder<NoInfer<B>['Types']>) => any)>
+  ): (builder: B) => ViewsBuilder<Types.AddView<B['Types'], Id>>
 }
 
 export interface AddViewHelper {
@@ -30,12 +30,12 @@ export interface AddViewHelper {
 
   <
     const Id extends string,
-    T extends AnyTypes,
+    B extends ViewsBuilder<any>,
   >(
     id: Id,
-    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>,
-  ): AddViewRules<Id> & {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
+    builder: (b: ElementViewBuilder<NoInfer<B>['Types']>) => any,
+  ): {
+    (builder: B): ViewsBuilder<Types.AddView<B['Types'], Id>>
   }
 
   <
@@ -43,20 +43,20 @@ export interface AddViewHelper {
     T extends AnyTypes,
   >(
     id: Id,
-    propsOrTitle: NoInfer<T['NewViewProps']> | string,
+    propsOrTitle: NoInfer<T>['NewViewProps'] | string,
   ): AddViewRules<Id> & {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 
   <
     const Id extends string,
-    T extends AnyTypes,
+    B extends ViewsBuilder<any>,
   >(
     id: Id,
-    propsOrTitle: NoInfer<T['NewViewProps']> | string | undefined,
-    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>,
-  ): AddViewRules<Id> & {
-    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
+    propsOrTitle: NoInfer<B>['Types']['NewViewProps'] | string | undefined,
+    builder: (b: ElementViewBuilder<NoInfer<B>['Types']>) => any,
+  ): {
+    (builder: B): ViewsBuilder<Types.AddView<B['Types'], Id>>
   }
 }
 
@@ -69,7 +69,7 @@ export interface AddViewOfHelper {
     T extends AnyTypes,
   >(
     id: Id,
-    of: ValidFqn<T>,
+    of: NoInfer<T>['Fqn'],
   ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
@@ -77,8 +77,8 @@ export interface AddViewOfHelper {
     T extends AnyTypes,
   >(
     id: Id,
-    of: ValidFqn<T>,
-    propsOrTitle: T['NewViewProps'] | string | ElementViewRulesBuilder<T>,
+    of: NoInfer<T['Fqn']>,
+    rules: ElementViewRulesBuilder<NoInfer<T>>,
   ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 
   <
@@ -86,9 +86,18 @@ export interface AddViewOfHelper {
     T extends AnyTypes,
   >(
     id: Id,
-    of: ValidFqn<T>,
+    of: NoInfer<T>['Fqn'],
     propsOrTitle: NoInfer<T>['NewViewProps'] | string,
-    builder: (b: ElementViewBuilder<T>) => ElementViewBuilder<T>,
+  ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
+
+  <
+    const Id extends string,
+    T extends AnyTypes,
+  >(
+    id: Id,
+    of: NoInfer<T>['Fqn'],
+    propsOrTitle: NoInfer<T>['NewViewProps'] | string,
+    rules: ElementViewRulesBuilder<NoInfer<T>>,
   ): (builder: ViewsBuilder<T>) => ViewsBuilder<Types.AddView<T, Id>>
 }
 
@@ -109,8 +118,8 @@ export interface TypedAddViewOfHelper<A extends AnyTypes> {
   >(
     id: Id,
     of: ValidFqn<A>,
-    builder: ((b: ElementViewBuilder<A>) => ElementViewBuilder<A>) | A['NewViewProps'] | string,
-  ): AddViewRules<Id> & {
+    rules: ElementViewRulesBuilder<A>,
+  ): {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 
@@ -121,8 +130,19 @@ export interface TypedAddViewOfHelper<A extends AnyTypes> {
     id: Id,
     of: ValidFqn<A>,
     propsOrTitle: A['NewViewProps'] | string,
-    builder: (b: ElementViewBuilder<A>) => ElementViewBuilder<A>,
-  ): AddViewRules<Id> & {
+  ): {
+    (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
+  }
+
+  <
+    const Id extends string,
+    T extends AnyTypes,
+  >(
+    id: Id,
+    of: ValidFqn<A>,
+    propsOrTitle: A['NewViewProps'] | string,
+    rules: ElementViewRulesBuilder<A>,
+  ): {
     (builder: ViewsBuilder<T>): ViewsBuilder<Types.AddView<T, Id>>
   }
 }

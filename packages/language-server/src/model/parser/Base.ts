@@ -185,8 +185,28 @@ export class BaseParser {
     }
   }
 
-  tryMap<N extends AstNode, T>(level: ParserLevel, iterable: ReadonlyArray<N>, fn: (node: N) => T | undefined): T[] {
-    return flatMap(iterable, node => this.tryParse(level, node, fn) ?? [])
+  tryMap<N extends AstNode, T>(
+    level: ParserLevel,
+    iterable: ReadonlyArray<N>,
+    fn: (node: N, index: number) => T | undefined,
+  ): T[] {
+    let index = 0
+    return flatMap(iterable, (node): T | [] => {
+      try {
+        if (!node || !this.isValid(node as any)) {
+          return []
+        }
+        const result = fn(node, index)
+        if (result !== undefined) {
+          index++
+          return result
+        }
+        return []
+      } catch (e) {
+        this.logError(e, node, level)
+        return []
+      }
+    })
   }
 
   resolveFqn(node: ast.FqnReferenceable): c4.Fqn {

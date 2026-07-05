@@ -82,15 +82,34 @@ export const BBox = {
     }
   },
 
-  expand(box: BBox, plus: number): BBox {
-    if (plus === 0) {
-      return box
+  /**
+   * Expands the box by the given amount in all directions, or separately for each direction
+   * @example
+   * ```ts
+   * BBox.expand({ x: 0, y: 0, width: 10, height: 10 }, 5)
+   * // => { x: -5, y: -5, width: 20, height: 20 }
+   *
+   * BBox.expand({ x: 0, y: 0, width: 10, height: 10 }, { left: 5, right: 5, top: 5, bottom: 5 })
+   * // => { x: -5, y: -5, width: 20, height: 20 }
+   * ```
+   */
+  expand(box: BBox, plus: number | { left?: number; right?: number; top?: number; bottom?: number }): BBox {
+    if (typeof plus === 'number') {
+      if (plus === 0) {
+        return box
+      }
+      return {
+        x: box.x - plus,
+        y: box.y - plus,
+        width: box.width + plus * 2,
+        height: box.height + plus * 2,
+      }
     }
     return {
-      x: box.x - plus,
-      y: box.y - plus,
-      width: box.width + plus * 2,
-      height: box.height + plus * 2,
+      x: box.x - (plus.left ?? 0),
+      y: box.y - (plus.top ?? 0),
+      width: box.width + (plus.left ?? 0) + (plus.right ?? 0),
+      height: box.height + (plus.top ?? 0) + (plus.bottom ?? 0),
     }
   },
 

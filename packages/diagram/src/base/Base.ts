@@ -1,16 +1,16 @@
-import { hasSubObject } from 'remeda'
+import { deepEqual } from 'fast-equals'
+import { entries } from 'remeda'
+
+const mergeData = <E extends WithData<any>>(v: E, data: Partial<E['data']>) =>
+  Object.assign({}, v, {
+    data: Object.assign({}, v.data, data),
+  })
 
 type WithDimmed = { data: { dimmed?: Base.Dimmed } }
 type WithHovered = { data: { hovered?: boolean } }
 
 const _setDimmed = <T extends WithDimmed>(v: T, dimmed: Base.Dimmed): T =>
-  (v.data.dimmed ?? false) === dimmed ? v : ({
-    ...v,
-    data: {
-      ...v.data,
-      dimmed,
-    },
-  })
+  (v.data.dimmed ?? false) === dimmed ? v : mergeData(v, { dimmed })
 
 function setDimmed<T extends WithDimmed>(value: T, dimmed: 'immediate' | boolean): T
 function setDimmed(dimmed: 'immediate' | boolean): <T extends WithDimmed>(value: T) => T
@@ -22,13 +22,8 @@ function setDimmed<T extends WithDimmed>(arg1: T | Base.Dimmed, arg2?: Base.Dimm
 }
 
 const _setHovered = <T extends WithHovered>(v: T, hovered: boolean): T =>
-  (v.data.hovered ?? false) === hovered ? v : ({
-    ...v,
-    data: {
-      ...v.data,
-      hovered,
-    },
-  })
+  (v.data.hovered ?? false) === hovered ? v : mergeData(v, { hovered })
+
 function setHovered<T extends WithHovered>(value: T, hovered: boolean): T
 function setHovered(hovered: boolean): <T extends WithHovered>(value: T) => T
 function setHovered<T extends WithHovered>(arg1: T | boolean, arg2?: boolean) {
@@ -38,21 +33,19 @@ function setHovered<T extends WithHovered>(arg1: T | boolean, arg2?: boolean) {
   return (v: T) => _setHovered(v, arg1 as boolean)
 }
 
+export function hasSubObject<E>(value: E, subobl: Partial<E>) {
+  return value === subobl || entries(subobl).every(([key, v]) => deepEqual((value as any)[key] ?? undefined, v))
+}
+
 type WithData<D> = { data: D }
-function _setData<E extends WithData<any>>(value: E, state: Partial<E['data']>): E {
-  if (hasSubObject(value.data as any, state as any)) {
+function _setData<E extends WithData<any>>(value: E, data: Partial<E['data']>): E {
+  if (hasSubObject(value.data, data)) {
     return value
   }
-  return {
-    ...value,
-    data: {
-      ...value.data,
-      ...state,
-    },
-  }
+  return mergeData(value, data)
 }
-function setData<E extends WithData<any>>(value: E, state: Partial<E['data']>): E
-function setData<E extends WithData<any>>(state: Partial<NoInfer<E['data']>>): (value: E) => E
+function setData<E extends WithData<any>>(value: E, data: Partial<E['data']>): E
+function setData<E extends WithData<any>>(state: Partial<NoInfer<E>['data']>): (value: E) => E
 function setData<E extends WithData<any>>(arg1: E | Partial<E['data']>, arg2?: any) {
   if (arg2 !== undefined) {
     return _setData(arg1 as E, arg2)

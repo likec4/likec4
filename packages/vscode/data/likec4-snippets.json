@@ -96,5 +96,25 @@
       "}"
     ],
     "description": "inserts extend relation block with a relationship kind and no title"
+  },
+  "try-catch": {
+    "prefix": ["tr"],
+    "body": [
+      "try {",
+      "\t$1",
+      "} catch {",
+      "\t$2",
+      "}"
+    ],
+    "description": "inserts try-catch flow block"
+  },
+  "alternatives flow": {
+    "prefix": ["al"],
+    "body": [
+      "alt '' {",
+      "\t$0",
+      "}"
+    ],
+    "description": "inserts alternative flow block"
   }
 }

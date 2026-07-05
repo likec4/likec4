@@ -1,18 +1,19 @@
 import { BBox } from '@likec4/core/geometry'
-import type {
-  DeploymentFqn,
-  DiagramEdge,
-  DiagramNode,
-  DiagramView,
-  Fqn,
-  XYPoint,
+import {
+  type DeploymentFqn,
+  type DiagramEdge,
+  type DiagramNode,
+  type DiagramView,
+  type Fqn,
+  isDynamicView,
 } from '@likec4/core/types'
-import { nonexhaustive, nonNullable } from '@likec4/core/utils'
-import { type Viewport, getEdgePosition, getNodeDimensions, getNodesBounds, getViewportForBounds } from '@xyflow/system'
+import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'
+import { type Viewport, getEdgePosition, getNodesBounds, getViewportForBounds } from '@xyflow/system'
 import type { ActorSystem } from 'xstate'
 import { MinZoom } from '../../base/const'
 import type { EditorActorRef } from '../../editor/actor/machine'
 import type { XYStoreState } from '../../hooks/useXYFlow'
+import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import { pickViewBounds } from '../../utils/view-bounds'
@@ -29,18 +30,22 @@ export const findNodeByModelFqn = <T extends NodeWithData>(
 }
 
 export function typedSystem(system: ActorSystem<any>) {
+  const sys = system as System
   return {
     get overlaysActorRef(): OverlaysActorRef | null {
-      return (system as System).get('overlays') ?? null
+      return sys.get('overlays') ?? null
     },
     get diagramActorRef(): DiagramActorRef {
-      return nonNullable((system as System).get('diagram'), 'Diagram actor not found')
+      return nonNullable(sys.get('diagram'), 'Diagram actor not found')
     },
     get searchActorRef(): SearchActorRef | null {
-      return (system as System).get('search') ?? null
+      return sys.get('search') ?? null
     },
     get editorActorRef(): EditorActorRef | null {
-      return (system as System).get('editor') ?? null
+      return sys.get('editor') ?? null
+    },
+    get navigationActorRef(): NavigationPanelActorRef | null {
+      return sys.get('navigationPanel') ?? null
     },
   }
 }
@@ -55,6 +60,9 @@ typedSystem.diagramActor = ({ system }: { system: ActorSystem<any> }): DiagramAc
 }
 typedSystem.searchActor = ({ system }: { system: ActorSystem<any> }): SearchActorRef => {
   return (system as System).get('search')!
+}
+typedSystem.navigationActor = ({ system }: { system: ActorSystem<any> }): NavigationPanelActorRef => {
+  return (system as System).get('navigationPanel')!
 }
 
 export function findDiagramNode(ctx: Context, xynodeId: string): DiagramNode | null {
@@ -78,18 +86,18 @@ export function viewBounds(
 }
 
 export function focusedBounds(params: { context: Context }): { bounds: BBox; duration?: number } {
-  const knownAbsolutes = new Map<string, XYPoint>()
+  // const knownAbsolutes = new Map<string, XYPoint>()
 
   const b = params.context.xynodes.reduce((acc, node) => {
-    let position = node.position
-    if (node.parentId) {
-      const parent = knownAbsolutes.get(node.parentId) ?? { x: 0, y: 0 }
-      position = {
-        x: position.x + parent.x,
-        y: position.y + parent.y,
-      }
-    }
-    knownAbsolutes.set(node.id, position)
+    let position = node.data
+    // if (node.parentId) {
+    //   const parent = knownAbsolutes.get(node.parentId) ?? { x: 0, y: 0 }
+    //   position = {
+    //     x: position.x + parent.x,
+    //     y: position.y + parent.y,
+    //   }
+    // }
+    // knownAbsolutes.set(node.id, position)
 
     if (node.hidden || node.data.dimmed) {
       return acc
@@ -130,39 +138,40 @@ export function focusedBounds(params: { context: Context }): { bounds: BBox; dur
 const MARGIN = 32
 export function activeSequenceBounds(params: { context: Context }): { bounds: BBox; duration: number } {
   const activeWalkthrough = nonNullable(params.context.activeWalkthrough)
+  const view = params.context.view
+  invariant(isDynamicView(view))
 
-  const stepEdge = nonNullable(params.context.xyedges.find(e => e.id === activeWalkthrough.stepId))
+  const stepEdge = nonNullable(params.context.xyedges.find(e => e.data.id === activeWalkthrough.stepId))
   const xystate = params.context.xystore.getState()
 
-  const sourceNode = nonNullable(xystate.nodeLookup.get(stepEdge.source))
-  const targetNode = nonNullable(xystate.nodeLookup.get(stepEdge.target))
+  const edgeBounds = getEdgeBounds(stepEdge, xystate)
 
-  const actorsBounds = getNodesBounds([sourceNode, targetNode], xystate)
-
-  let stepBounds: BBox | undefined | null
-  if (activeWalkthrough.parallelPrefix) {
-    const parallelArea = params.context.xynodes.find(n =>
-      n.type === 'seq-parallel' && n.data.parallelPrefix === activeWalkthrough.parallelPrefix
-    )
-    if (parallelArea) {
-      stepBounds = {
-        x: parallelArea.position.x,
-        y: parallelArea.position.y,
-        ...getNodeDimensions(parallelArea),
-      }
+  if (edgeBounds && params.context.dynamicViewVariant === 'sequence') {
+    const h = stepEdge.data.labelBBox?.height ?? 80
+    const [top, bottom] = stepEdge.data.dir !== 'back' ? [20, h] : [h, 20]
+    return {
+      duration: 500,
+      bounds: BBox.expand(
+        edgeBounds,
+        {
+          left: 50,
+          right: 50,
+          top,
+          bottom,
+        },
+      ),
     }
   }
 
-  stepBounds ??= getEdgeBounds(stepEdge, xystate)
-
-  if (stepBounds) {
-    stepBounds = BBox.merge(stepBounds, actorsBounds)
-  } else {
-    stepBounds = actorsBounds
-  }
+  const sourceNode = nonNullable(xystate.nodeLookup.get(stepEdge.source))
+  const targetNode = nonNullable(xystate.nodeLookup.get(stepEdge.target))
+  const actorsBounds = getNodesBounds([sourceNode, targetNode], xystate)
+  let stepBounds = edgeBounds
+    ? BBox.merge(edgeBounds, actorsBounds)
+    : actorsBounds
 
   return {
-    duration: 350,
+    duration: 500,
     bounds: BBox.expand(
       stepBounds,
       MARGIN,
@@ -170,7 +179,7 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
   }
 }
 
-function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
+export function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
   const sourceNode = store.nodeLookup.get(edge.source)
   const targetNode = store.nodeLookup.get(edge.target)
 
@@ -188,7 +197,7 @@ function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
   })
 
   if (!edgePosition) {
-    return null
+    return edge.data.labelBBox ?? null
   }
 
   return BBox.fromPoints([
@@ -207,6 +216,7 @@ export function nodeRef(node: Types.Node): Fqn | DeploymentFqn | null {
     case 'compound-deployment':
       return node.data.modelFqn ?? node.data.deploymentFqn
     case 'seq-parallel':
+    case 'seq-subflow':
     case 'view-group':
       return null
     default:

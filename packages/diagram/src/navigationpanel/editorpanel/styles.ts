@@ -53,23 +53,23 @@ export const autolayoutButton = css({
 })
 
 export const autolayoutIndicator = css({
-  background: 'mantine.colors.gray[2]',
+  background: 'mantine.gray[2]',
   borderRadius: 'sm',
   border: `1px solid`,
-  borderColor: 'mantine.colors.gray[4]',
+  borderColor: 'mantine.gray[4]',
   _dark: {
-    background: 'mantine.colors.dark[5]',
-    borderColor: 'mantine.colors.dark[4]',
+    background: 'mantine.dark[5]',
+    borderColor: 'mantine.dark[4]',
   },
 })
 
 export const spacingSliderBody = css({
   position: 'relative',
   borderRadius: 'sm',
-  background: 'mantine.colors.gray[3]',
-  boxShadow: 'inset 1px 1px 3px 0px #00000024',
+  background: 'mantine.gray[3]',
+  boxShadow: '[inset 1px 1px 3px 0px #00000024]',
   _dark: {
-    background: 'mantine.colors.dark[7]',
+    background: 'mantine.dark[7]',
   },
 })
 
@@ -78,7 +78,7 @@ export const spacingSliderThumb = css({
   width: '8px',
   height: '8px',
   border: `2px solid`,
-  borderColor: 'mantine.colors.gray[5]',
+  borderColor: 'mantine.gray[5]',
   borderRadius: 'sm',
   transform: 'translate(-50%, -50%)',
 })
