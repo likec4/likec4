@@ -5,7 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { indexBy, mapValues, pipe, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder/Builder'
 import type { LikeC4Model } from '../../model'

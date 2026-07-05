@@ -70,23 +70,3 @@ export function compute(
   })
 }
 
-const builder = Builder
-  .specification({
-    elements: ['component'],
-  })
-  .model(({ component }, _) =>
-    _(
-      component('A').with(
-        component('a1'),
-        component('a2'),
-      ),
-      component('B').with(
-        component('b1'),
-        component('b2'),
-      ),
-      component('C').with(
-        component('c1'),
-        component('c2'),
-      ),
-    )
-  )
