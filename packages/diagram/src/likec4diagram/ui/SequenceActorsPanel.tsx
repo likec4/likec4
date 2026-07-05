@@ -1,31 +1,23 @@
-import { type NodeId, BBox, ensureSizes } from '@likec4/core'
-import { ifilter, imap, invariant, nonNullable, toArray } from '@likec4/core/utils'
+import { ensureSizes } from '@likec4/core'
+import { ifilter, imap, invariant, toArray } from '@likec4/core/utils'
 import { css, cx } from '@likec4/styles/css'
-import { Box, Txt } from '@likec4/styles/jsx'
 import { elementNode } from '@likec4/styles/recipes'
-import { Panel } from '@xyflow/react'
-import { type NodeReplaceChange, getNodeDimensions } from '@xyflow/system'
-import { shallowEqual } from 'fast-equals'
-import { AnimatePresence, scale, useMotionTemplate, useMotionValue } from 'motion/react'
-import * as m from 'motion/react-m'
-import { useCallback, useEffect } from 'react'
-import { clamp, filter, map, omit, pipe } from 'remeda'
+import { useNodesData } from '@xyflow/react'
+import { getNodeDimensions } from '@xyflow/system'
 import {
-  type ElementTagsProps,
-  CompoundDetailsButton,
-  CompoundNodeContainer,
-  CompoundTitle,
-  DefaultHandles,
+  type Variants,
+  AnimatePresence,
+  LayoutGroup,
+} from 'motion/react'
+import * as m from 'motion/react-m'
+import { useCallback } from 'react'
+import { clamp, omit, pipe } from 'remeda'
+import {
   ElementData,
-  ElementDetailsButton,
-  ElementNodeContainer,
   ElementShape,
-  ElementTags as ElementTagsPrimitive,
 } from '../../base-primitives'
-import { PortalToContainer } from '../../custom'
-import { useDiagram, useUpdateEffect, useXYStore } from '../../hooks'
-import { selectDiagramActor } from '../../hooks/useDiagram'
-import { selectXYStore, useXYStoreApi } from '../../hooks/useXYFlow'
+import { useDiagram, useXYStore } from '../../hooks'
+import { selectXYStore } from '../../hooks/useXYFlow'
 import { roundDpr } from '../../utils'
 import type { Types } from '../types'
 
@@ -49,11 +41,8 @@ const selectActorNodes = selectXYStore((state) => {
       }
       const { width, height } = getNodeDimensions(node)
 
-      const maxY = xynode.data.ports.reduce((acc, port) => Math.max(acc, xynode.data.y + port.cy), -Infinity)
-
       const centerX = xynode.data.x + width / 2
-      return (xynode.data.y + height) < y1
-        && maxY > y1 + height + 30 &&
+      return (xynode.data.y + height) < y1 &&
         (centerX - 30 > x1 && centerX + 30 < x2)
     }),
     imap(node => node.id),
@@ -65,118 +54,77 @@ const selectActorNodes = selectXYStore((state) => {
  * Shows sequence actors at the top of the diagram, if current viewport does not fit them
  */
 export function SequenceActorsPanel() {
-  const api = useXYStoreApi()
+  // const api = useXYStoreApi()
   const ids = useXYStore(selectActorNodes)
-  const diagram = useDiagram()
-
-  // useUpdateEffect(() => {
-  //   const { nodes, triggerNodeChanges } = api.getState()
-  //   const mustBeHidden = ids.length > 0
-
-  //   const changes = pipe(
-  //     nodes,
-  //     filter(n => n.type === 'seq-actor' && (n.hidden ?? false) !== mustBeHidden),
-  //     map((e): NodeReplaceChange<Types.AnyNode> => ({
-  //       id: e.id,
-  //       item: {
-  //         ...e,
-  //         hidden: mustBeHidden,
-  //       },
-  //       type: 'replace',
-  //     })),
-  //   )
-  //   if (changes.length > 0) {
-  //     triggerNodeChanges(changes)
-  //   }
-  //   // if (ids.length > 0) {
-  //   //   const changes = pipe(
-  //   //     nodes,
-  //   //     filter(n => n.type === 'seq-actor' && n.hidden !== true),
-  //   //     map((e): NodeReplaceChange<Types.AnyNode> => ({
-  //   //       id: e.id,
-  //   //       item: {
-  //   //         ...e,
-  //   //         hidden: true,
-  //   //       },
-  //   //       type: 'replace',
-  //   //     })),
-  //   //   )
-  //   //   if (changes.length > 0) {
-  //   //     triggerNodeChanges(changes)
-  //   //   }
-  //   //   return
-  //   // }
-  //   // const changes = pipe(
-  //   //   nodes,
-  //   //   filter(n => n.type === 'seq-actor' && n.hidden === true),
-  //   //   map((e): NodeReplaceChange<Types.AnyNode> => ({
-  //   //     id: e.id,
-  //   //     item: {
-  //   //       ...e,
-  //   //       hidden: false,
-  //   //     },
-  //   //     type: 'replace',
-  //   //   })),
-  //   // )
-  //   // if (changes.length > 0) {
-  //   //   triggerNodeChanges(changes)
-  //   // }
-  // }, [ids])
 
   return (
-    // <PortalToContainer>
-    <AnimatePresence>
-      {ids.map(id => <SequenceActor key={id} id={id} />)}
-    </AnimatePresence>
+    <LayoutGroup>
+      <AnimatePresence anchorY="top">
+        {ids.map(id => <SequenceActor key={id} id={id} />)}
+      </AnimatePresence>
+    </LayoutGroup>
   )
 }
 
+const variants = {
+  initial: {
+    opacity: .5,
+    scale: 0.95,
+  },
+  normal: {
+    opacity: .8,
+    scale: 1,
+  },
+  hovered: {
+    opacity: 1,
+    scale: 1.05,
+  },
+  tap: {
+    opacity: 1,
+    scale: 0.98,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+  },
+} satisfies Variants
+
 function SequenceActor({ id }: { id: string }) {
-  const api = useXYStoreApi()
-  // const centerX = useMotionValue(0)
+  const node = useNodesData<Types.SequenceActorNode>(id)
+  const diagram = useDiagram()
 
-  // useEffect(() => {
-  //   return api.subscribe((state) => {
-  //     const node = state.nodeLookup.get(id)
-  //     if (!node) {
-  //       return
-  //     }
-  //     const { width } = getNodeDimensions(node)
-  //     const [tx, ty, tScale] = state.transform
-  //     centerX.set(roundDpr((node.position.x + width / 2) * tScale + tx))
-  //   })
-  // }, [id, api, centerX])
-
-  const { centerX, data, scale } = useXYStore(useCallback(state => {
-    const node = nonNullable(state.nodeLookup.get(id))
+  let { centerX, scale, width, height } = useXYStore(useCallback(state => {
+    const node = state.nodeLookup.get(id)
+    if (!node) {
+      return {
+        centerX: 0,
+        scale: 1,
+      }
+    }
     const { width, height } = getNodeDimensions(node)
     const [tx, ty, tScale] = state.transform
 
     const xynode = node.internals.userNode
     invariant(xynode.type === 'seq-actor')
 
-    const newWidth = roundDpr(clamp(width * tScale, {
-      min: 50,
-      max: 150,
-    }))
-
-    const scale = clamp(0.5 * tScale, {
+    const scale = clamp(0.6 * tScale, {
       min: 0.2,
       max: 0.6,
     })
 
-    // const newHeight = roundDpr(height * scale)
-
     return {
       centerX: roundDpr((node.position.x + width / 2) * tScale + tx),
-      data: xynode.data,
       scale,
-      // width: newWidth,
-      // height: newHeight,
-      // scale: newWidth / width,
-      // y: roundDpr((node.position.y - ty) * tScale),
+      width,
+      height,
     }
   }, [id]))
+
+  if (!node) {
+    return null
+  }
+  const { data } = node
+  const isHovered = data.hovered === true
 
   const {
     size,
@@ -185,56 +133,60 @@ function SequenceActor({ id }: { id: string }) {
   } = ensureSizes(data.style ?? {})
 
   return (
-    <Box
+    <div
       data-likec4-color={data.color}
       data-likec4-shape={data.shape}
       data-likec4-shape-size={size}
       data-likec4-spacing={padding}
       data-likec4-text-size={textSize}
-      className={cx(
-        elementNode(),
-        'group',
-        css({
-          position: 'absolute',
-          top: '[60px]',
-          left: '0',
-        }),
-      )}
+      data-likec4-hovered={data.hovered === true}
+      className={css({
+        position: 'absolute',
+        pointerEvents: 'none',
+        top: '0',
+        left: '0',
+      })}
       style={{
-        width: data.width,
-        height: data.height,
+        width: width,
+        height: height,
         transformOrigin: '50% 0%',
-        transform: `translateX(${centerX}px) translateX(-50%) scale(${scale})`,
+        transform: `translate(-50%, 60px) translateX(${centerX}px) scale(${scale})`,
       }}
     >
-      <ElementShape
-        data={{
-          width: data.width,
-          height: data.height,
-          shape: data.shape,
-        }} />
-      <ElementData data={omit(data, ['technology'])} />
-    </Box>
+      <m.div
+        className={cx(
+          elementNode(),
+          css({
+            pointerEvents: 'all',
+            userSelect: 'none',
+          }),
+        )}
+        variants={variants}
+        initial={'initial'}
+        animate={isHovered ? 'hovered' : 'normal'}
+        exit={'exit'}
+        whileTap="tap"
+        onHoverStart={() => {
+          diagram.send({
+            type: 'xyflow.nodeMouseEnter',
+            node: node.data.id,
+          })
+        }}
+        onHoverEnd={() => {
+          diagram.send({
+            type: 'xyflow.nodeMouseLeave',
+            node: node.data.id,
+          })
+        }}
+      >
+        <ElementShape
+          data={{
+            width: data.width,
+            height: data.height,
+            shape: data.shape,
+          }} />
+        <ElementData data={omit(data, ['technology'])} />
+      </m.div>
+    </div>
   )
-  // <m.div
-  //   key={id}
-  //   layout="position"
-
-  //   initial={{
-  //     y: -20,
-  //   }}
-  //   animate={{
-  //     y: 0,
-  //   }}
-  //   exit={{
-  //     y: -20,
-  //   }}
-  //   style={{
-  //     x: centerX,
-  //   }}
-  // >
-  //   <Box p={'2'} bg="mantine.green">
-  //     {id}
-  //   </Box>
-  // </m.div>
 }

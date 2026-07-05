@@ -13,6 +13,7 @@ import {
   focusOnNodesAndEdges,
   openElementDetails,
   openSourceOfFocusedOrLastClickedNode,
+  resetLastClickedNode,
   returnViewportBefore,
   startAutoUnfocusTimer,
   startHotKeyActor,
@@ -91,6 +92,7 @@ export const focused = machine.createStateConfig({
     },
     'xyflow.paneClick': {
       actions: [
+        resetLastClickedNode(),
         emitPaneClick(),
       ],
       ...to.idle,

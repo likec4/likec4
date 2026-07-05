@@ -3,6 +3,7 @@
 import {
   BBox,
   invariant,
+  isDynamicView,
   isNonEmptyArray,
   nonNullable,
 } from '@likec4/core'
@@ -24,8 +25,17 @@ import { type Context, machine } from './machine.setup'
 import {
   activeSequenceBounds,
   focusedBounds,
+  getEdgeBounds,
   viewBounds,
 } from './utils'
+
+const calcMaxZoom = (context: Context, transform: [number, number, number] = [0, 0, .9]) => {
+  const [, , zoom] = transform
+  if (isDynamicView(context.view) && context.dynamicViewVariant === 'sequence' && !!context.activeWalkthrough) {
+    return Math.max(zoom, 0.9)
+  }
+  return Math.max(zoom, 1)
+}
 
 export const setViewport = (params?: { viewport: Viewport; duration?: number }) =>
   machine.createAction(({ context, event }) => {
@@ -81,24 +91,21 @@ export const centerOnNodeOrEdge = () =>
       if (!edge) {
         return { type: 'noop' } as never
       }
-      const sourceNode = xystate.nodeLookup.get(edge.source)
-      const targetNode = xystate.nodeLookup.get(edge.target)
-      if (!sourceNode || !targetNode) {
-        return { type: 'noop' } as never
-      }
-      const bounds = getNodesBounds([sourceNode, targetNode], xystate)
-
-      const edgeBounds = calcEdgeBounds({
+      let bounds = calcEdgeBounds({
         points: edge.data.points,
         controlPoints: edge.data.controlPoints && isNonEmptyArray(edge.data.controlPoints)
           ? edge.data.controlPoints
           : null,
         labelBBox: edge.data.labelBBox ?? null,
       })
+      const edgeBounds = getEdgeBounds(edge, xystate)
+      if (edgeBounds) {
+        bounds = BBox.merge(bounds, edgeBounds)
+      }
 
       return {
         type: 'xyflow.fitDiagram',
-        bounds: BBox.merge(bounds, edgeBounds),
+        bounds,
       }
     }
 
@@ -116,7 +123,7 @@ export const centerOnNodeOrEdge = () =>
 function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
   const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
-  const maxZoom = Math.max(1, transform[2])
+  const maxZoom = calcMaxZoom(context, transform)
   const viewport = getViewportForBounds(
     bounds,
     width,
@@ -154,8 +161,7 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
 export const fitFocusedBounds = (params?: { duration?: number }) =>
   machine.createAction(({ context }) => {
     const isActiveWalkthrough = !!context.activeWalkthrough
-    const isActiveSequenceWalkthrough = isActiveWalkthrough && context.dynamicViewVariant === 'sequence'
-    let { bounds, duration = 450 } = isActiveSequenceWalkthrough
+    let { bounds, duration = 450 } = isActiveWalkthrough
       ? activeSequenceBounds({ context })
       : focusedBounds({ context })
 

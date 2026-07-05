@@ -15,13 +15,13 @@ const sharedConfig = defineConfig({
   test: {
     slowTestThreshold: 1000,
     chaiConfig: {
-      truncateThreshold: 200,
+      truncateThreshold: 100,
     },
     maxWorkers: '90%',
-    diff: {
-      omitAnnotationLines: true,
-      contextLines: 6,
-    },
+    // diff: {
+    //   omitAnnotationLines: true,
+    //   contextLines: 6,
+    // },
   },
 })
 

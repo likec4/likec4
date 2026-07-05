@@ -16,7 +16,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
-import { difference } from '@likec4/core/utils'
+import { difference, isString } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy } from 'remeda'
@@ -45,6 +45,11 @@ import {
 } from './utils'
 
 export * from './machine.actions.layout'
+
+export const resetSelection = () =>
+  machine.raise({
+    type: 'xyflow.resetSelection',
+  })
 
 export const disableCompareWithLatest = () =>
   machine.assign(({ context }) => {
@@ -231,7 +236,7 @@ export const assignDynamicViewVariant = () =>
 export const onNodeMouseEnter = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'xyflow.nodeMouseEnter')
-    const hoveredNodeId = event.node.id
+    const hoveredNodeId = isString(event.node) ? event.node : event.node.id
     return {
       xynodes: context.xynodes.map(n => {
         if (n.id === hoveredNodeId) {
@@ -245,7 +250,7 @@ export const onNodeMouseEnter = () =>
 export const onNodeMouseLeave = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'xyflow.nodeMouseLeave')
-    const leftNodeId = event.node.id
+    const leftNodeId = isString(event.node) ? event.node : event.node.id
     return {
       xynodes: context.xynodes.map(n => {
         if (n.id === leftNodeId) {

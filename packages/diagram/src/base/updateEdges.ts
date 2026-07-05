@@ -1,5 +1,6 @@
 import { deepEqual as eq } from 'fast-equals'
-import { hasSubObject, isDefined, isShallowEqual, pickBy } from 'remeda'
+import { isDefined, isShallowEqual, pickBy } from 'remeda'
+import { hasSubObject } from './Base'
 import type { BaseEdge } from './types'
 
 const EMPTY_OBJ = {}
@@ -27,42 +28,30 @@ function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
     let data = isSameData ? existing.data : update.data
     if (!isSameData) {
       // Preserve hovered and dimmed states if not specified in update
-      if (isDefined(existing.data.hovered) && !isDefined(update.data.hovered)) {
-        data = {
-          ...data,
-          hovered: existing.data.hovered,
-        }
+      if (isDefined(existing.data.hovered) && !isDefined(data.hovered)) {
+        data = Object.assign({ hovered: existing.data.hovered }, data)
       }
-      if (isDefined(existing.data.dimmed) && !isDefined(update.data.dimmed)) {
-        data = {
-          ...data,
-          dimmed: existing.data.dimmed,
-        }
+      if (isDefined(existing.data.dimmed) && !isDefined(data.dimmed)) {
+        data = Object.assign({ dimmed: existing.data.dimmed }, data)
       }
-      if (isDefined(existing.data.active) && !isDefined(update.data.active)) {
-        data = {
-          ...data,
-          active: existing.data.active,
-        }
+      if (isDefined(existing.data.active) && !isDefined(data.active)) {
+        data = Object.assign({ active: existing.data.active }, data)
       }
-    }
-
-    if (
-      isSameData
-      && eq(existing.hidden, update.hidden ?? existing.hidden)
+    } else if (
+      eq(existing.hidden, update.hidden ?? existing.hidden)
       && eq(existing.selected, update.selected ?? existing.selected)
       && eq(existing.selectable, update.selectable ?? existing.selectable)
-      && eq(existing.focusable, update.focusable ?? existing.focusable)
       && eq(existing.animated, update.animated ?? existing.animated)
-      && eq(existing.className, update.className)
+      && eq(existing.className, update.className ?? existing.className)
       && eq(existing.zIndex, update.zIndex ?? existing.zIndex)
       && eq(existing.label, update.label)
-      && eq(existing.sourceHandle, update.sourceHandle)
-      && eq(existing.targetHandle, update.targetHandle)
+      && eq(existing.sourceHandle, update.sourceHandle ?? existing.sourceHandle)
+      && eq(existing.targetHandle, update.targetHandle ?? existing.targetHandle)
       && eq(existing.style ?? EMPTY_OBJ, update.style ?? EMPTY_OBJ)
     ) {
       return existing
     }
+
     return {
       // Retain existing properties that are defined, except parentId
       ...pickBy(existing, isDefined) as unknown as E,

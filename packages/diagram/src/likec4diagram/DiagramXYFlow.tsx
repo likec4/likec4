@@ -157,6 +157,7 @@ export function LikeC4DiagramXYFlow({
     }, 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
+        $isPanning.set(false)
         isPanning.clear()
         return
       }
@@ -167,7 +168,11 @@ export function LikeC4DiagramXYFlow({
       }
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      if (event) {
+      if (!event) {
+        $isPanning.set(false)
+        isPanning.clear()
+        notPanning.cancel()
+      } else {
         notPanning()
       }
       diagram.send({
@@ -229,6 +234,9 @@ export function LikeC4DiagramXYFlow({
         diagram.send({ type: 'xyflow.edgeDoubleClick', edge })
       })}
       onDelete={useCallbackRef(({ nodes, edges }) => {
+        if (enableReadOnly) {
+          return
+        }
         diagram.editorActor().send({
           type: 'delete.nodes-edges',
           nodeIds: nodes.map(node => node.data.id),
@@ -268,11 +276,10 @@ export function LikeC4DiagramXYFlow({
         diagram.send({ type: 'xyflow.init', instance })
       })}
       onNodeContextMenu={useCallbackRef((event, node) => {
-        const diagramNode = nonNullable(
-          diagram.findDiagramNode(node.id as NodeId),
-          `diagramNode ${node.id} not found`,
-        )
-        onNodeContextMenu?.(diagramNode, event)
+        const diagramNode = diagram.findDiagramNode(node.data.id)
+        if (diagramNode) {
+          onNodeContextMenu?.(diagramNode, event)
+        }
       })}
       onEdgeContextMenu={useCallbackRef((event, edge) => {
         const diagramEdge = nonNullable(

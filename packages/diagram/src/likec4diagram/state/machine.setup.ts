@@ -145,14 +145,15 @@ export type Events =
   | { type: 'xyflow.paneClick' }
   | { type: 'xyflow.paneDblClick' }
   | { type: 'xyflow.resized' }
-  | { type: 'xyflow.nodeMouseEnter'; node: Types.Node }
-  | { type: 'xyflow.nodeMouseLeave'; node: Types.Node }
+  | { type: 'xyflow.nodeMouseEnter'; node: Types.Node | NodeId }
+  | { type: 'xyflow.nodeMouseLeave'; node: Types.Node | NodeId }
   | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
   | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox }
   | { type: 'xyflow.setViewport'; duration?: number; viewport: Viewport }
   | { type: 'xyflow.centerViewport'; nodeId: NodeId; duration?: number }
   | { type: 'xyflow.centerViewport'; edgeId: EdgeId; duration?: number }
+  | { type: 'xyflow.resetSelection' }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | {
@@ -344,11 +345,7 @@ export const machine = setup({
     },
     'click: active walkthrough step': ({ context, event }) => {
       assertEvent(event, ['xyflow.edgeClick', 'xyflow.edgeDoubleClick'])
-      if (!context.activeWalkthrough) {
-        return false
-      }
-      const { stepId } = context.activeWalkthrough
-      return event.edge.id === stepId
+      return event.edge.data.id === context.activeWalkthrough?.stepId
     },
   },
 })

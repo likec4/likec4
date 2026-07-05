@@ -60,55 +60,56 @@ export const { subflow } = defineSemanticTokens.colors({
      * TRY
      */
     try: {
-      block: {
-        DEFAULT: {
-          value: {
-            base: alpha(mantine.colors.yellow[9], 8),
-            _dark: alpha(mantine.colors.yellow[8], 8),
-          },
-        },
-        text: {
-          value: {
-            base: mantine.colors.orange[9],
-            _dark: alpha(mantine.colors.orange[1], 80),
-          },
-        },
-        border: {
-          value: {
-            base: alpha(mantine.colors.yellow[9], 80),
-            _dark: alpha(mantine.colors.yellow[7], 40),
-          },
-        },
-        header: {
-          value: {
-            base: alpha(mantine.colors.yellow[9], 60),
-            _dark: alpha(mantine.colors.orange[8], 40),
-          },
-        },
-        label: {
-          value: alpha(mantine.colors.yellow[8], 20),
+      DEFAULT: {
+        value: {
+          base: alpha(mantine.colors.yellow[9], 8),
+          _dark: alpha(mantine.colors.yellow[8], 8),
         },
       },
-      // try catch
-      catch: {
-        DEFAULT: {
-          value: {
-            base: alpha(mantine.colors.red[9], 8),
-            _dark: alpha(mantine.colors.red[8], 8),
-          },
+      text: {
+        value: {
+          base: mantine.colors.orange[9],
+          _dark: alpha(mantine.colors.orange[1], 80),
         },
-        text: {
-          value: {
-            base: alpha(mantine.colors.red[9], 90),
-            _dark: alpha(mantine.colors.red[3], 90),
-          },
+      },
+      border: {
+        value: {
+          base: alpha(mantine.colors.yellow[9], 80),
+          _dark: alpha(mantine.colors.yellow[7], 40),
         },
-        border: {
-          value: alpha(mantine.colors.red[7], 65),
+      },
+      header: {
+        value: {
+          base: alpha(mantine.colors.yellow[9], 60),
+          _dark: alpha(mantine.colors.orange[8], 40),
         },
-        label: {
-          value: alpha(mantine.colors.red[8], 25),
+      },
+      label: {
+        value: alpha(mantine.colors.yellow[8], 20),
+      },
+    },
+    /**
+     * -----------------
+     * Break
+     */
+    break: {
+      DEFAULT: {
+        value: {
+          base: alpha(mantine.colors.red[9], 8),
+          _dark: alpha(mantine.colors.red[8], 8),
         },
+      },
+      text: {
+        value: {
+          base: alpha(mantine.colors.red[9], 90),
+          _dark: alpha(mantine.colors.red[3], 90),
+        },
+      },
+      border: {
+        value: alpha(mantine.colors.red[7], 65),
+      },
+      label: {
+        value: alpha(mantine.colors.red[8], 25),
       },
     },
     /**

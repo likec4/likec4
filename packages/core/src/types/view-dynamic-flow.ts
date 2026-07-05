@@ -1,4 +1,15 @@
-import { filter, find, first, firstBy, isArray, isBoolean, isFunction, isTruthy, map, pipe, purry } from 'remeda'
+import {
+  filter,
+  find,
+  firstBy,
+  isArray,
+  isBoolean,
+  isFunction,
+  isTruthy,
+  map,
+  pipe,
+  purry,
+} from 'remeda'
 import type { IsEqual, Simplify } from 'type-fest'
 import {
   compareNaturalHierarchically,
@@ -71,7 +82,7 @@ type Subflow<T extends SubflowType> = SubFlows[T]
 
 type AnySubflow = SubFlows[SubflowType]
 
-type NestedFlowOf<T extends SubflowType> = SubFlows[T] extends { flow: IterableContainer<infer F> } ? F : never
+type NestedOf<T extends SubflowType> = SubFlows[T] extends { flow: IterableContainer<infer F> } ? F : never
 
 type ParentOf<T extends SubflowType> =
   // dprint-ignore
@@ -173,11 +184,18 @@ function isSubFlow(step: any) {
     && isString(step['_type'])
 }
 
+function asStepPath(step: StepPathOrFlow): scalar.StepPath {
+  return isString(step) ? step : step.id
+}
+
 export const flowGuards = {
   isStepPath,
   isSubFlow,
   isTry: (step: unknown): step is DynamicViewFlow.SubFlow.Try => {
     return isSubFlow(step) && step._type === 'try'
+  },
+  isTryBlock: (step: unknown): step is DynamicViewFlow.SubFlow.Try.Block => {
+    return isSubFlow(step) && flowGuards.type.isTryBlock(step._type)
   },
   isAlt: (step: unknown): step is DynamicViewFlow.SubFlow.Alt => {
     return isSubFlow(step) && step._type === 'alt'
@@ -205,6 +223,9 @@ export const flowGuards = {
     isAltBranch: (value: unknown): value is DynamicViewFlow.SubFlow.Alt.Branch['_type'] => {
       return isString(value) && value.startsWith('alt-')
     },
+    isTryBlock: (value: unknown): value is 'try-block' => {
+      return value === 'try-block'
+    },
     isTryBranch: (value: unknown): value is DynamicViewFlow.SubFlow.Try.Any['_type'] => {
       return isString(value) && value.startsWith('try-')
     },
@@ -216,8 +237,8 @@ export const flowGuards = {
   },
 }
 function _includesStep(flow: StepPathOrFlow, step: StepPathOrFlow): boolean {
-  const flowId = isStepPath(flow) ? flow : flow.id
-  const stepId = isStepPath(step) ? step : step.id
+  const flowId = asStepPath(flow)
+  const stepId = asStepPath(step)
   return stepId.startsWith(flowId)
 }
 
@@ -248,8 +269,8 @@ function _isBefore(
   step: StepPathOrFlow,
   other: StepPathOrFlow,
 ): boolean {
-  const stepId = isStepPath(step) ? step : step.id
-  const otherId = isStepPath(other) ? other : other.id
+  const stepId = asStepPath(step)
+  const otherId = asStepPath(other)
   return compareStepPath(stepId, otherId) <= 0
 }
 
@@ -425,7 +446,8 @@ type SubflowHookCtx<T extends SubflowType = SubflowType, R = DynamicViewFlow.Any
 }
 
 type OnLeave<T extends SubflowType = SubflowType> = (onleave: {
-  visited: Array<NestedFlowOf<T>>
+  visited: Array<NestedOf<T>>
+  lastVisited: NestedOf<T> | null
 }) => void
 
 type SubflowHookResult<T extends SubflowType = SubflowType> = {
@@ -437,7 +459,7 @@ type SubflowHookResult<T extends SubflowType = SubflowType> = {
    * { next: ['step-02:opt.03:try', 'step-02:opt.04:catch'] } // Multiple subflows
    * { next: undefined } // Continue with default behavior
    */
-  next?: undefined | NestedFlowOf<T> | ArrayLike<NestedFlowOf<T> | undefined>
+  next?: undefined | NestedOf<T> | ArrayLike<NestedOf<T> | undefined>
   /**
    * Callback function that is called when leaving the subflow
    */
@@ -617,8 +639,8 @@ export function walkthroughFlow(
       onLeave = result.onLeave
     }
 
-    const visited = walk(next, ctx, level + 1)
-    onLeave?.({ visited })
+    const walkresult = walk(next, ctx, level + 1)
+    onLeave?.(walkresult)
     return true
   }
 
@@ -626,13 +648,14 @@ export function walkthroughFlow(
     steps: AnySubflow['flow'],
     parent: SubflowHookCtx | null,
     level = 0,
-  ): Array<NestedFlowOf<SubflowType>> {
+  ) {
     let index = 1
     let previous: DynamicViewFlow.AnyStep | null = null
     const visited = [] as DynamicViewFlow.AnyStep[]
     for (const step of steps) {
       if (flowGuards.isStepPath(step)) {
-        visited.push(previous = step)
+        visited.push(step)
+        previous = step
         visitStep(step, parent, level, index++)
         continue
       }
@@ -641,7 +664,10 @@ export function walkthroughFlow(
         previous = step
       }
     }
-    return visited as unknown as Array<NestedFlowOf<SubflowType>>
+    return {
+      visited: visited as unknown as Array<NestedOf<SubflowType>>,
+      lastVisited: previous as unknown as NestedOf<SubflowType> | null,
+    }
   }
 
   try {
@@ -775,7 +801,7 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
     if (!subflow) {
       return nonNullable(flowHelpers.firstStep(this.view.flow), 'No steps found in flow')
     }
-    const f = this.lookup(isString(subflow) ? subflow : subflow.id)
+    const f = this.lookup(asStepPath(subflow))
     return flowHelpers.firstStep(f)
   }
 
@@ -788,7 +814,7 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
    */
   steps(subflow: scalar.StepPath | { id: scalar.StepPath }): readonly scalar.StepPath[]
   steps(subflow?: scalar.StepPath | { id: scalar.StepPath }) {
-    const flow = subflow ? this.lookup(isString(subflow) ? subflow : subflow.id).flow : this.view.flow
+    const flow = subflow ? this.lookup(asStepPath(subflow)).flow : this.view.flow
     return filter(flow, isStepPath)
   }
 
@@ -807,13 +833,20 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   }
 
   /**
+   * Returns top level subflows in the view
+   */
+  subflows(): DynamicViewFlow.SubFlow[]
+  /**
    * Returns nested subflows of a given subflow.
    * @param id The path of the subflow to lookup.
    * @returns The subflow with the given path, or throws if not found.
    */
-  subflows<N extends AnySubflow>(subflow: { flow: IterableContainer<scalar.StepPath | N> }): N[]
+  subflows<N extends AnySubflow>(subflow: N): NestedOf<N['_type']>[]
   subflows(id: scalar.StepPath): DynamicViewFlow.SubFlow.Any[]
-  subflows(value: scalar.StepPath | { flow: any }) {
+  subflows(value?: scalar.StepPath | { flow: any }) {
+    if (!value) {
+      return this.view.flow.filter(flowGuards.isSubFlow)
+    }
     const subflow = typeof value === 'string' ? this.lookup(value) : value
     return subflow.flow.filter(flowGuards.isSubFlow)
   }
@@ -829,7 +862,7 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   /**
    * @see Sequence Layout
    */
-  walkthrough<R extends DynamicViewFlow.AnyStep = DynamicViewFlow.AnyStep>(
+  walk<R extends DynamicViewFlow.AnyStep = DynamicViewFlow.AnyStep>(
     callback: WalkCallback<V, R>,
   ): R | undefined {
     return walkthroughFlow(this.view, callback)
@@ -840,18 +873,27 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
    * @param step The step to find predecessors for.
    * @returns An array of step paths that come before the given step.
    */
-  stepsBefore(step: scalar.StepPath): scalar.StepPath[] {
+  stepsBefore(step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
     return stepsBefore(this.view, step)
+  }
+
+  /**
+   * Returns all step paths that come before the given step in the flow.
+   * @param step The step to find predecessors for.
+   * @returns An array of step paths that come before the given step.
+   */
+  stepsPathsBefore(step: scalar.StepPath): scalar.StepPath[] {
+    return stepsBefore(this.view, step).map(asStepPath)
   }
 }
 
 /**
  * Returns all steps that come before the given step in the flow.
  */
-export function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepPath): scalar.StepPath[] {
+export function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
   const hasStep = includes(_step)
 
-  const result: scalar.StepPath[] = []
+  const result: DynamicViewFlow.AnyStep[] = []
 
   walkthroughFlow(view, {
     step: ({ step, stopAndReturn }) => {
@@ -864,11 +906,19 @@ export function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepP
       if (subflow.id === _step) {
         return stopAndReturn()
       }
+      result.push(subflow)
       // Handle branches in alt
       if (subflow._type === 'alt') {
         // We pick the branch that contains the step, or all branches if none contains it
         return {
-          next: hasStep(subflow) ? find(subflow.flow, hasStep) : subflow.flow,
+          next: hasStep(subflow) ? find(subflow.flow, hasStep) : firstBy(subflow.flow, flowHelpers.hasSteps),
+        }
+      }
+      // Handle branches in try
+      if (subflow._type === 'try') {
+        // We pick the branch that contains the step, or all branches if none contains it
+        return {
+          next: hasStep(subflow) ? subflow.flow : firstBy(subflow.flow, flowGuards.type.isTryBlock),
         }
       }
       return true

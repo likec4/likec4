@@ -362,7 +362,7 @@ export class SequenceViewLayouter {
       }
     }
 
-    this.#flow.walkthrough({
+    this.#flow.walk({
       subflow: {
         /**
          * Subflows with swimlines (stretch nested subflows)

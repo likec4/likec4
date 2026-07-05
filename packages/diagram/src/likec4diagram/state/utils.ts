@@ -141,7 +141,7 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
 
   if (edgeBounds && params.context.dynamicViewVariant === 'sequence') {
     const h = stepEdge.data.labelBBox?.height ?? 80
-    const [top, bottom] = stepEdge.data.dir !== 'back' ? [h, 20] : [20, h]
+    const [top, bottom] = stepEdge.data.dir !== 'back' ? [20, h] : [h, 20]
     return {
       duration: 500,
       bounds: BBox.expand(
@@ -172,7 +172,7 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
   }
 }
 
-function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
+export function getEdgeBounds(edge: Types.Edge, store: XYStoreState): BBox | null {
   const sourceNode = store.nodeLookup.get(edge.source)
   const targetNode = store.nodeLookup.get(edge.target)
 

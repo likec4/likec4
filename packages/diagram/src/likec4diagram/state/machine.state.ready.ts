@@ -219,6 +219,11 @@ export const ready = machine.createStateConfig({
         emitPaneClick(),
       ],
     },
+    'xyflow.resetSelection': {
+      actions: ({ context }) => {
+        context.xystore?.getState().resetSelectedElements()
+      },
+    },
     'xyflow.paneDblClick': {
       actions: [
         resetLastClickedNode(),
