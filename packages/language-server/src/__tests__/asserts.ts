@@ -14,8 +14,6 @@ export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   return stripIndent(result.join(''))
 }
 
-it.prototype
-
 export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
   return async ({ expect }) => {
     expect.hasAssertions()

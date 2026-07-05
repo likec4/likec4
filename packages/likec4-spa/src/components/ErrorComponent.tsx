@@ -14,7 +14,7 @@ const hasMessageOrStack = (error: unknown): error is { stack?: string; message?:
 }
 
 function errorMessage(error: unknown): string {
-  let message = 'Unknown error'
+  let message: string
   try {
     switch (true) {
       case isNullish(error):
