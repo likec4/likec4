@@ -948,6 +948,102 @@ describe('LikeC4ModelBuilder', () => {
     expect(viewsWithReadableEdges(model)).toMatchSnapshot()
   })
 
+  it('builds model with relationship spec with title, description and link', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        title 'Asynchronous'
+        description 'Async communication'
+        link https://example.com/async
+      }
+    }
+    model {
+      person user1
+      person user2
+
+      user1 .async user2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(values(model.relations)[0]).toMatchObject({
+      source: {
+        model: 'user1',
+      },
+      target: {
+        model: 'user2',
+      },
+      kind: 'async',
+      title: 'Asynchronous',
+      description: { txt: 'Async communication' },
+      links: [{ url: 'https://example.com/async' }],
+    })
+  })
+
+  it('relationship own properties override specification defaults', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        title 'Asynchronous'
+        description 'Async communication'
+      }
+    }
+    model {
+      person user1
+      person user2
+
+      user1 .async user2 'explicit title' {
+        description 'explicit description'
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(values(model.relations)[0]).toMatchObject({
+      kind: 'async',
+      title: 'explicit title',
+      description: { txt: 'explicit description' },
+    })
+  })
+
+  // Deployment relations inherit spec title automatically (parser omits unset title)
+  it('builds deployment relationship inheriting title from specification', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      relationship async {
+        title 'Asynchronous'
+      }
+      deploymentNode node
+    }
+    model {
+      component sys
+    }
+    deployment {
+      node n1 {
+        sys1 = instanceOf sys
+      }
+      node n2 {
+        sys2 = instanceOf sys
+      }
+
+      n1 .async n2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(values(model.deployments.relations)[0]).toMatchObject({
+      kind: 'async',
+      title: 'Asynchronous',
+    })
+  })
+
   it('builds model with styled relationship', async ({ expect, t }) => {
     const { validate, buildModel } = t
     const { diagnostics } = await validate(`

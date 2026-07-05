@@ -50,5 +50,8 @@
     "tsx": "catalog:",
     "typescript": "catalog:",
     "wrangler": "catalog:cloudflare"
+  },
+  "overrides": {
+    "vite": "^8.0.16"
   }
 }

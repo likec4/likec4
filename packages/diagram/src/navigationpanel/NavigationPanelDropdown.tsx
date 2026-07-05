@@ -47,6 +47,7 @@ import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
+import { Tooltip } from './_common'
 import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
 import {
@@ -519,17 +520,26 @@ function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } &
       )
     case 'view':
       return (
-        <NavigationLink
-          key={columnItem.viewId}
-          variant="filled"
-          active={columnItem.selected}
-          label={columnItem.title}
-          description={columnItem.description}
-          leftSection={ViewTypeIcon[columnItem.viewType]}
-          maw="300px"
-          miw="200px"
-          {...props}
-        />
+        <Tooltip
+          label={columnItem.description}
+          disabled={!columnItem.description}
+          multiline
+          w={260}
+          withinPortal
+          position="left"
+        >
+          <NavigationLink
+            key={columnItem.viewId}
+            variant="filled"
+            active={columnItem.selected}
+            label={columnItem.title}
+            description={columnItem.description}
+            leftSection={ViewTypeIcon[columnItem.viewType]}
+            maw="300px"
+            miw="200px"
+            {...props}
+          />
+        </Tooltip>
       )
     default:
       nonexhaustive(columnItem)

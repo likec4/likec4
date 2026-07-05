@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { actionBtn } from '@likec4/styles/recipes'
@@ -12,6 +19,7 @@ type ElementDetailsButtonProps = {
   selected?: boolean
   data: BaseNodeData
   icon?: ReactNode
+  ariaLabel?: string
   onClick: (e: ReactMouseEvent) => void
 }
 
@@ -74,6 +82,7 @@ export function ElementDetailsButton({
     hovered: isHovered = false,
   },
   icon,
+  ariaLabel = 'Open details',
   onClick,
 }: ElementDetailsButtonProps) {
   let variant: keyof typeof variants
@@ -87,6 +96,7 @@ export function ElementDetailsButton({
     default:
       variant = 'normal'
   }
+  const isActionVisible = isHovered || selected
   return (
     <Box className={cx(container, 'details-button')}>
       <ActionIcon
@@ -102,7 +112,9 @@ export function ElementDetailsButton({
         whileTap="whileTap"
         onClick={onClick}
         onDoubleClick={stopPropagation}
-        tabIndex={-1}
+        tabIndex={isActionVisible ? 0 : -1}
+        inert={isActionVisible ? undefined : true}
+        aria-label={ariaLabel}
       >
         {icon ?? <IconId stroke={1.8} style={{ width: '75%' }} />}
       </ActionIcon>

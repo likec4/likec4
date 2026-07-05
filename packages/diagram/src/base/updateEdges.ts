@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { deepEqual as eq } from 'fast-equals'
 import { isDefined, isShallowEqual, pickBy } from 'remeda'
 import { hasSubObject } from './Base'
@@ -42,6 +49,8 @@ function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
       && eq(existing.selected, update.selected ?? existing.selected)
       && eq(existing.selectable, update.selectable ?? existing.selectable)
       && eq(existing.animated, update.animated ?? existing.animated)
+      && eq(existing.ariaLabel, update.ariaLabel ?? existing.ariaLabel)
+      && eq(existing.ariaRole, update.ariaRole ?? existing.ariaRole)
       && eq(existing.className, update.className ?? existing.className)
       && eq(existing.zIndex, update.zIndex ?? existing.zIndex)
       && eq(existing.label, update.label)

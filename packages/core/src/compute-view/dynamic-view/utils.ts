@@ -1,15 +1,11 @@
-import {
-  first,
-  flatMap,
-  hasAtLeast,
-  isDeepEqual,
-  isTruthy,
-  map,
-  only,
-  pipe,
-  reduce,
-  unique,
-} from 'remeda'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import { first, flatMap, hasAtLeast, isDeepEqual, isTruthy, map, only, pipe, reduce, unique } from 'remeda'
 import type { ElementModel } from '../../model'
 import { findConnection } from '../../model/connection/model'
 import type { LikeC4Model } from '../../model/LikeC4Model'
@@ -20,6 +16,7 @@ import {
   type DynamicViewRule,
   type MarkdownOrString,
   type NonEmptyArray,
+  type RelationshipArrowType,
   type RelationshipLineType,
   type Step,
   type ViewRuleGlobalStyle,
@@ -162,6 +159,8 @@ export function findRelations<A extends Any>(
   navigateTo?: aux.StrictViewId<A>
   color?: Color
   line?: RelationshipLineType
+  head?: RelationshipArrowType
+  tail?: RelationshipArrowType
   technology?: string
   description?: MarkdownOrString
 } {
@@ -171,16 +170,21 @@ export function findRelations<A extends Any>(
   if (!isNonEmptyArray(relationships)) {
     return {}
   }
+  const specificationOf = (kind: aux.RelationKind<A> | null | undefined) =>
+    kind ? source.$model.specification.relationships[kind] : undefined
   if (relationships.length === 1) {
     const relation = relationships[0]
+    const spec = specificationOf(relation.kind)
     return exact({
       title: relation.title ?? undefined,
       kind: relation.kind ?? undefined,
       tags: relation.tags,
       relations: [relation.id],
       navigateTo: relation.$relationship.navigateTo,
-      color: relation.$relationship.color,
-      line: relation.$relationship.line,
+      color: relation.$relationship.color ?? spec?.color,
+      line: relation.$relationship.line ?? spec?.line,
+      head: relation.$relationship.head ?? spec?.head,
+      tail: relation.$relationship.tail ?? spec?.tail,
       technology: relation.technology ?? undefined,
       description: relation.$relationship.description ?? undefined,
     })
@@ -212,11 +216,18 @@ export function findRelations<A extends Any>(
 
   const commonProperties = pipe(
     relationships,
-    reduce((acc, { title, technology, $relationship: r }) => {
+    reduce((acc, { title, technology, kind, $relationship: r }) => {
+      const spec = specificationOf(kind)
+      const color = r.color ?? spec?.color
+      const line = r.line ?? spec?.line
+      const head = r.head ?? spec?.head
+      const tail = r.tail ?? spec?.tail
       isTruthy(title) && acc.title.add(title)
-      isTruthy(r.color) && acc.color.add(r.color)
-      isTruthy(r.line) && acc.line.add(r.line)
-      isTruthy(r.kind) && acc.kind.add(r.kind)
+      isTruthy(color) && acc.color.add(color)
+      isTruthy(line) && acc.line.add(line)
+      isTruthy(head) && acc.head.add(head)
+      isTruthy(tail) && acc.tail.add(tail)
+      isTruthy(kind) && acc.kind.add(kind)
       isTruthy(technology) && acc.technology.add(technology)
       if (isTruthy(r.description) && !acc.description.some(isDeepEqual(r.description))) {
         acc.description.push(r.description)
@@ -226,6 +237,8 @@ export function findRelations<A extends Any>(
       kind: new Set<aux.RelationKind<A>>(),
       color: new Set<Color>(),
       line: new Set<RelationshipLineType>(),
+      head: new Set<RelationshipArrowType>(),
+      tail: new Set<RelationshipArrowType>(),
       title: new Set<string>(),
       technology: new Set<string>(),
       description: [] as MarkdownOrString[],
@@ -240,6 +253,8 @@ export function findRelations<A extends Any>(
     title: only([...commonProperties.title]),
     color: only([...commonProperties.color]),
     line: only([...commonProperties.line]),
+    head: only([...commonProperties.head]),
+    tail: only([...commonProperties.tail]),
     technology: only([...commonProperties.technology]),
     description: only(commonProperties.description),
   })

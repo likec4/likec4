@@ -34,7 +34,7 @@ function setHovered<T extends WithHovered>(arg1: T | boolean, arg2?: boolean) {
 }
 
 export function hasSubObject<E>(value: E, subobl: Partial<E>) {
-  return value === subobl || entries(subobl).every(([v, key]) => deepEqual((value as any)[key] ?? undefined, v))
+  return value === subobl || entries(subobl).every(([key, v]) => deepEqual((value as any)[key] ?? undefined, v))
 }
 
 type WithData<D> = { data: D }
