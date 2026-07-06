@@ -3,7 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { describe, expect, it } from 'vitest'
-import { projectConfigSchema, serializeConfig } from './_common'
+import { buildRenderPayload, projectConfigSchema, serializeConfig } from './_common'
 
 describe('serializeConfig', () => {
   it('should serialize minimal config with name only', () => {
@@ -295,5 +295,33 @@ describe('projectConfigSchema', () => {
 
     const result = projectConfigSchema.safeParse(config)
     expect(result.success).toBe(true)
+  })
+})
+
+describe('buildRenderPayload', () => {
+  it('shapes a render/preview response from model data and a single layouted view', () => {
+    const modelData = {
+      specification: { elements: {} },
+      elements: { cloud: {} },
+      relations: {},
+      deployments: {},
+      views: { other: { id: 'other' } },
+    }
+    const layoutedView = { id: 'index', nodes: [], edges: [] } as any
+
+    const payload = buildRenderPayload({
+      projectId: 'default',
+      viewId: 'index',
+      title: 'Index',
+      layoutedView,
+      modelData,
+    })
+
+    expect(payload.id).toBe('index')
+    expect(payload.title).toBe('Index')
+    expect(payload.project).toBe('default')
+    expect(payload.view).toBe(layoutedView)
+    expect(payload.model['specification']).toBe(modelData.specification)
+    expect(payload.model['views']).toEqual({ index: layoutedView })
   })
 })

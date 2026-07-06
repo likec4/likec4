@@ -3,7 +3,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
 import * as z from 'zod/v3'
 import { useLanguageServices } from '../ctx'
-import { projectIdSchema, toolError } from './_common'
+import { buildRenderPayload, projectIdSchema, toolError } from './_common'
 
 export const renderViewResourceUri = 'ui://likec4/render-view.html'
 
@@ -63,25 +63,20 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
 
       // LikeC4Diagram unconditionally reads model.specification (tag colors) via
       // TagStylesProvider, so the UI needs a real LikeC4Model, not just the view.
-      // Ship the full model data but scope `views` down to just this one — other
-      // views' layouts aren't needed to render a single view.
-      const modelData = {
-        ...model.$data,
-        views: { [viewModel.id]: layoutedView },
-      }
-
+      // buildRenderPayload ships the full model data but scopes `views` down to
+      // just this one — other views' layouts aren't needed to render a single view.
       return {
         content: [{
           type: 'text',
           text: `Rendered view "${title}"`,
         }],
-        structuredContent: {
-          id: viewModel.id,
+        structuredContent: buildRenderPayload({
+          projectId,
+          viewId: viewModel.id,
           title,
-          project: projectId,
-          view: layoutedView,
-          model: modelData,
-        },
+          layoutedView,
+          modelData: model.$data,
+        }),
       }
     },
   )

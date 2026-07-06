@@ -2425,6 +2425,9 @@ importers:
       unctx:
         specifier: catalog:utils
         version: 2.5.0
+      vscode-languageserver-types:
+        specifier: 3.17.5
+        version: 3.17.5
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0

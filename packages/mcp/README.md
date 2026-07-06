@@ -58,6 +58,7 @@ OPTIONS
 - `read-deployment`: Details of a deployment node or deployed instance.
 - `read-view`: Full view details (nodes/edges) and sourceLocation.
 - `render-view`: Renders a view as an interactive diagram (pan/zoom/fit) inline in chat, for hosts that support [MCP Apps](https://github.com/modelcontextprotocol/ext-apps).
+- `preview-view`: Renders a preview of a LikeC4 view defined by DSL text, against an existing project's real elements, without saving to disk — for iterating on a view before creating or editing it for real.
 - `find-relationships`: Direct and indirect relationships between two elements in a project.
 - `query-graph`: Query element hierarchy (ancestors, descendants, siblings, children, parent) and relationships (incomers, outgoers).
 - `query-incomers-graph`: Get complete graph of all upstream dependencies/producers (recursive incomers).

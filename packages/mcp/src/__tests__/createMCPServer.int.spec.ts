@@ -33,6 +33,7 @@ const EXPECTED_TOOLS = [
   'subgraph-summary',
   'apply-semantic-layout',
   'render-view',
+  'preview-view',
 ] as const
 
 describe('createMCPServer — registration & discovery', () => {
