@@ -138,6 +138,7 @@ catalogs:
     "@mantine/vanilla-extract": 9.4.1
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
+    "@modelcontextprotocol/ext-apps": "^1.7.4"
   obuild:
     obuild: 0.4.31
   react:

@@ -57,6 +57,7 @@ OPTIONS
 - `read-element`: Full element details including relationships, includedInViews, deployedInstances, metadata and sourceLocation.
 - `read-deployment`: Details of a deployment node or deployed instance.
 - `read-view`: Full view details (nodes/edges) and sourceLocation.
+- `render-view`: Renders a view as an interactive diagram (pan/zoom/fit) inline in chat, for hosts that support [MCP Apps](https://github.com/modelcontextprotocol/ext-apps).
 - `find-relationships`: Direct and indirect relationships between two elements in a project.
 - `query-graph`: Query element hierarchy (ancestors, descendants, siblings, children, parent) and relationships (incomers, outgoers).
 - `query-incomers-graph`: Get complete graph of all upstream dependencies/producers (recursive incomers).

@@ -68,6 +68,7 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
+    "@modelcontextprotocol/ext-apps": "catalog:mcp",
     "bundle-require": "catalog:externals",
     "citty": "catalog:utils",
     "defu": "catalog:utils",

@@ -2,6 +2,11 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "composite": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
     "rootDirs": [
       "src",
       "."
@@ -34,6 +39,9 @@
     },
     {
       "path": "../language-services/"
+    },
+    {
+      "path": "../diagram/"
     }
   ]
 }
