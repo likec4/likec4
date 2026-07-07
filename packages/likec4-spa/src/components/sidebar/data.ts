@@ -9,7 +9,9 @@ interface DiagramTreeNodeData {
   label: string
   value: string
   type: 'file' | 'folder' | 'view' | 'deployment-view'
-  children: DiagramTreeNodeData[]
+  // Mantine Tree treats any node with a `children` array (even an empty one) as expandable,
+  // so leaf nodes (views) must not have this property
+  children?: DiagramTreeNodeData[]
 }
 
 export type GroupBy = 'by-files' | 'by-folders' | 'none'
@@ -25,10 +27,12 @@ function dropFilename(relativePath: string) {
 }
 
 function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
-  if (a.children.length === 0 && b.children.length > 0) {
+  const aChildren = a.children?.length ?? 0
+  const bChildren = b.children?.length ?? 0
+  if (aChildren === 0 && bChildren > 0) {
     return 1
   }
-  if (a.children.length > 0 && b.children.length === 0) {
+  if (aChildren > 0 && bChildren === 0) {
     return -1
   }
   return compareNatural(a.label, b.label)
@@ -56,7 +60,7 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
       let node = find(parent.children!, n => n.value === value)
       if (!node) {
         node = { label, value, type: 'folder', children: [] }
-        parent.children.push(node)
+        parent.children!.push(node)
       }
       parent = node
     }
@@ -79,21 +83,20 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
         nonexhaustive(groupBy)
     }
     const parent = findParent(relativePath)
-    parent.children.push({
+    parent.children!.push({
       value: view.id,
       label: view.title ?? view.id,
       type: view.isDeploymentView() ? 'deployment-view' : 'view',
-      children: [],
     })
     if (parent !== root) {
-      parent.children.sort(compareTreeNodes)
+      parent.children!.sort(compareTreeNodes)
       if (groupBy === 'by-files' && parent.type !== 'file') {
         parent.type = 'file'
       }
     }
   }
 
-  return root.children.sort(compareTreeNodes)
+  return root.children!.sort(compareTreeNodes)
 }
 
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
