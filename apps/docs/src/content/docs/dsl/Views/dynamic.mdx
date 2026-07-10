@@ -120,7 +120,20 @@ A <- B // is backward
 ```
 
 
-### Parallel steps
+### Flow control
+
+Steps can be grouped into flow-control blocks to express parallelism, loops, optional paths, alternatives, and error handling. Every block accepts an optional title and can be nested.
+
+:::caution[Experimental]
+Flow control blocks are experimental — syntax and rendering may still change.  
+We are looking for your feedback in <a href="https://github.com/likec4/likec4/discussions" target='_blank'>discussions</a>.
+:::
+
+In the `sequence` variant these blocks are rendered as nested frames (`par`, `opt`, `loop`, …), mirroring classic sequence-diagram fragments.
+
+#### Parallel — `parallel` / `par`
+
+Steps inside run concurrently:
 
 ```likec4 copy
 dynamic view parallelexample {
@@ -139,6 +152,89 @@ dynamic view parallelexample {
 ```
 
 Nested parallel blocks are not possible - <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>see this discussion</a>
+
+#### Optional — `opt`
+
+A block of steps that may be skipped:
+
+```likec4 copy
+opt 'if not cached' {
+  api -> db 'load and cache'
+}
+```
+
+#### Loop — `loop`
+
+A block of steps that repeats:
+
+```likec4 copy
+loop 'until success' {
+  api -> auth 'retry authentication'
+}
+```
+
+#### Break — `break`
+
+Interrupts the enclosing flow (e.g. exits a loop):
+
+```likec4 copy
+loop 'poll for result' {
+  api -> db 'check status'
+  break 'when ready' {
+    api -> web 'return result'
+  }
+}
+```
+
+#### Alternatives — `alt`
+
+Groups mutually exclusive branches. Each branch is a `when` / `if` / `else` block with an optional title:
+
+```likec4 copy
+alt {
+  when 'authorized' {
+    web -> api 'requests data'
+  }
+  else 'not authorized' {
+    web -> customer 'shows login'
+  }
+}
+```
+
+#### Try / catch / finally — `try`
+
+Models the happy path together with error handling. `catch` and `finally` are optional:
+
+```likec4 copy
+try {
+  api -> db 'query'
+} catch 'on failure' {
+  api -> web 'shows error'
+} finally {
+  api -> api 'release resources'
+}
+```
+
+#### Nesting
+
+Blocks can be combined and nested to any depth:
+
+```likec4 copy
+alt {
+  when 'online' {
+    loop 'until synced' {
+      web -> api 'sync changes'
+    }
+  }
+  else 'offline' {
+    web -> web 'queue locally'
+  }
+}
+```
+
+The `sequence` variant below combines `alt` / `when` / `else`, `loop`, `try` / `catch` / `finally`, `parallel` and `opt`:
+
+<DynamicLikeC4View viewId="flowControl" variant="sequence"/>
 
 ### Navigation
 

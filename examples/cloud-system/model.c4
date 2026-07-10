@@ -191,10 +191,10 @@ views {
     title 'Cloud to amazon'
 
     next.backend -> next.events {
-      notes "
+      notes '
       - Backend triggers EventManager
       - These calls enriched with data before publishing
-      "
+      '
     }
 
     parallel {

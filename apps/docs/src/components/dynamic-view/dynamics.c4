@@ -291,6 +291,58 @@ views {
     }
   }
 
+  dynamic view flowControl {
+    title 'Flow control example'
+
+    customer -> web 'opens dashboard'
+
+    alt 'session state' {
+      when 'token valid' {
+        web -> api 'GET /dashboard'
+      }
+      else 'token expired' {
+        loop 'until refreshed' {
+          web -> auth 'refresh access token'
+        }
+        web -> api 'GET /dashboard'
+      }
+    }
+
+    try 'load dashboard data' {
+      parallel {
+        api -> db 'query records'
+        api -> cache 'read session'
+      }
+    } catch 'on database failure' {
+      api -> cache 'serve cached data'
+    } finally {
+      api -> api 'assemble response'
+    }
+
+    opt 'analytics enabled' {
+      api -> db 'log access'
+    }
+
+    api -> web 'returns JSON'
+    web -> customer 'renders dashboard'
+
+    include cloud, backend, storage
+
+    style cloud._ {
+      color secondary
+      opacity 20%
+    }
+    style cloud {
+      color muted
+      opacity 15%
+    }
+    style customer {
+      color green
+      size sm
+      textSize md
+    }
+  }
+
   dynamic view order1 {
     variant sequence
     title 'Actors order / Version 1'

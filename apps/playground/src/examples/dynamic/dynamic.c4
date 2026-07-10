@@ -186,4 +186,61 @@ views {
       opacity 15%
     }
   }
+
+  dynamic view flowControl {
+    title 'Use Cases / Story 1.3 - Flow control'
+    variant sequence
+
+    customer -> web 'opens dashboard'
+
+    alt 'session state' {
+      when 'token valid' {
+        web -> api 'GET /dashboard'
+      }
+      else 'token expired' {
+        loop 'until refreshed' {
+          web -> auth 'refresh access token' {
+            notes 'Retries with exponential backoff'
+          }
+        }
+        web -> api 'GET /dashboard'
+      }
+    }
+
+    try 'load dashboard data' {
+      parallel {
+        api -> db 'query records'
+        api -> cache 'read session'
+      }
+    } catch 'on database failure' {
+      api -> cache 'serve cached data' {
+        notes 'Degraded mode - stale but available'
+      }
+    } finally {
+      api -> api 'assemble response'
+    }
+
+    opt 'analytics enabled' {
+      api -> db 'log access'
+    }
+
+    web <- api 'returns JSON'
+    web -> customer 'renders dashboard'
+
+    include cloud, backend, storage
+
+    style cloud._ {
+      color secondary
+      opacity 20%
+    }
+    style cloud {
+      color muted
+      opacity 15%
+    }
+    style customer {
+      color green
+      size sm
+      textSize md
+    }
+  }
 }

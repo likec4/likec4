@@ -26,7 +26,7 @@ dynamic view example {
 }
 ```
 
-Sequence diagrams render these blocks as nested frames, and actors stay visible when zoomed in.
+Sequence diagrams render these blocks as nested frames, and actors stay visible when zoomed in. During a walkthrough, a docked Sequence Outline panel shows the flow as a collapsible tree that mirrors the block nesting — each step is numbered and every operator carries a colored type tag and step count, so you can jump to any step and keep your place.
 
 > [!NOTE]
 > Flow control blocks are experimental — syntax and rendering may change. We are looking for your feedback in [discussions](https://github.com/likec4/likec4/discussions)!

@@ -148,8 +148,56 @@ views {
       navigateTo cloud-to-amazon
     }
 
-    ui.mobile -> cloud.graphql 'requests'
-    ui.mobile <- cloud.graphql
+
+
+    alt {
+      when 'first' {
+        customer -> ui.mobile 'opens'
+
+        try {
+          ui.mobile -> cloud.graphql 'requests'
+        } catch 'OOps' {
+          loop "until works" {
+            ui.mobile -> cloud.graphql 'requests with retry'
+          }
+          break "not retryable" {
+            ui.mobile <- cloud.graphql
+          }
+        } finally {
+          cloud.next.backend -> cloud.events
+        }
+
+        ui.dashboard -> cloud.next.backend
+      }
+      if 'second' {
+        cloud.graphql -> cloud.next.backend 'First call' {
+          line solid
+          color red
+        }
+        parallel 'starting several streams, starting several streams
+        starting several streams' {
+          cloud.graphql
+            -> cloud.next.backend 'Stream 1'
+             -> cloud.events 'as'
+          cloud.graphql -> cloud.next.backend 'Stream 2'
+          opt 'Optional' {
+            cloud.graphql -> cloud.next.backend 'Stream 3'
+          }
+          cloud.graphql -> cloud.next.backend 'Stream 4'
+        }
+      }
+      else 'second' {
+          cloud.dashboard -> cloud.next.backend 'Stream 2'
+          opt 'Optional' {
+            cloud.graphql -> cloud.next.backend 'Stream 3'
+          }
+          cloud.graphql -> cloud.next.backend 'Stream 4'
+      }
+    }
+
+    cloud.next.backend <- cloud.events
+
+
 
     include cloud
 
@@ -158,7 +206,7 @@ views {
       color secondary
     }
     style cloud {
-      opacity 40%
+      opacity 9%
       color muted
     }
   }
