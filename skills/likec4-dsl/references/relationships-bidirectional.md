@@ -47,7 +47,7 @@ model {
 }
 ```
 
-The relationship kind participates in extension matching. If multiple relationships share the same source, target, and title, include the kind in `extend` to target the intended one.
+The relationship kind participates in extension matching. When extending a kinded relationship, include the kind in `extend`; also include the title when multiple relationships share the same endpoints and kind.
 
 ## Extending bidirectional relationships
 
