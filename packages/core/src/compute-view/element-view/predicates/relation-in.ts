@@ -5,7 +5,7 @@ import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { nonexhaustive } from '../../../utils'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
-import { findConnectionsFrom, resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import { findConnectionsFrom, isBidirectionalRelation, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming<AnyAux>> = {
   include: ({ expr, scope, model, memory, stage, filterWhere }) => {
@@ -56,11 +56,11 @@ export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming
       if (!scope) {
         return
       }
-      excluded.push(...scope.allIncoming)
+      excluded.push(...incomingRelations(scope))
     } else {
       const elements = resolveElements(model, incoming)
       excluded.push(
-        ...elements.flatMap(e => [...e.allIncoming]),
+        ...elements.flatMap(incomingRelations),
       )
     }
     stage.excludeRelations(new Set(excluded.filter(where)))
@@ -78,14 +78,16 @@ export function incomingConnectionPredicate(
     const isOutgoing = Connection.isOutgoing(fqn)
     return connection =>
       isIncoming(connection)
-      || (isOutgoing(connection) && [...connection.relations].some(relation => relation.tail === 'normal'))
+      || (isOutgoing(connection) && [...connection.relations].some(isBidirectionalRelation))
   }
 
   switch (true) {
     case ModelFqnExpr.isElementKindExpr(expr):
     case ModelFqnExpr.isElementTagExpr(expr): {
       const isElement = elementExprToPredicate(expr)
-      return (connection) => isElement(connection.target)
+      return (connection) =>
+        isElement(connection.target)
+        || (isElement(connection.source) && [...connection.relations].some(isBidirectionalRelation))
     }
     case ModelFqnExpr.isModelRef(expr) && expr.selector === 'children': {
       const fqn = FqnRef.flatten(expr.ref)
@@ -118,4 +120,13 @@ export function incomingConnectionPredicate(
     default:
       nonexhaustive(expr)
   }
+}
+
+function incomingRelations(
+  element: { allIncoming: ReadonlySet<RelationshipModel>; allOutgoing: ReadonlySet<RelationshipModel> },
+) {
+  return [
+    ...element.allIncoming,
+    ...[...element.allOutgoing].filter(isBidirectionalRelation),
+  ]
 }

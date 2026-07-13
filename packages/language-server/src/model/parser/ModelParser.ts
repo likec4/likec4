@@ -19,6 +19,7 @@ import {
   toRelationshipStyle,
 } from '../../ast'
 import { stringHash } from '../../utils/stringHash'
+import { relationFingerprint } from '../relationFingerprint'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
@@ -163,17 +164,18 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       // Normalize title the same way as parseRelation does
       const { title = '' } = this.parseBaseProps({}, { title: astNode.title })
 
-      const id = stringHash(
-        'extend-relation',
-        FqnRef.flatten(source),
-        FqnRef.flatten(target),
-        kind ?? 'default',
+      const id = relationFingerprint({
+        source,
+        target,
+        kind,
         title,
-      ) as c4.RelationId
+        isBidirectional: astNode.isBidirectional || undefined,
+      }) as c4.RelationId
 
       return exact({
         id,
         astPath,
+        isBidirectional: astNode.isBidirectional || undefined,
         metadata,
         tags,
         links,

@@ -46,8 +46,8 @@ import type {
 } from '../../ast'
 import { logger } from '../../logger'
 import type { LikeC4Services } from '../../module'
-import { stringHash } from '../../utils/stringHash'
 import type { Project } from '../../workspace/ProjectsManager'
+import { relationFingerprint } from '../relationFingerprint'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
@@ -140,15 +140,8 @@ export function buildModelData(
       return true
     }),
     map(rel => {
-      // Apply relation extends by matching source, target, kind, and title
-      // Generate a stable match key for this relation
-      const matchKey = stringHash(
-        'extend-relation',
-        FqnRef.flatten(rel.source),
-        FqnRef.flatten(rel.target),
-        rel.kind ?? 'default',
-        rel.title ?? '',
-      )
+      // Apply relation extends by matching source, target, kind, title, and directionality.
+      const matchKey = relationFingerprint(rel)
 
       // Find all extends that match this relation
       const relExtends = relationExtends.filter(ext => ext.id === matchKey)

@@ -147,6 +147,10 @@ export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelation
     return this.$relationship.tail
   }
 
+  get isBidirectional(): boolean {
+    return this.$relationship.isBidirectional === true
+  }
+
   /**
    * Iterate over all views that include this relationship.
    */
