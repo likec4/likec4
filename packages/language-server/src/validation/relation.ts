@@ -5,13 +5,13 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type ProjectId, type Relationship, FqnRef, isSameHierarchy } from '@likec4/core'
+import { type ProjectId, FqnRef, isSameHierarchy } from '@likec4/core'
 import { type ValidationCheck, AstUtils, DocumentState, WorkspaceCache } from 'langium'
 import { flatMap, map, pipe } from 'remeda'
 import { ast } from '../ast'
+import { relationFingerprint } from '../model/relationFingerprint'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom, safeCall } from '../utils'
-import { stringHash } from '../utils/stringHash'
 import { tryOrLog } from './_shared'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
@@ -74,23 +74,13 @@ export const extendRelationChecks = (services: LikeC4Services): ValidationCheck<
 
   const cache = new WorkspaceCache<ProjectId, Set<string>>(services.shared, DocumentState.Linked)
 
-  type KeySource = Pick<Relationship, 'source' | 'target' | 'kind' | 'title'>
-  const calcFingerprint = ({ source, target, kind, title }: KeySource) =>
-    stringHash(
-      'extend-relation',
-      FqnRef.flatten(source),
-      FqnRef.flatten(target),
-      kind ?? 'default',
-      title ?? '',
-    )
-
   function getProjectFingerprints(projectId: ProjectId): Set<string> {
     return cache.get(projectId, () =>
       new Set(
         pipe(
           services.shared.workspace.LangiumDocuments.projectDocuments(projectId).toArray(),
           flatMap(doc => doc.c4Relations ?? []),
-          map(rel => calcFingerprint(rel)),
+          map(rel => relationFingerprint(rel)),
         ),
       ))
   }
@@ -140,7 +130,13 @@ export const extendRelationChecks = (services: LikeC4Services): ValidationCheck<
     // Normalize title using the same parser helper
     const { title = '' } = parser.parseBaseProps({}, { title: el.title })
 
-    const extendKey = calcFingerprint({ source, target, kind, title })
+    const extendKey = relationFingerprint({
+      source,
+      target,
+      kind,
+      title,
+      isBidirectional: el.isBidirectional || undefined,
+    })
 
     const hasMatch = getProjectFingerprints(projectId).has(extendKey)
     if (!hasMatch) {

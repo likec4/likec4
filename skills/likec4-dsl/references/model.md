@@ -3,6 +3,7 @@
 The `model` block defines the logical architecture: elements (systems, containers, components, actors) organized in a hierarchy, with relationships between them. Views project from this model.
 
 **Key rules:**
+
 - Elements MUST have a kind (from specification) and an identifier unique within their parent.
 - Relationships cannot exist directly between parent and child — move them outside the parent element.
 - `this` and `it` are aliases for the current element inside a nested relationship.
@@ -29,7 +30,9 @@ model {
     SOURCE -> TARGET                        // explicit, both sides named
     -> TARGET "title"                       // implicit source (current element)
     -> TARGET "title" { TAGS; PROPERTIES }
-    -[REL_KIND]-> TARGET "title"            // typed relationship
+    <-> TARGET "title"                      // bidirectional relationship
+    -[REL_KIND]-> TARGET "title"            // typed directed relationship
+    -[REL_KIND]<-> TARGET "title"           // typed bidirectional relationship
     .REL_KIND -> TARGET "title"             // alternative typed syntax
     SOURCE -> it                            // TARGET = current element (alias)
     this -> TARGET                          // SOURCE = current element (alias)
@@ -37,8 +40,10 @@ model {
 
   // Top-level relationships (outside element body): SOURCE is required
   SOURCE -> TARGET "title"
+  SOURCE <-> TARGET "title"
   SOURCE -> TARGET "title" { TAGS; PROPERTIES }
   SOURCE -[REL_KIND]-> TARGET
+  SOURCE -[REL_KIND]<-> TARGET
   SOURCE .REL_KIND TARGET
 
   // Extend existing element (by FQN, from any file)
@@ -54,7 +59,9 @@ model {
   // 3) Include TITLE when multiple relationships share SOURCE/TARGET/KIND.
   // Omitting KIND is WRONG (not merely ambiguous) when a typed relation exists.
   extend SOURCE -> TARGET { TAGS; PROPERTIES }
+  extend SOURCE <-> TARGET { TAGS; PROPERTIES }
   extend SOURCE -[REL_KIND]-> TARGET "title" { TAGS; PROPERTIES }
+  extend SOURCE -[REL_KIND]<-> TARGET "title" { TAGS; PROPERTIES }
 }
 ```
 
@@ -101,17 +108,17 @@ model {
 
 ## Element Properties
 
-| Property | Values |
-|---|---|
-| **title** | String, single line |
-| **description** | String, prefer Markdown. If > 150 chars, also add `summary`. |
-| **summary** | String, max 150 characters |
-| **technology** | String, no multi-line |
-| **style** | `style { ... }` — see `references/style-tokens-colors.md` |
-| **icon** | Shortcut for `style { icon ... }`, takes precedence over the style block |
-| **metadata** | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings |
-| **link** | `link URL "Optional title"` — repeatable; URL can be relative to the document |
-| **navigateTo** | ID of a dynamic view to navigate to on click |
+| Property        | Values                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| **title**       | String, single line                                                                      |
+| **description** | String, prefer Markdown. If > 150 chars, also add `summary`.                             |
+| **summary**     | String, max 150 characters                                                               |
+| **technology**  | String, no multi-line                                                                    |
+| **style**       | `style { ... }` — see `references/style-tokens-colors.md`                                |
+| **icon**        | Shortcut for `style { icon ... }`, takes precedence over the style block                 |
+| **metadata**    | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings |
+| **link**        | `link URL "Optional title"` — repeatable; URL can be relative to the document            |
+| **navigateTo**  | ID of a dynamic view to navigate to on click                                             |
 
 ## Relationship Properties
 

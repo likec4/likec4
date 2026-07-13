@@ -111,11 +111,14 @@ model {
   system2 = system 'System 2'
 
   system1 -[async]-> system2
+  system1 -[async]<-> system3
 
   // Or prefix with '.' to use the kind
   system1 .uses system2
 }
 ```
+
+Use `-[kind]<->` when a bidirectional relationship should also inherit a relationship kind.
 
 This makes it possible to add richer semantics to the interactions between elements, for example,
 from a technology perspective (REST, gRPC, GraphQL, Sync/Async, etc.)
