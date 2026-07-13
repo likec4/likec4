@@ -74,6 +74,132 @@ describe('Model Builder - Extend Relation', () => {
     expect(relation?.metadata).toBeUndefined()
   })
 
+  it('extends bidirectional relation from either endpoint order', async ({ expect }) => {
+    const { validate, buildLikeC4Model } = createTestServices()
+    await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sourceNode
+        component targetNode
+        sourceNode <-> targetNode
+      }
+    `)
+    await validate(`
+      model {
+        extend targetNode <-> sourceNode {
+          metadata {
+            protocol 'sync'
+          }
+        }
+      }
+    `)
+
+    const model = await buildLikeC4Model()
+    const relations = values(model.$data.relations)
+    expect(relations).toHaveLength(1)
+    const relation = relations[0]
+    expect(relation?.isBidirectional).toBe(true)
+    expect(relation?.metadata).toEqual({
+      protocol: 'sync',
+    })
+  })
+
+  it('extends kinded bidirectional relation from either endpoint order', async ({ expect }) => {
+    const { validate, buildLikeC4Model } = createTestServices()
+    await validate(`
+      specification {
+        element component
+        relationship sync
+      }
+      model {
+        component sourceNode
+        component targetNode
+        sourceNode -[sync]<-> targetNode
+      }
+    `)
+    await validate(`
+      model {
+        extend targetNode -[sync]<-> sourceNode {
+          metadata {
+            protocol 'sync'
+          }
+        }
+      }
+    `)
+
+    const model = await buildLikeC4Model()
+    const relations = values(model.$data.relations)
+    expect(relations).toHaveLength(1)
+    const relation = relations[0]
+    expect(relation?.kind).toBe('sync')
+    expect(relation?.isBidirectional).toBe(true)
+    expect(relation?.metadata).toEqual({
+      protocol: 'sync',
+    })
+  })
+
+  it('does not extend directed relation with bidirectional matcher', async ({ expect }) => {
+    const { validate, buildLikeC4Model } = createTestServices()
+    await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sourceNode
+        component targetNode
+        sourceNode -> targetNode
+      }
+    `)
+    await validate(`
+      model {
+        extend sourceNode <-> targetNode {
+          metadata {
+            protocol 'sync'
+          }
+        }
+      }
+    `)
+
+    const model = await buildLikeC4Model()
+    const relations = values(model.$data.relations)
+    expect(relations).toHaveLength(1)
+    const relation = relations[0]
+    expect(relation?.isBidirectional).toBeUndefined()
+    expect(relation?.metadata).toBeUndefined()
+  })
+
+  it('does not extend bidirectional relation with directed matcher', async ({ expect }) => {
+    const { validate, buildLikeC4Model } = createTestServices()
+    await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sourceNode
+        component targetNode
+        sourceNode <-> targetNode
+      }
+    `)
+    await validate(`
+      model {
+        extend sourceNode -> targetNode {
+          metadata {
+            protocol 'sync'
+          }
+        }
+      }
+    `)
+
+    const model = await buildLikeC4Model()
+    const relations = values(model.$data.relations)
+    expect(relations).toHaveLength(1)
+    const relation = relations[0]
+    expect(relation?.isBidirectional).toBe(true)
+    expect(relation?.metadata).toBeUndefined()
+  })
+
   it('deduplicates links with same URL and title from multiple extends', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices()
     await validate(`

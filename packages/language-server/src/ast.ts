@@ -108,6 +108,7 @@ export interface ParsedAstExtend {
 export interface ParsedAstExtendRelation {
   id: c4.RelationId
   astPath: string
+  isBidirectional?: boolean
   tags?: c4.NonEmptyArray<c4.Tag> | null
   links?: c4.NonEmptyArray<c4.Link> | null
   metadata?: { [key: string]: string | string[] }

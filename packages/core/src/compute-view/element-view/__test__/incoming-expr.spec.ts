@@ -25,6 +25,110 @@ describe('incoming-expr', () => {
     expect(test.computeView($include('-> a')).edges.map(edge => edge.id)).toEqual(['a -> b'])
   })
 
+  it('includes a bidirectional relationship to the declared source by element kind', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+          database: {},
+        },
+      })
+      .model(({ component, database, rel }, _) =>
+        _(
+          component('a'),
+          database('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'normal' } as any),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView($include({
+        incoming: {
+          elementKind: 'component',
+          isEqual: true,
+        },
+      })).edges.map(edge => edge.id),
+    ).toEqual(['a -> b'])
+  })
+
+  it('includes a bidirectional relationship to the declared source by element tag', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+          database: {},
+        },
+        tags: {
+          source: {},
+        },
+      })
+      .model(({ component, database, rel }, _) =>
+        _(
+          component('a', { tags: ['source'] }),
+          database('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'normal' } as any),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView($include({
+        incoming: {
+          elementTag: 'source',
+          isEqual: true,
+        },
+      })).edges.map(edge => edge.id),
+    ).toEqual(['a -> b'])
+  })
+
+  it('includes a styled bidirectional relationship from the declared source', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'diamond' } as any),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(test.computeView($include('-> a')).edges.map(edge => edge.id)).toEqual(['a -> b'])
+  })
+
+  it('excludes a bidirectional relationship from the declared source', () => {
+    const { $exclude, $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'normal' } as any),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView(
+        $include('*'),
+        $exclude('-> a'),
+      ).edges.map(edge => edge.id),
+    ).toEqual([])
+  })
+
   describe('top level', () => {
     it('include -> amazon.*', () => {
       const { nodeIds, edgeIds } = computeView([$include('-> amazon.*')])

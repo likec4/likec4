@@ -65,6 +65,54 @@ describe('model relation', () => {
     })
   })
 
+  it('builds a kinded bidirectional relation', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
+      specification {
+        element component
+        relationship sync
+      }
+      model {
+        component frontend
+        component backend
+        frontend -[sync]<-> backend
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const model = await t.buildModel()
+    const relation = Object.values(model.relations)[0]
+    expect(relation).toMatchObject({
+      kind: 'sync',
+      isBidirectional: true,
+      tail: 'normal',
+    })
+  })
+
+  it('keeps semantic bidirectionality when tail style is customized', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component frontend
+        component backend
+        frontend <-> backend {
+          style {
+            tail diamond
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    const model = await t.buildModel()
+    const relation = Object.values(model.relations)[0]
+    expect(relation).toMatchObject({
+      isBidirectional: true,
+      tail: 'diamond',
+    })
+  })
+
   test('fail if defined in model without source').invalid`
       specification {
         element person
