@@ -33,7 +33,7 @@ model {
     <-> TARGET "title"                      // bidirectional relationship
     -[REL_KIND]-> TARGET "title"            // typed directed relationship
     -[REL_KIND]<-> TARGET "title"           // typed bidirectional relationship
-    .REL_KIND -> TARGET "title"             // alternative typed syntax
+    .REL_KIND TARGET "title"                // alternative typed syntax
     SOURCE -> it                            // TARGET = current element (alias)
     this -> TARGET                          // SOURCE = current element (alias)
   }
@@ -55,7 +55,7 @@ model {
 
   // Extend existing relationship — anti-ambiguity matcher contract:
   // 1) SOURCE and TARGET always required.
-  // 2) Include KIND when typed relationships exist between source+target pair.
+  // 2) Include KIND when extending a typed relationship.
   // 3) Include TITLE when multiple relationships share SOURCE/TARGET/KIND.
   // Omitting KIND is WRONG (not merely ambiguous) when a typed relation exists.
   extend SOURCE -> TARGET { TAGS; PROPERTIES }

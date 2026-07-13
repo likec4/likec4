@@ -162,12 +162,7 @@ ExtendElementOrRelation:
   'extend' (
     {infer ExtendRelation}
       source=FqnRef
-      (
-        dotKind=RelationKindDotRef |
-        '-[' kind=[RelationshipKind] (isBidirectional?=']<->' | ']->') |
-        isBidirectional?='<->' |
-        '->'
-      )
+      RelationConnector
       target=FqnRef
       title=String?
       body=ExtendRelationBody |
@@ -249,12 +244,7 @@ StrictFqnRef returns StrictFqnRef:
 
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  (
-    dotKind=RelationKindDotRef |
-    '-[' kind=[RelationshipKind] (isBidirectional?=']<->' | ']->') |
-    isBidirectional?='<->' |
-    '->'
-  )
+  RelationConnector
   target=FqnRef
   (title=String  // title
     (description=String  // description
@@ -263,6 +253,13 @@ Relation<isExplicit>:
   )?
   tags=Tags?
   body=RelationBody?
+;
+
+fragment RelationConnector:
+  dotKind=RelationKindDotRef |
+  '-[' kind=[RelationshipKind] (isBidirectional?=']<->' | ']->') |
+  isBidirectional?='<->' |
+  '->'
 ;
 
 RelationBody: '{'
