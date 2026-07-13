@@ -140,9 +140,13 @@ export const extendRelationChecks = (services: LikeC4Services): ValidationCheck<
 
     const hasMatch = getProjectFingerprints(projectId).has(extendKey)
     if (!hasMatch) {
-      accept('warning', 'This extend does not match any relation (by source, kind, target, title)', {
-        node: el,
-      })
+      accept(
+        'warning',
+        'This extend does not match any relation (by source, kind, target, title, and directionality)',
+        {
+          node: el,
+        },
+      )
     }
   })
 }
