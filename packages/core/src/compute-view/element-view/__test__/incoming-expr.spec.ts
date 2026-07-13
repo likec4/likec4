@@ -1,7 +1,30 @@
 import { describe, expect, it } from 'vitest'
+import { Builder } from '../../../builder'
 import { $exclude, $include, computeView } from './fixture'
+import { TestHelper } from './TestHelper'
 
 describe('incoming-expr', () => {
+  it('includes a bidirectional relationship from either endpoint', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { tail: 'normal' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(test.computeView($include('-> b')).edges.map(edge => edge.id)).toEqual(['a -> b'])
+    expect(test.computeView($include('-> a')).edges.map(edge => edge.id)).toEqual(['a -> b'])
+  })
+
   describe('top level', () => {
     it('include -> amazon.*', () => {
       const { nodeIds, edgeIds } = computeView([$include('-> amazon.*')])

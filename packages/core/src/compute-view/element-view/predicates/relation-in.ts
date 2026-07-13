@@ -5,7 +5,7 @@ import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { nonexhaustive } from '../../../utils'
 import { elementExprToPredicate } from '../../utils/elementExpressionToPredicate'
 import type { ConnectionWhere, PredicateExecutor } from '../_types'
-import { findConnection, findConnectionsBetween, resolveAndIncludeFromMemory, resolveElements } from './_utils'
+import { findConnectionsFrom, resolveAndIncludeFromMemory, resolveElements } from './_utils'
 
 export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming<AnyAux>> = {
   include: ({ expr, scope, model, memory, stage, filterWhere }) => {
@@ -17,10 +17,9 @@ export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming
       }
       for (const sibling of scope.ascendingSiblings()) {
         connections.push(
-          ...findConnection(
+          ...findConnectionsFrom(
             sibling,
-            scope,
-            'directed',
+            [scope],
           ),
         )
       }
@@ -37,10 +36,9 @@ export const IncomingExprPredicate: PredicateExecutor<ModelRelationExpr.Incoming
       const ensureIncoming = incomingConnectionPredicate(model, target)
       for (const visible of visibleElements) {
         connections.push(
-          ...findConnectionsBetween(
+          ...findConnectionsFrom(
             visible,
             targets,
-            'directed',
           ).filter(ensureIncoming),
         )
       }
@@ -75,6 +73,14 @@ export function incomingConnectionPredicate(
   model: LikeC4Model,
   expr: ModelFqnExpr.NonWildcard,
 ): ConnectionWhere {
+  const isIncomingOrBidirectional = (fqn: string): ConnectionWhere => {
+    const isIncoming = Connection.isIncoming(fqn)
+    const isOutgoing = Connection.isOutgoing(fqn)
+    return connection =>
+      isIncoming(connection)
+      || (isOutgoing(connection) && [...connection.relations].some(relation => relation.tail === 'normal'))
+  }
+
   switch (true) {
     case ModelFqnExpr.isElementKindExpr(expr):
     case ModelFqnExpr.isElementTagExpr(expr): {
@@ -85,7 +91,7 @@ export function incomingConnectionPredicate(
       const fqn = FqnRef.flatten(expr.ref)
       return anyPass(
         [...model.children(fqn)].map(
-          el => Connection.isIncoming(el.id),
+          el => isIncomingOrBidirectional(el.id),
         ),
       )
     }
@@ -94,20 +100,20 @@ export function incomingConnectionPredicate(
       return anyPass([
         Connection.isInside(fqn),
         ...[...model.children(fqn)].map(
-          el => Connection.isIncoming(el.id),
+          el => isIncomingOrBidirectional(el.id),
         ),
       ])
     }
     case ModelFqnExpr.isModelRef(expr) && expr.selector === 'expanded': {
       const fqn = FqnRef.flatten(expr.ref)
       return anyPass([
-        Connection.isIncoming(fqn),
+        isIncomingOrBidirectional(fqn),
         Connection.isInside(fqn),
       ])
     }
     case ModelFqnExpr.isModelRef(expr): {
       const fqn = FqnRef.flatten(expr.ref)
-      return Connection.isIncoming(fqn)
+      return isIncomingOrBidirectional(fqn)
     }
     default:
       nonexhaustive(expr)
