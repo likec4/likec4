@@ -53,15 +53,18 @@ model {
     NESTED_ELEMENTS | RELATIONSHIPS         // additional children or edges
   }
 
-  // Extend existing relationship — anti-ambiguity matcher contract:
+  // Extend existing relationship — matcher contract:
   // 1) SOURCE and TARGET always required.
   // 2) Include KIND when extending a typed relationship.
-  // 3) Include TITLE when multiple relationships share SOURCE/TARGET/KIND.
+  // 3) Include TITLE when extending a titled relationship.
   // Omitting KIND is WRONG (not merely ambiguous) when a typed relation exists.
-  extend SOURCE -> TARGET { TAGS; PROPERTIES }
-  extend SOURCE <-> TARGET { TAGS; PROPERTIES }
-  extend SOURCE -[REL_KIND]-> TARGET "title" { TAGS; PROPERTIES }
-  extend SOURCE -[REL_KIND]<-> TARGET "title" { TAGS; PROPERTIES }
+  // Omitting TITLE is WRONG when the matched relation is titled.
+  extend SOURCE -> TARGET { TAGS; PROPERTIES }                  // untitled directed relationship
+  extend SOURCE -> TARGET "title" { TAGS; PROPERTIES }          // titled directed relationship
+  extend SOURCE <-> TARGET { TAGS; PROPERTIES }                 // untitled bidirectional relationship
+  extend SOURCE <-> TARGET "title" { TAGS; PROPERTIES }         // titled bidirectional relationship
+  extend SOURCE -[REL_KIND]-> TARGET "title" { TAGS; PROPERTIES } // typed titled relationship
+  extend SOURCE -[REL_KIND]<-> TARGET "title" { TAGS; PROPERTIES } // typed titled bidirectional
 }
 ```
 
