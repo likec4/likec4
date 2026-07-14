@@ -21,9 +21,13 @@ export function findConnectionsFrom<A extends AnyAux>(
   source: ElementModel<A>,
   targets: Iterable<ElementModel<A>>,
 ): readonly ConnectionModel<A>[] {
-  return findConnectionsBetween(source, targets).filter(
-    connection => connection.source === source || [...connection.relations].some(isBidirectionalRelation),
-  )
+  return findConnectionsBetween(source, targets).flatMap(connection => {
+    if (connection.source === source) {
+      return [connection]
+    }
+    const bidirectionalRelations = new Set([...connection.relations].filter(isBidirectionalRelation))
+    return bidirectionalRelations.size > 0 ? [connection.update(bidirectionalRelations)] : []
+  })
 }
 
 /**
