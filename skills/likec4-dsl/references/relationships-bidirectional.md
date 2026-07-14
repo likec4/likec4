@@ -9,6 +9,9 @@ LikeC4 supports `<->` in two places with related but different meanings:
 
 ## Declaring relationships in the model
 
+The short snippets in this reference are fragments unless they include their own element declarations. Declare the
+referenced elements in your model before using them.
+
 Use `->` when one element initiates the relationship:
 
 ```likec4
@@ -47,7 +50,7 @@ model {
 }
 ```
 
-The relationship kind participates in extension matching. When extending a kinded relationship, include the kind in `extend`; also include the title when multiple relationships share the same endpoints and kind.
+The relationship kind participates in extension matching. When extending a kinded relationship, include the kind in `extend`; also include the title whenever the relationship is titled.
 
 ## Extending bidirectional relationships
 
