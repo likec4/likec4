@@ -99,6 +99,8 @@ const absolute = relativePath => path.join(root, relativePath)
 const isTracked = relativePath => tracked.includes(relativePath)
 const read = relativePath => readFileSync(absolute(relativePath), 'utf8')
 const fail = message => failures.push(message)
+const stripHtmlComments = content => content.replace(/<!--[\s\S]*?-->/g, '')
+const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 const requireTrackedFile = relativePath => {
   if (!isTracked(relativePath)) {
@@ -115,6 +117,14 @@ const requireTrackedFile = relativePath => {
 const requireIncludes = (content, needle, label) => {
   if (!content.includes(needle)) {
     fail(`AGENTS.md must contain ${label}: ${needle}`)
+  }
+}
+
+const requireSourceMapRow = (content, source) => {
+  const escapedSourceCell = escapeRegExp(`\`${source}\``)
+  const sourceRowPattern = new RegExp(`^\\|\\s*${escapedSourceCell}\\s*\\|`, 'm')
+  if (!sourceRowPattern.test(stripHtmlComments(content))) {
+    fail(`AGENTS.md must contain source preservation map row: ${source}`)
   }
 }
 
@@ -213,7 +223,7 @@ if (existsSync(absolute('AGENTS.md'))) {
   ]
 
   for (const source of requiredSources) {
-    requireIncludes(agents, `| \`${source}\` |`, 'source preservation map row')
+    requireSourceMapRow(agents, source)
   }
 }
 
@@ -357,7 +367,7 @@ Treat round trips such as `fromWorkspace → toDSL → fromSource` as one-way ge
 
 ## Build, Test, and Development Commands
 
-- `pnpm install` installs dependencies and requires Node `>=22.21.1`.
+- `pnpm install` installs dependencies and requires Node `>=22.22.3`.
 - `pnpm generate` pre-generates sources; always run after checkout, big merges, refactors, and when generated files are missing.
 - `pnpm build` builds packages except docs and playground.
 - `pnpm typecheck` validates TypeScript; run it after `pnpm generate`.

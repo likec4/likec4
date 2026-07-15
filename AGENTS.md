@@ -317,19 +317,6 @@ Syncing rules:
 
 ## Source preservation map
 
-<!-- Source preservation validator row anchors:
-| `CLAUDE.md` |
-| `packages/core/CLAUDE.md` |
-| `packages/diagram/CLAUDE.md` |
-| `packages/language-server/CLAUDE.md` |
-| `packages/language-services/CLAUDE.md` |
-| `packages/likec4-spa/CLAUDE.md` |
-| `packages/vite-plugin/CLAUDE.md` |
-| `packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md` |
-| `.github/copilot-instructions.md` |
-| `.github/agents/changeset-generator.agent.md` |
--->
-
 | Source file                                                    | Destination in `AGENTS.md`                                  | Required preservation                                                                                                              |
 | -------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `CLAUDE.md`                                                    | Repository guidelines and architecture sections             | All shared root instructions, including public API, model stages, composite TS gotcha, Builder type-loss, and DSL writeback limits |
