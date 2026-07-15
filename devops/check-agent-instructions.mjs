@@ -18,6 +18,7 @@ const absolute = relativePath => path.join(root, relativePath)
 const isTracked = relativePath => tracked.includes(relativePath)
 const read = relativePath => readFileSync(absolute(relativePath), 'utf8')
 const fail = message => failures.push(message)
+const stripCarriageReturns = content => content.replace(/\r/g, '')
 const stripHtmlComments = content => content.replace(/<!--[\s\S]*?-->/g, '')
 const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -56,7 +57,7 @@ const requireSourceMapRow = (content, source) => {
 requireTrackedFile('AGENTS.md')
 
 if (requireTrackedFile('CLAUDE.md')) {
-  const claude = read('CLAUDE.md')
+  const claude = stripCarriageReturns(read('CLAUDE.md'))
   if (claude !== '@AGENTS.md\n') {
     fail('CLAUDE.md must contain exactly "@AGENTS.md" plus a trailing newline')
   }
@@ -125,7 +126,7 @@ if (existsSync(absolute('AGENTS.md'))) {
     '`packages/config/schema.json` is generated from `packages/config/src/schema.ts`',
     '`src/rpc/functions/` contains handlers such as `updateView.ts` and `calcAdhocView.ts`.',
     'VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`.',
-    'Builder` in `packages/core/src/builder/` uses a phantom-type ledger',
+    '`Builder` in `packages/core/src/builder/` uses a phantom-type ledger',
     '`@xstate/store` is available as a dependency, but current source does not import it.',
     'Do not treat package shims or build output such as `packages/diagram/adhoc-editor/package.json`, `lib/`, or `dist/` as active source layers.',
     'Do not import Vite virtual modules (`likec4:*`) or call the language server from `packages/diagram`.',
