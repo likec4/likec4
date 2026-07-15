@@ -27,6 +27,11 @@ type HandlerParams =
     }
   )
 
+/**
+ * Computes the output subdirectory for a view from its source path.
+ * Normalizes path separators, strips Windows drive prefixes, and removes `..`
+ * segments so generated files stay under the requested output directory.
+ */
 export function relativeOutputDir(sourcePath: string | undefined): string {
   if (!sourcePath) {
     return '.'
