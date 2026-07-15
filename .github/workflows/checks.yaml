@@ -25,6 +25,9 @@ jobs:
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
 
+      - name: 🤖 agent instructions
+        run: pnpm check:agent-instructions
+
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
