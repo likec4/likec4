@@ -25,6 +25,7 @@ LikeC4 is an architecture-as-code tool for visualizing software architecture. It
 - `packages/icons/` is script-generated; never change it unless explicitly asked.
 - `packages/log/` contains shared logging utilities.
 - `packages/mcp/` contains the MCP server package; see `packages/mcp/README.md`.
+- `packages/tsconfig/` contains shared TypeScript configuration.
 - `packages/create-likec4/` is not used for now.
 - `e2e/` is an isolated workspace for Playwright end-to-end tests.
 - `styled-system/preset` holds the PandaCSS preset.
@@ -117,7 +118,8 @@ Several packages have auto-generated files that must be generated before build o
 - `**/routeTree.gen.ts` files are TanStack Router routes.
 - `styled-system/preset/src/generated.ts` is the Panda CSS preset.
 - `styled-system/styles/dist/` is generated Panda CSS styles.
-- `schemas/likec4-config.schema.json` is generated from `packages/config/src/schema.ts`.
+- `packages/config/schema.json` is generated from `packages/config/src/schema.ts` and copied into
+  `packages/likec4/config/schema.json` during the LikeC4 package build.
 
 Do not edit git-ignored generated files; those changes will be overwritten.
 
@@ -160,11 +162,11 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 - Tools with native `AGENTS.md` support should read `AGENTS.md` directly.
 - Tool-specific files with import support should import `AGENTS.md`.
 - Tools without import support may use generated plain-text adapters derived from `AGENTS.md`, but those adapters must be generated and checked for drift.
-- Do not use symlink adapters; this repository has Windows CI and Windows contributors.
+- Do not use symlink adapters for shared repository instructions; this repository has Windows CI and Windows contributors.
 - Do not duplicate repository instructions into a second long-lived source of truth.
 - Do not create `AGENT.md`.
 - `.github/agents/*.agent.md` files may remain only as task-specific wrappers. Shared repository policy must live here in `AGENTS.md`.
-- GitHub Copilot and VS Code support `AGENTS.md` natively, so this repository does not keep `.github/copilot-instructions.md`.
+- VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`. Do not add `.github/copilot-instructions.md`; any future adapter must be generated from `AGENTS.md` and added together with drift validation.
 - The `.cursor/` directory is gitignored. Contributors may add local `.cursor/rules/` files for personal use, but do not commit them.
 - Use `.tool-versions` for expected Node and pnpm versions.
 - Pre-commit hooks use `nano-staged` to run dprint on staged files.
@@ -187,21 +189,20 @@ Imports flow upward only; never have a lower layer import from a higher one.
 - `overlays/`, `navigationpanel/`, `search/`, and `projects-overview/` are sibling stateful features. Each owns its own XState actor.
 - `likec4diagram/` is the top-level diagram engine. It hosts the main machine in `state/machine.ts` and embeds the editor as a child actor when editing is enabled.
 - `editor/` is an orthogonal feature injected into `likec4diagram/` through an actor reference. Do not nest it inside `likec4diagram/`, and do not import from `likec4diagram/` here.
-- `adhoc-editor/` is a separate code path with its own machine and is intentionally not re-exported from `src/index.ts`.
 - `context/`, `hooks/`, `components/`, `shadowroot/`, and `utils/` are utility layers used by everything above.
 - When adding a new feature, default to a sibling folder under `src/` with its own actor. Promote it into `likec4diagram/` only if it must coordinate with the main machine.
 
 State management:
 
 - XState machines are the default for coordinated or persistent state. Use file patterns such as `actor.ts`, `*Actor.ts`, and `state/machine.ts`.
-- `@xstate/store` is only for ephemeral UI state inside a single feature. It is currently used only by `adhoc-editor/state/panel.tsx`; do not introduce it elsewhere without a clear reason.
+- `@xstate/store` is available as a dependency, but current source does not import it. Do not introduce it without a clear reason and keep any future usage local to one feature.
 - `nanostores` are reserved for ambient reactive concerns such as media queries and container size. Do not use them for feature or model state; that belongs in `@likec4/spa`.
 - `useState` and `useReducer` are for transient UI state only, such as hover, focus, and form inputs.
 
 Public API and app contract:
 
 - `packages/diagram/src/index.ts` is the public API.
-- `adhoc-editor/` is intentionally internal.
+- Do not treat package shims or build output such as `packages/diagram/adhoc-editor/package.json`, `lib/`, or `dist/` as active source layers.
 - Do not import Vite virtual modules (`likec4:*`) or call the language server from `packages/diagram`.
 - `packages/diagram` defines the consumer contract through `LikeC4ModelProvider` and `useLikeC4Model`-style hooks. Data wiring belongs in `packages/likec4-spa` and `packages/vite-plugin`.
 
@@ -262,13 +263,13 @@ Subdirectory layering:
 - `src/plugin.ts` is the plugin factory. It wires `resolveId`, `load`, `configureServer`, and `handleHotUpdate`, and registers the virtual-module list. New virtual modules must be added to its registration arrays.
 - `src/internal.ts` is exported through the `./internal` subpath and consumed by generated virtual-module code and by `packages/likec4` static-site build. It re-exports nanostores helpers, `createRpc`, and `createHooksForModel`. Treat this as a stable contract because generated code in the wild depends on it.
 - `src/virtuals/` contains one file per virtual module. Each owns a single `likec4:*` id and its loader. Use `_shared.ts` helpers; do not cross-import between virtuals.
-- `src/rpc/` contains server-side birpc setup. `protocol.ts` is the typed contract, `rpc.ts` wires `enablePluginRPC` over `server.hot`, and individual files such as `updateView.ts` and `calcAdhocView.ts` hold handlers.
+- `src/rpc/` contains server-side birpc setup. `protocol.ts` is the typed contract, `rpc.ts` wires `enablePluginRPC` over `server.hot`, and `src/rpc/functions/` contains handlers such as `updateView.ts` and `calcAdhocView.ts`.
 - `src/modules.d.ts` contains ambient TypeScript declarations for every `likec4:*` id. It is required for IDE/type-check and published through the `./modules` subpath.
 
 Adding new functionality:
 
 - New virtual module: create a file in `src/virtuals/`, export a `VirtualModule` or `ProjectVirtualModule` with a unique `likec4:*` id and a `load()` returning generated code, register it in `src/plugin.ts`, and declare its module type in `src/modules.d.ts`.
-- New RPC method: add the signature to `src/rpc/protocol.ts`, implement the handler in `src/rpc/`, and wire it into `createBirpc` in `src/rpc/rpc.ts`. The client wrapper in `src/virtuals/rpc.ts` picks up the new method through the protocol type.
+- New RPC method: add the signature to `src/rpc/protocol.ts`, implement the handler in `src/rpc/functions/`, and wire it into `createBirpc` in `src/rpc/rpc.ts`. The client wrapper in `src/virtuals/rpc.ts` picks up the new method through the protocol type.
 - All virtual ids use the `likec4:*` prefix. Project-scoped ids include the project id, such as `likec4:model/{projectId}`.
 
 Boundaries:
@@ -327,5 +328,5 @@ Syncing rules:
 | `packages/likec4-spa/CLAUDE.md`                                | `packages/likec4-spa` section                               | Layering, nanostores, no XState, virtual-module boundaries, route generation                                                       |
 | `packages/vite-plugin/CLAUDE.md`                               | `packages/vite-plugin` section                              | Virtual modules, RPC, generated-code contract, and hard boundaries                                                                 |
 | `packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md` | nested package section                                      | Sequence layouter mirror/sync rules and both-side test requirement                                                                 |
-| `.github/copilot-instructions.md`                              | Repository guidelines, generated-file rules, adapter policy | Current shared instructions folded in; file removed because GitHub Copilot supports `AGENTS.md`                                    |
+| `.github/copilot-instructions.md`                              | Repository guidelines, generated-file rules, adapter policy | Current shared instructions folded in; file removed to avoid a second broad source; any future adapter requires generator + check  |
 | `.github/agents/changeset-generator.agent.md`                  | Changeset policy section                                    | Shared LikeC4 changeset rules; task workflow remains in the GitHub agent                                                           |

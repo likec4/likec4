@@ -39,6 +39,12 @@ const requireIncludes = (content, needle, label) => {
   }
 }
 
+const requireNotIncludes = (content, needle, label) => {
+  if (content.includes(needle)) {
+    fail(`AGENTS.md must not contain stale ${label}: ${needle}`)
+  }
+}
+
 const requireSourceMapRow = (content, source) => {
   const escapedSourceCell = escapeRegExp(`\`${source}\``)
   const sourceRowPattern = new RegExp(`^\\|\\s*${escapedSourceCell}\\s*\\|`, 'm')
@@ -72,11 +78,11 @@ if (unexpectedClaudeFiles.length > 0) {
 }
 
 if (isTracked('.github/copilot-instructions.md')) {
-  fail('Remove .github/copilot-instructions.md; GitHub Copilot should use root AGENTS.md directly')
+  fail('Remove .github/copilot-instructions.md; keep AGENTS.md as the only broad shared instruction source')
 }
 
 if (existsSync(absolute('.github/copilot-instructions.md'))) {
-  fail('Do not keep local .github/copilot-instructions.md; it becomes a competing instruction source')
+  fail('Do not keep local .github/copilot-instructions.md without a generated-adapter drift check')
 }
 
 if (existsSync(absolute('AGENTS.md'))) {
@@ -113,9 +119,15 @@ if (existsSync(absolute('AGENTS.md'))) {
     'AGENTS.md is the canonical shared repository instruction file.',
     'The root `CLAUDE.md` file is the Claude Code adapter and must contain exactly `@AGENTS.md`.',
     'Do not create `AGENT.md`.',
-    'Do not use symlink adapters; this repository has Windows CI and Windows contributors.',
+    'Do not use symlink adapters for shared repository instructions; this repository has Windows CI and Windows contributors.',
     'Always use `patch` changesets; versioning is handled manually by maintainers.',
+    '`packages/tsconfig/` contains shared TypeScript configuration.',
+    '`packages/config/schema.json` is generated from `packages/config/src/schema.ts`',
+    '`src/rpc/functions/` contains handlers such as `updateView.ts` and `calcAdhocView.ts`.',
+    'VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`.',
     'Builder` in `packages/core/src/builder/` uses a phantom-type ledger',
+    '`@xstate/store` is available as a dependency, but current source does not import it.',
+    'Do not treat package shims or build output such as `packages/diagram/adhoc-editor/package.json`, `lib/`, or `dist/` as active source layers.',
     'Do not import Vite virtual modules (`likec4:*`) or call the language server from `packages/diagram`.',
     'Do not edit files in `packages/language-server/src/generated` or `packages/language-server/src/generated-lib`.',
     'Node-only helpers that import `node:fs`, `node:path`, or similar modules go in `packages/language-services/src/node/index.ts`.',
@@ -126,6 +138,19 @@ if (existsSync(absolute('AGENTS.md'))) {
 
   for (const phrase of requiredPhrases) {
     requireIncludes(agents, phrase, 'required preserved rule')
+  }
+
+  const stalePhrases = [
+    '`schemas/likec4-config.schema.json`',
+    '`adhoc-editor/` is a separate code path',
+    '`adhoc-editor/` is intentionally internal',
+    '`adhoc-editor/state/panel.tsx`',
+    'implement the handler in `src/rpc/`',
+    'GitHub Copilot and VS Code support `AGENTS.md` natively',
+  ]
+
+  for (const phrase of stalePhrases) {
+    requireNotIncludes(agents, phrase, 'repository instruction')
   }
 
   const requiredSources = [
