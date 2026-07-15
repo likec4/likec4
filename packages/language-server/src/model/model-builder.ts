@@ -249,7 +249,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       }
       assignNavigateTo(views)
       const data: c4.ComputedLikeC4ModelData = {
-        ...parsedModelData,
+        ...(parsedModelData as c4.BaseLikeC4ModelData<any>),
         manualLayouts: { ...manualLayouts?.views },
         [_stage]: 'computed',
         views: indexBy(views, prop('id')),
@@ -305,6 +305,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private notifyListeners(docs: URI[]): void
   private notifyListeners(projectId: c4.ProjectId): void
   private notifyListeners(arg: URI[] | c4.ProjectId) {
+    if (this.listeners.length === 0) {
+      return
+    }
     let groupedByProject: Array<[projectId: c4.ProjectId, docs: URI[]]>
     if (isArray(arg)) {
       groupedByProject = pipe(
@@ -320,7 +323,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         [arg, []],
       ]
     }
-    for (const listener of [...this.listeners]) {
+    const listeners = [...this.listeners]
+    for (const listener of listeners) {
       for (const [projectId, docs] of groupedByProject) {
         try {
           listener(projectId, docs)

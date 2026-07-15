@@ -323,8 +323,8 @@ describe('context', () => {
       materialize(
         withctx(
           0 as Map<string, string> | number,
-          // @ts-expect-error - guard should fail
           guard(
+            // @ts-expect-error - guard should fail
             z.string(),
             print(),
           ),

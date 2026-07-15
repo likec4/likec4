@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest'
 import type { IconUrl } from '../../../types'
-import { $exclude, $expr, $include, computeView } from './fixture'
+import { $exclude, $expr, $include, $style, computeView } from './fixture'
 
 describe('compute-element-view', () => {
   it('should be empty if no root and no rules', ({ expect }) => {
@@ -327,31 +327,22 @@ describe('compute-element-view', () => {
       $include('cloud.frontend.dashboard'),
       // all elements
       // color: secondary
-      {
-        targets: [{ wildcard: true }],
-        style: {
-          color: 'secondary',
-          icon: 'none',
-          shape: 'storage',
-        },
-      },
+      $style('*', {
+        color: 'secondary',
+        icon: 'none',
+        shape: 'storage',
+      }),
       // cloud
       // color: muted
-      {
-        targets: [$expr('cloud')],
-        style: {
-          color: 'muted',
-          icon: 'http://some-icon' as IconUrl,
-        },
-      },
+      $style('cloud', {
+        color: 'muted',
+        icon: 'http://some-icon' as IconUrl,
+      }),
       // cloud.*
       // shape: browser
-      {
-        targets: [$expr('cloud.*')],
-        style: {
-          shape: 'browser',
-        },
-      },
+      $style('cloud.*', {
+        shape: 'browser',
+      }),
     ])
 
     const amazon = nodes.find(n => n.id === 'amazon')!

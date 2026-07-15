@@ -1,11 +1,11 @@
 import { isTruthy } from 'remeda'
 import type * as aux from './_aux'
-import type { AnyAux, Unknown } from './_aux'
+import type { AnyAux } from './_aux'
 import type { FqnRef } from './fqnRef'
 import type { AbstractRelationship, ElementStyle } from './model-logical'
 
 // dprint-ignore
-export interface DeploymentNode<A extends AnyAux = Unknown>
+export interface DeploymentNode<A extends AnyAux = AnyAux>
   extends
     aux.WithDescriptionAndTech,
     aux.WithOptionalTags<A>,
@@ -22,7 +22,7 @@ export interface DeploymentNode<A extends AnyAux = Unknown>
 }
 
 // dprint-ignore
-export interface DeployedInstance<A extends AnyAux = Unknown>
+export interface DeployedInstance<A extends AnyAux = AnyAux>
   extends
     aux.WithDescriptionAndTech,
     aux.WithOptionalTags<A>,
@@ -41,9 +41,9 @@ export interface DeployedInstance<A extends AnyAux = Unknown>
   readonly style: ElementStyle
 }
 
-export type DeploymentElement<A extends AnyAux = Unknown> = DeploymentNode<A> | DeployedInstance<A>
+export type DeploymentElement<A extends AnyAux = AnyAux> = DeploymentNode<A> | DeployedInstance<A>
 
-export type DeploymentElementRef<A extends AnyAux = Unknown> = {
+export type DeploymentElementRef<A extends AnyAux = AnyAux> = {
   readonly id: aux.StrictDeploymentFqn<A>
   readonly element?: aux.StrictFqn<A>
 }
@@ -59,7 +59,7 @@ export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): 
 /**
  * Relationship in deployment model
  */
-export interface DeploymentRelationship<A extends AnyAux = Unknown> extends AbstractRelationship<A> {
+export interface DeploymentRelationship<A extends AnyAux = AnyAux> extends AbstractRelationship<A> {
   readonly source: FqnRef.DeploymentRef<A>
   readonly target: FqnRef.DeploymentRef<A>
 }
@@ -67,4 +67,4 @@ export interface DeploymentRelationship<A extends AnyAux = Unknown> extends Abst
  * Backward compatibility alias
  * @deprecated Use {@link DeploymentRelationship} instead
  */
-export type DeploymentRelation<A extends AnyAux = Unknown> = DeploymentRelationship<A>
+export type DeploymentRelation<A extends AnyAux = AnyAux> = DeploymentRelationship<A>

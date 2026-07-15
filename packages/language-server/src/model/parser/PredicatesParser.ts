@@ -22,7 +22,7 @@ export function PredicatesParser<TBase extends WithExpressionV2>(B: TBase) {
     }
 
     parseElementPredicateOrWhere(astNode: ast.FqnExprOrWhere): c4.ModelFqnExpr.OrWhere {
-      return this.parseFqnExprOrWhere(astNode) as c4.ModelFqnExpr.Any
+      return this.parseFqnExprOrWhere(astNode) as c4.ModelFqnExpr.OrWhere
     }
 
     parseElementExpression(astNode: ast.FqnExpr): c4.ModelFqnExpr {

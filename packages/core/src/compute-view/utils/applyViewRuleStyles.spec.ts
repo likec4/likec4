@@ -4,6 +4,7 @@ import {
   type ElementViewRuleStyle as ViewRuleStyle,
   type IconUrl,
   type ModelExpression,
+  type ModelFqnExpr,
   type NonEmptyArray,
   GroupElementKind,
 } from '../../types'
@@ -23,7 +24,7 @@ function r(
   props: Partial<Omit<ViewRuleStyle, 'targets'>>,
 ): ViewRuleStyle {
   return {
-    targets,
+    targets: targets as ModelFqnExpr[],
     style: {},
     ...props,
   }

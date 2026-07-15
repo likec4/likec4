@@ -1,5 +1,5 @@
 import * as c4 from '@likec4/core'
-import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { filter, find, isDefined, isEmpty, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
 import type { Except, Writable } from 'type-fest'
 import {
@@ -18,6 +18,10 @@ import type { WithDeploymentView } from './DeploymentViewParser'
 import type { WithPredicates } from './PredicatesParser'
 
 export type WithViewsParser = ReturnType<typeof ViewsParser>
+
+function filterModelFqnExpr(arr: any): c4.ModelFqnExpr[] {
+  return arr as c4.ModelFqnExpr[]
+}
 
 type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
@@ -220,9 +224,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRuleRank(astRule: ast.ViewRuleRank): c4.ElementViewRuleRank {
-      const targets = this.parseFqnExpressions(astRule.targets).filter((e): e is c4.ModelFqnExpr.Any =>
-        c4.ModelExpression.isFqnExpr(e as any)
-      )
+      const targets = filterModelFqnExpr(this.parseFqnExpressions(astRule.targets))
       const rank = astRule.value ?? 'same'
       return {
         rank,
@@ -231,9 +233,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseViewRuleStyle(astRule: ast.ViewRuleStyle | ast.GlobalStyle): c4.ElementViewRuleStyle {
-      const targets = this.parseFqnExpressions(astRule.targets).filter((e): e is ModelFqnExpr.Any =>
-        c4.ModelExpression.isFqnExpr(e as any)
-      )
+      const targets = filterModelFqnExpr(this.parseFqnExpressions(astRule.targets))
       const style = this.parseStyleProps(astRule.props.filter(ast.isStyleProperty))
       const notation = removeIndent(parseMarkdownAsString(astRule.props.find(ast.isNotationProperty)?.value))
       return {

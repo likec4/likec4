@@ -43,7 +43,6 @@ catalog:
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.19
   "@types/pako": ^2.0.4
-  "@typescript/native-preview": 7.0.0-dev.20260702.3
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -54,8 +53,8 @@ catalog:
   pako: ^2.1.0
   playwright: 1.60.0
   tsx: 4.22.5
-  turbo: 2.9.18
-  typescript: 6.0.3
+  turbo: 2.10.5
+  typescript: 7.0.2
   wireit: 0.14.12
   zx: 8.8.5
 
@@ -168,9 +167,9 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
-    tsdown: ^0.22.3
-    "@tsdown/css": ^0.22.3
-    rolldown: ^1.1.4
+    tsdown: ^0.22.8
+    "@tsdown/css": ^0.22.8
+    rolldown: ^1.2.0
   utils:
     "@logtape/logtape": ^2.1.1
     "@lume/kiwi": ^0.4.4
@@ -245,15 +244,25 @@ minimumReleaseAgeExclude:
   - '@astrojs/react@5.0.7 || 6.0.1'
   - '@astrojs/starlight@0.39.3'
   - astro@6.4.3 || 7.0.6
-  - '@mantine/colors-generator@9.4.0'
-  - '@mantine/core@9.4.0'
-  - '@mantine/hooks@9.4.0'
-  - '@mantine/modals@9.4.0'
-  - '@mantine/notifications@9.4.0'
-  - '@mantine/store@9.4.0'
-  - '@mantine/vanilla-extract@9.4.0'
   - '@hono/node-server@2.0.6 || 2.0.8'
-  - tsx@4.22.5
   - '@astrojs/internal-helpers@0.10.1'
   - '@astrojs/markdown-satteri@0.3.3'
   - picomatch@4.0.5
+  - '@rolldown/binding-android-arm64@1.2.0'
+  - '@rolldown/binding-darwin-arm64@1.2.0'
+  - '@rolldown/binding-darwin-x64@1.2.0'
+  - '@rolldown/binding-freebsd-x64@1.2.0'
+  - '@rolldown/binding-linux-arm-gnueabihf@1.2.0'
+  - '@rolldown/binding-linux-arm64-gnu@1.2.0'
+  - '@rolldown/binding-linux-arm64-musl@1.2.0'
+  - '@rolldown/binding-linux-ppc64-gnu@1.2.0'
+  - '@rolldown/binding-linux-s390x-gnu@1.2.0'
+  - '@rolldown/binding-linux-x64-gnu@1.2.0'
+  - '@rolldown/binding-linux-x64-musl@1.2.0'
+  - '@rolldown/binding-openharmony-arm64@1.2.0'
+  - '@rolldown/binding-wasm32-wasi@1.2.0'
+  - '@rolldown/binding-win32-arm64-msvc@1.2.0'
+  - '@rolldown/binding-win32-x64-msvc@1.2.0'
+  - '@tsdown/css@0.22.8'
+  - rolldown@1.2.0
+  - tsdown@0.22.8

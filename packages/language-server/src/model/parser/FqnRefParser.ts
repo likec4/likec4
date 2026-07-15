@@ -420,7 +420,8 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
 
       return {
         where: {
-          expr: expr,
+          // TODO: check if expr is RelationExpr and wrap it in Where if needed
+          expr: expr as any,
           condition: condition,
         },
       }

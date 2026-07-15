@@ -800,16 +800,16 @@ export function foreachNewLine<A extends Iterable<any>>(
 /**
  * Guards context value with a condition and executes operations if the condition is true
  */
-export function guard<A, N extends A>(
-  condition: (ctx: A) => ctx is N,
-  ...ops: Ops<N>
-): Op<A>
 export function guard<A, Z extends z.ZodType<any, any, any>>(
   zodSchema: Z,
   ...ops: Or<
     A extends z.input<NoInfer<Z>> ? true : false,
     z.input<NoInfer<Z>> extends A ? true : false
   > extends true ? Ops<z.output<NoInfer<Z>>> : ['zod guard mismatch']
+): Op<A>
+export function guard<A, N extends A>(
+  condition: (ctx: A) => ctx is N,
+  ...ops: Ops<N>
 ): Op<A>
 export function guard(
   condition: Function | z.ZodSchema,

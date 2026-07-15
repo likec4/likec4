@@ -17,7 +17,7 @@ export type ProjectData = LikeC4Project & {
 }
 export type ProjectsData = NonEmptyArray<ProjectData>
 
-export type VirtualModuleLoadResult = Rolldown.SourceDescription | string
+export type VirtualModuleLoadResult = string | { code: string; moduleType: 'js' | 'jsx' }
 
 export type SharedVirtualModuleOptions =
   & {
@@ -40,7 +40,7 @@ export interface VirtualModule {
   id: string
   virtualId: string
   load(
-    this: Rolldown.MinimalPluginContext,
+    this: Rolldown.PluginContext,
     opts: SharedVirtualModuleOptions & {
       projects: NonEmptyArray<ProjectData>
     },
@@ -54,7 +54,7 @@ export interface ProjectVirtualModule {
   matches: (id: string) => ProjectId | null
   virtualId: (projectId: ProjectId) => string
   load(
-    this: Rolldown.MinimalPluginContext,
+    this: Rolldown.PluginContext,
     opts: SharedVirtualModuleOptions & {
       project: ProjectData
     },

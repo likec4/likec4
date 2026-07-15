@@ -27,7 +27,7 @@ import type { ViewManualLayoutSnapshot } from './view-manual-layout'
  *
  * !IMPORTANT: This is a low-level type, use `LikeC4Model` instead.
  */
-interface BaseLikeC4ModelData<A extends Any> {
+export interface BaseLikeC4ModelData<A extends Any> {
   [_stage]: A['Stage']
   projectId: aux.ProjectId<A>
   project: LikeC4Project

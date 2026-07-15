@@ -1,4 +1,4 @@
-import type { AnyAux, Unknown } from './_aux'
+import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
 import type { _type } from './const'
 import type { Expression, FqnExpr } from './expression'
@@ -13,18 +13,18 @@ import type {
 /**
  * Predicates scoped to deployment model
  */
-export interface DeploymentViewIncludePredicate<A extends AnyAux = Unknown> extends AnyIncludePredicate<Expression<A>>
+export interface DeploymentViewIncludePredicate<A extends AnyAux = AnyAux> extends AnyIncludePredicate<Expression<A>>
 {}
-export interface DeploymentViewExcludePredicate<A extends AnyAux = Unknown> extends AnyExcludePredicate<Expression<A>>
+export interface DeploymentViewExcludePredicate<A extends AnyAux = AnyAux> extends AnyExcludePredicate<Expression<A>>
 {}
 
-export type DeploymentViewPredicate<A extends AnyAux = Unknown> =
+export type DeploymentViewPredicate<A extends AnyAux = AnyAux> =
   | DeploymentViewIncludePredicate<A>
   | DeploymentViewExcludePredicate<A>
 
-export interface DeploymentViewRuleStyle<A extends AnyAux = Unknown> extends AnyViewRuleStyle<FqnExpr<A>> {}
+export interface DeploymentViewRuleStyle<A extends AnyAux = AnyAux> extends AnyViewRuleStyle<FqnExpr<A>> {}
 
-export type DeploymentViewRule<A extends AnyAux = Unknown> = ExclusiveUnion<{
+export type DeploymentViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   Include: DeploymentViewIncludePredicate<A>
   Exclude: DeploymentViewExcludePredicate<A>
   Style: DeploymentViewRuleStyle<A>
@@ -40,7 +40,7 @@ export interface ParsedViewRuleAncestors {
   includeAncestors: boolean
 }
 
-export interface ParsedDeploymentView<A extends AnyAux = Unknown> extends BaseParsedViewProperties<A> {
+export interface ParsedDeploymentView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'deployment'
   readonly rules: DeploymentViewRule<A>[]
 }
