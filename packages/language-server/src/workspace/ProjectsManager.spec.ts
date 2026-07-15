@@ -773,6 +773,106 @@ describe('ProjectsManager', () => {
         '/test/workspace/src/projectB/specification.c4',
       ])
     })
+
+    it('should apply exclude patterns to documents from include paths', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['**/proj-template.c4**'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectA'),
+      })
+
+      const projectB = await projectsManager.registerProject({
+        config: {
+          name: 'projectB',
+          include: { paths: ['../projectA/projects'] },
+          exclude: ['**/proj-template.c4**'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectB'),
+      })
+
+      const projectADoc = await addDocument('projectA/projects/model.c4', 'specification { element component }')
+      const templateDoc = await addDocument('projectA/projects/proj-template.c4', 'model { component template }')
+      const projectBDoc = await addDocument('projectB/model.c4', 'model { component b }')
+
+      expect(projectsManager.isIncluded(projectA.id, projectADoc)).toBe(true)
+      expect(projectsManager.isIncluded(projectA.id, templateDoc)).toBe(false)
+      expect(projectsManager.isIncluded(projectB.id, projectBDoc)).toBe(true)
+      expect(projectsManager.isIncluded(projectB.id, templateDoc)).toBe(false)
+
+      const documents = services.shared.workspace.LangiumDocuments
+      const projectBDocs = documents.projectDocuments(projectB.id).toArray().map(d => d.uri.path)
+
+      expect(projectBDocs).toEqual([
+        '/test/workspace/src/projectA/projects/model.c4',
+        '/test/workspace/src/projectB/model.c4',
+      ])
+    })
+
+    it('should globally exclude include path documents excluded by all matching projects', async ({ expect }) => {
+      const { projectsManager, services, addDocument } = await createMultiProjectTestServices({})
+
+      const projectB = await projectsManager.registerProject({
+        config: {
+          name: 'projectB',
+          include: { paths: ['../projectA/projects'] },
+          exclude: ['**/proj-template.c4**'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectB'),
+      })
+
+      const projectADoc = await addDocument('projectA/projects/model.c4', 'specification { element component }')
+      const templateDoc = await addDocument('projectA/projects/proj-template.c4', 'model { component template }')
+      const projectBDoc = await addDocument('projectB/model.c4', 'model { component b }')
+
+      expect(projectsManager.isIncluded(projectB.id, projectADoc)).toBe(true)
+      expect(projectsManager.isIncluded(projectB.id, templateDoc)).toBe(false)
+      expect(projectsManager.isIncluded(projectB.id, projectBDoc)).toBe(true)
+      expect(projectsManager.isExcluded(templateDoc)).toBe(true)
+      expect(projectsManager.isIncluded('default' as ProjectId, templateDoc)).toBe(false)
+
+      const documents = services.shared.workspace.LangiumDocuments
+      const userDocs = documents.userDocuments.toArray().map(d => d.uri.path)
+
+      expect(userDocs).toEqual([
+        '/test/workspace/src/projectA/projects/model.c4',
+        '/test/workspace/src/projectB/model.c4',
+      ])
+    })
+
+    it('should anchor globstar exclude patterns to project and include roots', async ({ expect }) => {
+      const { projectsManager, addDocument } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          exclude: ['**/test/**'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectA'),
+      })
+
+      const projectB = await projectsManager.registerProject({
+        config: {
+          name: 'projectB',
+          include: { paths: ['../shared'] },
+          exclude: ['**/test/**'],
+        },
+        folderUri: URI.parse('file:///test/workspace/src/projectB'),
+      })
+
+      const projectDoc = await addDocument('projectA/model.c4', 'specification { element component }')
+      const projectTestDoc = await addDocument('projectA/nested/test/model.c4', 'model { component ignored }')
+      const includedDoc = await addDocument('shared/model.c4', 'model { component shared }')
+      const includedTestDoc = await addDocument('shared/nested/test/model.c4', 'model { component ignored }')
+
+      expect(projectsManager.isIncluded(projectA.id, projectDoc)).toBe(true)
+      expect(projectsManager.isIncluded(projectA.id, projectTestDoc)).toBe(false)
+      expect(projectsManager.isIncluded(projectB.id, includedDoc)).toBe(true)
+      expect(projectsManager.isIncluded(projectB.id, includedTestDoc)).toBe(false)
+    })
   })
 
   it('should correctly return project for documents', async ({ expect }) => {
