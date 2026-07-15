@@ -4,6 +4,8 @@ description:
   Generates changeset files based on changes. Use when user asks to create a changeset or at the end of a feature implementation, when the user asks to wrap up or finalize changes
 ---
 
+> AGENTS.md is the canonical source for shared LikeC4 repository instructions, including changeset policy. This file is a task-specific wrapper for generating changeset files.
+
 Generate changeset files based on current branch changes or staged files.
 
 # 1. Identify Changes
