@@ -6,7 +6,7 @@ description:
 
 > AGENTS.md is the canonical source for shared LikeC4 repository instructions, including changeset policy. This file is a task-specific wrapper for generating changeset files.
 
-Generate changeset files based on current branch changes or staged files.
+Generate changeset files based on current branch changes or staged files. Use AGENTS.md for shared LikeC4 changeset policy, including when a changeset is needed, release type, package exclusions, and summary style.
 
 # 1. Identify Changes
 
@@ -56,7 +56,7 @@ git log --format="%s%n%b" main..HEAD   # commit messages for intent
 
 Read the actual diff for non-trivial files when commit messages are vague — file names alone are often insufficient for writing a good summary.
 
-**Conventional Commits hints:**
+**Conventional Commits triage hints:**
 
 - `feat:` / `fix:` — usually needs a changeset
 - `chore:` / `test:` / `refactor:` — usually skip unless user-facing
@@ -69,29 +69,15 @@ Group changed files by their package:
 - `apps/<name>/*` → read `apps/<name>/package.json`
 - `styled-system/<name>/*` → read `styled-system/<name>/package.json`
 
-**Skip packages** where the only changes are:
-
-- Test files (`*.spec.ts`, `__tests__/*`, `__snapshots__/*`)
-- Generated files (anything in `.gitignore`)
-- Internal packages that are never published: `@likec4/icons`, `@likec4/tsconfig`
-
-If no packages remain after filtering, tell the user there are no user-facing changes and stop — do not create a changeset.
+Apply the changeset policy in AGENTS.md to decide whether each changed package has public impact. If no packages remain after filtering, tell the user there are no user-facing changes and stop.
 
 # 3. Generate Summary
 
-Write from the **user's perspective** — what they can now do, what was fixed, what changed for them.
-
-**Rules:**
-
-- Be concise: 1–3 bullet points or a single sentence
-- Focus on user-facing/public impact only
-- Reference issues when relevant: `Fixes [#123](https://github.com/likec4/likec4/issues/123)`
-
-**Do NOT mention:** test changes, internal refactors, config changes, code cleanup, dependency bumps.
+Follow the summary policy in AGENTS.md. Reference issues when relevant, for example `Fixes [#123](https://github.com/likec4/likec4/issues/123)`.
 
 # 4. Create Changeset File
 
-**Always use `patch`** — versioning is handled manually by maintainers.
+Use the release type required by AGENTS.md for every selected package.
 
 ## File naming
 
@@ -152,13 +138,6 @@ First iteration of element notes feature:
 - Add notes property to elements
 - Display visual indicator on diagrams
 ```
-
-## Bad (avoid):
-
-- "Refactored XyzService to use DI" — internal implementation detail
-- "Fixed failing tests" — tests are not user-facing
-- "Updated types for better inference" — internal improvement
-- "Bumped dependencies" — maintenance, not a feature
 
 # Notes
 
