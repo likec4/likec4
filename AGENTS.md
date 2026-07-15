@@ -106,7 +106,7 @@ Treat round trips such as `fromWorkspace → toDSL → fromSource` as one-way ge
 - `pnpm lint:fix` applies oxlint fixes.
 - `pnpm fmt` formats with dprint.
 - `pnpm test:e2e` runs Playwright tests from the isolated `e2e` workspace and takes longer than unit tests.
-- `pnpm check:agent-instructions` validates that this file remains canonical and adapters do not drift.
+- `pnpm check:agent-instructions` validates that this file remains canonical and that instruction and skill adapters do not drift.
 
 ## Generated Files
 
@@ -160,6 +160,7 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 
 - AGENTS.md is the canonical shared repository instruction file.
 - The root `CLAUDE.md` file is the Claude Code adapter and must contain exactly `@AGENTS.md`.
+- Nested `CLAUDE.md` files are not shared adapters. Keep one only when Claude Code's lazy-loaded subtree memory adds materially local context that would be noisy globally. Currently `packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md` is allowed for the sequence layouter workbench.
 - Tools with native `AGENTS.md` support should read `AGENTS.md` directly.
 - Tool-specific files with import support should import `AGENTS.md`.
 - Tools without import support may use generated plain-text adapters derived from `AGENTS.md`, but those adapters must be generated and checked for drift.
@@ -169,6 +170,10 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 - `.github/agents/*.agent.md` files may remain only as task-specific wrappers. Shared repository policy must live here in `AGENTS.md`.
 - VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`. Do not add `.github/copilot-instructions.md`; any future adapter must be generated from `AGENTS.md` and added together with drift validation.
 - The `.cursor/` directory is gitignored. Contributors may add local `.cursor/rules/` files for personal use, but do not commit them.
+- Repo-local developer workflow skills live in `.agents/skills/`.
+- The public LikeC4 DSL skill lives in `skills/likec4-dsl/`.
+- Claude Code discovers project skills from `.claude/skills/`; keep each tracked `.claude/skills/*` entry as a per-skill symlink to one canonical skill directory.
+- Do not duplicate skill bodies into `.claude/skills/`; add or update the symlink adapter and `devops/check-agent-skills.mjs` together.
 - Use `.tool-versions` for expected Node and pnpm versions.
 - Pre-commit hooks use `nano-staged` to run dprint on staged files.
 

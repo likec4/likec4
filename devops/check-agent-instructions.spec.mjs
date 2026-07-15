@@ -104,12 +104,18 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects nested Claude adapters', () => {
+  it('accepts the localized sequence layouter Claude memory', () => {
+    expectPass(createFixture({
+      'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md': '# Sequence Layouter\n',
+    }))
+  })
+
+  it('rejects unexpected nested Claude adapters', () => {
     expectFail(
       createFixture({
         'packages/core/CLAUDE.md': '@../../AGENTS.md\n',
       }),
-      /Only root CLAUDE\.md is allowed/,
+      /Only root CLAUDE\.md and explicitly allowed localized Claude memories are allowed/,
     )
   })
 

@@ -11,7 +11,7 @@
   "scripts": {
     "prepare": "node .husky/install.mjs",
     "fmt": "dprint fmt",
-    "check:agent-instructions": "node --test devops/check-agent-instructions.spec.mjs && node devops/check-agent-instructions.mjs",
+    "check:agent-instructions": "node --test devops/check-agent-instructions.spec.mjs devops/check-agent-skills.spec.mjs && node devops/check-agent-instructions.mjs && node devops/check-agent-skills.mjs",
     "changeset:empty": "changeset --empty",
     "lint": "oxlint",
     "lint:errors-only": "oxlint --quiet",
