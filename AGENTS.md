@@ -96,7 +96,7 @@ Treat round trips such as `fromWorkspace → toDSL → fromSource` as one-way ge
 
 ## Build, Test, and Development Commands
 
-- `pnpm install` installs dependencies and requires Node `>=22.21.1`.
+- `pnpm install` installs dependencies and requires Node `>=22.22.3`.
 - `pnpm generate` pre-generates sources; always run after checkout, big merges, refactors, and when generated files are missing.
 - `pnpm build` builds packages except docs and playground.
 - `pnpm typecheck` validates TypeScript; run it after `pnpm generate`.
