@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generatePuml, generateViewsDataTs } from '@likec4/generators'
 import { type LikeC4, fromWorkspace } from '@likec4/language-services/node'
 import { mkdir, writeFile } from 'node:fs/promises'
-import { dirname, extname, relative, resolve } from 'node:path'
+import { dirname, extname, join, relative, resolve } from 'node:path'
 import { values } from 'remeda'
 import k from 'tinyrainbow'
 import type { Logger } from 'vite'
@@ -26,6 +26,29 @@ type HandlerParams =
       outdir: string | undefined
     }
   )
+
+export function relativeOutputDir(sourcePath: string | undefined): string {
+  if (!sourcePath) {
+    return '.'
+  }
+  const pathSegments = sourcePath.split(/[\\/]+/)
+  pathSegments.pop()
+  const segments: string[] = []
+  for (const segment of pathSegments) {
+    const withoutDrivePrefix = segment.replace(/^[a-zA-Z]:/, '')
+    switch (withoutDrivePrefix) {
+      case '':
+      case '.':
+        break
+      case '..':
+        segments.pop()
+        break
+      default:
+        segments.push(withoutDrivePrefix)
+    }
+  }
+  return segments.length > 0 ? join(...segments) : '.'
+}
 
 async function singleFileCodegenAction(
   languageServices: LikeC4,
@@ -68,11 +91,7 @@ async function dotCodegenAction(
         view,
         styles: model.$styles,
       })
-      let relativePath = '.'
-      if (view.sourcePath) {
-        relativePath = dirname(view.sourcePath)
-      }
-      relativePath = resolve(outdir, relativePath)
+      const relativePath = resolve(outdir, relativeOutputDir(view.sourcePath))
 
       if (!createdDirs.has(relativePath)) {
         await mkdir(relativePath, { recursive: true })
@@ -129,11 +148,7 @@ async function multipleFilesCodegenAction(
   for (const vm of model.views()) {
     const view = vm.$view
     try {
-      let relativePath = '.'
-      if (view.sourcePath) {
-        relativePath = dirname(view.sourcePath)
-      }
-      relativePath = resolve(outdir, relativePath)
+      const relativePath = resolve(outdir, relativeOutputDir(view.sourcePath))
 
       if (!createdDirs.has(relativePath)) {
         await mkdir(relativePath, { recursive: true })
