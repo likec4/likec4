@@ -65,7 +65,7 @@
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "generate": "tsx scripts/generate.ts",
-    "build": "obuild",
+    "build": "tsdown",
     "lint": "run -T eslint src/ --fix",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
@@ -102,7 +102,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",

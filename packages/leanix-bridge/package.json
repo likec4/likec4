@@ -40,7 +40,7 @@
   },
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "obuild",
+    "build": "tsdown",
     "lint": "oxlint --type-aware",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -58,7 +58,7 @@
     "@likec4/devops": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:tsdown",
     "vitest": "catalog:vitest"
   }
 }

@@ -14,7 +14,7 @@
   "scripts": {
     "generate": "tsx --conditions=sources scripts/generate.mts",
     "typecheck": "tsc -b --verbose",
-    "build": "obuild",
+    "build": "tsdown",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean",
     "prepack": "likec4ops prepack",
@@ -93,7 +93,7 @@
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:tsdown",
     "nano-spawn": "catalog:externals",
     "vitest": "catalog:vitest"
   }

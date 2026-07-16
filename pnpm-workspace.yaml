@@ -54,7 +54,7 @@ catalog:
   pako: ^2.1.0
   playwright: 1.60.0
   tsx: 4.22.5
-  turbo: 2.9.18
+  turbo: 2.10.5
   typescript: 6.0.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -168,9 +168,9 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
-    tsdown: ^0.22.3
-    "@tsdown/css": ^0.22.3
-    rolldown: ^1.1.4
+    tsdown: ^0.22.9
+    "@tsdown/css": ^0.22.9
+    rolldown: ^1.2.0
   utils:
     "@logtape/logtape": ^2.1.1
     "@lume/kiwi": ^0.4.4
@@ -257,3 +257,5 @@ minimumReleaseAgeExclude:
   - '@astrojs/internal-helpers@0.10.1'
   - '@astrojs/markdown-satteri@0.3.3'
   - picomatch@4.0.5
+  - '@tsdown/css@0.22.9'
+  - tsdown@0.22.9

@@ -15,12 +15,14 @@ import { URI } from 'vscode-uri'
 import type { FileNode, FileSystemProvider } from '../filesystem'
 import { isNodeModulesOrRepo } from '../filesystem/utils'
 import * as BuiltIn from '../likec4lib'
-import { logger, logWarnError } from '../logger'
+import { serverLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected readonly documentFactory: LangiumDocumentFactory
   protected override readonly fileSystemProvider: FileSystemProvider
+
+  #logger = serverLogger.getChild('workspace')
 
   /**
    * Whether the workspace is ready (promise from DefaultWorkspaceManager resolved)
@@ -52,6 +54,9 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * First load all project config files, then load all documents in the workspace.
    */
   protected override async performStartup(folders: WorkspaceFolder[]): Promise<LangiumDocument[]> {
+    if (this.#performedStartup) {
+      this.#logger.warn`workspace already initialized, invalid performStartup call`
+    }
     try {
       this.#performedStartup = false
       await this.readExcludeConfig()
@@ -64,7 +69,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
           configFiles.push(...found)
           this.services.workspace.FileSystemWatcher.watch(uri.fsPath)
         } catch (error) {
-          logWarnError(error)
+          this.#logger.warn(`Failed to scan workspace folder {folder} for project config files`, {
+            folder: folder.uri,
+            error,
+          })
         }
       }
       // Project config files
@@ -75,12 +83,18 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
           await projects.registerConfigFile(entry.uri)
           added++
         } catch (error) {
-          logWarnError(error)
+          this.#logger.warn(`Failed to register config file {config}`, {
+            config: entry.uri.fsPath,
+            error,
+          })
         }
       }
       if (configFiles.length !== added) {
-        logger.warn`loaded ${added} projects out of ${configFiles.length}`
+        this.#logger.warn`loaded ${added} projects out of ${configFiles.length}`
+      } else if (added > 0) {
+        this.#logger.info`loaded ${added} projects`
       }
+      this.#logger.debug`performing workspace startup for ${folders.length} folders`
       return await super.performStartup(folders)
     } finally {
       this.#performedStartup = true
@@ -101,6 +115,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
 
     // Load documents from project include paths
     const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
+    if (hasAtLeast(includePaths, 1)) {
+      return
+    }
+
     const isNotExcludedByWorkspace = isNot((f: FileNode) =>
       this.services.workspace.ProjectsManager.isExcludedByWorkspace(f.uri)
     )
@@ -110,7 +128,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
 
     for (const { projectId, includePath, includeConfig } of includePaths) {
       try {
-        logger.debug`scanning include path ${includePath.fsPath} for project ${projectId}`
+        this.#logger.debug`scanning include path ${includePath.fsPath} for project ${projectId}`
         const files = pipe(
           await this.fileSystemProvider.readDirectory(includePath, {
             recursive: true,
@@ -120,12 +138,12 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         )
         foundFiles.push(...files)
         if (files.length !== 0) {
-          logger.debug`loaded ${files.length} files from include path ${includePath.fsPath}`
+          this.#logger.debug`loaded ${files.length} files from include path ${includePath.fsPath}`
         } else {
-          logger.trace`no files found in include path ${includePath.fsPath}`
+          this.#logger.trace`no files found in include path ${includePath.fsPath}`
         }
       } catch (error) {
-        logger.warn(`Failed to scan include path ${includePath.fsPath}`, { error })
+        this.#logger.warn(`Failed to scan include path ${includePath.fsPath}`, { error })
       }
     }
 
@@ -135,7 +153,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         collector(doc)
         totalFilesLoaded++
       } catch (error) {
-        logger.warn(`Failed to load document ${file.uri.fsPath}`, { error })
+        this.#logger.warn(`Failed to load document ${file.uri.fsPath}`, { error })
       }
     }
 
@@ -145,13 +163,13 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       const minThreshold = Math.min(...includePaths.map(p => p.includeConfig.fileThreshold))
 
       if (totalFilesLoaded > minThreshold) {
-        logger.warn(
+        this.#logger.warn(
           `Loaded ${totalFilesLoaded} files from include paths (threshold: ${minThreshold}). ` +
             'Large include directories may slow workspace initialization. ' +
             'Consider adjusting "include.fileThreshold" or "include.maxDepth" in your project configuration.',
         )
       } else {
-        logger.info`loaded ${totalFilesLoaded} total files from ${includePaths.length} include paths`
+        this.#logger.info`loaded ${totalFilesLoaded} total files from ${includePaths.length} include paths`
       }
     }
   }
@@ -182,7 +200,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         const document = await this.langiumDocuments.getOrCreateDocument(file.uri)
         collector(document)
       } catch (error) {
-        logger.warn(`Failed to load document {path}`, { error, path: file.uri.fsPath })
+        this.#logger.warn(`Failed to load document {path}`, { error, path: file.uri.fsPath })
       }
     }
   }
@@ -214,7 +232,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
 
   public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
     const uris = this.services.workspace.LangiumDocuments.resetProjectIds()
-    logger.info('invalidate and rebuild all {docs} documents', { docs: uris.length })
+    this.#logger.info('invalidate and rebuild all {docs} documents', { docs: uris.length })
     this.forceCleanCaches()
     await this.documentBuilder.update(uris, [], cancelToken)
   }
@@ -261,26 +279,26 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    */
   private async readExcludeConfig(): Promise<void> {
     if (!this.services.lsp.Connection) {
-      logger.debug`no LSP connection, skipping initial configuration read`
+      this.#logger.debug`no LSP connection, skipping initial configuration read`
       return
     }
     const configProvider = this.services.workspace.ConfigurationProvider
     const wait = <T>(promise: Promise<T>) => pTimeout(promise, { milliseconds: 1000, message: false })
     try {
-      logger.trace`waiting for ConfigurationProvider ready...`
+      this.#logger.trace`waiting for ConfigurationProvider ready...`
       await wait(configProvider.ready)
-      logger.trace`ConfigurationProvider ready, reading exclude patterns...`
+      this.#logger.trace`ConfigurationProvider ready, reading exclude patterns...`
       const excludeConfig = await wait<string[]>(
         configProvider.getConfiguration('likec4', 'exclude'),
       )
       if (excludeConfig) {
-        logger.trace`exclude configuration found ${excludeConfig}`
+        this.#logger.trace`exclude configuration found ${excludeConfig}`
         this.services.workspace.ProjectsManager.setWorkspaceExcludePatterns(excludeConfig)
       } else {
-        logger.trace('no initial exclude configuration found')
+        this.#logger.trace('no initial exclude configuration found')
       }
     } catch (e) {
-      logger.warn('Failed to read initial exclude configuration', { error: e })
+      this.#logger.warn('Failed to read initial exclude configuration', { error: e })
     }
   }
 }

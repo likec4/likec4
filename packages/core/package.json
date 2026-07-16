@@ -13,7 +13,7 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "typecheck": "tsc -b --verbose",
-    "build": "obuild",
+    "build": "tsdown",
     "lint": "oxlint --type-aware",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
@@ -147,7 +147,7 @@
     "mnemonist": "0.40.4",
     "natural-compare-lite": "catalog:utils",
     "obliterator": "^2.0.5",
-    "obuild": "catalog:obuild",
+    "tsdown": "catalog:tsdown",
     "ohash": "catalog:utils",
     "oxlint": "catalog:",
     "rehype-format": "5.0.1",
