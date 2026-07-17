@@ -236,9 +236,5 @@ export const elementShapeRecipe = defineRecipe({
       },
     }),
   }],
-  staticCss: [{
-    shapetype: ['*'],
-    withOutline: ['*'],
-    withBorder: ['*'],
-  }],
+  staticCss: ['*'],
 })

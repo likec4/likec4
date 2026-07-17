@@ -294,9 +294,5 @@ export const elementNodeData = defineRecipe({
     iconPosition: 'left',
     withIconColor: false,
   },
-  staticCss: [{
-    withIconColor: ['*'],
-    iconPosition: ['*'],
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })

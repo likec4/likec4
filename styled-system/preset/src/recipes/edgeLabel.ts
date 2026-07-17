@@ -130,10 +130,5 @@ export const edgeLabel = defineRecipe({
     isStepEdge: false,
     cursor: 'default',
   },
-  staticCss: [{
-    conditions: ['*'],
-    isStepEdge: ['*'],
-    cursor: ['*'],
-    pointerEvents: ['*'],
-  }],
+  staticCss: ['*'],
 })

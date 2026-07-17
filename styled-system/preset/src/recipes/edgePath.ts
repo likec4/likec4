@@ -91,7 +91,5 @@ export const edgePath = defineSlotRecipe({
       pointerEvents: 'none',
     },
   },
-  staticCss: [{
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })

@@ -272,9 +272,5 @@ export const compoundNode = defineRecipe({
     inverseColor: false,
     borderStyle: 'none',
   },
-  staticCss: [{
-    isTransparent: ['*'],
-    inverseColor: ['*'],
-    borderStyle: ['*'],
-  }],
+  staticCss: ['*'],
 })

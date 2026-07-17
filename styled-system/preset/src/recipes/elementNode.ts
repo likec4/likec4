@@ -44,7 +44,5 @@ export const elementNode = defineRecipe({
       paddingBottom: '16px',
     },
   },
-  staticCss: [{
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })

@@ -26,7 +26,5 @@ export const likec4tag = defineRecipe({
       },
     },
   },
-  staticCss: [{
-    conditions: ['hover'],
-  }],
+  staticCss: ['*'],
 })

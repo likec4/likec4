@@ -59,8 +59,5 @@ export const navigationPanelActionIcon = defineRecipe({
     variant: 'default',
     type: 'default',
   },
-  staticCss: [{
-    variant: ['*'],
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })

@@ -39,7 +39,5 @@ export const edgeActionBtn = defineRecipe({
   },
   variants: {},
   defaultVariants: {},
-  staticCss: [{
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })

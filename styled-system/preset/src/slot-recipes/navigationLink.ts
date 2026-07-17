@@ -61,8 +61,5 @@ export const navigationLink = defineSlotRecipe({
   defaultVariants: {
     truncateLabel: false,
   },
-  staticCss: [{
-    truncateLabel: ['*'],
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })

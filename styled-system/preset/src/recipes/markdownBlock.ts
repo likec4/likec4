@@ -11,9 +11,10 @@ export const markdownBlock = defineRecipe({
   ],
   description: 'Block with Markdown content',
   base: {
+    '--md-scale': 'var(--mantine-scale, 1)',
     '--text-fz': '1em',
-    '--text-fz-sm': 'calc(var(--text-fz) * var(--mantine-scale, 1) / 1.125)',
-    '--text-fz-md': 'calc(var(--text-fz) * var(--mantine-scale, 1))',
+    '--text-fz-sm': 'calc(var(--text-fz) * var(--md-scale) / 1.125)',
+    '--text-fz-md': 'calc(var(--text-fz) * var(--md-scale))',
     '--typography-spacing': 'calc(0.75 * var(--text-fz-md))',
     '--text-fw-headings': '600',
     '--code-background': {
@@ -371,9 +372,5 @@ export const markdownBlock = defineRecipe({
     value: 'markdown',
   },
 
-  staticCss: [{
-    uselikec4palette: ['*'],
-    value: ['plaintext'],
-    conditions: ['*'],
-  }],
+  staticCss: ['*'],
 })
