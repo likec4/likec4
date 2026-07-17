@@ -66,7 +66,6 @@ export default defineConfig({
       formats: ['es'],
     },
     rolldownOptions: {
-      tsconfig: './tsconfig.src.json',
       treeshake: {
         moduleSideEffects: 'no-external',
       },

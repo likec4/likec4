@@ -66,14 +66,11 @@ export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType)
   const [view, setView] = useState(() => $likec4model.get().findView(viewId)?.$layouted ?? null)
   useEffect(() => {
     return $likec4model.subscribe((next, old) => {
-      // ignore immediate call on subscription, we only want to update the view when the model changes
-      if (old === undefined) {
-        return
-      }
       setView(current => {
         const vm = next.findView(viewId)
         if (!vm) {
-          return null
+          // If the view is not found, but it's the current view, keep it
+          return current?.id === viewId ? current : null
         }
         const nextView = layoutType === 'auto' ? vm.$view : vm.$layouted
         if (deepEqual(current, nextView)) {

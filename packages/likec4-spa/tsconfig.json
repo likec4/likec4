@@ -1,13 +1,43 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "files": [],
-  "include": [],
+  "extends": "@likec4/tsconfig/react-lib.json",
+  "compilerOptions": {
+    "customConditions": [
+      "sources"
+    ],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "noPropertyAccessFromIndexSignature": false,
+    "module": "preserve",
+    "types": [
+      "vite/client",
+      "@likec4/vite-plugin/modules"
+    ]
+  },
+  "include": [
+    "src/",
+    "codegen/",
+    "styled-system/",
+    "*.ts",
+    "package.json"
+  ],
   "references": [
     {
-      "path": "./tsconfig.src.json"
+      "path": "../core/"
     },
     {
-      "path": "./tsconfig.vite.json"
+      "path": "../layouts/"
+    },
+    {
+      "path": "../vite-plugin/"
+    },
+    {
+      "path": "../diagram/tsconfig.src.json"
+    },
+    {
+      "path": "../../devops/"
     }
   ]
 }

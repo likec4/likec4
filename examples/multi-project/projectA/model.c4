@@ -157,10 +157,10 @@ views {
         try {
           ui.mobile -> cloud.graphql 'requests'
         } catch 'OOps' {
-          loop "until works" {
+          loop 'until works' {
             ui.mobile -> cloud.graphql 'requests with retry'
           }
-          break "not retryable" {
+          break 'not retryable' {
             ui.mobile <- cloud.graphql
           }
         } finally {
@@ -178,7 +178,7 @@ views {
         starting several streams' {
           cloud.graphql
             -> cloud.next.backend 'Stream 1'
-             -> cloud.events 'as'
+            -> cloud.events 'as'
           cloud.graphql -> cloud.next.backend 'Stream 2'
           opt 'Optional' {
             cloud.graphql -> cloud.next.backend 'Stream 3'
@@ -187,11 +187,11 @@ views {
         }
       }
       else 'second' {
-          cloud.dashboard -> cloud.next.backend 'Stream 2'
-          opt 'Optional' {
-            cloud.graphql -> cloud.next.backend 'Stream 3'
-          }
-          cloud.graphql -> cloud.next.backend 'Stream 4'
+        cloud.dashboard -> cloud.next.backend 'Stream 2'
+        opt 'Optional' {
+          cloud.graphql -> cloud.next.backend 'Stream 3'
+        }
+        cloud.graphql -> cloud.next.backend 'Stream 4'
       }
     }
 

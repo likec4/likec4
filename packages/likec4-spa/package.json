@@ -21,7 +21,7 @@
     "clean": "likec4ops clean",
     "predev": "pandacss codegen",
     "dev": "tsx watch --conditions=sources --exclude=\"./../../{examples,e2e,styled-system}/**/*.{js,ts,mjs,mts}\" --exclude=\"./../core/src/styles/**/*.ts\" ./start-dev.ts",
-    "dev:debug": "tsx --inspect --conditions=sources ./start-dev.ts",
+    "dev:debug": "tsx --inspect-brk --conditions=sources ./start-dev.ts",
     "dev:single-project": "pnpm dev ../../examples/cloud-system",
     "dev:docs": "pnpm dev ../../apps/docs/src",
     "dev:playground:deployment": "pnpm dev ../../apps/playground/src/examples/deployment",
