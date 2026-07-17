@@ -154,8 +154,8 @@ export function activeSequenceBounds(params: { context: Context }): { bounds: BB
       bounds: BBox.expand(
         edgeBounds,
         {
-          left: 50,
-          right: 50,
+          left: 100,
+          right: 100,
           top,
           bottom,
         },

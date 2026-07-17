@@ -747,20 +747,25 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   private levelById = new Map<scalar.StepPath, number>()
   private byId = new Map<scalar.StepPath, DynamicViewFlow.SubFlow.Any>()
 
+  public readonly stepsCount: number
+
   private constructor(view: V) {
     if (!view.flow) {
       throw new Error(`Dynamic view "${view.id}" does not have a flow, probably it is a stale snapshot`)
     }
     this.view = view as V & { flow: DynamicViewFlowData }
+    let stepsCount = 0
     walkthroughFlow(view, {
       step: ({ step, level }) => {
         this.levelById.set(step, level)
+        stepsCount++
       },
       subflow: ({ subflow, level }) => {
         this.byId.set(subflow.id, subflow)
         this.levelById.set(subflow.id, level)
       },
     })
+    this.stepsCount = stepsCount
   }
 
   /**
@@ -833,6 +838,32 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   steps(subflow?: scalar.StepPath | { id: scalar.StepPath }) {
     const flow = subflow ? this.lookup(asStepPath(subflow)).flow : this.view.flow
     return filter(flow, isStepPath)
+  }
+
+  /**
+   * Returns previous and next steps for the given step
+   * (only steps are considered, subflows are excluded)
+   */
+  prevAndNext(targetStep: scalar.StepPath): { prev: scalar.StepPath | null; next: scalar.StepPath | null } {
+    invariant(!this.isSubflow(targetStep), `${targetStep} is a subflow, not a step`)
+    let prev: scalar.StepPath | null = null
+    let next: scalar.StepPath | null = null
+    let stepBefore: scalar.StepPath | null = null
+    walkthroughFlow(this.view, {
+      step: ({ step: currentStep, stopAndReturn }) => {
+        // Step before was the target - set next to current step
+        if (stepBefore === targetStep) {
+          next = currentStep
+          stopAndReturn()
+        }
+        // We found the target step, so prev is the last visited
+        if (currentStep === targetStep) {
+          prev = stepBefore
+        }
+        stepBefore = currentStep
+      },
+    })
+    return { prev, next }
   }
 
   /**

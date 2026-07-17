@@ -10,10 +10,11 @@ import {
   isStepPath,
   parentFlow,
 } from '@likec4/core/types'
-import { firstBy, isNumber } from 'remeda'
+import { clamp, firstBy, isNumber } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
 import { assign, raise } from 'xstate/actions'
 import { Base } from '../../base'
+import { roundDpr } from '../../utils'
 import type { Types } from '../types'
 import {
   assignLastClickedNode,
@@ -30,10 +31,21 @@ import {
   stopHotKeyActor,
   updateView,
 } from './machine.actions'
-import { machine, targetState, to } from './machine.setup'
+import { type Context, machine, targetState, to } from './machine.setup'
 
 const byId = (id: string) => <E extends Types.AnyEdge>(e: E): e is E & { data: { stepnum: number } } =>
   e.data.id === id && isNumber(e.data.stepnum)
+
+const outlinePanelWidth = ({ activeWalkthrough, xystore }: Pick<Context, 'activeWalkthrough' | 'xystore'>) => {
+  if (activeWalkthrough) {
+    return activeWalkthrough.outlinePanelWidth
+  }
+  const { width } = xystore.getState()
+  return clamp(roundDpr(width * 0.3), {
+    min: 180,
+    max: 400,
+  })
+}
 
 const updateActiveWalkthroughState = () =>
   machine.enqueueActions(({ context, enqueue }) => {
@@ -175,20 +187,21 @@ export const walkthrough = machine.createStateConfig({
     cancelEditing(),
     cancelFitDiagram(),
     assignViewportBefore(),
-    assign({
-      activeWalkthrough: ({ context, event }) => {
-        assertEvent(event, 'walkthrough.start')
-        const stepId = event.stepId
-          // or just take first
-          ?? firstBy(context.xyedges, (e) => isStepPath(e.data.id))?.data.id
+    assign(({ context, event }) => {
+      assertEvent(event, 'walkthrough.start')
+      const stepId = event.stepId
+        // or just take first
+        ?? firstBy(context.xyedges, (e) => isStepPath(e.data.id))?.data.id
 
-        return isStepPath(stepId)
+      return {
+        activeWalkthrough: isStepPath(stepId)
           ? {
             stepId,
             activeFlow: parentFlow(stepId),
+            outlinePanelWidth: outlinePanelWidth(context),
           }
-          : null
-      },
+          : null,
+      }
     }),
     updateActiveWalkthroughState(),
     fitFocusedBounds(),
@@ -239,6 +252,7 @@ export const walkthrough = machine.createStateConfig({
             activeWalkthrough: {
               stepId: nextStepId,
               activeFlow: parentFlow(nextStepId),
+              outlinePanelWidth: outlinePanelWidth(context),
             },
           })
           enqueue(updateActiveWalkthroughState())
@@ -257,13 +271,14 @@ export const walkthrough = machine.createStateConfig({
       },
       {
         actions: [
-          assign(({ event }) => {
+          assign(({ event, context }) => {
             invariant(event.edge.type === 'seq-step', `Expected seq-step edge, but got "${event.edge.type}"`)
             const stepId = event.edge.data.id
             return {
               activeWalkthrough: {
                 stepId,
                 activeFlow: parentFlow(stepId),
+                outlinePanelWidth: outlinePanelWidth(context),
               },
             }
           }),

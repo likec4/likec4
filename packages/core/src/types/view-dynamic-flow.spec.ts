@@ -5,7 +5,7 @@ import { invariant } from '../utils'
 import { type ViewId, StepPath } from './scalar'
 import { isDynamicView } from './view'
 import type { ComputedDynamicView } from './view-computed'
-import { flowAncestors, flowHelpers, parentFlow, walkthroughFlow } from './view-dynamic-flow'
+import { DynamicViewFlow, flowAncestors, flowHelpers, parentFlow, walkthroughFlow } from './view-dynamic-flow'
 
 const viewId = 'index' as ViewId<'index'>
 
@@ -505,5 +505,129 @@ describe('flowHelpers — against a computed view', () => {
     const blockStep = sp('step-02:alt.01:when.01:try.01:block.01')
     expect(flowHelpers.includes({ id: sp('step-02:alt.01:when.01:try.02:catch') }, blockStep)).toBe(false)
     expect(flowHelpers.includes({ id: sp('step-02:alt') }, sp('step-01'))).toBe(false)
+  })
+})
+
+describe('DynamicViewFlow.prevAndNext', () => {
+  const prevNextView = baseModel
+    .views(({ dynamicView, $step }, _) =>
+      _(
+        dynamicView('prevnext').with(
+          $step('a.child1 -> a.child2'),
+          $step.opt(
+            $step('a.child2 -> b.child1'),
+            $step.alt(
+              $step.when($step('b.child1 -> b.child2')),
+              $step.else($step('b.child2 -> b.child1')),
+            ),
+          ),
+          $step('b.child1 -> shopify'),
+        ),
+      )
+    )
+    .toLikeC4Model()
+    .view('prevnext')
+    .$view
+  invariant(isDynamicView(prevNextView))
+
+  const flow = DynamicViewFlow.from(prevNextView)
+
+  it('should return null for prev when step is first in flow', () => {
+    const result = flow.prevAndNext(sp('step-01'))
+    expect(result).toEqual({ prev: null, next: sp('step-02:opt.01') })
+  })
+
+  it('should return null for next when step is last in flow', () => {
+    const result = flow.prevAndNext(sp('step-03'))
+    expect(result).toEqual({ prev: sp('step-02:opt.02:alt.02:else.01'), next: null })
+  })
+
+  it('should return both prev and next for middle step', () => {
+    const result = flow.prevAndNext(sp('step-02:opt.01'))
+    expect(result).toEqual({ prev: sp('step-01'), next: sp('step-02:opt.02:alt.01:when.01') })
+  })
+
+  it('should navigate correctly through nested flows (excluding subflows)', () => {
+    // Steps in order: step-01, step-02:opt.01, step-02:opt.02:alt.01:when.01, step-02:opt.02:alt.02:else.01, step-03
+    const result1 = flow.prevAndNext(sp('step-02:opt.02:alt.01:when.01'))
+    expect(result1).toEqual({ prev: sp('step-02:opt.01'), next: sp('step-02:opt.02:alt.02:else.01') })
+
+    const result2 = flow.prevAndNext(sp('step-02:opt.02:alt.02:else.01'))
+    expect(result2).toEqual({ prev: sp('step-02:opt.02:alt.01:when.01'), next: sp('step-03') })
+  })
+
+  it('should throw when target is a subflow (not a step)', () => {
+    expect(() => flow.prevAndNext(sp('step-02:opt'))).toThrow('step-02:opt is a subflow, not a step')
+    expect(() => flow.prevAndNext(sp('step-02:opt.02:alt'))).toThrow('is a subflow, not a step')
+  })
+
+  it('should handle single step flow', () => {
+    const singleStepView = baseModel
+      .views(({ dynamicView, $step }, _) => _(dynamicView('single').with($step('a.child1 -> a.child2'))))
+      .toLikeC4Model()
+      .view('single')
+      .$view
+    invariant(isDynamicView(singleStepView))
+
+    const singleFlow = DynamicViewFlow.from(singleStepView)
+    const result = singleFlow.prevAndNext(sp('step-01'))
+    expect(result).toEqual({ prev: null, next: null })
+  })
+
+  it('should handle flow with only nested steps', () => {
+    const nestedView = baseModel
+      .views(({ dynamicView, $step }, _) =>
+        _(
+          dynamicView('nested').with(
+            $step.opt(
+              $step('a.child1 -> a.child2'),
+              $step('a.child2 -> b.child1'),
+            ),
+          ),
+        )
+      )
+      .toLikeC4Model()
+      .view('nested')
+      .$view
+    invariant(isDynamicView(nestedView))
+
+    const nestedFlow = DynamicViewFlow.from(nestedView)
+    const result1 = nestedFlow.prevAndNext(sp('step-01:opt.01'))
+    expect(result1).toEqual({ prev: null, next: sp('step-01:opt.02') })
+
+    const result2 = nestedFlow.prevAndNext(sp('step-01:opt.02'))
+    expect(result2).toEqual({ prev: sp('step-01:opt.01'), next: null })
+  })
+
+  it('should handle complex nested flow with try-catch-finally', () => {
+    const complexView = baseModel
+      .views(({ dynamicView, $step }, _) =>
+        _(
+          dynamicView('complex').with(
+            $step('a.child1 -> a.child2'),
+            $step.try({
+              try: [$step('a.child2 -> b.child1')],
+              catch: [$step('a.child2 -> b.child2')],
+              finally: [$step('b.child1 -> shopify')],
+            }),
+            $step('b.child1 -> webhook'),
+          ),
+        )
+      )
+      .toLikeC4Model()
+      .view('complex')
+      .$view
+    invariant(isDynamicView(complexView))
+
+    const complexFlow = DynamicViewFlow.from(complexView)
+    // Steps: step-01, step-02:try.01:block.01, step-02:try.02:catch.01, step-02:try.03:finally.01, step-03
+    const result1 = complexFlow.prevAndNext(sp('step-02:try.01:block.01'))
+    expect(result1).toEqual({ prev: sp('step-01'), next: sp('step-02:try.02:catch.01') })
+
+    const result2 = complexFlow.prevAndNext(sp('step-02:try.02:catch.01'))
+    expect(result2).toEqual({ prev: sp('step-02:try.01:block.01'), next: sp('step-02:try.03:finally.01') })
+
+    const result3 = complexFlow.prevAndNext(sp('step-02:try.03:finally.01'))
+    expect(result3).toEqual({ prev: sp('step-02:try.02:catch.01'), next: sp('step-03') })
   })
 })

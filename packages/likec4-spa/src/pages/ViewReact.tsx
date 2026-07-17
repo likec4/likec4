@@ -8,18 +8,20 @@
 import type { Fqn } from '@likec4/core'
 import {
   LikeC4Diagram,
+  selectDiagramContext,
   useDiagram,
-  useDiagramContext,
+  useDiagramSelector,
   useLikeC4Model,
   useOnDiagramEvent,
   useUpdateEffect,
 } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
-import { useIsMounted } from '@react-hookz/web'
+import { useIsMounted, useUnmountEffect } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { NotFound } from '../components/NotFound'
+import { headerOps } from '../components/view-page/state'
 import { useCurrentView } from '../hooks'
 
 export function ViewReact() {
@@ -85,7 +87,7 @@ export function ViewReact() {
         })
       }}
     >
-      <ListenForDynamicVariantChange />
+      <ListenForDiagramStateChanges />
       <OpenRelationshipBrowserFromUrl />
       <FocusElementFromUrl />
     </LikeC4Diagram>
@@ -197,9 +199,13 @@ export function FocusElementFromUrl() {
   return null
 }
 
-export function ListenForDynamicVariantChange() {
+const selectDiagramState = selectDiagramContext((c) => ({
+  dynamicViewVariant: c.dynamicViewVariant,
+  isWalkthroughActive: !!c.activeWalkthrough,
+}))
+export function ListenForDiagramStateChanges() {
   const router = useRouter()
-  const dynamicViewVariant = useDiagramContext(c => c.dynamicViewVariant)
+  const { dynamicViewVariant, isWalkthroughActive } = useDiagramSelector(selectDiagramState)
 
   useUpdateEffect(() => {
     const search = router.latestLocation.search.dynamic ?? 'diagram'
@@ -213,6 +219,14 @@ export function ListenForDynamicVariantChange() {
       })
     }
   }, [dynamicViewVariant])
+
+  useEffect(() => {
+    headerOps.toggle(!isWalkthroughActive)
+  }, [isWalkthroughActive])
+
+  useUnmountEffect(() => {
+    headerOps.show()
+  })
 
   return null
 }

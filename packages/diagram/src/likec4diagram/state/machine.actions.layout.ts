@@ -20,8 +20,10 @@ import {
   assertEvent,
 } from 'xstate'
 import { MinZoom } from '../../base'
+import type { ViewPaddings } from '../../LikeC4Diagram.props'
+import { roundDpr } from '../../utils'
 import { calcEdgeBounds } from '../../utils/view-bounds'
-import { type Context, machine } from './machine.setup'
+import { type Context, isActiveSequenceWalkthrough, machine } from './machine.setup'
 import {
   activeSequenceBounds,
   focusedBounds,
@@ -29,9 +31,9 @@ import {
   viewBounds,
 } from './utils'
 
-const calcMaxZoom = (context: Context, transform: [number, number, number] = [0, 0, .9]) => {
+const calcMaxZoom = (context: Context, transform: [number, number, number] = [0, 0, 1]) => {
   const [, , zoom] = transform
-  if (isDynamicView(context.view) && context.dynamicViewVariant === 'sequence' && !!context.activeWalkthrough) {
+  if (isActiveSequenceWalkthrough(context)) {
     return Math.max(zoom, 0.9)
   }
   return Math.max(zoom, 1)
@@ -121,7 +123,13 @@ export const centerOnNodeOrEdge = () =>
   })
 
 function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
-  const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
+  let { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
+  let left = undefined
+
+  if (isActiveSequenceWalkthrough(context)) {
+    left = context.activeWalkthrough.outlinePanelWidth
+    width -= left
+  }
 
   const maxZoom = calcMaxZoom(context, transform)
   const viewport = getViewportForBounds(
@@ -134,6 +142,9 @@ function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
   )
   viewport.x = Math.round(viewport.x)
   viewport.y = Math.round(viewport.y)
+  if (left !== undefined) {
+    viewport.x += left
+  }
 
   const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
 

@@ -14,7 +14,7 @@ import { LazyAIChat } from '../aichat'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
-import { FocusElementFromUrl, ListenForDynamicVariantChange, OpenRelationshipBrowserFromUrl } from './ViewReact'
+import { FocusElementFromUrl, ListenForDiagramStateChanges, OpenRelationshipBrowserFromUrl } from './ViewReact'
 
 export function ViewEditor() {
   const navigate = useNavigate()
@@ -96,7 +96,7 @@ export function ViewEditor() {
           })
         }}
       >
-        <ListenForDynamicVariantChange />
+        <ListenForDiagramStateChanges />
         <OpenRelationshipBrowserFromUrl />
         <FocusElementFromUrl />
         <LazyAIChat />

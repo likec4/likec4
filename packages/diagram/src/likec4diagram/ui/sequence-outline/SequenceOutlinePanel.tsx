@@ -12,6 +12,10 @@ import { vstack } from '@likec4/styles/patterns'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
+  Button,
+  CloseButton,
+  CloseIcon,
+  FocusTrap,
   ScrollArea,
   Tooltip,
   Tree,
@@ -25,18 +29,18 @@ import {
   IconChevronRight,
   IconCornerDownRight,
   IconListTree,
+  IconPlayerSkipBackFilled,
+  IconPlayerSkipForwardFilled,
   IconPlayerStop,
   IconRepeat,
 } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'motion/react'
 import { type ReactNode, memo, useMemo } from 'react'
-import { only } from 'remeda'
+import { mapToObj, only } from 'remeda'
 import { PortalToContainer } from '../../../custom'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../../hooks/safeContext'
 import { useOnDiagramEvent } from '../../../hooks/useDiagram'
-import { selectOutlineState, useOutlineState } from './hooks'
-import { OutlineStoreProvider } from './OutlineStoreProvider'
-import { type OutlineTreeNodeData, countSteps } from './state'
+import { type OutlineTreeNodeData, countSteps, useTreeData } from './state'
 
 // -----------------------------------------------------------------------------
 // Flow-type presentation
@@ -166,60 +170,65 @@ const labelText = css.raw({
 
 const selectFlow = selectDiagramContext((s) => {
   const activeStep = s.activeWalkthrough?.stepId ?? null
+  if (activeStep) {
+    return {
+      flow: isDynamicView(s.view) && hasProp(s.view, 'flow') ? dynamicViewFlow(s.view) : null,
+      activeStep,
+      title: s.view.title,
+      outlinePanelWidth: s.activeWalkthrough?.outlinePanelWidth,
+    }
+  }
   return {
-    flow: isDynamicView(s.view) && hasProp(s.view, 'flow') ? dynamicViewFlow(s.view) : null,
-    activeStep,
+    flow: null,
+    activeStep: null,
     title: s.view.title,
   }
 })
 
 export const SequenceOutlinePanel = memo(() => {
-  const { activeStep, flow, title } = useDiagramSelector(selectFlow)
+  const { activeStep, flow, title, outlinePanelWidth } = useDiagramSelector(selectFlow)
 
   return (
-    <AnimatePresence>
-      <PortalToContainer>
-        {activeStep && flow && (
-          <OutlineStoreProvider flow={flow} activeStep={activeStep}>
-            <m.div
-              layout="position"
-              className={vstack({
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                layerStyle: 'likec4.panel',
-                rounded: '0',
-                gap: '0',
-                padding: '0',
-                pointerEvents: 'all',
-                width: 320,
-                maxWidth: '85cqw',
-                height: '100cqh',
-                maxHeight: '100cqh',
-                cursor: 'default',
-                overflow: 'hidden',
-              })}
-              initial={{ opacity: 0, translateX: -20 }}
-              animate={{ opacity: 1, translateX: 0 }}
-              exit={{ opacity: 0, translateX: -20 }}
-            >
-              <OutlineHeader title={title} />
-              <OutlineBody activeStep={activeStep} />
-            </m.div>
-          </OutlineStoreProvider>
+    <PortalToContainer>
+      <AnimatePresence propagate>
+        {activeStep && flow && outlinePanelWidth && (
+          <m.div
+            layout="position"
+            className={vstack({
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              layerStyle: 'likec4.panel',
+              rounded: '0',
+              gap: '0',
+              padding: '0',
+              pointerEvents: 'all',
+              maxWidth: '85cqw',
+              height: '100cqh',
+              maxHeight: '100cqh',
+              cursor: 'default',
+              overflow: 'hidden',
+            })}
+            style={{
+              width: outlinePanelWidth,
+            }}
+            initial={{ opacity: 0.5, translateX: -40 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{ opacity: 0, translateX: -outlinePanelWidth }}
+          >
+            <OutlineHeader title={title} flow={flow} />
+            <OutlineBody activeStep={activeStep} flow={flow} />
+          </m.div>
         )}
-      </PortalToContainer>
-    </AnimatePresence>
+      </AnimatePresence>
+    </PortalToContainer>
   )
 })
 SequenceOutlinePanel.displayName = 'SequenceOutlinePanel'
 
-const selectTreeMeta = selectOutlineState(s => ({
-  stepCount: countSteps(s.tree),
-}))
-
-const OutlineHeader = ({ title }: { title: string | null }) => {
-  const { stepCount } = useOutlineState(selectTreeMeta)
+const OutlineHeader = ({ title, flow }: { title: string | null; flow: DynamicViewFlow }) => {
+  const diagram = useDiagram()
+  const stepCount = flow.stepsCount
   return (
     <HStack
       css={{
@@ -263,23 +272,23 @@ const OutlineHeader = ({ title }: { title: string | null }) => {
           {stepCount} {stepCount === 1 ? 'step' : 'steps'}
         </styled.div>
       </VStack>
+      <Box
+        css={{
+          flex: 'none',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <CloseButton size="sm" onClick={() => diagram.stopWalkthrough()} />
+      </Box>
     </HStack>
   )
 }
 
-const selectTree = selectOutlineState(s => ({
-  data: s.tree,
-  flow: s.flow,
-}))
-
-const OutlineBody = ({ activeStep }: { activeStep: StepPath }) => {
+const OutlineBody = ({ activeStep, flow }: { activeStep: StepPath; flow: DynamicViewFlow }) => {
   const diagram = useDiagram()
-  const { data, flow } = useOutlineState(selectTree)
-
-  const initialExpandedState = useMemo(
-    () => Object.fromEntries(flowAncestors(activeStep).map(id => [id, true] as const)),
-    [],
-  )
+  const treeData = useTreeData(flow)
+  const initialExpandedState = useMemo(() => mapToObj(flowAncestors(activeStep), id => [id, true]), [])
 
   const tree = useTree({
     initialSelectedState: [activeStep],
@@ -312,6 +321,8 @@ const OutlineBody = ({ activeStep }: { activeStep: StepPath }) => {
     [tree.expandedState],
   )
 
+  const { prev, next } = flow.prevAndNext(activeStep)
+
   return (
     <>
       <HStack
@@ -324,7 +335,7 @@ const OutlineBody = ({ activeStep }: { activeStep: StepPath }) => {
           paddingBottom: '1',
         }}
       >
-        <SectionLabel>Outline</SectionLabel>
+        <SectionLabel flex={'1'}>Outline</SectionLabel>
         <Tooltip
           label={allCollapsed ? 'Expand all' : 'Collapse all'}
           fz="xs"
@@ -332,14 +343,35 @@ const OutlineBody = ({ activeStep }: { activeStep: StepPath }) => {
           withinPortal={false}
         >
           <ActionIcon
+            tabIndex={-1}
             variant="subtle"
             size="sm"
-            className={css({ layerStyle: 'likec4.panel.action' })}
             onClick={() => (allCollapsed ? tree.expandAllNodes() : tree.collapseAllNodes())}
           >
             <IconListTree size={14} />
           </ActionIcon>
         </Tooltip>
+        <Button
+          tabIndex={-1}
+          size="compact-xs"
+          variant="light"
+          className={css({ fontSize: 'xxs' })}
+          leftSection={<IconPlayerSkipBackFilled size={10} />}
+          onClick={() => prev && diagram.walkthroughStep({ step: prev })}
+          disabled={!prev}>
+          Back
+        </Button>
+        <Button
+          tabIndex={-1}
+          size="compact-xs"
+          variant="light"
+          className={css({ fontSize: 'xxs' })}
+          rightSection={<IconPlayerSkipForwardFilled size={10} />}
+          onClick={() => next && diagram.walkthroughStep({ step: next })}
+          disabled={!next}
+        >
+          Next
+        </Button>
       </HStack>
       <ScrollArea
         type="scroll"
@@ -348,7 +380,7 @@ const OutlineBody = ({ activeStep }: { activeStep: StepPath }) => {
       >
         <Tree
           levelOffset={0}
-          data={data}
+          data={treeData}
           tree={tree}
           selectOnClick
           classNames={{

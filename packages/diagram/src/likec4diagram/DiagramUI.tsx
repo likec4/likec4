@@ -1,4 +1,4 @@
-import { isDynamicView } from '@likec4/core'
+import { hasProp, isDynamicView } from '@likec4/core'
 import { useRerender } from '@react-hookz/web'
 import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
@@ -14,10 +14,18 @@ const selectChildren = selectDiagramActor(s => ({
   overlays: s.children.overlays ?? null,
   search: s.children.search ?? null,
   navigation: s.children.navigationPanel ?? null,
-  isSequenceView: isDynamicView(s.context.view) && s.context.dynamicViewVariant === 'sequence',
-  isActiveWalkthrough: s.matches({
-    ready: 'walkthrough',
-  }),
+  ...(isDynamicView(s.context.view) ?
+    {
+      isSequenceView: s.context.dynamicViewVariant === 'sequence',
+      isActiveWalkthrough: s.context.dynamicViewVariant === 'sequence'
+        && !!s.context.activeWalkthrough
+        && hasProp(s.context.view, 'flow'),
+    } :
+    {
+      isSequenceView: false,
+      hasSequenceFlow: false,
+      isActiveWalkthrough: false,
+    }),
 }))
 
 export const LikeC4DiagramUI = memo(() => {
@@ -41,9 +49,9 @@ export const LikeC4DiagramUI = memo(() => {
 
   return (
     <ErrorBoundary onReset={handleReset}>
-      {isSequenceView && <SequenceActorsPanel />}
-      {isSequenceView && isActiveWalkthrough && <SequenceOutlinePanel />}
-      {enableControls && actors.navigation && <NavigationPanel actorRef={actors.navigation} />}
+      {isSequenceView && <SequenceActorsPanel isActiveWalkthrough={isActiveWalkthrough} />}
+      {isActiveWalkthrough && <SequenceOutlinePanel />}
+      {enableControls && actors.navigation && !isActiveWalkthrough && <NavigationPanel actorRef={actors.navigation} />}
       {actors.overlays && <Overlays overlaysActorRef={actors.overlays} />}
       {enableNotations && <NotationPanel />}
       {enableSearch && actors.search && <Search searchActorRef={actors.search} />}

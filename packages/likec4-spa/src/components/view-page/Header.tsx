@@ -15,12 +15,14 @@ import {
   Link,
   useMatches,
 } from '@tanstack/react-router'
+import { AnimatePresence } from 'motion/react'
 import { memo, useCallback, useState } from 'react'
 import { useCurrentProject, useCurrentViewId } from '../../hooks'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { NavigationPanel } from './NavigationPanel'
 import { SelectProject } from './SelectProject'
 import { ShareModal } from './ShareModal'
+import { useHeaderVisible } from './state'
 
 export const Header = memo(() => {
   const projects = useLikeC4Projects()
@@ -36,41 +38,52 @@ export const Header = memo(() => {
   const isTablet = useMediaQuery(`(min-width: ${breakpoints.md})`) ?? false
   const [opened, { open, close }] = useDisclosure(false)
 
+  const headerVisible = useHeaderVisible()
+
   return (
     <>
-      <NavigationPanel.Root panelPosition="right" hideBelow={'md'}>
-        <NavigationPanel.Body gap={'2'}>
-          {isReactDiagramRoute
-            ? (
-              <>
-                <SelectProject />
-                {projects.length <= 1 && (
+      <AnimatePresence initial={false}>
+        {headerVisible && (
+          <NavigationPanel.Root
+            panelPosition="right"
+            hideBelow={'md'}
+            initial={{ opacity: 0, y: -20, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50 }}>
+            <NavigationPanel.Body gap={'2'}>
+              {isReactDiagramRoute
+                ? (
+                  <>
+                    <SelectProject />
+                    {projects.length <= 1 && (
+                      <Button
+                        size={isTablet ? 'sm' : 'xs'}
+                        leftSection={<IconShare size={14} />}
+                        onClick={open}>
+                        Share
+                      </Button>
+                    )}
+                    <ExportButton />
+                  </>
+                )
+                : (
                   <Button
+                    component={Link}
+                    to={'../'}
                     size={isTablet ? 'sm' : 'xs'}
-                    leftSection={<IconShare size={14} />}
-                    onClick={open}>
-                    Share
+                    variant="subtle"
+                    color="gray">
+                    Back to diagram
                   </Button>
                 )}
-                <ExportButton />
-              </>
-            )
-            : (
-              <Button
-                component={Link}
-                to={'../'}
-                size={isTablet ? 'sm' : 'xs'}
-                variant="subtle"
-                color="gray">
-                Back to diagram
-              </Button>
-            )}
 
-          <Divider orientation="vertical" visibleFrom="md" />
-          <ColorSchemeToggle />
-        </NavigationPanel.Body>
-      </NavigationPanel.Root>
-      {opened && <ShareModal onClose={close} />}
+              <Divider orientation="vertical" visibleFrom="md" />
+              <ColorSchemeToggle />
+            </NavigationPanel.Body>
+          </NavigationPanel.Root>
+        )}
+      </AnimatePresence>
+      {headerVisible && opened && <ShareModal onClose={close} />}
     </>
   )
 })

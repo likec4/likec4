@@ -53,14 +53,14 @@ const selectActorNodes = selectXYStore((state) => {
 /**
  * Shows sequence actors at the top of the diagram, if current viewport does not fit them
  */
-export function SequenceActorsPanel() {
+export function SequenceActorsPanel({ isActiveWalkthrough }: { isActiveWalkthrough: boolean }) {
   // const api = useXYStoreApi()
   const ids = useXYStore(selectActorNodes)
 
   return (
     <LayoutGroup>
       <AnimatePresence anchorY="top">
-        {ids.map(id => <SequenceActor key={id} id={id} />)}
+        {ids.map(id => <SequenceActor key={id} id={id} top={isActiveWalkthrough ? 24 : 60} />)}
       </AnimatePresence>
     </LayoutGroup>
   )
@@ -68,11 +68,11 @@ export function SequenceActorsPanel() {
 
 const variants = {
   initial: {
-    opacity: .5,
+    opacity: .7,
     scale: 0.95,
   },
   normal: {
-    opacity: .8,
+    opacity: .9,
     scale: 1,
   },
   hovered: {
@@ -89,7 +89,7 @@ const variants = {
   },
 } satisfies Variants
 
-function SequenceActor({ id }: { id: string }) {
+function SequenceActor({ id, top }: { id: string; top: number }) {
   const node = useNodesData<Types.SequenceActorNode>(id)
   const diagram = useDiagram()
 
@@ -107,8 +107,8 @@ function SequenceActor({ id }: { id: string }) {
     const xynode = node.internals.userNode
     invariant(xynode.type === 'seq-actor')
 
-    const scale = clamp(0.55 * tScale, {
-      min: 0.2,
+    const scale = clamp(0.6 * tScale, {
+      min: 0.1,
       max: 0.6,
     })
 
@@ -143,14 +143,14 @@ function SequenceActor({ id }: { id: string }) {
       className={css({
         position: 'absolute',
         pointerEvents: 'none',
-        top: '0',
         left: '0',
+        top: '0',
       })}
       style={{
         width: width,
         height: height,
         transformOrigin: '50% 0%',
-        transform: `translate(-50%, 60px) translateX(${centerX}px) scale(${scale})`,
+        transform: `translate(-50%, ${top}px) translateX(${centerX}px) scale(${scale})`,
       }}
     >
       <m.div

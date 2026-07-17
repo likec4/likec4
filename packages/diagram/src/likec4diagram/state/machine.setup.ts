@@ -1,4 +1,6 @@
 import {
+  hasProp,
+  isDynamicView,
   nonexhaustive,
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
@@ -9,6 +11,7 @@ import type {
   DynamicViewDisplayVariant,
   EdgeId,
   Fqn,
+  LayoutedDynamicView,
   LayoutType,
   NodeId,
   NodeNotation as ElementNotation,
@@ -136,6 +139,7 @@ export interface Context extends Input {
   activeWalkthrough: null | {
     stepId: StepPath
     activeFlow: StepPath | null
+    outlinePanelWidth: number
   }
 }
 
@@ -299,6 +303,17 @@ export const deriveToggledFeatures = (context: Context): Required<ToggledFeature
 }
 
 const isReadOnly = (context: Context) => deriveToggledFeatures(context).enableReadOnly
+
+export function isActiveSequenceWalkthrough(
+  context: Context,
+): context is Context & {
+  view: LayoutedDynamicView & { flow: NonNullable<LayoutedDynamicView['flow']> }
+  dynamicViewVariant: 'sequence'
+  activeWalkthrough: NonNullable<Context['activeWalkthrough']>
+} {
+  return isDynamicView(context.view) && context.dynamicViewVariant === 'sequence' && !!context.activeWalkthrough &&
+    hasProp(context.view, 'flow')
+}
 
 const actors = defineActors({
   hotkey: hotkeyActorLogic,

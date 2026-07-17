@@ -1,4 +1,4 @@
-import { isDynamicView } from '@likec4/core/types'
+import { hasProp, isDynamicView } from '@likec4/core/types'
 import { VStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import {
@@ -21,15 +21,37 @@ import { NavigationPanelDropdown } from './NavigationPanelDropdown'
 import { ActiveWalkthroughControls } from './walkthrough'
 import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
-const select = selectDiagramContext(s => ({
-  view: s.view,
-  isSequenceView: isDynamicView(s.view) && s.dynamicViewVariant === 'sequence',
-  isActiveWalkthrough: !!s.activeWalkthrough,
-}))
+const select = selectDiagramContext(s => {
+  const isActiveWalkthrough = !!s.activeWalkthrough
+  if (isDynamicView(s.view) && isActiveWalkthrough) {
+    const isSequenceView = s.dynamicViewVariant === 'sequence'
+    return {
+      view: s.view,
+      mode: (isSequenceView && hasProp(s.view, 'flow')
+        ? 'walkthrough-flow'
+        : 'walkthrough') as NavigationPanelMode,
+    }
+  }
+  return {
+    view: s.view,
+    mode: 'default' as NavigationPanelMode,
+  }
+})
 
+type NavigationPanelMode =
+  | 'default' // Default mode - no walkthrough
+  | 'walkthrough-flow' // Walkthrough mode with flow visualization (hide panel)
+  | 'walkthrough'
+
+const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
-  const { isActiveWalkthrough, view } = useDiagramSelector(select)
+  const {
+    view,
+    mode,
+  } = useDiagramSelector(select)
   const viewModel = useOptionalCurrentViewModel()
+  const opened = useSelector(actorRef, stateHasActiveTag)
+  const portalProps = useMantinePortalProps()
 
   useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
@@ -64,63 +86,51 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
         },
       }}>
       <NavigationPanelActorContextProvider value={actorRef}>
-        <NavigationPanelImpl actor={actorRef} mode={isActiveWalkthrough ? 'walkthrough' : 'default'} />
-        <ComparePanel />
-        <WalkthroughPanel />
-        <EditorPanel />
+        {mode !== 'walkthrough-flow' && (
+          <>
+            <Popover
+              offset={{
+                mainAxis: 4,
+              }}
+              opened={opened}
+              position="bottom-start"
+              trapFocus={opened}
+              {...portalProps}
+              clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
+              onDismiss={() => actorRef.send({ type: 'dropdown.dismiss' })}
+            >
+              <LayoutGroup>
+                <PopoverTarget>
+                  <m.div
+                    layout
+                    layoutDependency={mode}
+                    className={hstack({
+                      layerStyle: 'likec4.panel',
+                      position: 'relative',
+                      gap: 'xs',
+                      cursor: 'pointer',
+                      pointerEvents: 'all',
+                      width: '100%',
+                    })}
+                    onMouseLeave={() => actorRef.send({ type: 'breadcrumbs.mouseLeave' })}
+                  >
+                    <AnimatePresence propagate initial={false}>
+                      {mode === 'walkthrough'
+                        ? <ActiveWalkthroughControls />
+                        : <NavigationPanelControls />}
+                    </AnimatePresence>
+                  </m.div>
+                </PopoverTarget>
+              </LayoutGroup>
+              {opened && <NavigationPanelDropdown />}
+            </Popover>
+            <ComparePanel />
+            {mode === 'walkthrough' && <WalkthroughPanel />}
+            <EditorPanel />
+          </>
+        )}
       </NavigationPanelActorContextProvider>
     </VStack>
   )
 })
 NavigationPanel.displayName = 'NavigationPanel'
-
-const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
-const NavigationPanelImpl = ({ actor, mode }: { actor: NavigationPanelActorRef; mode: 'default' | 'walkthrough' }) => {
-  const opened = useSelector(actor, stateHasActiveTag)
-  const portalProps = useMantinePortalProps()
-
-  return (
-    <Popover
-      offset={{
-        mainAxis: 4,
-      }}
-      opened={opened}
-      position="bottom-start"
-      trapFocus={opened}
-      {...portalProps}
-      clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-      onDismiss={() => actor.send({ type: 'dropdown.dismiss' })}
-    >
-      <NavigationPanelPopoverTarget actor={actor} mode={mode} />
-      {opened && <NavigationPanelDropdown />}
-    </Popover>
-  )
-}
-
-const NavigationPanelPopoverTarget = (
-  { actor, mode }: { actor: NavigationPanelActorRef; mode: 'default' | 'walkthrough' },
-) => {
-  return (
-    <LayoutGroup>
-      <PopoverTarget>
-        <m.div
-          layout
-          layoutDependency={mode}
-          className={hstack({
-            layerStyle: 'likec4.panel',
-            position: 'relative',
-            gap: 'xs',
-            cursor: 'pointer',
-            pointerEvents: 'all',
-            width: '100%',
-          })}
-          onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave' })}
-        >
-          <AnimatePresence propagate>
-            {mode === 'walkthrough' ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}
-          </AnimatePresence>
-        </m.div>
-      </PopoverTarget>
-    </LayoutGroup>
-  )
-}
