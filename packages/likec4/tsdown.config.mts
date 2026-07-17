@@ -27,10 +27,8 @@ export default defineConfig([
       'src/cli/index.ts',
       'src/index.ts',
     ],
-    tsconfig: 'tsconfig.cli.json',
-    dts: {
-      tsconfig: 'tsconfig.cli.json',
-    },
+    platform: 'node',
+    dts: true,
     inputOptions: {
       resolve: {
         mainFields: ['module', 'main'],
@@ -64,10 +62,7 @@ export default defineConfig([
     outputOptions: {
       entryFileNames: '[name].mjs',
     },
-    tsconfig: 'tsconfig.cli.json',
-    dts: {
-      tsconfig: 'tsconfig.cli.json',
-    },
+    dts: true,
   },
 ])
 

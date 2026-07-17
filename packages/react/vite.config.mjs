@@ -1,6 +1,7 @@
 import postcssPanda from '@pandacss/dev/postcss'
 import babel from '@rolldown/plugin-babel'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import { resolve } from 'node:path'
 import process from 'node:process'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -54,7 +55,6 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
-    tsconfigPaths: true,
     conditions: ['sources', 'module', 'import', 'default'],
     dedupe: [
       'react',
@@ -62,6 +62,7 @@ export default defineConfig({
     ],
     alias: {
       'use-sync-external-store/shim/with-selector.js': 'use-sync-external-store/shim/with-selector',
+      '@likec4/styles': resolve('styled-system'),
     },
   },
   css: {
@@ -113,6 +114,7 @@ export default defineConfig({
     dts({
       bundleTypes: {
         bundledPackages: [
+          'react-error-boundary',
           '@likec4/diagram',
           '@likec4/diagram/custom',
           '@likec4/styles/*',

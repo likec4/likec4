@@ -11,6 +11,10 @@
       "outputs": [
         "dist/**"
       ]
+    },
+    "build": {
+      "dependsOn": ["sources"],
+      "cache": false
     }
   }
 }

@@ -49,7 +49,6 @@ export default defineConfig({
       formats: ['es'],
     },
     rolldownOptions: {
-      tsconfig: 'tsconfig.src.json',
       external: [
         ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(\\/.*)?$`)),
         /framer-motion/,
@@ -69,7 +68,6 @@ export default defineConfig({
     react(),
     dts({
       staticImport: true,
-      tsconfigPath: 'tsconfig.src.json',
       compilerOptions: {
         customConditions: [],
         noCheck: true,

@@ -23,7 +23,7 @@
       "path": "../core"
     },
     {
-      "path": "../diagram/tsconfig.src.json"
+      "path": "../diagram"
     }
   ]
 }

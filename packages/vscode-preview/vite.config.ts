@@ -12,11 +12,9 @@ export default defineConfig(({ mode }) => {
       conditions: ['sources'],
       // Prefer .ts/.tsx over .js so diagram src is used (avoid CJS .js in diagram/src)
       extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
-      alias: [
-        // { find: /^@likec4\/diagram\/(.+)$/, replacement: resolve('..', 'diagram', 'src', '$1', 'index') },
-        // { find: /^@likec4\/diagram$/, replacement: resolve('..', 'diagram', 'src', 'index') },
-        { find: /^@likec4\/styles\/(.+)$/, replacement: resolve('styled-system', '$1', 'index.mjs') },
-      ],
+      alias: {
+        '@likec4/styles': resolve('styled-system'),
+      },
     },
     mode: isDev ? 'development' : 'production',
     define: {

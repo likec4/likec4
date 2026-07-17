@@ -12,7 +12,7 @@ import {
 } from 'xstate'
 import { type RelationshipsBrowserActorRef, relationshipsBrowserLogic } from '../relationships-browser/actor'
 
-export type Input = {
+export type ElementDetailsInput = {
   subject: Fqn
   currentView: DiagramView
   initiatedFrom?: {
@@ -37,7 +37,7 @@ export type Events =
 const _elementDetailsLogic = setup({
   types: {
     context: {} as Context,
-    input: {} as Input,
+    input: {} as ElementDetailsInput,
     events: {} as Events,
     children: {} as {
       [key: `${string}-relationships`]: 'relationshipsBrowserLogic'
@@ -102,7 +102,7 @@ export interface ElementDetailsLogic extends
     any,
     any,
     never,
-    Input,
+    ElementDetailsInput,
     any,
     any,
     any,
@@ -114,8 +114,4 @@ export const elementDetailsLogic: ElementDetailsLogic = _elementDetailsLogic as 
 
 export type ElementDetailsSnapshot = SnapshotFrom<ElementDetailsLogic>
 export interface ElementDetailsActorRef extends ActorRef<ElementDetailsSnapshot, Events> {
-}
-
-export type {
-  Input as ElementDetailsInput,
 }

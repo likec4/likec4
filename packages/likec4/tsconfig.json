@@ -1,13 +1,57 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "files": [],
-  "include": [],
+  "extends": "@likec4/tsconfig/base.json",
+  "compilerOptions": {
+    "customConditions": [
+      "production",
+      "sources"
+    ],
+    "target": "es2024",
+    "composite": true,
+    "incremental": true,
+    "resolvePackageJsonImports": true,
+    "types": [
+      "node"
+    ],
+    "rootDirs": [
+      "src",
+      "."
+    ]
+  },
+  "include": [
+    "src/",
+    "package.json"
+  ],
   "references": [
     {
-      "path": "./tsconfig.scripts.json"
+      "path": "../core/"
     },
     {
-      "path": "./tsconfig.cli.json"
+      "path": "../config/"
+    },
+    {
+      "path": "../language-services/"
+    },
+    {
+      "path": "../language-server/"
+    },
+    {
+      "path": "../vite-plugin/"
+    },
+    {
+      "path": "../generators/"
+    },
+    {
+      "path": "../layouts/"
+    },
+    {
+      "path": "../leanix-bridge/"
+    },
+    {
+      "path": "../log/"
+    },
+    {
+      "path": "../mcp/"
     }
   ]
 }

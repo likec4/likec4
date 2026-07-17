@@ -11,24 +11,17 @@
     "lib": [
       "ESNext",
       "DOM"
-    ],
-    "allowJs": true,
-    "paths": {
-      "@likec4/styles/*": [
-        "./styled-system/*/index.mjs"
-      ]
-    }
+    ]
   },
-  "include": [
-    "src",
-    "styled-system"
+  "files": [
+    "src/index.ts"
   ],
   "references": [
     {
       "path": "../core/"
     },
     {
-      "path": "../diagram/tsconfig.src.json"
+      "path": "../diagram/"
     }
   ]
 }

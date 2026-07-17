@@ -34,7 +34,7 @@
       "path": "../vite-plugin/"
     },
     {
-      "path": "../diagram/tsconfig.src.json"
+      "path": "../diagram/"
     },
     {
       "path": "../../devops/"
