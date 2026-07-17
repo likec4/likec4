@@ -5,13 +5,8 @@ import { DefaultLangiumDocuments, stream } from 'langium'
 import { groupBy, map, pipe, prop } from 'remeda'
 import { type LikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
 import type { LikeC4SharedServices } from '../module'
+import { compareByUri } from '../utils/compareByUri'
 import type { ProjectsManager } from './ProjectsManager'
-
-/**
- * Compare function for document paths to ensure consistent order
- */
-const compare = compareNaturalHierarchically('/')
-const ensureOrder = (a: LangiumDocument, b: LangiumDocument) => compare(a.uri.path, b.uri.path)
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
   constructor(protected services: LikeC4SharedServices) {
@@ -27,15 +22,28 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
     if (this.documentMap.has(uriString)) {
       throw new Error(`A document with the URI '${uriString}' is already present.`)
     }
-    const docs = [...this.documentMap.values(), document].sort(ensureOrder)
-    // Clear and re-add documents to ensure consistent order
-    this.documentMap.clear()
-    for (const doc of docs) {
-      this.documentMap.set(doc.uri.toString(), doc)
-    }
+
     if (isLikeC4UserDocument(document)) {
       // Set project ID
       document.likec4ProjectId = this.projectsManager.ownerProjectId(document)
+    }
+
+    // Optimization: check if new document comes after the last one
+    const docs = [...this.documentMap.values()]
+    const lastDoc = docs.at(-1)
+
+    if (!lastDoc || compareByUri(lastDoc, document) <= 0) {
+      // New document comes after the last one (or map is empty), just add it
+      this.documentMap.set(uriString, document)
+      return
+    }
+
+    // New document needs to be inserted somewhere in the middle, resort all
+    docs.push(document)
+    docs.sort(compareByUri)
+    this.documentMap.clear()
+    for (const doc of docs) {
+      this.documentMap.set(doc.uri.toString(), doc)
     }
   }
 

@@ -56,6 +56,7 @@ export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'
 
 export type * from './guards'
 export {
+  hasChildren,
   hasProp,
   isAnyOf,
   isNonEmptyArray,

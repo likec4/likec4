@@ -31,7 +31,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private queue = new PQueue({ concurrency: 1, timeout: 5000 })
 
   constructor(protected services: LikeC4SharedServices) {
-    logger.debug`ChokidarFileSystemWatcher created`
+    logger.trace`ChokidarFileSystemWatcher created`
   }
 
   watch(folder: string): void {
@@ -59,14 +59,13 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private createWatcher(folder: string): FSWatcher {
     logger.debug`create watcher for folder: ${folder}`
 
-    const projectsManager = this.services.workspace.ProjectsManager
-
     let watcher = chokidar.watch(folder, {
       ignored: [
         path => insideNodeModulesOrRepo(path),
-        // Honor the project's `exclude` so the watcher skips excluded subtrees.
-        path => projectsManager.isExcluded(URI.file(path)),
+        // Filter out non-LikeC4 files early to avoid unnecessary processing
         (path, stats) => !!stats && stats.isFile() && !isAnyLikeC4File(path),
+        // Honor the project's `exclude` so the watcher skips excluded subtrees.
+        path => this.services.workspace.ProjectsManager.isExcluded(URI.file(path)),
       ],
       followSymlinks: true,
       ignoreInitial: true,

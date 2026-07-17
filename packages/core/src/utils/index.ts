@@ -37,6 +37,9 @@ export { getOrCreate } from './getOrCreate'
 
 // Re-export for backwards compatibility
 export {
+  hasChildren,
+  hasProp,
+  isAnyOf,
   isNonEmptyArray,
   isString,
 } from '../types/guards'

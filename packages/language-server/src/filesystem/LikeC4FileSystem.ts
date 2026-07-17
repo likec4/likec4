@@ -9,12 +9,11 @@ import { unlink, writeFile as fsWriteFile } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
+import { compareByUri, compareByUriDeepFirst } from '../utils'
 import { WithChokidarWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './noop'
 import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './types'
-import { ensureOrder, hasLikeC4Ext, isNodeModulesOrRepo } from './utils'
-
-const logger = rootLogger.getChild('filesystem')
+import { hasLikeC4Ext, isNodeModulesOrRepo } from './utils'
 
 function isLikeC4ConfigFile(path: string, isDirectory: boolean = false) {
   return !isDirectory && isLikeC4Config(basename(path))
@@ -35,6 +34,8 @@ export const WithFileSystem = (
  * @see https://github.com/likec4/likec4/pull/1213
  */
 class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider implements FileSystemProvider {
+  #logger = rootLogger.getChild('filesystem')
+
   override async readFile(uri: URI): Promise<string> {
     if (isLikeC4Builtin(uri)) {
       return Promise.resolve(Content)
@@ -42,7 +43,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       return await super.readFile(uri)
     } catch (error) {
-      logger.warn(`Failed to read file ${uri.fsPath}`, { error })
+      this.#logger.warn(`Failed to read file ${uri.fsPath}`, { error })
       return ''
     }
   }
@@ -78,10 +79,11 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
           uri: URI.file(path),
         })
       }
+      return entries.sort(compareByUri)
     } catch (error) {
-      logger.warn(`Failed to read directory ${folderPath.fsPath}`, { error })
+      this.#logger.warn(`Failed to read directory ${folderPath.fsPath}`, { error })
+      return []
     }
-    return entries.sort(ensureOrder)
   }
 
   async scanProjectFiles(folderUri: URI): Promise<FileNode[]> {
@@ -89,11 +91,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     if (files.length <= 1) {
       return files
     }
-    const compare = compareNaturalHierarchically('/', true)
-    const compareByPath = (a: FileNode, b: FileNode): number => {
-      return compare(a.uri.path, b.uri.path)
-    }
-    return files.sort(compareByPath)
+    return files.sort(compareByUriDeepFirst)
   }
 
   async scanDirectory(
@@ -117,7 +115,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
         })
       }
     } catch (error) {
-      logger.warn(`Failed to scan directory {path}`, { path: directory.fsPath, error })
+      this.#logger.warn(`Failed to scan directory {path}`, { path: directory.fsPath, error })
     }
     return entries
   }
@@ -133,12 +131,12 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       throw new Error(`Cannot create directory ${dir} because a file with the same name exists.`)
     }
     if (!exists) {
-      logger.debug('creating directory {path}', { path: dir })
+      this.#logger.debug('creating directory {path}', { path: dir })
       // Create the directory synchronously on purpose
       // to prevent watchers from picking up the change too early
       mkdirSync(dir, { recursive: true })
     }
-    logger.debug('writing file {path}', { path: uri.fsPath })
+    this.#logger.debug('writing file {path}', { path: uri.fsPath })
     return await fsWriteFile(uri.fsPath, content, {
       encoding: 'utf-8',
     })
@@ -150,14 +148,14 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       const exists = statSync(path, { throwIfNoEntry: false })
       if (exists?.isFile() || exists?.isSymbolicLink()) {
         await unlink(path)
-        logger.debug('deleted file {path}', { path })
+        this.#logger.debug('deleted file {path}', { path })
         return true
       } else {
-        logger.warn('deleteFile failed: {path} does not exist, or is not a file', { path })
+        this.#logger.warn('deleteFile failed: {path} does not exist, or is not a file', { path })
         return false
       }
     } catch (error) {
-      logger.warn(`Failed to delete file ${uri.fsPath}`, { error })
+      this.#logger.warn(`Failed to delete file ${uri.fsPath}`, { error })
     }
     return false
   }

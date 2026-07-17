@@ -305,6 +305,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private notifyListeners(docs: URI[]): void
   private notifyListeners(projectId: c4.ProjectId): void
   private notifyListeners(arg: URI[] | c4.ProjectId) {
+    if (this.listeners.length === 0) {
+      return
+    }
     let groupedByProject: Array<[projectId: c4.ProjectId, docs: URI[]]>
     if (isArray(arg)) {
       groupedByProject = pipe(

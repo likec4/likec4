@@ -24,15 +24,19 @@ import type { IndexManager } from '../workspace'
 const { getDocument } = AstUtils
 
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
-  protected deploymentsIndex: DeploymentsIndex
-  protected fqnIndex: FqnIndex
   protected override readonly indexManager: IndexManager
 
-  constructor(services: LikeC4Services) {
+  constructor(protected services: LikeC4Services) {
     super(services)
     this.indexManager = services.shared.workspace.IndexManager
-    this.fqnIndex = services.likec4.FqnIndex
-    this.deploymentsIndex = services.likec4.DeploymentsIndex
+  }
+
+  protected get fqnIndex(): FqnIndex {
+    return this.services.likec4.FqnIndex
+  }
+
+  protected get deploymentsIndex(): DeploymentsIndex {
+    return this.services.likec4.DeploymentsIndex
   }
 
   override getScope(context: ReferenceInfo): Scope {

@@ -281,7 +281,7 @@ export class ProjectsManager extends ADisposable {
     if (this.isExcludedByWorkspace(docuri)) {
       return true
     }
-    const owner = this.#ownerOf.get(docuri)
+    const owner = this.findOwnerProject(docuri)
     if (!owner) {
       return isExcludedByDefault(docuri)
     }
@@ -293,24 +293,15 @@ export class ProjectsManager extends ADisposable {
     return false
   })
 
-  #ownerOf = new DefaultMap((docuri: NormalizedUri) => {
-    if (this.#projects.length === 0) {
-      return null
-    }
-    const hasThisDoc = isParentFolderFor(docuri)
-    // first check if the document is part of the project
-    return this.#projects.find(hasThisDoc)
-      // Otherwise, check if the document is included by any project
-      ?? this.#projects.find(includes(docuri))
-      // if not part of any project, return null
-      ?? null
-  })
+  /**
+   * This is a cached lookup for performance.
+   */
+  #ownerOf = new DefaultMap((docuri: NormalizedUri) => this.findOwnerProject(docuri) ?? null)
 
   constructor(protected services: LikeC4SharedServices) {
     super()
     this.onDispose(
       Disposable.create(() => {
-        this.resetCaches()
         this.#updateListeners.length = 0
       }),
     )
@@ -357,7 +348,7 @@ export class ProjectsManager extends ADisposable {
       }
       logger.debug`set workspace exclude patterns: ${normalizedPatterns}`
       this.#workspaceExclude = picomatch(normalizedPatterns, { dot: true })
-      this.resetCaches()
+      this.clearCaches()
     } catch (e) {
       logger.warn('Failed to set workspace exclude patterns', { error: e })
       this.#workspaceExclude = undefined
@@ -422,7 +413,7 @@ export class ProjectsManager extends ADisposable {
   }
 
   getProject(arg: ProjectId | LangiumDocument): ProjectData {
-    const id = typeof arg === 'string' ? arg : (arg.likec4ProjectId ?? this.ownerProjectId(arg))
+    const id = typeof arg === 'string' ? arg : this.ownerProjectId(arg)
     return this.#projectById.get(id)
   }
 
@@ -608,7 +599,7 @@ export class ProjectsManager extends ADisposable {
     }
 
     // Reset cached data
-    this.resetCaches()
+    this.clearCaches()
     this.notifyListeners()
 
     await this.rebuildProject(project.id, cancelToken).catch(error => {
@@ -634,6 +625,19 @@ export class ProjectsManager extends ADisposable {
       // if no owner, return default project
       ?? this.#defaultProjectId
       ?? ProjectsManager.DefaultProjectId
+  }
+
+  protected findOwnerProject(uri: NormalizedUri): ProjectData | undefined {
+    if (this.#projects.length === 0) {
+      return undefined
+    }
+    const hasThisDoc = isParentFolderFor(uri)
+    // first check if the document is part of the project
+    return this.#projects.find(hasThisDoc)
+      // Otherwise, check if the document is included by any project
+      ?? this.#projects.find(includes(uri))
+      // if not part of any project, return undefined
+      ?? undefined
   }
 
   /**
@@ -736,7 +740,7 @@ export class ProjectsManager extends ADisposable {
         }
       }
     }
-    this.resetCaches()
+    this.clearCaches()
     this.notifyListeners()
     await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
   }
@@ -755,8 +759,8 @@ export class ProjectsManager extends ADisposable {
     return id
   }
 
-  protected resetCaches(): void {
-    logger.trace('resetCaches')
+  clearCaches(): void {
+    logger.trace('clearCaches')
     if (this.#defaultProjectId && !this.#projects.some(p => p.id === this.#defaultProjectId)) {
       this.#defaultProjectId = undefined
     }
@@ -791,7 +795,7 @@ export class ProjectsManager extends ADisposable {
     }
 
     log.info`rebuild project documents: ${docs.length}`
-    this.resetCaches()
+    this.clearCaches()
     await this.services.workspace.DocumentBuilder
       .update(docs, [], cancelToken)
       .catch(error => {

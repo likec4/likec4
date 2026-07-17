@@ -1,5 +1,6 @@
 import prettyMs from 'pretty-ms'
 import { logger } from '../logger'
+export * from './compareByUri'
 export * from './disposable'
 export * from './elementRef'
 export * from './fqnRef'

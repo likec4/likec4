@@ -60,7 +60,6 @@ import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
 import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
-  AstNodeDescriptionProvider,
   IndexManager,
   LangiumDocuments,
   LikeC4WorkspaceManager,
@@ -219,9 +218,6 @@ export function createLikeC4Module(
       Formatter: bind(LikeC4Formatter),
       CodeActionProvider: bind(LikeC4CodeActionProvider),
     },
-    workspace: {
-      AstNodeDescriptionProvider: bind(AstNodeDescriptionProvider),
-    },
     references: {
       NameProvider: bind(LikeC4NameProvider),
       ScopeComputation: bind(LikeC4ScopeComputation),
@@ -300,7 +296,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     // Therefore, initialize the configuration provider instantly
     void shared.workspace.ConfigurationProvider.initialized({})
   } else {
-    onNextTick(() => likec4.Rpc.init())
+    onNextTick(() => shared.workspace.WorkspaceManager.ready.then(() => likec4.Rpc.init()))
   }
 
   return { shared, likec4 }

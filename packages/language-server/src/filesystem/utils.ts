@@ -22,12 +22,3 @@ export function insideNodeModulesOrRepo(path: string) {
   }
   return false
 }
-
-/**
- * Compare function for document paths to ensure consistent order
- */
-const compare = compareNaturalHierarchically('/')
-
-export function ensureOrder(a: FileSystemNode, b: FileSystemNode) {
-  return compare(a.uri.path, b.uri.path)
-}

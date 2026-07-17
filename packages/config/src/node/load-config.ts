@@ -70,7 +70,7 @@ const loadJsonConfigs = async (filepath: string, stack: string[]): Promise<[...J
  */
 export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4ProjectConfig> {
   filepath = typeof filepath === 'string' ? filepath : filepath.fsPath
-  logger.getChild('config').debug`Loading config: ${relative(cwd(), filepath)}`
+  logger.getChild('config').trace`Loading config: ${relative(cwd(), filepath)}`
 
   const folder = dirname(filepath)
   const filename = basename(filepath)

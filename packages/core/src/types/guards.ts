@@ -83,3 +83,7 @@ export function isAnyOf<const Predicates extends NonEmptyArray<Guard<any>>>(
     return predicates.some(predicate => predicate(value))
   }) as any
 }
+
+export function hasChildren<C, A extends { children: C[] }>(value: A): value is A & { children: NonEmptyArray<C> } {
+  return value.children.length > 0
+}

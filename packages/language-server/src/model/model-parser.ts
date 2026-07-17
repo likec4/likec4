@@ -10,7 +10,12 @@ import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
 import { type LangiumDocument, type Stream, Disposable, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
-import { type LikeC4DocumentProps, type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument } from '../ast'
+import {
+  type LikeC4DocumentProps,
+  type ParsedLikeC4LangiumDocument,
+  isLikeC4LangiumDocument,
+  isLikeC4UserDocument,
+} from '../ast'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
@@ -61,7 +66,7 @@ export class LikeC4ModelParser extends ADisposable {
         DocumentState.Linked,
         async doc => {
           if (this.cachedParsers.has(doc)) {
-            logger.trace('Linked: clear cached parser {projectId} document {doc}', {
+            logger.trace('project {project}, Linked: clear cached parser {doc}', {
               projectId: doc.likec4ProjectId,
               doc: UriUtils.basename(doc.uri),
             })
@@ -73,7 +78,7 @@ export class LikeC4ModelParser extends ADisposable {
         DocumentState.Linked,
         async docs => {
           for (const doc of docs) {
-            if (services.shared.workspace.ProjectsManager.isExcluded(doc)) {
+            if (!isLikeC4UserDocument(doc)) {
               continue
             }
             try {
@@ -91,8 +96,8 @@ export class LikeC4ModelParser extends ADisposable {
         DocumentState.Validated,
         async doc => {
           if (doc.diagnostics?.some(isError) && this.cachedParsers.has(doc)) {
-            logger.trace('Validated: clear cached parser {projectId} document {doc} because of errors', {
-              projectId: doc.likec4ProjectId,
+            logger.trace('project {project}, Validated: clear cached parser {doc} because of errors', {
+              project: doc.likec4ProjectId,
               doc: UriUtils.basename(doc.uri),
             })
             this.cachedParsers.delete(doc)
@@ -121,14 +126,10 @@ export class LikeC4ModelParser extends ADisposable {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
     const project = this.services.shared.workspace.ProjectsManager.getProject(doc)
     const docpath = UriUtils.relative(project.folderUri, doc.uri)
-    if (doc.likec4ProjectId) {
-      logger.trace(`create parser {projectId} document {doc}`, {
-        projectId: doc.likec4ProjectId,
-        doc: docpath,
-      })
-    } else {
-      logger.debug(`create parser for document without project {doc}`, { doc: doc.uri.fsPath })
-    }
+    logger.trace(`project {project}, create parser {doc}`, {
+      project: project.id,
+      doc: docpath,
+    })
     if (doc.state < DocumentState.Linked) {
       logger.debug(`Document {doc} is not linked, state is {state}`, {
         doc: docpath,

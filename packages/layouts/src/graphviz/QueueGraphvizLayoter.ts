@@ -140,12 +140,12 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
           break
         }
       }
-    } finally {
       const total = this.queue.pending + this.queue.size
       if (total > 0) {
         logger.trace`waiting ${total} tasks to finish`
         await this.queue.onIdle()
       }
+    } finally {
       logger.debug`batch layout done`
       this.isProcessingBatch = false
     }
