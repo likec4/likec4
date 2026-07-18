@@ -1,4 +1,4 @@
-import { isEmptyish, isString, isTruthy } from 'remeda'
+import { hasAtLeast, isEmptyish, isNumber, isString, isTruthy } from 'remeda'
 import type { Tagged } from 'type-fest'
 import { invariant } from '../utils'
 
@@ -142,21 +142,61 @@ export function EdgeId(id: string): EdgeId {
   return id as any
 }
 
-export type StepEdgeIdLiteral = `step-${number}` | `step-${number}.${number}`
-export type StepEdgeId = Tagged<StepEdgeIdLiteral, 'EdgeId'>
-export function stepEdgeId(step: number, parallelStep?: number): StepEdgeId {
-  const id = `step-${String(step).padStart(2, '0')}` as StepEdgeId
-  return parallelStep ? `${id}.${parallelStep}` as StepEdgeId : id
-}
 export const StepEdgeKind = '@step'
 
-export function isStepEdgeId(id: string): id is StepEdgeId {
-  return id.startsWith('step-')
-}
+export type StepPath = Tagged<Tagged<`step-${string}`, 'EdgeId'>, 'StepPath'>
 
-export function extractStep(id: EdgeId): number {
-  if (!isStepEdgeId(id)) {
-    throw new Error(`Invalid step edge id: ${id}`)
-  }
-  return parseFloat(id.slice('step-'.length))
+export function isStepPath(id: unknown): id is StepPath {
+  return typeof id === 'string' && id.startsWith('step-')
+}
+/**
+ * Path to a step, also acting as EdgeId
+ *
+ * Format: step-{segment1}.{segment2}...{segmentN}
+ * Where segment can be:
+ * - {index} (index in array, 1-based, represents A -> B)
+ * - {index}:{kind} (subflow of a kind, 1-based, i.e. "03:loop" - 3rd step starts a loop)
+ *
+ * @example
+ * ```
+ * dynamic view {
+ *   A -> B          // step-01
+ *   alt {           // step-02:alt - step 2 is alt subflow
+ *     when {        // step-02:alt.01:when - step 1 in alt is when subflow
+ *       try {       // step-02:alt.01:when.01:try - step 1 in when is try subflow
+ *         B -> C    // step-02:alt.01:when.01:try.01:block.01 - step 1 in try block
+ *       } catch {
+ *         B -> D    // step-02:alt.01:when.01:try.02:catch.01
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param segments - Array of segments, where each segment can be:
+ *   - string: literal segment
+ *   - number: index segment (will be padded to 2 digits)
+ *   - [number, string]: index:kind segment (will be padded to 2 digits)
+ *   - undefined: will be filtered out
+ */
+export function StepPath(...segments: Array<string | number | [number, string] | undefined>): StepPath {
+  const filtered = segments
+    .filter(v => v !== undefined && v !== '')
+    .map((v, i) => {
+      if (Array.isArray(v) && v.length === 2) {
+        invariant(isTruthy(v[1]), `StepPath segment kind can not be empty "${v[0]}:${v[1]}"`)
+        return `${v[0].toString(10).padStart(2, '0')}:${v[1]}`
+      }
+      if (isNumber(v)) {
+        return v.toString(10).padStart(2, '0')
+      }
+      // drop 'step-' prefix if present in segments after the first
+      if (i > 0 && v?.startsWith('step-')) {
+        return v.substring(5)
+      }
+      return v
+    })
+  invariant(hasAtLeast(filtered, 1), 'StepPath must have at least one segment')
+  const p = filtered.join('.')
+  return (!p.startsWith('step-') ? `step-${p}` : p) as StepPath
 }

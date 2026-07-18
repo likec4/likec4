@@ -113,13 +113,14 @@ Tags:
 
 Model:
   name='model' '{'
-    elements+=(
-      ExtendElement |
-      ExtendRelation |
-      Relation<true> |
-      Element
-    )*
+    elements+=(ModelElement)*
   '}'
+;
+
+ModelElement:
+  ExtendElementOrRelation |
+  Relation<true> |
+  Element
 ;
 
 Element:
@@ -157,8 +158,22 @@ ElementProperty:
 ElementStringProperty:
   key=('title' | 'description' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
 
-ExtendElement:
-  'extend' element=StrictFqnElementRef body=ExtendElementBody
+ExtendElementOrRelation:
+  'extend' (
+    {infer ExtendRelation}
+      source=FqnRef
+      (
+        dotKind=RelationKindDotRef |
+        '-[' kind=[RelationshipKind] ']->' |
+        '->'
+      )
+      target=FqnRef
+      title=String?
+      body=ExtendRelationBody |
+    {infer ExtendElement}
+      element=StrictFqnElementRef
+      body=ExtendElementBody
+  )
 ;
 
 ExtendElementBody:  '{'
@@ -176,18 +191,6 @@ ExtendElementProperty:
   LinkProperty |
   MetadataProperty;
 
-ExtendRelation:
-  'extend' source=FqnRef
-  (
-    dotKind=RelationKindDotRef |
-    '-[' kind=[RelationshipKind] ']->' |
-    '->'
-  )
-  target=FqnRef
-  title=String?
-  body=ExtendRelationBody
-;
-
 ExtendRelationBody: '{'
   tags=Tags?
   props+=ExtendRelationProperty*
@@ -198,28 +201,50 @@ ExtendRelationProperty:
   LinkProperty |
   MetadataProperty;
 
-// Hack, to strictly enforce resolution of model elements
-ElementRef:
+// Hack, to strictly enforce resolution of model elements ONLY (in active scope)
+interface ElementRef {
+  modelElement: FqnRef;
+}
+ElementRef returns ElementRef:
   modelElement=FqnRef;
 
-StrictFqnElementRef:
-  el=[Element:Id] ({infer StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
+interface StrictFqnElementRef {
+  parent?: StrictFqnElementRef;
+  el: @Element;
+}
+
+StrictFqnElementRef returns StrictFqnElementRef:
+  el=[Element:Id] ({StrictFqnElementRef.parent=current} StickyDot el=[Element:Id])*;
 
 
 type ModelReferenceable = Element | Imported;
 type Referenceable = DeploymentNode | DeployedInstance | Element | Imported;
+
+interface FqnRef {
+  parent?: FqnRef;
+  value: @Referenceable;
+}
+
+interface StrictFqnRef {
+  parent?: StrictFqnRef;
+  value: @Referenceable;
+}
+
 // Reference to Elements in logical or deployment model
 // Scope computation is based on the parent element:
 //  - If parent is DeploymentNode, then it can reference nested DeploymentNodes and DeployedInstances
 //  - If parent is DeployedInstance, then it can reference  nested  Element
 //  - If parent is Element, then it can reference  nested  Element
 //  Mix of DeploymentRef and ElementRef
-FqnRef: value=[Referenceable:Id] ({infer FqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+FqnRef returns FqnRef:
+  value=[Referenceable:Id] ({FqnRef.parent=current} StickyDot value=[Referenceable:Id])*
+;
 
 
 // Strict reference allows only direct children of parent
-StrictFqnRef:
-  value=[Referenceable:Id] ({infer StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*;
+StrictFqnRef returns StrictFqnRef:
+  value=[Referenceable:Id] ({StrictFqnRef.parent=current} StickyDot value=[Referenceable:Id])*
+;
 
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
@@ -293,7 +318,9 @@ ModelViews:
 
 type LikeC4View = ElementView | DynamicView | DeploymentView;
 LikeC4ViewRule returns LikeC4View:
-  ElementView | DynamicView | DeploymentView;
+  DynamicView |
+  DeploymentView |
+  ElementView;
 
 ElementView:
   'view' name=Id? (
@@ -327,7 +354,7 @@ DynamicViewBody: '{'
   tags=Tags?
   props+=DynamicViewProperty*
   (
-    steps+=(DynamicViewParallelSteps | DynamicViewStep) |
+    steps+=StepStatement |
     rules+=DynamicViewRule
   )*
 '}'
@@ -360,8 +387,6 @@ type AnyProperty =
   ElementProperty |
   RelationProperty |
   RelationshipStyleProperty |
-  NotationProperty |
-  NotesProperty |
   NavigateToProperty |
   StyleProperty
 ;
@@ -414,21 +439,126 @@ DynamicViewRule:
   ViewRuleAutoLayout
 ;
 
-DynamicViewParallelSteps:
-  ('parallel'|'par') '{'
-    // Accept nested ParallelSteps so we can report a clear validation error
-    // instead of leaving the user with a cryptic parser error. See #988.
-    (steps+=(DynamicViewParallelSteps | DynamicViewStep))*
-  '}'
+// -----------------------------------------------
+// Dynamic view flow steps
+// -----------------------------------------------
+type StepStatement =
+  StepOrSeries |
+  TryStep |
+  AltSteps |
+  SubflowStep
 ;
 
-fragment DynamicViewStepTarget:
+StepStatement returns StepStatement:
+  SubflowStep |
+  AltSteps |
+  TryStep |
+  StepOrSeries
+;
+
+interface StepsBlock {
+  steps: StepStatement[]
+}
+
+fragment StepsBlockFragment:
+  '{' steps+=StepStatement* '}'
+;
+
+// -----------------------------------------------
+// Semantic group of dynamic view steps (flow branch)
+
+interface SubflowStep extends StepsBlock {
+  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
+  /// Optional title for the branch
+  title?: string
+}
+
+// Must be defined before "StepsBlock"
+SubflowStep returns SubflowStep:
+  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break')
+  title=String? StepsBlockFragment
+;
+
+/**
+ * Represents a block of step statements, i.e. { ... }
+ */
+StepsBlock returns StepsBlock:
+  StepsBlockFragment
+;
+
+
+
+// -----------------------------------------------
+// Dynamic view TRY block
+
+interface TryBlock extends StepsBlock  {
+  /// Optional title for the try block
+  title?: string
+}
+
+interface CatchBlock {
+  try: TryBlock
+  // Optional title for the catch block
+  title?: string
+  catch: StepsBlock
+}
+
+interface FinallyBlock {
+  tryCatch: TryBlock | CatchBlock
+  // Optional title for the finally block
+  title?: string
+  finally: StepsBlock
+}
+
+type TryStep =
+  TryBlock |
+  CatchBlock |
+  FinallyBlock;
+
+TryStep returns TryStep:
+  FinallyBlock;
+
+FinallyBlock returns FinallyBlock:
+  CatchBlock ({FinallyBlock.tryCatch=current}
+    'finally' title=String?
+    finally=StepsBlock
+  )?
+;
+
+CatchBlock returns CatchBlock:
+  TryBlock ({CatchBlock.try=current}
+    'catch' title=String?
+    catch=StepsBlock
+  )?
+;
+
+TryBlock returns TryBlock:
+  'try' title=String? StepsBlockFragment
+;
+
+// -----------------------------------------------
+// Dynamic view ALT block
+
+interface AltSteps {
+  title?: string
+  branches: SubflowStep[]
+}
+
+AltSteps returns AltSteps:
+  'alt' title=String? '{' branches+=SubflowStep* '}'
+;
+
+
+// -----------------------------------------------
+// Dynamic view step (from previous model)
+
+fragment StepTarget:
   target=ElementRef
   title=String?
   custom=CustomRelationProperties?
 ;
 
-interface AbstractDynamicStep {
+interface AbstractStep {
   kind?: @RelationshipKind;
   dotKind?: RelationKindDotRef;
   target: ElementRef;
@@ -436,32 +566,40 @@ interface AbstractDynamicStep {
   custom?: CustomRelationProperties;
 }
 
-interface DynamicStepSingle extends AbstractDynamicStep {
+/**
+ * A single step in a dynamic view flow
+ * source -> target
+ */
+interface Step extends AbstractStep {
   source: ElementRef;
   isBackward?: boolean;
 }
 
-interface DynamicStepChain extends AbstractDynamicStep {
-  source: DynamicStepSingle | DynamicStepChain;
+/**
+ * A series of steps in a dynamic view flow
+ * source -> target1 -> target2 -> ...
+ */
+interface StepSeries extends AbstractStep {
+  source: Step | StepSeries;
 }
 
-type DynamicViewStep = DynamicStepSingle | DynamicStepChain;
+type StepOrSeries = Step | StepSeries;
 
-DynamicViewStep returns DynamicViewStep:
-  DynamicStepChain;
+StepOrSeries returns StepOrSeries:
+  StepSeries;
 
-DynamicStepChain returns DynamicStepSingle:
-  DynamicStepSingle
-  ({DynamicStepChain.source=current}
-    ('->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
-    DynamicViewStepTarget
+StepSeries returns StepSeries:
+  Step
+  ({StepSeries.source=current}
+    (dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
+    StepTarget
   )*
 ;
 
-DynamicStepSingle returns DynamicStepSingle:
+Step returns Step:
   source=ElementRef
-  (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | dotKind=RelationKindDotRef )
-  DynamicViewStepTarget
+  (isBackward?='<-' | dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
+  StepTarget
 ;
 
 ViewRulePredicate:
@@ -593,7 +731,7 @@ DirectedRelationExpr infers RelationExpr:
 
 OutgoingRelationExpr:
   from=FqnExpr
-  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind:Id] ']->' | dotKind=RelationKindDotRef)
+  (isBidirectional?='<->' | dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind:Id] ']->')
 ;
 
 FqnExpressions:
@@ -620,9 +758,9 @@ WhereElementNegation:
   'not' value=WhereElementExpression;
 
 WhereElement:
+  {infer WhereElementMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
   {infer WhereElementTag} 'tag' EqOperator value=TagRef |
-  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind] |
-  {infer WhereElementMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
+  {infer WhereElementKind} 'kind' EqOperator value=[DeploymentNodeOrElementKind]
 ;
 
 MetadataFilterValue returns string:
@@ -650,12 +788,12 @@ WhereRelationNegation:
   'not' value=WhereRelationExpression;
 
 WhereRelation:
-  {infer WhereRelationTag} 'tag' EqOperator value=TagRef |
-  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
-  {infer WhereRelationMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
-  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=TagRef |
+  {infer WhereRelationParticipantMetadata} participant=Participant StickyDot 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
   {infer WhereRelationParticipantKind} participant=Participant StickyDot 'kind' EqOperator value=[DeploymentNodeOrElementKind:Id] |
-  {infer WhereRelationParticipantMetadata} participant=Participant StickyDot 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)?
+  {infer WhereRelationParticipantTag} participant=Participant StickyDot 'tag' EqOperator value=TagRef |
+  {infer WhereRelationMetadata} 'metadata' StickyDot key=Id (EqOperator value=MetadataFilterValue)? |
+  {infer WhereRelationKind} 'kind' EqOperator value=[RelationshipKind:Id] |
+  {infer WhereRelationTag} 'tag' EqOperator value=TagRef
 ;
 type DeploymentNodeOrElementKind = ElementKind | DeploymentNodeKind
 type WhereTagEqual = WhereElementTag | WhereRelationTag | WhereRelationParticipantTag;
@@ -926,12 +1064,12 @@ ArrowProperty:
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
 
-TagRef :
-  Hash tag=[Tag:Id]
+TagRef:
+  tag=[Tag:HashId]
 ;
 
-RelationKindDotRef :
-  Dot kind=[RelationshipKind:Id]
+RelationKindDotRef:
+  kind=[RelationshipKind:DotId]
 ;
 
 LineOptions returns string:
@@ -1028,6 +1166,12 @@ Id returns string:
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
 
+DotId returns string:
+  DotPrefix Id;
+
+HashId returns string:
+  Hash Id;
+
 fragment EqOperator:
   (
     operator=(Eq | NotEqual) |
@@ -1070,11 +1214,13 @@ terminal URI_ALIAS: /@[a-zA-Z0-9_-]*\/[^\s]+/;
 
 terminal DotUnderscore: /\b\._(?![_a-zA-Z])/;
 terminal DotWildcard: /\b\.\*{1,2}/;
+// terminal HashPrefix: /\B#\b/;
 terminal Hash: '#';
 
 // No space allowed before dot
 terminal StickyDot: /\b\./;
-terminal Dot: '.';
+// terminal Dot: '.';
+terminal DotPrefix: '.';
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;

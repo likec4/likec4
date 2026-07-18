@@ -24,17 +24,22 @@ export const node = common.props
   .readonly()
   .transform(value => {
     const { shape, color, icon, ...rest } = value
-    if (shape || color || icon) {
-      return produce(rest, draft => {
+    return pickBy(
+      produce(rest, draft => {
         draft.style = rest.style || {}
-        draft.style.shape = shape ?? rest.style?.shape
-        draft.style.color = color ?? rest.style?.color
-        draft.style.icon = icon ?? rest.style?.icon
-      })
-    }
-    return rest
+        if (shape) {
+          draft.style.shape = shape
+        }
+        if (color) {
+          draft.style.color = color
+        }
+        if (icon) {
+          draft.style.icon = icon
+        }
+      }),
+      isNonNullish,
+    )
   })
-  .transform(pickBy(isNonNullish))
 
 export const instance = common.props
   .extend({
@@ -53,17 +58,22 @@ export const instance = common.props
   .readonly()
   .transform(value => {
     const { shape, color, icon, ...rest } = value
-    if (shape || color || icon) {
-      return produce(rest, draft => {
+    return pickBy(
+      produce(rest, draft => {
         draft.style = rest.style || {}
-        draft.style.shape = shape ?? rest.style?.shape
-        draft.style.color = color ?? rest.style?.color
-        draft.style.icon = icon ?? rest.style?.icon
-      })
-    }
-    return rest
+        if (shape) {
+          draft.style.shape = shape
+        }
+        if (color) {
+          draft.style.color = color
+        }
+        if (icon) {
+          draft.style.icon = icon
+        }
+      }),
+      isNonNullish,
+    )
   })
-  .transform(pickBy(isNonNullish))
 
 const relationshipEndpoint = expression.refDeployment
 

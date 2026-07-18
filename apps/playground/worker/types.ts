@@ -82,10 +82,6 @@ export const ShareOptionsSchema = z.discriminatedUnion('access', [
 ])
 export type AccessValue = ShareOptions['access']
 
-// export const ShareOptionsSchema = v.object({
-
-//   ...AccessValueSchema.e
-// })
 export type SharedPlayground = {
   forkable: true
   localWorkspace: LocalWorkspace

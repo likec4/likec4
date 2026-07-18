@@ -370,7 +370,7 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
    * Applies manual layout or calculates drifts from snapshot
    * if layoutType is specified
    */
-  private withLayoutType<V extends LayoutedView>(
+  private withLayoutType<V extends LayoutedView<any>>(
     layouted: V,
     likec4model: LikeC4Model.Computed,
     layoutType?: LayoutType,

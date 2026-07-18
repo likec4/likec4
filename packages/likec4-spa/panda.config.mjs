@@ -7,5 +7,5 @@ export default defineConfig({
     'src/**/*.{ts,tsx}',
     '../diagram/src/**/*.{ts,tsx}',
   ],
-  outdir: isProduction ? './styled-system' : '../../styled-system/styles/dist',
+  outdir: isProduction ? 'styled-system' : '../../styled-system/styles/dist',
 })

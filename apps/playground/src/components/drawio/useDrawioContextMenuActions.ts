@@ -8,7 +8,7 @@ import {
   generateDrawio,
   generateDrawioMulti,
 } from '@likec4/generators'
-import type { DrawioViewModelLike, GenerateDrawioOptions } from '@likec4/generators'
+import type { DrawioViewModelLike } from '@likec4/generators'
 import { useDisclosure } from '@mantine/hooks'
 import { useCallback, useMemo, useState } from 'react'
 import { DRAWIO_MIME_TYPE } from './drawio-events'
@@ -278,8 +278,7 @@ export function useDrawioContextMenuActions({
     onExportError,
   ])
 
-  const canExportAllViews =
-    allViewModelsFromState.length > 0 ||
+  const canExportAllViews = allViewModelsFromState.length > 0 ||
     (!!getLayoutedModel && !!likec4model) ||
     (!!layoutViews && !!likec4model)
 

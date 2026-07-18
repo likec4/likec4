@@ -1,10 +1,9 @@
-import { describe, it } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe } from 'vitest'
+import { testFileScope as it } from '../../test'
 
 describe('checkFqnExprWith', () => {
   //
-  it('should not warn', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should not warn', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -25,8 +24,7 @@ describe('checkFqnExprWith', () => {
     expect(errors).toEqual([])
   })
 
-  it('should error if not a element ref', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should error if not a element ref', async ({ expect, validate }) => {
     const { errors, warnings } = await validate(`
       specification {
         element component
@@ -44,8 +42,7 @@ describe('checkFqnExprWith', () => {
     expect(errors).toEqual(['Invalid target (expect reference to specific element)'])
   })
 
-  it('should error if used in exclude', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should error if used in exclude', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       specification {
         element component

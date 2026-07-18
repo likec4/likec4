@@ -140,7 +140,6 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
         height: '100%',
         border: 'default',
         rounded: 'sm',
-        borderWidth: 1,
         '--_color': {
           base: 'var(--likec4-palette-stroke)',
           _dark: '[color-mix(in oklab, var(--likec4-palette-hiContrast) 40%, var(--likec4-palette-fill))]',

@@ -8,57 +8,59 @@
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder/Builder'
 import type { LikeC4Model } from '../../model'
-import type { ViewId } from '../../types'
+import type { StepPath, ViewId } from '../../types'
 import { findRelations } from './utils'
 
 const viewId = 'index' as ViewId<'index'>
 
+const sp = (path: string) => path as StepPath
+
+const specs = Builder
+  .specification({
+    elements: {
+      el: {},
+    },
+    relationships: {
+      requests: {
+        technology: 'HTTP Request',
+        color: 'blue',
+        line: 'solid',
+        head: 'open',
+        tail: 'diamond',
+      },
+      responds: {
+        technology: 'Webhook Response',
+        color: 'red',
+        line: 'dashed',
+        head: 'normal',
+        tail: 'odot',
+      },
+    },
+    tags: {},
+  })
+
+const baseModel = specs
+  .model(({ el }, _) =>
+    _(
+      el('a').with(
+        el('child1'),
+        el('child2'),
+      ),
+      el('b').with(
+        el('child1'),
+        el('child2'),
+      ),
+      el('shopify'),
+      el('webhook'),
+    )
+  )
+  .views(({ view, $include }, _) =>
+    _(
+      view('index', $include('*')),
+    )
+  )
+
 describe('findRelations', () => {
-  const specs = Builder
-    .specification({
-      elements: {
-        el: {},
-      },
-      relationships: {
-        requests: {
-          technology: 'HTTP Request',
-          color: 'blue',
-          line: 'solid',
-          head: 'open',
-          tail: 'diamond',
-        },
-        responds: {
-          technology: 'Webhook Response',
-          color: 'red',
-          line: 'dashed',
-          head: 'normal',
-          tail: 'odot',
-        },
-      },
-      tags: {},
-    })
-
-  const baseModel = specs
-    .model(({ el }, _) =>
-      _(
-        el('a').with(
-          el('child1'),
-          el('child2'),
-        ),
-        el('b').with(
-          el('child1'),
-          el('child2'),
-        ),
-        el('shopify'),
-        el('webhook'),
-      )
-    )
-    .views(({ view, $include }, _) =>
-      _(
-        view('index', $include('*')),
-      )
-    )
-
   const testFindRelationsOnModel = (model: LikeC4Model<any>) => {
     const a = model.element('a')
     const b = model.element('b')

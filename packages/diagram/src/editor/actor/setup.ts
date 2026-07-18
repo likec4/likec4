@@ -1,5 +1,16 @@
 import type * as t from '@likec4/core/types'
-import { fromPromise, setup } from 'xstate'
+import {
+  type ActorRefFromLogic,
+  type StateMachine,
+  type StateValue,
+  fromPromise,
+  setup,
+} from 'xstate'
+import {
+  type inferChildrenRef,
+  type inferProvidedActor,
+  defineActors,
+} from '../../utils/defineActors'
 import { hotkey } from './hotkey'
 import type {
   EditorActorContext,
@@ -56,6 +67,13 @@ const applySemanticLayout = fromPromise<EditorCalls.ApplySemanticLayout.Output, 
   },
 )
 
+const actors = defineActors({
+  hotkey,
+  applyLatest,
+  executeChange,
+  applySemanticLayout,
+})
+
 export const machine = setup({
   types: {
     context: {} as EditorActorContext,
@@ -67,12 +85,7 @@ export const machine = setup({
     },
     tags: '' as EditorActorStateTag,
   },
-  actors: {
-    applyLatest,
-    executeChange,
-    applySemanticLayout,
-    hotkey,
-  },
+  actors: actors,
   delays: {
     '500ms': 500,
     'wait-after-edit': 1_000,
@@ -83,3 +96,27 @@ export const machine = setup({
     'can redo': ({ context }) => context.redo !== null,
   },
 })
+
+/**
+ * to workaround circular dependency issue between editor and diagram packages
+ */
+export interface BaseEditorActorLogic<State extends StateValue = any> extends
+  StateMachine<
+    EditorActorContext,
+    EditorActorEvent,
+    inferChildrenRef<typeof actors>,
+    inferProvidedActor<typeof actors>,
+    never,
+    never,
+    never,
+    State,
+    EditorActorStateTag,
+    EditorActorInput,
+    never,
+    EditorActorEmitedEvent,
+    never,
+    never
+  >
+{
+}
+export type BaseEditorActorRef = ActorRefFromLogic<BaseEditorActorLogic>

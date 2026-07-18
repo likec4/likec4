@@ -155,7 +155,7 @@ export interface DiagramApi<A extends Any = Unknown> {
   findDiagramEdge(xyedgeId: string): t.DiagramEdge<A> | null
 
   startWalkthrough(): void
-  walkthroughStep(direction?: 'next' | 'previous'): void
+  walkthroughStep(direction?: 'next' | 'previous' | { step: t.StepPath }): void
   stopWalkthrough(): void
   toggleFeature(feature: FeatureName, forceValue?: boolean): void
   highlightNotation(notation: ElementNotation, kind?: string): void
@@ -294,8 +294,12 @@ export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<Diag
       actorRef.current.send({ type: 'walkthrough.start' })
     },
 
-    walkthroughStep: (direction: 'next' | 'previous' = 'next') => {
-      actorRef.current.send({ type: 'walkthrough.step', direction })
+    walkthroughStep: (value: 'next' | 'previous' | { step: t.StepPath } = 'next') => {
+      if (value === 'next' || value === 'previous') {
+        actorRef.current.send({ type: 'walkthrough.step', direction: value })
+      } else {
+        actorRef.current.send({ type: 'walkthrough.step', stepId: value.step })
+      }
     },
 
     stopWalkthrough: () => {

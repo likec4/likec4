@@ -1,16 +1,16 @@
 import type { ThemeColor } from '@likec4/core/types'
 
 // minimum space between actors
-export const ACTOR_GAP = 60
+export const ACTOR_GAP = 80
 
 // minimum space between columns
-export const COLUMN_GAP = 32
+export const COLUMN_GAP = 50
 
 // minimum height of a step row
-export const MIN_ROW_HEIGHT = 80
+export const MIN_ROW_HEIGHT = 100
 
 // height of ports, edges connected to center of ports
-export const PORT_HEIGHT = 32
+export const PORT_HEIGHT = 24
 
 // margin from step label to step box
 export const STEP_LABEL_MARGIN = 50
@@ -25,10 +25,10 @@ export const FIRST_STEP_OFFSET = 30
 export const CONTINUOUS_OFFSET = 22
 
 export const SeqZIndex = {
-  compound: 0,
-  parallel: 1,
-  actor: 10,
-  step: 20,
+  compound: 1,
+  subflows: 10,
+  actor: 50,
+  step: 100,
 }
 
 export const SeqParallelAreaColor = {

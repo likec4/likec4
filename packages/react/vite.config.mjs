@@ -4,7 +4,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import process from 'node:process'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
-import { $ } from 'zx'
+import { $, fs } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
 
 $.quiet = false
@@ -102,6 +102,7 @@ export default defineConfig({
       name: 'likec4-react',
       async buildStart() {
         this.info('buildStart')
+        await fs.emptyDir('styled-system')
         await $`pandacss codegen`
       },
     },

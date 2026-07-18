@@ -1,19 +1,19 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { map, prop, take } from 'remeda'
-import { type ExpectStatic, describe, it } from 'vitest'
-import { createMultiProjectTestServices, createTestServices } from '../test'
+import { describe } from 'vitest'
+import { createMultiProjectTestServices, testFileScope as test } from '../test'
 
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
   return map(list, prop(property))
 }
 
-function expectCompletion() {
-  const services = createTestServices().services
-  return langiumExpectCompletion(services)
-}
+const it = test
+  .extend('completion', async ({ t }) => {
+    return langiumExpectCompletion(t.services)
+  })
 
 describe('LikeC4CompletionProvider', () => {
-  it('should suggest keywords inside specification', async ({ expect }) => {
+  it('should suggest keywords inside specification', async ({ completion }) => {
     const text = `
       <|>spe<|>cification {
         <|>el<|>ement frontend {
@@ -25,7 +25,6 @@ describe('LikeC4CompletionProvider', () => {
         color custom-color #ff0000
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -116,7 +115,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest keywords inside model', async ({ expect }) => {
+  it('should suggest keywords inside model', async ({ expect, completion }) => {
     const text = `
       specification {
         element actor
@@ -131,7 +130,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -202,7 +200,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest keywords inside element', async ({ expect }) => {
+  it('should suggest keywords inside element', async ({ expect, completion }) => {
     const text = `
       specification {
         element actor
@@ -218,7 +216,6 @@ describe('LikeC4CompletionProvider', () => {
         <|>
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -246,9 +243,9 @@ describe('LikeC4CompletionProvider', () => {
         expect(completions.items).not.to.be.empty
         const labels = pluck('label', completions.items)
         expect(labels).to.include.members([
-          'tag1',
-          'tag2',
-          'tag3',
+          '#tag1',
+          '#tag2',
+          '#tag3',
         ])
         expect(labels).not.to.include.members(['extend'])
       },
@@ -268,7 +265,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it.todo('should suggest relationship kind after dot', async ({ expect }) => {
+  it.todo('should suggest relationship kind after dot', async ({ expect, completion }) => {
     const text = `
       specification {
         element actor
@@ -276,12 +273,10 @@ describe('LikeC4CompletionProvider', () => {
       }
       model {
         actor customer {
-          .<|>
+          .u<|>
         }
       }
     `
-    const completion = expectCompletion()
-
     await completion({
       text,
       index: 0,
@@ -291,7 +286,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest nested elements for fqnref', async ({ expect }) => {
+  it('should suggest nested elements for fqnref', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -316,7 +311,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -351,7 +345,7 @@ describe('LikeC4CompletionProvider', () => {
       expectedItems: ['notunique', 'unique'],
     })
   })
-  it('should suggest nested elements inside view predicates', async ({ expect }) => {
+  it('should suggest nested elements inside view predicates', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -373,7 +367,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -436,47 +429,25 @@ describe('LikeC4CompletionProvider', () => {
   })
 
   describe('inside "where"-predicates', () => {
-    const testWithText = async (text: string, expect: ExpectStatic) => {
-      const completion = expectCompletion()
+    const it2 = it.extend('testWithText', async ({ completion, task }) => {
+      return async (text: string) => {
+        return completion({
+          text,
+          index: 0,
+          assert: completions => {
+            task.context.expect(completions.items).not.to.be.empty
+            const first = take(completions.items, 2)
+            task.context.expect(pluck('label', first)).toEqual([
+              '#tag1',
+              '#tag2',
+            ])
+          },
+          disposeAfterCheck: true,
+        })
+      }
+    })
 
-      await completion({
-        text,
-        index: 0,
-        assert: completions => {
-          expect(completions.items).not.to.be.empty
-          const first = take(completions.items, 2)
-          expect(pluck('label', first)).toEqual([
-            'tag1',
-            'tag2',
-          ])
-        },
-        disposeAfterCheck: true,
-      })
-      await completion({
-        text,
-        index: 1,
-        expectedItems: [
-          'tag1',
-          'tag2',
-        ],
-        disposeAfterCheck: true,
-      })
-      await completion({
-        text,
-        index: 2,
-        assert: completions => {
-          expect(completions.items).not.to.be.empty
-          const first = take(completions.items, 2)
-          expect(pluck('label', first)).toEqual([
-            'service',
-            'component',
-          ])
-        },
-        disposeAfterCheck: true,
-      })
-    }
-
-    it('should suggest tags and kinds inside "where"-predicates', async ({ expect }) => {
+    it2('should suggest tags and kinds inside "where"-predicates', async ({ expect, testWithText }) => {
       expect.hasAssertions()
       await testWithText(
         `
@@ -507,11 +478,10 @@ describe('LikeC4CompletionProvider', () => {
           }
         }
       `,
-        expect,
       )
     })
 
-    it('should suggest tags and kinds inside "where"-predicates inside groups', async ({ expect }) => {
+    it2('should suggest tags and kinds inside "where"-predicates inside groups', async ({ expect, testWithText }) => {
       expect.hasAssertions()
       await testWithText(
         `
@@ -544,12 +514,11 @@ describe('LikeC4CompletionProvider', () => {
           }
         }
       `,
-        expect,
       )
     })
   })
 
-  it('should suggest views for navigateTo', async ({ expect }) => {
+  it('should suggest views for navigateTo', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -573,7 +542,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -625,7 +593,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest dynamic views for navigateTo', async ({ expect }) => {
+  it('should suggest dynamic views for navigateTo', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -646,7 +614,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -690,7 +657,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest variants for dynamic view', async ({ expect }) => {
+  it('should suggest variants for dynamic view', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -704,7 +671,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,
@@ -717,7 +683,87 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest tags', async ({ expect }) => {
+  it('should suggest blocks in dynamic view', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+        relationship uses
+      }
+      model {
+        component a
+        component b
+      }
+      views {
+        dynamic view { // should also suggest dynamic views
+          <|>a <|>-> b
+          t<|>ry {
+          } <|>
+          alt {
+            <|>
+          }
+        }        
+      }
+    `
+
+    await completion({
+      text,
+      index: 0,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'a',
+          'b',
+          'opt',
+          'par',
+          'loop',
+          'alt',
+          'try',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'uses',
+        '.uses',
+      ],
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: [
+        'try',
+      ],
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 3,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'catch',
+          'finally',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 4,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'when',
+          'if',
+          'else',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+  })
+
+  it('should suggest tags', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -728,18 +774,23 @@ describe('LikeC4CompletionProvider', () => {
         c1 = component
         c2 = component {
           #<|>deprecated
-          -> c1 #<|>
+          -> c1 <|>
+        }
+        c1 -> c2 {
+          <|>#<|>
         }
       }
 
     `
-    const completion = expectCompletion()
 
     // #<|>deprecated
     await completion({
       text,
       index: 0,
-      expectedItems: ['deprecated', 'experimental'],
+      expectedItems: [
+        '#deprecated',
+        '#experimental',
+      ],
     })
     // > c1 <|>
     await completion({
@@ -747,17 +798,44 @@ describe('LikeC4CompletionProvider', () => {
       index: 1,
       assert: completions => {
         expect(completions.items).not.to.be.empty
-        const first = take(completions.items, 2)
+        const first = take(completions.items, 4)
         expect(pluck('label', first)).toEqual([
           'deprecated',
+          '#deprecated',
           'experimental',
+          '#experimental',
         ])
       },
       disposeAfterCheck: true,
     })
+    // c1 -> c2 {
+    //  <|>#
+    await completion({
+      text,
+      index: 2,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const first = take(completions.items, 4)
+        expect(pluck('label', first)).toEqual([
+          'deprecated',
+          '#deprecated',
+          'experimental',
+          '#experimental',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+    await completion({
+      text,
+      index: 3,
+      expectedItems: [
+        '#deprecated',
+        '#experimental',
+      ],
+    })
   })
 
-  it('should suggest deployments', async ({ expect }) => {
+  it('should suggest deployments', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -788,7 +866,6 @@ describe('LikeC4CompletionProvider', () => {
         }
       }
     `
-    const completion = expectCompletion()
 
     await completion({
       text,

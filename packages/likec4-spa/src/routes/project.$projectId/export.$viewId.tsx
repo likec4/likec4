@@ -7,6 +7,7 @@
 
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 import { z } from 'zod'
+import { ErrorComponent } from '../../components/ErrorComponent'
 import { ExportPage } from '../../pages/ExportPage'
 
 export const Route = createFileRoute('/project/$projectId/export/$viewId')({
@@ -29,4 +30,5 @@ export const Route = createFileRoute('/project/$projectId/export/$viewId')({
     ],
   },
   component: ExportPage,
+  errorComponent: ErrorComponent,
 })

@@ -1,4 +1,3 @@
-import type { IsAny } from 'type-fest'
 import type * as aux from './_aux'
 import type {
   Any,
@@ -9,7 +8,7 @@ import type {
   UnknownLayouted,
   UnknownParsed,
 } from './_aux'
-import type { NonEmptyArray } from './_common'
+import type { IsAnyOrNever, NonEmptyArray } from './_common'
 import type { _stage } from './const'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
@@ -46,7 +45,7 @@ interface BaseLikeC4ModelData<A extends Any> {
 export type AuxFromLikeC4ModelData<D> =
   // dprint-ignore
   D extends BaseLikeC4ModelData<infer A extends Any>
-    ? IsAny<A> extends true
+    ? IsAnyOrNever<A> extends true
       ? never
       : A
     : never

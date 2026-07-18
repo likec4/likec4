@@ -1,5 +1,5 @@
-import { describe, test as viTest } from 'vitest'
-import { invalid, likec4, valid } from './asserts'
+import { describe } from 'vitest'
+import { likec4, test as assertTest } from './asserts'
 
 const spec = `
 specification {
@@ -10,23 +10,16 @@ specification {
 function test(name: string) {
   return {
     valid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest(
-        `valid: ${name}`,
-        valid`${spec}
+      assertTest(`valid: ${name}`).valid`${spec}
       model {
         ${likec4(strings, ...expr)}
-      }`,
-      )
+      }`
     },
     invalid: (strings: TemplateStringsArray, ...expr: string[]) => {
-      viTest(
-        `invalid: ${name}`,
-        invalid`
-      ${spec}
+      assertTest(`invalid: ${name}`).invalid`${spec}
       model {
         ${likec4(strings, ...expr)}
-      }`,
-      )
+      }`
     },
   }
 }

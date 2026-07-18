@@ -7,7 +7,6 @@ import {
 import { basepath, useHashHistory } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
 import { map } from 'remeda'
-import { Fallback } from './components/Fallback'
 import { NotFound } from './components/NotFound'
 import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 import { routeTree } from './routeTree.gen'
@@ -28,9 +27,6 @@ const router = createTanstackRouter<RouteTree, 'always', true>({
   defaultStaleTime: Infinity,
   defaultNotFoundComponent: () => {
     return <NotFound />
-  },
-  defaultErrorComponent: ({ error, reset }) => {
-    return <Fallback error={error} resetErrorBoundary={reset} />
   },
 })
 

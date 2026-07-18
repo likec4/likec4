@@ -62,7 +62,7 @@ export function ActiveWalkthroughControls() {
   } = useDiagramContext(s => {
     const currentStepIndex = s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId)
     return ({
-      isParallel: isTruthy(s.activeWalkthrough?.parallelPrefix),
+      isParallel: isTruthy(s.activeWalkthrough?.activeFlow),
       hasNext: currentStepIndex < s.xyedges.length - 1,
       hasPrevious: currentStepIndex > 0,
       currentStep: currentStepIndex + 1,

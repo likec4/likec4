@@ -39,7 +39,7 @@ export function isKindEqual<A extends Any>(operator: WhereOperator<A>): operator
 
 export type MetadataEqual<A extends Any> = Omit<AllNever, 'metadata'> & {
   metadata: {
-    key: string
+    key: aux.MetadataKey<A>
     value?: EqualOperator<string> | string
   }
 }

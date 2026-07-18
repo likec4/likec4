@@ -47,7 +47,7 @@ describe('generateColorVars', () => {
   it('uses dark-2 text for radix backgrounds that are light at scale 9 (grass, lime, yellow, amber)', () => {
     for (const name of ['grass', 'lime', 'yellow', 'amber'] as const) {
       const css = generateColorVars({ color: name as TagSpecification['color'] })
-      expect(css).toContain(`--colors-likec4-tag-text: var(--colors-${name}-dark-2);`)
+      expect(css, `color ${name}`).toContain(`--colors-likec4-tag-text: rgba(0 0 0 / 0.85);`)
     }
   })
 

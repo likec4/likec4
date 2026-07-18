@@ -42,14 +42,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./adhoc-editor": {
-      "sources": "./src/adhoc-editor/index.ts",
-      "default": {
-        "types": "./dist/adhoc-editor/index.d.ts",
-        "import": "./dist/adhoc-editor/index.js",
-        "default": "./dist/adhoc-editor/index.js"
-      }
-    },
     "./custom": {
       "sources": "./src/custom/index.ts",
       "default": {
@@ -66,9 +58,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "pretypecheck": "pandacss codegen",
     "typecheck": "tsc --build --verbose",
-    "prebuild": "pandacss codegen",
     "build": "vite build -m production",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
@@ -92,9 +82,7 @@
     "@react-hookz/web": "catalog:react",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
-    "@zag-js/collection": "catalog:zag",
-    "@zag-js/react": "catalog:zag",
-    "@zag-js/tree-view": "catalog:zag",
+    "@xstate/store-react": "catalog:xstate",
     "bezier-js": "^6.1.4",
     "d3-shape": "^3.2.0",
     "defu": "catalog:utils",

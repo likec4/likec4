@@ -7,7 +7,7 @@
     "build": {
       "dependsOn": [
         "@likec4/core#build",
-        "@likec4/styles#build"
+        "@likec4/styles#sources"
       ],
       "outputs": [
         "dist/**",

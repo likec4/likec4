@@ -109,6 +109,36 @@ describe('Builder (style 2)', () => {
           ),
         )
       )
+      .views(({ dynamicView, $step }, _) =>
+        _(
+          dynamicView('dynamic-a', {
+            title: 'Dynamic View A',
+          }).with(
+            $step('cloud -> cloud', {
+              with: {
+                title: 'Step 1',
+                tail: 'odiamond',
+              },
+            }),
+            $step.series(
+              'customer',
+              '-> cloud.ui',
+              '-> cloud.backend',
+            ),
+            $step.parallel(
+              'cloud.backend -> cloud.backend',
+              $step('cloud.ui -> cloud', {
+                title: 'Step 2',
+                with: {
+                  navigateTo: 'cloud',
+                },
+              }),
+              'cloud.ui -> cloud',
+              'cloud -> customer',
+            ),
+          ),
+        )
+      )
 
     it('should build parsed model', () => {
       expect(b.build(), 'parsed model').toMatchSnapshot()
@@ -153,7 +183,7 @@ describe('Builder (style 2)', () => {
     await expect(m.$data).toMatchFileSnapshot('__snapshots__/Builder-style2.string-based-spec.json5')
   })
 
-  it('should fail if invalid ID provided ', () => {
+  it('should fail if invalid ID provided', () => {
     expect(() => {
       spec.model(({ actor }, _) =>
         _(
@@ -163,7 +193,7 @@ describe('Builder (style 2)', () => {
     }).toThrowError('Parent element with id "cust" not found for element with id "cust.omer"')
   })
 
-  it('should fail on invalid instance ', () => {
+  it('should fail on invalid instance', () => {
     const b = spec
       .model(_ =>
         _.model(

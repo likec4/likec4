@@ -1,6 +1,28 @@
 import type { ProjectId } from '@likec4/core'
-import { describe, expect, it } from 'vitest'
-import { createMultiProjectTestServices, createTestServices } from '../test'
+import { describe, expect } from 'vitest'
+import { createMultiProjectTestServices, test } from '../test'
+
+const it = test
+  .extend(
+    'setupServices',
+    async ({ create, task }) => {
+      return async function setupServices(...sources: string[]) {
+        const { validate, validateAll, services } = create()
+        const docs = []
+        for (const source of sources) {
+          const { document, errors } = await validate(source)
+          task.context.expect(errors, `validation errors in source:\n${source}`).toHaveLength(0)
+          docs.push(document)
+        }
+        if (sources.length > 1) {
+          const { errors } = await validateAll()
+          task.context.expect(errors, 'cross-document validation errors').toHaveLength(0)
+        }
+        const languageServices = services.likec4.LanguageServices
+        return { languageServices, docs }
+      }
+    },
+  )
 
 /**
  * Tests for `LikeC4LanguageServices.format()` — the low-level formatting API
@@ -9,23 +31,7 @@ import { createMultiProjectTestServices, createTestServices } from '../test'
  * and formatting options like `tabSize`/`insertSpaces`.
  */
 describe('LikeC4LanguageServices.format', () => {
-  async function setupServices(...sources: string[]) {
-    const { validate, validateAll, services } = createTestServices()
-    const docs = []
-    for (const source of sources) {
-      const { document, errors } = await validate(source)
-      expect(errors, `validation errors in source:\n${source}`).toHaveLength(0)
-      docs.push(document)
-    }
-    if (sources.length > 1) {
-      const { errors } = await validateAll()
-      expect(errors, 'cross-document validation errors').toHaveLength(0)
-    }
-    const languageServices = services.likec4.LanguageServices
-    return { languageServices, docs }
-  }
-
-  it('formats all documents when no options specified', async () => {
+  it('formats all documents when no options specified', async ({ setupServices, expect }) => {
     const { languageServices } = await setupServices(
       `
         specification {
@@ -49,7 +55,7 @@ describe('LikeC4LanguageServices.format', () => {
     expect(result.size).toBe(2)
   })
 
-  it('returns formatted content for unformatted source', async () => {
+  it('returns formatted content for unformatted source', async ({ setupServices, expect }) => {
     const { languageServices } = await setupServices(`
       specification {
               element component
@@ -75,7 +81,7 @@ describe('LikeC4LanguageServices.format', () => {
     `)
   })
 
-  it('formats only specified documents by documentUris', async () => {
+  it('formats only specified documents by documentUris', async ({ setupServices, expect }) => {
     const { languageServices, docs } = await setupServices(
       `
         specification {
@@ -101,7 +107,7 @@ describe('LikeC4LanguageServices.format', () => {
     expect(formatted).toContain('element component')
   })
 
-  it('skips unknown documentUris', async () => {
+  it('skips unknown documentUris', async ({ setupServices, expect }) => {
     const { languageServices } = await setupServices(`
       specification {
           element component
@@ -115,7 +121,7 @@ describe('LikeC4LanguageServices.format', () => {
     expect(result.size).toBe(0)
   })
 
-  it('formatting is idempotent', async () => {
+  it('formatting is idempotent', async ({ setupServices, expect }) => {
     // First pass: format unformatted source
     const { languageServices, docs } = await setupServices(`
       specification {
@@ -141,7 +147,7 @@ describe('LikeC4LanguageServices.format', () => {
     expect(formattedAgain).toBe(formatted)
   })
 
-  it('result Map keys are URI strings matching document URIs', async () => {
+  it('result Map keys are URI strings matching document URIs', async ({ setupServices, expect }) => {
     const { languageServices, docs } = await setupServices(
       `
         specification {
@@ -201,7 +207,7 @@ describe('LikeC4LanguageServices.format', () => {
       return { languageServices, projects }
     }
 
-    it('formats documents filtered by projectIds', async () => {
+    it('formats documents filtered by projectIds', async ({ expect }) => {
       const { languageServices, projects } = await setupMultiProject()
 
       const result = await languageServices.format({
@@ -230,7 +236,7 @@ describe('LikeC4LanguageServices.format', () => {
       expect(allContent).not.toContain('betaService')
     })
 
-    it('formats union of projectIds and documentUris', async () => {
+    it('formats union of projectIds and documentUris', async ({ expect }) => {
       const { languageServices, projects } = await setupMultiProject()
 
       const betaModelUri = projects.beta.model.uri.toString()
@@ -258,7 +264,7 @@ describe('LikeC4LanguageServices.format', () => {
   })
 
   describe('formatting options', () => {
-    it('respects tabSize option', async () => {
+    it('respects tabSize option', async ({ setupServices, expect }) => {
       const { languageServices } = await setupServices(`
         specification {
             element component
@@ -281,7 +287,7 @@ describe('LikeC4LanguageServices.format', () => {
       expect(formatted4).toContain('\n    element component')
     })
 
-    it('respects insertSpaces option', async () => {
+    it('respects insertSpaces option', async ({ setupServices, expect }) => {
       const { languageServices } = await setupServices(`
         specification {
             element component

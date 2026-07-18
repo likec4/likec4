@@ -26,7 +26,7 @@ export class NoopFileSystemProvider implements FileSystemProvider {
     if (isLikeC4Builtin(uri)) {
       return Promise.resolve(LibIcons)
     }
-    throw new Error('No file system is available.')
+    throw new Error(`No file system is available (${uri.toString()})`)
   }
 
   readDirectory(): Promise<FileNode[]> {

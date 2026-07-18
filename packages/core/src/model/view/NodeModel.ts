@@ -8,6 +8,7 @@ import {
   type IteratorLike,
   type LayoutedView,
   type Link,
+  type ProcessedView,
   type RichTextOrEmpty,
   type scalar,
   GroupElementKind,
@@ -22,9 +23,9 @@ import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
-export type NodesIterator<M extends Any, V extends $View<M>> = IteratorLike<NodeModel<M, V>>
+export type NodesIterator<M extends Any, V extends ProcessedView<M> = $View<M>> = IteratorLike<NodeModel<M, V>>
 
-export class NodeModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
+export class NodeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A>> implements WithTags<A> {
   public readonly Aux!: A
 
   public readonly $viewModel: LikeC4ViewModel<A, V>
@@ -254,24 +255,24 @@ export namespace NodeModel {
     } :
     never
 
-  export interface WithParent<A extends Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithParent<A extends Any, V extends ProcessedView<A> = $View<A>> extends NodeModel<A, V> {
     readonly parent: NodeModel<A, V>
   }
-  export interface WithElement<A extends Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithElement<A extends Any, V extends ProcessedView<A> = $View<A>> extends NodeModel<A, V> {
     readonly kind: aux.ElementKind<A>
     readonly element: ElementModel<A>
   }
-  export interface WithDeploymentElement<A extends Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithDeploymentElement<A extends Any, V extends ProcessedView<A> = $View<A>> extends NodeModel<A, V> {
     readonly kind: aux.DeploymentKind<A>
     readonly deployment: DeploymentElementModel<A>
   }
-  export interface WithDeployedInstance<A extends Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface WithDeployedInstance<A extends Any, V extends ProcessedView<A> = $View<A>> extends NodeModel<A, V> {
     readonly kind: 'instance'
     readonly element: ElementModel<A>
     readonly deployment: DeployedInstanceModel<A>
   }
 
-  export interface IsGroup<A extends Any, V extends $View<A> = $View<A>> extends NodeModel<A, V> {
+  export interface IsGroup<A extends Any, V extends ProcessedView<A> = $View<A>> extends NodeModel<A, V> {
     readonly kind: typeof GroupElementKind
     readonly element: null
     readonly deployment: null

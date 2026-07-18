@@ -1,6 +1,6 @@
-import type { StepEdgeId } from '@likec4/core'
+import { type StepPath, dynamicViewFlow, invariant, isDynamicView } from '@likec4/core'
 import { raise } from 'xstate/actions'
-import { and, or } from 'xstate/guards'
+import { and, not, or } from 'xstate/guards'
 import {
   assignFocusedNode,
   assignLastClickedNode,
@@ -12,6 +12,7 @@ import {
   openSourceOfFocusedOrLastClickedNode,
   raiseFitDiagram,
   resetLastClickedNode,
+  resetSelection,
 } from './machine.actions'
 import { machine, targetState, to } from './machine.setup'
 
@@ -20,9 +21,38 @@ export const idle = machine.createStateConfig({
   on: {
     'xyflow.nodeClick': [
       {
+        description: 'Handle sequence subflow click in sequence variant',
+        guard: and([
+          'is dynamic view in sequence variant',
+          ({ event }) => event.node.type === 'seq-subflow',
+          'click: same node',
+        ]),
+        actions: raise(({ event: { node }, context }) => {
+          invariant(node.type === 'seq-subflow')
+          invariant(isDynamicView(context.view))
+          const flow = dynamicViewFlow(context.view)
+          const stepId = flow.firstStep(node.data.flowId) ?? flow.firstStep()
+          return ({
+            type: 'walkthrough.start',
+            stepId,
+          })
+        }),
+      },
+      {
+        description: 'Handle sequence subflow click in sequence variant',
+        guard: and([
+          'is dynamic view in sequence variant',
+          ({ event }) => event.node.type === 'seq-subflow',
+        ]),
+        actions: [
+          assignLastClickedNode(),
+        ],
+      },
+      {
         guard: and([
           'enabled: Readonly',
           'enabled: FocusMode',
+          not('is dynamic view in sequence variant'),
           'click: node has connections',
           or([
             'click: same node',
@@ -70,6 +100,7 @@ export const idle = machine.createStateConfig({
     'xyflow.paneDblClick': {
       actions: [
         resetLastClickedNode(),
+        resetSelection(),
         raiseFitDiagram(),
         emitOpenSourceOfView(),
         emitPaneClick(),
@@ -80,27 +111,27 @@ export const idle = machine.createStateConfig({
       {
         guard: 'focus.node: autoUnfocus',
         actions: assignFocusedNode(),
-        target: targetState.focused,
+        ...to.focused,
       },
       // Regular focus - requires FocusMode to be enabled
       {
         guard: 'enabled: FocusMode',
         actions: assignFocusedNode(),
-        target: targetState.focused,
+        ...to.focused,
       },
     ],
     'xyflow.edgeClick': {
       guard: and([
         'enabled: Readonly',
-        'is dynamic view',
         'enabled: DynamicViewWalkthrough',
+        'is dynamic view',
         'click: selected edge',
       ]),
       actions: [
         resetLastClickedNode(),
         raise(({ event }) => ({
           type: 'walkthrough.start',
-          stepId: event.edge.id as StepEdgeId,
+          stepId: event.edge.data.id as StepPath,
         })),
         emitEdgeClick(),
       ],

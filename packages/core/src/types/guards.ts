@@ -51,7 +51,7 @@ export type Guard<To = unknown> = (value: any) => value is To
  * GuardedBy<typeof isString>; // string
  * ```
  */
-export type GuardedBy<G> =
+export type GuardedBy<G extends Function> =
   // dprint-ignore
   G extends Guard<infer To>
     ? Or<IsAny<To>,IsUnknown<To>> extends true

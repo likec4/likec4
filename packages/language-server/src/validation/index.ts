@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type Guard, type GuardedBy, isAnyOf } from '@likec4/core/types'
+import { type GuardedBy, isAnyOf } from '@likec4/core/types'
 import { onNextTick } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
-import { type AstNode, DocumentState } from 'langium'
+import { DocumentState } from 'langium'
 import { isNullish } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4AstNode, type LikeC4LangiumDocument, ast } from '../ast'
@@ -22,9 +22,9 @@ import {
 } from './deployment-checks'
 import {
   dynamicViewDisplayVariant,
-  dynamicViewParallelSteps,
-  dynamicViewStepChain,
-  dynamicViewStepSingle,
+  stepSeries,
+  stepSingle,
+  subflowStep,
 } from './dynamic-view'
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
@@ -71,9 +71,7 @@ const isValidatableAstNode = isAnyOf(
   ast.isRelationExprWith,
   ast.isFqnExpr,
   ast.isRelationExpr,
-  ast.isDynamicViewParallelSteps,
-  ast.isDynamicStepChain,
-  ast.isDynamicStepSingle,
+  ast.isStepStatement,
   ast.isDeploymentViewRule,
   ast.isDeploymentViewRulePredicate,
   ast.isExpressionV2,
@@ -120,7 +118,7 @@ const isValidatableAstNode = isAnyOf(
 type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
 const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
-  let nd = node as LikeC4AstNode['$container']
+  let nd = node as LikeC4AstNode | LikeC4AstNode['$container']
   while (nd && !ast.isLikeC4Grammar(nd)) {
     if (isValidatableAstNode(nd)) {
       return nd
@@ -140,9 +138,11 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
       continue
     }
     invalidNodes.add(node)
-    const container = findInvalidContainer(node)
-    if (container) {
-      invalidNodes.add(container)
+    if (!isValidatableAstNode(node)) {
+      const container = findInvalidContainer(node)
+      if (container) {
+        invalidNodes.add(container)
+      }
     }
   }
   const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
@@ -174,9 +174,9 @@ export function registerValidationChecks(services: LikeC4Services) {
     GlobalPredicateGroup: checkGlobalPredicate(services),
     GlobalDynamicPredicateGroup: checkGlobalPredicate(services),
     GlobalStyleId: checkGlobalStyleId(services),
-    DynamicStepSingle: dynamicViewStepSingle(services),
-    DynamicStepChain: dynamicViewStepChain(services),
-    DynamicViewParallelSteps: dynamicViewParallelSteps(services),
+    Step: stepSingle(services),
+    StepSeries: stepSeries(services),
+    SubflowStep: subflowStep(services),
     LikeC4View: viewChecks(services),
     Element: checkElement(services),
     ElementRef: checkElementRef(services),

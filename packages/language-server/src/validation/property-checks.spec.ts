@@ -1,10 +1,9 @@
-import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { describe } from 'vitest'
+import { it } from './_it-spec'
 
 describe('property-checks', () => {
   describe('icon', () => {
-    it('should error duplicate icon inside style', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should error duplicate icon inside style', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           element component
@@ -24,8 +23,7 @@ describe('property-checks', () => {
       ])
     })
 
-    it('should error when file:// schema used', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should error when file:// schema used', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           element component
@@ -43,8 +41,7 @@ describe('property-checks', () => {
       ])
     })
 
-    it('should error duplicate icon on element', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should error duplicate icon on element', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           element component
@@ -62,8 +59,7 @@ describe('property-checks', () => {
       ])
     })
 
-    it('should warn redundant icon', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should warn redundant icon', async ({ expect, validate }) => {
       const { warnings } = await validate(`
         specification {
           element component
@@ -84,8 +80,7 @@ describe('property-checks', () => {
   })
 
   describe('notes', () => {
-    it('should allow notes in view custom properties', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should allow notes in view custom properties', async ({ expect, validate }) => {
       const { errors } = await validate(`
       specification {
         element component
@@ -108,8 +103,7 @@ describe('property-checks', () => {
       expect(errors).to.be.empty
     })
 
-    it('should not report notes in dynamic view', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should not report notes in dynamic view', async ({ expect, validate }) => {
       const { errors } = await validate(`
       specification {
         element component
@@ -132,8 +126,7 @@ describe('property-checks', () => {
   })
 
   describe('color - HexColor', () => {
-    it('should report invalid length hex color (numbers)', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid length hex color (numbers)', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 #1234567
@@ -143,8 +136,7 @@ describe('property-checks', () => {
         'Invalid value "#1234567", must be 3, 6 or 8 characters long',
       ])
     })
-    it('should report invalid length hex color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid length hex color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 #ABAB
@@ -154,8 +146,7 @@ describe('property-checks', () => {
         'Invalid value "#ABAB", must be 3, 6 or 8 characters long',
       ])
     })
-    it('should report invalid hex color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid hex color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 #TTT
@@ -165,8 +156,7 @@ describe('property-checks', () => {
         'Invalid HEX',
       ])
     })
-    it('should not report valid hex color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should not report valid hex color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 #123456
@@ -179,8 +169,7 @@ describe('property-checks', () => {
   })
 
   describe('color - RGBAColor', () => {
-    it('should report invalid red color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid red color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 rgb( 300, 2, 3)
@@ -188,8 +177,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual(['Invalid value, must be between 0 and 255'])
     })
-    it('should report invalid green color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid green color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 rgb(2, 300, 3)
@@ -197,8 +185,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual(['Invalid value, must be between 0 and 255'])
     })
-    it('should report invalid blue color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid blue color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 rgb(2, 3, 300)
@@ -206,8 +193,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual(['Invalid value, must be between 0 and 255'])
     })
-    it('should report invalid float alpha', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid float alpha', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 rgba(2, 3, 4, 101)
@@ -215,8 +201,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual(['Invalid value, must be between 0 and 1'])
     })
-    it('should report invalid percentage alpha', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should report invalid percentage alpha', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 rgba(2, 3, 4, 101%)
@@ -224,8 +209,7 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual(['Invalid value, must be between 0% and 100%'])
     })
-    it('should not report valid color', async ({ expect }) => {
-      const { validate } = createTestServices()
+    it('should not report valid color', async ({ expect, validate }) => {
       const { errors } = await validate(`
         specification {
           color c1 rgb(0, 200, 255)

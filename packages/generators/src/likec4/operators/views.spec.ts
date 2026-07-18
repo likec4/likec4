@@ -23,8 +23,9 @@ const builder = Builder
     },
     metadataKeys: ['key1', 'key2'],
   })
-  .model(({ system, component }, _) =>
+  .model(({ actor, system, component }, _) =>
     _(
+      actor('customer'),
       system('cloud'),
       component('cloud.frontend'),
       component('cloud.backend'),
@@ -33,7 +34,20 @@ const builder = Builder
   )
 
 const {
-  views: { view, viewOf, deploymentView, views, $rules, $style, $include, $autoLayout, $exclude, $includeAncestors },
+  views: {
+    view,
+    viewOf,
+    deploymentView,
+    dynamicView,
+    $step,
+    views,
+    $rules,
+    $style,
+    $include,
+    $autoLayout,
+    $exclude,
+    $includeAncestors,
+  },
 } = builder.helpers()
 
 type T = typeof builder['Types']
@@ -334,6 +348,149 @@ describe('view', () => {
         "views {
           deployment view deployment {
             includeAncestors false
+          }
+        }"
+      `)
+    })
+  })
+
+  describe('dynamic view', () => {
+    it('should print steps', () => {
+      expect(
+        dynamicView(
+          'test',
+          $rules(
+            $step('cloud.frontend -> cloud.backend.api', {
+              title: 'Test step',
+              with: {
+                color: 'gray',
+                notes: {
+                  md: '**MD**',
+                },
+              },
+            }),
+            $step.loop(
+              'cloud.backend.api -> cloud.backend.api',
+            ),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          dynamic view test {
+            cloud.frontend -> cloud.backend.api 'Test step' {
+              notes '''
+                **MD**
+              '''
+              color gray
+            }
+            loop {
+              cloud.backend.api -> cloud.backend.api
+            }
+          }
+        }"
+      `)
+    })
+
+    it('should print step series', () => {
+      expect(
+        dynamicView(
+          'test',
+          $rules(
+            $step.series(
+              'customer',
+              '-> cloud.frontend',
+              '-> cloud.backend.api',
+              '-> cloud.frontend',
+            ),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          dynamic view test {
+            customer
+              -> cloud.frontend
+              -> cloud.backend.api
+              -> cloud.frontend
+          }
+        }"
+      `)
+    })
+
+    it('should print try catch', () => {
+      expect(
+        dynamicView(
+          'test',
+          $rules(
+            $step.try({
+              try: [
+                'cloud -> cloud',
+                'cloud.frontend -> cloud.backend',
+              ],
+              catch: [
+                'cloud.backend -> cloud.backend',
+              ],
+              finally: [
+                'cloud.backend -> cloud.backend',
+              ],
+            }),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          dynamic view test {
+            try {
+              cloud -> cloud
+              cloud.frontend -> cloud.backend
+            } catch {
+              cloud.backend -> cloud.backend
+            } finally {
+              cloud.backend -> cloud.backend
+            }
+          }
+        }"
+      `)
+    })
+
+    it('should print alt', () => {
+      expect(
+        dynamicView(
+          'test',
+          $rules(
+            $step('cloud', 'cloud', {
+              with: {
+                kind: 'likes',
+              },
+            }),
+            $step.alt(
+              $step.when(
+                'cloud -> cloud',
+                'cloud.frontend -> cloud.backend',
+              ),
+              $step.if(
+                'cloud.frontend -> cloud.backend',
+              ),
+              $step.else(
+                'cloud.backend -> cloud.backend',
+              ),
+            ),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          dynamic view test {
+            cloud -[likes]-> cloud
+            alt {
+              when {
+                cloud -> cloud
+                cloud.frontend -> cloud.backend
+              }
+              if {
+                cloud.frontend -> cloud.backend
+              }
+              else {
+                cloud.backend -> cloud.backend
+              }
+            }
           }
         }"
       `)

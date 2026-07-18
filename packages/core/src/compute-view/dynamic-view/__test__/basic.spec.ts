@@ -1,5 +1,7 @@
-import { last } from 'remeda'
+import { last, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
+import { Builder } from '../../../builder/Builder'
+import { invariant } from '../../../utils'
 import { $include } from '../../element-view/__test__/fixture'
 import { $step, compute } from './fixture'
 
@@ -52,7 +54,8 @@ describe('dynamic-view', () => {
         relations: [],
       },
     ])
-    expect([edges[0], edges[1]]).have.not.a.property('dir')
+    expect(edges[0]).not.toHaveProperty('dir')
+    expect(edges[1]).not.toHaveProperty('dir')
   })
 
   it('should build compounds', () => {
@@ -429,5 +432,148 @@ describe('dynamic-view', () => {
       },
     ])
     expect(last(edges)).not.toHaveProperty('dir')
+  })
+
+  it('should compute steps flow', () => {
+    const view = Builder
+      .specification({
+        elements: ['el'],
+      })
+      .model(({ el }, _) =>
+        _(
+          el('A'),
+          el('B'),
+          el('C'),
+          el('D'),
+        )
+      )
+      .views(({ dynamicView, $step, $rules }, _) =>
+        _(
+          dynamicView(
+            'test',
+            $rules(
+              $step('A -> B'),
+              $step.loop(
+                'B -> B',
+                $step('A -> B'),
+                $step.try({
+                  try: [
+                    'B -> C',
+                    $step.opt(
+                      'A -> A',
+                    ),
+                  ],
+                  catch: [
+                    'B -> A',
+                  ],
+                }),
+                $step.alt(
+                  $step.when('B -> A'),
+                  $step.when('B -> C'),
+                  $step.else(
+                    $step.break('B -> A'),
+                  ),
+                ),
+                $step('B -> B'),
+              ),
+              $step('D -> A'),
+            ),
+          ),
+        )
+      )
+      .toLikeC4Model()
+      .view('test')
+      .$view
+    invariant(view._type === 'dynamic')
+
+    expect(view.flow).toMatchInlineSnapshot(`
+      [
+        "step-01",
+        {
+          "_type": "loop",
+          "flow": [
+            "step-02:loop.01",
+            "step-02:loop.02",
+            {
+              "_type": "try",
+              "flow": [
+                {
+                  "_type": "try-block",
+                  "flow": [
+                    "step-02:loop.03:try.01:block.01",
+                    {
+                      "_type": "opt",
+                      "flow": [
+                        "step-02:loop.03:try.01:block.02:opt.01",
+                      ],
+                      "id": "step-02:loop.03:try.01:block.02:opt",
+                    },
+                  ],
+                  "id": "step-02:loop.03:try.01:block",
+                },
+                {
+                  "_type": "try-catch",
+                  "flow": [
+                    "step-02:loop.03:try.02:catch.01",
+                  ],
+                  "id": "step-02:loop.03:try.02:catch",
+                },
+              ],
+              "id": "step-02:loop.03:try",
+            },
+            {
+              "_type": "alt",
+              "flow": [
+                {
+                  "_type": "alt-when",
+                  "flow": [
+                    "step-02:loop.04:alt.01:when.01",
+                  ],
+                  "id": "step-02:loop.04:alt.01:when",
+                },
+                {
+                  "_type": "alt-when",
+                  "flow": [
+                    "step-02:loop.04:alt.02:when.01",
+                  ],
+                  "id": "step-02:loop.04:alt.02:when",
+                },
+                {
+                  "_type": "alt-else",
+                  "flow": [
+                    {
+                      "_type": "break",
+                      "flow": [
+                        "step-02:loop.04:alt.03:else.01:break.01",
+                      ],
+                      "id": "step-02:loop.04:alt.03:else.01:break",
+                    },
+                  ],
+                  "id": "step-02:loop.04:alt.03:else",
+                },
+              ],
+              "id": "step-02:loop.04:alt",
+            },
+            "step-02:loop.05",
+          ],
+          "id": "step-02:loop",
+        },
+        "step-03",
+      ]
+    `)
+
+    expect(map(view.edges, prop('id'))).toEqual([
+      'step-01',
+      'step-02:loop.01',
+      'step-02:loop.02',
+      'step-02:loop.03:try.01:block.01',
+      'step-02:loop.03:try.01:block.02:opt.01',
+      'step-02:loop.03:try.02:catch.01',
+      'step-02:loop.04:alt.01:when.01',
+      'step-02:loop.04:alt.02:when.01',
+      'step-02:loop.04:alt.03:else.01:break.01',
+      'step-02:loop.05',
+      'step-03',
+    ])
   })
 })

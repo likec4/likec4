@@ -5,11 +5,13 @@ import type {
   DiagramEdge,
   DiagramNode,
   DiagramNodeDriftReason,
+  DynamicViewFlow,
   ExclusiveUnion,
   Fqn,
   IconUrl,
   MarkdownOrString,
   NonEmptyReadonlyArray,
+  StepPath,
   ViewId,
 } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/system'
@@ -107,6 +109,62 @@ export namespace Types {
     }
   >
 
+  /**
+   * Represents subflow area in the diagram
+   * `try` and `alt` flows have special handling in the diagram
+   */
+  export type SequenceSubflowData =
+    & LeafNodeData
+    & {
+      flowId: StepPath
+      title: string | undefined
+      /**
+       * If set - this subflow (or one of its branches) is active
+       */
+      activePath?: StepPath | undefined | null
+      state?: 'processed' | 'active' | 'skipped' | 'pending' | undefined
+      /**
+       * This is first subflow in current flow
+       */
+      isFirst?: boolean | undefined
+      /**
+       * This is last subflow in current flow
+       */
+      isLast?: boolean | undefined
+    }
+    & (
+      | SequenceSubflowData.Try
+      | SequenceSubflowData.Alt
+      | {
+        flowType: Exclude<DynamicViewFlow.SubFlowType, 'try' | 'alt'>
+      }
+    )
+
+  export namespace SequenceSubflowData {
+    export type Branch = {
+      flowId: StepPath
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+
+    export type Try = {
+      flowType: 'try'
+      tryBlock: Branch
+      catchBlock: undefined | Branch
+      finallyBlock: undefined | Branch
+    }
+
+    export type Alt = {
+      flowType: 'alt'
+      branches: Array<Branch & { flowType: 'alt-when' | 'alt-else' | 'alt-if' }>
+    }
+  }
+
+  /**
+   * @deprecated Use {@link SequenceSubflowData} instead
+   */
   export type SequenceParallelAreaData = Simplify<
     & LeafNodeData
     & {
@@ -184,6 +242,7 @@ export namespace Types {
 
   export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
   export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
+  export type SequenceSubflowArea = BaseNode<SequenceSubflowData, 'seq-subflow'>
 
   export type CompoundElementNode = BaseNode<CompoundElementNodeData, 'compound-element'>
   export type CompoundDeploymentNode = BaseNode<CompoundDeploymentNodeData, 'compound-deployment'>
@@ -197,6 +256,7 @@ export namespace Types {
     | ViewGroupNode
     | SequenceActorNode
     | SequenceParallelArea
+    | SequenceSubflowArea
 
   export type NodeType = AnyNode['type']
 
@@ -208,6 +268,7 @@ export namespace Types {
     ViewGroupNodeData: ViewGroupNodeData
     SequenceActorNodeData: SequenceActorNodeData
     SequenceParallelAreaData: SequenceParallelAreaData
+    SequenceSubflowAreaData: SequenceSubflowData
   }>
 
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>
@@ -238,6 +299,12 @@ export namespace Types {
       labelXY: XYPosition | null
       isLabelCustomized?: boolean | undefined
       controlPoints: XYPosition[] | undefined | null
+      /**
+       * When dynamic view in "diagram" variant
+       * Edges are RelationshipEdgeData - stepnum is used to determine the step number
+       * (backward compatibility)
+       */
+      stepnum?: number
     }
   >
 
@@ -246,7 +313,6 @@ export namespace Types {
     & NonOptional<
       Pick<
         DiagramEdge,
-        | 'id'
         | 'label'
         | 'technology'
         | 'points'
@@ -261,6 +327,13 @@ export namespace Types {
       >
     >
     & {
+      id: StepPath
+      state?: 'processed' | 'active' | 'skipped' | 'pending' | null
+      stepnum: number
+      parentFlow: null | {
+        id: StepPath
+        type: DynamicViewFlow.SubFlowType
+      }
       notes: MarkdownOrString | null
       labelXY: XYPosition | null
       labelBBox: BBox

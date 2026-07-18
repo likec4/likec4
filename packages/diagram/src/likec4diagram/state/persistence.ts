@@ -11,7 +11,10 @@ export const DiagramToggledFeaturesPersistence = {
       }
       return null
     } catch (e) {
-      console.error(`Error reading fromStorage ${key}:`, e)
+      if (import.meta.env.MODE !== 'test') {
+        console.error(`Error reading fromStorage ${key}:`, e)
+      }
+
       return null
     }
   },

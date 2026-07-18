@@ -3,7 +3,6 @@
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "src",
     "tsBuildInfoFile": "lib/frontend.tsbuildinfo",
     "target": "esnext",
     "useDefineForClassFields": true,
@@ -25,11 +24,15 @@
       ],
       "$/*": [
         "./src/*"
+      ],
+      "@likec4/styles/*": [
+        "./styled-system/*"
       ]
     }
   },
   "include": [
-    "src/"
+    "src/",
+    "styled-system/"
   ],
   "references": [
     {
@@ -52,9 +55,6 @@
     },
     {
       "path": "../../packages/log/"
-    },
-    {
-      "path": "../../styled-system/styles/"
     }
   ]
 }

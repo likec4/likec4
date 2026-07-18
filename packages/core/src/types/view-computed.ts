@@ -20,6 +20,7 @@ import type {
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
+import type { DynamicViewFlowSteps } from './view-dynamic-flow'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
 export type ComputedNodeStyle = Simplify<
@@ -150,4 +151,10 @@ export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComp
    * - `sequence`: display as a sequence diagram
    */
   readonly variant: DynamicViewDisplayVariant
+
+  /**
+   * Represents the complete flow structure for dynamic views, as a sequence of steps.
+   * Can include nested flows, branches, loops, and conditional statements.
+   */
+  readonly flow: DynamicViewFlowSteps
 }

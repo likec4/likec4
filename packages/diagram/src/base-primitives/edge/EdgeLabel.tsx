@@ -1,4 +1,3 @@
-import { extractStep, isStepEdgeId } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
@@ -23,6 +22,8 @@ type EdgeLabelProps =
   & {
     children?: ReactNode
     edgeProps: BaseEdgePropsWithData<Data>
+    isSequenceStep?: boolean
+    stepNum?: number
     pointerEvents?: 'all' | 'none'
   }
 
@@ -38,6 +39,8 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       selected = false,
       selectable = false,
     },
+    isSequenceStep: isStepEdge = false,
+    stepNum,
     pointerEvents = 'all',
     className,
     children,
@@ -45,8 +48,6 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
   },
   ref,
 ) => {
-  const stepNum = isStepEdgeId(id) ? extractStep(id) : null
-  const isStepEdge = stepNum !== null
   const hasLabel = isTruthy(label) || isTruthy(technology)
 
   return (
@@ -68,7 +69,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
       }}
       {...rest}
     >
-      {stepNum !== null && (
+      {isStepEdge && stepNum && (
         <Box className={'likec4-edge-label__step-number'}>
           {stepNum}
         </Box>

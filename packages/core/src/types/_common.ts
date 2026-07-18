@@ -1,7 +1,9 @@
 import { omitBy } from 'remeda'
 import type {
   IsAny,
+  IsNever,
   KeysOfUnion,
+  Or,
   Simplify,
   UnionToIntersection,
 } from 'type-fest'
@@ -81,13 +83,28 @@ export interface Link {
 }
 
 /**
+ * @see {@link LiteralUnion} from type-fest (https://github.com/sindresorhus/type-fest/blob/main/source/literal-union.d.ts)
+ */
+export type OrString = string & Record<never, never>
+
+/**
  * Coalesce `V` to a string if it is `any`
  */
 export type Coalesce<V extends string, OrIfAny = string> = IsAny<V> extends true ? OrIfAny : V
 
 type ExactObject<T, InputType = unknown> =
   & {
-    [KeyType in keyof T]: undefined extends T[KeyType] ? T[KeyType] | undefined : T[KeyType]
+    [KeyType in keyof T]:
+      // dprint-ignore
+      undefined extends T[KeyType]
+        ? T[KeyType] | undefined
+        : T[KeyType]
+    // dprint-ignore
+    // IsNever<T[KeyType]> extends true
+    //   ? never
+    //   : undefined extends T[KeyType]
+    //     ? T[KeyType] | undefined
+    //     : T[KeyType]
   }
   & Record<Exclude<keyof InputType, KeysOfUnion<T>>, never>
 
@@ -99,3 +116,5 @@ type ExactObject<T, InputType = unknown> =
 export function exact<Expected, T extends ExactObject<Expected, T>>(a: T): Expected {
   return omitBy(a, v => v === undefined) as Expected
 }
+
+export type IsAnyOrNever<T> = Or<IsAny<T>, IsNever<T>>

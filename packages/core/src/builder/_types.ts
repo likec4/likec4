@@ -24,12 +24,25 @@ import type {
 import type { Builder } from './Builder'
 import type { DeploymentRulesBuilderOp } from './Builder.view-deployment'
 
+/**
+ * Duplicate-handling mode for a {@link Builder}.
+ *
+ * - `editable` (default): re-declaring an existing FQN with the **same kind** replaces the
+ *   existing entry (so `.with(...)` can both edit and descend). Different-kind
+ *   redeclaration still throws.
+ * - `strict`: re-declaring an FQN that already exists throws.
+ *
+ * Pass `'strict'` when duplicates should be treated as programmer errors — see
+ * {@link Builder.fromParsed} and `LikeC4.toBuilder`.
+ */
+export type BuilderMode = 'strict' | 'editable'
+
 type ElementSpecification = Omit<ElementKindSpecification, 'tags'> & {
   tags?: string[]
 }
 
 export type BuilderSpecification = {
-  elements: string[] | {
+  elements?: string[] | {
     [kind: string]: Partial<ElementSpecification>
   }
   relationships?: string[] | {
@@ -328,6 +341,68 @@ export namespace Types {
       >
     >
     : AnyAux
+
+  /**
+   * Merges two {@link Types} by unioning every slot (element kinds, FQNs,
+   * relationship kinds, tags, metadata keys, deployment kinds and FQNs).
+   *
+   * Used by `Builder.specification(...)` to combine the existing builder's
+   * types with a newly-declared specification. A plain `A & B` intersection
+   * would *narrow* the unions (e.g. `'a' | 'b' & 'c' | 'd'` = `never`), which
+   * is the opposite of what we want when adding new kinds.
+   */
+  export type Merge<A, B> = A extends Types<
+    infer AK extends string,
+    infer AF extends string,
+    infer AV extends string,
+    infer AR extends string,
+    infer AT extends string,
+    infer AM extends string,
+    infer ADK extends string,
+    infer ADF extends string
+  > ? B extends Types<
+      infer BK extends string,
+      infer BF extends string,
+      infer BV extends string,
+      infer BR extends string,
+      infer BT extends string,
+      infer BM extends string,
+      infer BDK extends string,
+      infer BDF extends string
+    > ? Types<AK | BK, AF | BF, AV | BV, AR | BR, AT | BT, AM | BM, ADK | BDK, ADF | BDF>
+    : A
+    : B
+
+  /**
+   * Inverse of {@link ToAux} — derives builder {@link Types} from an {@link Aux}.
+   *
+   * Useful when a `Builder` needs to be reconstructed from a runtime value whose
+   * Aux is already known statically (e.g. the result of `builder.build()`).
+   */
+  export type FromAux<A> = A extends Aux<
+    any,
+    infer Element extends string,
+    infer Deployment extends string,
+    infer View extends string,
+    any,
+    SpecAux<
+      infer ElementKind extends string,
+      infer DeploymentKind extends string,
+      infer RelationshipKind extends string,
+      infer Tag extends string,
+      infer MetadataKey extends string
+    >
+  > ? Types<
+      ElementKind,
+      Element,
+      View,
+      RelationshipKind,
+      Tag,
+      MetadataKey,
+      DeploymentKind,
+      Deployment
+    >
+    : AnyTypes
 
   export type ToExpression<T> = T extends AnyTypes ? Expression<ToAux<T>> : never
 

@@ -8,11 +8,9 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "type": "module",
   "sideEffects": false,
-  "types": "dist/index.d.mts",
-  "module": "dist/index.mjs",
   "scripts": {
-    "generate": "obuild",
-    "typecheck": "tsc --noEmit",
+    "sources": "tsdown",
+    "typecheck": "tsc",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",
@@ -31,35 +29,32 @@
     "dist",
     "src"
   ],
+  "types": "dist/index.d.mts",
+  "module": "dist/index.mjs",
   "exports": {
     ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
-      }
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./defaults": {
-      "sources": "./src/defaults/index.ts",
-      "default": {
-        "types": "./dist/defaults/index.d.mts",
-        "import": "./dist/defaults/index.mjs",
-        "default": "./dist/defaults/index.mjs"
-      }
+      "types": "./dist/defaults/index.d.mts",
+      "import": "./dist/defaults/index.mjs",
+      "default": "./dist/defaults/index.mjs"
     },
     "./src": "./src/index.ts"
   },
   "dependencies": {
-    "@radix-ui/colors": "^3.0.0",
-    "pandacss-preset-radix-colors": "^0.2.1",
-    "remeda": "catalog:utils"
+    "remeda": "catalog:utils",
+    "@radix-ui/colors": "catalog:css"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css"
   },
   "devDependencies": {
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css",
     "@types/react": "catalog:react",
     "@types/node": "catalog:",
     "@types/react-dom": "catalog:react",
@@ -67,11 +62,9 @@
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/vanilla-extract": "catalog:mantine",
-    "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css",
     "json5": "catalog:utils",
     "nano-spawn": "catalog:externals",
     "typescript": "catalog:",
-    "obuild": "catalog:obuild"
+    "tsdown": "catalog:tsdown"
   }
 }

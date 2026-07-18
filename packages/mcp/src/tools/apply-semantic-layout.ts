@@ -1,5 +1,4 @@
 import type { ProjectId } from '@likec4/core'
-import type { LikeC4LanguageServices } from '@likec4/language-server'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { completable } from '@modelcontextprotocol/sdk/server/completable'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'

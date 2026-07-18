@@ -339,7 +339,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(and|autoLayout|border|browser|bucket|color|component|crow|cylinder|dashed|description|diamond|document|dot|dotted|dynamic|deployment|global|group|element|environment|exclude|extend|extends|head|icon|icons|include|includeAncestors|it|kind|line|likec4lib|link|metadata|mobile|model|navigateTo|none|not|normal|notes|odiamond|odot|of|onormal|opacity|open|or|parallel|par|person|predicateGroup|predicate|queue|rank|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|vee|view|views|where|source|target|with|zone|vm)\\b"
+      "match": "\\b(alt|and|autoLayout|border|break|browser|bucket|catch|color|component|crow|cylinder|dashed|description|diamond|document|dot|dotted|dynamic|deployment|else|finally|global|group|element|environment|exclude|extend|extends|head|icon|icons|if|include|includeAncestors|it|kind|line|likec4lib|link|loop|metadata|mobile|model|navigateTo|none|not|normal|notes|odiamond|odot|of|onormal|opacity|open|opt|or|parallel|par|person|predicateGroup|predicate|queue|rank|rectangle|relationship|shape|solid|specification|storage|styleGroup|style|tag|tail|technology|this|title|try|vee|view|views|when|where|source|target|with|zone|vm)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",

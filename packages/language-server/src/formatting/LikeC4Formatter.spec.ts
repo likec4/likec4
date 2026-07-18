@@ -5,14 +5,34 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { describe, it } from 'vitest'
+import { describe, test } from 'vitest'
 import { createTestServices } from '../test'
+
+const it = test.extend<{
+  $file: {
+    t: ReturnType<typeof createTestServices>
+  }
+  $test: {
+    format: (source: TemplateStringsArray | string) => Promise<string>
+  }
+}>({
+  t: [async ({}, use) => {
+    const t = createTestServices()
+    await use(t)
+    t[Symbol.dispose]()
+  }, { scope: 'file' }],
+  format: async ({ t }, use) => {
+    await use(async (source: TemplateStringsArray | string) => {
+      return await t.format(typeof source === 'string' ? source : source.join(''))
+    })
+  },
+})
 
 describe('formating', () => {
   describe('formats imports', () => {
     it(
       'formats import rules',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           import   sys1   from    'another project'
@@ -31,7 +51,7 @@ describe('formating', () => {
   describe('formats specification', () => {
     it(
       'formats specification rules',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification{
@@ -58,7 +78,7 @@ describe('formating', () => {
     )
     it(
       'formats styles in specification rules',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification{
@@ -86,7 +106,7 @@ describe('formating', () => {
   describe('formats globals', () => {
     it(
       'formats syles and styleGroups',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           global{
@@ -118,7 +138,7 @@ describe('formating', () => {
 
     it(
       'formats predicate groups',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           global{
@@ -148,7 +168,7 @@ describe('formating', () => {
   describe('formats model', () => {
     it(
       'formats element',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
         model {
@@ -170,7 +190,7 @@ describe('formating', () => {
 
     it(
       'formats element extend',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -202,7 +222,7 @@ describe('formating', () => {
 
     it(
       'formats metadata',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -244,7 +264,7 @@ describe('formating', () => {
 
     it(
       'keeps metadata arrays as arrays',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -274,7 +294,7 @@ describe('formating', () => {
 
     it(
       'separates element kind and name with space',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -298,7 +318,7 @@ describe('formating', () => {
   describe('formats deployments', () => {
     it(
       'formats node declarations',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           deployment{
@@ -326,7 +346,7 @@ describe('formating', () => {
 
     it(
       'formats deployment extends',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           deployment{
@@ -366,7 +386,7 @@ describe('formating', () => {
 
     it(
       'formats instance declarations',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           deployment{
@@ -394,7 +414,7 @@ describe('formating', () => {
 
     it(
       'surrounds arrows with space',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -458,7 +478,7 @@ describe('formating', () => {
   describe('formats views', () => {
     it(
       'formats include/exclude expressions',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -538,7 +558,7 @@ describe('formating', () => {
         `),
     )
 
-    it('formats relation predicates', async ({ expect }) => {
+    it('formats relation predicates', async ({ expect, format }) => {
       expect(
         await format`
         views {
@@ -572,7 +592,7 @@ describe('formating', () => {
 
     it(
       'formats where expression',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -600,7 +620,7 @@ describe('formating', () => {
 
     it(
       'formats where expression v2',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -628,7 +648,7 @@ describe('formating', () => {
 
     it(
       'formats global style references',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -654,7 +674,7 @@ describe('formating', () => {
 
     it(
       'formats global predicate references',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -680,7 +700,7 @@ describe('formating', () => {
 
     it(
       'formats styles',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -710,7 +730,7 @@ describe('formating', () => {
 
     it(
       'formats view declarations',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -748,7 +768,7 @@ describe('formating', () => {
 
     it(
       'formats with predicates',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -774,7 +794,7 @@ describe('formating', () => {
 
     it(
       'formats autolayout property',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -800,7 +820,7 @@ describe('formating', () => {
 
     it(
       'formats groups',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -848,7 +868,7 @@ describe('formating', () => {
         `),
     )
 
-    it('formats chained dynamic steps', async ({ expect }) =>
+    it('formats chained dynamic steps', async ({ expect, format }) =>
       await expect(format`
         views {dynamic
         view index {
@@ -864,7 +884,7 @@ describe('formating', () => {
           }"
         `))
 
-    it('formats multiline chained dynamic steps', async ({ expect }) =>
+    it('formats multiline chained dynamic steps', async ({ expect, format }) =>
       await expect(format`
         views {
         dynamic view index {
@@ -894,7 +914,7 @@ describe('formating', () => {
           }"
         `))
 
-    it('formats multiline and parallel chained dynamic steps', async ({ expect }) =>
+    it('formats multiline and parallel chained dynamic steps', async ({ expect, format }) =>
       await expect(format`
         views {
         dynamic view index {
@@ -905,7 +925,7 @@ describe('formating', () => {
         title 'text'
         }
         
-           parallel {
+        parallel {
         
         PA
         -> PB { }
@@ -945,12 +965,79 @@ describe('formating', () => {
             }
           }"
         `))
+
+    it('formats try-catch dynamic steps', async ({ expect, format }) =>
+      await expect(format`
+        views {
+        dynamic view index {
+        
+                   try 'Try block'     {        
+        A -> B
+        -> C } 
+        
+        catch   'Catch block' 
+        
+        {        
+        }         finally 'Finally' { B 
+                 
+                  -> C  opt 'Optional step' {
+          D ->
+                E        
+                  }
+            
+                  par         {
+          D ->
+                E
+                A       -> F 
+                  }            
+                   }
+                  alt {  when '---' { A -> B }
+                  if {
+                  }
+            else 
+              {  A -> B      }}
+        }
+        }`)
+        .resolves
+        .toMatchInlineSnapshot(`
+          "
+          views {
+            dynamic view index {
+
+              try 'Try block' {
+                A
+                  -> B
+                  -> C
+              }
+              catch 'Catch block' {
+              } finally 'Finally' {
+                B -> C
+                opt 'Optional step' {
+                  D -> E
+                }
+
+                par {
+                  D -> E
+                  A -> F
+                }
+              }
+              alt {
+                when '---' { A -> B }
+                if {
+                }
+                else {
+                  A -> B
+                }
+              }
+            }
+          }"
+        `))
   })
 
   describe('common formatting', () => {
     it(
       'indents',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -992,7 +1079,7 @@ describe('formating', () => {
 
     it(
       'prepends open braces with space',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views{
@@ -1012,7 +1099,7 @@ describe('formating', () => {
 
     it(
       'handles comments',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1050,7 +1137,7 @@ describe('formating', () => {
 
     it(
       'formats tags',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -1070,7 +1157,7 @@ describe('formating', () => {
 
     it(
       'puts tags on a new line',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1099,7 +1186,7 @@ describe('formating', () => {
 
     it(
       'formats link property',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -1123,7 +1210,7 @@ describe('formating', () => {
 
     it(
       'formats navigateTo property',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           views {
@@ -1149,7 +1236,7 @@ describe('formating', () => {
 
     it(
       'formats style leaf properties',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1291,7 +1378,7 @@ describe('formating', () => {
 
     it(
       'formats leaf properties with colon',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1391,7 +1478,7 @@ describe('formating', () => {
 
     it(
       'formats style leaf properties with colon',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1523,7 +1610,7 @@ describe('formating', () => {
 
     it(
       'formats leaf properties',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1615,7 +1702,7 @@ describe('formating', () => {
 
     it(
       'prepends props with space',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -1641,7 +1728,7 @@ describe('formating', () => {
 
     it(
       'prepends properties with new line',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1667,7 +1754,7 @@ describe('formating', () => {
 
     it(
       'surrounds arrows with space',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           specification {
@@ -1768,7 +1855,7 @@ describe('formating', () => {
 
     it(
       'preserves empty lines',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -1802,7 +1889,7 @@ describe('formating', () => {
 
     it(
       'normalize quotes',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -1835,7 +1922,7 @@ describe('formating', () => {
     )
     it(
       'keeps internal quotes',
-      async ({ expect }) =>
+      async ({ expect, format }) =>
         expect(
           await format`
           model {
@@ -1873,7 +1960,7 @@ describe('formating', () => {
         `),
     )
 
-    it('is idempotent', async ({ expect }) => {
+    it('is idempotent', async ({ expect, format }) => {
       const source = `
   specification {
     color custom #6BD731
@@ -2039,8 +2126,3 @@ describe('formating', () => {
     })
   })
 })
-
-async function format(source: TemplateStringsArray | string) {
-  const { format } = createTestServices()
-  return await format(typeof source === 'string' ? source : source.join(''))
-}

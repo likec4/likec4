@@ -100,6 +100,9 @@ function _includes(project: ProjectData, docUri: NormalizedUri): boolean {
   }
   return false
 }
+function _isInScope(project: ProjectData, docUri: NormalizedUri): boolean {
+  return docUri.startsWith(project.folder) || (project.includePaths?.some(isParentFolderFor(docUri)) ?? false)
+}
 function _excludes(project: ProjectData, docUri: NormalizedUri): boolean {
   return project.exclude?.(withoutProtocol(docUri)) ?? false
 }
@@ -111,6 +114,12 @@ function includes(project: ProjectData, doc: NormalizedUri): boolean
 function includes(doc: NormalizedUri): (project: ProjectData) => boolean
 function includes(...args: unknown[]) {
   return purry(_includes, args)
+}
+
+function isInScope(project: ProjectData, doc: NormalizedUri): boolean
+function isInScope(doc: NormalizedUri): (project: ProjectData) => boolean
+function isInScope(...args: unknown[]) {
+  return purry(_isInScope, args)
 }
 
 /**
@@ -241,7 +250,7 @@ export class ProjectsManager extends ADisposable {
    * Configured default project ID.
    * (it is used in CLI and Vite plugin)
    */
-  #defaultProjectId: ProjectId | undefined = undefined
+  #defaultProjectId = undefined as ProjectId | undefined
 
   /**
    * Workspace-level exclude matcher from VS Code settings (likec4.exclude).
@@ -283,6 +292,9 @@ export class ProjectsManager extends ADisposable {
     }
     const owner = this.#ownerOf.get(docuri)
     if (!owner) {
+      if (this.#projects.some(isInScope(docuri))) {
+        return !this.#projects.some(includes(docuri))
+      }
       return isExcludedByDefault(docuri)
     }
     // if the document is excluded by the owner project
@@ -357,6 +369,7 @@ export class ProjectsManager extends ADisposable {
       }
       logger.debug`set workspace exclude patterns: ${normalizedPatterns}`
       this.#workspaceExclude = picomatch(normalizedPatterns, { dot: true })
+      this.resetCaches()
     } catch (e) {
       logger.warn('Failed to set workspace exclude patterns', { error: e })
       this.#workspaceExclude = undefined
@@ -514,7 +527,7 @@ export class ProjectsManager extends ADisposable {
     // - document is not excluded
     if (projectId === ProjectsManager.DefaultProjectId) {
       const owner = this.#ownerOf.get(uri)
-      return !owner && !isExcludedByDefault(uri)
+      return !owner && !this.#excludedDocuments.get(uri)
     }
     const project = this.#projectById.get(projectId)
     return includes(project, uri)
@@ -868,43 +881,45 @@ export class ProjectsManager extends ADisposable {
     delete project.includePaths
     delete project.exclude
 
+    const paths = project.includeConfig.paths
+    if (hasAtLeast(paths, 1)) {
+      // Resolve include paths relative to project folder
+      project.includePaths = map(
+        paths,
+        includePath => {
+          const uri = UriUtils.resolvePath(project.folderUri, includePath)
+          return {
+            uri,
+            folder: ProjectFolder(uri),
+          }
+        },
+      )
+      logger.debug`project ${project.id} include paths: ${project.includePaths.map(p => p.uri.fsPath).join(', ')}`
+    }
+
     // Update exclude patterns
-    switch (true) {
-      case isNullish(config.exclude):
-        project.exclude = DefaultProject.exclude
-        break
-      case config.exclude && hasAtLeast(config.exclude, 1): {
-        const patterns = map(config.exclude, p => {
+    const exclude = config.exclude
+    if (isNullish(exclude)) {
+      project.exclude = DefaultProject.exclude
+    } else if (hasAtLeast(exclude, 1)) {
+      const roots = [project.folderUri, ...map(project.includePaths ?? [], prop('uri'))]
+      const patterns = roots.flatMap(root =>
+        map(exclude, p => {
           if (!isRelative(p) && !p.startsWith('**')) {
             p = joinURL('**', p)
           }
-          return cleanDoubleSlashes(joinRelativeURL(project.folderUri.path, p))
+          return cleanDoubleSlashes(joinRelativeURL(root.path, p))
         })
-        project.exclude = picomatch(patterns, {
-          contains: true,
-          dot: true,
-        })
-        break
-      }
+      )
+      project.exclude = picomatch(patterns, {
+        contains: true,
+        dot: true,
+      })
     }
 
-    const paths = project.includeConfig.paths
-    if (!hasAtLeast(paths, 1)) {
+    if (!project.includePaths) {
       return project
     }
-
-    // Resolve include paths relative to project folder
-    project.includePaths = map(
-      paths,
-      includePath => {
-        const uri = UriUtils.resolvePath(project.folderUri, includePath)
-        return {
-          uri,
-          folder: ProjectFolder(uri),
-        }
-      },
-    )
-    logger.debug`project ${project.id} include paths: ${project.includePaths.map(p => p.uri.fsPath).join(', ')}`
 
     // Check for overlapping include paths with other projects
     for (const includePath of project.includePaths) {

@@ -7,6 +7,7 @@ import {
   ElementNode,
   SequenceActorNode,
   SequenceParallelArea,
+  SequenceSubflowArea,
   ViewGroupNode,
 } from './nodes'
 
@@ -18,6 +19,7 @@ export const BuiltinNodes = {
   ViewGroupNode,
   SequenceActorNode,
   SequenceParallelArea,
+  SequenceSubflowArea,
 }
 
 export const BuiltinEdges = {

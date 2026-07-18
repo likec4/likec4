@@ -26,15 +26,15 @@ export const generateColorVars = (spec: TagSpecification): string => {
   if (!radixColors.includes(color)) {
     return ''
   }
-  let textcolor = '12'
+  let textcolor = `var(--colors-${color}-12)`
   if (['mint', 'grass', 'lime', 'yellow', 'amber'].includes(color)) {
-    textcolor = 'dark-2'
+    textcolor = 'rgba(0 0 0 / 0.85)'
   }
   return `
   --colors-likec4-tag-border: var(--colors-${color}-8);
   --colors-likec4-tag-bg: var(--colors-${color}-9);
   --colors-likec4-tag-bg-hover: var(--colors-${color}-10);
-  --colors-likec4-tag-text: var(--colors-${color}-${textcolor});
+  --colors-likec4-tag-text: ${textcolor};
   `
 }
 

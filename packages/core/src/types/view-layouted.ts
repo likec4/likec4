@@ -3,6 +3,7 @@ import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from './_common'
 import type { _layout, _stage, _type } from './const'
+import type * as scalar from './scalar'
 import type {
   BaseViewProperties,
   ViewAutoLayout,
@@ -10,6 +11,7 @@ import type {
   ViewWithNotation,
 } from './view-common'
 import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { DynamicViewFlowSteps } from './view-dynamic-flow'
 import type { DiagramEdgeDriftReason, DiagramNodeDriftReason, LayoutedViewDriftReason } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 
@@ -117,6 +119,14 @@ export interface LayoutedDynamicView<A extends AnyAux = AnyAux> extends BaseLayo
   readonly variant: DynamicViewDisplayVariant
 
   /**
+   * Represents the complete flow structure for dynamic views, as a sequence of steps.
+   * Can include nested flows, branches, loops, and conditional statements.
+   *
+   * (this can be undefined if read from manual snapshot)
+   */
+  readonly flow?: DynamicViewFlowSteps
+
+  /**
    * Sequence layout of this dynamic view
    */
   readonly sequenceLayout: LayoutedDynamicView.Sequence.Layout
@@ -134,7 +144,7 @@ export namespace LayoutedDynamicView {
     }
 
     export interface Actor {
-      readonly id: aux.NodeId
+      readonly id: scalar.NodeId
       readonly x: number
       readonly y: number
       readonly width: number
@@ -143,11 +153,11 @@ export namespace LayoutedDynamicView {
     }
 
     export interface Compound {
-      readonly id: aux.NodeId
+      readonly id: scalar.NodeId
       /**
        * Original node id, since multiple compound nodes can be built from one node
        */
-      readonly origin: aux.NodeId
+      readonly origin: scalar.NodeId
       readonly x: number
       readonly y: number
       readonly width: number
@@ -155,6 +165,9 @@ export namespace LayoutedDynamicView {
       readonly depth: number
     }
 
+    /**
+     * @deprecated Use SubflowArea instead
+     */
     export interface ParallelArea {
       readonly parallelPrefix: string
       readonly x: number
@@ -163,8 +176,20 @@ export namespace LayoutedDynamicView {
       readonly height: number
     }
 
+    /**
+     * Represents an area around some flow control block
+     * (the rest my be read from `view.flow`)
+     */
+    export interface SubflowArea {
+      readonly id: scalar.StepPath
+      readonly x: number
+      readonly y: number
+      readonly width: number
+      readonly height: number
+    }
+
     export interface Step {
-      readonly id: aux.EdgeId
+      readonly id: scalar.StepPath
       readonly labelBBox?: { width: number; height: number } | undefined
       readonly sourceHandle: string
       readonly targetHandle: string
@@ -177,7 +202,11 @@ export namespace LayoutedDynamicView {
        */
       readonly steps: ReadonlyArray<Step>
       readonly compounds: ReadonlyArray<Compound>
+      /**
+       * @deprecated Use subflows instead
+       */
       readonly parallelAreas: ReadonlyArray<ParallelArea>
+      readonly subflows: ReadonlyArray<SubflowArea>
       readonly bounds: BBox
     }
   }

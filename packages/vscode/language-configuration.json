@@ -44,14 +44,16 @@
       "open": "\"",
       "close": "\"",
       "notIn": [
-        "string"
+        "string",
+        "comment"
       ]
     },
     {
       "open": "/*",
       "close": " */",
       "notIn": [
-        "string"
+        "string",
+        "comment"
       ]
     },
     {
@@ -89,7 +91,7 @@
     {
       "open": "'",
       "close": "'"
-    },
+    }
   ],
   "colorizedBracketPairs": [
     [
@@ -103,7 +105,7 @@
       "beforeText": "\\s*('{3}|\"{3})[^'\"]*$",
       "afterText": "^\\s*('{3}|\"{3})\\s*$",
       "action": {
-        "indent": "indentOutdent",
+        "indent": "indentOutdent"
       }
     },
     // If enter is pressed inside a single-quoted string
@@ -111,7 +113,7 @@
       "beforeText": "\\s*('|\")[^'\"]*$",
       "afterText": "^\\s*('|\")\\s*$",
       "action": {
-        "indent": "indentOutdent",
+        "indent": "indentOutdent"
       }
     },
     {

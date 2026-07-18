@@ -283,8 +283,8 @@ export function merge<A>(...ops: Ops<A>): Op<A> {
 /**
  * Indent output of operations
  */
-export function indent(value: string): InferOp
 export function indent<A>(...args: Ops<A>): Op<A>
+export function indent(value: string): InferOp
 export function indent(...args: AnyOp[] | [string]) {
   if (args.length === 1 && typeof args[0] === 'string') {
     const text = dedent(args[0] as string)
@@ -835,6 +835,16 @@ export function guard(
 
 /**
  * Executes operations on the context if the condition is true
+ * @example
+ * ```ts
+ * when(
+ *   hasRelationStyle,
+ *   body('style')(
+ *     colorProperty(),
+ *     property('line'),
+ *   ),
+ * )
+ * ```
  */
 export function when<A>(
   condition: (ctx: A) => boolean,
@@ -847,6 +857,16 @@ export function when<A>(
   })
 }
 
+/**
+ * Selects a value from the context and executes operations if the value is non-nullish
+ * @example
+ * ```ts
+ * select(
+ *   v => v.some.property,
+ *   print()
+ * )
+ * ```
+ */
 export function select<A, B>(
   selector: (value: A) => B,
   ...ops: Ops<B & {}> // NonNullable

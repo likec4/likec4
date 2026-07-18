@@ -74,7 +74,9 @@
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "likec4ops clean"
+    "clean": "likec4ops clean",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/config": "workspace:*",
@@ -99,6 +101,7 @@
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "memfs": "catalog:",
     "obuild": "catalog:obuild",
     "oxlint": "catalog:",
     "tsx": "catalog:",

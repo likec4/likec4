@@ -1,9 +1,9 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
-/// <reference path="../../../node_modules/xstate/dist/declarations/src/guards.d.ts" />
 import {
   BBox,
   invariant,
+  isDynamicView,
   isNonEmptyArray,
   nonNullable,
 } from '@likec4/core'
@@ -21,12 +21,21 @@ import {
 } from 'xstate'
 import { MinZoom } from '../../base'
 import { calcEdgeBounds } from '../../utils/view-bounds'
-import { machine } from './machine.setup'
+import { type Context, machine } from './machine.setup'
 import {
   activeSequenceBounds,
   focusedBounds,
+  getEdgeBounds,
   viewBounds,
 } from './utils'
+
+const calcMaxZoom = (context: Context, transform: [number, number, number] = [0, 0, .9]) => {
+  const [, , zoom] = transform
+  if (isDynamicView(context.view) && context.dynamicViewVariant === 'sequence' && !!context.activeWalkthrough) {
+    return Math.max(zoom, 0.9)
+  }
+  return Math.max(zoom, 1)
+}
 
 export const setViewport = (params?: { viewport: Viewport; duration?: number }) =>
   machine.createAction(({ context, event }) => {
@@ -82,24 +91,21 @@ export const centerOnNodeOrEdge = () =>
       if (!edge) {
         return { type: 'noop' } as never
       }
-      const sourceNode = xystate.nodeLookup.get(edge.source)
-      const targetNode = xystate.nodeLookup.get(edge.target)
-      if (!sourceNode || !targetNode) {
-        return { type: 'noop' } as never
-      }
-      const bounds = getNodesBounds([sourceNode, targetNode], xystate)
-
-      const edgeBounds = calcEdgeBounds({
+      let bounds = calcEdgeBounds({
         points: edge.data.points,
         controlPoints: edge.data.controlPoints && isNonEmptyArray(edge.data.controlPoints)
           ? edge.data.controlPoints
           : null,
         labelBBox: edge.data.labelBBox ?? null,
       })
+      const edgeBounds = getEdgeBounds(edge, xystate)
+      if (edgeBounds) {
+        bounds = BBox.merge(bounds, edgeBounds)
+      }
 
       return {
         type: 'xyflow.fitDiagram',
-        bounds: BBox.merge(bounds, edgeBounds),
+        bounds,
       }
     }
 
@@ -114,6 +120,28 @@ export const centerOnNodeOrEdge = () =>
     }
   })
 
+function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
+  const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
+
+  const maxZoom = calcMaxZoom(context, transform)
+  const viewport = getViewportForBounds(
+    bounds,
+    width,
+    height,
+    MinZoom,
+    maxZoom,
+    context.fitViewPadding,
+  )
+  viewport.x = Math.round(viewport.x)
+  viewport.y = Math.round(viewport.y)
+
+  const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
+
+  panZoom?.setViewport(viewport, animationProps).catch((err) => {
+    console.error('Error during fitDiagram panZoom setViewport', { err })
+  })
+}
+
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
   machine.createAction(({ context, event }) => {
     let bounds: BBox | undefined, duration: number | undefined
@@ -127,52 +155,19 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     // Default values
     bounds ??= viewBounds(context)
     duration ??= 450
-
-    const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
-
-    const maxZoom = Math.max(1, transform[2])
-    const viewport = getViewportForBounds(
-      bounds,
-      width,
-      height,
-      MinZoom,
-      maxZoom,
-      context.fitViewPadding,
-    )
-    viewport.x = Math.round(viewport.x)
-    viewport.y = Math.round(viewport.y)
-
-    const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
-
-    panZoom?.setViewport(viewport, animationProps).catch((err) => {
-      console.error('Error during fitDiagram panZoom setViewport', { err })
-    })
+    fitBoundsInViewport(context, bounds, duration)
   })
 
-export const fitFocusedBounds = () =>
+export const fitFocusedBounds = (params?: { duration?: number }) =>
   machine.createAction(({ context }) => {
-    const isActiveSequenceWalkthrough = !!context.activeWalkthrough && context.dynamicViewVariant === 'sequence'
-    const { bounds, duration = 450 } = isActiveSequenceWalkthrough
+    const isActiveWalkthrough = !!context.activeWalkthrough
+    let { bounds, duration = 450 } = isActiveWalkthrough
       ? activeSequenceBounds({ context })
       : focusedBounds({ context })
-    const { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
 
-    const maxZoom = Math.max(1, transform[2])
-    const viewport = getViewportForBounds(
-      bounds,
-      width,
-      height,
-      MinZoom,
-      maxZoom,
-      context.fitViewPadding,
-    )
-    viewport.x = Math.round(viewport.x)
-    viewport.y = Math.round(viewport.y)
-
-    const animationProps = duration > 0 ? { duration, interpolate: 'smooth' as const } : undefined
-    panZoom?.setViewport(viewport, animationProps).catch((err) => {
-      console.error('Error during fitFocusedBounds panZoom setViewport', { err })
-    })
+    // Priority from params
+    duration = params?.duration ?? duration
+    fitBoundsInViewport(context, bounds, duration)
   })
 
 const DEFAULT_DELAY = 30

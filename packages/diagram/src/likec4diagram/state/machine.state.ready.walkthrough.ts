@@ -1,28 +1,39 @@
 import {
-  type StepEdgeId,
-  getParallelStepsPrefix,
   invariant,
-  isStepEdgeId,
   nonNullable,
 } from '@likec4/core'
-import { clamp, first } from 'remeda'
-import { assertEvent } from 'xstate'
-import { assign, enqueueActions, raise } from 'xstate/actions'
-import { Base } from '../../base'
-import { SeqParallelAreaColor } from '../xyflow-sequence/const'
 import {
+  type Predicate,
+  dynamicViewFlow,
+  flowHelpers,
+  isDynamicView,
+  isStepPath,
+  parentFlow,
+} from '@likec4/core/types'
+import { firstBy, isNumber } from 'remeda'
+import { assertEvent, enqueueActions } from 'xstate'
+import { assign, raise } from 'xstate/actions'
+import { Base } from '../../base'
+import type { Types } from '../types'
+import {
+  assignLastClickedNode,
   assignViewportBefore,
   cancelEditing,
   cancelFitDiagram,
   emitEdgeClick,
+  emitPaneClick,
   fitFocusedBounds,
+  resetLastClickedNode,
+  resetSelection,
   returnViewportBefore,
   startHotKeyActor,
   stopHotKeyActor,
-  undimEverything,
   updateView,
 } from './machine.actions'
-import { machine, targetState } from './machine.setup'
+import { machine, targetState, to } from './machine.setup'
+
+const byId = (id: string) => <E extends Types.AnyEdge>(e: E): e is E & { data: { stepnum: number } } =>
+  e.data.id === id && isNumber(e.data.stepnum)
 
 const updateActiveWalkthroughState = () =>
   machine.enqueueActions(({ context, enqueue }) => {
@@ -32,41 +43,106 @@ const updateActiveWalkthroughState = () =>
       enqueue.raise({ type: 'walkthrough.end' })
       return
     }
-    const { stepId, parallelPrefix } = activeWalkthrough
-    const step = context.xyedges.find(x => x.id === stepId)
+    const { stepId, activeFlow } = activeWalkthrough
+    const step = context.xyedges.find(byId(stepId))
     if (!step) {
       console.warn('Invalid walkthrough stepId:', stepId)
       enqueue.raise({ type: 'walkthrough.end' })
       return
     }
+    invariant(isDynamicView(context.view))
+    let processedSteps
+    if (context.view.flow && context.dynamicViewVariant == 'sequence') {
+      const flow = dynamicViewFlow(context.view)
+      processedSteps = new Set(flow.stepPathsBefore(stepId))
+    } else {
+      processedSteps = new Set()
+    }
+
+    const hasActive = activeFlow ? flowHelpers.includes(stepId) : () => false
 
     enqueue.assign({
       xyedges: context.xyedges.map(edge => {
-        const active = stepId === edge.id || (!!parallelPrefix && edge.id.startsWith(parallelPrefix))
+        if (edge.data.id === step.data.id) {
+          return Base.setData(edge, {
+            active: true,
+            state: 'active',
+            dimmed: false,
+          })
+        }
+        if (processedSteps.has(edge.data.id)) {
+          return Base.setData(edge, {
+            active: false,
+            state: 'processed',
+            dimmed: false,
+          })
+        }
+        if (isNumber(edge.data.stepnum) && edge.data.stepnum <= step.data.stepnum) {
+          return Base.setData(edge, {
+            active: false,
+            state: 'skipped',
+            dimmed: true,
+          })
+        }
         return Base.setData(edge, {
-          active,
-          dimmed: stepId !== edge.id,
+          active: false,
+          state: 'pending',
+          dimmed: true,
         })
       }),
       xynodes: context.xynodes.map(node => {
         const dimmed = step.source !== node.id && step.target !== node.id
-        if (node.type === 'seq-parallel') {
+        if (node.type === 'seq-subflow') {
+          if (hasActive(node.data.flowId)) {
+            return Base.setData(node, {
+              activePath: activeFlow!,
+              dimmed: false,
+            })
+          }
+          if (processedSteps.has(node.data.flowId)) {
+            return Base.setData(node, {
+              activePath: null,
+              dimmed: false,
+            })
+          }
           return Base.setData(node, {
-            color: parallelPrefix === node.data.parallelPrefix
-              ? SeqParallelAreaColor.active
-              : SeqParallelAreaColor.default,
-            dimmed,
+            activePath: null,
+            dimmed: true,
           })
         }
         return Base.setDimmed(node, dimmed)
       }),
     })
+    enqueue(resetSelection())
+  })
+
+const clearWalkthroughState = () =>
+  machine.assign(({ context }) => {
+    return ({
+      activeWalkthrough: null,
+      xynodes: context.xynodes.map(n => {
+        if (n.type === 'seq-subflow') {
+          return Base.setData(n, {
+            activePath: null,
+            dimmed: false,
+          })
+        }
+        return Base.setDimmed(n, false)
+      }),
+      xyedges: context.xyedges.map(Base.setData({
+        state: null,
+        dimmed: false,
+        active: false,
+      })),
+    })
   })
 
 const emitWalkthroughStarted = () =>
   machine.emit(({ context }) => {
-    const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
-    invariant(edge, 'Invalid walkthrough state')
+    const edge = nonNullable(
+      context.xyedges.find(x => x.data.id === context.activeWalkthrough?.stepId),
+      'Walkthrough step not found',
+    )
     return {
       type: 'walkthroughStarted',
       edge,
@@ -81,56 +157,49 @@ const emitWalkthroughStopped = () =>
 
 const emitWalkthroughStep = () =>
   machine.emit(({ context }) => {
-    const edge = context.xyedges.find(x => x.id === context.activeWalkthrough?.stepId)
-    invariant(edge, 'Invalid walkthrough state')
+    const stepId = nonNullable(context.activeWalkthrough?.stepId)
+    const edge = nonNullable(
+      context.xyedges.find(x => x.data.id === stepId),
+      `Walkthrough step edge ${stepId} not found`,
+    )
     return {
       type: 'walkthroughStep',
       edge,
+      stepId,
     }
   })
 
 export const walkthrough = machine.createStateConfig({
   id: targetState.walkthrough.slice(1),
   entry: [
-    startHotKeyActor(),
     cancelEditing(),
     cancelFitDiagram(),
     assignViewportBefore(),
     assign({
       activeWalkthrough: ({ context, event }) => {
         assertEvent(event, 'walkthrough.start')
-        const stepId = event.stepId ?? first(context.xyedges)!.id as StepEdgeId
-        return {
-          stepId,
-          parallelPrefix: getParallelStepsPrefix(stepId),
-        }
+        const stepId = event.stepId
+          // or just take first
+          ?? firstBy(context.xyedges, (e) => isStepPath(e.data.id))?.data.id
+
+        return isStepPath(stepId)
+          ? {
+            stepId,
+            activeFlow: parentFlow(stepId),
+          }
+          : null
       },
     }),
     updateActiveWalkthroughState(),
     fitFocusedBounds(),
     emitWalkthroughStarted(),
+    startHotKeyActor(),
   ],
   exit: [
     stopHotKeyActor(),
-    enqueueActions(({ enqueue, context }) => {
-      enqueue.assign({
-        activeWalkthrough: null,
-      })
-      // Disable parallel areas highlight
-      if (context.dynamicViewVariant === 'sequence' && context.activeWalkthrough?.parallelPrefix) {
-        enqueue.assign({
-          xynodes: context.xynodes.map(n => {
-            if (n.type === 'seq-parallel') {
-              return Base.setData(n, {
-                color: SeqParallelAreaColor.default,
-              })
-            }
-            return n
-          }),
-        })
-      }
-    }),
-    undimEverything(),
+    cancelFitDiagram(),
+    clearWalkthroughState(),
+    resetSelection(),
     returnViewportBefore(),
     emitWalkthroughStopped(),
   ],
@@ -152,27 +221,30 @@ export const walkthrough = machine.createStateConfig({
     },
     'walkthrough.step': {
       actions: [
-        assign(({ context, event }) => {
-          const { stepId } = context.activeWalkthrough!
-          const stepIndex = context.xyedges.findIndex(e => e.id === stepId)
-          const nextStepIndex = clamp(event.direction === 'next' ? stepIndex + 1 : stepIndex - 1, {
-            min: 0,
-            max: context.xyedges.length - 1,
-          })
-          if (nextStepIndex === stepIndex) {
-            return {}
+        enqueueActions(({ enqueue, context, event }) => {
+          let predicate: Predicate<Types.AnyEdge>
+          if (event.direction) {
+            const { stepId } = nonNullable(context.activeWalkthrough, 'walkthrough.step: activeWalkthrough is null')
+            const step = nonNullable(context.xyedges.find(byId(stepId)))
+            const nextStepNum = step.data.stepnum + (event.direction === 'next' ? 1 : -1)
+            predicate = (edge) => edge.data.stepnum === nextStepNum
+          } else {
+            predicate = (edge) => edge.data.id === event.stepId
           }
-          const nextStepId = nonNullable(context.xyedges[nextStepIndex]).id as StepEdgeId
-          return {
+          const nextStepId = context.xyedges.find(predicate)?.data.id
+          if (!isStepPath(nextStepId) || context.activeWalkthrough?.stepId === nextStepId) {
+            return
+          }
+          enqueue.assign({
             activeWalkthrough: {
               stepId: nextStepId,
-              parallelPrefix: getParallelStepsPrefix(nextStepId),
+              activeFlow: parentFlow(nextStepId),
             },
-          }
+          })
+          enqueue(updateActiveWalkthroughState())
+          enqueue(fitFocusedBounds())
+          enqueue(emitWalkthroughStep())
         }),
-        updateActiveWalkthroughState(),
-        fitFocusedBounds(),
-        emitWalkthroughStep(),
       ],
     },
     'xyflow.edgeClick': [
@@ -186,22 +258,46 @@ export const walkthrough = machine.createStateConfig({
       {
         actions: [
           assign(({ event }) => {
-            const stepId = event.edge.id
-            invariant(isStepEdgeId(stepId))
+            invariant(event.edge.type === 'seq-step', `Expected seq-step edge, but got "${event.edge.type}"`)
+            const stepId = event.edge.data.id
             return {
               activeWalkthrough: {
                 stepId,
-                parallelPrefix: getParallelStepsPrefix(stepId),
+                activeFlow: parentFlow(stepId),
               },
             }
           }),
           updateActiveWalkthroughState(),
-          fitFocusedBounds(),
+          fitFocusedBounds({ duration: 600 }),
           emitEdgeClick(),
           emitWalkthroughStep(),
         ],
       },
     ],
+    'xyflow.nodeClick': {
+      guard: ({ event: { node } }) => node.type === 'seq-subflow',
+      actions: [
+        enqueueActions(({ enqueue, event: { node }, context }) => {
+          invariant(node.type === 'seq-subflow')
+          invariant(isDynamicView(context.view))
+          const flow = dynamicViewFlow(context.view)
+          const nextStepId = flow.firstStep(node.data.flowId) ?? flow.firstStep()
+          if (nextStepId !== context.activeWalkthrough?.stepId) {
+            enqueue.raise({
+              type: 'walkthrough.step',
+              stepId: nextStepId,
+            })
+            return
+          }
+          if (context.lastClickedNode?.id === node.id && context.lastClickedNode.clicks > 2) {
+            enqueue.raise({
+              type: 'walkthrough.end',
+            })
+          }
+        }),
+        assignLastClickedNode(),
+      ],
+    },
     'notations.unhighlight': {
       actions: updateActiveWalkthroughState(),
     },
@@ -216,10 +312,14 @@ export const walkthrough = machine.createStateConfig({
       ],
     },
     'walkthrough.end': {
-      target: targetState.idle,
+      ...to.idle,
     },
     'xyflow.paneDblClick': {
-      target: targetState.idle,
+      actions: [
+        resetLastClickedNode(),
+        emitPaneClick(),
+      ],
+      ...to.idle,
     },
   },
 })

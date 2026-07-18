@@ -43,6 +43,7 @@ export function selectDiagramActorContext<T = unknown>(
 
 /**
  * Read diagram context
+ * @deprecated use {@link useDiagramSelector}
  */
 export function useDiagramContext<T = unknown>(
   selector: (context: DiagramContext) => T,
@@ -100,3 +101,9 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type'] | '*'>(
     }
   }, [callbackRef, actorRef, event, once])
 }
+
+export {
+  selectDiagramContext,
+  selectDiagramSnapshot,
+  useDiagramSelector,
+} from './safeContext'

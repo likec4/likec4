@@ -257,7 +257,7 @@ function autoApplyLabelsToCompound(
  * @returns The snapshot with the next view applied
  */
 export function applyManualLayout<
-  V extends LayoutedView,
+  V extends LayoutedView<any>,
 >(
   autoLayouted: V,
   snapshot: ViewManualLayoutSnapshot,
@@ -278,7 +278,7 @@ export function applyManualLayout<
 
   const nodeNotations = buildElementNotations(nodes)
 
-  return produce(snapshot as V, (draft) => {
+  return produce(snapshot as unknown as V, (draft) => {
     // Auto-layouted properties
     draft.title = autoLayouted.title ?? snapshot.title
     draft.description = autoLayouted.description ?? snapshot.description

@@ -1,4 +1,3 @@
-import type { aux } from '@likec4/core/types'
 import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
 import { isFunction, keys, mapToObj } from 'remeda'

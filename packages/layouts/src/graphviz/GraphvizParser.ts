@@ -190,6 +190,7 @@ export function parseGraphvizJson(
         actors: [],
         compounds: [],
         parallelAreas: [],
+        subflows: [],
         steps: [],
         bounds,
       },

@@ -1,9 +1,8 @@
-import { describe, it } from 'vitest'
-import { createTestServices } from '../test'
+import { describe } from 'vitest'
+import { it } from './_it-spec'
 
 describe('relationChecks', () => {
-  it('should not report invalid relations', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should not report invalid relations', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -23,8 +22,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should report invalid relation of target', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid relation of target', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -38,8 +36,7 @@ describe('relationChecks', () => {
     expect(errors).to.include.members(['Target not resolved'])
   })
 
-  it('should report invalid this inside model', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid this inside model', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -52,8 +49,7 @@ describe('relationChecks', () => {
     expect(errors).to.include.members(['Source not resolved'])
   })
 
-  it('should report invalid relation of source', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid relation of source', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -67,8 +63,7 @@ describe('relationChecks', () => {
     expect(errors).to.include.members(['Source not resolved'])
   })
 
-  it('should report invalid relation: parent -> child', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid relation: parent -> child', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -85,8 +80,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid relation: -> nested child', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid relation: -> nested child', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -103,8 +97,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid relation: child -> parent', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid relation: child -> parent', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -121,8 +114,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid relation: nested child -> parent', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid relation: nested child -> parent', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -140,8 +132,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should not report for valid tags', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should not report for valid tags', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component
@@ -159,8 +150,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should report invalid tags', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report invalid tags', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component

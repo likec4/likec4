@@ -67,11 +67,11 @@ function MultiValueDisplay({
             <Text
               className={css({
                 fontSize: 'xs',
-                color: 'mantine.colors.gray[5]',
+                color: 'mantine.gray[5]',
                 fontWeight: 'medium',
                 flexShrink: 0,
                 _dark: {
-                  color: 'mantine.colors.dark[3]',
+                  color: 'mantine.dark[3]',
                 },
               })}
             >
@@ -116,7 +116,7 @@ function MultiValueDisplay({
               color: 'text',
               borderRadius: 'sm',
               border: '1px solid',
-              borderColor: 'mantine.colors.gray[3]',
+              borderColor: 'mantine.gray[3]',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -125,8 +125,8 @@ function MultiValueDisplay({
               flex: '0 1 auto',
               userSelect: 'all',
               _dark: {
-                backgroundColor: 'mantine.colors.dark[9]',
-                borderColor: 'mantine.colors.dark[4]',
+                backgroundColor: 'mantine.dark[9]',
+                borderColor: 'mantine.dark[4]',
               },
             })}
             title={value}
@@ -137,11 +137,11 @@ function MultiValueDisplay({
             <Text
               className={css({
                 fontSize: 'xs',
-                color: 'mantine.colors.gray[5]',
+                color: 'mantine.gray[5]',
                 fontWeight: 'medium',
                 flexShrink: 0,
                 _dark: {
-                  color: 'mantine.colors.dark[3]',
+                  color: 'mantine.dark[3]',
                 },
               })}
             >
@@ -189,11 +189,11 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
               whiteSpace: 'nowrap',
               transition: 'all 150ms ease',
               _hover: {
-                backgroundColor: 'mantine.colors.gray[1]',
-                color: 'mantine.colors.primary[6]',
+                backgroundColor: 'mantine.gray[1]',
+                color: 'mantine.primary[6]',
                 _dark: {
-                  backgroundColor: 'mantine.colors.dark[7]',
-                  color: 'mantine.colors.primary[4]',
+                  backgroundColor: 'mantine.dark[7]',
+                  color: 'mantine.primary[4]',
                 },
               },
             })}
@@ -207,13 +207,13 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
                 className={css({
                   fontSize: 'xs',
                   fontWeight: 'medium',
-                  color: 'mantine.colors.gray[6]',
-                  backgroundColor: 'mantine.colors.gray[1]',
+                  color: 'mantine.gray[6]',
+                  backgroundColor: 'mantine.gray[1]',
                   padding: '[1px 4px]',
                   borderRadius: 'xs',
                   _dark: {
-                    color: 'mantine.colors.dark[2]',
-                    backgroundColor: 'mantine.colors.dark[6]',
+                    color: 'mantine.dark[2]',
+                    backgroundColor: 'mantine.dark[6]',
                   },
                 })}
               >

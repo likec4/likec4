@@ -37,7 +37,6 @@ packages/*/lib
 packages/*/styled-system
 packages/*/styled-system-studio
 
-styled-system/preset/src/generated.ts
 styled-system/*/dist
 styled-system/*/lib
 styled-system/*/styled-system

@@ -3,7 +3,6 @@ import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, memo, useEffect, useRef, useState } from 'react'
 import { isNullish } from 'remeda'
-import { ErrorBoundary } from '../../components/ErrorFallback'
 import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
@@ -45,13 +44,13 @@ export function DiagramActorProvider({
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
-  const editorActor = useEditorActorLogic()
+  const editor = useEditorActorLogic()
   const features = useEnabledFeatures()
 
   const actor = useActorRef(
     diagramMachine.provide({
       actors: {
-        editorActor,
+        editor,
       },
     }),
     {
@@ -120,11 +119,9 @@ export function DiagramActorProvider({
   return (
     <DiagramActorContextProvider value={actor}>
       <DiagramApiContextProvider value={api}>
-        <ErrorBoundary>
-          <ToggledFeatures>
-            {children}
-          </ToggledFeatures>
-        </ErrorBoundary>
+        <ToggledFeatures>
+          {children}
+        </ToggledFeatures>
         <PropagateDiagramActorEvents />
       </DiagramApiContextProvider>
     </DiagramActorContextProvider>

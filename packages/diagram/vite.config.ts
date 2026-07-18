@@ -40,7 +40,6 @@ export default defineConfig({
     lib: {
       entry: [
         'src/index.ts',
-        'src/adhoc-editor/index.ts',
         'src/custom/index.ts',
         'src/styles-font.css',
         'src/styles-min.css',
@@ -80,7 +79,8 @@ export default defineConfig({
     {
       name: 'ship-panda',
       buildStart() {
-        execSync('pnpm pandacss codegen', {
+        this.info('pandacss codegen')
+        execSync('pnpm pandacss codegen --clean', {
           stdio: 'inherit',
           cwd: process.cwd(),
         })

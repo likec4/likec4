@@ -1,0 +1,22 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": [
+    "../../.oxlintrc.json"
+  ],
+  "env": {
+    "es2024": true,
+    "node": true
+  },
+  "settings": {},
+  "rules": {},
+  "overrides": [
+    {
+      "files": [
+        "src/likec4/**/*.spec.ts"
+      ],
+      "rules": {
+        "vitest/valid-expect": "off"
+      }
+    }
+  ]
+}

@@ -38,10 +38,17 @@ export default defineCommand({
 
     for (const subj of toclean) {
       const path = resolve($.cwd, subj)
-      if (fs.existsSync(path)) {
-        echo(`${chalk.gray('rm')} ${chalk.dim(subj)}`)
-        await fs.rm(path, { recursive: true, force: true })
+      if (!fs.existsSync(path)) {
+        continue
       }
+      if (subj === 'lib' || subj === 'dist' || subj === '.turbo') {
+        echo(`${chalk.gray('empty')} ${chalk.dim(subj)}`)
+        await fs.emptyDir(path)
+        continue
+      }
+
+      echo(`${chalk.gray('rm')} ${chalk.dim(subj)}`)
+      await fs.rm(path, { recursive: true, force: true })
     }
 
     // Clean tgz

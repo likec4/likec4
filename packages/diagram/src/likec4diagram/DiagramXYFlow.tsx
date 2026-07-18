@@ -41,6 +41,7 @@ const builtinNodes = {
   'view-group': BuiltinNodes.ViewGroupNode,
   'seq-actor': BuiltinNodes.SequenceActorNode,
   'seq-parallel': BuiltinNodes.SequenceParallelArea,
+  'seq-subflow': BuiltinNodes.SequenceSubflowArea,
 }
 function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   if (!nodeTypes || isEmpty(nodeTypes)) {
@@ -54,6 +55,7 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
     'view-group': nodeTypes.viewGroup ?? builtinNodes['view-group'],
     'seq-actor': nodeTypes.seqActor ?? builtinNodes['seq-actor'],
     'seq-parallel': nodeTypes.seqParallel ?? builtinNodes['seq-parallel'],
+    'seq-subflow': nodeTypes.seqSubflow ?? builtinNodes['seq-subflow'],
   }
 }
 
@@ -97,18 +99,6 @@ const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
     }),
   })
 })
-// const equalsXYProps = (a: ReturnType<typeof selectXYProps>, b: ReturnType<typeof selectXYProps>): boolean =>
-//   a.enableReadOnly === b.enableReadOnly &&
-//   a.initialized === b.initialized &&
-//   a.pannable === b.pannable &&
-//   a.zoomable === b.zoomable &&
-//   a.nodesDraggable === b.nodesDraggable &&
-//   a.nodesSelectable === b.nodesSelectable &&
-//   a.enableFitView === b.enableFitView &&
-//   shallowEqual(a.fitViewPadding, b.fitViewPadding) &&
-//   a.nodes === b.nodes &&
-//   a.edges === b.edges &&
-//   shallowEqual(a.viewport ?? null, b.viewport ?? null)
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
   Simplify<
@@ -155,13 +145,14 @@ export function LikeC4DiagramXYFlow({
     $isPanning = $panning,
     isPanning = useTimeout(() => {
       $isPanning.set(true)
-    }, isReducedGraphics ? 200 : 800),
+    }, isReducedGraphics ? 200 : 1000),
     notPanning = useDebouncedCallback(() => {
       isPanning.clear()
       $isPanning.set(false)
     }, 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
+        $isPanning.set(false)
         isPanning.clear()
         return
       }
@@ -172,7 +163,11 @@ export function LikeC4DiagramXYFlow({
       }
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      if (event) {
+      if (!event) {
+        $isPanning.set(false)
+        isPanning.clear()
+        notPanning.cancel()
+      } else {
         notPanning()
       }
       diagram.send({
@@ -234,6 +229,9 @@ export function LikeC4DiagramXYFlow({
         diagram.send({ type: 'xyflow.edgeDoubleClick', edge })
       })}
       onDelete={useCallbackRef(({ nodes, edges }) => {
+        if (enableReadOnly) {
+          return
+        }
         diagram.editorActor().send({
           type: 'delete.nodes-edges',
           nodeIds: nodes.map(node => node.data.id),
@@ -273,11 +271,10 @@ export function LikeC4DiagramXYFlow({
         diagram.send({ type: 'xyflow.init', instance })
       })}
       onNodeContextMenu={useCallbackRef((event, node) => {
-        const diagramNode = nonNullable(
-          diagram.findDiagramNode(node.id as NodeId),
-          `diagramNode ${node.id} not found`,
-        )
-        onNodeContextMenu?.(diagramNode, event)
+        const diagramNode = diagram.findDiagramNode(node.data.id)
+        if (diagramNode) {
+          onNodeContextMenu?.(diagramNode, event)
+        }
       })}
       onEdgeContextMenu={useCallbackRef((event, edge) => {
         const diagramEdge = nonNullable(

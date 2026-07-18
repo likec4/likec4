@@ -47,7 +47,7 @@ export const controlPoint = css({
     r: 8,
   },
   _hover: {
-    fill: 'mantine.colors.primary.filledHover',
+    fill: 'mantine.primary.filledHover',
     r: 10,
     transitionDuration: '100ms',
   },

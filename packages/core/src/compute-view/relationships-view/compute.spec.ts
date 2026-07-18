@@ -100,10 +100,11 @@ describe('computeRelationshipsView', () => {
         .toLikeC4Model(),
       result = computeRelationships('cloud', m, null)
 
-    expect(result.incomers.size).toBe(2)
+    expect(result.incomers.size).toBe(3)
     expect([...result.incomers]).toEqual([
       m.element('external'),
-      // Must skip the external.some
+      // Must keep the external.some, as the direct parent of the leaf
+      m.element('external.some'),
       m.element('external.some.service'),
     ])
 
@@ -131,9 +132,11 @@ describe('computeRelationshipsView', () => {
 
     m.findElement('clour')
 
-    expect(result.outgoers.size).toBe(2)
+    expect(result.outgoers.size).toBe(3)
     expect([...result.outgoers].map(e => e.id)).toEqual([
       'external',
+      // Must keep the external.some, as the direct parent of the leaf
+      'external.some',
       'external.some.service',
     ])
     expect(result.subjects.size).toBe(2)
@@ -192,6 +195,7 @@ describe('computeRelationshipsView', () => {
     )
     expect([...result1.subjects].map(prop('id'))).toEqual([
       'cloud',
+      'cloud.backend',
       'cloud.backend.service1',
       'cloud.backend.service2',
       'cloud.backend.service1.api',
@@ -248,7 +252,9 @@ describe('computeRelationshipsView', () => {
       'cloud',
       'cloud.backend1',
       'cloud.backend2',
+      'cloud.backend1.service1',
       'cloud.backend1.service1.api',
+      'cloud.backend2.service2',
       'cloud.backend2.service2.api',
     ])
 
@@ -272,6 +278,7 @@ describe('computeRelationshipsView', () => {
     expect([...result4.subjects].map(prop('id'))).toEqual([
       'cloud',
       'cloud.backend',
+      'cloud.backend.service1',
       'cloud.backend.service1.api',
     ])
   })
@@ -297,6 +304,7 @@ describe('computeRelationshipsView', () => {
     )
     expect([...result1.incomers].map(prop('id'))).toEqual([
       'cloud',
+      'cloud.backend',
       'cloud.backend.service1',
       'cloud.backend.service2',
       'cloud.backend.service1.api',
@@ -322,6 +330,7 @@ describe('computeRelationshipsView', () => {
     expect([...result2.incomers].map(prop('id'))).toEqual([
       'cloud',
       'cloud.backend',
+      'cloud.backend.service1',
       'cloud.backend.service1.api',
     ])
 
@@ -349,7 +358,9 @@ describe('computeRelationshipsView', () => {
       'cloud',
       'cloud.backend1',
       'cloud.backend2',
+      'cloud.backend1.service1',
       'cloud.backend1.service1.api',
+      'cloud.backend2.service2',
       'cloud.backend2.service2.api',
     ])
   })
@@ -375,6 +386,7 @@ describe('computeRelationshipsView', () => {
     )
     expect([...result1.outgoers].map(prop('id'))).toEqual([
       'cloud',
+      'cloud.backend',
       'cloud.backend.service1',
       'cloud.backend.service2',
       'cloud.backend.service1.api',
@@ -400,6 +412,7 @@ describe('computeRelationshipsView', () => {
     expect([...result2.outgoers].map(prop('id'))).toEqual([
       'cloud',
       'cloud.backend',
+      'cloud.backend.service1',
       'cloud.backend.service1.api',
     ])
 
@@ -427,7 +440,9 @@ describe('computeRelationshipsView', () => {
       'cloud',
       'cloud.backend1',
       'cloud.backend2',
+      'cloud.backend1.service1',
       'cloud.backend1.service1.api',
+      'cloud.backend2.service2',
       'cloud.backend2.service2.api',
     ])
   })

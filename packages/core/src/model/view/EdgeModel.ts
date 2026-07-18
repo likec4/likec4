@@ -3,13 +3,12 @@ import {
   type aux,
   type Color,
   type IteratorLike,
+  type ProcessedView,
   type RelationshipArrowType,
   type RelationshipLineType,
   type RichTextOrEmpty,
   type scalar,
-  type StepEdgeId,
-  extractStep,
-  isStepEdgeId,
+  isStepPath,
   RichText,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
@@ -18,9 +17,9 @@ import type { $View, WithTags } from '../types'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
-export type EdgesIterator<A extends Any, V extends $View<A>> = IteratorLike<EdgeModel<A, V>>
+export type EdgesIterator<A extends Any, V extends ProcessedView<A> = $View<A>> = IteratorLike<EdgeModel<A, V>>
 
-export class EdgeModel<A extends Any = Any, V extends $View<A> = $View<A>> implements WithTags<A> {
+export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A>> implements WithTags<A> {
   public readonly Aux!: A
 
   public readonly $viewModel: LikeC4ViewModel<A, V>
@@ -66,10 +65,6 @@ export class EdgeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return this.$edge.tags ?? []
   }
 
-  get stepNumber(): number | null {
-    return this.isStep() ? extractStep(this.id) : null
-  }
-
   get navigateTo(): LikeC4ViewModel<A> | null {
     return this.$edge.navigateTo ? this.$viewModel.$model.view(this.$edge.navigateTo) : null
   }
@@ -90,8 +85,8 @@ export class EdgeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
     return this.$edge.tail
   }
 
-  public isStep(): this is EdgeModel.StepEdge<A, V> {
-    return isStepEdgeId(this.id)
+  public isStep(): boolean {
+    return isStepPath(this.$edge.id)
   }
 
   public relationships(type: 'model'): IteratorLike<RelationshipModel<A>>
@@ -125,11 +120,7 @@ export class EdgeModel<A extends Any = Any, V extends $View<A> = $View<A>> imple
 }
 
 namespace EdgeModel {
-  export interface StepEdge<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
-    readonly id: StepEdgeId
-    readonly stepNumber: number
-  }
-  export interface WithParent<A extends Any, V extends $View<A>> extends EdgeModel<A, V> {
+  export interface WithParent<A extends Any, V extends ProcessedView<A>> extends EdgeModel<A, V> {
     readonly parent: NodeModel<A, V>
   }
 }

@@ -17,3 +17,8 @@ export type {
   AdhocViewPredicate,
   ComputedAdhocView,
 } from './adhoc-view/compute'
+
+export {
+  computeFlow,
+  type ComputeFlowResult,
+} from './dynamic-view/computeFlow'

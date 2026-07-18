@@ -1,5 +1,6 @@
-import { describe, it } from 'vitest'
-import { createMultiProjectTestServices, createTestServices } from '../test'
+import { describe } from 'vitest'
+import { createMultiProjectTestServices } from '../test'
+import { it } from './_it-spec'
 
 const specs = `
   specification {
@@ -9,8 +10,7 @@ const specs = `
 `
 
 describe('elementChecks', () => {
-  it('should report duplicate element names', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should report duplicate element names', async ({ expect, validate }) => {
     const { diagnostics } = await validate(`
       specification {
         element component
@@ -28,7 +28,7 @@ describe('elementChecks', () => {
     ])
   })
 
-  it('should report duplicate element names in same project', async ({ expect }) => {
+  it('should report duplicate element names in same project', async ({ expect, validate }) => {
     const { validateAll } = await createMultiProjectTestServices({
       project1: {
         specs,
@@ -52,7 +52,7 @@ describe('elementChecks', () => {
     ])
   })
 
-  it('should not report duplicate element names from different projects', async ({ expect }) => {
+  it('should not report duplicate element names from different projects', async ({ expect, validate }) => {
     const { validateAll } = await createMultiProjectTestServices({
       project1: {
         specs,
@@ -77,9 +77,8 @@ describe('elementChecks', () => {
     expect(warnings).toHaveLength(0)
   })
 
-  it('should report duplicate element names in extendElement', async ({ expect }) => {
-    const { parse, validateAll } = createTestServices()
-    await parse(`
+  it('should report duplicate element names in extendElement', async ({ expect, validateAll, t }) => {
+    await t.parse(`
       specification {
         element component
       }
@@ -91,7 +90,7 @@ describe('elementChecks', () => {
         }
       }
     `)
-    await parse(`
+    await t.parse(`
       model {
         extend c1.c2 {
           component c3
@@ -106,8 +105,7 @@ describe('elementChecks', () => {
     }
   })
 
-  it('should not report duplicate element names in nested', async ({ expect }) => {
-    const { validate } = createTestServices()
+  it('should not report duplicate element names in nested', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
         element component

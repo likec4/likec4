@@ -2,6 +2,7 @@ import { invariant } from '@likec4/core'
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import type { PropsWithChildren } from 'react'
+import { pickBy } from 'remeda'
 import type { UndefinedOnPartialDeep } from 'type-fest'
 import type { BaseEdgePropsWithData } from '../../base/types'
 
@@ -37,6 +38,7 @@ export function EdgeContainer({
   animated = false,
   children,
   style,
+  ...rest
 }: EdgeContainerProps) {
   animated = animated || isActive
   const props = {
@@ -59,6 +61,7 @@ export function EdgeContainer({
     ...(isDimmed !== false && {
       'data-likec4-dimmed': isDimmed,
     }),
+    ...pickBy(rest, (value, key) => value !== undefined && key.startsWith('data-')),
   }
   if (component === 'svg') {
     return (

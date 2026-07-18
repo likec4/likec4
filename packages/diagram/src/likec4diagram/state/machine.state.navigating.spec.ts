@@ -41,6 +41,7 @@ const mockDiagramDynamicView = {
     actors: [],
     compounds: [],
     parallelAreas: [],
+    subflows: [],
     steps: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
   },
@@ -63,6 +64,7 @@ const mockSequenceDynamicView = {
   sequenceLayout: {
     actors: [],
     compounds: [],
+    subflows: [],
     parallelAreas: [],
     steps: [],
     bounds: { x: 0, y: 0, width: 800, height: 600 },
@@ -99,8 +101,8 @@ function createTestActor(initialView: DiagramView) {
   const actor = createActor(
     diagramMachine.provide({
       actors: {
-        // mediaPrintActorLogic uses window.addEventListener — replace with no-op for tests
-        mediaPrintActorLogic: fromCallback(() => () => {}),
+        // mediaPrint actor uses window.addEventListener — replace with no-op for tests
+        mediaPrint: fromCallback(() => () => {}),
       },
     }),
     {

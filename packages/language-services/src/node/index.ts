@@ -1,7 +1,8 @@
 import { rootLogger } from '@likec4/log'
 import defu from 'defu'
 import { URI } from 'langium'
-import { basename, resolve } from 'node:path'
+import { writeFile } from 'node:fs/promises'
+import { basename, join, resolve } from 'node:path'
 import k from 'tinyrainbow'
 import { withTrailingSlash } from 'ufo'
 import { createFromSources } from '../common/createFromSources'
@@ -130,4 +131,47 @@ export async function fromSources(sources: Record<string, string>, options?: Ini
  */
 export function fromSource(source: string, options?: InitOptions): Promise<LikeC4> {
   return fromSources({ 'source.c4': source }, options)
+}
+
+/**
+ * Options for {@link writeDSL}.
+ */
+export interface WriteDSLOptions {
+  /** Project to render (when the workspace has multiple). Defaults to the only one. */
+  project?: string
+  /** Output filename. Default: `model.c4`. */
+  fileName?: string
+}
+
+/**
+ * Renders the parsed model back to LikeC4 DSL source and writes it to disk.
+ *
+ * The output is a single, formatted `.c4` file. This round-trip is intentionally
+ * LOSSY: comments, source positions and original formatting are not preserved.
+ *
+ * @param likec4 - A LikeC4 instance (typically from `fromWorkspace`).
+ * @param targetDir - Directory to write the output file into. Must already exist.
+ * @param options - {@link WriteDSLOptions}
+ * @returns The full path of the written file.
+ *
+ * @example
+ * ```ts
+ * const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+ * const out = await writeDSL(likec4, '/tmp/generated')
+ * console.log(`Wrote DSL to ${out}`)
+ * ```
+ */
+export async function writeDSL(
+  likec4: LikeC4,
+  targetDir: string,
+  options?: WriteDSLOptions,
+): Promise<string> {
+  const dsl = await likec4.toDSL(options?.project)
+  // Don't path.resolve() the targetDir — on Windows that prepends the current
+  // drive letter to POSIX-style paths (e.g. `/tmp/x` → `D:\tmp\x`), which both
+  // surprises callers and breaks platform-portable tests. writeFile resolves
+  // relative paths against cwd anyway.
+  const fullPath = join(targetDir, options?.fileName ?? 'model.c4')
+  await writeFile(fullPath, dsl, 'utf-8')
+  return fullPath
 }

@@ -25,7 +25,7 @@ export const card = css({
   userSelect: 'none',
   minWidth: 200,
   maxWidth: 'calc(100vw - 20px)',
-  backgroundColor: `body/80`,
+  backgroundColor: `surface.default/80`,
   // WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   // backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   sm: {
@@ -36,7 +36,7 @@ export const card = css({
     maxWidth: `40vw`,
   },
   _dark: {
-    backgroundColor: `mantine.colors.dark[6]/80`,
+    backgroundColor: `mantine.dark[6]/80`,
   },
 })
 
@@ -65,11 +65,11 @@ export const elementNotation = css({
   _hover: {
     transition: 'all 120ms ease-out',
     // backgroundColor:
-    backgroundColor: `mantine.colors.primary[2]/50`,
+    backgroundColor: `mantine.primary[2]/50`,
   },
   _dark: {
     _hover: {
-      backgroundColor: `mantine.colors.dark[3]/40`,
+      backgroundColor: `mantine.dark[3]/40`,
     },
   },
 })
@@ -89,7 +89,7 @@ export const shapeSvg = css({
 
 export const shapeBadge = css({
   fontWeight: 'medium',
-  letterSpacing: '0.2px',
+  letterSpacing: 'tight',
   paddingTop: '0',
   paddingBottom: '0',
   textTransform: 'lowercase',
