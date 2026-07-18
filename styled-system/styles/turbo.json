@@ -12,6 +12,10 @@
         "dist/**"
       ]
     },
+    "generate": {
+      "dependsOn": ["sources"],
+      "cache": false
+    },
     "build": {
       "dependsOn": ["sources"],
       "cache": false
