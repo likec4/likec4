@@ -40,6 +40,7 @@ import { mapToObj, only } from 'remeda'
 import { PortalToContainer } from '../../../custom'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../../hooks/safeContext'
 import { useOnDiagramEvent } from '../../../hooks/useDiagram'
+import type { DiagramContext } from '../../state/types'
 import { type OutlineTreeNodeData, countSteps, useTreeData } from './state'
 
 // -----------------------------------------------------------------------------
@@ -176,6 +177,7 @@ const selectFlow = selectDiagramContext((s) => {
       activeStep,
       title: s.view.title,
       outlinePanelWidth: s.activeWalkthrough?.outlinePanelWidth,
+      collapsed: s.collapsedSequenceFlows,
     }
   }
   return {
@@ -186,12 +188,12 @@ const selectFlow = selectDiagramContext((s) => {
 })
 
 export const SequenceOutlinePanel = memo(() => {
-  const { activeStep, flow, title, outlinePanelWidth } = useDiagramSelector(selectFlow)
+  const { activeStep, flow, title, outlinePanelWidth, collapsed } = useDiagramSelector(selectFlow)
 
   return (
     <PortalToContainer>
       <AnimatePresence propagate>
-        {activeStep && flow && outlinePanelWidth && (
+        {activeStep && flow && outlinePanelWidth && collapsed && (
           <m.div
             layout="position"
             className={vstack({
@@ -216,8 +218,12 @@ export const SequenceOutlinePanel = memo(() => {
             animate={{ opacity: 1, translateX: 0 }}
             exit={{ opacity: 0, translateX: -outlinePanelWidth }}
           >
-            <OutlineHeader title={title} flow={flow} />
-            <OutlineBody activeStep={activeStep} flow={flow} />
+            <SequenceOutlinePanelBody
+              title={title}
+              activeStep={activeStep}
+              flow={flow}
+              collapsed={collapsed}
+            />
           </m.div>
         )}
       </AnimatePresence>
@@ -226,7 +232,22 @@ export const SequenceOutlinePanel = memo(() => {
 })
 SequenceOutlinePanel.displayName = 'SequenceOutlinePanel'
 
-const OutlineHeader = ({ title, flow }: { title: string | null; flow: DynamicViewFlow }) => {
+type SequenceOutlinePanelBodyProps = {
+  title: string | null
+  activeStep: StepPath
+  flow: DynamicViewFlow
+  collapsed: DiagramContext['collapsedSequenceFlows']
+}
+function SequenceOutlinePanelBody(props: SequenceOutlinePanelBodyProps) {
+  return (
+    <>
+      <OutlineHeader {...props} />
+      <OutlineBody {...props} />
+    </>
+  )
+}
+
+const OutlineHeader = ({ title, flow }: SequenceOutlinePanelBodyProps) => {
   const diagram = useDiagram()
   const stepCount = flow.stepsCount
   return (
@@ -285,9 +306,9 @@ const OutlineHeader = ({ title, flow }: { title: string | null; flow: DynamicVie
   )
 }
 
-const OutlineBody = ({ activeStep, flow }: { activeStep: StepPath; flow: DynamicViewFlow }) => {
+const OutlineBody = ({ activeStep, flow, collapsed }: SequenceOutlinePanelBodyProps) => {
   const diagram = useDiagram()
-  const treeData = useTreeData(flow)
+  const treeData = useTreeData(flow, collapsed)
   const initialExpandedState = useMemo(() => mapToObj(flowAncestors(activeStep), id => [id, true]), [])
 
   const tree = useTree({
@@ -321,7 +342,7 @@ const OutlineBody = ({ activeStep, flow }: { activeStep: StepPath; flow: Dynamic
     [tree.expandedState],
   )
 
-  const { prev, next } = flow.prevAndNext(activeStep)
+  const { prev, next } = flow.prevAndNext(activeStep, flowId => collapsed[flowId] ?? false)
 
   return (
     <>

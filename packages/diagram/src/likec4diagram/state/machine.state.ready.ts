@@ -171,7 +171,10 @@ export const ready = machine.createStateConfig({
     },
     'sequence.flow.*': {
       guard: 'is dynamic view',
-      actions: collapseOrExpandSequenceFlow(),
+      actions: [
+        collapseOrExpandSequenceFlow(),
+        resetLastClickedNode(),
+      ],
     },
     'xyflow.edgeClick': {
       actions: [

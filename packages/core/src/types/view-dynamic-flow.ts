@@ -851,7 +851,10 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
    * Returns previous and next steps for the given step
    * (only steps are considered, subflows are excluded)
    */
-  prevAndNext(targetStep: scalar.StepPath): { prev: scalar.StepPath | null; next: scalar.StepPath | null } {
+  prevAndNext(
+    targetStep: scalar.StepPath,
+    skipFlow?: (flowId: scalar.StepPath) => boolean,
+  ): { prev: scalar.StepPath | null; next: scalar.StepPath | null } {
     invariant(!this.isSubflow(targetStep), `${targetStep} is a subflow, not a step`)
     let prev: scalar.StepPath | null = null
     let next: scalar.StepPath | null = null
@@ -868,6 +871,12 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
           prev = stepBefore
         }
         stepBefore = currentStep
+      },
+      subflow: ({ subflow }) => {
+        if (skipFlow?.(subflow.id)) {
+          return false
+        }
+        return true
       },
     })
     return { prev, next }

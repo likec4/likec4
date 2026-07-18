@@ -2,6 +2,7 @@ import { type DynamicViewFlow, type scalar, type StepPath } from '@likec4/core'
 
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
+import type { DiagramContext } from '../../state/types'
 
 export interface OutlineTreeNodeStep extends TreeNodeData {
   readonly value: StepPath
@@ -33,6 +34,8 @@ export interface OutlineTreeNodeFlow extends TreeNodeData {
 
 export type OutlineTreeNodeData = OutlineTreeNodeStep | OutlineTreeNodeFlow
 
+export type OutlineTreeNodes = OutlineTreeNodeData[]
+
 /**
  * Type guard narrowing a tree node to a sub-flow node.
  * (The discriminant lives on the nested `nodeProps.type`, so an explicit guard
@@ -57,7 +60,7 @@ export function countSteps(nodes: OutlineTreeNodeData[]): number {
   return count
 }
 
-export function buildTree(flow: DynamicViewFlow) {
+function buildTree(flow: DynamicViewFlow, collapsedFlows: DiagramContext['collapsedSequenceFlows']): OutlineTreeNodes {
   const tree: OutlineTreeNodeData[] = []
   let currentFlow: OutlineTreeNodeData[] = tree
 
@@ -77,6 +80,9 @@ export function buildTree(flow: DynamicViewFlow) {
       })
     },
     subflow: ({ subflow }) => {
+      if (collapsedFlows[subflow.id]) {
+        return false
+      }
       const node: OutlineTreeNodeFlow = {
         label: subflow.title ?? subflow._type,
         value: subflow.id,
@@ -100,6 +106,9 @@ export function buildTree(flow: DynamicViewFlow) {
   return tree
 }
 
-export function useTreeData(flow: DynamicViewFlow) {
-  return useMemo(() => buildTree(flow), [flow])
+export function useTreeData(
+  flow: DynamicViewFlow,
+  collapsed: DiagramContext['collapsedSequenceFlows'],
+): OutlineTreeNodes {
+  return useMemo(() => buildTree(flow, collapsed), [flow, collapsed])
 }

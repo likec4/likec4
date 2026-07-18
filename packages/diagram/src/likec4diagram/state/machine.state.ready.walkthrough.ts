@@ -241,10 +241,12 @@ export const walkthrough = machine.createStateConfig({
             'walkthrough.step: activeWalkthrough is null',
           )
           if (event.direction) {
+            invariant(isDynamicView(context.view))
             const { stepId } = activeWalkthrough
-            const step = nonNullable(context.xyedges.find(byId(stepId)))
-            const nextStepNum = step.data.stepnum + (event.direction === 'next' ? 1 : -1)
-            predicate = (edge) => edge.data.stepnum === nextStepNum
+            const flow = dynamicViewFlow(context.view)
+            const { prev, next } = flow.prevAndNext(stepId, flowId => context.collapsedSequenceFlows[flowId] ?? false)
+            const nextStep = event.direction === 'next' ? next : prev
+            predicate = (edge) => edge.data.id === nextStep
           } else {
             predicate = (edge) => edge.data.id === event.stepId
           }
