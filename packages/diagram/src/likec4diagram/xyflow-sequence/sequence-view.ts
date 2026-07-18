@@ -26,12 +26,8 @@ type Port = {
 export function calcSequenceLayout(
   view: LayoutedDynamicView,
   flow: DynamicViewFlow,
+  collapsedFlows: StepPath[] = [],
 ): LayoutedDynamicView.Sequence.Layout {
-  // const { edges } = computeFlow({
-  //   view,
-  //   subflows: flow.paths,
-  // })
-
   const actorNodes = new Set<DiagramNode>()
 
   const getNode = (id: string) => nonNullable(view.nodes.find(n => n.id === id))
@@ -119,6 +115,7 @@ export function calcSequenceLayout(
     steps,
     compounds: buildCompounds(actors, view.nodes),
     flow,
+    collapsedFlows,
   })
 
   const bounds = layout.getViewBounds()
@@ -155,6 +152,7 @@ export function calcSequenceLayout(
           height: s.label.height,
         },
       }),
+      ...layout.isStepCollapsed(s) && { hidden: true },
     })),
     parallelAreas: [],
     subflows,
@@ -183,6 +181,7 @@ function toSeqActor({ actor, ports, layout }: {
         height: bbox.height,
         type: p.type,
         position: p.position,
+        ...layout.isStepCollapsed(p.step) && { hidden: true },
       })
     }),
   }

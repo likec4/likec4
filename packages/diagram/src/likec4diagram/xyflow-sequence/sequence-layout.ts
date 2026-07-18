@@ -35,8 +35,11 @@ type Ctx = {
  * @param currentViewId The ID of the current view (optional, used to exclude navigation to the current view)
  */
 export function sequenceLayoutToXY(
-  view: LayoutedDynamicView,
-  currentViewId: ViewId | undefined,
+  { view, currentViewId, collapsedFlows = [] }: {
+    view: LayoutedDynamicView
+    currentViewId: ViewId | undefined
+    collapsedFlows?: StepPath[]
+  },
 ): {
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode>
   xyedges: Array<Types.SequenceStepEdge>
@@ -46,7 +49,7 @@ export function sequenceLayoutToXY(
 
   // We calculate sequence layout here only for development purposes
   // In production, the layout will be already calculated and stored in the view
-  const layout = flow ? calcSequenceLayout(view, flow) : view.sequenceLayout
+  const layout = flow ? calcSequenceLayout(view, flow, collapsedFlows) : view.sequenceLayout
 
   const ctx: Ctx = {
     view,
@@ -240,7 +243,7 @@ function toSeqActorNode(
   }
 }
 function toSeqStepEdge(
-  { id, labelBBox, sourceHandle, targetHandle }: LayoutedDynamicView.Sequence.Step,
+  { id, labelBBox, sourceHandle, targetHandle, hidden }: LayoutedDynamicView.Sequence.Step,
   edge: DiagramEdge,
   currentViewId: ViewId,
   stepnum: number,
@@ -283,6 +286,7 @@ function toSeqStepEdge(
     deletable: false,
     selectable: true,
     focusable: false,
+    ...hidden && { hidden: true },
     zIndex: SeqZIndex.step,
     interactionWidth: 50,
     source: edge.source,

@@ -193,6 +193,10 @@ export namespace LayoutedDynamicView {
       readonly labelBBox?: { width: number; height: number } | undefined
       readonly sourceHandle: string
       readonly targetHandle: string
+      /**
+       * Step is hidden if it is inside a collapsed subflow
+       */
+      readonly hidden?: boolean
     }
 
     export interface Layout {

@@ -40,7 +40,6 @@ type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
    */
   useActorRef: () => A
 
-  // selectSnapshot<T>(select: (state: Snapshot) => T): SelectAndCompare<Snapshot, T>
   /**
    * @param select - Function to extract a value from the actor's snapshot
    * @param compare - Optional comparison function. If not provided, shallow equality is used.

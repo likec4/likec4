@@ -16,7 +16,7 @@ import {
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
-import { makeDiagramApi } from './diagram-api'
+import { DiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 
@@ -80,19 +80,6 @@ export function DiagramActorProvider({
     actorRef.current = actor
   }
 
-  const [api, setApi] = useState(() => makeDiagramApi(actorRef))
-  useEffect(() => {
-    setApi(api => {
-      if (api.ref === actorRef) {
-        return api
-      }
-      console.error(
-        'DiagramMachine actorRef changed, creating new DiagramApi instance, this should not happen during the lifetime of the actor',
-      )
-      return makeDiagramApi(actorRef)
-    })
-  }, [actorRef])
-
   useEffect(() => {
     actor.send({ type: 'update.features', features })
   }, [actor, features])
@@ -118,7 +105,7 @@ export function DiagramActorProvider({
 
   return (
     <DiagramActorContextProvider value={actor}>
-      <DiagramApiContextProvider value={api}>
+      <DiagramApiContextProvider value={DiagramApi.withActor(actorRef)}>
         <ToggledFeatures>
           {children}
         </ToggledFeatures>

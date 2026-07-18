@@ -95,6 +95,9 @@ export const navigating = machine.createStateConfig({
           },
         } = context
 
+        // We are navigating to a new view, so we don't want to collapse any flows
+        const collapsedSequenceFlows = {}
+
         const eventWithXYData = 'xynodes' in event ? event : {
           ...event,
           ...convertToXYFlow({
@@ -102,6 +105,7 @@ export const navigating = machine.createStateConfig({
             dynamicViewVariant: context.dynamicViewVariant,
             view: event.view,
             where: context.where,
+            collapsedSequenceFlows,
           }),
         }
 
@@ -156,6 +160,7 @@ export const navigating = machine.createStateConfig({
             viewportChangedManually: viewportBefore?.wasChangedManually ?? fromHistory.viewportChangedManually,
             viewport: viewportBefore?.value ?? fromHistory.viewport,
             viewportBefore: null,
+            collapsedSequenceFlows,
           } satisfies Partial<typeof context>
 
           enqueue.assign(nextCtx)
@@ -266,6 +271,7 @@ export const navigating = machine.createStateConfig({
             currentIndex: updatedHistory.length - 1,
             history: updatedHistory,
           },
+          collapsedSequenceFlows,
         })
 
         if (nodeToFocus) {

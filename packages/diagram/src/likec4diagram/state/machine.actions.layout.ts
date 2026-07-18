@@ -3,7 +3,6 @@
 import {
   BBox,
   invariant,
-  isDynamicView,
   isNonEmptyArray,
   nonNullable,
 } from '@likec4/core'
@@ -20,8 +19,6 @@ import {
   assertEvent,
 } from 'xstate'
 import { MinZoom } from '../../base'
-import type { ViewPaddings } from '../../LikeC4Diagram.props'
-import { roundDpr } from '../../utils'
 import { calcEdgeBounds } from '../../utils/view-bounds'
 import { type Context, isActiveSequenceWalkthrough, machine } from './machine.setup'
 import {
@@ -34,7 +31,7 @@ import {
 const calcMaxZoom = (context: Context, transform: [number, number, number] = [0, 0, 1]) => {
   const [, , zoom] = transform
   if (isActiveSequenceWalkthrough(context)) {
-    return Math.max(zoom, 0.9)
+    return Math.max(zoom, 1.4)
   }
   return Math.max(zoom, 1)
 }

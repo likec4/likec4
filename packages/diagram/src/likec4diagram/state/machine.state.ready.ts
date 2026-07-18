@@ -7,6 +7,7 @@ import {
   cancelFitDiagram,
   centerOnNodeOrEdge,
   closeAllOverlays,
+  collapseOrExpandSequenceFlow,
   disableCompareWithLatest,
   emitEdgeClick,
   emitNodeClick,
@@ -167,6 +168,10 @@ export const ready = machine.createStateConfig({
     'walkthrough.start': {
       guard: 'is dynamic view',
       ...to.walkthrough,
+    },
+    'sequence.flow.*': {
+      guard: 'is dynamic view',
+      actions: collapseOrExpandSequenceFlow(),
     },
     'xyflow.edgeClick': {
       actions: [

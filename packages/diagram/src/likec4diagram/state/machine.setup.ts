@@ -141,6 +141,9 @@ export interface Context extends Input {
     activeFlow: StepPath | null
     outlinePanelWidth: number
   }
+  collapsedSequenceFlows: {
+    [flowId: StepPath]: boolean
+  }
 }
 
 export function Context({ input }: { input: Input }): Context {
@@ -179,6 +182,7 @@ export function Context({ input }: { input: Input }): Context {
       input.view._type === 'dynamic' ? input.view.variant : 'diagram'
     ) ?? 'diagram',
     activeWalkthrough: null,
+    collapsedSequenceFlows: {},
   }
 }
 
@@ -240,6 +244,10 @@ export type Events =
   | { type: 'walkthrough.step'; direction: 'next' | 'previous'; stepId?: never }
   | { type: 'walkthrough.step'; stepId: StepPath; direction?: never }
   | { type: 'walkthrough.end' }
+  | { type: 'sequence.flow.collapse'; flowId: StepPath }
+  | { type: 'sequence.flow.expand'; flowId: StepPath }
+  | { type: 'sequence.flow.toggle'; flowId: StepPath }
+  | { type: 'sequence.walkthrough.end' }
   | { type: 'highlight.node'; nodeId: NodeId }
   | { type: 'highlight.edge'; edgeId: EdgeId }
   | { type: 'unhighlight.all' }
@@ -399,6 +407,10 @@ export const machine = setup({
     'click: focused node': ({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return context.focusedNode === event.node.id
+    },
+    'click: node.type = seq-subflow': ({ event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      return event.node.type === 'seq-subflow'
     },
     'click: node has connections': ({ context, event }) => {
       assertEvent(event, 'xyflow.nodeClick')

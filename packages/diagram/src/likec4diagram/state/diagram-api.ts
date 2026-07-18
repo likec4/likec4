@@ -4,10 +4,10 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { invariant, nonNullable } from '@likec4/core/utils'
+import { DefaultWeakMap, invariant, nonNullable } from '@likec4/core/utils'
 import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
-import type { FeatureName, TogglableFeature } from '../../context/DiagramFeatures'
+import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
@@ -28,325 +28,304 @@ type Fqn<A> = t.aux.Fqn<A>
 type NodeId = t.aux.NodeId
 type EdgeId = t.aux.EdgeId
 
-export interface DiagramApi<A extends Any = Unknown> {
+export class DiagramApi<A extends Any = Unknown> {
+  private static cache = new DefaultWeakMap((ref: RefObject<DiagramActorRef>) => new DiagramApi(ref))
+
+  public static withActor(actorRef: RefObject<DiagramActorRef>): DiagramApi {
+    return this.cache.get(actorRef)
+  }
+
   /**
    * React ref to the diagram actor
    */
   readonly ref: RefObject<DiagramActorRef>
+
+  private constructor(actorRef: RefObject<DiagramActorRef>) {
+    this.ref = actorRef
+  }
+
   /**
    * @warning Do not use in render phase
    */
-  readonly actor: DiagramActorRef
+  get actor(): DiagramActorRef {
+    return this.ref.current
+  }
+
   /**
    * @warning Do not use in render phase
    */
-  readonly currentView: t.DiagramView<A>
+  get currentView(): t.DiagramView<A> {
+    return this.ref.current.getSnapshot().context.view
+  }
 
   /**
    * Editor actor reference
    * @warning Do not use in render phase
    */
-  editorActor(): EditorActorRef
+  editorActor(): EditorActorRef {
+    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    return nonNullable(editorActor, 'Editor actor not found in actor system')
+  }
 
   /**
    * Overlays actor reference
    * @warning Do not use in render phase
    */
-  overlays(): OverlaysActorRef
+  overlays(): OverlaysActorRef {
+    const overlaysActor = typedSystem(this.ref.current.system).overlaysActorRef
+    return nonNullable(overlaysActor, 'Overlays actor not found in actor system')
+  }
 
   /**
    * Search actor reference
    * @warning Do not use in render phase
    */
-  searchActor(): SearchActorRef
+  searchActor(): SearchActorRef {
+    const searchActor = typedSystem(this.ref.current.system).searchActorRef
+    return nonNullable(searchActor, 'Search actor not found in actor system')
+  }
 
   /**
    * Send event to diagram actor
    */
-  send(event: DiagramEvents): void
+  send(event: DiagramEvents): void {
+    this.ref.current.send(event)
+  }
+
   /**
    * Navigate to view
    * @param viewId - Target view ID
    * @param fromNode - Node from which navigation was triggered
    * @param focusOnElement - Element FQN to focus after navigation (from search)
    */
-  navigateTo(viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>): void
+  navigateTo(viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>): void {
+    this.send({
+      type: 'navigate.to',
+      viewId: viewId as any,
+      ...(fromNode && { fromNode }),
+      ...(focusOnElement && { focusOnElement: focusOnElement as any }),
+    })
+  }
+
   /**
    * Navigate back or forward in history
    */
-  navigate(direction: 'back' | 'forward'): void
+  navigate(direction: 'back' | 'forward'): void {
+    this.send({ type: `navigate.${direction}` })
+  }
+
   /**
    * Fit diagram to view
    */
-  fitDiagram(duration?: number): void
+  fitDiagram(duration = 350): void {
+    this.send({ type: 'xyflow.fitDiagram', duration })
+  }
+
   /**
    * Open relationships browser
    */
-  openRelationshipsBrowser(fqn: Fqn<A>): void
+  openRelationshipsBrowser(fqn: Fqn<A>): void {
+    this.send({ type: 'open.relationshipsBrowser', fqn })
+  }
+
   /**
    * If running in editor, trigger opening source file
    */
-  openSource(params: OpenSourceParams<A>): void
+  openSource(params: OpenSourceParams<Unknown>): void {
+    this.send({ type: 'open.source', ...params })
+  }
+
   /**
    * Open element details card
    */
-  openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void
-  openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void
-  updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void
-  updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void
-  highlightNode(nodeId: NodeId): void
-  highlightEdge(edgeId: EdgeId): void
-  unhighlightAll(): void
+  openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void {
+    this.send({ type: 'open.elementDetails', fqn, fromNode })
+  }
+
+  openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void {
+    if (params.length === 1) {
+      this.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
+    } else {
+      this.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
+    }
+  }
+
+  updateNodeData(nodeId: NodeId, data: PartialDeep<Types.NodeData>): void {
+    this.send({ type: 'update.nodeData', nodeId, data })
+  }
+
+  updateEdgeData(edgeId: EdgeId, data: PartialDeep<Types.EdgeData>): void {
+    this.send({ type: 'update.edgeData', edgeId, data })
+  }
+
+  highlightNode(nodeId: NodeId): void {
+    this.send({ type: 'highlight.node', nodeId })
+  }
+
+  highlightEdge(edgeId: EdgeId): void {
+    this.send({ type: 'highlight.edge', edgeId })
+  }
+
+  unhighlightAll(): void {
+    this.send({ type: 'unhighlight.all' })
+  }
+
   /**
    * Center viewport on a given node
    */
-  centerViewportOnNode(target: NodeId): void
+  centerViewportOnNode(target: NodeId): void {
+    this.send({ type: 'xyflow.centerViewport', nodeId: target })
+  }
+
   /**
    * Center viewport on a given edge (centering on edge means including both source and target nodes in view)
    */
-  centerViewportOnEdge(target: EdgeId): void
+  centerViewportOnEdge(target: EdgeId): void {
+    this.send({ type: 'xyflow.centerViewport', edgeId: target })
+  }
+
   /**
    * Start editing, either node or edge
    */
-  startEditing(subject: 'node' | 'edge'): void
+  startEditing(subject: 'node' | 'edge'): void {
+    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    invariant(editorActor, 'No editor actor found in diagram actor system')
+    editorActor.send({ type: 'edit.move.start', subject })
+  }
+
   /**
    * Stop editing
    * @param wasChanged - whether there were changes made during editing
    * @default false
    */
-  stopEditing(wasChanged?: boolean): void
+  stopEditing(wasChanged = false): void {
+    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    invariant(editorActor, 'No editor actor found in diagram actor system')
+    editorActor.send({ type: wasChanged ? 'edit.move.end' : 'edit.move.cancel' })
+  }
+
   /**
    * Undo last editing operation
    * @returns true if there was something to undo
    */
-  undoEditing(): boolean
+  undoEditing(): boolean {
+    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    invariant(editorActor, 'No editor actor found in diagram actor system')
+    const hasUndo = editorActor.getSnapshot().context.history !== null
+    if (hasUndo) {
+      editorActor.send({ type: 'undo' })
+    }
+    return hasUndo
+  }
+
   /**
    * Align nodes
    */
-  align(mode: AlignmentMode): void
+  align(mode: AlignmentMode): void {
+    this.send({ type: 'layout.align', mode })
+  }
+
   /**
    * Reset edge control points
    */
-  resetEdgeControlPoints(): void
+  resetEdgeControlPoints(): void {
+    this.send({ type: 'layout.resetEdgeControlPoints' })
+  }
+
   /**
    * Focus node
    */
-  focusNode(nodeId: NodeId): void
+  focusNode(nodeId: NodeId): void {
+    this.send({ type: 'focus.node', nodeId })
+  }
+
   /**
    * Focus on element by FQN (finds the node and focuses on it).
    * Used by search to highlight an element on the current view.
    */
-  focusOnElement(elementFqn: Fqn<A>): void
-  /**
-   * @warning Do not use in render phase
-   */
-  getContext(): DiagramContext
-  /**
-   * @warning Do not use in render phase
-   */
-  findDiagramNode(xynodeId: string): t.DiagramNode<A> | null
-  /**
-   * @warning Do not use in render phase
-   */
-  findEdge(xyedgeId: string): Types.Edge | null
-  /**
-   * @warning Do not use in render phase
-   */
-  findDiagramEdge(xyedgeId: string): t.DiagramEdge<A> | null
+  focusOnElement(elementFqn: Fqn<A>): void {
+    const context = this.ref.current.getSnapshot().context
+    const node = findNodeByModelFqn(context.xynodes, elementFqn)
+    if (node) {
+      this.send({ type: 'focus.node', nodeId: node.id as NodeId, autoUnfocus: true })
+    }
+  }
 
-  startWalkthrough(): void
-  walkthroughStep(direction?: 'next' | 'previous' | { step: t.StepPath }): void
-  stopWalkthrough(): void
-  toggleFeature(feature: FeatureName, forceValue?: boolean): void
-  highlightNotation(notation: ElementNotation, kind?: string): void
-  unhighlightNotation(): void
-  openSearch(searchValue?: string): void
-  triggerChange(viewChange: ViewChange): void
+  /**
+   * @warning Do not use in render phase
+   */
+  getContext(): DiagramContext {
+    return this.ref.current.getSnapshot().context
+  }
+
+  /**
+   * @warning Do not use in render phase
+   */
+  findDiagramNode(xynodeId: string): t.DiagramNode<A> | null {
+    return findDiagramNode(this.ref.current.getSnapshot().context, xynodeId)
+  }
+
+  /**
+   * @warning Do not use in render phase
+   */
+  findEdge(xyedgeId: string): Types.Edge | null {
+    return this.ref.current.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
+  }
+
+  /**
+   * @warning Do not use in render phase
+   */
+  findDiagramEdge(xyedgeId: string): t.DiagramEdge<A> | null {
+    return findDiagramEdge(this.ref.current.getSnapshot().context, xyedgeId)
+  }
+
+  startWalkthrough(): void {
+    this.send({ type: 'walkthrough.start' })
+  }
+
+  walkthroughStep(value: 'next' | 'previous' | { step: t.StepPath } = 'next'): void {
+    if (value === 'next' || value === 'previous') {
+      this.send({ type: 'walkthrough.step', direction: value })
+    } else {
+      this.send({ type: 'walkthrough.step', stepId: value.step })
+    }
+  }
+
+  stopWalkthrough(): void {
+    this.send({ type: 'walkthrough.end' })
+  }
+
+  toggleFeature(feature: TogglableFeature, forceValue?: boolean): void {
+    this.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
+  }
+
+  highlightNotation(notation: ElementNotation, kind?: string): void {
+    this.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
+  }
+
+  unhighlightNotation(): void {
+    this.send({ type: 'notations.unhighlight' })
+  }
+
+  openSearch(searchValue?: string): void {
+    this.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
+  }
+
+  triggerChange(change: ViewChange): void {
+    this.send({ type: 'trigger.change', change })
+  }
+
   /**
    * Switch dynamic view display variant
    */
-  switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void
-}
+  switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void {
+    this.send({ type: 'switch.dynamicViewVariant', variant })
+  }
 
-export function makeDiagramApi<A extends Any = Unknown>(actorRef: RefObject<DiagramActorRef>): DiagramApi<A> {
-  return {
-    ref: actorRef,
-    get actor(): DiagramActorRef {
-      return actorRef.current
-    },
-    editorActor(): EditorActorRef {
-      const editorActor = typedSystem(actorRef.current.system).editorActorRef
-      return nonNullable(editorActor, 'Editor actor not found in actor system')
-    },
-    overlays(): OverlaysActorRef {
-      const overlaysActor = typedSystem(actorRef.current.system).overlaysActorRef
-      return nonNullable(overlaysActor, 'Overlays actor not found in actor system')
-    },
-    searchActor(): SearchActorRef {
-      const searchActor = typedSystem(actorRef.current.system).searchActorRef
-      return nonNullable(searchActor, 'Search actor not found in actor system')
-    },
-    send: (event: DiagramEvents) => actorRef.current.send(event),
-    navigateTo: (viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>) => {
-      actorRef.current.send({
-        type: 'navigate.to',
-        viewId: viewId as any,
-        ...(fromNode && { fromNode }),
-        ...(focusOnElement && { focusOnElement: focusOnElement as any }),
-      })
-    },
-    navigate: (direction: 'back' | 'forward') => {
-      actorRef.current.send({ type: `navigate.${direction}` })
-    },
-    fitDiagram: (duration = 350) => {
-      actorRef.current.send({ type: 'xyflow.fitDiagram', duration })
-    },
-    openRelationshipsBrowser: (fqn) => {
-      actorRef.current.send({ type: 'open.relationshipsBrowser', fqn })
-    },
-    openSource: (params: OpenSourceParams<Unknown>) => {
-      actorRef.current.send({ type: 'open.source', ...params })
-    },
-    openElementDetails: (fqn, fromNode?: NodeId) => {
-      actorRef.current.send({ type: 'open.elementDetails', fqn, fromNode })
-    },
-    openRelationshipDetails: (...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]) => {
-      if (params.length === 1) {
-        actorRef.current.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
-      } else {
-        actorRef.current.send({ type: 'open.relationshipDetails', params: { source: params[0], target: params[1] } })
-      }
-    },
-
-    updateNodeData: (nodeId: NodeId, data: PartialDeep<Types.NodeData>) => {
-      actorRef.current.send({ type: 'update.nodeData', nodeId, data })
-    },
-    updateEdgeData: (edgeId: EdgeId, data: PartialDeep<Types.EdgeData>) => {
-      actorRef.current.send({ type: 'update.edgeData', edgeId, data })
-    },
-    startEditing: (subject: 'node' | 'edge') => {
-      const editorActor = typedSystem(actorRef.current.system).editorActorRef
-      invariant(editorActor, 'No editor actor found in diagram actor system')
-      editorActor.send({ type: 'edit.move.start', subject })
-    },
-    stopEditing: (wasChanged = false) => {
-      const editorActor = typedSystem(actorRef.current.system).editorActorRef
-      invariant(editorActor, 'No editor actor found in diagram actor system')
-      editorActor.send({ type: wasChanged ? 'edit.move.end' : 'edit.move.cancel' })
-    },
-    undoEditing: () => {
-      const editorActor = typedSystem(actorRef.current.system).editorActorRef
-      invariant(editorActor, 'No editor actor found in diagram actor system')
-      const hasUndo = editorActor.getSnapshot().context.history !== null
-      if (hasUndo) {
-        editorActor.send({ type: 'undo' })
-      }
-      return hasUndo
-    },
-
-    align: (mode: AlignmentMode) => {
-      actorRef.current.send({ type: 'layout.align', mode })
-    },
-
-    resetEdgeControlPoints: () => {
-      actorRef.current.send({ type: 'layout.resetEdgeControlPoints' })
-    },
-
-    focusNode: (nodeId: NodeId) => {
-      actorRef.current.send({ type: 'focus.node', nodeId })
-    },
-
-    focusOnElement: (elementFqn: Fqn<A>) => {
-      const context = actorRef.current.getSnapshot().context
-      const node = findNodeByModelFqn(context.xynodes, elementFqn)
-      if (node) {
-        actorRef.current.send({ type: 'focus.node', nodeId: node.id as NodeId, autoUnfocus: true })
-      }
-    },
-
-    /**
-     * @warning Do not use in render phase
-     */
-    get currentView(): t.DiagramView<A> {
-      return actorRef.current.getSnapshot().context.view
-    },
-    /**
-     * @warning Do not use in render phase
-     */
-    getContext: (): DiagramContext => actorRef.current.getSnapshot().context,
-    /**
-     * @warning Do not use in render phase
-     */
-    findDiagramNode: (xynodeId: string): t.DiagramNode<A> | null => {
-      return findDiagramNode(actorRef.current.getSnapshot().context, xynodeId)
-    },
-    findEdge: (xyedgeId: string): Types.Edge | null => {
-      return actorRef.current.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
-    },
-    /**
-     * @warning Do not use in render phase
-     */
-    findDiagramEdge: (xyedgeId: string): t.DiagramEdge<A> | null => {
-      return findDiagramEdge(actorRef.current.getSnapshot().context, xyedgeId)
-    },
-
-    startWalkthrough: () => {
-      actorRef.current.send({ type: 'walkthrough.start' })
-    },
-
-    walkthroughStep: (value: 'next' | 'previous' | { step: t.StepPath } = 'next') => {
-      if (value === 'next' || value === 'previous') {
-        actorRef.current.send({ type: 'walkthrough.step', direction: value })
-      } else {
-        actorRef.current.send({ type: 'walkthrough.step', stepId: value.step })
-      }
-    },
-
-    stopWalkthrough: () => {
-      actorRef.current.send({ type: 'walkthrough.end' })
-    },
-
-    toggleFeature: (feature: TogglableFeature, forceValue?: boolean) => {
-      actorRef.current.send({ type: 'toggle.feature', feature, ...(forceValue !== undefined && { forceValue }) })
-    },
-
-    highlightNotation: (notation: ElementNotation, kind?: string) => {
-      actorRef.current.send({ type: 'notations.highlight', notation, ...(kind && { kind }) })
-    },
-    unhighlightNotation: () => {
-      actorRef.current.send({ type: 'notations.unhighlight' })
-    },
-
-    openSearch: (searchValue?: string) => {
-      actorRef.current.send({ type: 'open.search', ...(searchValue && { search: searchValue }) })
-    },
-
-    triggerChange: (change: ViewChange) => {
-      actorRef.current.send({ type: 'trigger.change', change })
-    },
-
-    switchDynamicViewVariant: (variant: DynamicViewDisplayVariant) => {
-      actorRef.current.send({ type: 'switch.dynamicViewVariant', variant })
-    },
-
-    highlightNode: (nodeId: NodeId) => {
-      actorRef.current.send({ type: 'highlight.node', nodeId })
-    },
-
-    highlightEdge: (edgeId: EdgeId) => {
-      actorRef.current.send({ type: 'highlight.edge', edgeId })
-    },
-
-    unhighlightAll: () => {
-      actorRef.current.send({ type: 'unhighlight.all' })
-    },
-
-    centerViewportOnNode: (nodeId: NodeId) => {
-      actorRef.current.send({ type: 'xyflow.centerViewport', nodeId })
-    },
-
-    centerViewportOnEdge: (edgeId: EdgeId) => {
-      actorRef.current.send({ type: 'xyflow.centerViewport', edgeId })
-    },
+  /**
+   * Toggle sequence flow collapse/expand
+   */
+  toggleSequenceFlow(flowId: t.StepPath): void {
+    this.send({ type: 'sequence.flow.toggle', flowId })
   }
 }

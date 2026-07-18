@@ -98,6 +98,8 @@ export namespace Types {
     height: number
     type: 'target' | 'source'
     position: 'left' | 'right' | 'top' | 'bottom'
+    // Whether the port should be hidden (e.g., when the step connected to the port is collapsed)
+    hidden?: boolean
   }
   export type SequenceActorNodeData = Simplify<
     & LeafNodeData

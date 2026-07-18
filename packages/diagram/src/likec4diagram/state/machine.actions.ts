@@ -166,6 +166,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
         dynamicViewVariant: context.dynamicViewVariant,
         view,
         where: context.where,
+        collapsedSequenceFlows: context.collapsedSequenceFlows,
       })
     } else {
       assertEvent(event, 'update.view')
@@ -174,6 +175,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
         dynamicViewVariant: context.dynamicViewVariant,
         view: event.view,
         where: context.where,
+        collapsedSequenceFlows: context.collapsedSequenceFlows,
       })
     }
 
@@ -1084,4 +1086,29 @@ export const ensureAllActors = () =>
     enqueue(ensureOverlaysActor())
     enqueue(ensureSearchActor())
     enqueue(ensureNavigationPanelActor())
+  })
+
+export const collapseOrExpandSequenceFlow = () =>
+  machine.enqueueActions(({ enqueue, event, context, check }) => {
+    assertEvent(event, ['sequence.flow.*'])
+    const flowId = event.flowId
+    // current state
+    const isCollapsed = context.collapsedSequenceFlows[flowId] ?? false
+
+    if (isCollapsed && event.type === 'sequence.flow.collapse') {
+      return
+    }
+    if (!isCollapsed && event.type === 'sequence.flow.expand') {
+      return
+    }
+
+    enqueue.assign({
+      collapsedSequenceFlows: {
+        ...context.collapsedSequenceFlows,
+        [flowId]: !isCollapsed,
+      },
+    })
+    if (check('is dynamic view in sequence variant')) {
+      enqueue(assignXYDataFromView(context.view))
+    }
   })

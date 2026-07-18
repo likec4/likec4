@@ -24,7 +24,7 @@ export const idle = machine.createStateConfig({
         description: 'Handle sequence subflow click in sequence variant',
         guard: and([
           'is dynamic view in sequence variant',
-          ({ event }) => event.node.type === 'seq-subflow',
+          'click: node.type = seq-subflow',
           'click: same node',
         ]),
         actions: raise(({ event: { node }, context }) => {
@@ -42,7 +42,7 @@ export const idle = machine.createStateConfig({
         description: 'Handle sequence subflow click in sequence variant',
         guard: and([
           'is dynamic view in sequence variant',
-          ({ event }) => event.node.type === 'seq-subflow',
+          'click: node.type = seq-subflow',
         ]),
         actions: [
           assignLastClickedNode(),

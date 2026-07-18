@@ -1,6 +1,6 @@
 import type { BBox, DiagramEdge, DiagramNode, NodeId, StepPath, ViewId } from '@likec4/core/types'
 
-export type SpacingValue =
+export type Spacing =
   | number
   | Partial<
     {
@@ -12,14 +12,6 @@ export type SpacingValue =
       y: number
     }
   >
-
-export type Spacing = SpacingValue | {
-  padding?: SpacingValue
-  /**
-   * Margin only works between rows
-   */
-  margin?: number | { top: number; bottom: number }
-}
 
 export type Step = {
   id: StepPath
@@ -74,6 +66,8 @@ export interface SequenceActorStepPort {
   height: number
   type: 'target' | 'source'
   position: 'left' | 'right' | 'top' | 'bottom'
+  // Whether the port should be hidden (e.g., when the step connected to the port is collapsed)
+  hidden?: boolean
 }
 
 export interface SequenceActor {

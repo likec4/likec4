@@ -209,6 +209,10 @@ export const flowGuards = {
     return isSubFlow(step) && flowGuards.type.isTryBranch(step._type)
   },
 
+  isAltOrTry: (step: unknown): step is DynamicViewFlow.SubFlow.Try | DynamicViewFlow.SubFlow.Alt => {
+    return isSubFlow(step) && (flowGuards.type.isAltOrTry(step._type))
+  },
+
   isAltOrTryBranch: (step: unknown): step is DynamicViewFlow.SubFlow.Try.Any | DynamicViewFlow.SubFlow.Alt.Branch => {
     return isSubFlow(step) && (flowGuards.type.isAltOrTryBranch(step._type))
   },
@@ -220,6 +224,9 @@ export const flowGuards = {
   //   },
 
   type: {
+    isAltOrTry: (value: unknown): value is 'alt' | 'try' => {
+      return value === 'alt' || value === 'try'
+    },
     isAltBranch: (value: unknown): value is DynamicViewFlow.SubFlow.Alt.Branch['_type'] => {
       return isString(value) && value.startsWith('alt-')
     },

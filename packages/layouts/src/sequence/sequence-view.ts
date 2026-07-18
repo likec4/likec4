@@ -112,6 +112,9 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     steps,
     compounds: buildCompounds(actors, view.nodes),
     flow,
+    // When we layout on a backend, we don't have collapsed flows
+    // This is a case for UI
+    collapsedFlows: [],
   })
 
   const bounds = layout.getViewBounds()
@@ -148,6 +151,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
           height: s.label.height,
         },
       }),
+      ...layout.isStepCollapsed(s) && { hidden: true },
     })),
     parallelAreas: [],
     subflows,
@@ -176,6 +180,7 @@ function toSeqActor({ actor, ports, layout }: {
         height: bbox.height,
         type: p.type,
         position: p.position,
+        ...layout.isStepCollapsed(p.step) && { hidden: true },
       })
     }),
   }

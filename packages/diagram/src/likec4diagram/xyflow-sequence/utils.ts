@@ -1,11 +1,13 @@
-import type { DiagramNode } from '@likec4/core/types'
+import { type DiagramNode } from '@likec4/core/types'
 import { invariant, isAncestor, nonNullable, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
-import type { Compound, ParallelRect, Rect, Spacing, SpacingValue, Step } from './_types'
+import type { Compound, ParallelRect, Rect, Spacing, Step } from './_types'
 
-type Normalized = {
-  padding: { left: number; right: number; top: number; bottom: number }
-  margin: { top: number; bottom: number }
+export type NormalizedSpacing = {
+  left: number
+  right: number
+  top: number
+  bottom: number
 }
 
 const paddingFromNumber = (spacing: number) => ({
@@ -15,7 +17,9 @@ const paddingFromNumber = (spacing: number) => ({
   bottom: spacing,
 })
 
-function normalizePadding(padding: SpacingValue): Normalized['padding'] {
+export function normalizeSpacing(
+  padding: Spacing | number = 16,
+): NormalizedSpacing {
   if (typeof padding === 'number') {
     return paddingFromNumber(padding)
   }
@@ -24,51 +28,6 @@ function normalizePadding(padding: SpacingValue): Normalized['padding'] {
   const top = padding?.top ?? padding?.y ?? 0
   const bottom = padding?.bottom ?? padding?.y ?? 0
   return { left, right, top, bottom }
-}
-
-const DefaultMargin = { top: 0, bottom: 0 }
-
-function normalizeMargin(margin: number | { top?: number; bottom?: number }): Normalized['margin'] {
-  if (margin === DefaultMargin) return DefaultMargin
-  if (typeof margin === 'number') {
-    return { top: margin, bottom: margin }
-  }
-  const top = margin.top ?? DefaultMargin.top
-  const bottom = margin.bottom ?? DefaultMargin.bottom
-  return { top, bottom }
-}
-
-export function normalizeSpacing(
-  spacing: Spacing | number = 16,
-): Normalized {
-  if (typeof spacing === 'number') {
-    return {
-      padding: paddingFromNumber(spacing),
-      margin: DefaultMargin,
-    }
-  }
-  if (
-    'top' in spacing
-    || 'bottom' in spacing
-    || 'left' in spacing || 'right' in spacing || 'x' in spacing ||
-    'y' in spacing
-  ) {
-    return {
-      padding: normalizePadding(spacing),
-      margin: DefaultMargin,
-    }
-  }
-  if ('padding' in spacing || 'margin' in spacing) {
-    const { padding, margin } = spacing
-    return {
-      padding: normalizePadding(padding ?? 0),
-      margin: normalizeMargin(margin ?? DefaultMargin),
-    }
-  }
-  return {
-    padding: normalizePadding(0),
-    margin: DefaultMargin,
-  }
 }
 
 export function rectFromSteps(steps: Array<Step>): Rect {

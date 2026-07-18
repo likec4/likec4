@@ -54,6 +54,7 @@ const ActorStepPort = ({
         style={{
           top: p.cy,
           left: p.cx,
+          visibility: p.hidden ? 'hidden' : 'visible',
           height: p.height,
         }}
       />

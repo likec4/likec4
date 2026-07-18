@@ -5,6 +5,7 @@ import { hstack } from '@likec4/styles/patterns'
 import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
 import * as m from 'motion/react-m'
 import type { ReactNode } from 'react'
+import { useDiagram } from '../../../hooks'
 import type { Types } from '../../types'
 
 const typeLabelStyle = css.raw({
@@ -150,6 +151,12 @@ const Title = withContext('div', 'title')
 export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
   const { data } = props
   const isDimmed = data.dimmed ?? false
+  const diagram = useDiagram()
+
+  const toggleSequenceFlow = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    diagram.toggleSequenceFlow(data.flowId)
+  }
 
   let colorClassname
   let variant: 'subflow' | 'withbranches' | 'branch'
@@ -165,13 +172,13 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
         : data.flowType == 'loop'
         ? css({ colorPalette: 'subflow.loop' })
         : css({ colorPalette: 'subflow.opt' })
-      body = <FlowType>{data.flowType}</FlowType>
+      body = <FlowType onClick={toggleSequenceFlow}>{data.flowType}</FlowType>
       break
     }
     case 'break': {
       variant = 'subflow'
       colorClassname = css({ colorPalette: `subflow.break` })
-      body = <FlowType>{data.flowType}</FlowType>
+      body = <FlowType onClick={toggleSequenceFlow}>{data.flowType}</FlowType>
       break
     }
     case 'alt': {
@@ -185,7 +192,7 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
     case 'alt-if': {
       variant = 'branch'
       colorClassname = css({ colorPalette: 'subflow.alt' })
-      body = <BranchType>{data.flowType.substring(4)}</BranchType>
+      body = <BranchType onClick={toggleSequenceFlow}>{data.flowType.substring(4)}</BranchType>
       break
     }
     case 'try': {
@@ -197,14 +204,14 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
     case 'try-block': {
       variant = 'branch'
       colorClassname = css({ colorPalette: `subflow.try` })
-      body = <BranchType>TRY</BranchType>
+      body = <BranchType onClick={toggleSequenceFlow}>TRY</BranchType>
       break
     }
     case 'try-catch':
     case 'try-finally': {
       variant = 'branch'
       colorClassname = css({ colorPalette: `subflow.break` })
-      body = <BranchType>{data.flowType.substring(4)}</BranchType>
+      body = <BranchType onClick={toggleSequenceFlow}>{data.flowType.substring(4)}</BranchType>
       break
     }
     default:
