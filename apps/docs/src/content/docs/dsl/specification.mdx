@@ -51,11 +51,12 @@ specification {
 
 ## Relationship
 
-Relationship kinds may define properties (`title`, `description`, `technology`, `notation`, links) and visual styles:
+Relationship kinds may define tags, properties (`title`, `description`, `technology`, `notation`, links) and visual styles:
 
 ```likec4
 specification {
   relationship async {
+    #tcp
     title 'Asynchronous'
     description 'Communication over a message broker'
     technology 'Kafka'
@@ -67,10 +68,12 @@ specification {
   }
   relationship subscribes
   relationship is-downstream-of
+
+  tag tcp
 }
 ```
 
-These properties are inherited by every relationship of that kind, unless the relationship overrides them:
+These properties are inherited by every relationship of that kind, unless the relationship overrides them (tags are merged):
 
 ```likec4
 model {

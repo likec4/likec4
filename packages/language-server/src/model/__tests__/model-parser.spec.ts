@@ -216,6 +216,29 @@ describe('LikeC4ModelParser', () => {
         },
       })
     })
+
+    it('parses relationship kind tags', async ({ expect }) => {
+      const { validate, services } = createTestServices()
+      const { document } = await validate(`
+        specification {
+          tag tag1
+          tag tag2
+          relationship async {
+            #tag1 #tag2
+            line dotted
+          }
+        }
+      `)
+      const doc = services.likec4.ModelParser.parse(document)
+      expect(doc.c4Specification).toMatchObject({
+        relationships: {
+          async: {
+            tags: ['tag1', 'tag2'],
+            line: 'dotted',
+          },
+        },
+      })
+    })
   })
 
   describe('logical model', () => {

@@ -66,6 +66,7 @@ export function isTagColorSpecified(spec: string | TagSpecification): spec is { 
 }
 
 export interface RelationshipSpecification {
+  tags?: scalar.Tag[]
   title?: string
   // long description
   description?: scalar.MarkdownOrString
