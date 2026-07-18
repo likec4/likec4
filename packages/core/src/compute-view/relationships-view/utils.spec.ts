@@ -130,6 +130,7 @@ describe('treeFromElements', () => {
       'cloud.backend.service1',
       'cloud.backend.service2',
       'cloud.backend.service1.api',
+      'cloud.backend',
     ])
 
     const result2 = treeFromElements(
@@ -177,7 +178,9 @@ describe('treeFromElements', () => {
       'cloud.backend1',
       'cloud.backend2',
       'cloud.backend1.service1.api',
+      'cloud.backend1.service1',
       'cloud.backend2.service2.api',
+      'cloud.backend2.service2',
     ])
 
     const result4 = treeFromElements(
@@ -212,12 +215,15 @@ describe('treeFromElements', () => {
       'cloud.backend1',
       'cloud.backend2',
       'cloud.backend1.service1.api',
+      'cloud.backend1.service1',
       'cloud.backend2.service2.api',
+      'cloud.backend2.service2',
       'amazon.rds',
       'amazon.sqs',
       'amazon.rds.pg1',
       'amazon.rds.pg2',
       'amazon.rds.pg2.db.db1',
+      'amazon.rds.pg2.db',
       'amazon.sqs.q1',
       'amazon.sqs.q2',
     ])

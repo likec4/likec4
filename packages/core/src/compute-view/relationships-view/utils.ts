@@ -53,7 +53,8 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
    */
   children(el: aux.ElementId<M> | ElementModel<M>): ReadonlyArray<ElementModel<M>>
   /**
-   * Flattens the tree structure by removing redundant hierarchy levels.
+   * Flattens the tree structure by removing redundant hierarchy levels,
+   * while always keeping the direct parent of every leaf (the leaf owner).
    * @example
    *   A
    *   └── B
@@ -65,7 +66,8 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
    * becomes
    *   A
    *   ├── C
-   *   │   └── E
+   *   │   └── D
+   *   │       └── E
    *   └── F
    *       └── G
    */
@@ -115,6 +117,11 @@ export function treeFromElements<M extends AnyAux>(elements: Iterable<ElementMod
           const _children = children.get(el.id)
           if (_children.length === 0) {
             acc.push(el)
+            // Keep the direct parent of a leaf, otherwise its owner is lost
+            const parent = parents.get(el.id)
+            if (parent) {
+              acc.push(parent)
+            }
             return acc
           }
           if (_children.length > 1) {
