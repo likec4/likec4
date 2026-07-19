@@ -108,20 +108,22 @@ or from a business perspective (delegation, informing, accountability, etc.).
 
 You can define whichever relationship types best fit your context.
 
-A relationship kind can also define default properties — `title`, `description`, `technology`, `notation` and [links](#links) — inherited by every relationship of that kind (a relationship may override any of them):
+A relationship kind can also define [tags](#tags) and default properties — `title`, `description`, `technology`, `notation` and [links](#links) — inherited by every relationship of that kind (a relationship may override any of the properties; tags are merged):
 
 ```likec4
 specification {
   relationship async {
+    #tcp
     title 'Asynchronous'
     technology 'Kafka'
   }
+  tag tcp
 }
 model {
-  // inherits title 'Asynchronous' and technology 'Kafka'
+  // inherits tag #tcp, title 'Asynchronous' and technology 'Kafka'
   system1 .async system2
 
-  // overrides the title, keeps the inherited technology
+  // overrides the title, keeps the inherited tag and technology
   system1 .async system3 'publishes events'
 }
 ```

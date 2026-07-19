@@ -2,6 +2,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import type { AsyncDisposable } from 'langium'
+import type { Readable, Writable } from 'node:stream'
 import { setMcpServerCtx } from '../ctx'
 import { logger } from '../utils'
 import { createMCPServer } from './createMCPServer'
@@ -14,11 +15,19 @@ export interface LikeC4MCPServer {
   stop(): Promise<void>
 }
 
+export interface StdioLikeC4MCPServerOptions {
+  stdin?: Readable
+  stdout?: Writable
+}
+
 export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
   private transport: StdioServerTransport | undefined = undefined
   private _mcp: McpServer | undefined = undefined
 
-  constructor(private services: LikeC4LanguageServices) {
+  constructor(
+    private services: LikeC4LanguageServices,
+    private options: StdioLikeC4MCPServerOptions = {},
+  ) {
   }
 
   get mcp(): McpServer {
@@ -47,8 +56,13 @@ export class StdioLikeC4MCPServer implements LikeC4MCPServer, AsyncDisposable {
     logger.info('Starting MCP stdio server')
     this._mcp = createMCPServer(this.services)
     setMcpServerCtx(this._mcp)
-    this.transport = new StdioServerTransport()
-    await this._mcp.connect(this.transport)
+    this.transport = new StdioServerTransport(this.options.stdin, this.options.stdout)
+    try {
+      await this._mcp.connect(this.transport)
+    } catch (e) {
+      await this.stop()
+      throw e
+    }
     logger.info('LikeC4 MCP Server running on stdio')
   }
 

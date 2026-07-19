@@ -1044,6 +1044,125 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds model with relationship spec defining tags', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        #tcp
+      }
+      tag tcp
+    }
+    model {
+      person user1
+      person user2
+
+      user1 .async user2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(values(model.relations)[0]).toMatchObject({
+      kind: 'async',
+      tags: ['tcp'],
+    })
+  })
+
+  it('merges relationship spec tags with own tags (unique)', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        #tcp
+      }
+      tag tcp
+      tag next
+    }
+    model {
+      person user1
+      person user2
+
+      user1 .async user2 {
+        #next #tcp
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(values(model.relations)[0]).toMatchObject({
+      kind: 'async',
+      tags: ['tcp', 'next'],
+    })
+  })
+
+  it('relationship spec tags work in view predicates', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+      relationship async {
+        #tcp
+      }
+      tag tcp
+    }
+    model {
+      person user1
+      person user2
+      person user3
+
+      user1 .async user2
+      user1 -> user3 'untagged'
+    }
+    views {
+      view test1 {
+        include * -> * where tag is #tcp
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const view = model.views['test1' as ViewId]!
+    expect(view.edges).toHaveLength(1)
+    const nodeIds = view.nodes.map(n => n.id)
+    expect(nodeIds).toEqual(expect.arrayContaining(['user1', 'user2']))
+    expect(nodeIds).not.toContain('user3')
+  })
+
+  it('builds deployment relationship inheriting tags from specification', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      relationship async {
+        #tcp
+      }
+      tag tcp
+      deploymentNode node
+    }
+    model {
+      component sys
+    }
+    deployment {
+      node n1 {
+        sys1 = instanceOf sys
+      }
+      node n2 {
+        sys2 = instanceOf sys
+      }
+
+      n1 .async n2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(values(model.deployments.relations)[0]).toMatchObject({
+      kind: 'async',
+      tags: ['tcp'],
+    })
+  })
+
   it('builds model with styled relationship', async ({ expect, t }) => {
     const { validate, buildModel } = t
     const { diagnostics } = await validate(`

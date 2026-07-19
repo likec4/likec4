@@ -46,6 +46,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
             this.logError(`Relationship kind "${kindName}" is already defined`, kind, 'specification')
             continue
           }
+          const tags = this.parseTags(relSpec)
           const links = this.parseLinks(relSpec)
           const bodyProps = pipe(
             props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
@@ -67,6 +68,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           c4Specification.relationships[kindName] = exact({
             ...baseProps,
             notation,
+            tags: tags ?? undefined,
             ...(links && c4.isNonEmptyArray(links) && { links }),
             ...toRelationshipStyle(props.filter(ast.isRelationshipStyleProperty), this.isValid),
             ...(multipleProp && { multiple: multipleProp.value }),

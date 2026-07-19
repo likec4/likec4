@@ -81,6 +81,7 @@ SpecificationColor:
 
 SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind ('{'
+    tags=Tags?
     props+=(
       LinkProperty |
       RelationshipStyleProperty |
