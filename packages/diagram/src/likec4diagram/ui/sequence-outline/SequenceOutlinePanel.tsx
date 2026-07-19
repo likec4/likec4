@@ -172,6 +172,35 @@ const LabelSpan = styled('span', {
   base: labelText,
 })
 
+/**
+ * Height of the leading step badge; also the line-height of the first label line
+ * so that a multiline label keeps its first line aligned with the badge/arrow.
+ */
+const rowLeadingHeight = '18px'
+
+/** Groups the step badge and arrow so they stay centered against the first label line. */
+const leadingIcons = css.raw({
+  flex: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '2',
+  height: rowLeadingHeight,
+})
+
+/** Multiline label: preserves explicit newlines, wraps long lines, first line aligned with the badge. */
+const multilineLabelText = css.raw({
+  flex: '1',
+  minWidth: '0',
+  fontSize: 'xs',
+  lineHeight: rowLeadingHeight,
+  whiteSpace: 'pre-line',
+  overflowWrap: 'anywhere',
+})
+
+const MultilineLabelSpan = styled('span', {
+  base: multilineLabelText,
+})
+
 // -----------------------------------------------------------------------------
 // Panel
 // -----------------------------------------------------------------------------
@@ -491,16 +520,18 @@ const StepRow = ({ node, elementProps, selected }: StepRowProps) => {
   const { stepnum, source, target, label, notes } = node.nodeProps
   return (
     <>
-      <Box {...elementProps} className={cx(elementProps.className, css(rowBase))}>
-        <StepNum>{stepnum}</StepNum>
-        <IconArrowRight
-          size={13}
-          className={css({ flex: 'none', color: 'text.dimmed' })}
-        />
+      <Box {...elementProps} className={cx(elementProps.className, css(rowBase, { alignItems: 'flex-start' }))}>
+        <Box className={css(leadingIcons)}>
+          <StepNum>{stepnum}</StepNum>
+          <IconArrowRight
+            size={13}
+            className={css({ flex: 'none', color: 'text.dimmed' })}
+          />
+        </Box>
         {label
-          ? <LabelSpan>{label}</LabelSpan>
+          ? <MultilineLabelSpan>{label}</MultilineLabelSpan>
           : (
-            <HStack css={{ gap: '1', minWidth: '0', flex: '1' }}>
+            <HStack css={{ gap: '1', minWidth: '0', flex: '1', minHeight: rowLeadingHeight }}>
               <LabelSpan css={{ flex: 'none', color: 'text.dimmed' }}>{source}</LabelSpan>
               <IconArrowRight size={11} className={css({ flex: 'none', color: 'text.dimmed' })} />
               <LabelSpan>{target}</LabelSpan>
