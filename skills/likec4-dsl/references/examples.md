@@ -153,6 +153,36 @@ dynamic view checkout {
 }
 ```
 
+## Dynamic View — Flow Control (alt / try / loop)
+
+```likec4
+dynamic view resilient-checkout {
+  variant sequence
+
+  customer -> app "checkout"
+  alt {
+    when "authorized" {
+      loop "until confirmed" {
+        try {
+          app -> payments "charge card"
+        } catch "declined" {
+          app -> customer "ask for another card"
+        } finally {
+          app -> audit "record attempt"
+        }
+      }
+    }
+    else "not authorized" {
+      app -> customer "show login"
+    }
+  }
+}
+```
+
+- Each block takes an optional title. Blocks nest to any depth — the only exception is `parallel`/`par`, which cannot nest.
+- `when`/`if`/`else` are valid only directly inside `alt`; other blocks (`loop`/`opt`/`parallel`/`try`) must sit inside a branch, not directly under `alt`.
+- try/catch/finally order is fixed: `try` → `catch?` → `finally?`.
+
 ## Deployment — Multi-Environment, InstanceOf
 
 ```likec4

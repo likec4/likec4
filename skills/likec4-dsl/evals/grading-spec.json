@@ -501,6 +501,48 @@
         "The response provides one minimal view snippet rather than prose-only guidance."
       ],
       "grading_guidance": "The eval checks both array containment syntax and missing-key syntax. Accept equivalent line breaks and quote style, but not invented operators such as `contains` or `exists`."
+    },
+    {
+      "id": 36,
+      "expected_output": "A paste-ready `dynamic view auth-flow` snippet with the forward step `app -> api 'authorize'`, then an `alt { ... }` flow-control block containing a `when 'authorized'` branch (`api -> db 'load data'`) and an `else 'denied'` branch (`api -> app 'show login'`).",
+      "files": [],
+      "expectations": [
+        "The response uses a `dynamic view auth-flow { ... }` block.",
+        "The snippet includes the `app -> api 'authorize'` step before the block.",
+        "The snippet uses an `alt { ... }` block.",
+        "The `alt` block contains a `when 'authorized'` branch whose body is `api -> db 'load data'`.",
+        "The `alt` block contains an `else 'denied'` branch whose body is `api -> app 'show login'`.",
+        "The `when` / `else` branches appear only inside the `alt` block, not as standalone top-level steps.",
+        "The response is primarily a usable DSL snippet, not only an explanation."
+      ],
+      "grading_guidance": "Flow-control blocks are the focus. `if` is an accepted alias for `when`. Titles on the branches (`'authorized'`, `'denied'`) may vary in quote style but should be present. Penalize answers that place `when`/`else` outside `alt`, or that fall back to `notes`-only narrative branching instead of the real `alt` block."
+    },
+    {
+      "id": 37,
+      "expected_output": "A paste-ready `dynamic view query-flow` snippet wrapping `service -> db 'query'` in a `try` block, followed by `catch 'on error' { service -> logger 'log failure' }` and `finally { service -> service 'release connection' }`, in that order.",
+      "files": [],
+      "expectations": [
+        "The response uses a `dynamic view query-flow { ... }` block.",
+        "The snippet wraps `service -> db 'query'` inside a `try { ... }` block.",
+        "The snippet includes a `catch 'on error' { ... }` block with `service -> logger 'log failure'`.",
+        "The snippet includes a `finally { ... }` block with `service -> service 'release connection'`.",
+        "The blocks appear in the order `try` then `catch` then `finally`.",
+        "The response is primarily a usable DSL snippet, not only an explanation."
+      ],
+      "grading_guidance": "The try/catch/finally ordering is a hard constraint: `catch` after `finally`, or a standalone `catch`, is invalid. Accept minor title/quote variation on `catch`/`finally`. Penalize answers that reorder the blocks or emit `catch`/`finally` without a preceding `try`."
+    },
+    {
+      "id": 38,
+      "expected_output": "The response starts with `Invalid.`, explains that the direct children of an `alt` block must be `when` / `if` / `else` branches so a bare `loop` cannot sit directly inside `alt`, and provides a corrected snippet that nests the `loop` inside a `when` (or `else`) branch.",
+      "files": [],
+      "expectations": [
+        "The response starts with `Invalid.` exactly.",
+        "The response explains that `alt` accepts only branch blocks (`when` / `if` / `else`) as direct children.",
+        "The response states that `loop` cannot be a direct child of `alt` (it can not be used as an alternative branch).",
+        "The corrected snippet keeps the `loop` but nests it inside a `when` or `else` branch within the `alt` block.",
+        "The corrected snippet is minimal and syntactically valid LikeC4 DSL."
+      ],
+      "grading_guidance": "This is a contrastive placement-rule eval. The exact opening verdict `Invalid.` and the alt-branch rule are the primary signals. Reject answers that call the snippet valid, or that 'fix' it by removing the `loop` or by dropping the `alt` block entirely instead of nesting the loop inside a branch. `if` is an accepted alias for `when`."
     }
   ],
   "default_execution_checks": [

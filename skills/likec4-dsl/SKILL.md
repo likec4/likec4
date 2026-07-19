@@ -94,11 +94,11 @@ For strict command/snippet prompts, keep a compact loop:
 - scope / FQN correctness
 - deployment naming requirement satisfied
 - relationship matcher specificity (`kind`, `title` when needed)
-- dynamic view exactness: return arrows, chain form, single parallel block when requested
+- dynamic view exactness: return arrows, chain form, single parallel block when requested, flow-control block placement (`alt` branches, no nested `parallel`, try/catch/finally order)
 
 3. **Finalize** by fixing in place (no extra alternatives unless explicitly requested).
 
-Before final answer, verify the required tokens are literally present when the prompt depends on them (examples: `--no-layout`, `instanceOf`, `variant sequence`, `global predicate`, `-[async]->`, `parallel {`, `<-`).
+Before final answer, verify the required tokens are literally present when the prompt depends on them (examples: `--no-layout`, `instanceOf`, `variant sequence`, `global predicate`, `-[async]->`, `parallel {`, `alt {`, `when`, `try {`, `<-`).
 
 Never claim CLI execution happened unless it actually ran.
 
@@ -364,12 +364,17 @@ Flow / sequence diagram?
 ├─ Basic steps → source -> target "title"
 ├─ Response / backward → source <- target "returns"
 ├─ Parallel actions → one `parallel { ... }` block (also: `par { ... }`)
+├─ Optional / repeated steps → `opt { ... }` / `loop { ... }` (optional title each)
+├─ Mutually exclusive branches → `alt { when '...' { } else '...' { } }`
+├─ Success + error handling → `try { } catch { } finally { }`
 ├─ Chained steps → customer -> frontend "x" -> backend "y"
 ├─ Step with notes → step { notes 'Markdown content' }
 ├─ Link to another view → step { navigateTo other-view }
 ├─ Sequence variant → dynamic view name { variant sequence }
 └─ Full reference → references/dynamic-views.md
 ```
+
+Flow-control blocks (experimental) — all take an optional title and nest to any depth, except `parallel`/`par` which cannot nest. `when`/`if`/`else` are valid **only** directly inside `alt`; `loop`/`opt`/`parallel`/`try` cannot be a direct child of `alt` (nest them inside a branch). See `references/dynamic-views.md`.
 
 Return-arrow precision:
 
@@ -394,7 +399,7 @@ When a model errors or an eval answer seems wrong, load `references/troubleshoot
 - **Model & Hierarchy** — broken FQN references, parent-child relationship constraint, cross-file visibility
 - **View Predicates** — `*` vs `**` confusion, missing neighbor elements, `WHERE` case sensitivity
 - **Deployment** — `instanceOf` FQN resolution, undefined `deploymentNode` kinds
-- **Dynamic Views** — flattening parallel blocks, response arrow symmetry, exact `variant sequence` keyword
+- **Dynamic Views** — flow-control blocks (`parallel`/`opt`/`loop`/`alt`/`try`), `alt`-branch placement rules, no nested `parallel`, response arrow symmetry, exact `variant sequence` keyword
 - **Validation & Import** — config not found, import path resolution, upstream error cascade
 - **Performance** — spec in separate file, splitting large views
 - **5-step debugging workflow** — validation-first with `--file`, FQN integrity, predicate isolation, spec-first validation
@@ -413,7 +418,7 @@ Load a reference file when the task involves the corresponding topic. Claude rea
 | `references/views.md`                        | Writing views, include/exclude rules, style rules in views, groups, autoLayout, global predicates                               |
 | `references/predicates.md`                   | Complex `where` conditions, metadata filters, `with` overrides, global predicate groups, reusable predicates                    |
 | `references/include-predicates-wildcards.md` | Wildcard confusion suspected (`*` vs `_` vs `**`); need exact scoped-view semantics                                             |
-| `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, parallel blocks, `variant sequence`                                 |
+| `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, flow-control blocks (`parallel`/`opt`/`loop`/`alt`/`try`), `variant sequence` |
 | `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                                             |
 | `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                                             |
 | `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells                 |

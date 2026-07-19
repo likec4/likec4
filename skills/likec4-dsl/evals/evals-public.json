@@ -182,6 +182,21 @@
       "id": 35,
       "prompt": "Show one minimal element view that keeps only services with array metadata `regions` containing `eu` and then removes any included element without an `owner` metadata key. Use `metadata.regions is \"eu\"` and `not metadata.owner` exactly.",
       "files": []
+    },
+    {
+      "id": 36,
+      "prompt": "Write a minimal paste-ready `dynamic view auth-flow` snippet that models a conditional interaction. After `app -> api 'authorize'`, use LikeC4's flow-control `alt` block with two branches: `when 'authorized'` containing `api -> db 'load data'`, and `else 'denied'` containing `api -> app 'show login'`. Keep it snippet-only.",
+      "files": []
+    },
+    {
+      "id": 37,
+      "prompt": "Show a minimal paste-ready `dynamic view query-flow` snippet that wraps `service -> db 'query'` in a `try` block, adds a `catch 'on error'` branch with `service -> logger 'log failure'`, and a `finally` branch with `service -> service 'release connection'`. Keep the try/catch/finally order correct and output the snippet only.",
+      "files": []
+    },
+    {
+      "id": 38,
+      "prompt": "Start your answer with exactly `Invalid.` or `Valid.` on the first line. Is this dynamic view valid?\n```likec4\ndynamic view flow {\n  alt {\n    loop {\n      a -> b\n    }\n  }\n}\n```\nExplain in one sentence why, then give the corrected minimal snippet that keeps the `loop` but satisfies the `alt`-branch rule.",
+      "files": []
     }
   ]
 }

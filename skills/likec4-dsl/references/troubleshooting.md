@@ -42,7 +42,10 @@ Load this file when encountering validation errors, unexpected rendering, or whe
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| Parallel block renders incorrectly | Nested `parallel { parallel { ... } }` | Flatten: put all concurrent steps in a single `parallel { }` block |
+| `Nested parallel blocks are not allowed` | Nested `parallel { parallel { ... } }` (or `par`) | Flatten: put all concurrent steps in a single `parallel { }` block. Other flow blocks (`opt`/`loop`/`try`/`alt`) may nest freely |
+| `"loop" can not be used as an alternative branch` | Non-branch block (`loop`/`opt`/`parallel`/`try`) placed directly inside `alt` | `alt` accepts only `when`/`if`/`else` branches; nest the block inside a branch |
+| `"when" alternative branch must be inside "alt"` | `when`/`if`/`else` used at top level or inside a non-`alt` block | Wrap the branches in an `alt { ... }` block |
+| `catch`/`finally` rejected | `catch` without a preceding `try`, or `catch` after `finally` | Keep order `try` → `catch?` → `finally?` |
 | Response arrows (`<-`) show wrong direction | Chaining mixes `->` and `<-` inconsistently | Use symmetric chains: `a -> b -> c` then `c <- b <- a` for returns |
 | `navigateTo` link doesn't work | Target view name does not exist | Ensure the target view name exists in the same project |
 | `variant sequence` is ignored | Wrong keyword or spelling | Use exact: `variant sequence` (not `type`, `mode`, or `sequence` alone) |

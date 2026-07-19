@@ -14,12 +14,19 @@ views {
     
     SOURCE -> TARGET "step title"
     SOURCE <- TARGET "return flow"
-    
-    // grouped parallel actions
-    parallel {
+
+    // flow-control blocks (each takes an optional title, can nest)
+    parallel 'optional' {                 // also: par, opt, loop, break
       SOURCE_1 -> TARGET_1 "parallel action 1"
       SOURCE_2 -> TARGET_2 "parallel action 2"
     }
+    alt 'optional' {                          // mutually exclusive branches
+      when 'condition' { SOURCE -> TARGET }
+      else { SOURCE -> TARGET }
+    }
+    try 'optional' { SOURCE -> TARGET }
+    catch 'optional' { SOURCE -> TARGET }
+    finally 'optional' { SOURCE -> TARGET }
   }
 }
 ```
@@ -46,7 +53,7 @@ dynamic view checkout-flow {
 dynamic view checkout-flow {
   customer -> frontend "opens cart"
   frontend -> backend "requests checkout"
-  backend <- payment-service "payment result"  // Return flow
+  frontend <- backend "payment result"  // Return flow
 }
 ```
 
@@ -58,7 +65,8 @@ dynamic view checkout-flow {
 
 ```likec4
 dynamic view multi-hop {
-  customer -> frontend "request"
+  customer
+    -> frontend "request"
     -> backend "forwards"
     -> db "query"
 }
@@ -80,9 +88,28 @@ dynamic view checkout-flow {
 
 Attach the body only to the requested hop. Do not move the block onto the whole chain unless the prompt allows it.
 
-## Parallel Blocks
+## Flow Control Blocks
 
-Group simultaneous/independent actions in one `parallel { ... }` block:
+Steps can be grouped into **flow-control blocks**. `parallel` is one of these blocks — not a special case. Every block:
+
+- takes an **optional title** (a `String`) right after the keyword, then wraps a `{ ... }` body of steps;
+- may be **nested to any depth** — the only exception is `parallel`/`par`, which cannot nest inside another `parallel`/`par`.
+
+Block keyword map:
+
+| Block                 | Keyword(s)                  | Meaning                                         |
+| --------------------- | --------------------------- | ----------------------------------------------- |
+| Parallel              | `parallel` / `par`          | Steps inside run concurrently                   |
+| Optional              | `opt`                       | Steps that may be skipped                       |
+| Loop                  | `loop`                      | Steps that repeat                               |
+| Break                 | `break`                     | Interrupts the enclosing flow (e.g. exits loop) |
+| Alternatives          | `alt`                       | Container of mutually exclusive branches        |
+| Branch (inside `alt`) | `when` / `if` / `else`      | One branch of an `alt` (`if` is a `when` alias) |
+| Error handling        | `try` / `catch` / `finally` | Happy path plus optional error handling         |
+
+### Parallel — `parallel` / `par`
+
+Steps inside run concurrently. Use for fan-outs (one source to multiple targets):
 
 ```likec4
 dynamic view fan-out {
@@ -95,10 +122,106 @@ dynamic view fan-out {
 }
 ```
 
-- All actions inside `parallel { ... }` are considered concurrent.
+- `par { ... }` is an exact alias for `parallel { ... }`.
 - Renders with time-aligned horizontal layout.
-- Use for fan-outs: one source to multiple targets.
-- Do **not** nest `parallel` blocks; flatten all concurrent actions.
+- **Cannot nest**: `parallel { parallel { ... } }` (or with `par`) is a validation error — `Nested parallel blocks are not allowed`. A `parallel` block may still live inside `opt` / `loop` / `try` / an `alt` branch.
+- When the prompt asks for one fan-out, keep sibling actions in **one** `parallel { ... }` block; do not split them into multiple one-step blocks.
+
+### Optional — `opt`
+
+A block of steps that may be skipped:
+
+```likec4
+opt 'if not cached' {
+  api -> db 'load and cache'
+}
+```
+
+### Loop — `loop`
+
+A block of steps that repeats:
+
+```likec4
+loop 'until success' {
+  api -> auth 'retry authentication'
+}
+```
+
+### Break — `break`
+
+Interrupts the enclosing flow (typically exits a `loop`):
+
+```likec4
+loop 'poll for result' {
+  api -> db 'check status'
+  break 'when ready' {
+    api -> web 'return result'
+  }
+}
+```
+
+### Alternatives — `alt` with `when` / `if` / `else`
+
+`alt` groups mutually exclusive branches. Its **direct children must be branches** — `when`, `if`, or `else` (with an optional title each):
+
+```likec4
+alt {
+  when 'authorized' {
+    app -> api 'requests data'
+  }
+  else 'not authorized' {
+    app -> customer 'shows login'
+  }
+}
+```
+
+- `if` is an alias for `when`; both are branch keywords.
+- `when` / `if` / `else` are only valid **inside** `alt`. Using them at the top level or inside `loop` / `parallel` / `opt` is a validation error (`"when" alternative branch must be inside "alt"`).
+- Putting a non-branch block (`loop`, `opt`, `parallel`, `try`) as a **direct** child of `alt` is a validation error (`"loop" can not be used as an alternative branch`). Nest those blocks **inside** a branch instead.
+
+### Try / catch / finally — `try`
+
+Models the happy path with optional error handling. `catch` and `finally` are both optional, but order is fixed: `try` → `catch?` → `finally?`.
+
+```likec4
+try {
+  api -> db 'query'
+} catch 'on failure' {
+  api -> web 'shows error'
+} finally {
+  api -> api 'release resources'
+}
+```
+
+- `try` alone, `try { } catch { }`, `try { } finally { }`, and `try { } catch { } finally { }` are all valid.
+- A `catch` with no preceding `try`, or a `catch` after `finally`, is a validation error.
+- `try` cannot be a direct child of `alt` (only branches can) — put it inside a `when` / `else` branch.
+
+### Nesting
+
+Blocks combine and nest to any depth (except `parallel` inside `parallel`):
+
+```likec4
+dynamic view resilient-sync {
+  variant sequence
+  loop 'until synced' {
+    try {
+      alt {
+        when 'online' {
+          web -> api 'sync changes'
+        }
+        else 'offline' {
+          opt {
+            web -> web 'queue locally'
+          }
+        }
+      }
+    } finally {
+      web <- api 'ack'
+    }
+  }
+}
+```
 
 ## Step Properties (Body)
 
@@ -240,36 +363,40 @@ dynamic view data-pipeline {
 - Linear chain: each stage outputs to the next.
 - Use for ETL/processing workflows.
 
-### Conditional/branching (narrative)
+### Conditional/branching
+
+Prefer an `alt` block with `if` / `when` / `else` branches — this renders as an explicit alternative frame in the `sequence` variant:
 
 ```likec4
 dynamic view payment-decision {
   customer -> frontend "enter amount"
-  frontend -> backend "validate" {
-    notes "If amount > limit, rejected"
+  frontend -> backend "validate"
+  alt {
+    when 'within limit' {
+      backend -> payment-service "charge"
+      backend <- payment-service "result"
+    }
+    else 'over limit' {
+      backend -> frontend "rejected"
+    }
   }
-  
-  backend -> payment-service "charge" {
-    notes "Only if validation passes"
-  }
-  
-  backend <- payment-service "result"
-  frontend <- backend "response"
 }
 ```
 
-- LikeC4 does **not** render explicit if/then/else branches visually.
-- Use `notes` on steps to document decision logic.
+- Reach for `opt` for an "if without else" (a step group that may be skipped), and `try` / `catch` for success-vs-failure paths.
+- `notes` on a step remains a lightweight way to document decision logic when a full branch block is not warranted.
 
 ## Anti-Patterns to Avoid
 
-| Anti-pattern                                  | Problem                                     | Solution                                            |
-| --------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
-| Nested `parallel { parallel { ... } }`        | Syntax error; flatten as required           | Put all concurrent steps in one `parallel {}`       |
-| Chaining inside `parallel`                    | Ambiguous timing                            | Move chains to separate sequential steps            |
-| Too many steps in one view                    | Diagram becomes unreadable                  | Split into sub-views with `navigateTo`              |
-| Using `<-` for side-by-side actions           | Implies return; violates sequence semantics | Use forward `->` or group with `parallel`           |
-| Forgetting `variant sequence` when UML needed | Wrong rendering                             | Add `variant sequence` if sequence diagram required |
+| Anti-pattern                                      | Problem                                     | Solution                                            |
+| ------------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
+| Nested `parallel { parallel { ... } }`            | `Nested parallel blocks are not allowed`    | Put all concurrent steps in one `parallel {}`       |
+| `when` / `if` / `else` outside `alt`              | `alternative branch must be inside "alt"`   | Wrap branches in an `alt { ... }` block             |
+| `loop`/`opt`/`parallel`/`try` direct in `alt`     | `can not be used as an alternative branch`  | Nest them inside a `when` / `else` branch           |
+| `catch` without `try`, or `catch` after `finally` | Invalid try/catch/finally order             | Keep order `try` → `catch?` → `finally?`            |
+| Too many steps in one view                        | Diagram becomes unreadable                  | Split into sub-views with `navigateTo`              |
+| Using `<-` for side-by-side actions               | Implies return; violates sequence semantics | Use forward `->` or group with `parallel`           |
+| Forgetting `variant sequence` when UML needed     | Wrong rendering                             | Add `variant sequence` if sequence diagram required |
 
 ## Predicate Filters in Dynamic Views
 
@@ -324,3 +451,7 @@ Use `variant sequence` when the prompt explicitly asks for UML-style sequence re
 - Using forward arrows where the prompt explicitly asks for response arrows back out
 - Spreading one requested parallel fan-out across multiple `parallel` blocks
 - Omitting required hop-local tokens such as `technology` or `navigateTo`
+- Placing `when` / `if` / `else` anywhere but directly inside `alt`
+- Putting `loop` / `opt` / `parallel` / `try` as a direct child of `alt` instead of inside a branch
+- Nesting `parallel` inside `parallel` (only block that cannot nest)
+- Breaking try/catch/finally order (`try` → `catch?` → `finally?`)
