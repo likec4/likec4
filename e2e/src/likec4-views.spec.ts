@@ -84,6 +84,7 @@ test('Generated model from views has expected view ids', () => {
     'multiple-explicit',
     'multiple-merged',
     'view-with-custom-colors',
+    'flow-control-1',
   ])
 })
 
