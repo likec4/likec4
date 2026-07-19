@@ -1,5 +1,11 @@
 # @likec4/mcp
 
+## 1.59.0
+
+### Patch Changes
+
+- [#3097](https://github.com/likec4/likec4/pull/3097) [`a862f7f`](https://github.com/likec4/likec4/commit/a862f7f72ab63e635881eb0c5bb1ceab5296df6f) Thanks [@ckeller42](https://github.com/ckeller42)! - Stop stdio MCP servers when the client closes stdin so file watchers are cleaned up instead of leaving orphaned processes.
+
 ## 1.57.1
 
 ## 1.57.0

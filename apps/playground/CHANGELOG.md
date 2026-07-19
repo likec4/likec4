@@ -1,5 +1,20 @@
 # @likec4/playground
 
+## 1.59.0
+
+### Patch Changes
+
+- Updated dependencies [[`76ef007`](https://github.com/likec4/likec4/commit/76ef007fd2fb0c6d52cedcdb3ef048a9f2a624c4), [`fe33144`](https://github.com/likec4/likec4/commit/fe33144ee9e055371150b70a3db093d22a240626), [`0994577`](https://github.com/likec4/likec4/commit/09945775fb0c4c64b79eae6f17ee0abce92ef8f1), [`196988d`](https://github.com/likec4/likec4/commit/196988d8a8fbbc3841200971233be6bda2b517be), [`31e3671`](https://github.com/likec4/likec4/commit/31e3671c2d94d6f5f057c806868865c660eac23f), [`9b9727f`](https://github.com/likec4/likec4/commit/9b9727fcd1201296c4d7e09f7446edd38669328a), [`d0a05fe`](https://github.com/likec4/likec4/commit/d0a05fe8e29105444762542c78c9861a13bfaff0), [`1814846`](https://github.com/likec4/likec4/commit/1814846f629971cec2a392222ab00c42abea47ed), [`061e687`](https://github.com/likec4/likec4/commit/061e6872ee80b1381d3ec047663a22d1ebe6bab5), [`c830215`](https://github.com/likec4/likec4/commit/c83021565c2fced17d544177f7acfa52e08451f9), [`56d26c1`](https://github.com/likec4/likec4/commit/56d26c1baec4b2ce78a31d22339b90d62452c901)]:
+  - @likec4/language-server@1.59.0
+  - @likec4/core@1.59.0
+  - @likec4/diagram@1.59.0
+  - @likec4/generators@1.59.0
+  - @likec4/log@1.59.0
+  - @likec4/tsconfig@1.59.0
+  - @likec4/style-preset@1.59.0
+  - @likec4/styles@1.59.0
+  - @likec4/icons@1.46.4
+
 ## 1.57.1
 
 ### Patch Changes
