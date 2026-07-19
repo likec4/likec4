@@ -1,15 +1,10 @@
-import { nonexhaustive } from '@likec4/core'
-import { css, sva } from '@likec4/styles/css'
-import { createStyleContext, isCssProperty } from '@likec4/styles/jsx'
+import { type DynamicViewFlow } from '@likec4/core'
+import { type RecipeVariant, css, cx, sva } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
-import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
-import * as m from 'motion/react-m'
-import type { ReactNode } from 'react'
 import { useDiagram } from '../../../hooks'
-import { stopPropagation } from '../../../utils'
 import type { Types } from '../../types'
 
-const typeLabelStyle = css.raw({
+const labelStyle = css.raw({
   color: 'colorPalette.text',
   fontSize: '[9px]',
   fontWeight: 'bold',
@@ -37,7 +32,7 @@ const withBackground = css.raw({
 })
 
 const recipe = sva({
-  slots: ['root', 'content', 'header', 'flowtype', 'branchtype', 'title'],
+  slots: ['root', 'content', 'label', 'title'],
   base: {
     root: css.raw({
       width: '100%',
@@ -47,64 +42,17 @@ const recipe = sva({
     content: hstack.raw({
       gap: '2',
       width: '100%',
-      alignItems: 'baseline',
+      alignItems: 'center',
     }),
-    header: css.raw(typeLabelStyle, withBorder, hstack.raw(), {
-      width: '100%',
-      borderTopLeftRadius: 'md',
-      borderTopRightRadius: 'md',
-      paddingInline: '2',
-      borderBottomWidth: '1',
-      background: 'colorPalette.header',
-    }),
-    'flowtype': css.raw(typeLabelStyle, withBorder, { // position: 'absolute',
-      // alignSelf: 'stretch',
-      paddingInline: '2',
-      paddingBlock: '1',
-      background: 'colorPalette.label',
-      // clipPath: 'polygon(0px 0px, 100% 0px, calc(100% - 8px) 100%, 0px 100%)',
-      width: 'max-content',
-      borderTopLeftRadius: 'sm',
-      borderBottomRightRadius: 'sm',
-      borderTop: 'none',
-      borderLeft: 'none',
-      [':is([data-state="collapsed"]) &']: {
-        // alignSelf: 'stretch',
-        background: 'none',
-        borderColor: 'transparent',
-      },
-    }),
-    'branchtype': css.raw(typeLabelStyle, {
-      position: 'relative',
-      background: 'colorPalette.label',
-      paddingLeft: '4.5',
-      paddingRight: '2',
-      paddingBlock: '1',
-      marginBlock: '2',
-      marginInlineStart: '2',
-      rounded: 'sm',
-      minWidth: '[40px]',
-      width: 'min-content',
-      textAlign: 'center',
-      _before: {
-        position: 'absolute',
-        content: '" "',
-        background: 'currentColor',
-        width: '[5px]',
-        height: '[5px]',
-        opacity: '[.6]',
-        rounded: 'pill',
-        top: '[50%]',
-        left: '2',
-        transform: 'translateY(-50%)',
-      },
-    }),
-    title: {
+    label: css.raw(labelStyle),
+    title: css.raw({
       flex: '1',
       color: `[oklch(from {colors.colorPalette.text} l calc(c - 0.15) h)]`,
-      fontSize: 'xxs',
-      fontWeight: 'normal',
-    },
+      fontSize: 'xs',
+      lineHeight: 'xxs',
+      fontWeight: 'medium',
+      truncate: true,
+    }),
   },
   variants: {
     variant: {
@@ -112,16 +60,23 @@ const recipe = sva({
         root: css.raw(withBackground, withBorder, {
           rounded: 'md',
         }),
-        content: {
-          minHeight: '[22px]',
-        },
-        flowtype: {
+        label: css.raw(withBorder, {
           alignSelf: 'stretch',
-          alignContent: 'center',
-        },
-        title: {
-          paddingTop: '0.5',
-        },
+          paddingInline: '2',
+          paddingBlock: '1',
+          background: 'colorPalette.label',
+          // clipPath: 'polygon(0px 0px, 100% 0px, calc(100% - 8px) 100%, 0px 100%)',
+          width: 'max-content',
+          borderTopLeftRadius: 'sm',
+          borderBottomRightRadius: 'sm',
+          borderTop: 'none',
+          borderLeft: 'none',
+          [':is([data-state="collapsed"]) &']: {
+            // alignSelf: 'stretch',
+            background: 'none',
+            borderColor: 'transparent',
+          },
+        }),
       },
       branch: {
         root: css.raw(withBackground, withBorder, {
@@ -138,14 +93,42 @@ const recipe = sva({
             background: 'colorPalette.header',
           },
         }),
+        label: css.raw({
+          position: 'relative',
+          background: 'colorPalette.label',
+          paddingLeft: '4.5',
+          paddingRight: '2',
+          paddingBlock: '1',
+          marginBlock: '2',
+          marginInlineStart: '2',
+          rounded: 'sm',
+          minWidth: '[40px]',
+          width: 'min-content',
+          textAlign: 'center',
+          _before: {
+            position: 'absolute',
+            content: '" "',
+            background: 'currentColor',
+            width: '[5px]',
+            height: '[5px]',
+            opacity: '[.6]',
+            rounded: 'pill',
+            top: '[50%]',
+            left: '2',
+            transform: 'translateY(-50%)',
+          },
+        }),
       },
+      // alt and try
       withbranches: {
-        root: {
-          background: 'none',
-        },
-        content: {
-          display: 'contents',
-        },
+        content: css.raw(withBorder, {
+          width: '100%',
+          borderTopLeftRadius: 'md',
+          borderTopRightRadius: 'md',
+          paddingInline: '2',
+          borderBottomWidth: '1',
+          background: 'colorPalette.header',
+        }),
       },
     },
   },
@@ -155,19 +138,40 @@ const recipe = sva({
   className: 'seq-subflow',
 })
 
-const { withContext, withProvider } = createStyleContext(recipe)
+type FlowType = DynamicViewFlow.SubFlowType
+/**
+ * PandaCSS `colorPalette` classes for each sub-flow palette.
+ * Declared as literals so the static analyzer can extract them.
+ */
+const palette = {
+  loop: css({ colorPalette: 'subflow.loop' }),
+  opt: css({ colorPalette: 'subflow.opt' }),
+  par: css({ colorPalette: 'subflow.par' }),
+  break: css({ colorPalette: 'subflow.break' }),
+  alt: css({ colorPalette: 'subflow.alt' }),
+  try: css({ colorPalette: 'subflow.try' }),
+} as const
 
-const shouldForwardProp = (prop: string, variantKeys: string[]): boolean =>
-  !variantKeys.includes(prop) && (isValidMotionProp(prop) || !isCssProperty(prop))
+type FlowPresentation = {
+  readonly paletteClass: string
+  readonly variant: NonNullable<RecipeVariant<typeof recipe>['variant']>
+  readonly label: string
+}
 
-const SubflowRoot = withProvider(m.div as ForwardRefComponent<'div', HTMLMotionProps<'div'>>, 'root', {
-  shouldForwardProp,
-})
-const Content = withContext('div', 'content')
-const Header = withContext('div', 'header')
-const FlowType = withContext('div', 'flowtype')
-const BranchType = withContext('div', 'branchtype')
-const Title = withContext('div', 'title')
+const flowPresentation: Record<FlowType, FlowPresentation> = {
+  loop: { paletteClass: palette.loop, variant: 'subflow', label: 'loop' },
+  opt: { paletteClass: palette.opt, variant: 'subflow', label: 'opt' },
+  par: { paletteClass: palette.par, variant: 'subflow', label: 'par' },
+  break: { paletteClass: palette.break, variant: 'subflow', label: 'break' },
+  alt: { paletteClass: palette.alt, variant: 'withbranches', label: 'alt' },
+  'alt-when': { paletteClass: palette.alt, variant: 'branch', label: 'when' },
+  'alt-else': { paletteClass: palette.alt, variant: 'branch', label: 'else' },
+  'alt-if': { paletteClass: palette.alt, variant: 'branch', label: 'if' },
+  try: { paletteClass: palette.try, variant: 'withbranches', label: 'try' },
+  'try-block': { paletteClass: palette.try, variant: 'branch', label: 'block' },
+  'try-catch': { paletteClass: palette.break, variant: 'branch', label: 'catch' },
+  'try-finally': { paletteClass: palette.break, variant: 'branch', label: 'finally' },
+}
 
 export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
   const { data } = props
@@ -179,68 +183,12 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
     diagram.toggleSequenceFlow(data.flowId)
   }
 
-  let colorClassname
-  let variant: 'subflow' | 'withbranches' | 'branch'
-  let body: ReactNode
-  switch (data.flowType) {
-    case 'par':
-    case 'loop':
-    case 'opt': {
-      variant = 'subflow'
-      // PandaCSS Static analyzer fails here
-      colorClassname = data.flowType == 'par'
-        ? css({ colorPalette: 'subflow.par' })
-        : data.flowType == 'loop'
-        ? css({ colorPalette: 'subflow.loop' })
-        : css({ colorPalette: 'subflow.opt' })
-      body = <FlowType onClick={toggleSequenceFlow}>{data.flowType}</FlowType>
-      break
-    }
-    case 'break': {
-      variant = 'subflow'
-      colorClassname = css({ colorPalette: `subflow.break` })
-      body = <FlowType onClick={toggleSequenceFlow}>{data.flowType}</FlowType>
-      break
-    }
-    case 'alt': {
-      variant = 'withbranches'
-      colorClassname = css({ colorPalette: 'subflow.alt' })
-      body = <Header onClick={toggleSequenceFlow} style={{ height: data.headerHeight }}>ALTERNATIVE</Header>
-      break
-    }
-    case 'alt-when':
-    case 'alt-else':
-    case 'alt-if': {
-      variant = 'branch'
-      colorClassname = css({ colorPalette: 'subflow.alt' })
-      body = <BranchType onClick={toggleSequenceFlow}>{data.flowType.substring(4)}</BranchType>
-      break
-    }
-    case 'try': {
-      variant = 'withbranches'
-      colorClassname = css({ colorPalette: 'subflow.try' })
-      body = <Header onClick={toggleSequenceFlow} style={{ height: data.headerHeight }}>CRITICAL</Header>
-      break
-    }
-    case 'try-block': {
-      variant = 'branch'
-      colorClassname = css({ colorPalette: `subflow.try` })
-      body = <BranchType onClick={toggleSequenceFlow}>TRY</BranchType>
-      break
-    }
-    case 'try-catch':
-    case 'try-finally': {
-      variant = 'branch'
-      colorClassname = css({ colorPalette: `subflow.break` })
-      body = <BranchType onClick={toggleSequenceFlow}>{data.flowType.substring(4)}</BranchType>
-      break
-    }
-    default:
-      nonexhaustive(data)
-      //
-  }
+  const { paletteClass, variant, label } = flowPresentation[data.flowType]
 
-  let state = ''
+  const classes = recipe({ variant })
+  const headerHeight = data.flowType === 'alt' || data.flowType === 'try' ? data.headerHeight : undefined
+
+  let state = undefined
   if (data.collapsed === true) {
     state = 'collapsed'
   } else if (data.hovered) {
@@ -248,9 +196,8 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
   }
 
   return (
-    <SubflowRoot
-      variant={variant}
-      className={colorClassname}
+    <div
+      className={cx(classes.root, paletteClass)}
       data-is-first={data.isFirst === true}
       data-is-last={data.isLast === true}
       data-state={state}
@@ -258,10 +205,10 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
         'data-likec4-dimmed': isDimmed,
       })}
     >
-      <Content>
-        {body}
-        {data.title && <Title onClick={toggleSequenceFlow}>{data.title}</Title>}
-      </Content>
-    </SubflowRoot>
+      <div className={classes.content} style={{ height: headerHeight }}>
+        <div className={classes.label} onClick={toggleSequenceFlow}>{label}</div>
+        {data.title && <div className={classes.title} onClick={toggleSequenceFlow}>{data.title}</div>}
+      </div>
+    </div>
   )
 }
