@@ -139,7 +139,6 @@ catalogs:
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
   obuild:
-    "@rolldown/plugin-node-polyfills": ^1.0.3
     obuild: 0.4.31
   react:
     "@floating-ui/dom": ^1.7.6
@@ -168,6 +167,7 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
+    "@rolldown/plugin-node-polyfills": ^1.0.3
     tsdown: ^0.22.9
     "@tsdown/css": ^0.22.9
     rolldown: ^1.2.0

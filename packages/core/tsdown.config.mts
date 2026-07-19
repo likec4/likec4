@@ -1,4 +1,5 @@
 import { codeSplittingGroup, defineConfig, outputOptions } from '@likec4/devops/tsdown'
+import nodePolyfills from '@rolldown/plugin-node-polyfills'
 
 export default defineConfig({
   entry: [
@@ -12,7 +13,9 @@ export default defineConfig({
     'src/utils/index.ts',
     'src/index.ts',
   ],
+  target: false,
   platform: 'neutral',
+  nodeProtocol: 'strip',
   outputOptions: outputOptions({
     codeSplitting: {
       groups: [
@@ -21,4 +24,7 @@ export default defineConfig({
       ],
     },
   }),
+  plugins: [
+    nodePolyfills(),
+  ],
 })

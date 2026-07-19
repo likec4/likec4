@@ -126,7 +126,7 @@
     "@likec4/style-preset": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/colors-generator": "catalog:mantine",
-    "@rolldown/plugin-node-polyfills": "catalog:obuild",
+    "@rolldown/plugin-node-polyfills": "catalog:tsdown",
     "@types/chroma-js": "catalog:utils",
     "@types/extend": "3.0.4",
     "@types/hast": "3.0.4",

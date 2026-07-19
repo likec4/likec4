@@ -258,9 +258,6 @@ catalogs:
       specifier: ^1.29.0
       version: 1.29.0
   obuild:
-    '@rolldown/plugin-node-polyfills':
-      specifier: ^1.0.3
-      version: 1.0.3
     obuild:
       specifier: 0.4.31
       version: 0.4.31
@@ -318,6 +315,9 @@ catalogs:
       specifier: ^1.114.13
       version: 1.114.17
   tsdown:
+    '@rolldown/plugin-node-polyfills':
+      specifier: ^1.0.3
+      version: 1.0.3
     '@tsdown/css':
       specifier: ^0.22.9
       version: 0.22.9
@@ -1054,7 +1054,7 @@ importers:
         specifier: catalog:mantine
         version: 9.4.1(chroma-js@3.2.0(patch_hash=d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c))
       '@rolldown/plugin-node-polyfills':
-        specifier: catalog:obuild
+        specifier: catalog:tsdown
         version: 1.0.3
       '@types/chroma-js':
         specifier: catalog:utils
