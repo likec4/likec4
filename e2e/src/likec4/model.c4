@@ -140,7 +140,7 @@ views {
   }
 
   dynamic view dynamic-view-1 {
-    title 'Dynamic View Example'
+    title 'Dynamic Views / Dynamic View Example'
 
     link https://docs.likec4.dev/dsl/views/dynamic/ 'Docs'
 
@@ -163,10 +163,12 @@ views {
 
     cloud.myAccount -> next.backend
 
-    next.backend -> amazon.pg {
-      color amber
-      title 'selects user data'
-      technology 'SQL'
+    opt {
+      next.backend -> amazon.pg {
+        color amber
+        title 'selects user data'
+        technology 'SQL'
+      }
     }
     next.backend <- amazon.pg {
       color amber
@@ -203,13 +205,15 @@ views {
   }
 
   dynamic view cloud-to-amazon {
-    title 'Cloud to amazon'
+    title 'Dynamic Views / Cloud to amazon'
 
     next.backend -> next.events
 
     parallel {
       next.backend -> amazon.aurora
       ui.supportPanel -> amazon.aurora
+    }
+    opt {
       next.events -> amazon.sqs
     }
 

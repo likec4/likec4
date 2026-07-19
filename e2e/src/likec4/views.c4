@@ -1,7 +1,7 @@
 views {
 
   view cloud of cloud {
-    title "The Cloud System"
+    title 'The Cloud System'
 
     include
       *,
@@ -85,5 +85,58 @@ views {
       cloud.next.graphql -> cloud.next.backend with {
         multiple true
       }
+  }
+
+  dynamic view flow-control-1 {
+    title 'Dynamic Views / Flow control'
+
+    customer -> cloud.ui.dashboard 'opens dashboard'
+
+    alt 'session state' {
+      when 'token valid' {
+        cloud.ui.dashboard -> cloud.next.backend 'GET /dashboard'
+      }
+      else 'token expired' {
+        loop 'until refreshed' {
+          cloud.ui.dashboard -> cloud.next.backend 'refresh access token'
+        }
+        cloud.ui.dashboard -> cloud.next.backend 'GET /dashboard'
+      }
+    }
+
+    try 'load dashboard data' {
+      parallel 'execute in parallel' {
+        cloud.next.backend -> amazon.aurora 'query records'
+        cloud.next.backend -> cloud.legacy.services 'read session'
+      }
+    } catch 'on database failure' {
+      cloud.next.backend -> cloud.next.events 'read session'
+    } finally {
+      cloud.next.backend -> cloud.next.backend 'assemble response'
+    }
+
+    opt 'analytics enabled' {
+      cloud.next.backend -> amazon.aurora 'log access'
+    }
+
+    cloud.next.backend
+      -> cloud.ui.dashboard 'returns JSON'
+      -> customer 'renders dashboard'
+
+    include cloud, cloud.next, amazon
+
+    style cloud._ {
+      color secondary
+      opacity 10%
+    }
+    style cloud {
+      color muted
+      opacity 10%
+    }
+    style customer {
+      color green
+      size sm
+      textSize md
+    }
   }
 }
