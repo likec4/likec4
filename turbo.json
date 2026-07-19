@@ -24,7 +24,6 @@
       "outputs": [
         "src/generated/**",
         "src/generated-lib/**",
-        "src/meta.ts",
         "all.js",
         "all.d.ts",
         "schema.json"

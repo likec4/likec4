@@ -173,9 +173,6 @@ catalogs:
     esbuild-node-externals:
       specifier: 1.23.1
       version: 1.23.1
-    esbuild-plugins-node-modules-polyfill:
-      specifier: 1.8.2
-      version: 1.8.2
   esbuild-wasm:
     esbuild:
       specifier: npm:esbuild-wasm@0.28.1
@@ -2758,6 +2755,9 @@ importers:
       '@reactive-vscode/vueuse':
         specifier: ^0.4.1
         version: 0.4.1
+      '@rolldown/plugin-node-polyfills':
+        specifier: catalog:tsdown
+        version: 1.0.3
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2770,9 +2770,6 @@ importers:
       '@vscode/extension-telemetry':
         specifier: ^1.5.2
         version: 1.5.2(tslib@2.8.1)
-      esbuild-plugins-node-modules-polyfill:
-        specifier: catalog:esbuild
-        version: 1.8.2(esbuild-wasm@0.28.1)
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -5061,9 +5058,6 @@ packages:
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
-
-  '@jspm/core@2.1.0':
-    resolution: {integrity: sha512-3sRl+pkyFY/kLmHl0cgHiFp2xEqErA8N3ECjMs7serSUBmoJ70lBa0PG5t0IM6WJgdZNyyI0R8YFfi5wM8+mzg==}
 
   '@logtape/logtape@2.1.1':
     resolution: {integrity: sha512-aULbCqUQGerfOsZ3CMvcKtueKzmdchluXYUd3bIHKmOIS93fx1ko0+hyRQ4flloGZ8EiyRPydZXiy8n1J/eAQA==}
@@ -7718,12 +7712,6 @@ packages:
     peerDependencies:
       esbuild: 0.12 - 0.28
 
-  esbuild-plugins-node-modules-polyfill@1.8.2:
-    resolution: {integrity: sha512-qUia44jWQLoi8U9WSrUvuyTJWs99VHOTy/L8Iw/ZiyLyyGj7Pa27iCc0P8kIIvb+XWnhQvYc/qn/OM8YwhPZ3g==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      esbuild: '>=0.14.0 <=0.28.x'
-
   esbuild-wasm@0.28.1:
     resolution: {integrity: sha512-p/GD4E8oYRjg3kjdKrnMb0s4PzXgJF42e0MF4H0+ACyK/kIlFRp3e0fzOleIG+wBBm6MM3XQrbpe7soEA+vJIA==}
     engines: {node: '>=18'}
@@ -9951,10 +9939,6 @@ packages:
 
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
-
-  resolve.exports@2.0.3:
-    resolution: {integrity: sha512-OcXjMsGdhL4XnbShKpAcSqPMzQoYkYyhbEaeSko47MjRP9NfEQMhZkXL1DoFlt9LWQn4YttrdnV6X2OiyzBi+A==}
-    engines: {node: '>=10'}
 
   resolve@1.22.12:
     resolution: {integrity: sha512-TyeJ1zif53BPfHootBGwPRYT1RUt6oGWsaQr8UyZW/eAm9bKoijtvruSDEmZHm92CwS9nj7/fWttqPCgzep8CA==}
@@ -13762,8 +13746,6 @@ snapshots:
       '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jspm/core@2.1.0': {}
-
   '@logtape/logtape@2.1.1': {}
 
   '@lume/kiwi@0.4.4': {}
@@ -16634,13 +16616,6 @@ snapshots:
       empathic: 2.0.1
       esbuild: 0.28.1
 
-  esbuild-plugins-node-modules-polyfill@1.8.2(esbuild-wasm@0.28.1):
-    dependencies:
-      '@jspm/core': 2.1.0
-      esbuild: esbuild-wasm@0.28.1
-      local-pkg: 1.2.1
-      resolve.exports: 2.0.3
-
   esbuild-wasm@0.28.1: {}
 
   esbuild@0.25.12:
@@ -19425,8 +19400,6 @@ snapshots:
   resolve-from@5.0.0: {}
 
   resolve-pkg-maps@1.0.0: {}
-
-  resolve.exports@2.0.3: {}
 
   resolve@1.22.12:
     dependencies:

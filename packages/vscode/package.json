@@ -357,7 +357,7 @@
     "@types/which": "^3.0.4",
     "@types/vscode": "catalog:vscode",
     "@vscode/extension-telemetry": "^1.5.2",
-    "esbuild-plugins-node-modules-polyfill": "catalog:esbuild",
+    "@rolldown/plugin-node-polyfills": "catalog:tsdown",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",
     "pathe": "catalog:utils",

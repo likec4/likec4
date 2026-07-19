@@ -1,4 +1,4 @@
-import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
+import nodeModulesPolyfillPlugin from '@rolldown/plugin-node-polyfills'
 import { existsSync, readdirSync, rmSync } from 'node:fs'
 import { cp, mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -33,6 +33,7 @@ export default defineConfig([
     entry: 'src/node/extension.ts',
     format: 'cjs',
     nodeProtocol: true,
+    target: false,
     sourcemap: isDev,
     inputOptions: {
       resolve: {
@@ -55,6 +56,7 @@ export default defineConfig([
     ],
     nodeProtocol: true,
     format: 'esm',
+    target: false,
     sourcemap: isDev,
     inputOptions: {
       resolve: {
@@ -66,9 +68,10 @@ export default defineConfig([
   {
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
+    platform: 'browser',
     format: 'cjs',
+    target: false,
     inputOptions: {
-      platform: 'browser',
       resolve: {
         conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],
       },
@@ -81,7 +84,9 @@ export default defineConfig([
   {
     outDir: 'dist/browser',
     entry: 'src/browser/language-server-worker.ts',
+    target: false,
     format: 'iife',
+    platform: 'browser',
     inputOptions: {
       resolve: {
         conditionNames: ['worker', 'browser', 'import'],

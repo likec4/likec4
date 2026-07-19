@@ -1,7 +1,6 @@
 contrib/
 dist/
 *.vsix
-src/meta.ts
 data/config.schema.json
 .vscode-test-web/
 data/skills/
