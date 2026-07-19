@@ -12,6 +12,10 @@ export const { subflow } = defineSemanticTokens.colors({
       DEFAULT: {
         value: alpha(mantine.colors.indigo[8], 8),
       },
+      hovered: {
+        description: 'Background color when hovered',
+        value: alpha(mantine.colors.indigo[8], 13),
+      },
       text: {
         value: {
           base: alpha(mantine.colors.indigo[9], 75),
@@ -34,6 +38,13 @@ export const { subflow } = defineSemanticTokens.colors({
         value: {
           base: alpha(mantine.colors.teal[9], 8),
           _dark: alpha(mantine.colors.teal[8], 9),
+        },
+      },
+      hovered: {
+        description: 'Background color when hovered',
+        value: {
+          base: alpha(mantine.colors.teal[9], 13),
+          _dark: alpha(mantine.colors.teal[8], 14),
         },
       },
       text: {
@@ -64,6 +75,13 @@ export const { subflow } = defineSemanticTokens.colors({
         value: {
           base: alpha(mantine.colors.yellow[9], 8),
           _dark: alpha(mantine.colors.yellow[8], 8),
+        },
+      },
+      hovered: {
+        description: 'Background color when hovered',
+        value: {
+          base: alpha(mantine.colors.yellow[9], 13),
+          _dark: alpha(mantine.colors.yellow[8], 13),
         },
       },
       text: {
@@ -99,6 +117,13 @@ export const { subflow } = defineSemanticTokens.colors({
           _dark: alpha(mantine.colors.red[8], 8),
         },
       },
+      hovered: {
+        description: 'Background color when hovered',
+        value: {
+          base: alpha(mantine.colors.red[9], 13),
+          _dark: alpha(mantine.colors.red[8], 13),
+        },
+      },
       text: {
         value: {
           base: alpha(mantine.colors.red[9], 90),
@@ -107,6 +132,12 @@ export const { subflow } = defineSemanticTokens.colors({
       },
       border: {
         value: alpha(mantine.colors.red[7], 65),
+      },
+      header: {
+        value: {
+          base: alpha(mantine.colors.red[9], 40),
+          _dark: alpha(mantine.colors.red[8], 40),
+        },
       },
       label: {
         value: alpha(mantine.colors.red[8], 25),
@@ -119,6 +150,10 @@ export const { subflow } = defineSemanticTokens.colors({
     par: {
       DEFAULT: {
         value: alpha(mantine.colors.grape[8], 8),
+      },
+      hovered: {
+        description: 'Background color when hovered',
+        value: alpha(mantine.colors.grape[8], 13),
       },
       text: {
         value: {
@@ -147,11 +182,15 @@ export const { subflow } = defineSemanticTokens.colors({
           _dark: alpha(mantine.colors.violet[8], 10),
         },
       },
-      header: {
+      hovered: {
+        description: 'Background color when alt is hovered',
         value: {
-          base: alpha(mantine.colors.violet[8], 50),
-          _dark: alpha(mantine.colors.violet[8], 40),
+          base: alpha(mantine.colors.violet[9], 10),
+          _dark: alpha(mantine.colors.violet[8], 15),
         },
+      },
+      header: {
+        value: alpha(mantine.colors.violet[8], 50),
       },
       text: {
         value: {

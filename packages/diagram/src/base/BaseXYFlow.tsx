@@ -10,6 +10,7 @@ import { useMantineColorScheme } from '@mantine/core'
 import {
   type ReactFlowProps,
   type ReactFlowState,
+  Controls,
   ReactFlow,
   useStore,
 } from '@xyflow/react'
@@ -85,6 +86,7 @@ export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge
     zoomable: boolean
     nodesSelectable: boolean
     nodesDraggable: boolean
+    showControls?: boolean
     background?: 'transparent' | 'solid' | XYBackground
     fitViewPadding?: ViewPadding | undefined
     onViewportResize?: undefined | (() => void)
@@ -137,6 +139,7 @@ export function BaseXYFlow<
     ariaLabelConfig,
     nodesFocusable = nodesDraggable || nodesSelectable,
     edgesFocusable = false,
+    showControls = false,
     ...props
   }: BaseXYFlowProps<NodeType, EdgeType>,
 ) {

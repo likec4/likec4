@@ -154,7 +154,11 @@ export class SequenceViewLayouter {
     collapsedFlows: StepPath[]
   }) {
     this.#flow = flow
-    this.#rowsTop = this.newVar(FIRST_STEP_OFFSET)
+    const firstRowOffset = Math.max(...actors.map(actor => actor.height)) + FIRST_STEP_OFFSET
+    this.#rowsTop = this.newVar(firstRowOffset)
+    this.constraint(this.#rowsTop, '==', firstRowOffset, Strength.soft)
+    this.constraint(this.#rowsTop, '>=', firstRowOffset, Strength.weak)
+
     this.#viewportRight = this.newVar(0)
     this.#viewportBottom = this.newVar(0)
 
@@ -162,28 +166,27 @@ export class SequenceViewLayouter {
 
     let lastCompound: CompoundArea | undefined
     for (const compound of compounds) {
-      const result = this.addCompound(compound)
-      // first element is the top level compound
+      const result = this.addCompound(compound) // first element is the top level compound
       const toplevel = lastCompound = result[0]
       // ensure that the top level compound is at the top
       this.constraint(toplevel.y1, '==', 0, Strength.strong)
-      this.put(this.#viewportBottom, Strength.strong).after(toplevel.bottom)
-      this.require(this.#rowsTop).after(toplevel.y2)
+      // this.constraint(this.#rowsTop, '==', toplevel.y2, Strength.weak)
+      // this.constraint(this.#rowsTop, '>=', toplevel.y2)
+      // this.put(this.#viewportBottom, Strength.strong).after(toplevel.bottom)
+      this.put(this.#rowsTop, Strength.strong).after(toplevel.y2)
       this.#compounds.push(...result)
     }
-    if (lastCompound) {
-      this.require(this.#viewportRight).after(lastCompound.x2, 16)
-    }
+    // if (lastCompound) {
+    //   this.require(this.#viewportRight).after(lastCompound.x2, 16)
+    // }
 
     const [firstActor, ...restActors] = this.#actors
     this.constraint(firstActor.offset.left, '==', 0, Strength.strong)
-    this.put(this.#rowsTop, Strength.strong).after(firstActor.offset.bottom)
 
     const lastActor = restActors.reduce((prev, actor) => {
       this.put(actor.x).after(prev.right, ACTOR_GAP)
       this.put(prev.offset.right, Strength.strong).before(actor.offset.left, COLUMN_GAP)
       this.constraint(actor.centerY, '==', prev.centerY, Strength.strong)
-      this.require(this.#rowsTop).after(actor.offset.bottom)
       return actor
     }, firstActor)
 
@@ -192,9 +195,17 @@ export class SequenceViewLayouter {
     }
     this.createSubflowAreas(steps, new Set(collapsedFlows))
 
-    this.require(this.#viewportRight).after(lastActor.offset.right)
+    this.constraint(this.#viewportRight, '==', lastActor.offset.right)
+    // this.require(this.#viewportRight).after(lastActor.offset.right)
     const mostBottom = last(this.#rows)?.outer.bottom ?? this.#rowsTop
-    this.put(this.#viewportBottom).after(mostBottom, 16)
+    this.put(this.#viewportBottom, Strength.strong).after(mostBottom, 16)
+
+    // this.constraint(
+    //   this.#viewportBottom,
+    //   '==',
+    //   mostBottom.plus(16),
+    //   // Strength.strong,
+    // )
 
     if (compounds.length > 0) {
       for (const compound of this.#compounds) {
@@ -206,22 +217,26 @@ export class SequenceViewLayouter {
           maxRow = Math.max(maxRow, actorBox.maxRow)
         }
         const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
-        this.put(compound.bottom).after(lastRow.outer.bottom)
+        // this.constraint(
+        //   compound.bottom,
+        //   '==',
+        //   lastRow.inner.bottom.plus(10),
+        //   // Strength.strong,
+        // )
+        this.put(compound.bottom, Strength.strong).after(lastRow.outer.bottom, 10)
       }
     }
 
     this.#solver.updateVariables()
   }
 
-  getSubflowAreas(): Array<{ subflow: DynamicViewFlow.SubFlow.Any; box: BBox }> {
+  getSubflowAreas(): Array<{ id: StepPath } & BBox> {
     return [...this.#subflows.entries()].map(([id, { x1, y1, x2, y2 }]) => ({
-      subflow: this.#flow.lookup(id),
-      box: {
-        x: x1.value(),
-        y: y1.value(),
-        width: x2.value() - x1.value(),
-        height: y2.value() - y1.value(),
-      },
+      id,
+      x: x1.value(),
+      y: y1.value(),
+      width: x2.value() - x1.value(),
+      height: y2.value() - y1.value(),
     }))
   }
 
@@ -373,7 +388,7 @@ export class SequenceViewLayouter {
 
     this.ensureRow(step.from.row, height)
     if (step.isSelfLoop) {
-      this.ensureRow(step.to.row, MIN_ROW_HEIGHT)
+      this.ensureRow(step.to.row, 0)
     }
 
     return this
@@ -413,10 +428,8 @@ export class SequenceViewLayouter {
     let y1, y2
     switch (true) {
       case !!onlyChild: {
-        y1 = this.newVar(0)
-        y2 = this.newVar(0)
-        this.put(onlyChild.y1).after(y1, PADDING_TOP)
-        this.put(onlyChild.y2).before(y2, PADDING)
+        y1 = onlyChild.y1.minus(PADDING_TOP)
+        y2 = onlyChild.y2.plus(PADDING)
         this.put(onlyChild.bottom).before(bottom, PADDING)
         break
       }
@@ -424,7 +437,7 @@ export class SequenceViewLayouter {
       case to === from: {
         y1 = this.newVar(0)
         y2 = this.newVar(0)
-        this.put(from.offset.top).after(y1, PADDING_TOP_FROM_ACTOR)
+        this.put(y1).before(from.offset.top, PADDING_TOP_FROM_ACTOR)
         this.put(from.offset.bottom).before(y2, PADDING)
         this.put(y2).before(bottom)
         break
@@ -434,7 +447,7 @@ export class SequenceViewLayouter {
         y1 = this.newVar(0)
         y2 = this.newVar(0)
         for (const child of children) {
-          this.put(child.y1).after(y1, PADDING)
+          this.put(y1).before(child.y1, PADDING)
           this.put(child.y2).before(y2, PADDING)
           this.put(child.bottom).before(bottom, PADDING)
         }
@@ -445,7 +458,7 @@ export class SequenceViewLayouter {
         y2 = this.newVar(0)
         for (var col = from.column; col <= to.column; col++) {
           const offset = this.actorBox(col).offset
-          this.put(offset.top).after(y1, PADDING_TOP_FROM_ACTOR)
+          this.put(y1).before(offset.top, PADDING_TOP_FROM_ACTOR)
           this.put(offset.bottom).before(y2, PADDING)
         }
         this.put(y2).before(bottom)
@@ -476,15 +489,6 @@ export class SequenceViewLayouter {
   }
 
   private ensureRow(row: number, rowHeight: number) {
-    // existing row - ensure height
-    if (row < this.#rows.length) {
-      const rowVar = nonNullable(this.#rows[row])
-      if (rowHeight > rowVar.height.value()) {
-        rowVar.height.setValue(rowHeight)
-        this.#solver.suggestValue(rowVar.height, rowHeight)
-      }
-      return
-    }
     while (row >= this.#rows.length) {
       const prevRowBottom = last(this.#rows)?.outer.bottom || this.#rowsTop
       const outerTop = prevRowBottom
@@ -493,20 +497,27 @@ export class SequenceViewLayouter {
       this.put(innerTop).after(outerTop)
 
       // If this is the row we are adding, use the provided rowHeight
+      let heightValue = rowHeight
       if (row !== this.#rows.length) {
         // Otherwise use MIN_ROW_HEIGHT for existing rows
-        rowHeight = this.#rows.length === 0
-          ? 20 // First row
-          : MIN_ROW_HEIGHT
+        heightValue = MIN_ROW_HEIGHT
       }
       const height = new kiwi.Variable()
-      height.setValue(rowHeight)
-      this.#solver.addEditVariable(height, Strength.medium)
-      this.#solver.suggestValue(height, rowHeight)
+      height.setValue(heightValue)
+      this.#solver.addEditVariable(height, Strength.strong)
+      this.#solver.suggestValue(height, heightValue)
 
-      const innerBottom = innerTop.plus(height)
+      const innerBottom = this.newVar(innerTop.value() + heightValue)
+      this.require(innerBottom).after(innerTop)
+      this.constraint(
+        innerBottom.minus(innerTop),
+        '==',
+        height,
+        Strength.strong,
+      )
 
-      const outerBottom = this.newVar(innerTop.value() + rowHeight)
+      const outerBottom = this.newVar(innerBottom.value())
+      // this.put(innerBottom).before(outerBottom)
       this.put(outerBottom).after(innerBottom)
 
       this.#rows.push({
@@ -522,12 +533,14 @@ export class SequenceViewLayouter {
         height,
       })
     }
+    const rowVar = nonNullable(this.#rows[row])
+    if (rowHeight > rowVar.height.value()) {
+      rowVar.height.setValue(rowHeight)
+      this.#solver.suggestValue(rowVar.height, rowHeight)
+    }
   }
 
   private collapseRect({ min, max }: Rect) {
-    // Calculate height for each row based on number of rows
-    // Ensure at collapsed area has at least 20px height
-    // const h = Math.ceil(20 / (max.row - min.row + 1))
     const h = 0
     for (let row = min.row; row <= max.row; row++) {
       const r = nonNullable(this.#rows[row], `Row ${row} not found`)
@@ -567,9 +580,9 @@ export class SequenceViewLayouter {
     const bounds = this.getRectBounds(rect)
 
     const x1 = this.newVar(0)
-    this.put(bounds.x1).after(x1, p.left)
+    this.put(x1).before(bounds.x1, p.left)
     const x2 = this.newVar(0)
-    this.put(bounds.x2).before(x2, p.right)
+    this.put(x2).after(bounds.x2, p.right)
 
     const y1 = this.newVar(bounds.minY.value())
     this.require(y1).after(bounds.minY)
@@ -649,7 +662,7 @@ export class SequenceViewLayouter {
 
       // If the first area is at the top of the parent, add top padding
       if (firstArea.min.row == area.min.row) {
-        this.require(firstArea.y1).after(area.y1, p.top)
+        this.require(area.y1).before(firstArea.y1, p.top)
       }
 
       // If the last area is at the bottom of the parent, add bottom padding
@@ -672,15 +685,28 @@ export class SequenceViewLayouter {
     ): SubflowArea => {
       const steps = selectSteps(subflow.id)
       const rect = rectFromSteps(steps)
-      let space: Spacing = spacing
-      if (flowGuards.isAltOrTry(subflow)) {
-        space = 0
-      } else if (collapsed.has(subflow.id)) {
-        space = {
-          ...spacing,
-          top: 16,
-          bottom: 16,
-        }
+      let space: Spacing
+      switch (true) {
+        case flowGuards.isAltOrTry(subflow):
+          space = 0
+          break
+        case collapsed.has(subflow.id) && flowGuards.isAltOrTryBranch(subflow):
+          space = {
+            ...spacing,
+            top: 36,
+            bottom: 0,
+          }
+          break
+        case collapsed.has(subflow.id):
+          space = {
+            ...spacing,
+            top: 24,
+            bottom: 0,
+          }
+          break
+        default:
+          space = spacing
+          break
       }
       const area = {
         ...this.wrapAroundRect(rect, space),
@@ -699,7 +725,7 @@ export class SequenceViewLayouter {
 
           // Add space between subflows
           if (!flowGuards.isAltOrTryBranch(subflow) && previousSubflow) {
-            this.put(area.y1).after(previousSubflow.y2, 32)
+            this.put(previousSubflow.y2).before(area.y1, 32)
           }
 
           // Ensure space on the left of the subflow to accommodate the previous actor
@@ -717,7 +743,7 @@ export class SequenceViewLayouter {
                 area,
                 visited,
                 padding: {
-                  top: 20,
+                  top: 24,
                   left: 0,
                   right: 0,
                 },
@@ -761,6 +787,7 @@ export class SequenceViewLayouter {
       v.setValue(initialValue)
       this.#solver.suggestValue(v, initialValue)
     }
+    // this.constraint(v, '>=', 0, Strength.weak)
     return v
   }
 

@@ -49,7 +49,7 @@ type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
    */
   selectSnapshot<T>(
     select: (state: Snapshot) => T,
-    compare?: (old: NoInfer<T> | undefined, next: NoInfer<T>) => boolean,
+    compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
   ): SelectAndCompare<Snapshot, T>
 
   /**
@@ -58,7 +58,7 @@ type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
    */
   selectContext<T>(
     select: (state: Context) => T,
-    compare?: (old: NoInfer<T> | undefined, next: NoInfer<T>) => boolean,
+    compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
   ): SelectAndCompare<Snapshot, T>
 
   useActorSelector<T>(select: (state: Snapshot) => T): T
@@ -100,7 +100,7 @@ export function createSafeContextForActor<
   // -----------------
   function selectSnapshot<T>(
     selector: (state: Snapshot) => T,
-    compare?: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+    compare?: (a: NoInfer<T>, b: NoInfer<T>) => boolean,
   ): SelectAndCompare<Snapshot, T> {
     return [
       selector,
@@ -112,7 +112,7 @@ export function createSafeContextForActor<
   // -----------------
   function selectContext<T>(
     selector: (state: Context) => T,
-    compare?: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+    compare?: (a: NoInfer<T>, b: NoInfer<T>) => boolean,
   ): SelectAndCompare<Snapshot, T> {
     return [
       (snapshot: Snapshot) => selector((snapshot as any).context),
@@ -137,7 +137,7 @@ export function createSafeContextForActor<
   ): T
   function useActorSelector<T>(
     selector: (snapshot: Snapshot) => T,
-    compare?: (a: NoInfer<T> | undefined, b: NoInfer<T>) => boolean,
+    compare?: (a: NoInfer<T>, b: NoInfer<T>) => boolean,
   ): T
   function useActorSelector(arg1: any | any[], arg2?: any) {
     let selector, compare

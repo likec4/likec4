@@ -36,6 +36,7 @@ import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
 import { navigationPanelActorLogic } from '../../navigationpanel/actor'
+import { xyflow } from '../../overlays/element-details/TabPanelRelationships.css'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
 import { defineActors } from '../../utils/defineActors'
@@ -240,8 +241,8 @@ export type Events =
   | { type: 'focus.node'; nodeId: NodeId; autoUnfocus?: boolean }
   | { type: 'focus.autoUnfocus' }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
-  | { type: 'walkthrough.start'; stepId?: StepPath }
-  | { type: 'walkthrough.step'; direction: 'next' | 'previous'; stepId?: never }
+  | { type: 'walkthrough.start'; stepId?: StepPath | undefined }
+  | { type: 'walkthrough.step'; direction: 'next' | 'prev'; stepId?: never }
   | { type: 'walkthrough.step'; stepId: StepPath; direction?: never }
   | { type: 'walkthrough.end' }
   | { type: 'sequence.flow.collapse'; flowId: StepPath }

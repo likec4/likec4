@@ -17,6 +17,7 @@ export type { DiagramApi, DiagramContext }
 
 /**
  * Helper to create a selector for diagram actor snapshot
+ * @deprecated use {@link selectDiagramSnapshot}
  */
 export function selectDiagramActor<T = unknown>(
   selector: (state: DiagramActorSnapshot) => T,
@@ -24,6 +25,10 @@ export function selectDiagramActor<T = unknown>(
   return selector
 }
 
+/**
+ * Read diagram actor snapshot
+ * @deprecated use {@link useDiagramSelector}
+ */
 export function useDiagramSnapshot<T = unknown>(
   selector: (state: DiagramActorSnapshot) => T,
   compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
@@ -34,6 +39,7 @@ export function useDiagramSnapshot<T = unknown>(
 
 /**
  * Helper to create a selector for diagram actor snapshot
+ * @deprecated use {@link selectDiagramContext}
  */
 export function selectDiagramActorContext<T = unknown>(
   selector: (state: DiagramContext) => T,

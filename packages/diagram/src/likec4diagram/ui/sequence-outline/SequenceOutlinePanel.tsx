@@ -1,22 +1,24 @@
 import {
   type DynamicViewFlow,
+  type scalar,
   type StepPath,
   dynamicViewFlow,
   flowAncestors,
   hasProp,
   isDynamicView,
+  RichText,
 } from '@likec4/core'
+import { extractViewTitleFromPath } from '@likec4/core/model'
 import { css, cx } from '@likec4/styles/css'
-import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
+import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
   Button,
   CloseButton,
-  CloseIcon,
-  FocusTrap,
   ScrollArea,
+  Spoiler,
   Tooltip,
   Tree,
   useTree,
@@ -28,6 +30,7 @@ import {
   IconArrowRight,
   IconChevronRight,
   IconCornerDownRight,
+  IconDirectionSignFilled,
   IconListTree,
   IconPlayerSkipBackFilled,
   IconPlayerSkipForwardFilled,
@@ -37,11 +40,11 @@ import {
 import { AnimatePresence, m } from 'motion/react'
 import { type ReactNode, memo, useMemo } from 'react'
 import { mapToObj, only } from 'remeda'
-import { PortalToContainer } from '../../../custom'
+import { Markdown, PortalToContainer } from '../../../custom'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../../hooks/safeContext'
 import { useOnDiagramEvent } from '../../../hooks/useDiagram'
 import type { DiagramContext } from '../../state/types'
-import { type OutlineTreeNodeData, countSteps, useTreeData } from './state'
+import { type OutlineTreeNodeData, useTreeData } from './state'
 
 // -----------------------------------------------------------------------------
 // Flow-type presentation
@@ -165,35 +168,43 @@ const labelText = css.raw({
   textOverflow: 'ellipsis',
 })
 
+const LabelSpan = styled('span', {
+  base: labelText,
+})
+
 // -----------------------------------------------------------------------------
 // Panel
 // -----------------------------------------------------------------------------
 
 const selectFlow = selectDiagramContext((s) => {
+  const title = extractViewTitleFromPath(s.view.title ?? 'Untitled')
+  const description = s.view.description
   const activeStep = s.activeWalkthrough?.stepId ?? null
   if (activeStep) {
     return {
       flow: isDynamicView(s.view) && hasProp(s.view, 'flow') ? dynamicViewFlow(s.view) : null,
       activeStep,
-      title: s.view.title,
-      outlinePanelWidth: s.activeWalkthrough?.outlinePanelWidth,
+      title,
+      description,
+      outlinePanelWidth: s.activeWalkthrough?.outlinePanelWidth ?? 0,
       collapsed: s.collapsedSequenceFlows,
     }
   }
   return {
     flow: null,
     activeStep: null,
-    title: s.view.title,
+    title,
+    description,
   }
 })
 
 export const SequenceOutlinePanel = memo(() => {
-  const { activeStep, flow, title, outlinePanelWidth, collapsed } = useDiagramSelector(selectFlow)
+  const props = useDiagramSelector(selectFlow)
 
   return (
     <PortalToContainer>
       <AnimatePresence propagate>
-        {activeStep && flow && outlinePanelWidth && collapsed && (
+        {props.activeStep && props.flow && (
           <m.div
             layout="position"
             className={vstack({
@@ -212,17 +223,18 @@ export const SequenceOutlinePanel = memo(() => {
               overflow: 'hidden',
             })}
             style={{
-              width: outlinePanelWidth,
+              width: props.outlinePanelWidth,
             }}
             initial={{ opacity: 0.5, translateX: -40 }}
             animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -outlinePanelWidth }}
+            exit={{ opacity: 0, translateX: -props.outlinePanelWidth }}
           >
             <SequenceOutlinePanelBody
-              title={title}
-              activeStep={activeStep}
-              flow={flow}
-              collapsed={collapsed}
+              title={props.title}
+              description={props.description}
+              activeStep={props.activeStep}
+              flow={props.flow}
+              collapsed={props.collapsed}
             />
           </m.div>
         )}
@@ -234,6 +246,7 @@ SequenceOutlinePanel.displayName = 'SequenceOutlinePanel'
 
 type SequenceOutlinePanelBodyProps = {
   title: string | null
+  description: scalar.MarkdownOrString | null
   activeStep: StepPath
   flow: DynamicViewFlow
   collapsed: DiagramContext['collapsedSequenceFlows']
@@ -241,72 +254,113 @@ type SequenceOutlinePanelBodyProps = {
 function SequenceOutlinePanelBody(props: SequenceOutlinePanelBodyProps) {
   return (
     <>
-      <OutlineHeader {...props} />
-      <OutlineBody {...props} />
+      <OutlineHeader
+        title={props.title}
+        flow={props.flow}
+        description={props.description}
+      />
+      <OutlineBody
+        activeStep={props.activeStep}
+        flow={props.flow}
+        collapsed={props.collapsed} />
     </>
   )
 }
 
-const OutlineHeader = ({ title, flow }: SequenceOutlinePanelBodyProps) => {
+const OutlineHeader = ({
+  title,
+  flow,
+  description,
+}: Pick<
+  SequenceOutlinePanelBodyProps,
+  'title' | 'flow' | 'description'
+>) => {
   const diagram = useDiagram()
   const stepCount = flow.stepsCount
   return (
-    <HStack
+    <VStack
       css={{
         gap: '2.5',
-        alignItems: 'center',
         width: '100%',
         paddingInline: '2.5',
         paddingBlock: '2',
         borderBottom: '1px solid {colors.likec4.panel.border}',
-      }}
-    >
-      <Box
+      }}>
+      <HStack
         css={{
-          flex: 'none',
-          display: 'flex',
+          gap: '2.5',
           alignItems: 'center',
-          justifyContent: 'center',
-          boxSize: '28px',
-          rounded: 'md',
-          colorPalette: 'subflow.loop',
-          bg: 'colorPalette.label',
-          color: 'colorPalette.text',
+          width: '100%',
+          padding: '0',
         }}
       >
-        <IconListTree size={16} />
-      </Box>
-      <VStack css={{ gap: '0', alignItems: 'stretch', flex: '1', minWidth: '0' }}>
-        <styled.div
+        <Box
           css={{
-            fontSize: 'sm',
-            fontWeight: 'semibold',
-            color: 'text',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            flex: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxSize: '20px',
+            rounded: 'sm',
+            colorPalette: 'subflow.loop',
+            bg: 'colorPalette.label',
+            color: 'colorPalette.text',
           }}
         >
-          {title ?? 'Sequence'}
-        </styled.div>
-        <styled.div css={{ textStyle: 'dimmed.xs' }}>
-          {stepCount} {stepCount === 1 ? 'step' : 'steps'}
-        </styled.div>
-      </VStack>
-      <Box
-        css={{
-          flex: 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <CloseButton size="sm" onClick={() => diagram.stopWalkthrough()} />
-      </Box>
-    </HStack>
+          <IconDirectionSignFilled size={14} />
+        </Box>
+        <VStack css={{ gap: '0', alignItems: 'stretch', flex: '1', minWidth: '0' }}>
+          <styled.div
+            css={{
+              fontSize: 'sm',
+              fontWeight: 'semibold',
+              color: 'text',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {title ?? 'Sequence'}
+          </styled.div>
+          <Txt size={'xxs'} dimmed noUserSelect>
+            {stepCount} {stepCount === 1 ? 'step' : 'steps'}
+          </Txt>
+        </VStack>
+        <Box
+          css={{
+            flex: 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <CloseButton size="sm" onClick={() => diagram.stopWalkthrough()} />
+        </Box>
+      </HStack>
+      {description && (
+        <Spoiler
+          showLabel={<Txt size="xxs">show description</Txt>}
+          hideLabel={<Txt size="xxs">hide</Txt>}
+          maxHeight={16}
+        >
+          <Markdown
+            value={RichText.from(description)}
+            className={css({
+              color: 'text.dimmed',
+            })}
+            fontSize={'xxs'}
+          />
+        </Spoiler>
+      )}
+    </VStack>
   )
 }
 
-const OutlineBody = ({ activeStep, flow, collapsed }: SequenceOutlinePanelBodyProps) => {
+const OutlineBody = (
+  { activeStep, flow, collapsed }: Pick<
+    SequenceOutlinePanelBodyProps,
+    'activeStep' | 'flow' | 'collapsed'
+  >,
+) => {
   const diagram = useDiagram()
   const treeData = useTreeData(flow, collapsed)
   const initialExpandedState = useMemo(() => mapToObj(flowAncestors(activeStep), id => [id, true]), [])
@@ -395,23 +449,22 @@ const OutlineBody = ({ activeStep, flow, collapsed }: SequenceOutlinePanelBodyPr
         </Button>
       </HStack>
       <ScrollArea
-        type="scroll"
+        type="auto"
         overscrollBehavior="contain"
         className={css({ flex: '1', width: '100%', minHeight: '0' })}
       >
         <Tree
-          levelOffset={0}
+          levelOffset="var(--spacing-2\.5)"
           data={treeData}
           tree={tree}
           selectOnClick
           classNames={{
             root: css({ paddingInline: '2', paddingBottom: '3' }),
-            // Draw a connecting rail down each nested sub-flow.
-            subtree: css({
-              marginInlineStart: '3',
-              paddingInlineStart: '2.5',
-              borderLeft: '1px solid {colors.mantine.colors.defaultBorder}',
-            }),
+          }}
+          styles={{
+            node: {
+              paddingInlineStart: 'var(--label-offset)',
+            },
           }}
           renderNode={renderTreeNode}
         />
@@ -434,32 +487,55 @@ const renderTreeNode = ((payload: OutlineTreeNodeProps) => {
 
 type StepRowProps = OutlineTreeNodeProps & { node: Extract<OutlineTreeNodeData, { nodeProps: { type: 'step' } }> }
 
-const StepRow = ({ node, elementProps }: StepRowProps) => {
-  const { stepnum, source, target, label } = node.nodeProps
+const StepRow = ({ node, elementProps, selected }: StepRowProps) => {
+  const { stepnum, source, target, label, notes } = node.nodeProps
   return (
-    <Box {...elementProps} className={cx(elementProps.className, css(rowBase))}>
-      <StepNum>{stepnum}</StepNum>
-      <IconArrowRight
-        size={13}
-        className={css({ flex: 'none', color: 'text.dimmed' })}
-      />
-      {label
-        ? <span className={css(labelText)}>{label}</span>
-        : (
-          <HStack css={{ gap: '1', minWidth: '0', flex: '1' }}>
-            <styled.span css={{ ...labelText, flex: 'none', color: 'text.dimmed' }}>{source}</styled.span>
-            <IconArrowRight size={11} className={css({ flex: 'none', color: 'text.dimmed' })} />
-            <span className={css(labelText)}>{target}</span>
-          </HStack>
-        )}
-    </Box>
+    <>
+      <Box {...elementProps} className={cx(elementProps.className, css(rowBase))}>
+        <StepNum>{stepnum}</StepNum>
+        <IconArrowRight
+          size={13}
+          className={css({ flex: 'none', color: 'text.dimmed' })}
+        />
+        {label
+          ? <LabelSpan>{label}</LabelSpan>
+          : (
+            <HStack css={{ gap: '1', minWidth: '0', flex: '1' }}>
+              <LabelSpan css={{ flex: 'none', color: 'text.dimmed' }}>{source}</LabelSpan>
+              <IconArrowRight size={11} className={css({ flex: 'none', color: 'text.dimmed' })} />
+              <LabelSpan>{target}</LabelSpan>
+            </HStack>
+          )}
+      </Box>
+      {notes && (
+        <Markdown
+          value={RichText.from(notes)}
+          fontSize={'sm'}
+          textScale={0.9}
+          className={css({
+            background: 'surface.sunken',
+            border: '1px solid {colors.surface.sunken.border}',
+            rounded: 'md',
+            cursor: 'default',
+            marginBlockStart: '1',
+            marginBlockEnd: '2',
+            paddingInline: '4',
+            paddingBlock: '2',
+          })}
+          style={{
+            marginInlineStart: 'calc(-1 * var(--label-offset))',
+            display: selected ? 'block' : 'none',
+          }}
+        />
+      )}
+    </>
   )
 }
 
 type FlowRowProps = OutlineTreeNodeProps & { node: Extract<OutlineTreeNodeData, { nodeProps: { type: FlowType } }> }
 
 const FlowRow = ({ node, expanded, elementProps }: FlowRowProps) => {
-  const { type, title, stepCount } = node.nodeProps
+  const { type, title } = node.nodeProps
   const { paletteClass, tag, Icon } = flowPresentation[type]
   return (
     <Box
@@ -481,15 +557,6 @@ const FlowRow = ({ node, expanded, elementProps }: FlowRowProps) => {
         {title ?? tag}
       </styled.span>
       <FlowTag>{tag}</FlowTag>
-      <styled.span
-        css={{
-          flex: 'none',
-          textStyle: 'dimmed.xs',
-          fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        {stepCount}
-      </styled.span>
     </Box>
   )
 }

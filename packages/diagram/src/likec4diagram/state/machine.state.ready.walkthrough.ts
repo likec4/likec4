@@ -9,7 +9,7 @@ import {
   isStepPath,
   parentFlow,
 } from '@likec4/core/types'
-import { clamp, firstBy, isNumber } from 'remeda'
+import { clamp, firstBy, isNumber, map } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
 import { assign, raise } from 'xstate/actions'
 import { Base } from '../../base'
@@ -105,20 +105,17 @@ const updateActiveWalkthroughState = () =>
         const dimmed = step.source !== node.id && step.target !== node.id
         if (node.type === 'seq-subflow' && activeFlow) {
           switch (true) {
-            case node.data.flowId == activeFlow:
             // Do not dim try/alt blocks that are parents of the active flow
-            case (node.data.flowType === 'try' || node.data.flowType === 'alt') &&
-              parentActiveFlow === node.data.flowId: {
-              return Base.setData(node, {
-                activePath: activeFlow,
-                dimmed: false,
-              })
+            case node.data.flowId == parentActiveFlow && (
+              node.data.flowType === 'try'
+              || node.data.flowType === 'alt'
+            ):
+            // Do not dim the active flow itself
+            case node.data.flowId == activeFlow: {
+              return Base.setDimmed(node, false)
             }
             default: {
-              return Base.setData(node, {
-                activePath: null,
-                dimmed: true,
-              })
+              return Base.setDimmed(node, true)
             }
           }
         }
@@ -132,20 +129,18 @@ const clearWalkthroughState = () =>
   machine.assign(({ context }) => {
     return ({
       activeWalkthrough: null,
-      xynodes: context.xynodes.map(n => {
-        if (n.type === 'seq-subflow') {
-          return Base.setData(n, {
-            activePath: null,
-            dimmed: false,
-          })
-        }
-        return Base.setDimmed(n, false)
-      }),
-      xyedges: context.xyedges.map(Base.setData({
-        state: null,
-        dimmed: false,
-        active: false,
-      })),
+      xynodes: map(
+        context.xynodes,
+        Base.setDimmed(false),
+      ),
+      xyedges: map(
+        context.xyedges,
+        Base.setData({
+          state: null,
+          dimmed: false,
+          active: false,
+        }),
+      ),
     })
   })
 
@@ -221,10 +216,10 @@ export const walkthrough = machine.createStateConfig({
       target: targetState.idle,
     },
     'key.arrow.left': {
-      actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
+      actions: raise({ type: 'walkthrough.step', direction: 'prev' }),
     },
     'key.arrow.up': {
-      actions: raise({ type: 'walkthrough.step', direction: 'previous' }),
+      actions: raise({ type: 'walkthrough.step', direction: 'prev' }),
     },
     'key.arrow.right': {
       actions: raise({ type: 'walkthrough.step', direction: 'next' }),
@@ -244,9 +239,8 @@ export const walkthrough = machine.createStateConfig({
             invariant(isDynamicView(context.view))
             const { stepId } = activeWalkthrough
             const flow = dynamicViewFlow(context.view)
-            const { prev, next } = flow.prevAndNext(stepId, flowId => context.collapsedSequenceFlows[flowId] ?? false)
-            const nextStep = event.direction === 'next' ? next : prev
-            predicate = (edge) => edge.data.id === nextStep
+            const prevNext = flow.prevAndNext(stepId, flowId => context.collapsedSequenceFlows[flowId] ?? false)
+            predicate = (edge) => edge.data.id === prevNext[event.direction]
           } else {
             predicate = (edge) => edge.data.id === event.stepId
           }
@@ -301,6 +295,13 @@ export const walkthrough = machine.createStateConfig({
       actions: [
         enqueueActions(({ enqueue, event: { node }, context }) => {
           invariant(node.type === 'seq-subflow')
+          if (node.data.collapsed) {
+            enqueue.raise({
+              type: 'sequence.flow.expand',
+              flowId: node.data.flowId,
+            })
+            return
+          }
           invariant(isDynamicView(context.view))
           const flow = dynamicViewFlow(context.view)
           const nextStepId = flow.firstStep(node.data.flowId) ?? flow.firstStep()

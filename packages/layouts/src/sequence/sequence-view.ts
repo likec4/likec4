@@ -133,11 +133,6 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
     flat(),
   )
 
-  const subflows = layout.getSubflowAreas().map(({ subflow, box }): LayoutedDynamicView.Sequence.SubflowArea => ({
-    id: subflow.id,
-    ...box,
-  }))
-
   return {
     actors: actors.map(actor => toSeqActor({ actor, ports: actorPorts.get(actor), layout })),
     compounds,
@@ -154,7 +149,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
       ...layout.isStepCollapsed(s) && { hidden: true },
     })),
     parallelAreas: [],
-    subflows,
+    subflows: layout.getSubflowAreas(),
     bounds,
   }
 }

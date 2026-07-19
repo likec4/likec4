@@ -9,7 +9,9 @@ import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
+import { Controls } from '@xyflow/react'
 import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
+import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
@@ -17,7 +19,12 @@ import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useDiagramEventHandlers } from '../context'
 import { useRootContainer } from '../context/RootContainerContext'
-import { selectDiagramActor, useCallbackRef, useDiagramSnapshot, useUpdateEffect } from '../hooks'
+import {
+  selectDiagramSnapshot,
+  useCallbackRef,
+  useDiagramSelector,
+  useUpdateEffect,
+} from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
@@ -68,7 +75,7 @@ const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
   }
 }
 
-const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
+const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
   const editorSnapshot = enableReadOnly ? null : children.editor?.getSnapshot()
@@ -98,6 +105,8 @@ const selectXYProps = selectDiagramActor(({ context: ctx, children }) => {
       viewport: viewportToTopLeft(ctx),
     }),
   })
+}, ({ nodes: aNodes, edges: aEdges, ...a }, { nodes: bNodes, edges: bEdges, ...b }) => {
+  return shallowEqual(a, b) && shallowEqual(aNodes, bNodes) && shallowEqual(aEdges, bEdges)
 })
 
 export type LikeC4DiagramXYFlowProps = PropsWithChildren<
@@ -126,7 +135,7 @@ export function LikeC4DiagramXYFlow({
     nodesDraggable,
     nodesSelectable,
     ...props
-  } = useDiagramSnapshot(selectXYProps)
+  } = useDiagramSelector(selectXYProps)
 
   const {
     onNodeContextMenu,
@@ -298,6 +307,15 @@ export function LikeC4DiagramXYFlow({
       {...(nodesDraggable && layoutConstraints)}
       {...props}
       {...reactFlowProps}>
+      {enableFitView && (
+        <Controls
+          showInteractive={false}
+          onFitView={() => {
+            debugger
+            diagram.fitDiagram(500)
+          }}
+          position="bottom-left" />
+      )}
       {children}
     </BaseXYFlow>
   )

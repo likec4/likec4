@@ -17,7 +17,6 @@ import { isDefined } from 'remeda'
 import { first, isFunction, isString, once } from 'remeda'
 import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
-import { ShadowRootContext } from '../context/ShadowRootContext'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
 import fontsCss from '../styles-font.css?inline'
@@ -212,9 +211,7 @@ const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) 
     <div {...props} ref={hostRef}>
       {root && (
         <ShadowRootHostPortal root={root}>
-          <ShadowRootContext value={root}>
-            {children}
-          </ShadowRootContext>
+          {children}
         </ShadowRootHostPortal>
       )}
     </div>

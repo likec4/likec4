@@ -202,7 +202,7 @@ export const globalCss = defineGlobalStyles({
       },
       '& .react-flow__node-seq-subflow': {
         mixBlendMode: {
-          _dark: 'luminosity',
+          _dark: 'screen',
           _light: 'color-burn',
           _print: 'normal!',
         },

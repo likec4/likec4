@@ -90,7 +90,7 @@ export function ActiveWalkthroughControls() {
       <PrevNextButton
         key="prev"
         disabled={!hasPrevious}
-        onClick={() => diagram.walkthroughStep('previous')}
+        onClick={() => diagram.walkthroughStep('prev')}
         leftSection={<IconPlayerSkipBackFilled size={10} />}
       >
         Previous

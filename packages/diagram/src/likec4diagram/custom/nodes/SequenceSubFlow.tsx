@@ -6,6 +6,7 @@ import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } fro
 import * as m from 'motion/react-m'
 import type { ReactNode } from 'react'
 import { useDiagram } from '../../../hooks'
+import { stopPropagation } from '../../../utils'
 import type { Types } from '../../types'
 
 const typeLabelStyle = css.raw({
@@ -21,9 +22,18 @@ const withBorder = css.raw({
   border: '{borderWidths.2} solid {colors.colorPalette.border}',
 })
 
-const withBody = css.raw(withBorder, {
+const withBackground = css.raw({
   background: 'colorPalette',
-  rounded: 'md',
+  ['&[data-state="hovered"]']: {
+    background: 'colorPalette.hovered',
+    transition: 'faster',
+    transitionDelay: 'faster',
+    transitionTimingFunction: 'out',
+    transitionProperty: 'background',
+  },
+  ['&[data-state="collapsed"]']: {
+    background: 'colorPalette.label',
+  },
 })
 
 const recipe = sva({
@@ -58,6 +68,11 @@ const recipe = sva({
       borderBottomRightRadius: 'sm',
       borderTop: 'none',
       borderLeft: 'none',
+      [':is([data-state="collapsed"]) &']: {
+        // alignSelf: 'stretch',
+        background: 'none',
+        borderColor: 'transparent',
+      },
     }),
     'branchtype': css.raw(typeLabelStyle, {
       position: 'relative',
@@ -86,10 +101,7 @@ const recipe = sva({
     }),
     title: {
       flex: '1',
-      color: {
-        base: `[oklch(from {colors.colorPalette.text} calc(l - 0.2) calc(c - 0.2) h / 80%)]`,
-        _dark: `[oklch(from {colors.colorPalette.text} calc(l - 0.1)  calc(c - 0.1) h / 90%)]`,
-      },
+      color: `[oklch(from {colors.colorPalette.text} l calc(c - 0.15) h)]`,
       fontSize: 'xxs',
       fontWeight: 'normal',
     },
@@ -97,7 +109,9 @@ const recipe = sva({
   variants: {
     variant: {
       subflow: {
-        root: css.raw(withBody, {}),
+        root: css.raw(withBackground, withBorder, {
+          rounded: 'md',
+        }),
         content: {
           minHeight: '[22px]',
         },
@@ -110,11 +124,18 @@ const recipe = sva({
         },
       },
       branch: {
-        root: css.raw(withBody, {
+        root: css.raw(withBackground, withBorder, {
           rounded: '0',
+          borderTopWidth: '1',
           ['&[data-is-last="true"]']: {
             borderBottomLeftRadius: 'md',
             borderBottomRightRadius: 'md',
+          },
+          ['&:not([data-is-last="true"])']: {
+            borderBottomWidth: '1',
+          },
+          ['&[data-state="collapsed"]']: {
+            background: 'colorPalette.header',
           },
         }),
       },
@@ -184,7 +205,7 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
     case 'alt': {
       variant = 'withbranches'
       colorClassname = css({ colorPalette: 'subflow.alt' })
-      body = <Header style={{ height: data.branches?.[0]?.y }}>ALTERNATIVE</Header>
+      body = <Header onClick={toggleSequenceFlow} style={{ height: data.headerHeight }}>ALTERNATIVE</Header>
       break
     }
     case 'alt-when':
@@ -198,7 +219,7 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
     case 'try': {
       variant = 'withbranches'
       colorClassname = css({ colorPalette: 'subflow.try' })
-      body = <Header style={{ height: data.tryBlock.y }}>CRITICAL</Header>
+      body = <Header onClick={toggleSequenceFlow} style={{ height: data.headerHeight }}>CRITICAL</Header>
       break
     }
     case 'try-block': {
@@ -219,20 +240,27 @@ export function SequenceSubflowArea(props: Types.NodeProps<'seq-subflow'>) {
       //
   }
 
+  let state = ''
+  if (data.collapsed === true) {
+    state = 'collapsed'
+  } else if (data.hovered) {
+    state = 'hovered'
+  }
+
   return (
     <SubflowRoot
       variant={variant}
-      data-likec4-hovered={data.hovered === true}
       className={colorClassname}
       data-is-first={data.isFirst === true}
       data-is-last={data.isLast === true}
+      data-state={state}
       {...(isDimmed !== false && {
         'data-likec4-dimmed': isDimmed,
       })}
     >
       <Content>
         {body}
-        {data.title && <Title>{data.title}</Title>}
+        {data.title && <Title onClick={toggleSequenceFlow}>{data.title}</Title>}
       </Content>
     </SubflowRoot>
   )

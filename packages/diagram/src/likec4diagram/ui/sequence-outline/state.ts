@@ -26,8 +26,6 @@ export interface OutlineTreeNodeFlow extends TreeNodeData {
     readonly type: DynamicViewFlow.SubFlowType
     /** Friendly title of the sub-flow, if defined */
     readonly title: string | undefined
-    /** Number of steps (leaf messages) nested under this sub-flow */
-    readonly stepCount: number
   }>
   children: OutlineTreeNodeData[]
 }
@@ -45,27 +43,19 @@ export function isOutlineFlowNode(node: OutlineTreeNodeData): node is OutlineTre
   return node.nodeProps.type !== 'step'
 }
 
-/**
- * Recursively counts the leaf steps (messages) under a list of tree nodes.
- */
-export function countSteps(nodes: OutlineTreeNodeData[]): number {
-  let count = 0
-  for (const node of nodes) {
-    if (isOutlineFlowNode(node)) {
-      count += node.nodeProps.stepCount
-    } else {
-      count++
-    }
-  }
-  return count
-}
-
 function buildTree(flow: DynamicViewFlow, collapsedFlows: DiagramContext['collapsedSequenceFlows']): OutlineTreeNodes {
   const tree: OutlineTreeNodeData[] = []
   let currentFlow: OutlineTreeNodeData[] = tree
 
+  let isCollapsed = false
+
   flow.walk({
     step: ({ step, stepnum, source, target, edge }) => {
+      // Skip steps if we're in a collapsed subflow
+      // We need stepnum to track the global step number even when collapsed
+      if (isCollapsed) {
+        return
+      }
       currentFlow.push({
         label: edge.label ?? `${source.title} → ${target.title}`,
         value: step,
@@ -81,7 +71,10 @@ function buildTree(flow: DynamicViewFlow, collapsedFlows: DiagramContext['collap
     },
     subflow: ({ subflow }) => {
       if (collapsedFlows[subflow.id]) {
-        return false
+        isCollapsed = true
+        return () => {
+          isCollapsed = false
+        }
       }
       const node: OutlineTreeNodeFlow = {
         label: subflow.title ?? subflow._type,
@@ -89,7 +82,6 @@ function buildTree(flow: DynamicViewFlow, collapsedFlows: DiagramContext['collap
         nodeProps: {
           type: subflow._type,
           title: subflow.title,
-          stepCount: 0,
         },
         children: [],
       }
@@ -98,7 +90,6 @@ function buildTree(flow: DynamicViewFlow, collapsedFlows: DiagramContext['collap
       currentFlow = node.children
       // restore parent on leave
       return () => {
-        ;(node.nodeProps as { stepCount: number }).stepCount = countSteps(node.children)
         currentFlow = parent
       }
     },

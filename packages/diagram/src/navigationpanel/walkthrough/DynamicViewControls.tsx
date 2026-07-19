@@ -9,7 +9,7 @@ import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { selectDiagramActorContext, useDiagram, useDiagramSnapshot } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
 
@@ -116,10 +116,10 @@ const DynamicViewModeSwitcher = forwardRef<HTMLDivElement, {
   </m.div>
 ))
 
-const selectDynamicViewVariant = selectDiagramActorContext(c => c.dynamicViewVariant)
+const selectDynamicViewVariant = selectDiagramContext(c => c.dynamicViewVariant)
 
 export function DynamicViewControls() {
-  const dynamicViewVariant = useDiagramSnapshot(selectDynamicViewVariant)
+  const dynamicViewVariant = useDiagramSelector(selectDynamicViewVariant)
   const diagram = useDiagram()
   return (
     <AnimatePresence>

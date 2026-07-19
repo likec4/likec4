@@ -1,6 +1,18 @@
 import { defineLayerStyles } from '@pandacss/dev'
 
 export const layerStyles = /* @__PURE__ */ defineLayerStyles({
+  surface: {
+    sunken: {
+      description: 'LikeC4 sunken surface layer',
+      value: {
+        backgroundColor: 'surface.sunken',
+        border: '1px solid {colors.surface.sunken.border}',
+        _hover: {
+          backgroundColor: 'surface.sunken.hover',
+        },
+      },
+    },
+  },
   likec4: {
     tag: {
       description: 'LikeC4 tag layer',

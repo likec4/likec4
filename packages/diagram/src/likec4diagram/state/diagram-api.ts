@@ -279,12 +279,12 @@ export class DiagramApi<A extends Any = Unknown> {
     return findDiagramEdge(this.ref.current.getSnapshot().context, xyedgeId)
   }
 
-  startWalkthrough(): void {
-    this.send({ type: 'walkthrough.start' })
+  startWalkthrough(stepId?: t.StepPath): void {
+    this.send({ type: 'walkthrough.start', stepId })
   }
 
-  walkthroughStep(value: 'next' | 'previous' | { step: t.StepPath } = 'next'): void {
-    if (value === 'next' || value === 'previous') {
+  walkthroughStep(value: 'next' | 'prev' | { step: t.StepPath } = 'next'): void {
+    if (value === 'next' || value === 'prev') {
       this.send({ type: 'walkthrough.step', direction: value })
     } else {
       this.send({ type: 'walkthrough.step', stepId: value.step })

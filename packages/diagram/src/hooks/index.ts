@@ -36,4 +36,10 @@ export {
 
 export { useLikeC4Styles } from './useLikeC4Styles'
 
-export * from './useDiagram'
+export {
+  selectDiagramContext,
+  selectDiagramSnapshot,
+  useDiagram,
+  useDiagramSelector,
+  useOnDiagramEvent,
+} from './useDiagram'

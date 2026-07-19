@@ -54,5 +54,5 @@ export const extractViewTitleFromPath = (title: string): string => {
   if (!title.includes(VIEW_FOLDERS_SEPARATOR)) {
     return title.trim()
   }
-  return splitViewTitle(title).pop() ?? title
+  return splitViewTitle(title).at(-1) ?? title
 }

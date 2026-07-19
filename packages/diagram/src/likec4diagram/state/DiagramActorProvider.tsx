@@ -1,16 +1,19 @@
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { type PropsWithChildren, memo, useEffect, useRef, useState } from 'react'
+import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
-import { DiagramActorContextProvider, DiagramApiContextProvider } from '../../hooks/safeContext'
 import {
-  selectDiagramActorContext,
+  DiagramActorContextProvider,
+  DiagramApiContextProvider,
+  selectDiagramContext,
+  useDiagramSelector,
+} from '../../hooks/safeContext'
+import {
   useDiagram,
-  useDiagramSnapshot,
   useOnDiagramEvent,
 } from '../../hooks/useDiagram'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
@@ -115,7 +118,7 @@ export function DiagramActorProvider({
   )
 }
 
-const selectToggledFeatures = selectDiagramActorContext(context => {
+const selectToggledFeatures = selectDiagramContext(context => {
   let toggledFeatures = context.toggledFeatures
 
   const hasDrifts = context.view.drifts != null && context.view.drifts.length > 0
@@ -149,7 +152,7 @@ const selectToggledFeatures = selectDiagramActorContext(context => {
 })
 
 function ToggledFeatures({ children }: PropsWithChildren) {
-  const toggledFeatures = useDiagramSnapshot(selectToggledFeatures)
+  const toggledFeatures = useDiagramSelector(selectToggledFeatures)
   useUpdateEffect(() => {
     DiagramToggledFeaturesPersistence.write(toggledFeatures)
   }, [toggledFeatures])

@@ -42,7 +42,7 @@
       "path": "../../packages/core/"
     },
     {
-      "path": "../../packages/diagram/tsconfig.src.json"
+      "path": "../../packages/diagram/"
     },
     {
       "path": "../../packages/generators/"

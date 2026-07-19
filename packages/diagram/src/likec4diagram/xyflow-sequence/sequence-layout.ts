@@ -13,7 +13,7 @@ import {
   hasProp,
   NodeId,
 } from '@likec4/core/types'
-import { isArray } from 'remeda'
+import { filter, first, firstBy, hasAtLeast, isArray, isTruthy, map, pipe } from 'remeda'
 import type { SetNonNullable, Writable } from 'type-fest'
 import type { Types } from '../types'
 import {
@@ -26,6 +26,7 @@ type Ctx = {
   view: Omit<LayoutedDynamicView, 'sequenceLayout' | 'flow'>
   flow: DynamicViewFlow | undefined
   layout: LayoutedDynamicView.Sequence.Layout
+  collapsedFlows: StepPath[]
   subflowArea: (id: StepPath) => LayoutedDynamicView.Sequence.SubflowArea | undefined
 }
 
@@ -47,14 +48,16 @@ export function sequenceLayoutToXY(
 } {
   const flow = hasProp(view, 'flow') ? dynamicViewFlow(view) : undefined
 
-  // We calculate sequence layout here only for development purposes
-  // In production, the layout will be already calculated and stored in the view
-  const layout = flow ? calcSequenceLayout(view, flow, collapsedFlows) : view.sequenceLayout
+  // We calculate sequence layout here if any flow is collapsed
+  const layout = flow
+    ? calcSequenceLayout(view, flow, collapsedFlows)
+    : view.sequenceLayout
 
   const ctx: Ctx = {
     view,
     flow,
     layout,
+    collapsedFlows,
     subflowArea: (id: StepPath) => layout.subflows.find((area) => area.id === id),
   }
   const { actors, steps, compounds, parallelAreas, subflows, bounds } = ctx.layout
@@ -316,12 +319,6 @@ function createSubflowNodes(
         node.data.isFirst = true
       }
 
-      if (flowGuards.isAltOrTryBranch(subflow)) {
-        node.position.y -= 1
-        node.height! += 2
-        node.initialHeight! += 2
-      }
-
       nodes.push(node)
 
       return ({
@@ -354,11 +351,9 @@ function createSubflowNode(
 
   const flowData =
     // dprint-ignore
-    ctx.flow.guards.isTry(subflow)
-      ? composeTryData(area, subflow, ctx)
-      : ctx.flow.guards.isAlt(subflow)
-        ? composeAltData(area, subflow, ctx)
-        : { flowType: subflow._type }
+    ctx.flow.guards.isAltOrTry(subflow)
+      ? composeAltTryData(area, subflow, ctx)
+      : { flowType: subflow._type }
 
   return {
     id,
@@ -382,6 +377,7 @@ function createSubflowNode(
       viewId: ctx.view.id,
       drifts: null,
       notes: undefined,
+      collapsed: ctx.collapsedFlows.includes(subflow.id),
       ...flowData,
     },
     zIndex: SeqZIndex.subflows + level,
@@ -400,58 +396,19 @@ function createSubflowNode(
   }
 }
 
-const toSequenceBranch = (
+function composeAltTryData(
   parent: XYPoint,
-  area: LayoutedDynamicView.Sequence.SubflowArea,
-): Types.SequenceSubflowData.Branch => ({
-  flowId: area.id,
-  x: area.x - parent.x,
-  y: area.y - parent.y,
-  width: area.width,
-  height: area.height,
-})
-
-function composeTryData(
-  parent: XYPoint,
-  tryflow: DynamicViewFlow.SubFlow.Try,
+  subflow: DynamicViewFlow.SubFlow.Try | DynamicViewFlow.SubFlow.Alt,
   { flow, subflowArea }: CtxWithFlow,
-): Types.SequenceSubflowData.Try {
-  const blocks = flow.unwindTry(tryflow)
-
-  const tryBlockArea = nonNullable(subflowArea(blocks.tryBlock.id))
-  const tryBlock = toSequenceBranch(parent, tryBlockArea)
-
-  const catchBlockArea = blocks.catchBlock ? subflowArea(blocks.catchBlock.id) : undefined
-  const catchBlock = catchBlockArea ? toSequenceBranch(parent, catchBlockArea) : undefined
-
-  const finallyBlockArea = blocks.finallyBlock ? subflowArea(blocks.finallyBlock.id) : undefined
-  const finallyBlock = finallyBlockArea ? toSequenceBranch(parent, finallyBlockArea) : undefined
-
+): Types.SequenceSubflowData.AltOrTry {
+  const firstBranch = pipe(
+    flow.subflows(subflow),
+    map(({ id }) => subflowArea(id)),
+    filter(isTruthy),
+    first(),
+  )
   return {
-    flowType: 'try' as const,
-    tryBlock,
-    catchBlock,
-    finallyBlock,
-  }
-}
-
-function composeAltData(
-  parent: XYPoint,
-  altflow: DynamicViewFlow.SubFlow.Alt,
-  { flow, subflowArea }: CtxWithFlow,
-): Types.SequenceSubflowData.Alt {
-  const branches = flow.subflows(altflow).flatMap(f => {
-    const area = subflowArea(f.id)
-    if (area) {
-      return {
-        ...toSequenceBranch(parent, area),
-        flowType: f._type,
-      }
-    }
-    return []
-  })
-  return {
-    flowType: 'alt' as const,
-    branches,
+    flowType: subflow._type,
+    headerHeight: firstBranch ? firstBranch.y - parent.y : 20,
   }
 }

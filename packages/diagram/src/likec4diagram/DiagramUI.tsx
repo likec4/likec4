@@ -3,14 +3,14 @@ import { useRerender } from '@react-hookz/web'
 import { memo, useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
-import { selectDiagramActor, useDiagramSnapshot } from '../hooks/useDiagram'
+import { selectDiagramSnapshot, useDiagramSelector } from '../hooks'
 import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
 import { RelationshipPopover } from './relationship-popover/RelationshipPopover'
-import { LayoutDriftFrame, NotationPanel, SequenceActorsPanel, SequenceOutlinePanel } from './ui'
+import { FloatingSequenceActors, LayoutDriftFrame, NotationPanel, SequenceOutlinePanel } from './ui'
 
-const selectChildren = selectDiagramActor(s => ({
+const selectChildren = selectDiagramSnapshot(s => ({
   overlays: s.children.overlays ?? null,
   search: s.children.search ?? null,
   navigation: s.children.navigationPanel ?? null,
@@ -38,7 +38,7 @@ export const LikeC4DiagramUI = memo(() => {
     enableCompareWithLatest,
   } = useEnabledFeatures()
   const rerender = useRerender()
-  const { isSequenceView, isActiveWalkthrough, ...actors } = useDiagramSnapshot(selectChildren)
+  const { isSequenceView, isActiveWalkthrough, ...actors } = useDiagramSelector(selectChildren)
 
   const handleReset = useCallback(() => {
     if (import.meta.env.DEV) {
@@ -49,7 +49,7 @@ export const LikeC4DiagramUI = memo(() => {
 
   return (
     <ErrorBoundary onReset={handleReset}>
-      {isSequenceView && <SequenceActorsPanel isActiveWalkthrough={isActiveWalkthrough} />}
+      {isSequenceView && <FloatingSequenceActors isActiveWalkthrough={isActiveWalkthrough} />}
       {isActiveWalkthrough && <SequenceOutlinePanel />}
       {enableControls && actors.navigation && !isActiveWalkthrough && <NavigationPanel actorRef={actors.navigation} />}
       {actors.overlays && <Overlays overlaysActorRef={actors.overlays} />}

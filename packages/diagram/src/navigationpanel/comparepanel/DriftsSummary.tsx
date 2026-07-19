@@ -14,7 +14,12 @@ import { useDebouncedCallback } from '@mantine/hooks'
 import { type Variants, AnimatePresence, m, stagger } from 'motion/react'
 import type { MouseEvent, MouseEventHandler } from 'react'
 import { filter, hasAtLeast, map, pipe } from 'remeda'
-import { selectDiagramActorContext, useCallbackRef, useDiagram, useDiagramSnapshot } from '../../hooks'
+import {
+  selectDiagramContext,
+  useCallbackRef,
+  useDiagram,
+  useDiagramSelector,
+} from '../../hooks'
 
 const hasDrifts = <
   E extends {
@@ -24,7 +29,7 @@ const hasDrifts = <
   return !!item.drifts && hasAtLeast(item.drifts, 1)
 }
 
-const selectDrifts = selectDiagramActorContext(ctx => ({
+const selectDrifts = selectDiagramContext(ctx => ({
   view: ctx.view.drifts ?? [],
   nodes: pipe(
     ctx.view.nodes,
@@ -43,7 +48,7 @@ const selectDrifts = selectDiagramActorContext(ctx => ({
     })),
     filter(hasDrifts),
   ),
-}))
+}), deepEqual)
 
 const variants = {
   initial: {
@@ -73,7 +78,7 @@ type Handlers = {
 }
 
 export function DriftsSummary() {
-  const selected = useDiagramSnapshot(selectDrifts, deepEqual)
+  const selected = useDiagramSelector(selectDrifts)
 
   const diagram = useDiagram()
 

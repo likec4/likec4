@@ -119,7 +119,9 @@ describe('buildCompounds', () => {
     const b2 = node('p.c2.b2', 'p.c2')
 
     const nodes: Array<DiagramNode> = [p, c1, c2, a1, a2, b1, b2]
-    // Sequence: a1 (c1), b1 (c2), a2 (c1)
+    // |        P          |
+    // | C1 |   C2    | C1 |
+    // | A1 | B1 | B2 | A2 |
     const actors: Array<DiagramNode> = [a1, b1, b2, a2]
 
     const compounds = buildCompounds(actors, nodes)
@@ -127,16 +129,15 @@ describe('buildCompounds', () => {
     // Top-level compound is p, spanning from first actor to last actor (a1 -> a2)
     expect(compounds).toHaveLength(1)
     const top = compounds[0]!
-    expect(top.node.id).toBe('p')
-    expect(top.from.id).toBe('p.c1.a1')
-    expect(top.to.id).toBe('p.c1.a2')
+    expect(top).toMatchObject({
+      node: p,
+      from: a1,
+      to: a2,
+    })
 
-    // Inside, there should be thre nested compounds for c1,c2,c1 in order of first encounter
-    expect(top.nested).toHaveLength(3)
+    expect.soft(top.nested).toHaveLength(3)
 
-    const firstNested = top.nested[0]!
-    const secondNested = top.nested[1]!
-    const thirdNested = top.nested[2]!
+    const [firstNested, secondNested, thirdNested] = top.nested
 
     // c1 first opens at a1
     expect(firstNested).toEqual({

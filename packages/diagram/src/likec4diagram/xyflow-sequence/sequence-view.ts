@@ -75,7 +75,7 @@ export function calcSequenceLayout(
       isContinuing = prevStep.isSelfLoop !== isSelfLoop || prevStep.isBack === isBack
     }
 
-    if (!isContinuing) {
+    if (!isContinuing && prevStep) {
       row++
     }
 
@@ -134,11 +134,6 @@ export function calcSequenceLayout(
     flat(),
   )
 
-  const subflows = layout.getSubflowAreas().map(({ subflow, box }): LayoutedDynamicView.Sequence.SubflowArea => ({
-    id: subflow.id,
-    ...box,
-  }))
-
   return {
     actors: actors.map(actor => toSeqActor({ actor, ports: actorPorts.get(actor), layout })),
     compounds,
@@ -155,7 +150,7 @@ export function calcSequenceLayout(
       ...layout.isStepCollapsed(s) && { hidden: true },
     })),
     parallelAreas: [],
-    subflows,
+    subflows: layout.getSubflowAreas(),
     bounds,
   }
 }

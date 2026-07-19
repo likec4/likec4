@@ -1,8 +1,10 @@
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
+  dynamicViewFlow,
   exact,
   invariant,
+  isDynamicView,
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
@@ -13,13 +15,14 @@ import type {
   Fqn,
   LayoutType,
   NodeId,
+  StepPath,
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
 import { difference, isString } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy } from 'remeda'
+import { hasAtLeast, isTruthy, mapToObj, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   assertEvent,
@@ -35,7 +38,7 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
-import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
+import { cancelFitDiagram, fitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
@@ -862,6 +865,8 @@ export const onEdgeMouseEnter = () =>
   machine.enqueueActions(({ enqueue, context, event }) => {
     assertEvent(event, 'xyflow.edgeMouseEnter')
     let edge = event.edge
+    let parentFlow = edge.type === 'seq-step' && edge.data.parentFlow
+
     enqueue.assign({
       xyedges: context.xyedges.map(e => {
         if (e.id === event.edge.id) {
@@ -871,6 +876,14 @@ export const onEdgeMouseEnter = () =>
         }
         return e
       }),
+      xynodes: parentFlow
+        ? context.xynodes.map(n => {
+          if (n.type === 'seq-subflow' && n.data.flowId === parentFlow.id) {
+            return Base.setHovered(n, true)
+          }
+          return n
+        })
+        : context.xynodes,
     })
     enqueue.emit({
       type: 'edgeMouseEnter',
@@ -883,6 +896,7 @@ export const onEdgeMouseLeave = () =>
   machine.enqueueActions(({ enqueue, context, event }) => {
     assertEvent(event, 'xyflow.edgeMouseLeave')
     let edge = event.edge
+    let parentFlow = edge.type === 'seq-step' && edge.data.parentFlow
     enqueue.assign({
       xyedges: context.xyedges.map(e => {
         if (e.id === event.edge.id) {
@@ -891,6 +905,14 @@ export const onEdgeMouseLeave = () =>
         }
         return e
       }),
+      xynodes: parentFlow
+        ? context.xynodes.map(n => {
+          if (n.type === 'seq-subflow' && n.data.flowId === parentFlow.id) {
+            return Base.setHovered(n, false)
+          }
+          return n
+        })
+        : context.xynodes,
     })
     enqueue.emit({
       type: 'edgeMouseLeave',
@@ -1091,24 +1113,44 @@ export const ensureAllActors = () =>
 export const collapseOrExpandSequenceFlow = () =>
   machine.enqueueActions(({ enqueue, event, context, check }) => {
     assertEvent(event, ['sequence.flow.*'])
+    invariant(isDynamicView(context.view))
     const flowId = event.flowId
-    // current state
-    const isCollapsed = context.collapsedSequenceFlows[flowId] ?? false
-
-    if (isCollapsed && event.type === 'sequence.flow.collapse') {
+    const flow = dynamicViewFlow(context.view)
+    const subflow = flow.isSubflow(flowId) ? flow.lookup(flowId) : null
+    if (!subflow) {
       return
     }
-    if (!isCollapsed && event.type === 'sequence.flow.expand') {
+
+    let targets: StepPath[]
+    let isCollapsed: boolean
+    if (flow.guards.isAltOrTry(subflow)) {
+      targets = flow.subflows(subflow).map(s => s.id)
+      isCollapsed = targets.some(id => context.collapsedSequenceFlows[id])
+    } else {
+      targets = [flowId]
+      isCollapsed = context.collapsedSequenceFlows[flowId] ?? false
+    }
+
+    // No state change needed - already in the desired state
+    if (
+      (isCollapsed && event.type === 'sequence.flow.collapse') ||
+      (!isCollapsed && event.type === 'sequence.flow.expand')
+    ) {
       return
     }
 
     enqueue.assign({
       collapsedSequenceFlows: {
         ...context.collapsedSequenceFlows,
-        [flowId]: !isCollapsed,
+        ...mapToObj(targets, id => [id, !isCollapsed]),
       },
     })
+
     if (check('is dynamic view in sequence variant')) {
       enqueue(assignXYDataFromView(context.view))
+
+      if (!context.viewportChangedManually) {
+        enqueue(raiseFitDiagram())
+      }
     }
   })

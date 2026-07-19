@@ -4,6 +4,7 @@ import { css, cx } from '@likec4/styles/css'
 import { elementNode } from '@likec4/styles/recipes'
 import { useNodesData } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
+import { shallowEqual } from 'fast-equals'
 import {
   type Variants,
   AnimatePresence,
@@ -42,25 +43,26 @@ const selectActorNodes = selectXYStore((state) => {
       const { width, height } = getNodeDimensions(node)
 
       const centerX = xynode.data.x + width / 2
-      return (xynode.data.y + height) < y1 &&
-        (centerX - 30 > x1 && centerX + 30 < x2)
+      if ((xynode.data.y + height - 8) < y1 && (centerX - 30 > x1 && centerX + 30 < x2)) {
+        return true
+      }
+      return false
     }),
     imap(node => node.id),
     toArray(),
   )
 })
-
 /**
  * Shows sequence actors at the top of the diagram, if current viewport does not fit them
  */
-export function SequenceActorsPanel({ isActiveWalkthrough }: { isActiveWalkthrough: boolean }) {
+export function FloatingSequenceActors({ isActiveWalkthrough }: { isActiveWalkthrough: boolean }) {
   // const api = useXYStoreApi()
   const ids = useXYStore(selectActorNodes)
 
   return (
     <LayoutGroup>
       <AnimatePresence anchorY="top">
-        {ids.map(id => <SequenceActor key={id} id={id} top={isActiveWalkthrough ? 24 : 60} />)}
+        {ids.map(id => <SequenceActor key={id} id={id} top={isActiveWalkthrough ? 24 : 64} />)}
       </AnimatePresence>
     </LayoutGroup>
   )
@@ -69,15 +71,15 @@ export function SequenceActorsPanel({ isActiveWalkthrough }: { isActiveWalkthrou
 const variants = {
   initial: {
     opacity: .7,
-    scale: 0.95,
+    scale: 0.9,
   },
   normal: {
-    opacity: .9,
+    opacity: .95,
     scale: 1,
   },
   hovered: {
     opacity: 1,
-    scale: 1.05,
+    scale: 1.07,
   },
   tap: {
     opacity: 1,
@@ -85,7 +87,7 @@ const variants = {
   },
   exit: {
     opacity: 0,
-    scale: 0.95,
+    scale: 0.9,
   },
 } satisfies Variants
 
@@ -108,7 +110,7 @@ function SequenceActor({ id, top }: { id: string; top: number }) {
     invariant(xynode.type === 'seq-actor')
 
     const scale = clamp(0.6 * tScale, {
-      min: 0.1,
+      min: 0.2,
       max: 0.6,
     })
 
@@ -162,6 +164,11 @@ function SequenceActor({ id, top }: { id: string; top: number }) {
           }),
         )}
         variants={variants}
+        transition={{
+          type: 'spring',
+          stiffness: 400,
+          damping: 30,
+        }}
         initial={'initial'}
         animate={isHovered ? 'hovered' : 'normal'}
         exit={'exit'}

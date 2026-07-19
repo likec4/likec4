@@ -30,7 +30,7 @@
       "path": "../../packages/vite-plugin/"
     },
     {
-      "path": "../../packages/likec4/tsconfig.cli.json"
+      "path": "../../packages/likec4/"
     }
   ]
 }

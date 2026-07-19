@@ -121,11 +121,6 @@ export namespace Types {
       flowId: StepPath
       title: string | undefined
       /**
-       * If set - this subflow (or one of its branches) is active
-       */
-      activePath?: StepPath | undefined | null
-      state?: 'processed' | 'active' | 'skipped' | 'pending' | undefined
-      /**
        * This is first subflow in current flow
        */
       isFirst?: boolean | undefined
@@ -133,34 +128,19 @@ export namespace Types {
        * This is last subflow in current flow
        */
       isLast?: boolean | undefined
+      collapsed: boolean
     }
     & (
-      | SequenceSubflowData.Try
-      | SequenceSubflowData.Alt
       | {
         flowType: Exclude<DynamicViewFlow.SubFlowType, 'try' | 'alt'>
       }
+      | SequenceSubflowData.AltOrTry
     )
 
   export namespace SequenceSubflowData {
-    export type Branch = {
-      flowId: StepPath
-      x: number
-      y: number
-      width: number
-      height: number
-    }
-
-    export type Try = {
-      flowType: 'try'
-      tryBlock: Branch
-      catchBlock: undefined | Branch
-      finallyBlock: undefined | Branch
-    }
-
-    export type Alt = {
-      flowType: 'alt'
-      branches: Array<Branch & { flowType: 'alt-when' | 'alt-else' | 'alt-if' }>
+    export type AltOrTry = {
+      flowType: 'try' | 'alt'
+      headerHeight: number
     }
   }
 
