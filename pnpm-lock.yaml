@@ -1296,7 +1296,7 @@ importers:
         version: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
       vite-plugin-dts:
         specifier: 5.0.2
-        version: 5.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.2(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       vitest:
         specifier: catalog:vitest
         version: 4.1.9(@types/node@22.19.19)(@vitest/ui@4.1.9)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
@@ -2031,7 +2031,7 @@ importers:
         version: 1.6.4
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.3(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       vitest:
         specifier: catalog:vitest
         version: 4.1.9(@types/node@22.19.19)(@vitest/ui@4.1.9)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
@@ -2272,7 +2272,7 @@ importers:
         version: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.3(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       vitest:
         specifier: catalog:vitest
         version: 4.1.9(@types/node@22.19.19)(@vitest/ui@4.1.9)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
@@ -2497,8 +2497,8 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
-        version: 7.58.9(@types/node@24.12.4)
+        specifier: ^7.58.10
+        version: 7.58.11(@types/node@24.12.4)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
@@ -2555,7 +2555,7 @@ importers:
         version: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.3(@microsoft/api-extractor@7.58.11(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       xstate:
         specifier: catalog:xstate
         version: 5.32.4
@@ -5129,11 +5129,11 @@ packages:
   '@microsoft/1ds-post-js@4.4.1':
     resolution: {integrity: sha512-CkFEhDY7X8E2JLr6HsEvRiC0DaLOCsA7vlbq/9DJP65gAumgw2NnFNIAOg6Je5Geq1LDu76/nb2hP34p8eGggw==}
 
-  '@microsoft/api-extractor-model@7.33.8':
-    resolution: {integrity: sha512-aIcoQggPyer3B6Ze3usz0YWC/oBwUHfRH5ETUsr+oT2BRA6SfTJl7IKPcPZkX4UR+PohowzW4uMxsvjrn8vm+w==}
+  '@microsoft/api-extractor-model@7.33.10':
+    resolution: {integrity: sha512-uPUK17xGxeQ3av6TN7awp+dTTSTvx8fZC0XFL1gyt7hFapYuxND3XLXH8vkmI7UjfW92oogzFAFqHSifmJROaw==}
 
-  '@microsoft/api-extractor@7.58.9':
-    resolution: {integrity: sha512-S2UF4yza5GoxCmf7hJQNxJNZN9ltOVuOQv8Dy+Z21aol5ERoBNMdWcQHm4MJMPPItW4H/4rZD906iaf4mUojJA==}
+  '@microsoft/api-extractor@7.58.11':
+    resolution: {integrity: sha512-ngeL7gd6HYwmq9VRWBh4mUBSM6mXlIK5hwyVXxJ9go5Xf70ohx9M57t+8LIgZTARmsyN5sk/q+RUBkD9Bgq5yA==}
     hasBin: true
 
   '@microsoft/applicationinsights-channel-js@3.4.1':
@@ -5952,8 +5952,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rushstack/node-core-library@5.23.1':
-    resolution: {integrity: sha512-wlKmIKIYCKuCASbITvOxLZXepPbwXvrv7S6ig6XNWFchSyhL/E2txmVXspHY49Wu2dzf7nI27a2k/yV5BA3EiA==}
+  '@rushstack/node-core-library@5.23.3':
+    resolution: {integrity: sha512-f6uuza7Um65bwsIJgf0MRs7IPA5IG+A+zs1AYGQvpZmLjtTGdfHowhQw4kwF0pPhJCrU4UHNhK8Qa6tLygYZCA==}
     peerDependencies:
       '@types/node': '*'
     peerDependenciesMeta:
@@ -5971,16 +5971,16 @@ packages:
   '@rushstack/rig-package@0.7.3':
     resolution: {integrity: sha512-aAA518n6wxxjCfnTAOjQnm7ngNE0FVHxHAw2pxKlIhxrMn0XQjGcXKF0oKWpjBgJOmsaJpVob/v+zr3zxgPWuA==}
 
-  '@rushstack/terminal@0.24.0':
-    resolution: {integrity: sha512-8ZQS4MMaGsv27EXCBiH7WMPkRZrffeDoIevs6z9TM5dzqiY6+Hn4evfK/G+gvgBTjfvfkHIZPQQmalmI2sM4TQ==}
+  '@rushstack/terminal@0.24.2':
+    resolution: {integrity: sha512-KB7PpvzDyKMw/RGU3TxOwxTs3OwZ4gq6+WHlTJN/JfQH4ezliNtWIqver78jTaAJyz/ZAAlJGH7a/M1WyFLFSw==}
     peerDependencies:
       '@types/node': '*'
     peerDependenciesMeta:
       '@types/node':
         optional: true
 
-  '@rushstack/ts-command-line@5.3.10':
-    resolution: {integrity: sha512-fwI076HYknC0IrMXdY6UmjDv+PH7NHhNJX3/pY2UblSE5XrXgndXZPiOe/6ZtuFpn6DvVDVNhtkIzQ+Qu/MhVQ==}
+  '@rushstack/ts-command-line@5.3.12':
+    resolution: {integrity: sha512-Vg2n24arSf7JvUNga2DMHYTbxnVq9L5OtVCp4Gfr8YC/kmL/bmdR8FQhGcpMzMYNY9Vdw3+TaimG11Sf+z1Tpw==}
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -6869,6 +6869,9 @@ packages:
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
+
+  ajv@8.20.0:
+    resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
   am-i-vibing@0.4.0:
     resolution: {integrity: sha512-MxT4XZL7pzLHpuvhDKdMaQHMGGkJDLluKBLsbstn+8wv9sWcFT6h+0ve9qkml95amVTZtZV83gQe2hY+ojgHLg==}
@@ -13876,32 +13879,32 @@ snapshots:
     transitivePeerDependencies:
       - tslib
 
-  '@microsoft/api-extractor-model@7.33.8(@types/node@22.19.19)':
+  '@microsoft/api-extractor-model@7.33.10(@types/node@22.19.19)':
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@rushstack/node-core-library': 5.23.1(@types/node@22.19.19)
+      '@rushstack/node-core-library': 5.23.3(@types/node@22.19.19)
     transitivePeerDependencies:
       - '@types/node'
     optional: true
 
-  '@microsoft/api-extractor-model@7.33.8(@types/node@24.12.4)':
+  '@microsoft/api-extractor-model@7.33.10(@types/node@24.12.4)':
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@rushstack/node-core-library': 5.23.1(@types/node@24.12.4)
+      '@rushstack/node-core-library': 5.23.3(@types/node@24.12.4)
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.58.9(@types/node@22.19.19)':
+  '@microsoft/api-extractor@7.58.11(@types/node@22.19.19)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.33.8(@types/node@22.19.19)
+      '@microsoft/api-extractor-model': 7.33.10(@types/node@22.19.19)
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@rushstack/node-core-library': 5.23.1(@types/node@22.19.19)
+      '@rushstack/node-core-library': 5.23.3(@types/node@22.19.19)
       '@rushstack/rig-package': 0.7.3
-      '@rushstack/terminal': 0.24.0(@types/node@22.19.19)
-      '@rushstack/ts-command-line': 5.3.10(@types/node@22.19.19)
+      '@rushstack/terminal': 0.24.2(@types/node@22.19.19)
+      '@rushstack/ts-command-line': 5.3.12(@types/node@22.19.19)
       diff: 8.0.4
       minimatch: 10.2.3
       resolve: 1.22.12
@@ -13912,15 +13915,15 @@ snapshots:
       - '@types/node'
     optional: true
 
-  '@microsoft/api-extractor@7.58.9(@types/node@24.12.4)':
+  '@microsoft/api-extractor@7.58.11(@types/node@24.12.4)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.33.8(@types/node@24.12.4)
+      '@microsoft/api-extractor-model': 7.33.10(@types/node@24.12.4)
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@rushstack/node-core-library': 5.23.1(@types/node@24.12.4)
+      '@rushstack/node-core-library': 5.23.3(@types/node@24.12.4)
       '@rushstack/rig-package': 0.7.3
-      '@rushstack/terminal': 0.24.0(@types/node@24.12.4)
-      '@rushstack/ts-command-line': 5.3.10(@types/node@24.12.4)
+      '@rushstack/terminal': 0.24.2(@types/node@24.12.4)
+      '@rushstack/ts-command-line': 5.3.12(@types/node@24.12.4)
       diff: 8.0.4
       minimatch: 10.2.3
       resolve: 1.22.12
@@ -13985,8 +13988,8 @@ snapshots:
   '@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3)':
     dependencies:
       '@hono/node-server': 1.19.14(hono@4.12.27)
-      ajv: 8.18.0
-      ajv-formats: 3.0.1(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
       content-type: 1.0.5
       cors: 2.8.5
       cross-spawn: 7.0.6
@@ -14654,11 +14657,11 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.1':
     optional: true
 
-  '@rushstack/node-core-library@5.23.1(@types/node@22.19.19)':
+  '@rushstack/node-core-library@5.23.3(@types/node@22.19.19)':
     dependencies:
-      ajv: 8.18.0
-      ajv-draft-04: 1.0.0(ajv@8.18.0)
-      ajv-formats: 3.0.1(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-draft-04: 1.0.0(ajv@8.20.0)
+      ajv-formats: 3.0.1(ajv@8.20.0)
       fs-extra: 11.3.2
       import-lazy: 4.0.0
       jju: 1.4.0
@@ -14668,11 +14671,11 @@ snapshots:
       '@types/node': 22.19.19
     optional: true
 
-  '@rushstack/node-core-library@5.23.1(@types/node@24.12.4)':
+  '@rushstack/node-core-library@5.23.3(@types/node@24.12.4)':
     dependencies:
-      ajv: 8.18.0
-      ajv-draft-04: 1.0.0(ajv@8.18.0)
-      ajv-formats: 3.0.1(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-draft-04: 1.0.0(ajv@8.20.0)
+      ajv-formats: 3.0.1(ajv@8.20.0)
       fs-extra: 11.3.2
       import-lazy: 4.0.0
       jju: 1.4.0
@@ -14695,26 +14698,26 @@ snapshots:
       jju: 1.4.0
       resolve: 1.22.12
 
-  '@rushstack/terminal@0.24.0(@types/node@22.19.19)':
+  '@rushstack/terminal@0.24.2(@types/node@22.19.19)':
     dependencies:
-      '@rushstack/node-core-library': 5.23.1(@types/node@22.19.19)
+      '@rushstack/node-core-library': 5.23.3(@types/node@22.19.19)
       '@rushstack/problem-matcher': 0.2.1(@types/node@22.19.19)
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 22.19.19
     optional: true
 
-  '@rushstack/terminal@0.24.0(@types/node@24.12.4)':
+  '@rushstack/terminal@0.24.2(@types/node@24.12.4)':
     dependencies:
-      '@rushstack/node-core-library': 5.23.1(@types/node@24.12.4)
+      '@rushstack/node-core-library': 5.23.3(@types/node@24.12.4)
       '@rushstack/problem-matcher': 0.2.1(@types/node@24.12.4)
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 24.12.4
 
-  '@rushstack/ts-command-line@5.3.10(@types/node@22.19.19)':
+  '@rushstack/ts-command-line@5.3.12(@types/node@22.19.19)':
     dependencies:
-      '@rushstack/terminal': 0.24.0(@types/node@22.19.19)
+      '@rushstack/terminal': 0.24.2(@types/node@22.19.19)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -14722,9 +14725,9 @@ snapshots:
       - '@types/node'
     optional: true
 
-  '@rushstack/ts-command-line@5.3.10(@types/node@24.12.4)':
+  '@rushstack/ts-command-line@5.3.12(@types/node@24.12.4)':
     dependencies:
-      '@rushstack/terminal': 0.24.0(@types/node@24.12.4)
+      '@rushstack/terminal': 0.24.2(@types/node@24.12.4)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -15668,15 +15671,22 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ajv-draft-04@1.0.0(ajv@8.18.0):
+  ajv-draft-04@1.0.0(ajv@8.20.0):
     optionalDependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
 
-  ajv-formats@3.0.1(ajv@8.18.0):
+  ajv-formats@3.0.1(ajv@8.20.0):
     optionalDependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
 
   ajv@8.18.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      fast-uri: 3.1.0
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
+
+  ajv@8.20.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-uri: 3.1.0
@@ -16234,8 +16244,8 @@ snapshots:
 
   conf@15.1.0:
     dependencies:
-      ajv: 8.18.0
-      ajv-formats: 3.0.1(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
       atomically: 2.0.3
       debounce-fn: 6.0.0
       dot-prop: 10.1.0
@@ -20010,7 +20020,7 @@ snapshots:
 
   table@6.9.0:
     dependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
       lodash.truncate: 4.4.2
       slice-ansi: 4.0.0
       string-width: 4.2.3
@@ -20285,7 +20295,7 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  unplugin-dts@1.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  unplugin-dts@1.0.2(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       '@volar/typescript': 2.4.28
@@ -20297,7 +20307,7 @@ snapshots:
       typescript: 6.0.3
       unplugin: 2.3.11
     optionalDependencies:
-      '@microsoft/api-extractor': 7.58.9(@types/node@22.19.19)
+      '@microsoft/api-extractor': 7.58.11(@types/node@22.19.19)
       esbuild: 0.28.1
       rolldown: 1.2.0
       rollup: 4.60.1
@@ -20305,7 +20315,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       '@volar/typescript': 2.4.28
@@ -20317,7 +20327,7 @@ snapshots:
       typescript: 6.0.3
       unplugin: 2.3.11
     optionalDependencies:
-      '@microsoft/api-extractor': 7.58.9(@types/node@22.19.19)
+      '@microsoft/api-extractor': 7.58.11(@types/node@22.19.19)
       esbuild: 0.28.1
       rolldown: 1.2.0
       rollup: 4.60.1
@@ -20325,7 +20335,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.11(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       '@volar/typescript': 2.4.28
@@ -20337,7 +20347,7 @@ snapshots:
       typescript: 6.0.3
       unplugin: 2.3.11
     optionalDependencies:
-      '@microsoft/api-extractor': 7.58.9(@types/node@24.12.4)
+      '@microsoft/api-extractor': 7.58.11(@types/node@24.12.4)
       esbuild: 0.28.1
       rolldown: 1.2.0
       rollup: 4.60.1
@@ -20436,11 +20446,11 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-dts@5.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  vite-plugin-dts@5.0.2(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      unplugin-dts: 1.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      unplugin-dts: 1.0.2(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
     optionalDependencies:
-      '@microsoft/api-extractor': 7.58.9(@types/node@22.19.19)
+      '@microsoft/api-extractor': 7.58.11(@types/node@22.19.19)
       rollup: 4.60.1
       vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
     transitivePeerDependencies:
@@ -20452,11 +20462,11 @@ snapshots:
       - typescript
       - webpack
 
-  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.11(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
     optionalDependencies:
-      '@microsoft/api-extractor': 7.58.9(@types/node@22.19.19)
+      '@microsoft/api-extractor': 7.58.11(@types/node@22.19.19)
       rollup: 4.60.1
       vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
     transitivePeerDependencies:
@@ -20468,11 +20478,11 @@ snapshots:
       - typescript
       - webpack
 
-  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.11(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.11(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
     optionalDependencies:
-      '@microsoft/api-extractor': 7.58.9(@types/node@24.12.4)
+      '@microsoft/api-extractor': 7.58.11(@types/node@24.12.4)
       rollup: 4.60.1
       vite: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
     transitivePeerDependencies:
@@ -20848,8 +20858,8 @@ snapshots:
   yaml-language-server@1.20.0:
     dependencies:
       '@vscode/l10n': 0.0.18
-      ajv: 8.18.0
-      ajv-draft-04: 1.0.0(ajv@8.18.0)
+      ajv: 8.20.0
+      ajv-draft-04: 1.0.0(ajv@8.20.0)
       prettier: 3.5.2
       request-light: 0.5.8
       vscode-json-languageservice: 4.1.8
