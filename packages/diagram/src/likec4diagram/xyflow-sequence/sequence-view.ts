@@ -147,7 +147,7 @@ export function calcSequenceLayout(
           height: s.label.height,
         },
       }),
-      ...layout.isStepCollapsed(s) && { hidden: true },
+      hidden: layout.isStepCollapsed(s),
     })),
     parallelAreas: [],
     subflows: layout.getSubflowAreas(),
@@ -176,7 +176,7 @@ function toSeqActor({ actor, ports, layout }: {
         height: bbox.height,
         type: p.type,
         position: p.position,
-        ...layout.isStepCollapsed(p.step) && { hidden: true },
+        hidden: layout.isStepCollapsed(p.step),
       })
     }),
   }

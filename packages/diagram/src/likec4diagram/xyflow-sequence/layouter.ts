@@ -520,6 +520,7 @@ export class SequenceViewLayouter {
       rowVar.height.setValue(rowHeight)
       this.#solver.suggestValue(rowVar.height, rowHeight)
     }
+    return rowVar
   }
 
   private collapseRect({ min, max }: Rect) {
@@ -590,17 +591,7 @@ export class SequenceViewLayouter {
     steps: ReadonlyArray<Step>,
     collapsed: Set<StepPath>,
   ) {
-    const nested = filter(steps, hasProp('parent'))
-    if (!hasAtLeast(nested, 1)) {
-      return
-    }
-    // Parents
-    const ancestors = new Set<StepPath>()
-    for (const step of nested) {
-      flowAncestors(step.id).forEach(a => ancestors.add(a))
-    }
-
-    const selectSteps = (id: StepPath) => filter(nested, s => s.id.startsWith(id))
+    const selectSteps = (id: StepPath) => filter(steps, s => s.id.startsWith(id))
 
     const spacing: NormalizedSpacing = {
       top: 30,

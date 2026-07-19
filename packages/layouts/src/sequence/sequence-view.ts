@@ -72,7 +72,7 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
       isContinuing = prevStep.isSelfLoop !== isSelfLoop || prevStep.isBack === isBack
     }
 
-    if (!isContinuing) {
+    if (!isContinuing && prevStep) {
       row++
     }
 
@@ -146,7 +146,6 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
           height: s.label.height,
         },
       }),
-      ...layout.isStepCollapsed(s) && { hidden: true },
     })),
     parallelAreas: [],
     subflows: layout.getSubflowAreas(),
@@ -175,7 +174,6 @@ function toSeqActor({ actor, ports, layout }: {
         height: bbox.height,
         type: p.type,
         position: p.position,
-        ...layout.isStepCollapsed(p.step) && { hidden: true },
       })
     }),
   }

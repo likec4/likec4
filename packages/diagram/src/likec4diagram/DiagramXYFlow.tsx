@@ -9,7 +9,7 @@ import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
-import { Controls } from '@xyflow/react'
+import { Controls as XYFlowControls } from '@xyflow/react'
 import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
@@ -17,6 +17,7 @@ import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
+import { MinZoom } from '../base/const'
 import { useDiagramEventHandlers } from '../context'
 import { useRootContainer } from '../context/RootContainerContext'
 import {
@@ -27,7 +28,7 @@ import {
 } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
-import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties, NodeRenderers, ViewPadding, ViewPaddings } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
 import type { DiagramContext } from './state/types'
@@ -101,6 +102,7 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
     nodesSelectable: ctx.nodesSelectable && isNotEditingEdge && !isEditorBusy,
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
+    enableControls: ctx.features.enableControls && ctx.features.enableFitView,
     ...(!ctx.features.enableFitView && {
       viewport: viewportToTopLeft(ctx),
     }),
@@ -134,6 +136,7 @@ export function LikeC4DiagramXYFlow({
     enableFitView,
     nodesDraggable,
     nodesSelectable,
+    enableControls,
     ...props
   } = useDiagramSelector(selectXYProps)
 
@@ -307,16 +310,21 @@ export function LikeC4DiagramXYFlow({
       {...(nodesDraggable && layoutConstraints)}
       {...props}
       {...reactFlowProps}>
-      {enableFitView && (
-        <Controls
-          showInteractive={false}
-          onFitView={() => {
-            debugger
-            diagram.fitDiagram(500)
-          }}
-          position="bottom-left" />
-      )}
+      {enableControls && <Controls padding={props.fitViewPadding} />}
       {children}
     </BaseXYFlow>
   )
 }
+
+const Controls = ({ padding }: { padding: ViewPaddings }) => (
+  <XYFlowControls
+    showInteractive={false}
+    fitViewOptions={{
+      padding,
+      minZoom: MinZoom,
+      maxZoom: 1,
+      duration: 350,
+    }}
+    position="bottom-left"
+  />
+)

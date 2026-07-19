@@ -1,5 +1,5 @@
 import { type DiagramNode } from '@likec4/core/types'
-import { invariant, isAncestor, nonNullable, Stack } from '@likec4/core/utils'
+import { invariant, isAncestor, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
 import type { Compound, ParallelRect, Rect, Spacing, Step } from './_types'
 
@@ -34,11 +34,14 @@ export function rectFromSteps(steps: Array<Step>): Rect {
   invariant(steps.length > 0)
   return steps.reduce(
     (acc, step) => {
-      acc.min.column = Math.min(acc.min.column, step.from.column, step.to.column)
-      acc.min.row = Math.min(acc.min.row, step.from.row, step.to.row)
+      const columns = [step.from.column, step.to.column]
+      const rows = [step.from.row, step.to.row]
 
-      acc.max.column = Math.max(acc.max.column, step.from.column, step.to.column)
-      acc.max.row = Math.max(acc.max.row, step.from.row, step.to.row)
+      acc.min.column = Math.min(acc.min.column, ...columns)
+      acc.min.row = Math.min(acc.min.row, ...rows)
+
+      acc.max.column = Math.max(acc.max.column, ...columns)
+      acc.max.row = Math.max(acc.max.row, ...rows)
 
       return acc
     },
@@ -83,9 +86,9 @@ export function buildCompounds(actors: ReadonlyArray<DiagramNode>, nodes: Readon
   if (actors.length === 0 || actors.length === nodes.length) {
     return []
   }
-  const getNode = (id: string) => nonNullable(nodes.find(n => n.id === id))
+  const getNode = (id: string) => nodes.find(n => n.id === id)
   function parentsLookup(node: DiagramNode): DiagramNode[] {
-    const parent = node.parent ? getNode(node.parent) : null
+    const parent = node.parent && getNode(node.parent)
     if (parent) {
       return [parent, ...parentsLookup(parent)]
     }
@@ -96,27 +99,24 @@ export function buildCompounds(actors: ReadonlyArray<DiagramNode>, nodes: Readon
   const result = [] as Array<Compound>
 
   actors.forEach(actor => {
-    const _ancestors = parentsLookup(actor)
-    if (_ancestors.length === 0) {
+    const parents = parentsLookup(actor)
+    if (parents.length === 0) {
       stack.clear()
       return
     }
-    const ancestors = Stack.from(_ancestors)
-    let compound: DiagramNode | undefined
-    let parent: DiagramNode | undefined
-    while (true) {
-      compound = stack.peek()?.node
-      parent = ancestors.peek()
-      if (!parent || !compound) {
+
+    let head: DiagramNode | undefined
+    let parent = parents[0]
+    // Fist we check current stack
+    // We pop elements from stack that are not ancestors of the current parent
+    while ((head = stack.peek()?.node)) {
+      if (!parent || head.id === parent.id) {
+        // Clear ancestors array, stack head is already in the result
+        parents.length = 0
         break
       }
-      // Drop ancestors that are ancestors of the current compound
-      if (isAncestor(parent.id, compound.id) || parent.id === compound.id) {
-        ancestors.pop()
-        continue
-      }
       // Drop compounds that are not ancestors of the current parent
-      if (!isAncestor(compound.id, parent.id)) {
+      if (!isAncestor(head.id, parent.id)) {
         stack.pop()
         continue
       }
@@ -124,14 +124,20 @@ export function buildCompounds(actors: ReadonlyArray<DiagramNode>, nodes: Readon
     }
 
     // Add ancestors to the stack
-    while ((parent = ancestors.pop())) {
+    while ((head = parents.pop())) {
+      let compound = stack.peek()
+
+      // Skip if this ancestor is already in the stack as a nested compound
+      if (compound && (isAncestor(head.id, compound.node.id) || head.id === compound.node.id)) {
+        continue
+      }
+
       const parentAsCompound = {
-        node: parent,
+        node: head,
         from: actor,
         to: actor,
         nested: [],
       }
-      let compound = stack.peek()
       if (!compound) {
         result.push(parentAsCompound)
       } else {

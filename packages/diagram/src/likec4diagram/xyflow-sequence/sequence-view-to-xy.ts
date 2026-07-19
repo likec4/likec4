@@ -9,12 +9,23 @@ import {
   type XYPoint,
   DynamicViewFlow,
   dynamicViewFlow,
-  flowGuards,
   hasProp,
   NodeId,
 } from '@likec4/core/types'
-import { filter, first, firstBy, hasAtLeast, isArray, isTruthy, map, pipe } from 'remeda'
+import {
+  entries,
+  filter,
+  first,
+  identity,
+  isArray,
+  isEmptyish,
+  isTruthy,
+  map,
+  pipe,
+  piped,
+} from 'remeda'
 import type { SetNonNullable, Writable } from 'type-fest'
+import type { DiagramContext } from '../state/types'
 import type { Types } from '../types'
 import {
   SeqParallelAreaColor,
@@ -26,9 +37,16 @@ type Ctx = {
   view: Omit<LayoutedDynamicView, 'sequenceLayout' | 'flow'>
   flow: DynamicViewFlow | undefined
   layout: LayoutedDynamicView.Sequence.Layout
-  collapsedFlows: StepPath[]
+  collapsedFlows: DiagramContext['collapsedSequenceFlows']
   subflowArea: (id: StepPath) => LayoutedDynamicView.Sequence.SubflowArea | undefined
 }
+
+const calcCollapsedFlows = piped(
+  identity()<DiagramContext['collapsedSequenceFlows']>,
+  entries(),
+  filter(([_, collapsed]) => collapsed),
+  map(([flowId]) => flowId),
+)
 
 /**
  * Converts a sequence layout to XY flow nodes and edges.
@@ -36,10 +54,10 @@ type Ctx = {
  * @param currentViewId The ID of the current view (optional, used to exclude navigation to the current view)
  */
 export function sequenceLayoutToXY(
-  { view, currentViewId, collapsedFlows = [] }: {
+  { view, currentViewId, collapsedFlows }: {
     view: LayoutedDynamicView
     currentViewId: ViewId | undefined
-    collapsedFlows?: StepPath[]
+    collapsedFlows: DiagramContext['collapsedSequenceFlows']
   },
 ): {
   xynodes: Array<Types.SequenceActorNode | Types.SequenceParallelArea | Types.SequenceSubflowArea | Types.ViewGroupNode>
@@ -49,8 +67,8 @@ export function sequenceLayoutToXY(
   const flow = hasProp(view, 'flow') ? dynamicViewFlow(view) : undefined
 
   // We calculate sequence layout here if any flow is collapsed
-  const layout = flow
-    ? calcSequenceLayout(view, flow, collapsedFlows)
+  const layout = flow && !isEmptyish(collapsedFlows)
+    ? calcSequenceLayout(view, flow, calcCollapsedFlows(collapsedFlows))
     : view.sequenceLayout
 
   const ctx: Ctx = {
@@ -289,7 +307,7 @@ function toSeqStepEdge(
     deletable: false,
     selectable: true,
     focusable: false,
-    ...hidden && { hidden: true },
+    hidden: hidden ?? false,
     zIndex: SeqZIndex.step,
     interactionWidth: 50,
     source: edge.source,
@@ -377,7 +395,7 @@ function createSubflowNode(
       viewId: ctx.view.id,
       drifts: null,
       notes: undefined,
-      collapsed: ctx.collapsedFlows.includes(subflow.id),
+      collapsed: ctx.collapsedFlows[subflow.id] ?? false,
       ...flowData,
     },
     zIndex: SeqZIndex.subflows + level,

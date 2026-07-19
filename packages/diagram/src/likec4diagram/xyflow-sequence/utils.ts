@@ -1,7 +1,6 @@
 import { type DiagramNode } from '@likec4/core/types'
-import { invariant, isAncestor, nonNullable, Stack } from '@likec4/core/utils'
-import { first, groupBy, hasAtLeast, last, mapValues, pipe, values } from 'remeda'
-import { isAccessor } from 'typescript'
+import { invariant, isAncestor, Stack } from '@likec4/core/utils'
+import { groupBy, mapValues, pipe, values } from 'remeda'
 import type { Compound, ParallelRect, Rect, Spacing, Step } from './_types'
 
 export type NormalizedSpacing = {
@@ -35,11 +34,14 @@ export function rectFromSteps(steps: Array<Step>): Rect {
   invariant(steps.length > 0)
   return steps.reduce(
     (acc, step) => {
-      acc.min.column = Math.min(acc.min.column, step.from.column, step.to.column)
-      acc.min.row = Math.min(acc.min.row, step.from.row, step.to.row)
+      const columns = [step.from.column, step.to.column]
+      const rows = [step.from.row, step.to.row]
 
-      acc.max.column = Math.max(acc.max.column, step.from.column, step.to.column)
-      acc.max.row = Math.max(acc.max.row, step.from.row, step.to.row)
+      acc.min.column = Math.min(acc.min.column, ...columns)
+      acc.min.row = Math.min(acc.min.row, ...rows)
+
+      acc.max.column = Math.max(acc.max.column, ...columns)
+      acc.max.row = Math.max(acc.max.row, ...rows)
 
       return acc
     },

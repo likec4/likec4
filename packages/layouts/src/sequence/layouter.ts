@@ -153,6 +153,10 @@ export class SequenceViewLayouter {
     flow: DynamicViewFlow
     collapsedFlows: StepPath[]
   }) {
+    // Increase max iterations to handle complex layouts with many constraints
+    // Default is 1000
+    this.#solver.maxIterations = 2000
+
     this.#flow = flow
     const firstRowOffset = Math.max(...actors.map(actor => actor.height)) + FIRST_STEP_OFFSET
     this.#rowsTop = this.newVar(firstRowOffset)
@@ -164,21 +168,14 @@ export class SequenceViewLayouter {
 
     this.#actors = this.addActors(actors)
 
-    let lastCompound: CompoundArea | undefined
     for (const compound of compounds) {
       const result = this.addCompound(compound) // first element is the top level compound
-      const toplevel = lastCompound = result[0]
+      const toplevel = result[0]
       // ensure that the top level compound is at the top
       this.constraint(toplevel.y1, '==', 0, Strength.strong)
-      // this.constraint(this.#rowsTop, '==', toplevel.y2, Strength.weak)
-      // this.constraint(this.#rowsTop, '>=', toplevel.y2)
-      // this.put(this.#viewportBottom, Strength.strong).after(toplevel.bottom)
       this.put(this.#rowsTop, Strength.strong).after(toplevel.y2)
       this.#compounds.push(...result)
     }
-    // if (lastCompound) {
-    //   this.require(this.#viewportRight).after(lastCompound.x2, 16)
-    // }
 
     const [firstActor, ...restActors] = this.#actors
     this.constraint(firstActor.offset.left, '==', 0, Strength.strong)
@@ -196,16 +193,8 @@ export class SequenceViewLayouter {
     this.createSubflowAreas(steps, new Set(collapsedFlows))
 
     this.constraint(this.#viewportRight, '==', lastActor.offset.right)
-    // this.require(this.#viewportRight).after(lastActor.offset.right)
-    const mostBottom = last(this.#rows)?.outer.bottom ?? this.#rowsTop
+    const mostBottom = last(this.#rows)?.inner.bottom ?? this.#rowsTop
     this.put(this.#viewportBottom, Strength.strong).after(mostBottom, 16)
-
-    // this.constraint(
-    //   this.#viewportBottom,
-    //   '==',
-    //   mostBottom.plus(16),
-    //   // Strength.strong,
-    // )
 
     if (compounds.length > 0) {
       for (const compound of this.#compounds) {
@@ -217,13 +206,7 @@ export class SequenceViewLayouter {
           maxRow = Math.max(maxRow, actorBox.maxRow)
         }
         const lastRow = nonNullable(this.#rows[maxRow], `row ${maxRow} not found`)
-        // this.constraint(
-        //   compound.bottom,
-        //   '==',
-        //   lastRow.inner.bottom.plus(10),
-        //   // Strength.strong,
-        // )
-        this.put(compound.bottom, Strength.strong).after(lastRow.outer.bottom, 10)
+        this.put(compound.bottom, Strength.strong).after(lastRow.inner.bottom, 10)
       }
     }
 
@@ -517,7 +500,6 @@ export class SequenceViewLayouter {
       )
 
       const outerBottom = this.newVar(innerBottom.value())
-      // this.put(innerBottom).before(outerBottom)
       this.put(outerBottom).after(innerBottom)
 
       this.#rows.push({
@@ -538,6 +520,7 @@ export class SequenceViewLayouter {
       rowVar.height.setValue(rowHeight)
       this.#solver.suggestValue(rowVar.height, rowHeight)
     }
+    return rowVar
   }
 
   private collapseRect({ min, max }: Rect) {
@@ -608,17 +591,7 @@ export class SequenceViewLayouter {
     steps: ReadonlyArray<Step>,
     collapsed: Set<StepPath>,
   ) {
-    const nested = filter(steps, hasProp('parent'))
-    if (!hasAtLeast(nested, 1)) {
-      return
-    }
-    // Parents
-    const ancestors = new Set<StepPath>()
-    for (const step of nested) {
-      flowAncestors(step.id).forEach(a => ancestors.add(a))
-    }
-
-    const selectSteps = (id: StepPath) => filter(nested, s => s.id.startsWith(id))
+    const selectSteps = (id: StepPath) => filter(steps, s => s.id.startsWith(id))
 
     const spacing: NormalizedSpacing = {
       top: 30,
@@ -743,7 +716,7 @@ export class SequenceViewLayouter {
                 area,
                 visited,
                 padding: {
-                  top: 24,
+                  top: 30,
                   left: 0,
                   right: 0,
                 },
@@ -787,7 +760,6 @@ export class SequenceViewLayouter {
       v.setValue(initialValue)
       this.#solver.suggestValue(v, initialValue)
     }
-    // this.constraint(v, '>=', 0, Strength.weak)
     return v
   }
 
