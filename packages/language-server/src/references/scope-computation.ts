@@ -199,7 +199,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
             if (isTruthy(spec.kind.name)) {
               docExports.push(
                 this.descriptions.createDescription(spec.kind, spec.kind.name, document),
-                this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document),
               )
             }
             continue

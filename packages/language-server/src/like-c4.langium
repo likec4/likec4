@@ -439,169 +439,6 @@ DynamicViewRule:
   ViewRuleAutoLayout
 ;
 
-// -----------------------------------------------
-// Dynamic view flow steps
-// -----------------------------------------------
-type StepStatement =
-  StepOrSeries |
-  TryStep |
-  AltSteps |
-  SubflowStep
-;
-
-StepStatement returns StepStatement:
-  SubflowStep |
-  AltSteps |
-  TryStep |
-  StepOrSeries
-;
-
-interface StepsBlock {
-  steps: StepStatement[]
-}
-
-fragment StepsBlockFragment:
-  '{' steps+=StepStatement* '}'
-;
-
-// -----------------------------------------------
-// Semantic group of dynamic view steps (flow branch)
-
-interface SubflowStep extends StepsBlock {
-  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
-  /// Optional title for the branch
-  title?: string
-}
-
-// Must be defined before "StepsBlock"
-SubflowStep returns SubflowStep:
-  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break')
-  title=String? StepsBlockFragment
-;
-
-/**
- * Represents a block of step statements, i.e. { ... }
- */
-StepsBlock returns StepsBlock:
-  StepsBlockFragment
-;
-
-
-
-// -----------------------------------------------
-// Dynamic view TRY block
-
-interface TryBlock extends StepsBlock  {
-  /// Optional title for the try block
-  title?: string
-}
-
-interface CatchBlock {
-  try: TryBlock
-  // Optional title for the catch block
-  title?: string
-  catch: StepsBlock
-}
-
-interface FinallyBlock {
-  tryCatch: TryBlock | CatchBlock
-  // Optional title for the finally block
-  title?: string
-  finally: StepsBlock
-}
-
-type TryStep =
-  TryBlock |
-  CatchBlock |
-  FinallyBlock;
-
-TryStep returns TryStep:
-  FinallyBlock;
-
-FinallyBlock returns FinallyBlock:
-  CatchBlock ({FinallyBlock.tryCatch=current}
-    'finally' title=String?
-    finally=StepsBlock
-  )?
-;
-
-CatchBlock returns CatchBlock:
-  TryBlock ({CatchBlock.try=current}
-    'catch' title=String?
-    catch=StepsBlock
-  )?
-;
-
-TryBlock returns TryBlock:
-  'try' title=String? StepsBlockFragment
-;
-
-// -----------------------------------------------
-// Dynamic view ALT block
-
-interface AltSteps {
-  title?: string
-  branches: SubflowStep[]
-}
-
-AltSteps returns AltSteps:
-  'alt' title=String? '{' branches+=SubflowStep* '}'
-;
-
-
-// -----------------------------------------------
-// Dynamic view step (from previous model)
-
-fragment StepTarget:
-  target=ElementRef
-  title=String?
-  custom=CustomRelationProperties?
-;
-
-interface AbstractStep {
-  kind?: @RelationshipKind;
-  dotKind?: RelationKindDotRef;
-  target: ElementRef;
-  title?: string;
-  custom?: CustomRelationProperties;
-}
-
-/**
- * A single step in a dynamic view flow
- * source -> target
- */
-interface Step extends AbstractStep {
-  source: ElementRef;
-  isBackward?: boolean;
-}
-
-/**
- * A series of steps in a dynamic view flow
- * source -> target1 -> target2 -> ...
- */
-interface StepSeries extends AbstractStep {
-  source: Step | StepSeries;
-}
-
-type StepOrSeries = Step | StepSeries;
-
-StepOrSeries returns StepOrSeries:
-  StepSeries;
-
-StepSeries returns StepSeries:
-  Step
-  ({StepSeries.source=current}
-    (dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
-    StepTarget
-  )*
-;
-
-Step returns Step:
-  source=ElementRef
-  (isBackward?='<-' | dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
-  StepTarget
-;
-
 ViewRulePredicate:
   (isInclude?='include' | 'exclude')
   exprs=Expressions
@@ -801,6 +638,168 @@ type WhereKindEqual = WhereElementKind | WhereRelationKind | WhereRelationPartic
 type WhereMetadataEqual = WhereElementMetadata | WhereRelationMetadata | WhereRelationParticipantMetadata;
 
 type WhereExpression = WhereElementExpression | WhereRelationExpression;
+
+// -----------------------------------------------
+// Dynamic view flow steps
+// -----------------------------------------------
+type StepStatement =
+  StepOrSeries |
+  TryStep |
+  AltSteps |
+  SubflowStep
+;
+
+StepStatement returns StepStatement:
+  SubflowStep |
+  AltSteps |
+  TryStep |
+  StepSeries
+;
+
+interface StepsBlock {
+  steps: StepStatement[]
+}
+
+fragment StepsBlockFragment:
+  '{' steps+=StepStatement* '}'
+;
+
+// -----------------------------------------------
+// Semantic group of dynamic view steps (flow branch)
+
+interface SubflowStep extends StepsBlock {
+  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
+  /// Optional title for the branch
+  title?: string
+}
+
+// Must be defined before "StepsBlock"
+SubflowStep returns SubflowStep:
+  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break')
+  title=String? StepsBlockFragment
+;
+
+/**
+ * Represents a block of step statements, i.e. { ... }
+ */
+StepsBlock returns StepsBlock:
+  StepsBlockFragment
+;
+
+// -----------------------------------------------
+// Dynamic view TRY block
+
+interface TryBlock extends StepsBlock  {
+  /// Optional title for the try block
+  title?: string
+}
+
+interface CatchBlock {
+  try: TryBlock
+  // Optional title for the catch block
+  title?: string
+  catch: StepsBlock
+}
+
+interface FinallyBlock {
+  tryCatch: TryBlock | CatchBlock
+  // Optional title for the finally block
+  title?: string
+  finally: StepsBlock
+}
+
+type TryStep =
+  TryBlock |
+  CatchBlock |
+  FinallyBlock;
+
+TryStep returns TryStep:
+  FinallyBlock;
+
+FinallyBlock returns FinallyBlock:
+  CatchBlock ({FinallyBlock.tryCatch=current}
+    'finally' title=String?
+    finally=StepsBlock
+  )?
+;
+
+CatchBlock returns CatchBlock:
+  TryBlock ({CatchBlock.try=current}
+    'catch' title=String?
+    catch=StepsBlock
+  )?
+;
+
+TryBlock returns TryBlock:
+  'try' title=String? StepsBlockFragment
+;
+
+// -----------------------------------------------
+// Dynamic view ALT block
+
+interface AltSteps {
+  title?: string
+  branches: SubflowStep[]
+}
+
+AltSteps returns AltSteps:
+  'alt' title=String? '{' branches+=SubflowStep* '}'
+;
+
+
+// -----------------------------------------------
+// Dynamic view step (from previous model)
+
+fragment StepTarget:
+  target=ElementRef
+  title=String?
+  custom=CustomRelationProperties?
+;
+
+interface AbstractStep {
+  kind?: @RelationshipKind;
+  dotKind?: RelationKindDotRef;
+  target: ElementRef;
+  title?: string;
+  custom?: CustomRelationProperties;
+}
+
+/**
+ * A single step in a dynamic view flow
+ * source -> target
+ */
+interface Step extends AbstractStep {
+  source: ElementRef;
+  isBackward?: boolean;
+}
+
+/**
+ * A series of steps in a dynamic view flow
+ * source -> target1 -> target2 -> ...
+ */
+interface StepSeries extends AbstractStep {
+  source: Step | StepSeries;
+}
+
+type StepOrSeries = Step | StepSeries;
+
+StepSeries returns StepSeries:
+  Step
+  ({StepSeries.source=current}
+    (dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
+      target=ElementRef
+      title=String?
+      custom=CustomRelationProperties?
+  )*
+;
+
+Step returns Step:
+  source=ElementRef
+  (isBackward?='<-' | dotKind=RelationKindDotRef | '->' | '-[' kind=[RelationshipKind] ']->')
+  target=ElementRef
+  title=String?
+  custom=CustomRelationProperties?
+;
 
 // Deployment -------------------------------------
 
@@ -1069,7 +1068,7 @@ TagRef:
 ;
 
 RelationKindDotRef:
-  kind=[RelationshipKind:DotId]
+  Dot kind=[RelationshipKind:Id]
 ;
 
 LineOptions returns string:
@@ -1166,9 +1165,6 @@ Id returns string:
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
 
-DotId returns string:
-  DotPrefix Id;
-
 HashId returns string:
   Hash Id;
 
@@ -1219,8 +1215,7 @@ terminal Hash: '#';
 
 // No space allowed before dot
 terminal StickyDot: /\b\./;
-// terminal Dot: '.';
-terminal DotPrefix: '.';
+terminal Dot: '.';
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Percent: /\b\d+%/;

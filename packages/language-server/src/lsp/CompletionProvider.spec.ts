@@ -683,7 +683,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest blocks in dynamic view', async ({ expect, completion }) => {
+  it('should suggest flows in dynamic view', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -695,7 +695,7 @@ describe('LikeC4CompletionProvider', () => {
       }
       views {
         dynamic view { // should also suggest dynamic views
-          <|>a <|>-> b
+          <|>a .<|>-> b
           t<|>ry {
           } <|>
           alt {
@@ -726,7 +726,6 @@ describe('LikeC4CompletionProvider', () => {
       index: 1,
       expectedItems: [
         'uses',
-        '.uses',
       ],
       disposeAfterCheck: true,
     })
@@ -760,6 +759,108 @@ describe('LikeC4CompletionProvider', () => {
         ])
       },
       disposeAfterCheck: true,
+    })
+  })
+
+  it('should suggest source elements in dynamic view', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+        relationship uses
+      }
+      model {
+        component a {
+          component b {
+            component c
+          }
+        }        
+      }
+      views {
+        dynamic view {
+          <|>a.<|>b.<|>
+        }        
+      }
+    `
+
+    await completion({
+      text,
+      index: 0,
+      assert(completions) {
+        expect(pluck('label', completions.items)).to.include.members([
+          'a',
+          'b',
+          'c',
+        ])
+      },
+      disposeAfterCheck: true,
+    })
+
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'b',
+        'c',
+      ],
+      disposeAfterCheck: true,
+    })
+
+    await completion({
+      text,
+      index: 2,
+      expectedItems: [
+        'c',
+      ],
+    })
+  })
+
+  it('should suggest target elements in dynamic view', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+        relationship uses
+      }
+      model {
+        component a {
+          component b {
+            component c
+          }
+        }        
+      }
+      views {
+        dynamic view {
+          a.b -> <|>a.<|>b.<|>          
+        }        
+      }
+    `
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: [
+        'a',
+        'b',
+        'c',
+      ],
+      disposeAfterCheck: true,
+    })
+
+    await completion({
+      text,
+      index: 1,
+      expectedItems: [
+        'b',
+        'c',
+      ],
+      disposeAfterCheck: true,
+    })
+
+    await completion({
+      text,
+      index: 2,
+      expectedItems: [
+        'c',
+      ],
     })
   })
 
