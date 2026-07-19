@@ -249,6 +249,15 @@ export class SequenceViewLayouter {
     const x = this.actorBox(column).centerX
     const { rowTop } = nonNullable(this.#rows[row])
 
+    // For self-loop target (next row), place port at the top
+    if (step.isSelfLoop && type === 'target') {
+      return {
+        cx: x.value(),
+        cy: rowTop.value(),
+        height: PORT_HEIGHT,
+      }
+    }
+
     return {
       cx: x.value(),
       cy: rowTop.value() + 40 + step.offset,
@@ -370,8 +379,8 @@ export class SequenceViewLayouter {
     height = Math.max(height, MIN_ROW_HEIGHT) + step.offset
 
     this.ensureRow(step.from.row, height)
-    if (step.isSelfLoop) {
-      this.ensureRow(step.to.row, 0)
+    if (step.to.row !== step.from.row) {
+      this.ensureRow(step.to.row, PORT_HEIGHT)
     }
 
     return this
