@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@11.10.0",
+  "packageManager": "pnpm@11.15.0",
   "scripts": {
     "install:chromium": "playwright install chromium",
     "generate:png": "likec4 export png -o ./generated/images --flat",
@@ -29,7 +29,7 @@
     "std-env": "^3.9.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16",
-    "wrangler": "^4.80.0",
+    "wrangler": "^4.95.0",
     "zx": "^8.8.5"
   }
 }

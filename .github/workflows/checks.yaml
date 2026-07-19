@@ -200,11 +200,11 @@ jobs:
       - id: cloudflare
         if: ${{ failure() && github.repository_owner == 'likec4' }}
         name: ⚙️ publish playwright-report
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy playwright-report --project-name likec4-e2e --commit-dirty --branch preview
+          command: pages deploy playwright-report --project-name=likec4-e2e --commit-dirty --branch preview
           workingDirectory: e2e
           packageManager: pnpm
 
