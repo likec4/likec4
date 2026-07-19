@@ -495,6 +495,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
         {...isBrowserEnabled && {
           onCanvasClick: onNavigateToThisView,
           onNodeClick: onNavigateToThisView,
+          onEdgeClick: onNavigateToThisView,
         }}
         reactFlowProps={reactFlowProps}
         renderNodes={renderNodes}
@@ -503,7 +504,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
         {children}
       </LikeC4Diagram>
       {browserView && (
-        <Overlay openDelay={0} onClose={closeBrowser}>
+        <Overlay onClose={closeBrowser}>
           <LikeC4Diagram
             view={browserView}
             pannable

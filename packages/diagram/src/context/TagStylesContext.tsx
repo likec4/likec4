@@ -1,15 +1,14 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
-import { DefaultTagColors, getContrastedColorsAPCA, isValidColor } from '@likec4/core/styles'
+import { DefaultTagColors } from '@likec4/core/styles'
+import { getContrastedColorsAPCA, isValidColor } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
 import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 
-const TagStylesContext = createContext<Record<string, TagSpecification>>({})
-
 const radixColors = DefaultTagColors as unknown as string[]
 
-export const generateColorVars = (spec: TagSpecification): string => {
+export function generateColorVars(spec: TagSpecification): string {
   const color = spec.color
   // Tag has a color defined in the specification — derive a high-contrast text
   // color from it (APCA) so the chip text stays legible on any background.
@@ -38,6 +37,8 @@ export const generateColorVars = (spec: TagSpecification): string => {
   `
 }
 
+const TagStylesContext = createContext<Record<string, TagSpecification>>({})
+
 function generateStylesheet(tags: Record<string, TagSpecification> | undefined, rootSelector: string) {
   if (!tags || isEmpty(tags)) {
     return ''
@@ -53,16 +54,18 @@ function generateStylesheet(tags: Record<string, TagSpecification> | undefined, 
   )
 }
 
-export function TagStylesProvider({ children, rootSelector }: PropsWithChildren<{ rootSelector: string }>) {
+export function TagStylesProvider({ children, id }: PropsWithChildren<{ id: string }>) {
   const tags = useLikeC4Specification().tags
   const nonce = useMantineStyleNonce()?.()
-  const stylesheet = generateStylesheet(tags, rootSelector)
+  const stylesheet = generateStylesheet(tags, `#${id}`)
 
   return (
-    <TagStylesContext.Provider value={tags}>
+    <>
       {stylesheet !== '' && <TagStylesheet nonce={nonce} stylesheet={stylesheet} />}
-      {children}
-    </TagStylesContext.Provider>
+      <TagStylesContext.Provider value={tags}>
+        {children}
+      </TagStylesContext.Provider>
+    </>
   )
 }
 

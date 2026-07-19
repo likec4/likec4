@@ -8,13 +8,13 @@ import {
   type PropsWithChildren,
   memo,
   useEffectEvent,
+  useInsertionEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { isDefined } from 'remeda'
-import { first, isFunction, isString, once } from 'remeda'
+import { first, isDefined, isFunction, isString, once } from 'remeda'
 import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { useCallbackRef } from '../hooks/useCallbackRef'
@@ -40,8 +40,7 @@ function useShadowRootStyle(
   height: 100%;
   min-width: 80px;
   min-height: 80px;
-}
-  `.trim()
+}`
   }
 
   const width = Math.ceil(keepAspectRatio.width)
@@ -59,21 +58,44 @@ function useShadowRootStyle(
   aspect-ratio: ${width} / ${height};
   ${
     isLandscape ? '' : `
-  max-width: min(100%, var(--likec4-view-max-width, ${width}px));
-  margin-left: auto;
-  margin-right: auto;`
+max-width: min(100%, var(--likec4-view-max-width, ${width}px));
+margin-left: auto;
+margin-right: auto;`
   }
   width: ${isLandscape ? '100%' : 'auto'};
   height: ${isLandscape ? 'auto' : '100%'};
   ${isLandscape ? `min-width: 80px;` : `min-height: 80px;`}
   max-height: min(100%, var(--likec4-view-max-height, ${height}px));
+}`
 }
-`.trim()
+
+function useInjectLikeC4Font(injectFontCss: boolean, styleNonce?: string | (() => string | undefined) | undefined) {
+  useInsertionEffect(() => {
+    if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
+      const style = document.createElement('style')
+      style.setAttribute('type', 'text/css')
+      style.setAttribute('data-likec4-font', '')
+
+      let nonce: string | undefined
+      if (isString(styleNonce)) {
+        nonce = styleNonce
+      }
+      if (isFunction(styleNonce)) {
+        nonce = styleNonce()
+      }
+      if (nonce) {
+        style.setAttribute('nonce', nonce)
+      }
+
+      style.appendChild(document.createTextNode(fontsCss))
+      document.head.appendChild(style)
+    }
+  }, [])
 }
 
 type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
   injectFontCss?: boolean | undefined
-  styleNonce?: string | (() => string) | undefined
+  styleNonce?: string | (() => string | undefined) | undefined
   colorScheme?: 'light' | 'dark' | undefined
   keepAspectRatio?: false | undefined | { width: number; height: number }
   /**
@@ -96,18 +118,16 @@ export function ShadowRoot({
   const cssstyle = useShadowRootStyle(id, keepAspectRatio)
   const mantineRootRef = useRef<HTMLDivElement>(null)
 
-  useLayoutEffect(
-    () => appendFontToDocument(injectFontCss, styleNonce),
-    [],
-  )
+  useInjectLikeC4Font(injectFontCss, styleNonce)
+
   const getRootElement = useCallbackRef(() => mantineRootRef.current ?? undefined)
 
   const getStyleNonce = useCallbackRef(() => {
     if (isDefined(styleNonce)) {
       if (typeof styleNonce === 'string') {
-        return styleNonce
+        return styleNonce ?? ''
       } else if (typeof styleNonce === 'function') {
-        return styleNonce()
+        return styleNonce() ?? ''
       }
     }
     return ''
@@ -149,9 +169,9 @@ const MemoizedStyle = memo<{
 ) => (
   <style
     type="text/css"
-    {...({ nonce })}
+    {...(nonce && { nonce })}
     dangerouslySetInnerHTML={{ __html: cssstyle }} />
-), shallowEqual)
+), (a, b) => a.cssstyle === b.cssstyle)
 MemoizedStyle.displayName = 'MemoizedStyle'
 
 const ShadowRootHostPortal = ({ children, root }: PropsWithChildren<{ root: ShadowRoot }>) => {
@@ -162,7 +182,7 @@ const ShadowRootHost = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) 
   const hostRef = useRef<HTMLDivElement>(null)
   const [root, setRoot] = useState<globalThis.ShadowRoot | null>(null)
 
-  const styles = shadowRootCSS()
+  const styles = shadowScopedCSS()
 
   const updateShadowRoot = useEffectEvent((styles: string) => {
     setRoot(current => {
@@ -231,33 +251,11 @@ function scopeStylesToShadowRoot(styles: string): string {
     .replaceAll(/(^|[{},;]|\*\/)(\s*)body(?=\s*[{,])/g, '$1$2.likec4-shadow-root')
 }
 
-function appendFontToDocument(injectFontCss: boolean, styleNonce?: string | (() => string) | undefined) {
-  if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
-    const style = document.createElement('style')
-    style.setAttribute('type', 'text/css')
-    style.setAttribute('data-likec4-font', '')
-
-    let nonce: string | undefined
-    if (isString(styleNonce)) {
-      nonce = styleNonce
-    }
-    if (isFunction(styleNonce)) {
-      nonce = styleNonce()
-    }
-    if (nonce) {
-      style.setAttribute('nonce', nonce)
-    }
-
-    style.appendChild(document.createTextNode(fontsCss))
-    document.head.appendChild(style)
-  }
-}
-
 /**
  * Creates a CSS string with styles scoped to the shadow root
  * @returns CSS string for the shadow root
  */
-const shadowRootCSS = once(() => {
+const shadowScopedCSS = once(() => {
   return scopeStylesToShadowRoot(inlinedStyles)
 })
 /**

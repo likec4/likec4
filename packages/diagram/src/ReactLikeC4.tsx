@@ -50,7 +50,7 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
     mantineTheme?: any
 
     /** Function to generate nonce attribute added to all generated `<style />` tags */
-    styleNonce?: string | (() => string) | undefined
+    styleNonce?: string | (() => string | undefined) | undefined
 
     children?: ReactNode | undefined
   }

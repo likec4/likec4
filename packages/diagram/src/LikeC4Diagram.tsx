@@ -184,7 +184,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                   onLayoutTypeChange,
                 }}>
                 <LikeC4Styles id={id} />
-                <TagStylesProvider rootSelector={`#${id}`}>
+                <TagStylesProvider id={id}>
                   <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
                     <XYFlowProvider
                       fitView={fitView}
