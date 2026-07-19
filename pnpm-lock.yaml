@@ -743,7 +743,7 @@ importers:
         version: 1.1.0(nanostores@1.3.0)(react@19.2.7)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -935,7 +935,7 @@ importers:
         version: 4.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1012,7 +1012,7 @@ importers:
         version: 2.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1100,7 +1100,7 @@ importers:
         version: 0.24.8
       mdast-util-from-markdown:
         specifier: ^2.0.3
-        version: 2.0.3
+        version: 2.0.3(supports-color@10.1.0)
       mdast-util-to-hast:
         specifier: ^13.2.1
         version: 13.2.1
@@ -1133,13 +1133,13 @@ importers:
         version: 10.0.1
       remark-gfm:
         specifier: 4.0.1
-        version: 4.0.1
+        version: 4.0.1(supports-color@10.1.0)
       remark-github-blockquote-alert:
         specifier: ^2.0.1
         version: 2.0.1
       remark-parse:
         specifier: 11.0.0
-        version: 11.0.0
+        version: 11.0.0(supports-color@10.1.0)
       remark-rehype:
         specifier: 11.1.2
         version: 11.1.2
@@ -1148,7 +1148,7 @@ importers:
         version: 2.37.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       turbo:
         specifier: 2.10.5
         version: 2.10.5
@@ -1260,7 +1260,7 @@ importers:
         version: link:../tsconfig
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.21.0)(xstate@5.32.4)
@@ -1281,7 +1281,7 @@ importers:
         version: 19.2.3(@types/react@19.2.17)
       '@vitejs/plugin-react':
         specifier: catalog:vite
-        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       oxlint:
         specifier: 'catalog:'
         version: 1.72.0(oxlint-tsgolint@0.24.0)
@@ -1296,7 +1296,7 @@ importers:
         version: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
       vite-plugin-dts:
         specifier: 5.0.2
-        version: 5.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       vitest:
         specifier: catalog:vitest
         version: 4.1.9(@types/node@22.19.19)(@vitest/ui@4.1.9)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
@@ -1357,7 +1357,7 @@ importers:
         version: 2.0.4
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1547,7 +1547,7 @@ importers:
         version: 1.72.0(oxlint-tsgolint@0.24.0)
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1632,7 +1632,7 @@ importers:
         version: 1.72.0(oxlint-tsgolint@0.24.0)
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1723,7 +1723,7 @@ importers:
         version: 3.0.4
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1760,7 +1760,7 @@ importers:
         version: 22.19.19
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1784,7 +1784,7 @@ importers:
         version: 0.8.3(@tanstack/ai@0.14.0)(zod@4.4.3)
       '@tanstack/ai-gemini':
         specifier: catalog:ai
-        version: 0.10.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@tanstack/ai@0.14.0)
+        version: 0.10.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(@tanstack/ai@0.14.0)(supports-color@10.1.0)
       '@tanstack/ai-ollama':
         specifier: catalog:ai
         version: 0.6.10(@tanstack/ai@0.14.0)
@@ -1796,7 +1796,7 @@ importers:
         version: 0.8.2(@tanstack/ai@0.14.0)
       '@vitejs/plugin-react':
         specifier: catalog:vite
-        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       bundle-require:
         specifier: catalog:externals
         version: 5.1.0(esbuild@0.28.1)
@@ -1896,7 +1896,7 @@ importers:
         version: 1.1.0(nanostores@1.3.0)(react@19.2.7)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@tanstack/ai':
         specifier: catalog:ai
         version: 0.14.0
@@ -2016,7 +2016,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2031,7 +2031,7 @@ importers:
         version: 1.6.4
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       vitest:
         specifier: catalog:vitest
         version: 4.1.9(@types/node@22.19.19)(@vitest/ui@4.1.9)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
@@ -2122,13 +2122,13 @@ importers:
         version: 1.1.0(nanostores@1.3.0)(react@19.2.7)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@rolldown/plugin-babel':
         specifier: catalog:vite
-        version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.44.0(react@19.2.7)
@@ -2143,7 +2143,7 @@ importers:
         version: 0.8.0(@tanstack/ai@0.14.0)(@types/react@19.2.17)(react@19.2.7)
       '@tanstack/ai-react-ui':
         specifier: catalog:ai
-        version: 0.6.2(@tanstack/ai-client@0.8.0)(@tanstack/ai-react@0.8.0(@tanstack/ai@0.14.0)(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 0.6.2(@tanstack/ai-client@0.8.0)(@tanstack/ai-react@0.8.0(@tanstack/ai@0.14.0)(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(supports-color@10.1.0)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -2152,7 +2152,7 @@ importers:
         version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       '@tanstack/router-vite-plugin':
         specifier: catalog:tanstack
-        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@10.1.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@tsdown/css':
         specifier: catalog:tsdown
         version: 0.22.9(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
@@ -2170,7 +2170,7 @@ importers:
         version: 19.2.3(@types/react@19.2.17)
       '@vitejs/plugin-react':
         specifier: catalog:vite
-        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.4)
@@ -2251,7 +2251,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2272,7 +2272,7 @@ importers:
         version: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       vitest:
         specifier: catalog:vitest
         version: 4.1.9(@types/node@22.19.19)(@vitest/ui@4.1.9)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
@@ -2309,7 +2309,7 @@ importers:
         version: 1.3.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -2352,7 +2352,7 @@ importers:
         version: 3.5.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       turbo:
         specifier: 2.10.5
         version: 2.10.5
@@ -2380,7 +2380,7 @@ importers:
     devDependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(hono-rate-limiter@0.4.2(hono@4.12.27))(hono@4.12.27)(zod@4.4.3)
+        version: 0.3.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)
       '@hono/node-server':
         specifier: catalog:hono
         version: 2.0.8(hono@4.12.27)
@@ -2410,7 +2410,7 @@ importers:
         version: link:../tsconfig
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.29.0(zod@4.4.3)
+        version: 1.29.0(supports-color@10.1.0)(zod@4.4.3)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2437,7 +2437,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2483,7 +2483,7 @@ importers:
     devDependencies:
       '@babel/core':
         specifier: catalog:react
-        version: 7.29.7
+        version: 7.29.7(supports-color@10.1.0)
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2501,13 +2501,13 @@ importers:
         version: 7.58.9(@types/node@24.12.4)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@rolldown/plugin-babel':
         specifier: catalog:vite
-        version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@types/react':
         specifier: 19.2.17
         version: 19.2.17
@@ -2516,7 +2516,7 @@ importers:
         version: 19.2.3(@types/react@19.2.17)
       '@vitejs/plugin-react':
         specifier: catalog:vite
-        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.4)
@@ -2555,7 +2555,7 @@ importers:
         version: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
       vite-plugin-dts:
         specifier: catalog:vite
-        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 5.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       xstate:
         specifier: catalog:xstate
         version: 5.32.4
@@ -2590,7 +2590,7 @@ importers:
         version: link:../log
       '@tanstack/ai-gemini':
         specifier: catalog:ai
-        version: 0.10.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@tanstack/ai@0.14.0)
+        version: 0.10.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(@tanstack/ai@0.14.0)(supports-color@10.1.0)
       '@tanstack/ai-ollama':
         specifier: catalog:ai
         version: 0.6.10(@tanstack/ai@0.14.0)
@@ -2696,7 +2696,7 @@ importers:
         version: 1.2.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2814,7 +2814,7 @@ importers:
         version: 2.37.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -2895,13 +2895,13 @@ importers:
         version: 1.1.0(nanostores@1.3.0)(react@19.2.7)
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
         version: 25.2.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@rolldown/plugin-babel':
         specifier: catalog:vite
-        version: 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.44.0(react@19.2.7)
@@ -2928,7 +2928,7 @@ importers:
         version: 1.57.5
       '@vitejs/plugin-react':
         specifier: catalog:vite
-        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+        version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -3004,7 +3004,7 @@ importers:
         version: 9.4.1(@mantine/core@9.4.1(@mantine/hooks@9.4.1(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@pandacss/types':
         specifier: catalog:css
         version: 1.11.4
@@ -3025,7 +3025,7 @@ importers:
         version: 2.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -3037,7 +3037,7 @@ importers:
         version: link:../preset
       '@pandacss/dev':
         specifier: catalog:css
-        version: 1.11.4(typescript@6.0.3)
+        version: 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -3077,7 +3077,7 @@ importers:
         version: 2.37.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -8220,10 +8220,14 @@ packages:
   hmac-drbg@1.0.1:
     resolution: {integrity: sha512-Tti3gMqLdZfhOQY1Mzf/AanLiqh1WTiJgEj26ZuYQ9fbkLomzGchCws4FyrSd4VkpBfiNhaE1On+lOz894jvXg==}
 
-  hono-rate-limiter@0.4.2:
-    resolution: {integrity: sha512-AAtFqgADyrmbDijcRTT/HJfwqfvhalya2Zo+MgfdrMPas3zSMD8SU03cv+ZsYwRU1swv7zgVt0shwN059yzhjw==}
+  hono-rate-limiter@0.5.3:
+    resolution: {integrity: sha512-M0DxbVMpPELEzLi0AJg1XyBHLGJXz7GySjsPoK+gc5YeeBsdGDGe+2RvVuCAv8ydINiwlbxqYMNxUEyYfRji/A==}
     peerDependencies:
-      hono: ^4.1.1
+      hono: ^4.10.8
+      unstorage: ^1.17.3
+    peerDependenciesMeta:
+      unstorage:
+        optional: true
 
   hono-sessions@0.8.1:
     resolution: {integrity: sha512-YLSKuIP13yhXTQe2x3sCc1JWsqt1Z3WZB2DWE+oX+YpOsC3lv8uCHnCoNHcY9DPyflDw4XQJN+MFVvcp5QwWdw==}
@@ -11514,8 +11518,8 @@ snapshots:
       mdast-util-definitions: 6.0.0
       rehype-raw: 7.0.0
       rehype-stringify: 10.0.1
-      remark-gfm: 4.0.1
-      remark-parse: 11.0.0
+      remark-gfm: 4.0.1(supports-color@10.1.0)
+      remark-parse: 11.0.0(supports-color@10.1.0)
       remark-rehype: 11.1.2
       remark-smartypants: 3.0.2
       unified: 11.0.5
@@ -11545,7 +11549,7 @@ snapshots:
       hast-util-to-html: 9.0.5
       piccolore: 0.1.3
       rehype-raw: 7.0.0
-      remark-gfm: 4.0.1
+      remark-gfm: 4.0.1(supports-color@10.1.0)
       remark-smartypants: 3.0.2
       source-map: 0.7.6
       unist-util-visit: 5.1.0
@@ -11661,11 +11665,31 @@ snapshots:
       '@babel/helpers': 7.29.7
       '@babel/parser': 7.29.7
       '@babel/template': 7.29.7
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
       '@babel/types': 7.29.7
       '@jridgewell/remapping': 2.3.5
       convert-source-map: 2.0.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
+      gensync: 1.0.0-beta.2
+      json5: 2.2.3
+      semver: 6.3.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/core@7.29.7(supports-color@10.1.0)':
+    dependencies:
+      '@babel/code-frame': 7.29.7
+      '@babel/generator': 7.29.7
+      '@babel/helper-compilation-targets': 7.29.7
+      '@babel/helper-module-transforms': 7.29.7(@babel/core@7.29.7(supports-color@10.1.0))(supports-color@10.1.0)
+      '@babel/helpers': 7.29.7
+      '@babel/parser': 7.29.7
+      '@babel/template': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
+      '@babel/types': 7.29.7
+      '@jridgewell/remapping': 2.3.5
+      convert-source-map: 2.0.0
+      debug: 4.4.3(supports-color@10.1.0)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -11699,19 +11723,28 @@ snapshots:
 
   '@babel/helper-globals@7.29.7': {}
 
-  '@babel/helper-module-imports@7.29.7':
+  '@babel/helper-module-imports@7.29.7(supports-color@10.1.0)':
     dependencies:
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
       '@babel/types': 7.29.7
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/helper-module-transforms@7.29.7(@babel/core@7.29.7(supports-color@10.1.0))(supports-color@10.1.0)':
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
+      '@babel/helper-module-imports': 7.29.7(supports-color@10.1.0)
+      '@babel/helper-validator-identifier': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
     transitivePeerDependencies:
       - supports-color
 
   '@babel/helper-module-transforms@7.29.7(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
-      '@babel/helper-module-imports': 7.29.7
+      '@babel/helper-module-imports': 7.29.7(supports-color@10.1.0)
       '@babel/helper-validator-identifier': 7.29.7
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -11746,9 +11779,19 @@ snapshots:
     dependencies:
       '@babel/types': 8.0.0
 
+  '@babel/plugin-syntax-jsx@7.25.9(@babel/core@7.29.7(supports-color@10.1.0))':
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
+      '@babel/helper-plugin-utils': 7.27.1
+
   '@babel/plugin-syntax-jsx@7.25.9(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
+      '@babel/helper-plugin-utils': 7.27.1
+
+  '@babel/plugin-syntax-typescript@7.25.9(@babel/core@7.29.7(supports-color@10.1.0))':
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
       '@babel/helper-plugin-utils': 7.27.1
 
   '@babel/plugin-syntax-typescript@7.25.9(@babel/core@7.29.7)':
@@ -11774,7 +11817,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.7':
+  '@babel/traverse@7.29.7(supports-color@10.1.0)':
     dependencies:
       '@babel/code-frame': 7.29.7
       '@babel/generator': 7.29.7
@@ -11782,7 +11825,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/template': 7.29.7
       '@babel/types': 7.29.7
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -13418,24 +13461,24 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
-  '@google/genai@1.52.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))':
+  '@google/genai@1.52.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(supports-color@10.1.0)':
     dependencies:
-      google-auth-library: 10.6.2
+      google-auth-library: 10.6.2(supports-color@10.1.0)
       p-retry: 4.6.2
       protobufjs: 7.5.6
       ws: 8.21.0
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(hono-rate-limiter@0.4.2(hono@4.12.27))(hono@4.12.27)(zod@4.4.3)':
+  '@hono/mcp@0.3.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
       hono: 4.12.27
-      hono-rate-limiter: 0.4.2(hono@4.12.27)
+      hono-rate-limiter: 0.5.3(hono@4.12.27)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
       zod: 4.4.3
 
@@ -13795,14 +13838,14 @@ snapshots:
       estree-util-is-identifier-name: 3.0.0
       estree-util-scope: 1.0.0
       estree-walker: 3.0.3
-      hast-util-to-jsx-runtime: 2.3.5
+      hast-util-to-jsx-runtime: 2.3.5(supports-color@10.1.0)
       markdown-extensions: 2.0.0
       recma-build-jsx: 1.0.0
       recma-jsx: 1.0.0(acorn@8.16.0)
       recma-stringify: 1.0.0
       rehype-recma: 1.0.0
       remark-mdx: 3.1.0
-      remark-parse: 11.0.0
+      remark-parse: 11.0.0(supports-color@10.1.0)
       remark-rehype: 11.1.2
       source-map: 0.7.6
       unified: 11.0.5
@@ -13939,7 +13982,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.16.0': {}
 
-  '@modelcontextprotocol/sdk@1.29.0(zod@4.4.3)':
+  '@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3)':
     dependencies:
       '@hono/node-server': 1.19.14(hono@4.12.27)
       ajv: 8.18.0
@@ -13949,7 +13992,7 @@ snapshots:
       cross-spawn: 7.0.6
       eventsource: 3.0.7
       eventsource-parser: 3.0.6
-      express: 5.2.1
+      express: 5.2.1(supports-color@10.1.0)
       express-rate-limit: 8.3.1(express@5.2.1)
       hono: 4.12.27
       jose: 6.1.3
@@ -14156,12 +14199,12 @@ snapshots:
       postcss-selector-parser: 7.1.1
       ts-pattern: 5.9.0
 
-  '@pandacss/dev@1.11.4(typescript@6.0.3)':
+  '@pandacss/dev@1.11.4(supports-color@10.1.0)(typescript@6.0.3)':
     dependencies:
       '@clack/prompts': 0.11.0
       '@pandacss/config': 1.11.4
       '@pandacss/logger': 1.11.4
-      '@pandacss/mcp': 1.11.4(typescript@6.0.3)
+      '@pandacss/mcp': 1.11.4(supports-color@10.1.0)(typescript@6.0.3)
       '@pandacss/node': 1.11.4(typescript@6.0.3)
       '@pandacss/postcss': 1.11.4(typescript@6.0.3)
       '@pandacss/preset-base': 1.11.4
@@ -14206,10 +14249,10 @@ snapshots:
       '@pandacss/types': 1.11.4
       kleur: 4.1.5
 
-  '@pandacss/mcp@1.11.4(typescript@6.0.3)':
+  '@pandacss/mcp@1.11.4(supports-color@10.1.0)(typescript@6.0.3)':
     dependencies:
       '@clack/prompts': 0.11.0
-      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
       '@pandacss/logger': 1.11.4
       '@pandacss/node': 1.11.4(typescript@6.0.3)
       '@pandacss/token-dictionary': 1.11.4
@@ -14486,6 +14529,24 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.2.0':
     optional: true
 
+  '@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
+      picomatch: 4.0.5
+      rolldown: 1.2.0
+    optionalDependencies:
+      '@babel/runtime': 7.27.6
+      vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
+
+  '@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
+      picomatch: 4.0.5
+      rolldown: 1.2.0
+    optionalDependencies:
+      '@babel/runtime': 7.27.6
+      vite: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
+
   '@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
     dependencies:
       '@babel/core': 7.29.7
@@ -14494,15 +14555,7 @@ snapshots:
     optionalDependencies:
       '@babel/runtime': 7.27.6
       vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
-
-  '@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
-    dependencies:
-      '@babel/core': 7.29.7
-      picomatch: 4.0.5
-      rolldown: 1.2.0
-    optionalDependencies:
-      '@babel/runtime': 7.27.6
-      vite: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
+    optional: true
 
   '@rolldown/plugin-node-polyfills@1.0.3': {}
 
@@ -14831,9 +14884,9 @@ snapshots:
       '@tanstack/ai': 0.14.0
       '@tanstack/devtools-event-client': 0.4.3
 
-  '@tanstack/ai-gemini@0.10.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))(@tanstack/ai@0.14.0)':
+  '@tanstack/ai-gemini@0.10.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(@tanstack/ai@0.14.0)(supports-color@10.1.0)':
     dependencies:
-      '@google/genai': 1.52.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))
+      '@google/genai': 1.52.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(supports-color@10.1.0)
       '@tanstack/ai': 0.14.0
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
@@ -14860,18 +14913,18 @@ snapshots:
       '@openrouter/sdk': 0.12.14
       '@tanstack/ai': 0.14.0
 
-  '@tanstack/ai-react-ui@0.6.2(@tanstack/ai-client@0.8.0)(@tanstack/ai-react@0.8.0(@tanstack/ai@0.14.0)(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@tanstack/ai-react-ui@0.6.2(@tanstack/ai-client@0.8.0)(@tanstack/ai-react@0.8.0(@tanstack/ai@0.14.0)(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(supports-color@10.1.0)':
     dependencies:
       '@tanstack/ai-client': 0.8.0
       '@tanstack/ai-react': 0.8.0(@tanstack/ai@0.14.0)(@types/react@19.2.17)(react@19.2.7)
       '@types/react': 19.2.17
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
-      react-markdown: 10.1.0(@types/react@19.2.17)(react@19.2.7)
+      react-markdown: 10.1.0(@types/react@19.2.17)(react@19.2.7)(supports-color@10.1.0)
       rehype-highlight: 7.0.2
       rehype-raw: 7.0.0
       rehype-sanitize: 6.0.0
-      remark-gfm: 4.0.1
+      remark-gfm: 4.0.1(supports-color@10.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -14940,13 +14993,38 @@ snapshots:
     optionalDependencies:
       '@tanstack/react-router': 1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
+  '@tanstack/router-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@10.1.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
+      '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.29.7(supports-color@10.1.0))
+      '@babel/plugin-syntax-typescript': 7.25.9(@babel/core@7.29.7(supports-color@10.1.0))
+      '@babel/template': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
+      '@babel/types': 7.29.7
+      '@tanstack/router-core': 1.114.25
+      '@tanstack/router-generator': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+      '@tanstack/router-utils': 1.114.12
+      '@tanstack/virtual-file-routes': 1.114.12
+      '@types/babel__core': 7.20.5
+      '@types/babel__template': 7.4.4
+      '@types/babel__traverse': 7.20.6
+      babel-dead-code-elimination: 1.0.9(supports-color@10.1.0)
+      chokidar: 3.6.0
+      unplugin: 2.3.11
+      zod: 3.25.76
+    optionalDependencies:
+      '@tanstack/react-router': 1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
+    transitivePeerDependencies:
+      - supports-color
+
   '@tanstack/router-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.29.7)
       '@babel/plugin-syntax-typescript': 7.25.9(@babel/core@7.29.7)
       '@babel/template': 7.29.7
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
       '@babel/types': 7.29.7
       '@tanstack/router-core': 1.114.25
       '@tanstack/router-generator': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
@@ -14971,6 +15049,17 @@ snapshots:
       '@babel/parser': 7.29.7
       ansis: 3.17.0
       diff: 7.0.0
+
+  '@tanstack/router-vite-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@10.1.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
+    dependencies:
+      '@tanstack/router-plugin': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@10.1.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+    transitivePeerDependencies:
+      - '@rsbuild/core'
+      - '@tanstack/react-router'
+      - supports-color
+      - vite
+      - vite-plugin-solid
+      - webpack
 
   '@tanstack/router-vite-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
     dependencies:
@@ -15013,7 +15102,7 @@ snapshots:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
-      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.15
     transitivePeerDependencies:
@@ -15026,7 +15115,7 @@ snapshots:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
-      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3)
+      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.16
     transitivePeerDependencies:
@@ -15276,20 +15365,28 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitejs/plugin-react@6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
+    dependencies:
+      '@rolldown/pluginutils': 1.0.1
+      vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
+    optionalDependencies:
+      '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      babel-plugin-react-compiler: 1.0.0
+
+  '@vitejs/plugin-react@6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
+    dependencies:
+      '@rolldown/pluginutils': 1.0.1
+      vite: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
+    optionalDependencies:
+      '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      babel-plugin-react-compiler: 1.0.0
+
   '@vitejs/plugin-react@6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
     optionalDependencies:
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
-      babel-plugin-react-compiler: 1.0.0
-
-  '@vitejs/plugin-react@6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))':
-    dependencies:
-      '@rolldown/pluginutils': 1.0.1
-      vite: 8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)
-    optionalDependencies:
-      '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       babel-plugin-react-compiler: 1.0.0
 
   '@vitest/expect@4.1.9':
@@ -15798,7 +15895,16 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.7
       '@babel/parser': 7.29.7
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
+      '@babel/types': 7.29.7
+    transitivePeerDependencies:
+      - supports-color
+
+  babel-dead-code-elimination@1.0.9(supports-color@10.1.0):
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.1.0)
+      '@babel/parser': 7.29.7
+      '@babel/traverse': 7.29.7(supports-color@10.1.0)
       '@babel/types': 7.29.7
     transitivePeerDependencies:
       - supports-color
@@ -15847,11 +15953,11 @@ snapshots:
 
   bn.js@5.2.3: {}
 
-  body-parser@2.2.2:
+  body-parser@2.2.2(supports-color@10.1.0):
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       http-errors: 2.0.1
       iconv-lite: 0.7.1
       on-finished: 2.4.1
@@ -16312,9 +16418,11 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@10.1.0):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 10.1.0
 
   decode-named-character-reference@1.0.2:
     dependencies:
@@ -16695,23 +16803,23 @@ snapshots:
 
   express-rate-limit@8.3.1(express@5.2.1):
     dependencies:
-      express: 5.2.1
+      express: 5.2.1(supports-color@10.1.0)
       ip-address: 10.1.0
 
-  express@5.2.1:
+  express@5.2.1(supports-color@10.1.0):
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.2.2
+      body-parser: 2.2.2(supports-color@10.1.0)
       content-disposition: 1.0.1
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 2.1.1
+      finalhandler: 2.1.1(supports-color@10.1.0)
       fresh: 2.0.0
       http-errors: 2.0.1
       merge-descriptors: 2.0.0
@@ -16722,9 +16830,9 @@ snapshots:
       proxy-addr: 2.0.7
       qs: 6.15.2
       range-parser: 1.2.1
-      router: 2.2.0
-      send: 1.2.1
-      serve-static: 2.2.1
+      router: 2.2.0(supports-color@10.1.0)
+      send: 1.2.1(supports-color@10.1.0)
+      serve-static: 2.2.1(supports-color@10.1.0)
       statuses: 2.0.2
       type-is: 2.0.1
       vary: 1.1.2
@@ -16801,9 +16909,9 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@2.1.1:
+  finalhandler@2.1.1(supports-color@10.1.0):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -16891,17 +16999,17 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  gaxios@7.1.4:
+  gaxios@7.1.4(supports-color@10.1.0):
     dependencies:
       extend: 3.0.2
-      https-proxy-agent: 7.0.6
+      https-proxy-agent: 7.0.6(supports-color@10.1.0)
       node-fetch: 3.3.2
     transitivePeerDependencies:
       - supports-color
 
-  gcp-metadata@8.1.2:
+  gcp-metadata@8.1.2(supports-color@10.1.0):
     dependencies:
-      gaxios: 7.1.4
+      gaxios: 7.1.4(supports-color@10.1.0)
       google-logging-utils: 1.1.3
       json-bigint: 1.0.0
     transitivePeerDependencies:
@@ -16986,12 +17094,12 @@ snapshots:
       merge2: 1.4.1
       slash: 3.0.0
 
-  google-auth-library@10.6.2:
+  google-auth-library@10.6.2(supports-color@10.1.0):
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 7.1.4
-      gcp-metadata: 8.1.2
+      gaxios: 7.1.4(supports-color@10.1.0)
+      gcp-metadata: 8.1.2(supports-color@10.1.0)
       google-logging-utils: 1.1.3
       jws: 4.0.1
     transitivePeerDependencies:
@@ -17191,9 +17299,9 @@ snapshots:
       estree-util-attach-comments: 3.0.0
       estree-util-is-identifier-name: 3.0.0
       hast-util-whitespace: 3.0.0
-      mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.2.0
-      mdast-util-mdxjs-esm: 2.0.1
+      mdast-util-mdx-expression: 2.0.1(supports-color@10.1.0)
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.1.0)
+      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.1.0)
       property-information: 7.0.0
       space-separated-tokens: 2.0.2
       style-to-object: 1.0.8
@@ -17216,7 +17324,7 @@ snapshots:
       stringify-entities: 4.0.4
       zwitch: 2.0.4
 
-  hast-util-to-jsx-runtime@2.3.5:
+  hast-util-to-jsx-runtime@2.3.5(supports-color@10.1.0):
     dependencies:
       '@types/estree': 1.0.8
       '@types/hast': 3.0.4
@@ -17225,9 +17333,9 @@ snapshots:
       devlop: 1.1.0
       estree-util-is-identifier-name: 3.0.0
       hast-util-whitespace: 3.0.0
-      mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.2.0
-      mdast-util-mdxjs-esm: 2.0.1
+      mdast-util-mdx-expression: 2.0.1(supports-color@10.1.0)
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.1.0)
+      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.1.0)
       property-information: 7.0.0
       space-separated-tokens: 2.0.2
       style-to-object: 1.0.8
@@ -17277,9 +17385,11 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.4.2(hono@4.12.27):
+  hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5):
     dependencies:
       hono: 4.12.27
+    optionalDependencies:
+      unstorage: 1.17.5
 
   hono-sessions@0.8.1(hono@4.12.27):
     dependencies:
@@ -17313,10 +17423,10 @@ snapshots:
 
   https-browserify@1.0.0: {}
 
-  https-proxy-agent@7.0.6:
+  https-proxy-agent@7.0.6(supports-color@10.1.0):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -17759,7 +17869,7 @@ snapshots:
       '@types/unist': 3.0.3
       ccount: 2.0.1
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
       parse-entities: 4.0.2
       stringify-entities: 4.0.4
@@ -17774,14 +17884,14 @@ snapshots:
       unist-util-is: 6.0.0
       unist-util-visit-parents: 6.0.2
 
-  mdast-util-from-markdown@2.0.3:
+  mdast-util-from-markdown@2.0.3(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
       decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
-      micromark: 4.0.2
+      micromark: 4.0.2(supports-color@10.1.0)
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-decode-string: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
@@ -17799,67 +17909,67 @@ snapshots:
       mdast-util-find-and-replace: 3.0.2
       micromark-util-character: 2.1.1
 
-  mdast-util-gfm-footnote@2.1.0:
+  mdast-util-gfm-footnote@2.1.0(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
       micromark-util-normalize-identifier: 2.0.1
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-strikethrough@2.0.0:
+  mdast-util-gfm-strikethrough@2.0.0(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-table@2.0.0:
+  mdast-util-gfm-table@2.0.0(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       markdown-table: 3.0.4
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-task-list-item@2.0.0:
+  mdast-util-gfm-task-list-item@2.0.0(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm@3.1.0:
+  mdast-util-gfm@3.1.0(supports-color@10.1.0):
     dependencies:
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-gfm-autolink-literal: 2.0.1
-      mdast-util-gfm-footnote: 2.1.0
-      mdast-util-gfm-strikethrough: 2.0.0
-      mdast-util-gfm-table: 2.0.0
-      mdast-util-gfm-task-list-item: 2.0.0
+      mdast-util-gfm-footnote: 2.1.0(supports-color@10.1.0)
+      mdast-util-gfm-strikethrough: 2.0.0(supports-color@10.1.0)
+      mdast-util-gfm-table: 2.0.0(supports-color@10.1.0)
+      mdast-util-gfm-task-list-item: 2.0.0(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx-expression@2.0.1:
+  mdast-util-mdx-expression@2.0.1(supports-color@10.1.0):
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx-jsx@3.2.0:
+  mdast-util-mdx-jsx@3.2.0(supports-color@10.1.0):
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.4
@@ -17867,7 +17977,7 @@ snapshots:
       '@types/unist': 3.0.3
       ccount: 2.0.1
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
       parse-entities: 4.0.2
       stringify-entities: 4.0.4
@@ -17878,21 +17988,21 @@ snapshots:
 
   mdast-util-mdx@3.0.0:
     dependencies:
-      mdast-util-from-markdown: 2.0.3
-      mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.2.0
-      mdast-util-mdxjs-esm: 2.0.1
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
+      mdast-util-mdx-expression: 2.0.1(supports-color@10.1.0)
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.1.0)
+      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdxjs-esm@2.0.1:
+  mdast-util-mdxjs-esm@2.0.1(supports-color@10.1.0):
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -18222,10 +18332,10 @@ snapshots:
 
   micromark-util-types@2.0.2: {}
 
-  micromark@4.0.2:
+  micromark@4.0.2(supports-color@10.1.0):
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
@@ -19023,17 +19133,17 @@ snapshots:
 
   react-is@16.13.1: {}
 
-  react-markdown@10.1.0(@types/react@19.2.17)(react@19.2.7):
+  react-markdown@10.1.0(@types/react@19.2.17)(react@19.2.7)(supports-color@10.1.0):
     dependencies:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/react': 19.2.17
       devlop: 1.1.0
-      hast-util-to-jsx-runtime: 2.3.5
+      hast-util-to-jsx-runtime: 2.3.5(supports-color@10.1.0)
       html-url-attributes: 3.0.1
       mdast-util-to-hast: 13.2.1
       react: 19.2.7
-      remark-parse: 11.0.0
+      remark-parse: 11.0.0(supports-color@10.1.0)
       remark-rehype: 11.1.2
       unified: 11.0.5
       unist-util-visit: 5.1.0
@@ -19240,12 +19350,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  remark-gfm@4.0.1:
+  remark-gfm@4.0.1(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-gfm: 3.1.0
+      mdast-util-gfm: 3.1.0(supports-color@10.1.0)
       micromark-extension-gfm: 3.0.0
-      remark-parse: 11.0.0
+      remark-parse: 11.0.0(supports-color@10.1.0)
       remark-stringify: 11.0.0
       unified: 11.0.5
     transitivePeerDependencies:
@@ -19262,10 +19372,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  remark-parse@11.0.0:
+  remark-parse@11.0.0(supports-color@10.1.0):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.1.0)
       micromark-util-types: 2.0.2
       unified: 11.0.5
     transitivePeerDependencies:
@@ -19373,7 +19483,7 @@ snapshots:
     transitivePeerDependencies:
       - oxc-resolver
 
-  rolldown-plugin-dts@0.27.9(@typescript/native-preview@7.0.0-dev.20260602.1)(rolldown@1.2.0)(typescript@6.0.3):
+  rolldown-plugin-dts@0.27.9(@typescript/native-preview@7.0.0-dev.20260702.3)(rolldown@1.2.0)(typescript@6.0.3):
     dependencies:
       dts-resolver: 3.0.0
       get-tsconfig: 5.0.0-beta.5
@@ -19490,9 +19600,9 @@ snapshots:
       rosie-skills-freebsd-x64: 0.6.4
       rosie-skills-linux-x64: 0.6.4
 
-  router@2.2.0:
+  router@2.2.0(supports-color@10.1.0):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -19552,9 +19662,9 @@ snapshots:
 
   semver@7.8.5: {}
 
-  send@1.2.1:
+  send@1.2.1(supports-color@10.1.0):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -19568,12 +19678,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serve-static@2.2.1:
+  serve-static@2.2.1(supports-color@10.1.0):
     dependencies:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 1.2.1
+      send: 1.2.1(supports-color@10.1.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -19784,7 +19894,7 @@ snapshots:
       github-slugger: 2.0.0
       hast-util-from-html: 2.0.3
       is-absolute-url: 5.0.0
-      mdast-util-mdx-jsx: 3.2.0
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.1.0)
       mdast-util-to-hast: 13.2.1
       picomatch: 4.0.5
       satteri: 0.9.4
@@ -20001,7 +20111,7 @@ snapshots:
 
   ts-pattern@5.9.0: {}
 
-  tsdown@0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260602.1)(tsx@4.22.5)(typescript@6.0.3):
+  tsdown@0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -20012,7 +20122,7 @@ snapshots:
       obug: 2.1.3
       picomatch: 4.0.5
       rolldown: 1.2.0
-      rolldown-plugin-dts: 0.27.9(@typescript/native-preview@7.0.0-dev.20260602.1)(rolldown@1.2.0)(typescript@6.0.3)
+      rolldown-plugin-dts: 0.27.9(@typescript/native-preview@7.0.0-dev.20260702.3)(rolldown@1.2.0)(typescript@6.0.3)
       semver: 7.8.5
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
@@ -20175,12 +20285,12 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  unplugin-dts@1.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  unplugin-dts@1.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       '@volar/typescript': 2.4.28
       compare-versions: 6.1.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       kolorist: 1.8.0
       local-pkg: 1.2.1
       magic-string: 0.30.21
@@ -20195,12 +20305,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       '@volar/typescript': 2.4.28
       compare-versions: 6.1.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       kolorist: 1.8.0
       local-pkg: 1.2.1
       magic-string: 0.30.21
@@ -20215,12 +20325,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  unplugin-dts@1.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       '@volar/typescript': 2.4.28
       compare-versions: 6.1.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.1.0)
       kolorist: 1.8.0
       local-pkg: 1.2.1
       magic-string: 0.30.21
@@ -20326,9 +20436,9 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite-plugin-dts@5.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  vite-plugin-dts@5.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      unplugin-dts: 1.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      unplugin-dts: 1.0.2(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
     optionalDependencies:
       '@microsoft/api-extractor': 7.58.9(@types/node@22.19.19)
       rollup: 4.60.1
@@ -20342,9 +20452,9 @@ snapshots:
       - typescript
       - webpack
 
-  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.9(@types/node@22.19.19))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
     optionalDependencies:
       '@microsoft/api-extractor': 7.58.9(@types/node@22.19.19)
       rollup: 4.60.1
@@ -20358,9 +20468,9 @@ snapshots:
       - typescript
       - webpack
 
-  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
+  vite-plugin-dts@5.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
+      unplugin-dts: 1.0.3(@microsoft/api-extractor@7.58.9(@types/node@24.12.4))(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.60.1)(supports-color@10.1.0)(typescript@6.0.3)(vite@8.1.3(@types/node@24.12.4)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
     optionalDependencies:
       '@microsoft/api-extractor': 7.58.9(@types/node@24.12.4)
       rollup: 4.60.1
