@@ -1,5 +1,14 @@
 # @likec4/spa
 
+## 1.59.0
+
+### Patch Changes
+
+- [#3089](https://github.com/likec4/likec4/pull/3089) [`465d0aa`](https://github.com/likec4/likec4/commit/465d0aab648e517182be109c0d93854d475ddcf5) Thanks [@kindasorrow](https://github.com/kindasorrow)! - Fixed sidebar navigation drawer rendering every view as an empty expandable folder: view leaf nodes carried an empty `children` array, which Mantine Tree treats as "has children", so views got a folder icon and lost click navigation
+
+- Updated dependencies [[`76ef007`](https://github.com/likec4/likec4/commit/76ef007fd2fb0c6d52cedcdb3ef048a9f2a624c4), [`0994577`](https://github.com/likec4/likec4/commit/09945775fb0c4c64b79eae6f17ee0abce92ef8f1), [`9b9727f`](https://github.com/likec4/likec4/commit/9b9727fcd1201296c4d7e09f7446edd38669328a), [`d0a05fe`](https://github.com/likec4/likec4/commit/d0a05fe8e29105444762542c78c9861a13bfaff0), [`1814846`](https://github.com/likec4/likec4/commit/1814846f629971cec2a392222ab00c42abea47ed), [`061e687`](https://github.com/likec4/likec4/commit/061e6872ee80b1381d3ec047663a22d1ebe6bab5)]:
+  - @likec4/core@1.59.0
+
 ## 1.57.1
 
 ### Patch Changes

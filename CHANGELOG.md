@@ -1,3 +1,42 @@
+## [1.59.0](https://github.com/likec4/likec4/compare/v1.58.0...v1.59.0) (2026-07-19)
+
+### 🚀 Features
+
+- **Flow Control in Dynamic Views** (experimental):\
+  Besides `parallel`, steps can now be grouped into flow blocks with an optional title -- `opt`, `loop` and `break` blocks, `alt` with `when` / `else` branches, and `try` / `catch` / `finally`. Sequence diagrams render these as nested frames, actors stay visible when zoomed in, and during a walkthrough a docked Sequence Outline panel shows the flow as a collapsible tree. [#3084](https://github.com/likec4/likec4/pull/3084), resolves [#2745](https://github.com/likec4/likec4/issues/2745), [#2993](https://github.com/likec4/likec4/issues/2993), [#3074](https://github.com/likec4/likec4/issues/3074)
+
+- **Title, Description and Links on Relationship Kinds**:\
+  Define `title`, `description` and `link` on relationship kinds in the `specification`, the same way as for element kinds. These properties are inherited by every relationship of that kind and can be overridden per relationship. Thanks [@farhan523](https://github.com/farhan523), [#3053](https://github.com/likec4/likec4/pull/3053), closes [#2260](https://github.com/likec4/likec4/issues/2260)
+
+- **Tags on Relationship Kinds**:\
+  Define tags on relationship kinds in the `specification`. Tags are inherited by every relationship of that kind (merged with the relationship's own tags), so they can be used in view predicates like `where tag is #tcp`. Thanks [@farhan523](https://github.com/farhan523), [#3083](https://github.com/likec4/likec4/pull/3083), closes [#2533](https://github.com/likec4/likec4/issues/2533)
+
+- **Programmatic Enrichment and DSL Writeback**:\
+  New SDK APIs to seed a `Builder` from a loaded workspace and write it back to `.c4` DSL: `Builder.fromParsed(data, mode?)`, `LikeC4.parsedModel()`, `LikeC4.toBuilder()`, `LikeC4.toTypedBuilder()`, `LikeC4.toDSL()`, and the Node-only `writeDSL()` helper. The DSL round-trip is intentionally lossy -- comments, source positions and original formatting are not preserved. [#2984](https://github.com/likec4/likec4/pull/2984), resolves [#2833](https://github.com/likec4/likec4/issues/2833)
+
+- **Diagram Accessibility Improvements**:\
+  Diagrams now expose node and relationship text to assistive technologies and allow focused nodes and relationships to be activated from the keyboard. Added keyboard zoom shortcuts for focused diagrams and made zoomable diagrams keyboard-focusable. Thanks [@ckeller42](https://github.com/ckeller42), [#2990](https://github.com/likec4/likec4/pull/2990), [#3056](https://github.com/likec4/likec4/pull/3056), fixes [#2988](https://github.com/likec4/likec4/issues/2988), [#2915](https://github.com/likec4/likec4/issues/2915)
+
+- **View Description Tooltip in Navigation Panel**:\
+  Hovering a view in the navigation menu now reveals its complete description in a tooltip, so long (truncated) descriptions stay readable. Thanks [@farhan523](https://github.com/farhan523), [#3060](https://github.com/likec4/likec4/pull/3060), closes [#2933](https://github.com/likec4/likec4/issues/2933)
+
+### 🐞 Bug Fixes
+
+- Inherit relationship kind styles in dynamic views. Thanks [@ckeller42](https://github.com/ckeller42), [#3055](https://github.com/likec4/likec4/pull/3055), fixes [#2916](https://github.com/likec4/likec4/issues/2916)
+
+- Fixed `EMFILE: too many open files, watch` crash in `likec4 serve` / `dev` on large repositories -- the file watcher now honors the project's `exclude` patterns. Thanks [@Vinceveve](https://github.com/Vinceveve), [#3058](https://github.com/likec4/likec4/pull/3058)
+
+- Fixed project `exclude` patterns so they also filter matching files loaded through `include.paths`. Thanks [@ckeller42](https://github.com/ckeller42), [#3093](https://github.com/likec4/likec4/pull/3093)
+
+- Keep generated `dot`, `d2`, `mermaid`, and `plantuml` files inside the requested output directory when views come from external include paths. Thanks [@ckeller42](https://github.com/ckeller42), [#3094](https://github.com/likec4/likec4/pull/3094)
+
+- Stop stdio MCP servers when the client closes stdin, so file watchers are cleaned up instead of leaving orphaned processes. Thanks [@ckeller42](https://github.com/ckeller42), [#3097](https://github.com/likec4/likec4/pull/3097)
+
+- Relationships browser: keep the direct parent of leaf elements when flattening hierarchy, so a nested component's owner stays visible. Thanks [@kindasorrow](https://github.com/kindasorrow), [#3099](https://github.com/likec4/likec4/pull/3099)
+
+- Fixed sidebar navigation drawer rendering every view as an empty expandable folder instead of a clickable leaf. Thanks [@kindasorrow](https://github.com/kindasorrow), [#3089](https://github.com/likec4/likec4/pull/3089)
+
+
 ## [1.58.0](https://github.com/likec4/likec4/compare/v1.57.0...v1.58.0) (2026-06-05)
 
 ### 🚀 Features

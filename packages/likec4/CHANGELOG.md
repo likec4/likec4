@@ -1,5 +1,30 @@
 # likec4
 
+## 1.59.0
+
+### Minor Changes
+
+- [#2984](https://github.com/likec4/likec4/pull/2984) [`061e687`](https://github.com/likec4/likec4/commit/061e6872ee80b1381d3ec047663a22d1ebe6bab5) Thanks [@davydkov](https://github.com/davydkov)! - Add programmatic enrichment + DSL writeback for loaded workspaces (resolves [#2833](https://github.com/likec4/likec4/issues/2833)).
+
+  - `Builder.fromParsed(data, mode?)` — seed a `Builder` from an existing `ParsedLikeC4ModelData`. The returned builder is `Builder<AnyTypes>` (kinds/FQNs unknown at compile time); pass an explicit generic to opt back into a typed Builder. `mode` (`'strict'` | `'editable'`, default `'editable'`) controls duplicate handling: in `editable` mode re-declaring an existing FQN with the same kind edits it in place; pass `'strict'` to throw on duplicates instead.
+  - `LikeC4.parsedModel(project?)` — exposes the parsed model on the public `LikeC4` instance.
+  - `LikeC4.toBuilder(mode?, project?)` — returns a Builder seeded from the parsed workspace; chain `.model(...)` / `.deployment(...)` / `.views(...)` to extend it. Defaults to `editable` (re-declaring a loaded element edits it); pass `'strict'` for a builder where duplicate FQNs throw.
+  - `LikeC4.toTypedBuilder({ specification, mode?, project? })` — validates the given specification against the loaded model (subset semantics — every declared kind/tag/metadata key must exist) and returns a Builder typed by it (`Builder<Types.FromSpecification<Spec>>`), replacing the unchecked `as unknown as Builder<...>` cast. Backed by the new `assertSpecificationCompatible` helper exported from `@likec4/core/builder`.
+  - `LikeC4.toDSL(project?)` — renders the parsed model back to `.c4` DSL source via `@likec4/generators/likec4`.
+  - `writeDSL(likec4, targetDir, options?)` — Node-only helper exported from `likec4` (and `@likec4/language-services/node`) that writes the rendered DSL to disk.
+
+  The DSL round-trip is intentionally LOSSY: comments, source positions and original formatting are not preserved.
+
+### Patch Changes
+
+- [#3094](https://github.com/likec4/likec4/pull/3094) [`b67f2b4`](https://github.com/likec4/likec4/commit/b67f2b432b89e78ac3cdfef7618612821b49d341) Thanks [@ckeller42](https://github.com/ckeller42)! - Keep generated `dot`, `d2`, `mermaid`, and `plantuml` files inside the requested output directory when views come from external include paths.
+
+- [#3097](https://github.com/likec4/likec4/pull/3097) [`a862f7f`](https://github.com/likec4/likec4/commit/a862f7f72ab63e635881eb0c5bb1ceab5296df6f) Thanks [@ckeller42](https://github.com/ckeller42)! - Stop stdio MCP servers when the client closes stdin so file watchers are cleaned up instead of leaving orphaned processes.
+
+- Updated dependencies [[`76ef007`](https://github.com/likec4/likec4/commit/76ef007fd2fb0c6d52cedcdb3ef048a9f2a624c4), [`0994577`](https://github.com/likec4/likec4/commit/09945775fb0c4c64b79eae6f17ee0abce92ef8f1), [`9b9727f`](https://github.com/likec4/likec4/commit/9b9727fcd1201296c4d7e09f7446edd38669328a), [`d0a05fe`](https://github.com/likec4/likec4/commit/d0a05fe8e29105444762542c78c9861a13bfaff0), [`1814846`](https://github.com/likec4/likec4/commit/1814846f629971cec2a392222ab00c42abea47ed), [`061e687`](https://github.com/likec4/likec4/commit/061e6872ee80b1381d3ec047663a22d1ebe6bab5)]:
+  - @likec4/core@1.59.0
+  - @likec4/icons@1.46.4
+
 ## 1.57.1
 
 ### Patch Changes

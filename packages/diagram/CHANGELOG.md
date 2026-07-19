@@ -1,5 +1,56 @@
 # @likec4/diagram
 
+## 1.59.0
+
+### Patch Changes
+
+- [#3084](https://github.com/likec4/likec4/pull/3084) [`76ef007`](https://github.com/likec4/likec4/commit/76ef007fd2fb0c6d52cedcdb3ef048a9f2a624c4) Thanks [@davydkov](https://github.com/davydkov)! - Flow control in dynamic views. Besides `parallel`, steps can now be grouped into flow blocks (each with an optional title):
+
+  - `opt`, `loop` and `break` blocks
+  - `alt` with `when` / `else` branches
+  - `try` / `catch` / `finally` blocks
+
+  ```likec4
+  dynamic view example {
+    customer -> app 'opens app'
+    alt {
+      when 'authorized' {
+        app -> api 'requests data'
+      }
+      else 'not authorized' {
+        app -> customer 'shows login'
+      }
+    }
+  }
+  ```
+
+  Sequence diagrams render these blocks as nested frames, and actors stay visible when zoomed in (fixes [#3074](https://github.com/likec4/likec4/issues/3074)). During a walkthrough, a docked Sequence Outline panel shows the flow as a collapsible tree that mirrors the block nesting — each step is numbered and every operator carries a colored type tag and step count, so you can jump to any step and keep your place.
+
+  > [!NOTE]
+  > Flow control blocks are experimental — syntax and rendering may change. We are looking for your feedback in [discussions](https://github.com/likec4/likec4/discussions)!
+
+  Resolved issues:
+
+  - [#2745](https://github.com/likec4/likec4/issues/2745)
+  - [#2993](https://github.com/likec4/likec4/issues/2993)
+  - [#3074](https://github.com/likec4/likec4/issues/3074)
+
+- [#2990](https://github.com/likec4/likec4/pull/2990) [`fe33144`](https://github.com/likec4/likec4/commit/fe33144ee9e055371150b70a3db093d22a240626) Thanks [@ckeller42](https://github.com/ckeller42)! - Fixes [#2988](https://github.com/likec4/likec4/issues/2988): diagrams now expose LikeC4 node and relationship text to assistive technologies and allow focused nodes and relationships to be activated from the keyboard.
+
+- [#3056](https://github.com/likec4/likec4/pull/3056) [`31e3671`](https://github.com/likec4/likec4/commit/31e3671c2d94d6f5f057c806868865c660eac23f) Thanks [@ckeller42](https://github.com/ckeller42)! - Add keyboard zoom shortcuts for focused diagrams and make zoomable diagrams keyboard-focusable.
+
+  Fixes [#2915](https://github.com/likec4/likec4/issues/2915)
+
+- [#3060](https://github.com/likec4/likec4/pull/3060) [`c830215`](https://github.com/likec4/likec4/commit/c83021565c2fced17d544177f7acfa52e08451f9) Thanks [@farhan523](https://github.com/farhan523)! - Navigation panel: show the full view description in a tooltip on hover.
+
+  View descriptions in the navigation menu are truncated to fit the item, so long descriptions were not fully readable without opening the view. Hovering a view now reveals its complete description in a tooltip.
+
+  Closes [#2933](https://github.com/likec4/likec4/issues/2933)
+
+- Updated dependencies [[`76ef007`](https://github.com/likec4/likec4/commit/76ef007fd2fb0c6d52cedcdb3ef048a9f2a624c4), [`0994577`](https://github.com/likec4/likec4/commit/09945775fb0c4c64b79eae6f17ee0abce92ef8f1), [`9b9727f`](https://github.com/likec4/likec4/commit/9b9727fcd1201296c4d7e09f7446edd38669328a), [`d0a05fe`](https://github.com/likec4/likec4/commit/d0a05fe8e29105444762542c78c9861a13bfaff0), [`1814846`](https://github.com/likec4/likec4/commit/1814846f629971cec2a392222ab00c42abea47ed), [`061e687`](https://github.com/likec4/likec4/commit/061e6872ee80b1381d3ec047663a22d1ebe6bab5)]:
+  - @likec4/core@1.59.0
+  - @likec4/styles@1.59.0
+
 ## 1.57.1
 
 ### Patch Changes
