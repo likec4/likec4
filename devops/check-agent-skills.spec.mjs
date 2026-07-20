@@ -53,9 +53,14 @@ function validSkill(name) {
     ? 'description:\n  Use when testing generated changeset skill metadata'
     : `description: Use when testing ${name} skill metadata`
 
-  const extraMetadata = name === 'refactor' ? 'license: MIT\n' : ''
+  const extraMetadata = [
+    name === 'add-new-element-shape' ? 'disable-model-invocation: true' : '',
+    name === 'refactor' ? 'license: MIT' : '',
+  ].filter(Boolean).join('\n')
 
-  return `---\nname: ${name}\n${description}\n${extraMetadata}---\n\n# ${name}\n\nUse this skill in tests.\n`
+  return `---\nname: ${name}\n${description}\n${
+    extraMetadata ? `${extraMetadata}\n` : ''
+  }---\n\n# ${name}\n\nUse this skill in tests.\n`
 }
 
 function createFixture(customize) {
@@ -146,7 +151,7 @@ describe('check-agent-skills', () => {
       createFixture(root => {
         writeFixtureFile(root, '.agents/skills/likec4-gh-pr-triage/SKILL.md', '# LikeC4 PR triage\n')
       }),
-      /\.agents\/skills\/likec4-gh-pr-triage\/SKILL\.md must start with YAML frontmatter/,
+      /\.agents\/skills\/likec4-gh-pr-triage\/SKILL\.md: SKILL\.md must start with YAML frontmatter/,
     )
   })
 
@@ -159,7 +164,7 @@ describe('check-agent-skills', () => {
           `---\nname: issue-repro\ndescription: Use when testing issue repro metadata\n---\n\n# Issue Repro\n`,
         )
       }),
-      /name must match directory "likec4-issue-repro", but found "issue-repro"/,
+      /Directory name 'likec4-issue-repro' must match skill name 'issue-repro'/,
     )
   })
 
@@ -172,7 +177,20 @@ describe('check-agent-skills', () => {
           `---\nname: likec4-project-config-workflow\ndescription:\n---\n\n# Project Config Workflow\n`,
         )
       }),
-      /\.agents\/skills\/likec4-project-config-workflow\/SKILL\.md must define a non-empty description/,
+      /\.agents\/skills\/likec4-project-config-workflow\/SKILL\.md: Field 'description' must be a non-empty string/,
+    )
+  })
+
+  it('rejects unexpected skill metadata fields', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(
+          root,
+          '.agents/skills/likec4-gh-pr-triage/SKILL.md',
+          `---\nname: likec4-gh-pr-triage\ndescription: Use when testing PR triage metadata\nunsupported-field: true\n---\n\n# PR Triage\n`,
+        )
+      }),
+      /Unexpected fields in frontmatter: unsupported-field/,
     )
   })
 

@@ -2,6 +2,7 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, lstatSync, readFileSync, readlinkSync } from 'node:fs'
 import path from 'node:path'
+import { parseFrontmatter, validateMetadata } from 'skills-ref'
 
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
   encoding: 'utf8',
@@ -40,55 +41,9 @@ const fail = message => failures.push(message)
 const absolute = relativePath => path.join(root, relativePath)
 const read = relativePath => readFileSync(absolute(relativePath), 'utf8').replace(/\r/g, '')
 const gitPathJoin = (...segments) => path.posix.normalize(path.posix.join(...segments))
-const stripOuterQuotes = value => value.replace(/^['"]|['"]$/g, '')
-
-const parseSkillMetadata = (relativePath, content) => {
-  if (!content.startsWith('---\n')) {
-    fail(`${relativePath} must start with YAML frontmatter`)
-    return undefined
-  }
-
-  const frontmatterEnd = content.indexOf('\n---\n', 4)
-  if (frontmatterEnd === -1) {
-    fail(`${relativePath} must close YAML frontmatter with ---`)
-    return undefined
-  }
-
-  const frontmatter = content.slice(4, frontmatterEnd)
-  const body = content.slice(frontmatterEnd + '\n---\n'.length)
-  const lines = frontmatter.split('\n')
-  const metadata = new Map()
-
-  for (let index = 0; index < lines.length; index++) {
-    const line = lines[index]
-    const match = line.match(/^([A-Za-z0-9_-]+):(?:\s*(.*))?$/)
-    if (!match) {
-      continue
-    }
-
-    const key = match[1]
-    const inlineValue = match[2]?.trim() ?? ''
-    if (inlineValue) {
-      metadata.set(key, stripOuterQuotes(inlineValue))
-      continue
-    }
-
-    const blockLines = []
-    for (let blockIndex = index + 1; blockIndex < lines.length; blockIndex++) {
-      const blockLine = lines[blockIndex]
-      if (/^[A-Za-z0-9_-]+:/.test(blockLine)) {
-        break
-      }
-      if (blockLine.trim()) {
-        blockLines.push(blockLine.trim())
-      }
-      index = blockIndex
-    }
-    metadata.set(key, blockLines.join(' '))
-  }
-
-  return { body, metadata }
-}
+const legacyLikeC4SkillMetadataFields = new Set([
+  'disable-model-invocation',
+])
 
 const validateSkillFile = relativePath => {
   if (!existsSync(absolute(relativePath))) {
@@ -96,27 +51,39 @@ const validateSkillFile = relativePath => {
     return
   }
 
-  const parsed = parseSkillMetadata(relativePath, read(relativePath))
-  if (!parsed) {
+  let metadata
+  let body
+  try {
+    const parsed = parseFrontmatter(read(relativePath))
+    metadata = parsed[0]
+    body = parsed[1]
+  } catch (error) {
+    fail(`${relativePath}: ${error.message}`)
     return
   }
 
   const skillDir = path.posix.dirname(relativePath)
-  const expectedName = path.posix.basename(skillDir)
-  const name = parsed.metadata.get('name')?.trim()
-  const description = parsed.metadata.get('description')?.trim()
-
-  if (!name) {
-    fail(`${relativePath} must define a non-empty name`)
-  } else if (name !== expectedName) {
-    fail(`${relativePath} name must match directory "${expectedName}", but found "${name}"`)
+  const metadataForReferenceValidation = { ...metadata }
+  for (const field of legacyLikeC4SkillMetadataFields) {
+    delete metadataForReferenceValidation[field]
   }
 
-  if (!description) {
-    fail(`${relativePath} must define a non-empty description`)
+  for (const error of validateMetadata(metadataForReferenceValidation, absolute(skillDir))) {
+    fail(`${relativePath}: ${error}`)
   }
 
-  if (!parsed.body.trim()) {
+  if ('name' in metadata && (typeof metadata.name !== 'string' || !metadata.name.trim())) {
+    fail(`${relativePath}: Field 'name' must be a non-empty string`)
+  }
+
+  if (
+    'description' in metadata
+    && (typeof metadata.description !== 'string' || !metadata.description.trim())
+  ) {
+    fail(`${relativePath}: Field 'description' must be a non-empty string`)
+  }
+
+  if (!body.trim()) {
     fail(`${relativePath} must contain a non-empty skill body after frontmatter`)
   }
 }
