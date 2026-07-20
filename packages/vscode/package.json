@@ -83,18 +83,18 @@
           "likec4.config.json"
         ],
         "icon": {
-          "light": "data/icon-rc-256.png",
-          "dark": "data/icon-rc-256.png"
+          "light": "./data/icon-rc-256.png",
+          "dark": "./data/icon-rc-256.png"
         }
       },
       {
-        "id": "json5",
-        "filenamePatterns": [
-          "**/*.likec4.snap"
+        "id": "likec4-snapshot",
+        "extensions": [
+          ".likec4.snap"
         ],
         "icon": {
-          "light": "data/icon-snap-256.png",
-          "dark": "data/icon-snap-256.png"
+          "light": "./data/icon-snap-256.png",
+          "dark": "./data/icon-snap-256.png"
         }
       },
       {
@@ -110,22 +110,22 @@
         ],
         "configuration": "language-configuration.json",
         "icon": {
-          "light": "data/icon-256-light.png",
-          "dark": "data/icon-256-dark.png"
+          "light": "./data/icon-256-light.png",
+          "dark": "./data/icon-256-dark.png"
         }
       }
     ],
     "snippets": [
       {
         "language": "likec4",
-        "path": "data/likec4-snippets.json"
+        "path": "./data/likec4-snippets.json"
       }
     ],
     "grammars": [
       {
         "language": "likec4",
         "scopeName": "source.likec4",
-        "path": "likec4.tmLanguage.json",
+        "path": "./likec4.tmLanguage.json",
         "embeddedLanguages": {
           "meta.embedded.block.markdown": "markdown"
         }

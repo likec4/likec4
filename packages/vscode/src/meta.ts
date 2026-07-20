@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "likec4"
 export const name = "likec4-vscode"
-export const version = "1.58.0"
+export const version = "1.59.0"
 export const displayName = "LikeC4"
 export const description = "Support for the LikeC4 modeling language"
 export const extensionId = `${publisher}.${name}`
