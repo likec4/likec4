@@ -1,5 +1,12 @@
 # @likec4/styles
 
+## 1.59.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/style-preset@1.59.1
+
 ## 1.59.0
 
 ### Patch Changes

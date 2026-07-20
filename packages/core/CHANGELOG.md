@@ -1,5 +1,7 @@
 # @likec4/core
 
+## 1.59.1
+
 ## 1.59.0
 
 ### Minor Changes

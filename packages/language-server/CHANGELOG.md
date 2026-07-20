@@ -1,5 +1,20 @@
 # @likec4/language-server
 
+## 1.59.1
+
+### Patch Changes
+
+- [#3107](https://github.com/likec4/likec4/pull/3107) [`3db77c8`](https://github.com/likec4/likec4/commit/3db77c8ee4134e211019c2c7571b1c188910951d) Thanks [@ckeller42](https://github.com/ckeller42)! - Project excludes now match Windows drive-letter URI paths, and workspace startup loads files from configured include paths.
+
+  Fixes [#2546](https://github.com/likec4/likec4/issues/2546)
+
+- Updated dependencies []:
+  - @likec4/config@1.59.1
+  - @likec4/core@1.59.1
+  - @likec4/generators@1.59.1
+  - @likec4/layouts@1.59.1
+  - @likec4/log@1.59.1
+
 ## 1.59.0
 
 ### Minor Changes

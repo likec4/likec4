@@ -1,5 +1,20 @@
 # @likec4/playground
 
+## 1.59.1
+
+### Patch Changes
+
+- Updated dependencies [[`3db77c8`](https://github.com/likec4/likec4/commit/3db77c8ee4134e211019c2c7571b1c188910951d)]:
+  - @likec4/language-server@1.59.1
+  - @likec4/core@1.59.1
+  - @likec4/diagram@1.59.1
+  - @likec4/generators@1.59.1
+  - @likec4/log@1.59.1
+  - @likec4/tsconfig@1.59.1
+  - @likec4/style-preset@1.59.1
+  - @likec4/styles@1.59.1
+  - @likec4/icons@1.46.4
+
 ## 1.59.0
 
 ### Patch Changes
