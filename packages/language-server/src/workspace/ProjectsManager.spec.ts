@@ -1113,6 +1113,84 @@ describe('ProjectsManager', () => {
       )
     })
 
+    it('should exclude same-directory files from project config on real Windows paths', async ({ expect }) => {
+      const { projectsManager, services, validateAll, buildModel } = await createMultiProjectTestServices({})
+
+      const projectRoot = 'c:\\likec4-repro\\architecture'
+      const modelDocUri = URI.file(`${projectRoot}\\model.c4`)
+      const excludedDocUri = URI.file(`${projectRoot}\\test.c4`)
+
+      const project = await projectsManager.registerProject({
+        config: {
+          name: 'architecture-repository',
+          title: 'Repozytorium architektury',
+          exclude: ['test.c4'],
+          implicitViews: false,
+          landingPage: {
+            redirect: true,
+          },
+        },
+        folderUri: projectRoot,
+      })
+
+      const modelDoc = services.shared.workspace.LangiumDocumentFactory.fromString(
+        `
+        specification {
+          element component
+        }
+
+        model {
+          component app
+        }
+
+        views {
+          view included {
+            title 'Included'
+            include *
+          }
+        }
+        `,
+        modelDocUri,
+      )
+      const excludedDoc = services.shared.workspace.LangiumDocumentFactory.fromString(
+        `
+        views {
+          view test {
+            title '!TEST!'
+            include *
+          }
+        }
+        `,
+        excludedDocUri,
+      )
+
+      services.shared.workspace.LangiumDocuments.addDocument(modelDoc)
+      services.shared.workspace.LangiumDocuments.addDocument(excludedDoc)
+
+      expect(projectsManager.ownerProjectId(modelDoc)).toBe(project.id)
+      expect(projectsManager.ownerProjectId(excludedDoc)).toBe(project.id)
+      expect(projectsManager.isExcluded(project.id, excludedDoc)).toBe(true)
+      expect(projectsManager.isExcluded(excludedDoc)).toBe(true)
+      expect(projectsManager.isIncluded(project.id, excludedDoc)).toBe(false)
+
+      const projectDocs = services.shared.workspace.LangiumDocuments.projectDocuments(project.id)
+        .toArray()
+        .map(doc => doc.uri.toString())
+
+      expect(projectDocs).toContain(modelDocUri.toString())
+      expect(projectDocs).not.toContain(excludedDocUri.toString())
+
+      const { errors } = await validateAll()
+      expect(errors).toEqual([])
+
+      const model = await buildModel(project.id)
+      const viewTitles = Object.values(model.views).map(view => view.title)
+
+      expect(viewTitles).toContain('Included')
+      expect(viewTitles).not.toContain('!TEST!')
+      expect(model.views).not.toHaveProperty('test')
+    })
+
     it.todo('should exclude node_modules', async ({ expect }) => {
       const { projectsManager: pm } = await createMultiProjectTestServices({})
 
