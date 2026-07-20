@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { invariant } from '@likec4/core'
 import type {
   BuildOptions,
@@ -148,7 +155,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected async scanProjectIncludePaths(): Promise<FileSystemNode[]> {
     // Load documents from project include paths
     const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
-    if (hasAtLeast(includePaths, 1)) {
+    if (!hasAtLeast(includePaths, 1)) {
       return []
     }
 

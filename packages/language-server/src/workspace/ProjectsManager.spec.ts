@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
 import { UriUtils } from 'langium'
@@ -451,6 +458,93 @@ describe('ProjectsManager', () => {
       Object.entries(testdata).forEach(([path, expected]) => {
         expect(pm.isExcluded(path), `path: ${path}`).toBe(expected)
       })
+    })
+
+    it('should match project excludes against decoded Windows drive URI paths', async ({ expect }) => {
+      const { projectsManager, services } = await createMultiProjectTestServices({})
+
+      const projectA = await projectsManager.registerProject({
+        config: {
+          name: 'projectA',
+          include: { paths: ['../shared'] },
+          exclude: ['test.c4', '**/wrong.c4', 'node_modules', 'excluded.c4', 'bad file.c4'],
+        },
+        folderUri: URI.parse('file:///C%3A/repo/architecture'),
+      })
+
+      const addDocumentAt = (uri: string, input = 'model { component c }') => {
+        const document = services.shared.workspace.LangiumDocumentFactory.fromString(input, URI.parse(uri))
+        services.shared.workspace.LangiumDocuments.addDocument(document)
+        return document
+      }
+
+      const projectDoc = addDocumentAt(
+        'file:///C%3A/repo/architecture/model.c4',
+        'specification { element component }',
+      )
+      const sameFolderExcludedDoc = addDocumentAt('file:///C%3A/repo/architecture/test.c4')
+      const nestedExcludedDoc = addDocumentAt('file:///C%3A/repo/architecture/nested/wrong.c4')
+      const nodeModulesDoc = addDocumentAt('file:///C%3A/repo/architecture/node_modules/pkg/model.c4')
+      const includedExcludedDoc = addDocumentAt('file:///C%3A/repo/shared/excluded.c4')
+      const spacedExcludedDoc = addDocumentAt('file:///C%3A/repo/architecture/my%20workspace/bad%20file.c4')
+
+      expect(projectsManager.ownerProjectId(projectDoc)).toBe(projectA.id)
+      expect(projectsManager.isIncluded(projectA.id, projectDoc)).toBe(true)
+      expect(projectsManager.isExcluded(projectDoc)).toBe(false)
+
+      for (
+        const doc of [
+          sameFolderExcludedDoc,
+          nestedExcludedDoc,
+          nodeModulesDoc,
+          spacedExcludedDoc,
+        ]
+      ) {
+        expect(projectsManager.ownerProjectId(doc)).toBe(projectA.id)
+        expect(projectsManager.isExcluded(projectA.id, doc)).toBe(true)
+        expect(projectsManager.isExcluded(doc)).toBe(true)
+        expect(projectsManager.isIncluded(projectA.id, doc)).toBe(false)
+      }
+      expect(projectsManager.ownerProjectId(includedExcludedDoc)).toBe('default')
+      expect(projectsManager.isExcluded(projectA.id, includedExcludedDoc)).toBe(true)
+      expect(projectsManager.isExcluded(includedExcludedDoc)).toBe(true)
+      expect(projectsManager.isIncluded(projectA.id, includedExcludedDoc)).toBe(false)
+
+      const projectADocs = services.shared.workspace.LangiumDocuments.projectDocuments(projectA.id)
+        .toArray()
+        .map(d => d.uri.toString())
+
+      expect(projectADocs).toContain(projectDoc.uri.toString())
+      expect(projectADocs).not.toContain(sameFolderExcludedDoc.uri.toString())
+      expect(projectADocs).not.toContain(nestedExcludedDoc.uri.toString())
+      expect(projectADocs).not.toContain(nodeModulesDoc.uri.toString())
+      expect(projectADocs).not.toContain(includedExcludedDoc.uri.toString())
+      expect(projectADocs).not.toContain(spacedExcludedDoc.uri.toString())
+    })
+
+    it('should match workspace excludes against decoded Windows drive URI paths', async ({ expect }) => {
+      const { projectsManager: pm, services } = await createMultiProjectTestServices({})
+
+      pm.setWorkspaceExcludePatterns([
+        '/C:/repo/architecture/workspace-excluded.c4',
+        '**/dist/**',
+      ])
+      const projectA = await pm.registerProject({
+        config: { name: 'projectA' },
+        folderUri: URI.parse('file:///c%3A/repo/architecture'),
+      })
+      const workspaceExcludedDoc = services.shared.workspace.LangiumDocumentFactory.fromString(
+        'model { component c }',
+        URI.parse('file:///c%3A/repo/architecture/workspace-excluded.c4'),
+      )
+      services.shared.workspace.LangiumDocuments.addDocument(workspaceExcludedDoc)
+
+      expect(pm.ownerProjectId(workspaceExcludedDoc)).toBe(projectA.id)
+      expect(pm.isExcludedByWorkspace(workspaceExcludedDoc.uri)).toBe(true)
+      expect(pm.isExcluded(workspaceExcludedDoc)).toBe(true)
+      expect(pm.isIncluded(projectA.id, workspaceExcludedDoc)).toBe(false)
+      expect(pm.isExcludedByWorkspace(URI.parse('file:///c%3A/repo/architecture/dist/model.c4'))).toBe(true)
+      expect(pm.isExcludedByWorkspace(URI.parse('file:///c%3A/repo/architecture/src/model.c4'))).toBe(false)
     })
   })
 
@@ -1112,6 +1206,87 @@ describe('ProjectsManager', () => {
         'file:///c%3A/my/files-ext/',
       )
     })
+
+    it.runIf(isWin)(
+      'should exclude same-directory files from project config on real Windows paths',
+      async ({ expect }) => {
+        const { projectsManager, services, validateAll, buildModel } = await createMultiProjectTestServices({})
+
+        const projectRoot = 'c:\\likec4-repro\\architecture'
+        const modelDocUri = URI.file(`${projectRoot}\\model.c4`)
+        const excludedDocUri = URI.file(`${projectRoot}\\test.c4`)
+
+        const project = await projectsManager.registerProject({
+          config: {
+            name: 'architecture-repository',
+            title: 'Repozytorium architektury',
+            exclude: ['test.c4'],
+            implicitViews: false,
+            landingPage: {
+              redirect: true,
+            },
+          },
+          folderUri: projectRoot,
+        })
+
+        const modelDoc = services.shared.workspace.LangiumDocumentFactory.fromString(
+          `
+        specification {
+          element component
+        }
+
+        model {
+          component app
+        }
+
+        views {
+          view included {
+            title 'Included'
+            include *
+          }
+        }
+        `,
+          modelDocUri,
+        )
+        const excludedDoc = services.shared.workspace.LangiumDocumentFactory.fromString(
+          `
+        views {
+          view test {
+            title '!TEST!'
+            include *
+          }
+        }
+        `,
+          excludedDocUri,
+        )
+
+        services.shared.workspace.LangiumDocuments.addDocument(modelDoc)
+        services.shared.workspace.LangiumDocuments.addDocument(excludedDoc)
+
+        expect(projectsManager.ownerProjectId(modelDoc)).toBe(project.id)
+        expect(projectsManager.ownerProjectId(excludedDoc)).toBe(project.id)
+        expect(projectsManager.isExcluded(project.id, excludedDoc)).toBe(true)
+        expect(projectsManager.isExcluded(excludedDoc)).toBe(true)
+        expect(projectsManager.isIncluded(project.id, excludedDoc)).toBe(false)
+
+        const projectDocs = services.shared.workspace.LangiumDocuments.projectDocuments(project.id)
+          .toArray()
+          .map(doc => doc.uri.toString())
+
+        expect(projectDocs).toContain(modelDocUri.toString())
+        expect(projectDocs).not.toContain(excludedDocUri.toString())
+
+        const { errors } = await validateAll()
+        expect(errors).toEqual([])
+
+        const model = await buildModel(project.id)
+        const viewTitles = Object.values(model.views).map(view => view.title)
+
+        expect(viewTitles).toContain('Included')
+        expect(viewTitles).not.toContain('!TEST!')
+        expect(model.views).not.toHaveProperty('test')
+      },
+    )
 
     it.todo('should exclude node_modules', async ({ expect }) => {
       const { projectsManager: pm } = await createMultiProjectTestServices({})
