@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process'
-import { existsSync, lstatSync, readlinkSync } from 'node:fs'
+import { existsSync, lstatSync, readFileSync, readlinkSync } from 'node:fs'
 import path from 'node:path'
 
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -38,7 +38,88 @@ const expectedClaudeSkillLinks = new Map([
 
 const fail = message => failures.push(message)
 const absolute = relativePath => path.join(root, relativePath)
+const read = relativePath => readFileSync(absolute(relativePath), 'utf8').replace(/\r/g, '')
 const gitPathJoin = (...segments) => path.posix.normalize(path.posix.join(...segments))
+const stripOuterQuotes = value => value.replace(/^['"]|['"]$/g, '')
+
+const parseSkillMetadata = (relativePath, content) => {
+  if (!content.startsWith('---\n')) {
+    fail(`${relativePath} must start with YAML frontmatter`)
+    return undefined
+  }
+
+  const frontmatterEnd = content.indexOf('\n---\n', 4)
+  if (frontmatterEnd === -1) {
+    fail(`${relativePath} must close YAML frontmatter with ---`)
+    return undefined
+  }
+
+  const frontmatter = content.slice(4, frontmatterEnd)
+  const body = content.slice(frontmatterEnd + '\n---\n'.length)
+  const lines = frontmatter.split('\n')
+  const metadata = new Map()
+
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index]
+    const match = line.match(/^([A-Za-z0-9_-]+):(?:\s*(.*))?$/)
+    if (!match) {
+      continue
+    }
+
+    const key = match[1]
+    const inlineValue = match[2]?.trim() ?? ''
+    if (inlineValue) {
+      metadata.set(key, stripOuterQuotes(inlineValue))
+      continue
+    }
+
+    const blockLines = []
+    for (let blockIndex = index + 1; blockIndex < lines.length; blockIndex++) {
+      const blockLine = lines[blockIndex]
+      if (/^[A-Za-z0-9_-]+:/.test(blockLine)) {
+        break
+      }
+      if (blockLine.trim()) {
+        blockLines.push(blockLine.trim())
+      }
+      index = blockIndex
+    }
+    metadata.set(key, blockLines.join(' '))
+  }
+
+  return { body, metadata }
+}
+
+const validateSkillFile = relativePath => {
+  if (!existsSync(absolute(relativePath))) {
+    fail(`${relativePath} must exist`)
+    return
+  }
+
+  const parsed = parseSkillMetadata(relativePath, read(relativePath))
+  if (!parsed) {
+    return
+  }
+
+  const skillDir = path.posix.dirname(relativePath)
+  const expectedName = path.posix.basename(skillDir)
+  const name = parsed.metadata.get('name')?.trim()
+  const description = parsed.metadata.get('description')?.trim()
+
+  if (!name) {
+    fail(`${relativePath} must define a non-empty name`)
+  } else if (name !== expectedName) {
+    fail(`${relativePath} name must match directory "${expectedName}", but found "${name}"`)
+  }
+
+  if (!description) {
+    fail(`${relativePath} must define a non-empty description`)
+  }
+
+  if (!parsed.body.trim()) {
+    fail(`${relativePath} must contain a non-empty skill body after frontmatter`)
+  }
+}
 
 const trackedClaudeSkillEntries = [...tracked.keys()].filter(file => file.startsWith('.claude/skills/'))
 const unexpectedClaudeSkillEntries = trackedClaudeSkillEntries.filter(file => !expectedClaudeSkillLinks.has(file))
@@ -99,9 +180,28 @@ const trackedAgentSkillDirs = new Set(
     .map(file => file.split('/').slice(0, 3).join('/')),
 )
 
+const trackedSkillFiles = [...tracked.keys()].filter(file =>
+  (file.startsWith('.agents/skills/') || file.startsWith('skills/')) && file.endsWith('/SKILL.md')
+)
+
+const expectedClaudeSkillTargets = new Set(
+  [...expectedClaudeSkillLinks.entries()].map(([linkPath, expectedTarget]) =>
+    gitPathJoin(path.posix.dirname(linkPath), expectedTarget)
+  ),
+)
+
 for (const skillDir of trackedAgentSkillDirs) {
   const alias = `.claude/skills/${path.posix.basename(skillDir)}`
   if (!expectedClaudeSkillLinks.has(alias)) {
+    fail(`${skillDir} is tracked but missing an explicit Claude skill symlink adapter`)
+  }
+}
+
+for (const skillFile of trackedSkillFiles) {
+  validateSkillFile(skillFile)
+
+  const skillDir = path.posix.dirname(skillFile)
+  if (!expectedClaudeSkillTargets.has(skillDir)) {
     fail(`${skillDir} is tracked but missing an explicit Claude skill symlink adapter`)
   }
 }

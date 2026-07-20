@@ -8,6 +8,8 @@ import { afterEach, describe, it } from 'node:test'
 const repoRoot = path.resolve(import.meta.dirname, '..')
 const checker = path.join(repoRoot, 'devops/check-agent-instructions.mjs')
 const canonicalAgents = readFileSync(path.join(repoRoot, 'AGENTS.md'), 'utf8')
+const sequenceLayouterClaude =
+  '@../../../../../AGENTS.md\n\nClaude Code local memory: use the `### packages/diagram/src/likec4diagram/xyflow-sequence` section in the imported root `AGENTS.md`; do not duplicate the sequence-layouter rules here.\n'
 
 const tempRoots = []
 
@@ -106,8 +108,28 @@ describe('check-agent-instructions', () => {
 
   it('accepts the localized sequence layouter Claude memory', () => {
     expectPass(createFixture({
-      'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md': '# Sequence Layouter\n',
+      'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md': sequenceLayouterClaude,
     }))
+  })
+
+  it('rejects duplicated localized Claude memory content', () => {
+    expectFail(
+      createFixture({
+        'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md':
+          '# Sequence Layouter\n\nThis directory is a development copy of the sequence layouter from `@likec4/layouts`.\n',
+      }),
+      /must import AGENTS\.md and contain only the approved local pointer/,
+    )
+  })
+
+  it('rejects missing AGENTS import in localized Claude memory', () => {
+    expectFail(
+      createFixture({
+        'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md':
+          'Claude Code local memory: use the sequence layouter section in AGENTS.md.\n',
+      }),
+      /must import AGENTS\.md and contain only the approved local pointer/,
+    )
   })
 
   it('rejects unexpected nested Claude adapters', () => {

@@ -48,6 +48,16 @@ function targetSkillPath(linkPath, target) {
   return path.posix.join(path.posix.dirname(linkPath), target, 'SKILL.md')
 }
 
+function validSkill(name) {
+  const description = name === 'changeset-generator'
+    ? 'description:\n  Use when testing generated changeset skill metadata'
+    : `description: Use when testing ${name} skill metadata`
+
+  const extraMetadata = name === 'refactor' ? 'license: MIT\n' : ''
+
+  return `---\nname: ${name}\n${description}\n${extraMetadata}---\n\n# ${name}\n\nUse this skill in tests.\n`
+}
+
 function createFixture(customize) {
   const root = mkdtempSync(path.join(tmpdir(), 'likec4-agent-skills-check-'))
   tempRoots.push(root)
@@ -55,7 +65,7 @@ function createFixture(customize) {
   execFileSync('git', ['init', '--initial-branch=main'], { cwd: root, stdio: 'ignore' })
 
   for (const [linkPath, target] of expectedClaudeSkillLinks) {
-    writeFixtureFile(root, targetSkillPath(linkPath, target), `---\nname: ${path.posix.basename(linkPath)}\n---\n`)
+    writeFixtureFile(root, targetSkillPath(linkPath, target), validSkill(path.posix.basename(linkPath)))
     createSymlink(root, linkPath, target)
   }
 
@@ -125,9 +135,57 @@ describe('check-agent-skills', () => {
   it('rejects repo-local skills without explicit Claude adapters', () => {
     expectFail(
       createFixture(root => {
-        writeFixtureFile(root, '.agents/skills/local-only/SKILL.md', '---\nname: local-only\n---\n')
+        writeFixtureFile(root, '.agents/skills/local-only/SKILL.md', validSkill('local-only'))
       }),
       /\.agents\/skills\/local-only is tracked but missing an explicit Claude skill symlink adapter/,
+    )
+  })
+
+  it('rejects skill files without frontmatter', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(root, '.agents/skills/likec4-gh-pr-triage/SKILL.md', '# LikeC4 PR triage\n')
+      }),
+      /\.agents\/skills\/likec4-gh-pr-triage\/SKILL\.md must start with YAML frontmatter/,
+    )
+  })
+
+  it('rejects skill names that drift from their directory', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(
+          root,
+          '.agents/skills/likec4-issue-repro/SKILL.md',
+          `---\nname: issue-repro\ndescription: Use when testing issue repro metadata\n---\n\n# Issue Repro\n`,
+        )
+      }),
+      /name must match directory "likec4-issue-repro", but found "issue-repro"/,
+    )
+  })
+
+  it('rejects skills without descriptions', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(
+          root,
+          '.agents/skills/likec4-project-config-workflow/SKILL.md',
+          `---\nname: likec4-project-config-workflow\ndescription:\n---\n\n# Project Config Workflow\n`,
+        )
+      }),
+      /\.agents\/skills\/likec4-project-config-workflow\/SKILL\.md must define a non-empty description/,
+    )
+  })
+
+  it('rejects skills without body content', () => {
+    expectFail(
+      createFixture(root => {
+        writeFixtureFile(
+          root,
+          '.agents/skills/likec4-cli-codegen-regression/SKILL.md',
+          `---\nname: likec4-cli-codegen-regression\ndescription: Use when testing codegen metadata\n---\n`,
+        )
+      }),
+      /\.agents\/skills\/likec4-cli-codegen-regression\/SKILL\.md must contain a non-empty skill body after frontmatter/,
     )
   })
 })
