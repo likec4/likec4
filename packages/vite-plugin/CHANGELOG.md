@@ -1,5 +1,18 @@
 # @likec4/vite-plugin
 
+## 1.59.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/language-services@1.59.1
+  - @likec4/config@1.59.1
+  - @likec4/core@1.59.1
+  - @likec4/generators@1.59.1
+  - @likec4/layouts@1.59.1
+  - @likec4/log@1.59.1
+  - @likec4/icons@1.46.4
+
 ## 1.59.0
 
 ### Patch Changes

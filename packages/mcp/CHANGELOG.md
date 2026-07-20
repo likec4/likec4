@@ -1,5 +1,7 @@
 # @likec4/mcp
 
+## 1.59.1
+
 ## 1.59.0
 
 ### Patch Changes
