@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
 import { LikeC4ProjectConfigOps } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
 import { describe, it, vi } from 'vitest'
