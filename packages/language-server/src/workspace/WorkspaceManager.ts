@@ -148,7 +148,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected async scanProjectIncludePaths(): Promise<FileSystemNode[]> {
     // Load documents from project include paths
     const includePaths = this.services.workspace.ProjectsManager.getAllIncludePaths()
-    if (hasAtLeast(includePaths, 1)) {
+    if (!hasAtLeast(includePaths, 1)) {
       return []
     }
 

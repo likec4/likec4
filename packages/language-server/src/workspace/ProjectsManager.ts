@@ -32,7 +32,6 @@ import {
   isRelative,
   joinRelativeURL,
   joinURL,
-  withoutProtocol,
   withoutTrailingSlash,
   withTrailingSlash,
 } from 'ufo'
@@ -63,6 +62,19 @@ function normalizeUri(uri: DocOrUri): NormalizedUri {
     return URI.file(uri).toString() as NormalizedUri
   }
   return uri.toString() as NormalizedUri
+}
+
+const windowsDrivePath = /^\/?([A-Za-z]):(?=\/|$)/
+
+function normalizeWindowsDrivePath(path: string): string {
+  return path.replace(windowsDrivePath, (_, drive: string) => `/${drive.toLowerCase()}:`)
+}
+
+function uriPathForMatcher(uri: NormalizedUri | URI): string {
+  if (URI.isUri(uri)) {
+    return normalizeWindowsDrivePath(uri.path)
+  }
+  return normalizeWindowsDrivePath(URI.parse(uri).path)
 }
 
 /**
@@ -104,7 +116,7 @@ function _isInScope(project: ProjectData, docUri: NormalizedUri): boolean {
   return docUri.startsWith(project.folder) || (project.includePaths?.some(isParentFolderFor(docUri)) ?? false)
 }
 function _excludes(project: ProjectData, docUri: NormalizedUri): boolean {
-  return project.exclude?.(withoutProtocol(docUri)) ?? false
+  return project.exclude?.(uriPathForMatcher(docUri)) ?? false
 }
 
 /**
@@ -194,7 +206,7 @@ const DefaultProject = {
 }
 
 function isExcludedByDefault(uri: NormalizedUri): boolean {
-  return DefaultProject.exclude(withoutProtocol(uri))
+  return DefaultProject.exclude(uriPathForMatcher(uri))
 }
 
 type RegisterProjectOptions =
@@ -331,7 +343,7 @@ export class ProjectsManager extends ADisposable {
     if (URI.isUri(uri)) {
       uri = normalizeUri(uri)
     }
-    return this.#workspaceExclude(withoutProtocol(uri))
+    return this.#workspaceExclude(uriPathForMatcher(uri))
   }
 
   /**
@@ -348,6 +360,7 @@ export class ProjectsManager extends ADisposable {
         patterns,
         filter(isTruthy),
         map(p => {
+          p = normalizeWindowsDrivePath(p)
           if (!isAbsolute(p) && !p.startsWith('**')) {
             p = joinURL('**', p)
           }
@@ -912,7 +925,7 @@ export class ProjectsManager extends ADisposable {
           if (!isRelative(p) && !p.startsWith('**')) {
             p = joinURL('**', p)
           }
-          return cleanDoubleSlashes(joinRelativeURL(root.path, p))
+          return cleanDoubleSlashes(joinRelativeURL(uriPathForMatcher(root), p))
         })
       )
       project.exclude = picomatch(patterns, {
