@@ -344,8 +344,8 @@ catalogs:
       specifier: ^0.2.2
       version: 0.2.2
     date-fns:
-      specifier: ^4.1.0
-      version: 4.1.0
+      specifier: ^4.4.0
+      version: 4.4.0
     defu:
       specifier: ^6.1.7
       version: 6.1.7
@@ -785,7 +785,7 @@ importers:
         version: 0.0.77
       date-fns:
         specifier: catalog:utils
-        version: 4.1.0
+        version: 4.4.0
       fast-equals:
         specifier: catalog:utils
         version: 6.0.0
@@ -7484,8 +7484,8 @@ packages:
   dataloader@1.4.0:
     resolution: {integrity: sha512-68s5jYdlvasItOJnCuI2Q9s4q98g0pCyL3HrcKJu8KNugUl8ahgmZYg38ysLTgQjjXX3H8CJLkAvWrclWfcalw==}
 
-  date-fns@4.1.0:
-    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+  date-fns@4.4.0:
+    resolution: {integrity: sha512-+1UMbeh68lH1SegH83CGWwpb6OHHbpSgr3+s5Eww5M4CAgswBpoWS0AjTOfEJ33HiYKz1hdj/KTFprzXHmq/6w==}
 
   debounce-fn@6.0.0:
     resolution: {integrity: sha512-rBMW+F2TXryBwB54Q0d8drNEI+TfoS9JpNTAoVpukbWEhjXQq4rySFYLaqXMFXwdv61Zb2OHtj5bviSoimqxRQ==}
@@ -16404,7 +16404,7 @@ snapshots:
 
   dataloader@1.4.0: {}
 
-  date-fns@4.1.0: {}
+  date-fns@4.4.0: {}
 
   debounce-fn@6.0.0:
     dependencies:
