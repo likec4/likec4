@@ -1,3 +1,13 @@
+## [1.59.1](https://github.com/likec4/likec4/compare/v1.59.0...v1.59.1) (2026-07-20)
+
+### 🐞 Bug Fixes
+
+- Project `exclude` patterns now match Windows drive-letter URI paths, and workspace startup loads files from configured `include` paths. Thanks [@ckeller42](https://github.com/ckeller42), [#3107](https://github.com/likec4/likec4/pull/3107), fixes [#2546](https://github.com/likec4/likec4/issues/2546)
+
+- Fixed rendering of self-loops in sequence diagrams ([56772b3](https://github.com/likec4/likec4/commit/56772b3c29e6b2b519a66adc24132efe543b7dd6))
+
+- Fixed code completion in dynamic views ([224b586](https://github.com/likec4/likec4/commit/224b586c85a8a7987966e79855d833dc611bfc9c))
+
 ## [1.59.0](https://github.com/likec4/likec4/compare/v1.58.0...v1.59.0) (2026-07-19)
 
 ### 🚀 Features
@@ -36,7 +46,6 @@
 
 - Fixed sidebar navigation drawer rendering every view as an empty expandable folder instead of a clickable leaf. Thanks [@kindasorrow](https://github.com/kindasorrow), [#3089](https://github.com/likec4/likec4/pull/3089)
 
-
 ## [1.58.0](https://github.com/likec4/likec4/compare/v1.57.0...v1.58.0) (2026-06-05)
 
 ### 🚀 Features
@@ -61,7 +70,6 @@
 - Nested `parallel` blocks in dynamic views now produce a clear validation error (`Nested parallel blocks are not allowed`) instead of a cryptic parser error. Thanks [@farhan523](https://github.com/farhan523), [#2985](https://github.com/likec4/likec4/pull/2985), resolves [#988](https://github.com/likec4/likec4/issues/988)
 
 - Fixed "apply latest" action incorrectly triggering the new AI layout enhancement. [#2995](https://github.com/likec4/likec4/pull/2995)
-
 
 ## [1.57.0](https://github.com/likec4/likec4/compare/v1.56.0...v1.57.0) (2026-05-22)
 
@@ -113,7 +121,6 @@
 - Fixed overlay animations (relationships browser, element details, search) glitching on open/close. [#2976](https://github.com/likec4/likec4/pull/2976)
 
 - Upgraded `pnpm` to 11
-
 
 ## [1.56.0](https://github.com/likec4/likec4/compare/v1.55.1...v1.56.0) (2026-04-28)
 
