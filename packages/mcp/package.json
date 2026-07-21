@@ -50,6 +50,7 @@
     "preinspector": "tsdown",
     "inspector": "DANGEROUSLY_OMIT_AUTH=1 LIKEC4_WORKSPACE=../../examples pnpx @modelcontextprotocol/inspector node bin/likec4-mcp.mjs",
     "pack": "pnpm pack",
+    "smoke:pack": "node scripts/smoke-packed-install.mjs",
     "postpack": "likec4ops postpack",
     "clean": "likec4ops clean",
     "test": "vitest run --no-isolate",
