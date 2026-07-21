@@ -5,7 +5,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
@@ -39,18 +39,28 @@ function run(command, args, options = {}) {
   return result
 }
 
-function packageTarballs() {
-  const packagesDir = join(repoRoot, 'packages')
-  return readdirSync(packagesDir, { withFileTypes: true })
-    .filter(entry => entry.isDirectory())
-    .map(entry => join(packagesDir, entry.name, 'package.tgz'))
-    .filter(existsSync)
+function workspacePackageDirs() {
+  const result = run('pnpm', ['--filter', '@likec4/mcp...', 'list', '--depth', '-1', '--json'], { capture: true })
+  if (result.status !== 0) {
+    process.stdout.write(result.stdout ?? '')
+    process.stderr.write(result.stderr ?? '')
+    throw new Error(`Unable to list MCP workspace package closure: ${result.status ?? result.signal}`)
+  }
+
+  const packageInfos = JSON.parse(result.stdout ?? '[]')
+  if (!Array.isArray(packageInfos)) {
+    throw new Error('Unexpected pnpm workspace package list output')
+  }
+
+  return packageInfos.flatMap(packageInfo => {
+    return typeof packageInfo.path === 'string' ? [packageInfo.path] : []
+  })
 }
 
-function cleanPackageTarballs() {
-  for (const tarball of packageTarballs()) {
-    rmSync(tarball)
-  }
+function packageTarballs(packageDirs) {
+  return packageDirs
+    .map(packageDir => join(packageDir, 'package.tgz'))
+    .filter(existsSync)
 }
 
 const tempRoot = mkdtempSync(join(tmpdir(), 'likec4-mcp-pack-smoke-'))
@@ -60,10 +70,10 @@ const installLog = join(tempRoot, 'npm-install.log')
 mkdirSync(installDir)
 
 console.log(`Smoke workspace: ${tempRoot}`)
-cleanPackageTarballs()
+const packageDirs = workspacePackageDirs()
 run('pnpm', ['turbo', 'run', 'pack', '--filter=@likec4/mcp...'])
 
-const tarballs = packageTarballs()
+const tarballs = packageTarballs(packageDirs)
 const mcpTarball = join(packageDir, 'package.tgz')
 
 if (!existsSync(mcpTarball)) {
