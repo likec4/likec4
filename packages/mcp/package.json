@@ -57,39 +57,39 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:externals",
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild",
-    "std-env": "catalog:externals"
-  },
-  "devDependencies": {
     "@hono/mcp": "catalog:hono",
     "@hono/node-server": "catalog:hono",
+    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
-    "@likec4/devops": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "catalog:mcp",
-    "@types/node": "catalog:",
-    "@vitest/ui": "catalog:vitest",
+    "bundle-require": "catalog:externals",
     "citty": "catalog:utils",
     "defu": "catalog:utils",
+    "esbuild": "catalog:esbuild",
     "hono": "catalog:hono",
-    "langium": "catalog:langium",
     "remeda": "catalog:utils",
+    "std-env": "catalog:externals",
     "tinyrainbow": "catalog:utils",
+    "unctx": "catalog:utils",
+    "vscode-uri": "catalog:vscode",
+    "zod": "catalog:externals"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/ui": "catalog:vitest",
+    "langium": "catalog:langium",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "type-fest": "catalog:externals",
-    "unctx": "catalog:utils",
-    "vitest": "catalog:vitest",
-    "vscode-uri": "catalog:vscode",
-    "zod": "catalog:externals"
+    "vitest": "catalog:vitest"
   }
 }
