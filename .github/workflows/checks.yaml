@@ -60,6 +60,9 @@ jobs:
         run: |
           pnpm lint:package
 
+      - name: ⚙️ MCP packed install smoke
+        run: pnpm --filter @likec4/mcp run smoke:pack
+
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
