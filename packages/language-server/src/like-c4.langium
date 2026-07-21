@@ -1093,6 +1093,20 @@ ArrowType returns string:
 DynamicViewDisplayVariantValue returns string:
   'diagram' | 'sequence';
 
+DynamicViewFlowKeyword returns string:
+  'alt' |
+  'opt' |
+  'par' |
+  'parallel' |
+  'loop' |
+  'when' |
+  'if' |
+  'else' |
+  'break' |
+  'try' |
+  'catch' |
+  'finally';
+
 ThemeColor returns string:
   'primary' |
   'secondary' |
@@ -1160,6 +1174,7 @@ Id returns string:
   Participant |
   SizeValue |
   DynamicViewDisplayVariantValue |
+  DynamicViewFlowKeyword |
   IconPositionValue |
   RankValue |
   // Allow reserved keywords as Id
