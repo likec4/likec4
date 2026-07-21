@@ -12,6 +12,7 @@
   },
   "include": [
     "src",
+    "scripts",
     "package.json",
     "build.config.ts"
   ],

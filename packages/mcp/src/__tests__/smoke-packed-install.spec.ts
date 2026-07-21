@@ -5,33 +5,12 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath, pathToFileURL } from 'node:url'
-import { beforeAll, describe, expect, it } from 'vitest'
-
-type WorkspacePackage = {
-  dir: string
-  name: string
-  private: boolean
-}
-
-type SmokePackedInstallModule = {
-  expectedPackedTarballs: (packages: readonly WorkspacePackage[]) => string[]
-  localMcpBin: (installDir: string, platform: NodeJS.Platform) => string
-  removePackedTarballs: (packages: readonly WorkspacePackage[]) => void
-}
-
-const packageDir = fileURLToPath(new URL('../..', import.meta.url))
-let expectedPackedTarballs: SmokePackedInstallModule['expectedPackedTarballs']
-let localMcpBin: SmokePackedInstallModule['localMcpBin']
-let removePackedTarballs: SmokePackedInstallModule['removePackedTarballs']
-
-beforeAll(async () => {
-  const scriptUrl = pathToFileURL(join(packageDir, 'scripts/smoke-packed-install.mjs')).href
-  const module = await import(scriptUrl) as SmokePackedInstallModule
-  expectedPackedTarballs = module.expectedPackedTarballs
-  localMcpBin = module.localMcpBin
-  removePackedTarballs = module.removePackedTarballs
-})
+import { describe, expect, it } from 'vitest'
+import {
+  expectedPackedTarballs,
+  localMcpBin,
+  removePackedTarballs,
+} from '../../scripts/smoke-packed-install.mjs'
 
 function tempPackageDir(name: string): string {
   const dir = join(tmpdir(), `likec4-smoke-script-${process.pid}-${name}`)
