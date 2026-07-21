@@ -52,7 +52,13 @@ function sourceFiles(dir: string): Array<string> {
 }
 
 function packageNameFromSpecifier(specifier: string): string | null {
-  if (specifier.startsWith('.') || specifier.startsWith('/') || nodeBuiltins.has(specifier)) {
+  if (
+    specifier.startsWith('.')
+    || specifier.startsWith('/')
+    || specifier.startsWith('#')
+    || specifier.startsWith('node:')
+    || nodeBuiltins.has(specifier)
+  ) {
     return null
   }
   const parts = specifier.split('/')
@@ -80,6 +86,22 @@ function hasRuntimeImport(importClause: ts.ImportClause | undefined): boolean {
     return true
   }
   return namedBindings.elements.some(element => !element.isTypeOnly)
+}
+
+function hasRuntimeExport(node: ts.ExportDeclaration): boolean {
+  if (node.isTypeOnly) {
+    return false
+  }
+  if (!node.exportClause) {
+    return true
+  }
+  if (!ts.isNamedExports(node.exportClause)) {
+    return true
+  }
+  if (node.exportClause.elements.length === 0) {
+    return true
+  }
+  return node.exportClause.elements.some(element => !element.isTypeOnly)
 }
 
 function runtimeImport(filePath: string, specifier: string): RuntimeImport | null {
@@ -112,7 +134,7 @@ function collectRuntimeImportsFromSource(sourceText: string, filePath: string): 
       }
     }
     if (
-      ts.isExportDeclaration(node) && !node.isTypeOnly && node.moduleSpecifier &&
+      ts.isExportDeclaration(node) && hasRuntimeExport(node) && node.moduleSpecifier &&
       ts.isStringLiteral(node.moduleSpecifier)
     ) {
       addSpecifier(node.moduleSpecifier.text)
@@ -126,6 +148,24 @@ function collectRuntimeImportsFromSource(sourceText: string, filePath: string): 
       if (specifier && ts.isStringLiteral(specifier)) {
         addSpecifier(specifier.text)
       }
+    }
+    if (
+      ts.isCallExpression(node)
+      && ts.isIdentifier(node.expression)
+      && node.expression.text === 'require'
+      && node.arguments.length === 1
+    ) {
+      const specifier = node.arguments[0]
+      if (specifier && ts.isStringLiteral(specifier)) {
+        addSpecifier(specifier.text)
+      }
+    }
+    if (
+      ts.isImportEqualsDeclaration(node)
+      && ts.isExternalModuleReference(node.moduleReference)
+      && ts.isStringLiteral(node.moduleReference.expression)
+    ) {
+      addSpecifier(node.moduleReference.expression.text)
     }
     ts.forEachChild(node, visit)
   }
@@ -164,8 +204,13 @@ describe('@likec4/mcp runtime package imports', () => {
         'import \'side-effect-runtime\'',
         'import { readFileSync } from \'node:fs\'',
         'import { local } from \'./local\'',
+        'import internalValue from \'#internal/runtime\'',
         'export { runtimeExport } from \'export-runtime\'',
-        'export type { ExportType } from \'export-type-only\'',
+        'export { runtimeExport, type ExportType } from \'mixed-export-runtime\'',
+        'export { type ExportType } from \'export-type-only\'',
+        'export type { ExportType } from \'export-type-only-declaration\'',
+        'const required = require(\'required-runtime\')',
+        'import equalsRuntime = require(\'equals-runtime\')',
         'async function load() { return import(\'dynamic-runtime\') }',
       ].join('\n'),
       `${packageDir}/synthetic.ts`,
@@ -178,6 +223,9 @@ describe('@likec4/mcp runtime package imports', () => {
       ['empty-runtime', 'empty-runtime'],
       ['side-effect-runtime', 'side-effect-runtime'],
       ['export-runtime', 'export-runtime'],
+      ['mixed-export-runtime', 'mixed-export-runtime'],
+      ['required-runtime', 'required-runtime'],
+      ['equals-runtime', 'equals-runtime'],
       ['dynamic-runtime', 'dynamic-runtime'],
     ])
   })
@@ -186,11 +234,13 @@ describe('@likec4/mcp runtime package imports', () => {
     const dependencies = new Set(Object.keys(packageJson.dependencies ?? {}))
     const devDependencies = new Set(Object.keys(packageJson.devDependencies ?? {}))
 
-    const missingDependencies = uniqueRuntimeImports()
+    const runtimeImports = uniqueRuntimeImports()
+
+    const missingDependencies = runtimeImports
       .filter(({ packageName }) => !dependencies.has(packageName))
       .map(({ file, packageName, specifier }) => `${file} imports ${specifier} from ${packageName}`)
 
-    const misplacedDependencies = uniqueRuntimeImports()
+    const misplacedDependencies = runtimeImports
       .filter(({ packageName }) => devDependencies.has(packageName))
       .map(({ file, packageName, specifier }) => `${file} imports ${specifier} from ${packageName}`)
 
