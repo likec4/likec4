@@ -5,14 +5,35 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
-import {
-  expectedPackedTarballs,
-  localMcpBin,
-  removePackedTarballs,
-} from '../../scripts/smoke-packed-install.mjs'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { beforeAll, describe, expect, it } from 'vitest'
 
-function packageDir(name: string): string {
+type WorkspacePackage = {
+  dir: string
+  name: string
+  private: boolean
+}
+
+type SmokePackedInstallModule = {
+  expectedPackedTarballs: (packages: readonly WorkspacePackage[]) => string[]
+  localMcpBin: (installDir: string, platform: NodeJS.Platform) => string
+  removePackedTarballs: (packages: readonly WorkspacePackage[]) => void
+}
+
+const packageDir = fileURLToPath(new URL('../..', import.meta.url))
+let expectedPackedTarballs: SmokePackedInstallModule['expectedPackedTarballs']
+let localMcpBin: SmokePackedInstallModule['localMcpBin']
+let removePackedTarballs: SmokePackedInstallModule['removePackedTarballs']
+
+beforeAll(async () => {
+  const scriptUrl = pathToFileURL(join(packageDir, 'scripts/smoke-packed-install.mjs')).href
+  const module = await import(scriptUrl) as SmokePackedInstallModule
+  expectedPackedTarballs = module.expectedPackedTarballs
+  localMcpBin = module.localMcpBin
+  removePackedTarballs = module.removePackedTarballs
+})
+
+function tempPackageDir(name: string): string {
   const dir = join(tmpdir(), `likec4-smoke-script-${process.pid}-${name}`)
   rmSync(dir, { recursive: true, force: true })
   mkdirSync(dir, { recursive: true })
@@ -21,9 +42,9 @@ function packageDir(name: string): string {
 
 describe('smoke-packed-install helpers', () => {
   it('requires packed tarballs for every public workspace package', () => {
-    const publicPacked = packageDir('public-packed')
-    const publicMissing = packageDir('public-missing')
-    const privateMissing = packageDir('private-missing')
+    const publicPacked = tempPackageDir('public-packed')
+    const publicMissing = tempPackageDir('public-missing')
+    const privateMissing = tempPackageDir('private-missing')
     const publicTarball = join(publicPacked, 'package.tgz')
     writeFileSync(publicTarball, 'packed')
 
@@ -39,8 +60,8 @@ describe('smoke-packed-install helpers', () => {
   })
 
   it('returns public tarballs and ignores private workspace packages', () => {
-    const publicPacked = packageDir('only-public-packed')
-    const privateMissing = packageDir('ignored-private-missing')
+    const publicPacked = tempPackageDir('only-public-packed')
+    const privateMissing = tempPackageDir('ignored-private-missing')
     const publicTarball = join(publicPacked, 'package.tgz')
     writeFileSync(publicTarball, 'packed')
 
@@ -53,8 +74,8 @@ describe('smoke-packed-install helpers', () => {
   })
 
   it('removes stale public tarballs before packing', () => {
-    const publicPacked = packageDir('stale-public')
-    const privatePacked = packageDir('stale-private')
+    const publicPacked = tempPackageDir('stale-public')
+    const privatePacked = tempPackageDir('stale-private')
     const publicTarball = join(publicPacked, 'package.tgz')
     const privateTarball = join(privatePacked, 'package.tgz')
     writeFileSync(publicTarball, 'stale')
