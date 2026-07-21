@@ -162,6 +162,7 @@ function collectRuntimeImportsFromSource(sourceText: string, filePath: string): 
     }
     if (
       ts.isImportEqualsDeclaration(node)
+      && !node.isTypeOnly
       && ts.isExternalModuleReference(node.moduleReference)
       && ts.isStringLiteral(node.moduleReference.expression)
     ) {
@@ -211,6 +212,7 @@ describe('@likec4/mcp runtime package imports', () => {
         'export type { ExportType } from \'export-type-only-declaration\'',
         'const required = require(\'required-runtime\')',
         'import equalsRuntime = require(\'equals-runtime\')',
+        'import type equalsTypeOnly = require(\'equals-type-only\')',
         'async function load() { return import(\'dynamic-runtime\') }',
       ].join('\n'),
       `${packageDir}/synthetic.ts`,
