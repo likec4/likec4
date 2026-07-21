@@ -78,6 +78,6 @@ describe('smoke-packed-install helpers', () => {
 
   it('resolves the installed local MCP binary without npx', () => {
     expect(localMcpBin('/tmp/install', 'linux')).toBe('/tmp/install/node_modules/.bin/likec4-mcp')
-    expect(localMcpBin('C:\\install', 'win32')).toBe('C:\\install/node_modules/.bin/likec4-mcp.cmd')
+    expect(localMcpBin('C:\\install', 'win32')).toBe('C:\\install\\node_modules\\.bin\\likec4-mcp.cmd')
   })
 })

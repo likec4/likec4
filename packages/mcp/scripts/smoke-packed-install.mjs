@@ -7,7 +7,7 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { join, posix, resolve, win32 } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -109,7 +109,8 @@ export function expectedPackedTarballs(packages) {
 }
 
 export function localMcpBin(installDir, platform = process.platform) {
-  return join(installDir, 'node_modules', '.bin', platform === 'win32' ? 'likec4-mcp.cmd' : 'likec4-mcp')
+  const path = platform === 'win32' ? win32 : posix
+  return path.join(installDir, 'node_modules', '.bin', platform === 'win32' ? 'likec4-mcp.cmd' : 'likec4-mcp')
 }
 
 export function main() {
