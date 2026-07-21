@@ -121,9 +121,11 @@ function collectRuntimeImportsFromSource(sourceText: string, filePath: string): 
       ts.isCallExpression(node)
       && node.expression.kind === ts.SyntaxKind.ImportKeyword
       && node.arguments.length === 1
-      && ts.isStringLiteral(node.arguments[0])
     ) {
-      addSpecifier(node.arguments[0].text)
+      const specifier = node.arguments[0]
+      if (specifier && ts.isStringLiteral(specifier)) {
+        addSpecifier(specifier.text)
+      }
     }
     ts.forEachChild(node, visit)
   }
