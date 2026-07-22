@@ -316,8 +316,8 @@ catalogs:
       specifier: ^1.0.3
       version: 1.0.3
     '@tsdown/css':
-      specifier: ^0.22.9
-      version: 0.22.9
+      specifier: ^0.22.11
+      version: 0.22.12
     rolldown:
       specifier: ^1.2.0
       version: 1.2.0
@@ -2152,7 +2152,7 @@ importers:
         version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@10.1.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.22.9(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
+        version: 0.22.12(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2248,7 +2248,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -6447,6 +6447,28 @@ packages:
 
   '@ts-morph/common@0.29.0':
     resolution: {integrity: sha512-35oUmphHbJvQ/+UTwFNme/t2p3FoKiGJ5auTjjpNTop2dyREspirjMy82PLSC1pnDJ8ah1GU98hwpVt64YXQsg==}
+
+  '@tsdown/css@0.22.12':
+    resolution: {integrity: sha512-y7UMif5Fi96wZ8h9nRUIfxicLdmpIFl89CZNRi3suvyZCfBfPN9zQgUAUjtDK5yYKlGJlJM81LYf/XNLJ0mxWA==}
+    engines: {node: ^22.18.0 || >=24.11.0}
+    peerDependencies:
+      postcss: ^8.4.0
+      postcss-import: ^16.0.0
+      postcss-modules: ^6.0.0
+      sass: '*'
+      sass-embedded: '*'
+      tsdown: 0.22.12
+    peerDependenciesMeta:
+      postcss:
+        optional: true
+      postcss-import:
+        optional: true
+      postcss-modules:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
 
   '@tsdown/css@0.22.9':
     resolution: {integrity: sha512-FxWI31j8RyKQJvkLbaeLVnSwnaisTVNluVnInN7SE6KDSjp2pyTn5SZ9xETVHegSGd+qUs3khMjTCxq9yRojtQ==}
@@ -15340,12 +15362,12 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.22.9(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)':
+  '@tsdown/css@0.22.12(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)':
     dependencies:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
-      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
+      tsdown: 0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.15
     transitivePeerDependencies:
@@ -20379,6 +20401,33 @@ snapshots:
       code-block-writer: 13.0.3
 
   ts-pattern@5.9.0: {}
+
+  tsdown@0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3):
+    dependencies:
+      ansis: 4.3.1
+      cac: 7.0.0
+      defu: 6.1.7
+      empathic: 2.0.1
+      hookable: 6.1.1
+      import-without-cache: 0.4.0
+      obug: 2.1.3
+      picomatch: 4.0.5
+      rolldown: 1.2.0
+      rolldown-plugin-dts: 0.27.9(@typescript/native-preview@7.0.0-dev.20260707.2)(rolldown@1.2.0)(typescript@6.0.3)
+      semver: 7.8.5
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      tree-kill: 1.2.2
+      unconfig-core: 7.5.0
+    optionalDependencies:
+      '@tsdown/css': 0.22.12(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
+      tsx: 4.22.5
+      typescript: 6.0.3
+    transitivePeerDependencies:
+      - '@ts-macro/tsc'
+      - '@typescript/native-preview'
+      - oxc-resolver
+      - vue-tsc
 
   tsdown@0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3):
     dependencies:
