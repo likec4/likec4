@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import * as c4 from '@likec4/core'
 import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { filter, find, isDefined, isEmpty, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
@@ -416,13 +423,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseStep(node: ast.Step): c4.Step {
-      const sourceEl = elementRef(node.source)
-      if (!sourceEl) {
-        throw new Error('Invalid reference to source')
-      }
       let baseStep = {
         ...this.parseAbstractDynamicStep(node),
-        source: this.resolveFqn(sourceEl),
+        source: this.parseDynamicStepEndpoint(node.source, 'source'),
       }
 
       if (node.isBackward) {
@@ -439,13 +442,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     parseAbstractDynamicStep(
       astnode: ast.AbstractStep,
     ): Writable<Except<c4.Step, 'source', { requireExactProps: true }>> {
-      const targetEl = elementRef(astnode.target)
-      if (!targetEl) {
-        throw new Error('Invalid reference to target')
-      }
       const astPath = pathInsideDynamicView(astnode)
       const step: Writable<Omit<c4.Step, 'source'>> = {
-        target: this.resolveFqn(targetEl),
+        target: this.parseDynamicStepEndpoint(astnode.target, 'target'),
         astPath: astPath,
       }
 
@@ -520,6 +519,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         }
       }
       return step
+    }
+
+    parseDynamicStepEndpoint(node: ast.ElementRef, endpoint: 'source' | 'target'): c4.Fqn {
+      const ref = this.parseFqnRef(node.modelElement)
+      if (!c4.FqnRef.isModelRef(ref)) {
+        throw new Error(`Invalid reference to ${endpoint}`)
+      }
+      return c4.FqnRef.flatten(ref)
     }
 
     parseSubflowStep(node: ast.SubflowStep): c4.Step.Opt | c4.Step.Break | c4.Step.Loop | c4.Step.Parallel {
