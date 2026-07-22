@@ -1916,7 +1916,7 @@ importers:
         specifier: ^17.0.33
         version: 17.0.33
       autoprefixer:
-        specifier: ^10.5.3
+        specifier: ^10.5.4
         version: 10.5.4(postcss@8.5.15)
       birpc:
         specifier: catalog:vite
@@ -2181,7 +2181,7 @@ importers:
         specifier: catalog:xyflow
         version: 0.0.77
       autoprefixer:
-        specifier: ^10.5.3
+        specifier: ^10.5.4
         version: 10.5.4(postcss@8.5.15)
       babel-plugin-react-compiler:
         specifier: catalog:react
