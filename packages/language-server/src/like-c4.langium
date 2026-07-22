@@ -1101,7 +1101,15 @@ DynamicViewDisplayVariantValue returns string:
   'diagram' | 'sequence';
 
 DynamicViewFlowKeyword returns string:
-  SubflowKind |
+  'alt' |
+  'opt' |
+  'par' |
+  'parallel' |
+  'loop' |
+  'when' |
+  'if' |
+  'else' |
+  'break' |
   'try' |
   'catch' |
   'finally';
