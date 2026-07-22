@@ -207,8 +207,8 @@ catalogs:
       version: 4.4.3
   hono:
     '@hono/mcp':
-      specifier: ^0.3.0
-      version: 0.3.0
+      specifier: ^0.3.1
+      version: 0.3.1
     '@hono/node-server':
       specifier: ^2.0.8
       version: 2.0.10
@@ -2377,7 +2377,7 @@ importers:
     devDependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)
+        version: 0.3.1(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)
       '@hono/node-server':
         specifier: catalog:hono
         version: 2.0.10(hono@4.12.27)
@@ -4719,10 +4719,10 @@ packages:
       '@modelcontextprotocol/sdk':
         optional: true
 
-  '@hono/mcp@0.3.0':
-    resolution: {integrity: sha512-UhSWFbZwRxHBdptOn2r1HyB8Vt6gU+BL3AbTis2t8TBW69ZhG4soJQ09yEL/t/ymxszJnWp5Rq6tOXXOjuK1qg==}
+  '@hono/mcp@0.3.1':
+    resolution: {integrity: sha512-EB2rTyyl27qT8KtvEysgfcLK2jhp4KBb5+XyJ5/bcKNA64usp6qyuUWja9X4QB8Rx9U/yhZHGpfI96Xa/jem4Q==}
     peerDependencies:
-      '@modelcontextprotocol/sdk': ^1.25.1
+      '@modelcontextprotocol/sdk': ^1.29.0
       hono: '*'
       hono-rate-limiter: ^0.5.3
       zod: ^3.25.0 || ^4.0.0
@@ -13453,7 +13453,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)':
+  '@hono/mcp@0.3.1(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
       hono: 4.12.27
