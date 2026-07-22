@@ -12,6 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 const packageDir = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const repoRoot = resolve(packageDir, '../..')
 const runOnWindowsShell = process.platform === 'win32'
+const npmInstallTimeoutMs = 5 * 60_000
 
 /**
  * @typedef {object} WorkspacePackage
@@ -20,6 +21,18 @@ const runOnWindowsShell = process.platform === 'win32'
  * @property {boolean} private
  */
 
+/**
+ * @typedef {object} RunOptions
+ * @property {boolean} [capture]
+ * @property {string} [cwd]
+ * @property {number} [timeout]
+ */
+
+/**
+ * @param {string} command
+ * @param {Array<string>} args
+ * @param {RunOptions} [options]
+ */
 function run(command, args, options = {}) {
   const cwd = options.cwd ?? repoRoot
   console.log(`$ ${command} ${args.join(' ')}`)
@@ -32,6 +45,7 @@ function run(command, args, options = {}) {
     encoding: 'utf8',
     shell: runOnWindowsShell,
     stdio: options.capture ? 'pipe' : 'inherit',
+    timeout: options.timeout,
   })
 
   if (options.capture) {
@@ -75,6 +89,7 @@ function tarballPath(workspacePackage) {
   return join(workspacePackage.dir, 'package.tgz')
 }
 
+/** @param {Array<WorkspacePackage>} packages */
 export function removePackedTarballs(packages) {
   for (const workspacePackage of packages) {
     if (!workspacePackage.private) {
@@ -83,6 +98,10 @@ export function removePackedTarballs(packages) {
   }
 }
 
+/**
+ * @param {Array<WorkspacePackage>} packages
+ * @returns {Array<string>}
+ */
 export function expectedPackedTarballs(packages) {
   const missing = []
   const tarballs = []
@@ -106,6 +125,11 @@ export function expectedPackedTarballs(packages) {
   return tarballs
 }
 
+/**
+ * @param {string} installDir
+ * @param {string} [platform]
+ * @returns {string}
+ */
 export function localMcpBin(installDir, platform = process.platform) {
   const path = platform === 'win32' ? win32 : posix
   return path.join(installDir, 'node_modules', '.bin', platform === 'win32' ? 'likec4-mcp.cmd' : 'likec4-mcp')
@@ -136,8 +160,19 @@ export function main() {
       `${JSON.stringify({ private: true, type: 'module' }, null, 2)}\n`,
     )
 
-    const install = run('npm', ['install', ...tarballs], { cwd: installDir, capture: true })
+    const install = run('npm', ['install', ...tarballs], {
+      cwd: installDir,
+      capture: true,
+      timeout: npmInstallTimeoutMs,
+    })
     writeFileSync(installLog, `${install.stdout ?? ''}${install.stderr ?? ''}`)
+
+    if (install.error) {
+      console.error(`npm install failed. Log: ${installLog}`)
+      process.stdout.write(install.stdout ?? '')
+      process.stderr.write(install.stderr ?? '')
+      throw new Error(`npm install failed: ${install.error.message}`)
+    }
 
     if (install.status !== 0) {
       console.error(`npm install failed. Log: ${installLog}`)
