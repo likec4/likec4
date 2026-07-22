@@ -1,5 +1,24 @@
 # @likec4/language-server
 
+## 1.59.2
+
+### Patch Changes
+
+- [#3135](https://github.com/likec4/likec4/pull/3135) [`1d2575a`](https://github.com/likec4/likec4/commit/1d2575a8abf1cdf48dde3e5f509a087b855b18f4) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix dynamic views that reference imported elements from another project.
+
+  Fixes [#2989](https://github.com/likec4/likec4/issues/2989)
+
+- [#3114](https://github.com/likec4/likec4/pull/3114) [`4b5deac`](https://github.com/likec4/likec4/commit/4b5deac079439b3b6b3dd6eefa78acda2af6ea42) Thanks [@ckeller42](https://github.com/ckeller42)! - Allow dynamic view flow keywords such as `alt` to be used as metadata keys again.
+
+  Fixes [#3110](https://github.com/likec4/likec4/issues/3110)
+
+- Updated dependencies []:
+  - @likec4/config@1.59.2
+  - @likec4/core@1.59.2
+  - @likec4/generators@1.59.2
+  - @likec4/layouts@1.59.2
+  - @likec4/log@1.59.2
+
 ## 1.59.1
 
 ### Patch Changes
