@@ -1,3 +1,13 @@
+## [1.59.2](https://github.com/likec4/likec4/compare/v1.59.1...v1.59.2) (2026-07-22)
+
+### 🐞 Bug Fixes
+
+- Fixed dynamic views that reference imported elements from another project. Thanks [@ckeller42](https://github.com/ckeller42), [#3135](https://github.com/likec4/likec4/pull/3135), fixes [#2989](https://github.com/likec4/likec4/issues/2989)
+
+- Allow dynamic view flow keywords such as `alt` to be used as metadata keys again. Thanks [@ckeller42](https://github.com/ckeller42), [#3114](https://github.com/likec4/likec4/pull/3114), fixes [#3110](https://github.com/likec4/likec4/issues/3110)
+
+- Fixed `npx` installs of the MCP server by publishing its runtime dependencies. Thanks [@ckeller42](https://github.com/ckeller42), [#3113](https://github.com/likec4/likec4/pull/3113)
+
 ## [1.59.1](https://github.com/likec4/likec4/compare/v1.59.0...v1.59.1) (2026-07-20)
 
 ### 🐞 Bug Fixes
