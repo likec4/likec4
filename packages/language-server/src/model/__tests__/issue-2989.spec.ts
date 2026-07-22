@@ -2,14 +2,15 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { type ViewId, invariant, isDynamicView, ProjectId, stepGuards } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
+import { invariant, isDynamicView, ProjectId, stepGuards } from '@likec4/core'
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices } from '../../test'
 
 const importedBackend = '@contrat.entreprise.refonteExtranetEntrepriseBack'
 const localService = 'hermesPrevoyance.noyau_wsedimachine'
 
-function projects(hermesSource: string) {
+function projects(hermesSource: string): ReturnType<typeof createMultiProjectTestServices> {
   return createMultiProjectTestServices({
     contrat: {
       'model.c4': `
