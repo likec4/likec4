@@ -125,8 +125,8 @@ catalogs:
       specifier: ^2.0.4
       version: 2.0.4
     '@typescript/native-preview':
-      specifier: 7.0.0-dev.20260702.3
-      version: 7.0.0-dev.20260702.3
+      specifier: 7.0.0-dev.20260707.2
+      version: 7.0.0-dev.20260707.2
     graphology:
       specifier: ^0.26.0
       version: 0.26.0
@@ -932,7 +932,7 @@ importers:
         version: 4.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1009,7 +1009,7 @@ importers:
         version: 2.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1076,7 +1076,7 @@ importers:
         version: 3.0.3
       '@typescript/native-preview':
         specifier: 'catalog:'
-        version: 7.0.0-dev.20260702.3
+        version: 7.0.0-dev.20260707.2
       chroma-js:
         specifier: catalog:utils
         version: 3.2.0(patch_hash=d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c)
@@ -1145,7 +1145,7 @@ importers:
         version: 2.37.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       turbo:
         specifier: 2.10.5
         version: 2.10.5
@@ -1354,7 +1354,7 @@ importers:
         version: 2.0.4
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1544,7 +1544,7 @@ importers:
         version: 1.72.0(oxlint-tsgolint@0.24.0)
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1629,7 +1629,7 @@ importers:
         version: 1.72.0(oxlint-tsgolint@0.24.0)
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1720,7 +1720,7 @@ importers:
         version: 3.0.4
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -1757,7 +1757,7 @@ importers:
         version: 22.19.19
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -2013,7 +2013,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2248,7 +2248,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2306,7 +2306,7 @@ importers:
         version: 1.3.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -2349,7 +2349,7 @@ importers:
         version: 3.5.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       turbo:
         specifier: 2.10.5
         version: 2.10.5
@@ -2434,7 +2434,7 @@ importers:
         version: 3.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2693,7 +2693,7 @@ importers:
         version: 1.2.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -2811,7 +2811,7 @@ importers:
         version: 2.37.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -3022,7 +3022,7 @@ importers:
         version: 2.1.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -3074,7 +3074,7 @@ importers:
         version: 2.37.0
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -6668,50 +6668,50 @@ packages:
   '@types/yargs@17.0.33':
     resolution: {integrity: sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-sswJ7XRSH17/jDv6eqlRyNzjQev4w+TH+16RgeoZkKbQfZnVuLchF4ORCecEuia15X2yE8pbiQGY596LVbGKdA==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-wny2pgKjGbiZtnOIHVa3tXC1UfDqxNEFzyPGmiqybedG8hipG2Nfp0l5UxbaKCjkLacUpH/W5bP2hBOMVhCOzg==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-j8ZYT/chWtx3QT1Bghp0/+2g6aKLaxRVpXEHt6Fjdj4OXQTpH4pljOE0+LeAqaET88PUo/XM9pi0TJ5TJwHLMg==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-Afc7M5zOwo+GpfcYwz5Z8HMB2tPVsui7nNIqEuuFB73MPdVqNn/Wmpe4tP4MRri0AtJnJknoHBaTJ/VDAp/Jhw==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-FEBt9UER27yvn3o4quXZ9fQ/Hd39hxFPljJe8dxstCvyYLh0A9TwDuuwghWCisp5U9TDWWtl8m1GLjvqIKc6IA==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-iITBa2WjjTI5N9t5l7Z4KoOSI+2zBlhbvFzsD/f8qX8QoKjz/Y4DPyBDgezYi8nkqjjksbgSOJ3/ykzhwrB9cg==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-SM73Mp3oYUWkyHmym0MVfPnMeLGM6oo1vcPZTxVoL7BOKWkJKK+iM7D1tcqDSZNPwURSkWMxP17Dh+4JPqzikg==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-hJm/UOqZTr9FHmR7uNm8VGX4oKtfWk0Jem0zPeJFNC8ckGUfSBueyiEYMZB+XmRc1aG4x1E46y3CplP4CLHvGQ==}
     engines: {node: '>=16.20.0'}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-CY/r7gHjDnf3xWptpQVRQnagMdUDbh+zL01SF+cTJsg1WVY3TtVNrCo48dwAnJL+U97qx1SKaGVsi/8cSPwrZA==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-du0dzi6y97Po5vDNdPJTyyijHCpaS22JLRnKZEJXBDaO9gCIymOv/5QQokFRuOlQm0bWl3i9PF4OVdGP6uAOQA==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-9U/ahdJAWZdYxPdNry3VAhB9avaQCiqsEk2PfheeKrKSKCtfs5FoPXy/QXAaIGIBK/Lw4a7OqyVyEbd0i77TkQ==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-SsAwfhyHJ1akgBc+99z4+hwdbHsdWaKB8EwCNIMA6JfSLMeUjffrYvxu+vfMyxVtOVOz7RrRXRoiDiu4a2sCtg==}
     engines: {node: '>=16.20.0'}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-kPqfivHuzzEK2NFEl2QeCCiWJ4qkGMJYFX9TmJ4ylh784XICgQLX3PJe7OCqZcUicfeMIIDu6m3flcCi+4tW4Q==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-DL4u27stv0fo71sVhOzHSwE+YMZsbBijVI+kg5dLDLilSH79WFTJ8RSQ46vJrCMt+Gjlv/JOZP1PuLJDfioYeQ==}
     engines: {node: '>=16.20.0'}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20260702.3':
-    resolution: {integrity: sha512-j21laxUja23ex6qYGjwiSiQ6YpS/p5E7lCMDYKDBAdBv93Z1NzV96BZV3gdRwl+buH09EPuBAiqxKQqRO1grhw==}
+  '@typescript/native-preview@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-oUGp+Rep/hqMhPunyinsALUwSlzHINSxitifPiSaeqoKOKD2OlR9NE3TaPqwsl4NlGslsOSUXI1JotWQzpYCPg==}
     engines: {node: '>=16.20.0'}
     hasBin: true
 
@@ -15345,7 +15345,7 @@ snapshots:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
-      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.15
     transitivePeerDependencies:
@@ -15358,7 +15358,7 @@ snapshots:
       lightningcss: 1.32.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
-      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3)
+      tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.16
     transitivePeerDependencies:
@@ -15561,36 +15561,36 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260702.3':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260707.2':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20260702.3':
+  '@typescript/native-preview@7.0.0-dev.20260707.2':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260702.3
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260702.3
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260702.3
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260702.3
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260702.3
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260702.3
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260702.3
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260707.2
 
   '@ungap/structured-clone@1.3.0': {}
 
@@ -19720,7 +19720,7 @@ snapshots:
     transitivePeerDependencies:
       - oxc-resolver
 
-  rolldown-plugin-dts@0.27.9(@typescript/native-preview@7.0.0-dev.20260702.3)(rolldown@1.2.0)(typescript@6.0.3):
+  rolldown-plugin-dts@0.27.9(@typescript/native-preview@7.0.0-dev.20260707.2)(rolldown@1.2.0)(typescript@6.0.3):
     dependencies:
       dts-resolver: 3.0.0
       get-tsconfig: 5.0.0-beta.5
@@ -19730,7 +19730,7 @@ snapshots:
       yuku-codegen: 0.6.3
       yuku-parser: 0.6.3
     optionalDependencies:
-      '@typescript/native-preview': 7.0.0-dev.20260702.3
+      '@typescript/native-preview': 7.0.0-dev.20260707.2
       typescript: 6.0.3
     transitivePeerDependencies:
       - oxc-resolver
@@ -20380,7 +20380,7 @@ snapshots:
 
   ts-pattern@5.9.0: {}
 
-  tsdown@0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260702.3)(tsx@4.22.5)(typescript@6.0.3):
+  tsdown@0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -20391,7 +20391,7 @@ snapshots:
       obug: 2.1.3
       picomatch: 4.0.5
       rolldown: 1.2.0
-      rolldown-plugin-dts: 0.27.9(@typescript/native-preview@7.0.0-dev.20260702.3)(rolldown@1.2.0)(typescript@6.0.3)
+      rolldown-plugin-dts: 0.27.9(@typescript/native-preview@7.0.0-dev.20260707.2)(rolldown@1.2.0)(typescript@6.0.3)
       semver: 7.8.5
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
