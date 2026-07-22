@@ -51,7 +51,7 @@
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@microsoft/api-extractor": "^7.58.10",
+    "@microsoft/api-extractor": "^7.58.11",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
     "@types/react": "catalog:react",

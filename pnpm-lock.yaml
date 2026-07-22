@@ -2494,7 +2494,7 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@microsoft/api-extractor':
-        specifier: ^7.58.10
+        specifier: ^7.58.11
         version: 7.58.11(@types/node@24.12.4)
       '@pandacss/dev':
         specifier: catalog:css
