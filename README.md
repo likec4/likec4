@@ -1,5 +1,7 @@
 # Architecture as a code
 
+[简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
+
 Visualize, collaborate on, and evolve your software architecture with always up-to-date, live diagrams generated from your code.
 
 [docs](https://likec4.dev/) - [playground](https://playground.likec4.dev/) - [demo](https://template.likec4.dev/view/index)
