@@ -1,6 +1,6 @@
 import type { ProjectId } from '@likec4/core'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
-import { completable } from '@modelcontextprotocol/sdk/server/completable'
+import { completable } from '@modelcontextprotocol/sdk/server/completable.js'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'
 import * as z from 'zod/v3'
