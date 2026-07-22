@@ -1,5 +1,19 @@
 # @likec4/mcp
 
+## 1.59.2
+
+### Patch Changes
+
+- [#3113](https://github.com/likec4/likec4/pull/3113) [`9dbaaf0`](https://github.com/likec4/likec4/commit/9dbaaf0af1f952437cbf5e42e471fa854413ec9b) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix npx installs of the MCP server by publishing its runtime dependencies.
+
+- Updated dependencies [[`1d2575a`](https://github.com/likec4/likec4/commit/1d2575a8abf1cdf48dde3e5f509a087b855b18f4), [`4b5deac`](https://github.com/likec4/likec4/commit/4b5deac079439b3b6b3dd6eefa78acda2af6ea42)]:
+  - @likec4/language-server@1.59.2
+  - @likec4/language-services@1.59.2
+  - @likec4/config@1.59.2
+  - @likec4/core@1.59.2
+  - @likec4/layouts@1.59.2
+  - @likec4/log@1.59.2
+
 ## 1.59.1
 
 ## 1.59.0

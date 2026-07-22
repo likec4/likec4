@@ -1,5 +1,13 @@
 # @likec4/diagram
 
+## 1.59.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.59.2
+  - @likec4/styles@1.59.2
+
 ## 1.59.1
 
 ### Patch Changes
