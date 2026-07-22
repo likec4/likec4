@@ -398,4 +398,28 @@ describe('model', () => {
         }
       }
     }`
+
+  // https://github.com/likec4/likec4/issues/3110
+  test('element metadata keys can use dynamic view flow keywords').valid`
+    specification {
+      element component
+    }
+    model {
+      component system1 {
+        metadata {
+          alt 'alternative'
+          opt 'optional'
+          par 'parallel group'
+          parallel 'parallel group'
+          loop 'loop'
+          when 'condition'
+          if 'condition'
+          else 'fallback'
+          break 'break'
+          try 'try'
+          catch 'catch'
+          finally 'finally'
+        }
+      }
+    }`
 })

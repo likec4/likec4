@@ -667,15 +667,22 @@ fragment StepsBlockFragment:
 // -----------------------------------------------
 // Semantic group of dynamic view steps (flow branch)
 
+type SubflowKind =
+  'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
+;
+SubflowKind returns SubflowKind:
+  'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
+;
+
 interface SubflowStep extends StepsBlock {
-  kind: 'opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break'
+  kind: SubflowKind
   /// Optional title for the branch
   title?: string
 }
 
 // Must be defined before "StepsBlock"
 SubflowStep returns SubflowStep:
-  kind=('opt' | 'par' | 'parallel' | 'loop' | 'when' | 'if' | 'else' | 'break')
+  kind=SubflowKind
   title=String? StepsBlockFragment
 ;
 
@@ -1093,6 +1100,12 @@ ArrowType returns string:
 DynamicViewDisplayVariantValue returns string:
   'diagram' | 'sequence';
 
+DynamicViewFlowKeyword returns string:
+  SubflowKind |
+  'try' |
+  'catch' |
+  'finally';
+
 ThemeColor returns string:
   'primary' |
   'secondary' |
@@ -1160,6 +1173,7 @@ Id returns string:
   Participant |
   SizeValue |
   DynamicViewDisplayVariantValue |
+  DynamicViewFlowKeyword |
   IconPositionValue |
   RankValue |
   // Allow reserved keywords as Id
