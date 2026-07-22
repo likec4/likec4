@@ -211,7 +211,7 @@ catalogs:
       version: 0.3.0
     '@hono/node-server':
       specifier: ^2.0.8
-      version: 2.0.8
+      version: 2.0.10
     '@hono/oauth-providers':
       specifier: ^0.8.5
       version: 0.8.5
@@ -2380,7 +2380,7 @@ importers:
         version: 0.3.0(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.27)(unstorage@1.17.5))(hono@4.12.27)(zod@4.4.3)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 2.0.8(hono@4.12.27)
+        version: 2.0.10(hono@4.12.27)
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -4733,8 +4733,8 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/node-server@2.0.8':
-    resolution: {integrity: sha512-GuCWzLxwg218fy1JaHculFsdcuY12hxit83V+algozTPnwhNjLrRL/Alg9OYjLZLoUZ1rw/S4CdTMsnkSKCmFA==}
+  '@hono/node-server@2.0.10':
+    resolution: {integrity: sha512-ZcnNVhKTmyDJeg0UlnZjvM73JBsTAuhrH/J4fjwGOw59PwOW51r4J+p6CsKZWXdKSme4MFqU62CZMOsdDrU4CA==}
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
@@ -13465,7 +13465,7 @@ snapshots:
     dependencies:
       hono: 4.12.27
 
-  '@hono/node-server@2.0.8(hono@4.12.27)':
+  '@hono/node-server@2.0.10(hono@4.12.27)':
     dependencies:
       hono: 4.12.27
 
