@@ -122,7 +122,7 @@ catalogs:
   hono:
     "@hono/mcp": ^0.3.0
     "@hono/node-server": ^2.0.8
-    "@hono/oauth-providers": ^0.8.5
+    "@hono/oauth-providers": ^0.8.6
     "@hono/zod-validator": ^0.8.0
     hono: ^4.12.27
     hono-sessions: ^0.8.1
