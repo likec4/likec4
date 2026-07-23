@@ -19,7 +19,6 @@ import {
   ViewOps,
 } from '../../ast'
 import { safeCall, stringHash } from '../../utils'
-import { elementRef } from '../../utils/elementRef'
 import { parseViewOrder, removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentView } from './DeploymentViewParser'
 import type { WithPredicates } from './PredicatesParser'

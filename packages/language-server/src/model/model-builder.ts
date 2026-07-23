@@ -90,7 +90,7 @@ function withImportedScopedViewTitles(
   return mapValues(views, view => {
     if (view[_type] === 'element' && view.title === null && view.viewOf) {
       const title = titles.get(view.viewOf)
-      if (title) {
+      if (title !== undefined) {
         return {
           ...view,
           title,
