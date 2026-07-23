@@ -1,6 +1,8 @@
 # LikeC4 Agent Skills
 
-This directory contains [Agent Skills](https://www.skillsdk.dev/) for AI coding assistants (Claude Code, Cursor, Windsurf, etc.) that help with LikeC4 development.
+This directory contains public [Agent Skills](https://www.skillsdk.dev/) for AI coding assistants (Claude Code, Cursor, Windsurf, etc.) that help with LikeC4 development.
+
+Repo-local developer workflow skills live in `.agents/skills/`. Claude Code discovers those through per-skill symlink adapters in `.claude/skills/`.
 
 Skills are auto-discovered by agents when working in this repository. They provide DSL syntax references, coding patterns, and workflow guidance — enabling AI agents to write correct LikeC4 code without hallucinating syntax.
 

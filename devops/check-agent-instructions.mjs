@@ -73,10 +73,33 @@ if (existsSync(absolute('AGENT.md'))) {
   fail('Do not create root AGENT.md; use AGENTS.md')
 }
 
+const allowedNestedClaudeFiles = new Map([
+  [
+    'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md',
+    '@../../../../../AGENTS.md\n\nClaude Code local memory: use the `### packages/diagram/src/likec4diagram/xyflow-sequence` section in the imported root `AGENTS.md`; do not duplicate the sequence-layouter rules here.\n',
+  ],
+])
 const trackedClaudeFiles = tracked.filter(file => path.basename(file) === 'CLAUDE.md')
-const unexpectedClaudeFiles = trackedClaudeFiles.filter(file => file !== 'CLAUDE.md')
+const unexpectedClaudeFiles = trackedClaudeFiles.filter(file =>
+  file !== 'CLAUDE.md' && !allowedNestedClaudeFiles.has(file)
+)
 if (unexpectedClaudeFiles.length > 0) {
-  fail(`Only root CLAUDE.md is allowed; remove package adapters: ${unexpectedClaudeFiles.join(', ')}`)
+  fail(
+    `Only root CLAUDE.md and explicitly allowed localized Claude memories are allowed; remove package adapters: ${
+      unexpectedClaudeFiles.join(', ')
+    }`,
+  )
+}
+
+for (const [relativePath, expectedContent] of allowedNestedClaudeFiles) {
+  if (!isTracked(relativePath)) {
+    continue
+  }
+
+  const content = stripCarriageReturns(read(relativePath))
+  if (content !== expectedContent) {
+    fail(`${relativePath} must import AGENTS.md and contain only the approved local pointer`)
+  }
 }
 
 if (isTracked('.github/copilot-instructions.md')) {
@@ -119,6 +142,7 @@ if (existsSync(absolute('AGENTS.md'))) {
   const requiredPhrases = [
     'AGENTS.md is the canonical shared repository instruction file.',
     'The root `CLAUDE.md` file is the Claude Code adapter and must contain exactly `@AGENTS.md`.',
+    'Nested `CLAUDE.md` files are not shared adapters. Keep one only when Claude Code\'s lazy-loaded subtree memory should point agents at a materially local section of AGENTS.md; it must import AGENTS.md and contain only a short pointer, not copied rules.',
     'Do not create `AGENT.md`.',
     'Do not use symlink adapters for shared repository instructions; this repository has Windows CI and Windows contributors.',
     'Always use `patch` changesets; versioning is handled manually by maintainers.',
