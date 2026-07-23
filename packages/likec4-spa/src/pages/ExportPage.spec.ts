@@ -14,9 +14,6 @@ const testState = vi.hoisted(() => ({
     description: null,
     notation: null,
   },
-  project: {
-    exportFormats: ['drawio'],
-  },
   search: {
     format: 'png',
   },
@@ -60,18 +57,16 @@ vi.mock('../components/NotFound', () => ({
 }))
 
 vi.mock('../hooks', () => ({
-  useCurrentProject: () => testState.project,
   useCurrentView: () => [testState.diagram],
-  useTransparentBackground: vi.fn(),
+  useTransparentBackground: vi.fn<(transparent: boolean) => void>(),
 }))
 
 describe('ExportPage', () => {
   beforeEach(() => {
-    testState.project.exportFormats = ['drawio']
     testState.search.format = 'png'
   })
 
-  it('keeps the image export route available when webapp image downloads are disabled', () => {
+  it('renders image export routes independently from webapp menu capabilities', () => {
     const markup = renderToStaticMarkup(React.createElement(ExportPage))
 
     expect(markup).toContain('data-testid="export-page"')

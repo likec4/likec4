@@ -168,6 +168,18 @@ const hmrProjectVirtuals = [
   projectPumlModule,
   projectDrawioModule,
 ]
+
+/**
+ * Root virtual modules that cache project-level export capability maps.
+ */
+const hmrProjectListVirtuals = [
+  d2Module,
+  dotModule,
+  mmdModule,
+  pumlModule,
+  drawioModule,
+]
+
 /**
  * All virtual modules per LikeC4 project ()
  */
@@ -182,11 +194,7 @@ const _virtuals = [
   projectsOverviewModule,
   singleProjectModule,
   singleProjectReactModule,
-  d2Module,
-  dotModule,
-  mmdModule,
-  pumlModule,
-  drawioModule,
+  ...hmrProjectListVirtuals,
   iconsModule,
   rpcModule,
 ]
@@ -435,6 +443,9 @@ export function LikeC4VitePlugin({
             await reloadModule(projectsModule.virtualId)
             await reloadModule(iconsModule.virtualId)
             await reloadModule(modelModule.virtualId)
+            for (const module of hmrProjectListVirtuals) {
+              await reloadModule(module.virtualId)
+            }
             if (projects.length > 1) {
               await reloadModule(projectsOverviewModule.virtualId)
             }

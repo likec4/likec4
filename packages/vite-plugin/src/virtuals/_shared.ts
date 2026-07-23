@@ -144,14 +144,9 @@ export async function ${fnName}(projectId) {
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = ${fnName}Fn
-    }
     const update = md.${fnName}Fn
     if (update) {
-      for (const [id, fn] of Object.entries(update)) {
-        import.meta.hot.data.$update[id] ??= fn
-      }
+      ${fnName}Fn = update
     } else {
       import.meta.hot.invalidate()
     }

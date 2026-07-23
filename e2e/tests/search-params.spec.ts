@@ -43,6 +43,10 @@ function projectViewUrl(projectId: string, viewId: string, extra?: Record<string
   return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${qs ? `?${qs}` : ''}`
 }
 
+function projectTextExportUrl(projectId: string, viewId: string, format: 'dot' | 'd2' | 'mmd' | 'puml'): string {
+  return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${format}`
+}
+
 function viewUrl(viewId: string, extra?: Record<string, string>): string {
   return projectViewUrl(PROJECT, viewId, extra)
 }
@@ -157,6 +161,18 @@ test.describe('webapp.exportFormats configuration', () => {
     }
 
     await gotoAndWaitForCanvas(page, projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
+  })
+
+  test('blocks direct text export routes for disabled formats', async ({ page }) => {
+    await page.goto(projectTextExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, 'dot'))
+
+    await expect(page.getByText(/The diagram\s+index\s+does not exist or contains errors/)).toBeVisible()
+  })
+
+  test('keeps direct text export routes available for enabled formats', async ({ page }) => {
+    await page.goto(projectTextExportUrl(PROJECT, STATIC_VIEW, 'dot'))
+
+    await expect(page.getByText('digraph {').first()).toBeVisible()
   })
 
   test('removes export entry points when every webapp export format is disabled', async ({ page }) => {
