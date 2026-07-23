@@ -34,6 +34,7 @@
     "clean": "pnpm -r run clean && rimraf -v -g \"**/.turbo\" \"**/node_modules/.cache\" \"**/node_modules/.vite\"",
     "clean:lib": "rimraf -v -g \"packages/*/lib\" \"styled-system/*/lib\" \"**/.tsbuildinfo\"",
     "git:pre-commit": "nano-staged",
+    "git:pre-push": "pnpm typecheck",
     "test": "vitest run --no-isolate",
     "test:affected": "turbo run test --affected --filter=\"!./apps/*\"",
     "test:watch": "vitest --no-isolate",
