@@ -1,8 +1,17 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   type ProjectId,
   type UnknownComputed,
   type UnknownParsed,
   _stage,
+  _type,
+  GlobalFqn,
 } from '@likec4/core'
 import { computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
@@ -28,6 +37,7 @@ import {
   isArray,
   isEmptyish,
   map,
+  mapValues,
   pipe,
   piped,
   prop,
@@ -49,6 +59,47 @@ import type { LikeC4ModelParser } from './model-parser'
 const builderLogger = mainLogger.getChild('builder')
 
 type ModelParsedListener = (projectId: ProjectId, docs: URI[]) => void
+
+function isRequestedImportedElement(fqns: ReadonlySet<c4.Fqn>, element: c4.Element): boolean {
+  for (const fqn of fqns) {
+    if (element.id === fqn || element.id.startsWith(`${fqn}.`)) {
+      return true
+    }
+  }
+  return false
+}
+
+function importedElementTitles(imports: c4.ParsedLikeC4ModelData['imports']): ReadonlyMap<string, string> {
+  const titles = new Map<string, string>()
+  for (const [projectId, elements] of entries(imports)) {
+    for (const element of elements) {
+      titles.set(GlobalFqn(projectId, element.id), element.title)
+    }
+  }
+  return titles
+}
+
+function withImportedScopedViewTitles(
+  views: c4.ParsedLikeC4ModelData['views'],
+  imports: c4.ParsedLikeC4ModelData['imports'],
+): c4.ParsedLikeC4ModelData['views'] {
+  const titles = importedElementTitles(imports)
+  if (titles.size === 0) {
+    return views
+  }
+  return mapValues(views, view => {
+    if (view[_type] === 'element' && view.title === null && view.viewOf) {
+      const title = titles.get(view.viewOf)
+      if (title !== undefined) {
+        return {
+          ...view,
+          title,
+        }
+      }
+    }
+    return view
+  })
+}
 
 export interface LikeC4ModelBuilder extends Disposable {
   parseModel(
@@ -174,7 +225,9 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         }
         const anotherProject = this.unsafeSyncParseModelData(projectId)
         if (anotherProject) {
-          const imported = [...fqns].flatMap(fqn => anotherProject.data.elements[fqn] ?? [])
+          const imported = values(anotherProject.data.elements).filter(element =>
+            isRequestedImportedElement(fqns, element)
+          )
           if (hasAtLeast(imported, 1)) {
             acc[projectId] = structuredClone(imported)
           }
@@ -184,6 +237,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       return {
         ...result.data,
         imports,
+        views: withImportedScopedViewTitles(result.data.views, imports),
       }
     })
   }
