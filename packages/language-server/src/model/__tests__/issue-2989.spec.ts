@@ -3,10 +3,11 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { ViewId } from '@likec4/core'
-import { invariant, isDynamicView, ProjectId, stepGuards } from '@likec4/core'
+import { invariant, isDynamicView, isElementView, ProjectId, stepGuards } from '@likec4/core'
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices } from '../../test'
 
+const importedRoot = '@contrat.entreprise'
 const importedBackend = '@contrat.entreprise.refonteExtranetEntrepriseBack'
 const localService = 'hermesPrevoyance.noyau_wsedimachine'
 
@@ -54,6 +55,89 @@ function projects(hermesSource: string): ReturnType<typeof createMultiProjectTes
 }
 
 describe('issue #2989', () => {
+  it('preserves project id in scoped element views that reference imported elements', async ({ expect }) => {
+    await using t = await projects(`
+      view local_scope of hermesPrevoyance.noyau_wsedimachine {
+        include *
+      }
+
+      view imported_root_scope of entreprise {
+        include *
+      }
+
+      view imported_nested_scope of entreprise.refonteExtranetEntrepriseBack {
+        include *
+      }
+    `)
+
+    await t.validateAll()
+    const parsed = await t.services.likec4.ModelBuilder.parseModel(ProjectId('hermes'))
+    invariant(parsed)
+
+    const localView = parsed.$data.views['local_scope' as ViewId]
+    invariant(localView)
+    invariant(isElementView(localView))
+    expect(localView.viewOf).toBe(localService)
+
+    const rootView = parsed.$data.views['imported_root_scope' as ViewId]
+    invariant(rootView)
+    invariant(isElementView(rootView))
+    expect(rootView.viewOf).toBe(importedRoot)
+
+    const nestedView = parsed.$data.views['imported_nested_scope' as ViewId]
+    invariant(nestedView)
+    invariant(isElementView(nestedView))
+    expect(nestedView.viewOf).toBe(importedBackend)
+
+    // This proves `viewOf` parsing registered both imported targets, not only the explicit import alias.
+    expect(parsed.$data.imports['contrat']?.map(e => e.id)).toEqual(expect.arrayContaining([
+      'entreprise',
+      'entreprise.refonteExtranetEntrepriseBack',
+    ]))
+  })
+
+  it('computes scoped element views that reference imported nested elements', async ({ expect }) => {
+    await using t = await projects(`
+      view local_scope of hermesPrevoyance.noyau_wsedimachine {
+        include *
+      }
+
+      view imported_root_scope of entreprise {
+        include *
+      }
+
+      view imported_nested_scope of entreprise.refonteExtranetEntrepriseBack {
+        include *
+      }
+    `)
+
+    const model = await t.buildModel('hermes')
+    const localView = model.views['local_scope' as ViewId]
+    invariant(localView)
+    invariant(isElementView(localView))
+    expect(localView.viewOf).toBe(localService)
+    expect(localView.nodes.map(n => n.id)).toEqual(expect.arrayContaining([
+      localService,
+    ]))
+
+    const rootView = model.views['imported_root_scope' as ViewId]
+    invariant(rootView)
+    invariant(isElementView(rootView))
+    expect(rootView.viewOf).toBe(importedRoot)
+    expect(rootView.nodes.map(n => n.id)).toEqual(expect.arrayContaining([
+      importedRoot,
+      importedBackend,
+    ]))
+
+    const nestedView = model.views['imported_nested_scope' as ViewId]
+    invariant(nestedView)
+    invariant(isElementView(nestedView))
+    expect(nestedView.viewOf).toBe(importedBackend)
+    expect(nestedView.nodes.map(n => n.id)).toEqual(expect.arrayContaining([
+      importedBackend,
+    ]))
+  })
+
   it('computes dynamic-only steps that reference imported nested elements', async ({ expect }) => {
     await using t = await projects(`
       dynamic view process_reception_dat_entreprise {

@@ -84,13 +84,13 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const astPath = this.getAstNodePath(astNode)
 
       let viewOf = null as c4.Fqn | null
-      if ('viewOf' in astNode) {
-        const viewOfEl = elementRef(astNode.viewOf)
-        const _viewOf = viewOfEl && safeCall(() => this.resolveFqn(viewOfEl))
+      const viewOfNode = astNode.viewOf
+      if (viewOfNode) {
+        const _viewOf = safeCall(() => this.parseModelElementRef(viewOfNode, 'Invalid reference to viewOf'))
         if (!_viewOf) {
           const viewId = astNode.name ?? 'unnamed'
-          const msg = astNode.viewOf.$cstNode?.text ?? '<unknown>'
-          this.logError(`viewOf ${viewId} not resolved ${msg}`, astNode.viewOf)
+          const msg = viewOfNode.$cstNode?.text ?? '<unknown>'
+          this.logError(`viewOf ${viewId} not resolved ${msg}`, viewOfNode)
         } else {
           viewOf = _viewOf
         }
@@ -526,12 +526,16 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       return step
     }
 
-    parseDynamicStepEndpoint(node: ast.ElementRef, endpoint: 'source' | 'target'): c4.Fqn {
+    parseModelElementRef(node: ast.ElementRef, errorMessage: string): c4.Fqn {
       const ref = this.parseFqnRef(node.modelElement)
       if (!c4.FqnRef.isModelRef(ref)) {
-        throw new Error(`Invalid reference to ${endpoint}`)
+        throw new Error(errorMessage)
       }
       return c4.FqnRef.flatten(ref)
+    }
+
+    parseDynamicStepEndpoint(node: ast.ElementRef, endpoint: 'source' | 'target'): c4.Fqn {
+      return this.parseModelElementRef(node, `Invalid reference to ${endpoint}`)
     }
 
     parseSubflowStep(node: ast.SubflowStep): c4.Step.Opt | c4.Step.Break | c4.Step.Loop | c4.Step.Parallel {
