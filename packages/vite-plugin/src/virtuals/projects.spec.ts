@@ -62,7 +62,7 @@ describe('projects virtual module export capabilities', () => {
     const code = typeof result === 'string' ? result : result.code
     expect(code).toContain('exports-dot')
     expect(code).not.toContain('without-dot')
-    expect(code).toContain('throw new Error(\'Project does not enable dot export: \' + projectId)')
+    expect(code).toContain('throw new Error("Project does not enable dot export: " + projectId)')
     expect(code).not.toContain('Falling back to project')
   })
 })

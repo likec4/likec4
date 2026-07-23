@@ -112,6 +112,9 @@ export function generateCombinedProjects(
         )
         return `${idLiteral}: async () => await import(${pkgLiteral})`
       })
+      const disabledExportMessageLiteral = exportFormat
+        ? hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(`Project does not enable ${exportFormat} export: `))
+        : null
 
       const code = `
 export let ${fnName}Fn = {
@@ -125,7 +128,7 @@ export async function ${fnName}(projectId) {
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     ${
         exportFormat
-          ? `throw new Error('Project does not enable ${exportFormat} export: ' + projectId)`
+          ? `throw new Error(${disabledExportMessageLiteral} + projectId)`
           : `
     if (projects.length === 0) {
       throw new Error('No projects found, invalid state')
