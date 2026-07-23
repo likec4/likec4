@@ -59,8 +59,8 @@ catalogs:
       specifier: 0.44.0
       version: 0.44.0
     astro:
-      specifier: 7.1.0
-      version: 7.1.0
+      specifier: 7.1.3
+      version: 7.1.3
     astro-og-canvas:
       specifier: 0.13.0
       version: 0.13.0
@@ -563,10 +563,10 @@ importers:
         version: 6.0.1(@types/node@24.12.4)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(tsx@4.22.5)(yaml@2.8.3)
       '@astrojs/starlight':
         specifier: catalog:astro
-        version: 0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+        version: 0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
       '@astrojs/starlight-tailwind':
         specifier: catalog:astro
-        version: 5.0.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(tailwindcss@4.3.2)
+        version: 5.0.0(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(tailwindcss@4.3.2)
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
         version: 0.44.0
@@ -605,13 +605,13 @@ importers:
         version: 19.2.3(@types/react@19.2.17)
       astro:
         specifier: catalog:astro
-        version: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+        version: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.13.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
+        version: 0.13.0(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
       astro-skills:
         specifier: catalog:astro
-        version: 0.1.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+        version: 0.1.0(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
       canvaskit-wasm:
         specifier: 0.40.0
         version: 0.40.0
@@ -632,13 +632,13 @@ importers:
         version: 4.1.0
       starlight-heading-badges:
         specifier: catalog:astro
-        version: 0.8.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))
+        version: 0.8.0(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))
       starlight-links-validator:
         specifier: catalog:astro
-        version: 0.25.2(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
+        version: 0.25.2(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
       starlight-package-managers:
         specifier: catalog:astro
-        version: 0.12.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))
+        version: 0.12.0(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))
       tailwindcss:
         specifier: catalog:css
         version: 4.3.2
@@ -7148,8 +7148,8 @@ packages:
       astro: '*'
       typescript: ^5.9.3
 
-  astro@7.1.0:
-    resolution: {integrity: sha512-jXHNZXpO0HOuANLwv5uLg5WFXFmIMyDTMlokIb8sv10y8QItOFaikwrqvp6+Pe0MSqvp+aO7V1SfVriFcCEKgA==}
+  astro@7.1.3:
+    resolution: {integrity: sha512-4dhPyAAXthf3xLEYnG8SeL7yr/nTPPABfY7e9YF0yuO+vK9Xp+8Q5j4xzsmL3GueukQv4oNwGNTBepLOiDGeJA==}
     engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
     peerDependencies:
@@ -7538,6 +7538,10 @@ packages:
   cookie@1.1.1:
     resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
     engines: {node: '>=18'}
+
+  cookie@2.0.1:
+    resolution: {integrity: sha512-yuToqVvRrj6pfDXREyQAAv8SkAEk/8GS3jQRTiUMm66TVtBYmqQeoEjL2Lmq8Rpo6271vH76InTChTitEAm65w==}
+    engines: {node: '>=22'}
 
   copy-anything@3.0.5:
     resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
@@ -9344,8 +9348,8 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
-  neotraverse@0.6.18:
-    resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
+  neotraverse@1.0.1:
+    resolution: {integrity: sha512-WmmLty1YWwJl9yZi77v2dVIV6X2kuYV8YYBI/G3LWGKdGHmHUvL1z7FW0iDvEvGAwNEoc5x1tOOOyDnf5jJw/w==}
     engines: {node: '>= 10'}
 
   nlcst-to-string@4.0.0:
@@ -11701,13 +11705,13 @@ snapshots:
       hast-util-from-html: 2.0.3
       satteri: 0.9.4
 
-  '@astrojs/mdx@7.0.1(@astrojs/markdown-satteri@0.3.4)(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))':
+  '@astrojs/mdx@7.0.1(@astrojs/markdown-satteri@0.3.4)(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))':
     dependencies:
       '@astrojs/internal-helpers': 0.10.0
       '@astrojs/markdown-remark': 7.2.0
       '@mdx-js/mdx': 3.1.1
       acorn: 8.16.0
-      astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+      astro: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
       es-module-lexer: 2.0.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -11759,22 +11763,22 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 4.4.3
 
-  '@astrojs/starlight-tailwind@5.0.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(tailwindcss@4.3.2)':
+  '@astrojs/starlight-tailwind@5.0.0(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(tailwindcss@4.3.2)':
     dependencies:
-      '@astrojs/starlight': 0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+      '@astrojs/starlight': 0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
       tailwindcss: 4.3.2
 
-  '@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)':
+  '@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)':
     dependencies:
       '@astrojs/markdown-satteri': 0.3.4
-      '@astrojs/mdx': 7.0.1(@astrojs/markdown-satteri@0.3.4)(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
+      '@astrojs/mdx': 7.0.1(@astrojs/markdown-satteri@0.3.4)(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
       '@astrojs/sitemap': 3.7.3
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.5
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
-      astro-expressive-code: 0.44.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
+      astro: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+      astro-expressive-code: 0.44.0(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -16028,22 +16032,22 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.44.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)):
+  astro-expressive-code@0.44.0(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+      astro: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
       rehype-expressive-code: 0.44.0
       url-extras: 0.1.0
 
-  astro-og-canvas@0.13.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)):
+  astro-og-canvas@0.13.0(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
-      astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+      astro: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
       canvaskit-wasm: 0.41.1
       deterministic-object-hash: 2.0.2
       entities: 8.0.0
 
-  astro-skills@0.1.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3):
+  astro-skills@0.1.0(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3):
     dependencies:
-      astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+      astro: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
       gray-matter: 4.0.3
       p-limit: 6.2.0
       picomatch: 4.0.5
@@ -16051,7 +16055,7 @@ snapshots:
       tinyglobby: 0.2.17
       typescript: 6.0.3
 
-  astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3):
+  astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3):
     dependencies:
       '@astrojs/compiler-rs': 0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)
       '@astrojs/internal-helpers': 0.10.1
@@ -16067,7 +16071,7 @@ snapshots:
       ci-info: 4.4.0
       clsx: 2.1.1
       common-ancestor-path: 2.0.0
-      cookie: 1.1.1
+      cookie: 2.0.1
       devalue: 5.8.1
       diff: 8.0.4
       dset: 3.1.4
@@ -16084,7 +16088,7 @@ snapshots:
       magic-string: 0.30.21
       magicast: 0.5.3
       mrmime: 2.0.1
-      neotraverse: 0.6.18
+      neotraverse: 1.0.1
       obug: 2.1.3
       p-limit: 7.3.0
       p-queue: 9.3.0
@@ -16539,6 +16543,8 @@ snapshots:
   cookie@0.7.2: {}
 
   cookie@1.1.1: {}
+
+  cookie@2.0.1: {}
 
   copy-anything@3.0.5:
     dependencies:
@@ -18785,7 +18791,7 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  neotraverse@0.6.18: {}
+  neotraverse@1.0.1: {}
 
   nlcst-to-string@4.0.0:
     dependencies:
@@ -20164,11 +20170,11 @@ snapshots:
 
   stackback@0.0.2: {}
 
-  starlight-heading-badges@0.8.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)):
+  starlight-heading-badges@0.8.0(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)):
     dependencies:
       '@astrojs/markdown-remark': 7.2.0
       '@astrojs/markdown-satteri': 0.3.4
-      '@astrojs/starlight': 0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+      '@astrojs/starlight': 0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
       satteri: 0.9.4
@@ -20176,12 +20182,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.25.2(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)):
+  starlight-links-validator@0.25.2(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)):
     dependencies:
       '@astrojs/markdown-satteri': 0.3.4
-      '@astrojs/starlight': 0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+      '@astrojs/starlight': 0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
       '@types/picomatch': 4.0.3
-      astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
+      astro: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
       github-slugger: 2.0.0
       hast-util-from-html: 2.0.3
       is-absolute-url: 5.0.0
@@ -20195,9 +20201,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-package-managers@0.12.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)):
+  starlight-package-managers@0.12.0(@astrojs/starlight@0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)):
     dependencies:
-      '@astrojs/starlight': 0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+      '@astrojs/starlight': 0.41.3(astro@7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
 
   statuses@2.0.2: {}
 
