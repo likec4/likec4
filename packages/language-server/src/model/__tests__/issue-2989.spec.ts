@@ -2,8 +2,7 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { ViewId } from '@likec4/core'
-import { invariant, isDynamicView, isElementView, ProjectId, stepGuards } from '@likec4/core'
+import { invariant, isDynamicView, isElementView, ProjectId, stepGuards, ViewId } from '@likec4/core'
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices } from '../../test'
 
@@ -74,17 +73,17 @@ describe('issue #2989', () => {
     const parsed = await t.services.likec4.ModelBuilder.parseModel(ProjectId('hermes'))
     invariant(parsed)
 
-    const localView = parsed.$data.views['local_scope' as ViewId]
+    const localView = parsed.$data.views[ViewId('local_scope')]
     invariant(localView)
     invariant(isElementView(localView))
     expect(localView.viewOf).toBe(localService)
 
-    const rootView = parsed.$data.views['imported_root_scope' as ViewId]
+    const rootView = parsed.$data.views[ViewId('imported_root_scope')]
     invariant(rootView)
     invariant(isElementView(rootView))
     expect(rootView.viewOf).toBe(importedRoot)
 
-    const nestedView = parsed.$data.views['imported_nested_scope' as ViewId]
+    const nestedView = parsed.$data.views[ViewId('imported_nested_scope')]
     invariant(nestedView)
     invariant(isElementView(nestedView))
     expect(nestedView.viewOf).toBe(importedBackend)
@@ -112,7 +111,7 @@ describe('issue #2989', () => {
     `)
 
     const model = await t.buildModel('hermes')
-    const localView = model.views['local_scope' as ViewId]
+    const localView = model.views[ViewId('local_scope')]
     invariant(localView)
     invariant(isElementView(localView))
     expect(localView.viewOf).toBe(localService)
@@ -120,7 +119,7 @@ describe('issue #2989', () => {
       localService,
     ]))
 
-    const rootView = model.views['imported_root_scope' as ViewId]
+    const rootView = model.views[ViewId('imported_root_scope')]
     invariant(rootView)
     invariant(isElementView(rootView))
     expect(rootView.viewOf).toBe(importedRoot)
@@ -129,7 +128,7 @@ describe('issue #2989', () => {
       importedBackend,
     ]))
 
-    const nestedView = model.views['imported_nested_scope' as ViewId]
+    const nestedView = model.views[ViewId('imported_nested_scope')]
     invariant(nestedView)
     invariant(isElementView(nestedView))
     expect(nestedView.viewOf).toBe(importedBackend)
@@ -149,7 +148,7 @@ describe('issue #2989', () => {
     const parsed = await t.services.likec4.ModelBuilder.parseModel(ProjectId('hermes'))
     invariant(parsed)
 
-    const parsedView = parsed.$data.views['imported_root_scope' as ViewId]
+    const parsedView = parsed.$data.views[ViewId('imported_root_scope')]
     invariant(parsedView)
     invariant(isElementView(parsedView))
     expect(parsedView.title).toBe('Entreprise')
@@ -159,7 +158,7 @@ describe('issue #2989', () => {
     ])
 
     const model = await t.buildModel('hermes')
-    const view = model.views['imported_root_scope' as ViewId]
+    const view = model.views[ViewId('imported_root_scope')]
     invariant(view)
     invariant(isElementView(view))
     expect(view.title).toBe('Entreprise')
@@ -178,7 +177,7 @@ describe('issue #2989', () => {
     `)
 
     const model = await t.buildLikeC4Model('hermes')
-    const view = model.$data.views['process_reception_dat_entreprise' as ViewId]
+    const view = model.$data.views[ViewId('process_reception_dat_entreprise')]
     invariant(view)
     invariant(isDynamicView(view))
 
@@ -222,7 +221,7 @@ describe('issue #2989', () => {
     const parsed = await t.services.likec4.ModelBuilder.parseModel(ProjectId('hermes'))
     invariant(parsed)
 
-    const importedAsSource = parsed.$data.views['imported_as_source' as ViewId]
+    const importedAsSource = parsed.$data.views[ViewId('imported_as_source')]
     invariant(importedAsSource)
     invariant(isDynamicView(importedAsSource))
     expect(importedAsSource.steps[0]).toMatchObject({
@@ -230,7 +229,7 @@ describe('issue #2989', () => {
       target: localService,
     })
 
-    const importedAsTarget = parsed.$data.views['imported_as_target' as ViewId]
+    const importedAsTarget = parsed.$data.views[ViewId('imported_as_target')]
     invariant(importedAsTarget)
     invariant(isDynamicView(importedAsTarget))
     expect(importedAsTarget.steps[0]).toMatchObject({
@@ -238,7 +237,7 @@ describe('issue #2989', () => {
       target: importedBackend,
     })
 
-    const importedBackward = parsed.$data.views['imported_backward' as ViewId]
+    const importedBackward = parsed.$data.views[ViewId('imported_backward')]
     invariant(importedBackward)
     invariant(isDynamicView(importedBackward))
     expect(importedBackward.steps[0]).toMatchObject({
@@ -247,7 +246,7 @@ describe('issue #2989', () => {
       isBackward: true,
     })
 
-    const importedChain = parsed.$data.views['imported_chain' as ViewId]
+    const importedChain = parsed.$data.views[ViewId('imported_chain')]
     invariant(importedChain)
     invariant(isDynamicView(importedChain))
     const [series] = importedChain.steps
@@ -280,7 +279,7 @@ describe('issue #2989', () => {
     `)
 
     const model = await t.buildModel('hermes')
-    const view = model.views['nested_flows' as ViewId]
+    const view = model.views[ViewId('nested_flows')]
     invariant(view)
     invariant(isDynamicView(view))
 
@@ -312,7 +311,7 @@ describe('issue #2989', () => {
     )
 
     const model = await t.buildModel('hermes')
-    const view = model.views['relation_metadata' as ViewId]
+    const view = model.views[ViewId('relation_metadata')]
     invariant(view)
     invariant(isDynamicView(view))
 
