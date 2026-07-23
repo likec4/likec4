@@ -138,6 +138,38 @@ describe('issue #2989', () => {
     ]))
   })
 
+  it('computes imported root scoped wildcard views with descendants and default title', async ({ expect }) => {
+    await using t = await projects(`
+      view imported_root_scope of entreprise {
+        include *
+      }
+    `)
+
+    await t.validateAll()
+    const parsed = await t.services.likec4.ModelBuilder.parseModel(ProjectId('hermes'))
+    invariant(parsed)
+
+    const parsedView = parsed.$data.views['imported_root_scope' as ViewId]
+    invariant(parsedView)
+    invariant(isElementView(parsedView))
+    expect(parsedView.title).toBe('Entreprise')
+    expect(parsed.$data.imports['contrat']?.map(e => e.id)).toEqual([
+      'entreprise',
+      'entreprise.refonteExtranetEntrepriseBack',
+    ])
+
+    const model = await t.buildModel('hermes')
+    const view = model.views['imported_root_scope' as ViewId]
+    invariant(view)
+    invariant(isElementView(view))
+    expect(view.title).toBe('Entreprise')
+    expect(view.viewOf).toBe(importedRoot)
+    expect(view.nodes.map(n => n.id)).toEqual(expect.arrayContaining([
+      importedRoot,
+      importedBackend,
+    ]))
+  })
+
   it('computes dynamic-only steps that reference imported nested elements', async ({ expect }) => {
     await using t = await projects(`
       dynamic view process_reception_dat_entreprise {
