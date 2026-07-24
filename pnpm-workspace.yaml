@@ -139,7 +139,7 @@ catalogs:
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
   obuild:
-    obuild: 0.4.31
+    obuild: 0.4.38
   react:
     "@floating-ui/dom": ^1.7.6
     "@nanostores/media-query": 0.1.2
