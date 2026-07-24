@@ -1,7 +1,28 @@
 import { DefaultMap } from '@likec4/core/utils'
 import { type ElementIconRenderer, type ElementIconRendererProps, IconRendererProvider } from '@likec4/diagram'
-import { lazy, memo, Suspense } from 'react'
+import { type CSSProperties, lazy, memo, Suspense } from 'react'
 import { ExtensionApi as extensionApi } from './vscode'
+
+const iconUrl = (group: string, name: string) => `https://icons.like-c4.dev/${group}/${name}.svg`
+
+function BootstrapIconMask({ name, ...props }: Omit<ElementIconRendererProps, 'node'> & { name: string }) {
+  const url = iconUrl('bootstrap', name)
+  const style = {
+    display: 'inline-block',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'currentColor',
+    maskImage: `url("${url}")`,
+    maskRepeat: 'no-repeat',
+    maskPosition: 'center',
+    maskSize: 'contain',
+    WebkitMaskImage: `url("${url}")`,
+    WebkitMaskRepeat: 'no-repeat',
+    WebkitMaskPosition: 'center',
+    WebkitMaskSize: 'contain',
+  } satisfies CSSProperties
+  return <span {...props} aria-hidden="true" style={style} />
+}
 
 const DefaultIconRenderer: ElementIconRenderer = ({ node, ...props }) => {
   if (!node.icon || node.icon === 'none') {
@@ -12,7 +33,11 @@ const DefaultIconRenderer: ElementIconRenderer = ({ node, ...props }) => {
     return null
   }
 
-  return <img {...props} src={`https://icons.like-c4.dev/${group}/${name}.svg`} />
+  if (group === 'bootstrap') {
+    return <BootstrapIconMask {...props} name={name} />
+  }
+
+  return <img {...props} src={iconUrl(group, name)} />
 }
 
 const icons = new DefaultMap<string, ElementIconRenderer>(icon => {
