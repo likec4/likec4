@@ -121,6 +121,7 @@ export interface AbstractRelationship<A extends AnyAux>
 export interface Relationship<A extends AnyAux = AnyAux> extends AbstractRelationship<A> {
   readonly source: FqnRef.ModelRef<A>
   readonly target: FqnRef.ModelRef<A>
+  readonly isBidirectional?: boolean
 }
 
 /**

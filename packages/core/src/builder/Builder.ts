@@ -1026,7 +1026,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
             return b as any
           }
         },
-        rel: (source: string, target: string, _props?: T['NewRelationshipProps'] | string) => {
+        rel: (source: string, target: string, _props?: T['NewDeploymentRelationshipProps'] | string) => {
           return <T extends AnyTypes>(b: DeploymentModelBuilder<T>) => {
             const {
               title = null,

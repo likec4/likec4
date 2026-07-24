@@ -3,6 +3,7 @@
 The `model` block defines the logical architecture: elements (systems, containers, components, actors) organized in a hierarchy, with relationships between them. Views project from this model.
 
 **Key rules:**
+
 - Elements MUST have a kind (from specification) and an identifier unique within their parent.
 - Relationships cannot exist directly between parent and child — move them outside the parent element.
 - `this` and `it` are aliases for the current element inside a nested relationship.
@@ -29,16 +30,20 @@ model {
     SOURCE -> TARGET                        // explicit, both sides named
     -> TARGET "title"                       // implicit source (current element)
     -> TARGET "title" { TAGS; PROPERTIES }
-    -[REL_KIND]-> TARGET "title"            // typed relationship
-    .REL_KIND -> TARGET "title"             // alternative typed syntax
+    <-> TARGET "title"                      // bidirectional relationship
+    -[REL_KIND]-> TARGET "title"            // typed directed relationship
+    -[REL_KIND]<-> TARGET "title"           // typed bidirectional relationship
+    .REL_KIND TARGET "title"                // alternative typed syntax
     SOURCE -> it                            // TARGET = current element (alias)
     this -> TARGET                          // SOURCE = current element (alias)
   }
 
   // Top-level relationships (outside element body): SOURCE is required
   SOURCE -> TARGET "title"
+  SOURCE <-> TARGET "title"
   SOURCE -> TARGET "title" { TAGS; PROPERTIES }
   SOURCE -[REL_KIND]-> TARGET
+  SOURCE -[REL_KIND]<-> TARGET
   SOURCE .REL_KIND TARGET
 
   // Extend existing element (by FQN, from any file)
@@ -48,13 +53,18 @@ model {
     NESTED_ELEMENTS | RELATIONSHIPS         // additional children or edges
   }
 
-  // Extend existing relationship — anti-ambiguity matcher contract:
+  // Extend existing relationship — matcher contract:
   // 1) SOURCE and TARGET always required.
-  // 2) Include KIND when typed relationships exist between source+target pair.
-  // 3) Include TITLE when multiple relationships share SOURCE/TARGET/KIND.
+  // 2) Include KIND when extending a typed relationship.
+  // 3) Include TITLE when extending a titled relationship.
   // Omitting KIND is WRONG (not merely ambiguous) when a typed relation exists.
-  extend SOURCE -> TARGET { TAGS; PROPERTIES }
-  extend SOURCE -[REL_KIND]-> TARGET "title" { TAGS; PROPERTIES }
+  // Omitting TITLE is WRONG when the matched relation is titled.
+  extend SOURCE -> TARGET { TAGS; PROPERTIES }                  // untitled directed relationship
+  extend SOURCE -> TARGET "title" { TAGS; PROPERTIES }          // titled directed relationship
+  extend SOURCE <-> TARGET { TAGS; PROPERTIES }                 // untitled bidirectional relationship
+  extend SOURCE <-> TARGET "title" { TAGS; PROPERTIES }         // titled bidirectional relationship
+  extend SOURCE -[REL_KIND]-> TARGET "title" { TAGS; PROPERTIES } // typed titled relationship
+  extend SOURCE -[REL_KIND]<-> TARGET "title" { TAGS; PROPERTIES } // typed titled bidirectional
 }
 ```
 
@@ -101,17 +111,17 @@ model {
 
 ## Element Properties
 
-| Property | Values |
-|---|---|
-| **title** | String, single line |
-| **description** | String, prefer Markdown. If > 150 chars, also add `summary`. |
-| **summary** | String, max 150 characters |
-| **technology** | String, no multi-line |
-| **style** | `style { ... }` — see `references/style-tokens-colors.md` |
-| **icon** | Shortcut for `style { icon ... }`, takes precedence over the style block |
-| **metadata** | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings |
-| **link** | `link URL "Optional title"` — repeatable; URL can be relative to the document |
-| **navigateTo** | ID of a dynamic view to navigate to on click |
+| Property        | Values                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| **title**       | String, single line                                                                      |
+| **description** | String, prefer Markdown. If > 150 chars, also add `summary`.                             |
+| **summary**     | String, max 150 characters                                                               |
+| **technology**  | String, no multi-line                                                                    |
+| **style**       | `style { ... }` — see `references/style-tokens-colors.md`                                |
+| **icon**        | Shortcut for `style { icon ... }`, takes precedence over the style block                 |
+| **metadata**    | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings |
+| **link**        | `link URL "Optional title"` — repeatable; URL can be relative to the document            |
+| **navigateTo**  | ID of a dynamic view to navigate to on click                                             |
 
 ## Relationship Properties
 

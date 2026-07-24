@@ -435,7 +435,7 @@ export type AddDeploymentRelation<Props = unknown> =
 
 export type DeloymentModelHelpers<T extends AnyTypes> = AddDeploymentNodeHelpers<T> & {
   instanceOf: AddDeployedInstance<T['NewDeploymentNodeProps']>
-  rel: AddDeploymentRelation<T['NewRelationshipProps']>
+  rel: AddDeploymentRelation<T['NewDeploymentRelationshipProps']>
   deployment: typeof deployment
 }
 

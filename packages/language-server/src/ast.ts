@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 //
 // Copyright (c) 2023-2026 Denis Davydkov
-// Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
@@ -108,6 +108,7 @@ export interface ParsedAstExtend {
 export interface ParsedAstExtendRelation {
   id: c4.RelationId
   astPath: string
+  isBidirectional?: boolean
   tags?: c4.NonEmptyArray<c4.Tag> | null
   links?: c4.NonEmptyArray<c4.Link> | null
   metadata?: { [key: string]: string | string[] }
@@ -118,6 +119,7 @@ export interface ParsedAstRelation {
   astPath: string
   source: c4.FqnRef.ModelRef
   target: c4.FqnRef.ModelRef
+  isBidirectional?: boolean
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string

@@ -1,11 +1,34 @@
 import { anyPass } from 'remeda'
-import type { ElementModel, LikeC4Model } from '../../../model'
+import type { ConnectionModel, ElementModel, LikeC4Model, RelationshipModel } from '../../../model'
 import { modelConnection } from '../../../model'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { ifilter, isDescendantOf, nonexhaustive, toArray } from '../../../utils'
 import type { Elem, Memory, PredicateCtx } from '../_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = modelConnection
+
+export function isBidirectionalRelation<A extends AnyAux>(relation: RelationshipModel<A>): boolean {
+  return relation.isBidirectional || relation.tail === 'normal'
+}
+
+/**
+ * Resolve connections that can originate at an element.
+ *
+ * Relationships with arrows at both ends can be selected from either endpoint,
+ * while their connection retains the direction declared in the model.
+ */
+export function findConnectionsFrom<A extends AnyAux>(
+  source: ElementModel<A>,
+  targets: Iterable<ElementModel<A>>,
+): readonly ConnectionModel<A>[] {
+  return findConnectionsBetween(source, targets).flatMap(connection => {
+    if (connection.source === source) {
+      return [connection]
+    }
+    const bidirectionalRelations = new Set([...connection.relations].filter(isBidirectionalRelation))
+    return bidirectionalRelations.size > 0 ? [connection.update(bidirectionalRelations)] : []
+  })
+}
 
 /**
  * Resolve elements from the model based on the given expression

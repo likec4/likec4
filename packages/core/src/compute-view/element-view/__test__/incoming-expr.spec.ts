@@ -1,7 +1,214 @@
 import { describe, expect, it } from 'vitest'
+import { Builder } from '../../../builder'
 import { $exclude, $include, computeView } from './fixture'
+import { TestHelper } from './TestHelper'
 
 describe('incoming-expr', () => {
+  it('includes a bidirectional relationship from either endpoint', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { tail: 'normal' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(test.computeView($include('-> b')).edges.map(edge => edge.id)).toEqual(['a -> b'])
+    expect(test.computeView($include('-> a')).edges.map(edge => edge.id)).toEqual(['a -> b'])
+  })
+
+  it('includes a bidirectional relationship to the declared source by element kind', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+          database: {},
+        },
+      })
+      .model(({ component, database, rel }, _) =>
+        _(
+          component('a'),
+          database('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'normal' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView($include({
+        incoming: {
+          elementKind: 'component',
+          isEqual: true,
+        },
+      })).edges.map(edge => edge.id),
+    ).toEqual(['a -> b'])
+  })
+
+  it('includes a bidirectional relationship to the declared source by element tag', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+          database: {},
+        },
+        tags: {
+          source: {},
+        },
+      })
+      .model(({ component, database, rel }, _) =>
+        _(
+          component('a', { tags: ['source'] }),
+          database('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'normal' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView($include({
+        incoming: {
+          elementTag: 'source',
+          isEqual: true,
+        },
+      })).edges.map(edge => edge.id),
+    ).toEqual(['a -> b'])
+  })
+
+  it('includes a styled bidirectional relationship from the declared source', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'diamond' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(test.computeView($include('-> a')).edges.map(edge => edge.id)).toEqual(['a -> b'])
+  })
+
+  it('excludes a bidirectional relationship from the declared source', () => {
+    const { $exclude, $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { isBidirectional: true, tail: 'normal' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView(
+        $include('*'),
+        $exclude('-> a'),
+      ).edges.map(edge => edge.id),
+    ).toEqual([])
+  })
+
+  it('includes only bidirectional relations from a mixed parallel connection to the declared source', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { title: 'bidirectional', isBidirectional: true, tail: 'normal' }),
+          rel('a', 'b', { title: 'directed' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    const edges = test.computeView($include('-> a')).edges
+
+    expect(edges).toHaveLength(1)
+    expect(edges[0]!.label).toBe('bidirectional')
+    expect(edges[0]!.relations).toHaveLength(1)
+  })
+
+  it('does not let a directed parallel relation match a reverse bidirectional incoming predicate', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+        tags: {
+          bidirectional: {},
+          directed: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { title: 'bidirectional', tags: ['bidirectional'], isBidirectional: true, tail: 'normal' }),
+          rel('a', 'b', { title: 'directed', tags: ['directed'] }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    expect(
+      test.computeView($include('-> a', { where: 'tag is #directed' } as any)).edges,
+    ).toHaveLength(0)
+    expect(
+      test.computeView($include('-> a', { where: 'tag is #bidirectional' } as any)).edges.map(edge => edge.label),
+    ).toEqual(['bidirectional'])
+  })
+
+  it('preserves normal incoming behavior for mixed parallel relations to the declared target', () => {
+    const { $include } = TestHelper
+    const builder = Builder
+      .specification({
+        elements: {
+          component: {},
+        },
+      })
+      .model(({ component, rel }, _) =>
+        _(
+          component('a'),
+          component('b'),
+          rel('a', 'b', { title: 'bidirectional', isBidirectional: true, tail: 'normal' }),
+          rel('a', 'b', { title: 'directed' }),
+        )
+      )
+    const test = TestHelper.from(builder)
+
+    const edges = test.computeView($include('-> b')).edges
+
+    expect(edges).toHaveLength(1)
+    expect(edges[0]!.label).toBe('[...]')
+    expect(edges[0]!.relations).toHaveLength(2)
+  })
+
   describe('top level', () => {
     it('include -> amazon.*', () => {
       const { nodeIds, edgeIds } = computeView([$include('-> amazon.*')])
