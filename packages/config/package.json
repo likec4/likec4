@@ -55,6 +55,13 @@
         "default": "./dist/node/index.mjs"
       }
     },
+    "./webapp-export-formats": {
+      "sources": "./src/webapp-export-formats.ts",
+      "default": {
+        "types": "./dist/webapp-export-formats.d.mts",
+        "default": "./dist/webapp-export-formats.mjs"
+      }
+    },
     "./package.json": "./package.json",
     "./schema.json": "./schema.json"
   },

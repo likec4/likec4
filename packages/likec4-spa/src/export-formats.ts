@@ -2,17 +2,7 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { WebappExportFormat } from '@likec4/config'
-
-const WebappExportFormats = [
-  'png',
-  'jpg',
-  'dot',
-  'd2',
-  'mmd',
-  'puml',
-  'drawio',
-] as const satisfies readonly WebappExportFormat[]
+import { type WebappExportFormat, WebappExportFormats } from '@likec4/config/webapp-export-formats'
 
 type ProjectExportCapabilities = {
   exportFormats?: readonly WebappExportFormat[] | undefined

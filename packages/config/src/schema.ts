@@ -22,6 +22,7 @@ import z from 'zod/v4'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
+import { type WebappExportFormat, WebappExportFormats } from './webapp-export-formats'
 
 export interface VscodeURI {
   readonly scheme: string
@@ -53,11 +54,11 @@ export const ManualLayoutsConfigSchema = z
 
 export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
 
-export const WebappExportFormats = ['png', 'jpg', 'dot', 'd2', 'mmd', 'puml', 'drawio'] as const
+export { WebappExportFormats }
 
 export const WebappExportFormatSchema = z.enum(WebappExportFormats)
 
-export type WebappExportFormat = z.infer<typeof WebappExportFormatSchema>
+export type { WebappExportFormat }
 
 export const WebappConfigSchema = z
   .strictObject({

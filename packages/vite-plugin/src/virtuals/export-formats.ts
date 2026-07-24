@@ -2,8 +2,8 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { LikeC4ProjectConfig, WebappExportFormat } from '@likec4/config'
-import { WebappExportFormats } from '@likec4/config'
+import type { LikeC4ProjectConfig } from '@likec4/config'
+import { type WebappExportFormat, WebappExportFormats } from '@likec4/config/webapp-export-formats'
 
 type WebappExportConfig = Pick<LikeC4ProjectConfig, 'webapp'>
 
