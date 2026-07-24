@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 declare module 'likec4:projects' {
-  import type { WebappExportFormat } from '@likec4/config'
+  import type { WebappExportFormat } from 'likec4/config'
   import type { ProjectId } from 'likec4/model'
   type LandingPageConfig =
     | { redirect: true }
