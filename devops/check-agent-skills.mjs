@@ -35,6 +35,7 @@ const expectedClaudeSkillLinks = new Map([
   ['.claude/skills/likec4-issue-repro', '../../.agents/skills/likec4-issue-repro'],
   ['.claude/skills/likec4-project-config-workflow', '../../.agents/skills/likec4-project-config-workflow'],
   ['.claude/skills/refactor', '../../.agents/skills/refactor'],
+  ['.claude/skills/vscode-extension-screenshot-evidence', '../../.agents/skills/vscode-extension-screenshot-evidence'],
 ])
 
 const fail = message => failures.push(message)
