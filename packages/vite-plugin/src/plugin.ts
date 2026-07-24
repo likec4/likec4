@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
@@ -19,6 +26,7 @@ import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { drawioModule, projectDrawioModule } from './virtuals/drawio'
+import { effectiveWebappExportFormats } from './virtuals/export-formats'
 import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
@@ -160,6 +168,18 @@ const hmrProjectVirtuals = [
   projectPumlModule,
   projectDrawioModule,
 ]
+
+/**
+ * Root virtual modules that cache project-level export capability maps.
+ */
+const hmrProjectListVirtuals = [
+  d2Module,
+  dotModule,
+  mmdModule,
+  pumlModule,
+  drawioModule,
+]
+
 /**
  * All virtual modules per LikeC4 project ()
  */
@@ -174,11 +194,7 @@ const _virtuals = [
   projectsOverviewModule,
   singleProjectModule,
   singleProjectReactModule,
-  d2Module,
-  dotModule,
-  mmdModule,
-  pumlModule,
-  drawioModule,
+  ...hmrProjectListVirtuals,
   iconsModule,
   rpcModule,
 ]
@@ -245,6 +261,7 @@ export function LikeC4VitePlugin({
       title: p.title,
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
+      exportFormats: effectiveWebappExportFormats(p.config),
     })) satisfies (data: ProjectsData) => any
     let _last: any
     return <T extends ProjectsData>(update: T): boolean => {
@@ -426,6 +443,9 @@ export function LikeC4VitePlugin({
             await reloadModule(projectsModule.virtualId)
             await reloadModule(iconsModule.virtualId)
             await reloadModule(modelModule.virtualId)
+            for (const module of hmrProjectListVirtuals) {
+              await reloadModule(module.virtualId)
+            }
             if (projects.length > 1) {
               await reloadModule(projectsOverviewModule.virtualId)
             }

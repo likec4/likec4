@@ -22,6 +22,7 @@ import z from 'zod/v4'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
+import { type WebappExportFormat, WebappExportFormats } from './webapp-export-formats'
 
 export interface VscodeURI {
   readonly scheme: string
@@ -52,6 +53,34 @@ export const ManualLayoutsConfigSchema = z
   })
 
 export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
+
+export { WebappExportFormats }
+
+export const WebappExportFormatSchema = z.enum(WebappExportFormats)
+
+export type { WebappExportFormat }
+
+export const WebappConfigSchema = z
+  .strictObject({
+    exportFormats: z.array(WebappExportFormatSchema)
+      .refine(
+        (formats) => new Set(formats).size === formats.length,
+        { message: 'Export formats cannot contain duplicates' },
+      )
+      .default([...WebappExportFormats])
+      .meta({
+        description: [
+          'Webapp export formats enabled in the generated application.',
+          'Omit to enable all export formats. Use an empty array to disable webapp exports.',
+        ].join('\n'),
+      }),
+  })
+  .meta({
+    id: 'WebappConfig',
+    description: 'Configuration for the generated web application',
+  })
+
+export type WebappConfig = z.infer<typeof WebappConfigSchema>
 
 export const LandingPageSchema = z
   .union([
@@ -128,6 +157,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
   landingPage: LandingPageSchema.optional(),
+  webapp: WebappConfigSchema.optional(),
 })
   .meta({
     id: 'LikeC4ProjectConfig',
