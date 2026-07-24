@@ -67,4 +67,27 @@ describe('projects virtual module export capabilities', () => {
     expect(code).toContain('loadDotSourcesFn = update')
     expect(code).not.toContain('??=')
   })
+
+  it('generates parseable combined export modules for escaped project ids', async ({ expect }) => {
+    const mod = generateCombinedProjects('dot', 'loadDotSources', 'dot')
+    const result = await mod.load.call({} as any, {
+      projects: [
+        {
+          id: 'weird-project</script>\u2028with-slash',
+          config: {
+            webapp: {
+              exportFormats: ['dot'],
+            },
+          },
+        },
+      ],
+    } as any)
+
+    const code = typeof result === 'string' ? result : result.code
+    expect(code).not.toContain('</script>')
+    await expect(import(`data:text/javascript,${encodeURIComponent(code)}`)).resolves.toMatchObject({
+      loadDotSources: expect.any(Function),
+      loadDotSourcesFn: expect.any(Object),
+    })
+  })
 })
