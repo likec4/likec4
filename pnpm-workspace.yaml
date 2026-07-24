@@ -84,7 +84,7 @@ catalogs:
     "@expressive-code/plugin-line-numbers": 0.44.0
     astro: 7.1.0
     astro-og-canvas: 0.13.0
-    astro-skills: 0.1.0
+    astro-skills: 0.1.1
     shiki: 4.1.0
     starlight-heading-badges: 0.8.0
     starlight-image-zoom: 0.15.0
