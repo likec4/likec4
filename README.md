@@ -1,5 +1,7 @@
 # Architecture as a code
 
+[![MCP Toplist](https://mcptoplist.com/badge/mcp.so%2FLikeC4%2FLikeC4.svg)](https://mcptoplist.com/server/mcp.so%2FLikeC4%2FLikeC4)
+
 Visualize, collaborate on, and evolve your software architecture with always up-to-date, live diagrams generated from your code.
 
 [docs](https://likec4.dev/) - [playground](https://playground.likec4.dev/) - [demo](https://template.likec4.dev/view/index)
