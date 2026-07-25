@@ -570,6 +570,28 @@ view {
   }
 }
 ```
+
+Groups may also reference [global predicate groups](#global-predicate-groups), to reuse a set of predicates
+and keep the matched elements inside the group:
+
+```likec4
+global {
+  predicateGroup microservices {
+    include cloud.*
+      where kind is microservice
+  }
+}
+
+views {
+  view of newServices {
+    include cloud.new.*
+
+    group 'Microservices' {
+      global predicate microservices
+    }
+  }
+}
+```
 :::note
 Order of predicates is significant. 
 <details>

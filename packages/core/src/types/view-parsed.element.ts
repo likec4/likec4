@@ -28,7 +28,7 @@ export type ElementViewPredicate<A extends AnyAux = AnyAux> =
   | ElementViewExcludePredicate<A>
 
 export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
-  groupRules: Array<ElementViewPredicate<A> | ElementViewRuleGroup<A>>
+  groupRules: Array<ElementViewPredicate<A> | ViewRuleGlobalPredicateRef | ElementViewRuleGroup<A>>
   title: string | null
   color?: Color
   border?: BorderStyle

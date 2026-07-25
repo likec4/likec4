@@ -428,6 +428,7 @@ ViewRuleGroup:
     )*
     groupRules+=(
       ViewRulePredicate |
+      ViewRuleGlobalPredicateRef |
       ViewRuleGroup
     )*
   '}';

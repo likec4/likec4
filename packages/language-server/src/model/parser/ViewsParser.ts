@@ -210,6 +210,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             groupRules.push(this.parseViewRulePredicate(rule))
             continue
           }
+          if (ast.isViewRuleGlobalPredicateRef(rule)) {
+            groupRules.push(this.parseViewRuleGlobalPredicateRef(rule))
+            continue
+          }
           if (ast.isViewRuleGroup(rule)) {
             groupRules.push(this.parseViewRuleGroup(rule))
             continue

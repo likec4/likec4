@@ -5,6 +5,7 @@ import {
   type DynamicViewRule,
   type ElementViewPredicate,
   type ElementViewRule,
+  type ElementViewRuleGroup,
   type ModelGlobals,
   type ParsedDynamicView,
   type ParsedElementView,
@@ -14,6 +15,7 @@ import {
   isElementView,
   isViewRuleGlobalPredicateRef,
   isViewRuleGlobalStyle,
+  isViewRuleGroup,
 } from '../../types'
 import { nonexhaustive } from '../../utils'
 
@@ -58,9 +60,44 @@ export function resolveGlobalRulesInElementView<M extends AnyAux>(
       }
       return acc.concat(globalStyles)
     }
+    if (isViewRuleGroup(rule)) {
+      acc.push({
+        ...rule,
+        groupRules: resolveGlobalRulesInGroup(rule.groupRules, globals),
+      })
+      return acc
+    }
     acc.push(rule)
     return acc
   }, [] as Array<Exclude<ElementViewRule<M>, ViewRuleGlobal>>)
+}
+
+/**
+ * Groups may reference global predicates as well, resolve them in place
+ * to keep the elements inside the group
+ */
+function resolveGlobalRulesInGroup<M extends AnyAux>(
+  groupRules: ElementViewRuleGroup<M>['groupRules'],
+  globals: ModelGlobals<M>,
+): Array<Exclude<ElementViewRuleGroup<M>['groupRules'][number], ViewRuleGlobalPredicateRef>> {
+  return groupRules.reduce((acc, rule) => {
+    if (isViewRuleGlobalPredicateRef(rule)) {
+      const globalPredicates = globals.predicates[rule.predicateId]
+      if (isNullish(globalPredicates)) {
+        return acc
+      }
+      return acc.concat(globalPredicates as ElementViewPredicate<M>[])
+    }
+    if (isViewRuleGroup(rule)) {
+      acc.push({
+        ...rule,
+        groupRules: resolveGlobalRulesInGroup(rule.groupRules, globals),
+      })
+      return acc
+    }
+    acc.push(rule)
+    return acc
+  }, [] as Array<Exclude<ElementViewRuleGroup<M>['groupRules'][number], ViewRuleGlobalPredicateRef>>)
 }
 
 export function resolveGlobalRulesInDynamicView<M extends AnyAux>(
