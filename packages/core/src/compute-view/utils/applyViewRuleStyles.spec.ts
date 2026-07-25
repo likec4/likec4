@@ -148,4 +148,28 @@ describe('applyViewRuleStyles', () => {
     expect(applyViewRuleStyles([r([$expr('*')], {})], nodes)).toStrictEqual([nodes[0]])
     expect(applyViewRuleStyles([r([$expr('*')], { style: {} })], nodes)).toStrictEqual([nodes[0]])
   })
+
+  it('applies children selector only to direct children', () => {
+    const nodes = [
+      nd('cloud'),
+      nd('cloud.backend'),
+      nd('cloud.backend.storage'),
+    ] as ComputedNode[]
+
+    const styled = applyViewRuleStyles([r([$expr('cloud.*')], { style: { color: 'red' } })], nodes)
+
+    expect(styled.map(n => n.color)).toEqual([undefined, 'red', undefined])
+  })
+
+  it('applies descendants selector to all descendants', () => {
+    const nodes = [
+      nd('cloud'),
+      nd('cloud.backend'),
+      nd('cloud.backend.storage'),
+    ] as ComputedNode[]
+
+    const styled = applyViewRuleStyles([r([$expr('cloud.**')], { style: { color: 'red' } })], nodes)
+
+    expect(styled.map(n => n.color)).toEqual([undefined, 'red', 'red'])
+  })
 })
