@@ -63,25 +63,40 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       return
     }
 
-    const acceptProperty = (insertAfterText: string) => {
+    /**
+     * The generated text starts with the keyword itself, so it must replace the
+     * already typed prefix. We provide an explicit `textEdit` instead of `insertText`,
+     * because clients that apply `insertText` at the cursor would duplicate the
+     * keyword (see https://github.com/likec4/likec4/issues/3091)
+     */
+    const acceptReplacing = (item: Partial<CompletionItem>, newText: string) => {
+      // Keep the default fuzzy-matching behavior, which also decides
+      // whether the item is offered at all for the typed prefix
+      const textEdit = this.buildCompletionTextEdit(context, keyword.value, newText)
+      if (!textEdit) {
+        return
+      }
       acceptor(context, {
         label: keyword.value,
-        detail: `Insert ${keyword.value} property`,
-        kind: CompletionItemKind.Property,
         insertTextFormat: InsertTextFormat.Snippet,
-        insertText: `${keyword.value} ${insertAfterText}`,
+        ...item,
+        textEdit,
       })
     }
 
+    const acceptProperty = (insertAfterText: string) => {
+      acceptReplacing({
+        detail: `Insert ${keyword.value} property`,
+        kind: CompletionItemKind.Property,
+      }, `${keyword.value} ${insertAfterText}`)
+    }
+
     const acceptSnippet = ({ insertText, ...item }: SetRequired<Partial<CompletionItem>, 'insertText'>) => {
-      acceptor(context, {
-        label: keyword.value,
+      acceptReplacing({
         detail: `Insert ${keyword.value}`,
         kind: CompletionItemKind.Snippet,
-        insertTextFormat: InsertTextFormat.Snippet,
         ...item,
-        insertText: `${keyword.value} ${insertText}`,
-      })
+      }, `${keyword.value} ${insertText}`)
     }
 
     const acceptPropertyAndSuggest = (variants: readonly string[]) => {

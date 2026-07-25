@@ -1167,4 +1167,54 @@ describe('LikeC4CompletionProvider', () => {
       ],
     })
   })
+
+  // Issue #3091 - completion items must carry an explicit textEdit,
+  // otherwise clients relying on insertText duplicate the typed keyword ("modelmodel")
+  it('should not duplicate typed keyword in snippet completions', async ({ expect, completion }) => {
+    const text = `mod<|>`
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        const item = completions.items.find(i => i.label === 'model')
+        expect(item, 'expected a "model" completion item').toBeDefined()
+        // The typed prefix `mod` must be replaced, not appended to
+        expect(item!.textEdit).toEqual({
+          newText: 'model {\n\t$0\n}',
+          range: {
+            start: { line: 0, character: 0 },
+            end: { line: 0, character: 3 },
+          },
+        })
+        // insertText must never be the sole carrier of the snippet, otherwise
+        // clients that ignore textEdit insert at the cursor and duplicate the keyword
+        expect(item!.insertText).toBeUndefined()
+      },
+    })
+  })
+
+  it('should not duplicate typed keyword in property completions', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          titl<|>
+        }
+      }
+    `
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        const item = completions.items.find(i => i.label === 'title')
+        expect(item, 'expected a "title" completion item').toBeDefined()
+        expect(item!.textEdit).toMatchObject({
+          newText: `title '$0'`,
+        })
+        expect(item!.insertText).toBeUndefined()
+      },
+    })
+  })
 })
