@@ -79,6 +79,8 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     ): ParsedAstElementView {
       const body = astNode.body
       invariant(body, 'ElementView body is not defined')
+      // only valid props
+      const props = body.props.filter(this.isValid)
       const astPath = this.getAstNodePath(astNode)
 
       let viewOf = null as c4.Fqn | null
@@ -105,8 +107,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const { title = null, description = null } = this.parseBaseProps(
         pipe(
-          body.props,
-          filter(p => this.isValid(p)),
+          props,
           filter(ast.isViewStringProperty),
           mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
         ),
@@ -114,7 +115,8 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
-      const order = body.props.find(ast.isViewOrderProperty)?.value
+      const order = props.find(ast.isViewOrderProperty)?.value
+      const validOrder = typeof order === 'number' && Number.isSafeInteger(order) && order >= 0 ? order : undefined
 
       const view: ParsedAstElementView = {
         [c4._type]: 'element',
@@ -122,7 +124,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         astPath,
         title: toSingleLine(title) ?? null,
         description,
-        ...(order !== undefined && { order }),
+        ...(validOrder !== undefined && { order: validOrder }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: [
@@ -288,6 +290,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
       const order = props.find(ast.isViewOrderProperty)?.value
+      const validOrder = typeof order === 'number' && Number.isSafeInteger(order) && order >= 0 ? order : undefined
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -299,7 +302,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         astPath,
         title: toSingleLine(title) ?? null,
         description,
-        ...(order !== undefined && { order }),
+        ...(validOrder !== undefined && { order: validOrder }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         variant,

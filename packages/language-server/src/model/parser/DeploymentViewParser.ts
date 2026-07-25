@@ -43,6 +43,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
       const order = props.find(ast.isViewOrderProperty)?.value
+      const validOrder = typeof order === 'number' && Number.isSafeInteger(order) && order >= 0 ? order : undefined
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -52,7 +53,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         astPath,
         title: toSingleLine(title) ?? null,
         description,
-        ...(order !== undefined && { order }),
+        ...(validOrder !== undefined && { order: validOrder }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: this.tryMap('deployment', body.rules, n => this.parseDeploymentViewRule(n)),

@@ -95,4 +95,43 @@ describe('viewChecks', () => {
       expect(diagnostic.message, 'diagnostic message').toBe('Duplicate view \'v3\'')
     }
   })
+
+  it('should accept safe view order values', async ({ expect, validate }) => {
+    const { errors, warnings } = await validate(`
+      views {
+        view elementView {
+          order 0
+        }
+        dynamic view dynamicView {
+          order 1
+        }
+        deployment view deploymentView {
+          order 2
+        }
+      }
+    `)
+    expect(errors).toHaveLength(0)
+    expect(warnings).toHaveLength(0)
+  })
+
+  it('should reject unsafe view order values', async ({ expect, validate }) => {
+    const { errors } = await validate(`
+      views {
+        view elementView {
+          order 9007199254740992
+        }
+        dynamic view dynamicView {
+          order 9007199254740992
+        }
+        deployment view deploymentView {
+          order 9007199254740992
+        }
+      }
+    `)
+    expect(errors).toEqual([
+      'View order must be a non-negative safe integer',
+      'View order must be a non-negative safe integer',
+      'View order must be a non-negative safe integer',
+    ])
+  })
 })

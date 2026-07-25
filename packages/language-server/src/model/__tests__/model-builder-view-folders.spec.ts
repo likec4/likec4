@@ -198,6 +198,69 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     ])
   })
 
+  it('drops unsafe view order values from parsed and computed model', async ({ expect }) => {
+    const { validate, buildModel, services } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+      }
+      views 'Group 1' {
+        view validElement {
+          order 0
+          include *
+        }
+        view unsafeElement {
+          order 9007199254740992
+          include *
+        }
+        dynamic view validDynamic {
+          order 1
+          sys1 -> sys2
+        }
+        dynamic view unsafeDynamic {
+          order 9007199254740992
+          sys1 -> sys2
+        }
+        deployment view validDeployment {
+          order 2
+          include *
+        }
+        deployment view unsafeDeployment {
+          order 9007199254740992
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([
+      'View order must be a non-negative safe integer',
+      'View order must be a non-negative safe integer',
+      'View order must be a non-negative safe integer',
+    ])
+
+    const parsed = await services.likec4.ModelBuilder.parseModel()
+    if (!parsed) {
+      throw new Error('Expected parsed model')
+    }
+    expect(parsed.$data.views['validElement']?.order).toBe(0)
+    expect(parsed.$data.views['validDynamic']?.order).toBe(1)
+    expect(parsed.$data.views['validDeployment']?.order).toBe(2)
+    expect(parsed.$data.views['unsafeElement']?.order).toBeUndefined()
+    expect(parsed.$data.views['unsafeDynamic']?.order).toBeUndefined()
+    expect(parsed.$data.views['unsafeDeployment']?.order).toBeUndefined()
+
+    const computed = await buildModel()
+    expect(computed.views['validElement']?.order).toBe(0)
+    expect(computed.views['validDynamic']?.order).toBe(1)
+    expect(computed.views['validDeployment']?.order).toBe(2)
+    expect(computed.views['unsafeElement']?.order).toBeUndefined()
+    expect(computed.views['unsafeDynamic']?.order).toBeUndefined()
+    expect(computed.views['unsafeDeployment']?.order).toBeUndefined()
+  })
+
   it('does not inherit order from extended views', async ({ expect }) => {
     const { validate, buildModel } = createTestServices({ projectConfig: {} })
     const { errors } = await validate(`

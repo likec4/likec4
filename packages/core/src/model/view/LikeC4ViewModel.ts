@@ -61,6 +61,9 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
    * The title of the view
    */
   public readonly title: string | null
+  /**
+   * Optional per-view navigation order.
+   */
   public readonly order: number | undefined
 
   /**
