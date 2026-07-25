@@ -95,6 +95,7 @@ export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTa
   readonly id: aux.StrictViewId<A>
   readonly title: string | null
   readonly description: scalar.MarkdownOrString | null
+  readonly order?: number
   /**
    * Source file containing this view, relative to the project root.
    * Undefined if the view is auto-generated.

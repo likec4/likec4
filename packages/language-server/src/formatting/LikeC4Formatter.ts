@@ -330,6 +330,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       ast.isElementStringProperty(node)
       || ast.isRelationStringProperty(node)
       || ast.isViewStringProperty(node)
+      || ast.isViewOrderProperty(node)
       || ast.isNotationProperty(node)
       || ast.isNotesProperty(node)
       || ast.isSpecificationElementStringProperty(node)
@@ -354,6 +355,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       const propertyName = formatter.keywords(
         'title',
         'description',
+        'order',
         'technology',
         'summary',
         'notation',

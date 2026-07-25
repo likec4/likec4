@@ -144,6 +144,86 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     ])
   })
 
+  it('orders sibling views by explicit order', async ({ expect }) => {
+    const { validate, buildModel, buildLikeC4Model } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+      }
+      views 'Group 1' {
+        view unordered1 {
+          title 'Same / Unordered 1'
+          include *
+        }
+        view ordered2 {
+          title 'Same / Ordered 2'
+          order 2
+          include *
+        }
+        dynamic view ordered1 {
+          title 'Same / Ordered 1'
+          order 1
+          sys1 -> sys2
+        }
+        deployment view ordered2b {
+          title 'Same / Ordered 2B'
+          order 2
+          include *
+        }
+        view unordered2 {
+          title 'Same / Unordered 2'
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+
+    const computed = await buildModel()
+    expect(computed.views['ordered1']?.order).toBe(1)
+    expect(computed.views['ordered2']?.order).toBe(2)
+    expect(computed.views['ordered2b']?.order).toBe(2)
+    expect(computed.views['unordered1']?.order).toBeUndefined()
+
+    const model = await buildLikeC4Model()
+    expect([...model.viewFolder('Group 1/Same').views]).toEqual([
+      model.view('ordered1'),
+      model.view('ordered2'),
+      model.view('ordered2b'),
+      model.view('unordered1'),
+      model.view('unordered2'),
+    ])
+  })
+
+  it('does not inherit order from extended views', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+      }
+      views {
+        view base {
+          order 1
+          include *
+        }
+        view child extends base {
+          title 'Child'
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+
+    const computed = await buildModel()
+    expect(computed.views['base']?.order).toBe(1)
+    expect(computed.views['child']?.order).toBeUndefined()
+  })
+
   it('implicit views are placed in Auto folder', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices({
       projectConfig: { implicitViews: true },

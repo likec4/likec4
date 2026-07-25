@@ -75,6 +75,45 @@ describe('LikeC4ViewsGroup', () => {
     })
   })
 
+  it('orders sibling views by explicit order only within the same folder', ({ expect }) => {
+    const ordered = Builder
+      .specification({
+        elements: {
+          el: {},
+        },
+      })
+      .model(({ el }, _) => _(el('sys')))
+      .views(({ view, dynamicView, deploymentView }, _) =>
+        _(
+          view('root-default'),
+          view('root-late', { order: 10 }),
+          view('root-first', { order: 0 }),
+          view('same-a', { title: 'Ordered / Same A', order: 2 }),
+          dynamicView('same-b', { title: 'Ordered / Same B', order: 2 }),
+          deploymentView('same-c', { title: 'Ordered / Same C', order: 2 }),
+          view('unordered-a', 'Ordered / Unordered A'),
+          view('ordered-first', { title: 'Ordered / First', order: 1 }),
+          view('unordered-b', 'Ordered / Unordered B'),
+        )
+      )
+      .toLikeC4Model()
+
+    expect([...ordered.rootViewFolder.children]).toEqual([
+      ordered.viewFolder('Ordered'),
+      ordered.view('root-first'),
+      ordered.view('root-late'),
+      ordered.view('root-default'),
+    ])
+    expect([...ordered.viewFolder('Ordered').views]).toEqual([
+      ordered.view('ordered-first'),
+      ordered.view('same-a'),
+      ordered.view('same-b'),
+      ordered.view('same-c'),
+      ordered.view('unordered-a'),
+      ordered.view('unordered-b'),
+    ])
+  })
+
   describe('view folder (level 2)', () => {
     it('One/Cloud 1', ({ expect }) => {
       const folder = model.viewFolder('One/Cloud 1')

@@ -114,6 +114,7 @@ const viewProps = z.object({
   id: common.viewId,
   title: z.string().nullish(),
   description: common.markdownOrString.nullish(),
+  order: z.number().int().nonnegative().optional(),
   tags: common.tags.nullish(),
   links: common.links.nullish(),
 })

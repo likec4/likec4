@@ -97,4 +97,15 @@ describe('calcViewLayoutHash', () => {
     const hashed2 = calcViewLayoutHash(JSON.parse(JSON.stringify(view1)))
     expect(hashed1.hash).toBe(hashed2.hash)
   })
+
+  it('ignores navigation order metadata', () => {
+    const view = builder
+      .views(v => v.view('test', v.$include('*')))
+      .toLikeC4Model()
+      .view('test').$view
+
+    expect(calcViewLayoutHash({ ...view, order: 1 } as any).hash).toBe(
+      calcViewLayoutHash({ ...view, order: 2 } as any).hash,
+    )
+  })
 })

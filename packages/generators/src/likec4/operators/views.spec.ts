@@ -92,6 +92,7 @@ describe('view', () => {
         'index',
         {
           title: 'Index',
+          order: 3,
           tags: ['tag1'],
           description: {
             md: 'Cloud **description**',
@@ -108,6 +109,7 @@ describe('view', () => {
         view index {
           #tag1
           title 'Index'
+          order 3
           description '''
             Cloud **description**
           '''
@@ -354,7 +356,37 @@ describe('view', () => {
     })
   })
 
+  it('should print deployment view order', () => {
+    const result = expect(
+      deploymentView(
+        'deployment',
+        {
+          title: 'Deployment',
+          order: 2,
+        },
+        $include('*'),
+      ),
+    )
+    result.toContain('deployment view deployment {\n    title \'Deployment\'\n    order 2')
+    result.toContain('include *')
+  })
+
   describe('dynamic view', () => {
+    it('should print dynamic view order', () => {
+      const result = expect(
+        dynamicView(
+          'test',
+          {
+            title: 'Flow',
+            order: 1,
+          },
+          $step('cloud.frontend -> cloud.backend.api'),
+        ),
+      )
+      result.toContain('dynamic view test {\n    title \'Flow\'\n    order 1')
+      result.toContain('cloud.frontend -> cloud.backend.api')
+    })
+
     it('should print steps', () => {
       expect(
         dynamicView(

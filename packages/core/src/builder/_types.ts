@@ -127,6 +127,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
 export type NewViewProps<Tag> = {
   title?: string
   description?: MarkdownOrString | string
+  order?: number
   tags?: [Tag, ...Tag[]]
   links?: Array<string | { title?: string; url: string }>
 }

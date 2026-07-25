@@ -453,6 +453,10 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       tags = [],
       ...props
     } = typeof _props === 'string' ? { title: _props } : { ..._props }
+    invariant(
+      props.order === undefined || Number.isInteger(props.order) && props.order >= 0,
+      'View order must be a non-negative integer',
+    )
 
     const links = mapLinks(_links)
     return [

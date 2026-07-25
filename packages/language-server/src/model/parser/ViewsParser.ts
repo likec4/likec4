@@ -114,6 +114,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
+      const order = body.props.find(ast.isViewOrderProperty)?.value
 
       const view: ParsedAstElementView = {
         [c4._type]: 'element',
@@ -121,6 +122,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         astPath,
         title: toSingleLine(title) ?? null,
         description,
+        ...(order !== undefined && { order }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: [
@@ -285,6 +287,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
+      const order = props.find(ast.isViewOrderProperty)?.value
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -296,6 +299,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         astPath,
         title: toSingleLine(title) ?? null,
         description,
+        ...(order !== undefined && { order }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         variant,

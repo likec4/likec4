@@ -155,6 +155,7 @@ export interface ParsedAstElementView {
   astPath: string
   title: string | null
   description: c4.MarkdownOrString | null
+  order?: number
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: c4.ElementViewRule[]
@@ -166,6 +167,7 @@ export interface ParsedAstDynamicView {
   astPath: string
   title: string | null
   description: c4.MarkdownOrString | null
+  order?: number
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   steps: c4.Step.Any[]
@@ -179,6 +181,7 @@ export interface ParsedAstDeploymentView {
   astPath: string
   title: string | null
   description: c4.MarkdownOrString | null
+  order?: number
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>
