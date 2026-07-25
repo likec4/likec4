@@ -1210,11 +1210,56 @@ describe('LikeC4CompletionProvider', () => {
       assert: completions => {
         const item = completions.items.find(i => i.label === 'title')
         expect(item, 'expected a "title" completion item').toBeDefined()
+        // The typed prefix `titl` must be replaced, not appended to
         expect(item!.textEdit).toMatchObject({
           newText: `title '$0'`,
+          range: {
+            start: { line: 6, character: 10 },
+            end: { line: 6, character: 14 },
+          },
         })
         expect(item!.insertText).toBeUndefined()
       },
     })
+  })
+
+  it('should not duplicate typed keyword in predicate completions', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        component c1
+      }
+      views {
+        view v1 {
+          inc<|>
+        }
+        view v2 {
+          include *
+          exc<|>
+        }
+      }
+    `
+    // `include` is on line 9, `exclude` on line 13
+    for (const [index, [keyword, line]] of ([['include', 9], ['exclude', 13]] as const).entries()) {
+      await completion({
+        text,
+        index,
+        assert: completions => {
+          const item = completions.items.find(i => i.label === keyword)
+          expect(item, `expected an "${keyword}" completion item`).toBeDefined()
+          // The typed 3-char prefix must be replaced, not appended to
+          expect(item!.textEdit).toMatchObject({
+            newText: `${keyword} `,
+            range: {
+              start: { line, character: 10 },
+              end: { line, character: 13 },
+            },
+          })
+          expect(item!.insertText).toBeUndefined()
+        },
+      })
+    }
   })
 })

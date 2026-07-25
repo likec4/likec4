@@ -209,13 +209,11 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         acceptPropertyAndSuggest(['sequence', 'diagram'])
         break
       case ['include', 'exclude'].includes(keyword.value):
-        acceptor(context, {
-          label: keyword.value,
+        acceptReplacing({
           kind: CompletionItemKind.Operator,
           detail: `Insert ${keyword.value} predicate`,
           insertTextFormat: InsertTextFormat.PlainText,
-          insertText: `${keyword.value} `,
-        })
+        }, `${keyword.value} `)
         break
       default:
         acceptor(context, {
