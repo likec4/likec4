@@ -20,7 +20,7 @@ import {
 } from '../../ast'
 import { safeCall, stringHash } from '../../utils'
 import { elementRef } from '../../utils/elementRef'
-import { removeIndent, toSingleLine } from './Base'
+import { parseViewOrder, removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentView } from './DeploymentViewParser'
 import type { WithPredicates } from './PredicatesParser'
 
@@ -115,8 +115,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
-      const order = props.find(ast.isViewOrderProperty)?.value
-      const validOrder = typeof order === 'number' && Number.isSafeInteger(order) && order >= 0 ? order : undefined
+      const order = parseViewOrder(props.find(ast.isViewOrderProperty))
 
       const view: ParsedAstElementView = {
         [c4._type]: 'element',
@@ -124,7 +123,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         astPath,
         title: toSingleLine(title) ?? null,
         description,
-        ...(validOrder !== undefined && { order: validOrder }),
+        ...(order !== undefined && { order }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: [
@@ -289,8 +288,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
-      const order = props.find(ast.isViewOrderProperty)?.value
-      const validOrder = typeof order === 'number' && Number.isSafeInteger(order) && order >= 0 ? order : undefined
+      const order = parseViewOrder(props.find(ast.isViewOrderProperty))
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -302,7 +300,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         astPath,
         title: toSingleLine(title) ?? null,
         description,
-        ...(validOrder !== undefined && { order: validOrder }),
+        ...(order !== undefined && { order }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         variant,

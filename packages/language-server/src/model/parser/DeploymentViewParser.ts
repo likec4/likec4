@@ -4,7 +4,7 @@ import { filter, isNonNullish, mapToObj, pipe } from 'remeda'
 import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
-import { removeIndent, toSingleLine } from './Base'
+import { parseViewOrder, removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentModel } from './DeploymentModelParser'
 import type { WithExpressionV2 } from './FqnRefParser'
 
@@ -42,8 +42,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
-      const order = props.find(ast.isViewOrderProperty)?.value
-      const validOrder = typeof order === 'number' && Number.isSafeInteger(order) && order >= 0 ? order : undefined
+      const order = parseViewOrder(props.find(ast.isViewOrderProperty))
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
@@ -53,7 +52,7 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         astPath,
         title: toSingleLine(title) ?? null,
         description,
-        ...(validOrder !== undefined && { order: validOrder }),
+        ...(order !== undefined && { order }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: this.tryMap('deployment', body.rules, n => this.parseDeploymentViewRule(n)),

@@ -104,6 +104,16 @@ export function removeIndent(str: ast.MarkdownOrString | string | undefined) {
   }
 }
 
+/**
+ * Returns a non-negative safe view order while discarding recovered negative literals.
+ */
+export function parseViewOrder(prop: ast.ViewOrderProperty | undefined): number | undefined {
+  if (!prop || /^\s*order\b\s*-/.test(prop.$cstNode?.text ?? '')) {
+    return undefined
+  }
+  return Number.isSafeInteger(prop.value) && prop.value >= 0 ? prop.value : undefined
+}
+
 export type Base = GConstructor<BaseParser>
 
 type ParserLevel =
