@@ -203,7 +203,10 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const name = astElement.name
     const kind = astElement.kind.$refText
     // TODO: return the title as well
-    const detail = kind // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
+    // Wrapped in parens so the kind never visually merges with `name` when a client
+    // renders `name` and `detail` adjacently without its own separator (e.g. an element
+    // named the same as its kind, such as `model model`, would otherwise show as `modelmodel`)
+    const detail = `(${kind})` // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
     return [
       {
         kind: this.symbolKind(astElement),
@@ -306,7 +309,10 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const name = this.nameProvider.getNameStrict(astElement)
     const kind = astElement.kind.$refText
     // TODO: return the title as well
-    const detail = kind // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
+    // Wrapped in parens so the kind never visually merges with `name` when a client
+    // renders `name` and `detail` adjacently without its own separator (e.g. a deployment
+    // node named the same as its kind would otherwise show as e.g. `nodenode`)
+    const detail = `(${kind})` // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
     return [
       {
         kind: this.symbolKind(astElement),
