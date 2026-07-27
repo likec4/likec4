@@ -65,8 +65,8 @@ catalogs:
       specifier: 0.13.0
       version: 0.13.0
     astro-skills:
-      specifier: 0.1.0
-      version: 0.1.0
+      specifier: 0.1.1
+      version: 0.1.1
     shiki:
       specifier: 4.1.0
       version: 4.1.0
@@ -611,7 +611,7 @@ importers:
         version: 0.13.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))
       astro-skills:
         specifier: catalog:astro
-        version: 0.1.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
+        version: 0.1.1(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3)
       canvaskit-wasm:
         specifier: 0.40.0
         version: 0.40.0
@@ -7142,8 +7142,8 @@ packages:
     peerDependencies:
       astro: ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  astro-skills@0.1.0:
-    resolution: {integrity: sha512-Xa+sltSMMZEoJB4L3kn8fqRbQMogApQOIMq+P9Fi2lX/CTvComvplFgm/O+zPbIpdrCz3KGs9bdiZkHfzxApqQ==}
+  astro-skills@0.1.1:
+    resolution: {integrity: sha512-BS3XmG3OY6Uq9nOqc+DSH265220JxoG8mxMBXD+ZClcqDcuzm1Gll1wMI6U5bL/dr71ziyf+iAL8I0rNj1jisw==}
     peerDependencies:
       astro: '*'
       typescript: ^5.9.3
@@ -8005,10 +8005,6 @@ packages:
   exsolve@1.0.8:
     resolution: {integrity: sha512-LmDxfWXwcTArk8fUEnOfSZpHOJ6zOMUJKOtFLFqJLoKJetuQG874Uc7/Kki7zFLzYybmZhp1M7+98pfMqeX8yA==}
 
-  extend-shallow@2.0.1:
-    resolution: {integrity: sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==}
-    engines: {node: '>=0.10.0'}
-
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
@@ -8279,10 +8275,6 @@ packages:
     resolution: {integrity: sha512-8SSImzgUUYC89Z042s+0r/vMibY7GX/Emz4LDO5e7jYXhuoWfHISPFJYjpRLUSJGq6UQ6xlenvX1p/hJdfXuXg==}
     peerDependencies:
       graphology-types: '>=0.24.0'
-
-  gray-matter@4.0.3:
-    resolution: {integrity: sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q==}
-    engines: {node: '>=6.0'}
 
   h3@1.15.11:
     resolution: {integrity: sha512-L3THSe2MPeBwgIZVSH5zLdBBU90TOxarvhK9d04IDY2AmVS8j2Jz2LIWtwsGOU3lu2I5jCN7FNvVfY2+XyF+mg==}
@@ -8555,10 +8547,6 @@ packages:
     resolution: {integrity: sha512-nEw1ptjtbmXRkHOFrLvpHywsv+jMUZdtqI2BAC/XxMd24vUY5gXhvOprH0Bh4xA2gqQCQsEkr7aaxsgvxYRjnQ==}
     engines: {node: '>=18.18.0'}
 
-  is-extendable@0.1.1:
-    resolution: {integrity: sha512-5BMULNob1vgFX6EjQw5izWDxrecWK9AM72rugNr0TFldMOi0fj6Jk+zeKIt0xGj4cEfQIJth4w3OKWOJ4f+AFw==}
-    engines: {node: '>=0.10.0'}
-
   is-extglob@2.1.1:
     resolution: {integrity: sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==}
     engines: {node: '>=0.10.0'}
@@ -8730,10 +8718,6 @@ packages:
 
   khroma@2.1.0:
     resolution: {integrity: sha512-Ls993zuzfayK269Svk9hzpeGUKob/sIgZzyHYdjQoAdQetRKpOLj+k/QQQ/6Qi0Yz65mlROrfd+Ev+1+7dz9Kw==}
-
-  kind-of@6.0.3:
-    resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
-    engines: {node: '>=0.10.0'}
 
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
@@ -10271,10 +10255,6 @@ packages:
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
 
-  section-matter@1.0.0:
-    resolution: {integrity: sha512-vfD3pmTzGpufjScBh50YHKzEu2lxBWhVEHsNGoEXmCmn2hKGfeNLYMzCJpe8cD7gqX7TJluOVpBkAequ6dgMmA==}
-    engines: {node: '>=4'}
-
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
@@ -10506,10 +10486,6 @@ packages:
   strip-ansi@7.1.0:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
     engines: {node: '>=12'}
-
-  strip-bom-string@1.0.0:
-    resolution: {integrity: sha512-uCC2VHvQRYu+lMh4My/sFNmF2klFymLX1wHJeXnbEJERpV/ZsVuonzerjfrGpIGF7LBVa1O7i9kjiWvJiFck8g==}
-    engines: {node: '>=0.10.0'}
 
   strip-bom@3.0.0:
     resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
@@ -16041,15 +16017,15 @@ snapshots:
       deterministic-object-hash: 2.0.2
       entities: 8.0.0
 
-  astro-skills@0.1.0(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3):
+  astro-skills@0.1.1(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3):
     dependencies:
       astro: 7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3)
-      gray-matter: 4.0.3
       p-limit: 6.2.0
       picomatch: 4.0.5
       tar: 7.5.16
       tinyglobby: 0.2.17
       typescript: 6.0.3
+      yaml: 2.8.3
 
   astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3):
     dependencies:
@@ -17113,10 +17089,6 @@ snapshots:
 
   exsolve@1.0.8: {}
 
-  extend-shallow@2.0.1:
-    dependencies:
-      is-extendable: 0.1.1
-
   extend@3.0.2: {}
 
   extendable-error@0.1.7: {}
@@ -17392,13 +17364,6 @@ snapshots:
     dependencies:
       events: 3.3.0
       graphology-types: 0.24.8
-
-  gray-matter@4.0.3:
-    dependencies:
-      js-yaml: 3.14.2
-      kind-of: 6.0.3
-      section-matter: 1.0.0
-      strip-bom-string: 1.0.0
 
   h3@1.15.11:
     dependencies:
@@ -17767,8 +17732,6 @@ snapshots:
 
   is-error-instance@3.0.1: {}
 
-  is-extendable@0.1.1: {}
-
   is-extglob@2.1.1: {}
 
   is-fullwidth-code-point@3.0.0: {}
@@ -17908,8 +17871,6 @@ snapshots:
       safe-buffer: 5.2.1
 
   khroma@2.1.0: {}
-
-  kind-of@6.0.3: {}
 
   kleur@4.1.5: {}
 
@@ -19910,11 +19871,6 @@ snapshots:
 
   scheduler@0.27.0: {}
 
-  section-matter@1.0.0:
-    dependencies:
-      extend-shallow: 2.0.1
-      kind-of: 6.0.3
-
   semver@6.3.1: {}
 
   semver@7.7.4: {}
@@ -20251,8 +20207,6 @@ snapshots:
   strip-ansi@7.1.0:
     dependencies:
       ansi-regex: 6.1.0
-
-  strip-bom-string@1.0.0: {}
 
   strip-bom@3.0.0: {}
 
