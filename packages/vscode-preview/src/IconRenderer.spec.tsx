@@ -79,6 +79,24 @@ describe('IconRenderer', () => {
     expect(html).not.toContain('<img')
   })
 
+  it('detects currentColor case-insensitively in local SVG data URLs', () => {
+    const dataUrl =
+      'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="currentcolor"/%3E%3C/svg%3E'
+    const LocalIcon = localIconRendererFromDataUrl(dataUrl)
+
+    const html = renderToStaticMarkup(
+      <LocalIcon
+        node={{
+          id: 'test',
+          title: 'Test',
+          icon: 'file:///workspace/icons/component.svg',
+        }} />,
+    )
+
+    expect(html).toContain('mask-image:url(')
+    expect(html).not.toContain('<img')
+  })
+
   it('keeps local SVG data URLs without currentColor as images', () => {
     const dataUrl = `data:image/svg+xml,${
       encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg"><path fill="red"/></svg>')

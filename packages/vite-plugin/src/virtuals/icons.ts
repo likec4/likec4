@@ -25,12 +25,32 @@ type ModelDataWithIcons = {
   }
 }
 
-const iconRef = (icon: string | null | undefined) => isTruthy(icon) && !startsWithHttp.test(icon) ? icon : undefined
+type BundledIconGroup = 'aws' | 'azure' | 'gcp' | 'tech' | 'bootstrap'
 
-function iconRefsFromModelData(data: ModelDataWithIcons) {
-  const iconsFromViews = (views: Record<string, ViewWithIcons>) =>
+type BundledIconRef = {
+  group: BundledIconGroup
+  icon: string
+}
+
+type GeneratedIconRendererParts = {
+  imports: string[]
+  cases: string[]
+}
+
+const bundledIconGroups: ReadonlySet<string> = new Set(['aws', 'azure', 'gcp', 'tech', 'bootstrap'])
+
+function iconRef(icon: string | null | undefined): string | undefined {
+  if (!isTruthy(icon) || startsWithHttp.test(icon) || icon === 'none' || icon.startsWith('data:image')) {
+    return undefined
+  }
+  return icon.startsWith('file:') || parseBundledIconRef(icon) ? icon : undefined
+}
+
+function iconRefsFromModelData(data: ModelDataWithIcons): string[] {
+  const iconsFromViews = (views: Record<string, ViewWithIcons>): Array<string | null | undefined> =>
     values(views).flatMap(view => view.nodes.map(node => node.icon))
-  const iconsFromStyled = (items: Record<string, { style?: IconRef }>) => values(items).map(item => item.style?.icon)
+  const iconsFromStyled = (items: Record<string, { style?: IconRef }>): Array<string | null | undefined> =>
+    values(items).map(item => item.style?.icon)
 
   return pipe(
     [
@@ -46,22 +66,43 @@ function iconRefsFromModelData(data: ModelDataWithIcons) {
   )
 }
 
-const isLocalSvg = (icon: string) => {
+const isLocalSvg = (icon: string): boolean => {
   if (!icon.startsWith('file:')) {
     return false
   }
   return icon.toLowerCase().split(/[?#]/)[0]?.endsWith('.svg') ?? false
 }
 
-const jsStringLiteral = (value: string) => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))
+const jsStringLiteral = (value: string): string => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))
 
-export function generateIconRendererCode(data: ModelDataWithIcons) {
+function isBundledIconGroup(group: string): group is BundledIconGroup {
+  return bundledIconGroups.has(group)
+}
+
+function parseBundledIconRef(iconRef: string): BundledIconRef | null {
+  const separator = iconRef.indexOf(':')
+  if (separator <= 0 || separator === iconRef.length - 1) {
+    return null
+  }
+
+  const group = iconRef.slice(0, separator)
+  if (!isBundledIconGroup(group)) {
+    return null
+  }
+
+  return {
+    group,
+    icon: iconRef.slice(separator + 1),
+  }
+}
+
+export function generateIconRendererCode(data: ModelDataWithIcons): string {
   const icons = iconRefsFromModelData(data)
 
   const {
     imports,
     cases,
-  } = icons.reduce((acc, s, i) => {
+  } = icons.reduce<GeneratedIconRendererParts>((acc, s, i) => {
     const isLocalImage = s.startsWith('file:')
     const Component = 'Icon' + i.toString().padStart(2, '0')
     const iconLiteral = jsStringLiteral(s)
@@ -82,14 +123,18 @@ export function generateIconRendererCode(data: ModelDataWithIcons) {
       return acc
     }
 
-    const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
+    const bundledIcon = parseBundledIconRef(s)
+    if (!bundledIcon) {
+      return acc
+    }
+    const { group, icon } = bundledIcon
     const url = `likec4:icon-bundle/${group}/${icon}.jsx`
     acc.imports.push(`import ${Component} from ${jsStringLiteral(url)}`)
     acc.cases.push(`  ${iconLiteral}: ${Component}`)
     return acc
   }, {
-    imports: [] as string[],
-    cases: [] as string[],
+    imports: [],
+    cases: [],
   })
   return `
 import { jsx } from 'react/jsx-runtime'
@@ -122,7 +167,7 @@ function MaskedSvgIcon({ src, style, ...props }) {
 }
 
 function LocalSvgIcon({ src, raw, ...props }) {
-  if (typeof raw === 'string' && raw.includes('currentColor')) {
+  if (typeof raw === 'string' && /currentcolor/i.test(raw)) {
     return jsx(MaskedSvgIcon, { ...props, src })
   }
   return jsx('img', { ...props, src })

@@ -63,6 +63,66 @@ describe('generateIconRendererCode', () => {
     expect(code).toContain(`import Icon00 from ${jsStringLiteral('file:///workspace/icons/node.svg?inline')}`)
   })
 
+  it('includes supported bundled icon groups', () => {
+    const code = generateIconRendererCode({
+      views: {
+        index: {
+          nodes: [{
+            icon: 'bootstrap:file-earmark-code',
+          }],
+        },
+      },
+      elements: {
+        component: {
+          style: {
+            icon: 'tech:react',
+          },
+        },
+      },
+      deployments: {
+        elements: {},
+      },
+    })
+
+    expect(code).toContain(
+      `import Icon00 from ${jsStringLiteral('likec4:icon-bundle/bootstrap/file-earmark-code.jsx')}`,
+    )
+    expect(code).toContain(`import Icon01 from ${jsStringLiteral('likec4:icon-bundle/tech/react.jsx')}`)
+    expect(code).toContain(`${jsStringLiteral('bootstrap:file-earmark-code')}: Icon00`)
+    expect(code).toContain(`${jsStringLiteral('tech:react')}: Icon01`)
+  })
+
+  it('ignores unsupported non-local icon references instead of emitting invalid bundle imports', () => {
+    const code = generateIconRendererCode({
+      views: {
+        index: {
+          nodes: [
+            {
+              icon: 'none',
+            },
+            {
+              icon: 'data:image/svg+xml,<svg />',
+            },
+            {
+              icon: 'mdi:server',
+            },
+          ],
+        },
+      },
+      elements: {},
+      deployments: {
+        elements: {},
+      },
+    })
+
+    expect(code).not.toContain('likec4:icon-bundle/none/')
+    expect(code).not.toContain('likec4:icon-bundle/data/')
+    expect(code).not.toContain('likec4:icon-bundle/mdi/')
+    expect(code).not.toContain(`${jsStringLiteral('none')}:`)
+    expect(code).not.toContain(`${jsStringLiteral('data:image/svg+xml,<svg />')}:`)
+    expect(code).not.toContain(`${jsStringLiteral('mdi:server')}:`)
+  })
+
   it('escapes icon references before embedding them into generated code', () => {
     const icon = 'file:///workspace/icons/icon\';\nthrow new Error("pwned")//.svg'
     const code = generateIconRendererCode({
@@ -86,6 +146,29 @@ describe('generateIconRendererCode', () => {
     expect(code).not.toContain(`from '${icon}?inline'`)
   })
 
+  it('escapes supported bundled icon references before embedding them into generated code', () => {
+    const icon = 'tech:react\';\nthrow new Error("pwned")//'
+    const code = generateIconRendererCode({
+      views: {
+        index: {
+          nodes: [{
+            icon,
+          }],
+        },
+      },
+      elements: {},
+      deployments: {
+        elements: {},
+      },
+    })
+
+    expect(code).toContain(
+      `import Icon00 from ${jsStringLiteral('likec4:icon-bundle/tech/react\';\nthrow new Error("pwned")//.jsx')}`,
+    )
+    expect(code).toContain(`${jsStringLiteral(icon)}: Icon00`)
+    expect(code).not.toContain(`from 'likec4:icon-bundle/tech/react';`)
+  })
+
   it('renders currentColor local SVG assets as masks without injecting raw SVG markup', () => {
     const code = generateIconRendererCode({
       views: {},
@@ -103,7 +186,7 @@ describe('generateIconRendererCode', () => {
 
     expect(code).toContain('function MaskedSvgIcon')
     expect(code).toContain('function LocalSvgIcon')
-    expect(code).toContain('raw.includes(\'currentColor\')')
+    expect(code).toContain('/currentcolor/i.test(raw)')
     expect(code).toContain('backgroundColor: \'currentColor\'')
     expect(code).not.toContain('dangerouslySetInnerHTML')
   })

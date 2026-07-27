@@ -77,7 +77,7 @@ export function localIconRendererFromDataUrl(base64data: string | null): Element
 }
 
 function hasCurrentColorReference(dataUrl: string): boolean {
-  return decodeSvgDataUrl(dataUrl)?.includes('currentColor') ?? false
+  return /currentcolor/i.test(decodeSvgDataUrl(dataUrl) ?? '')
 }
 
 function decodeSvgDataUrl(dataUrl: string): string | null {
