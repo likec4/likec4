@@ -1,5 +1,5 @@
 import { compareNatural } from '@likec4/core/utils'
-import { filter, flatMap, isTruthy, map, pipe, sort, unique, values } from 'remeda'
+import { filter, isTruthy, map, pipe, sort, unique, values } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
 import { logGenerating } from '../logger'
@@ -28,21 +28,22 @@ type ModelDataWithIcons = {
 const iconRef = (icon: string | null | undefined) => isTruthy(icon) && !startsWithHttp.test(icon) ? icon : undefined
 
 function iconRefsFromModelData(data: ModelDataWithIcons) {
-  const icons = pipe(
+  const iconsFromViews = (views: Record<string, ViewWithIcons>) =>
+    values(views).flatMap(view => view.nodes.map(node => node.icon))
+  const iconsFromStyled = (items: Record<string, { style?: IconRef }>) => values(items).map(item => item.style?.icon)
+
+  return pipe(
     [
-      ...values(data.views),
-      ...values(data.manualLayouts ?? {}),
-      ...values(data.elements),
-      ...values(data.deployments.elements),
+      ...iconsFromViews(data.views),
+      ...iconsFromViews(data.manualLayouts ?? {}),
+      ...iconsFromStyled(data.elements),
+      ...iconsFromStyled(data.deployments.elements),
     ],
-    flatMap(item => 'nodes' in item ? item.nodes.map(n => n.icon) : [item.style?.icon]),
     map(iconRef),
     filter(isTruthy),
     unique(),
     sort(compareNatural),
   )
-
-  return icons
 }
 
 const isLocalSvg = (icon: string) => {
@@ -51,6 +52,8 @@ const isLocalSvg = (icon: string) => {
   }
   return icon.toLowerCase().split(/[?#]/)[0]?.endsWith('.svg') ?? false
 }
+
+const jsStringLiteral = (value: string) => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))
 
 export function generateIconRendererCode(data: ModelDataWithIcons) {
   const icons = iconRefsFromModelData(data)
@@ -61,14 +64,19 @@ export function generateIconRendererCode(data: ModelDataWithIcons) {
   } = icons.reduce((acc, s, i) => {
     const isLocalImage = s.startsWith('file:')
     const Component = 'Icon' + i.toString().padStart(2, '0')
+    const iconLiteral = jsStringLiteral(s)
 
     if (isLocalImage) {
       if (isLocalSvg(s)) {
-        acc.imports.push(`import ${Component} from '${s}?raw'`)
-        acc.cases.push(`  '${s}': props => jsx(InlineSvgIcon, { ...props, svg: ${Component} })`)
+        const RawComponent = `${Component}Raw`
+        acc.imports.push(`import ${RawComponent} from ${jsStringLiteral(`${s}?raw`)}`)
+        acc.imports.push(`import ${Component} from ${jsStringLiteral(`${s}?inline`)}`)
+        acc.cases.push(
+          `  ${iconLiteral}: props => jsx(LocalSvgIcon, { ...props, src: ${Component}, raw: ${RawComponent} })`,
+        )
       } else {
-        acc.imports.push(`import ${Component} from '${s}?inline'`)
-        acc.cases.push(`  '${s}': props => jsx('img', { ...props, src: ${Component} })`)
+        acc.imports.push(`import ${Component} from ${jsStringLiteral(`${s}?inline`)}`)
+        acc.cases.push(`  ${iconLiteral}: props => jsx('img', { ...props, src: ${Component} })`)
       }
 
       return acc
@@ -76,8 +84,8 @@ export function generateIconRendererCode(data: ModelDataWithIcons) {
 
     const [group, icon] = s.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
     const url = `likec4:icon-bundle/${group}/${icon}.jsx`
-    acc.imports.push(`import ${Component} from '${url}'`)
-    acc.cases.push(`  '${group}:${icon}': ${Component}`)
+    acc.imports.push(`import ${Component} from ${jsStringLiteral(url)}`)
+    acc.cases.push(`  ${iconLiteral}: ${Component}`)
     return acc
   }, {
     imports: [] as string[],
@@ -91,12 +99,33 @@ const Icons = {
 ${cases.join(',\n')}
 }
 
-function InlineSvgIcon({ svg, style, ...props }) {
+function MaskedSvgIcon({ src, style, ...props }) {
+  const maskUrl = 'url(' + JSON.stringify(src) + ')'
   return jsx('span', {
     ...props,
-    style: { ...style, display: 'contents' },
-    dangerouslySetInnerHTML: { __html: svg }
+    style: {
+      ...style,
+      display: 'inline-block',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'currentColor',
+      maskImage: maskUrl,
+      maskRepeat: 'no-repeat',
+      maskPosition: 'center',
+      maskSize: 'contain',
+      WebkitMaskImage: maskUrl,
+      WebkitMaskRepeat: 'no-repeat',
+      WebkitMaskPosition: 'center',
+      WebkitMaskSize: 'contain'
+    }
   })
+}
+
+function LocalSvgIcon({ src, raw, ...props }) {
+  if (typeof raw === 'string' && raw.includes('currentColor')) {
+    return jsx(MaskedSvgIcon, { ...props, src })
+  }
+  return jsx('img', { ...props, src })
 }
 
 export function IconRenderer({ node, ...props }) {
