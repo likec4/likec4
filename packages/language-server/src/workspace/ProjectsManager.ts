@@ -107,6 +107,19 @@ function _overlaps(folderA: WithFolder, folderB: WithFolder): boolean {
   return a === b || a.startsWith(b) || b.startsWith(a)
 }
 
+function sameFolder(folderA: WithFolder, folderB: WithFolder): boolean {
+  const a = isString(folderA) ? folderA : folderA.folder
+  const b = isString(folderB) ? folderB : folderB.folder
+  return a === b
+}
+
+function hasAmbiguousIncludePathOverlap(
+  includePath: { folder: ProjectFolder },
+  otherIncludePath: { folder: ProjectFolder },
+): boolean {
+  return _overlaps(includePath, otherIncludePath) && !sameFolder(includePath, otherIncludePath)
+}
+
 function overlaps(folderA: WithFolder, folderB: WithFolder): boolean
 function overlaps(folderA: WithFolder): (folderB: WithFolder) => boolean
 function overlaps(...args: unknown[]) {
@@ -961,7 +974,7 @@ export class ProjectsManager extends ADisposable {
 
         // Check if this include path overlaps with another project's include paths
         otherProject.includePaths?.forEach((otherIncludePath) => {
-          if (overlaps(includePath, otherIncludePath)) {
+          if (hasAmbiguousIncludePathOverlap(includePath, otherIncludePath)) {
             logger.warn(
               'Project "{projectId}" include path "{includePath}" overlaps with project "{otherProjectId}" ' +
                 'include path "{otherIncludePath}". Files in overlapping areas will only belong to one project.',

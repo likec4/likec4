@@ -7,8 +7,9 @@
 
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
+import { type LogRecord, configureLogger } from '@likec4/log'
 import { UriUtils } from 'langium'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { createMultiProjectTestServices } from '../test'
 import { ProjectFolder } from './ProjectsManager'
@@ -22,7 +23,38 @@ const folderAt = (path: string) => ({
   folderUri: UriUtils.joinPath(URI.file(`/test/workspace/src`), path),
 })
 
+let shouldResetLogger = false
+
+function captureLogRecords(): LogRecord[] {
+  const records = [] as LogRecord[]
+  shouldResetLogger = true
+  configureLogger({
+    sinks: {
+      capture: record => records.push(record),
+    },
+    loggers: [
+      {
+        category: 'likec4',
+        sinks: ['capture'],
+        lowestLevel: 'warning',
+      },
+    ],
+  })
+  return records
+}
+
+function overlappingAreaWarnings(records: LogRecord[]): LogRecord[] {
+  return records.filter(record => String(record.rawMessage).includes('Files in overlapping areas'))
+}
+
 describe('ProjectsManager', () => {
+  afterEach(() => {
+    if (shouldResetLogger) {
+      shouldResetLogger = false
+      configureLogger({ loggers: [] })
+    }
+  })
+
   it('should assign likec4ProjectId to docs', async ({ expect }) => {
     const { projects, addDocumentOutside, validateAll } = await createMultiProjectTestServices({
       project1: {
@@ -549,6 +581,52 @@ describe('ProjectsManager', () => {
   })
 
   describe('include paths', () => {
+    it('should not warn when multiple projects share the same include path', async ({ expect }) => {
+      const records = captureLogRecords()
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'a-project1',
+          include: { paths: ['../shared'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/a-project1'),
+      })
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'a-project2',
+          include: { paths: ['../shared'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/a-project2'),
+      })
+
+      expect(overlappingAreaWarnings(records)).toHaveLength(0)
+    })
+
+    it('should keep warning when include paths partially overlap', async ({ expect }) => {
+      const records = captureLogRecords()
+      const { projectsManager } = await createMultiProjectTestServices({})
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'a-project1',
+          include: { paths: ['../shared'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/a-project1'),
+      })
+
+      await projectsManager.registerProject({
+        config: {
+          name: 'a-project2',
+          include: { paths: ['../shared/common'] },
+        },
+        folderUri: URI.parse('file:///test/workspace/src/a-project2'),
+      })
+
+      expect(overlappingAreaWarnings(records)).toHaveLength(1)
+    })
+
     it('should resolve include paths relative to project folder', async ({ expect }) => {
       const { projectsManager } = await createMultiProjectTestServices({})
 
