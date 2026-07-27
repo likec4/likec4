@@ -280,7 +280,10 @@ export const elementNodeData = defineRecipe({
           },
         },
       }),
-      false: parts({
+      false: parts({}),
+    },
+    withIconBlend: {
+      true: parts({
         icon: {
           mixBlendMode: {
             base: 'hard-light',
@@ -288,11 +291,13 @@ export const elementNodeData = defineRecipe({
           },
         },
       }),
+      false: parts({}),
     },
   },
   defaultVariants: {
     iconPosition: 'left',
     withIconColor: false,
+    withIconBlend: false,
   },
   staticCss: ['*'],
 })
