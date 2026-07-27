@@ -48,8 +48,11 @@ describe('ElementData icon blending', () => {
 
   it('adds the blending recipe variant for bootstrap icons without explicit iconColor', () => {
     expect(renderElementData('bootstrap:house')).toContain('likec4-element-node-data--withIconBlend_true')
-    expect(renderElementData('bootstrap:house', { iconColor: 'indigo' })).toContain(
-      'likec4-element-node-data--withIconBlend_false',
-    )
+
+    const html = renderElementData('bootstrap:house', { iconColor: 'indigo' })
+
+    expect(html).toContain('likec4-element-node-data--withIconColor_true')
+    expect(html).toContain('likec4-element-node-data--withIconBlend_false')
+    expect(html).toContain('--likec4-icon-color:')
   })
 })
