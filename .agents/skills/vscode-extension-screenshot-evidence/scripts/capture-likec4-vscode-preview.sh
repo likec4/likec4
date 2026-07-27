@@ -14,6 +14,8 @@ Options:
   --command "LikeC4: Open Preview"  VS Code command palette text to run.
   --wait-seconds 18                 Seconds to wait after selecting the view.
   --window-size 1280x900            Screenshot window size.
+  --allow-live-display              Allow running on common live desktop DISPLAY values.
+  --keep-temp                       Keep temporary VS Code user-data dirs for debugging.
 USAGE
 }
 
@@ -24,6 +26,8 @@ out_png=""
 command_text="LikeC4: Open Preview"
 wait_seconds="18"
 window_size="1280x900"
+allow_live_display="false"
+keep_temp="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -55,6 +59,14 @@ while [[ $# -gt 0 ]]; do
       window_size="${2:-}"
       shift 2
       ;;
+    --allow-live-display)
+      allow_live_display="true"
+      shift
+      ;;
+    --keep-temp)
+      keep_temp="true"
+      shift
+      ;;
     -h|--help)
       usage
       exit 0
@@ -72,7 +84,7 @@ if [[ -z "$label" || -z "$fixture" || -z "$extension_path" || -z "$out_png" ]]; 
   exit 2
 fi
 
-for required in code xdotool import python3; do
+for required in code xdotool import python3 file; do
   if ! command -v "$required" >/dev/null 2>&1; then
     echo "Missing required command: $required" >&2
     exit 1
@@ -83,6 +95,16 @@ if [[ -z "${DISPLAY:-}" ]]; then
   echo "DISPLAY is not set. Run this script under xvfb-run -a or start Xvfb first." >&2
   exit 1
 fi
+
+case "$DISPLAY" in
+  :0|:0.*|:1|:1.*)
+    if [[ "$allow_live_display" != "true" ]]; then
+      echo "Refusing to run against likely live desktop DISPLAY=$DISPLAY." >&2
+      echo "Run under xvfb-run -a -s '-screen 0 1280x1024x24', or pass --allow-live-display for manual debugging." >&2
+      exit 1
+    fi
+    ;;
+esac
 
 if [[ ! -d "$fixture" ]]; then
   echo "Fixture folder does not exist: $fixture" >&2
@@ -96,6 +118,16 @@ fi
 
 mkdir -p "$(dirname "$out_png")"
 
+search_code_windows() {
+  {
+    xdotool search --onlyvisible --classname code 2>/dev/null || true
+    xdotool search --onlyvisible --class code 2>/dev/null || true
+    xdotool search --onlyvisible --class Code 2>/dev/null || true
+  } | awk '!seen[$0]++'
+}
+
+existing_windows="$(search_code_windows || true)"
+fixture_name="$(basename "$fixture")"
 user_data="$(mktemp -d "/tmp/likec4-vscode-${label}-user.XXXXXX")"
 extensions_dir="$(mktemp -d "/tmp/likec4-vscode-${label}-extensions.XXXXXX")"
 log_file="${out_png%.png}.log"
@@ -133,22 +165,44 @@ code \
   --skip-release-notes \
   "$fixture" >"$log_file" 2>&1 &
 code_pid="$!"
+window_id=""
 
 cleanup() {
   set +e
-  xdotool key --clearmodifiers alt+F4 >/dev/null 2>&1
+  if [[ -n "${window_id:-}" ]]; then
+    xdotool windowfocus "$window_id" >/dev/null 2>&1
+    xdotool key --window "$window_id" --clearmodifiers alt+F4 >/dev/null 2>&1
+  fi
   sleep 1
   kill "$code_pid" >/dev/null 2>&1
   pkill -f "$user_data" >/dev/null 2>&1
+  if [[ "$keep_temp" != "true" ]]; then
+    rm -rf "$user_data" "$extensions_dir"
+  else
+    echo "Kept temp dirs: $user_data $extensions_dir" >&2
+  fi
 }
 trap cleanup EXIT
 
-window_id=""
 for _ in $(seq 1 60); do
-  window_id="$(xdotool search --onlyvisible --class code 2>/dev/null | tail -n 1 || true)"
-  if [[ -n "$window_id" ]]; then
-    break
-  fi
+  fallback_window_id=""
+  while IFS= read -r candidate; do
+    if [[ -z "$candidate" ]]; then
+      continue
+    fi
+    if grep -Fxq "$candidate" <<<"$existing_windows"; then
+      continue
+    fi
+    title="$(xdotool getwindowname "$candidate" 2>/dev/null || true)"
+    fallback_window_id="${fallback_window_id:-$candidate}"
+    if [[ "$title" == *"Extension Development Host"* || "$title" == *"$fixture_name"* ]]; then
+      window_id="$candidate"
+      break
+    fi
+  done < <(search_code_windows)
+
+  window_id="${window_id:-$fallback_window_id}"
+  [[ -n "$window_id" ]] && break
   sleep 1
 done
 
@@ -170,14 +224,15 @@ xdotool windowsize "$window_id" "$width" "$height"
 xdotool windowmove "$window_id" 0 0
 
 sleep 8
-xdotool key --clearmodifiers ctrl+shift+p
+xdotool windowfocus "$window_id"
+xdotool key --window "$window_id" --clearmodifiers ctrl+shift+p
 sleep 1
-xdotool type --delay 1 "$command_text"
+xdotool type --window "$window_id" --delay 1 "$command_text"
 sleep 1
-xdotool key --clearmodifiers Return
+xdotool key --window "$window_id" --clearmodifiers Return
 sleep 3
-xdotool key --clearmodifiers Return
+xdotool key --window "$window_id" --clearmodifiers Return
 sleep "$wait_seconds"
 
-import -window root "$out_png"
+import -window "$window_id" "$out_png"
 file "$out_png"

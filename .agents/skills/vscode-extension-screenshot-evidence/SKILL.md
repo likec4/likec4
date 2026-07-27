@@ -14,6 +14,7 @@ Capture visual evidence from a real VS Code Extension Development Host. Use brow
 - Use `origin/main` or the PR base for "before" and the PR branch for "after".
 - Keep screenshots and temporary fixtures out of the fix branch unless the user explicitly wants image assets committed.
 - Visually inspect the captured images before adding them to a PR.
+- Do not publish screenshots until you have confirmed they contain no secrets, usernames, home-directory paths, private tabs, unrelated files, or unrelated windows.
 - Mention any hosting fallback used for images. GitHub `user-attachments` uploads require a browser `user_session` cookie or `GH_SESSION_TOKEN`; the normal `gh` token is not enough.
 
 ## Prerequisites
@@ -25,9 +26,17 @@ command -v code
 command -v Xvfb
 command -v xdotool
 command -v import
+command -v python3
+command -v file
 ```
 
-`import` is from ImageMagick. If `DISPLAY` is not already set, run the capture command under `xvfb-run -a`.
+`import` is from ImageMagick. Always run the capture command under an isolated Xvfb display, even when `DISPLAY` is already set. Use an explicit screen size so the default 1280x900 window is not cropped:
+
+```bash
+xvfb-run -a -s "-screen 0 1280x1024x24" ...
+```
+
+The helper script refuses common live-desktop displays such as `:0` and `:1` unless `--allow-live-display` is passed for manual debugging. Do not use live-desktop captures as PR evidence unless you have cropped or redacted them.
 
 ## Build the extension under test
 
@@ -80,13 +89,13 @@ OUT=/tmp/likec4-vscode-screens
 
 mkdir -p "$OUT"
 
-xvfb-run -a "$SKILL/scripts/capture-likec4-vscode-preview.sh" \
+xvfb-run -a -s "-screen 0 1280x1024x24" "$SKILL/scripts/capture-likec4-vscode-preview.sh" \
   --label before \
   --fixture "$FIXTURE" \
   --extension-path /tmp/likec4-before/packages/vscode \
   --output "$OUT/before-vscode.png"
 
-xvfb-run -a "$SKILL/scripts/capture-likec4-vscode-preview.sh" \
+xvfb-run -a -s "-screen 0 1280x1024x24" "$SKILL/scripts/capture-likec4-vscode-preview.sh" \
   --label after \
   --fixture "$FIXTURE" \
   --extension-path /path/to/pr-worktree/packages/vscode \
@@ -111,24 +120,29 @@ Expected evidence should show:
 - the reported broken state in the before image
 - the fixed state in the after image
 - enough surrounding VS Code UI to prove the capture is not a browser-only rendering
+- no usernames, home-directory paths, tokens, private tabs, unrelated files, or unrelated windows
 
 ## Add screenshots to the PR
 
-Prefer GitHub attachment URLs when a session token is available:
+Prefer GitHub attachment URLs when the `gh image` extension and a session token are available:
 
 ```bash
+gh extension list | grep -F "drogers0/gh-image" || gh extension install drogers0/gh-image
 gh image --repo likec4/likec4 "$OUT/before-vscode.png" "$OUT/after-vscode.png"
 ```
+
+`gh image` is not a built-in `gh` command. It uses GitHub's web upload flow and needs a browser `user_session` cookie or `GH_SESSION_TOKEN`; treat that session token like a password.
 
 If `gh image` fails because browser cookies or `GH_SESSION_TOKEN` are unavailable, use a dedicated asset branch rather than committing images into the fix branch:
 
 ```bash
 ASSET_BRANCH=cgk/pr-NNNN-vscode-screenshots
 ASSET_WORKTREE=$(mktemp -d /tmp/likec4-pr-NNNN-assets.XXXXXX)
+ASSET_REPO=OWNER/likec4
 
 cd "$ASSET_WORKTREE"
 git init
-git remote add origin https://github.com/likec4/likec4.git
+git remote add origin "https://github.com/${ASSET_REPO}.git"
 git checkout --orphan "$ASSET_BRANCH"
 mkdir -p pr-assets/prNNNN
 cp "$OUT/before-vscode.png" pr-assets/prNNNN/before-vscode.png
@@ -138,12 +152,19 @@ git commit -m "docs: add prNNNN vscode screenshots"
 git push origin HEAD:refs/heads/"$ASSET_BRANCH"
 ```
 
+Use a fork for `ASSET_REPO` unless you intentionally want a maintainer-owned upstream asset branch. If you use the upstream repository, delete the asset branch after the PR no longer needs it:
+
+```bash
+git push origin --delete "$ASSET_BRANCH"
+```
+
 Then embed raw URLs in the PR body:
 
 ```markdown
 ## VS Code screenshots
 
 Captured from a real VS Code Extension Development Host under Xvfb against the issue fixture.
+Screenshots were checked for sensitive or unrelated visible content before upload.
 
 | Before (`origin/main`)                           | After (this PR)                               |
 | ------------------------------------------------ | --------------------------------------------- |
