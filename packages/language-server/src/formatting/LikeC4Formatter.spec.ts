@@ -29,6 +29,60 @@ const it = test.extend<{
 })
 
 describe('formating', () => {
+  describe('formats view order', () => {
+    it(
+      'formats order properties in all view kinds',
+      async ({ expect, format }) =>
+        expect(
+          await format`
+          specification {
+            element component
+          }
+          model {
+            component sys1
+            component sys2
+          }
+          views {
+            view index {
+              order     1
+              include *
+            }
+            dynamic view flow {
+              order 2
+              sys1 -> sys2
+            }
+            deployment view infra {
+              order 3
+              include *
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          specification {
+            element component
+          }
+          model {
+            component sys1
+            component sys2
+          }
+          views {
+            view index {
+              order 1
+              include *
+            }
+            dynamic view flow {
+              order 2
+              sys1 -> sys2
+            }
+            deployment view infra {
+              order 3
+              include *
+            }
+          }"
+        `),
+    )
+  })
+
   describe('formats imports', () => {
     it(
       'formats import rules',

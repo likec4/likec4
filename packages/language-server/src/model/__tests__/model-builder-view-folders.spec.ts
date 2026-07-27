@@ -144,6 +144,209 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     ])
   })
 
+  it('orders sibling views by explicit order', async ({ expect }) => {
+    const { validate, buildModel, buildLikeC4Model } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+      }
+      views 'Group 1' {
+        view unordered1 {
+          title 'Same / Unordered 1'
+          include *
+        }
+        view ordered2 {
+          title 'Same / Ordered 2'
+          order 2
+          include *
+        }
+        dynamic view ordered1 {
+          title 'Same / Ordered 1'
+          order 1
+          sys1 -> sys2
+        }
+        deployment view ordered2b {
+          title 'Same / Ordered 2B'
+          order 2
+          include *
+        }
+        view unordered2 {
+          title 'Same / Unordered 2'
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+
+    const computed = await buildModel()
+    expect(computed.views['ordered1']?.order).toBe(1)
+    expect(computed.views['ordered2']?.order).toBe(2)
+    expect(computed.views['ordered2b']?.order).toBe(2)
+    expect(computed.views['unordered1']?.order).toBeUndefined()
+
+    const model = await buildLikeC4Model()
+    expect([...model.viewFolder('Group 1/Same').views]).toEqual([
+      model.view('ordered1'),
+      model.view('ordered2'),
+      model.view('ordered2b'),
+      model.view('unordered1'),
+      model.view('unordered2'),
+    ])
+  })
+
+  it('drops unsafe view order values from parsed and computed model', async ({ expect }) => {
+    const { validate, buildModel, services } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+      }
+      views 'Group 1' {
+        view validElement {
+          order 0
+          include *
+        }
+        view unsafeElement {
+          order 9007199254740992
+          include *
+        }
+        dynamic view validDynamic {
+          order 1
+          sys1 -> sys2
+        }
+        dynamic view unsafeDynamic {
+          order 9007199254740992
+          sys1 -> sys2
+        }
+        deployment view validDeployment {
+          order 2
+          include *
+        }
+        deployment view unsafeDeployment {
+          order 9007199254740992
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([
+      'View order must be a non-negative safe integer',
+      'View order must be a non-negative safe integer',
+      'View order must be a non-negative safe integer',
+    ])
+
+    const parsed = await services.likec4.ModelBuilder.parseModel()
+    if (!parsed) {
+      throw new Error('Expected parsed model')
+    }
+    expect(parsed.$data.views['validElement']?.order).toBe(0)
+    expect(parsed.$data.views['validDynamic']?.order).toBe(1)
+    expect(parsed.$data.views['validDeployment']?.order).toBe(2)
+    expect(parsed.$data.views['unsafeElement']?.order).toBeUndefined()
+    expect(parsed.$data.views['unsafeDynamic']?.order).toBeUndefined()
+    expect(parsed.$data.views['unsafeDeployment']?.order).toBeUndefined()
+
+    const computed = await buildModel()
+    expect(computed.views['validElement']?.order).toBe(0)
+    expect(computed.views['validDynamic']?.order).toBe(1)
+    expect(computed.views['validDeployment']?.order).toBe(2)
+    expect(computed.views['unsafeElement']?.order).toBeUndefined()
+    expect(computed.views['unsafeDynamic']?.order).toBeUndefined()
+    expect(computed.views['unsafeDeployment']?.order).toBeUndefined()
+  })
+
+  it('drops recovered negative view order values from parsed and computed model', async ({ expect }) => {
+    const { validate, buildModel, services } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+      }
+      views {
+        view validElement {
+          order 0
+          include *
+        }
+        view negativeElement {
+          order -1
+          include *
+        }
+        dynamic view validDynamic {
+          order 1
+          sys1 -> sys2
+        }
+        dynamic view negativeDynamic {
+          order -1
+          sys1 -> sys2
+        }
+        deployment view validDeployment {
+          order 2
+          include *
+        }
+        deployment view negativeDeployment {
+          order -1
+          include *
+        }
+      }
+    `)
+    expect(errors).toHaveLength(3)
+    expect(errors.every(error => error.startsWith('unexpected character: ->-<-'))).toBe(true)
+
+    const parsed = await services.likec4.ModelBuilder.parseModel()
+    if (!parsed) {
+      throw new Error('Expected parsed model')
+    }
+    expect(parsed.$data.views['validElement']?.order).toBe(0)
+    expect(parsed.$data.views['validDynamic']?.order).toBe(1)
+    expect(parsed.$data.views['validDeployment']?.order).toBe(2)
+    expect(parsed.$data.views['negativeElement']?.order).toBeUndefined()
+    expect(parsed.$data.views['negativeDynamic']?.order).toBeUndefined()
+    expect(parsed.$data.views['negativeDeployment']?.order).toBeUndefined()
+
+    const computed = await buildModel()
+    expect(computed.views['validElement']?.order).toBe(0)
+    expect(computed.views['validDynamic']?.order).toBe(1)
+    expect(computed.views['validDeployment']?.order).toBe(2)
+    expect(computed.views['negativeElement']?.order).toBeUndefined()
+    expect(computed.views['negativeDynamic']?.order).toBeUndefined()
+    expect(computed.views['negativeDeployment']?.order).toBeUndefined()
+  })
+
+  it('does not inherit order from extended views', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+      }
+      views {
+        view base {
+          order 1
+          include *
+        }
+        view child extends base {
+          title 'Child'
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+
+    const computed = await buildModel()
+    expect(computed.views['base']?.order).toBe(1)
+    expect(computed.views['child']?.order).toBeUndefined()
+  })
+
   it('implicit views are placed in Auto folder', async ({ expect }) => {
     const { validate, buildLikeC4Model } = createTestServices({
       projectConfig: { implicitViews: true },

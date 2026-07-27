@@ -27,6 +27,30 @@ On the UI, this view will be displayed as:
 
 ![organize views](../../../../assets/views/organize.png)
 
+## Order views
+
+Views in the same folder can be ordered with `order` followed by a non-negative integer.
+Views with an explicit order are shown first in ascending order. Views with the same order, and views without an order, keep their declaration order.
+Folders are still sorted alphabetically.
+
+```likec4
+views {
+  view api {
+    title 'Services / API'
+    order 1
+  }
+
+  dynamic view checkout {
+    title 'Services / Checkout flow'
+    order 2
+  }
+
+  deployment view production {
+    title 'Services / Production'
+  }
+}
+```
+
 Views can be defined in the same file, but placed in different folders:
 
 ```likec4

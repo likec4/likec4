@@ -40,3 +40,17 @@ export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4
     }
   })
 }
+
+/**
+ * Validates per-view navigation order values.
+ */
+export const viewOrderChecks = (_services: LikeC4Services): ValidationCheck<ast.ViewOrderProperty> => {
+  return tryOrLog((node, accept) => {
+    if (!Number.isSafeInteger(node.value) || node.value < 0) {
+      accept('error', 'View order must be a non-negative safe integer', {
+        node,
+        property: 'value',
+      })
+    }
+  })
+}

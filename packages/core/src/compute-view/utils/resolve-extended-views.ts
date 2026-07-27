@@ -63,8 +63,10 @@ export function resolveRulesExtendedViews<A extends AnyAux, V extends Record<any
       ...(view.links ?? []),
     ]
 
+    const { order: _order, ...parent } = extendsFrom
+
     acc[view.id] = {
-      ...extendsFrom,
+      ...parent,
       ...view,
       title: view.title ?? extendsFrom.title ?? null,
       description: view.description ?? extendsFrom.description ?? null,

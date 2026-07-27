@@ -375,6 +375,7 @@ describe('LikeC4CompletionProvider', () => {
       expectedItems: [
         'title',
         'description',
+        'order',
         'link',
         'include',
         'exclude',

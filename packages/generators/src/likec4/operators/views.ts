@@ -187,6 +187,7 @@ export const elementView = zodOp(schemas.views.elementView.partial({ _type: true
         lines(
           tagsProperty(),
           viewTitleProperty(),
+          property('order'),
           descriptionProperty(),
           linksProperty(),
         ),
@@ -237,6 +238,7 @@ export const deploymentView = zodOp(schemas.views.deploymentView.partial({ _type
         lines(
           tagsProperty(),
           viewTitleProperty(),
+          property('order'),
           descriptionProperty(),
           linksProperty(),
         ),
@@ -460,6 +462,7 @@ export const dynamicView = zodOp(schemas.views.dynamicView.partial({ _type: true
         lines(
           tagsProperty(),
           viewTitleProperty(),
+          property('order'),
           descriptionProperty(),
           linksProperty(),
           property('variant'),

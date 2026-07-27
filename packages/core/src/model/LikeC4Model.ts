@@ -196,6 +196,24 @@ export class LikeC4Model<A extends Any = Any> {
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
       const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
+      const compareViews = (a: { view: $View<A>; folderPath: string }, b: { view: $View<A>; folderPath: string }) => {
+        const folder = compare(a.folderPath, b.folderPath)
+        if (folder !== 0) {
+          return folder
+        }
+        const aOrder = a.view.order
+        const bOrder = b.view.order
+        if (aOrder === bOrder) {
+          return 0
+        }
+        if (aOrder === undefined) {
+          return 1
+        }
+        if (bOrder === undefined) {
+          return -1
+        }
+        return aOrder - bOrder
+      }
 
       const views = pipe(
         values($data.views as Record<string, $View<A>>),
@@ -204,8 +222,7 @@ export class LikeC4Model<A extends Any = Any> {
           path: normalizeViewPath(view.title ?? view.id),
           folderPath: view.title && getViewFolderPath(view.title) || '',
         })),
-        // Sort hierarchically by groups, but keep same order within groups
-        sort((a, b) => compare(a.folderPath, b.folderPath)),
+        sort(compareViews),
       )
 
       const getOrCreateFolder = (path: string) => {

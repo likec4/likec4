@@ -391,11 +391,14 @@ type AnyProperty =
 ;
 
 ViewProperty:
-  ViewStringProperty | LinkProperty
+  ViewStringProperty | ViewOrderProperty | LinkProperty
 ;
 
 ViewStringProperty:
   key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
+
+ViewOrderProperty:
+  key='order' value=Number ';'?;
 
 ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';

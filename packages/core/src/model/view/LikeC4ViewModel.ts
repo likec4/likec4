@@ -61,6 +61,10 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
    * The title of the view
    */
   public readonly title: string | null
+  /**
+   * Optional per-view navigation order.
+   */
+  public readonly order: number | undefined
 
   /**
    * View folder this view belongs to.
@@ -84,6 +88,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     this.$model = model
     this.#view = view
     this.id = view.id
+    this.order = view.order
     this.folder = folder
     this.#manualLayoutSnapshot = manualLayoutSnapshot as ViewManualLayoutSnapshot<inferType<V>>
 
