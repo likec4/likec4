@@ -55,6 +55,11 @@ const resolveIconColor = (styles: LikeC4Styles, data: RequiredData): ColorLitera
   return iconColor === data.color ? colors.stroke : colors.fill
 }
 
+function shouldBlendIconWithPalette(icon: string | null | undefined, hasIconColor: boolean): boolean {
+  // Bootstrap icons are monochrome currentColor SVGs. Other bundled groups use brand/provider fills.
+  return !hasIconColor && icon?.startsWith('bootstrap:') === true
+}
+
 const Root = forwardRef<
   HTMLDivElement,
   RootProps
@@ -72,6 +77,7 @@ const Root = forwardRef<
     ? styles.nodeSizes(data.style).values.iconSize
     : undefined
   const resolvedIconColor = resolveIconColor(styles, data)
+  const hasIconColor = !!resolvedIconColor
   return (
     <div
       {...props}
@@ -80,7 +86,8 @@ const Root = forwardRef<
         className,
         elementNodeData({
           iconPosition: data.style.iconPosition,
-          withIconColor: !!resolvedIconColor,
+          withIconColor: hasIconColor,
+          withIconBlend: shouldBlendIconWithPalette(data.icon, hasIconColor),
         }),
         'likec4-element',
       )}
