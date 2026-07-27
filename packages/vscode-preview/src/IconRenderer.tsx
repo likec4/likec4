@@ -5,6 +5,34 @@ import { ExtensionApi as extensionApi } from './vscode'
 
 const iconUrl = (group: string, name: string) => `https://icons.like-c4.dev/${group}/${name}.svg`
 
+export function decodeSvgDataUrl(dataUrl: string): string | null {
+  if (!dataUrl.startsWith('data:image/svg+xml')) {
+    return null
+  }
+
+  try {
+    if (dataUrl.includes(';base64,')) {
+      const base64Content = dataUrl.split(';base64,')[1]
+      if (base64Content) {
+        return atob(base64Content)
+      }
+    } else {
+      const encodedContent = dataUrl.split(',')[1]
+      if (encodedContent) {
+        return decodeURIComponent(encodedContent)
+      }
+    }
+  } catch {
+    // Fall back to rendering the data URL as an image.
+  }
+
+  return null
+}
+
+function InlineSvgIcon({ svg }: { svg: string }) {
+  return <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />
+}
+
 function BootstrapIconMask({ name, ...props }: Omit<ElementIconRendererProps, 'node'> & { name: string }) {
   const url = iconUrl('bootstrap', name)
   const style = {
@@ -53,8 +81,9 @@ const icons = new DefaultMap<string, ElementIconRenderer>(icon => {
         }
       }
 
+      const svg = decodeSvgDataUrl(base64data)
       return {
-        default: (_: ElementIconRendererProps) => <img src={base64data} alt="" />,
+        default: svg ? () => <InlineSvgIcon svg={svg} /> : () => <img src={base64data} alt="" />,
       }
     } catch (error) {
       console.error(error)

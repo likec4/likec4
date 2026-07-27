@@ -8,15 +8,52 @@ import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLite
 
 const startsWithHttp = /^(https?:)?\/\//i
 
-function code<V extends { nodes: ReadonlyArray<{ icon?: string | null }> }>(views: V[]) {
+type IconRef = {
+  icon?: string | null
+}
+
+type ViewWithIcons = {
+  nodes: ReadonlyArray<IconRef>
+}
+
+type ModelDataWithIcons = {
+  views: Record<string, ViewWithIcons>
+  manualLayouts?: Record<string, ViewWithIcons>
+  elements: Record<string, { style?: IconRef }>
+  deployments: {
+    elements: Record<string, { style?: IconRef }>
+  }
+}
+
+const iconRef = (icon: string | null | undefined) => isTruthy(icon) && !startsWithHttp.test(icon) ? icon : undefined
+
+function iconRefsFromModelData(data: ModelDataWithIcons) {
   const icons = pipe(
-    views,
-    flatMap(v => v.nodes),
-    map(n => n.icon ?? undefined),
-    filter((s): s is string => isTruthy(s) && !startsWithHttp.test(s)),
+    [
+      ...values(data.views),
+      ...values(data.manualLayouts ?? {}),
+      ...values(data.elements),
+      ...values(data.deployments.elements),
+    ],
+    flatMap(item => 'nodes' in item ? item.nodes.map(n => n.icon) : [item.style?.icon]),
+    map(iconRef),
+    filter(isTruthy),
     unique(),
     sort(compareNatural),
   )
+
+  return icons
+}
+
+const isLocalSvg = (icon: string) => {
+  if (!icon.startsWith('file:')) {
+    return false
+  }
+  return icon.toLowerCase().split(/[?#]/)[0]?.endsWith('.svg') ?? false
+}
+
+export function generateIconRendererCode(data: ModelDataWithIcons) {
+  const icons = iconRefsFromModelData(data)
 
   const {
     imports,
@@ -26,8 +63,13 @@ function code<V extends { nodes: ReadonlyArray<{ icon?: string | null }> }>(view
     const Component = 'Icon' + i.toString().padStart(2, '0')
 
     if (isLocalImage) {
-      acc.imports.push(`import ${Component} from '${s}?inline'`)
-      acc.cases.push(`  '${s}': () => jsx('img', { src: ${Component} })`)
+      if (isLocalSvg(s)) {
+        acc.imports.push(`import ${Component} from '${s}?raw'`)
+        acc.cases.push(`  '${s}': props => jsx(InlineSvgIcon, { ...props, svg: ${Component} })`)
+      } else {
+        acc.imports.push(`import ${Component} from '${s}?inline'`)
+        acc.cases.push(`  '${s}': props => jsx('img', { ...props, src: ${Component} })`)
+      }
 
       return acc
     }
@@ -48,6 +90,15 @@ ${imports.join('\n')}
 const Icons = {
 ${cases.join(',\n')}
 }
+
+function InlineSvgIcon({ svg, style, ...props }) {
+  return jsx('span', {
+    ...props,
+    style: { ...style, display: 'contents' },
+    dangerouslySetInnerHTML: { __html: svg }
+  })
+}
+
 export function IconRenderer({ node, ...props }) {
   const IconComponent = Icons[node.icon ?? '']
   if (!IconComponent) {
@@ -63,13 +114,9 @@ export const projectIconsModule: ProjectVirtualModule = {
   async load({ likec4, project }) {
     logGenerating('icons', project.id)
     const model = await likec4.computedModel(project.id)
-    const views = [
-      ...values(model.$data.views),
-      ...values(model.$data.manualLayouts ?? {}),
-    ]
     return {
       moduleType: 'jsx',
-      code: code(views),
+      code: generateIconRendererCode(model.$data),
     }
   },
 }

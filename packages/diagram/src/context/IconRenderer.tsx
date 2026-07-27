@@ -78,7 +78,7 @@ function decodeSvgDataUrl(dataUrl: string): string | null {
       }
     }
   } catch {
-    // If decoding fails, return null to fall back to img tag
+    // If decoding fails, return null so the caller falls back to an img tag.
   }
   return null
 }
@@ -186,7 +186,7 @@ export function IconOrShapeRenderer({
 function SvgDataUrlIcon({ dataUrl, ...props }: { dataUrl: string; alt?: string }) {
   const svgContent = useMemo(() => decodeSvgDataUrl(dataUrl), [dataUrl])
   if (!svgContent) {
-    return null
+    return <img src={dataUrl} {...props} />
   }
   // Inline the SVG content directly
   // This allows CSS `color` property to affect `currentColor` in the SVG
