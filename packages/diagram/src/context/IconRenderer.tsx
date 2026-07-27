@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ElementShape } from '@likec4/core'
 import { cx as clsx } from '@likec4/styles/css'
 import {
@@ -51,36 +58,6 @@ export function IconRendererProvider({
       {children}
     </IconRendererContext.Provider>
   )
-}
-
-/**
- * Attempts to extract and decode SVG content from a data URL.
- * Returns the decoded SVG string if successful, or null if not an SVG data URL.
- */
-function decodeSvgDataUrl(dataUrl: string): string | null {
-  // Check if it's an SVG data URL
-  if (!dataUrl.startsWith('data:image/svg+xml')) {
-    return null
-  }
-
-  try {
-    // Handle both base64 and URL-encoded SVG data URLs
-    if (dataUrl.includes(';base64,')) {
-      const base64Content = dataUrl.split(';base64,')[1]
-      if (base64Content) {
-        return atob(base64Content)
-      }
-    } else {
-      // URL-encoded format: data:image/svg+xml,%3csvg...
-      const encodedContent = dataUrl.split(',')[1]
-      if (encodedContent) {
-        return decodeURIComponent(encodedContent)
-      }
-    }
-  } catch {
-    // If decoding fails, return null to fall back to img tag
-  }
-  return null
 }
 
 export function IconRenderer({
@@ -183,13 +160,62 @@ export function IconOrShapeRenderer({
   return <IconRenderer element={element} className={className} style={style} />
 }
 
-function SvgDataUrlIcon({ dataUrl, ...props }: { dataUrl: string; alt?: string }) {
-  const svgContent = useMemo(() => decodeSvgDataUrl(dataUrl), [dataUrl])
-  if (!svgContent) {
+function SvgDataUrlIcon({ dataUrl, alt }: { dataUrl: string; alt?: string }) {
+  const shouldUseMask = useMemo(() => hasCurrentColorReference(dataUrl), [dataUrl])
+
+  if (!shouldUseMask) {
+    return <img src={dataUrl} alt={alt} />
+  }
+
+  const maskUrl = `url(${JSON.stringify(dataUrl)})`
+  return (
+    <span
+      role={alt ? 'img' : undefined}
+      aria-label={alt}
+      style={{
+        display: 'inline-block',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'currentColor',
+        maskImage: maskUrl,
+        maskRepeat: 'no-repeat',
+        maskPosition: 'center',
+        maskSize: 'contain',
+        WebkitMaskImage: maskUrl,
+        WebkitMaskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'center',
+        WebkitMaskSize: 'contain',
+      }}
+    />
+  )
+}
+
+function hasCurrentColorReference(dataUrl: string): boolean {
+  return /currentcolor/i.test(decodeSvgDataUrl(dataUrl) ?? '')
+}
+
+function decodeSvgDataUrl(dataUrl: string): string | null {
+  if (!dataUrl.startsWith('data:image/svg+xml')) {
     return null
   }
-  // Inline the SVG content directly
-  // This allows CSS `color` property to affect `currentColor` in the SVG
-  // Using display: contents so the span doesn't affect flexbox layout
-  return <span {...props} style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svgContent }} />
+
+  try {
+    const comma = dataUrl.indexOf(',')
+    if (comma === -1) {
+      return null
+    }
+
+    const payload = dataUrl.slice(comma + 1)
+    if (dataUrl.slice(0, comma).endsWith(';base64')) {
+      return new TextDecoder().decode(Uint8Array.from(atob(payload), c => c.charCodeAt(0)))
+    }
+
+    try {
+      return decodeURIComponent(payload)
+    } catch {
+      return payload
+    }
+  } catch {
+    return null
+  }
 }
