@@ -7,7 +7,8 @@
 
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
-import { type LogRecord, configureLogger } from '@likec4/log'
+import type { LogRecord } from '@likec4/log'
+import { configureLogger } from '@likec4/log'
 import { UriUtils } from 'langium'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
@@ -51,7 +52,7 @@ describe('ProjectsManager', () => {
   afterEach(() => {
     if (shouldResetLogger) {
       shouldResetLogger = false
-      configureLogger({ loggers: [] })
+      configureLogger()
     }
   })
 
