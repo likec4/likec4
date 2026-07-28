@@ -2,9 +2,11 @@
 
 ## Why
 
-A LikeC4 project is browsable in the LikeC4 app/server, but architecture docs are most
-useful **where the code lives** — in the repository, on a pull request, in a wiki. GitHub (and
-most forges) renders Markdown natively, including fenced ` ```mermaid ` diagrams.
+LikeC4's interactive app/server is great for the architect actively shaping the model — live
+editing, exploring relationships, deciding. An **observer** — someone reading the architecture,
+not deciding it — doesn't want to stand up a server just to understand a design; they want it
+where they already are: the repository, a pull request, a wiki. GitHub (and most forges) render
+Markdown natively, including fenced ` ```mermaid ` diagrams.
 
 Teams already generate loose `.mmd` files from the model, then hand-assemble them into a
 readable page. That assembly is manual, drifts from the model, and isn't reproducible.
