@@ -30,9 +30,12 @@ and records the one genuine fork: how a generating CLI command handles multiple 
    the existing generator rather than re-deriving its output, so the embedded result stays identical.
 
 6. **The command layer owns project iteration and I/O, not the generator.** A generating CLI command
-   defaults to **all projects** (one output each) and takes `--project` to restrict — following the
-   `export png`/`json` handlers. The older `ensureSingleProject()` path (`gen mermaid`/`d2`/`puml`) is
-   not the pattern for new commands.
+   defaults to **all projects** and takes `--project` to restrict — following the `export png`/`json`
+   handlers. The older `ensureSingleProject()` path (`gen mermaid`/`d2`/`puml`) is not the pattern for
+   new commands. Projects that render to no content (e.g. an empty default project) are skipped, not
+   written. Where the output is a whole-project artifact meant to be browsed in place (e.g.
+   `export markdown`), the default write target is **`README.md` inside that project's own folder** —
+   not a separate flat output directory — so the rendering appears where a reader is already looking.
 
 7. **CLI placement is by output shape, not by the generator library.** All generators live together
    in `@likec4/generators`, but their commands split by what they produce: a **per-view, single-project**
