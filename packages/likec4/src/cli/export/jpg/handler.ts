@@ -118,6 +118,12 @@ export function jpgCmd(yargs: Argv) {
             desc: 'include view description in exported JPEG files',
             default: false,
           },
+          'background': {
+            type: 'string',
+            desc:
+              'CSS background color for exported JPEG files, e.g. "#fff" or "white"; defaults to the selected theme body color',
+            nargs: 1,
+          },
         })
         .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export jpg')}
@@ -128,6 +134,9 @@ export function jpgCmd(yargs: Argv) {
 
   ${k.green('$0 export jpg --quality 90 -o ./jpg src/likec4')}
     ${k.gray('Export JPEG with 90% quality')}
+
+  ${k.green('$0 export jpg --background "#111827" -o ./jpg src/likec4')}
+    ${k.gray('Export JPEG files with a custom background color')}
 
   ${k.green('$0 export jpg -f "team1*" -f "team2*" --flat -o ./jpg src/likec4')}
     ${k.gray('Export views matching team1* or team2* only')}
@@ -158,6 +167,7 @@ export function jpgCmd(yargs: Argv) {
           quality: args.quality,
           notation: args.notation,
           description: args.description,
+          background: args.background,
         } satisfies PngExportArgs,
       )
     },

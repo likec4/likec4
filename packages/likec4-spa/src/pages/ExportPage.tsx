@@ -23,7 +23,7 @@ import {
   EXPORT_DESCRIPTION_TOP_PADDING,
   EXPORT_NOTATION_ITEM_HEIGHT,
 } from './export-layout'
-import { isExportSearchFlagEnabled } from './export-page-params'
+import { hasSolidExportBackground, isExportSearchFlagEnabled, normalizeExportBackground } from './export-page-params'
 
 type PaletteCssVars =
   & CSSProperties
@@ -54,16 +54,18 @@ function triggerDownload(url: string, filename: string) {
  * Converts the export viewport into a PNG file and starts a browser download.
  */
 async function downloadAsPng({
+  background,
   pngFilename,
   viewport,
 }: {
+  background?: string | undefined
   pngFilename: string
   viewport: HTMLElement
 }) {
   try {
     const { toBlob } = await import('html-to-image')
     const blob = await toBlob(viewport, {
-      backgroundColor: 'transparent',
+      backgroundColor: background ?? 'transparent',
       cacheBust: true,
       imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
     })
@@ -84,17 +86,20 @@ async function downloadAsPng({
  * Converts the export viewport into a JPEG file and starts a browser download.
  */
 async function downloadAsJpeg({
+  background,
   filename,
   viewport,
   quality = 0.8,
 }: {
+  background?: string | undefined
   filename: string
   viewport: HTMLElement
   quality?: number
 }) {
   try {
     const { toJpeg } = await import('html-to-image')
-    const backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--mantine-color-body')
+    const backgroundColor = background ??
+      getComputedStyle(document.documentElement).getPropertyValue('--mantine-color-body')
     const dataUrl = await toJpeg(viewport, {
       backgroundColor,
       quality,
@@ -115,7 +120,8 @@ async function downloadAsJpeg({
  */
 export function ExportPage() {
   const [diagram] = useCurrentView()
-  const { format } = useSearch({ strict: false })
+  const { background, format } = useSearch({ strict: false })
+  const exportBackground = normalizeExportBackground(background)
   const isJpeg = format === 'jpeg'
 
   useTransparentBackground(!isJpeg)
@@ -124,13 +130,21 @@ export function ExportPage() {
     return <div>Loading...</div>
   }
 
-  return <GuardedExportPage diagram={diagram} isJpeg={isJpeg} />
+  return <GuardedExportPage diagram={diagram} exportBackground={exportBackground} isJpeg={isJpeg} />
 }
 
 /**
  * Renders the measured export viewport for a loaded diagram.
  */
-function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg: boolean }) {
+function GuardedExportPage({
+  diagram,
+  exportBackground,
+  isJpeg,
+}: {
+  diagram: LayoutedView
+  exportBackground: string | undefined
+  isJpeg: boolean
+}) {
   const {
     padding = 20,
     download = false,
@@ -159,6 +173,7 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     description: showDescription ? { title: viewTitle, text: viewDescription.text } : null,
     notationEntries: showNotation ? notationEntries.length : 0,
   })
+  const hasSolidBackground = isJpeg || hasSolidExportBackground(exportBackground)
 
   const downloadDiagram = () => {
     const viewport = viewportRef.current
@@ -172,12 +187,14 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     downloadedRef.current = true
     if (isJpeg) {
       void downloadAsJpeg({
+        background: exportBackground,
         filename: diagram.id,
         viewport,
         quality: quality ?? 0.8,
       })
     } else {
       void downloadAsPng({
+        background: exportBackground,
         pngFilename: diagram.id,
         viewport,
       })
@@ -204,7 +221,7 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
         width: layout.width,
         minHeight: layout.height,
         height: layout.height,
-        background: isJpeg ? 'var(--mantine-color-body)' : 'transparent',
+        backgroundColor: exportBackground ?? (isJpeg ? 'var(--mantine-color-body)' : 'transparent'),
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <Box
@@ -228,7 +245,7 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
             left: '0px',
             right: '0px',
           }}
-          background={isJpeg ? 'solid' : 'transparent'}
+          background={hasSolidBackground ? 'solid' : 'transparent'}
           reduceGraphics={false}
           dynamicViewVariant={dynamic}
           className={'likec4-static-view'}

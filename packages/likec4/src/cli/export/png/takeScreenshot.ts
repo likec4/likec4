@@ -29,13 +29,14 @@ type TakeScreenshotParams = {
   quality?: number | undefined
   notation?: boolean
   description?: boolean
+  background?: string | undefined
 }
 
 /**
  * Builds the SPA export URL for a view screenshot, encoding the view id and export query parameters.
  *
- * @param params - View id, padding, theme, and optional dynamic layout, image format, notation, and description settings.
- * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, `notation`, and `description`.
+ * @param params - View id, padding, theme, and optional dynamic layout, image format, decoration, and background settings.
+ * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, decoration, and background query params.
  */
 export function createExportViewUrl({
   viewId,
@@ -45,6 +46,7 @@ export function createExportViewUrl({
   format = 'png',
   notation = false,
   description = false,
+  background,
 }: {
   viewId: string
   padding: number
@@ -53,6 +55,7 @@ export function createExportViewUrl({
   format?: 'png' | 'jpeg'
   notation?: boolean
   description?: boolean
+  background?: string | undefined
 }): string {
   return withQuery(`export/${encodeURIComponent(viewId)}/`, {
     padding,
@@ -60,6 +63,7 @@ export function createExportViewUrl({
     dynamic: dynamicVariant,
     ...(notation ? { notation: true } : {}),
     ...(description ? { description: true } : {}),
+    ...(background ? { background } : {}),
     ...(format === 'jpeg' ? { format: 'jpeg' } : {}),
   })
 }
@@ -83,6 +87,7 @@ export async function takeScreenshot({
   quality,
   notation = false,
   description = false,
+  background,
 }: TakeScreenshotParams) {
   const padding = 20
 
@@ -147,6 +152,7 @@ export async function takeScreenshot({
         format,
         notation,
         description,
+        background,
       }))
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
