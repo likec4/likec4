@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -13,6 +13,11 @@ vi.mock('@likec4/generators', () => ({
 }))
 
 vi.mock('@likec4/language-services/node', () => ({ fromWorkspace }))
+
+vi.mock('node:fs/promises', async importOriginal => {
+  const actual = await importOriginal<typeof import('node:fs/promises')>()
+  return { ...actual, readFile: vi.fn<typeof actual.readFile>(actual.readFile) }
+})
 
 const logger = {
   info: vi.fn<(msg: string) => void>(),
@@ -151,6 +156,19 @@ describe('export markdown handler', () => {
     await expect(
       runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger),
     ).rejects.toThrow(/No documents generated/)
+  })
+
+  it('fails without writing when the README cannot be read for a reason other than not existing', async () => {
+    const a = join(tmp, 'project-a')
+    await mkdir(a, { recursive: true })
+    await writeFile(join(a, 'README.md'), '# My hand-written notes\n')
+    mockWorkspace([{ id: 'project-a', folder: a }])
+    const eacces = Object.assign(new Error('permission denied'), { code: 'EACCES' })
+    vi.mocked(readFile).mockRejectedValueOnce(eacces)
+    await expect(
+      runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger),
+    ).rejects.toThrow(/permission denied/)
+    expect(readFileSync(join(a, 'README.md'), 'utf-8')).toBe('# My hand-written notes\n')
   })
 
   it('forces an overwrite of a hand-authored README when force is set', async () => {

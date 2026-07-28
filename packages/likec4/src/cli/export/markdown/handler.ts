@@ -33,8 +33,14 @@ function projectDescription(metadata: Record<string, unknown> | undefined): stri
 
 async function canWrite(outfile: string, force: boolean): Promise<boolean> {
   if (force) return true
-  const existing = await readFile(outfile, 'utf-8').catch(() => null)
-  return existing === null || existing.startsWith(GENERATED_MARKER)
+  let existing: string
+  try {
+    existing = await readFile(outfile, 'utf-8')
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return true
+    throw error
+  }
+  return existing.startsWith(GENERATED_MARKER)
 }
 
 export async function runExportMarkdown(args: MarkdownExportArgs, logger: ViteLogger): Promise<void> {
