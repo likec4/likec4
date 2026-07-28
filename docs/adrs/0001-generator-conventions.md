@@ -19,12 +19,6 @@ and records the one genuine fork: how a generating CLI command handles multiple 
    (`generateLikeC4Model`, `generateAux`, `generateReactTypes`, and `generateMarkdown`'s
    `{ description }`). This keeps them deterministic and snapshot-testable.
 
-   `generateMarkdown`'s `options.description` is a stand-in: `LikeC4Project` has no description
-   field today, so the CLI reads it from the project config's free-form `metadata` bag and passes
-   it in. If a first-class `description` ever lands on `LikeC4Project`, `generateMarkdown` should
-   read it from the model directly instead, and this option can be dropped — a real project field
-   would be the nicer, less ad-hoc source.
-
 2. **One module per format** under `packages/generators/src/<format>/`: `generate-<format>.ts` plus
    an `index.ts` that re-exports it, and the function is re-exported from `packages/generators/src/index.ts`.
 
