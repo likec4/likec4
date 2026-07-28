@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -19,10 +19,17 @@ const logger = {
   error: vi.fn<(msg: string) => void>(),
 } as any
 
-function mockWorkspace(projectIds: string[]) {
+type ProjectSpec = { id: string; folder: string; hasViews?: boolean }
+
+function mockWorkspace(projects: ProjectSpec[]) {
   fromWorkspace.mockResolvedValue({
-    projectsManager: { all: projectIds },
-    layoutedModel: vi.fn<(id: string) => Promise<{ projectId: string }>>(async id => ({ projectId: id })),
+    languageServices: {
+      projects: () => projects.map(p => ({ id: p.id, folder: { fsPath: p.folder } })),
+    },
+    layoutedModel: vi.fn<(id: string) => Promise<{ projectId: string; views: () => Array<unknown> }>>(async id => ({
+      projectId: id,
+      views: () => (projects.find(p => p.id === id)?.hasViews ?? true) ? [{ $view: { sourcePath: 'views.c4' } }] : [],
+    })),
     [Symbol.asyncDispose]: async () => {},
   })
 }
@@ -39,37 +46,54 @@ describe('export markdown handler', () => {
     await rm(tmp, { recursive: true, force: true })
   })
 
-  it('writes one document per project, into the workspace by default', async () => {
-    mockWorkspace(['project-a', 'project-b'])
-    await runExportMarkdown({ path: tmp, output: tmp, project: undefined, useDot: false }, logger)
-    expect(existsSync(join(tmp, 'project-a.md'))).toBe(true)
-    expect(existsSync(join(tmp, 'project-b.md'))).toBe(true)
+  it('writes a README.md into each project own folder by default', async () => {
+    const a = join(tmp, 'project-a')
+    const b = join(tmp, 'project-b')
+    await mkdir(a, { recursive: true })
+    await mkdir(b, { recursive: true })
+    mockWorkspace([{ id: 'project-a', folder: a }, { id: 'project-b', folder: b }])
+    await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
+    expect(existsSync(join(a, 'README.md'))).toBe(true)
+    expect(existsSync(join(b, 'README.md'))).toBe(true)
+  })
+
+  it('skips a project that renders to no views', async () => {
+    const a = join(tmp, 'project-a')
+    const b = join(tmp, 'project-b')
+    await mkdir(a, { recursive: true })
+    await mkdir(b, { recursive: true })
+    mockWorkspace([
+      { id: 'project-a', folder: a, hasViews: true },
+      { id: 'project-b', folder: b, hasViews: false },
+    ])
+    await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
+    expect(existsSync(join(a, 'README.md'))).toBe(true)
+    expect(existsSync(join(b, 'README.md'))).toBe(false)
   })
 
   it('restricts to a single project when one is named', async () => {
-    mockWorkspace(['project-a', 'project-b'])
-    await runExportMarkdown({ path: tmp, output: tmp, project: 'project-a', useDot: false }, logger)
-    expect(existsSync(join(tmp, 'project-a.md'))).toBe(true)
-    expect(existsSync(join(tmp, 'project-b.md'))).toBe(false)
+    const a = join(tmp, 'project-a')
+    const b = join(tmp, 'project-b')
+    await mkdir(a, { recursive: true })
+    await mkdir(b, { recursive: true })
+    mockWorkspace([{ id: 'project-a', folder: a }, { id: 'project-b', folder: b }])
+    await runExportMarkdown({ path: tmp, project: 'project-a', useDot: false }, logger)
+    expect(existsSync(join(a, 'README.md'))).toBe(true)
+    expect(existsSync(join(b, 'README.md'))).toBe(false)
   })
 
   it('reports an unknown project', async () => {
-    mockWorkspace(['project-a'])
+    mockWorkspace([{ id: 'project-a', folder: join(tmp, 'project-a') }])
     await expect(
-      runExportMarkdown({ path: tmp, output: tmp, project: 'nope', useDot: false }, logger),
+      runExportMarkdown({ path: tmp, project: 'nope', useDot: false }, logger),
     ).rejects.toThrow(/project not found: nope/)
   })
 
-  it('honors a chosen output directory', async () => {
-    mockWorkspace(['project-a'])
-    const out = join(tmp, 'docs')
-    await runExportMarkdown({ path: tmp, output: out, project: undefined, useDot: false }, logger)
-    expect(existsSync(join(out, 'project-a.md'))).toBe(true)
-  })
-
   it('writes the rendered Markdown of each project', async () => {
-    mockWorkspace(['project-a'])
-    await runExportMarkdown({ path: tmp, output: tmp, project: undefined, useDot: false }, logger)
-    expect(readFileSync(join(tmp, 'project-a.md'), 'utf-8')).toBe('# project-a\n')
+    const a = join(tmp, 'project-a')
+    await mkdir(a, { recursive: true })
+    mockWorkspace([{ id: 'project-a', folder: a }])
+    await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
+    expect(readFileSync(join(a, 'README.md'), 'utf-8')).toBe('# project-a\n')
   })
 })
