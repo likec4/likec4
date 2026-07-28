@@ -10,6 +10,17 @@ Feature: Render a LikeC4 project as a Markdown page
     When I render the project as Markdown
     Then I get a single Markdown document headed by the project title
 
+  Scenario: A project with a configured description
+    Given the project has a configured description
+    When I render the project as Markdown
+    Then the description appears as an overview directly under the project title
+    And it appears before the first view section
+
+  Scenario: A project without a configured description
+    Given the project has no configured description
+    When I render the project as Markdown
+    Then the document goes straight from the project title to the first view section
+
   Scenario: Every authored view becomes a section
     When I render the project as Markdown
     Then each authored view appears as its own section directly under the project title

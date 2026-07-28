@@ -12,8 +12,8 @@ readable page. That assembly is manual, drifts from the model, and isn't reprodu
 ## Outcome
 
 Each project is rendered as a `README.md` in its own folder, so browsing that folder on GitHub
-shows the architecture — a section per view, diagrams rendered inline — always in sync with the
-model, with no LikeC4 server and no hand-assembly.
+shows the architecture — an overview of the project, then a section per view with diagrams
+rendered inline — always in sync with the model, with no LikeC4 server and no hand-assembly.
 
 ## Scope
 

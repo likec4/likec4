@@ -30,3 +30,8 @@ Feature: Export a workspace to browsable Markdown
   Scenario: Each page is the rendered architecture of its project
     When I export the workspace to Markdown
     Then each README is the Markdown rendering of its project, diagrams included
+
+  Scenario: A configured project description carries through to the page
+    Given a project with a configured description
+    When I export the workspace to Markdown
+    Then that README shows the description as the project overview
