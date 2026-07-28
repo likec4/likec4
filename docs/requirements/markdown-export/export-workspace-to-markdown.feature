@@ -1,20 +1,25 @@
-Feature: Export a workspace to Markdown files
-  As a maintainer wiring architecture docs into CI
-  I want to export my LikeC4 workspace to Markdown files on disk
-  so that the rendered architecture is committed in the repository for readers to browse
+Feature: Export a workspace to browsable Markdown
+  As a maintainer wiring architecture docs into a repository
+  I want each project rendered as a README in its own folder
+  so that browsing that folder on GitHub shows the architecture, diagrams and all
 
   Background:
     Given a LikeC4 workspace
 
-  Scenario: Every project is exported by default
+  Scenario: Each project is rendered in its own folder by default
     Given the workspace contains more than one project
     When I export the workspace to Markdown
-    Then one Markdown document is written for each project
+    Then each project gets a README page written into its own project folder
+
+  Scenario: A project that renders to no views is skipped
+    Given the workspace contains a project with no views
+    When I export the workspace to Markdown
+    Then no page is written for that project
 
   Scenario: Restricting the export to a single project
     Given the workspace contains more than one project
     When I export the workspace to Markdown for a single named project
-    Then only that project is written
+    Then only that project gets a README page
     And the other projects are left out
 
   Scenario: An unknown project name is reported
@@ -22,14 +27,6 @@ Feature: Export a workspace to Markdown files
     Then the export fails
     And it tells me the project was not found
 
-  Scenario: Default output location is the workspace
-    When I export the workspace to Markdown without choosing an output location
-    Then the documents are written under the workspace
-
-  Scenario: A chosen output location is honored
-    When I export the workspace to Markdown into a chosen output directory
-    Then the documents are written under that directory
-
-  Scenario: Each document is the rendered page for its project
+  Scenario: Each page is the rendered architecture of its project
     When I export the workspace to Markdown
-    Then each document is the Markdown rendering of its project, diagrams included
+    Then each README is the Markdown rendering of its project, diagrams included

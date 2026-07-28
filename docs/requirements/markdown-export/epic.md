@@ -11,15 +11,16 @@ readable page. That assembly is manual, drifts from the model, and isn't reprodu
 
 ## Outcome
 
-A reader opens the repository on GitHub and reads the architecture as one self-contained
-Markdown page — sections per view, diagrams rendered inline — always in sync with the model,
-with no LikeC4 server and no hand-assembly.
+Each project is rendered as a `README.md` in its own folder, so browsing that folder on GitHub
+shows the architecture — a section per view, diagrams rendered inline — always in sync with the
+model, with no LikeC4 server and no hand-assembly.
 
 ## Scope
 
-- One Markdown document per **project**.
+- One Markdown page per **project**, written as `README.md` into the project folder so GitHub
+  auto-renders it on folder navigation.
 - Rendering covers **every project by default**; a reader/CI can restrict to a single project.
+- Projects that render to no views (e.g. an empty default project) are skipped.
 - Out of scope (later features):
-  - multi-page output — one file per source view file plus an index — for models too large
-    for a single page;
-  - grouping views by something other than their source file (e.g. by tag or by `viewOf`).
+  - splitting a single large project across multiple pages plus an index;
+  - grouping a page by tag or by `viewOf`.
