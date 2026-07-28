@@ -1,6 +1,6 @@
 ---
-'likec4': minor
-'@likec4/generators': minor
+'likec4': patch
+'@likec4/generators': patch
 ---
 
 Add a Markdown generator and `export markdown` CLI command. `generateMarkdown` renders a
