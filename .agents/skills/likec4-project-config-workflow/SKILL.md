@@ -49,7 +49,6 @@ Add or update tests for the relevant rows:
 
 ```bash
 pnpm --filter @likec4/language-server test -- ProjectsManager.spec.ts
-pnpm --filter @likec4/language-server test -- WorkspaceManager.spec.ts
 pnpm --filter @likec4/language-server typecheck
 pnpm exec dprint check packages/language-server/src/workspace
 git diff --check
