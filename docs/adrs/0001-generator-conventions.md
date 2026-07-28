@@ -13,7 +13,7 @@ and records the one genuine fork: how a generating CLI command handles multiple 
 ## Decisions
 
 1. **A generator is a pure function that returns a string.** No filesystem, no project iteration.
-   A view-level generator takes a `LikeC4Vdid iewModel` (`generateMermaid`, `generateD2`,
+   A view-level generator takes a `LikeC4ViewModel` (`generateMermaid`, `generateD2`,
    `generatePuml`); a whole-project generator takes a `LikeC4Model` (`generateLikeC4Model`). This
    keeps them deterministic and snapshot-testable.
 
