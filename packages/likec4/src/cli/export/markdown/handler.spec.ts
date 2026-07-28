@@ -8,7 +8,8 @@ import { runExportMarkdown } from './handler'
 const fromWorkspace = vi.hoisted(() => vi.fn<(path: string, opts: unknown) => Promise<unknown>>())
 
 vi.mock('@likec4/generators', () => ({
-  generateMarkdown: (model: { projectId: string }) => `# ${model.projectId}\n`,
+  generateMarkdown: (model: { projectId: string }, options?: { description?: string }) =>
+    `# ${model.projectId}${options?.description ? '\n\n' + options.description : ''}\n`,
 }))
 
 vi.mock('@likec4/language-services/node', () => ({ fromWorkspace }))
@@ -19,12 +20,17 @@ const logger = {
   error: vi.fn<(msg: string) => void>(),
 } as any
 
-type ProjectSpec = { id: string; folder: string; hasViews?: boolean }
+type ProjectSpec = { id: string; folder: string; hasViews?: boolean; description?: string }
 
 function mockWorkspace(projects: ProjectSpec[]) {
   fromWorkspace.mockResolvedValue({
     languageServices: {
-      projects: () => projects.map(p => ({ id: p.id, folder: { fsPath: p.folder } })),
+      projects: () =>
+        projects.map(p => ({
+          id: p.id,
+          folder: { fsPath: p.folder },
+          config: { metadata: p.description ? { description: p.description } : {} },
+        })),
     },
     layoutedModel: vi.fn<(id: string) => Promise<{ projectId: string; views: () => Array<unknown> }>>(async id => ({
       projectId: id,
@@ -95,5 +101,15 @@ describe('export markdown handler', () => {
     mockWorkspace([{ id: 'project-a', folder: a }])
     await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
     expect(readFileSync(join(a, 'README.md'), 'utf-8')).toBe('# project-a\n')
+  })
+
+  it('passes the configured project description through to the rendered page', async () => {
+    const a = join(tmp, 'project-a')
+    await mkdir(a, { recursive: true })
+    mockWorkspace([{ id: 'project-a', folder: a, description: 'Enriches organisation profiles.' }])
+    await runExportMarkdown({ path: tmp, project: undefined, useDot: false }, logger)
+    expect(readFileSync(join(a, 'README.md'), 'utf-8')).toBe(
+      '# project-a\n\nEnriches organisation profiles.\n',
+    )
   })
 })

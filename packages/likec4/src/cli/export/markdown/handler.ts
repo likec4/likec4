@@ -23,6 +23,11 @@ function hasAuthoredViews(model: LikeC4Model<UnknownLayouted>): boolean {
   return false
 }
 
+function projectDescription(metadata: Record<string, unknown> | undefined): string | undefined {
+  const description = metadata?.['description']
+  return typeof description === 'string' ? description : undefined
+}
+
 export async function runExportMarkdown(args: MarkdownExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
   await using likec4 = await fromWorkspace(args.path, {
@@ -49,7 +54,8 @@ export async function runExportMarkdown(args: MarkdownExportArgs, logger: ViteLo
       continue
     }
     const outfile = join(prj.folder.fsPath, 'README.md')
-    await writeFile(outfile, generateMarkdown(model))
+    const description = projectDescription(prj.config.metadata)
+    await writeFile(outfile, generateMarkdown(model, description !== undefined ? { description } : {}))
     written++
     logger.info(`${k.dim('generated')} ${outfile}`)
   }
