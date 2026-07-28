@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Full document snapshot 1`] = `
+"# Acme Platform
+
+## views/system.c4
+
+### Context
+
+How the system fits its surroundings.
+
+\`\`\`mermaid
+---
+title: "Context"
+---
+graph TB
+  Amazon@{ shape: rectangle, label: "amazon" }
+  subgraph Cloud["\`cloud\`"]
+    Cloud.Backend@{ shape: rectangle, label: "backend" }
+    Cloud.Frontend@{ shape: rectangle, label: "frontend" }
+  end
+  Customer@{ shape: rectangle, label: "customer" }
+  Support@{ shape: rectangle, label: "support" }
+  Cloud.Frontend -. "\`requests\`" .-> Cloud.Backend
+  Cloud.Backend -.-> Amazon
+  Support -.-> Cloud.Frontend
+  Customer -. "\`opens\`" .-> Cloud.Frontend
+\`\`\`
+
+### Containers
+
+\`\`\`mermaid
+---
+title: "Containers"
+---
+graph TB
+  Amazon@{ shape: rectangle, label: "amazon" }
+  subgraph Cloud["\`cloud\`"]
+    subgraph Cloud.Backend["\`backend\`"]
+      Cloud.Backend.Graphql@{ shape: rectangle, label: "graphql" }
+      Cloud.Backend.Storage@{ shape: rectangle, label: "storage" }
+    end
+    Cloud.FrontendAdminPanel@{ shape: rectangle, label: "adminPanel" }
+    Cloud.FrontendDashboard@{ shape: rectangle, label: "dashboard" }
+  end
+  Customer@{ shape: rectangle, label: "customer" }
+  Support@{ shape: rectangle, label: "support" }
+  Cloud.FrontendDashboard -.-> Cloud.Backend.Graphql
+  Cloud.FrontendAdminPanel -.-> Cloud.Backend.Graphql
+  Cloud.Backend.Storage -.-> Amazon
+  Cloud.Backend.Graphql -.-> Cloud.Backend.Storage
+  Support -.-> Cloud.FrontendAdminPanel
+  Customer -.-> Cloud.FrontendDashboard
+\`\`\`
+
+## views/deployment.c4
+
+### Deployment
+
+Where it runs.
+
+\`\`\`mermaid
+---
+title: "Deployment"
+---
+graph TB
+  Client@{ shape: rectangle, label: "client" }
+  SystemBackend@{ shape: rectangle, label: "backend" }
+  SystemFrontend@{ shape: rectangle, label: "frontend" }
+  SystemFrontend -. "\`requests\`" .-> SystemBackend
+  Client -. "\`opens\`" .-> SystemFrontend
+\`\`\`
+
+"
+`;
