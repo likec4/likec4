@@ -31,8 +31,15 @@ and records the one genuine fork: how a generating CLI command handles multiple 
 
 6. **The command layer owns project iteration and I/O, not the generator.** A generating CLI command
    defaults to **all projects** (one output each) and takes `--project` to restrict — following the
-   `export png` handler. The older `ensureSingleProject()` path (`gen mermaid`/`d2`/`puml`) is not
-   the pattern for new commands.
+   `export png`/`json` handlers. The older `ensureSingleProject()` path (`gen mermaid`/`d2`/`puml`) is
+   not the pattern for new commands.
+
+7. **CLI placement is by output shape, not by the generator library.** All generators live together
+   in `@likec4/generators`, but their commands split by what they produce: a **per-view, single-project**
+   output goes under `gen <format>` (`gen mermaid`/`d2`/`puml`); a **whole-model artifact rendered per
+   project** goes under `export <format>` (`export json`/`drawio`, and `png`/`jpg`). `generateDrawio`
+   sits beside `generateMermaid` in the package yet ships as `export drawio`, not `gen drawio` — the
+   precedent for placing new whole-model exporters (e.g. Markdown) under `export`.
 
 ## Consequences
 
