@@ -59,6 +59,20 @@ test('One document per project', ({ expect }) => {
   expect(md).toContain('# Acme Platform')
 })
 
+test('A project with a configured description shows it as an overview before the first section', ({ expect }) => {
+  const md = generateMarkdown(model, { description: 'Enriches organisation profiles from PCDB.' })
+  const descIdx = md.indexOf('Enriches organisation profiles from PCDB.')
+  const titleIdx = md.indexOf('# Acme Platform')
+  const firstSectionIdx = md.indexOf('### Context')
+  expect(descIdx).toBeGreaterThan(titleIdx)
+  expect(descIdx).toBeLessThan(firstSectionIdx)
+})
+
+test('A project without a configured description goes straight from the title to the first section', ({ expect }) => {
+  const md = generateMarkdown(model)
+  expect(md).toBe('# Acme Platform\n\n' + md.slice(md.indexOf('### Context')))
+})
+
 test('Every authored view becomes a section directly under the project title, in authored order', ({ expect }) => {
   const md = generateMarkdown(model)
   const headings = [...md.matchAll(/^### (.+)$/gm)].map(m => m[1])
