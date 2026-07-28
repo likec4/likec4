@@ -3,8 +3,6 @@
 exports[`Full document snapshot 1`] = `
 "# Acme Platform
 
-## views/system.c4
-
 ### Context
 
 How the system fits its surroundings.
@@ -52,8 +50,6 @@ graph TB
   Support -.-> Cloud.FrontendAdminPanel
   Customer -.-> Cloud.FrontendDashboard
 \`\`\`
-
-## views/deployment.c4
 
 ### Deployment
 

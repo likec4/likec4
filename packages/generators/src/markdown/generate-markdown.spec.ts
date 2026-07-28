@@ -7,7 +7,7 @@ import { generateMarkdown } from './generate-markdown'
 
 type ViewSpec = {
   title: string
-  sourcePath: string
+  sourcePath?: string
   description?: string
   $view: ProcessedView
 }
@@ -18,7 +18,7 @@ const mockView = ({ title, sourcePath, description, $view }: ViewSpec): LikeC4Vi
     description: description
       ? { isEmpty: false, nonEmpty: true, md: description }
       : { isEmpty: true, nonEmpty: false, md: '' },
-    $view: { ...$view, sourcePath },
+    $view: sourcePath !== undefined ? { ...$view, sourcePath } : { ...$view },
   }) as unknown as LikeC4ViewModel<aux.Unknown>
 
 const mockModel = (views: LikeC4ViewModel<aux.Unknown>[], project = { id: 'default', title: 'Acme Platform' }) =>
@@ -28,7 +28,6 @@ const mockModel = (views: LikeC4ViewModel<aux.Unknown>[], project = { id: 'defau
     views: () => views.values(),
   }) as unknown as LikeC4Model<aux.Unknown>
 
-// Two source files; file A has two views (one described, one not), file B has one.
 const contextView = mockView({
   title: 'Context',
   sourcePath: 'views/system.c4',
@@ -46,7 +45,12 @@ const deploymentView = mockView({
   description: 'Where it runs.',
   $view: fakeDiagram2,
 })
+const landscapeView = mockView({
+  title: 'Landscape view',
+  $view: fakeDiagram2,
+})
 const model = mockModel([contextView, containersView, deploymentView])
+const modelWithLandscape = mockModel([landscapeView, contextView, containersView, deploymentView])
 
 test('One document per project', ({ expect }) => {
   const md = generateMarkdown(model)
@@ -55,23 +59,18 @@ test('One document per project', ({ expect }) => {
   expect(md).toContain('# Acme Platform')
 })
 
-test('Every view becomes a section headed by its title', ({ expect }) => {
+test('Every authored view becomes a section directly under the project title, in authored order', ({ expect }) => {
   const md = generateMarkdown(model)
-  expect(md).toContain('### Context')
-  expect(md).toContain('### Containers')
-  expect(md).toContain('### Deployment')
+  const headings = [...md.matchAll(/^### (.+)$/gm)].map(m => m[1])
+  expect(headings).toEqual(['Context', 'Containers', 'Deployment'])
+  expect(md).not.toMatch(/^## /m)
 })
 
-test('Views are grouped by source file, in authored order', ({ expect }) => {
-  const md = generateMarkdown(model)
-  const headings = [...md.matchAll(/^#{2,3} (.+)$/gm)].map(m => m[1])
-  expect(headings).toEqual([
-    'views/system.c4',
-    'Context',
-    'Containers',
-    'views/deployment.c4',
-    'Deployment',
-  ])
+test('Automatically generated views without a source file are omitted', ({ expect }) => {
+  const md = generateMarkdown(modelWithLandscape)
+  expect(md).not.toContain('Landscape view')
+  const headings = [...md.matchAll(/^### (.+)$/gm)].map(m => m[1])
+  expect(headings).toEqual(['Context', 'Containers', 'Deployment'])
 })
 
 test('Each section embeds the diagram from generateMermaid', ({ expect }) => {
@@ -90,9 +89,8 @@ test('A view with a description shows it as prose above the diagram', ({ expect 
 
 test('A view without a description shows only heading and diagram', ({ expect }) => {
   const md = generateMarkdown(model)
-  const section = md.slice(md.indexOf('### Containers'), md.indexOf('## views/deployment.c4'))
+  const section = md.slice(md.indexOf('### Containers'), md.indexOf('### Deployment'))
   expect(section).toContain('```mermaid')
-  // nothing but the heading between the title and the fence
   const between = section.slice('### Containers'.length, section.indexOf('```mermaid')).trim()
   expect(between).toBe('')
 })
