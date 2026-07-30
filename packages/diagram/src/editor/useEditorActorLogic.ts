@@ -5,6 +5,7 @@ import { useCallbackRef } from '../hooks'
 import { type EditorActorLogic, editorActorLogic } from './actor/machine'
 import type { EditorCalls } from './actor/setup'
 import { applyChangesToManualLayout } from './applyChangesToManualLayout'
+import { shouldWaitForViewSync } from './LikeC4EditorCallbacks'
 import { useOptionalLikeC4Editor } from './LikeC4EditorProvider'
 
 const promisify = <T>(fn: () => T | Promise<T>): Promise<T> => {
@@ -46,15 +47,17 @@ export function useEditorActorLogic(): EditorActorLogic & {
         console.debug('Executing change', { input })
       }
       const applied = [] as typeof input.changes
+      let waitForViewSync = false
       for (const change of input.changes) {
         try {
-          await promisify(() => port.handleChange(input.viewId, change))
+          const result = await promisify(() => port.handleChange(input.viewId, change))
           applied.push(change)
+          waitForViewSync ||= shouldWaitForViewSync(result)
         } catch (error) {
           console.error('Failed to execute change', { change, error })
         }
       }
-      return { requested: input.changes, applied }
+      return { requested: input.changes, applied, waitForViewSync }
     },
   )
 
