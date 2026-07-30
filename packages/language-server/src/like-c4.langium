@@ -315,10 +315,11 @@ ModelViews:
     )*
   '}';
 
-type LikeC4View = ElementView | DynamicView | DeploymentView;
+type LikeC4View = ElementView | DynamicView | DeploymentView | StoryView;
 LikeC4ViewRule returns LikeC4View:
   DynamicView |
   DeploymentView |
+  StoryView |
   ElementView;
 
 ElementView:
@@ -358,6 +359,65 @@ DynamicViewBody: '{'
   )*
 '}'
 ;
+
+StoryView:
+  'story' name=Id body=StoryViewBody?
+;
+
+StoryViewBody: '{'
+  tags=Tags?
+  props+=StoryViewProperty*
+  statements+=StoryStatement*
+'}'
+;
+
+StoryViewProperty:
+  StorySceneLayoutProperty | ViewProperty
+;
+
+StorySceneLayoutProperty:
+  key='sceneLayout' ':'? value=StorySceneLayoutValue ';'?
+;
+
+StorySceneLayoutValue returns string:
+  'anchored' | 'independent' | 'unified';
+
+StoryStatement:
+  StoryScene | StoryAlt | StorySubflow
+;
+
+StoryScene:
+  'scene' view=[LikeC4View] body=StorySceneBody? ';'?
+;
+
+StorySceneBody: '{'
+  props+=(ViewStringProperty | NotesProperty)*
+  rules+=StoryCorrespondenceRule*
+'}'
+;
+
+StoryCorrespondenceRule:
+  sources=ElementRefs 'becomes' targets=ElementRefs ';'?
+;
+
+ElementRefs:
+  refs+=ElementRef (',' refs+=ElementRef)*
+;
+
+// Reuses the existing SubflowKind terminal set. One rule covers every block
+// keyword, exactly as SubflowStep does for dynamic views.
+StorySubflow:
+  kind=SubflowKind title=String? '{'
+    statements+=StoryStatement*
+  '}'
+;
+
+StoryAlt:
+  'alt' title=String? '{' branches+=StorySubflow* '}'
+;
+
+StoryViewRef:
+  view=[StoryView];
 
 DynamicViewProperty:
   DynamicViewDisplayVariantProperty | ViewProperty
@@ -511,7 +571,7 @@ NavigateToProperty:
   key='navigateTo' value=ViewRef;
 
 RelationNavigateToProperty:
-  key='navigateTo' value=DynamicViewRef;
+  key='navigateTo' value=(DynamicViewRef | StoryViewRef);
 
 // Expressions -------------------------------------
 
@@ -1184,10 +1244,12 @@ Id returns string:
   SizeValue |
   DynamicViewDisplayVariantValue |
   DynamicViewFlowKeyword |
+  StorySceneLayoutValue |
   IconPositionValue |
   RankValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' |
+  'story' | 'scene' | 'sceneLayout' | 'becomes';
 
 HashId returns string:
   Hash Id;
