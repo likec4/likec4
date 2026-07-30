@@ -1,36 +1,36 @@
 import { describe, expect, it } from 'vitest'
-import { resolveNodesDraggable } from './DiagramXYFlow'
+import { resolveInteractionEnabled } from './DiagramXYFlow'
 
-describe('resolveNodesDraggable', () => {
+describe('resolveInteractionEnabled', () => {
   it.each([
     {
-      nodesDraggable: true,
+      enabled: true,
       override: undefined,
       isEditorBusy: false,
       expected: true,
     },
     {
-      nodesDraggable: false,
+      enabled: false,
       override: true,
       isEditorBusy: false,
       expected: true,
     },
     {
-      nodesDraggable: true,
+      enabled: true,
       override: false,
       isEditorBusy: false,
       expected: false,
     },
     {
-      nodesDraggable: false,
+      enabled: false,
       override: true,
       isEditorBusy: true,
       expected: false,
     },
   ])(
-    'returns $expected for draggable=$nodesDraggable, override=$override, busy=$isEditorBusy',
-    ({ nodesDraggable, override, isEditorBusy, expected }) => {
-      expect(resolveNodesDraggable(nodesDraggable, override, isEditorBusy)).toBe(expected)
+    'returns $expected for enabled=$enabled, override=$override, busy=$isEditorBusy',
+    ({ enabled, override, isEditorBusy, expected }) => {
+      expect(resolveInteractionEnabled(enabled, override, isEditorBusy)).toBe(expected)
     },
   )
 })
