@@ -32,6 +32,7 @@ function createTestActor(executeChange: EditorCalls.ExecuteChange) {
 describe('editor sync queue', () => {
   it('preserves synchronization unless a callback explicitly opts out', () => {
     expect(shouldWaitForViewSync()).toBe(true)
+    expect(shouldWaitForViewSync({ waitForViewSync: true })).toBe(true)
     expect(shouldWaitForViewSync({ waitForViewSync: false })).toBe(false)
   })
 

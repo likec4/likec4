@@ -55,6 +55,7 @@ export function useEditorActorLogic(): EditorActorLogic & {
           waitForViewSync ||= shouldWaitForViewSync(result)
         } catch (error) {
           console.error('Failed to execute change', { change, error })
+          waitForViewSync ||= shouldWaitForViewSync()
         }
       }
       return { requested: input.changes, applied, waitForViewSync }

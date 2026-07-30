@@ -16,7 +16,7 @@ export interface LikeC4EditorChangeResult {
 }
 
 export function shouldWaitForViewSync(
-  result: void | LikeC4EditorChangeResult,
+  result?: void | LikeC4EditorChangeResult,
 ): boolean {
   return result?.waitForViewSync ?? true
 }
