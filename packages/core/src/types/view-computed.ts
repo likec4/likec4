@@ -22,6 +22,11 @@ import type {
 } from './view-common'
 import type { DynamicViewFlowSteps } from './view-dynamic-flow'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
+import type {
+  AnyStoryStatement,
+  StoryCorrespondence,
+  StorySceneLayout,
+} from './view-parsed.story'
 
 export type ComputedNodeStyle = Simplify<
   ElementStyle & {
@@ -157,4 +162,38 @@ export interface ComputedDynamicView<A extends AnyAux = AnyAux> extends BaseComp
    * Can include nested flows, branches, loops, and conditional statements.
    */
   readonly flow: DynamicViewFlowSteps
+}
+
+/**
+ * A scene resolved to a traversable position in the story.
+ */
+export interface ComputedStoryScene<A extends AnyAux = AnyAux> {
+  /**
+   * Hierarchical path, same format and ordering rules as `scalar.StepPath`.
+   * e.g. `step-01`, `step-02:alt.01:when.01`
+   */
+  readonly id: scalar.StepPath
+  readonly view: aux.StrictViewId<A>
+  readonly title?: string | null
+  readonly notes?: scalar.MarkdownOrString
+  readonly becomes?: StoryCorrespondence<A>[]
+  /**
+   * Title of the nearest enclosing alt branch, if any. Shown in the panel so the
+   * viewer knows they are inside a hypothetical.
+   */
+  readonly branchTitle?: string
+  readonly astPath: string
+}
+
+export interface ComputedStoryView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
+  readonly [_type]: 'story'
+  readonly sceneLayout: StorySceneLayout
+  /**
+   * Flattened scene list in traversal order.
+   */
+  readonly scenes: ReadonlyArray<ComputedStoryScene<A>>
+  /**
+   * Tree structure preserving `alt` blocks, for the outline panel.
+   */
+  readonly storyFlow: ReadonlyArray<AnyStoryStatement<A>>
 }

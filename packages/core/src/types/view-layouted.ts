@@ -10,10 +10,11 @@ import type {
   ViewWithHash,
   ViewWithNotation,
 } from './view-common'
-import type { ComputedEdge, ComputedNode } from './view-computed'
+import type { ComputedEdge, ComputedNode, ComputedStoryScene } from './view-computed'
 import type { DynamicViewFlowSteps } from './view-dynamic-flow'
 import type { DiagramEdgeDriftReason, DiagramNodeDriftReason, LayoutedViewDriftReason } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
+import type { AnyStoryStatement, StorySceneLayout } from './view-parsed.story'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   /**
@@ -214,4 +215,17 @@ export namespace LayoutedDynamicView {
       readonly bounds: BBox
     }
   }
+}
+
+export interface LayoutedStoryView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
+  readonly [_type]: 'story'
+  readonly sceneLayout: StorySceneLayout
+  /**
+   * Flattened scene list in traversal order.
+   */
+  readonly scenes: ReadonlyArray<ComputedStoryScene<A>>
+  /**
+   * Tree structure preserving `alt` blocks, for the outline panel.
+   */
+  readonly storyFlow: ReadonlyArray<AnyStoryStatement<A>>
 }

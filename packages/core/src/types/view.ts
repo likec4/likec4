@@ -8,20 +8,24 @@ import type {
   ComputedDeploymentView,
   ComputedDynamicView,
   ComputedElementView,
+  ComputedStoryView,
 } from './view-computed'
 import type {
   LayoutedDeploymentView,
   LayoutedDynamicView,
   LayoutedElementView,
+  LayoutedStoryView,
 } from './view-layouted'
 import type { ParsedDeploymentView } from './view-parsed.deployment'
 import type { ParsedDynamicView } from './view-parsed.dynamic'
 import type { ParsedElementView } from './view-parsed.element'
+import type { ParsedStoryView } from './view-parsed.story'
 
 export type ParsedView<A extends Any = Any> =
   | ParsedElementView<A>
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
+  | ParsedStoryView<A>
 
 /**
  * Should be `ParsedView` but keep it for backward compatibility
@@ -33,11 +37,13 @@ export type ComputedView<A extends Any = Any> =
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
+  | ComputedStoryView<A>
 
 export type LayoutedView<A extends Any = Any> =
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
+  | LayoutedStoryView<A>
 
 export type ProcessedView<A extends Any = Any> =
   | ComputedView<A>
@@ -55,12 +61,15 @@ export type AnyView<A extends Any = Any> =
   | ParsedElementView<A>
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
+  | ParsedStoryView<A>
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
+  | ComputedStoryView<A>
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
+  | LayoutedStoryView<A>
 
 export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
 export type ViewWithType<V extends AnyView<any>, T extends ViewType> = Extract<V, { [_type]: T }>
@@ -73,7 +82,7 @@ export type InferViewAux<V> =
       : A
   : never
 
-export type ViewRule<A extends Any = Any> = ParsedView<A>['rules'][number]
+export type ViewRule<A extends Any = Any> = Extract<ParsedView<A>, { rules: unknown[] }>['rules'][number]
 export type ViewRulePredicate<A extends Any = Any> = Extract<
   ViewRule<A>,
   { include: any[] } | { exclude: any[] }
@@ -123,4 +132,8 @@ export function isDeploymentView<V extends AnyView<any>>(view: V): view is ViewW
 
 export function isDynamicView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'dynamic'> {
   return view._type === 'dynamic'
+}
+
+export function isStoryView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'story'> {
+  return view._type === 'story'
 }

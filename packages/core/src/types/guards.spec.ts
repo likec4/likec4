@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
+import { _type } from './const'
 import { hasProp } from './guards'
+import { isStoryView } from './view'
+import type { AnyView } from './view'
 
 describe('hasProp', () => {
   it('returns true for present non-nullish property', () => {
@@ -41,5 +44,19 @@ describe('hasProp', () => {
     it('returns false for missing property', () => {
       expect(hasProp('some')({ other: 1 })).toBe(false)
     })
+  })
+})
+
+describe('isStoryView', () => {
+  it('returns true for a story view', () => {
+    const view = { [_type]: 'story' } as unknown as AnyView<any>
+    expect(isStoryView(view)).toBe(true)
+  })
+
+  it('returns false for element, dynamic and deployment views', () => {
+    for (const t of ['element', 'dynamic', 'deployment']) {
+      const view = { [_type]: t } as unknown as AnyView<any>
+      expect(isStoryView(view)).toBe(false)
+    }
   })
 })
