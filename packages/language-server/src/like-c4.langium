@@ -416,9 +416,6 @@ StoryAlt:
   'alt' title=String? '{' branches+=StorySubflow* '}'
 ;
 
-StoryViewRef:
-  view=[StoryView];
-
 DynamicViewProperty:
   DynamicViewDisplayVariantProperty | ViewProperty
 ;
@@ -571,7 +568,7 @@ NavigateToProperty:
   key='navigateTo' value=ViewRef;
 
 RelationNavigateToProperty:
-  key='navigateTo' value=(DynamicViewRef | StoryViewRef);
+  key='navigateTo' value=DynamicViewRef;
 
 // Expressions -------------------------------------
 
