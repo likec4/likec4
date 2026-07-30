@@ -1,7 +1,13 @@
-# 1. Generator conventions (`@likec4/generators`)
+---
+type: Architecture Decision Record
+title: "ADR-0001: Generator conventions (@likec4/generators)"
+description: The shared shape every @likec4/generators exporter follows, and how a generating CLI command handles multiple projects.
+status: draft
+date: 2026-07-28
+tags: [adr, generators, export]
+---
 
-Status: Draft
-Date: 2026-07-28
+# 1. Generator conventions (`@likec4/generators`)
 
 ## Context
 

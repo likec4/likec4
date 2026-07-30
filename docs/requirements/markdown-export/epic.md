@@ -1,3 +1,11 @@
+---
+type: Epic
+title: "Markdown documentation export"
+description: Render each LikeC4 project as a README.md with its views as inline Mermaid diagrams, kept in sync with the model.
+status: draft
+tags: [epic, markdown, export, documentation]
+---
+
 # Epic: Markdown documentation export
 
 ## Why
