@@ -77,6 +77,14 @@ const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
   }
 }
 
+export function resolveNodesDraggable(
+  nodesDraggable: boolean,
+  override: boolean | undefined,
+  isEditorBusy: boolean,
+): boolean {
+  return (override ?? nodesDraggable) && !isEditorBusy
+}
+
 const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
 
@@ -139,7 +147,7 @@ export function LikeC4DiagramXYFlow({
     ...props
   } = useDiagramSelector(selectXYProps)
   const isEditorBusy = useEditorActorStateHasTag('busy')
-  nodesDraggable = nodesDraggable && !isEditorBusy
+  nodesDraggable = resolveNodesDraggable(nodesDraggable, reactFlowProps.nodesDraggable, isEditorBusy)
   nodesSelectable = nodesSelectable && !isEditorBusy
 
   const {
@@ -303,15 +311,15 @@ export function LikeC4DiagramXYFlow({
       {...enableFitView && {
         onViewportResize,
       }}
-      nodesDraggable={nodesDraggable}
-      nodesSelectable={nodesSelectable}
       nodesFocusable
       edgesFocusable
       elevateEdgesOnSelect={!enableReadOnly}
       zIndexMode="manual"
       {...(nodesDraggable && layoutConstraints)}
       {...props}
-      {...reactFlowProps}>
+      {...reactFlowProps}
+      nodesDraggable={nodesDraggable}
+      nodesSelectable={nodesSelectable}>
       {enableControls && <Controls padding={props.fitViewPadding} />}
       {children}
     </BaseXYFlow>
