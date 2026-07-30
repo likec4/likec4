@@ -5,6 +5,10 @@ import { generateMermaid } from '../mmd/generate-mmd'
 
 type ViewModel = LikeC4ViewModel<aux.Unknown>
 
+/**
+ * Appends a single view to the document as a level-3 heading, its optional
+ * description, and a fenced Mermaid diagram.
+ */
 function appendView(doc: CompositeGeneratorNode, view: ViewModel): void {
   doc.append('### ', view.titleOrId, NL, NL)
   if (view.description.nonEmpty) {
@@ -23,6 +27,11 @@ export type GenerateMarkdownOptions = {
   description?: string
 }
 
+/**
+ * Renders a LikeC4 model as a Markdown document: the project title, an optional
+ * description, and every authored view as a Mermaid diagram. Views without a
+ * `sourcePath` (e.g. auto-generated index views) are skipped.
+ */
 export function generateMarkdown(
   model: LikeC4Model<aux.Unknown>,
   options: GenerateMarkdownOptions = {},
