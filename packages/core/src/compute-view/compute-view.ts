@@ -11,12 +11,14 @@ import {
   isDeploymentView,
   isDynamicView,
   isElementView,
+  isStoryView,
 } from '../types'
 import type { Any, AnyParsed, ViewId } from '../types/_aux'
 import { nonexhaustive } from '../utils'
 import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'
 import { computeElementView } from './element-view/compute'
+import { computeStoryView } from './story-view/compute'
 
 export type ComputeViewResult<V> =
   | {
@@ -41,6 +43,8 @@ export function unsafeComputeView<A extends Any>(
       return computeDeploymentView(likec4model, viewsource)
     case isDynamicView(viewsource):
       return computeDynamicView(likec4model, viewsource)
+    case isStoryView(viewsource):
+      return computeStoryView(likec4model, viewsource)
     default:
       nonexhaustive(viewsource)
   }
