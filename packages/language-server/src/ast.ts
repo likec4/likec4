@@ -44,6 +44,9 @@ declare module './generated/ast' {
   export interface DeploymentView {
     [idattr]?: c4.ViewId | undefined
   }
+  export interface StoryView {
+    [idattr]?: c4.ViewId | undefined
+  }
   export interface DeploymentNode {
     [idattr]?: c4.Fqn | undefined
   }
@@ -198,7 +201,27 @@ export interface ParsedAstDeploymentView {
   rules: Array<c4.DeploymentViewRule>
 }
 
-export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView | ParsedAstDeploymentView
+export interface ParsedAstStoryView {
+  [c4._type]: 'story'
+  id: c4.ViewId
+  astPath: string
+  title: string | null
+  description: c4.MarkdownOrString | null
+  /**
+   * Optional per-view navigation order.
+   */
+  order?: number
+  tags: c4.NonEmptyArray<c4.Tag> | null
+  links: c4.NonEmptyArray<c4.Link> | null
+  sceneLayout: c4.StorySceneLayout | undefined
+  statements: c4.AnyStoryStatement[]
+}
+
+export type ParsedAstView =
+  | ParsedAstElementView
+  | ParsedAstDynamicView
+  | ParsedAstDeploymentView
+  | ParsedAstStoryView
 export const ViewOps = {
   writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewId): T {
     node[idattr] = id

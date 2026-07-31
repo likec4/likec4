@@ -6,12 +6,13 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import * as c4 from '@likec4/core'
-import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { type ModelFqnExpr, invariant, isNonEmptyArray, nonexhaustive, nonNullable } from '@likec4/core'
 import { filter, find, isDefined, isEmpty, isNumber, isTruthy, last, mapToObj, pipe } from 'remeda'
 import type { Except, Writable } from 'type-fest'
 import {
   type ParsedAstDynamicView,
   type ParsedAstElementView,
+  type ParsedAstStoryView,
   ast,
   parseMarkdownAsString,
   toAutoLayout,
@@ -58,6 +59,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
                 break
               case ast.isDeploymentView(view):
                 this.doc.c4Views.push(this.parseDeploymentView(view))
+                break
+              case ast.isStoryView(view):
+                this.doc.c4Views.push(this.parseStoryView(view))
                 break
               default:
                 nonexhaustive(view)
@@ -623,6 +627,149 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         [c4._type]: 'alt',
         title: node.title,
         branches,
+      })
+    }
+
+    /**
+     * Parses a `story` view.
+     *
+     * A story owns no geometry of its own — it is an ordered list of scenes, each naming
+     * another view. See `docs/rfcs/0001-story-view.md`.
+     */
+    parseStoryView(astNode: ast.StoryView): ParsedAstStoryView {
+      const body = astNode.body
+      invariant(body, 'StoryView body is not defined')
+      // `StoryViewProperty` (which includes `StorySceneLayoutProperty`) is not yet part of the
+      // language server's `ValidatableAstNode` union, so `this.isValid` cannot be called on it
+      // directly; `tryMap` with an identity function filters out invalid nodes the same way.
+      const props = this.tryMap('views', body.props, p => p)
+      const astPath = this.getAstNodePath(astNode)
+
+      let id = astNode.name
+      if (!id) {
+        id = 'story_' + stringHash(this.doc.uri.toString(), astPath) as c4.ViewId
+      }
+
+      const { title = null, description = null } = this.parseBaseProps(
+        pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
+
+      const tags = this.convertTags(body)
+      const links = this.convertLinks(body)
+      const order = parseViewOrder(props.find(ast.isViewOrderProperty))
+
+      ViewOps.writeId(astNode, id as c4.ViewId)
+
+      const sceneLayout = find(props, ast.isStorySceneLayoutProperty)?.value as
+        | c4.StorySceneLayout
+        | undefined
+
+      return {
+        [c4._type]: 'story',
+        id: id as c4.ViewId,
+        astPath,
+        title: toSingleLine(title) ?? null,
+        description,
+        ...(order !== undefined && { order }),
+        tags,
+        links: isNonEmptyArray(links) ? links : null,
+        sceneLayout,
+        statements: this.tryMap('views', body.statements, n => this.parseStoryStatement(n)),
+      }
+    }
+
+    parseStoryStatement(node: ast.StoryStatement): c4.AnyStoryStatement {
+      switch (true) {
+        case ast.isStoryScene(node):
+          return this.parseStoryScene(node)
+        case ast.isStoryAlt(node):
+          return this.parseStoryAlt(node)
+        case ast.isStorySubflow(node):
+          return this.parseStorySubflow(node)
+        default:
+          nonexhaustive(node)
+      }
+    }
+
+    parseStoryScene(node: ast.StoryScene): c4.StoryScene {
+      const viewId = nonNullable(
+        ViewOps.readId(node.view.ref!),
+        `Story scene view "${node.view.$refText}" not resolved`,
+      )
+      const body = node.body
+      const props = body?.props.filter(this.isValid) ?? []
+
+      const { title = null } = this.parseBaseProps(
+        pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+      )
+      const notes = find(props, ast.isNotesProperty)?.value
+
+      // `StoryCorrespondenceRule` is likewise not part of `ValidatableAstNode`; `tryMap` both
+      // filters invalid nodes and catches per-rule parse errors (e.g. an empty `becomes` side)
+      // without failing the whole scene.
+      const becomes = body
+        ? this.tryMap('views', body.rules, rule => this.parseStoryCorrespondence(rule))
+        : []
+
+      return c4.exact({
+        view: viewId,
+        title: toSingleLine(title) ?? null,
+        // `notes` is `scalar.MarkdownOrString`, not a flat string — mirrors `description` above.
+        notes: removeIndent(notes),
+        becomes: isNonEmptyArray(becomes) ? becomes : undefined,
+        astPath: this.getAstNodePath(node),
+      })
+    }
+
+    parseStoryCorrespondence(rule: ast.StoryCorrespondenceRule): c4.StoryCorrespondence {
+      const toFqns = (refs: ast.ElementRefs) =>
+        refs.refs.map(r => this.resolveFqn(nonNullable(elementRef(r), 'Element ref not resolved')))
+
+      const sources = toFqns(rule.sources)
+      const targets = toFqns(rule.targets)
+      invariant(isNonEmptyArray(sources), '"becomes" requires at least one source')
+      invariant(isNonEmptyArray(targets), '"becomes" requires at least one target')
+      return { sources, targets }
+    }
+
+    parseStoryAlt(node: ast.StoryAlt): c4.StoryAlt {
+      // `StorySubflow` is not part of `ValidatableAstNode`; see `parseStoryView` above.
+      const branches = this.tryMap('views', node.branches, b => this.parseStoryAltBranch(b))
+      invariant(isNonEmptyArray(branches), 'Story alt must have at least one branch')
+      return c4.exact({
+        [c4._type]: 'alt',
+        title: node.title,
+        branches,
+      })
+    }
+
+    parseStoryAltBranch(node: ast.StorySubflow): c4.StoryAltBranch {
+      const statements = this.tryMap('views', node.statements, n => this.parseStoryStatement(n))
+      invariant(isNonEmptyArray(statements), 'Story alt branch must have at least one statement')
+      return c4.exact({
+        [c4._type]: node.kind as c4.StoryAltBranchKind,
+        title: node.title,
+        statements,
+      })
+    }
+
+    parseStorySubflow(node: ast.StorySubflow): c4.StorySubflow {
+      const statements = this.tryMap('views', node.statements, n => this.parseStoryStatement(n))
+      invariant(isNonEmptyArray(statements), 'Story block must have at least one statement')
+      // `parallel` normalises to `par`, matching dynamic views
+      const kind = (node.kind === 'parallel' ? 'par' : node.kind) as c4.StorySubflowKind
+      return c4.exact({
+        [c4._type]: kind,
+        title: node.title,
+        statements,
       })
     }
   }
