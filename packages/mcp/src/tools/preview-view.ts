@@ -1,13 +1,8 @@
-// Uses the test-harness factory to build a throwaway, isolated language-server
-// instance per call. `/test` resolves to raw TS source (no `dist` build target) —
-// this only works because @likec4/mcp is always bundled with the `sources`
-// condition by tsdown. If that ever changes, this import would need a real
-// production-facing factory instead.
-import { createTestServices } from '@likec4/language-server/test'
+import { fromSources } from '@likec4/language-services/node'
 import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
-import { DiagnosticSeverity } from 'vscode-languageserver-types'
+import { relative, sep } from 'node:path'
 import * as z from 'zod/v3'
 import { useLanguageServices } from '../ctx'
 import { buildRenderPayload, projectIdSchema, toolError } from './_common'
@@ -24,8 +19,20 @@ function wrapAsViewsBlock(dsl: string): string {
   return `views {\n${dsl}\n}\n`
 }
 
+function toPortablePath(path: string): string {
+  return path.split(sep).join('/')
+}
+
+function toVirtualSourcePath(projectFolder: string, documentPath: string, fallback: string): string {
+  const relativePath = toPortablePath(relative(projectFolder, documentPath))
+  return relativePath === '' || relativePath.startsWith('..') ? fallback : relativePath
+}
+
 function formatDiagnostics(
-  diagnostics: ReadonlyArray<{ message: string; range: { start: { line: number; character: number } } }>,
+  diagnostics: ReadonlyArray<{
+    message: string
+    range: { start: { line: number; character: number } }
+  }>,
 ): string {
   return diagnostics
     .map(d => `- line ${d.range.start.line + 1}, column ${d.range.start.character + 1}: ${d.message}`)
@@ -84,8 +91,7 @@ Use "preview-view" to iterate on a new view definition before creating it for re
         )
       }
 
-      const uris = languageServices.project(projectId).documents
-      const originalTexts = uris.map(uri => languageServices.documentText(uri.toString()) ?? '')
+      const project = languageServices.project(projectId)
 
       const existingModel = await languageServices.computedModel(projectId)
       if (existingModel?.findView(rawViewId)) {
@@ -95,39 +101,35 @@ Use "preview-view" to iterate on a new view definition before creating it for re
         )
       }
 
-      // a brand-new, independent instance seeded with
-      // the project's documents plus the new preview view.
-      const preview = createTestServices()
-      for (const [index, text] of originalTexts.entries()) {
-        await preview.addDocument(text, `seed-${index}.c4`)
+      const sources: Record<string, string> = {}
+      for (const [index, uri] of project.documents.entries()) {
+        const filePath = toVirtualSourcePath(project.folder.fsPath, uri.fsPath, `seed-${index}.c4`)
+        sources[filePath] = languageServices.documentText(uri.toString()) ?? ''
       }
-      await preview.addDocument(wrapAsViewsBlock(args.dsl), 'preview-view.c4')
+      sources['preview-view.c4'] = wrapAsViewsBlock(args.dsl)
 
-      const documentBuilder = preview.services.shared.workspace.DocumentBuilder
-      const langiumDocuments = preview.services.shared.workspace.LangiumDocuments
+      // Build a separate production instance from virtual sources to keep preview isolated.
+      await using preview = await fromSources(sources, {
+        printErrors: false,
+        throwIfInvalid: false,
+      })
 
-      // Single, full validated build of the final document set.
-      await documentBuilder.build(langiumDocuments.all.toArray(), { validation: true })
-
-      const errors = langiumDocuments.all
-        .flatMap(doc => doc.diagnostics ?? [])
-        .filter(d => d.severity === DiagnosticSeverity.Error)
-        .toArray()
+      const errors = preview.getErrors()
 
       if (errors.length > 0) {
         return toolError(`Failed to build preview:\n${formatDiagnostics(errors)}`)
       }
 
-      const model = await preview.services.likec4.ModelBuilder.computeModel()
-      if (!model) {
-        return toolError('Failed to compute preview model.')
-      }
+      const model = await preview.computedModel()
       const viewModel = model.findView(rawViewId)
       if (!viewModel) {
         return toolError(`View "${rawViewId}" was not found after building the preview.`)
       }
 
-      const layouted = await preview.services.likec4.Views.layoutView({ viewId: viewModel.id })
+      const layouted = await preview.viewsService.layoutView({
+        viewId: viewModel.id,
+        projectId,
+      })
       if (!layouted) {
         return toolError(`Failed to layout preview view "${rawViewId}".`)
       }
@@ -141,7 +143,7 @@ Use "preview-view" to iterate on a new view definition before creating it for re
         }],
         structuredContent: buildRenderPayload({
           projectId,
-          viewId: rawViewId,
+          viewId: viewModel.id,
           title,
           layoutedView: layouted.diagram,
           modelData: model.$data,
