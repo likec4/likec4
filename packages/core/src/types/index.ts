@@ -48,6 +48,7 @@ export * from './view-parsed.deployment'
 export * from './view-parsed.dynamic'
 export * from './view-parsed.element'
 export * from './view-parsed.story'
+export * from './view-story-flow'
 
 export * as scalar from './scalar'
 
