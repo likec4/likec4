@@ -35,6 +35,8 @@ export {
   calcDriftsFromSnapshot,
 } from './manual-layout'
 
+export { calcSceneOffset } from './story/align'
+
 export type {
   ComputedProjectsView,
   LayoutedProjectsView,
