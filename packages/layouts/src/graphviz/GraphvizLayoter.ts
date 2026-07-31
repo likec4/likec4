@@ -4,9 +4,11 @@ import {
   type ComputedView,
   type DiagramView,
   type LayoutedDynamicView,
+  _stage,
   isDeploymentView,
   isDynamicView,
   isElementView,
+  isStoryView,
   LikeC4Styles,
 } from '@likec4/core'
 import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
@@ -44,6 +46,11 @@ const getPrinter = <A extends AnyAux>({ view, styles }: LayoutTaskParams<A>) => 
       return new DeploymentViewPrinter(view, styles)
     case isElementView(view):
       return new ElementViewPrinter(view, styles)
+    case isStoryView(view):
+      // A story has no DOT representation (see RFC 0001, "Layout"): it owns no geometry
+      // and defers entirely to the views it names. Reaching this branch means the
+      // `isStoryView` bypass in `layout()`/`aiLayout()` was skipped — fail loudly.
+      throw new Error(`Story views have no DOT representation: ${view.id}`)
     default:
       nonexhaustive(view)
   }
@@ -129,6 +136,21 @@ export class GraphvizLayouter implements Disposable {
 
   async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     const logger = this.newScopedLogger('layout')
+
+    // A story owns no geometry - each scene defers to the view it names - so there is
+    // nothing to lay out and no DOT representation at all (see RFC 0001, "Layout").
+    // This must run before `this.dot(params)`/`getPrinter` are ever reached, because
+    // there is no printer that can produce DOT for a story.
+    if (isStoryView(params.view)) {
+      return {
+        dot: '' as DotSource,
+        diagram: {
+          ...params.view,
+          [_stage]: 'layouted',
+        } as unknown as DiagramView<A>,
+      }
+    }
+
     try {
       logger.trace`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
@@ -160,6 +182,21 @@ export class GraphvizLayouter implements Disposable {
     hints: AILayoutHints,
   ): Promise<LayoutResult<A>> {
     const logger = this.newScopedLogger('ai-layout')
+
+    // Same rationale as `layout()`: a story has no DOT to generate, so it cannot be
+    // handed to `AiLayoutViewPrinter`. This path is reachable for stories - e.g. the MCP
+    // `apply-semantic-layout` tool resolves any view id via `model.findView` without
+    // filtering by view type - so the bypass is required here too.
+    if (isStoryView(view)) {
+      return {
+        dot: '' as DotSource,
+        diagram: {
+          ...view,
+          [_stage]: 'layouted',
+        } as unknown as DiagramView<A>,
+      }
+    }
+
     try {
       logger.trace`layouting view ${view.id} using AI hints...`
       const printer = new AiLayoutViewPrinter(view, styles, hints)
