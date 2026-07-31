@@ -93,7 +93,7 @@ describe('ParsedAstStoryView', () => {
     })
   })
 
-  it('drops a scene that forward-references a view declared later in the document', async ({ expect, t, validate }) => {
+  it('resolves a scene that forward-references a view declared later in the document', async ({ expect, t, validate }) => {
     const { document } = await validate(`
       specification {
         element system
@@ -111,12 +111,9 @@ describe('ParsedAstStoryView', () => {
     const { c4Views } = t.likec4.ModelParser.parse(document)
     const story = c4Views.find(v => v.id === 'migration')
     invariant(story?._type === 'story', 'Expected story view')
-    // Documents forward-reference behaviour at parse time: `parseViews` writes each view's
-    // id (`ViewOps.writeId`) only when that view itself is reached in source order, so a
-    // scene naming a view declared *later* in the same `views { }` block resolves before
-    // that id has been written. `ViewOps.readId` then returns `undefined`, `nonNullable`
-    // throws inside `parseStoryScene`, and `tryMap` swallows the error per-item — the scene
-    // is silently dropped rather than the whole story failing.
-    expect(story.statements).toHaveLength(0)
+    // Regression test: the scene must resolve, not be silently dropped, regardless of whether
+    // `laterView` is declared before or after `migration` in the same `views { }` block.
+    expect(story.statements).toHaveLength(1)
+    expect(story.statements[0]).toMatchObject({ view: 'laterView' })
   })
 })

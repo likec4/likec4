@@ -696,10 +696,22 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     }
 
     parseStoryScene(node: ast.StoryScene): c4.StoryScene {
+      // Resolve through Langium's own cross-reference (`node.view.ref`), not `ViewOps.readId`.
+      // `ViewOps.readId` is populated lazily, in `parseViews`'s own source-order walk, so it is
+      // not yet written for a view that appears later in the same `views { }` block — that made
+      // a forward-referencing scene resolve to `undefined` and get silently dropped. Langium
+      // links all cross-references for the whole document during the `Linked` phase, before any
+      // parser runs, so `node.view.ref` is already resolved here regardless of declaration
+      // order. `.ref?.name` (rather than raw `.$refText`) is used deliberately: `$refText` is
+      // always a non-empty string once the source parses, even for a name that never resolves
+      // to a real view (a typo), so it can't distinguish "this scene names a real view" from
+      // "this scene names nothing" — the very silent-corruption failure mode this fix is for.
+      // `.ref?.name` is `undefined` whenever linking genuinely failed, so `nonNullable` below
+      // still fails loudly on a truly bad reference instead of manufacturing a bogus scene.
       const viewId = nonNullable(
-        ViewOps.readId(node.view.ref!),
+        node.view.ref?.name,
         `Story scene view "${node.view.$refText}" not resolved`,
-      )
+      ) as c4.ViewId
       const body = node.body
       const props = body?.props.filter(this.isValid) ?? []
 
