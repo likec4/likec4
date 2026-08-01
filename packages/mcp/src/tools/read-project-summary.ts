@@ -58,7 +58,7 @@ Deployment (object) fields:
 View (object) fields:
 - id: string — view identifier
 - title: string — view title
-- type: "element" | "deployment" | "dynamic"
+- type: "element" | "deployment" | "dynamic" | "story"
 
 Notes:
 - Read-only, idempotent, no side effects.
@@ -151,7 +151,7 @@ Example response:
     views: z.array(z.object({
       id: z.string(),
       title: z.string(),
-      type: z.enum(['element', 'deployment', 'dynamic']),
+      type: z.enum(['element', 'deployment', 'dynamic', 'story']),
     })),
   },
 })(async (languageServices, args) => {

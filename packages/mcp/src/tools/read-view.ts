@@ -69,7 +69,7 @@ Request:
 
 Response (JSON object):
 - id: string — view id
-- type: "element" | "deployment" | "dynamic" — view type
+- type: "element" | "deployment" | "dynamic" | "story" — view type
 - title: string — view title (falls back to id if not set)
 - description: string|null — optional description
 - tags: string[] — view tags
@@ -120,7 +120,7 @@ Example response:
   },
   outputSchema: {
     id: z.string(),
-    type: z.enum(['element', 'deployment', 'dynamic']).describe('View type'),
+    type: z.enum(['element', 'deployment', 'dynamic', 'story']).describe('View type'),
     title: z.string(),
     description: z.string().nullable(),
     tags: z.array(z.string()),
