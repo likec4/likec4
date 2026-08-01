@@ -8,13 +8,26 @@
 import type { Element, ViewId } from '@likec4/core'
 import {
   type ViewRulePredicate,
+  invariant,
   isViewRulePredicate,
   ModelRelationExpr,
 } from '@likec4/core'
 import { viewsWithReadableEdges, withReadableEdges } from '@likec4/core/compute-view'
 import { keys, values } from 'remeda'
 import { describe } from 'vitest'
+import type { ParsedAstView } from '../../ast'
 import { createTestServices, test } from '../../test'
+
+/**
+ * A story view has `statements`, not `rules` (RFC 0001: a story owns no view rules).
+ * These fixtures always construct an element, dynamic, or deployment view, so assert
+ * that here rather than widening the fixtures' assertions to tolerate a story view.
+ */
+function rulesOf(view: ParsedAstView | null | undefined) {
+  invariant(view, 'Expected a parsed view')
+  invariant('rules' in view, `Expected view ${view.id} to have rules (got a story view?)`)
+  return view.rules
+}
 
 const it = test
 
@@ -1777,7 +1790,7 @@ describe('LikeC4ModelBuilder', () => {
     `)
 
     const doc = services.likec4.ModelParser.parse(langiumDocument)
-    const rules = doc.c4Views[0]?.rules!
+    const rules = rulesOf(doc.c4Views[0])
     const includeRule = rules[0] as ViewRulePredicate
     const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
 
@@ -1808,7 +1821,7 @@ describe('LikeC4ModelBuilder', () => {
     `)
 
     const doc = services.likec4.ModelParser.parse(langiumDocument)
-    const rules = doc.c4Views[0]?.rules!
+    const rules = rulesOf(doc.c4Views[0])
     const includeRule = rules[0] as ViewRulePredicate
     const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
 
