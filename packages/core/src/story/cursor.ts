@@ -73,13 +73,32 @@ function enter(
 }
 
 /**
+ * Positions the cursor at an arbitrary scene, seeding `innerStep` to that
+ * scene's first inner step when it is a dynamic view, or `null` otherwise.
+ * Returns `null` if `scene` is not a path known to `flow`.
+ *
+ * Exists for callers that jump straight to a scene rather than moving
+ * relative to a current cursor — e.g. intercepting `navigateTo` when its
+ * target is one of the story's own scenes. It delegates to the same `enter`
+ * helper the relative-move functions below use, rather than duplicating
+ * "how do we land on a scene" logic a second time.
+ */
+export function cursorAtScene(
+  flow: StoryFlow,
+  resolve: ResolveSceneView,
+  scene: scalar.StepPath,
+): StoryCursor | null {
+  return flow.lookup(scene) ? enter(flow, resolve, scene, 'first') : null
+}
+
+/**
  * First position in the story: its first scene, entered on that scene's first
  * inner step if it is a dynamic view. Returns `null` if the story has no
  * scenes.
  */
 export function firstCursor(flow: StoryFlow, resolve: ResolveSceneView): StoryCursor | null {
   const scene = flow.firstScene()
-  return scene ? enter(flow, resolve, scene, 'first') : null
+  return scene ? cursorAtScene(flow, resolve, scene) : null
 }
 
 /**

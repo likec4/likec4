@@ -4,7 +4,14 @@ import { StepPath } from '../types/scalar'
 import type { ComputedStoryView } from '../types/view-computed'
 import { StoryFlow } from '../types/view-story-flow'
 import { nonNullable } from '../utils'
-import { type ResolveSceneView, firstCursor, nextCursor, nextSceneCursor, prevCursor } from './cursor'
+import {
+  type ResolveSceneView,
+  cursorAtScene,
+  firstCursor,
+  nextCursor,
+  nextSceneCursor,
+  prevCursor,
+} from './cursor'
 
 const SCENE_1 = StepPath(1) // 'step-01' — static scene
 const SCENE_2 = StepPath(2) // 'step-02' — dynamic scene, resolves to view "dyn"
@@ -99,5 +106,17 @@ describe('story cursor', () => {
   it('nextSceneCursor skips a dynamic scene’s remaining steps', () => {
     const c = nextSceneCursor(flow, resolve, { scene: SCENE_2, innerStep: INNER_1 })
     expect(c).toEqual({ scene: SCENE_3, innerStep: null })
+  })
+
+  it('cursorAtScene positions on a static scene with no inner step', () => {
+    expect(cursorAtScene(flow, resolve, SCENE_1)).toEqual({ scene: SCENE_1, innerStep: null })
+  })
+
+  it('cursorAtScene seeds the first inner step when the scene is a dynamic view', () => {
+    expect(cursorAtScene(flow, resolve, SCENE_2)).toEqual({ scene: SCENE_2, innerStep: INNER_1 })
+  })
+
+  it('cursorAtScene returns null for a scene path unknown to the flow', () => {
+    expect(cursorAtScene(flow, resolve, StepPath(99))).toBeNull()
   })
 })
