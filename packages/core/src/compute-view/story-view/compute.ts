@@ -10,7 +10,7 @@ import {
   storyGuards,
 } from '../../types'
 import type { Any } from '../../types/_aux'
-import { nonexhaustive, nonNullable } from '../../utils'
+import { invariant, nonexhaustive, nonNullable } from '../../utils'
 import { calcViewLayoutHash } from '../utils/view-hash'
 
 /**
@@ -48,9 +48,17 @@ export function computeStoryView<A extends Any>(
           // constructs `likec4model` from `ParsedLikeC4ModelData` before computing any
           // view). So the existence check goes through the stage-agnostic raw
           // `$data.views` record instead.
-          nonNullable(
+          const referencedView = nonNullable(
             likec4model.$data.views[statement.view],
             `Story "${parsed.id}" references view "${statement.view}", which does not exist in the model`,
+          )
+          // Defence in depth (RFC 0001, "Compute"): the LSP validation is the primary
+          // gate rejecting a scene that names another story. A hand-built
+          // ParsedStoryView (e.g. via Builder, with no LSP in the loop) has no such
+          // gate, so without this check a nested story would silently pass through.
+          invariant(
+            referencedView[_type] !== 'story',
+            `Story "${parsed.id}" references view "${statement.view}", which is itself a story`,
           )
           scenes.push({
             id: StepPath(...prefix, position),
@@ -93,7 +101,7 @@ export function computeStoryView<A extends Any>(
 
   walk(parsed.statements, [], undefined)
 
-  const { sceneLayout = 'anchored', statements, ...props } = parsed
+  const { sceneLayout = 'anchored', statements, docUri: _docUri, ...props } = parsed // exclude docUri
 
   return calcViewLayoutHash({
     ...props,

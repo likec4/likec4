@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder'
 import { LikeC4Model } from '../../model'
-import { type ParsedStoryView, type ViewId, _stage, _type } from '../../types'
+import { type ParsedLikeC4ModelData, type ParsedStoryView, type ViewId, _stage, _type } from '../../types'
 import { computeStoryView } from './compute'
 
 const builder = Builder.specification({
@@ -10,7 +10,7 @@ const builder = Builder.specification({
   },
 })
 
-function buildModel() {
+function buildModel(extraViews: Record<string, unknown> = {}) {
   const parsed = builder
     .model(({ el }, _) => _(el('v1'), el('v2')))
     .views(({ view, $include, $rules }, _) =>
@@ -20,7 +20,10 @@ function buildModel() {
       )
     )
     .build()
-  return LikeC4Model.create(parsed)
+  return LikeC4Model.create({
+    ...parsed,
+    views: { ...parsed.views, ...extraViews },
+  } as unknown as ParsedLikeC4ModelData<any>)
 }
 
 describe('computeStoryView', () => {
@@ -110,5 +113,38 @@ describe('computeStoryView', () => {
         } as unknown as ParsedStoryView<any>,
       )
     ).toThrowError(/does-not-exist/)
+  })
+
+  it('throws when a scene references a view that is itself a story', () => {
+    const model = buildModel({
+      nested: {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 'nested' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [],
+      },
+    })
+
+    expect(() =>
+      computeStoryView(
+        model,
+        {
+          [_stage]: 'parsed',
+          [_type]: 'story',
+          id: 's' as ViewId,
+          title: null,
+          description: null,
+          tags: null,
+          links: null,
+          statements: [
+            { view: 'nested' as ViewId, astPath: '/statements@0' },
+          ],
+        } as unknown as ParsedStoryView<any>,
+      )
+    ).toThrowError(/nested/)
   })
 })
