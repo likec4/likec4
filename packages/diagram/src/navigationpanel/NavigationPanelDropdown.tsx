@@ -26,6 +26,7 @@ import {
   IconChevronRight,
   IconDirectionSignFilled,
   IconFolderFilled,
+  IconPresentationFilled,
   IconSearch,
   IconStack2,
   IconStarFilled,
@@ -371,6 +372,7 @@ const ViewTypeIcon = {
   ),
   deployment: <IconStack2 size={16} stroke={1.5} className={viewTypeIconCss} />,
   dynamic: <IconDirectionSignFilled size={18} className={viewTypeIconCss} />,
+  story: <IconPresentationFilled size={16} className={viewTypeIconCss} />,
 }
 
 const ColumnScrollArea = ScrollAreaAutosize.withProps({
@@ -392,7 +394,7 @@ type ColumnItem =
   }
   | {
     type: 'view'
-    viewType: 'element' | 'deployment' | 'dynamic' | 'index'
+    viewType: 'element' | 'deployment' | 'dynamic' | 'story' | 'index'
     viewId: ViewId
     title: string
     description: string | null
