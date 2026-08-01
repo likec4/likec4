@@ -3,6 +3,7 @@ import {
   type UnknownComputed,
   type UnknownParsed,
   _stage,
+  isStoryView,
 } from '@likec4/core'
 import { computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
@@ -49,6 +50,24 @@ import type { LikeC4ModelParser } from './model-parser'
 const builderLogger = mainLogger.getChild('builder')
 
 type ModelParsedListener = (projectId: ProjectId, docs: URI[]) => void
+
+/**
+ * A story owns no geometry and has nothing to drift (RFC 0001): manual layout is
+ * inapplicable to it by construction, so `ViewManualLayoutSnapshot` never admits a
+ * `story` variant. Story entries should never appear in a saved snapshot, but exclude
+ * them defensively rather than widen the snapshot type to cover a case that cannot occur.
+ */
+function excludeStoryManualLayouts(
+  views: Record<c4.ViewId, c4.LayoutedView> | undefined,
+): Record<c4.ViewId, c4.ViewManualLayoutSnapshot> {
+  const result: Record<c4.ViewId, c4.ViewManualLayoutSnapshot> = {}
+  for (const [id, view] of Object.entries(views ?? {}) as Array<[c4.ViewId, c4.LayoutedView]>) {
+    if (!isStoryView(view)) {
+      result[id] = view
+    }
+  }
+  return result
+}
 
 export interface LikeC4ModelBuilder extends Disposable {
   parseModel(
@@ -250,7 +269,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       assignNavigateTo(views)
       const data: c4.ComputedLikeC4ModelData = {
         ...parsedModelData,
-        manualLayouts: { ...manualLayouts?.views },
+        manualLayouts: excludeStoryManualLayouts(manualLayouts?.views),
         [_stage]: 'computed',
         views: indexBy(views, prop('id')),
       }
