@@ -19,6 +19,8 @@ export function changeViewLayout(_services: LikeC4Services, {
   viewAst,
   layout,
 }: ChangeViewLayoutArg): TextEdit {
+  // A story owns no geometry and no view rules (RFC 0001), so there is no autoLayout to change.
+  invariant(!ast.isStoryView(viewAst), `View ${view.id} is a story view; it has no rules to change`)
   // Should never happen
   invariant(viewAst.body, `View ${view.id} has no body`)
   const viewCstNode = viewAst.$cstNode

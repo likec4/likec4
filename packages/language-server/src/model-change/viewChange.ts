@@ -1,4 +1,4 @@
-import { type scalar, type ViewChange, type ViewId, nonNullable } from '@likec4/core'
+import { type scalar, type ViewChange, type ViewId, invariant, nonNullable } from '@likec4/core'
 import {
   type AnyOp,
   indent,
@@ -16,11 +16,19 @@ import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
 import type { ProjectData } from '../workspace/ProjectsManager'
 
+/**
+ * A story owns no geometry and no view rules (RFC 0001). Title/description/tag edits
+ * below are property-level text edits shared with `ViewProperty`, but this task adds no
+ * story-editing feature, so story views are excluded here the same way they are from
+ * `changeElementStyle` and `changeViewLayout`.
+ */
+type NonStoryLikeC4View = Exclude<ast.LikeC4View, ast.StoryView>
+
 export type ViewChangePayload<Op extends ViewChange['op']> = {
   viewId: ViewId
   project: ProjectData
   doc: ParsedLikeC4LangiumDocument
-  viewAst: ast.LikeC4View
+  viewAst: NonStoryLikeC4View
   change: Extract<ViewChange, { op: Op }>
   services: LikeC4Services
   workspace: LikeC4Services['shared']['workspace']
@@ -34,6 +42,10 @@ export function preparePayload(request: ChangeView.Params, services: LikeC4Servi
   if (!lookup) {
     throw new Error(`View ${viewId} not found in project ${project.id}`)
   }
+  invariant(
+    !ast.isStoryView(lookup.viewAst),
+    `View ${viewId} is a story view; model changes are not supported for story views`,
+  )
   return {
     viewId,
     change,
@@ -94,12 +106,12 @@ export const changePropertyHandler = viewChangeHandler(
   },
 )
 
-type PropOf<V extends ast.LikeC4View> = NonNullable<V['body']>['props'][number]
+type PropOf<V extends NonStoryLikeC4View> = NonNullable<V['body']>['props'][number]
 
 type WithCst<T extends { $cstNode?: any }> = T & { $cstNode: NonNullable<T['$cstNode']> }
 
 function findExistingViewProperty<
-  V extends ast.LikeC4View,
+  V extends NonStoryLikeC4View,
   P extends PropOf<V>['key'],
   T extends WithCst<PropOf<V> & { key: P }> = WithCst<PropOf<V> & { key: P }>,
 >(
@@ -113,7 +125,7 @@ function findExistingViewProperty<
   return findLast(props, (p): p is T => p.key === property && p.$cstNode !== undefined)
 }
 
-function findInsertPosition<V extends ast.LikeC4View>(
+function findInsertPosition<V extends NonStoryLikeC4View>(
   viewAst: V,
   select: (body: NonNullable<V['body']>) => Position | undefined,
 ) {
@@ -134,7 +146,7 @@ const doubleIndent = (op: AnyOp): AnyOp =>
     ),
   )
 
-function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
+function updateViewTitle(viewAst: NonStoryLikeC4View, title: string): TextEdit {
   const existing = findExistingViewProperty(viewAst, 'title')
 
   const titleOut = withctx({ title })(
@@ -183,7 +195,11 @@ function collectAllTagRefs(tags: ast.Tags | undefined): Array<WithCst<ast.TagRef
   return groups.reverse().flat()
 }
 
-function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit {
+function addTag(
+  viewAst: NonStoryLikeC4View,
+  body: NonNullable<NonStoryLikeC4View['body']>,
+  tagName: scalar.Tag,
+): TextEdit {
   const tagsNode = body.tags
 
   // Append to existing tags
@@ -208,7 +224,7 @@ function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body'
   )
 }
 
-function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit | undefined {
+function removeTag(body: NonNullable<NonStoryLikeC4View['body']>, tagName: scalar.Tag): TextEdit | undefined {
   const allRefs = collectAllTagRefs(body.tags)
   const targetIndex = allRefs.findIndex(ref => ref.tag.ref?.name === tagName)
 
@@ -249,7 +265,7 @@ function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Ta
 }
 
 function updateViewTags(
-  viewAst: ast.LikeC4View,
+  viewAst: NonStoryLikeC4View,
   tag: NonNullable<ViewChange.ChangeProperty['tag']>,
 ): TextEdit[] {
   const edits: TextEdit[] = []
@@ -276,7 +292,7 @@ function updateViewTags(
   return edits
 }
 
-function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit[] {
+function updateViewDescription(viewAst: NonStoryLikeC4View, description: scalar.MarkdownOrString): TextEdit[] {
   const existing = findExistingViewProperty(viewAst, 'description')
 
   const descriptionOut = withctx(
