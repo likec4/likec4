@@ -32,5 +32,11 @@ describe('GraphvizLayouter with story views', () => {
       throw new Error('expected diagram to be a story view')
     }
     expect(diagram.scenes).toEqual(story.scenes)
+    // Regression: LayoutedStoryView requires `bounds: BBox`. Consumers such as
+    // packages/diagram/src/LikeC4Diagram.tsx dereference `view.bounds.width` /
+    // `view.bounds.height` unconditionally, so an undefined `bounds` is a guaranteed
+    // runtime crash the moment a story view is rendered. A story owns no geometry, so
+    // the honest value is a zero box, not an absent one.
+    expect(diagram.bounds).toEqual({ x: 0, y: 0, width: 0, height: 0 })
   })
 })

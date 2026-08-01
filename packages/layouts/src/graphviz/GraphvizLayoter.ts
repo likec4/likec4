@@ -1,6 +1,7 @@
 import {
   type AnyAux,
   type aux,
+  type BBox,
   type ComputedView,
   type DiagramView,
   type LayoutedDynamicView,
@@ -67,6 +68,14 @@ export type LayoutResult<A extends aux.Any = aux.Any> = {
 }
 
 const rootLogger = mainLogger.getChild('layouter')
+
+/**
+ * A story owns no geometry (see RFC 0001, "Layout"), so there is no computed `BBox` to
+ * report. A zero box is the honest value - it is not "unknown", it is "nothing to show" -
+ * and keeps `bounds` a real `BBox` instead of `undefined`, which downstream consumers
+ * (e.g. `LikeC4Diagram.tsx`) dereference unconditionally.
+ */
+const zeroBounds: BBox = { x: 0, y: 0, width: 0, height: 0 }
 
 function normalizeDot(dot: DotSource): DotSource {
   return dot
@@ -147,7 +156,10 @@ export class GraphvizLayouter implements Disposable {
         diagram: {
           ...params.view,
           [_stage]: 'layouted',
-        } as unknown as DiagramView<A>,
+          bounds: zeroBounds,
+          nodes: [],
+          edges: [],
+        },
       }
     }
 
@@ -193,7 +205,10 @@ export class GraphvizLayouter implements Disposable {
         diagram: {
           ...view,
           [_stage]: 'layouted',
-        } as unknown as DiagramView<A>,
+          bounds: zeroBounds,
+          nodes: [],
+          edges: [],
+        },
       }
     }
 
