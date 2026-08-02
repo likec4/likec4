@@ -1,3 +1,4 @@
+import type { AnyTextAdapter } from '@tanstack/ai'
 import type { AnthropicTextAdapter } from '@tanstack/ai-anthropic'
 import type { GeminiTextAdapter } from '@tanstack/ai-gemini'
 import type { OllamaTextAdapter } from '@tanstack/ai-ollama'
@@ -111,6 +112,42 @@ async function loadOllama(): Promise<AIOptions<OllamaTextAdapter<typeof ollamaDe
   }
 }
 
+const minimaxDefaultModel = 'MiniMax-M3' as const
+const minimaxBaseURLs = {
+  global_en: 'https://api.minimax.io/v1',
+  cn_zh: 'https://api.minimaxi.com/v1',
+} as const
+
+function chooseMiniMaxBaseURL(): string {
+  const region = env['MINIMAX_REGION']?.trim().toLowerCase()
+  if (region === 'cn_zh' || region === 'cn' || region === 'cn-zh' || region === 'china') {
+    return minimaxBaseURLs.cn_zh
+  }
+  return minimaxBaseURLs.global_en
+}
+
+async function loadMiniMax(): Promise<AIOptions> {
+  const baseURL = chooseMiniMaxBaseURL()
+  logger.info(
+    'Found ' +
+      k.yellow('MINIMAX_API_KEY') +
+      k.dim(', loading OpenAI-compatible adapter on ') +
+      k.green(baseURL),
+  )
+  await ensurePackage('@tanstack/ai-openai')
+  const { createOpenaiChat } = await import('@tanstack/ai-openai')
+  const apiKey = env['MINIMAX_API_KEY'] as string
+  const model = chooseModel('MINIMAX_CHAT_MODEL', minimaxDefaultModel)
+  return {
+    adapter: createOpenaiChat(
+      model as never,
+      apiKey,
+      { baseURL },
+    ) as unknown as AnyTextAdapter,
+    maxTokens,
+  }
+}
+
 /**
  * Picks the appropriate AI loader based on available environment variables.
  * Returns undefined if no AI provider is configured.
@@ -134,6 +171,10 @@ function pickLoader(): undefined | (() => Promise<AIOptions>) {
 
   if (isTruthy(env['OLLAMA_HOST'])) {
     return loadOllama
+  }
+
+  if (isTruthy(env['MINIMAX_API_KEY'])) {
+    return loadMiniMax
   }
 
   return undefined
