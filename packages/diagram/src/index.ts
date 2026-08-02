@@ -42,6 +42,7 @@ export {
 export {
   createLikeC4Editor,
   type LikeC4EditorCallbacks,
+  type LikeC4EditorChangeResult,
 } from './editor/LikeC4EditorCallbacks'
 
 export {

@@ -1,6 +1,27 @@
 import type * as t from '@likec4/core/types'
 
 /**
+ * Result of applying a change from the LikeC4 Editor.
+ */
+export interface LikeC4EditorChangeResult {
+  /**
+   * Whether applying the change will publish a refreshed view to the diagram
+   * that the editor should wait for.
+   *
+   * Returning no result from `handleChange` defaults this to `true`,
+   * preserving the existing behavior for integrations that persist changes
+   * through an external model service.
+   */
+  waitForViewSync: boolean
+}
+
+export function shouldWaitForViewSync(
+  result?: void | LikeC4EditorChangeResult,
+): boolean {
+  return result?.waitForViewSync ?? true
+}
+
+/**
  * Callbacks from LikeC4 Editor.
  */
 export interface LikeC4EditorCallbacks {
@@ -20,8 +41,15 @@ export interface LikeC4EditorCallbacks {
 
   /**
    * Callback invoked when the view changes.
+   *
+   * Return `{ waitForViewSync: false }` when the integration applies the
+   * change locally and will not publish a refreshed view. When changes are
+   * batched, the editor waits if any callback invocation expects a refresh.
    */
-  handleChange(viewId: t.ViewId, change: t.ViewChange): void | Promise<void>
+  handleChange(
+    viewId: t.ViewId,
+    change: t.ViewChange,
+  ): void | LikeC4EditorChangeResult | Promise<void | LikeC4EditorChangeResult>
 }
 
 export function createLikeC4Editor(callbacks: LikeC4EditorCallbacks): LikeC4EditorCallbacks {
