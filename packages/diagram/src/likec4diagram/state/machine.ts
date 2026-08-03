@@ -1,4 +1,3 @@
-import type { ResolveSceneView } from '@likec4/core'
 import type { ComputedStoryView } from '@likec4/core/types'
 import { StoryFlow } from '@likec4/core/types'
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
@@ -44,10 +43,9 @@ const _diagramMachine = machine.createMachine({
   context: DiagramContext,
   // Spawns the story cursor actor when the diagram is initially mounted on a
   // story view. Root-level `entry` only runs once (when the machine starts),
-  // so this covers "opened directly on a story" (Task 13's example) but not
-  // navigating into a story mid-session — that transition is owned by
-  // `update.view`/`navigating` (`machine.state.navigating.ts`, out of this
-  // task's scope) and by `navigateTo` interception (Task 12).
+  // so this covers "opened directly on a story" but not navigating into a
+  // story mid-session — that direction (and the reverse, leaving a story) is
+  // `syncStoryActor` in `machine.state.navigating.ts`.
   entry: [
     enqueueActions(({ enqueue, context }) => {
       if (context.view._type !== 'story') {
@@ -63,17 +61,13 @@ const _diagramMachine = machine.createMachine({
           // both). The cast only bridges the phantom `_stage` discriminant,
           // which `StoryFlow` never inspects.
           flow: StoryFlow.from(context.view as unknown as ComputedStoryView),
-          // Placeholder: this actor can't reach `useLikeC4Model` (no XState
-          // actor can), so it has no real way to tell whether a scene's view
-          // is a dynamic one. `cursor.ts`'s own functions already degrade
-          // gracefully when `resolve` returns null (every scene behaves as if
-          // it were static — `innerStep` stays `null`), so this is inert
-          // rather than broken. A later task should replace this with a
-          // model-bound resolver supplied from the React layer, the same way
-          // `useEditorActorLogic()` provides model/port-bound services to
-          // `editorActorLogic` via `.provide({ actors: {...} })` in
-          // `DiagramActorProvider.tsx`.
-          resolve: (() => null) satisfies ResolveSceneView,
+          // `context.resolve` is already the real, model-bound resolver by
+          // the time this runs: `DiagramActorProvider.tsx` supplies it as
+          // machine `input`, populated from `useOptionalResolveSceneView()`,
+          // before this actor is even created. Only falls back to `() =>
+          // null` (every scene reads as non-dynamic) for callers with no
+          // model, e.g. this file's own test suites.
+          resolve: context.resolve,
         },
       })
     }),

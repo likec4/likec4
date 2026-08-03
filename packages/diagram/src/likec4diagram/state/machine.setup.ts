@@ -3,7 +3,7 @@ import {
   isDynamicView,
   nonexhaustive,
 } from '@likec4/core'
-import type { StoryCursor } from '@likec4/core'
+import type { ResolveSceneView, StoryCursor } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import type {
   DiagramEdge,
@@ -84,6 +84,21 @@ export interface Input {
   where: WhereOperator | null
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
   features?: EnabledFeatures
+  /**
+   * Resolves a scene's view id to a dynamic view, for the story actor's
+   * cursor to descend into a scene that is itself a dynamic view. An XState
+   * actor cannot reach `useLikeC4Model`, so this always comes from the React
+   * layer — `DiagramActorProvider.tsx` supplies `useOptionalResolveSceneView()`
+   * here, the same way `where`/`features`/`dynamicViewVariant` flow in from
+   * props. Both of the story actor's spawn sites (`machine.ts`'s root
+   * `entry:`, `machine.state.navigating.ts`'s `syncStoryActor`) read
+   * `context.resolve` rather than a hardcoded placeholder, so the actor has
+   * the real resolver from the moment it is spawned — mount-time or
+   * mid-session — regardless of whether `StoryWalkthrough`'s UI is toggled
+   * on. Defaults to `() => null` (every scene reads as non-dynamic) for
+   * callers that don't have a model, e.g. this file's own test suites.
+   */
+  resolve?: ResolveSceneView
 }
 
 export type ToggledFeatures = {
@@ -94,6 +109,7 @@ export interface Context extends Input {
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
   features: EnabledFeatures
+  resolve: ResolveSceneView
   // This is used to override features from props
   toggledFeatures: ToggledFeatures
   initialized: {
@@ -164,6 +180,7 @@ export function Context({ input }: { input: Input }): Context {
       ...DefaultFeatures,
       ...input.features,
     },
+    resolve: input.resolve ?? (() => null),
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
       enableCompareWithLatest: false,
@@ -250,7 +267,10 @@ export type Events =
     cursor: StoryCursor
     view: DiagramView
   }
-  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features'>> }
+  | {
+    type: 'update.inputs'
+    inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features' | 'resolve'>>
+  }
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }

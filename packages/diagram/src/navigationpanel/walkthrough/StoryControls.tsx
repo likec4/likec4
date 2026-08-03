@@ -21,11 +21,10 @@ import {
 import { useSelector } from '@xstate/react'
 import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { forwardRef, useEffect } from 'react'
+import { forwardRef } from 'react'
 import { Markdown } from '../../base-primitives'
 import { selectDiagramSnapshot, useDiagramSelector, useMantinePortalProps } from '../../hooks'
 import type { StoryActorSnapshot } from '../../story/actor'
-import { useResolveSceneView } from '../../story/resolveSceneView'
 import { Tooltip } from '../_common'
 
 /** Previous/Next button, styled like the dynamic-view walkthrough's own prev/next pair. */
@@ -89,18 +88,12 @@ export function StoryControls() {
   const storyActor = useDiagramSelector(selectStoryActor)
   const portalProps = useMantinePortalProps()
 
-  /**
-   * The story actor is spawned with `resolve: () => null` as a placeholder
-   * (`story/actor.ts`), because an XState actor cannot reach `useLikeC4Model`.
-   * This is the React-layer supply: as soon as both the story actor and the
-   * model are available, hand the actor the real resolver so dynamic-scene
-   * descent stops being inert. See `story/resolveSceneView.ts`.
-   */
-  const resolve = useResolveSceneView()
-  useEffect(() => {
-    storyActor?.send({ type: 'update.resolve', resolve })
-  }, [storyActor, resolve])
-
+  // The story actor is spawned with the real, model-bound `resolve` from the
+  // start (`DiagramActorProvider.tsx` feeds `useOptionalResolveSceneView()`
+  // into the diagram machine's `context.resolve`, read by both of the
+  // actor's spawn sites), so there is nothing to backfill here any more.
+  // `update.resolve` (`story/actor.ts`) still exists as a fallback for
+  // callers that spawn the actor directly without a model-bound resolver.
   const scene = useSelector(storyActor, selectActiveScene)
 
   return (
