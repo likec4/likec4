@@ -1,8 +1,9 @@
+import type { StoryCursor } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
-import type { LayoutedView, StorySceneLayout } from '@likec4/core/types'
-import { _stage, _type } from '@likec4/core/types'
+import type { ComputedStoryView, LayoutedView, StorySceneLayout } from '@likec4/core/types'
+import { _stage, _type, StepPath, StoryFlow } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { applyOffset, positionsOf, resolveScene } from './resolveScene'
+import { applyOffset, positionsOf, resolveCurrentScene, resolveScene } from './resolveScene'
 
 // Minimal fixture — `positionsOf`/`applyOffset` only look at `nodes[].id/x/y`,
 // so the rest of the view shape is irrelevant to these pure helpers.
@@ -111,5 +112,107 @@ describe('resolveScene', () => {
 
     expect(resolved!.offset).toEqual({ x: 0, y: 0 })
     expect(resolved!.view).toBe(targetView)
+  })
+})
+
+describe('resolveCurrentScene', () => {
+  // Reuses `resolveScene`'s `model`/`targetView` fixtures above — this suite
+  // only exercises the cursor-lookup and `previous`-vs-`outgoing` wiring on
+  // top of them, not scene resolution itself (already covered above).
+  const model = LikeC4Model.fromDump({
+    _stage: 'layouted',
+    specification: { elements: {} },
+    deployments: {},
+    views: {
+      'scene-view': {
+        id: 'scene-view',
+        [_type]: 'element',
+        [_stage]: 'layouted',
+        nodes: [
+          { id: 'shared', x: 0, y: 0, width: 10, height: 10, tags: [] },
+          { id: 'only-in-target', x: 40, y: 0, width: 10, height: 10, tags: [] },
+        ],
+        edges: [],
+      } as unknown as LayoutedView,
+    },
+  })
+
+  const flow = StoryFlow.from({
+    [_type]: 'story',
+    scenes: [
+      { id: StepPath(1), view: 'scene-view', astPath: '/a' },
+    ],
+  } as unknown as ComputedStoryView)
+
+  const cursor: StoryCursor = { scene: StepPath(1), innerStep: null }
+
+  it('returns null when the cursor points to a scene unknown to flow', () => {
+    const result = resolveCurrentScene({
+      cursor: { scene: StepPath(99), innerStep: null },
+      flow,
+      model,
+      previous: null,
+      sceneLayout: 'anchored' as StorySceneLayout,
+    })
+    expect(result).toBeNull()
+  })
+
+  it('resolves with a zero offset when there is no previous scene on screen', () => {
+    const resolved = resolveCurrentScene({
+      cursor,
+      flow,
+      model,
+      previous: null,
+      sceneLayout: 'anchored' as StorySceneLayout,
+    })
+    expect(resolved).not.toBeNull()
+    expect(resolved!.offset).toEqual({ x: 0, y: 0 })
+  })
+
+  it('aligns against the previous (already offset-applied) scene, not the incoming scene\'s native layout', () => {
+    // 'shared' was last shown at (30, 0) -- 30px right of where 'scene-view'
+    // lays it out natively (0, 0) -- so anchored mode should offset by (+30, 0)
+    // exactly like `resolveScene`'s own `outgoing`-map test above.
+    const previous = {
+      id: 'prev-scene',
+      [_type]: 'element',
+      [_stage]: 'layouted',
+      nodes: [
+        { id: 'shared', x: 30, y: 0, width: 10, height: 10, tags: [] },
+      ],
+      edges: [],
+    } as unknown as LayoutedView
+
+    const resolved = resolveCurrentScene({
+      cursor,
+      flow,
+      model,
+      previous,
+      sceneLayout: 'anchored' as StorySceneLayout,
+    })
+
+    expect(resolved!.offset).toEqual({ x: 30, y: 0 })
+  })
+
+  it('forces a zero offset in independent mode regardless of previous', () => {
+    const previous = {
+      id: 'prev-scene',
+      [_type]: 'element',
+      [_stage]: 'layouted',
+      nodes: [
+        { id: 'shared', x: 30, y: 0, width: 10, height: 10, tags: [] },
+      ],
+      edges: [],
+    } as unknown as LayoutedView
+
+    const resolved = resolveCurrentScene({
+      cursor,
+      flow,
+      model,
+      previous,
+      sceneLayout: 'independent' as StorySceneLayout,
+    })
+
+    expect(resolved!.offset).toEqual({ x: 0, y: 0 })
   })
 })
