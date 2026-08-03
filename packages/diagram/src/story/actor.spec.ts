@@ -5,7 +5,7 @@ import { StepPath } from '@likec4/core/types'
 import { StoryFlow } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { createActor } from 'xstate'
-import { storyActorLogic } from './actor'
+import { findSceneForView, storyActorLogic } from './actor'
 
 // Mirrors the fixture in `packages/core/src/story/cursor.spec.ts`: three
 // scenes, the middle one a dynamic view with two of its own steps.
@@ -140,5 +140,28 @@ describe('storyActorLogic', () => {
       actor.send({ type: 'update.resolve', resolve })
       expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_1, innerStep: null })
     })
+  })
+})
+
+describe('findSceneForView', () => {
+  const flow = StoryFlow.from(storyView)
+
+  it('finds the scene showing a given view', () => {
+    expect(findSceneForView(flow, 'dyn')).toBe(SCENE_2)
+  })
+
+  it('returns null for a view that is not a scene', () => {
+    expect(findSceneForView(flow, 'elsewhere')).toBeNull()
+  })
+
+  it('returns the first matching scene when a view appears twice', () => {
+    const twice = {
+      [_type]: 'story',
+      scenes: [
+        { id: SCENE_1, view: 'static1', astPath: '/a' },
+        { id: SCENE_2, view: 'static1', astPath: '/b' },
+      ],
+    } as unknown as ComputedStoryView
+    expect(findSceneForView(StoryFlow.from(twice), 'static1')).toBe(SCENE_1)
   })
 })

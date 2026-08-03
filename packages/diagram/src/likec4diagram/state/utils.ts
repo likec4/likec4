@@ -16,6 +16,7 @@ import type { XYStoreState } from '../../hooks/useXYFlow'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
+import type { StoryActorRef } from '../../story/actor'
 import { pickViewBounds } from '../../utils/view-bounds'
 import type { Types } from '../types'
 import type { Context } from './machine.setup'
@@ -46,6 +47,9 @@ export function typedSystem(system: ActorSystem<any>) {
     },
     get navigationActorRef(): NavigationPanelActorRef | null {
       return sys.get('navigationPanel') ?? null
+    },
+    get storyActorRef(): StoryActorRef | null {
+      return sys.get('story') ?? null
     },
   }
 }

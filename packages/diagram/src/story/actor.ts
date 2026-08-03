@@ -36,9 +36,14 @@ export interface Input {
   flow: StoryFlow
   /**
    * Resolves a scene's view id to a dynamic view, so the cursor can descend
-   * into its steps. Model-bound in the general case; the caller that spawns
-   * this actor is responsible for supplying a real implementation once it has
-   * model access (see `machine.ts`'s spawn site for the current placeholder).
+   * into its steps. Model-bound in the general case; both spawn sites
+   * (`machine.ts`'s root `entry:`, `machine.state.navigating.ts`'s
+   * `syncStoryActor`) read `context.resolve` on the top-level diagram
+   * machine, which `DiagramActorProvider.tsx` populates from
+   * `useOptionalResolveSceneView()` — so by the time either spawns this
+   * actor, `resolve` is already the real, model-bound implementation, not a
+   * placeholder. Only tests and other callers with no model access fall back
+   * to `() => null`.
    */
   resolve: ResolveSceneView
 }
@@ -48,11 +53,12 @@ export type Events =
   | { type: 'prev' }
   | { type: 'gotoScene'; sceneId: StepPath }
   /**
-   * Supplies the real `ResolveSceneView` once the React layer has model
-   * access (see `resolveSceneView.ts`'s `useResolveSceneView`). The actor is
-   * spawned with a placeholder that always returns `null`
-   * (`machine.ts`'s spawn site), so every scene visited before this event
-   * arrives has `innerStep: null` even when its view actually is dynamic.
+   * Fallback for backfilling `resolve` after the actor has already been
+   * spawned. Not needed on the normal path any more — every spawn site
+   * supplies the real resolver as `input.resolve` from the start (see
+   * `Input.resolve`) — but kept for callers that spawn this actor directly
+   * (e.g. isolated tests) with a placeholder and want to upgrade it later
+   * without restarting the actor.
    */
   | { type: 'update.resolve'; resolve: ResolveSceneView }
 
@@ -154,3 +160,18 @@ export const storyActorLogic: StoryActorLogic = _actorLogic as any
 export type StoryActorSnapshot = SnapshotFrom<StoryActorLogic>
 
 export interface StoryActorRef extends ActorRef<StoryActorSnapshot, Events, never> {}
+
+/**
+ * The scene showing `viewId`, or `null` when the view is not part of this story.
+ *
+ * Used to intercept `navigateTo` (`likec4diagram/state/diagram-api.ts`'s
+ * `DiagramApi.navigateTo`): when the target is one of the story's own scenes,
+ * the cursor jumps there via `gotoScene` instead of routing away and
+ * discarding the story. See RFC 0001, "`navigateTo` inside a story".
+ *
+ * Returns the *first* matching scene when a view is shown by more than one
+ * scene — `Array.find` order, which is `flow.scenes`' traversal order.
+ */
+export function findSceneForView(flow: StoryFlow, viewId: string): StepPath | null {
+  return flow.scenes.find(s => s.view === viewId)?.id ?? null
+}
