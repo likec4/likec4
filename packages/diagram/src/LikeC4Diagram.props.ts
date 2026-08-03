@@ -235,6 +235,12 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   enableDynamicViewWalkthrough?: boolean | undefined
 
   /**
+   * If the story walkthrough panel (Previous/Next, scene narration) should be enabled
+   * @default false
+   */
+  enableStoryWalkthrough?: boolean | undefined
+
+  /**
    * Enable "Compare with auto layout" action when view was manually modified and out of sync with latest model
    * @default true if `onLayoutTypeChange` is set, false otherwise
    */
