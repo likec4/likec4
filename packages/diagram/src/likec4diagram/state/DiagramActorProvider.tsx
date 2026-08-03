@@ -210,6 +210,13 @@ function selectCursor(snapshot: StoryActorSnapshot | undefined) {
   return snapshot?.context.cursor ?? null
 }
 
+// `context.initialized.xydata` flips to `true` once the machine's own
+// mount-time `update.view` (`DiagramActorProvider`'s effect below, sent with
+// the raw `view` prop — the story's own wrapper view when mounting directly
+// on a story) has been processed. Gating on it is what keeps that event from
+// undoing this component's own `story.scene` dispatch.
+const selectInitializedXydata = selectDiagramContext(ctx => ctx.initialized.xydata)
+
 /**
  * The story cursor's dispatch link: whenever the story actor's cursor moves
  * (`next`/`prev`/`gotoScene`, from `StoryControls.tsx` or `navigateTo`
@@ -221,6 +228,21 @@ function selectCursor(snapshot: StoryActorSnapshot | undefined) {
  * Lives here, not in the story actor itself, because resolving a scene needs
  * `LikeC4Model` (`resolveCurrentScene` → `resolveScene` → `model.findView`),
  * and an XState actor cannot reach `useLikeC4Model`.
+ *
+ * Waits for `initialized.xydata` before dispatching. Discovered by running
+ * the example story end to end (Task 13): on the very first mount directly on
+ * a story, `DiagramActorProvider`'s own mount-time `update.view` effect (sent
+ * with the raw story `view` prop, to satisfy `initializing`'s "waits for
+ * `update.view`" requirement) fires as a *sibling* effect in the same commit
+ * — and since this component is a child of `DiagramActorProvider`, React
+ * runs child effects before parent effects, so this component's first
+ * dispatch would otherwise land *before* that event and immediately get
+ * overwritten by it (`mergeXYNodesEdges` merges against the *story* view,
+ * wiping the resolved scene's nodes back to the story's own empty ones).
+ * `initialized.xydata` is already `true` for every other trigger (`next`/
+ * `prev`/`gotoScene`, and mid-session entry via `syncStoryActor`, which only
+ * ever runs from the `ready` state), so this only changes behaviour for the
+ * one mount-directly-on-a-story race.
  *
  * `previousRef` tracks the last *resolved* (already offset-applied) scene —
  * exactly what the previous `story.scene` dispatch carried as `view` — as the
@@ -235,6 +257,7 @@ const StoryCursorSync = memo(() => {
   const model = useOptionalLikeC4Model()
   const storyActor = useDiagramSelector(selectStoryActor)
   const cursor = useSelector(storyActor, selectCursor)
+  const initializedXydata = useDiagramSelector(selectInitializedXydata)
 
   const previousRef = useRef<DiagramView | null>(null)
 
@@ -243,7 +266,7 @@ const StoryCursorSync = memo(() => {
   }, [storyActor])
 
   useEffect(() => {
-    if (!model || !storyActor || !cursor) {
+    if (!initializedXydata || !model || !storyActor || !cursor) {
       return
     }
     const { flow } = storyActor.getSnapshot().context
@@ -265,7 +288,7 @@ const StoryCursorSync = memo(() => {
     }
     previousRef.current = resolved.view
     diagramActor.send({ type: 'story.scene', cursor, view: resolved.view })
-  }, [diagramActor, model, storyActor, cursor])
+  }, [diagramActor, model, storyActor, cursor, initializedXydata])
 
   return null
 })

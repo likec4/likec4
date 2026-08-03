@@ -25,7 +25,7 @@ import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls, StoryControls } from './walkthrough'
 
-const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
+export const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
   const view = context.view
   const folder = context.viewModel?.folder
   return {
@@ -36,7 +36,15 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
     viewId: view.id,
     viewTitle: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
     isDynamicView: (context.viewModel?._type ?? view._type) === 'dynamic',
-    isStoryView: (context.viewModel?._type ?? view._type) === 'story',
+    // Not `view._type === 'story'`: once the first scene has rendered,
+    // `story.scene` has already replaced `view` with that scene's own view
+    // (element/dynamic/deployment), so `view._type` never reads as 'story'
+    // again for the rest of the session even though it is still active.
+    // `activeStoryCursor` is the main diagram context's own signal for "is a
+    // story currently active" and survives exactly as long as the story does
+    // (see `machine.state.navigating.ts`'s `syncStoryActor`, which clears it
+    // on leaving).
+    isStoryView: context.activeStoryCursor !== null,
   }
 }
 
