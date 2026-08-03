@@ -326,10 +326,28 @@ export const dynamicView = viewProps
 //   rules: v.rules,
 // }))
 
+// ---- Story View Schema ----
+
+export const storySceneLayout = z.literal(['anchored', 'independent', 'unified'])
+
+/**
+ * Replicates ParsedStoryView from the core, loosely — the generator does not
+ * emit story views at all (see `operators/views.ts`'s `storyView`, which
+ * throws), so this only needs to type-check against real parsed data, not
+ * describe every field precisely.
+ */
+export const storyView = viewProps
+  .extend({
+    _type: z.literal('story'),
+    sceneLayout: storySceneLayout.optional(),
+    statements: z.array(z.unknown()).optional().default([]),
+  })
+
 export const anyView = z.union([
   elementView,
   deploymentView,
   dynamicView,
+  storyView,
 ])
 
 export const views = z.record(common.viewId, anyView)

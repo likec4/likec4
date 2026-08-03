@@ -484,6 +484,20 @@ export const dynamicView = zodOp(schemas.views.dynamicView.partial({ _type: true
   ),
 )
 
+// --- Story View ---
+
+/**
+ * Story views are out of scope for DSL generation in this POC (RFC 0001):
+ * throws explicitly rather than silently emitting nothing, so a caller that
+ * round-trips a story through `writeDSL`/`toDSL` finds out immediately
+ * instead of getting a `views { }` block missing a view.
+ */
+export const storyView = zodOp(schemas.views.storyView)(({ ctx }) => {
+  throw new Error(
+    `Story views are not supported by this generator (POC scope — see RFC 0001): ${ctx.id}`,
+  )
+})
+
 // --- Parsed View ---
 export const anyView = zodOp(schemas.views.anyView)(({ ctx, exec }) => {
   if ('_type' in ctx) {
@@ -495,6 +509,9 @@ export const anyView = zodOp(schemas.views.anyView)(({ ctx, exec }) => {
     }
     if (ctx._type === 'dynamic') {
       return exec(ctx, dynamicView())
+    }
+    if (ctx._type === 'story') {
+      return exec(ctx, storyView())
     }
   }
   nonexhaustive(ctx)
