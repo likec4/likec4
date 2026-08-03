@@ -30,7 +30,7 @@ If the current branch has no PR, ask whether to inspect a specific PR number or 
 Set the target login from the request or live GitHub context. Do not hard-code personal usernames.
 
 ```bash
-GITHUB_LOGIN=<github-login>
+GITHUB_LOGIN='REPLACE_WITH_GITHUB_LOGIN'
 REPO=likec4/likec4
 
 gh api -X GET search/issues --paginate \
