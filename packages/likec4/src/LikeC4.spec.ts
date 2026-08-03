@@ -287,6 +287,7 @@ describe('LikeC4', () => {
             "deployment.c4",
             "externals.c4",
             "model.c4",
+            "story.c4",
             "views.c4",
           ],
           "folder": "cloud-system",

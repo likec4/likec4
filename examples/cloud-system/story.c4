@@ -1,0 +1,37 @@
+views {
+
+  story migration {
+    title 'Migration to microservices'
+    description 'How Cloud System moved from a single legacy backend to Cloud Next.'
+    sceneLayout anchored
+
+    scene cloud_legacy {
+      notes '
+        Everything ships from one legacy backend.
+        One deployment, one team, one database.
+      '
+    }
+    scene dynamic-view-1 {
+      title 'How a request flows today'
+      notes '
+        A customer request travels through the dashboard, GraphQL,
+        and the legacy backend before touching Amazon services.
+      '
+    }
+    scene cloud_next {
+      title 'Extracted into Cloud Next'
+      notes 'Legacy backend services split into a dedicated backend and a GraphQL API.'
+      cloud.legacy.backend.services becomes cloud.next.backend, cloud.next.graphql
+    }
+
+    alt 'Two ways forward' {
+      when 'Aggressive: cut over immediately' {
+        scene cloud_next
+      }
+      else {
+        scene cloud_legacy
+      }
+    }
+  }
+
+}
