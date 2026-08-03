@@ -47,6 +47,14 @@ export type Events =
   | { type: 'next' }
   | { type: 'prev' }
   | { type: 'gotoScene'; sceneId: StepPath }
+  /**
+   * Supplies the real `ResolveSceneView` once the React layer has model
+   * access (see `resolveSceneView.ts`'s `useResolveSceneView`). The actor is
+   * spawned with a placeholder that always returns `null`
+   * (`machine.ts`'s spawn site), so every scene visited before this event
+   * arrives has `innerStep: null` even when its view actually is dynamic.
+   */
+  | { type: 'update.resolve'; resolve: ResolveSceneView }
 
 export interface Context extends Input {
   cursor: StoryCursor | null
@@ -101,6 +109,22 @@ const _actorLogic = actor.createMachine({
     gotoScene: {
       actions: assign(({ context, event }) => {
         return { cursor: cursorAtScene(context.flow, context.resolve, event.sceneId) ?? context.cursor }
+      }),
+    },
+    'update.resolve': {
+      actions: assign(({ context, event }) => {
+        if (!context.cursor) {
+          return { resolve: event.resolve }
+        }
+        // Re-enter the *current* scene with the real resolver: this backfills
+        // `innerStep` for whichever scene the cursor happens to be on when the
+        // real resolver arrives, not just the story's first scene. It is a
+        // no-op for a genuinely non-dynamic scene (`cursorAtScene` returns the
+        // same `{ scene, innerStep: null }` shape either way).
+        return {
+          resolve: event.resolve,
+          cursor: cursorAtScene(context.flow, event.resolve, context.cursor.scene) ?? context.cursor,
+        }
       }),
     },
   },

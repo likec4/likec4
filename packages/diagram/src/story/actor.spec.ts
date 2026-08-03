@@ -95,4 +95,50 @@ describe('storyActorLogic', () => {
     actor.send({ type: 'gotoScene', sceneId: StepPath(99) })
     expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_1, innerStep: null })
   })
+
+  describe('update.resolve', () => {
+    // Reproduces the real spawn site (`machine.ts`): the actor starts with a
+    // placeholder that always returns null, so a dynamic scene reads as
+    // non-dynamic until the React layer supplies the real resolver.
+    function startInert() {
+      const actor = createActor(storyActorLogic, {
+        input: { flow: StoryFlow.from(storyView), resolve: () => null },
+      })
+      actor.start()
+      return actor
+    }
+
+    it('with the placeholder resolver, a dynamic scene reads as non-dynamic', () => {
+      const actor = startInert()
+      actor.send({ type: 'next' })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: null })
+    })
+
+    it('backfills innerStep for the current scene once the real resolver arrives', () => {
+      const actor = startInert()
+      actor.send({ type: 'next' })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: null })
+
+      actor.send({ type: 'update.resolve', resolve })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_1 })
+    })
+
+    it('next continues through the remaining inner steps after the resolver is backfilled', () => {
+      const actor = startInert()
+      actor.send({ type: 'next' })
+      actor.send({ type: 'update.resolve', resolve })
+
+      actor.send({ type: 'next' })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_2 })
+
+      actor.send({ type: 'next' })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_3, innerStep: null })
+    })
+
+    it('is a no-op on a static scene', () => {
+      const actor = startInert()
+      actor.send({ type: 'update.resolve', resolve })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_1, innerStep: null })
+    })
+  })
 })
