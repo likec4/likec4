@@ -27,7 +27,7 @@ function buildModel(extraViews: Record<string, unknown> = {}) {
 }
 
 describe('computeStoryView', () => {
-  it('assigns sequential scene paths and defaults sceneLayout to anchored', () => {
+  it('assigns sequential scene paths', () => {
     const model = buildModel()
     const view = computeStoryView(
       model,
@@ -46,7 +46,10 @@ describe('computeStoryView', () => {
       } as unknown as ParsedStoryView<any>,
     )
 
-    expect(view.sceneLayout).toBe('anchored')
+    // `sceneLayout` was removed once explicit `anchor` statements superseded it (see
+    // `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`) — nothing should produce
+    // it anymore.
+    expect(view).not.toHaveProperty('sceneLayout')
     expect(view).not.toHaveProperty('nodes')
     expect(view).not.toHaveProperty('edges')
     expect(view).not.toHaveProperty('autoLayout')

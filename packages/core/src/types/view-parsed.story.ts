@@ -6,16 +6,6 @@ import * as scalar from './scalar'
 import type { BaseParsedViewProperties } from './view-common'
 
 /**
- * How consecutive scenes relate geometrically.
- *
- * - `anchored`: each scene keeps its own layout; the incoming frame is translated
- *   so shared elements move as little as possible
- * - `independent`: each scene keeps its own layout, with no alignment
- * - `unified`: one layout across all scenes (NOT implemented — see RFC 0001)
- */
-export type StorySceneLayout = 'anchored' | 'independent' | 'unified'
-
-/**
  * N→M element correspondence across a scene transition.
  * `a becomes b, c` splits; `a, b becomes c` merges; `a becomes b` renames.
  */
@@ -95,6 +85,5 @@ export const storyGuards = {
 
 export interface ParsedStoryView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'story'
-  readonly sceneLayout?: StorySceneLayout
   readonly statements: AnyStoryStatement<A>[]
 }

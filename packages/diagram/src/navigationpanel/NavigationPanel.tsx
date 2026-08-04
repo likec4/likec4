@@ -9,6 +9,7 @@ import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
+import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
@@ -58,13 +59,34 @@ export type NavigationPanelMode =
   | 'walkthrough'
   | 'walkthrough-in-story' // Dynamic-view walkthrough active while inside a story scene: both controls render together
 
+/**
+ * `select` is a pure XState selector with no access to `DiagramFeatures`'s React context, so
+ * the `enableStoryWalkthrough` gate can't be folded into it directly. This downgrades the raw
+ * `'walkthrough-in-story'` mode to plain `'walkthrough'` — the pre-Task-5 behavior
+ * (dynamic-view-only controls, no `StoryControls`) — whenever the consumer hasn't explicitly
+ * opted into `enableStoryWalkthrough`. Every other mode passes through unchanged. This mirrors
+ * the gate `NavigationPanelControls` already applies to its own (non-walkthrough)
+ * `StoryControls`.
+ */
+export const resolveMode = (
+  selectedMode: NavigationPanelMode,
+  enableStoryWalkthrough: boolean,
+): NavigationPanelMode => {
+  if (selectedMode === 'walkthrough-in-story' && !enableStoryWalkthrough) {
+    return 'walkthrough'
+  }
+  return selectedMode
+}
+
 const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
   const {
     view,
     story,
-    mode,
+    mode: selectedMode,
   } = useDiagramSelector(select)
+  const { enableStoryWalkthrough } = useEnabledFeatures()
+  const mode = resolveMode(selectedMode, enableStoryWalkthrough)
   const viewModel = useOptionalCurrentViewModel()
   const opened = useSelector(actorRef, stateHasActiveTag)
   const portalProps = useMantinePortalProps()

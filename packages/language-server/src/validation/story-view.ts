@@ -1,4 +1,5 @@
 import { type ValidationCheck, AstUtils } from 'langium'
+import { filter } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
@@ -186,12 +187,33 @@ export const storyAltChecks = (
  * a depth-first pre-order walk over the story's `statements` tree. This walk
  * is duplicated at the AST level (rather than reusing the core-level walk)
  * because validation runs on the AST before any view is computed.
+ *
+ * Also rejects more than one `anchor` in the same scene. `anchor` used to
+ * have its own strict-order grammar slot (`anchor=StoryAnchorProperty?`),
+ * which structurally guaranteed at most one occurrence but forced `anchor`
+ * to appear after every prop/note and before any `becomes` rule — misplacing
+ * it produced a misleading "Could not resolve reference to Referenceable
+ * named 'anchor'" parse error instead of pointing at the real problem.
+ * `anchor` now lives in the unordered `props` alternation like every other
+ * scene-level property, so nothing at the grammar level stops `anchor a;
+ * anchor b;` from parsing — this check closes that gap with a clean
+ * diagnostic instead of a silent last-write-wins overwrite.
  */
 export const storySceneChecks = (
   _services: LikeC4Services,
 ): ValidationCheck<ast.StoryScene> => {
   return tryOrLog((el, accept) => {
-    if (!el.body?.anchor) {
+    const anchors = filter(el.body?.props ?? [], ast.isStoryAnchorProperty)
+    if (anchors.length > 1) {
+      for (const extra of anchors.slice(1)) {
+        accept('error', 'A scene can only declare one "anchor"', {
+          node: extra,
+        })
+      }
+    }
+
+    const anchor = anchors[0]
+    if (!anchor) {
       return
     }
     const story = AstUtils.getContainerOfType(el, ast.isStoryView)

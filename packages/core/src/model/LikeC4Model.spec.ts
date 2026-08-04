@@ -342,7 +342,6 @@ describe('LikeC4Model', () => {
           description: null,
           tags: null,
           links: null,
-          sceneLayout: 'anchored',
           scenes: [
             { id: 'step-01', view: 'index', title: null, astPath: '/statements@0' },
           ],

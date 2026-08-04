@@ -2,7 +2,7 @@ import type { AnyStoryView, DiagramView } from '@likec4/core/types'
 import { _type } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import type { DiagramMachineSnapshot } from '../likec4diagram/state/machine'
-import { select } from './NavigationPanel'
+import { resolveMode, select } from './NavigationPanel'
 
 // `select` is a `selectDiagramContext(...)` result, i.e. a
 // `[selector, compare]` tuple (see `createSafeContextForActor.selectContext`
@@ -89,5 +89,28 @@ describe('NavigationPanel select — mode derivation', () => {
         story: null,
       })).mode,
     ).toBe('walkthrough-flow')
+  })
+})
+
+describe('resolveMode — enableStoryWalkthrough gate', () => {
+  // `select` (tested above) can produce `'walkthrough-in-story'` purely from `activeWalkthrough`
+  // + `story` in diagram context, with no regard for `enableStoryWalkthrough` — that flag lives
+  // in `DiagramFeatures`'s React context, which the pure XState selector can't see. `resolveMode`
+  // is what the `NavigationPanel` component applies on top of `select`'s output to close that
+  // gap: a consumer that enables `enableDynamicViewWalkthrough` but leaves the default
+  // `enableStoryWalkthrough: false` must not get `StoryControls` rendered on their behalf.
+  it('downgrades "walkthrough-in-story" to "walkthrough" when enableStoryWalkthrough is false', () => {
+    expect(resolveMode('walkthrough-in-story', false)).toBe('walkthrough')
+  })
+
+  it('keeps "walkthrough-in-story" when enableStoryWalkthrough is true', () => {
+    expect(resolveMode('walkthrough-in-story', true)).toBe('walkthrough-in-story')
+  })
+
+  it('leaves every other mode unchanged regardless of the flag', () => {
+    for (const mode of ['default', 'walkthrough-flow', 'walkthrough'] as const) {
+      expect(resolveMode(mode, false)).toBe(mode)
+      expect(resolveMode(mode, true)).toBe(mode)
+    }
   })
 })

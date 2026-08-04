@@ -106,13 +106,12 @@ export function computeStoryView<A extends Any>(
 
   walk(parsed.statements, [], undefined)
 
-  const { sceneLayout = 'anchored', statements, docUri: _docUri, ...props } = parsed // exclude docUri
+  const { statements, docUri: _docUri, ...props } = parsed // exclude docUri
 
   return {
     ...props,
     [_stage]: 'computed',
     [_type]: 'story',
-    sceneLayout,
     scenes,
     storyFlow: statements,
   } as ComputedStoryView<A>

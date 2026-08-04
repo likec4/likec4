@@ -14,7 +14,7 @@ import type { ComputedEdge, ComputedNode, ComputedStoryScene } from './view-comp
 import type { DynamicViewFlowSteps } from './view-dynamic-flow'
 import type { DiagramEdgeDriftReason, DiagramNodeDriftReason, LayoutedViewDriftReason } from './view-manual-layout'
 import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
-import type { AnyStoryStatement, StorySceneLayout } from './view-parsed.story'
+import type { AnyStoryStatement } from './view-parsed.story'
 
 export interface DiagramNode<A extends AnyAux = AnyAux> extends ComputedNode<A>, BBox {
   /**
@@ -220,7 +220,6 @@ export namespace LayoutedDynamicView {
 export interface LayoutedStoryView<A extends AnyAux = AnyAux> extends BaseViewProperties<A> {
   readonly [_type]: 'story'
   readonly [_stage]: 'layouted'
-  readonly sceneLayout: StorySceneLayout
   /**
    * Flattened scene list in traversal order.
    */

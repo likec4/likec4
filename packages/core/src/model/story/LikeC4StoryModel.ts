@@ -3,7 +3,6 @@ import type {
   AnyStoryStatement,
   ComputedStoryScene,
   Link,
-  StorySceneLayout,
 } from '../../types'
 import { isOnStage } from '../../types'
 import type * as aux from '../../types/_aux'
@@ -51,15 +50,6 @@ export class LikeC4StoryModel<A extends AnyAux = AnyAux> {
 
   get $view(): AnyStoryView<A> {
     return this.story
-  }
-
-  /**
-   * How consecutive scenes relate geometrically.
-   * Defined at every stage: `undefined` on a parsed story that has not defaulted yet,
-   * otherwise the resolved layout.
-   */
-  get sceneLayout(): StorySceneLayout | undefined {
-    return this.story.sceneLayout
   }
 
   /**
