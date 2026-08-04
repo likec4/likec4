@@ -1,4 +1,4 @@
-import { cursorAtScene, firstCursor, nextCursor, prevCursor } from '@likec4/core'
+import { cursorAtScene, firstCursor, nextSceneCursor } from '@likec4/core'
 import type { ResolveSceneView, StoryCursor } from '@likec4/core'
 import type { StepPath, StoryFlow } from '@likec4/core/types'
 import {
@@ -96,12 +96,20 @@ const _actorLogic = actor.createMachine({
   id: 'story',
   context: ({ input }) => Context({ input }),
   on: {
+    // Next/prev move a whole scene at a time rather than descending into a
+    // dynamic scene's own steps (`nextCursor`/`prevCursor`, still exported from
+    // core for when they can be used). Nothing in the diagram consumes
+    // `cursor.innerStep` yet: `StoryCursorSync` resolves by `cursor.scene`, so
+    // descending would spend one press per inner step while the canvas showed
+    // nothing at all. `cursorAtScene`/`nextSceneCursor` still seed `innerStep`,
+    // so once active-step highlighting exists this can switch back to
+    // `nextCursor`/`prevCursor` without touching anything else.
     next: {
       actions: assign(({ context }) => {
         if (!context.cursor) {
           return {}
         }
-        return { cursor: nextCursor(context.flow, context.resolve, context.cursor) ?? context.cursor }
+        return { cursor: nextSceneCursor(context.flow, context.resolve, context.cursor) ?? context.cursor }
       }),
     },
     prev: {
@@ -109,7 +117,13 @@ const _actorLogic = actor.createMachine({
         if (!context.cursor) {
           return {}
         }
-        return { cursor: prevCursor(context.flow, context.resolve, context.cursor) ?? context.cursor }
+        // Core exports no `prevSceneCursor`; compose the mirror from the flow's
+        // own scene ordering instead.
+        const previous = context.flow.prevAndNext(context.cursor.scene).prev
+        if (!previous) {
+          return {}
+        }
+        return { cursor: cursorAtScene(context.flow, context.resolve, previous) ?? context.cursor }
       }),
     },
     gotoScene: {

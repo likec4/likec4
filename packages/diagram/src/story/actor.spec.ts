@@ -51,12 +51,14 @@ describe('storyActorLogic', () => {
     expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_1, innerStep: null })
   })
 
-  it('next descends into a dynamic scene and steps through it', () => {
+  // Scene-level, deliberately: `cursor.innerStep` has no consumer in the diagram
+  // yet, so descending would spend one press per inner step while the canvas
+  // showed nothing (`StoryCursorSync` resolves by `cursor.scene`, which does not
+  // change). `innerStep` is still seeded so highlighting can use it later.
+  it('next advances one scene at a time, not through a dynamic scene\'s own steps', () => {
     const actor = start()
     actor.send({ type: 'next' })
     expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_1 })
-    actor.send({ type: 'next' })
-    expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_2 })
     actor.send({ type: 'next' })
     expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_3, innerStep: null })
   })
@@ -77,11 +79,11 @@ describe('storyActorLogic', () => {
     expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_1, innerStep: null })
   })
 
-  it('prev mirrors next, re-entering a dynamic scene on its last step', () => {
+  it('prev mirrors next, entering a dynamic scene at its start', () => {
     const actor = start()
     actor.send({ type: 'gotoScene', sceneId: SCENE_3 })
     actor.send({ type: 'prev' })
-    expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_2 })
+    expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_1 })
   })
 
   it('gotoScene jumps directly to an arbitrary scene', () => {
@@ -123,13 +125,11 @@ describe('storyActorLogic', () => {
       expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_1 })
     })
 
-    it('next continues through the remaining inner steps after the resolver is backfilled', () => {
+    it('next still advances by scene after the resolver is backfilled', () => {
       const actor = startInert()
       actor.send({ type: 'next' })
       actor.send({ type: 'update.resolve', resolve })
-
-      actor.send({ type: 'next' })
-      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_2 })
+      expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_2, innerStep: INNER_1 })
 
       actor.send({ type: 'next' })
       expect(actor.getSnapshot().context.cursor).toEqual({ scene: SCENE_3, innerStep: null })
