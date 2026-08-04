@@ -75,6 +75,7 @@ export function StoryReact() {
       showNavigationButtons
       enableSearch
       enableFocusMode
+      enableDynamicViewWalkthrough
       enableStoryWalkthrough
       enableElementDetails
       enableRelationshipDetails
