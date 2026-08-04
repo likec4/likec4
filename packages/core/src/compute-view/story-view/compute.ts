@@ -11,7 +11,6 @@ import {
 } from '../../types'
 import type { Any } from '../../types/_aux'
 import { invariant, nonexhaustive, nonNullable } from '../../utils'
-import { calcViewLayoutHash } from '../utils/view-hash'
 
 /**
  * Computes a story view.
@@ -56,8 +55,13 @@ export function computeStoryView<A extends Any>(
           // gate rejecting a scene that names another story. A hand-built
           // ParsedStoryView (e.g. via Builder, with no LSP in the loop) has no such
           // gate, so without this check a nested story would silently pass through.
+          // `referencedView` is typed `ParsedView<A>`, which no longer includes
+          // story views (they now live in the parallel `stories` registry), so the
+          // type system considers this comparison unreachable. It is not: nothing
+          // stops a hand-built model from putting a story-shaped object into `views`.
+          // Cast narrowly to keep this a genuine runtime check rather than deleting it.
           invariant(
-            referencedView[_type] !== 'story',
+            (referencedView[_type] as string) !== 'story',
             `Story "${parsed.id}" references view "${statement.view}", which is itself a story`,
           )
           scenes.push({
@@ -103,15 +107,12 @@ export function computeStoryView<A extends Any>(
 
   const { sceneLayout = 'anchored', statements, docUri: _docUri, ...props } = parsed // exclude docUri
 
-  return calcViewLayoutHash({
+  return {
     ...props,
     [_stage]: 'computed',
     [_type]: 'story',
     sceneLayout,
     scenes,
     storyFlow: statements,
-    nodes: [],
-    edges: [],
-    autoLayout: { direction: 'TB' },
-  }) as ComputedStoryView<A>
+  } as ComputedStoryView<A>
 }

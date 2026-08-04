@@ -1,5 +1,7 @@
 import { map, prop } from 'remeda'
 import { describe, it } from 'vitest'
+import type { ComputedLikeC4ModelData } from '../types'
+import { _stage, _type } from '../types'
 import { type TestFqn, computed, model, parsed } from './__test__/fixture'
 import { LikeC4Model } from './LikeC4Model'
 
@@ -326,6 +328,49 @@ describe('LikeC4Model', () => {
       'cloud.backend.api -> email',
       'cloud -> email',
     ])
+  })
+
+  describe('stories', () => {
+    const withStory = LikeC4Model.create({
+      ...computed,
+      stories: {
+        walkthrough: {
+          [_stage]: 'computed',
+          [_type]: 'story',
+          id: 'walkthrough',
+          title: 'Walkthrough',
+          description: null,
+          tags: null,
+          links: null,
+          sceneLayout: 'anchored',
+          scenes: [
+            { id: 'step-01', view: 'index', title: null, astPath: '/statements@0' },
+          ],
+          storyFlow: [],
+        },
+      },
+    } as unknown as ComputedLikeC4ModelData<any>)
+
+    it('findStory returns a LikeC4StoryModel with the right scenes', ({ expect }) => {
+      const story = withStory.findStory('walkthrough')
+      expect(story).not.toBeNull()
+      expect(story!.title).toBe('Walkthrough')
+      expect(story!.scenes.map(prop('id'))).toEqual(['step-01'])
+      expect(story!.scenes.map(prop('view'))).toEqual(['index'])
+    })
+
+    it('story throws when not found, findStory returns null', ({ expect }) => {
+      expect(() => withStory.story('missing' as any)).toThrow(/not found/)
+      expect(withStory.findStory('missing')).toBeNull()
+    })
+
+    it('stories() iterates all registered stories', ({ expect }) => {
+      expect([...withStory.stories()].map(prop('id'))).toEqual(['walkthrough'])
+    })
+
+    it('a model with no stories has an empty stories() iterator', ({ expect }) => {
+      expect([...model.stories()]).toEqual([])
+    })
   })
 
   it('relationships with req kind must have technology', ({ expect }) => {

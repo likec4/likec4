@@ -217,8 +217,9 @@ export namespace LayoutedDynamicView {
   }
 }
 
-export interface LayoutedStoryView<A extends AnyAux = AnyAux> extends BaseLayoutedViewProperties<A> {
+export interface LayoutedStoryView<A extends AnyAux = AnyAux> extends BaseViewProperties<A> {
   readonly [_type]: 'story'
+  readonly [_stage]: 'layouted'
   readonly sceneLayout: StorySceneLayout
   /**
    * Flattened scene list in traversal order.

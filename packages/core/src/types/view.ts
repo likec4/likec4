@@ -2,7 +2,8 @@ import { isTruthy } from 'remeda'
 import type { IsAny, IsNever, Or } from 'type-fest'
 import type * as aux from './_aux'
 import type { Any } from './_aux'
-import type { _stage, _type, ExtractOnStage, ModelStage } from './const'
+import { _type } from './const'
+import type { _stage, ExtractOnStage, ModelStage } from './const'
 import type { ViewType } from './view-common'
 import type {
   ComputedDeploymentView,
@@ -25,7 +26,7 @@ export type ParsedView<A extends Any = Any> =
   | ParsedElementView<A>
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
-  | ParsedStoryView<A>
+// ParsedStoryView removed — see AnyStoryView below
 
 /**
  * Should be `ParsedView` but keep it for backward compatibility
@@ -37,12 +38,17 @@ export type ComputedView<A extends Any = Any> =
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
-  | ComputedStoryView<A>
+// ComputedStoryView removed
 
 export type LayoutedView<A extends Any = Any> =
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
+// LayoutedStoryView removed
+
+export type AnyStoryView<A extends Any = Any> =
+  | ParsedStoryView<A>
+  | ComputedStoryView<A>
   | LayoutedStoryView<A>
 
 export type ProcessedView<A extends Any = Any> =
@@ -61,15 +67,12 @@ export type AnyView<A extends Any = Any> =
   | ParsedElementView<A>
   | ParsedDeploymentView<A>
   | ParsedDynamicView<A>
-  | ParsedStoryView<A>
   | ComputedElementView<A>
   | ComputedDeploymentView<A>
   | ComputedDynamicView<A>
-  | ComputedStoryView<A>
   | LayoutedElementView<A>
   | LayoutedDeploymentView<A>
   | LayoutedDynamicView<A>
-  | LayoutedStoryView<A>
 
 export type ViewOnStage<V extends AnyView<Any>, T extends ModelStage> = Extract<V, { [_stage]: T }>
 export type ViewWithType<V extends AnyView<any>, T extends ViewType> = Extract<V, { [_type]: T }>
@@ -134,6 +137,6 @@ export function isDynamicView<V extends AnyView<any>>(view: V): view is ViewWith
   return view._type === 'dynamic'
 }
 
-export function isStoryView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'story'> {
-  return view._type === 'story'
+export function isStoryView<V extends AnyStoryView<any>>(view: V): view is V {
+  return view[_type] === 'story'
 }

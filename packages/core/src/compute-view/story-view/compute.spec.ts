@@ -47,8 +47,9 @@ describe('computeStoryView', () => {
     )
 
     expect(view.sceneLayout).toBe('anchored')
-    expect(view.nodes).toEqual([])
-    expect(view.edges).toEqual([])
+    expect(view).not.toHaveProperty('nodes')
+    expect(view).not.toHaveProperty('edges')
+    expect(view).not.toHaveProperty('autoLayout')
     expect(view.scenes.map(s => s.id)).toEqual(['step-01', 'step-02'])
     expect(view.scenes.map(s => s.view)).toEqual(['v1', 'v2'])
   })

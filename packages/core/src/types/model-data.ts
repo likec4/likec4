@@ -17,7 +17,10 @@ import type { Specification } from './model-spec'
 import type { LikeC4Project } from './project'
 import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
+import type { ComputedStoryView } from './view-computed'
+import type { LayoutedStoryView } from './view-layouted'
 import type { ViewManualLayoutSnapshot } from './view-manual-layout'
+import type { ParsedStoryView } from './view-parsed.story'
 
 /**
  * Represents a LikeC4 model data, in different stages of processing
@@ -53,11 +56,13 @@ export type AuxFromLikeC4ModelData<D> =
 export interface ParsedLikeC4ModelData<A extends AnyParsed = UnknownParsed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'parsed'
   views: Record<aux.ViewId<A>, ParsedView<A>>
+  stories: Record<aux.ViewId<A>, ParsedStoryView<A>>
 }
 
 export interface ComputedLikeC4ModelData<A extends AnyComputed = UnknownComputed> extends BaseLikeC4ModelData<A> {
   [_stage]: 'computed'
   views: Record<aux.ViewId<A>, ComputedView<A>>
+  stories: Record<aux.ViewId<A>, ComputedStoryView<A>>
   /**
    * If project contains saved manual layouts
    */
@@ -67,6 +72,7 @@ export interface ComputedLikeC4ModelData<A extends AnyComputed = UnknownComputed
 export interface LayoutedLikeC4ModelData<A extends AnyLayouted = UnknownLayouted> extends BaseLikeC4ModelData<A> {
   [_stage]: 'layouted'
   views: Record<aux.ViewId<A>, LayoutedView<A>>
+  stories: Record<aux.ViewId<A>, LayoutedStoryView<A>>
   /**
    * If this model contains saved manual layouts
    */

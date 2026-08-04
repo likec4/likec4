@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { _type } from './const'
 import { hasProp } from './guards'
 import { isStoryView } from './view'
-import type { AnyView } from './view'
+import type { AnyStoryView } from './view'
 
 describe('hasProp', () => {
   it('returns true for present non-nullish property', () => {
@@ -49,14 +49,12 @@ describe('hasProp', () => {
 
 describe('isStoryView', () => {
   it('returns true for a story view', () => {
-    const view = { [_type]: 'story' } as unknown as AnyView<any>
+    const view = { [_type]: 'story' } as unknown as AnyStoryView<any>
     expect(isStoryView(view)).toBe(true)
   })
 
-  it('returns false for element, dynamic and deployment views', () => {
-    for (const t of ['element', 'dynamic', 'deployment']) {
-      const view = { [_type]: t } as unknown as AnyView<any>
-      expect(isStoryView(view)).toBe(false)
-    }
+  it('returns false for a malformed non-story value', () => {
+    const view = { [_type]: 'element' } as unknown as AnyStoryView<any>
+    expect(isStoryView(view)).toBe(false)
   })
 })

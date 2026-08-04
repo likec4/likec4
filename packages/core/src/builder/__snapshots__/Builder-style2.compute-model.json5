@@ -115,6 +115,7 @@
       },
     },
   },
+  "stories": {},
   "views": {
     "cloudui": {
       "_stage": "computed",

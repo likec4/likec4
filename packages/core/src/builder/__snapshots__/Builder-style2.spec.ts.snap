@@ -389,6 +389,7 @@ exports[`Builder (style 2) > general > should build parsed model 1`] = `
       },
     },
   },
+  "stories": {},
   "views": {
     "cloud": {
       "_stage": "parsed",

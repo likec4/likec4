@@ -185,8 +185,9 @@ export interface ComputedStoryScene<A extends AnyAux = AnyAux> {
   readonly astPath: string
 }
 
-export interface ComputedStoryView<A extends AnyAux = AnyAux> extends BaseComputedViewProperties<A> {
+export interface ComputedStoryView<A extends AnyAux = AnyAux> extends BaseViewProperties<A> {
   readonly [_type]: 'story'
+  readonly [_stage]: 'computed'
   readonly sceneLayout: StorySceneLayout
   /**
    * Flattened scene list in traversal order.
