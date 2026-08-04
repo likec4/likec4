@@ -3,7 +3,6 @@ stories {
   story migration {
     title 'Migration to microservices'
     description 'How Cloud System moved from a single legacy backend to Cloud Next.'
-    sceneLayout anchored
 
     scene cloud_legacy {
       notes '
@@ -17,10 +16,12 @@ stories {
         A customer request travels through the dashboard, GraphQL,
         and the legacy backend before touching Amazon services.
       '
+      anchor customer
     }
     scene cloud_next {
       title 'Extracted into Cloud Next'
       notes 'Legacy backend services split into a dedicated backend and a GraphQL API.'
+      anchor cloud.next.backend
       cloud.legacy.backend.services becomes cloud.next.backend, cloud.next.graphql
     }
 

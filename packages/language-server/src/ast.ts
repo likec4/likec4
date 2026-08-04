@@ -213,7 +213,6 @@ export interface ParsedAstStoryView {
   order?: number
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
-  sceneLayout: c4.StorySceneLayout | undefined
   statements: c4.AnyStoryStatement[]
 }
 

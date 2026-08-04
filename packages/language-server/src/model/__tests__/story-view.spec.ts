@@ -20,7 +20,6 @@ describe('story view grammar', () => {
       stories {
         story migration {
           title 'Migration'
-          sceneLayout anchored
 
           scene before {
             notes 'One deployable'
@@ -48,7 +47,7 @@ describe('story view grammar', () => {
         system story
         system scene
         system becomes
-        system sceneLayout
+        system anchor
       }
     `)
     expect(diagnostics).toHaveLength(0)
@@ -73,9 +72,11 @@ describe('ParsedAstStoryView', () => {
       stories {
         story migration {
           title 'Migration'
-          sceneLayout independent
           scene before { notes 'One deployable' }
-          scene after { mono becomes orders, billing }
+          scene after {
+            anchor orders
+            mono becomes orders, billing
+          }
         }
       }
     `)
@@ -84,14 +85,17 @@ describe('ParsedAstStoryView', () => {
     expect(story).toMatchObject({
       id: 'migration',
       title: 'Migration',
-      sceneLayout: 'independent',
     })
     invariant(story, 'Expected story view')
     expect(story.statements).toHaveLength(2)
     // `notes` is `scalar.MarkdownOrString`, not a flat string.
     expect(story.statements[0]).toMatchObject({ view: 'before', notes: { txt: 'One deployable' } })
+    // `before` has no `anchor` statement, so its `anchor` field is left undefined — a plain
+    // crossfade, per the design.
+    expect((story.statements[0] as { anchor?: unknown }).anchor).toBeUndefined()
     expect(story.statements[1]).toMatchObject({
       view: 'after',
+      anchor: 'orders',
       becomes: [{ sources: ['mono'], targets: ['orders', 'billing'] }],
     })
   })

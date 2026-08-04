@@ -375,15 +375,8 @@ StoryViewBody: '{'
 ;
 
 StoryViewProperty:
-  StorySceneLayoutProperty | ViewProperty
+  ViewProperty
 ;
-
-StorySceneLayoutProperty:
-  key='sceneLayout' ':'? value=StorySceneLayoutValue ';'?
-;
-
-StorySceneLayoutValue returns string:
-  'anchored' | 'independent' | 'unified';
 
 StoryStatement:
   StoryScene | StoryAlt | StorySubflow
@@ -395,8 +388,13 @@ StoryScene:
 
 StorySceneBody: '{'
   props+=(ViewStringProperty | NotesProperty)*
+  anchor=StoryAnchorProperty?
   rules+=StoryCorrespondenceRule*
 '}'
+;
+
+StoryAnchorProperty:
+  'anchor' ref=ElementRef ';'?
 ;
 
 StoryCorrespondenceRule:
@@ -1244,12 +1242,11 @@ Id returns string:
   SizeValue |
   DynamicViewDisplayVariantValue |
   DynamicViewFlowKeyword |
-  StorySceneLayoutValue |
   IconPositionValue |
   RankValue |
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' |
-  'story' | 'stories' | 'scene' | 'sceneLayout' | 'becomes';
+  'story' | 'stories' | 'scene' | 'anchor' | 'becomes';
 
 HashId returns string:
   Hash Id;

@@ -649,9 +649,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
     parseStoryView(astNode: ast.StoryView): ParsedAstStoryView {
       const body = astNode.body
       invariant(body, 'StoryView body is not defined')
-      // `StoryViewProperty` (which includes `StorySceneLayoutProperty`) is not yet part of the
-      // language server's `ValidatableAstNode` union, so `this.isValid` cannot be called on it
-      // directly; `tryMap` with an identity function filters out invalid nodes the same way.
+      // `StoryViewProperty` is not yet part of the language server's `ValidatableAstNode` union,
+      // so `this.isValid` cannot be called on it directly; `tryMap` with an identity function
+      // filters out invalid nodes the same way.
       const props = this.tryMap('views', body.props, p => p)
       const astPath = this.getAstNodePath(astNode)
 
@@ -674,10 +674,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
-      const sceneLayout = find(props, ast.isStorySceneLayoutProperty)?.value as
-        | c4.StorySceneLayout
-        | undefined
-
       return {
         [c4._type]: 'story',
         id: id as c4.ViewId,
@@ -687,7 +683,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ...(order !== undefined && { order }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
-        sceneLayout,
         statements: this.tryMap('views', body.statements, n => this.parseStoryStatement(n)),
       }
     }
@@ -741,12 +736,17 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ? this.tryMap('views', body.rules, rule => this.parseStoryCorrespondence(rule))
         : []
 
+      const anchor = body?.anchor
+        ? this.resolveFqn(nonNullable(elementRef(body.anchor.ref), 'Anchor element ref not resolved'))
+        : undefined
+
       return c4.exact({
         view: viewId,
         title: toSingleLine(title) ?? null,
         // `notes` is `scalar.MarkdownOrString`, not a flat string — mirrors `description` above.
         notes: removeIndent(notes),
         becomes: isNonEmptyArray(becomes) ? becomes : undefined,
+        anchor,
         astPath: this.getAstNodePath(node),
       })
     }
