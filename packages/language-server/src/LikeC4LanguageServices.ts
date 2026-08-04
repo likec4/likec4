@@ -5,13 +5,14 @@ import {
   type ProjectId,
   type UnknownComputed,
   type UnknownLayouted,
+  _stage,
   nonexhaustive,
 } from '@likec4/core'
 import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { TextDocument, URI } from 'langium'
-import { entries, filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
+import { entries, filter, flatMap, hasAtLeast, indexBy, map, mapValues, pipe, prop } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
 import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
@@ -258,6 +259,13 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       throw new Error('Failed to compute model, empty project?')
     }
     const layouted = await this.views.layoutAllViews(projectId, cancelToken)
+    // A story owns no geometry (RFC 0001, "Layout"): "layouting" a story is just
+    // relabeling its stage, no Graphviz call needed. Same stamping pass as
+    // `layoutLikeC4Model` in packages/layouts/src/graphviz/layout-model.ts.
+    const layoutedStories = mapValues(
+      model.$data.stories,
+      (story) => ({ ...story, [_stage]: 'layouted' as const }),
+    )
     return LikeC4Model.create({
       ...model.$data,
       _stage: 'layouted' as const,
@@ -266,6 +274,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         map(prop('diagram')),
         indexBy(prop('id')),
       ),
+      stories: layoutedStories,
     })
   }
 

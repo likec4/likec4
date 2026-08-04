@@ -1832,3 +1832,48 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 })
+
+describe('stories', () => {
+  /**
+   * Regression test for the parsed→computed stamping gap in `unsafeSyncComputeModel`:
+   * before the fix, `stories` was carried over unchanged from `parsedModelData` (still
+   * `ParsedStoryView`, no `scenes`/`storyFlow`), rather than run through
+   * `computeStoryView`.
+   */
+  it('computes stories with resolved scenes, not a parsed passthrough', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+      specification {
+        element system
+      }
+      model {
+        system mono
+        system orders
+      }
+      views {
+        view before { include mono }
+        view after { include orders }
+      }
+      stories {
+        story migration {
+          title 'Migration'
+          scene before
+          scene after
+        }
+      }
+    `)
+    expect(diagnostics).to.be.empty
+
+    const model = await buildModel()
+    const story = model.stories['migration' as ViewId]
+    invariant(story, 'Expected computed story "migration"')
+    expect(story).toMatchObject({
+      id: 'migration',
+      title: 'Migration',
+      _stage: 'computed',
+    })
+    expect(story.scenes).toHaveLength(2)
+    expect(story.scenes[0]).toMatchObject({ view: 'before' })
+    expect(story.scenes[1]).toMatchObject({ view: 'after' })
+  })
+})

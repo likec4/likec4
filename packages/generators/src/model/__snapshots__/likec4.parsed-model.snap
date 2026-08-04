@@ -566,6 +566,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
       ],
     },
   },
+  stories: {},
   imports: {},
 } as any) as any
 

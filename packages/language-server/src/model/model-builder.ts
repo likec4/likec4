@@ -3,9 +3,8 @@ import {
   type UnknownComputed,
   type UnknownParsed,
   _stage,
-  isStoryView,
 } from '@likec4/core'
-import { computeView } from '@likec4/core/compute-view'
+import { computeStoryView, computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import type * as c4 from '@likec4/core/types'
 import { loggable } from '@likec4/log'
@@ -50,24 +49,6 @@ import type { LikeC4ModelParser } from './model-parser'
 const builderLogger = mainLogger.getChild('builder')
 
 type ModelParsedListener = (projectId: ProjectId, docs: URI[]) => void
-
-/**
- * A story owns no geometry and has nothing to drift (RFC 0001): manual layout is
- * inapplicable to it by construction, so `ViewManualLayoutSnapshot` never admits a
- * `story` variant. Story entries should never appear in a saved snapshot, but exclude
- * them defensively rather than widen the snapshot type to cover a case that cannot occur.
- */
-function excludeStoryManualLayouts(
-  views: Record<c4.ViewId, c4.LayoutedView> | undefined,
-): Record<c4.ViewId, c4.ViewManualLayoutSnapshot> {
-  const result: Record<c4.ViewId, c4.ViewManualLayoutSnapshot> = {}
-  for (const [id, view] of Object.entries(views ?? {}) as Array<[c4.ViewId, c4.LayoutedView]>) {
-    if (!isStoryView(view)) {
-      result[id] = view
-    }
-  }
-  return result
-}
 
 export interface LikeC4ModelBuilder extends Disposable {
   parseModel(
@@ -267,11 +248,25 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         views.push(result.view)
       }
       assignNavigateTo(views)
+      const stories = [] as c4.ComputedStoryView[]
+      for (const story of values(parsedModelData.stories)) {
+        try {
+          stories.push(computeStoryView(parsedModel, story))
+        } catch (e) {
+          logger.warn(loggable(e))
+        }
+      }
       const data: c4.ComputedLikeC4ModelData = {
         ...parsedModelData,
-        manualLayouts: excludeStoryManualLayouts(manualLayouts?.views),
+        // `manualLayouts?.views` is keyed off LayoutedView, which no longer includes
+        // `story` (Task 1's containment redesign), so no story entry can appear here —
+        // `excludeStoryManualLayouts`'s filtering is dead. Default to `{}` (rather than
+        // leaving the field absent) to preserve `excludeStoryManualLayouts`'s prior
+        // always-defined behavior.
+        manualLayouts: manualLayouts?.views ?? {},
         [_stage]: 'computed',
         views: indexBy(views, prop('id')),
+        stories: indexBy(stories, prop('id')),
       }
       logger.debug(`computeModel${manualLayouts ? ' with manual layouts' : ''}: {status} in ${t0.pretty}`, {
         status: 'completed',

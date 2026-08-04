@@ -108,7 +108,7 @@ export const elementSummarySchema = z.object({
   includedInViews: z.array(z.object({
     id: z.string().describe('View id'),
     title: z.string().describe('View title'),
-    type: z.enum(['element', 'deployment', 'dynamic', 'story']).describe('View type'),
+    type: z.enum(['element', 'deployment', 'dynamic']).describe('View type'),
   })).describe('Views that include this element'),
 })
 
@@ -257,7 +257,7 @@ export const projectIdSchema = z.string()
 export const includedInViewsSchema = z.array(z.object({
   id: z.string().describe('View id'),
   title: z.string().describe('View title'),
-  type: z.enum(['element', 'deployment', 'dynamic', 'story']).describe('View type'),
+  type: z.enum(['element', 'deployment', 'dynamic']).describe('View type'),
 }))
 
 export const includedInViews = (views: Iterable<LikeC4ViewModel>): z.infer<typeof includedInViewsSchema> => {

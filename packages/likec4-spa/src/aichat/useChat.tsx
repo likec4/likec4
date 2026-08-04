@@ -69,13 +69,6 @@ function useChatTools() {
           features,
         } = diagram.getContext()
 
-        if (view._type === 'story') {
-          // AI chat's read-ui-state contract (packages/vite-plugin/src/ai/tools.ts) has no
-          // story-view variant — MCP/AI chat surfaces are an explicit RFC 0001 non-goal for
-          // stories, which own no nodes/edges to report here.
-          throw new Error('read-ui-state is not supported for story views')
-        }
-
         const isReadOnly = toggledFeatures.enableReadOnly ?? features.enableReadOnly
 
         const toNodeData = mapToNodeData(xystore.getState())
