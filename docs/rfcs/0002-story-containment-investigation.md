@@ -523,7 +523,7 @@ Task 6 (`docs/superpowers/plans/2026-08-03-story-containment-redesign.md`, "Task
 and `resolveSceneView`'s actor-side split outright — commit `7e3074011`,
 "refactor(diagram): delete the story actor/cursor — the route is now the cursor." The reasoning:
 once Next/Prev became real, pushed `navigate()` calls (open question 1, resolved as push), the
-route's `$viewId` param already *is* the position in the story — there is nothing left for an
+route's `$viewId` param already _is_ the position in the story — there is nothing left for an
 in-memory cursor to track that the URL doesn't already track. Keeping the actor around to duplicate
 that state would have reintroduced exactly the two-sources-of-truth problem (`context.view` vs. the
 URL) that RFC 0001's retrospective and this RFC's §1 last row (the `activeStoryCursor` staleness
@@ -546,3 +546,9 @@ offsets across scene transitions, matching the values Task 7's smoke test alread
   things.
 - `ModelLocator.locateStoryAst`/`StoryLocateResult` (Task 3) have no consumers yet — there's no
   "go to definition"/"open source" story analogue of `locateView` wired up.
+
+**Superseded since this record was written.** The `sceneLayout` property (§"Open questions" item 4
+above, and RFC 0001's "Scene layout modes") — and the `resolveScene`/`calcSceneOffset` alignment
+math this section describes as relocated to `StoryReact.tsx` — was replaced by a per-scene,
+DSL-authored `anchor <ElementRef>` statement computed inside `packages/diagram` itself. See
+`docs/superpowers/plans/2026-08-04-story-scene-anchor.md`.

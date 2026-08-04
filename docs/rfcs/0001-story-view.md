@@ -290,6 +290,11 @@ implemented. The `StoryTry` type below is specified for that future work, not bu
 
 ### Scene layout modes
 
+> **Superseded.** The `sceneLayout: anchored | independent | unified` story-level property
+> described in this section was replaced by a per-scene, DSL-authored `anchor <ElementRef>`
+> statement — see `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`. The discussion below
+> is kept for historical context on why alignment was originally automatic and story-scoped.
+
 How consecutive scenes relate geometrically is configurable, because the right answer is a visual
 judgement that should be made by looking rather than by argument.
 
