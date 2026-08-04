@@ -12,7 +12,7 @@
 
 ## Deviation from the approved design spec — read this before Task 3
 
-The spec's validation section calls for statically checking that an anchor's element is present in *both* the scene's own view and its immediate predecessor's view. Research for this plan found **no existing mechanism anywhere in `packages/language-server/src/validation/` for checking "is element X actually included in view V's resolved node set"** — that information only exists after a view is computed (`computeView`/`computeStoryView`, run by `LikeC4ModelBuilder.unsafeSyncComputeModel`), and Langium validation checks run on the AST before that, with no established pattern for reaching into the compute cache from inside one. Building that reach-in is new, unverified infrastructure, not a reuse of anything — a materially bigger and riskier task than this plan's scope.
+The spec's validation section calls for statically checking that an anchor's element is present in _both_ the scene's own view and its immediate predecessor's view. Research for this plan found **no existing mechanism anywhere in `packages/language-server/src/validation/` for checking "is element X actually included in view V's resolved node set"** — that information only exists after a view is computed (`computeView`/`computeStoryView`, run by `LikeC4ModelBuilder.unsafeSyncComputeModel`), and Langium validation checks run on the AST before that, with no established pattern for reaching into the compute cache from inside one. Building that reach-in is new, unverified infrastructure, not a reuse of anything — a materially bigger and riskier task than this plan's scope.
 
 **Scope reduction for this plan:** Task 3 implements only the structural half of validation — a scene with no predecessor (the first scene in depth-first order) that declares `anchor` is a validation error. The "present in both views" check is dropped; the runtime fallback (Task 3's diagram-side "if the anchor node isn't found in the outgoing or incoming render, just fall back to fit-to-bounds" behavior, which the design already calls for as a safety net) covers a misconfigured anchor by degrading gracefully instead of crashing. If stronger static validation is wanted later, it needs its own design pass on how to safely call into the compute cache from a validation check — out of scope here.
 
@@ -23,7 +23,7 @@ The spec's validation section calls for statically checking that an anchor's ele
 - Stage explicit paths only — never `git add -A`. Do not touch `packages/icons/` or any `generated/` directory (gitignored).
 - After any grammar change: run `pnpm generate`, then verify `packages/vscode/src/meta.ts` is unchanged (revert if `pnpm generate` touched it — it re-bumps a version every run).
 - After any `packages/core` type change: run `pnpm exec tsc --build` before touching downstream packages (composite-project gotcha — downstream reads `.d.ts` from `packages/core/lib/`, not source).
-- Each task must leave `pnpm exec tsc --build` clean and its own package's test suite green before moving to the next task. This plan is ordered so no task should leave the *whole repo* red even transiently — unlike the earlier containment-redesign plan, there is no "known transient breakage" table here; if a task discovers it needs to break compilation elsewhere, stop and reconsider the task order rather than pushing through.
+- Each task must leave `pnpm exec tsc --build` clean and its own package's test suite green before moving to the next task. This plan is ordered so no task should leave the _whole repo_ red even transiently — unlike the earlier containment-redesign plan, there is no "known transient breakage" table here; if a task discovers it needs to break compilation elsewhere, stop and reconsider the task order rather than pushing through.
 - No changesets (unreleased POC branch).
 - Commit after each task, Conventional Commits style.
 
@@ -32,16 +32,19 @@ The spec's validation section calls for statically checking that an anchor's ele
 ### Task 1: Core — add the `anchor` field (additive only, no deletions yet)
 
 **Files:**
+
 - Modify: `packages/core/src/types/view-parsed.story.ts` (`StoryScene<A>` interface, lines 27-44)
 - Modify: `packages/core/src/types/view-computed.ts` (`ComputedStoryScene<A>` interface, lines 167-186)
 - Test: `packages/core/src/compute-view/story-view/compute.spec.ts` (extend)
 
 **Interfaces:**
+
 - Produces: `StoryScene<A>.anchor?: aux.StrictFqn<A>` and `ComputedStoryScene<A>.anchor?: aux.StrictFqn<A>` — the anchor element's FQN, present only when the DSL author declared one. No stage transformation happens to this value; it's copied straight through parsed → computed → layouted (via the same `ComputedStoryScene` type reused verbatim by `LayoutedStoryView`, per `view-layouted.ts:13`).
 
 **Step 1: Add the field to `StoryScene`**
 
 In `packages/core/src/types/view-parsed.story.ts`, add `anchor` to `StoryScene<A>` (currently lines 27-44), following the exact convention `StoryCorrespondence.sources`/`.targets` already use for `aux.StrictFqn<A>`:
+
 ```ts
 export interface StoryScene<A extends AnyAux = AnyAux> {
   /**
@@ -73,6 +76,7 @@ export interface StoryScene<A extends AnyAux = AnyAux> {
 **Step 2: Add the same field to `ComputedStoryScene`**
 
 In `packages/core/src/types/view-computed.ts`, add the identical field to `ComputedStoryScene<A>` (currently lines 167-186):
+
 ```ts
 export interface ComputedStoryScene<A extends AnyAux = AnyAux> {
   readonly id: scalar.StepPath
@@ -89,11 +93,13 @@ export interface ComputedStoryScene<A extends AnyAux = AnyAux> {
   readonly astPath: string
 }
 ```
+
 Do **not** touch `LayoutedStoryView` in `view-layouted.ts` — it imports and reuses `ComputedStoryScene` directly (`view-layouted.ts:13`), so this change already applies there with zero edits to that file.
 
 **Step 3: Wire `anchor` through `computeStoryView`**
 
 In `packages/core/src/compute-view/story-view/compute.ts`, find the scene-assembly object literal inside the `walk` function's `isScene` branch (the one pushing `{ id, view, title, ...(notes...), ...(becomes...), ...(branchTitle...), astPath }` into `scenes`). Add a matching conditional spread for `anchor`, following the exact same idiom the neighboring optional fields already use:
+
 ```ts
 scenes.push({
   id: StepPath(...prefix, position),
@@ -106,6 +112,7 @@ scenes.push({
   astPath: statement.astPath,
 })
 ```
+
 (`statement` here is the parsed `StoryScene<A>` this iteration is processing — confirm the exact local variable name by reading the surrounding `walk` function before editing; it may not literally be called `statement`.)
 
 **Step 4: Test**
@@ -126,6 +133,7 @@ git commit -m "feat(core): add anchor field to story scenes"
 ### Task 2: Language-server — `anchor` grammar, parsing, and example
 
 **Files:**
+
 - Modify: `packages/language-server/src/like-c4.langium` (`StorySceneBody`, `StoryViewProperty`, `StorySceneLayoutProperty`, `StorySceneLayoutValue`, `Id` reserved-keyword list)
 - Modify: `packages/language-server/src/model/parser/ViewsParser.ts` (`parseStoryView`, `parseStoryScene`)
 - Modify: `packages/language-server/src/ast.ts` (`ParsedAstStoryView`)
@@ -134,6 +142,7 @@ git commit -m "feat(core): add anchor field to story scenes"
 - Modify: `examples/cloud-system/story.c4`
 
 **Interfaces:**
+
 - Consumes: `StoryScene<A>.anchor` (Task 1).
 - Produces: `ast.StorySceneBody.anchor?: ast.StoryAnchorProperty` (new grammar field); `parseStoryScene` now returns a `StoryScene` with `anchor` populated.
 
@@ -142,6 +151,7 @@ git commit -m "feat(core): add anchor field to story scenes"
 In `packages/language-server/src/like-c4.langium`, remove the `sceneLayout` property entirely and add the new `anchor` property to `StorySceneBody`:
 
 Before (lines 366-408):
+
 ```
 StoryView:
   'story' name=Id body=StoryViewBody?
@@ -181,6 +191,7 @@ StorySceneBody: '{'
 ```
 
 After:
+
 ```
 StoryView:
   'story' name=Id body=StoryViewBody?
@@ -216,9 +227,11 @@ StoryAnchorProperty:
   'anchor' ref=ElementRef ';'?
 ;
 ```
+
 (`StoryViewProperty: ViewProperty` with the alternation collapsed to one member is fine to leave as a single-member rule rather than inlining `ViewProperty` directly into `StoryViewBody.props+=` — check whether Langium requires at least two alternatives in a `|`-rule; if it errors on a single-member alternation, inline `props+=ViewProperty*` directly into `StoryViewBody` instead and delete the `StoryViewProperty` rule entirely.)
 
 In the `Id` reserved-keyword list (currently lines 1237-1252), remove `StorySceneLayoutValue` from the alternation (line 1247) and replace `'sceneLayout'` with `'anchor'` in the literal keyword list (line 1252):
+
 ```
 Id returns string:
   IdTerminal |
@@ -250,6 +263,7 @@ In `packages/language-server/src/model/parser/ViewsParser.ts`:
 `parseStoryView` (currently lines 649-693) — delete the `sceneLayout` extraction (lines 677-679: `const sceneLayout = find(props, ast.isStorySceneLayoutProperty)?.value as c4.StorySceneLayout | undefined`) and remove `sceneLayout,` from the returned object literal (line 690). If `ast.isStorySceneLayoutProperty` becomes unused elsewhere in this file after this deletion, remove its import too.
 
 `parseStoryScene` (currently lines 708-751) — add anchor extraction, following the exact resolution pattern `parseStoryCorrespondence` already uses for a single `ElementRef` (`elementRef(r)` → `this.resolveFqn(...)`):
+
 ```ts
 parseStoryScene(node: ast.StoryScene): c4.StoryScene {
   // ... existing viewId/body/props/title/notes/becomes logic unchanged ...
@@ -268,6 +282,7 @@ parseStoryScene(node: ast.StoryScene): c4.StoryScene {
   })
 }
 ```
+
 (`body?.anchor` refers to the new `StorySceneBody.anchor?: ast.StoryAnchorProperty` grammar field from Step 1; `body.anchor.ref` is `StoryAnchorProperty.ref: ast.ElementRef`. `elementRef` is already imported at the top of this file from `'../../utils/elementRef'`. Confirm the exact current variable name holding `node.body` in this method before editing — it may be `body` already, per the existing `parseStoryScene` shown in research, or may need adjusting.)
 
 **Step 4: Update `story-view.spec.ts` fixtures**
@@ -281,6 +296,7 @@ In `packages/vscode/likec4.tmLanguage.json` and `apps/playground/likec4.tmLangua
 **Step 6: Update the example**
 
 In `examples/cloud-system/story.c4`, delete line 6 (`sceneLayout anchored`) and add `anchor` statements to two of the three scenes, using elements confirmed (by this plan's research) to be present in both the outgoing and incoming views of each transition:
+
 ```
 stories {
 
@@ -321,6 +337,7 @@ stories {
 
 }
 ```
+
 (`customer` is present in `cloud_legacy` via its `-> customer ->` include, and in `dynamic-view-1` via the explicit `customer -> ui.dashboard` step. `cloud.next.backend` is present in `dynamic-view-1`'s own steps and in `cloud_next`'s `group { include * }`, and is already one of the `becomes` targets declared two lines below — same element, two different declarations, no coupling required.)
 
 The two occurrences of `scene cloud_next` / `scene cloud_legacy` inside the `alt` block are bare references (no body), so they carry no anchor — leave them exactly as-is. Per this plan's design, a scene with no anchor is valid (plain crossfade), not an error.
@@ -341,11 +358,13 @@ git commit -m "feat(language-server): parse anchor <ElementRef> on story scenes,
 ### Task 3: Language-server — validate anchor on a scene with no predecessor
 
 **Files:**
+
 - Modify: `packages/language-server/src/validation/story-view.ts`
 - Modify: `packages/language-server/src/validation/index.ts`
 - Test: extend `packages/language-server/src/validation/story-view.spec.ts`
 
 **Interfaces:**
+
 - Produces: a new `StoryScene`-keyed validation check rejecting `anchor` on a scene with no predecessor.
 
 **Step 1: Write the depth-first "has no predecessor" check**
@@ -403,6 +422,7 @@ export function storySceneChecks(_services: LikeC4Services): ValidationCheck<ast
   }
 }
 ```
+
 (Confirm the exact accept-call signature — `node`/`property`/message-first-vs-options-first — against a neighboring factory in the same file, e.g. `storyAltChecks`, before finalizing; match its exact call shape rather than guessing. Confirm `AstUtils.getContainerOfType` is the correct current Langium import path used elsewhere in this codebase — grep for `getContainerOfType` in `packages/language-server/src` for the established import.)
 
 **Step 2: Register it**
@@ -412,10 +432,11 @@ In `packages/language-server/src/validation/index.ts`, add `StoryScene: storySce
 **Step 3: Test**
 
 Extend `packages/language-server/src/validation/story-view.spec.ts` with:
-- A story whose *first* scene declares `anchor` on an element present in that scene's own view → expect the error message above.
-- A story whose *second* scene (after a first, anchor-less scene) declares `anchor` → expect no error.
+
+- A story whose _first_ scene declares `anchor` on an element present in that scene's own view → expect the error message above.
+- A story whose _second_ scene (after a first, anchor-less scene) declares `anchor` → expect no error.
 - A scene inside an `alt` branch that is the very first scene overall (the alt is the first statement in the story) and declares `anchor` → expect the error (exercises the recursive branch-walk, not just the top-level list).
-- A scene that is NOT the first overall, but is the first statement *inside* an `alt` branch (i.e., has a predecessor from before the alt started) and declares `anchor` → expect no error (confirms the walk correctly treats "predecessor" as "anywhere earlier in the whole flattened order," not "earlier within this branch only").
+- A scene that is NOT the first overall, but is the first statement _inside_ an `alt` branch (i.e., has a predecessor from before the alt started) and declares `anchor` → expect no error (confirms the walk correctly treats "predecessor" as "anywhere earlier in the whole flattened order," not "earlier within this branch only").
 
 **Step 4: Build and test**
 
@@ -433,11 +454,13 @@ git commit -m "feat(language-server): reject anchor on a story's first scene"
 ### Task 4: Diagram — anchor-driven viewport continuity
 
 **Files:**
+
 - Modify: `packages/diagram/src/likec4diagram/state/utils.ts` (`findCorrespondingNode` or a sibling function)
 - Modify: `packages/diagram/src/likec4diagram/state/machine.state.navigating.ts` (the `fromNode`/`toNode` branch)
 - Test: extend or create `packages/diagram/src/likec4diagram/state/utils.spec.ts` (check if this file exists; if not, add a focused spec for the new/changed function only, matching this codebase's existing test-file-per-source-file convention)
 
 **Interfaces:**
+
 - Consumes: `ComputedStoryScene.anchor` (Task 1), `context.story: AnyStoryView | null` (already exists, from the containment redesign).
 - Produces: the existing `findCorrespondingNode(context, event)` (or a new sibling) returns a non-null `{ fromNode, toNode }` pair when the incoming scene declares an anchor and that element is found in both node lists — even when `context.lastOnNavigate` is absent.
 
@@ -448,17 +471,19 @@ Read `packages/diagram/src/likec4diagram/state/utils.ts`'s current `findCorrespo
 **Step 2: Add an anchor-based fallback correspondence source**
 
 `findCorrespondingNode`'s job is: given some "this FQN should stay put" signal, find the matching node in the outgoing (`context.xynodes`) and incoming (`event.xynodes`) node lists via `nodeRef`. Today that signal is `context.lastOnNavigate?.fromNode`. Add a second source: when `context.lastOnNavigate` is absent (or after it, as a fallback — click-driven correspondence should still win if both are somehow present), look up the incoming scene's declared anchor:
+
 ```ts
 const incomingScene = context.story?.scenes.find(s => s.view === event.view.id)
 const anchorFqn = incomingScene?.anchor
 ```
+
 Use whichever FQN (from `lastOnNavigate` or `anchorFqn`) is available to drive the same `nodeRef`-based lookup `findCorrespondingNode` already does, returning `{ fromNode: null, toNode: null }` when neither is present (unchanged from today) or when the FQN doesn't resolve to a node in one of the two lists (the graceful-degradation case this plan's design explicitly calls for — an anchor whose element isn't actually rendered in the outgoing or incoming view falls through to the existing `else` branch in `machine.state.navigating.ts`, which does the ordinary fit-to-bounds `calcViewportForBounds` path unchanged).
 
-Do not change the `panBy`/`raiseSetViewport` mechanics in `machine.state.navigating.ts` at all — the existing "pan by the screen-space delta, then settle into the fit-bounds viewport after a short delay" behavior is exactly what this feature should produce for an anchored scene transition too; only the *source* of `fromNode`/`toNode` changes, not what happens once they're found.
+Do not change the `panBy`/`raiseSetViewport` mechanics in `machine.state.navigating.ts` at all — the existing "pan by the screen-space delta, then settle into the fit-bounds viewport after a short delay" behavior is exactly what this feature should produce for an anchored scene transition too; only the _source_ of `fromNode`/`toNode` changes, not what happens once they're found.
 
 **Step 2b: Sequence-mode dynamic views are handled by the same fallback, not a special case**
 
-The design's edge-case list flags dynamic views shown in sequence mode (lifelines/messages, not free node positions) as a case where the anchor pan shouldn't apply. Do not add a special check for this — if `convertToXYFlow` doesn't produce a plain positioned node for the anchor's FQN when rendering in sequence mode, the `nodeRef` lookup in Step 2 simply won't find a match in one of the two node lists, and the existing fallback (ordinary `calcViewportForBounds` fit-to-bounds) already applies. Confirm this holds by testing it directly (a scene whose view is a dynamic view rendered in `sequence` mode, with an anchor declared) rather than assuming — if it turns out `nodeRef`/`convertToXYFlow` *does* produce a matching node in sequence mode with a misleading position, that's a real gap to report, not something to silently paper over.
+The design's edge-case list flags dynamic views shown in sequence mode (lifelines/messages, not free node positions) as a case where the anchor pan shouldn't apply. Do not add a special check for this — if `convertToXYFlow` doesn't produce a plain positioned node for the anchor's FQN when rendering in sequence mode, the `nodeRef` lookup in Step 2 simply won't find a match in one of the two node lists, and the existing fallback (ordinary `calcViewportForBounds` fit-to-bounds) already applies. Confirm this holds by testing it directly (a scene whose view is a dynamic view rendered in `sequence` mode, with an anchor declared) rather than assuming — if it turns out `nodeRef`/`convertToXYFlow` _does_ produce a matching node in sequence mode with a misleading position, that's a real gap to report, not something to silently paper over.
 
 **Step 3: Test**
 
@@ -480,16 +505,19 @@ git commit -m "feat(diagram): pan the viewport to a story scene's declared ancho
 ### Task 5: Diagram — StoryControls boundary buttons + dual controls for dynamic-view scenes
 
 **Files:**
+
 - Modify: `packages/diagram/src/navigationpanel/walkthrough/StoryControls.tsx`
 - Modify: `packages/diagram/src/navigationpanel/NavigationPanel.tsx`
 - Test: extend `packages/diagram/src/navigationpanel/walkthrough/StoryControls.spec.ts` if it exists (check first), or add one; check for an existing `NavigationPanel.spec.ts`/similar for the mode-derivation logic.
 
 **Interfaces:**
+
 - Consumes: `prevScene`/`nextScene` from `packages/diagram/src/navigationpanel/walkthrough/storyScenePosition.ts` (already exist, from the containment redesign).
 
 **Step 1: Fix StoryControls' boundary visibility**
 
 In `StoryControls.tsx`, the Previous and Next buttons currently use `disabled={!story}` (always enabled once inside a story, regardless of position). Change both to match `ActiveWalkthroughControls.tsx`'s existing convention for the exact same kind of boundary (`disabled={!hasPrevious}` / `disabled={!hasNext}`):
+
 ```tsx
 <StoryControlButton
   key="story-prev"
@@ -505,6 +533,7 @@ In `StoryControls.tsx`, the Previous and Next buttons currently use `disabled={!
   Previous
 </StoryControlButton>
 ```
+
 ```tsx
 <StoryControlButton
   key="story-next"
@@ -520,13 +549,15 @@ In `StoryControls.tsx`, the Previous and Next buttons currently use `disabled={!
   Next
 </StoryControlButton>
 ```
+
 (`prev`/`next` are already computed in this component via `prevScene(story, viewId)`/`nextScene(story, viewId)` — this only changes which value drives `disabled`, not the click handlers, which already correctly no-op via their own `if (prev)`/`if (next)` guards.)
 
 **Step 2: Make dynamic-view walkthrough coexist with story controls**
 
-This is the real fix for "different sets of previous/next buttons for dynamic views inside stories." Today, `NavigationPanel.tsx`'s `mode` selector treats `context.activeWalkthrough` being set as an unconditional signal to replace the *entire* `NavigationPanelControls` row (which is `StoryControls`' only mount point) with `ActiveWalkthroughControls`. Read the current `select` selector and the JSX around it in full before editing (`mode: 'default' | 'walkthrough-flow' | 'walkthrough'`, and the `{mode === 'walkthrough' ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}` swap).
+This is the real fix for "different sets of previous/next buttons for dynamic views inside stories." Today, `NavigationPanel.tsx`'s `mode` selector treats `context.activeWalkthrough` being set as an unconditional signal to replace the _entire_ `NavigationPanelControls` row (which is `StoryControls`' only mount point) with `ActiveWalkthroughControls`. Read the current `select` selector and the JSX around it in full before editing (`mode: 'default' | 'walkthrough-flow' | 'walkthrough'`, and the `{mode === 'walkthrough' ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}` swap).
 
 Add a fourth mode, `'walkthrough-in-story'`, for exactly the case `context.story != null && isActiveWalkthrough`:
+
 ```tsx
 const select = selectDiagramContext(s => {
   const isActiveWalkthrough = !!s.activeWalkthrough
@@ -551,19 +582,24 @@ type NavigationPanelMode =
   | 'walkthrough'
   | 'walkthrough-in-story'
 ```
+
 Then, where the JSX currently does `{mode === 'walkthrough' ? <ActiveWalkthroughControls /> : <NavigationPanelControls />}`, render both when `mode === 'walkthrough-in-story'` — put `StoryControls`' scene-stepping alongside `ActiveWalkthroughControls`' step-stepping in the same row, since `NavigationPanelControls` already composes multiple controls side by side (breadcrumbs, `DynamicViewControls`, `StoryControls`, search) in one `hstack`:
+
 ```tsx
-{mode === 'walkthrough'
-  ? <ActiveWalkthroughControls />
-  : mode === 'walkthrough-in-story'
-  ? (
-    <>
-      <ActiveWalkthroughControls />
-      <StoryControls key="story-controls" />
-    </>
-  )
-  : <NavigationPanelControls />}
+{
+  mode === 'walkthrough'
+    ? <ActiveWalkthroughControls />
+    : mode === 'walkthrough-in-story'
+    ? (
+      <>
+        <ActiveWalkthroughControls />
+        <StoryControls key="story-controls" />
+      </>
+    )
+    : <NavigationPanelControls />
+}
 ```
+
 (Confirm this JSX actually fits the surrounding layout sensibly when you run it in the dev server per Task 6's e2e check — `ActiveWalkthroughControls` and `StoryControls` were each designed to be the sole content of their row, so seeing both together for the first time may reveal a real layout adjustment is needed, e.g. wrapping, spacing, or which one goes first. Treat the code above as a starting point to get both mounted and interactive, not a guaranteed-final visual arrangement — use your own judgment once you see it rendered, and note what you changed and why in your report.)
 
 **Step 3: Test**
@@ -586,14 +622,17 @@ git commit -m "fix(diagram): hide story controls at boundaries, keep them visibl
 ### Task 6: SPA — simplify `StoryReact.tsx`
 
 **Files:**
+
 - Modify: `packages/likec4-spa/src/pages/StoryReact.tsx`
 
 **Interfaces:**
+
 - Consumes: `view={view}` and `story={story.$view}` passed straight through to `<LikeC4Diagram>` — no pre-transform.
 
 **Step 1: Remove the resolve/pre-transform machinery**
 
 In `packages/likec4-spa/src/pages/StoryReact.tsx`, delete:
+
 - The import `import { positionsOf, resolveScene } from '@likec4/core'` and `import type { LayoutedView } from '@likec4/core/types'`.
 - The `previousRef`/`previousStoryId` state and the `storyId`-change reset block.
 - The `currentScene`/`resolved`/`resolvedView` computation.
@@ -620,6 +659,7 @@ git commit -m "refactor(likec4-spa): stop pre-transforming scene geometry, diagr
 ### Task 7: Full-repo verification and docs
 
 **Files:**
+
 - Verify: dev-server smoke test
 - Modify: `docs/rfcs/0002-story-containment-investigation.md` if it mentions `sceneLayout` (check first — it may only mention the containment redesign and never reference scene alignment at all; if so, no edit needed there)
 
@@ -654,3 +694,15 @@ git commit -m "docs: note that sceneLayout was superseded by explicit scene anch
 - **Task 3's validation is deliberately narrower than the design spec** — see the "Deviation" section at the top of this plan. Don't let a reviewer send this back for "missing" the present-in-both-views check without first reading that section.
 - **Task 5's dual-controls JSX is explicitly marked as a starting point, not a guaranteed-final layout** — the actual visual arrangement of two previously-mutually-exclusive control rows appearing together for the first time is exactly the kind of thing that looks fine in code and wrong on screen; Task 7's e2e check is what actually validates it, not Task 5's own unit tests.
 - **Tasks 4 and 5 both touch only `packages/diagram`, with zero file overlap** (Task 4: `utils.ts`/`machine.state.navigating.ts`; Task 5: `StoryControls.tsx`/`NavigationPanel.tsx`) and Task 4 has no dependency on Task 5 or vice versa — both depend only on Task 1 (core's `anchor` field). If parallel execution is wanted, Task 5 can be dispatched in an isolated worktree branched from Task 1's commit while Task 4 runs on the main checkout, mirroring how the earlier containment-redesign plan parallelized its own Task 3/Task 6 — merge back before Task 6 (SPA), which doesn't strictly need either but is easiest to sequence after both land.
+
+## Known limitation: scene identity is keyed by view id, not by scene occurrence (found in final review, fixed with a fail-safe)
+
+Final whole-branch review flagged that `findIncomingAnchor` in `packages/diagram/src/likec4diagram/state/utils.ts` matched the incoming story scene by `s.view === event.view.id`. `story.scenes` is a flattened array, and the _same_ view id can legitimately appear more than once in one story's depth-first traversal — `examples/cloud-system/story.c4`'s own `alt` block does exactly this (`cloud_next` and `cloud_legacy` each appear once as a top-level scene and again inside `alt`). `.find()` always resolves to the first matching occurrence, which is not necessarily the occurrence actually being entered — a real gap in this plan's core promise that anchor is per-scene-_occurrence_, not per-view.
+
+This is a genuine identity-model limitation, not just a missed line of code: scene identity throughout `packages/diagram` (and the SPA routing that drives it) is the view id, while the story's own model already has a finer-grained identity for each occurrence — `ComputedStoryScene.id: scalar.StepPath` (see `packages/core/src/types/view-computed.ts`). Nothing downstream of the AST/compute layer currently threads `StepPath` through to the diagram or the route; `packages/diagram`'s public prop contract and `packages/likec4-spa`'s routing would both need to change to carry it. That is a real design change, and is deliberately out of scope for this plan.
+
+**What was implemented instead (a fail-safe, not a redesign):** `findIncomingAnchor` now finds _all_ scenes matching the incoming view id. If there is exactly one match, or every match agrees on the same `anchor` value (including all being anchor-less), it resolves exactly as before. If there is more than one match and they disagree, it returns `null` — the same graceful-degradation result already used for every other "can't resolve this anchor confidently" case (anchor not found in the outgoing/incoming node lists, sequence-mode nodes) — which makes the transition fall back to the ordinary fit-to-bounds path instead of applying the wrong pan. See the updated docstring on `findIncomingAnchor` and the two new cases in `packages/diagram/src/likec4diagram/state/utils.spec.ts` (`fails safe (no anchor pan) when the incoming view id appears twice in the story with different anchors` / `still resolves the anchor when the incoming view id appears twice but all occurrences agree`).
+
+**A companion diagnostic was added** in `packages/language-server/src/validation/story-view.ts` (folded into the existing `storyViewChecks` factory): a warning, on the `StoryView` node, whenever the story's depth-first-flattened scene list resolves the same view id more than once. This is a warning, not an error — repeating a view id across `alt` branches is a legitimate, RFC-0001-sanctioned pattern — but it now surfaces the limitation to the DSL author instead of leaving it silent. `examples/cloud-system/story.c4` triggers this warning twice (once for `cloud_legacy`, once for `cloud_next`); that is expected and left as-is, since fixing the example's structure is not what this fail-safe round is for.
+
+**Residual limitation, not fixed by the above:** scene _stepping_ and _boundary detection_ (Previous/Next buttons, "is this the first/last scene") still cannot distinguish between repeated occurrences of the same view id — only the anchor lookup got a fail-safe. A proper fix for all three (anchor, stepping, boundaries) requires making the scene's own `StepPath` — not the view id — the routing/diagram-context identity, which is the design change described above.

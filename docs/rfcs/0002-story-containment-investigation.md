@@ -552,3 +552,16 @@ above, and RFC 0001's "Scene layout modes") — and the `resolveScene`/`calcScen
 math this section describes as relocated to `StoryReact.tsx` — was replaced by a per-scene,
 DSL-authored `anchor <ElementRef>` statement computed inside `packages/diagram` itself. See
 `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`.
+
+**Known limitation, found in that plan's final review.** Scene identity in `packages/diagram` is
+keyed by the scene's _view id_, not by the story's own finer-grained `StepPath`
+scene-occurrence id (`ComputedStoryScene.id`). A story whose flattened depth-first traversal
+repeats a view id — as this very RFC's `alt`-branch pattern permits, and as
+`examples/cloud-system/story.c4`'s own `alt` block does — has a known limitation: an `anchor`
+declared on the repeated occurrence may not apply correctly (mitigated by a fail-safe that
+silently disables the pan rather than applying it wrong), and scene stepping/boundary buttons
+cannot walk past the first occurrence of a repeated view id. A proper fix requires making the
+scene's own `StepPath` — not the view id — the routing/diagram-context identity, a design
+change spanning `packages/likec4-spa` and `packages/diagram`'s public prop contract, deliberately
+out of scope for the anchor plan. See the "Known limitation" section near the end of
+`docs/superpowers/plans/2026-08-04-story-scene-anchor.md`.
