@@ -25,7 +25,6 @@ import type { DynamicViewDisplayVariant } from './view-parsed.dynamic'
 import type {
   AnyStoryStatement,
   StoryCorrespondence,
-  StorySceneLayout,
 } from './view-parsed.story'
 
 export type ComputedNodeStyle = Simplify<
@@ -189,7 +188,6 @@ export interface ComputedStoryScene<A extends AnyAux = AnyAux> {
 export interface ComputedStoryView<A extends AnyAux = AnyAux> extends BaseViewProperties<A> {
   readonly [_type]: 'story'
   readonly [_stage]: 'computed'
-  readonly sceneLayout: StorySceneLayout
   /**
    * Flattened scene list in traversal order.
    */

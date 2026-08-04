@@ -21,7 +21,6 @@ describe('layoutLikeC4Model with story views', () => {
       description: null,
       tags: null,
       links: null,
-      sceneLayout: 'anchored',
       scenes: [{ id: 'step-01', view: 'v1', astPath: '/a' }],
       storyFlow: [],
     } as unknown as ComputedStoryView

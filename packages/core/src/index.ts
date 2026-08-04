@@ -35,11 +35,6 @@ export {
   calcDriftsFromSnapshot,
 } from './manual-layout'
 
-export { calcSceneOffset } from './story/align'
-
-export { applyOffset, positionsOf, resolveScene } from './story/resolveScene'
-export type { ResolvedScene } from './story/resolveScene'
-
 export type {
   ComputedProjectsView,
   LayoutedProjectsView,
