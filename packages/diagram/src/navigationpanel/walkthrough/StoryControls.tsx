@@ -94,7 +94,7 @@ export function StoryControls() {
     <AnimatePresence propagate mode="popLayout">
       <StoryControlButton
         key="story-prev"
-        disabled={!story}
+        disabled={!prev}
         onClick={e => {
           e.stopPropagation()
           if (prev) {
@@ -157,7 +157,7 @@ export function StoryControls() {
 
       <StoryControlButton
         key="story-next"
-        disabled={!story}
+        disabled={!next}
         onClick={e => {
           e.stopPropagation()
           if (next) {
