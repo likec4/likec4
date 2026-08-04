@@ -718,7 +718,11 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         `Story scene view "${node.view.$refText}" not resolved`,
       ) as c4.ViewId
       const body = node.body
-      const props = body?.props.filter(this.isValid) ?? []
+      // `StoryAnchorProperty` is not part of the language server's `ValidatableAstNode` union
+      // (see `parseStoryView` above for the same situation with `StoryViewProperty`), so
+      // `this.isValid` cannot be called directly on `body.props` now that `anchor` lives in
+      // that array; `tryMap` with an identity function filters out invalid nodes the same way.
+      const props = body ? this.tryMap('views', body.props, p => p) : []
 
       const { title = null } = this.parseBaseProps(
         pipe(
@@ -736,8 +740,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ? this.tryMap('views', body.rules, rule => this.parseStoryCorrespondence(rule))
         : []
 
-      const anchor = body?.anchor
-        ? this.resolveFqn(nonNullable(elementRef(body.anchor.ref), 'Anchor element ref not resolved'))
+      const anchorProp = find(props, ast.isStoryAnchorProperty)
+      const anchor = anchorProp
+        ? this.resolveFqn(nonNullable(elementRef(anchorProp.ref), 'Anchor element ref not resolved'))
         : undefined
 
       return c4.exact({

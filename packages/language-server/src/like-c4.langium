@@ -387,8 +387,7 @@ StoryScene:
 ;
 
 StorySceneBody: '{'
-  props+=(ViewStringProperty | NotesProperty)*
-  anchor=StoryAnchorProperty?
+  props+=(ViewStringProperty | NotesProperty | StoryAnchorProperty)*
   rules+=StoryCorrespondenceRule*
 '}'
 ;

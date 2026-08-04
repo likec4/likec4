@@ -161,6 +161,34 @@ describe('story view validation', () => {
     expect(errors).toEqual([])
   })
 
+  it('rejects more than one anchor in the same scene', async ({ expect, validate }) => {
+    const { errors } = await validate(`${preamble}
+      story s {
+        scene v1
+        scene v1 { anchor a anchor b }
+      }
+    }`)
+    expect(errors).toContain('A scene can only declare one "anchor"')
+  })
+
+  it('allows anchor to appear interleaved with other props, not just after all of them', async ({ expect, validate }) => {
+    // Previously `anchor` had its own strict-order grammar slot after every prop/note and
+    // before any `becomes` rule. Folding it into the `props` alternation means it can now
+    // appear anywhere among the other props — here, before `notes` instead of after it.
+    const { errors } = await validate(`${preamble}
+      story s {
+        scene v1
+        scene v1 {
+          title 'a title'
+          anchor a
+          notes 'some notes'
+          a becomes b
+        }
+      }
+    }`)
+    expect(errors).toEqual([])
+  })
+
   it('allows a view and a story to share the same id (separate namespaces, see RFC 0002 §5)', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {
