@@ -671,6 +671,71 @@ so it visibly divides toward them, and the targets enter from that same box.
 - **Duplicated tree-walk.** `StoryFlow` repeats traversal logic that `walkthroughFlow` already
   implements, deliberately, to avoid refactoring a snapshot-tested file during a POC.
 
+## Open architectural question — is a story a view?
+
+**This is the most significant unresolved question in the RFC, and it was raised by the POC rather
+than answered by it.**
+
+This RFC decided a story _is_ a view: `_type: 'story'`, a `ViewId`, served at `/view/$viewId`. The
+reasoning was routing convenience — search indexing, the navigation dropdown, and `model.findView`
+all come free. That reasoning holds, but the cost turned out to be much larger than anticipated, and
+it is concentrated in exactly the places the implementation went wrong:
+
+- **Task 14 exists only because of this decision.** Widening `ParsedView` / `ComputedView` /
+  `LayoutedView` to admit stories broke 36 sites across five packages — `model-change/*`, the MCP
+  tools, manual-layout snapshots, the aichat guard, `NavigationPanelDropdown`. Almost none of that
+  fallout occurs if a story is not a member of those unions.
+- **The `bounds: undefined` crash** (fixed in `41bca4a6b`) followed directly from `LayoutedStoryView`
+  extending `BaseLayoutedViewProperties`, which requires `bounds: BBox` — a contract a geometry-less
+  artifact has no business satisfying. The type system was correctly objecting to the modelling.
+- **`ViewManualLayoutSnapshotPerType` needed boundary filtering** so a story could never acquire a
+  manual layout, because membership in the view unions admitted it somewhere it does not belong.
+- **The `story.scene` / `update.view` split** — described above as the single most important
+  constraint in the diagram integration — exists _only_ because a scene change could not be a real
+  navigation without polluting browser history.
+- **`isStoryView` had to stop reading `context.view`** because `story.scene` overwrites it with the
+  scene's view, making the field stale after the first scene. The route says `/view/migration` while
+  the canvas shows `cloud_legacy`; that discrepancy required a workaround.
+
+### The alternative
+
+Model a story as a container _above_ views rather than a peer of them, addressed as:
+
+```
+/project/cloud-system/story/migration/view/cloud_legacy
+```
+
+This is honest about what is on screen — the canvas genuinely renders `cloud_legacy`, within story
+`migration`. Three consequences follow:
+
+1. **Scene position becomes deep-linkable.** `/view/migration` cannot express "scene 3 of the
+   migration story"; the nested form can.
+2. **Scene changes become genuine navigations.** Browser back/forward stepping the story backward and
+   forward is then the _correct_ behaviour rather than pollution to be suppressed, and the whole
+   `story.scene`-versus-`update.view` apparatus becomes unnecessary.
+3. **The view unions stay closed**, so the Task 14 class of fallout does not arise.
+
+### What the alternative costs
+
+Membership in the view unions was not free-riding; it purchased real things. A story outside them
+needs a parallel registry (`model.stories`) and its own answers for what `View` currently supplies:
+search indexing, the navigation dropdown, `findView`-style lookup, and route generation. Some of that
+is rebuilt rather than inherited.
+
+Note that `BaseViewProperties` already isolates most of what genuinely generalises — `id`, `title`,
+`description`, `tags`, `links`, `sourcePath` — from what does not (`nodes`, `edges`, `bounds`,
+`autoLayout`, `rules`). That split is suggestive: the shared supertype may already exist in all but
+name, and the mistake may have been inheriting from the geometry-bearing type rather than the
+addressable one.
+
+### Status
+
+Unresolved, and deliberately not retrofitted into this POC. This RFC's stated goal was to establish
+whether smooth cross-view transitions are achievable and which `sceneLayout` mode wins; both were
+answered. Discovering that the containment model is probably wrong is a second and arguably more
+valuable finding, and it warrants its own design pass rather than an amendment to a branch that
+already works.
+
 ## Rationale and alternatives
 
 ### DSL shape
