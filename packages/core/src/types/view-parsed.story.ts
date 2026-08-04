@@ -37,6 +37,13 @@ export interface StoryScene<A extends AnyAux = AnyAux> {
   readonly notes?: scalar.MarkdownOrString
   readonly becomes?: StoryCorrespondence<A>[]
   /**
+   * The element that should stay visually still when arriving at this scene,
+   * if the author declared one. Resolved by `packages/diagram` at render time
+   * against whatever was on screen before this scene — see
+   * `docs/superpowers/specs/2026-08-04-story-scene-anchor-design.md`.
+   */
+  readonly anchor?: aux.StrictFqn<A>
+  /**
    * Path to the AST node relative to the view body ast.
    * Used to locate the scene in the source code. Mirrors `Step.astPath`.
    */

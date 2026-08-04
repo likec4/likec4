@@ -94,6 +94,48 @@ describe('computeStoryView', () => {
     expect(view.scenes[1]!.branchTitle).toBe('fast')
   })
 
+  it('carries a declared anchor through to the computed scene', () => {
+    const model = buildModel()
+    const view = computeStoryView(
+      model,
+      {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 's' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [
+          { view: 'v1' as ViewId, anchor: 'v1', astPath: '/statements@0' },
+        ],
+      } as unknown as ParsedStoryView<any>,
+    )
+
+    expect(view.scenes[0]!.anchor).toBe('v1')
+  })
+
+  it('has no anchor property on the computed scene when none was declared', () => {
+    const model = buildModel()
+    const view = computeStoryView(
+      model,
+      {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 's' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [
+          { view: 'v1' as ViewId, astPath: '/statements@0' },
+        ],
+      } as unknown as ParsedStoryView<any>,
+    )
+
+    expect(view.scenes[0]).not.toHaveProperty('anchor')
+  })
+
   it('throws when a scene references a view missing from the model', () => {
     const model = buildModel()
 

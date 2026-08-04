@@ -177,6 +177,7 @@ export interface ComputedStoryScene<A extends AnyAux = AnyAux> {
   readonly title?: string | null
   readonly notes?: scalar.MarkdownOrString
   readonly becomes?: StoryCorrespondence<A>[]
+  readonly anchor?: aux.StrictFqn<A>
   /**
    * Title of the nearest enclosing alt branch, if any. Shown in the panel so the
    * viewer knows they are inside a hypothetical.

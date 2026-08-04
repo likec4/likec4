@@ -70,6 +70,7 @@ export function computeStoryView<A extends Any>(
             title: statement.title ?? null,
             ...(statement.notes !== undefined && { notes: statement.notes }),
             ...(statement.becomes !== undefined && { becomes: statement.becomes }),
+            ...(statement.anchor !== undefined && { anchor: statement.anchor }),
             ...(branchTitle !== undefined && { branchTitle }),
             astPath: statement.astPath,
           })
