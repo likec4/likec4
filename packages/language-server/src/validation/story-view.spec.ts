@@ -28,6 +28,7 @@ describe('story view validation', () => {
     }
     views {
       view v1 { include a }
+      view v2 { include b }
     }
     stories {
       story other { scene v1 }
@@ -96,10 +97,11 @@ describe('story view validation', () => {
   })
 
   it('accepts a valid story', async ({ expect, validate }) => {
+    // Branches reference distinct views (v1/v2) so this also stays a no-repeated-view-id case —
+    // see the dedicated repeated-view-id tests below for that check specifically.
     const { errors, warnings } = await validate(`${preamble}
       story s {
-        scene v1
-        alt { when 'x' { scene v1 } else { scene v1 } }
+        alt { when 'x' { scene v1 } else { scene v2 } }
       }
     }`)
     expect(errors).toEqual([])
@@ -159,6 +161,32 @@ describe('story view validation', () => {
       }
     }`)
     expect(errors).toEqual([])
+  })
+
+  it('warns when a scene view id appears more than once in the story\'s traversal order', async ({ expect, validate }) => {
+    // Mirrors examples/cloud-system/story.c4's own `alt` block: the same view referenced from a
+    // top-level scene and again from both `alt` branches.
+    const { errors, warnings } = await validate(`${preamble}
+      story s {
+        scene v1
+        alt { when 'x' { scene v1 } else { scene v2 } }
+      }
+    }`)
+    expect(errors).toEqual([])
+    expect(warnings).toContain(
+      'Scene \'v1\' appears more than once in this story\'s traversal order. Scene stepping, boundary detection, and anchors cannot currently distinguish between the occurrences — see docs/superpowers/plans/2026-08-04-story-scene-anchor.md.',
+    )
+  })
+
+  it('does not warn about repeats when no scene view id appears more than once', async ({ expect, validate }) => {
+    const { errors, warnings } = await validate(`${preamble}
+      story s {
+        scene v1
+        scene v2
+      }
+    }`)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
   })
 
   it('allows a view and a story to share the same id (separate namespaces, see RFC 0002 §5)', async ({ expect, validate }) => {

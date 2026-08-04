@@ -91,10 +91,58 @@ export const storyViewChecks = (
       }
     })
 
+  /**
+   * Depth-first pre-order walk over the story's statement tree, collecting each scene's
+   * resolved view id in traversal order. This mirrors the walk `computeStoryView`
+   * (`packages/core/src/compute-view/story-view/compute.ts`) uses to flatten a story into
+   * its `scenes` list, and the AST-level walk `storySceneChecks` (below) performs for the
+   * same reason (validation runs before any view is computed) — kept as its own small copy
+   * here rather than factored out, since the two walks collect different things (predecessor
+   * existence vs. view-id order) and would gain nothing from sharing beyond the shape.
+   */
+  const collectSceneViewIds = (statements: readonly ast.StoryStatement[], out: string[]): void => {
+    for (const statement of statements) {
+      if (ast.isStoryScene(statement)) {
+        const viewId = statement.view.ref?.name
+        if (viewId) {
+          out.push(viewId)
+        }
+      } else if (ast.isStoryAlt(statement)) {
+        for (const branch of statement.branches) {
+          collectSceneViewIds(branch.statements, out)
+        }
+      } else if (ast.isStorySubflow(statement)) {
+        collectSceneViewIds(statement.statements, out)
+      }
+    }
+  }
+
   return tryOrLog((el, accept) => {
     const statements = el.body?.statements ?? []
     if (!hasScene(statements)) {
       accept('warning', 'Story has no scenes', { node: el, property: 'name' })
+    }
+
+    // A repeated view id in the flattened traversal is a legitimate DSL pattern (RFC 0001's
+    // depth-first `alt` traversal routinely revisits the same view from different branches —
+    // see `examples/cloud-system/story.c4`), but scene identity in `packages/diagram` is
+    // currently keyed by view id, not by the scene's own `StepPath` occurrence id, so scene
+    // stepping, boundary detection, and anchors cannot currently distinguish between the
+    // occurrences. Warn (not error) once per repeated view id.
+    const viewIds: string[] = []
+    collectSceneViewIds(statements, viewIds)
+    const seen = new Set<string>()
+    const warnedFor = new Set<string>()
+    for (const viewId of viewIds) {
+      if (seen.has(viewId) && !warnedFor.has(viewId)) {
+        warnedFor.add(viewId)
+        accept(
+          'warning',
+          `Scene '${viewId}' appears more than once in this story's traversal order. Scene stepping, boundary detection, and anchors cannot currently distinguish between the occurrences — see docs/superpowers/plans/2026-08-04-story-scene-anchor.md.`,
+          { node: el, property: 'name' },
+        )
+      }
+      seen.add(viewId)
     }
 
     if (!el.name) {
