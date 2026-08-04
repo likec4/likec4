@@ -60,6 +60,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   onLayoutTypeChange,
   onInitialized,
   view,
+  story = null,
   className,
   controls = true,
   fitView = true,
@@ -161,7 +162,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                 enableSearch: enableSearch && hasLikeC4Model,
                 enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
                 enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
-                enableStoryWalkthrough: view._type === 'story' && enableStoryWalkthrough,
+                enableStoryWalkthrough: story != null && enableStoryWalkthrough,
                 enableNotations,
                 enableVscode: !!onOpenSource,
                 enableControls: controls,
@@ -195,6 +196,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                       <DiagramActorProvider
                         id={id}
                         view={view}
+                        story={story}
                         zoomable={zoomable}
                         pannable={pannable}
                         fitViewPadding={fitViewPadding}

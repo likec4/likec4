@@ -1,5 +1,5 @@
-import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
-import { useActorRef, useSelector } from '@xstate/react'
+import type { AnyStoryView, DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
+import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
 import { isNullish } from 'remeda'
@@ -10,20 +10,14 @@ import {
   DiagramActorContextProvider,
   DiagramApiContextProvider,
   selectDiagramContext,
-  selectDiagramSnapshot,
-  useDiagramActorRef,
   useDiagramSelector,
 } from '../../hooks/safeContext'
 import {
   useDiagram,
   useOnDiagramEvent,
 } from '../../hooks/useDiagram'
-import { useOptionalLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { ViewPaddings } from '../../LikeC4Diagram.props'
-import type { StoryActorSnapshot } from '../../story/actor'
-import { resolveCurrentScene } from '../../story/resolveScene'
-import { useOptionalResolveSceneView } from '../../story/resolveSceneView'
 import type { Types } from '../types'
 import { DiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
@@ -32,6 +26,7 @@ import { DiagramToggledFeaturesPersistence } from './persistence'
 export function DiagramActorProvider({
   id,
   view,
+  story = null,
   zoomable,
   pannable,
   nodesDraggable,
@@ -43,6 +38,7 @@ export function DiagramActorProvider({
 }: PropsWithChildren<{
   id: string
   view: DiagramView
+  story?: AnyStoryView | null
   zoomable: boolean
   pannable: boolean
   nodesDraggable: boolean
@@ -55,13 +51,6 @@ export function DiagramActorProvider({
 
   const editor = useEditorActorLogic()
   const features = useEnabledFeatures()
-  // Model-bound resolver for the story actor's cursor, supplied here rather
-  // than via a corrective event so it's already the real implementation by
-  // the time either of the actor's spawn sites (`machine.ts`'s root `entry:`,
-  // `machine.state.navigating.ts`'s `syncStoryActor`) reads `context.resolve`
-  // — see `Input.resolve`'s JSDoc in `machine.setup.ts`. Optional-model-safe
-  // because this provider mounts for every view type, not just stories.
-  const resolve = useOptionalResolveSceneView()
 
   const actor = useActorRef(
     diagramMachine.provide({
@@ -76,6 +65,7 @@ export function DiagramActorProvider({
       input: {
         xystore,
         view,
+        story,
         zoomable,
         pannable,
         fitViewPadding,
@@ -84,7 +74,6 @@ export function DiagramActorProvider({
         where,
         features,
         dynamicViewVariant: _defaultVariant,
-        resolve,
       },
     },
   )
@@ -105,9 +94,9 @@ export function DiagramActorProvider({
     () =>
       actor.send({
         type: 'update.inputs',
-        inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
+        inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, story },
       }),
-    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable],
+    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, story],
   )
 
   useUpdateEffect(() => {
@@ -127,7 +116,6 @@ export function DiagramActorProvider({
           {children}
         </ToggledFeatures>
         <PropagateDiagramActorEvents />
-        <StoryCursorSync />
       </DiagramApiContextProvider>
     </DiagramActorContextProvider>
   )
@@ -203,93 +191,3 @@ const PropagateDiagramActorEvents = memo(() => {
 
   return null
 })
-
-const selectStoryActor = selectDiagramSnapshot(s => s.children.story ?? undefined)
-
-function selectCursor(snapshot: StoryActorSnapshot | undefined) {
-  return snapshot?.context.cursor ?? null
-}
-
-// `context.initialized.xydata` flips to `true` once the machine's own
-// mount-time `update.view` (`DiagramActorProvider`'s effect below, sent with
-// the raw `view` prop — the story's own wrapper view when mounting directly
-// on a story) has been processed. Gating on it is what keeps that event from
-// undoing this component's own `story.scene` dispatch.
-const selectInitializedXydata = selectDiagramContext(ctx => ctx.initialized.xydata)
-
-/**
- * The story cursor's dispatch link: whenever the story actor's cursor moves
- * (`next`/`prev`/`gotoScene`, from `StoryControls.tsx` or `navigateTo`
- * interception in `diagram-api.ts`), resolves the scene it now points to and
- * dispatches `story.scene` so the canvas actually repaints. Without this, the
- * cursor advances but nothing the viewer sees ever changes — see this task's
- * brief and RFC 0001, "Diagram integration".
- *
- * Lives here, not in the story actor itself, because resolving a scene needs
- * `LikeC4Model` (`resolveCurrentScene` → `resolveScene` → `model.findView`),
- * and an XState actor cannot reach `useLikeC4Model`.
- *
- * Waits for `initialized.xydata` before dispatching. Discovered by running
- * the example story end to end (Task 13): on the very first mount directly on
- * a story, `DiagramActorProvider`'s own mount-time `update.view` effect (sent
- * with the raw story `view` prop, to satisfy `initializing`'s "waits for
- * `update.view`" requirement) fires as a *sibling* effect in the same commit
- * — and since this component is a child of `DiagramActorProvider`, React
- * runs child effects before parent effects, so this component's first
- * dispatch would otherwise land *before* that event and immediately get
- * overwritten by it (`mergeXYNodesEdges` merges against the *story* view,
- * wiping the resolved scene's nodes back to the story's own empty ones).
- * `initialized.xydata` is already `true` for every other trigger (`next`/
- * `prev`/`gotoScene`, and mid-session entry via `syncStoryActor`, which only
- * ever runs from the `ready` state), so this only changes behaviour for the
- * one mount-directly-on-a-story race.
- *
- * `previousRef` tracks the last *resolved* (already offset-applied) scene —
- * exactly what the previous `story.scene` dispatch carried as `view` — as the
- * alignment target for the next one, per `resolveCurrentScene`'s own JSDoc.
- * It resets to `null` whenever the story actor ref itself changes (a fresh
- * session: initial mount, or `syncStoryActor` respawning on mid-session
- * entry into a story), since a fresh session has nothing on screen yet to
- * align its first scene against.
- */
-const StoryCursorSync = memo(() => {
-  const diagramActor = useDiagramActorRef()
-  const model = useOptionalLikeC4Model()
-  const storyActor = useDiagramSelector(selectStoryActor)
-  const cursor = useSelector(storyActor, selectCursor)
-  const initializedXydata = useDiagramSelector(selectInitializedXydata)
-
-  const previousRef = useRef<DiagramView | null>(null)
-
-  useEffect(() => {
-    previousRef.current = null
-  }, [storyActor])
-
-  useEffect(() => {
-    if (!initializedXydata || !model || !storyActor || !cursor) {
-      return
-    }
-    const { flow } = storyActor.getSnapshot().context
-    const resolved = resolveCurrentScene({
-      cursor,
-      flow,
-      model,
-      previous: previousRef.current,
-      // `flow.view` is the story's *own* view — not `diagramActor`'s
-      // `context.view`, which `story.scene` (`machine.ts`) overwrites with
-      // whichever scene is currently rendered as soon as the first one is
-      // dispatched. `flow.view.sceneLayout` stays correct for the entire
-      // session, mount-time or mid-session, regardless of how many scenes
-      // have played.
-      sceneLayout: flow.view.sceneLayout,
-    })
-    if (!resolved) {
-      return
-    }
-    previousRef.current = resolved.view
-    diagramActor.send({ type: 'story.scene', cursor, view: resolved.view })
-  }, [diagramActor, model, storyActor, cursor, initializedXydata])
-
-  return null
-})
-StoryCursorSync.displayName = 'StoryCursorSync'

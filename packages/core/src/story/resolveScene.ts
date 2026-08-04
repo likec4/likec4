@@ -1,8 +1,9 @@
-import { calcSceneOffset } from '@likec4/core'
-import type { StoryCursor } from '@likec4/core'
-import type { XYPoint } from '@likec4/core/geometry'
-import type { LikeC4Model } from '@likec4/core/model'
-import type { ComputedStoryScene, LayoutedView, StoryFlow, StorySceneLayout } from '@likec4/core/types'
+import type { XYPoint } from '../geometry'
+import type { LikeC4Model } from '../model/LikeC4Model'
+import type { LayoutedView } from '../types/view'
+import type { ComputedStoryScene } from '../types/view-computed'
+import type { StorySceneLayout } from '../types/view-parsed.story'
+import { calcSceneOffset } from './align'
 
 /**
  * A scene resolved to the geometry the canvas should render: the target view,
@@ -75,45 +76,4 @@ export function resolveScene({ scene, model, outgoing, sceneLayout }: {
     view: applyOffset(target, offset),
     offset,
   }
-}
-
-/**
- * Resolves the scene a story cursor currently points to, ready to dispatch as
- * `story.scene` to the main diagram machine.
- *
- * This is the pure step behind the story cursor's dispatch link
- * (`DiagramActorProvider.tsx`'s `StoryCursorSync`) — everything impure
- * (finding the model, finding the story actor, tracking what was previously
- * on screen) is the React layer's job; this function only looks the cursor's
- * scene up in `flow` and delegates to {@link resolveScene}.
- *
- * `previous` is the last *resolved* scene (already offset-applied) — i.e.
- * exactly what `story.scene` last carried as `view` — not the incoming
- * scene's own native layout. Aligning against what is actually on screen
- * keeps `anchored` mode's offsets from resetting to each scene's raw layout
- * every step; passing `null` (a story's first scene, or the first scene after
- * a fresh mid-session entry — `machine.state.navigating.ts`'s
- * `syncStoryActor`) is equivalent to an empty `outgoing` map, so the scene
- * renders at its own native layout with zero offset.
- *
- * @returns `null` when `cursor.scene` is unknown to `flow`, or when
- * {@link resolveScene} itself returns `null`.
- */
-export function resolveCurrentScene({ cursor, flow, model, previous, sceneLayout }: {
-  cursor: StoryCursor
-  flow: StoryFlow
-  model: LikeC4Model<any>
-  previous: LayoutedView | null
-  sceneLayout: StorySceneLayout
-}): ResolvedScene | null {
-  const scene = flow.lookup(cursor.scene)
-  if (!scene) {
-    return null
-  }
-  return resolveScene({
-    scene,
-    model,
-    outgoing: previous ? positionsOf(previous) : new Map(),
-    sceneLayout,
-  })
 }

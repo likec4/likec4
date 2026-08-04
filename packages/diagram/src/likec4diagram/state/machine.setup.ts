@@ -3,9 +3,9 @@ import {
   isDynamicView,
   nonexhaustive,
 } from '@likec4/core'
-import type { ResolveSceneView, StoryCursor } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import type {
+  AnyStoryView,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -40,7 +40,6 @@ import { navigationPanelActorLogic } from '../../navigationpanel/actor'
 import { xyflow } from '../../overlays/element-details/TabPanelRelationships.css'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
-import { storyActorLogic } from '../../story/actor'
 import { defineActors } from '../../utils/defineActors'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
@@ -85,20 +84,13 @@ export interface Input {
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
   features?: EnabledFeatures
   /**
-   * Resolves a scene's view id to a dynamic view, for the story actor's
-   * cursor to descend into a scene that is itself a dynamic view. An XState
-   * actor cannot reach `useLikeC4Model`, so this always comes from the React
-   * layer — `DiagramActorProvider.tsx` supplies `useOptionalResolveSceneView()`
-   * here, the same way `where`/`features`/`dynamicViewVariant` flow in from
-   * props. Both of the story actor's spawn sites (`machine.ts`'s root
-   * `entry:`, `machine.state.navigating.ts`'s `syncStoryActor`) read
-   * `context.resolve` rather than a hardcoded placeholder, so the actor has
-   * the real resolver from the moment it is spawned — mount-time or
-   * mid-session — regardless of whether `StoryWalkthrough`'s UI is toggled
-   * on. Defaults to `() => null` (every scene reads as non-dynamic) for
-   * callers that don't have a model, e.g. this file's own test suites.
+   * The story this view is currently a scene of, if any. Supplied by the
+   * consumer — the routing layer — the same way `view` itself is supplied;
+   * this state machine has no way to look it up on its own (see
+   * `LikeC4Diagram.props.ts`'s `story` prop). `null`/`undefined` when the
+   * view is being shown standalone.
    */
-  resolve?: ResolveSceneView
+  story?: AnyStoryView | null
 }
 
 export type ToggledFeatures = {
@@ -109,7 +101,7 @@ export interface Context extends Input {
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
   features: EnabledFeatures
-  resolve: ResolveSceneView
+  story: AnyStoryView | null
   // This is used to override features from props
   toggledFeatures: ToggledFeatures
   initialized: {
@@ -163,12 +155,6 @@ export interface Context extends Input {
   collapsedSequenceFlows: {
     [flowId: StepPath]: boolean
   }
-  /**
-   * Cursor position when the current view is a story: the active scene, and —
-   * when that scene is itself a dynamic view — the step within it. `null` when
-   * the current view is not a story.
-   */
-  activeStoryCursor: null | StoryCursor
 }
 
 export function Context({ input }: { input: Input }): Context {
@@ -180,7 +166,7 @@ export function Context({ input }: { input: Input }): Context {
       ...DefaultFeatures,
       ...input.features,
     },
-    resolve: input.resolve ?? (() => null),
+    story: input.story ?? null,
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
       enableCompareWithLatest: false,
@@ -209,7 +195,6 @@ export function Context({ input }: { input: Input }): Context {
     ) ?? 'diagram',
     activeWalkthrough: null,
     collapsedSequenceFlows: {},
-    activeStoryCursor: null,
   }
 }
 
@@ -251,25 +236,8 @@ export type Events =
   }
   | { type: 'update.view-bounds'; bounds: BBox }
   | {
-    /**
-     * Distinct from `update.view`: advancing a story scene must never push
-     * `navigationHistory` (`machine.state.navigating.ts:247-255` is where
-     * `update.view` does that for a differing view id) — every Next/Previous
-     * press would otherwise pollute browser back. See RFC 0001, "Diagram
-     * integration". The already-resolved `view` travels with the event
-     * (rather than a bare view id) for the same reason `update.view` always
-     * carries a full `DiagramView`: this state machine has no `LikeC4Model`
-     * access and never resolves a view by id itself — whoever dispatches this
-     * event already holds the model (see `LikeC4View.tsx`) and must resolve
-     * the scene (`story/resolveScene.ts`) before sending it here.
-     */
-    type: 'story.scene'
-    cursor: StoryCursor
-    view: DiagramView
-  }
-  | {
     type: 'update.inputs'
-    inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features' | 'resolve'>>
+    inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features'>>
   }
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
@@ -382,8 +350,6 @@ const actors = defineActors({
   editor: editorActorLogic,
   // Navigation panel actor manages navigation panel state and interactions
   navigationPanel: navigationPanelActorLogic,
-  // Story actor owns the traversal cursor when the current view is a story
-  story: storyActorLogic,
 })
 
 export const machine = setup({

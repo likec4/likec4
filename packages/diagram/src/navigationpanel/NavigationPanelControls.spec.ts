@@ -1,12 +1,11 @@
-import type { StoryCursor } from '@likec4/core'
+import type { AnyStoryView, LayoutedElementView } from '@likec4/core/types'
 import { _stage, _type } from '@likec4/core/types'
-import type { LayoutedElementView, LayoutedStoryView } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import type { NavigationPanelActorSnapshot } from './actor'
 import { selectBreadcrumbs } from './NavigationPanelControls'
 
 // Minimal fixtures — `selectBreadcrumbs` only reads `context.view`,
-// `context.viewModel`, and `context.activeStoryCursor`.
+// `context.viewModel`, and `context.story`.
 const elementView = {
   id: 'view:scene',
   [_type]: 'element',
@@ -16,45 +15,39 @@ const elementView = {
   edges: [],
 } as unknown as LayoutedElementView
 
-const storyView = {
+// A story is never assigned to `view` itself (Task 1 pulled `story` out of
+// the view unions) — it only ever arrives as the separate `story` field.
+const story = {
   id: 'view:story',
   [_type]: 'story',
   [_stage]: 'layouted',
   title: 'A Story',
-  nodes: [],
-  edges: [],
-} as unknown as LayoutedStoryView
+  scenes: [],
+} as unknown as AnyStoryView
 
-const cursor: StoryCursor = { scene: 'step-01' as any, innerStep: null }
-
-function snapshot(view: LayoutedElementView | LayoutedStoryView, activeStoryCursor: StoryCursor | null) {
+function snapshot(view: LayoutedElementView, story: AnyStoryView | null) {
   return {
     context: {
       view,
       viewModel: null,
-      activeStoryCursor,
+      story,
     },
   } as unknown as NavigationPanelActorSnapshot
 }
 
 describe('selectBreadcrumbs — isStoryView', () => {
-  it('is false when there is no active story cursor, even while mounted directly on a story view', () => {
-    // The narrow window before the dispatch link's first `story.scene` has
-    // landed: `view` is still the story wrapper, but nothing has resolved yet.
-    expect(selectBreadcrumbs(snapshot(storyView, null)).isStoryView).toBe(false)
+  it('is false when there is no story', () => {
+    expect(selectBreadcrumbs(snapshot(elementView, null)).isStoryView).toBe(false)
   })
 
-  it('is true once a story is active, even though `view` is an ordinary scene view', () => {
-    // The steady state for almost the entire lifetime of a story session:
-    // `story.scene` has already replaced `view` with the current scene's own
-    // view (element/dynamic/deployment), never the story wrapper again.
-    // `isStoryView` must not regress to keying off `view._type === 'story'`,
-    // or the StoryWalkthrough controls disappear right after the first scene
-    // renders.
-    expect(selectBreadcrumbs(snapshot(elementView, cursor)).isStoryView).toBe(true)
+  it('is true once a story is supplied alongside an ordinary scene view', () => {
+    // `view` is always an ordinary element/dynamic/deployment view — a story
+    // is never assigned to it — so `isStoryView` must not key off
+    // `view._type === 'story'`, only off `context.story`.
+    expect(selectBreadcrumbs(snapshot(elementView, story)).isStoryView).toBe(true)
   })
 
-  it('is false again once the story has ended (activeStoryCursor cleared)', () => {
+  it('is false again once the story has ended (story cleared)', () => {
     expect(selectBreadcrumbs(snapshot(elementView, null)).isStoryView).toBe(false)
   })
 })

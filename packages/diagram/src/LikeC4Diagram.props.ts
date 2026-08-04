@@ -7,6 +7,7 @@
 
 import type * as t from '@likec4/core/types'
 import type {
+  AnyStoryView,
   DiagramEdge,
   DiagramNode,
   DynamicViewDisplayVariant,
@@ -107,6 +108,13 @@ export type ViewPadding = PaddingWithUnit | ViewPaddings
 
 export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   view: LayoutedView<A>
+
+  /**
+   * The story this view is currently a scene of, if any. `null`/`undefined`
+   * when the view is being shown standalone. Supplied by the consumer (the
+   * routing layer) — `packages/diagram` has no way to look this up itself.
+   */
+  story?: AnyStoryView<A> | null | undefined
 
   className?: string | undefined
 

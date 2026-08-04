@@ -1,17 +1,11 @@
-import type { ComputedStoryView } from '@likec4/core/types'
-import { StoryFlow } from '@likec4/core/types'
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, SnapshotFrom, StateValueFrom } from 'xstate'
-import { enqueueActions } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
 import type { BaseEditorActorRef } from '../../editor/actor/setup'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
-import type { StoryActorRef } from '../../story/actor'
-import { convertToXYFlow } from '../convert-to-xyflow'
 import {
-  mergeXYNodesEdges,
   updateEdgeData,
   updateNodeData,
 } from './assign'
@@ -41,37 +35,6 @@ import { ready } from './machine.state.ready'
 const _diagramMachine = machine.createMachine({
   initial: 'initializing',
   context: DiagramContext,
-  // Spawns the story cursor actor when the diagram is initially mounted on a
-  // story view. Root-level `entry` only runs once (when the machine starts),
-  // so this covers "opened directly on a story" but not navigating into a
-  // story mid-session — that direction (and the reverse, leaving a story) is
-  // `syncStoryActor` in `machine.state.navigating.ts`.
-  entry: [
-    enqueueActions(({ enqueue, context }) => {
-      if (context.view._type !== 'story') {
-        return
-      }
-      enqueue.spawnChild('story', {
-        id: 'story',
-        systemId: 'story',
-        input: {
-          // `StoryFlow.from` is typed for `ComputedStoryView`, but only ever
-          // reads `.scenes` — identically typed on `ComputedStoryView` and
-          // `LayoutedStoryView` (`ReadonlyArray<ComputedStoryScene<A>>` on
-          // both). The cast only bridges the phantom `_stage` discriminant,
-          // which `StoryFlow` never inspects.
-          flow: StoryFlow.from(context.view as unknown as ComputedStoryView),
-          // `context.resolve` is already the real, model-bound resolver by
-          // the time this runs: `DiagramActorProvider.tsx` supplies it as
-          // machine `input`, populated from `useOptionalResolveSceneView()`,
-          // before this actor is even created. Only falls back to `() =>
-          // null` (every scene reads as non-dynamic) for callers with no
-          // model, e.g. this file's own test suites.
-          resolve: context.resolve,
-        },
-      })
-    }),
-  ],
   states: {
     initializing,
     isReady,
@@ -111,26 +74,6 @@ const _diagramMachine = machine.createMachine({
         }
       }),
     },
-    // Distinct from `update.view`: intentionally does NOT push
-    // `navigationHistory` (contrast with the history push in
-    // `machine.state.navigating.ts:247-255`), so advancing a story scene never
-    // pollutes browser back/forward. See RFC 0001, "Diagram integration", and
-    // the JSDoc on this event in `machine.setup.ts`.
-    'story.scene': {
-      actions: assign(({ context, event }) => {
-        const { view, xynodes, xyedges } = convertToXYFlow({
-          currentViewId: context.view.id,
-          dynamicViewVariant: context.dynamicViewVariant,
-          view: event.view,
-          where: context.where,
-          collapsedSequenceFlows: context.collapsedSequenceFlows,
-        })
-        return {
-          ...mergeXYNodesEdges(context, { view, xynodes, xyedges }),
-          activeStoryCursor: event.cursor,
-        }
-      }),
-    },
     'update.features': {
       actions: updateFeatures(),
     },
@@ -163,7 +106,6 @@ const _diagramMachine = machine.createMachine({
         stopChild('overlays'),
         stopChild('search'),
         stopChild('mediaPrint'),
-        stopChild('story'),
         assign({
           xyflow: null,
           xystore: null as any,
@@ -186,7 +128,6 @@ export interface DiagramMachineLogic extends
       search: SearchActorRef | undefined
       editor: BaseEditorActorRef | undefined
       navigationPanel: NavigationPanelActorRef | undefined
-      story: StoryActorRef | undefined
     },
     StateValueFrom<typeof _diagramMachine>
   > {}
