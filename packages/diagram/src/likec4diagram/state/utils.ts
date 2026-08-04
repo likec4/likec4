@@ -266,6 +266,21 @@ export function findCorrespondingNode(
  * diagram actor down at story boundaries) is what keeps anchor continuity from
  * leaking across story boundaries, e.g. deep-linking directly into a mid-story
  * scene from an unrelated view that happens to render the same model element.
+ *
+ * `story.scenes` is a flattened array keyed by view id, but the same view id
+ * can legitimately appear more than once (e.g. the same view referenced from
+ * two different `alt` branches) — each occurrence is a distinct scene with its
+ * own, potentially different, `anchor`. Since this lookup only has the
+ * incoming *view id* to go on (not which occurrence is actually being
+ * entered — see `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`),
+ * it cannot safely pick one when several matching occurrences disagree on
+ * `anchor`. In that case it fails safe and returns `null`, which degrades to
+ * the ordinary fit-to-bounds path — the same graceful-degradation behavior
+ * already used for every other "can't resolve this anchor confidently" case
+ * (anchor not found in the outgoing/incoming node lists, sequence-mode nodes,
+ * etc.). When every matching occurrence agrees (including all being
+ * anchor-less), or there's only one match, this resolves exactly as if the
+ * view id were unique.
  */
 function findIncomingAnchor(
   context: Pick<Context, 'story' | 'view'>,
@@ -279,8 +294,14 @@ function findIncomingAnchor(
   if (!outgoingIsPartOfStory) {
     return null
   }
-  const incomingScene = story.scenes.find(s => s.view === event.view.id)
-  return incomingScene?.anchor ?? null
+  const matchingScenes = story.scenes.filter(s => s.view === event.view.id)
+  if (matchingScenes.length === 0) {
+    return null
+  }
+  const [firstScene, ...rest] = matchingScenes
+  const firstAnchor = firstScene!.anchor ?? null
+  const allAgree = rest.every(s => (s.anchor ?? null) === firstAnchor)
+  return allAgree ? firstAnchor : null
 }
 
 /**

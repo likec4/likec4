@@ -208,4 +208,46 @@ describe('findCorrespondingNode', () => {
     const event = { view: mkView('view:b'), xynodes: [toNode] }
     expect(findCorrespondingNode(context, event)).toEqual({ fromNode: null, toNode: null })
   })
+
+  it('fails safe (no anchor pan) when the incoming view id appears twice in the story with different anchors', () => {
+    // Same view referenced from two different `alt` branches (e.g. examples/cloud-system/story.c4):
+    // one occurrence declares an anchor, the other (or a differing one) declares a different
+    // anchor. `story.scenes` is keyed by view id, not by which occurrence is actually being
+    // entered, so this can't be resolved confidently — it must degrade to the ordinary
+    // fit-to-bounds path (fromNode: null, toNode: null), not silently pick the first match.
+    const fromNode = mkNode('n1', 'element', 'cloud.api')
+    const toNode = mkNode('n2', 'element', 'cloud.api')
+    const context = {
+      lastOnNavigate: null,
+      xynodes: [fromNode],
+      story: mkStory([
+        { view: 'view:a' },
+        { view: 'view:b', anchor: 'cloud.api' },
+        { view: 'view:b' }, // same view id, no anchor — disagrees with the occurrence above
+      ]),
+      view: mkView('view:a'),
+    }
+    const event = { view: mkView('view:b'), xynodes: [toNode] }
+    expect(findCorrespondingNode(context, event)).toEqual({ fromNode: null, toNode: null })
+  })
+
+  it('still resolves the anchor when the incoming view id appears twice but all occurrences agree', () => {
+    // Repeated view id is not by itself disqualifying — only disagreement about the anchor is.
+    // Every occurrence declaring the same anchor (or all being anchor-less) must resolve exactly
+    // as if the view id were unique, so this isn't overly conservative.
+    const fromNode = mkNode('n1', 'element', 'cloud.api')
+    const toNode = mkNode('n2', 'element', 'cloud.api')
+    const context = {
+      lastOnNavigate: null,
+      xynodes: [fromNode],
+      story: mkStory([
+        { view: 'view:a' },
+        { view: 'view:b', anchor: 'cloud.api' },
+        { view: 'view:b', anchor: 'cloud.api' }, // same view id, same anchor — agrees
+      ]),
+      view: mkView('view:a'),
+    }
+    const event = { view: mkView('view:b'), xynodes: [toNode] }
+    expect(findCorrespondingNode(context, event)).toEqual({ fromNode, toNode })
+  })
 })
