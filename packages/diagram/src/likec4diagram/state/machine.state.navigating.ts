@@ -1,6 +1,5 @@
 import { BBox } from '@likec4/core/geometry'
-import type { ComputedStoryView, NodeId } from '@likec4/core/types'
-import { StoryFlow } from '@likec4/core/types'
+import type { NodeId } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'
@@ -16,64 +15,6 @@ import {
 } from './machine.actions'
 import { machine, targetState, to } from './machine.setup'
 import { calcViewportForBounds, findCorrespondingNode, findNodeByModelFqn, nodeRef, viewBounds } from './utils'
-
-/**
- * Spawns or stops the story cursor actor as `update.view` crosses into or out
- * of a story. Task 10's root-level `entry:` (`machine.ts`) only spawns once,
- * at machine start, so it covers being mounted directly on a story but not
- * navigating into one mid-session — nor either direction of *leaving* one,
- * since `entry:` never runs again. This state is where every `update.view`
- * for "another view" (`context.view.id !== event.view.id`, the guard that
- * routes here) is handled, so it's the one place that sees every such
- * transition and can keep the story actor's lifecycle in sync with it.
- *
- * Detects "was a story active" from `system.get('story')`, not
- * `context.view._type === 'story'`: once the first scene has rendered,
- * `story.scene` (`machine.ts`) has already overwritten `context.view` with
- * that scene's own view — an element/dynamic/deployment view, not the story
- * wrapper — so `context.view._type` reads as non-story for the rest of the
- * session even though the story actor is still very much alive. Whether the
- * actor is spawned is the only reliable signal.
- *
- * Unconditionally stopping (`stopChild` on a non-existent child is a no-op —
- * see `destroy`'s handler in `machine.ts`, which already stops `'story'`
- * unconditionally) then maybe-respawning, rather than trying to detect "same
- * story, leave it alone": the guard that routes here already guarantees a
- * *different* view id, so two consecutive story views here are necessarily
- * two different stories — always warranting a fresh cursor at the new
- * story's first scene, never a reason to keep the old actor around.
- *
- * Always resets `activeStoryCursor` to `null` first: it's the top-level
- * context's mirror of the story actor's `cursor`, kept in sync only by
- * `story.scene` — dispatched from the React layer once it observes a cursor
- * change (`DiagramActorProvider.tsx`'s `StoryCursorSync`). Left alone, it
- * would keep naming a scene from a story that either no longer exists
- * (navigated away) or is about to be replaced by a fresh one (navigated to a
- * different story) until that dispatch catches up on the next tick.
- */
-const syncStoryActor = () =>
-  machine.enqueueActions(({ enqueue, context, event, system }) => {
-    assertEvent(event, 'update.view')
-    const hasStoryActor = !!system.get('story')
-    const willBeStory = event.view._type === 'story'
-    if (!hasStoryActor && !willBeStory) {
-      return
-    }
-    enqueue.assign({ activeStoryCursor: null })
-    enqueue.stopChild('story')
-    if (willBeStory) {
-      enqueue.spawnChild('story', {
-        id: 'story',
-        systemId: 'story',
-        input: {
-          // Same cast as `machine.ts`'s root `entry:` — bridges the phantom
-          // `_stage` discriminant, which `StoryFlow` never inspects.
-          flow: StoryFlow.from(event.view as unknown as ComputedStoryView),
-          resolve: context.resolve,
-        },
-      })
-    }
-  })
 
 /**
  * If the user navigates back or forward using the browser's back/forward buttons,
@@ -140,7 +81,6 @@ export const navigating = machine.createStateConfig({
   always: {
     ...to.idle,
     actions: [
-      syncStoryActor(),
       cancelFitDiagram(),
       handleBrowserForwardBackward(),
       disableCompareWithLatest(),

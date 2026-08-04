@@ -12,7 +12,6 @@ import type { EditorActorRef } from '../../editor/actor/machine'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
-import { findSceneForView } from '../../story/actor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
 import type {
@@ -96,25 +95,11 @@ export class DiagramApi<A extends Any = Unknown> {
   /**
    * Navigate to view.
    *
-   * Intercepted when the current view is a story and `viewId` is one of its
-   * own scenes: the story's cursor jumps there (`gotoScene`) instead of
-   * routing away and discarding the story, so the same view behaves
-   * correctly both standalone and as a scene. See RFC 0001, "`navigateTo`
-   * inside a story", and `findSceneForView` (`story/actor.ts`).
-   *
    * @param viewId - Target view ID
    * @param fromNode - Node from which navigation was triggered
    * @param focusOnElement - Element FQN to focus after navigation (from search)
    */
   navigateTo(viewId: ViewId<A>, fromNode?: NodeId, focusOnElement?: Fqn<A>): void {
-    const storyActor = typedSystem(this.ref.current.system).storyActorRef
-    if (storyActor) {
-      const sceneId = findSceneForView(storyActor.getSnapshot().context.flow, viewId)
-      if (sceneId) {
-        storyActor.send({ type: 'gotoScene', sceneId })
-        return
-      }
-    }
     this.send({
       type: 'navigate.to',
       viewId: viewId as any,

@@ -37,14 +37,8 @@ export {
 
 export { calcSceneOffset } from './story/align'
 
-export {
-  cursorAtScene,
-  firstCursor,
-  nextCursor,
-  nextSceneCursor,
-  prevCursor,
-} from './story/cursor'
-export type { ResolveSceneView, StoryCursor } from './story/cursor'
+export { applyOffset, positionsOf, resolveScene } from './story/resolveScene'
+export type { ResolvedScene } from './story/resolveScene'
 
 export type {
   ComputedProjectsView,

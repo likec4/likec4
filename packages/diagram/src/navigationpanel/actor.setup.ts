@@ -1,5 +1,4 @@
-import type { StoryCursor } from '@likec4/core'
-import type { LayoutedView, ViewId } from '@likec4/core/types'
+import type { AnyStoryView, LayoutedView, ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import { setup } from 'xstate'
 import type { CurrentViewModel } from '../hooks/useCurrentViewModel'
@@ -8,15 +7,14 @@ export interface Input {
   view: LayoutedView
   viewModel: CurrentViewModel | null
   /**
-   * Mirrors the main diagram context's `activeStoryCursor`
-   * (`likec4diagram/state/machine.setup.ts`) — `null` unless a story is
-   * currently active. Not derivable from `view` alone: once the first scene
-   * of a story has rendered, `story.scene` (`machine.ts`) has already
-   * replaced `view` with that scene's own view, so `view._type` reads as
-   * non-story for the rest of the session even though the story is still
-   * active. See `NavigationPanelControls.tsx`'s `isStoryView`.
+   * Mirrors the main diagram context's `story`
+   * (`likec4diagram/state/machine.setup.ts`) — `null` unless the current view
+   * is a scene of a story. Supplied by the consumer alongside `view`, not
+   * derivable from `view` alone: a story is never assigned to `view` itself
+   * (Task 1 pulled `story` out of the view unions), so `view._type` never
+   * reads as `'story'`. See `NavigationPanelControls.tsx`'s `isStoryView`.
    */
-  activeStoryCursor: StoryCursor | null
+  story: AnyStoryView | null
 }
 
 export type Events =
@@ -70,7 +68,7 @@ export interface Context {
 
   viewModel: CurrentViewModel | null
 
-  activeStoryCursor: StoryCursor | null
+  story: AnyStoryView | null
   /**
    * Who activated the dropdown
    * (if `click` then the dropdown is always open until dismissed)

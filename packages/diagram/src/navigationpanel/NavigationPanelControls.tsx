@@ -36,15 +36,12 @@ export const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => 
     viewId: view.id,
     viewTitle: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
     isDynamicView: (context.viewModel?._type ?? view._type) === 'dynamic',
-    // Not `view._type === 'story'`: once the first scene has rendered,
-    // `story.scene` has already replaced `view` with that scene's own view
-    // (element/dynamic/deployment), so `view._type` never reads as 'story'
-    // again for the rest of the session even though it is still active.
-    // `activeStoryCursor` is the main diagram context's own signal for "is a
-    // story currently active" and survives exactly as long as the story does
-    // (see `machine.state.navigating.ts`'s `syncStoryActor`, which clears it
-    // on leaving).
-    isStoryView: context.activeStoryCursor !== null,
+    // Not `view._type === 'story'`: a story is never assigned to `view`
+    // itself (Task 1 pulled `story` out of the view unions), so `view._type`
+    // never reads as `'story'`. `context.story` is the consumer-supplied
+    // signal for "is the current view a scene of a story" — see
+    // `LikeC4Diagram.props.ts`'s `story` prop.
+    isStoryView: context.story != null,
   }
 }
 

@@ -1,4 +1,4 @@
-import type { DiagramView, LayoutedElementView, LayoutedStoryView } from '@likec4/core/types'
+import type { DiagramView, LayoutedElementView } from '@likec4/core/types'
 import { scalar } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { createActor, fromCallback } from 'xstate'
@@ -39,26 +39,6 @@ const mockElsewhereView = {
   edges: [],
   bounds: { x: 0, y: 0, width: 800, height: 600 },
 } satisfies LayoutedElementView
-
-const mockStoryView = {
-  _type: 'story' as const,
-  _stage: 'layouted' as const,
-  id: scalar.ViewId('view:story'),
-  title: 'Story View',
-  description: null,
-  tags: null,
-  links: null,
-  hash: 'mock-hash-story',
-  autoLayout: { direction: 'TB' as const },
-  nodes: [],
-  edges: [],
-  bounds: { x: 0, y: 0, width: 800, height: 600 },
-  sceneLayout: 'anchored' as const,
-  scenes: [
-    { id: scalar.StepPath('step-01'), view: mockSceneView.id, astPath: '/a' },
-  ],
-  storyFlow: [],
-} satisfies LayoutedStoryView
 
 const mockXYStore = {
   getState: () => ({
@@ -115,58 +95,21 @@ function createTestApi(initialView: DiagramView) {
   return { actor, api: DiagramApi.withActor(ref) }
 }
 
-describe('DiagramApi.navigateTo — story interception', () => {
-  it('jumps the story cursor instead of emitting navigateTo when the target is one of its own scenes', () => {
-    const { actor, api } = createTestApi(mockStoryView)
-
-    let emittedNavigateTo: string | null = null
-    actor.on('navigateTo', ({ viewId }) => {
-      emittedNavigateTo = viewId
-    })
-
-    api.navigateTo(mockSceneView.id)
-
-    const story = actor.getSnapshot().children.story
-    expect(story).toBeDefined()
-    expect(story!.getSnapshot().context.cursor).toEqual({
-      scene: mockStoryView.scenes[0]!.id,
-      innerStep: null,
-    })
-    expect(emittedNavigateTo).toBeNull()
-
-    actor.stop()
-  })
-
-  it('falls through to the normal navigate.to path when the target is not one of the story scenes', () => {
-    const { actor, api } = createTestApi(mockStoryView)
-
-    let emittedNavigateTo: string | null = null
-    actor.on('navigateTo', ({ viewId }) => {
-      emittedNavigateTo = viewId
-    })
-
-    api.navigateTo(mockElsewhereView.id)
-
-    const story = actor.getSnapshot().children.story
-    // Cursor stays at the story's first scene — untouched by the fallthrough.
-    expect(story!.getSnapshot().context.cursor).toEqual({
-      scene: mockStoryView.scenes[0]!.id,
-      innerStep: null,
-    })
-    expect(emittedNavigateTo).toBe(mockElsewhereView.id)
-
-    actor.stop()
-  })
-
-  it('behaves exactly as before when the current view is not a story (no story actor to intercept for)', () => {
+describe('DiagramApi.navigateTo', () => {
+  // No story interception any more: `navigateTo` always sends a plain
+  // `navigate.to` event, unconditionally. A story's own scenes are never
+  // assigned to `context.view` (Task 1 pulled `story` out of the view
+  // unions), so there is nothing here to intercept for — the decision of
+  // whether a navigation should stay "inside" a story now belongs entirely to
+  // the consumer (the routing layer, see Task 7), which is the only layer
+  // with both router access and story-scene knowledge.
+  it('always emits navigateTo, regardless of the current view', () => {
     const { actor, api } = createTestApi(mockSceneView)
 
     let emittedNavigateTo: string | null = null
     actor.on('navigateTo', ({ viewId }) => {
       emittedNavigateTo = viewId
     })
-
-    expect(actor.getSnapshot().children.story).toBeUndefined()
 
     api.navigateTo(mockElsewhereView.id)
 

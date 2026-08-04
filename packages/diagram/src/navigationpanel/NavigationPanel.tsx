@@ -27,7 +27,7 @@ const select = selectDiagramContext(s => {
     const isSequenceView = s.dynamicViewVariant === 'sequence'
     return {
       view: s.view,
-      activeStoryCursor: s.activeStoryCursor,
+      story: s.story,
       mode: (isSequenceView && hasProp(s.view, 'flow')
         ? 'walkthrough-flow'
         : 'walkthrough') as NavigationPanelMode,
@@ -35,7 +35,7 @@ const select = selectDiagramContext(s => {
   }
   return {
     view: s.view,
-    activeStoryCursor: s.activeStoryCursor,
+    story: s.story,
     mode: 'default' as NavigationPanelMode,
   }
 })
@@ -49,7 +49,7 @@ const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag(
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
   const {
     view,
-    activeStoryCursor,
+    story,
     mode,
   } = useDiagramSelector(select)
   const viewModel = useOptionalCurrentViewModel()
@@ -57,8 +57,8 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
   const portalProps = useMantinePortalProps()
 
   useEffect(() => {
-    actorRef.send({ type: 'update.inputs', inputs: { viewModel, view, activeStoryCursor } })
-  }, [actorRef, viewModel, view, activeStoryCursor])
+    actorRef.send({ type: 'update.inputs', inputs: { viewModel, view, story } })
+  }, [actorRef, viewModel, view, story])
 
   return (
     <VStack
