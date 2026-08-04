@@ -18,19 +18,31 @@ import { EditorPanel } from './editorpanel'
 import { NavigationPanelActorContextProvider } from './hooks'
 import { NavigationPanelControls } from './NavigationPanelControls'
 import { NavigationPanelDropdown } from './NavigationPanelDropdown'
-import { ActiveWalkthroughControls } from './walkthrough'
+import { ActiveWalkthroughControls, StoryControls } from './walkthrough'
 import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
-const select = selectDiagramContext(s => {
+export const select = selectDiagramContext(s => {
   const isActiveWalkthrough = !!s.activeWalkthrough
   if (isDynamicView(s.view) && isActiveWalkthrough) {
     const isSequenceView = s.dynamicViewVariant === 'sequence'
+    if (isSequenceView && hasProp(s.view, 'flow')) {
+      return {
+        view: s.view,
+        story: s.story,
+        mode: 'walkthrough-flow' as NavigationPanelMode,
+      }
+    }
     return {
       view: s.view,
       story: s.story,
-      mode: (isSequenceView && hasProp(s.view, 'flow')
-        ? 'walkthrough-flow'
-        : 'walkthrough') as NavigationPanelMode,
+      // A dynamic view's own step-through walkthrough can be entered while
+      // that view is also being shown as a story scene. The two are
+      // orthogonal — the walkthrough steps edges within the view, the story
+      // steps scenes across views — so neither should hide the other: this
+      // mode renders `ActiveWalkthroughControls` and `StoryControls`
+      // side by side instead of the walkthrough replacing the story's
+      // scene-stepping controls.
+      mode: (s.story != null ? 'walkthrough-in-story' : 'walkthrough') as NavigationPanelMode,
     }
   }
   return {
@@ -40,10 +52,11 @@ const select = selectDiagramContext(s => {
   }
 })
 
-type NavigationPanelMode =
+export type NavigationPanelMode =
   | 'default' // Default mode - no walkthrough
   | 'walkthrough-flow' // Walkthrough mode with flow visualization (hide panel)
   | 'walkthrough'
+  | 'walkthrough-in-story' // Dynamic-view walkthrough active while inside a story scene: both controls render together
 
 const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
@@ -120,6 +133,13 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
                     <AnimatePresence propagate initial={false}>
                       {mode === 'walkthrough'
                         ? <ActiveWalkthroughControls />
+                        : mode === 'walkthrough-in-story'
+                        ? (
+                          <>
+                            <ActiveWalkthroughControls />
+                            <StoryControls key="story-controls" />
+                          </>
+                        )
                         : <NavigationPanelControls />}
                     </AnimatePresence>
                   </m.div>
@@ -128,7 +148,7 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
               {opened && <NavigationPanelDropdown />}
             </Popover>
             <ComparePanel />
-            {mode === 'walkthrough' && <WalkthroughPanel />}
+            {(mode === 'walkthrough' || mode === 'walkthrough-in-story') && <WalkthroughPanel />}
             <EditorPanel />
           </>
         )}
