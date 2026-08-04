@@ -478,3 +478,59 @@ into a deliberate feature commit); the `model-change` guards (deleted).
 6. **Backward compatibility for URLs minted during the POC's life**, if any ever ship before this
    migration lands. Moot for an unreleased branch, but worth deciding before this pattern is applied
    to a released feature.
+
+## Implementation record
+
+Candidate B shipped across the nine tasks tracked in
+`docs/superpowers/plans/2026-08-03-story-containment-redesign.md`. This section records what the
+"Open questions" above actually resolved to, and the one place the shipped design diverged from
+this RFC's own migration sketch.
+
+**Open question 1 — push-vs-replace browser history.** Resolved: push. Next/Prev on a story now
+call `navigate()` with no `replace: true`, so each scene transition is a real, separately-back-
+button-able history entry (Task 7, `packages/likec4-spa/src/pages/StoryReact.tsx`). Confirmed
+working via Task 7's browser smoke test and re-confirmed in this task's own end-to-end pass: the
+back button steps backward through scenes one at a time (`cloud_next` → `dynamic-view-1` →
+`cloud_legacy`), not back out of the story entirely.
+
+**Open question 2 — DSL placement.** Resolved: a sibling top-level `stories { }` block, not a
+second collecting property inside `views { }`. `story` no longer appears as an alternative of
+`LikeC4View` in the grammar; `ModelViews`/`ViewsParser` route it to its own `doc.c4Stories` sink
+(Task 3, `packages/language-server/src/like-c4.langium`, `packages/language-server/src/model/parser/ViewsParser.ts`).
+This was the RFC's "free choice" (§5a) — the smallest-diff option (keeping `story` inside
+`views { }`) was not the one taken; the sibling block was chosen for a clearer authoring signal
+that a story is not a view.
+
+**Open question 3 — dev-mode RPC parity.** Resolved, and cheaper than estimated: no new
+vite-plugin virtual module or RPC surface was needed. Once `stories` became a field on
+`LayoutedLikeC4ModelData` (Task 1), it started riding the existing `likec4:model` virtual module
+for free — `packages/vite-plugin/src/virtuals/model.ts` serializes the whole `LayoutedLikeC4ModelData`
+already, `stories` included. Task 8 verified this at two levels (a `fromWorkspace` script and a
+running dev server's served module) before writing any code, and the only change that shipped was
+a per-item HMR diff for `stories` in `packages/vite-plugin/src/internal.ts`'s `updateModel`, matching
+the diffing this file already did for `views` (an HMR-diff-quality improvement, not new surface
+area). This RFC's cost estimate (§"What it costs") had flagged this as "real, unbudgeted work" whose
+size "cannot be sized without knowing whether live-editing... is a hard requirement" — it turned out
+to cost nothing beyond the type change itself.
+
+**Deviation from the migration sketch: the story actor/cursor were deleted, not rewired.** The
+migration sketch's step 7 (§"Migration sketch (Candidate B)") expected the story actor,
+`resolveScene`, `align.ts`, and `StoryFlow` to "survive verbatim," with only their input wiring
+changed so `context.view` never becomes story-shaped, and treated push-vs-replace navigation as an
+open, independent product question layered on top of a surviving actor. That is not what shipped.
+Task 6 (`docs/superpowers/plans/2026-08-03-story-containment-redesign.md`, "Task 6: Diagram + Core
+— delete the story actor/cursor, add a `story` prop") deleted the story XState actor, its cursor,
+and `resolveSceneView`'s actor-side split outright — commit `7e3074011`,
+"refactor(diagram): delete the story actor/cursor — the route is now the cursor." The reasoning:
+once Next/Prev became real, pushed `navigate()` calls (open question 1, resolved as push), the
+route's `$viewId` param already *is* the position in the story — there is nothing left for an
+in-memory cursor to track that the URL doesn't already track. Keeping the actor around to duplicate
+that state would have reintroduced exactly the two-sources-of-truth problem (`context.view` vs. the
+URL) that RFC 0001's retrospective and this RFC's §1 last row (the `activeStoryCursor` staleness
+workaround) had already identified as a trap. `resolveScene`/`calcSceneOffset` (the alignment math)
+were not deleted — they were relocated to `packages/core/src/story/resolveScene.ts` and are now
+called directly from `packages/likec4-spa/src/pages/StoryReact.tsx` on every render, keyed off the
+route's current scene instead of actor state. This task's own end-to-end verification (see below)
+confirms that relocation preserved the alignment behavior: non-zero, monotonically-accumulating
+offsets across scene transitions, matching the values Task 7's smoke test already recorded
+(`{x:125,y:-98}` then `{x:390,y:-187}`).
