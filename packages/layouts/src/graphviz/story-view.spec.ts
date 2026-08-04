@@ -1,15 +1,22 @@
-import { type ComputedStoryView, _stage, _type, isStoryView, ViewId } from '@likec4/core'
+import {
+  type ComputedLikeC4ModelData,
+  type ComputedStoryView,
+  _stage,
+  _type,
+  ViewId,
+} from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
 import { describe, it } from 'vitest'
-import { parsedModel } from './__fixtures__'
-import { GraphvizLayouter } from './GraphvizLayoter'
-import { GraphvizWasmAdapter } from './wasm/GraphvizWasmAdapter'
+import { FakeModel } from './__fixtures__/model'
+import { layoutLikeC4Model } from './layout-model'
 
-describe('GraphvizLayouter with story views', () => {
-  it('returns the story unchanged, stamped as layouted, with empty dot', async ({ expect }) => {
+describe('layoutLikeC4Model with story views', () => {
+  it('stamps a story as layouted, unchanged otherwise (no bounds/nodes/edges fabricated)', async ({ expect }) => {
+    const storyId = ViewId('s')
     const story = {
       [_stage]: 'computed',
       [_type]: 'story',
-      id: ViewId('s'),
+      id: storyId,
       title: null,
       description: null,
       tags: null,
@@ -17,26 +24,28 @@ describe('GraphvizLayouter with story views', () => {
       sceneLayout: 'anchored',
       scenes: [{ id: 'step-01', view: 'v1', astPath: '/a' }],
       storyFlow: [],
-      nodes: [],
-      edges: [],
-      autoLayout: { direction: 'TopBottom' },
     } as unknown as ComputedStoryView
 
-    const layouter = new GraphvizLayouter(new GraphvizWasmAdapter())
-    const { dot, diagram } = await layouter.layout({ view: story, styles: parsedModel.$styles })
+    const computedModel = LikeC4Model.create({
+      ...FakeModel,
+      [_stage]: 'computed',
+      views: {},
+      stories: { [storyId]: story },
+    } as unknown as ComputedLikeC4ModelData)
 
-    expect(dot).toBe('')
-    expect(diagram[_stage]).toBe('layouted')
-    expect(diagram[_type]).toBe('story')
-    if (!isStoryView(diagram)) {
-      throw new Error('expected diagram to be a story view')
+    const layouted = await layoutLikeC4Model(computedModel)
+
+    const layoutedStory = layouted.$data.stories[storyId]
+    if (!layoutedStory) {
+      throw new Error('expected story to survive layoutLikeC4Model')
     }
-    expect(diagram.scenes).toEqual(story.scenes)
-    // Regression: LayoutedStoryView requires `bounds: BBox`. Consumers such as
-    // packages/diagram/src/LikeC4Diagram.tsx dereference `view.bounds.width` /
-    // `view.bounds.height` unconditionally, so an undefined `bounds` is a guaranteed
-    // runtime crash the moment a story view is rendered. A story owns no geometry, so
-    // the honest value is a zero box, not an absent one.
-    expect(diagram.bounds).toEqual({ x: 0, y: 0, width: 0, height: 0 })
+    expect(layoutedStory[_stage]).toBe('layouted')
+    // A story owns no geometry (see RFC 0001, "Layout"): layouting it is just
+    // relabeling its stage, so nothing else should change and no `bounds`/`nodes`/
+    // `edges` should be fabricated.
+    expect(layoutedStory).toEqual({ ...story, [_stage]: 'layouted' })
+    expect(layoutedStory).not.toHaveProperty('bounds')
+    expect(layoutedStory).not.toHaveProperty('nodes')
+    expect(layoutedStory).not.toHaveProperty('edges')
   })
 })
