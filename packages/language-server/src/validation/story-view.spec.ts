@@ -125,6 +125,42 @@ describe('story view validation', () => {
     expect(errors.filter(m => m === `Duplicate story 'dup'`)).toHaveLength(2)
   })
 
+  it('rejects anchor on the first scene of a story', async ({ expect, validate }) => {
+    const { errors } = await validate(`${preamble}
+      story s { scene v1 { anchor a } }
+    }`)
+    expect(errors).toContain('The first scene in a story has no prior scene to anchor against')
+  })
+
+  it('accepts anchor on a scene that follows an earlier scene', async ({ expect, validate }) => {
+    const { errors } = await validate(`${preamble}
+      story s {
+        scene v1
+        scene v1 { anchor a }
+      }
+    }`)
+    expect(errors).toEqual([])
+  })
+
+  it('rejects anchor on a scene inside an alt branch when the alt is the story\'s first statement', async ({ expect, validate }) => {
+    const { errors } = await validate(`${preamble}
+      story s {
+        alt { when 'x' { scene v1 { anchor a } } else { scene v1 } }
+      }
+    }`)
+    expect(errors).toContain('The first scene in a story has no prior scene to anchor against')
+  })
+
+  it('accepts anchor on a scene that is first inside an alt branch but has an earlier predecessor overall', async ({ expect, validate }) => {
+    const { errors } = await validate(`${preamble}
+      story s {
+        scene v1
+        alt { when 'x' { scene v1 { anchor a } } else { scene v1 } }
+      }
+    }`)
+    expect(errors).toEqual([])
+  })
+
   it('allows a view and a story to share the same id (separate namespaces, see RFC 0002 §5)', async ({ expect, validate }) => {
     const { errors } = await validate(`
       specification {

@@ -48,6 +48,7 @@ import {
 } from './specification'
 import {
   storyAltChecks,
+  storySceneChecks,
   storySubflowChecks,
   storyViewChecks,
 } from './story-view'
@@ -202,6 +203,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ViewRuleRank: viewRuleRankChecks(services),
     ViewOrderProperty: viewOrderChecks(services),
     StoryView: storyViewChecks(services),
+    StoryScene: storySceneChecks(services),
     StorySubflow: storySubflowChecks(services),
     StoryAlt: storyAltChecks(services),
   })

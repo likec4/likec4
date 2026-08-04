@@ -1,4 +1,4 @@
-import type { ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
@@ -124,6 +124,57 @@ export const storyAltChecks = (
   return tryOrLog((el, accept) => {
     if (el.branches.length === 0) {
       accept('error', 'Alt must have at least one branch', { node: el })
+    }
+  })
+}
+
+/**
+ * A scene with no predecessor has nothing to anchor against — declaring
+ * `anchor` there can never have an effect, and per this feature's design
+ * that's treated as an author mistake, not silently ignored.
+ *
+ * "No predecessor" is determined the same way `computeStoryView`
+ * (`packages/core/src/compute-view/story-view/compute.ts`) flattens scenes:
+ * a depth-first pre-order walk over the story's `statements` tree. This walk
+ * is duplicated at the AST level (rather than reusing the core-level walk)
+ * because validation runs on the AST before any view is computed.
+ */
+export const storySceneChecks = (
+  _services: LikeC4Services,
+): ValidationCheck<ast.StoryScene> => {
+  return tryOrLog((el, accept) => {
+    if (!el.body?.anchor) {
+      return
+    }
+    const story = AstUtils.getContainerOfType(el, ast.isStoryView)
+    if (!story?.body) {
+      return
+    }
+    let sawEarlierScene = false
+    let isFirst = true
+    const visit = (statements: readonly ast.StoryStatement[]) => {
+      for (const statement of statements) {
+        if (ast.isStoryScene(statement)) {
+          if (statement === el) {
+            isFirst = !sawEarlierScene
+            return
+          }
+          sawEarlierScene = true
+        } else if (ast.isStoryAlt(statement)) {
+          for (const branch of statement.branches) {
+            visit(branch.statements)
+          }
+        } else if (ast.isStorySubflow(statement)) {
+          visit(statement.statements)
+        }
+      }
+    }
+    visit(story.body.statements)
+    if (isFirst) {
+      accept('error', 'The first scene in a story has no prior scene to anchor against', {
+        node: el,
+        property: 'body',
+      })
     }
   })
 }
