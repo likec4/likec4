@@ -221,13 +221,12 @@ export type ParsedAstView =
   | ParsedAstElementView
   | ParsedAstDynamicView
   | ParsedAstDeploymentView
-  | ParsedAstStoryView
 export const ViewOps = {
-  writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewId): T {
+  writeId<T extends ast.LikeC4View | ast.StoryView>(node: T, id: c4.ViewId): T {
     node[idattr] = id
     return node
   },
-  readId(node: ast.LikeC4View): c4.ViewId | undefined {
+  readId(node: ast.LikeC4View | ast.StoryView): c4.ViewId | undefined {
     return node[idattr]
   },
 }
@@ -265,6 +264,7 @@ export interface LikeC4DocumentProps {
   c4Relations?: ParsedAstRelation[]
   c4Globals?: ParsedAstGlobals
   c4Views?: ParsedAstView[]
+  c4Stories?: ParsedAstStoryView[]
   c4Deployments?: ParsedAstDeployment[]
   c4DeploymentRelations?: ParsedAstDeploymentRelation[]
   c4Imports?: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
@@ -300,6 +300,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4ExtendRelations
     && !!doc.c4Relations
     && !!doc.c4Views
+    && !!doc.c4Stories
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
     && !!doc.c4Imports

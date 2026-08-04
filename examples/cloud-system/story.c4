@@ -1,4 +1,4 @@
-views {
+stories {
 
   story migration {
     title 'Migration to microservices'

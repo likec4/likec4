@@ -34,6 +34,7 @@ describe('LikeC4CompletionProvider', () => {
         'specification',
         'model',
         'views',
+        'stories',
         'global',
         'deployment',
         'likec4lib',

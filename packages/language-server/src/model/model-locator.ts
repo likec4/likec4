@@ -8,7 +8,7 @@ import { AstUtils, DocumentState, GrammarUtils } from 'langium'
 import { flatMap, isString, pipe } from 'remeda'
 import type { Location, Range } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
-import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
+import type { ParsedAstElement, ParsedAstStoryView, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
 import { ast } from '../ast'
 import { logger as serverLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -28,6 +28,13 @@ export type ViewLocateResult = {
   doc: ParsedLikeC4LangiumDocument
   view: ParsedAstView
   viewAst: ast.LikeC4View
+}
+
+/** Result of locating a story: document, story AST, and parsed story. */
+export type StoryLocateResult = {
+  doc: ParsedLikeC4LangiumDocument
+  story: ParsedAstStoryView
+  storyAst: ast.StoryView
 }
 
 /**
@@ -204,6 +211,30 @@ export class LikeC4ModelLocator {
           view,
           viewAst,
         }
+      }
+    }
+    return null
+  }
+
+  /**
+   * Locates a story by id, mirroring `locateViewAst` for the sibling `stories { }` block.
+   */
+  public locateStoryAst(
+    storyId: c4.ViewId,
+    projectId?: c4.ProjectId | undefined,
+  ): null | StoryLocateResult {
+    const project = this.projects.ensureProjectId(projectId)
+    for (const doc of this.documents(project)) {
+      const story = doc.c4Stories?.find(r => r.id === storyId)
+      if (!story) {
+        continue
+      }
+      const storyAst = this.services.workspace.AstNodeLocator.getAstNode(
+        doc.parseResult.value,
+        story.astPath,
+      )
+      if (ast.isStoryView(storyAst)) {
+        return { doc, story, storyAst }
       }
     }
     return null

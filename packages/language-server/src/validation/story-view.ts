@@ -1,30 +1,22 @@
 import type { ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 import { tryOrLog } from './_shared'
+
+// `storySceneChecks` (which used to reject `scene x` where `x` is a story, i.e. nested
+// stories) was removed here. Since stories moved into their own sibling `stories { }` block
+// (RFC 0002), `StoryScene.view=[LikeC4View]` structurally can no longer resolve to a
+// `StoryView` at all — a story is no longer exported under the `LikeC4View` type, so
+// `el.view.ref` could never again be a story and the check was dead code. `scene other`
+// naming a story now fails to link at all, surfacing Langium's own
+// "Could not resolve reference to LikeC4View named '...'" diagnostic instead — still an
+// error, just no longer a custom one.
 
 const IMPLEMENTED_BRANCH_KINDS = ['when', 'if', 'else'] as const
 
 const isAltBranchKind = (kind: string): boolean =>
   IMPLEMENTED_BRANCH_KINDS.includes(kind as typeof IMPLEMENTED_BRANCH_KINDS[number])
-
-/**
- * A scene must target a playable view (element, dynamic, or deployment view).
- * Stories cannot nest other stories.
- */
-export const storySceneChecks = (
-  _services: LikeC4Services,
-): ValidationCheck<ast.StoryScene> => {
-  return tryOrLog((el, accept) => {
-    const target = el.view.ref
-    if (target && ast.isStoryView(target)) {
-      accept('error', 'A scene can not reference a story view', {
-        node: el,
-        property: 'view',
-      })
-    }
-  })
-}
 
 /**
  * The grammar admits every `SubflowKind` block for forward compatibility with RFC 0001,
@@ -71,11 +63,20 @@ export const storySubflowChecks = (
 
 /**
  * Warns when a story has no scenes anywhere in its statement tree, since such a story has
- * nothing to play.
+ * nothing to play. Also rejects two stories sharing the same id.
+ *
+ * Story ids and view ids are deliberately treated as separate namespaces: a `view foo { }`
+ * and a `story foo { }` in the same project are allowed to coexist. Stories moved out of
+ * `views { }` into their own sibling `stories { }` block (see RFC 0002) precisely because a
+ * story is not a substitutable kind of view — it is addressed through its own
+ * `ModelLocator.locateStoryAst`, never through `locateViewAst`, and nothing in the grammar
+ * cross-references a story by id (`StoryScene.view` always targets `[LikeC4View]`). RFC 0002
+ * §5 left cross-type collision explicitly unresolved; this is the resolution.
  */
 export const storyViewChecks = (
-  _services: LikeC4Services,
+  services: LikeC4Services,
 ): ValidationCheck<ast.StoryView> => {
+  const index = services.shared.workspace.IndexManager
   const hasScene = (statements: ast.StoryStatement[]): boolean =>
     statements.some(s => {
       switch (true) {
@@ -94,6 +95,22 @@ export const storyViewChecks = (
     const statements = el.body?.statements ?? []
     if (!hasScene(statements)) {
       accept('warning', 'Story has no scenes', { node: el, property: 'name' })
+    }
+
+    if (!el.name) {
+      return
+    }
+    const projectId = projectIdFrom(el)
+    const otherStories = index
+      .projectElements(projectId, ast.StoryView)
+      .filter(n => n.name === el.name)
+      .limit(2)
+      .count()
+    if (otherStories > 1) {
+      accept('error', `Duplicate story '${el.name}'`, {
+        node: el,
+        property: 'name',
+      })
     }
   })
 }

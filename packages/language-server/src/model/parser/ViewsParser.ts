@@ -60,9 +60,6 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               case ast.isDeploymentView(view):
                 this.doc.c4Views.push(this.parseDeploymentView(view))
                 break
-              case ast.isStoryView(view):
-                this.doc.c4Views.push(this.parseStoryView(view))
-                break
               default:
                 nonexhaustive(view)
             }
@@ -72,6 +69,19 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             }
           } catch (e) {
             this.logError(e, view, 'views')
+          }
+        }
+      }
+
+      for (const storyBlock of this.doc.parseResult.value.stories) {
+        for (const story of storyBlock.stories) {
+          try {
+            if (!isValid(story)) {
+              continue
+            }
+            this.doc.c4Stories.push(this.parseStoryView(story))
+          } catch (e) {
+            this.logError(e, story, 'views')
           }
         }
       }

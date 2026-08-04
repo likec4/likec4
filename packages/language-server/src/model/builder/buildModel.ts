@@ -41,6 +41,7 @@ import {
   unique,
 } from 'remeda'
 import type {
+  ParsedAstStoryView,
   ParsedAstView,
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
@@ -290,7 +291,26 @@ export function buildModelData(
     }
   }
 
+  function toC4Story(doc: LangiumDocument) {
+    const docUri = doc.uri.toString()
+    return (parsedAstStory: ParsedAstStoryView): c4.ParsedStoryView => {
+      const {
+        // ignore this property
+        astPath: _ignore,
+        ...story
+      } = parsedAstStory
+
+      return {
+        ...omitBy(story, v => v === undefined),
+        [_stage]: 'parsed',
+        sourcePath: UriUtils.relative(project.folderUri, docUri),
+        docUri,
+      }
+    }
+  }
+
   const parsedViews = docs.flatMap(d => map(d.c4Views, toC4View(d)))
+  const parsedStories = docs.flatMap(d => map(d.c4Stories, toC4Story(d)))
 
   // Add index view if not present
   if (!parsedViews.some(v => v.id === 'index')) {
@@ -396,6 +416,10 @@ export function buildModelData(
       relations,
       globals: c4Specification.globals,
       views,
+      stories: pipe(
+        parsedStories,
+        indexBy(prop('id')),
+      ),
       deployments: {
         elements: deploymentElements,
         relations: deploymentRelations,

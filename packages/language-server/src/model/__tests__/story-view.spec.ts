@@ -16,7 +16,8 @@ describe('story view grammar', () => {
       views {
         view before { include mono }
         view after { include orders, billing }
-
+      }
+      stories {
         story migration {
           title 'Migration'
           sceneLayout anchored
@@ -68,6 +69,8 @@ describe('ParsedAstStoryView', () => {
       views {
         view before { include mono }
         view after { include orders, billing }
+      }
+      stories {
         story migration {
           title 'Migration'
           sceneLayout independent
@@ -76,14 +79,14 @@ describe('ParsedAstStoryView', () => {
         }
       }
     `)
-    const { c4Views } = t.likec4.ModelParser.parse(document)
-    const story = c4Views.find(v => v.id === 'migration')
+    const { c4Stories } = t.likec4.ModelParser.parse(document)
+    const story = c4Stories.find(v => v.id === 'migration')
     expect(story).toMatchObject({
       id: 'migration',
       title: 'Migration',
       sceneLayout: 'independent',
     })
-    invariant(story?._type === 'story', 'Expected story view')
+    invariant(story, 'Expected story view')
     expect(story.statements).toHaveLength(2)
     // `notes` is `scalar.MarkdownOrString`, not a flat string.
     expect(story.statements[0]).toMatchObject({ view: 'before', notes: { txt: 'One deployable' } })
@@ -102,15 +105,17 @@ describe('ParsedAstStoryView', () => {
         system mono
       }
       views {
+        view laterView { include mono }
+      }
+      stories {
         story migration {
           scene laterView
         }
-        view laterView { include mono }
       }
     `)
-    const { c4Views } = t.likec4.ModelParser.parse(document)
-    const story = c4Views.find(v => v.id === 'migration')
-    invariant(story?._type === 'story', 'Expected story view')
+    const { c4Stories } = t.likec4.ModelParser.parse(document)
+    const story = c4Stories.find(v => v.id === 'migration')
+    invariant(story, 'Expected story view')
     // Regression test: the scene must resolve, not be silently dropped, regardless of whether
     // `laterView` is declared before or after `migration` in the same `views { }` block.
     expect(story.statements).toHaveLength(1)

@@ -67,8 +67,6 @@ export function changeElementStyle(services: LikeC4Services, {
   modifiedRange: Range
   edits: TextEdit[]
 } {
-  // A story owns no geometry and no view rules (RFC 0001), so there is nothing to change here.
-  invariant(!ast.isStoryView(viewAst), `View ${view.id} is a story view; it has no rules to change`)
   // Should never happen
   invariant(viewAst.body, `View ${view.id} has no body`)
 

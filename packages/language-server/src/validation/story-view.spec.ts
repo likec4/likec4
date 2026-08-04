@@ -28,14 +28,21 @@ describe('story view validation', () => {
     }
     views {
       view v1 { include a }
+    }
+    stories {
       story other { scene v1 }
   `
 
   it('rejects a scene targeting a story', async ({ expect, validate }) => {
+    // `other` is a story, not a view. Since stories moved into their own sibling
+    // `stories { }` block (RFC 0002), a story is no longer exported under the `LikeC4View`
+    // type at all, so `scene other` can no longer link — Langium's own reference-resolution
+    // diagnostic is the rejection, rather than a custom "scene can not reference a story"
+    // validation message (which would now be dead code, since it could never fire).
     const { errors } = await validate(`${preamble}
       story s { scene other }
     }`)
-    expect(errors).toContain('A scene can not reference a story view')
+    expect(errors).toContain(`Could not resolve reference to LikeC4View named 'other'.`)
   })
 
   it('rejects an empty alt', async ({ expect, validate }) => {
@@ -97,5 +104,44 @@ describe('story view validation', () => {
     }`)
     expect(errors).toEqual([])
     expect(warnings).toEqual([])
+  })
+
+  it('rejects two stories sharing the same id', async ({ expect, validate }) => {
+    const { errors } = await validate(`
+      specification {
+        element system
+      }
+      model {
+        system a
+      }
+      views {
+        view v1 { include a }
+      }
+      stories {
+        story dup { scene v1 }
+        story dup { scene v1 }
+      }
+    `)
+    expect(errors.filter(m => m === `Duplicate story 'dup'`)).toHaveLength(2)
+  })
+
+  it('allows a view and a story to share the same id (separate namespaces, see RFC 0002 §5)', async ({ expect, validate }) => {
+    const { errors } = await validate(`
+      specification {
+        element system
+      }
+      model {
+        system a
+      }
+      views {
+        view shared { include a }
+      }
+      stories {
+        story shared { scene shared }
+      }
+    `)
+    expect(errors).not.toContain(`Duplicate view 'shared'`)
+    expect(errors).not.toContain(`Duplicate story 'shared'`)
+    expect(errors).toEqual([])
   })
 })

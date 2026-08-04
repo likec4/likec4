@@ -13,6 +13,7 @@ entry LikeC4Grammar:
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
+    stories+=ModelStories |
     globals+=Globals |
     deployments+=ModelDeployments  |
     likec4lib+=LikeC4Lib
@@ -315,11 +316,13 @@ ModelViews:
     )*
   '}';
 
-type LikeC4View = ElementView | DynamicView | DeploymentView | StoryView;
+ModelStories:
+  name='stories' '{' (stories+=StoryView)* '}';
+
+type LikeC4View = ElementView | DynamicView | DeploymentView;
 LikeC4ViewRule returns LikeC4View:
   DynamicView |
   DeploymentView |
-  StoryView |
   ElementView;
 
 ElementView:
@@ -1246,7 +1249,7 @@ Id returns string:
   RankValue |
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' |
-  'story' | 'scene' | 'sceneLayout' | 'becomes';
+  'story' | 'stories' | 'scene' | 'sceneLayout' | 'becomes';
 
 HashId returns string:
   Hash Id;

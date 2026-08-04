@@ -158,6 +158,7 @@ export class LikeC4ModelParser extends ADisposable {
         styles: {},
       },
       c4Views: [],
+      c4Stories: [],
       c4Imports: new MultiMap(Set),
     }
     doc = Object.assign(doc, props)

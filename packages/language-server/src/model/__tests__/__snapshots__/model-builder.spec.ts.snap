@@ -100,6 +100,7 @@ exports[`LikeC4ModelBuilder > builds model with description, summary and technol
     "relationships": {},
     "tags": {},
   },
+  "stories": {},
   "views": {
     "index": {
       "_stage": "computed",
@@ -264,6 +265,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       },
     },
   },
+  "stories": {},
   "views": {
     "frontend": {
       "_stage": "computed",
@@ -611,6 +613,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       },
     },
   },
+  "stories": {},
   "views": {
     "index": {
       "_stage": "computed",
@@ -751,6 +754,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     },
     "tags": {},
   },
+  "stories": {},
   "views": {
     "index": {
       "_stage": "computed",
@@ -885,6 +889,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     "relationships": {},
     "tags": {},
   },
+  "stories": {},
   "views": {
     "index": {
       "_stage": "computed",
