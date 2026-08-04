@@ -79,6 +79,7 @@
     "tinyrainbow": "catalog:utils",
     "unctx": "catalog:utils",
     "vscode-uri": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
     "zod": "catalog:externals"
   },
   "devDependencies": {
