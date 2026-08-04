@@ -534,3 +534,15 @@ route's current scene instead of actor state. This task's own end-to-end verific
 confirms that relocation preserved the alignment behavior: non-zero, monotonically-accumulating
 offsets across scene transitions, matching the values Task 7's smoke test already recorded
 (`{x:125,y:-98}` then `{x:390,y:-187}`).
+
+**Known gaps not yet closed.** The record above is accurate but incomplete about what's left:
+
+- Stories are not discoverable anywhere in the SPA UI — no entry in the navigation dropdown,
+  search, sidebar, or landing page. The only way to reach a story is to hand-type the nested URL.
+- The view-id/story-id shared-vs-separate-namespace decision (Task 3: `view foo {}` and
+  `story foo {}` are allowed to coexist) is a URL/product-contract decision, not just an internal
+  validation choice, and needs explicit product sign-off before this ships for real — it currently
+  means `/project/x/view/foo` and `/project/x/story/foo` can address two different, same-named
+  things.
+- `ModelLocator.locateStoryAst`/`StoryLocateResult` (Task 3) have no consumers yet — there's no
+  "go to definition"/"open source" story analogue of `locateView` wired up.
