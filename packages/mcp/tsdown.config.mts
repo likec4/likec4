@@ -9,6 +9,7 @@ export default defineConfig([
       'src/index.ts',
       'src/cli.ts',
     ],
+    platform: 'node',
     inputOptions: {
       resolve: {
         conditionNames: ['production', 'sources', 'node', 'import', 'default'],
@@ -28,6 +29,13 @@ export default defineConfig([
     platform: 'browser',
     format: 'iife',
     dts: false,
+    define: {
+      'import.meta': '{}',
+    },
+    deps: {
+      onlyBundle: false,
+      alwaysBundle: [/.*/],
+    },
     outputOptions: {
       entryFileNames: '[name].js',
     },

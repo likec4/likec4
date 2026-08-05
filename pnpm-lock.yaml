@@ -2380,6 +2380,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/diagram':
+        specifier: workspace:*
+        version: link:../diagram
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
@@ -2392,6 +2395,9 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      '@mantine/core':
+        specifier: catalog:mantine
+        version: 9.4.1(@mantine/hooks@9.4.1(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@modelcontextprotocol/ext-apps':
         specifier: catalog:mcp
         version: 1.7.5(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)
@@ -2413,6 +2419,12 @@ importers:
       hono:
         specifier: catalog:hono
         version: 4.12.31
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+      react-dom:
+        specifier: 19.2.7
+        version: 19.2.7(react@19.2.7)
       remeda:
         specifier: catalog:utils
         version: 2.37.0
