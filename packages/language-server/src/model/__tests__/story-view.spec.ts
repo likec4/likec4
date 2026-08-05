@@ -3,7 +3,7 @@ import { describe } from 'vitest'
 import { testFileScope as it } from '../../test'
 
 describe('story view grammar', () => {
-  it('parses a story with scenes, alt and becomes', async ({ expect, validate }) => {
+  it('rejects alt, and still warns about repeated view ids it would have introduced', async ({ expect, validate }) => {
     const { errors, warnings } = await validate(`
       specification {
         element system
@@ -40,8 +40,8 @@ describe('story view grammar', () => {
     // branches are otherwise well-formed.
     expect(errors).toEqual(['"alt" is not yet supported in stories'])
     // `before` and `after` are each referenced once as a top-level scene and again from the
-    // `alt` branches — a legitimate depth-first-`alt` pattern (RFC 0001), but one this feature's
-    // validation now warns about since scene identity is currently keyed by view id, not by
+    // (now rejected) `alt` branches — the repeated-view-id warning is a dormant fail-safe that
+    // still fires regardless, since scene identity is currently keyed by view id, not by
     // occurrence. See docs/superpowers/plans/2026-08-04-story-scene-anchor.md.
     expect(warnings).toHaveLength(2)
     expect(warnings).toContain(

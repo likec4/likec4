@@ -479,9 +479,9 @@ export interface StoryScene<A extends AnyAux = AnyAux> {
 }
 
 /**
- * Block kinds a story may contain. Only `alt` is implemented by the MVP;
- * the rest are parsed and rejected by validation. `parallel` normalises to
- * `par`, exactly as dynamic views do.
+ * Block kinds a story may contain. None are implemented yet — all are parsed for forward
+ * compatibility and rejected by validation, including `alt` (see "Branching," above).
+ * `parallel` normalises to `par`, exactly as dynamic views do.
  */
 export type StorySubflowKind = 'opt' | 'par' | 'loop' | 'break'
 export type StoryAltBranchKind = 'when' | 'if' | 'else'
@@ -821,7 +821,8 @@ have been seen running would be premature. This is a named extension point.
 **In:**
 
 - Grammar, including the `Id`-rule additions
-- `StorySubflow` admitting every `SubflowKind`, with validation gating everything except `alt`
+- `StorySubflow` admitting every `SubflowKind`, with validation gating all of them, `alt` included
+  (`alt` shipped in the initial MVP but was pulled back to "not yet supported" — see "Branching," above)
 - Core types across parsed, computed, and layouted stages, plus `isStoryView`
 - `StoryFlow` and the composite cursor
 - `computeStoryView`
@@ -840,7 +841,7 @@ have been seen running would be premature. This is a named extension point.
 - TextMate grammars for `packages/vscode`, `apps/playground`, `apps/docs`
 - MCP server surface, docs site
 - `sceneLayout unified`
-- Every `SubflowKind` except `alt`'s branches — parsed, then rejected by validation
+- Every `SubflowKind`, `alt`'s branches included — parsed, then rejected by validation
 - `try` / `catch` / `finally` — not admitted by the story grammar at all; fails to parse
 - Fork prompts, scene-level controls
 - Manual layout for stories (inapplicable by construction)
@@ -851,9 +852,9 @@ have been seen running would be premature. This is a named extension point.
 - **Grammar fixtures**: story with scenes; story with `alt` and nested scenes; `becomes` in all
   three directions; **and a model using `story`, `scene`, and `becomes` as element names** — the
   `Id`-rule regression.
-- **Validation specs**: scene targeting a story (error); empty `alt` (error); story with no scenes
-  (warning); `opt` / `par` / `loop` / `break` each **parsing cleanly but failing validation** with
-  the "not yet supported" diagnostic — this is what keeps the speculative syntax in this RFC honest.
+- **Validation specs**: scene targeting a story (error); story with no scenes (warning); `alt` /
+  `opt` / `par` / `loop` / `break` each **parsing cleanly but failing validation** with the "not
+  yet supported" diagnostic — this is what keeps the speculative syntax in this RFC honest.
 - **Compute specs and snapshots**: path assignment for flat and nested statements.
 - **`StoryFlow.prevAndNext`**: flat scenes; nested `alt`; first and last boundaries.
 - **Composite cursor**: traversal into and out of a dynamic scene, in both directions.

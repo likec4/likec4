@@ -210,11 +210,13 @@ describe('findCorrespondingNode', () => {
   })
 
   it('fails safe (no anchor pan) when the incoming view id appears twice in the story with different anchors', () => {
-    // Same view referenced from two different `alt` branches (e.g. examples/cloud-system/story.c4):
-    // one occurrence declares an anchor, the other (or a differing one) declares a different
-    // anchor. `story.scenes` is keyed by view id, not by which occurrence is actually being
-    // entered, so this can't be resolved confidently — it must degrade to the ordinary
-    // fit-to-bounds path (fromNode: null, toNode: null), not silently pick the first match.
+    // Same view referenced from two different scene occurrences (previously constructible via an
+    // `alt` block; `alt` is now rejected by validation, but this fail-safe stays as generic
+    // protection for whenever branching returns): one occurrence declares an anchor, the other
+    // (or a differing one) declares a different anchor. `story.scenes` is keyed by view id, not
+    // by which occurrence is actually being entered, so this can't be resolved confidently — it
+    // must degrade to the ordinary fit-to-bounds path (fromNode: null, toNode: null), not
+    // silently pick the first match.
     const fromNode = mkNode('n1', 'element', 'cloud.api')
     const toNode = mkNode('n2', 'element', 'cloud.api')
     const context = {

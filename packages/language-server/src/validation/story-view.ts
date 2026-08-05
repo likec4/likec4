@@ -124,12 +124,13 @@ export const storyViewChecks = (
       accept('warning', 'Story has no scenes', { node: el, property: 'name' })
     }
 
-    // A repeated view id in the flattened traversal is a legitimate DSL pattern (RFC 0001's
-    // depth-first `alt` traversal routinely revisits the same view from different branches —
-    // see `examples/cloud-system/story.c4`), but scene identity in `packages/diagram` is
-    // currently keyed by view id, not by the scene's own `StepPath` occurrence id, so scene
-    // stepping, boundary detection, and anchors cannot currently distinguish between the
-    // occurrences. Warn (not error) once per repeated view id.
+    // A repeated view id in the flattened traversal is currently unreachable through any
+    // validation-passing DSL — `alt`, the only construct that could revisit an earlier scene's
+    // view from a different branch, is now rejected outright by `storyAltChecks` below. This
+    // check stays as a dormant fail-safe for whenever branching returns: scene identity in
+    // `packages/diagram` is keyed by view id, not by the scene's own `StepPath` occurrence id,
+    // so scene stepping, boundary detection, and anchors cannot currently distinguish between
+    // occurrences of the same view. Warn (not error) once per repeated view id.
     const viewIds: string[] = []
     collectSceneViewIds(statements, viewIds)
     const seen = new Set<string>()

@@ -61,8 +61,8 @@ const sceneTitleText = css({
 })
 
 /**
- * Story walkthrough controls: Previous/Next, the active scene's title and
- * notes, and the enclosing `alt` branch title as a badge when present.
+ * Story walkthrough controls: Previous/Next, plus the active scene's title
+ * and notes.
  *
  * Previously wired to a dedicated story-cursor XState actor. That actor is
  * gone (see this task's brief and the plan's architecture note): once
@@ -76,10 +76,11 @@ const sceneTitleText = css({
  * navigation goes through — which emits the `navigateTo` event the consumer's
  * `onNavigateTo` (a real route push, per Task 7) already listens for.
  *
- * RFC 0001 chose depth-first `alt` traversal — `Next` walks every branch in
- * sequence rather than prompting the viewer to choose — so the branch badge
- * is the only signal telling a viewer they are inside a hypothetical rather
- * than a continuing timeline. It is not decorative.
+ * The `scene?.branchTitle` badge below renders an `alt` branch's title, from
+ * RFC 0001's depth-first traversal design. `alt` is currently rejected by
+ * validation (see `storyAltChecks`, `packages/language-server/src/validation/story-view.ts`),
+ * so no validation-passing story can ever populate `branchTitle` — the badge
+ * is dormant, kept for when branching returns rather than deleted outright.
  */
 export function StoryControls() {
   const diagram = useDiagram()

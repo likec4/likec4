@@ -41,8 +41,10 @@ export interface StoryScene<A extends AnyAux = AnyAux> {
 }
 
 /**
- * Block kinds a story may contain. Only `alt` and its branches are implemented;
- * the rest are parsed and rejected by validation. `parallel` normalises to `par`.
+ * Block kinds a story may contain. None are implemented yet — all are parsed for forward
+ * compatibility and rejected by validation, including `alt` and its branches (see
+ * `storyAltChecks` and `storySubflowChecks` in `packages/language-server/src/validation/story-view.ts`).
+ * `parallel` normalises to `par`.
  */
 export type StorySubflowKind = 'opt' | 'par' | 'loop' | 'break'
 export type StoryAltBranchKind = 'when' | 'if' | 'else'
