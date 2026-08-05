@@ -31,7 +31,13 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
 import { useCurrentView, useLikeC4Views } from '../../hooks'
-import { type DiagramTreeNodeData, type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
+import {
+  type DiagramTreeNodeData,
+  type GroupBy,
+  isTreeNodeData,
+  storyIdFromNodeValue,
+  useDiagramsTreeData,
+} from './data'
 import { SidebarDrawerOps } from './state'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -63,7 +69,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       void navigate({
         to: '/story/$storyId/',
         viewTransition: false,
-        params: { storyId: node.value },
+        params: { storyId: storyIdFromNodeValue(node.value) },
       })
       return
     }

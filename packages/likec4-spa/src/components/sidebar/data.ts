@@ -16,6 +16,18 @@ export interface DiagramTreeNodeData {
 
 export type GroupBy = 'by-files' | 'by-folders' | 'none'
 
+/**
+ * Story ids and view ids are separate namespaces (RFC 0002 §5 — a `view foo {}` and a
+ * `story foo {}` may legally coexist in the same project), but this tree's `value` field is a
+ * single flat space Mantine's `Tree`/`useTree` uses as node identity (`tree.select`, React
+ * keys). Prefixing story values keeps a same-named story and view from colliding.
+ */
+const STORY_VALUE_PREFIX = 'story:'
+
+export const storyNodeValue = (storyId: string): string => `${STORY_VALUE_PREFIX}${storyId}`
+
+export const storyIdFromNodeValue = (value: string): string => value.slice(STORY_VALUE_PREFIX.length)
+
 export const isTreeNodeData = (node: TreeNodeData): node is DiagramTreeNodeData =>
   'type' in node && ['file', 'folder', 'view', 'deployment-view', 'story'].includes(node.type as any)
 
@@ -102,7 +114,7 @@ export function buildDiagramTreeData(
 
   for (const story of stories) {
     root.children!.push({
-      value: story.id,
+      value: storyNodeValue(story.id),
       label: story.title ?? story.id,
       type: 'story',
     })
