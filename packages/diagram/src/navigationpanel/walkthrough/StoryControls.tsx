@@ -27,13 +27,14 @@ import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { currentScene, nextScene, prevScene } from './storyScenePosition'
 
-/** Previous/Next button, styled like the dynamic-view walkthrough's own prev/next pair. */
+/** Previous/Next Scene button, styled distinctly (grape) from the dynamic-view walkthrough's own prev/next pair. */
 export const StoryControlButton = forwardRef<HTMLButtonElement, ButtonProps & HTMLMotionProps<'button'>>((
   props,
   ref,
 ) => (
   <Button
     variant="light"
+    color="grape"
     size="xs"
     fw="500"
     {...props}
@@ -103,7 +104,7 @@ export function StoryControls() {
         }}
         leftSection={<IconPlayerSkipBackFilled size={10} />}
       >
-        Previous
+        Previous Scene
       </StoryControlButton>
 
       {scene?.branchTitle && (
@@ -166,7 +167,7 @@ export function StoryControls() {
         }}
         rightSection={<IconPlayerSkipForwardFilled size={10} />}
       >
-        Next
+        Next Scene
       </StoryControlButton>
     </AnimatePresence>
   )
