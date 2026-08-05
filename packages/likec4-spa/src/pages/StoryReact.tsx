@@ -7,7 +7,7 @@
 
 import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { NotFound } from '../components/NotFound'
 import { useCurrentStory, useCurrentView } from '../hooks'
@@ -29,6 +29,14 @@ export function StoryReact() {
   const story = useCurrentStory()
   const [view, setLayoutType] = useCurrentView()
   const model = useLikeC4Model()
+  // `projectId` is only present as a route param under `project.$projectId/*`
+  // routes; `_single/*` routes have no such segment. This is the same signal
+  // `useCurrentProject` (`../hooks.ts`) relies on to distinguish the two route
+  // trees this component can be mounted under.
+  const projectId = useParams({
+    select: params => params.projectId,
+    strict: false,
+  })
 
   const onNavigateTo = useCallbackRef((targetViewId: string) => {
     const isOwnScene = story?.scenes.some(s => s.view === targetViewId) ?? false
@@ -40,12 +48,20 @@ export function StoryReact() {
         params: (current: any) => ({ ...current, viewId: targetViewId }),
         search: true,
       })
-    } else {
+    } else if (projectId) {
       // Target isn't one of this story's scenes — drop to the flat view route.
       void navigate({
         to: '/project/$projectId/view/$viewId/',
         viewTransition: false,
         params: (current: any) => ({ projectId: current.projectId, viewId: targetViewId }),
+        search: true,
+      })
+    } else {
+      // Single-project mode has no `projectId` segment.
+      void navigate({
+        to: '/view/$viewId/',
+        viewTransition: false,
+        params: { viewId: targetViewId },
         search: true,
       })
     }

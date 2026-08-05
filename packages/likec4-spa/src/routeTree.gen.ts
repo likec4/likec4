@@ -19,9 +19,11 @@ import { Route as ProjectProjectIdRouteImport } from './routes/project.$projectI
 import { Route as ProjectProjectIdIndexImport } from './routes/project.$projectId/index'
 import { Route as SingleWebcomponentSplatImport } from './routes/_single/webcomponent.$'
 import { Route as SingleViewViewIdImport } from './routes/_single/view.$viewId'
+import { Route as SingleStoryStoryIdImport } from './routes/_single/story.$storyId'
 import { Route as SingleExportViewIdImport } from './routes/_single/export.$viewId'
 import { Route as SingleEmbedViewIdImport } from './routes/_single/embed.$viewId'
 import { Route as SingleViewViewIdIndexImport } from './routes/_single/view.$viewId.index'
+import { Route as SingleStoryStoryIdIndexImport } from './routes/_single/story.$storyId.index'
 import { Route as ProjectProjectIdViewViewIdImport } from './routes/project.$projectId/view.$viewId'
 import { Route as ProjectProjectIdStoryStoryIdImport } from './routes/project.$projectId/story.$storyId'
 import { Route as ProjectProjectIdExportViewIdImport } from './routes/project.$projectId/export.$viewId'
@@ -36,6 +38,7 @@ import { Route as ProjectProjectIdViewViewIdPumlImport } from './routes/project.
 import { Route as ProjectProjectIdViewViewIdMmdImport } from './routes/project.$projectId/view.$viewId.mmd'
 import { Route as ProjectProjectIdViewViewIdDotImport } from './routes/project.$projectId/view.$viewId.dot'
 import { Route as ProjectProjectIdViewViewIdD2Import } from './routes/project.$projectId/view.$viewId.d2'
+import { Route as SingleStoryStoryIdViewViewIdImport } from './routes/_single/story.$storyId.view.$viewId'
 import { Route as ProjectProjectIdStoryStoryIdViewViewIdImport } from './routes/project.$projectId/story.$storyId.view.$viewId'
 
 // Create/Update Routes
@@ -87,6 +90,12 @@ const SingleViewViewIdRoute = SingleViewViewIdImport.update({
   getParentRoute: () => SingleRouteRoute,
 } as any)
 
+const SingleStoryStoryIdRoute = SingleStoryStoryIdImport.update({
+  id: '/story/$storyId',
+  path: '/story/$storyId',
+  getParentRoute: () => SingleRouteRoute,
+} as any)
+
 const SingleExportViewIdRoute = SingleExportViewIdImport.update({
   id: '/export/$viewId',
   path: '/export/$viewId',
@@ -103,6 +112,12 @@ const SingleViewViewIdIndexRoute = SingleViewViewIdIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SingleViewViewIdRoute,
+} as any)
+
+const SingleStoryStoryIdIndexRoute = SingleStoryStoryIdIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SingleStoryStoryIdRoute,
 } as any)
 
 const ProjectProjectIdViewViewIdRoute = ProjectProjectIdViewViewIdImport.update(
@@ -200,6 +215,13 @@ const ProjectProjectIdViewViewIdD2Route =
     getParentRoute: () => ProjectProjectIdViewViewIdRoute,
   } as any)
 
+const SingleStoryStoryIdViewViewIdRoute =
+  SingleStoryStoryIdViewViewIdImport.update({
+    id: '/view/$viewId',
+    path: '/view/$viewId',
+    getParentRoute: () => SingleStoryStoryIdRoute,
+  } as any)
+
 const ProjectProjectIdStoryStoryIdViewViewIdRoute =
   ProjectProjectIdStoryStoryIdViewViewIdImport.update({
     id: '/view/$viewId',
@@ -258,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/export/$viewId'
       fullPath: '/export/$viewId'
       preLoaderRoute: typeof SingleExportViewIdImport
+      parentRoute: typeof SingleRouteImport
+    }
+    '/_single/story/$storyId': {
+      id: '/_single/story/$storyId'
+      path: '/story/$storyId'
+      fullPath: '/story/$storyId'
+      preLoaderRoute: typeof SingleStoryStoryIdImport
       parentRoute: typeof SingleRouteImport
     }
     '/_single/view/$viewId': {
@@ -337,12 +366,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectProjectIdViewViewIdImport
       parentRoute: typeof ProjectProjectIdRouteImport
     }
+    '/_single/story/$storyId/': {
+      id: '/_single/story/$storyId/'
+      path: '/'
+      fullPath: '/story/$storyId/'
+      preLoaderRoute: typeof SingleStoryStoryIdIndexImport
+      parentRoute: typeof SingleStoryStoryIdImport
+    }
     '/_single/view/$viewId/': {
       id: '/_single/view/$viewId/'
       path: '/'
       fullPath: '/view/$viewId/'
       preLoaderRoute: typeof SingleViewViewIdIndexImport
       parentRoute: typeof SingleViewViewIdImport
+    }
+    '/_single/story/$storyId/view/$viewId': {
+      id: '/_single/story/$storyId/view/$viewId'
+      path: '/view/$viewId'
+      fullPath: '/story/$storyId/view/$viewId'
+      preLoaderRoute: typeof SingleStoryStoryIdViewViewIdImport
+      parentRoute: typeof SingleStoryStoryIdImport
     }
     '/project/$projectId/view/$viewId/d2': {
       id: '/project/$projectId/view/$viewId/d2'
@@ -398,6 +441,19 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface SingleStoryStoryIdRouteChildren {
+  SingleStoryStoryIdIndexRoute: typeof SingleStoryStoryIdIndexRoute
+  SingleStoryStoryIdViewViewIdRoute: typeof SingleStoryStoryIdViewViewIdRoute
+}
+
+const SingleStoryStoryIdRouteChildren: SingleStoryStoryIdRouteChildren = {
+  SingleStoryStoryIdIndexRoute: SingleStoryStoryIdIndexRoute,
+  SingleStoryStoryIdViewViewIdRoute: SingleStoryStoryIdViewViewIdRoute,
+}
+
+const SingleStoryStoryIdRouteWithChildren =
+  SingleStoryStoryIdRoute._addFileChildren(SingleStoryStoryIdRouteChildren)
+
 interface SingleViewViewIdRouteChildren {
   SingleViewViewIdD2Route: typeof SingleViewViewIdD2Route
   SingleViewViewIdDotRoute: typeof SingleViewViewIdDotRoute
@@ -421,6 +477,7 @@ interface SingleRouteRouteChildren {
   SingleSingleIndexRoute: typeof SingleSingleIndexRoute
   SingleEmbedViewIdRoute: typeof SingleEmbedViewIdRoute
   SingleExportViewIdRoute: typeof SingleExportViewIdRoute
+  SingleStoryStoryIdRoute: typeof SingleStoryStoryIdRouteWithChildren
   SingleViewViewIdRoute: typeof SingleViewViewIdRouteWithChildren
   SingleWebcomponentSplatRoute: typeof SingleWebcomponentSplatRoute
 }
@@ -429,6 +486,7 @@ const SingleRouteRouteChildren: SingleRouteRouteChildren = {
   SingleSingleIndexRoute: SingleSingleIndexRoute,
   SingleEmbedViewIdRoute: SingleEmbedViewIdRoute,
   SingleExportViewIdRoute: SingleExportViewIdRoute,
+  SingleStoryStoryIdRoute: SingleStoryStoryIdRouteWithChildren,
   SingleViewViewIdRoute: SingleViewViewIdRouteWithChildren,
   SingleWebcomponentSplatRoute: SingleWebcomponentSplatRoute,
 }
@@ -507,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/single-index': typeof SingleSingleIndexRoute
   '/embed/$viewId': typeof SingleEmbedViewIdRoute
   '/export/$viewId': typeof SingleExportViewIdRoute
+  '/story/$storyId': typeof SingleStoryStoryIdRouteWithChildren
   '/view/$viewId': typeof SingleViewViewIdRouteWithChildren
   '/webcomponent/$': typeof SingleWebcomponentSplatRoute
   '/project/$projectId/': typeof ProjectProjectIdIndexRoute
@@ -518,7 +577,9 @@ export interface FileRoutesByFullPath {
   '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
   '/project/$projectId/story/$storyId': typeof ProjectProjectIdStoryStoryIdRouteWithChildren
   '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdRouteWithChildren
+  '/story/$storyId/': typeof SingleStoryStoryIdIndexRoute
   '/view/$viewId/': typeof SingleViewViewIdIndexRoute
+  '/story/$storyId/view/$viewId': typeof SingleStoryStoryIdViewViewIdRoute
   '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
   '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
   '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
@@ -543,7 +604,9 @@ export interface FileRoutesByTo {
   '/view/$viewId/puml': typeof SingleViewViewIdPumlRoute
   '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
   '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
+  '/story/$storyId': typeof SingleStoryStoryIdIndexRoute
   '/view/$viewId': typeof SingleViewViewIdIndexRoute
+  '/story/$storyId/view/$viewId': typeof SingleStoryStoryIdViewViewIdRoute
   '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
   '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
   '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
@@ -562,6 +625,7 @@ export interface FileRoutesById {
   '/_single/single-index': typeof SingleSingleIndexRoute
   '/_single/embed/$viewId': typeof SingleEmbedViewIdRoute
   '/_single/export/$viewId': typeof SingleExportViewIdRoute
+  '/_single/story/$storyId': typeof SingleStoryStoryIdRouteWithChildren
   '/_single/view/$viewId': typeof SingleViewViewIdRouteWithChildren
   '/_single/webcomponent/$': typeof SingleWebcomponentSplatRoute
   '/project/$projectId/': typeof ProjectProjectIdIndexRoute
@@ -573,7 +637,9 @@ export interface FileRoutesById {
   '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
   '/project/$projectId/story/$storyId': typeof ProjectProjectIdStoryStoryIdRouteWithChildren
   '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdRouteWithChildren
+  '/_single/story/$storyId/': typeof SingleStoryStoryIdIndexRoute
   '/_single/view/$viewId/': typeof SingleViewViewIdIndexRoute
+  '/_single/story/$storyId/view/$viewId': typeof SingleStoryStoryIdViewViewIdRoute
   '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
   '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
   '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
@@ -593,6 +659,7 @@ export interface FileRouteTypes {
     | '/single-index'
     | '/embed/$viewId'
     | '/export/$viewId'
+    | '/story/$storyId'
     | '/view/$viewId'
     | '/webcomponent/$'
     | '/project/$projectId/'
@@ -604,7 +671,9 @@ export interface FileRouteTypes {
     | '/project/$projectId/export/$viewId'
     | '/project/$projectId/story/$storyId'
     | '/project/$projectId/view/$viewId'
+    | '/story/$storyId/'
     | '/view/$viewId/'
+    | '/story/$storyId/view/$viewId'
     | '/project/$projectId/view/$viewId/d2'
     | '/project/$projectId/view/$viewId/dot'
     | '/project/$projectId/view/$viewId/mmd'
@@ -628,7 +697,9 @@ export interface FileRouteTypes {
     | '/view/$viewId/puml'
     | '/project/$projectId/embed/$viewId'
     | '/project/$projectId/export/$viewId'
+    | '/story/$storyId'
     | '/view/$viewId'
+    | '/story/$storyId/view/$viewId'
     | '/project/$projectId/view/$viewId/d2'
     | '/project/$projectId/view/$viewId/dot'
     | '/project/$projectId/view/$viewId/mmd'
@@ -645,6 +716,7 @@ export interface FileRouteTypes {
     | '/_single/single-index'
     | '/_single/embed/$viewId'
     | '/_single/export/$viewId'
+    | '/_single/story/$storyId'
     | '/_single/view/$viewId'
     | '/_single/webcomponent/$'
     | '/project/$projectId/'
@@ -656,7 +728,9 @@ export interface FileRouteTypes {
     | '/project/$projectId/export/$viewId'
     | '/project/$projectId/story/$storyId'
     | '/project/$projectId/view/$viewId'
+    | '/_single/story/$storyId/'
     | '/_single/view/$viewId/'
+    | '/_single/story/$storyId/view/$viewId'
     | '/project/$projectId/view/$viewId/d2'
     | '/project/$projectId/view/$viewId/dot'
     | '/project/$projectId/view/$viewId/mmd'
@@ -706,6 +780,7 @@ export const routeTree = rootRoute
         "/_single/single-index",
         "/_single/embed/$viewId",
         "/_single/export/$viewId",
+        "/_single/story/$storyId",
         "/_single/view/$viewId",
         "/_single/webcomponent/$"
       ]
@@ -734,6 +809,14 @@ export const routeTree = rootRoute
     "/_single/export/$viewId": {
       "filePath": "_single/export.$viewId.tsx",
       "parent": "/_single"
+    },
+    "/_single/story/$storyId": {
+      "filePath": "_single/story.$storyId.tsx",
+      "parent": "/_single",
+      "children": [
+        "/_single/story/$storyId/",
+        "/_single/story/$storyId/view/$viewId"
+      ]
     },
     "/_single/view/$viewId": {
       "filePath": "_single/view.$viewId.tsx",
@@ -797,9 +880,17 @@ export const routeTree = rootRoute
         "/project/$projectId/view/$viewId/"
       ]
     },
+    "/_single/story/$storyId/": {
+      "filePath": "_single/story.$storyId.index.tsx",
+      "parent": "/_single/story/$storyId"
+    },
     "/_single/view/$viewId/": {
       "filePath": "_single/view.$viewId.index.tsx",
       "parent": "/_single/view/$viewId"
+    },
+    "/_single/story/$storyId/view/$viewId": {
+      "filePath": "_single/story.$storyId.view.$viewId.tsx",
+      "parent": "/_single/story/$storyId"
     },
     "/project/$projectId/view/$viewId/d2": {
       "filePath": "project.$projectId/view.$viewId.d2.tsx",
