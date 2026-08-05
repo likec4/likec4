@@ -1,27 +1,36 @@
 # RFC 0001 — Story views
 
-- **Status**: draft, targeting a local proof-of-concept
+- **Status**: implemented as a local proof-of-concept, on the `story-view-implementation` branch
 - **Date**: 2026-07-30
-- **Scope**: new `story` view type in the LikeC4 DSL, plus the rendering and navigation to make it legible
+- **Scope**: a new `story` construct in the LikeC4 DSL, plus the rendering and navigation to make
+  it legible. `story` was originally proposed as a fourth `LikeC4View` variant; see
+  [Open architectural question — is a story a view?](#open-architectural-question--is-a-story-a-view)
+  and `docs/rfcs/0002-story-containment-investigation.md` for why that changed during
+  implementation.
 
 ## Summary
 
-A **story** is a view type that shows how an architecture _changes_, by playing an ordered
-sequence of existing views. Where a `dynamic view` animates control flow across one static
-picture, a story animates across _several_ pictures.
+A **story** shows how an architecture _changes_, by playing an ordered sequence of existing
+views. Where a `dynamic view` animates control flow across one static picture, a story animates
+across _several_ pictures.
 
 ```likec4
-story migration {
-  title 'Migration to microservices'
+stories {
+  story migration {
+    title 'Migration to microservices'
 
-  scene monolith
-  scene strangler
-  scene microservices
+    scene monolith
+    scene strangler
+    scene microservices
+  }
 }
 ```
 
-Stories reuse the dynamic-view walkthrough panel and its Next/Previous cursor. A scene may
-itself be a dynamic view, in which case one cursor walks into that view's steps and back out.
+Stories reuse the dynamic-view walkthrough panel's Next/Previous UI. A scene may itself be a
+dynamic view, in which case its own step-through walkthrough and the story's scene-stepping
+render side by side rather than sharing one cursor — see
+[The cursor is not a composite type](#the-cursor-is-not-a-composite-type--it-is-two-independent-orthogonal-owners)
+below.
 
 ## Motivation
 
@@ -36,11 +45,35 @@ A story makes both explicit in the model rather than in a slide deck alongside i
 
 ## Guide-level explanation
 
-### A story is a view
+### A story is not a view
 
-`story` is declared inside `views { }` beside `view`, `dynamic view`, and `deployment view`.
-It gets a `ViewId`, so it appears in search, in the navigation dropdown, and at the SPA route
-`/view/$viewId` with no extra work.
+**Update:** this RFC originally modeled a story as a fourth `LikeC4View` variant, declared inside
+`views { }` and served at `/view/$viewId`. That decision was reversed during implementation — see
+[Open architectural question — is a story a view?](#open-architectural-question--is-a-story-a-view)
+below and `docs/rfcs/0002-story-containment-investigation.md`, which is the resolution and now the
+authoritative source for the DSL placement and addressing scheme. The rest of this RFC (grammar,
+types, behavior) has been updated to match what shipped; only this section and the "Open
+architectural question" section below narrate the change itself.
+
+`story` is declared in its own sibling top-level block, `stories { }`, alongside `views { }` — not
+inside it:
+
+```likec4
+stories {
+  story migration {
+    scene monolith
+    scene microservices
+  }
+}
+```
+
+A story is addressed by its own id in its own namespace (a `view foo` and a `story foo` may
+coexist), reached at `/project/$projectId/story/$storyId/view/$viewId` — the URL is honest about
+what is actually on screen: story `$storyId`, currently showing scene `$viewId`. There is no
+`/view/$storyId` route; a story is not findable via `model.findView`, does not appear in the
+navigation dropdown, and does not participate in `nonexhaustive(view)` dispatch over
+`ParsedView`/`ComputedView`/`LayoutedView` — `LikeC4Model` exposes a separate `model.stories()` /
+`model.findStory()` registry instead.
 
 A story owns **no geometry of its own**. Each scene names another view, and that view remains
 the single source of truth for its own picture.
@@ -57,10 +90,11 @@ views {
     orders -> billing 'charge'
     billing -> ledger 'record'
   }
+}
 
+stories {
   story migration {
     title 'Migration to microservices'
-    sceneLayout anchored
 
     scene monolith {
       notes 'Everything ships together. One database.'
@@ -69,10 +103,12 @@ views {
     scene strangler {
       title 'Introduce a facade'
       notes 'Traffic still terminates in the monolith.'
+      anchor gateway
     }
 
     scene microservices {
       title 'Extract the services'
+      anchor gateway
       monolith.api becomes orders.api, billing.api
     }
 
@@ -85,6 +121,8 @@ views {
 
 A scene's `title` and `notes` drive the walkthrough panel. Both reuse the existing
 `ViewStringProperty` and `NotesProperty` grammar rules, so no new property machinery is needed.
+`anchor <ElementRef>` is new to a scene body — see
+[Scene continuity: `anchor`](#scene-continuity-anchor) below.
 
 The last scene is a dynamic view. Pressing Next at that scene descends into its steps; pressing
 Next past its final step leaves the story (or advances to the following scene, if any).
@@ -298,80 +336,118 @@ keyword-parameterised rule, so admitting it purely to reject it would add real g
 no MVP benefit. It is **not admitted by the story grammar** and fails to parse until it is
 implemented. The `StoryTry` type below is specified for that future work, not built now.
 
-### Scene layout modes
+### Scene continuity: `anchor`
 
-> **Superseded.** The `sceneLayout: anchored | independent | unified` story-level property
-> described in this section was replaced by a per-scene, DSL-authored `anchor <ElementRef>`
-> statement — see `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`. The discussion below
-> is kept for historical context on why alignment was originally automatic and story-scoped.
-
-How consecutive scenes relate geometrically is configurable, because the right answer is a visual
-judgement that should be made by looking rather than by argument.
+**Update — this section replaces the original design.** This RFC originally proposed a
+story-level `sceneLayout: anchored | independent | unified` property, computing an automatic,
+implicit centroid-based translation between every consecutive pair of scenes (see
+[Rationale and alternatives](#rationale-and-alternatives) below for what that looked like and why
+it was replaced). It shipped, was evaluated end to end against the real example, and was then
+replaced during implementation by a per-scene, author-declared statement:
 
 ```likec4
-story migration {
-  sceneLayout anchored      // default
+scene microservices {
+  anchor gateway
 }
 ```
 
-| Mode          | Behaviour                                                                                                                                                |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `anchored`    | Each scene keeps its own view's layout untouched. The incoming frame is translated so shared elements move as little as possible.                        |
-| `independent` | Each scene keeps its own layout, with no alignment. Shared elements interpolate from wherever they were to wherever they are.                            |
-| `unified`     | One layout is computed across every scene; positions are fixed, so shared elements never move. Frames become sparse where absent elements reserve space. |
+`anchor <ElementRef>` means: when this specific scene _occurrence_ is entered, keep
+`<ElementRef>`'s on-screen position continuous with wherever it was a moment ago, in the scene the
+viewer is coming from. A scene with no `anchor` is a plain crossfade — no attempt at continuity.
+This is a strictly more precise replacement for the old `anchored` mode's automatic multi-element
+centroid: the author names the one element that matters for a given transition instead of the
+mechanism guessing from every element the two scenes happen to share. `independent` survives as
+the (now nameless) default behavior of a scene with no `anchor`; `sceneLayout unified` was dropped
+entirely rather than carried forward as unimplemented vocabulary — it required a story-owned
+layout pass that discarded per-view layout intent, and nothing in the POC demonstrated a need for
+it strong enough to justify that cost.
 
-`anchored` and `independent` are the same code path — `independent` is `anchored` with the
-alignment offset forced to zero — so both ship together and can be compared live.
+**Mechanism: viewport panning, not geometry offsetting.** The original design translated every
+node and edge in the incoming scene by a computed offset — geometry that then had to be
+un-translated if the viewer navigated away mid-transition. The shipped mechanism instead pans the
+_camera_: `packages/diagram`'s state machine looks up the anchor element's rendered position in
+the outgoing scene and its raw position in the incoming scene's own (untouched) layout, and solves
+for the viewport `(x, y)` that puts the incoming position at the same screen pixel the outgoing
+position occupied a moment ago — holding zoom fixed. Nothing about a scene's own node, edge, or
+`bounds` geometry is touched; a scene keeps exactly the layout its own view was already computed
+and laid out with. This is the same "translation only, no scale, no rotation" reasoning the
+original design used (scaling would render the same element at different sizes across scenes,
+which reads as a zoom rather than as continuity) — it now applies to the viewport instead of to
+node positions.
 
-`unified` is the only mode that requires a story-owned layout pass, and the only one that
-discards per-view layout intent and manual layouts. It is deferred; see
-[Deferred decisions](#deferred-decisions).
+**Validation.** A scene with no predecessor (the first scene in a story's flattened traversal
+order) that declares `anchor` is a validation error — there is nothing to be continuous _with_.
+A scene may declare at most one `anchor`. (The original design additionally specified that the
+anchored element must be present in both the scene's own view and its predecessor's view; that
+static check was not built — no validation infrastructure exists yet to check an `ElementRef`'s
+presence in a specific view's `include` set outside the compute pipeline that already resolves it
+at runtime. This is a known gap, not a design decision; see
+[Deferred decisions](#deferred-decisions).)
 
-Dynamic scenes are exempt from `unified`: a dynamic view in `sequence` variant owns a bespoke
-layout that cannot be merged into a union graph.
-
-### The property is `sceneLayout`, not `layout`
-
-Views already carry `autoLayout` (Graphviz rank direction). Two similarly named properties in one
-block is a footgun, so the story-level property is spelled `sceneLayout`.
+**Known limitation: scene identity is keyed by view id, not by scene occurrence.** The
+routing/diagram-context identity used to look up "the scene being entered" is currently the target
+_view_ id. A story's flattened scene list can repeat a view id — the only DSL construct that could
+do this was `alt` revisiting an already-declared scene from a branch, which is why `alt` is
+currently rejected (see [Branching](#branching) above). If a repeated view id ever occurs, nothing
+client-observable can tell the occurrences apart, which would silently break scene stepping,
+boundary detection, and per-scene anchors. The shipped code fails safe rather than guessing: if a
+story's flattened scenes disagree about which anchor applies to a repeated view id, the pan is
+skipped and the transition falls back to an ordinary crossfade — and a validation warning flags
+any repeated view id so an author sees the risk before it manifests as a visual glitch. The
+complete fix requires making a scene's own `StepPath` occurrence — not the view id — the identity
+used for routing and diagram context, which touches `packages/diagram`'s public prop contract and
+`packages/likec4-spa`'s URL scheme; out of scope here, tracked as future work.
 
 ### `navigateTo` inside a story
 
-`navigateTo` is today a **route change**: the action button calls `diagram.navigateTo()`, which
-emits to the host, and the SPA's handler (`packages/likec4-spa/src/pages/ViewReact.tsx:35`) calls
-the router. Left alone, clicking it mid-story would swap the route and silently discard the cursor.
+`navigateTo` is a **route change**: the action button calls `diagram.navigateTo()`, which emits a
+`navigateTo` event to whatever consumer supplied the `LikeC4Diagram` component
+(`packages/diagram` never calls a router itself — see `AGENTS.md`'s app↔language-server
+architecture note). The SPA's page component for a story
+(`packages/likec4-spa/src/pages/StoryReact.tsx`) supplies the `onNavigateTo` callback and decides
+what a click actually does:
 
-Inside a story, `navigateTo` is intercepted:
-
-- If the target view **is a scene of the current story**, the cursor jumps to that scene.
-- Otherwise, it falls through to the existing behaviour and leaves the story.
+- If the target view **is a scene of the current story**, stay on the same nested
+  `/story/$storyId/view/...` route, updating only the `$viewId` param — the story's own
+  Previous/Next buttons do the same thing, so a search hit and a manual `navigateTo` click behave
+  identically to pressing Next.
+- Otherwise, navigate to the flat `/project/$projectId/view/$viewId` route, leaving the story.
 
 The same view can therefore be both a standalone destination and a scene, with the click doing the
 right thing in each context.
 
 `navigateTo` also gains stories as a destination:
 
-- From an element — already free. `NavigateToProperty` takes `ViewRef` = `[LikeC4View]`, and a
-  story is a `LikeC4View`.
-- From a relation or dynamic-view step — **not supported.** This was specified as "one grammar
-  line: widen `RelationNavigateToProperty` from `DynamicViewRef` to `DynamicViewRef | StoryViewRef`",
-  and that turned out to be wrong: the two alternatives are syntactically identical bare
-  cross-references, so Langium/Chevrotain cannot disambiguate them and always reduces to the first.
-  `navigateTo <storyName>` from a step then fails with "Could not resolve reference to DynamicView",
-  and `langium generate` emits no ambiguity warning. Cut from the MVP; see
+- From an element — supported via `model.findStory`, since a story is independently addressable
+  (see [A story is not a view](#a-story-is-not-a-view) above) even though it is no longer a
+  `LikeC4View`.
+- From a relation or dynamic-view step — **not supported**, and not attempted: this was originally
+  specified as "one grammar line: widen `RelationNavigateToProperty` from `DynamicViewRef` to
+  `DynamicViewRef | StoryViewRef`", which turned out to be wrong even when a story was still a
+  `LikeC4View` variant — the two alternatives are syntactically identical bare cross-references,
+  so Langium/Chevrotain cannot disambiguate them and always reduces to the first. Moving stories
+  out of the `LikeC4View` union (RFC 0002) does not change this; it remains cut. See
   [Deferred decisions](#deferred-decisions).
 
 ## Reference-level explanation
 
 ### Grammar delta
 
-In `packages/language-server/src/like-c4.langium`:
+In `packages/language-server/src/like-c4.langium`, as shipped (updated by RFC 0002 and the
+anchor design — see [A story is not a view](#a-story-is-not-a-view) and
+[Scene continuity: `anchor`](#scene-continuity-anchor) above for why this differs from the
+originally specified grammar):
 
 ```langium
-type LikeC4View = ElementView | DynamicView | DeploymentView | StoryView;
+// `story` is a sibling of `views { }`, not a member of it — see RFC 0002.
+ModelStories:
+  name='stories' '{' (stories+=StoryView)* '}';
+
+// LikeC4View has only three members; StoryView was removed from this union.
+type LikeC4View = ElementView | DynamicView | DeploymentView;
 
 LikeC4ViewRule returns LikeC4View:
-  DynamicView | DeploymentView | StoryView | ElementView;
+  DynamicView | DeploymentView | ElementView;
 
 StoryView:
   'story' name=Id body=StoryViewBody?;
@@ -382,14 +458,10 @@ StoryViewBody: '{'
   statements+=StoryStatement*
 '}';
 
+// No StorySceneLayoutProperty — sceneLayout was dropped entirely, not replaced with an
+// equivalent story-level property. ViewProperty alone remains (title, description, etc).
 StoryViewProperty:
-  StorySceneLayoutProperty | ViewProperty;
-
-StorySceneLayoutProperty:
-  key='sceneLayout' ':'? value=StorySceneLayoutValue ';'?;
-
-StorySceneLayoutValue returns string:
-  'anchored' | 'independent' | 'unified';
+  ViewProperty;
 
 StoryStatement:
   StoryScene | StoryAlt | StorySubflow;
@@ -397,10 +469,15 @@ StoryStatement:
 StoryScene:
   'scene' view=[LikeC4View] body=StorySceneBody? ';'?;
 
+// `anchor` is folded into the same unordered props alternation as the other scene props
+// (not a separate ordered slot) — see the anchor design's grammar-ordering finding for why.
 StorySceneBody: '{'
-  props+=(ViewStringProperty | NotesProperty)*
+  props+=(ViewStringProperty | NotesProperty | StoryAnchorProperty)*
   rules+=StoryCorrespondenceRule*
 '}';
+
+StoryAnchorProperty:
+  'anchor' ref=ElementRef ';'?;
 
 StoryCorrespondenceRule:
   sources=ElementRefs 'becomes' targets=ElementRefs ';'?;
@@ -425,22 +502,23 @@ StoryAlt:
 
 ### Backward compatibility: the `Id` rule
 
-`like-c4.langium:1177` carries an `Id` rule that re-admits every keyword as an identifier, with the
-comment _"We need to add all the possible terminal values to Id, so that the parser can accept them
-as Id (not a bug and not a feature of Langium)"_.
+`like-c4.langium`'s `Id` rule (around line 1247) re-admits every keyword as an identifier, with
+the comment _"We need to add all the possible terminal values to Id, so that the parser can
+accept them as Id (not a bug and not a feature of Langium)"_.
 
-New keywords **must** be added there, or any existing model using `story`, `scene`, `becomes`, or a
-mode name as an element name will stop parsing:
+New keywords **must** be added there, or any existing model using `story`, `stories`, `scene`,
+`anchor`, or `becomes` as an element name will stop parsing. As shipped:
 
 ```langium
 Id returns string:
   IdTerminal |
   /* ...existing... */ |
-  StorySceneLayoutValue |
-  'story' | 'scene' | 'sceneLayout' | 'becomes';
+  'story' | 'stories' | 'scene' | 'anchor' | 'becomes';
 ```
 
-This is the single most likely regression in the whole proposal and gets its own test fixture.
+`sceneLayout` is **not** in this list — it was added when `sceneLayout` shipped, then removed
+again when the property was deleted; `anchor` and `stories` were added in its place. This is the
+single most likely regression in the whole proposal and gets its own test fixture.
 
 The block keywords cost nothing by contrast. `SubflowKind` — `opt`, `par`, `parallel`, `loop`,
 `when`, `if`, `else`, `break` — plus `try`, `catch`, and `finally` are already enumerated in
@@ -458,7 +536,7 @@ New `packages/core/src/types/view-parsed.story.ts`, deliberately mirroring the s
 `view-parsed.dynamic.ts`:
 
 ```ts
-export type StorySceneLayout = 'anchored' | 'independent' | 'unified'
+// StorySceneLayout does not exist — sceneLayout was deleted, not carried as a resolved type.
 
 export interface StoryCorrespondence<A extends AnyAux = AnyAux> {
   readonly sources: NonEmptyReadonlyArray<aux.StrictFqn<A>>
@@ -471,6 +549,8 @@ export interface StoryScene<A extends AnyAux = AnyAux> {
   readonly description?: scalar.MarkdownOrString
   readonly notes?: scalar.MarkdownOrString
   readonly becomes?: StoryCorrespondence<A>[]
+  /** The element to keep visually continuous with the previous scene — see "Scene continuity," above. */
+  readonly anchor?: aux.StrictFqn<A>
   /**
    * Path to the AST node relative to the view body ast.
    * Used to locate the scene in the source code. Mirrors `Step.astPath`.
@@ -529,23 +609,34 @@ export type AnyStoryStatement<A extends AnyAux = AnyAux> = ExclusiveUnion<{
 
 export interface ParsedStoryView<A extends AnyAux = AnyAux> extends BaseParsedViewProperties<A> {
   [_type]: 'story'
-  readonly sceneLayout?: StorySceneLayout
   readonly statements: AnyStoryStatement<A>[]
 }
 ```
 
-`ComputedStoryView` and `LayoutedStoryView` add `sceneLayout` (resolved, no longer optional), a flat
-`scenes` list in depth-first traversal order, and a `storyFlow` tree that preserves `alt` blocks for
-the outline panel. `nodes` and `edges` are empty arrays.
+**Update:** `ParsedStoryView` no longer extends `BaseParsedViewProperties` and is not a member of
+the `ParsedView` union — see [A story is not a view](#a-story-is-not-a-view). As shipped,
+`ComputedStoryView` and `LayoutedStoryView` extend `BaseViewProperties` directly (not
+`BaseComputedViewProperties` / `BaseLayoutedViewProperties`), so they carry no `nodes`, `edges`,
+`autoLayout`, or `bounds` at all — not empty arrays standing in for geometry a story doesn't have,
+but no geometry fields in the type. This is the fix for the `bounds: undefined` crash discussed in
+[Open architectural question — is a story a view?](#open-architectural-question--is-a-story-a-view)
+below: the original design's "empty `nodes`/`edges`" was still committing to the geometry-bearing
+shape; leaving the union entirely means there is no contract to violate.
+
+`ComputedStoryScene` (the resolved form of `StoryScene` once views are computed) additionally
+carries an `id: scalar.StepPath` — the scene's own occurrence identity, distinct from `view` (the
+target view id) — and an optional `branchTitle: string`, populated only inside an `alt` branch
+(currently dormant; see [Branching](#branching)). `ComputedStoryView`/`LayoutedStoryView` add a
+flat `scenes: ReadonlyArray<ComputedStoryScene>` list in depth-first traversal order and a
+`storyFlow` tree that preserves `alt` blocks for the outline panel.
 
 The `scenes` list is an array rather than a map keyed by path, because traversal order is the thing
 consumers need: `prevAndNext` is an index step over it, so `computeStoryView` flattens once and
 `StoryFlow` derives its own path→index lookup. Scene paths remain hierarchical (`scalar.StepPath`
-format) and unique, so a map is recoverable whenever one is wanted.
-
-Adding `story` to the `ParsedView` / `ComputedView` / `LayoutedView` unions turns every
-`nonexhaustive(view)` dispatch site into a compile error. That error list is the implementation
-checklist, which is a feature — it is why the type lands first.
+format) and unique, so a map is recoverable whenever one is wanted. `id` exists on
+`ComputedStoryScene` precisely so a per-occurrence lookup is _possible_ — the known limitation
+described in [Scene continuity](#scene-continuity-anchor) above is that the diagram/routing layer
+does not yet use it as the addressing key, not that the identity is unavailable.
 
 ### Scene paths
 
@@ -568,24 +659,29 @@ pluggable step resolver, which touches a load-bearing file covered by snapshot t
 pointing at the resolver refactor. If this proposal is ever pursued upstream, the refactor is the
 correct move and should happen before merge.
 
-### The cursor is a composition
+### The cursor is not a composite type — it is two independent, orthogonal owners
 
-```ts
-type StoryCursor = {
-  scene: StepPath
-  innerStep: StepPath | null // step within a dynamic scene, if any
-}
-```
+**Update:** this RFC originally proposed a single `StoryCursor { scene, innerStep }` type, owned
+by a dedicated story actor, composing scene-stepping and inner-dynamic-view-stepping into one
+value with one `next()`/`prev()` that decided which to advance. That actor was deleted during
+implementation (see [Diagram integration](#diagram-integration) below) once scene stepping became
+a real route navigation rather than actor-owned state:
 
-`next()`:
+- **The scene cursor is the route's own `$viewId` param.** `packages/likec4-spa`'s
+  `/story/$storyId/view/$viewId` route (RFC 0002) already has to track "which scene" as its URL
+  parameter for deep-linking and browser back/forward to work at all; a separate cursor value
+  would just be a second, redundant source of truth for the same fact. Pressing the story's own
+  Next/Previous calls `diagram.navigateTo()` — a real navigation, not a cursor mutation.
+- **The inner-step cursor is unchanged, pre-existing dynamic-view walkthrough state** — the same
+  mechanism a dynamic view already uses outside a story, tracking `activeWalkthrough.stepId` over
+  the current view's edges. A story scene that happens to be a dynamic view does not get a
+  story-specific inner cursor; it gets the same walkthrough state any dynamic view gets.
 
-1. If the current scene is a dynamic view and `DynamicViewFlow.prevAndNext(innerStep).next`
-   exists, advance `innerStep`.
-2. Otherwise advance `scene` via `StoryFlow.prevAndNext`, seeding `innerStep` from the new scene's
-   `firstStep()` when that scene is dynamic.
-
-`prev()` is the mirror image. `nextScene()` — the second control pair, should it ever be wanted —
-is this function minus step 1, which is why deferring the two-cursor UI costs nothing structurally.
+These two are independent because nothing requires them to be composed: the scene-view boundary is
+now a route boundary, and the dynamic-view walkthrough already resets its own step state when its
+target view changes. The two control pairs render side by side rather than as one merged
+Next/Previous — see [Dual walkthrough controls](#dual-walkthrough-controls) below — which is the
+concrete, user-visible consequence of not composing them into one cursor.
 
 ### Compute
 
@@ -594,8 +690,9 @@ is this function minus step 1, which is why deferring the two-cursor UI costs no
 1. Resolve each scene's view reference; reject stories (defence in depth — the LSP validation is
    the primary gate).
 2. Assign `StepPath` ids by walking statements, mirroring how dynamic-view steps are numbered.
-3. Resolve `becomes` FQNs through the model.
-4. Return a `ComputedStoryView` with empty `nodes` and `edges`.
+3. Resolve `becomes` and `anchor` FQNs through the model.
+4. Return a `ComputedStoryView`. It has no `nodes`/`edges` fields at all (see
+   [Core types](#core-types) above), not empty arrays standing in for them.
 
 It deliberately does **not** inline scene geometry.
 
@@ -613,74 +710,152 @@ and a story owning no positions has nothing to drift.
 
 ### Alignment math
 
-`packages/core/src/story/align.ts` — pure, unit-tested math over two position maps, kept out of the
-React layer:
-
-1. `shared` = nodes present in both frames, matched by node id (the element FQN).
-2. `shared` empty → offset `(0, 0)`; the transition is a pure crossfade.
-3. Otherwise offset = `centroid(outgoing[shared]) − centroid(incoming[shared])`.
-4. `independent` mode forces the offset to `(0, 0)`.
-
-**Translation only** — no scale, no rotation. Scaling would render the same element at different
-sizes in different scenes, which reads as a zoom rather than as continuity. Centroid alignment is
-the least-squares optimum for a translation-only fit, so it degrades predictably: one shared node
-pins exactly, many minimise mean displacement.
+**Update:** `packages/core/src/story/align.ts` — described here in the original design as pure,
+unit-tested centroid math over two position maps — was deleted along with `sceneLayout` (and its
+sibling `resolveScene.ts`); `packages/core/src/story/` no longer exists. The replacement mechanism
+lives entirely in `packages/diagram` (viewport panning, not position-map math) and is described in
+full in [Scene continuity: `anchor`](#scene-continuity-anchor) above — that section is the current
+source of truth for how continuity is computed. Nothing in `packages/core` computes an alignment
+offset any more; `computeStoryView` resolves an `anchor` to an FQN and stops there.
 
 ### Diagram integration
 
 The `packages/diagram` guidance in `AGENTS.md` is that a new feature gets a sibling folder with its
-own actor, promoted into `likec4diagram/` only when it must coordinate with the main machine. A
-story must — it swaps canvas contents — so:
+own actor, promoted into `likec4diagram/` only when it must coordinate with the main machine. This
+RFC originally proposed exactly that — a dedicated story actor owning a composite cursor — and it
+was deleted during implementation once scene stepping became a real route navigation with no
+actor-owned state left to justify one (see
+[The cursor is not a composite type](#the-cursor-is-not-a-composite-type--it-is-two-independent-orthogonal-owners)
+above). As shipped:
 
-- **`packages/diagram/src/story/actor.ts`** owns the cursor and is spawned as a child of the main
-  machine, the way `editorActorLogic` already is.
-- **A new `story.scene` event, distinct from `update.view`.** `update.view` with a differing view
-  id pushes navigation history and runs the `navigating` state, so reusing it would mean every
-  Next press pollutes browser back. `story.scene` reuses `mergeXYNodesEdges`
-  (`packages/diagram/src/likec4diagram/state/assign.ts:52`, which already merges by node id across
-  differing views) and skips the history push.
-- **Scene resolution** goes through `useLikeC4Model`, as `LikeC4View.tsx` already does for
-  arbitrary views. The alignment offset is applied before `convertToXYFlow`.
-- **Panel** reuses `WalkthroughPanel` for `title` and `notes`, and adds a scene list following the
-  pattern in `likec4diagram/ui/sequence-outline/SequenceOutlinePanel.tsx`. A new `StoryWalkthrough`
-  feature flag sits beside `DynamicViewWalkthrough`
-  (`packages/diagram/src/context/DiagramFeatures.tsx:23`).
-- **`navigateTo` interception** lives in the story actor: if the target is one of the story's scene
-  view ids, `gotoScene`; otherwise fall through to the existing host emit.
+- **No story actor exists.** Story-related UI lives as plain components under
+  `packages/diagram/src/navigationpanel/walkthrough/` (`StoryControls.tsx`,
+  `storyScenePosition.ts`), reading `context.story` and `context.view.id` — both already supplied
+  to `LikeC4Diagram` by its consumer — through a pure, stateless lookup rather than an actor.
+- **No `story.scene` event exists.** A search of `packages/diagram/src` turns up zero references.
+  Next/Previous call `diagram.navigateTo()`, the same `DiagramApi` method any other navigation
+  uses, which emits the ordinary `navigateTo` event the consumer's `onNavigateTo` already handles
+  (see [`navigateTo` inside a story](#navigateto-inside-a-story) above). The original concern this
+  event was invented to solve — "reusing `update.view` would pollute browser history on every
+  Next press" — is resolved differently: the consumer's `onNavigateTo` decides whether a click
+  stays nested (same route, new `$viewId` param — one history entry per step, which is the
+  _correct_, wanted behavior for a deep-linkable story, not pollution) or leaves the story
+  entirely, per RFC 0002's containment model.
+- **Scene resolution** goes through `useLikeC4Model` and `context.story`, exactly as originally
+  specified. What happens next differs: no alignment offset is computed or applied before
+  `convertToXYFlow` — a scene's nodes/edges are converted and rendered exactly as its own view
+  computed and laid them out, and continuity (when `anchor` is declared) is achieved by panning
+  the viewport afterward, not by moving anything the layout produced.
+- **Panel** reuses `WalkthroughPanel` for `title` and `notes`. A `StoryWalkthrough` feature flag
+  (`enableStoryWalkthrough` on `LikeC4Diagram`) sits beside `DynamicViewWalkthrough`
+  (`enableDynamicViewWalkthrough`), as specified.
+- **`navigateTo` interception** moved from the (deleted) story actor to the SPA consumer layer —
+  see [`navigateTo` inside a story](#navigateto-inside-a-story) above for the current mechanism.
+
+#### Dual walkthrough controls
+
+Not originally specified: a story scene that is itself a dynamic view can have its own
+step-through walkthrough active _while_ the story's own scene-stepping controls are also live —
+the two are orthogonal (one steps edges within a view, the other steps scenes across views), so
+neither should hide the other. `NavigationPanel.tsx` models this as a fourth mode,
+`walkthrough-in-story`, alongside the original `default` / `walkthrough-flow` / `walkthrough`:
+
+```ts
+export type NavigationPanelMode =
+  | 'default'
+  | 'walkthrough-flow'
+  | 'walkthrough'
+  | 'walkthrough-in-story' // dynamic-view walkthrough active while inside a story scene
+```
+
+selected whenever `s.story != null` and a dynamic-view walkthrough is active, and rendering both
+control sets together:
+
+```tsx
+{
+  mode === 'walkthrough-in-story' && (
+    <>
+      <ActiveWalkthroughControls />
+      <StoryControls key="story-controls" />
+    </>
+  )
+}
+```
+
+gated behind `resolveMode(selectedMode, enableStoryWalkthrough)` so it only ever activates when
+the consumer opted into `enableStoryWalkthrough` in the first place. The two pairs are made
+visually unambiguous rather than relying on position alone: the story's own Previous/Next are
+grape-colored and read "Previous Scene" / "Next Scene"; the dynamic view's own Previous/Next keep
+their existing (Mantine theme-default indigo) color and read "Previous Step" / "Next Step".
+
+Both pairs disable at their own boundaries, matching how a plain dynamic-view walkthrough already
+behaves outside a story: the story's Previous/Next are `disabled` when there is no
+previous/next entry in `story.scenes` at the current index; the dynamic view's Previous/Next are
+`disabled` when the current step is the first/last edge in `xyedges`. Neither reads the other's
+boundary.
+
+#### Sidebar integration
+
+Also not originally specified: the SPA's single-project-mode sidebar view list
+(`packages/likec4-spa/src/components/sidebar/`) lists stories alongside views, each with a
+distinct icon (`IconBook2`, versus the dashboard/stack icons already used for views and deployment
+views). Since a story and a view may share an id (RFC 0002 §5's namespace decision), the sidebar's
+tree-node identity is namespaced (`story:<id>`) to avoid colliding with a same-named view's node.
+Not wired into multi-project mode as of this writing.
 
 ### Transition rendering
 
-Node identity across scenes is already stable, and `updateNodes` already merges by id across
-differing views. The only missing ingredient is _interpolation_: XYFlow applies `transform`
-immediately, and `packages/diagram/src/styles-xyflow.css` is a bare `@import` with no node rules.
-
-The POC adds a transient CSS transition on node transform for the duration of a scene change,
-removed afterwards so that dragging stays crisp.
+Node identity across scenes is already stable. Interpolation for the _anchored_ case is the
+viewport pan described in [Scene continuity](#scene-continuity-anchor) above, which is confirmed
+built and working. **Unverified as of this writing:** the transient CSS transition on node
+transform originally specified here, for smoothing a non-anchored scene's crossfade —
+`packages/diagram/src/styles-xyflow.css` is still a bare `@import` with no node-transform rules,
+and no crossfade-specific animation code was found elsewhere in `packages/diagram/src` during this
+update. Whether a non-anchored transition currently reads as an abrupt cut or an acceptable plain
+crossfade (XYFlow's own re-render) has not been re-verified against the shipped code; treat this
+paragraph as the original design intent, not a confirmed-shipped fact, until someone checks.
 
 `becomes` feeds this pairing: a source node's exit is anchored to the bounding box of its targets,
-so it visibly divides toward them, and the targets enter from that same box.
+so it visibly divides toward them, and the targets enter from that same box. This part is also
+unverified against the shipped code for the same reason.
 
 ### Validations
 
-| Check                                                                      | Severity                               | Location        |
-| -------------------------------------------------------------------------- | -------------------------------------- | --------------- |
-| `scene` targets a story view (no nested stories)                           | error                                  | language-server |
-| `alt` (any use at all, well-formed or not)                                 | error — "not yet supported in stories" | language-server |
-| Block kind not yet implemented (`opt`, `par`, `parallel`, `loop`, `break`) | error — "not yet supported in stories" | language-server |
-| `alt` branch is not a `when` / `if` / `else` block                         | error                                  | language-server |
-| Story has no scenes                                                        | warning                                | language-server |
-| `becomes` refs absent from the adjacent scenes                             | deferred — needs computed views        | —               |
+| Check                                                                      | Severity                                                         | Location        |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------- |
+| `scene` targets a story (no nested stories)                                | error (Langium's own, not custom)                                | language-server |
+| `alt` (any use at all, well-formed or not)                                 | error — "not yet supported in stories"                           | language-server |
+| Block kind not yet implemented (`opt`, `par`, `parallel`, `loop`, `break`) | error — "not yet supported in stories"                           | language-server |
+| `alt` branch is not a `when` / `if` / `else` block                         | error                                                            | language-server |
+| `anchor` on a scene with no predecessor (first in traversal order)         | error                                                            | language-server |
+| More than one `anchor` on the same scene                                   | error                                                            | language-server |
+| A scene's view id repeats an earlier scene's view id                       | warning (dormant fail-safe)                                      | language-server |
+| Story has no scenes                                                        | warning                                                          | language-server |
+| Two stories share the same id                                              | error                                                            | language-server |
+| `becomes` refs absent from the adjacent scenes                             | deferred — needs computed views                                  | —               |
+| `anchor` ref present in both the scene's own and predecessor's view        | **not built** — see [Scene continuity](#scene-continuity-anchor) | —               |
+
+`scene` targeting a story used to be a custom check (rejecting `scene x` where `x` is a story).
+Since stories moved out of the `LikeC4View` union (RFC 0002), `StoryScene.view=[LikeC4View]` can
+structurally no longer resolve to a story at all — `scene other` naming a story fails to link,
+surfacing Langium's own "Could not resolve reference to LikeC4View named '...'" diagnostic
+instead. Still an error; no longer a custom one, and the custom check would now be dead code.
 
 ## Drawbacks
 
-- **Fourth view type.** Every `nonexhaustive` dispatch site must grow a branch, including
-  generators and exporters that have no meaningful story implementation.
+- **Not a view, but still view-adjacent.** RFC 0002 resolved the "is a story a view?" question by
+  moving it out of the `LikeC4View` union (see below), which closed most of the original "fourth
+  view type" cost — but generators, exporters, and any other `nonexhaustive(view)`-style dispatch
+  that was written assuming views are the only addressable-diagram-thing still need to _know_
+  stories exist and choose to ignore them, rather than the type system forcing the question.
 - **No single image.** A story cannot be exported to PNG or SVG, cannot be emitted as Mermaid,
   PlantUML, or D2, and has no sensible representation in any of the existing generators. Stories
   are a viewer-only artifact.
-- **Depth-first `alt` may mislead.** Playing alternative futures consecutively is faithful to
-  dynamic-view semantics but is not what "alternative" suggests. The branch label in the panel is
-  a mitigation, not a fix.
+- **`alt` is currently unavailable, not just discouraged.** The original concern here — that
+  depth-first `alt` traversal may mislead a viewer into thinking "alternative" means
+  "sequential" — is moot for now: `alt` is rejected by validation entirely (see
+  [Branching](#branching) above), pending the scene-identity fix. If and when `alt` returns, this
+  concern returns with it.
 - **A story couples views.** Renaming or deleting a view breaks any story referencing it. This is
   no worse than `navigateTo` or `extends`, but it widens the blast radius of a view rename.
 - **Duplicated tree-walk.** `StoryFlow` repeats traversal logic that `walkthroughFlow` already
@@ -688,13 +863,18 @@ so it visibly divides toward them, and the targets enter from that same box.
 
 ## Open architectural question — is a story a view?
 
-**This is the most significant unresolved question in the RFC, and it was raised by the POC rather
-than answered by it.**
+**Resolved.** This was the most significant unresolved question raised by the original POC, and
+the resolution shipped: `docs/rfcs/0002-story-containment-investigation.md` recommended
+"Candidate B" — a story as a _parallel, addressable registry_ rather than a `LikeC4View` member —
+and that is what the codebase now has (see [A story is not a view](#a-story-is-not-a-view) at the
+top of this document, and every "Update" note throughout this RFC). This section is kept as the
+historical record of _why_: it is the analysis that motivated RFC 0002, not a still-open question.
 
-This RFC decided a story _is_ a view: `_type: 'story'`, a `ViewId`, served at `/view/$viewId`. The
-reasoning was routing convenience — search indexing, the navigation dropdown, and `model.findView`
-all come free. That reasoning holds, but the cost turned out to be much larger than anticipated, and
-it is concentrated in exactly the places the implementation went wrong:
+This RFC originally decided a story _is_ a view: `_type: 'story'`, a `ViewId`, served at
+`/view/$viewId`. The reasoning was routing convenience — search indexing, the navigation dropdown,
+and `model.findView` all come free. That reasoning held on paper, but the cost turned out to be
+much larger than anticipated, and it is concentrated in exactly the places the implementation went
+wrong:
 
 - **Task 14 exists only because of this decision.** Widening `ParsedView` / `ComputedView` /
   `LayoutedView` to admit stories broke 36 sites across five packages — `model-change/*`, the MCP
@@ -712,7 +892,7 @@ it is concentrated in exactly the places the implementation went wrong:
   scene's view, making the field stale after the first scene. The route says `/view/migration` while
   the canvas shows `cloud_legacy`; that discrepancy required a workaround.
 
-### The alternative
+### The alternative — what shipped
 
 Model a story as a container _above_ views rather than a peer of them, addressed as:
 
@@ -721,35 +901,40 @@ Model a story as a container _above_ views rather than a peer of them, addressed
 ```
 
 This is honest about what is on screen — the canvas genuinely renders `cloud_legacy`, within story
-`migration`. Three consequences follow:
+`migration`. Three consequences followed, all now real rather than hypothetical:
 
-1. **Scene position becomes deep-linkable.** `/view/migration` cannot express "scene 3 of the
-   migration story"; the nested form can.
-2. **Scene changes become genuine navigations.** Browser back/forward stepping the story backward and
-   forward is then the _correct_ behaviour rather than pollution to be suppressed, and the whole
-   `story.scene`-versus-`update.view` apparatus becomes unnecessary.
-3. **The view unions stay closed**, so the Task 14 class of fallout does not arise.
+1. **Scene position is deep-linkable.** `/view/migration` could not have expressed "scene 3 of the
+   migration story"; the nested form does, for free — it's just the route.
+2. **Scene changes are genuine navigations.** Browser back/forward stepping the story backward and
+   forward is the _correct_ behaviour, not pollution to be suppressed, and the whole
+   `story.scene`-versus-`update.view` apparatus this RFC originally specified turned out to be
+   unnecessary — it was deleted rather than built out further (see
+   [Diagram integration](#diagram-integration) above).
+3. **The view unions stay closed**, so the Task 14 class of fallout did not recur for this change.
 
-### What the alternative costs
+### What the alternative cost
 
-Membership in the view unions was not free-riding; it purchased real things. A story outside them
-needs a parallel registry (`model.stories`) and its own answers for what `View` currently supplies:
-search indexing, the navigation dropdown, `findView`-style lookup, and route generation. Some of that
-is rebuilt rather than inherited.
+Membership in the view unions was not free-riding; it purchased real things, and a story outside
+them needed its own answers, some rebuilt rather than inherited: a parallel registry
+(`model.stories()` / `model.findStory()`) in place of `model.findView`, its own route tree instead
+of participating in the existing view route, and — as of this update — no wiring into the SPA's
+search index or multi-project-mode view list at all (the single-project sidebar addition mentioned
+in [Diagram integration](#diagram-integration) above is a first, partial, single-project-only step
+toward parity, not full parity).
 
-Note that `BaseViewProperties` already isolates most of what genuinely generalises — `id`, `title`,
+`BaseViewProperties` already isolated most of what genuinely generalises — `id`, `title`,
 `description`, `tags`, `links`, `sourcePath` — from what does not (`nodes`, `edges`, `bounds`,
-`autoLayout`, `rules`). That split is suggestive: the shared supertype may already exist in all but
-name, and the mistake may have been inheriting from the geometry-bearing type rather than the
-addressable one.
+`autoLayout`, `rules`), which is exactly the split `ComputedStoryView`/`LayoutedStoryView` now use
+by extending `BaseViewProperties` directly (see [Core types](#core-types) above) — the shared
+supertype existed already; the fix was inheriting from the addressable type instead of the
+geometry-bearing one.
 
 ### Status
 
-Unresolved, and deliberately not retrofitted into this POC. This RFC's stated goal was to establish
-whether smooth cross-view transitions are achievable and which `sceneLayout` mode wins; both were
-answered. Discovering that the containment model is probably wrong is a second and arguably more
-valuable finding, and it warrants its own design pass rather than an amendment to a branch that
-already works.
+Resolved. See `docs/rfcs/0002-story-containment-investigation.md` for the full decision record
+(candidates considered, the exact DSL and routing shape chosen, and an implementation record
+confirming what shipped) and [A story is not a view](#a-story-is-not-a-view) at the top of this
+document for the current, load-bearing summary.
 
 ## Rationale and alternatives
 
@@ -794,45 +979,56 @@ alternatives of one another.
 The original sketch carried a transition style in the arrow: `-[fade]->`. Under the scene-list
 shape this would land as `scene x { transition fade 400ms }`.
 
-Left unspecified on purpose. What a transition should look like is largely determined by
-`sceneLayout` mode plus correspondence rules, so fixing an animation vocabulary before those modes
-have been seen running would be premature. This is a named extension point.
+Left unspecified on purpose. What a transition should look like is largely determined by whether
+a scene declares `anchor` plus correspondence rules, so fixing an animation vocabulary before that
+mechanism had been seen running would have been premature. This is a named extension point.
 
 ## Deferred decisions
 
-| Decision                                        | Why deferred                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Which `sceneLayout` mode should be the default  | **Closed by Task 13**, observing `examples/cloud-system/story.c4` end to end. `anchored` reduces the _mean_ displacement of a transition's shared elements — confirmed both analytically (`calcSceneOffset` against the real layouted views) and visually in the running dev app — but it is not a uniform per-element win: on `dynamic-view-1 → cloud_next` a tracked shared node travelled 207px under `anchored` vs 240px under `independent` (anchored better, as expected), but on `cloud_legacy → dynamic-view-1`, where two shared elements (`customer`, `cloud`) pull the alignment in different directions, the tracked element travelled _further_ under `anchored` (328px) than under `independent` (243px) — the reverse of the expected direction, because centroid alignment minimises the mean squared displacement across all shared elements, not every individual one. `anchored` stays the default: it never loses in aggregate, and its failure mode (one element among several moving more) is milder than `independent`'s (every shared element jumps by its raw, unrelated layout difference). Open follow-up: whether a smarter alignment (e.g. weighting by element importance, or picking the single best-anchored element instead of the centroid) would fix the conflicting-offset case. |
-| `sceneLayout unified` implementation            | The only mode requiring a story-owned layout pass, and the only one that breaks the geometry-less invariant. Needs its own design pass.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Fork-prompt branch navigation                   | Costs a new cursor concept. Reachable later with no DSL change.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Scene-level Next/Previous control pair          | `nextScene()` already falls out of the composite cursor; only the UI is deferred.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Real geometric box-splitting for `becomes`      | Bespoke animation work competing directly with the layout modes that need comparing. The POC pairs fade anchors instead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Per-scene `sceneLayout` override (a "hard cut") | No demonstrated need yet.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Transition styling vocabulary                   | See above.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `opt` and `loop`-as-label                       | Clear readings and cheap, but not needed to prove the concept. First candidates after the MVP.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `try` / `catch` / `finally` vocabulary          | The structure fits rollback planning; the programming-borrowed keywords read badly. Decide between reuse and story-native aliases before implementing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `par` / `parallel` rendering                    | Three plausible readings (annotation, composite frame, split screen) with no obvious winner. Needs its own design pass.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `loop` as generative iteration                  | Would require parameterising a view by element — templating, an order of magnitude larger than the label reading. Explicitly not implied by the keyword.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `break`                                         | Has nothing to say until fork-prompt navigation exists.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `navigateTo` a story from a relation/step       | Cut during implementation. Two bare cross-reference alternatives (`DynamicViewRef \| StoryViewRef`) are not disambiguable in Langium — the parser always reduces to the first, and `langium generate` gives no warning. The working fix is `value=ViewRef` (`[LikeC4View]`) plus a validation pass re-narrowing to dynamic-or-story targets: the same "admit broadly, validate narrowly" pattern used for `StorySubflow`. Element-level `navigateTo` → story is unaffected and works today.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Decision                                                          | Why deferred                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scene-identity fix (`StepPath`, not view id, as the routing key)  | The complete fix for the known limitation that repeated view ids can't be told apart (see "Scene continuity: `anchor`," above). Touches `packages/diagram`'s public prop contract and `packages/likec4-spa`'s URL scheme; a real design pass, not a patch.                                                                                                        |
+| Static check: `anchor` ref present in both scenes' views          | Specified in the anchor design but not built — no validation infrastructure exists to check an `ElementRef`'s presence in a specific view's resolved `include` set outside the compute pipeline. A real (if currently unenforced) gap; see "Validations," above.                                                                                                  |
+| Smarter-than-centroid alignment                                   | Moot as originally framed — the centroid-vs-single-element tradeoff was about the deleted `sceneLayout: anchored` mode. `anchor` already lets an author pick the single element that matters, which was the "smarter" option under consideration.                                                                                                                 |
+| Fork-prompt branch navigation                                     | Costs a new cursor concept. Reachable later with no DSL change, once `alt` itself returns (see "Branching," above).                                                                                                                                                                                                                                               |
+| Real geometric box-splitting for `becomes`                        | Bespoke animation work. The POC pairs fade anchors instead — see "Transition rendering"'s unverified status, above.                                                                                                                                                                                                                                               |
+| Transition styling vocabulary                                     | See "Transition styling," below.                                                                                                                                                                                                                                                                                                                                  |
+| `opt` and `loop`-as-label                                         | Clear readings and cheap, but not needed to prove the concept. First candidates after the MVP.                                                                                                                                                                                                                                                                    |
+| `try` / `catch` / `finally` vocabulary                            | The structure fits rollback planning; the programming-borrowed keywords read badly. Decide between reuse and story-native aliases before implementing.                                                                                                                                                                                                            |
+| `par` / `parallel` rendering                                      | Three plausible readings (annotation, composite frame, split screen) with no obvious winner. Needs its own design pass.                                                                                                                                                                                                                                           |
+| `loop` as generative iteration                                    | Would require parameterising a view by element — templating, an order of magnitude larger than the label reading. Explicitly not implied by the keyword.                                                                                                                                                                                                          |
+| `break`                                                           | Has nothing to say until fork-prompt navigation exists.                                                                                                                                                                                                                                                                                                           |
+| `navigateTo` a story from a relation/step                         | Cut during implementation. Two bare cross-reference alternatives (`DynamicViewRef \| StoryViewRef`) are not disambiguable in Langium — the parser always reduces to the first, and `langium generate` gives no warning. Moving stories out of the `LikeC4View` union (RFC 0002) does not change this. Element-level `navigateTo` → story works today, unaffected. |
+| Full parity with views in the SPA (search, multi-project sidebar) | The single-project sidebar addition (see "Diagram integration," above) is a first step, not full parity — search indexing and multi-project-mode's view list still don't know stories exist.                                                                                                                                                                      |
 
 ## MVP scope
 
-**In:**
+**In, as shipped (differs from the original spec in several places — each is cross-referenced
+above):**
 
-- Grammar, including the `Id`-rule additions
+- Grammar, including the `Id`-rule additions — `story`/`stories`/`scene`/`anchor`/`becomes`, not
+  `sceneLayout`
+- A sibling `stories { }` block, not a `StoryView` member of `LikeC4View` (RFC 0002)
 - `StorySubflow` admitting every `SubflowKind`, with validation gating all of them, `alt` included
   (`alt` shipped in the initial MVP but was pulled back to "not yet supported" — see "Branching," above)
-- Core types across parsed, computed, and layouted stages, plus `isStoryView`
-- `StoryFlow` and the composite cursor
-- `computeStoryView`
+- Core types across parsed, computed, and layouted stages, extending `BaseViewProperties` directly
+  rather than the geometry-bearing computed/layouted supertypes
+- `StoryFlow`; no composite cursor type (the route is the scene cursor — see "The cursor is not a
+  composite type," above)
+- `computeStoryView`, including `anchor` resolution
 - Layouter bypass for stories
-- `align.ts`, with `anchored` and `independent` modes both selectable
-- Story actor in `packages/diagram`, `story.scene` event, scene resolution and rendering
+- Per-scene `anchor <ElementRef>` and its viewport-pan mechanism in `packages/diagram` — not
+  `align.ts`/`sceneLayout`, which were built first, evaluated, and then deleted
+- Scene resolution and rendering as plain components, not a dedicated story actor; no `story.scene`
+  event
 - Walkthrough panel narration, scene outline list, `StoryWalkthrough` feature flag
-- `navigateTo` interception
-- The validations listed above
+  (`enableStoryWalkthrough`), plus dual walkthrough controls (`walkthrough-in-story` mode) and
+  boundary-disabled Previous/Next — neither originally specified
+- `navigateTo` interception, at the SPA consumer layer rather than inside a diagram-level actor
+- The validations listed above, including two (anchor-on-first-scene, one-anchor-max) not in the
+  original spec, and one specified but not built (anchor-present-in-both-views)
 - An example story in `examples/`
+- A single-project-mode sidebar entry with its own icon — not originally specified
 
 **Out, deliberately:**
 
@@ -840,27 +1036,35 @@ have been seen running would be premature. This is a named extension point.
 - Exports (PNG, SVG)
 - TextMate grammars for `packages/vscode`, `apps/playground`, `apps/docs`
 - MCP server surface, docs site
-- `sceneLayout unified`
+- `sceneLayout unified` — and the rest of `sceneLayout` with it; there is no story-level layout
+  property at all any more, resolved or otherwise
 - Every `SubflowKind`, `alt`'s branches included — parsed, then rejected by validation
 - `try` / `catch` / `finally` — not admitted by the story grammar at all; fails to parse
 - Fork prompts, scene-level controls
 - Manual layout for stories (inapplicable by construction)
+- Multi-project-mode sidebar/view-list integration, and search indexing, for stories
 - A changeset — this is a POC, not a published change
 
 ## Testing strategy
 
-- **Grammar fixtures**: story with scenes; story with `alt` and nested scenes; `becomes` in all
-  three directions; **and a model using `story`, `scene`, and `becomes` as element names** — the
-  `Id`-rule regression.
-- **Validation specs**: scene targeting a story (error); story with no scenes (warning); `alt` /
-  `opt` / `par` / `loop` / `break` each **parsing cleanly but failing validation** with the "not
-  yet supported" diagnostic — this is what keeps the speculative syntax in this RFC honest.
-- **Compute specs and snapshots**: path assignment for flat and nested statements.
+- **Grammar fixtures**: story with scenes; story with `alt` and nested scenes; `becomes` and
+  `anchor` in a scene body; **and a model using `story`, `stories`, `scene`, `anchor`, and
+  `becomes` as element names** — the `Id`-rule regression.
+- **Validation specs**: scene targeting a story (Langium's own unresolved-reference error, not a
+  custom check — see "Validations," above); story with no scenes (warning); `alt` (any use,
+  well-formed or not) / `opt` / `par` / `loop` / `break` each **parsing cleanly but failing
+  validation** with the "not yet supported" diagnostic — this is what keeps the speculative syntax
+  in this RFC honest; `anchor` on a scene with no predecessor (error); more than one `anchor` on
+  one scene (error); a repeated view id across a story's flattened traversal (warning).
+- **Compute specs and snapshots**: path assignment for flat and nested statements; `anchor` FQN
+  resolution.
 - **`StoryFlow.prevAndNext`**: flat scenes; nested `alt`; first and last boundaries.
-- **Composite cursor**: traversal into and out of a dynamic scene, in both directions.
-- **`align.ts` units**: no shared nodes; exactly one shared node; several shared nodes;
-  `independent` mode forcing zero offset.
-- **Not covered**: end-to-end Playwright tests.
+- **Anchor viewport-pan units** (`packages/diagram`): no anchor declared (plain crossfade); anchor
+  resolves cleanly; the fail-safe when a repeated view id's occurrences disagree on `anchor`
+  (falls back to fit-to-bounds rather than guessing).
+- **Not covered**: end-to-end Playwright tests. Also not independently re-verified during this
+  update: the non-anchored crossfade's visual quality and the `becomes` box-splitting animation —
+  see "Transition rendering," above.
 
 ## Process notes
 
