@@ -14,15 +14,15 @@ import { tryOrLog } from './_shared'
 // "Could not resolve reference to LikeC4View named '...'" diagnostic instead — still an
 // error, just no longer a custom one.
 
-const IMPLEMENTED_BRANCH_KINDS = ['when', 'if', 'else'] as const
+const ALT_BRANCH_KINDS = ['when', 'if', 'else'] as const
 
-const isAltBranchKind = (kind: string): boolean =>
-  IMPLEMENTED_BRANCH_KINDS.includes(kind as typeof IMPLEMENTED_BRANCH_KINDS[number])
+const isAltBranchKind = (kind: string): boolean => ALT_BRANCH_KINDS.includes(kind as typeof ALT_BRANCH_KINDS[number])
 
 /**
- * The grammar admits every `SubflowKind` block for forward compatibility with RFC 0001,
- * but only `alt` and its `when` / `if` / `else` branches are implemented today. This check
- * enforces that:
+ * The grammar admits every `SubflowKind` block for forward compatibility with RFC 0001, but
+ * none are implemented — `alt` itself is rejected outright by `storyAltChecks` below, and every
+ * other kind is rejected here. This check still needs to distinguish `when` / `if` / `else`
+ * (only ever syntactically valid as `alt` branches) from the rest, so it enforces that:
  * - `when` / `if` / `else` blocks only appear directly inside `alt`.
  * - Any other block kind (`opt`, `par`, `parallel`, `loop`, `break`) never appears inside `alt`
  *   as if it were a branch.

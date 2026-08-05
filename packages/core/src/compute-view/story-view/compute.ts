@@ -77,6 +77,10 @@ export function computeStoryView<A extends Any>(
           return
         }
         case storyGuards.isAlt(statement): {
+          // Unreachable through any validation-passing DSL: `storyAltChecks`
+          // (`packages/language-server/src/validation/story-view.ts`) rejects every `alt`
+          // outright. Still handled structurally, rather than thrown, so a future relaxation of
+          // validation does not silently drop nested scenes. See RFC 0001, "Branching."
           statement.branches.forEach((branch, branchIndex) => {
             walk(
               branch.statements,
@@ -87,10 +91,11 @@ export function computeStoryView<A extends Any>(
           return
         }
         case storyGuards.isSubflow(statement): {
-          // Unreachable in the MVP: validation rejects every non-`alt` block kind
-          // (`opt` / `par` / `loop` / `break`) before compute ever sees one (RFC 0001,
-          // "Flow control beyond alt"). Still handled structurally, rather than thrown,
-          // so a future relaxation of validation does not silently drop nested scenes.
+          // Unreachable through any validation-passing DSL: `storySubflowChecks` (same file as
+          // above) rejects every non-`alt` block kind (`opt` / `par` / `loop` / `break`) before
+          // compute ever sees one (RFC 0001, "Flow control — speculative"). Still handled
+          // structurally, rather than thrown, so a future relaxation of validation does not
+          // silently drop nested scenes.
           walk(
             statement.statements,
             [...prefix, [position, statement[_type]]],
