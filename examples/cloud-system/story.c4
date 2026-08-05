@@ -24,15 +24,6 @@ stories {
       anchor cloud.next.backend
       cloud.legacy.backend.services becomes cloud.next.backend, cloud.next.graphql
     }
-
-    alt 'Two ways forward' {
-      when 'Aggressive: cut over immediately' {
-        scene cloud_next
-      }
-      else {
-        scene cloud_legacy
-      }
-    }
   }
 
 }

@@ -35,7 +35,10 @@ describe('story view grammar', () => {
         }
       }
     `)
-    expect(errors).toEqual([])
+    // `alt` is now rejected unconditionally (see `storyAltChecks` in
+    // `packages/language-server/src/validation/story-view.ts`), regardless of whether its
+    // branches are otherwise well-formed.
+    expect(errors).toEqual(['"alt" is not yet supported in stories'])
     // `before` and `after` are each referenced once as a top-level scene and again from the
     // `alt` branches — a legitimate depth-first-`alt` pattern (RFC 0001), but one this feature's
     // validation now warns about since scene identity is currently keyed by view id, not by

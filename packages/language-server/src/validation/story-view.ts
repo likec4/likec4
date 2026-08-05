@@ -165,15 +165,25 @@ export const storyViewChecks = (
 }
 
 /**
- * An `alt` block must have at least one branch to be meaningful.
+ * `alt` was the MVP's only implemented branching construct, but it is the
+ * direct and sole cause of the scene-identity limitation documented in
+ * `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`'s "Known
+ * limitation" section: a story's flattened scene list can repeat a view id
+ * only when an `alt` branch revisits an already-declared scene, and nothing
+ * in the current routing/diagram-context identity can then tell the
+ * occurrences apart. Rather than ship a branching mechanism with a known,
+ * silently-degrading failure mode, `alt` now joins the same "grammar admits
+ * it, validation gates it" treatment RFC 0001 already uses for `opt` / `par`
+ * / `parallel` / `loop` / `break` (see `storySubflowChecks` above) — parsed
+ * for forward compatibility, rejected until the scene-identity design work
+ * lands. See RFC 0001's "Recommended adoption order" table for the updated
+ * tier.
  */
 export const storyAltChecks = (
   _services: LikeC4Services,
 ): ValidationCheck<ast.StoryAlt> => {
   return tryOrLog((el, accept) => {
-    if (el.branches.length === 0) {
-      accept('error', 'Alt must have at least one branch', { node: el })
-    }
+    accept('error', '"alt" is not yet supported in stories', { node: el })
   })
 }
 

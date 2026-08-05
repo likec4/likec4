@@ -154,12 +154,22 @@ view current {
 This is idiomatic rather than novel: LikeC4 already uses `navigateTo` on a relation to mean
 "this step is elaborated in another dynamic view".
 
-### Flow control beyond `alt` — speculative
+**Update:** `alt` (and its `when`/`if`/`else` branches) shipped in the initial MVP but was pulled
+back to "not yet supported" — see `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`'s
+"Known limitation" section. The routing/diagram-context identity used to address a scene is
+currently the target _view_ id, and `alt` was the only construct that could make a story's
+flattened scene list repeat a view id; once that happens, nothing client-observable can tell the
+repeated occurrences apart, which silently breaks scene stepping, boundary detection, and per-scene
+anchors. `alt` now joins the same "grammar admits it, validation gates it" treatment described
+below for `opt`/`par`/`parallel`/`loop`/`break`, pending a design pass on making the scene's own
+`StepPath` (not the view id) part of that identity.
 
-`alt` is the only block the MVP implements, but it is one of eight `SubflowKind` keywords plus the
-`try` / `catch` / `finally` chain. Because `StorySubflow` reuses `SubflowKind` wholesale, the
-grammar admits all of them from day one at no cost. The question is which ones _mean_ anything for
-a story, and that deserves an answer before any of them are wired up.
+### Flow control — speculative
+
+All `SubflowKind` keywords, `alt` included, are grammar-admitted for forward compatibility with
+this RFC but validation-gated pending future work. Because `StorySubflow` reuses `SubflowKind`
+wholesale, the grammar admits all of them from day one at no cost. The question is which ones
+_mean_ anything for a story, and that deserves an answer before any of them are wired up.
 
 #### The semantic gap
 
@@ -266,14 +276,14 @@ covered by `alt`.
 
 #### Recommended adoption order
 
-| Order    | Keyword                     | Rationale                                                      |
-| -------- | --------------------------- | -------------------------------------------------------------- |
-| MVP      | `alt`, `when`, `if`, `else` | Needed for branching; traversal is free.                       |
-| Next     | `opt`                       | Clearest narrative reading; reuses collapse-to-skip machinery. |
-| Next     | `loop` (label only)         | Matches a real migration pattern; cheap as an annotation.      |
-| Later    | `try` / `catch` / `finally` | Resolve the vocabulary question first.                         |
-| Later    | `par` / `parallel`          | Resolve the rendering question first.                          |
-| Deferred | `break`                     | Meaningless until fork prompts exist.                          |
+| Order    | Keyword                     | Rationale                                                                                    |
+| -------- | --------------------------- | -------------------------------------------------------------------------------------------- |
+| Next     | `alt`, `when`, `if`, `else` | Needed for branching; pulled from MVP pending a scene-identity fix (see "Branching," above). |
+| Next     | `opt`                       | Clearest narrative reading; reuses collapse-to-skip machinery.                               |
+| Next     | `loop` (label only)         | Matches a real migration pattern; cheap as an annotation.                                    |
+| Later    | `try` / `catch` / `finally` | Resolve the vocabulary question first.                                                       |
+| Later    | `par` / `parallel`          | Resolve the rendering question first.                                                        |
+| Deferred | `break`                     | Meaningless until fork prompts exist.                                                        |
 
 **Grammar admits every `SubflowKind`, validation gates the rest.** `StorySubflow` accepts any
 `SubflowKind` — `opt`, `par`, `parallel`, `loop`, `break`, `when`, `if`, `else` — from the start,
@@ -655,7 +665,7 @@ so it visibly divides toward them, and the targets enter from that same box.
 | Check                                                                      | Severity                               | Location        |
 | -------------------------------------------------------------------------- | -------------------------------------- | --------------- |
 | `scene` targets a story view (no nested stories)                           | error                                  | language-server |
-| `alt` block has no branches                                                | error                                  | language-server |
+| `alt` (any use at all, well-formed or not)                                 | error — "not yet supported in stories" | language-server |
 | Block kind not yet implemented (`opt`, `par`, `parallel`, `loop`, `break`) | error — "not yet supported in stories" | language-server |
 | `alt` branch is not a `when` / `if` / `else` block                         | error                                  | language-server |
 | Story has no scenes                                                        | warning                                | language-server |

@@ -47,13 +47,27 @@ describe('story view validation', () => {
   })
 
   it('rejects an empty alt', async ({ expect, validate }) => {
+    // `alt` is now rejected unconditionally, regardless of its internal shape — an empty `alt`
+    // gets the same blanket message as a well-formed one (see 'rejects alt entirely...' below).
     const { errors } = await validate(`${preamble}
       story s {
         scene v1
         alt { }
       }
     }`)
-    expect(errors).toContain('Alt must have at least one branch')
+    expect(errors).toContain('"alt" is not yet supported in stories')
+  })
+
+  it('rejects alt entirely, even a well-formed one', async ({ expect, validate }) => {
+    // Direct proof of this task's change: `alt` is now gated exactly like the other
+    // not-yet-implemented flow-control keywords (`opt`/`par`/`parallel`/`loop`/`break`),
+    // regardless of whether its branches are otherwise well-formed.
+    const { errors } = await validate(`${preamble}
+      story s {
+        alt { when 'x' { scene v1 } else { scene v2 } }
+      }
+    }`)
+    expect(errors).toEqual(['"alt" is not yet supported in stories'])
   })
 
   it('rejects block kinds that are not yet supported', async ({ expect, validate }) => {
@@ -97,11 +111,10 @@ describe('story view validation', () => {
   })
 
   it('accepts a valid story', async ({ expect, validate }) => {
-    // Branches reference distinct views (v1/v2) so this also stays a no-repeated-view-id case —
-    // see the dedicated repeated-view-id tests below for that check specifically.
     const { errors, warnings } = await validate(`${preamble}
       story s {
-        alt { when 'x' { scene v1 } else { scene v2 } }
+        scene v1
+        scene v2
       }
     }`)
     expect(errors).toEqual([])
@@ -145,34 +158,41 @@ describe('story view validation', () => {
   })
 
   it('rejects anchor on a scene inside an alt branch when the alt is the story\'s first statement', async ({ expect, validate }) => {
+    // `alt` usage here is incidental — the point is the anchor-with-no-predecessor check still
+    // fires for a scene nested inside a (now also rejected) `alt` branch.
     const { errors } = await validate(`${preamble}
       story s {
         alt { when 'x' { scene v1 { anchor a } } else { scene v1 } }
       }
     }`)
     expect(errors).toContain('The first scene in a story has no prior scene to anchor against')
+    expect(errors).toContain('"alt" is not yet supported in stories')
   })
 
   it('accepts anchor on a scene that is first inside an alt branch but has an earlier predecessor overall', async ({ expect, validate }) => {
+    // `alt` usage here is incidental — the point is the anchor check does not fire, since the
+    // scene has an earlier predecessor overall. `alt` itself is still rejected regardless.
     const { errors } = await validate(`${preamble}
       story s {
         scene v1
         alt { when 'x' { scene v1 { anchor a } } else { scene v1 } }
       }
     }`)
-    expect(errors).toEqual([])
+    expect(errors).toEqual(['"alt" is not yet supported in stories'])
   })
 
   it('warns when a scene view id appears more than once in the story\'s traversal order', async ({ expect, validate }) => {
-    // Mirrors examples/cloud-system/story.c4's own `alt` block: the same view referenced from a
-    // top-level scene and again from both `alt` branches.
+    // `alt` is still the only way to construct a repeated-view-id scenario in this test file —
+    // the same view referenced from a top-level scene and again from an `alt` branch. `alt`
+    // itself is now also rejected; this test asserts the repeated-view-id warning still fires
+    // alongside that rejection.
     const { errors, warnings } = await validate(`${preamble}
       story s {
         scene v1
         alt { when 'x' { scene v1 } else { scene v2 } }
       }
     }`)
-    expect(errors).toEqual([])
+    expect(errors).toEqual(['"alt" is not yet supported in stories'])
     expect(warnings).toContain(
       'Scene \'v1\' appears more than once in this story\'s traversal order. Scene stepping, boundary detection, and anchors cannot currently distinguish between the occurrences — see docs/superpowers/plans/2026-08-04-story-scene-anchor.md.',
     )
