@@ -1,6 +1,7 @@
 import { css } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import {
+  type TooltipProps,
   Popover,
   PopoverDropdown,
   PopoverTarget,
@@ -50,7 +51,7 @@ const Action = ({
   </Tooltip>
 )
 
-export function manualLayoutTooltipProps(isPopoverOpen: boolean): { opened?: false } {
+export function manualLayoutTooltipProps(isPopoverOpen: boolean): Pick<TooltipProps, 'opened'> {
   return isPopoverOpen ? { opened: false } : {}
 }
 
@@ -60,6 +61,8 @@ export const ManualLayoutToolsButton = memo(() => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   return (
     <Popover
+      opened={isPopoverOpen}
+      onChange={setIsPopoverOpen}
       position="right"
       offset={{
         mainAxis: 12,
@@ -67,8 +70,6 @@ export const ManualLayoutToolsButton = memo(() => {
       clickOutsideEvents={[
         'pointerdown',
       ]}
-      onOpen={() => setIsPopoverOpen(true)}
-      onClose={() => setIsPopoverOpen(false)}
       {...portalProps}>
       <PopoverTarget>
         <Tooltip label="Manual layouting tools" {...manualLayoutTooltipProps(isPopoverOpen)}>
