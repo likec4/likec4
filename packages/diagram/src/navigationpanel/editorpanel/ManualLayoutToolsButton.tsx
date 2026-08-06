@@ -17,7 +17,7 @@ import {
   IconLayoutCollage,
   IconRouteOff,
 } from '@tabler/icons-react'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import type { MouseEventHandler, ReactNode } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
@@ -50,9 +50,14 @@ const Action = ({
   </Tooltip>
 )
 
+export function manualLayoutTooltipProps(isPopoverOpen: boolean) {
+  return isPopoverOpen ? { opened: false as const } : {}
+}
+
 export const ManualLayoutToolsButton = memo(() => {
   const diagram = useDiagram()
   const portalProps = useMantinePortalProps()
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   return (
     <Popover
       position="right"
@@ -62,9 +67,11 @@ export const ManualLayoutToolsButton = memo(() => {
       clickOutsideEvents={[
         'pointerdown',
       ]}
+      onOpen={() => setIsPopoverOpen(true)}
+      onClose={() => setIsPopoverOpen(false)}
       {...portalProps}>
       <PopoverTarget>
-        <Tooltip label="Manual layouting tools">
+        <Tooltip label="Manual layouting tools" {...manualLayoutTooltipProps(isPopoverOpen)}>
           <PanelActionIcon>
             <IconLayoutCollage />
           </PanelActionIcon>
