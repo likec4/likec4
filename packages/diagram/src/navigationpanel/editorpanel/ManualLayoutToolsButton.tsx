@@ -50,8 +50,8 @@ const Action = ({
   </Tooltip>
 )
 
-export function manualLayoutTooltipProps(isPopoverOpen: boolean) {
-  return isPopoverOpen ? { opened: false as const } : {}
+export function manualLayoutTooltipProps(isPopoverOpen: boolean): { opened?: false } {
+  return isPopoverOpen ? { opened: false } : {}
 }
 
 export const ManualLayoutToolsButton = memo(() => {
