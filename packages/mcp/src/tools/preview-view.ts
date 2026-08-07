@@ -2,6 +2,7 @@ import { fromSources } from '@likec4/language-services/node'
 import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
+import { randomUUID } from 'node:crypto'
 import { relative, sep } from 'node:path'
 import * as z from 'zod/v3'
 import { useLanguageServices } from '../ctx'
@@ -106,7 +107,8 @@ Use "preview-view" to iterate on a new view definition before creating it for re
         const filePath = toVirtualSourcePath(project.folder.fsPath, uri.fsPath, `seed-${index}.c4`)
         sources[filePath] = languageServices.documentText(uri.toString()) ?? ''
       }
-      sources['preview-view.c4'] = wrapAsViewsBlock(args.dsl)
+      const previewSourcePath = `${randomUUID()}.c4`
+      sources[previewSourcePath] = wrapAsViewsBlock(args.dsl)
 
       // Build a separate production instance from virtual sources to keep preview isolated.
       await using preview = await fromSources(sources, {

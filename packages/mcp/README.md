@@ -86,7 +86,7 @@ We are always happy to help you get started:
 ## Contributors
 
 <a href="https://github.com/likec4/likec4/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=likec4/likec4" />
+  <img src="https://contrib.rocks/image?repo=likec4/likec4" alt="LikeC4 contributors" />
 </a>
 
 [Become a contributor](../../CONTRIBUTING.md)

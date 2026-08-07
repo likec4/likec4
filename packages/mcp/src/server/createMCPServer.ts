@@ -49,7 +49,7 @@ Available tools:
 - read-deployment — Details of a deployment node or deployed instance. Input: { id, project? }.
 - read-view — Full view details (nodes/edges) and sourceLocation. Input: { viewId, project? }.
 - render-view — Renders a view as an interactive diagram (pan/zoom/fit) inline in chat, for hosts that support MCP Apps. Input: { viewId, project? }.
-- preview-view — Renders a preview of a LikeC4 view defined by DSL text, in the context of an existing project's real elements, without saving to disk. If the DSL's view id matches an existing view, that view is previewed with its replaced definition; otherwise it's previewed as a new draft. Input: { dsl, project? }.
+- preview-view — Renders a preview of a LikeC4 view defined by DSL text, in the context of an existing project's real elements, without saving to disk. The view id must be new: if it already exists, the tool returns an error and asks for a different id. Input: { dsl, project? }.
 - find-relationships — Direct and indirect relationships between two elements in a project. Input: { element1, element2, project? }.
 - query-graph — Query element hierarchy (ancestors, descendants, siblings, children, parent) and relationships (incomers, outgoers). Input: { elementId, queryType, includeIndirect?, project? }.
 - query-incomers-graph — Get complete graph of all upstream dependencies/producers (recursive incomers). Much more efficient than repeated query-graph calls. Input: { elementId, includeIndirect?, maxDepth?, maxNodes?, project? }.
