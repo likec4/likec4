@@ -24,7 +24,7 @@ Tudo adaptado às suas necessidades.
 
 ## Como é o LikeC4 na prática?
 
-Código-fonte do LikeC4:
+Código-fonte em LikeC4:
 
 <div align="center">
   <img src="https://github.com/likec4/.github/assets/824903/c0f22106-dba6-469e-ab47-85e7b8565513" width="675px">
@@ -66,7 +66,7 @@ Estamos sempre disponíveis para ajudar você a começar:
 
 ## Apoie o desenvolvimento
 
-O LikeC4 é um projeto open source sob a licença MIT, e sua evolução contínua só é possível graças ao apoio da comunidade.\
+O LikeC4 é um projeto de código aberto sob a licença MIT, e seu desenvolvimento contínuo só é possível graças ao seu apoio.\
 Se você gosta do projeto, considere contribuir financeiramente para ajudar no seu crescimento e aprimoramento.\
 Você pode apoiar o projeto pelo [OpenCollective](https://opencollective.com/likec4) ou pelo [GitHub Sponsors](https://github.com/sponsors/likec4).
 
