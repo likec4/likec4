@@ -4,7 +4,7 @@
 
 Visualize, colabore e evolua sua arquitetura de software com diagramas dinâmicos e sempre atualizados, gerados a partir do seu código.
 
-[Documentação](https://likec4.dev/) - [Playground](https://playground.likec4.dev/) - [Demonstração](https://template.likec4.dev/view/index)
+[Documentação](https://likec4.dev/pt-br/) - [Playground](https://playground.likec4.dev/) - [Demonstração](https://template.likec4.dev/view/index)
 
 <a href="https://www.npmjs.com/package/likec4" target="_blank"> ![Versão no NPM](https://img.shields.io/npm/v/likec4) </a>
 <a href="https://www.npmjs.com/package/likec4" target="_blank">![Downloads no NPM](https://img.shields.io/npm/dm/likec4)</a>
@@ -47,7 +47,7 @@ Disponível em — [https://template.likec4.dev](https://template.likec4.dev/vie
 
 [![Abrir no StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/likec4/template)
 
-Confira o [Tutorial](https://likec4.dev/tutorial/) para ter uma visão geral rápida do LikeC4.
+Confira o [Tutorial](https://likec4.dev/pt-br/tutorial/) para ter uma visão geral rápida do LikeC4.
 
 ## Como obter ajuda
 
