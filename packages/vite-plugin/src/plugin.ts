@@ -28,6 +28,7 @@ import { projectPumlModule, pumlModule } from './virtuals/puml'
 import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { rpcModule } from './virtuals/rpc'
 import { singleProjectModule } from './virtuals/single-project'
+import { projectWebcomponentsModule } from './virtuals/webcomponents'
 
 export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
   /**
@@ -166,6 +167,7 @@ const hmrProjectVirtuals = [
 const projectVirtuals = [
   ...hmrProjectVirtuals,
   projectReactModule,
+  projectWebcomponentsModule,
 ]
 
 const _virtuals = [

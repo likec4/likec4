@@ -171,6 +171,15 @@ declare module 'likec4:react/*' {
   export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types>): JSX.Element
 }
 
+declare module 'likec4:webcomponents/*' {
+  /**
+   * Defines a custom element that renders views from this LikeC4 project.
+   *
+   * Calling this function repeatedly with the same name is safe.
+   */
+  export function defineWebcomponent(name: string): CustomElementConstructor
+}
+
 declare module 'likec4:rpc' {
   import type { LikeC4VitePluginRpc } from 'likec4/vite-plugin/internal'
 

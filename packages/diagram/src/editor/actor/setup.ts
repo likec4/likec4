@@ -45,7 +45,11 @@ export namespace EditorCalls {
     /**
      * Returns the changes that were applied to the view
      */
-    export type Output = { requested: t.ViewChange[]; applied: t.ViewChange[] }
+    export type Output = {
+      requested: t.ViewChange[]
+      applied: t.ViewChange[]
+      waitForViewSync: boolean
+    }
   }
 }
 

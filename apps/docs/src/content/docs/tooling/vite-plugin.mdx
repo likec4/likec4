@@ -232,6 +232,32 @@ const example = () => (
 ```
 <br />
 
+### Web components
+
+Use a project-scoped `likec4:webcomponents/*` virtual module to render a LikeC4 view in HTML without adding
+React components to your application code:
+
+```ts
+import { defineWebcomponent } from 'likec4:webcomponents/project-a'
+
+defineWebcomponent('likec4-view-project-a')
+```
+
+The custom element supports the same attributes as generated LikeC4 web components:
+
+```html
+<likec4-view-project-a
+  view-id="index"
+  browser="true"
+  dynamic-variant="sequence"
+  color-scheme="dark">
+</likec4-view-project-a>
+```
+
+The project id in the import must match a project from your LikeC4 workspace. The custom element name must follow the
+[custom element naming rules](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names),
+including at least one hyphen.
+
 ### Usage with API
 
 It is also possible to initiate using [LikeC4 API](/tooling/model-api):

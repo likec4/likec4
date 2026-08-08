@@ -314,6 +314,9 @@ const process = machine.createStateConfig({
                 },
               )
             }
+            if (!event.output.waitForViewSync) {
+              enqueue.raise({ type: 'view.synched' })
+            }
           }),
           target: 'waitViewSynced',
         },
