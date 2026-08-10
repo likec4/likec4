@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+specification {
+  element system
+}
+
+model {
+  app = system "Application" {
+    -> api "uses"
+  }
+
+  api = system "API"
+}
+
+views {
+  view index {
+    include *
+  }
+}
