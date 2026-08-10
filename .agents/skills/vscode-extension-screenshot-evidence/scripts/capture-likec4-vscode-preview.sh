@@ -14,7 +14,7 @@ Options:
   --command "LikeC4: Open Preview"  VS Code command palette text to run.
   --wait-seconds 18                 Seconds to wait after selecting the view.
   --window-size 1280x900            Screenshot window size.
-  --allow-live-display              Allow running on common live desktop DISPLAY values.
+  --allow-live-display              Allow running with an unverified DISPLAY value.
   --keep-temp                       Keep temporary VS Code user-data dirs for debugging.
 USAGE
 }
@@ -96,15 +96,31 @@ if [[ -z "${DISPLAY:-}" ]]; then
   exit 1
 fi
 
-case "$DISPLAY" in
-  :0|:0.*|:1|:1.*)
-    if [[ "$allow_live_display" != "true" ]]; then
-      echo "Refusing to run against likely live desktop DISPLAY=$DISPLAY." >&2
-      echo "Run under xvfb-run -a -s '-screen 0 1280x1024x24', or pass --allow-live-display for manual debugging." >&2
-      exit 1
-    fi
-    ;;
-esac
+is_isolated_xvfb_display() {
+  local display_number="${DISPLAY%%.*}"
+  local pid
+  local command
+  local arguments
+  local argument
+
+  [[ "$display_number" =~ ^:[0-9]+$ ]] || return 1
+
+  while read -r pid command; do
+    [[ "$command" == "Xvfb" ]] || continue
+    arguments="$(ps -p "$pid" -o args=)"
+    for argument in $arguments; do
+      [[ "$argument" == "$display_number" ]] && return 0
+    done
+  done < <(ps -eo pid=,comm=)
+
+  return 1
+}
+
+if ! is_isolated_xvfb_display && [[ "$allow_live_display" != "true" ]]; then
+  echo "DISPLAY=$DISPLAY is not verified as an isolated Xvfb display." >&2
+  echo "Run under xvfb-run -a -s '-screen 0 1280x1024x24', or pass --allow-live-display for manual debugging." >&2
+  exit 1
+fi
 
 if [[ ! -d "$fixture" ]]; then
   echo "Fixture folder does not exist: $fixture" >&2

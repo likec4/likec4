@@ -36,7 +36,7 @@ command -v file
 xvfb-run -a -s "-screen 0 1280x1024x24" ...
 ```
 
-The helper script refuses common live-desktop displays such as `:0` and `:1` unless `--allow-live-display` is passed for manual debugging. Do not use live-desktop captures as PR evidence unless you have cropped or redacted them.
+The helper script runs without `--allow-live-display` only when it verifies that `DISPLAY` belongs to an active Xvfb process. All other display values, including `:2` and remote displays, require `--allow-live-display` for manual debugging. Do not use live-desktop captures as PR evidence unless you have cropped or redacted them.
 
 ## Build the extension under test
 
@@ -148,6 +148,10 @@ mkdir -p pr-assets/prNNNN
 cp "$OUT/before-vscode.png" pr-assets/prNNNN/before-vscode.png
 cp "$OUT/after-vscode.png" pr-assets/prNNNN/after-vscode.png
 git add pr-assets/prNNNN/before-vscode.png pr-assets/prNNNN/after-vscode.png
+if ! git config user.name >/dev/null || ! git config user.email >/dev/null; then
+  echo "Set Git author identity before committing: git config user.name 'Your Name'; git config user.email 'you@example.com'" >&2
+  exit 1
+fi
 git commit -m "docs: add prNNNN vscode screenshots"
 git push origin HEAD:refs/heads/"$ASSET_BRANCH"
 ```
