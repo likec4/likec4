@@ -1,6 +1,7 @@
 import { css } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import {
+  type TooltipProps,
   Popover,
   PopoverDropdown,
   PopoverTarget,
@@ -17,7 +18,7 @@ import {
   IconLayoutCollage,
   IconRouteOff,
 } from '@tabler/icons-react'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import type { MouseEventHandler, ReactNode } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
@@ -50,11 +51,18 @@ const Action = ({
   </Tooltip>
 )
 
+export function manualLayoutTooltipProps(isPopoverOpen: boolean): Pick<TooltipProps, 'opened'> {
+  return isPopoverOpen ? { opened: false } : {}
+}
+
 export const ManualLayoutToolsButton = memo(() => {
   const diagram = useDiagram()
   const portalProps = useMantinePortalProps()
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   return (
     <Popover
+      opened={isPopoverOpen}
+      onChange={setIsPopoverOpen}
       position="right"
       offset={{
         mainAxis: 12,
@@ -64,7 +72,7 @@ export const ManualLayoutToolsButton = memo(() => {
       ]}
       {...portalProps}>
       <PopoverTarget>
-        <Tooltip label="Manual layouting tools">
+        <Tooltip label="Manual layouting tools" {...manualLayoutTooltipProps(isPopoverOpen)}>
           <PanelActionIcon>
             <IconLayoutCollage />
           </PanelActionIcon>
