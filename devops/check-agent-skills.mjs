@@ -35,6 +35,7 @@ const expectedClaudeSkillLinks = new Map([
   ['.claude/skills/likec4-issue-repro', '../../.agents/skills/likec4-issue-repro'],
   ['.claude/skills/likec4-project-config-workflow', '../../.agents/skills/likec4-project-config-workflow'],
   ['.claude/skills/refactor', '../../.agents/skills/refactor'],
+  ['.claude/skills/vscode-extension-screenshot-evidence', '../../.agents/skills/vscode-extension-screenshot-evidence'],
 ])
 
 const fail = message => failures.push(message)
@@ -43,6 +44,17 @@ const read = relativePath => readFileSync(absolute(relativePath), 'utf8').replac
 const gitPathJoin = (...segments) => path.posix.normalize(path.posix.join(...segments))
 const legacyLikeC4SkillMetadataFields = new Set([
   'disable-model-invocation',
+])
+const skillScriptSmokeChecks = new Map([
+  [
+    '.agents/skills/vscode-extension-screenshot-evidence/scripts/capture-likec4-vscode-preview.sh',
+    [
+      '--fixture',
+      '--extension-path',
+      '--output',
+      '--allow-live-display',
+    ],
+  ],
 ])
 
 const validateSkillFile = relativePath => {
@@ -85,6 +97,53 @@ const validateSkillFile = relativePath => {
 
   if (!body.trim()) {
     fail(`${relativePath} must contain a non-empty skill body after frontmatter`)
+  }
+}
+
+const validateSkillScript = (relativePath, expectedHelpFragments) => {
+  const entry = tracked.get(relativePath)
+  if (!entry) {
+    fail(`${relativePath} must be tracked`)
+    return
+  }
+
+  if (entry.mode !== '100755') {
+    fail(`${relativePath} must be tracked as executable, but git mode is ${entry.mode}`)
+    return
+  }
+
+  if (!existsSync(absolute(relativePath))) {
+    fail(`${relativePath} must exist`)
+    return
+  }
+
+  try {
+    execFileSync('bash', ['-n', absolute(relativePath)], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: 'pipe',
+    })
+  } catch (error) {
+    fail(`${relativePath} must pass bash -n: ${error.stderr || error.message}`)
+    return
+  }
+
+  let help
+  try {
+    help = execFileSync(absolute(relativePath), ['--help'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: 'pipe',
+    })
+  } catch (error) {
+    fail(`${relativePath} --help must exit successfully: ${error.stderr || error.message}`)
+    return
+  }
+
+  for (const fragment of expectedHelpFragments) {
+    if (!help.includes(fragment)) {
+      fail(`${relativePath} --help must mention ${fragment}`)
+    }
   }
 }
 
@@ -171,6 +230,10 @@ for (const skillFile of trackedSkillFiles) {
   if (!expectedClaudeSkillTargets.has(skillDir)) {
     fail(`${skillDir} is tracked but missing an explicit Claude skill symlink adapter`)
   }
+}
+
+for (const [scriptFile, expectedHelpFragments] of skillScriptSmokeChecks) {
+  validateSkillScript(scriptFile, expectedHelpFragments)
 }
 
 if (failures.length > 0) {

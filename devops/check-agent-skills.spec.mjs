@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { execFileSync, spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, it } from 'node:test'
@@ -20,6 +20,7 @@ const expectedClaudeSkillLinks = new Map([
   ['.claude/skills/likec4-issue-repro', '../../.agents/skills/likec4-issue-repro'],
   ['.claude/skills/likec4-project-config-workflow', '../../.agents/skills/likec4-project-config-workflow'],
   ['.claude/skills/refactor', '../../.agents/skills/refactor'],
+  ['.claude/skills/vscode-extension-screenshot-evidence', '../../.agents/skills/vscode-extension-screenshot-evidence'],
 ])
 
 afterEach(() => {
@@ -32,6 +33,11 @@ function writeFixtureFile(root, relativePath, content) {
   const file = path.join(root, relativePath)
   mkdirSync(path.dirname(file), { recursive: true })
   writeFileSync(file, content)
+}
+
+function writeFixtureExecutable(root, relativePath, content) {
+  writeFixtureFile(root, relativePath, content)
+  chmodSync(path.join(root, relativePath), 0o755)
 }
 
 function createSymlink(root, relativePath, target) {
@@ -63,6 +69,19 @@ function validSkill(name) {
   }---\n\n# ${name}\n\nUse this skill in tests.\n`
 }
 
+function validScreenshotScript() {
+  return `#!/usr/bin/env bash
+if [[ "\${1:-}" = "--help" ]]; then
+  echo "--fixture"
+  echo "--extension-path"
+  echo "--output"
+  echo "--allow-live-display"
+  exit 0
+fi
+exit 0
+`
+}
+
 function createFixture(customize) {
   const root = mkdtempSync(path.join(tmpdir(), 'likec4-agent-skills-check-'))
   tempRoots.push(root)
@@ -71,6 +90,16 @@ function createFixture(customize) {
 
   for (const [linkPath, target] of expectedClaudeSkillLinks) {
     writeFixtureFile(root, targetSkillPath(linkPath, target), validSkill(path.posix.basename(linkPath)))
+    if (path.posix.basename(linkPath) === 'vscode-extension-screenshot-evidence') {
+      writeFixtureExecutable(
+        root,
+        path.posix.join(
+          path.posix.dirname(targetSkillPath(linkPath, target)),
+          'scripts/capture-likec4-vscode-preview.sh',
+        ),
+        validScreenshotScript(),
+      )
+    }
     createSymlink(root, linkPath, target)
   }
 
@@ -204,6 +233,18 @@ describe('check-agent-skills', () => {
         )
       }),
       /\.agents\/skills\/likec4-cli-codegen-regression\/SKILL\.md must contain a non-empty skill body after frontmatter/,
+    )
+  })
+
+  it('rejects missing checked skill helper scripts', () => {
+    expectFail(
+      createFixture(root => {
+        removeFixturePath(
+          root,
+          '.agents/skills/vscode-extension-screenshot-evidence/scripts/capture-likec4-vscode-preview.sh',
+        )
+      }),
+      /vscode-extension-screenshot-evidence\/scripts\/capture-likec4-vscode-preview\.sh must be tracked/,
     )
   })
 })
