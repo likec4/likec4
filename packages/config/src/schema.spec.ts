@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, it } from 'vitest'
 import { validateProjectConfig as validateConfig } from './schema'
 import { ImageAliasesSchema } from './schema.image-alias'
@@ -80,6 +87,61 @@ describe('ProjectConfig schema', () => {
         const config = { name: 'test', exclude: ['**/node_modules/**', '**/dist/**'] }
         const result = validateConfig(config)
         expect(result.exclude).toEqual(['**/node_modules/**', '**/dist/**'])
+      })
+    })
+
+    describe('webapp field', () => {
+      it('should enable every export format when exportFormats is omitted', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          webapp: {},
+        })
+
+        expect(result.webapp?.exportFormats).toEqual(['png', 'jpg', 'dot', 'd2', 'mmd', 'puml', 'drawio'])
+      })
+
+      it('should preserve a configured export format allow-list', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          webapp: {
+            exportFormats: ['jpg', 'drawio', 'dot'],
+          },
+        })
+
+        expect(result.webapp?.exportFormats).toEqual(['jpg', 'drawio', 'dot'])
+      })
+
+      it('should allow disabling every webapp export format', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          webapp: {
+            exportFormats: [],
+          },
+        })
+
+        expect(result.webapp?.exportFormats).toEqual([])
+      })
+
+      it('should reject duplicate export formats', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            webapp: {
+              exportFormats: ['png', 'png'],
+            },
+          })
+        ).toThrow('Export formats cannot contain duplicates')
+      })
+
+      it('should reject unknown export formats', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            webapp: {
+              exportFormats: ['svg'],
+            },
+          })
+        ).toThrow()
       })
     })
 

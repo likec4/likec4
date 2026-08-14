@@ -5,6 +5,7 @@ export default defineConfig({
   entry: [
     'src/index.ts',
     'src/node/index.ts',
+    'src/webapp-export-formats.ts',
   ],
   platform: 'node',
   hooks: {

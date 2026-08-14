@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { LikeC4Model } from '@likec4/core/model'
 import { generateD2 } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
@@ -47,6 +54,7 @@ function code(model: LikeC4Model.Computed) {
 }
 
 export const projectD2Module: ProjectVirtualModule = {
+  exportFormat: 'd2',
   ...generateMatches('d2'),
   async load({ likec4, project }) {
     logGenerating('d2', project.id)
@@ -58,4 +66,4 @@ export const projectD2Module: ProjectVirtualModule = {
   },
 }
 
-export const d2Module = generateCombinedProjects('d2', 'loadD2Sources')
+export const d2Module = generateCombinedProjects('d2', 'loadD2Sources', 'd2')

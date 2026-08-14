@@ -116,7 +116,8 @@ async function downloadAsJpeg({
 export function ExportPage() {
   const [diagram] = useCurrentView()
   const { format } = useSearch({ strict: false })
-  const isJpeg = format === 'jpeg'
+  const imageFormat = format ?? 'png'
+  const isJpeg = imageFormat === 'jpeg'
 
   useTransparentBackground(!isJpeg)
 

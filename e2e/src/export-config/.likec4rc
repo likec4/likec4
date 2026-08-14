@@ -1,0 +1,7 @@
+{
+  name: 'export-config',
+  implicitViews: false,
+  webapp: {
+    exportFormats: ['png'],
+  },
+}
