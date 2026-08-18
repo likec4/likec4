@@ -9,12 +9,12 @@ import type {
 import { useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'
 
-const selectCompareLayoutState = ({ context }: DiagramActorSnapshot): {
+export const selectCompareLayoutState = ({ context }: DiagramActorSnapshot): {
   isEnabled: false
   hasEditor: false
   isEditable: false
   isActive: false
-  drifts: never
+  drifts: null
   canApplyLatest: boolean
   layout: t.LayoutType
 } | {
@@ -33,7 +33,7 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot): {
       isEnabled: false as const,
       isEditable: false as const,
       isActive: false as const,
-      drifts: null as never,
+      drifts: null,
       canApplyLatest: false,
       layout: context.view._layout ?? 'auto',
     })

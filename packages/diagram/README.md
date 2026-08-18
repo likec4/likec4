@@ -296,7 +296,10 @@ function LayoutControls() {
         {state.isActive ? 'Stop comparing' : 'Compare with latest'}
       </button>
       <button
-        disabled={state.layout === 'auto' || !state.canApplyLatest}
+        disabled={state.layout === 'auto' ||
+          !state.canApplyLatest ||
+          !state.hasEditor ||
+          !state.isEditable}
         onClick={actions.applyLatestToManual}
       >
         Apply latest
