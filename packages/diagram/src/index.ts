@@ -12,6 +12,7 @@ export {
   NodeConnectionBoundaryProvider,
   type NodeConnectionBoundaryRequest,
   type NodeConnectionBoundaryResolver,
+  useNodeConnectionBoundaryResolver,
 } from './context/NodeConnectionBoundary'
 
 export {
