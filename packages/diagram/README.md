@@ -329,6 +329,62 @@ function App() {
 > [!IMPORTANT]
 > Try to keep node renderers referentially stable.
 
+#### Custom relationship attachment points
+
+If a custom renderer's visible shape differs from its rectangular node bounds,
+wrap the diagram in `NodeConnectionBoundaryProvider`. The resolver receives the
+measured node bounds and the adjacent route point, and may return the point where
+the relationship should attach. Return `undefined` to keep the default boundary.
+
+```tsx
+import {
+  type NodeConnectionBoundaryResolver,
+  LikeC4Diagram,
+  NodeConnectionBoundaryProvider,
+} from '@likec4/diagram'
+
+const circularNodes = new Set(['customer'])
+
+const resolveConnectionBoundary: NodeConnectionBoundaryResolver = ({
+  nodeId,
+  nodeBounds,
+  toward,
+}) => {
+  if (!circularNodes.has(nodeId)) {
+    return undefined
+  }
+
+  const center = {
+    x: nodeBounds.x + nodeBounds.width / 2,
+    y: nodeBounds.y + nodeBounds.height / 2,
+  }
+  const direction = {
+    x: toward.x - center.x,
+    y: toward.y - center.y,
+  }
+  const length = Math.hypot(direction.x, direction.y)
+  if (length === 0) {
+    return undefined
+  }
+  const radius = Math.min(nodeBounds.width, nodeBounds.height) / 2
+  return {
+    x: center.x + direction.x / length * radius,
+    y: center.y + direction.y / length * radius,
+  }
+}
+
+function App() {
+  return (
+    <NodeConnectionBoundaryProvider resolver={resolveConnectionBoundary}>
+      <LikeC4Diagram view={view} renderNodes={renderNodes} />
+    </NodeConnectionBoundaryProvider>
+  )
+}
+```
+
+The resolver applies to auto-layout paths and manually edited relationship
+routes, including while a waypoint is being moved.
+
 ### Custom styles
 
 LikeC4Diagram uses [PandaCSS](https://panda-css.com) for styling. You can use it to customize the styles.

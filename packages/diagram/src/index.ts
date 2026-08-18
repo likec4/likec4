@@ -8,6 +8,13 @@
 export { IconRendererProvider } from './context/IconRenderer'
 
 export {
+  type NodeConnectionBoundaryEnd,
+  NodeConnectionBoundaryProvider,
+  type NodeConnectionBoundaryRequest,
+  type NodeConnectionBoundaryResolver,
+} from './context/NodeConnectionBoundary'
+
+export {
   LikeC4Diagram,
   type LikeC4DiagramProps,
 } from './LikeC4Diagram'
