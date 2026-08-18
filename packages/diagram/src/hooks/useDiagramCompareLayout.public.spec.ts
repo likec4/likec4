@@ -1,6 +1,10 @@
 import type { LayoutedViewDriftReason } from '@likec4/core/types'
-import { describe, expect, it } from 'vitest'
-import { useDiagramCompareLayout as publicHook } from '../index'
+import { describe, expect, expectTypeOf, it } from 'vitest'
+import {
+  type DiagramCompareLayoutOps,
+  type DiagramCompareLayoutState,
+  useDiagramCompareLayout as publicHook,
+} from '../index'
 import type { DiagramActorSnapshot } from '../likec4diagram/state/types'
 import {
   selectCompareLayoutState,
@@ -36,6 +40,10 @@ const snapshot = ({
 describe('useDiagramCompareLayout public API', () => {
   it('exports the built-in manual-layout controller from the package root', () => {
     expect(publicHook).toBe(internalHook)
+    expectTypeOf<ReturnType<typeof publicHook>>().toEqualTypeOf<[
+      DiagramCompareLayoutState,
+      DiagramCompareLayoutOps,
+    ]>()
   })
 
   it('returns null drifts when comparison is unavailable', () => {
