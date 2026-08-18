@@ -7,7 +7,6 @@ import type {
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
-import { bezierControlPoints, isSamePoint } from '../../utils/xyflow'
 import type { DiagramContext } from './types'
 
 export function createViewChange(
@@ -24,7 +23,6 @@ export function createViewChange(
   } = parentContext
 
   const { nodeLookup, edgeLookup } = xystore.getState()
-  const movedNodes = new Set<string>()
 
   const nodes = map(view.nodes, (node): DiagramNode => {
     const internal = nodeLookup.get(node.id)
@@ -35,14 +33,6 @@ export function createViewChange(
     const xynodedata = xynodes.find(n => n.data.id === node.id)?.data ?? internal.data
     const position = internal.internals.positionAbsolute
     const { width, height } = getNodeDimensions(internal)
-
-    const isChanged = !isSamePoint(position, node)
-      || node.width !== width
-      || node.height !== height
-
-    if (isChanged) {
-      movedNodes.add(node.id)
-    }
 
     return {
       ...node,
@@ -65,12 +55,7 @@ export function createViewChange(
       return edge
     }
     const data = xyedge.data
-    let controlPoints = data.controlPoints ?? []
-    const sourceOrTargetMoved = movedNodes.has(xyedge.source) || movedNodes.has(xyedge.target)
-    // If edge control points are not set, but the source or target node was moved
-    if (controlPoints.length === 0 && sourceOrTargetMoved) {
-      controlPoints = bezierControlPoints(data.points)
-    }
+    const controlPoints = data.controlPoints ?? []
     const _updated: DiagramEdge = {
       ...edge,
       points: data.points,
