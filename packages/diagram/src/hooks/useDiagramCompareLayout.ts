@@ -55,8 +55,14 @@ const selectCompareLayoutState = ({ context }: DiagramActorSnapshot): {
   })
 }
 
+/**
+ * Current manual-layout comparison state exposed by {@link useDiagramCompareLayout}.
+ */
 export type DiagramCompareLayoutState = ReturnType<typeof selectCompareLayoutState>
 
+/**
+ * Manual-layout actions exposed by {@link useDiagramCompareLayout}.
+ */
 export type DiagramCompareLayoutOps = {
   /**
    * Toggles the compare mode on or off.
@@ -78,6 +84,11 @@ export type DiagramCompareLayoutOps = {
   resetManualLayout: () => void
 }
 
+/**
+ * Controls LikeC4's manual-layout comparison from custom diagram children.
+ *
+ * The hook must be called by a component rendered inside {@link LikeC4Diagram}.
+ */
 export function useDiagramCompareLayout(): [
   DiagramCompareLayoutState,
   DiagramCompareLayoutOps,
