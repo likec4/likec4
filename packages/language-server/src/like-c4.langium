@@ -73,7 +73,7 @@ SpecificationDeploymentNodeKind:
 
 SpecificationTag:
   'tag' tag=Tag ('{'
-    ('color' color=ColorLiteral)?
+    ('color' (ColorRef | color=ColorLiteral))?
   '}')?;
 
 SpecificationColor:
@@ -981,8 +981,12 @@ type FqnReferenceable = Referenceable | Element | ExtendElement | ExtendDeployme
 
 LinkProperty:
   key='link' ':'? value=Uri title=String? ';'?;
+
+fragment ColorRef:
+  themeColor=ThemeColor | customColor=[CustomColor:CustomColorId];
+
 ColorProperty:
-  key='color' ':'? (themeColor=ThemeColor | customColor=[CustomColor:CustomColorId]) ';'?;
+  key='color' ':'? ColorRef ';'?;
 
 OpacityProperty:
   key='opacity' ':'? value=Percent ';'?;
@@ -995,7 +999,7 @@ IconProperty:
   key='icon' ':'? (libicon=[LibIcon:IconId] | value=('none'|Uri)) ';'?;
 
 IconColorProperty:
-  key='iconColor' ':'? (themeColor=ThemeColor | customColor=[CustomColor:CustomColorId]) ';'?;
+  key='iconColor' ':'? ColorRef ';'?;
 
 IconSizeProperty:
   key='iconSize' ':'? value=SizeValue ';'?;

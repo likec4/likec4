@@ -70,7 +70,7 @@ export type ParsedElementStyle = {
 export interface ParsedAstSpecification {
   tags: Record<c4.Tag, {
     astPath: string
-    color?: c4.ColorLiteral
+    color?: c4.TagSpecification['color']
   }>
   elements: Record<c4.ElementKind, c4.ElementSpecification>
   relationships: Record<c4.RelationshipKind, c4.RelationshipSpecification>
@@ -381,7 +381,9 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
   return result
 }
 
-export function toColor(astNode: ast.ColorProperty | ast.IconColorProperty): c4.Color | undefined {
+export function toColor(
+  astNode: ast.ColorProperty | ast.IconColorProperty | ast.SpecificationTag,
+): c4.Color | undefined {
   return astNode?.themeColor ?? (astNode?.customColor?.$refText as (c4.CustomColor | undefined))
 }
 

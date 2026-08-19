@@ -221,8 +221,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       mark.property('name').readonly.declaration.type()
     })
     when(ast.isSpecificationTag, mark => {
-      if (isTruthy(mark.node.color)) {
+      if (isTruthy(mark.node.color) || isTruthy(mark.node.themeColor) || isTruthy(mark.node.customColor)) {
         mark.keyword('color').property()
+      }
+      if (isTruthy(mark.node.customColor)) {
+        mark.property('customColor').enum()
+      }
+      if (isTruthy(mark.node.themeColor)) {
+        mark.property('themeColor').enum()
       }
     })
     when(

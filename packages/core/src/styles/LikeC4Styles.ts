@@ -18,6 +18,7 @@ import { styleDefaults } from './defaults'
 import { defaultTheme } from './theme'
 import type {
   ColorLiteral,
+  CustomColor,
   CustomColorDefinitions,
   ElementColorValues,
   IconSize,
@@ -249,7 +250,7 @@ export class LikeC4Styles {
   /**
    * Get color values for a tag (including default tag colors)
    */
-  tagColor(tag: typeof DefaultTagColors[number] | ThemeColor | ColorLiteral): ThemeColorValues['elements'] {
+  tagColor(tag: typeof DefaultTagColors[number] | ThemeColor | CustomColor | ColorLiteral): ThemeColorValues['elements'] {
     if (this.isThemeColor(tag)) {
       return this.theme.colors[tag].elements
     }
