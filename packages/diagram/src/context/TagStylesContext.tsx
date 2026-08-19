@@ -6,7 +6,7 @@ import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
 import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 import { useLikeC4Styles } from '../hooks/useLikeC4Styles'
 
-const radixColors = DefaultTagColors as unknown as string[]
+const radixColors: readonly string[] = DefaultTagColors
 
 export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles = LikeC4Styles.DEFAULT): string {
   const color = spec.color
