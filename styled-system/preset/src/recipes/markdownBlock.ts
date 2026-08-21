@@ -181,6 +181,86 @@ export const markdownBlock = defineRecipe({
       color: 'inherit',
       border: '0',
     },
+    '& :where(pre .code-line)': {
+      display: 'block',
+      minWidth: 'max-content',
+      marginInline: '-0.75rem',
+      paddingInline: '0.75rem',
+    },
+    '& :where(pre .code-line.inserted)': {
+      backgroundColor: {
+        base: 'rgba(26, 127, 55, 0.14)',
+        _dark: 'rgba(46, 160, 67, 0.18)',
+      },
+      boxShadow: 'inset 3px 0 #2da44e',
+    },
+    '& :where(pre .code-line.deleted)': {
+      backgroundColor: {
+        base: 'rgba(207, 34, 46, 0.12)',
+        _dark: 'rgba(248, 81, 73, 0.18)',
+      },
+      boxShadow: 'inset 3px 0 #cf222e',
+    },
+    '& :where(pre .token.comment, pre .token.prolog, pre .token.doctype, pre .token.cdata)': {
+      color: {
+        base: '#6e7781',
+        _dark: '#8b949e',
+      },
+    },
+    '& :where(pre .token.punctuation)': {
+      color: {
+        base: '#57606a',
+        _dark: '#c9d1d9',
+      },
+    },
+    '& :where(pre .token.property, pre .token.tag, pre .token.constant, pre .token.symbol, pre .token.deleted)': {
+      color: {
+        base: '#cf222e',
+        _dark: '#ff7b72',
+      },
+    },
+    '& :where(pre .token.boolean, pre .token.number)': {
+      color: {
+        base: '#0550ae',
+        _dark: '#79c0ff',
+      },
+    },
+    '& :where(pre .token.selector, pre .token.attr-name, pre .token.string, pre .token.char, pre .token.builtin, pre .token.inserted)': {
+      color: {
+        base: '#116329',
+        _dark: '#a5d6ff',
+      },
+    },
+    '& :where(pre .token.operator, pre .token.entity, pre .token.url)': {
+      color: {
+        base: '#953800',
+        _dark: '#ffa657',
+      },
+    },
+    '& :where(pre .token.atrule, pre .token.attr-value, pre .token.function, pre .token.class-name)': {
+      color: {
+        base: '#8250df',
+        _dark: '#d2a8ff',
+      },
+    },
+    '& :where(pre .token.keyword)': {
+      color: {
+        base: '#cf222e',
+        _dark: '#ff7b72',
+      },
+    },
+    '& :where(pre .token.regex, pre .token.important, pre .token.variable)': {
+      color: {
+        base: '#0a3069',
+        _dark: '#a5d6ff',
+      },
+    },
+    '& :where(pre .token.important, pre .token.bold)': {
+      fontWeight: 'bold',
+    },
+    '& :where(pre .token.italic)': {
+      fontStyle: 'italic',
+    },
 
     '& :where(ul, ol):not([data-type="taskList"])': {
       marginBottom: 'var(--typography-spacing)',
