@@ -137,7 +137,7 @@ describe('markdownToHtml', () => {
   })
 
   it('should preserve diff styling when the source language is unknown', () => {
-    const html = markdownToHtml('```diff-not-a-language\n- old\n+ new\n```')
+    const html: string = markdownToHtml('```diff-not-a-language\n- old\n+ new\n```')
 
     expect(html).toContain('<span class="code-line deleted">- old')
     expect(html).toContain('<span class="code-line inserted">+ new')
