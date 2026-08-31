@@ -1168,4 +1168,99 @@ describe('LikeC4CompletionProvider', () => {
       ],
     })
   })
+
+  // Issue #3091 - completion items must carry an explicit textEdit,
+  // otherwise clients relying on insertText duplicate the typed keyword ("modelmodel")
+  it('should not duplicate typed keyword in snippet completions', async ({ expect, completion }) => {
+    const text = `mod<|>`
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        const item = completions.items.find(i => i.label === 'model')
+        expect(item, 'expected a "model" completion item').toBeDefined()
+        // The typed prefix `mod` must be replaced, not appended to
+        expect(item!.textEdit).toEqual({
+          newText: 'model {\n\t$0\n}',
+          range: {
+            start: { line: 0, character: 0 },
+            end: { line: 0, character: 3 },
+          },
+        })
+        // insertText must never be the sole carrier of the snippet, otherwise
+        // clients that ignore textEdit insert at the cursor and duplicate the keyword
+        expect(item!.insertText).toBeUndefined()
+      },
+    })
+  })
+
+  it('should not duplicate typed keyword in property completions', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          titl<|>
+        }
+      }
+    `
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        const item = completions.items.find(i => i.label === 'title')
+        expect(item, 'expected a "title" completion item').toBeDefined()
+        // The typed prefix `titl` must be replaced, not appended to
+        expect(item!.textEdit).toMatchObject({
+          newText: `title '$0'`,
+          range: {
+            start: { line: 6, character: 10 },
+            end: { line: 6, character: 14 },
+          },
+        })
+        expect(item!.insertText).toBeUndefined()
+      },
+    })
+  })
+
+  it('should not duplicate typed keyword in predicate completions', async ({ expect, completion }) => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        component c1
+      }
+      views {
+        view v1 {
+          inc<|>
+        }
+        view v2 {
+          include *
+          exc<|>
+        }
+      }
+    `
+    // `include` is on line 9, `exclude` on line 13
+    for (const [index, [keyword, line]] of ([['include', 9], ['exclude', 13]] as const).entries()) {
+      await completion({
+        text,
+        index,
+        assert: completions => {
+          const item = completions.items.find(i => i.label === keyword)
+          expect(item, `expected an "${keyword}" completion item`).toBeDefined()
+          // The typed 3-char prefix must be replaced, not appended to
+          expect(item!.textEdit).toMatchObject({
+            newText: `${keyword} `,
+            range: {
+              start: { line, character: 10 },
+              end: { line, character: 13 },
+            },
+          })
+          expect(item!.insertText).toBeUndefined()
+        },
+      })
+    }
+  })
 })
