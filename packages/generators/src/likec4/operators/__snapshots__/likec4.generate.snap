@@ -30,8 +30,12 @@ specification {
     line dotted
   }
   
-  tag external
-  tag internal
+  tag external {
+    color tomato
+  }
+  tag internal {
+    color grass
+  }
 }
 
 model {

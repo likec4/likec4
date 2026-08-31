@@ -38,11 +38,7 @@ export const relationship = z
 
 export const tagSpec = z
   .object({
-    color: z
-      .string()
-      .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/)
-      .optional()
-      .catch(undefined),
+    color: common.color.nullable(),
   })
   .partial()
   .transform(pickBy(isNonNullish))
