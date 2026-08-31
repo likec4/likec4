@@ -619,20 +619,21 @@ export function $expr(expr: Expression | ModelExpression<$Aux>): ModelExpression
       selector: 'expanded',
     }
   }
-  if (expr.endsWith('.*')) {
-    return {
-      ref: {
-        model: expr.replace('.*', '') as aux.Fqn<$Aux>,
-      },
-      selector: 'children',
-    }
-  }
+  // Check `.**` before `.*`, otherwise descendants are parsed as children
   if (expr.endsWith('.**')) {
     return {
       ref: {
         model: expr.replace('.**', '') as aux.Fqn<$Aux>,
       },
       selector: 'descendants',
+    }
+  }
+  if (expr.endsWith('.*')) {
+    return {
+      ref: {
+        model: expr.replace('.*', '') as aux.Fqn<$Aux>,
+      },
+      selector: 'children',
     }
   }
   return {

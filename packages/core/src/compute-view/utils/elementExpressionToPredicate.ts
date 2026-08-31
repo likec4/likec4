@@ -35,10 +35,15 @@ export function elementExprToPredicate<T extends { id: string; tags: readonly st
         return n.id === fqn || parentFqn(n.id) === fqn
       }
     }
-    if (target.selector === 'descendants' || target.selector === 'children') {
+    if (target.selector === 'descendants') {
       const fqnWithDot = fqn + '.'
       return (n) => {
         return n.id.startsWith(fqnWithDot)
+      }
+    }
+    if (target.selector === 'children') {
+      return (n) => {
+        return parentFqn(n.id) === fqn
       }
     }
     return (n) => {
