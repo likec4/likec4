@@ -1,0 +1,16 @@
+specification {
+  element system
+}
+
+model {
+  thing = system 'Thing'
+  other = system 'Other' {
+    -> thing 'uses'
+  }
+}
+
+views {
+  view index {
+    include *
+  }
+}
