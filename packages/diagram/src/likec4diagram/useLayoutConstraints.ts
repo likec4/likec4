@@ -14,7 +14,7 @@ import { useMemo, useRef } from 'react'
 import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
-import { bezierControlPoints, vector } from '../utils'
+import { vector } from '../utils'
 import { nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
@@ -195,7 +195,7 @@ function makeRelativeEdgeModifier(
   anchorNode: BBox,
   staticNode: BBox,
 ): EdgeModifier {
-  const controlPoints = edge.data.controlPoints ?? bezierControlPoints(edge.data.points)
+  const controlPoints = edge.data.controlPoints
   const anchorV = vector(BBox.center(anchorNode))
   const staticV = vector(BBox.center(staticNode))
 
@@ -219,6 +219,9 @@ function makeRelativeEdgeModifier(
     const d = vector(dx, dy)
 
     const relativePoint = (pt: { x: number; y: number }) => {
+      if (staticToAnchorLength === 0) {
+        return { x: pt.x, y: pt.y }
+      }
       const point = vector(pt)
       const staticToP = point.subtract(staticV)
       const projLength = staticToP.dot(staticToAnchor)
@@ -243,7 +246,15 @@ function makeRelativeEdgeModifier(
       id: edge.id,
       type: 'replace',
       item: produce(current, draft => {
-        draft.data.controlPoints = controlPoints.map(relativePoint)
+        if (controlPoints) {
+          draft.data.controlPoints = controlPoints.map(relativePoint)
+        } else {
+          draft.data.points = map(edge.data.points, ([x, y]) => {
+            const point = relativePoint({ x, y })
+            return [point.x, point.y] satisfies [number, number]
+          })
+          draft.data.controlPoints = controlPoints
+        }
 
         if (edge.data.labelBBox) {
           draft.data.labelBBox ??= edge.data.labelBBox
