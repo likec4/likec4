@@ -272,6 +272,59 @@ function App() {
 }
 ```
 
+### Manual layout controls
+
+Use `useDiagramCompareLayout` in a component rendered inside `LikeC4Diagram`
+to place the built-in manual-layout behavior in custom application chrome. The
+hook provides comparison availability and activity, drift reasons, the current
+layout type, whether the latest model can be applied, and the corresponding
+actions.
+
+```tsx
+import { LikeC4Diagram, useDiagramCompareLayout } from '@likec4/diagram'
+
+function LayoutControls() {
+  const [state, actions] = useDiagramCompareLayout()
+
+  if (!state.isEnabled) {
+    return null
+  }
+
+  return (
+    <div>
+      <button onClick={() => actions.toggleCompare()}>
+        {state.isActive ? 'Stop comparing' : 'Compare with latest'}
+      </button>
+      <button
+        disabled={state.layout === 'auto' ||
+          !state.canApplyLatest ||
+          !state.hasEditor ||
+          !state.isEditable}
+        onClick={actions.applyLatestToManual}
+      >
+        Apply latest
+      </button>
+      <button onClick={actions.resetManualLayout}>Reset manual layout</button>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <LikeC4Diagram
+      view={view}
+      onLayoutTypeChange={setLayoutType}
+    >
+      <LayoutControls />
+    </LikeC4Diagram>
+  )
+}
+```
+
+The hook reuses the same controller as LikeC4's built-in compare panel. It
+requires comparison to be enabled for the diagram and an editor provider for
+actions that modify a saved manual layout.
+
 ## Customization
 
 ### Custom node renderer

@@ -62,6 +62,12 @@ export {
 } from './hooks/useDiagram'
 
 export {
+  type DiagramCompareLayoutOps,
+  type DiagramCompareLayoutState,
+  useDiagramCompareLayout,
+} from './hooks/useDiagramCompareLayout'
+
+export {
   useLikeC4Model,
   useLikeC4Specification,
   useLikeC4ViewModel,
