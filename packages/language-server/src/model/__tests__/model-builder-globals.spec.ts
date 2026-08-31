@@ -666,6 +666,45 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(indexView.nodes.map(prop('id'))).toEqual(['sys1', 'sys2'])
   })
 
+  // Issue #1828
+  it('global predicate groups are applied inside a group', async ({ expect, t }) => {
+    const { diagnostics } = await t.validate(`
+      specification {
+        element component
+        tag deprecated
+      }
+      model {
+        component sys1
+        component sys2 {
+          #deprecated
+        }
+        sys1 -> sys2
+      }
+      views {
+        view index {
+          include sys1
+          group 'Deprecated' {
+            global predicate global_predicate_group_name
+          }
+        }
+      }
+      global {
+        predicateGroup global_predicate_group_name {
+          include * where tag is #deprecated
+        }
+      }
+    `)
+    expect(diagnostics.length).toBe(0)
+    const model = await t.buildModel()
+    const indexView = model?.views['index' as ViewId]!
+    expect(indexView).toBeDefined()
+    // sys2 is included by the global predicate and placed inside the group
+    const group = indexView.nodes.find(n => n.kind === '@group')
+    expect(group?.title).toBe('Deprecated')
+    expect(group?.children).toEqual(['sys2'])
+    expect(indexView.nodes.find(n => n.id === 'sys2')?.parent).toBe(group?.id)
+  })
+
   it('global dynamic predicate groups are applied', async ({ expect, t }) => {
     const { diagnostics } = await t.validate(`
       specification {
