@@ -1,9 +1,10 @@
+import type { LayoutedView, ViewId } from '@likec4/core'
 import { UriUtils } from 'langium'
 import { vol } from 'memfs'
 import stripIndent from 'strip-indent'
 import { type ExpectStatic, describe, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
-import { WithFileSystem } from '../filesystem'
+import { WithFileSystem, WithLikeC4ManualLayouts } from '../filesystem'
 import type { ChangeView } from '../protocol'
 import { createTestServices } from '../test'
 
@@ -65,6 +66,102 @@ async function testDoc(expect: ExpectStatic, document: string) {
 }
 
 describe('viewChange', () => {
+  describe('implicit views', () => {
+    async function implicitViewTest(expect: ExpectStatic) {
+      const test = createTestServices({
+        projectConfig: { implicitViews: true },
+        context: {
+          ...WithFileSystem(),
+          ...WithLikeC4ManualLayouts,
+        },
+      })
+      const { errors } = await test.validate(`
+        specification {
+          element component
+        }
+        model {
+          component sys1
+        }
+      `)
+      expect(errors).toEqual([])
+      return test
+    }
+
+    const implicitViewId = '__sys1' as ViewId
+    const layout = {
+      id: implicitViewId,
+      _type: 'element',
+      _stage: 'layouted',
+      _layout: 'manual',
+      title: 'sys1',
+      description: null,
+      hash: 'test-hash',
+      autoLayout: { direction: 'TB' },
+      nodes: [],
+      edges: [],
+      bounds: { x: 0, y: 0, width: 0, height: 0 },
+    } satisfies LayoutedView
+
+    it('saves and resets manual layouts', async ({ expect }) => {
+      const { services } = await implicitViewTest(expect)
+      const manualLayouts = services.shared.workspace.ManualLayouts
+      const location = {
+        uri: 'file:///test/workspace/src/.likec4/__sys1.likec4.snap',
+        range: {
+          start: { line: 0, character: 0 },
+          end: { line: 0, character: 0 },
+        },
+      }
+      const write = vi.spyOn(manualLayouts, 'write').mockResolvedValue(location)
+      const remove = vi.spyOn(manualLayouts, 'remove').mockResolvedValue(location)
+
+      await expect(services.likec4.ModelChanges.applyChange({
+        viewId: implicitViewId,
+        change: {
+          op: 'save-view-snapshot',
+          layout,
+        },
+      })).resolves.toEqual({ success: true, location })
+      expect(write).toHaveBeenCalledOnce()
+
+      await expect(services.likec4.ModelChanges.applyChange({
+        viewId: implicitViewId,
+        change: { op: 'reset-manual-layout' },
+      })).resolves.toEqual({ success: true, location })
+      expect(remove).toHaveBeenCalledOnce()
+    })
+
+    it('rejects layouts for unknown views', async ({ expect }) => {
+      const { services } = await implicitViewTest(expect)
+      const write = vi.spyOn(services.shared.workspace.ManualLayouts, 'write')
+
+      const result = await services.likec4.ModelChanges.applyChange({
+        viewId: '__unknown' as ViewId,
+        change: {
+          op: 'save-view-snapshot',
+          layout: { ...layout, id: '__unknown' as ViewId },
+        },
+      })
+
+      expect(result.success).toBe(false)
+      expect(write).not.toHaveBeenCalled()
+    })
+
+    it('continues to reject source edits', async ({ expect }) => {
+      const { services } = await implicitViewTest(expect)
+
+      const result = await services.likec4.ModelChanges.applyChange({
+        viewId: implicitViewId,
+        change: {
+          op: 'change-autolayout',
+          layout: { direction: 'LR' },
+        },
+      })
+
+      expect(result.success).toBe(false)
+    })
+  })
+
   describe('change-property', () => {
     it('should update view title', async ({ expect }) => {
       const { change, read } = await testDoc(
