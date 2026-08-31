@@ -332,6 +332,13 @@ Please specify a project folder`)
   }
 
   /**
+   * Returns the file system paths of the parsed documents in the workspace
+   */
+  documentPaths(): string[] {
+    return [...this.LangiumDocuments.userDocuments].map(doc => doc.uri.fsPath)
+  }
+
+  /**
    * Subscribe to model updates
    * @param listener Function called when the model is updated - receives the project ID that was updated
    * @returns A function to dispose the listener
