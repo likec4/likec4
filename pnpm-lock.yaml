@@ -257,6 +257,9 @@ catalogs:
       specifier: 9.4.1
       version: 9.4.1
   mcp:
+    '@modelcontextprotocol/ext-apps':
+      specifier: ^1.7.4
+      version: 1.7.5
     '@modelcontextprotocol/sdk':
       specifier: ^1.29.0
       version: 1.29.0
@@ -2389,6 +2392,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/diagram':
+        specifier: workspace:*
+        version: link:../diagram
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
@@ -2401,6 +2407,12 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      '@mantine/core':
+        specifier: catalog:mantine
+        version: 9.4.1(@mantine/hooks@9.4.1(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@modelcontextprotocol/ext-apps':
+        specifier: catalog:mcp
+        version: 1.7.5(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
         version: 1.29.0(supports-color@10.1.0)(zod@4.4.3)
@@ -2419,6 +2431,12 @@ importers:
       hono:
         specifier: catalog:hono
         version: 4.12.34
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+      react-dom:
+        specifier: 19.2.7
+        version: 19.2.7(react@19.2.7)
       remeda:
         specifier: catalog:utils
         version: 2.37.0
@@ -2431,6 +2449,9 @@ importers:
       unctx:
         specifier: catalog:utils
         version: 2.5.0
+      vscode-languageserver-types:
+        specifier: 3.17.5
+        version: 3.17.5
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
@@ -2447,6 +2468,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
+      '@types/react':
+        specifier: 19.2.17
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       '@vitest/ui':
         specifier: catalog:vitest
         version: 4.1.9(vitest@4.1.9)
@@ -5331,6 +5358,20 @@ packages:
 
   '@microsoft/tsdoc@0.16.0':
     resolution: {integrity: sha512-xgAyonlVVS+q7Vc7qLW0UrJU7rSFcETRWsqdXZtjzRU8dF+6CkozTK4V4y1LwOX7j8r/vHphjDeMeGI4tNGeGA==}
+
+  '@modelcontextprotocol/ext-apps@1.7.5':
+    resolution: {integrity: sha512-TjPH2S2y5UEGKhmI6+XGFuqfqOV4ppe1x6DA3txnUaEWkgtA4G5vo14jGKFZmegdkZ1H4QMLyujLvoU1BEdnAg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@modelcontextprotocol/sdk': ^1.29.0
+      react: 19.2.7
+      react-dom: 19.2.7
+      zod: ^3.25.0 || ^4.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   '@modelcontextprotocol/sdk@1.29.0':
     resolution: {integrity: sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==}
@@ -14254,6 +14295,15 @@ snapshots:
       resolve: 1.22.12
 
   '@microsoft/tsdoc@0.16.0': {}
+
+  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(zod@4.4.3)':
+    dependencies:
+      '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
+      '@standard-schema/spec': 1.1.0
+      zod: 4.4.3
+    optionalDependencies:
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
   '@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3)':
     dependencies:

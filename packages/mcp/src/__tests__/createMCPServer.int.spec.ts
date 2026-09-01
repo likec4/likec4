@@ -32,6 +32,8 @@ const EXPECTED_TOOLS = [
   'element-diff',
   'subgraph-summary',
   'apply-semantic-layout',
+  'render-view',
+  'preview-view',
 ] as const
 
 describe('createMCPServer — registration & discovery', () => {

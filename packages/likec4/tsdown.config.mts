@@ -48,6 +48,7 @@ export default defineConfig([
 
         await copyReact()
         await bundleApp()
+        await copyMcpAppAssets()
       },
     },
   },
@@ -94,6 +95,22 @@ async function bundleApp() {
   await mkdir(to, { recursive: true })
 
   console.info(`Copy @likec4/spa`)
+  console.info(`  from: ${from}`)
+  console.info(`  to: ${to}`)
+
+  await fs.copy(from, to)
+}
+
+async function copyMcpAppAssets() {
+  const from = resolve('../mcp/dist/app/')
+  if (!existsSync(from)) {
+    throw new Error(`@likec4/mcp dist/app not found: ${from}`)
+  }
+  const to = resolve('./dist/app/')
+
+  await mkdir(to, { recursive: true })
+
+  console.info(`Copy @likec4/mcp app assets`)
   console.info(`  from: ${from}`)
   console.info(`  to: ${to}`)
 

@@ -99,6 +99,11 @@ export interface LikeC4LanguageServices {
   locate(params: Locate.Params): Locate.Res
 
   /**
+   * Returns the current in-memory text of a document, or `undefined` if the document is not known.
+   */
+  documentText(uri: string): string | undefined
+
+  /**
    * Formats documents and returns a map of document URI → formatted source text.
    *
    * Target selection uses union semantics:
@@ -329,6 +334,11 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       default:
         nonexhaustive(params)
     }
+  }
+
+  documentText(uri: string): string | undefined {
+    const doc = this.services.shared.workspace.LangiumDocuments.getDocument(URI.parse(uri))
+    return doc?.textDocument.getText()
   }
 
   /**
