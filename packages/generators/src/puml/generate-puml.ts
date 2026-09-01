@@ -13,8 +13,9 @@ import type {
   ThemeColor,
 } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
-import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
+import { CompositeGeneratorNode, joinToNode, toString } from 'langium/generate'
 import { isEmptyish, isNullish as isNil } from 'remeda'
+import { NL } from '../newline'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 

@@ -6,7 +6,6 @@ import {
   CompositeGeneratorNode,
   joinToNode,
   NewLineNode,
-  NL,
   toString,
 } from 'langium/generate'
 import {
@@ -28,6 +27,7 @@ import { dedent } from 'strip-indent'
 import type { IfAny, Or } from 'type-fest'
 import * as z from 'zod/v4'
 import type * as z4 from 'zod/v4/core'
+import { NL } from '../../newline'
 
 function hasContent(out: Generated): boolean {
   if (typeof out === 'string') {

@@ -1,6 +1,7 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
+import { CompositeGeneratorNode, expandToNode, joinToNode, toString } from 'langium/generate'
+import { NL } from '../newline'
 import { generateViewId } from './generateViewId'
 
 /**

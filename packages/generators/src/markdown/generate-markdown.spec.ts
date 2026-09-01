@@ -113,6 +113,10 @@ test('Output is reproducible', ({ expect }) => {
   expect(generateMarkdown(model)).toBe(generateMarkdown(model))
 })
 
+test('Line endings are LF on every platform', ({ expect }) => {
+  expect(generateMarkdown(model)).not.toContain('\r')
+})
+
 test('Full document snapshot', ({ expect }) => {
   expect(generateMarkdown(model)).toMatchSnapshot()
 })
