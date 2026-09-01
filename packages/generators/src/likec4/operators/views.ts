@@ -3,8 +3,9 @@ import {
   invariant,
   nonexhaustive,
 } from '@likec4/core'
-import { CompositeGeneratorNode, NL } from 'langium/generate'
+import { CompositeGeneratorNode } from 'langium/generate'
 import { hasAtLeast, values } from 'remeda'
+import { NL } from '../../newline'
 import { schemas } from '../schemas'
 import {
   type Op,
