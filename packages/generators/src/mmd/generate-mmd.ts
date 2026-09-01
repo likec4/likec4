@@ -1,9 +1,9 @@
 import { nonexhaustive } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
-import { CompositeGeneratorNode, joinToNode, toString } from 'langium/generate'
+import { CompositeGeneratorNode, joinToNode } from 'langium/generate'
 import { isNullish as isNil } from 'remeda'
-import { NL } from '../newline'
+import { NL, toStringLF } from '../newline'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
@@ -98,7 +98,7 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     )
   }
 
-  return toString(
+  return toStringLF(
     new CompositeGeneratorNode()
       .append(
         '---',

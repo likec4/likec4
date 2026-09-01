@@ -6,7 +6,6 @@ import {
   CompositeGeneratorNode,
   joinToNode,
   NewLineNode,
-  toString,
 } from 'langium/generate'
 import {
   filter,
@@ -27,7 +26,7 @@ import { dedent } from 'strip-indent'
 import type { IfAny, Or } from 'type-fest'
 import * as z from 'zod/v4'
 import type * as z4 from 'zod/v4/core'
-import { NL } from '../../newline'
+import { NL, toStringLF } from '../../newline'
 
 function hasContent(out: Generated): boolean {
   if (typeof out === 'string') {
@@ -109,7 +108,7 @@ export function fresh(ctx?: unknown) {
  */
 export function materialize(ctx: AnyCtx | Op<any>, defaultIndentation: string | number = 2): string {
   const out = isFunction(ctx) ? executeOnFresh(undefined, [ctx]).out : ctx.out
-  return toString(out, defaultIndentation).replaceAll(/\r\n/g, '\n')
+  return toStringLF(out, defaultIndentation)
 }
 
 /**

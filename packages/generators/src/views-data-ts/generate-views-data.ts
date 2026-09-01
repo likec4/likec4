@@ -1,7 +1,7 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, expandToNode, joinToNode, toString } from 'langium/generate'
-import { NL } from '../newline'
+import { CompositeGeneratorNode, expandToNode, joinToNode } from 'langium/generate'
+import { NL, toStringLF } from '../newline'
 import { generateViewId } from './generateViewId'
 
 /**
@@ -22,7 +22,7 @@ export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
 
   if (views.length == 0) {
     out.append('export const LikeC4Views = {}', NL)
-    return toString(out)
+    return toStringLF(out)
   }
 
   out.appendTemplate`
@@ -55,7 +55,7 @@ export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
 
     /* prettier-ignore-end */
   `.append(NL)
-  return toString(out)
+  return toStringLF(out)
 }
 
 /**
@@ -79,7 +79,7 @@ export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
 
   if (views.length === 0) {
     out.append('export {}', NL)
-    return toString(out)
+    return toStringLF(out)
   }
 
   out.appendTemplate`
@@ -119,7 +119,7 @@ export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
 
     /* prettier-ignore-end */
   `.append(NL)
-  return toString(out)
+  return toStringLF(out)
 }
 
 /**
@@ -141,7 +141,7 @@ export function generateViewsDataDTs(diagrams: Iterable<DiagramView>) {
 
   if (views.length == 0) {
     out.append('export {}', NL)
-    return toString(out)
+    return toStringLF(out)
   }
 
   out.appendTemplate`
@@ -153,5 +153,5 @@ export function generateViewsDataDTs(diagrams: Iterable<DiagramView>) {
 
     /* prettier-ignore-end */
   `.append(NL)
-  return toString(out)
+  return toStringLF(out)
 }

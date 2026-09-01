@@ -1,8 +1,8 @@
 import type { LikeC4Model, LikeC4ViewModel } from '@likec4/core/model'
 import type { aux } from '@likec4/core/types'
-import { CompositeGeneratorNode, toString } from 'langium/generate'
+import { CompositeGeneratorNode } from 'langium/generate'
 import { generateMermaid } from '../mmd/generate-mmd'
-import { NL } from '../newline'
+import { NL, toStringLF } from '../newline'
 
 type ViewModel = LikeC4ViewModel<aux.Unknown>
 
@@ -48,5 +48,5 @@ export function generateMarkdown(
     appendView(doc, view)
   }
 
-  return toString(doc)
+  return toStringLF(doc)
 }
