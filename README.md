@@ -1,6 +1,6 @@
 # Architecture as a code
 
-[简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
+[Português (Brasil)](./README.pt-BR.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
 Visualize, collaborate on, and evolve your software architecture with always up-to-date, live diagrams generated from your code.
 
