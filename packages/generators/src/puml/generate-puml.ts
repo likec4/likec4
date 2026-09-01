@@ -13,8 +13,9 @@ import type {
   ThemeColor,
 } from '@likec4/core/types'
 import { RichText } from '@likec4/core/types'
-import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
+import { CompositeGeneratorNode, joinToNode } from 'langium/generate'
 import { isEmptyish, isNullish as isNil } from 'remeda'
+import { NL, toStringLF } from '../newline'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
@@ -233,7 +234,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     return out.append(NL)
   }
 
-  return toString(
+  return toStringLF(
     new CompositeGeneratorNode()
       .append('@startuml', NL)
       .append(printHeader(), NL)
