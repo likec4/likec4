@@ -1,0 +1,16 @@
+specification {
+  element system
+}
+
+model {
+  customer = system 'Customer'
+  backend = system 'Backend' {
+    -> customer 'notifies'
+  }
+}
+
+views {
+  view index {
+    include *
+  }
+}

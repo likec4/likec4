@@ -1,4 +1,5 @@
 import defu from 'defu'
+import rehypePrism from 'rehype-prism-plus/common'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
 import remarkGfm from 'remark-gfm'
@@ -13,6 +14,7 @@ function parser() {
     .use(remarkGfm)
     .use(remarkAlert)
     .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypePrism, { ignoreMissing: true })
     .use(
       rehypeSanitize,
       defu(

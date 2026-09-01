@@ -272,9 +272,9 @@ export const walkthrough = machine.createStateConfig({
       {
         actions: [
           assign(({ event, context }) => {
-            invariant(event.edge.type === 'seq-step', `Expected seq-step edge, but got "${event.edge.type}"`)
             invariant(!!context.activeWalkthrough)
             const stepId = event.edge.data.id
+            invariant(isStepPath(stepId), `Expected step edge, but got "${stepId}"`)
             return {
               activeWalkthrough: {
                 ...context.activeWalkthrough,

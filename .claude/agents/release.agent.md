@@ -50,7 +50,24 @@ jq -r .version package.json
 
 This is the version being released (e.g., `1.52.0`).
 
-## 4. Read the Current Root CHANGELOG.md
+## 4. Regenerate Version-Derived Files
+
+The changeset action bumps versions in `package.json` files only. Some tracked sources embed the version and must be regenerated after every bump:
+
+```bash
+pnpm install
+pnpm generate
+```
+
+`packages/vscode/src/meta.ts` is the main one — it carries the extension version. Check what changed:
+
+```bash
+git status --porcelain
+```
+
+Any files changed here are part of the release commit in the "Commit and Push" step below. If nothing changed, continue.
+
+## 5. Read the Current Root CHANGELOG.md
 
 Read the first 100 lines of `CHANGELOG.md` to understand:
 
@@ -59,7 +76,7 @@ Read the first 100 lines of `CHANGELOG.md` to understand:
 
 The previous version is in the first `## [X.Y.Z]` header.
 
-## 5. Prepare the Changelog Summary
+## 6. Prepare the Changelog Summary
 
 Summarize the changes from the per-package changelogs into a new entry for the root `CHANGELOG.md`.
 
@@ -91,11 +108,11 @@ Follow this exact format:
 - Use today's date for the release date.
 - Deduplicate entries that appear in multiple package changelogs (they represent the same change).
 
-## 6. Update Root CHANGELOG.md
+## 7. Update Root CHANGELOG.md
 
 Prepend the new version entry at the very top of `CHANGELOG.md` (before the existing first `##` header). Add two blank lines between the new entry and the previous one.
 
-## 7. Ask User to Review
+## 8. Ask User to Review
 
 Show the complete changelog entry to the user and ask for confirmation before proceeding.
 
@@ -103,15 +120,19 @@ Show the complete changelog entry to the user and ask for confirmation before pr
 
 If the user requests changes, edit the changelog accordingly and ask again.
 
-## 8. Commit and Push
+## 9. Commit and Push
+
+Include both the changelog and any files regenerated in step 4:
 
 ```bash
 git add CHANGELOG.md
+git add -u   # picks up regenerated files, e.g. packages/vscode/src/meta.ts
+git status --short
 git commit -m "chore: update changelog for v{VERSION}"
 git push origin changeset-release/main
 ```
 
-## 9. Update PR Title
+## 10. Update PR Title
 
 The PR title must contain `release: v{VERSION}` — this is used as the squash merge commit message, and the `main.yml` workflow checks for this pattern to:
 
@@ -122,7 +143,7 @@ The PR title must contain `release: v{VERSION}` — this is used as the squash m
 gh pr edit {PR_NUMBER} --title "release: v{VERSION}"
 ```
 
-## 10. Squash Merge the PR
+## 11. Squash Merge the PR
 
 This branch does not require waiting for CI checks to pass before merging.
 
@@ -130,7 +151,7 @@ This branch does not require waiting for CI checks to pass before merging.
 gh pr merge {PR_NUMBER} --squash --subject "release: v{VERSION}"
 ```
 
-## 11. Wait for Quality Gate on Main
+## 12. Wait for Quality Gate on Main
 
 After merging, the `main` workflow triggers on the `main` branch. Wait for the quality gate (`🚦 quality gate` job) to pass. This typically takes ~5 minutes.
 
@@ -148,7 +169,7 @@ Check every 30–60 seconds until:
 
 If the quality gate fails, inform the user with the workflow run URL and stop.
 
-## 12. Trigger the Release Workflow
+## 13. Trigger the Release Workflow
 
 If the quality gate passes, trigger the release workflow:
 
@@ -156,7 +177,7 @@ If the quality gate passes, trigger the release workflow:
 gh workflow run release.yaml
 ```
 
-## 13. Monitor Release Workflow and Report
+## 14. Monitor Release Workflow and Report
 
 Wait for the release workflow to complete:
 
@@ -178,6 +199,7 @@ You can stop after reporting the result.
 ## Error Handling
 
 - If no `changeset-release/main` branch exists → inform user, stop
+- If `pnpm generate` fails → show the error, stop (do not merge with stale generated files)
 - If no open PR exists → inform user, stop
 - If merge fails → show error, ask user how to proceed
 - If quality gate fails → show workflow URL, stop
@@ -186,5 +208,6 @@ You can stop after reporting the result.
 ## Notes
 
 - The `main.yml` workflow condition `contains(github.event.head_commit.message, 'release: v')` is critical — the squash merge commit message **must** start with `release: v` for the release flow to work correctly.
+- Never hand-edit generated files such as `packages/vscode/src/meta.ts`; always run `pnpm generate` after the version bump.
 - All packages are versioned together (fixed versioning via changesets config). The version in root `package.json` is the single source of truth.
 - The release workflow publishes to npm with provenance and creates a draft GitHub release with auto-generated notes.

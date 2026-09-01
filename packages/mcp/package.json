@@ -90,6 +90,8 @@
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     "@vitest/ui": "catalog:vitest",
     "langium": "catalog:langium",
     "tsdown": "catalog:tsdown",

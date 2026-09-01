@@ -1,0 +1,68 @@
+---
+type: Architecture Decision Record
+title: "ADR-0001: Generator conventions (@likec4/generators)"
+description: The shared shape every @likec4/generators exporter follows, and how a generating CLI command handles multiple projects.
+status: draft
+date: 2026-07-28
+tags: [adr, generators, export]
+---
+
+# 1. Generator conventions (`@likec4/generators`)
+
+## Context
+
+`@likec4/generators` converts a LikeC4 model into other formats — Mermaid, D2, PlantUML, DrawIO,
+model typings. The existing generators already share a shape, but it is only implicit in the code.
+Capturing it makes new exporters (e.g. a Markdown/GitHub-page generator) consistent and reviewable,
+and records the one genuine fork: how a generating CLI command handles multiple projects.
+
+## Decisions
+
+1. **A generator is a pure function that returns a string.** No filesystem, no project iteration.
+   A view-level generator takes a `LikeC4ViewModel` (`generateMermaid`, `generateD2`,
+   `generatePuml`); a whole-project generator takes a `LikeC4Model`, optionally followed by an
+   `options: {...} = {}` object for auxiliary inputs the model itself does not carry
+   (`generateLikeC4Model`, `generateAux`, `generateReactTypes`, and `generateMarkdown`'s
+   `{ description }`). This keeps them deterministic and snapshot-testable.
+
+2. **One module per format** under `packages/generators/src/<format>/`: `generate-<format>.ts` plus
+   an `index.ts` that re-exports it, and the function is re-exported from `packages/generators/src/index.ts`.
+
+3. **Build output with `langium/generate`** (`CompositeGeneratorNode`, `joinToNode`, `toString`),
+   not string concatenation — for indentation-aware, deterministic results.
+
+4. **Test with Vitest snapshots** in a co-located `*.spec.ts`, using the shared
+   `__mocks__/data` fixtures.
+
+5. **Reuse over reimplement.** A format that embeds another (e.g. Markdown embedding Mermaid) calls
+   the existing generator rather than re-deriving its output, so the embedded result stays identical.
+
+6. **The command layer owns project iteration and I/O, not the generator.** A generating CLI command
+   defaults to **all projects** and takes `--project` to restrict — following the `export png`/`json`
+   handlers. The older `ensureSingleProject()` path (`gen mermaid`/`d2`/`puml`) is not the pattern for
+   new commands. Projects that render to no content (e.g. an empty default project) are skipped, not
+   written. Where the output is a whole-project artifact meant to be browsed in place (e.g.
+   `export markdown`), the default write target is **`README.md` inside that project's own folder** —
+   not a separate flat output directory — so the rendering appears where a reader is already looking.
+
+7. **CLI placement is by output shape, not by the generator library.** All generators live together
+   in `@likec4/generators`, but their commands split by what they produce: a **per-view, single-project**
+   output goes under `gen <format>` (`gen mermaid`/`d2`/`puml`); a **whole-model artifact rendered per
+   project** goes under `export <format>` (`export json`/`drawio`, and `png`/`jpg`). `generateDrawio`
+   sits beside `generateMermaid` in the package yet ships as `export drawio`, not `gen drawio` — the
+   precedent for placing new whole-model exporters (e.g. Markdown) under `export`.
+
+8. **Marker-protect a write target likely to already exist as hand-authored content.** A
+   generated file's first line carries an HTML-comment marker identifying it as generated
+   (mirroring the `vscode-ext-gen` "do not modify manually" convention already used in
+   `packages/vscode/src/meta.ts`). On write: no existing file → write; existing file **with**
+   the marker → overwrite (our own prior output, a normal regeneration); existing file
+   **without** the marker → refuse, and only overwrite if the user passes an explicit force
+   flag.
+
+## Consequences
+
+- New exporters are a single pure function + a snapshot spec; multi-project and file writing are
+  added once, in the command layer.
+- Adopting decision 6 for new commands leaves two project-handling patterns in the CLI until the
+  older `gen` commands are (optionally, separately) aligned.

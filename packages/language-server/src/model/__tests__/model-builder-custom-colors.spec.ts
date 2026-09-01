@@ -192,4 +192,37 @@ describe('LikeC4ModelBuilder - Custom Colors', () => {
     expect(indexView).toBeDefined()
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('custom-color1')
   })
+
+  it('allows theme and custom colors in tag specification', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { errors, warnings } = await validate(`
+      specification {
+        color custom-color1 #FF00FF
+
+        tag themed {
+          color primary
+        }
+        tag customized {
+          color custom-color1
+        }
+        tag literal {
+          color #3094FEB9
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+    expect(warnings).toEqual([])
+    const model = await buildModel()
+    expect(model.specification.tags).toEqual({
+      themed: {
+        color: 'primary',
+      },
+      customized: {
+        color: 'custom-color1',
+      },
+      literal: {
+        color: '#3094FEB9',
+      },
+    })
+  })
 })

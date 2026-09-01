@@ -15,7 +15,6 @@ const mcpCmd = <T>(yargs: Argv<T>) => {
         y
           .usage(`${k.bold('Usage:')} $0 mcp [path]`)
           .positional('path', path)
-          .default('path', '.', 'current directory')
           .option('stdio', {
             boolean: true,
             description: 'use stdio transport',

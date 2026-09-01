@@ -52,14 +52,16 @@ export class LikeC4ModelChanges {
       const project = workspace.ProjectsManager.ensureProject(_projectId as ProjectId)
       logger.debug`Applying model change ${change.op} to view ${viewId} in project ${project.id}`
       const lookup = this.locator.locateViewAst(viewId, project.id)
-      if (!lookup) {
-        throw new Error(`View ${viewId} not found in project ${project.id}`)
+      if (
+        !lookup
+        && (change.op === 'save-view-snapshot' || change.op === 'reset-manual-layout')
+      ) {
+        const model = await this.services.likec4.ModelBuilder.computeModel(project.id)
+        if (!model.findView(viewId)) {
+          throw new Error(`View ${viewId} not found in project ${project.id}`)
+        }
       }
-      const textDocument = {
-        uri: lookup.doc.textDocument.uri,
-        version: lookup.doc.textDocument.version,
-      }
-      // TODO refactor to use separate methods for save/reset operations
+
       if (change.op === 'save-view-snapshot') {
         invariant(
           viewId === change.layout.id,
@@ -78,6 +80,14 @@ export class LikeC4ModelChanges {
           success: true,
           location,
         }
+      }
+
+      if (!lookup) {
+        throw new Error(`View ${viewId} not found in project ${project.id}`)
+      }
+      const textDocument = {
+        uri: lookup.doc.textDocument.uri,
+        version: lookup.doc.textDocument.version,
       }
 
       // Convert the view change to text edits

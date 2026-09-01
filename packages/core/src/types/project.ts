@@ -50,6 +50,16 @@ export interface LikeC4Project {
   title?: string
 
   /**
+   * Contact person/team responsible for the project
+   */
+  contactPerson?: string
+
+  /**
+   * Additional metadata (from config)
+   */
+  metadata?: Record<string, unknown>
+
+  /**
    * Custom styles
    */
   styles?: LikeC4ProjectStylesConfig | undefined

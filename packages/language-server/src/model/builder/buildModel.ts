@@ -377,6 +377,8 @@ export function buildModelData(
         id: project.id,
         title: project.config.title ?? project.config.name,
         styles: project.config.styles,
+        contactPerson: project.config.contactPerson,
+        metadata: project.config.metadata,
         manualLayouts: project.config.manualLayouts,
         inferTechnologyFromIcon: project.config.inferTechnologyFromIcon,
       }),

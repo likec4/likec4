@@ -1,0 +1,8 @@
+{
+  "name": "wrapper",
+  "include": {
+    "paths": [
+      "../base"
+    ]
+  }
+}

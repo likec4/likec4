@@ -2,7 +2,7 @@ import * as c4 from '@likec4/core'
 import { exact } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { filter, isTruthy, mapToObj, pipe } from 'remeda'
-import { ast, parseMarkdownAsString, toRelationshipStyle } from '../../ast'
+import { ast, parseMarkdownAsString, toColor, toRelationshipStyle } from '../../ast'
 import { type Base, removeIndent } from './Base'
 
 export function SpecificationParser<TBase extends Base>(B: TBase) {
@@ -83,7 +83,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
         try {
           const tag = tagSpec.tag.name as c4.Tag
           const astPath = this.getAstNodePath(tagSpec.tag)
-          const color = tagSpec.color && this.parseColorLiteral(tagSpec.color)
+          const color = toColor(tagSpec) ?? (tagSpec.color && this.parseColorLiteral(tagSpec.color))
           if (tag in c4Specification.tags) {
             this.logError(`Tag ${tag} is already defined, skipping duplicate`, tagSpec, 'specification')
             continue

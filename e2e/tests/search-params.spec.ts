@@ -1,7 +1,14 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 import { canvas } from '../helpers/selectors'
-import { TIMEOUT_CANVAS } from '../helpers/timeouts'
+import { TIMEOUT_CANVAS, TIMEOUT_MENU } from '../helpers/timeouts'
 
 /**
  * E2E tests for URL search parameters (?theme=, ?dynamic=, ?relationships=).
@@ -16,18 +23,32 @@ import { TIMEOUT_CANVAS } from '../helpers/timeouts'
  */
 
 const PROJECT = 'e2e'
+const EXPORT_CONFIG_PROJECT = 'export-config'
+const EXPORT_DISABLED_PROJECT = 'export-disabled'
 const STATIC_VIEW = 'index'
 const DYNAMIC_VIEW = 'dynamic-view-1'
 
-function exportUrl(viewId: string, extra?: Record<string, string>): string {
+function projectExportUrl(projectId: string, viewId: string, extra?: Record<string, string>): string {
   const params = new URLSearchParams({ padding: '22', ...extra })
-  return `/project/${encodeURIComponent(PROJECT)}/export/${encodeURIComponent(viewId)}/?${params.toString()}`
+  return `/project/${encodeURIComponent(projectId)}/export/${encodeURIComponent(viewId)}/?${params.toString()}`
+}
+
+function exportUrl(viewId: string, extra?: Record<string, string>): string {
+  return projectExportUrl(PROJECT, viewId, extra)
+}
+
+function projectViewUrl(projectId: string, viewId: string, extra?: Record<string, string>): string {
+  const params = extra ? new URLSearchParams(extra) : undefined
+  const qs = params?.toString()
+  return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${qs ? `?${qs}` : ''}`
+}
+
+function projectTextExportUrl(projectId: string, viewId: string, format: 'dot' | 'd2' | 'mmd' | 'puml'): string {
+  return `/project/${encodeURIComponent(projectId)}/view/${encodeURIComponent(viewId)}/${format}`
 }
 
 function viewUrl(viewId: string, extra?: Record<string, string>): string {
-  const params = extra ? new URLSearchParams(extra) : undefined
-  const qs = params?.toString()
-  return `/project/${encodeURIComponent(PROJECT)}/view/${encodeURIComponent(viewId)}/${qs ? `?${qs}` : ''}`
+  return projectViewUrl(PROJECT, viewId, extra)
 }
 
 const COLOR_SCHEME_ATTR = 'data-mantine-color-scheme'
@@ -112,5 +133,51 @@ test.describe('?relationships= search parameter', () => {
   test('absent ?relationships= does not open overlay', async ({ page }) => {
     await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW))
     await expect(page.locator(RELATIONSHIPS_BROWSER)).toHaveCount(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// webapp.exportFormats
+// ---------------------------------------------------------------------------
+
+test.describe('webapp.exportFormats configuration', () => {
+  const DISABLED_MENU_ITEMS = [
+    'Export as .jpg',
+    'Export as .dot',
+    'Export as .d2',
+    'Export as .mmd',
+    'Export as .puml',
+    'Export to Draw.io',
+  ] as const
+
+  test('limits the view export menu to enabled formats', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
+
+    await page.getByRole('button', { name: 'Export', exact: true }).click()
+    await expect(page.getByRole('menu')).toBeVisible({ timeout: TIMEOUT_MENU })
+    await expect(page.getByRole('menuitem', { name: 'Export as .png' })).toBeVisible()
+    for (const item of DISABLED_MENU_ITEMS) {
+      await expect(page.getByRole('menuitem', { name: item })).toHaveCount(0)
+    }
+
+    await gotoAndWaitForCanvas(page, projectExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW))
+  })
+
+  test('blocks direct text export routes for disabled formats', async ({ page }) => {
+    await page.goto(projectTextExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, 'dot'))
+
+    await expect(page.getByText(/The diagram\s+index\s+does not exist or contains errors/)).toBeVisible()
+  })
+
+  test('keeps direct text export routes available for enabled formats', async ({ page }) => {
+    await page.goto(projectTextExportUrl(PROJECT, STATIC_VIEW, 'dot'))
+
+    await expect(page.getByText('digraph {').first()).toBeVisible()
+  })
+
+  test('removes export entry points when every webapp export format is disabled', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_DISABLED_PROJECT, STATIC_VIEW))
+
+    await expect(page.getByRole('button', { name: 'Export', exact: true })).toHaveCount(0)
   })
 })

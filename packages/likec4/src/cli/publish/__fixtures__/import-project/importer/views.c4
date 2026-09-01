@@ -1,0 +1,7 @@
+import { thing, other } from 'base'
+
+views {
+  view index {
+    include thing, other
+  }
+}

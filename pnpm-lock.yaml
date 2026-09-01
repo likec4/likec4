@@ -53,11 +53,11 @@ catalogs:
       specifier: 5.0.0
       version: 5.0.0
     '@expressive-code/plugin-collapsible-sections':
-      specifier: 0.44.0
-      version: 0.44.0
+      specifier: 0.44.1
+      version: 0.44.1
     '@expressive-code/plugin-line-numbers':
-      specifier: 0.44.0
-      version: 0.44.0
+      specifier: 0.44.1
+      version: 0.44.1
     astro:
       specifier: 7.1.0
       version: 7.1.0
@@ -100,8 +100,8 @@ catalogs:
       specifier: ^4.3.2
       version: 4.3.2
     postcss:
-      specifier: 8.5.15
-      version: 8.5.15
+      specifier: 8.5.23
+      version: 8.5.23
     tailwindcss:
       specifier: ^4.3.2
       version: 4.3.2
@@ -154,6 +154,12 @@ catalogs:
     playwright:
       specifier: 1.60.0
       version: 1.60.0
+    rehype-prism-plus:
+      specifier: 2.0.2
+      version: 2.0.2
+    skills-ref:
+      specifier: 0.1.5
+      version: 0.1.5
     tsx:
       specifier: 4.22.5
       version: 4.22.5
@@ -220,7 +226,7 @@ catalogs:
       version: 0.8.0
     hono:
       specifier: ^4.12.31
-      version: 4.12.31
+      version: 4.12.34
     hono-sessions:
       specifier: ^0.8.1
       version: 0.8.1
@@ -475,11 +481,11 @@ catalogs:
       version: 5.32.4
   xyflow:
     '@xyflow/react':
-      specifier: 12.11.0
-      version: 12.11.0
+      specifier: 12.11.5
+      version: 12.11.5
     '@xyflow/system':
-      specifier: 0.0.77
-      version: 0.0.77
+      specifier: 0.0.81
+      version: 0.0.81
 
 overrides:
   react: 19.2.7
@@ -543,6 +549,9 @@ importers:
       rimraf:
         specifier: ^6.1.3
         version: 6.1.3
+      skills-ref:
+        specifier: 'catalog:'
+        version: 0.1.5
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -572,10 +581,10 @@ importers:
         version: 5.0.0(@astrojs/starlight@0.41.3(astro@7.1.0(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.12.4)(jiti@2.7.0)(rollup@4.60.1)(tsx@4.22.5)(yaml@2.8.3))(typescript@6.0.3))(tailwindcss@4.3.2)
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
-        version: 0.44.0
+        version: 0.44.1
       '@expressive-code/plugin-line-numbers':
         specifier: catalog:astro
-        version: 0.44.0
+        version: 0.44.1
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
         version: 5.2.8
@@ -692,10 +701,10 @@ importers:
         version: 16.1.1
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.8.6(hono@4.12.31)
+        version: 0.8.6(hono@4.12.34)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.8.0(hono@4.12.31)(zod@4.4.3)
+        version: 0.8.0(hono@4.12.34)(zod@4.4.3)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.22.2
@@ -782,10 +791,10 @@ importers:
         version: 6.1.0(@types/react@19.2.17)(react@19.2.7)(xstate@5.32.4)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 12.11.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.77
+        version: 0.0.81
       date-fns:
         specifier: catalog:utils
         version: 4.4.0
@@ -794,10 +803,10 @@ importers:
         version: 6.0.2
       hono:
         specifier: catalog:hono
-        version: 4.12.31
+        version: 4.12.34
       hono-sessions:
         specifier: catalog:hono
-        version: 0.8.1(hono@4.12.31)
+        version: 0.8.1(hono@4.12.34)
       import-meta-resolve:
         specifier: ^4.2.0
         version: 4.2.0
@@ -824,7 +833,7 @@ importers:
         version: 1.3.0
       postcss:
         specifier: catalog:css
-        version: 8.5.15
+        version: 8.5.23
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -1125,6 +1134,9 @@ importers:
       rehype-format:
         specifier: 5.0.1
         version: 5.0.1
+      rehype-prism-plus:
+        specifier: 'catalog:'
+        version: 2.0.2
       rehype-sanitize:
         specifier: ^6.0.0
         version: 6.0.0
@@ -1135,8 +1147,8 @@ importers:
         specifier: 4.0.1
         version: 4.0.1(supports-color@10.1.0)
       remark-github-blockquote-alert:
-        specifier: ^2.0.1
-        version: 2.0.1
+        specifier: ^2.1.0
+        version: 2.1.0
       remark-parse:
         specifier: 11.0.0
         version: 11.0.0(supports-color@10.1.0)
@@ -1208,10 +1220,10 @@ importers:
         version: 2.0.0(react@19.2.7)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 12.11.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.77
+        version: 0.0.81
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -1287,7 +1299,7 @@ importers:
         version: 1.72.0(oxlint-tsgolint@0.24.0)
       postcss:
         specifier: catalog:css
-        version: 8.5.15
+        version: 8.5.23
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1920,7 +1932,7 @@ importers:
         version: 17.0.33
       autoprefixer:
         specifier: ^10.5.4
-        version: 10.5.4(postcss@8.5.15)
+        version: 10.5.4(postcss@8.5.23)
       birpc:
         specifier: catalog:vite
         version: 4.0.0
@@ -1986,7 +1998,7 @@ importers:
         version: 4.0.5
       postcss:
         specifier: catalog:css
-        version: 8.5.15
+        version: 8.5.23
       pretty-ms:
         specifier: ^9.3.0
         version: 9.3.0
@@ -2155,7 +2167,7 @@ importers:
         version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@10.1.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.22.12(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
+        version: 0.22.12(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2179,13 +2191,13 @@ importers:
         version: 4.2.1
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 12.11.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.77
+        version: 0.0.81
       autoprefixer:
         specifier: ^10.5.4
-        version: 10.5.4(postcss@8.5.15)
+        version: 10.5.4(postcss@8.5.23)
       babel-plugin-react-compiler:
         specifier: catalog:react
         version: 1.0.0
@@ -2224,7 +2236,7 @@ importers:
         version: 7.3.0
       postcss:
         specifier: catalog:css
-        version: 8.5.15
+        version: 8.5.23
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.2(react@19.2.7)
@@ -2367,10 +2379,10 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.1(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.31)(unstorage@1.17.5))(hono@4.12.31)(zod@4.4.3)
+        version: 0.3.1(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.34)(unstorage@1.17.5))(hono@4.12.34)(zod@4.4.3)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 2.0.10(hono@4.12.31)
+        version: 2.0.10(hono@4.12.34)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.22.2
@@ -2418,7 +2430,7 @@ importers:
         version: 0.28.1
       hono:
         specifier: catalog:hono
-        version: 4.12.31
+        version: 4.12.34
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -2456,6 +2468,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
+      '@types/react':
+        specifier: 19.2.17
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       '@vitest/ui':
         specifier: catalog:vitest
         version: 4.1.9(vitest@4.1.9)
@@ -2543,10 +2561,10 @@ importers:
         version: 4.2.1
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 12.11.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.77
+        version: 0.0.81
       babel-plugin-react-compiler:
         specifier: catalog:react
         version: 1.0.0
@@ -2949,10 +2967,10 @@ importers:
         version: 6.0.3(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3)))(babel-plugin-react-compiler@1.0.0)(vite@8.1.3(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.8.3))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 12.11.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.77
+        version: 0.0.81
       babel-plugin-react-compiler:
         specifier: catalog:react
         version: 1.0.0
@@ -2964,7 +2982,7 @@ importers:
         version: 1.3.0
       postcss:
         specifier: catalog:css
-        version: 8.5.15
+        version: 8.5.23
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -3086,7 +3104,7 @@ importers:
         version: 2.1.0
       postcss:
         specifier: catalog:css
-        version: 8.5.15
+        version: 8.5.23
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -4689,17 +4707,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@expressive-code/core@0.44.0':
-    resolution: {integrity: sha512-xgiF2P6tYUbrhi3+x0S8xHZWT1t3Bvb3U91tAtRbLb9HLejLvYc5GZUqKICKLaUN4iSGhhNJu2fM/aH8e5yCMg==}
+  '@expressive-code/core@0.44.1':
+    resolution: {integrity: sha512-3dDo9N8D7hYrLNNMMWFovg3+aDUtnQm7c7z0GZc1c0LEFVBc0Q6lKG+tVT28gDadOvsgOANfCn35fgpe97Pmgg==}
 
-  '@expressive-code/plugin-collapsible-sections@0.44.0':
-    resolution: {integrity: sha512-dK8axLBt0uXPaifZUZ0ZxVL/QjlqSatBds8xdXh8ecLsjXO55uQ+igK9yyI+BtU/gb/sZggcST8Ya5VNyCjH0g==}
+  '@expressive-code/plugin-collapsible-sections@0.44.1':
+    resolution: {integrity: sha512-1XG4PfamU5JPpWf9Z5jEsS1mNbeymntwn1EoQE40PPS5K9rUNTKpY5GFYEI60vWwj890a3/Oz9bCWTomvFityQ==}
 
   '@expressive-code/plugin-frames@0.44.0':
     resolution: {integrity: sha512-V6M6+zVc1GzqCvXkQHc2m5rcFOIVzJgMq5gnfrMnVf2gwtj/sg4H93c1f/mGeqHycubwkHFUDyParAOiGeDZeA==}
 
-  '@expressive-code/plugin-line-numbers@0.44.0':
-    resolution: {integrity: sha512-jZbCinT19JTZ1TCl18vGZBAgbNcegkWQjsuvqEDN2OeAlCqcSFE62j9d70+fk2zUd8nHnEgXF214D3a+STsrAQ==}
+  '@expressive-code/plugin-line-numbers@0.44.1':
+    resolution: {integrity: sha512-rWZmmSXBq9sq0DSe5+bXA+7j+3bYrh4EwXJdaBZtxEKB2I99OUSrU2d+4FAyu9Afpm5tCijbCs9AOg7Y93suOw==}
 
   '@expressive-code/plugin-shiki@0.44.0':
     resolution: {integrity: sha512-RZsdaqlbGqyAQKuoX4myQXxjmiE2l5KBpJ/gKPh62tCdIdpWyjbzVqSo8+5XsezZxkfi8AJ/J6EUaBTPROFX/Q==}
@@ -6684,6 +6702,9 @@ packages:
   '@types/picomatch@4.0.3':
     resolution: {integrity: sha512-iG0T6+nYJ9FAPmx9SsUlnwcq1ZVRuCXcVEvWnntoPlrOpwtSTKNDC9uVAxTsC3PUvJ+99n4RpAcNgBbHX3JSnQ==}
 
+  '@types/prismjs@1.26.6':
+    resolution: {integrity: sha512-vqlvI7qlMvcCBbVe0AKAb4f97//Hy0EBTaiW8AalRnG/xAN5zOiWWyrNqNXeq8+KAuvRewjCVY1+IPxk4RdNYw==}
+
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
@@ -6901,8 +6922,8 @@ packages:
   '@xstate/store@4.2.1':
     resolution: {integrity: sha512-dX7g9bYFOK/YvyFJVCsdHk3o/g1eC+eJcX8mHPWmitAXH6O58xSk1V91lUj67/cn27c2+uMKl98N7nRz+IyHoA==}
 
-  '@xyflow/react@12.11.0':
-    resolution: {integrity: sha512-na4IO33FSs2OS72hASgZDmTYwFAkef7Z74uBUVrong3ARmQQHfnRUVaCFn1kTt5LbS6pK03TbYjCPGLjLFfziA==}
+  '@xyflow/react@12.11.5':
+    resolution: {integrity: sha512-QqoryGkqEhWBuQN9bZWRKhwr3Uoj9lCGj/tg0NnIWHHEOXV+5c8cYsc7Q9TST63V92lHqcNV9P5cjvJ9ZAmblQ==}
     peerDependencies:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3
@@ -6914,8 +6935,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@xyflow/system@0.0.77':
-    resolution: {integrity: sha512-qCDCMCQAAgUu8yHnhloHG9F5mwPX5E+Wl8McpYIOPSSXfzFJJoZcwOcsDiAjitVKIg2de1WmJbCHfpcvxprsgg==}
+  '@xyflow/system@0.0.81':
+    resolution: {integrity: sha512-hfbafW4i7uLq7ILok8QWFFm4KMFw22lbZNJHKfHOMSOOoCk5e5m8yfr84UV9NaJajmogWaLVnp2XFU9JQejlqg==}
 
   '@yuku-codegen/binding-darwin-arm64@0.6.3':
     resolution: {integrity: sha512-pbDcFygFmbvo0jGFq5U0m5Sa9U8aVttVJWbBHZDZ68w/X48HdDWS1V4XvBacs8XkmWbTr/ef5fMGG7HsngqTmg==}
@@ -7517,6 +7538,10 @@ packages:
   commander@11.1.0:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
+
+  commander@12.1.0:
+    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
+    engines: {node: '>=18'}
 
   commenting@1.1.0:
     resolution: {integrity: sha512-YeNK4tavZwtH7jEgK1ZINXzLKm6DZdEMfsaaieOsCAN0S8vsY7UeuO3Q7d/M018EFgE+IeUAuBOKkFccBZsUZA==}
@@ -8432,8 +8457,8 @@ packages:
     peerDependencies:
       hono: ^4.0.0
 
-  hono@4.12.31:
-    resolution: {integrity: sha512-zJIHFrl6bq3RDd2YusFNCDlM8qUprxKswyi/OPzPyzKDdyBXDqWx8bZlZ7R+saTdSTatUmb3O7K4SspGPaEOQg==}
+  hono@4.12.34:
+    resolution: {integrity: sha512-GqXJqY/xJkJmuloTrnV1ZEXG3fqte+VjkUqoRNZXcrUidiUOP4fMSIHHY4tsqZBK++kVyWmt/AAfSUuy57/eSA==}
     engines: {node: '>=16.9.0'}
 
   hookable@6.1.1:
@@ -9342,8 +9367,8 @@ packages:
     engines: {node: ^22 || >= 24}
     hasBin: true
 
-  nanoid@3.3.12:
-    resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
+  nanoid@3.3.18:
+    resolution: {integrity: sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -9630,6 +9655,9 @@ packages:
     resolution: {integrity: sha512-TXfryirbmq34y8QBwgqCVLi+8oA3oWx2eAnSn62ITyEhEYaWRlVZ2DvMM9eZbMs/RfxPu/PK/aBLyGj4IrqMHw==}
     engines: {node: '>=18'}
 
+  parse-numeric-range@1.3.0:
+    resolution: {integrity: sha512-twN+njEipszzlMJd4ONUYgSfZPDxgHhT9Ahed5uTigpQn90FggW4SA/AIPq/6a149fTbE9qBEcSwE3FAEp6wQQ==}
+
   parse5@7.2.1:
     resolution: {integrity: sha512-BuBYQYlv1ckiPdQi/ohiivi9Sagc9JG+Ozs0r7b/0iK3sKmrb0b9FdWdBbOdx6hBCM/F9Ir82ofnBhtZOjCRPQ==}
 
@@ -9813,12 +9841,8 @@ packages:
     resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  postcss@8.5.15:
-    resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
-    engines: {node: ^10 || ^12 || >=14}
-
-  postcss@8.5.16:
-    resolution: {integrity: sha512-vuwillviilfKZsg0VGj5R/YwwcHx4SLsIOI/7K6mQkWx+l5cUHTjj5g0AasTBcyXsbfTgrwsUNmVUb5xVwyPwg==}
+  postcss@8.5.23:
+    resolution: {integrity: sha512-g50586zr4bZmwFiTlflMu8E0bDTb5I5gertgwAKmsdUlTQIhZtunzUlD1WSzwcVWPoAVpsrA6vlfCD7oXvRwgg==}
     engines: {node: ^10 || ^12 || >=14}
 
   prettier@2.8.8:
@@ -10048,6 +10072,9 @@ packages:
     resolution: {integrity: sha512-/YYmIi0V+vlg2B/QwwOr/SAirVKYdI9iF+KFRPMK5y2QqGq7Ky6PgxNBVXcuVq9E2o0clC4j2EyC1eigpbW8bA==}
     engines: {node: '>=18.18.0'}
 
+  refractor@5.0.0:
+    resolution: {integrity: sha512-QXOrHQF5jOpjjLfiNk5GFnWhRXvxjUVnlFxkeDmewR5sXkr3iM46Zo+CnRR8B+MDVqkULW4EcLVcRBNOPXHosw==}
+
   regex-recursion@6.0.2:
     resolution: {integrity: sha512-0YCaSCq2VRIebiaUviZNs0cBz1kg5kVS2UKUfNIx8YVs1cN3AV7NTctO5FOKBA+UT2BPJIWZauYHPqJODG50cg==}
 
@@ -10068,6 +10095,9 @@ packages:
 
   rehype-parse@9.0.1:
     resolution: {integrity: sha512-ksCzCD0Fgfh7trPDxr2rSylbwq9iYDkSn8TCDmEJ49ljEUBxDVCzCHv7QNzZOfODanX4+bWQ4WZqLCRWYLfhag==}
+
+  rehype-prism-plus@2.0.2:
+    resolution: {integrity: sha512-jTHb8ZtQHd2VWAAKeCINgv/8zNEF0+LesmwJak69GemoPVN9/8fGEARTvqOpKqmN57HwaM9z8UKBVNVJe8zggw==}
 
   rehype-raw@7.0.0:
     resolution: {integrity: sha512-/aE8hCfKlQeA8LmyeyQvQF3eBiLRGNlfBJEvWH7ivp9sBqs7TNqBL5X3v157rM4IFETqDnIOO+z5M/biZbo9Ww==}
@@ -10090,8 +10120,8 @@ packages:
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
 
-  remark-github-blockquote-alert@2.0.1:
-    resolution: {integrity: sha512-0w0u3/wjBEK555yzm5UUnDCWO38Qk60laA5FvJrnES+YA/+r3hvvLgE/5SpMjaVpPOpVzunXk9caob1NTheM0g==}
+  remark-github-blockquote-alert@2.1.0:
+    resolution: {integrity: sha512-J392jmIP684d7iGsENN0uguL10IGbRdc8bTUSrd/jOLzdWkwg721Fj3JPQGN8tF6fTIrE5HHOIA3nBuwuaeuPQ==}
     engines: {node: '>=16'}
 
   remark-mdx@3.1.0:
@@ -10399,6 +10429,11 @@ packages:
   sitemap@9.0.1:
     resolution: {integrity: sha512-S6hzjGJSG3d6if0YoF5kTyeRJvia6FSTBroE5fQ0bu1QNxyJqhhinfUsXi9fH3MgtXODWvwo2BDyQSnhPQ88uQ==}
     engines: {node: '>=20.19.5', npm: '>=10.8.2'}
+    hasBin: true
+
+  skills-ref@0.1.5:
+    resolution: {integrity: sha512-C2vyZbUQqt3PXA9vcdUmJ0lwbH9jK19C9fwQjl/ICPy2e5bzV3CaropViakJCv+HLt/9zsgjZ/NLJ5xEri0jSA==}
+    engines: {node: '>=18.0.0'}
     hasBin: true
 
   slash@3.0.0:
@@ -10818,6 +10853,9 @@ packages:
 
   unifont@0.7.4:
     resolution: {integrity: sha512-oHeis4/xl42HUIeHuNZRGEvxj5AaIKR+bHPNegRq5LV1gdc3jundpONbjglKpihmJf+dswygdMJn3eftGIMemg==}
+
+  unist-util-filter@5.0.1:
+    resolution: {integrity: sha512-pHx7D4Zt6+TsfwylH9+lYhBhzyhEnCXs/lbq/Hstxno5z4gVdyc2WEW0asfjGKPyG4pEKrnBv5hdkO6+aRnQJw==}
 
   unist-util-find-after@5.0.0:
     resolution: {integrity: sha512-amQa0Ep2m6hE2g72AugUItjbuM8X8cGQnFoHk0pGfrFeT9GZhzN5SW8nRsiGKK7Aif4CrACPENkA6P/Lw6fHGQ==}
@@ -13575,38 +13613,38 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
-  '@expressive-code/core@0.44.0':
+  '@expressive-code/core@0.44.1':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       hast-util-select: 6.0.4
       hast-util-to-html: 9.0.5
       hast-util-to-text: 4.0.2
       hastscript: 9.0.1
-      postcss: 8.5.16
-      postcss-nested: 6.2.0(postcss@8.5.16)
+      postcss: 8.5.23
+      postcss-nested: 6.2.0(postcss@8.5.23)
       unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.2
 
-  '@expressive-code/plugin-collapsible-sections@0.44.0':
+  '@expressive-code/plugin-collapsible-sections@0.44.1':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.44.1
 
   '@expressive-code/plugin-frames@0.44.0':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.44.1
 
-  '@expressive-code/plugin-line-numbers@0.44.0':
+  '@expressive-code/plugin-line-numbers@0.44.1':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.44.1
 
   '@expressive-code/plugin-shiki@0.44.0':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.44.1
       shiki: 4.1.0
 
   '@expressive-code/plugin-text-markers@0.44.0':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.44.1
 
   '@floating-ui/core@1.7.5':
     dependencies:
@@ -13648,29 +13686,29 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.1(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.31)(unstorage@1.17.5))(hono@4.12.31)(zod@4.4.3)':
+  '@hono/mcp@0.3.1(@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3))(hono-rate-limiter@0.5.3(hono@4.12.34)(unstorage@1.17.5))(hono@4.12.34)(zod@4.4.3)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
-      hono: 4.12.31
-      hono-rate-limiter: 0.5.3(hono@4.12.31)(unstorage@1.17.5)
+      hono: 4.12.34
+      hono-rate-limiter: 0.5.3(hono@4.12.34)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
       zod: 4.4.3
 
-  '@hono/node-server@1.19.14(hono@4.12.31)':
+  '@hono/node-server@1.19.14(hono@4.12.34)':
     dependencies:
-      hono: 4.12.31
+      hono: 4.12.34
 
-  '@hono/node-server@2.0.10(hono@4.12.31)':
+  '@hono/node-server@2.0.10(hono@4.12.34)':
     dependencies:
-      hono: 4.12.31
+      hono: 4.12.34
 
-  '@hono/oauth-providers@0.8.6(hono@4.12.31)':
+  '@hono/oauth-providers@0.8.6(hono@4.12.34)':
     dependencies:
-      hono: 4.12.31
+      hono: 4.12.34
 
-  '@hono/zod-validator@0.8.0(hono@4.12.31)(zod@4.4.3)':
+  '@hono/zod-validator@0.8.0(hono@4.12.34)(zod@4.4.3)':
     dependencies:
-      hono: 4.12.31
+      hono: 4.12.34
       zod: 4.4.3
 
   '@hpcc-js/wasm-graphviz@1.22.2': {}
@@ -14269,7 +14307,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.29.0(supports-color@10.1.0)(zod@4.4.3)':
     dependencies:
-      '@hono/node-server': 1.19.14(hono@4.12.31)
+      '@hono/node-server': 1.19.14(hono@4.12.34)
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
       content-type: 1.0.5
@@ -14279,7 +14317,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1(supports-color@10.1.0)
       express-rate-limit: 8.3.1(express@5.2.1)
-      hono: 4.12.31
+      hono: 4.12.34
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -14440,12 +14478,12 @@ snapshots:
 
   '@pandabox/panda-plugins@0.0.8':
     dependencies:
-      '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.16)
-      postcss: 8.5.16
+      '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.23)
+      postcss: 8.5.23
 
-  '@pandabox/postcss-plugins@0.0.2(postcss@8.5.16)':
+  '@pandabox/postcss-plugins@0.0.2(postcss@8.5.23)':
     dependencies:
-      postcss: 8.5.16
+      postcss: 8.5.23
 
   '@pandabox/utils@0.0.5':
     dependencies:
@@ -15382,27 +15420,27 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.22.12(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)':
+  '@tsdown/css@0.22.12(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)':
     dependencies:
       lightningcss: 1.32.0
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.5)(yaml@2.8.3)
+      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.23)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
       tsdown: 0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
-      postcss: 8.5.15
+      postcss: 8.5.23
     transitivePeerDependencies:
       - jiti
       - tsx
       - yaml
 
-  '@tsdown/css@0.22.9(jiti@2.7.0)(postcss@8.5.16)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)':
+  '@tsdown/css@0.22.9(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)':
     dependencies:
       lightningcss: 1.32.0
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.22.5)(yaml@2.8.3)
+      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.23)(tsx@4.22.5)(yaml@2.8.3)
       rolldown: 1.2.0
       tsdown: 0.22.9(@tsdown/css@0.22.9)(@typescript/native-preview@7.0.0-dev.20260707.2)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
-      postcss: 8.5.16
+      postcss: 8.5.23
     transitivePeerDependencies:
       - jiti
       - tsx
@@ -15566,6 +15604,8 @@ snapshots:
       '@types/node': 24.12.4
 
   '@types/picomatch@4.0.3': {}
+
+  '@types/prismjs@1.26.6': {}
 
   '@types/react-dom@19.2.3(@types/react@19.2.17)':
     dependencies:
@@ -15818,7 +15858,7 @@ snapshots:
       '@vue/shared': 3.5.25
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.16
+      postcss: 8.5.23
       source-map-js: 1.2.1
 
   '@vue/compiler-ssr@3.5.25':
@@ -15847,9 +15887,9 @@ snapshots:
 
   '@xstate/store@4.2.1': {}
 
-  '@xyflow/react@12.11.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@xyflow/react@12.11.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(immer@11.1.9)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
-      '@xyflow/system': 0.0.77
+      '@xyflow/system': 0.0.81
       classcat: 5.0.5
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -15860,7 +15900,7 @@ snapshots:
     transitivePeerDependencies:
       - immer
 
-  '@xyflow/system@0.0.77':
+  '@xyflow/system@0.0.81':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-interpolate': 3.0.4
@@ -16168,13 +16208,13 @@ snapshots:
       stubborn-fs: 1.2.5
       when-exit: 2.1.4
 
-  autoprefixer@10.5.4(postcss@8.5.15):
+  autoprefixer@10.5.4(postcss@8.5.23):
     dependencies:
       browserslist: 4.28.6
       caniuse-lite: 1.0.30001806
       fraction.js: 5.3.4
       picocolors: 1.1.1
-      postcss: 8.5.15
+      postcss: 8.5.23
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.7:
@@ -16517,6 +16557,8 @@ snapshots:
   commander@11.0.0: {}
 
   commander@11.1.0: {}
+
+  commander@12.1.0: {}
 
   commenting@1.1.0: {}
 
@@ -17126,7 +17168,7 @@ snapshots:
 
   expressive-code@0.44.0:
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.44.1
       '@expressive-code/plugin-frames': 0.44.0
       '@expressive-code/plugin-shiki': 0.44.0
       '@expressive-code/plugin-text-markers': 0.44.0
@@ -17659,19 +17701,19 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.5.3(hono@4.12.31)(unstorage@1.17.5):
+  hono-rate-limiter@0.5.3(hono@4.12.34)(unstorage@1.17.5):
     dependencies:
-      hono: 4.12.31
+      hono: 4.12.34
     optionalDependencies:
       unstorage: 1.17.5
 
-  hono-sessions@0.8.1(hono@4.12.31):
+  hono-sessions@0.8.1(hono@4.12.34):
     dependencies:
-      hono: 4.12.31
+      hono: 4.12.34
       iron-webcrypto: 1.2.1
       ohash: 2.0.11
 
-  hono@4.12.31: {}
+  hono@4.12.34: {}
 
   hookable@6.1.1: {}
 
@@ -18780,7 +18822,7 @@ snapshots:
 
   nano-staged@1.0.2: {}
 
-  nanoid@3.3.12: {}
+  nanoid@3.3.18: {}
 
   nanoid@5.1.16: {}
 
@@ -19114,6 +19156,8 @@ snapshots:
 
   parse-ms@4.0.0: {}
 
+  parse-numeric-range@1.3.0: {}
+
   parse5@7.2.1:
     dependencies:
       entities: 4.5.0
@@ -19212,24 +19256,14 @@ snapshots:
     dependencies:
       postcss: 8.5.14
 
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.5)(yaml@2.8.3):
+  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.23)(tsx@4.22.5)(yaml@2.8.3):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.7.0
-      postcss: 8.5.15
+      postcss: 8.5.23
       tsx: 4.22.5
       yaml: 2.8.3
-
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.22.5)(yaml@2.8.3):
-    dependencies:
-      lilconfig: 3.1.3
-    optionalDependencies:
-      jiti: 2.7.0
-      postcss: 8.5.16
-      tsx: 4.22.5
-      yaml: 2.8.3
-    optional: true
 
   postcss-minify-selectors@7.0.5(postcss@8.5.14):
     dependencies:
@@ -19237,9 +19271,9 @@ snapshots:
       postcss: 8.5.14
       postcss-selector-parser: 7.1.1
 
-  postcss-nested@6.2.0(postcss@8.5.16):
+  postcss-nested@6.2.0(postcss@8.5.23):
     dependencies:
-      postcss: 8.5.16
+      postcss: 8.5.23
       postcss-selector-parser: 6.1.2
 
   postcss-nested@7.0.2(postcss@8.5.14):
@@ -19266,19 +19300,13 @@ snapshots:
 
   postcss@8.5.14:
     dependencies:
-      nanoid: 3.3.12
+      nanoid: 3.3.18
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  postcss@8.5.15:
+  postcss@8.5.23:
     dependencies:
-      nanoid: 3.3.12
-      picocolors: 1.1.1
-      source-map-js: 1.2.1
-
-  postcss@8.5.16:
-    dependencies:
-      nanoid: 3.3.12
+      nanoid: 3.3.18
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -19542,6 +19570,13 @@ snapshots:
     dependencies:
       is-plain-obj: 4.1.0
 
+  refractor@5.0.0:
+    dependencies:
+      '@types/hast': 3.0.5
+      '@types/prismjs': 1.26.6
+      hastscript: 9.0.1
+      parse-entities: 4.0.2
+
   regex-recursion@6.0.2:
     dependencies:
       regex-utilities: 2.3.0
@@ -19574,6 +19609,15 @@ snapshots:
       '@types/hast': 3.0.5
       hast-util-from-html: 2.0.3
       unified: 11.0.5
+
+  rehype-prism-plus@2.0.2:
+    dependencies:
+      hast-util-to-string: 3.0.1
+      parse-numeric-range: 1.3.0
+      refractor: 5.0.0
+      rehype-parse: 9.0.1
+      unist-util-filter: 5.0.1
+      unist-util-visit: 5.1.0
 
   rehype-raw@7.0.0:
     dependencies:
@@ -19627,7 +19671,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  remark-github-blockquote-alert@2.0.1:
+  remark-github-blockquote-alert@2.1.0:
     dependencies:
       unist-util-visit: 5.1.0
 
@@ -20110,6 +20154,11 @@ snapshots:
       arg: 5.0.2
       sax: 1.6.0
 
+  skills-ref@0.1.5:
+    dependencies:
+      commander: 12.1.0
+      js-yaml: 4.1.1
+
   slash@3.0.0: {}
 
   slice-ansi@4.0.0:
@@ -20418,7 +20467,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
     optionalDependencies:
-      '@tsdown/css': 0.22.12(jiti@2.7.0)(postcss@8.5.15)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
+      '@tsdown/css': 0.22.12(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
       tsx: 4.22.5
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -20445,7 +20494,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
     optionalDependencies:
-      '@tsdown/css': 0.22.9(jiti@2.7.0)(postcss@8.5.16)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
+      '@tsdown/css': 0.22.9(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.8.3)
       tsx: 4.22.5
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -20548,6 +20597,12 @@ snapshots:
       css-tree: 3.1.0
       ofetch: 1.5.1
       ohash: 2.0.11
+
+  unist-util-filter@5.0.1:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.0
+      unist-util-visit-parents: 6.0.2
 
   unist-util-find-after@5.0.0:
     dependencies:
@@ -20819,7 +20874,7 @@ snapshots:
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
-      postcss: 8.5.16
+      postcss: 8.5.23
       rolldown: 1.1.4
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -20834,7 +20889,7 @@ snapshots:
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
-      postcss: 8.5.16
+      postcss: 8.5.23
       rolldown: 1.1.4
       tinyglobby: 0.2.17
     optionalDependencies:
