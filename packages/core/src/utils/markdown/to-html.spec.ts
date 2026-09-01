@@ -115,10 +115,38 @@ describe('markdownToHtml', () => {
   it('should convert code blocks to HTML pre/code tags', () => {
     const markdown = '```\nconst x = 1;\nconsole.log(x);\n```'
     expect(markdownToHtml(markdown)).toMatchInlineSnapshot(`
-      "<pre><code>const x = 1;
-      console.log(x);
-      </code></pre>"
+      "<pre><code class=""><span class="code-line">const x = 1;
+      </span><span class="code-line">console.log(x);
+      </span></code></pre>"
     `)
+  })
+
+  it('should highlight fenced code blocks', () => {
+    expect(markdownToHtml('```ts\nconst value: string = 1\n```')).toMatchInlineSnapshot(`
+      "<pre class="language-ts"><code class="language-ts"><span class="code-line"><span class="token keyword">const</span> value<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token number">1</span>
+      </span></code></pre>"
+    `)
+  })
+
+  it('should highlight diff blocks using their source language', () => {
+    expect(markdownToHtml('```diff-ts\n- const value: string = 1\n+ const value: string = 2\n```')).toMatchInlineSnapshot(`
+      "<pre class="language-ts"><code class="language-diff-ts"><span class="code-line deleted"><span class="token operator">-</span> <span class="token keyword">const</span> value<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token number">1</span>
+      </span><span class="code-line inserted"><span class="token operator">+</span> <span class="token keyword">const</span> value<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token number">2</span>
+      </span></code></pre>"
+    `)
+  })
+
+  it('should preserve diff styling when the source language is unknown', () => {
+    const html: string = markdownToHtml('```diff-not-a-language\n- old\n+ new\n```')
+
+    expect(html).toContain('<span class="code-line deleted">- old')
+    expect(html).toContain('<span class="code-line inserted">+ new')
+  })
+
+  it('should leave unknown fenced languages unhighlighted', () => {
+    expect(markdownToHtml('```not-a-language\nvalue\n```')).toBe(
+      '<pre><code class="language-not-a-language"><span class="code-line">value\n</span></code></pre>',
+    )
   })
 
   it('should convert inline code to HTML code tags', () => {
@@ -156,8 +184,8 @@ code block
       <li>List item 1</li>
       <li>List item 2 with <em>emphasis</em></li>
       </ul>
-      <pre><code>code block
-      </code></pre>"
+      <pre><code class=""><span class="code-line">code block
+      </span></code></pre>"
     `)
   })
 

@@ -2,7 +2,7 @@ import type { Fqn } from '@likec4/core/types'
 import { z } from 'zod'
 
 export const searchParamsSchema = z.object({
-  theme: z.literal(['light', 'dark', 'auto'])
+  theme: z.enum(['light', 'dark', 'auto'])
     .optional()
     .catch(undefined),
   dynamic: z.enum(['diagram', 'sequence'])

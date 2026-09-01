@@ -1,5 +1,26 @@
 import { describe, expect, it } from 'vitest'
-import { resolveForceColorScheme } from './searchParams'
+import { resolveForceColorScheme, searchParamsSchema } from './searchParams'
+
+describe('searchParamsSchema', () => {
+  it('should parse valid theme options', () => {
+    expect(searchParamsSchema.parse({ theme: 'light' }).theme).toBe('light')
+    expect(searchParamsSchema.parse({ theme: 'dark' }).theme).toBe('dark')
+    expect(searchParamsSchema.parse({ theme: 'auto' }).theme).toBe('auto')
+  })
+
+  it('should fallback to undefined for invalid or missing theme', () => {
+    expect(searchParamsSchema.parse({ theme: 'invalid' }).theme).toBeUndefined()
+    expect(searchParamsSchema.parse({}).theme).toBeUndefined()
+  })
+
+  it('should parse default search params', () => {
+    const parsed = searchParamsSchema.parse({})
+    expect(parsed.dynamic).toBe('diagram')
+    expect(parsed.padding).toBe(20)
+    expect(parsed.relationships).toBeUndefined()
+    expect(parsed.focusOnElement).toBeUndefined()
+  })
+})
 
 describe('resolveForceColorScheme', () => {
   it('should force light/dark and pass through auto/undefined', () => {

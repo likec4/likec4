@@ -53,6 +53,7 @@ catalog:
   oxlint-tsgolint: 0.24.0
   pako: ^2.1.0
   playwright: 1.60.0
+  rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
   tsx: 4.22.5
   turbo: 2.10.5
@@ -81,8 +82,8 @@ catalogs:
     "@astrojs/react": 6.0.1
     "@astrojs/starlight": 0.41.3
     "@astrojs/starlight-tailwind": 5.0.0
-    "@expressive-code/plugin-collapsible-sections": 0.44.0
-    "@expressive-code/plugin-line-numbers": 0.44.0
+    "@expressive-code/plugin-collapsible-sections": 0.44.1
+    "@expressive-code/plugin-line-numbers": 0.44.1
     astro: 7.1.0
     astro-og-canvas: 0.13.0
     astro-skills: 0.1.1
@@ -100,7 +101,7 @@ catalogs:
     "@radix-ui/colors": ^3.0.0
     "@pandacss/types": ^1.11.4
     "@tailwindcss/vite": ^4.3.2
-    postcss: 8.5.15
+    postcss: 8.5.23
     tailwindcss: ^4.3.2
   esbuild:
     esbuild: 0.28.1
@@ -139,6 +140,7 @@ catalogs:
     "@mantine/vanilla-extract": 9.4.1
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
+    "@modelcontextprotocol/ext-apps": "^1.7.4"
   obuild:
     obuild: 0.4.31
   react:
@@ -177,7 +179,7 @@ catalogs:
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001806
+    caniuse-lite: ^1.0.30001810
     chroma-js: 3.2.0
     citty: ^0.2.2
     consola: ^3.4.2
@@ -185,7 +187,7 @@ catalogs:
     defu: ^6.1.7
     esm-env: ^1.2.2
     fast-equals: ^6.0.2
-    immer: ^11.1.9
+    immer: ^11.1.18
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
@@ -239,8 +241,8 @@ catalogs:
     "@xstate/store-react": 2.0.0
     xstate: 5.32.4
   xyflow:
-    "@xyflow/react": 12.11.0
-    "@xyflow/system": 0.0.77
+    "@xyflow/react": 12.11.5
+    "@xyflow/system": 0.0.81
 
 minimumReleaseAgeExclude:
   - '@astrojs/react@5.0.7 || 6.0.1'

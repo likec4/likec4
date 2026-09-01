@@ -1,3 +1,6 @@
+# Publish asset fixtures are hashed byte-for-byte by the tests, never convert line endings
+packages/likec4/src/cli/publish/__fixtures__/**/*.svg -text
+
 # Test Snapshots
 *.snap            text eol=lf
 *.mmd             text eol=lf

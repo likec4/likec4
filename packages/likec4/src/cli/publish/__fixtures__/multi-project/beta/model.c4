@@ -1,0 +1,13 @@
+specification {
+  element system
+}
+
+model {
+  beta = system 'Beta'
+}
+
+views {
+  view index {
+    include *
+  }
+}

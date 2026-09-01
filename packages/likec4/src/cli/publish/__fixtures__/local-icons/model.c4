@@ -1,0 +1,26 @@
+specification {
+  element system {
+    style {
+      icon ./logo.svg
+    }
+  }
+}
+
+model {
+  customer = system 'Customer' {
+    link file:///home/alice/spec.pdf 'Spec'
+  }
+  backend = system 'Backend' {
+    icon ./logo.svg
+    -> customer 'notifies'
+  }
+}
+
+views {
+  view index {
+    include *
+    style * {
+      icon ./logo.svg
+    }
+  }
+}

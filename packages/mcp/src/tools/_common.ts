@@ -7,6 +7,7 @@
 
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import { invariant } from '@likec4/core'
+import type { LayoutedView } from '@likec4/core'
 import type {
   DeploymentElementModel,
   ElementModel,
@@ -294,5 +295,38 @@ export function toolError(text: string): CallToolResult {
       type: 'text',
       text,
     }],
+  }
+}
+
+export interface RenderPayload {
+  [key: string]: unknown
+  id: string
+  title: string
+  project: string
+  view: LayoutedView
+  model: Record<string, unknown>
+}
+
+/**
+ * Shapes the `{ id, title, project, view, model }` response shared by `render-view`
+ * and `preview-view` — both feed a single layouted view plus the rest of a computed
+ * model's data into the same paired MCP App UI.
+ */
+export function buildRenderPayload<M extends object>(params: {
+  projectId: string
+  viewId: string
+  title: string
+  layoutedView: LayoutedView
+  modelData: M
+}): RenderPayload {
+  return {
+    id: params.viewId,
+    title: params.title,
+    project: params.projectId,
+    view: params.layoutedView,
+    model: {
+      ...params.modelData,
+      views: { [params.viewId]: params.layoutedView },
+    },
   }
 }

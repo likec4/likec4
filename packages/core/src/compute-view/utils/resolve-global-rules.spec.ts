@@ -6,6 +6,7 @@ import {
   type ModelGlobals,
   type ParsedElementView as ElementView,
   isElementView,
+  isViewRuleGroup,
   isViewRulePredicate,
   isViewRuleStyle,
   ViewId,
@@ -544,5 +545,98 @@ describe('resolveGlobalRulesInViews', () => {
     expect(isViewRulePredicate(resolvedView.rules[3])).toBeTruthy()
     if (!isViewRulePredicate(resolvedView.rules[3])) return
     expect(resolvedView.rules[3].exclude).toEqual([{ elementTag: 'obsolete' as aux.Tag<$Aux>, isEqual: true }])
+  })
+
+  // Issue #1828
+  describe('global predicates inside groups', () => {
+    it('should replace global predicate inside a group', ({ expect }) => {
+      const globals = generateGlobals()
+      const unresolvedView: ElementView = {
+        ...generateElementView(),
+        rules: [{
+          title: 'Group title',
+          groupRules: [
+            { predicateId: 'all' as GlobalPredicateId },
+          ],
+        }],
+      }
+
+      const resolvedView = resolveGlobalRules(unresolvedView, globals)
+
+      expect(resolvedView.rules).toHaveLength(1)
+      const rule = resolvedView.rules[0]
+      invariant(rule && isViewRuleGroup(rule), 'expected a group rule')
+      expect(rule.title).toBe('Group title')
+      expect(rule.groupRules).toEqual([{ include: [{ wildcard: true }] }])
+    })
+
+    it('should expand global predicate with multiple rules inside a group', ({ expect }) => {
+      const globals = generateGlobals()
+      const unresolvedView: ElementView = {
+        ...generateElementView(),
+        rules: [{
+          title: null,
+          groupRules: [
+            { include: [{ ref: { model: 'kept' as aux.Fqn<$Aux> } }] },
+            { predicateId: 'multiple' as GlobalPredicateId },
+          ],
+        }],
+      }
+
+      const resolvedView = resolveGlobalRules(unresolvedView, globals)
+
+      const rule = resolvedView.rules[0]
+      invariant(rule && isViewRuleGroup(rule), 'expected a group rule')
+      // the local predicate is preserved, the global one expands in place
+      expect(rule.groupRules).toEqual([
+        { include: [{ ref: { model: 'kept' } }] },
+        { include: [{ elementTag: 'api', isEqual: true }] },
+        { include: [{ element: 'backend' }] },
+        { exclude: [{ elementTag: 'deprecated', isEqual: true }] },
+      ])
+    })
+
+    it('should resolve global predicate inside a nested group', ({ expect }) => {
+      const globals = generateGlobals()
+      const unresolvedView: ElementView = {
+        ...generateElementView(),
+        rules: [{
+          title: 'Outer',
+          groupRules: [{
+            title: 'Inner',
+            groupRules: [
+              { predicateId: 'all' as GlobalPredicateId },
+            ],
+          }],
+        }],
+      }
+
+      const resolvedView = resolveGlobalRules(unresolvedView, globals)
+
+      const outer = resolvedView.rules[0]
+      invariant(outer && isViewRuleGroup(outer), 'expected an outer group rule')
+      const inner = outer.groupRules[0]
+      invariant(inner && isViewRuleGroup(inner), 'expected an inner group rule')
+      expect(inner.groupRules).toEqual([{ include: [{ wildcard: true }] }])
+    })
+
+    it('should remove global predicate inside a group that does not exist', ({ expect }) => {
+      const globals = generateGlobals()
+      const unresolvedView: ElementView = {
+        ...generateElementView(),
+        rules: [{
+          title: null,
+          groupRules: [
+            { predicateId: 'missing' as GlobalPredicateId },
+          ],
+        }],
+      }
+
+      const resolvedView = resolveGlobalRules(unresolvedView, globals)
+
+      const rule = resolvedView.rules[0]
+      invariant(rule && isViewRuleGroup(rule), 'expected a group rule')
+      expect(rule.groupRules).toHaveLength(0)
+    })
   })
 })

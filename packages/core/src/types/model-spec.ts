@@ -3,6 +3,7 @@ import type {
   BorderStyle,
   Color,
   ColorLiteral,
+  CustomColor,
   CustomColorDefinitions,
   ElementShape,
   IconPosition,
@@ -53,7 +54,7 @@ export interface ElementSpecification {
 }
 
 export interface TagSpecification {
-  color: ThemeColor | ColorLiteral
+  color: ThemeColor | CustomColor | ColorLiteral
 }
 
 /**

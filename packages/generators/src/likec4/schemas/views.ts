@@ -62,7 +62,9 @@ export const viewRuleRank = z
 
 // Manually typed due to recursive z.lazy schema
 export type ViewRuleGroupInput = {
-  groupRules: Array<z.input<typeof viewRulePredicate> | ViewRuleGroupInput>
+  groupRules: Array<
+    z.input<typeof viewRulePredicate> | z.input<typeof viewRuleGlobalPredicate> | ViewRuleGroupInput
+  >
   title: string | null
   color?: z.input<typeof common.color> | undefined
   border?: z.input<typeof common.border> | undefined
@@ -74,7 +76,9 @@ export type ViewRuleGroupInput = {
 }
 
 export type ViewRuleGroupOutput = {
-  groupRules: Array<z.infer<typeof viewRulePredicate> | ViewRuleGroupOutput>
+  groupRules: Array<
+    z.infer<typeof viewRulePredicate> | z.infer<typeof viewRuleGlobalPredicate> | ViewRuleGroupOutput
+  >
   title: string | null
   color?: z.infer<typeof common.color> | undefined
   border?: z.infer<typeof common.border> | undefined
@@ -87,7 +91,7 @@ export type ViewRuleGroupOutput = {
 
 export const viewRuleGroup: z.ZodType<ViewRuleGroupOutput, ViewRuleGroupInput> = z.lazy(() =>
   z.object({
-    groupRules: z.array(z.union([viewRulePredicate, viewRuleGroup])),
+    groupRules: z.array(z.union([viewRulePredicate, viewRuleGlobalPredicate, viewRuleGroup])),
     title: z.string().nullable(),
     color: common.color.optional(),
     border: common.border.optional(),

@@ -4,10 +4,11 @@ import type * as yargs from 'yargs'
 import { drawioCmd } from './drawio/handler'
 import { jpgCmd } from './jpg/handler'
 import { jsonCmd } from './json/handler'
+import { markdownCmd } from './markdown/handler'
 import { pngCmd } from './png/handler'
 
 /**
- * Registers the `export` command with subcommands png, jpg, json, drawio.
+ * Registers the `export` command with subcommands png, jpg, json, drawio, markdown.
  * @param yargs - yargs instance to extend
  * @returns yargs chain with export <format> [path] and format-specific options
  */
@@ -15,7 +16,7 @@ const exportCmd = (yargs: yargs.Argv) => {
   return yargs
     .command({
       command: 'export <format> [path]',
-      describe: 'Export to images, JSON, or DrawIO',
+      describe: 'Export to images, JSON, DrawIO, or Markdown',
       builder: yargs =>
         pipe(
           yargs.usage(`${k.bold('Usage:')} $0 export <format> [path]`),
@@ -23,6 +24,7 @@ const exportCmd = (yargs: yargs.Argv) => {
           jpgCmd,
           jsonCmd,
           drawioCmd,
+          markdownCmd,
         )
           .updateStrings({
             'Commands:': k.bold('Formats:'),

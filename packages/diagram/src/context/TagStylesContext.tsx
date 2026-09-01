@@ -1,14 +1,14 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
-import { DefaultTagColors } from '@likec4/core/styles'
-import { getContrastedColorsAPCA, isValidColor } from '@likec4/core/styles'
+import { DefaultTagColors, getContrastedColorsAPCA, isValidColor, LikeC4Styles } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
 import { useLikeC4Specification } from '../hooks/useLikeC4Model'
+import { useLikeC4Styles } from '../hooks/useLikeC4Styles'
 
-const radixColors = DefaultTagColors as unknown as string[]
+const radixColors: readonly string[] = DefaultTagColors
 
-export function generateColorVars(spec: TagSpecification): string {
+export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles = LikeC4Styles.DEFAULT): string {
   const color = spec.color
   // Tag has a color defined in the specification — derive a high-contrast text
   // color from it (APCA) so the chip text stays legible on any background.
@@ -22,24 +22,38 @@ export function generateColorVars(spec: TagSpecification): string {
       --colors-likec4-tag-text: ${text};
     `
   }
-  if (!radixColors.includes(color)) {
-    return ''
+  if (radixColors.includes(color)) {
+    let textcolor = `var(--colors-${color}-12)`
+    if (['mint', 'grass', 'lime', 'yellow', 'amber'].includes(color)) {
+      textcolor = 'rgba(0 0 0 / 0.85)'
+    }
+    return `
+    --colors-likec4-tag-border: var(--colors-${color}-8);
+    --colors-likec4-tag-bg: var(--colors-${color}-9);
+    --colors-likec4-tag-bg-hover: var(--colors-${color}-10);
+    --colors-likec4-tag-text: ${textcolor};
+    `
   }
-  let textcolor = `var(--colors-${color}-12)`
-  if (['mint', 'grass', 'lime', 'yellow', 'amber'].includes(color)) {
-    textcolor = 'rgba(0 0 0 / 0.85)'
+  // Theme color (e.g. `primary`, `secondary`) or a project-defined custom color —
+  // resolve to actual literal values via the project's LikeC4Styles.
+  if (styles.isThemeColor(color)) {
+    const { fill, hiContrast } = styles.tagColor(color)
+    return `
+    --colors-likec4-tag-bg: ${fill};
+    --colors-likec4-tag-bg-hover: color-mix(in oklab, ${fill}, var(--colors-likec4-mix-color) 20%);
+    --colors-likec4-tag-text: ${hiContrast};
+    `
   }
-  return `
-  --colors-likec4-tag-border: var(--colors-${color}-8);
-  --colors-likec4-tag-bg: var(--colors-${color}-9);
-  --colors-likec4-tag-bg-hover: var(--colors-${color}-10);
-  --colors-likec4-tag-text: ${textcolor};
-  `
+  return ''
 }
 
 const TagStylesContext = createContext<Record<string, TagSpecification>>({})
 
-function generateStylesheet(tags: Record<string, TagSpecification> | undefined, rootSelector: string) {
+function generateStylesheet(
+  tags: Record<string, TagSpecification> | undefined,
+  rootSelector: string,
+  styles: LikeC4Styles,
+) {
   if (!tags || isEmpty(tags)) {
     return ''
   }
@@ -47,7 +61,7 @@ function generateStylesheet(tags: Record<string, TagSpecification> | undefined, 
     entries(tags),
     flatMap(([tag, spec]) => [
       `:is(${rootSelector} [data-likec4-tag="${tag}"]) {`,
-      generateColorVars(spec),
+      generateColorVars(spec, styles),
       '}',
     ]),
     join('\n'),
@@ -56,8 +70,9 @@ function generateStylesheet(tags: Record<string, TagSpecification> | undefined, 
 
 export function TagStylesProvider({ children, id }: PropsWithChildren<{ id: string }>) {
   const tags = useLikeC4Specification().tags
+  const styles = useLikeC4Styles()
   const nonce = useMantineStyleNonce()?.()
-  const stylesheet = generateStylesheet(tags, `#${id}`)
+  const stylesheet = generateStylesheet(tags, `#${id}`, styles)
 
   return (
     <>

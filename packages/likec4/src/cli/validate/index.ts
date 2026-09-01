@@ -4,27 +4,8 @@ import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { path, project } from '../options'
-
-interface DiagnosticItem {
-  message: string
-  file: string
-  line: number
-  range: {
-    start: { line: number; character: number }
-    end: { line: number; character: number }
-  } | null
-}
-
-interface ValidateResult {
-  valid: boolean
-  errors: DiagnosticItem[]
-  stats: {
-    totalFiles: number
-    totalErrors: number
-    filteredFiles: number
-    filteredErrors: number
-  }
-}
+import type { DiagnosticItem } from './result'
+import { buildValidateResult } from './result'
 
 const validateCmd = (yargs: yargs.Argv) => {
   return yargs
@@ -127,31 +108,16 @@ const validateCmd = (yargs: yargs.Argv) => {
         }
 
         const allErrors = [...allModelErrors, ...layoutErrors]
-        const totalFiles = languageServices.documentCount()
-        const totalErrors = allErrors.length
 
-        // Apply file filter
-        const filteredErrors = fileFilter
-          ? allErrors.filter(e =>
-            fileFilter.some(f => e.file === f || e.file.endsWith('/' + f) || e.file.endsWith('\\' + f))
-          )
-          : allErrors
+        const result = buildValidateResult({
+          documents: languageServices.documentPaths(),
+          errors: allErrors,
+          fileFilter,
+        })
+        const { valid, errors: filteredErrors } = result
+        const { totalFiles, totalErrors } = result.stats
 
-        const filteredFileSet = new Set(filteredErrors.map(e => e.file))
-
-        const valid = filteredErrors.length === 0
         process.exitCode = valid ? 0 : 1
-
-        const result: ValidateResult = {
-          valid,
-          errors: filteredErrors,
-          stats: {
-            totalFiles,
-            totalErrors,
-            filteredFiles: fileFilter ? filteredFileSet.size : totalFiles,
-            filteredErrors: filteredErrors.length,
-          },
-        }
 
         // Output
         if (isJson) {

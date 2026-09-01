@@ -1,0 +1,13 @@
+specification {
+  element system
+}
+
+model {
+  alpha = system 'Alpha'
+}
+
+views {
+  view index {
+    include *
+  }
+}

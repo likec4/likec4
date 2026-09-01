@@ -13,12 +13,14 @@ import packageJson from '../../package.json' with { type: 'json' }
 import { setMcpServerCtx } from '../ctx'
 import { applySemanticLayoutPrompt } from '../prompts/applySemanticLayout'
 import { projectResource } from '../resource/project'
+import { renderViewResource } from '../resource/render-view'
 import { applySemanticLayoutTool } from '../tools/apply-semantic-layout'
 import { batchReadElements } from '../tools/batch-read-elements'
 import { elementDiff } from '../tools/element-diff'
 import { findRelationshipPaths } from '../tools/find-relationship-paths'
 import { findRelationships } from '../tools/find-relationships'
 import { listProjects } from '../tools/list-projects'
+import { previewViewTool } from '../tools/preview-view'
 import { queryByMetadata } from '../tools/query-by-metadata'
 import { queryByTagPattern } from '../tools/query-by-tag-pattern'
 import { queryByTags } from '../tools/query-by-tags'
@@ -29,6 +31,7 @@ import { readDeployment } from '../tools/read-deployment'
 import { readElement } from '../tools/read-element'
 import { readProjectSummary } from '../tools/read-project-summary'
 import { readView } from '../tools/read-view'
+import { renderViewTool } from '../tools/render-view'
 import { searchElement } from '../tools/search-element'
 import { subgraphSummary } from '../tools/subgraph-summary'
 
@@ -45,6 +48,8 @@ Available tools:
 - read-element — Full element details including relationships, includedInViews, deployedInstances, metadata and sourceLocation. Input: { id, project? }.
 - read-deployment — Details of a deployment node or deployed instance. Input: { id, project? }.
 - read-view — Full view details (nodes/edges) and sourceLocation. Input: { viewId, project? }.
+- render-view — Renders a view as an interactive diagram (pan/zoom/fit) inline in chat, for hosts that support MCP Apps. Input: { viewId, project? }.
+- preview-view — Renders a preview of a LikeC4 view defined by DSL text, in the context of an existing project's real elements, without saving to disk. The view id must be new: if it already exists, the tool returns an error and asks for a different id. Input: { dsl, project? }.
 - find-relationships — Direct and indirect relationships between two elements in a project. Input: { element1, element2, project? }.
 - query-graph — Query element hierarchy (ancestors, descendants, siblings, children, parent) and relationships (incomers, outgoers). Input: { elementId, queryType, includeIndirect?, project? }.
 - query-incomers-graph — Get complete graph of all upstream dependencies/producers (recursive incomers). Much more efficient than repeated query-graph calls. Input: { elementId, includeIndirect?, maxDepth?, maxNodes?, project? }.
@@ -119,8 +124,13 @@ export function createMCPServer(_services: LikeC4LanguageServices): McpServer {
     piped(
       applySemanticLayoutPrompt,
       applySemanticLayoutTool,
+      renderViewTool,
+      previewViewTool,
     ),
     // Resources
-    projectResource,
+    piped(
+      projectResource,
+      renderViewResource,
+    ),
   )
 }
