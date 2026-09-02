@@ -1,3 +1,69 @@
+## [1.59.3](https://github.com/likec4/likec4/compare/v1.59.2...v1.59.3) (2026-09-02)
+
+### 🚀 Features
+
+- **MCP Apps: `render-view` and `preview-view`**:\
+  `render-view` renders a LikeC4 view as an interactive diagram (pan/zoom/fit) inline in MCP hosts that support MCP Apps, alongside the existing text-only `read-view`. `preview-view` renders a preview of a view defined by DSL text within the context of an existing project's real elements, without saving to disk — so view definitions can be experimented with before adding them to the project. Thanks [@kgeilmann](https://github.com/kgeilmann), [#3174](https://github.com/likec4/likec4/pull/3174)
+
+- **Markdown Export**:\
+  New `generateMarkdown` generator and `likec4 export markdown [path]` command render a project's views as a single GitHub-flavored Markdown document, with embedded Mermaid diagrams. Writes one `README.md` per project into that project's own folder, or use `--project` to restrict to one — so the rendered architecture is browsable directly on GitHub, with no server and no manual diagram assembly. Thanks [@StefanStuehrmann](https://github.com/StefanStuehrmann), [#3160](https://github.com/likec4/likec4/pull/3160)
+
+- **Bidirectional Relationships**:\
+  Model relationships can use the documented `<->` and `-[kind]<->` syntax. Bidirectional semantics are preserved through styling and relationship extensions, and such relationships can be included or excluded from either endpoint in view relationship expressions. Thanks [@ckeller42](https://github.com/ckeller42), [#2949](https://github.com/likec4/likec4/pull/2949), fixes [#2927](https://github.com/likec4/likec4/issues/2927)
+
+- **Global Predicates in View Groups**:\
+  Global predicate groups can be referenced inside view groups, so a reusable set of predicates can be scoped into a named group. Thanks [@farhan523](https://github.com/farhan523), [#3147](https://github.com/likec4/likec4/pull/3147)
+
+- **View Order Metadata**:\
+  Optional view order metadata for sorting sibling views in navigation. Thanks [@merlincat11](https://github.com/merlincat11), [#3150](https://github.com/likec4/likec4/pull/3150)
+
+- **Configurable Webapp Export Formats**:\
+  Generated webapps can limit the available export formats from project config. Omitting `webapp.exportFormats` keeps all current formats enabled; an empty list hides webapp exports. Thanks [@ckeller42](https://github.com/ckeller42), [#3078](https://github.com/likec4/likec4/pull/3078)
+
+- **Project-scoped Web Components**:\
+  Define project-scoped LikeC4 web components directly from the Vite plugin with `likec4:webcomponents/<project-id>`. Thanks [@JJordan0C](https://github.com/JJordan0C), [#3161](https://github.com/likec4/likec4/pull/3161)
+
+- **Escaping `/` in Titles**:\
+  Escape a forward slash in a title with `\/` so it doesn't create a view folder. This also applies to element titles, so `implicitViews` no longer split an auto-generated view into an unwanted subfolder when the element's title contains a slash. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist), [#3215](https://github.com/likec4/likec4/pull/3215)
+
+- **Syntax Highlighting in Markdown Blocks**:\
+  Language-tagged Markdown code blocks and combined `diff-<language>` blocks are syntax highlighted in diagram descriptions and notes. Thanks [@ekisu](https://github.com/ekisu), [#3196](https://github.com/likec4/likec4/pull/3196)
+
+- **Manual Layout Editor**:\
+  Manual layouts can be saved and reset for implicit element views, and the built-in manual-layout comparison state and actions are exposed to custom viewers. Embedded editors can skip waiting for a refreshed view after applying a change locally. Thanks [@Phrogz](https://github.com/Phrogz), [#3188](https://github.com/likec4/likec4/pull/3188), [#3190](https://github.com/likec4/likec4/pull/3190), [#3166](https://github.com/likec4/likec4/pull/3166)
+
+### 🐞 Bug Fixes
+
+- Fixed `--theme light` and `--theme dark` export flags not applying the requested theme in PNG and JPEG diagram exports. Thanks [@Abhirup0](https://github.com/Abhirup0), [#3193](https://github.com/likec4/likec4/pull/3193)
+
+- Fixed crash when clicking another step during a walkthrough in a `diagram`-variant dynamic view. Thanks [@wataryooou](https://github.com/wataryooou), [#3200](https://github.com/likec4/likec4/pull/3200), fixes [#3201](https://github.com/likec4/likec4/issues/3201)
+
+- Fixed `likec4 mcp` ignoring the `LIKEC4_WORKSPACE` environment variable. The command overrode the shared `path` default, so the workspace always fell back to the current directory and the server silently served an empty model. Thanks [@tnucera](https://github.com/tnucera), [#3204](https://github.com/likec4/likec4/pull/3204)
+
+- Fixed generated output using CRLF line endings on Windows. Markdown, Mermaid, D2, PlantUML and LikeC4 DSL exports now always emit LF, so generated files are byte-identical across platforms. [#3210](https://github.com/likec4/likec4/pull/3210)
+
+- Fixed `likec4 validate --file` reporting `filteredFiles: 0` for clean files. Every file matched by the filter is now counted, including files with no diagnostics. Thanks [@luantaraschi](https://github.com/luantaraschi), [#3182](https://github.com/likec4/likec4/pull/3182)
+
+- Fixed keyword completions inserting the keyword twice (e.g. `modelmodel`) in editors other than VS Code. Thanks [@farhan523](https://github.com/farhan523), [#3146](https://github.com/likec4/likec4/pull/3146)
+
+- Fixed outline entries merging an element's kind into its name, such as `modelmodel`. The kind now renders in parentheses. Thanks [@bounce12340](https://github.com/bounce12340), [#3151](https://github.com/likec4/likec4/pull/3151), fixes [#3091](https://github.com/likec4/likec4/issues/3091)
+
+- Fixed Bootstrap icons in the VS Code preview so `iconColor` colors them correctly. Thanks [@ckeller42](https://github.com/ckeller42), [#3144](https://github.com/likec4/likec4/pull/3144)
+
+- Preserve original colors for non-Bootstrap diagram icons, including bundled brand, cloud provider, and image-based icons. Thanks [@ckeller42](https://github.com/ckeller42), [#3154](https://github.com/likec4/likec4/pull/3154), fixes [#3153](https://github.com/likec4/likec4/issues/3153)
+
+- Render custom SVG icons reliably in relationship views, and allow local SVG icons that use `currentColor` to follow `iconColor`. Thanks [@ckeller42](https://github.com/ckeller42), [#3155](https://github.com/likec4/likec4/pull/3155)
+
+- Avoid overlapping-area warnings when multiple projects intentionally include the same shared folder. Nested or partially overlapping include paths still warn because those can make file ownership ambiguous. Thanks [@ckeller42](https://github.com/ckeller42), [#3156](https://github.com/likec4/likec4/pull/3156), fixes [#2973](https://github.com/likec4/likec4/issues/2973)
+
+- Preserve imported project prefixes for scoped `view of` element views. Thanks [@ckeller42](https://github.com/ckeller42), [#3143](https://github.com/likec4/likec4/pull/3143)
+
+- Keep automatically routed relationships automatic when moving connected nodes in the layout editor. Thanks [@Phrogz](https://github.com/Phrogz), [#3187](https://github.com/likec4/likec4/pull/3187), fixes [#3184](https://github.com/likec4/likec4/issues/3184)
+
+- Restore node dragging and selection when the editor finishes synchronizing a layout change. Thanks [@Phrogz](https://github.com/Phrogz), [#3164](https://github.com/likec4/likec4/pull/3164)
+
+- Hide the manual layout tools tooltip while its popover is open. Thanks [@Phrogz](https://github.com/Phrogz), [#3176](https://github.com/likec4/likec4/pull/3176)
+
 ## [1.59.2](https://github.com/likec4/likec4/compare/v1.59.1...v1.59.2) (2026-07-22)
 
 ### 🐞 Bug Fixes
