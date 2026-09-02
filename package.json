@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "version": "1.59.2",
-  "packageManager": "pnpm@11.15.0",
+  "packageManager": "pnpm@11.25.0",
   "type": "module",
   "engines": {
     "node": ">=22.22.3"
@@ -48,7 +48,7 @@
     "@changesets/cli": "catalog:",
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
-    "dprint": "^0.54.0",
+    "dprint": "catalog:",
     "execa": "^9.6.0",
     "global": "^4.4.0",
     "husky": "^9.1.7",

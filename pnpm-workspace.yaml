@@ -37,13 +37,14 @@ patchedDependencies:
   "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
 
 catalog:
-  "@changesets/changelog-github": ^0.7.0
-  "@changesets/cli": ^2.31.1
+  "@changesets/changelog-github": ^1.0.0
+  "@changesets/cli": ^3.0.1
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.19
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260707.2
+  dprint: ^0.57.0
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -56,7 +57,7 @@ catalog:
   rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
   tsx: 4.22.5
-  turbo: 2.10.5
+  turbo: 2.10.12
   typescript: 6.0.3
   wireit: 0.14.12
   zx: 8.8.5
@@ -122,22 +123,22 @@ catalogs:
     type-fest: ^4.41.0
     zod: ^4.4.3
   hono:
-    "@hono/mcp": ^0.3.1
-    "@hono/node-server": ^2.0.10
-    "@hono/oauth-providers": ^0.8.6
+    "@hono/mcp": ^0.3.2
+    "@hono/node-server": ^2.1.1
+    "@hono/oauth-providers": ^0.8.8
     "@hono/zod-validator": ^0.8.0
-    hono: ^4.12.31
+    hono: ^4.13.5
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 9.4.1
-    "@mantine/core": 9.4.1
-    "@mantine/hooks": 9.4.1
-    "@mantine/modals": 9.4.1
-    "@mantine/notifications": 9.4.1
-    "@mantine/vanilla-extract": 9.4.1
+    "@mantine/colors-generator": 9.6.0
+    "@mantine/core": 9.6.0
+    "@mantine/hooks": 9.6.0
+    "@mantine/modals": 9.6.0
+    "@mantine/notifications": 9.6.0
+    "@mantine/vanilla-extract": 9.6.0
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
     "@modelcontextprotocol/ext-apps": "^1.7.4"
@@ -148,18 +149,18 @@ catalogs:
     "@nanostores/media-query": 0.1.2
     "@nanostores/react": 1.1.0
     "@react-hookz/web": ^25.2.0
-    "@tabler/icons-react": 3.44.0
-    "@types/react": 19.2.17
-    "@types/react-dom": 19.2.3
+    "@tabler/icons-react": 3.46.0
+    "@types/react": 19.2.18
+    "@types/react-dom": 19.2.5
     "@babel/core": ^7.29.7
     babel-plugin-react-compiler: ^1.0.0
     clsx: ^2.1.1
-    motion: ^12.42.2
-    nanostores: 1.3.0
-    react: 19.2.7
-    react-dom: 19.2.7
-    react-error-boundary: ^6.1.2
-    react-resizable-panels: ^4.11.2
+    motion: ^12.43.0
+    nanostores: 1.5.2
+    react: 19.2.8
+    react-dom: 19.2.8
+    react-error-boundary: ^6.1.4
+    react-resizable-panels: ^4.12.3
     use-sync-external-store: ^1.6.0
   tanstack:
     "@tanstack/pacer": ^0.17.3
@@ -194,35 +195,35 @@ catalogs:
     nanoid: 5.1.16
     natural-compare-lite: ^1.4.0
     object-hash: ^3.0.0
-    ohash: ^2.0.11
+    ohash: ^2.0.12
     p-debounce: 5.1.0
-    p-limit: 7.3.0
+    p-limit: 7.3.2
     p-queue: 8.1.1
     p-timeout: 7.0.1
     package-manager-detector: 1.6.0
     package-up: ^5.0.0
     pathe: ^2.0.3
-    remeda: ^2.37.0
+    remeda: ^2.45.0
     safe-stringify: ^1.3.0
     sharp: 0.35.0
     strip-indent: ^4.1.1
     superjson: ^2.2.6
-    tinyrainbow: ^3.1.0
+    tinyrainbow: ^3.1.1
     ufo: 1.6.4
     unctx: ^2.5.0
     unstorage: ^1.17.5
   vite:
     "@rolldown/plugin-babel": ^0.2.3
-    "@vitejs/plugin-react": ^6.0.3
-    birpc: ^4.0.0
-    rollup: ^4.62.2
-    vite: ^8.1.3
-    vite-plugin-dts: ^5.0.3
+    "@vitejs/plugin-react": ^6.1.1
+    birpc: ^4.2.0
+    rollup: ^4.63.1
+    vite: ^8.2.2
+    vite-plugin-dts: ^5.1.0
     vite-plugin-node-polyfills: ^0.28.0
     vite-tsconfig-paths: ^6.1.1
   vitest:
-    "@vitest/ui": 4.1.9
-    vitest: 4.1.9
+    "@vitest/ui": 4.1.11
+    vitest: 4.1.11
   vscode:
     "@types/vscode": ^1.115.0
     vscode: npm:@types/vscode@1.115.0
@@ -237,12 +238,12 @@ catalogs:
     vscode-uri: 3.1.0
   xstate:
     "@xstate/react": 6.1.0
-    "@xstate/store": 4.2.1
+    "@xstate/store": 4.2.3
     "@xstate/store-react": 2.0.0
-    xstate: 5.32.4
+    xstate: 5.32.6
   xyflow:
-    "@xyflow/react": 12.11.5
-    "@xyflow/system": 0.0.81
+    "@xyflow/react": 12.11.6
+    "@xyflow/system": 0.0.82
 
 minimumReleaseAgeExclude:
   - '@astrojs/react@5.0.7 || 6.0.1'
