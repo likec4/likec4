@@ -1,5 +1,31 @@
 # @likec4/core
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3150](https://github.com/likec4/likec4/pull/3150) [`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c) Thanks [@merlincat11](https://github.com/merlincat11)! - Add optional view order metadata for sorting sibling views in navigation.
+
+- [#3215](https://github.com/likec4/likec4/pull/3215) [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Allow escaping a forward slash in a title with `\/` so it doesn't create a view folder. This also applies to element titles, so `implicitViews` no longer split an auto-generated view into an unwanted subfolder when the element's title contains a slash.
+
+- [#2949](https://github.com/likec4/likec4/pull/2949) [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435) Thanks [@ckeller42](https://github.com/ckeller42)! - Allow model relationships to use the documented `<->` and `-[kind]<->` syntax, preserve bidirectional semantics through styling and relationship extensions, and include/exclude them from either endpoint in view relationship expressions. Fixes [#2927](https://github.com/likec4/likec4/issues/2927).
+
+- [#3196](https://github.com/likec4/likec4/pull/3196) [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6) Thanks [@ekisu](https://github.com/ekisu)! - Syntax highlight language-tagged Markdown code blocks and combined `diff-<language>` blocks in diagram descriptions and notes.
+
+- [#3147](https://github.com/likec4/likec4/pull/3147) [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e) Thanks [@farhan523](https://github.com/farhan523)! - Allow referencing global predicate groups inside view groups, so a reusable set of predicates can be scoped into a named group:
+
+  ```likec4
+  views {
+    view of newServices {
+      include cloud.new.*
+
+      group 'Microservices' {
+        global predicate microservices
+      }
+    }
+  }
+  ```
+
 ## 1.59.2
 
 ## 1.59.1
