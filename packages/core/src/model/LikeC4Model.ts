@@ -1,4 +1,4 @@
-import { entries, hasAtLeast, isEmpty, map, pipe, prop, sort, sortBy, split, values } from 'remeda'
+import { entries, hasAtLeast, isEmpty, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import type { IsAny } from 'type-fest'
 import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
@@ -53,7 +53,7 @@ import type {
   OutgoingFilter,
   RelationOrId,
 } from './types'
-import { getId, getViewFolderPath, normalizeViewPath, VIEW_FOLDERS_SEPARATOR } from './utils'
+import { getId, getViewFolderPath, normalizeViewPath, splitViewFolderPath, VIEW_FOLDERS_SEPARATOR } from './utils'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
 import { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
 import type { NodeModel } from './view/NodeModel'
@@ -228,7 +228,7 @@ export class LikeC4Model<A extends Any = Any> {
       const getOrCreateFolder = (path: string) => {
         let folder = this._viewFolders.get(path)
         if (!folder) {
-          const segments = split(path, VIEW_FOLDERS_SEPARATOR)
+          const segments = splitViewFolderPath(path)
           invariant(hasAtLeast(segments, 1), `View group path "${path}" must have at least one element`)
           let defaultView
           // Root group has "index" as default view
@@ -252,7 +252,7 @@ export class LikeC4Model<A extends Any = Any> {
           continue
         }
         // Create groups for each segment of the path
-        split(folderPath, VIEW_FOLDERS_SEPARATOR).reduce((segments, segment) => {
+        splitViewFolderPath(folderPath).reduce((segments, segment) => {
           const parent = segments.join(VIEW_FOLDERS_SEPARATOR)
           const path = isEmpty(parent) ? segment : parent + VIEW_FOLDERS_SEPARATOR + segment
 
