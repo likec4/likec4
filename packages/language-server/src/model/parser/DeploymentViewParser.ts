@@ -4,7 +4,7 @@ import { filter, isNonNullish, mapToObj, pipe } from 'remeda'
 import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
 import { stringHash } from '../../utils'
-import { parseViewOrder, removeIndent, toSingleLine } from './Base'
+import { parseTitleKeepingEscapedSlash, parseViewOrder, removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentModel } from './DeploymentModelParser'
 import type { WithExpressionV2 } from './FqnRefParser'
 
@@ -29,16 +29,17 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         ) as c4.ViewId
       }
 
+      const deploymentViewBodyProps = pipe(
+        props,
+        filter(ast.isViewStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
       const {
         title = null,
         description = null,
-      } = this.parseBaseProps(
-        pipe(
-          props,
-          filter(ast.isViewStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-      )
+      } = this.parseBaseProps(deploymentViewBodyProps, {
+        title: parseTitleKeepingEscapedSlash(deploymentViewBodyProps.title),
+      })
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
