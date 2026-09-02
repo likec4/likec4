@@ -1,5 +1,32 @@
 # likec4
 
+## 1.59.3
+
+### Patch Changes
+
+- [`2f41d09`](https://github.com/likec4/likec4/commit/2f41d0995c4f3fada1da41032865ef1aaeb64032) Thanks [@davydkov](https://github.com/davydkov)! - Add `likec4 publish` to upload Graphviz-layouted models to LikeC4 Cloud as a snapshot of the current commit. Publishes every project in the workspace by default, or a single one with `-p`. Repository, commit, branch and tag are read from git and from GitHub Actions environment variables, and can be overridden with `--origin`, `--sha`, `--branch` and `--tag`. Authenticate with `--token` or the `LIKEC4_PUBLISH_TOKEN` environment variable; point at another instance with `--url` or `LIKEC4_CLOUD_URL`. Validation errors block the publish unless `--force` is passed. Publishing the same commit again overwrites its snapshot, and projects accumulate into it.
+
+- [#3193](https://github.com/likec4/likec4/pull/3193) [`6028026`](https://github.com/likec4/likec4/commit/6028026b824d5fe25fe8fc0c8a73556fb5784206) Thanks [@Abhirup0](https://github.com/Abhirup0)! - Fix `--theme light` and `--theme dark` export flag not applying the requested theme in PNG and JPEG diagram exports.
+
+- [#3182](https://github.com/likec4/likec4/pull/3182) [`d1099dd`](https://github.com/likec4/likec4/commit/d1099dd4cd14ab0aec891eb66622f0c070530345) Thanks [@luantaraschi](https://github.com/luantaraschi)! - `likec4 validate --file` now counts every file matched by the filter in `filteredFiles`, including files with no diagnostics. It previously counted only files that carried errors, so a clean matched file reported `filteredFiles: 0`.
+
+- [#3160](https://github.com/likec4/likec4/pull/3160) [`5b09f1d`](https://github.com/likec4/likec4/commit/5b09f1d2880664635f40b2fb21781332144e75c9) Thanks [@StefanStuehrmann](https://github.com/StefanStuehrmann)! - Add a Markdown generator and `export markdown` CLI command. `generateMarkdown` renders a
+  project's views as a single GitHub-flavored Markdown document (optionally with a project
+  overview from `options.description`), reusing `generateMermaid` for each embedded diagram.
+  `likec4 export markdown [path]` writes one `README.md` per project into that project's own
+  folder — following the `export png`/`json` precedent of iterating all projects by default,
+  with `--project` to restrict to one — so the rendered architecture is browsable directly on
+  GitHub, with no server and no manual diagram assembly.
+
+- [#3204](https://github.com/likec4/likec4/pull/3204) [`bf36d22`](https://github.com/likec4/likec4/commit/bf36d2210b1c26d6703f18de63d468f3cb47cf01) Thanks [@tnucera](https://github.com/tnucera)! - Fix `likec4 mcp` ignoring the `LIKEC4_WORKSPACE` environment variable. The command overrode the shared `path` default, so the workspace always fell back to the current directory and the server silently served an empty model. Behaviour now matches the documented help text and the other commands.
+
+- [#3078](https://github.com/likec4/likec4/pull/3078) [`61677a8`](https://github.com/likec4/likec4/commit/61677a8e5861f36c12e4f379f1623d9af455fa30) Thanks [@ckeller42](https://github.com/ckeller42)! - Allow generated webapps to limit available export formats from project config.
+
+  Omitting `webapp.exportFormats` keeps all current formats enabled; an empty list hides webapp exports.
+- Updated dependencies [[`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c), [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d), [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435), [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6), [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e)]:
+  - @likec4/core@1.59.3
+  - @likec4/icons@1.46.4
+
 ## 1.59.2
 
 ### Patch Changes

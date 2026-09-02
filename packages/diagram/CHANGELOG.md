@@ -1,5 +1,30 @@
 # @likec4/diagram
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3166](https://github.com/likec4/likec4/pull/3166) [`67b696e`](https://github.com/likec4/likec4/commit/67b696e77ef8f97f43e435819a019ff8cc637cec) Thanks [@Phrogz](https://github.com/Phrogz)! - Allow embedded editors to skip waiting for a refreshed view after applying a change locally.
+
+- [#3190](https://github.com/likec4/likec4/pull/3190) [`a77d799`](https://github.com/likec4/likec4/commit/a77d79990089149eb0c4420224ee4368041663fd) Thanks [@Phrogz](https://github.com/Phrogz)! - Expose the built-in manual-layout comparison state and actions to custom viewers.
+
+- [#3164](https://github.com/likec4/likec4/pull/3164) [`ef28a22`](https://github.com/likec4/likec4/commit/ef28a2272630324c38fd2465d2a52696160cb59c) Thanks [@Phrogz](https://github.com/Phrogz)! - Restore node dragging and selection when the editor finishes synchronizing a layout change.
+
+- [#3155](https://github.com/likec4/likec4/pull/3155) [`ecae4b2`](https://github.com/likec4/likec4/commit/ecae4b28259040be97f17041ebcf6ce535fc5fe4) Thanks [@ckeller42](https://github.com/ckeller42)! - Render custom SVG icons reliably in relationship views and allow local SVG icons that use `currentColor` to follow `iconColor`.
+
+- [#3200](https://github.com/likec4/likec4/pull/3200) [`13daa47`](https://github.com/likec4/likec4/commit/13daa47058023ee3b13e660dbeb3df97748b09f0) Thanks [@wataryooou](https://github.com/wataryooou)! - Fix crash when clicking another step during a walkthrough in a `diagram`-variant dynamic view. The click handler asserted the ReactFlow edge type, which is `seq-step` only in the `sequence` variant, and now checks the step id instead. Fixes [#3201](https://github.com/likec4/likec4/issues/3201).
+
+- [#3196](https://github.com/likec4/likec4/pull/3196) [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6) Thanks [@ekisu](https://github.com/ekisu)! - Syntax highlight language-tagged Markdown code blocks and combined `diff-<language>` blocks in diagram descriptions and notes.
+
+- [#3176](https://github.com/likec4/likec4/pull/3176) [`2159ad5`](https://github.com/likec4/likec4/commit/2159ad568c6daf555f90d6697fc13bf22150530c) Thanks [@Phrogz](https://github.com/Phrogz)! - Hide the manual layout tools tooltip while its popover is open.
+
+- [#3154](https://github.com/likec4/likec4/pull/3154) [`6546da5`](https://github.com/likec4/likec4/commit/6546da5b8f5e96ee2d73d6254e5fa8d8c0a63ec4) Thanks [@ckeller42](https://github.com/ckeller42)! - Preserve original colors for non-Bootstrap diagram icons, including bundled brand, cloud provider, and image-based icons. Fixes [#3153](https://github.com/likec4/likec4/issues/3153).
+
+- [#3187](https://github.com/likec4/likec4/pull/3187) [`be42269`](https://github.com/likec4/likec4/commit/be422697cab02c760f470d5e74c2b709505f72ac) Thanks [@Phrogz](https://github.com/Phrogz)! - Keep automatically routed relationships automatic when moving connected nodes in the layout editor. Fixes [#3184](https://github.com/likec4/likec4/issues/3184).
+- Updated dependencies [[`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c), [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d), [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435), [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6), [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e), [`6546da5`](https://github.com/likec4/likec4/commit/6546da5b8f5e96ee2d73d6254e5fa8d8c0a63ec4)]:
+  - @likec4/core@1.59.3
+  - @likec4/styles@1.59.3
+
 ## 1.59.2
 
 ### Patch Changes

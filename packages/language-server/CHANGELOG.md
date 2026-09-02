@@ -1,5 +1,47 @@
 # @likec4/language-server
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3174](https://github.com/likec4/likec4/pull/3174) [`17c73c1`](https://github.com/likec4/likec4/commit/17c73c18f317641f14d339b70deb76bb3c20d4b2) Thanks [@kgeilmann](https://github.com/kgeilmann)! - Add `preview-view` MCP tool that renders a preview of a LikeC4 view defined by DSL text within the context of an existing project's real elements, without saving changes to disk. If the view ID matches an already existing view, an error is returned. This allows users to experiment with view definitions before adding them to the project.
+
+- [#3150](https://github.com/likec4/likec4/pull/3150) [`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c) Thanks [@merlincat11](https://github.com/merlincat11)! - Add optional view order metadata for sorting sibling views in navigation.
+
+- [#3215](https://github.com/likec4/likec4/pull/3215) [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Allow escaping a forward slash in a title with `\/` so it doesn't create a view folder. This also applies to element titles, so `implicitViews` no longer split an auto-generated view into an unwanted subfolder when the element's title contains a slash.
+
+- [#2949](https://github.com/likec4/likec4/pull/2949) [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435) Thanks [@ckeller42](https://github.com/ckeller42)! - Allow model relationships to use the documented `<->` and `-[kind]<->` syntax, preserve bidirectional semantics through styling and relationship extensions, and include/exclude them from either endpoint in view relationship expressions. Fixes [#2927](https://github.com/likec4/likec4/issues/2927).
+
+- [#3146](https://github.com/likec4/likec4/pull/3146) [`945ac39`](https://github.com/likec4/likec4/commit/945ac390524a93df4a0a22670e73686d42c662c2) Thanks [@farhan523](https://github.com/farhan523)! - Fix keyword completions inserting the keyword twice (e.g. `modelmodel`) in editors other than VS Code. Snippet and property completions now provide an explicit text edit that replaces the typed prefix, instead of relying on the client to prefer it over the plain insert text.
+
+- [#3151](https://github.com/likec4/likec4/pull/3151) [`603d274`](https://github.com/likec4/likec4/commit/603d2747f3a1c46c1cf84857b637c1fe56f511f9) Thanks [@bounce12340](https://github.com/bounce12340)! - Fix outline entries merging an element's kind into its name, such as `modelmodel`. The kind now renders in parentheses. Fixes [#3091](https://github.com/likec4/likec4/issues/3091)
+
+- [#3143](https://github.com/likec4/likec4/pull/3143) [`31d2e10`](https://github.com/likec4/likec4/commit/31d2e101937d178155e9764eaa2b5ad773fc1a0b) Thanks [@ckeller42](https://github.com/ckeller42)! - Preserve imported project prefixes for scoped `view of` element views.
+
+- [#3156](https://github.com/likec4/likec4/pull/3156) [`797907a`](https://github.com/likec4/likec4/commit/797907a50098c64f50c22ec301183140c38ac33f) Thanks [@ckeller42](https://github.com/ckeller42)! - Avoid overlapping-area warnings when multiple projects intentionally include the same shared folder. Nested or partially overlapping include paths still warn because those can make file ownership ambiguous. Fixes [#2973](https://github.com/likec4/likec4/issues/2973).
+
+- [#3147](https://github.com/likec4/likec4/pull/3147) [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e) Thanks [@farhan523](https://github.com/farhan523)! - Allow referencing global predicate groups inside view groups, so a reusable set of predicates can be scoped into a named group:
+
+  ```likec4
+  views {
+    view of newServices {
+      include cloud.new.*
+
+      group 'Microservices' {
+        global predicate microservices
+      }
+    }
+  }
+  ```
+
+- [#3188](https://github.com/likec4/likec4/pull/3188) [`d3d597a`](https://github.com/likec4/likec4/commit/d3d597ad1cdfe3b8735744353518339c794b8d28) Thanks [@Phrogz](https://github.com/Phrogz)! - Allow saving and resetting manual layouts for implicit element views.
+- Updated dependencies [[`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c), [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d), [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435), [`bdefe0b`](https://github.com/likec4/likec4/commit/bdefe0b4983a86518bf4a5359bd5ba1511c8473a), [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6), [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e), [`5b09f1d`](https://github.com/likec4/likec4/commit/5b09f1d2880664635f40b2fb21781332144e75c9), [`61677a8`](https://github.com/likec4/likec4/commit/61677a8e5861f36c12e4f379f1623d9af455fa30)]:
+  - @likec4/core@1.59.3
+  - @likec4/generators@1.59.3
+  - @likec4/config@1.59.3
+  - @likec4/layouts@1.59.3
+  - @likec4/log@1.59.3
+
 ## 1.59.2
 
 ### Patch Changes
