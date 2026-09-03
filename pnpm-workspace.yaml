@@ -105,12 +105,12 @@ catalogs:
     postcss: 8.5.23
     tailwindcss: ^4.3.2
   esbuild:
-    esbuild: 0.28.1
+    esbuild: 0.28.2
     esbuild-node-externals: 1.23.1
     esbuild-plugins-node-modules-polyfill: 1.8.2
     esbuild-wasm: 0.28.1
   esbuild-wasm:
-    esbuild: npm:esbuild-wasm@0.28.1
+    esbuild: npm:esbuild-wasm@0.28.2
   externals:
     "@hpcc-js/wasm-graphviz": 1.22.2
     "@types/picomatch": ^4.0.3
