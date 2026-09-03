@@ -125,9 +125,45 @@ test.describe('?dynamic= search parameter', () => {
 test.describe('?relationships= search parameter', () => {
   const RELATIONSHIPS_BROWSER = '.relationships-browser'
 
-  test('?relationships=<fqn> opens the relationship browser overlay', async ({ page }) => {
+  test('?relationships=<fqn> opens the relationship browser with view scope in a clean storage context', async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.clear())
     await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud' }))
     await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+    await expect(page.getByRole('radio', { name: 'Current view' })).toBeChecked()
+  })
+
+  test('?relationshipsScope=global opens the relationship browser with global scope', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud', relationshipsScope: 'global' }))
+    await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+    await expect(page.getByRole('radio', { name: 'Global' })).toBeChecked()
+  })
+
+  test('same-subject URL scope navigation reapplies the relationship browser scope', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud' }))
+    await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+    await expect(page.getByRole('radio', { name: 'Current view' })).toBeChecked()
+
+    await page.evaluate(() => {
+      const url = new URL(window.location.href)
+      url.searchParams.set('relationships', 'cloud')
+      url.searchParams.set('relationshipsScope', 'global')
+      window.history.pushState({}, '', url)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+
+    await expect(page.getByRole('radio', { name: 'Global' })).toBeChecked({ timeout: TIMEOUT_CANVAS })
+  })
+
+  test('copies the selected relationship browser scope in the relationship URL', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    await gotoAndWaitForCanvas(page, viewUrl(STATIC_VIEW, { relationships: 'cloud' }))
+    await expect(page.locator(RELATIONSHIPS_BROWSER).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+
+    await page.getByText('Global', { exact: true }).click()
+    await expect(page.getByRole('radio', { name: 'Global' })).toBeChecked()
+    await page.getByRole('button', { name: 'Copy relationship URL' }).click()
+
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('relationshipsScope=global')
   })
 
   test('absent ?relationships= does not open overlay', async ({ page }) => {
@@ -166,7 +202,7 @@ test.describe('webapp.exportFormats configuration', () => {
   test('blocks direct text export routes for disabled formats', async ({ page }) => {
     await page.goto(projectTextExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, 'dot'))
 
-    await expect(page.getByText(/The diagram\s+index\s+does not exist or contains errors/)).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Project not found' })).toBeVisible()
   })
 
   test('keeps direct text export routes available for enabled formats', async ({ page }) => {

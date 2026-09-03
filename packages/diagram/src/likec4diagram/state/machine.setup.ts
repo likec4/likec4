@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   hasProp,
   isDynamicView,
@@ -34,7 +41,7 @@ import {
 import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
-import type { OpenSourceParams, ViewPaddings } from '../../LikeC4Diagram.props'
+import type { OpenSourceParams, RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
 import { navigationPanelActorLogic } from '../../navigationpanel/actor'
 import { xyflow } from '../../overlays/element-details/TabPanelRelationships.css'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
@@ -81,6 +88,7 @@ export interface Input {
   fitViewPadding: ViewPaddings
   where: WhereOperator | null
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
+  relationshipBrowserScope?: RelationshipBrowserScope | undefined
   features?: EnabledFeatures
 }
 
@@ -89,6 +97,7 @@ export type ToggledFeatures = {
 }
 
 export interface Context extends Input {
+  relationshipBrowserScope: RelationshipBrowserScope
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
   features: EnabledFeatures
@@ -150,6 +159,7 @@ export interface Context extends Input {
 export function Context({ input }: { input: Input }): Context {
   return {
     ...input,
+    relationshipBrowserScope: input.relationshipBrowserScope ?? 'view',
     xynodes: [],
     xyedges: [],
     features: {
@@ -229,7 +239,7 @@ export type Events =
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
-  | { type: 'open.relationshipsBrowser'; fqn: Fqn }
+  | { type: 'open.relationshipsBrowser'; fqn: Fqn; scope?: RelationshipBrowserScope | undefined }
   | { type: 'open.search'; search?: string }
   // | { type: 'close.overlay' }
   | { type: 'navigate.to'; viewId: ViewId; fromNode?: NodeId | undefined; focusOnElement?: Fqn | undefined }

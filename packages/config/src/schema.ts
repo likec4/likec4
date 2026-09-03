@@ -60,6 +60,14 @@ export const WebappExportFormatSchema = z.enum(WebappExportFormats)
 
 export type { WebappExportFormat }
 
+export const RelationshipBrowserScopeSchema = z.enum(['global', 'view'])
+
+export type RelationshipBrowserScope = z.infer<typeof RelationshipBrowserScopeSchema>
+
+export const RelationshipsBrowserConfigSchema = z.strictObject({
+  defaultScope: RelationshipBrowserScopeSchema.default('view'),
+})
+
 export const WebappConfigSchema = z
   .strictObject({
     exportFormats: z.array(WebappExportFormatSchema)
@@ -74,6 +82,7 @@ export const WebappConfigSchema = z
           'Omit to enable all export formats. Use an empty array to disable webapp exports.',
         ].join('\n'),
       }),
+    relationshipsBrowser: RelationshipsBrowserConfigSchema.optional(),
   })
   .meta({
     id: 'WebappConfig',
