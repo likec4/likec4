@@ -29,13 +29,35 @@ type SimLink = SimulationLinkDatum<SimNode>
 const radius = GraphNodeDiameter / 2
 
 /**
- * Builds the d3-force graph (nodes seeded at their current center, links between existing nodes
- * only) from the "graph" variant's xynodes/xyedges.
+ * Picks the visible graph-element nodes and visible relationship edges out of a diagram's
+ * xynodes/xyedges, plus a stable string key identifying that exact topology (node ids, and
+ * edge ids with their endpoints).
+ *
+ * Both hidden nodes and hidden edges (e.g. dimmed out by a `where`/search filter) are excluded -
+ * an invisible relationship must not keep pulling visible nodes together via a d3-force link.
  *
  * Exported as a pure function so it can be unit-tested without a render harness - this package
  * has no `renderHook` infrastructure, so hook effects themselves stay untested; this is the part
- * of the hook worth covering in isolation (id-based link resolution, dropping hidden/dangling
- * refs is exactly what would otherwise blow up inside d3-force with a cryptic error).
+ * of the hook worth covering in isolation.
+ */
+export function selectGraphTopology(xynodes: readonly Types.Node[], xyedges: readonly Types.Edge[]): {
+  graphNodes: Types.GraphElementNode[]
+  graphEdges: Types.RelationshipEdge[]
+  topologyKey: string
+} {
+  const graphNodes = xynodes.filter((n): n is Types.GraphElementNode => n.type === 'graph-element' && !n.hidden)
+  const graphEdges = xyedges.filter((e): e is Types.RelationshipEdge => e.type === 'relationship' && !e.hidden)
+  const topologyKey = graphNodes.map(n => n.id).sort().join(',') + '|'
+    + graphEdges.map(e => `${e.id}:${e.source}-${e.target}`).sort().join(',')
+  return { graphNodes, graphEdges, topologyKey }
+}
+
+/**
+ * Builds the d3-force graph (nodes seeded at their current center, links between existing nodes
+ * only) from the visible graph-element nodes/edges returned by {@link selectGraphTopology}.
+ *
+ * Dropping links with a dangling endpoint (e.g. the other side was hidden or belonged to a
+ * flattened-away compound) is what would otherwise make d3-force's forceLink throw.
  */
 export function buildSimGraph(
   graphNodes: readonly Types.GraphElementNode[],
@@ -75,20 +97,17 @@ export function useGraphForceSimulation({ enabled, nodes: xynodes, edges: xyedge
   const diagram = useDiagram()
   const simulationRef = useRef<Simulation<SimNode, SimLink> | undefined>(undefined)
 
-  const graphNodes = useMemo(
-    () => xynodes.filter((n): n is Types.GraphElementNode => n.type === 'graph-element' && !n.hidden),
-    [xynodes],
-  )
-  const graphEdges = useMemo(
-    () => xyedges.filter((e): e is Types.RelationshipEdge => e.type === 'relationship'),
-    [xyedges],
-  )
   // Switching into "graph" mode is not synchronous - `elementViewVariant` flips first, and the
   // graph-element nodes/edges arrive a render or two later (view re-conversion is dispatched via
   // a raised event). Re-seed the simulation once that population actually settles, identified by
-  // its node ids, instead of on every `enabled`/array-identity change (which would also fire on
-  // the still-empty intermediate render, or reset the simulation on unrelated re-renders).
-  const graphNodeIdsKey = useMemo(() => graphNodes.map(n => n.id).sort().join(','), [graphNodes])
+  // `topologyKey`, instead of on every `enabled`/array-identity change (which would also fire on
+  // the still-empty intermediate render, or reset the simulation on unrelated re-renders). The key
+  // covers visible edges too, so a `where`/search filter that hides or reveals a relationship
+  // without changing the node set still re-seeds the simulation.
+  const { graphNodes, graphEdges, topologyKey } = useMemo(
+    () => selectGraphTopology(xynodes, xyedges),
+    [xynodes, xyedges],
+  )
 
   useEffect(() => {
     if (!enabled || graphNodes.length === 0) {
@@ -125,7 +144,7 @@ export function useGraphForceSimulation({ enabled, nodes: xynodes, edges: xyedge
       simulationRef.current = undefined
     }
     // oxlint-disable-next-line exhaustive-deps
-  }, [enabled, graphNodeIdsKey])
+  }, [enabled, topologyKey])
 
   return useMemo((): GraphForceHandlers => ({
     onNodeDragStart: (_event, xynode) => {
