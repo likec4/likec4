@@ -85,6 +85,7 @@ export const relationship = common.props
     title: z.string().nullish(),
     source: relationshipEndpoint,
     target: relationshipEndpoint,
+    isBidirectional: z.boolean().nullish(),
     navigateTo: common.viewId.nullish(),
     color: common.color.nullish(),
     kind: common.kind.nullish(),

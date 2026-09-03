@@ -98,6 +98,8 @@ deployment {
     }
     // Deployment-level relationship not in the logical model
     AppTier -> DataTier "internal traffic" { technology "TCP/5432" }
+    // Bidirectional, `-[kind]<->` is also supported
+    AppTier <-> DataTier "replicates"
   }
 }
 ```
