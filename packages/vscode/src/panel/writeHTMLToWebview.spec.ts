@@ -28,7 +28,8 @@ describe('writeHTMLToWebview', () => {
 
     writeHTMLToWebview({ webview } as never, { screen: 'view' })
 
-    expect(webview.html).toContain('style-src vscode-webview://likec4 \'nonce-')
+    expect(webview.html).toMatch(/style-src vscode-webview:\/\/likec4 'nonce-[^']+';/)
+    expect(webview.html).not.toContain('style-src vscode-webview://likec4 \'unsafe-inline\';')
     expect(webview.html).toContain('style-src-attr \'unsafe-inline\';')
     expect(webview.html).toContain('script-src \'nonce-')
   })
