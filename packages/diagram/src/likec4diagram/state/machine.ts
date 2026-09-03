@@ -11,6 +11,7 @@ import {
 } from './assign'
 import {
   assignDynamicViewVariant,
+  assignElementViewVariant,
   cancelFitDiagram,
   emitOnLayoutTypeChange,
   raiseUpdateView,
@@ -55,6 +56,16 @@ const _diagramMachine = machine.createMachine({
       guard: ({ context, event }) => context.dynamicViewVariant !== event.variant,
       actions: [
         assignDynamicViewVariant(),
+        assign({
+          viewportChangedManually: false,
+        }),
+        raiseUpdateView(),
+      ],
+    },
+    'switch.elementViewVariant': {
+      guard: ({ context, event }) => context.elementViewVariant !== event.variant,
+      actions: [
+        assignElementViewVariant(),
         assign({
           viewportChangedManually: false,
         }),

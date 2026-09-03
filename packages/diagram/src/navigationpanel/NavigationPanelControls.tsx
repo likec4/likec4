@@ -21,6 +21,7 @@ import {
   SearchControl,
   ToggleReadonly,
 } from './controls'
+import { ElementViewControls } from './ElementViewControls'
 import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
@@ -36,6 +37,7 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
     viewId: view.id,
     viewTitle: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
     isDynamicView: (context.viewModel?._type ?? view._type) === 'dynamic',
+    isElementView: (context.viewModel?._type ?? view._type) === 'element',
   }
 }
 
@@ -51,6 +53,7 @@ export const NavigationPanelControls = memo(() => {
     folders,
     viewTitle,
     isDynamicView,
+    isElementView,
   } = useSelector(actor.actorRef, selectBreadcrumbs, deepEqual)
 
   const folderBreadcrumbs = folders.flatMap(({ folderPath, title }, i) => [
@@ -142,6 +145,7 @@ export const NavigationPanelControls = memo(() => {
         <ToggleReadonly />
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
+      {isElementView && <ElementViewControls key="element-view-controls" />}
       {enableSearch && !enableCompareWithLatest && <SearchControl key="search-control" />}
       <LayoutWarning key="outdated-manual-layout-warning" />
     </AnimatePresence>
