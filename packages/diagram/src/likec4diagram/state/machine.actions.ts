@@ -167,6 +167,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       xydata = convertToXYFlow({
         currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
+        elementViewVariant: context.elementViewVariant,
         view,
         where: context.where,
         collapsedSequenceFlows: context.collapsedSequenceFlows,
@@ -176,6 +177,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       xydata = 'xynodes' in event ? event : convertToXYFlow({
         currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
+        elementViewVariant: context.elementViewVariant,
         view: event.view,
         where: context.where,
         collapsedSequenceFlows: context.collapsedSequenceFlows,
@@ -234,6 +236,14 @@ export const assignDynamicViewVariant = () =>
     assertEvent(event, 'switch.dynamicViewVariant')
     return {
       dynamicViewVariant: event.variant,
+    }
+  })
+
+export const assignElementViewVariant = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'switch.elementViewVariant')
+    return {
+      elementViewVariant: event.variant,
     }
   })
 

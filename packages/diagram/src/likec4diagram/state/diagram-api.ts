@@ -14,6 +14,7 @@ import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
+import type { ElementViewDisplayVariant } from './machine.setup'
 import type {
   DiagramActorRef,
   DiagramContext,
@@ -320,6 +321,13 @@ export class DiagramApi<A extends Any = Unknown> {
    */
   switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void {
     this.send({ type: 'switch.dynamicViewVariant', variant })
+  }
+
+  /**
+   * Switch element view display variant ('diagram' | 'graph')
+   */
+  switchElementViewVariant(variant: ElementViewDisplayVariant): void {
+    this.send({ type: 'switch.elementViewVariant', variant })
   }
 
   /**
