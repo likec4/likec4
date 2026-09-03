@@ -359,7 +359,7 @@
     "@vscode/extension-telemetry": "^1.5.2",
     "@rolldown/plugin-node-polyfills": "catalog:tsdown",
     "esm-env": "catalog:utils",
-    "execa": "^9.5.3",
+    "execa": "^9.6.1",
     "pathe": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
