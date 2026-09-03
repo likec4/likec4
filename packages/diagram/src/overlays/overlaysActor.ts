@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn } from '@likec4/core/types'
 import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
@@ -215,6 +222,10 @@ const openRelationshipsBrowser = () =>
         type: 'navigate.to',
         subject: event.subject,
         viewId: event.viewId,
+      })
+      enqueue.sendTo(currentOverlay.id, {
+        type: 'change.scope',
+        scope: event.viewId ? event.scope : 'global',
       })
       return
     }

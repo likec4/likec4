@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, expect, it } from 'vitest'
 import { resolveForceColorScheme, searchParamsSchema } from './searchParams'
 
@@ -13,10 +20,17 @@ describe('searchParamsSchema', () => {
     expect(searchParamsSchema.parse({}).theme).toBeUndefined()
   })
 
+  it('should parse relationship browser scope without invalidating the route', () => {
+    expect(searchParamsSchema.parse({ relationshipsScope: 'global' }).relationshipsScope).toBe('global')
+    expect(searchParamsSchema.parse({ relationshipsScope: 'view' }).relationshipsScope).toBe('view')
+    expect(searchParamsSchema.parse({ relationshipsScope: 'all' }).relationshipsScope).toBeUndefined()
+  })
+
   it('should parse default search params', () => {
     const parsed = searchParamsSchema.parse({})
     expect(parsed.dynamic).toBe('diagram')
     expect(parsed.padding).toBe(20)
+    expect(parsed.relationshipsScope).toBeUndefined()
     expect(parsed.relationships).toBeUndefined()
     expect(parsed.focusOnElement).toBeUndefined()
   })

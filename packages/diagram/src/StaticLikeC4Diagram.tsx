@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Any, UnknownLayouted } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import type { JSX } from 'react/jsx-runtime'
@@ -14,6 +21,7 @@ export type StaticLikeC4DiagramProps<A extends Any> = Pick<
   | 'enableElementDetails'
   | 'enableRelationshipDetails'
   | 'enableRelationshipBrowser'
+  | 'relationshipBrowserScope'
   | 'enableElementTags'
   | 'reduceGraphics'
   | 'initialWidth'

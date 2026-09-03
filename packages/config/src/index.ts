@@ -13,12 +13,15 @@ export type {
   LikeC4ProjectConfigInput,
   LikeC4ProjectJsonConfig,
   LocateResult,
+  RelationshipBrowserScope,
   WebappConfig,
   WebappExportFormat,
 } from './schema'
 
 export {
   LikeC4ProjectConfigOps,
+  RelationshipBrowserScopeSchema,
+  RelationshipsBrowserConfigSchema,
   WebappConfigSchema,
   WebappExportFormats,
   WebappExportFormatSchema,

@@ -91,6 +91,56 @@ describe('ProjectConfig schema', () => {
     })
 
     describe('webapp field', () => {
+      it('should accept relationship browser global default scope', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          webapp: {
+            relationshipsBrowser: {
+              defaultScope: 'global',
+            },
+          },
+        })
+
+        expect(result.webapp?.relationshipsBrowser?.defaultScope).toBe('global')
+      })
+
+      it('should accept relationship browser view default scope', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          webapp: {
+            relationshipsBrowser: {
+              defaultScope: 'view',
+            },
+          },
+        })
+
+        expect(result.webapp?.relationshipsBrowser?.defaultScope).toBe('view')
+      })
+
+      it('should default relationship browser scope to view', ({ expect }) => {
+        const result = validateConfig({
+          name: 'test',
+          webapp: {
+            relationshipsBrowser: {},
+          },
+        })
+
+        expect(result.webapp?.relationshipsBrowser?.defaultScope).toBe('view')
+      })
+
+      it('should reject unknown relationship browser default scopes', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'test',
+            webapp: {
+              relationshipsBrowser: {
+                defaultScope: 'all',
+              },
+            },
+          })
+        ).toThrow()
+      })
+
       it('should enable every export format when exportFormats is omitted', ({ expect }) => {
         const result = validateConfig({
           name: 'test',

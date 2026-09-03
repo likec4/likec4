@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { type Fqn, ancestorsFqn } from '@likec4/core'
 import {
   ActionIcon,
@@ -16,6 +23,7 @@ import {
 } from '@mantine/core'
 import { IconChevronRight, IconSelector } from '@tabler/icons-react'
 import { memo, useEffect, useRef } from 'react'
+import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useLikeC4ElementsTree } from '../../hooks/useLikeC4ElementsTree'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { RelationshipsBrowserSnapshot } from './actor'
@@ -36,6 +44,7 @@ const selector2 = (state: RelationshipsBrowserSnapshot) => {
 
 export const SelectElement = memo(() => {
   const browser = useRelationshipsBrowser()
+  const { onRelationshipBrowserScopeChange } = useDiagramEventHandlers()
   const {
     subjectId,
     viewId,
@@ -208,7 +217,9 @@ export const SelectElement = memo(() => {
                   },
                 }}
                 onChange={value => {
-                  browser.changeScope(value as 'global' | 'view')
+                  const nextScope = value as 'global' | 'view'
+                  browser.changeScope(nextScope)
+                  onRelationshipBrowserScopeChange?.(nextScope)
                 }}
                 data={[
                   { label: 'Global', value: 'global' },

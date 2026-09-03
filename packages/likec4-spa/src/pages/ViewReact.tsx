@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { RelationshipBrowserScope } from '@likec4/config'
 import type { Fqn } from '@likec4/core'
 import {
   LikeC4Diagram,
@@ -22,11 +23,14 @@ import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useEffect, useRef } from 'react'
 import { NotFound } from '../components/NotFound'
 import { headerOps } from '../components/view-page/state'
-import { useCurrentView } from '../hooks'
+import { useCurrentProject, useCurrentView } from '../hooks'
+import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 
 export function ViewReact() {
   const navigate = useNavigate()
+  const project = useCurrentProject()
   const [view, setLayoutType] = useCurrentView()
+  const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
   const model = useLikeC4Model()
   const { dynamic } = useSearch({
     from: '__root__',
@@ -75,6 +79,8 @@ export function ViewReact() {
       enableElementDetails
       enableRelationshipDetails
       enableRelationshipBrowser
+      relationshipBrowserScope={relationshipBrowserScope}
+      onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
       enableElementTags
       enableCompareWithLatest
       enableNotations={hasNotations}
@@ -88,7 +94,7 @@ export function ViewReact() {
       }}
     >
       <ListenForDiagramStateChanges />
-      <OpenRelationshipBrowserFromUrl />
+      <OpenRelationshipBrowserFromUrl relationshipBrowserScope={relationshipBrowserScope} />
       <FocusElementFromUrl />
     </LikeC4Diagram>
   )
@@ -97,28 +103,34 @@ export function ViewReact() {
 /**
  * Opens Relationship Browser when `?relationships={elementFqn}` URL parameter is present.
  * Handles both initial load and parameter changes during navigation.
- * Clears the parameter after opening to prevent reopening on navigation.
+ * Clears the URL parameters after opening to prevent reopening on navigation.
  */
-export function OpenRelationshipBrowserFromUrl() {
+export function OpenRelationshipBrowserFromUrl({
+  relationshipBrowserScope,
+}: {
+  relationshipBrowserScope: RelationshipBrowserScope
+}) {
   const router = useRouter()
   const diagram = useDiagram()
-  const { relationships } = useSearch({
+  const { relationships, relationshipsScope } = useSearch({
     from: '__root__',
   })
-  const processedRef = useRef<Fqn | null>(null)
+  const processedRef = useRef<string | null>(null)
   const isInitializedRef = useRef(false)
   const isProcessingRef = useRef(Promise.resolve())
   const isMounted = useIsMounted()
 
   const openAndClear = (fqn: Fqn) => {
+    const scope = relationshipsScope ?? relationshipBrowserScope
+    const requestKey = `${fqn}:${scope}`
     isProcessingRef.current = isProcessingRef.current.then(async () => {
-      if (!isMounted() || processedRef.current === fqn) return
+      if (!isMounted() || processedRef.current === requestKey) return
       try {
-        processedRef.current = fqn
-        diagram.openRelationshipsBrowser(fqn)
+        processedRef.current = requestKey
+        diagram.openRelationshipsBrowser(fqn, scope)
         await router.buildAndCommitLocation({
           search: (s: Record<string, unknown>) => {
-            const { relationships: _, ...rest } = s
+            const { relationships: _, relationshipsScope: __, ...rest } = s
             return rest
           },
           replace: true,
@@ -135,7 +147,9 @@ export function OpenRelationshipBrowserFromUrl() {
       processedRef.current = null
       return
     }
-    if (relationships && processedRef.current !== relationships) {
+    const scope = relationshipsScope ?? relationshipBrowserScope
+    const requestKey = `${relationships}:${scope}`
+    if (processedRef.current !== requestKey) {
       void openAndClear(relationships)
     }
   }
@@ -148,7 +162,7 @@ export function OpenRelationshipBrowserFromUrl() {
   // Handle parameter changes after initialization
   useUpdateEffect(() => {
     process()
-  }, [relationships])
+  }, [relationships, relationshipsScope])
 
   return null
 }

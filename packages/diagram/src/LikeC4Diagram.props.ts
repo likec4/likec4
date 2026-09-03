@@ -48,6 +48,8 @@ export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
 
 export type LikeC4ColorScheme = 'light' | 'dark'
 
+export type RelationshipBrowserScope = 'global' | 'view'
+
 export type OverrideReactFlowProps = Pick<
   ReactFlowProps<Types.AnyNode, Types.AnyEdge>,
   | 'paneClickDistance'
@@ -229,6 +231,13 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   enableRelationshipBrowser?: boolean | undefined
 
   /**
+   * Initial scope for the relationship browser
+   *
+   * @default 'view'
+   */
+  relationshipBrowserScope?: RelationshipBrowserScope | undefined
+
+  /**
    * If Walkthrough for dynamic views should be enabled
    * @default false
    */
@@ -345,6 +354,8 @@ export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstan
 
 export type OnLayoutTypeChange = (layoutType: LayoutType) => void
 
+export type OnRelationshipBrowserScopeChange = (scope: RelationshipBrowserScope) => void
+
 export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
   onNavigateTo?: OnNavigateTo<A> | null | undefined
   onNodeClick?: OnNodeClick<A> | null | undefined
@@ -369,4 +380,6 @@ export interface LikeC4DiagramEventHandlers<A extends Any = Unknown> {
    * @param layoutType new layout type
    */
   onLayoutTypeChange?: OnLayoutTypeChange | null | undefined
+
+  onRelationshipBrowserScopeChange?: OnRelationshipBrowserScopeChange | null | undefined
 }

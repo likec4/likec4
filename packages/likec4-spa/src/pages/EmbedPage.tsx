@@ -6,7 +6,8 @@
 
 import { pickViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
-import { useCurrentView, useTransparentBackground } from '../hooks'
+import { useCurrentProject, useCurrentView, useTransparentBackground } from '../hooks'
+import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 
 export function EmbedPage() {
   const {
@@ -15,6 +16,8 @@ export function EmbedPage() {
   } = useSearch({
     strict: false,
   })
+  const project = useCurrentProject()
+  const [relationshipBrowserScope] = useRelationshipBrowserScope(project)
   const [diagram] = useCurrentView()
 
   useTransparentBackground(!!diagram)
@@ -49,6 +52,7 @@ export function EmbedPage() {
         dynamicViewVariant={dynamic}
         enableRelationshipDetails
         enableRelationshipBrowser
+        relationshipBrowserScope={relationshipBrowserScope}
         initialWidth={bounds.width}
         initialHeight={bounds.height} />
     </div>

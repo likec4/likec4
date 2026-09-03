@@ -260,6 +260,25 @@ This setting affects the generated webapp only; CLI export commands are unchange
 For `png` and `jpg`, this removes the menu entries; direct image export routes used by screenshot automation remain available.
 In multi-project webapps, each project uses its own export format list.
 
+## Relationship browser scope
+
+Configure the initial scope in the relationship browser.
+The allowed values are `global` and `view`. The default is `view`.
+
+```jsonc
+{
+  "name": "project-name",
+  "webapp": {
+    "relationshipsBrowser": {
+      "defaultScope": "global"
+    }
+  }
+}
+```
+
+A saved user preference takes precedence over `defaultScope`.
+The `relationshipsScope` URL parameter takes precedence over both the saved preference and `defaultScope`.
+
 ## Image Aliases
 
 When using local images in your LikeC4 model, you can create aliases for the folder your images are in to make them more readable and the files more transportable.
