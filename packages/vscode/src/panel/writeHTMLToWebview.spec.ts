@@ -4,6 +4,8 @@
 
 import { describe, expect, it, vi } from 'vitest'
 
+import { writeHTMLToWebview } from './writeHTMLToWebview'
+
 vi.mock('reactive-vscode', () => ({
   computed: (value: () => boolean) => ({ value: value() }),
   extensionContext: { value: { extensionUri: {} } },
@@ -15,12 +17,10 @@ vi.mock('reactive-vscode', () => ({
 vi.mock('vscode', () => ({ Uri: { joinPath: (...parts: unknown[]) => parts.join('/') } }))
 vi.mock('../const.ts', () => ({ hasAI: false, isProd: true }))
 
-import { writeHTMLToWebview } from './writeHTMLToWebview'
-
 describe('writeHTMLToWebview', () => {
   it('permits inline style attributes without relaxing production style or script sources', () => {
     const webview = {
-      asWebviewUri: vi.fn(() => 'vscode-webview://likec4/resource'),
+      asWebviewUri: vi.fn<() => string>(() => 'vscode-webview://likec4/resource'),
       cspSource: 'vscode-webview://likec4',
       html: '',
       options: {},
@@ -28,11 +28,20 @@ describe('writeHTMLToWebview', () => {
 
     writeHTMLToWebview({ webview } as never, { screen: 'view' })
 
-    const styleSrc = webview.html.match(/style-src ([^;]+);/)?.[1]
+    const cspContent = webview.html.match(/Content-Security-Policy" content="([^"]+)"/)?.[1] ?? ''
+    const directives = Object.fromEntries(
+      cspContent.split(';').filter(Boolean).map(directive => {
+        const [name, ...values] = directive.trim().split(/\s+/)
+        return [name, values]
+      }),
+    )
 
-    expect(styleSrc).toMatch(/^vscode-webview:\/\/likec4 'nonce-[A-Za-z0-9]{16}'$/)
-    expect(styleSrc).not.toContain('unsafe-inline')
-    expect(webview.html).toContain('style-src-attr \'unsafe-inline\';')
-    expect(webview.html).toContain('script-src \'nonce-')
+    expect(directives['style-src']).toEqual([
+      'vscode-webview://likec4',
+      expect.stringMatching(/^'nonce-[A-Za-z0-9]{16}'$/),
+    ])
+    expect(directives['style-src-attr']).toEqual(['\'unsafe-inline\''])
+    expect(directives['script-src']).toEqual([expect.stringMatching(/^'nonce-[A-Za-z0-9]{16}'$/)])
+    expect(cspContent.match(/'unsafe-inline'/g)).toHaveLength(1)
   })
 })
