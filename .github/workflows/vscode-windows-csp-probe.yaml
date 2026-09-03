@@ -1,0 +1,135 @@
+# SPDX-License-Identifier: MIT
+#
+# Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+name: VS Code Windows CSP probe
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/vscode-windows-csp-probe.yaml'
+      - 'scripts/capture-vscode-preview.ps1'
+      - 'packages/vscode/**'
+      - 'packages/vscode-preview/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: CSP baseline versus PR
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      BASELINE_REF: 43f0b705d
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node and pnpm
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.22.3
+
+      - name: Enable pnpm
+        shell: pwsh
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.15.0 --activate
+          pnpm --version
+
+      - name: Set probe paths
+        shell: pwsh
+        run: |
+          "FIXTURE=$env:RUNNER_TEMP\\likec4-csp-fixture" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "EVIDENCE=$env:RUNNER_TEMP\\likec4-csp-evidence" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install VS Code
+        shell: pwsh
+        run: |
+          if (-not (Get-Command code.cmd -ErrorAction SilentlyContinue) -and -not (Get-Command code -ErrorAction SilentlyContinue)) {
+            choco install vscode --yes --no-progress
+            $env:Path = "$env:ProgramFiles\\Microsoft VS Code\\bin;$env:Path"
+            "C:\\Program Files\\Microsoft VS Code\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+          code --version
+
+      - name: Create reporter fixture
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force $env:FIXTURE | Out-Null
+          @'
+          specification {
+            element system {
+              style {
+                opacity 10%
+                icon bootstrap:boxes
+                iconColor pale-white
+                iconSize small
+                iconPosition top
+              }
+            }
+
+            color pale-white #eff7ff
+          }
+
+          model {
+            system sap 'SAP' {
+              #prod
+              description 'System finansowo-księgowy.'
+            }
+          }
+
+          views {
+            view index {
+              include *
+            }
+          }
+          '@ | Set-Content -Encoding utf8 (Join-Path $env:FIXTURE 'model.c4')
+
+      - name: Build v1.59.3 baseline extension
+        shell: pwsh
+        env:
+          NODE_ENV: production
+        run: |
+          git worktree add "$env:RUNNER_TEMP\\likec4-baseline" $env:BASELINE_REF
+          Set-Location "$env:RUNNER_TEMP\\likec4-baseline"
+          pnpm install --frozen-lockfile
+          pnpm generate
+          pnpm --filter @likec4/vscode-preview build
+          pnpm --filter likec4-vscode build
+
+      - name: Build PR extension
+        shell: pwsh
+        env:
+          NODE_ENV: production
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm generate
+          pnpm --filter @likec4/vscode-preview build
+          pnpm --filter likec4-vscode build
+
+      - name: Capture baseline and PR previews
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force $env:EVIDENCE | Out-Null
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/capture-vscode-preview.ps1 `
+            -Label baseline `
+            -ExtensionPath "$env:RUNNER_TEMP\\likec4-baseline\\packages\\vscode" `
+            -FixturePath $env:FIXTURE `
+            -OutputPath "$env:EVIDENCE\\baseline.png"
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/capture-vscode-preview.ps1 `
+            -Label pr `
+            -ExtensionPath "$PWD\\packages\\vscode" `
+            -FixturePath $env:FIXTURE `
+            -OutputPath "$env:EVIDENCE\\pr.png"
+
+      - name: Upload probe evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vscode-windows-csp-probe
+          path: ${{ env.EVIDENCE }}
+          if-no-files-found: warn
