@@ -173,7 +173,7 @@ catalogs:
   tsdown:
     "@rolldown/plugin-node-polyfills": ^1.0.3
     tsdown: ^0.22.9
-    "@tsdown/css": ^0.22.11
+    "@tsdown/css": ^0.22.14
     rolldown: ^1.2.0
   utils:
     "@logtape/logtape": ^2.1.1
