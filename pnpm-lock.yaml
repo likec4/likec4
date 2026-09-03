@@ -328,8 +328,8 @@ catalogs:
       specifier: ^1.0.3
       version: 1.0.3
     '@tsdown/css':
-      specifier: ^0.22.11
-      version: 0.22.12
+      specifier: ^0.22.14
+      version: 0.22.14
     rolldown:
       specifier: ^1.2.0
       version: 1.2.0
@@ -2170,7 +2170,7 @@ importers:
         version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.1.0)(vite@8.2.2(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.5)(yaml@2.9.0))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.22.12(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.9.0)
+        version: 0.22.14(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.9.0)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2266,7 +2266,7 @@ importers:
         version: 3.1.1
       tsdown:
         specifier: catalog:tsdown
-        version: 0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3)
+        version: 0.22.9(@tsdown/css@0.22.14)(tsx@4.22.5)(typescript@6.0.3)
       tsx:
         specifier: 'catalog:'
         version: 4.22.5
@@ -6539,8 +6539,8 @@ packages:
   '@ts-morph/common@0.29.0':
     resolution: {integrity: sha512-35oUmphHbJvQ/+UTwFNme/t2p3FoKiGJ5auTjjpNTop2dyREspirjMy82PLSC1pnDJ8ah1GU98hwpVt64YXQsg==}
 
-  '@tsdown/css@0.22.12':
-    resolution: {integrity: sha512-y7UMif5Fi96wZ8h9nRUIfxicLdmpIFl89CZNRi3suvyZCfBfPN9zQgUAUjtDK5yYKlGJlJM81LYf/XNLJ0mxWA==}
+  '@tsdown/css@0.22.14':
+    resolution: {integrity: sha512-0NpbgqfhfjaAoLdY3DxjrMo08vKFEtvlybCS42Gtolx8OPoKUdZZDyls0qgNEqea0c7XGjlF0NIE1tIxgU8RqA==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       postcss: ^8.4.0
@@ -6548,7 +6548,7 @@ packages:
       postcss-modules: ^6.0.0
       sass: '*'
       sass-embedded: '*'
-      tsdown: 0.22.12
+      tsdown: 0.22.14
     peerDependenciesMeta:
       postcss:
         optional: true
@@ -15380,12 +15380,12 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.22.12(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.9.0)':
+  '@tsdown/css@0.22.14(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.9.0)':
     dependencies:
       lightningcss: 1.33.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.23)(tsx@4.22.5)(yaml@2.9.0)
       rolldown: 1.2.6
-      tsdown: 0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3)
+      tsdown: 0.22.9(@tsdown/css@0.22.14)(tsx@4.22.5)(typescript@6.0.3)
     optionalDependencies:
       postcss: 8.5.23
     transitivePeerDependencies:
@@ -20374,7 +20374,7 @@ snapshots:
 
   ts-pattern@5.9.0: {}
 
-  tsdown@0.22.9(@tsdown/css@0.22.12)(tsx@4.22.5)(typescript@6.0.3):
+  tsdown@0.22.9(@tsdown/css@0.22.14)(tsx@4.22.5)(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -20392,7 +20392,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
     optionalDependencies:
-      '@tsdown/css': 0.22.12(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.9.0)
+      '@tsdown/css': 0.22.14(jiti@2.7.0)(postcss@8.5.23)(tsdown@0.22.9)(tsx@4.22.5)(yaml@2.9.0)
       tsx: 4.22.5
       typescript: 6.0.3
     transitivePeerDependencies:
