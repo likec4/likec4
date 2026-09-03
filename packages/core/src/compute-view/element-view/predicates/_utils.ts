@@ -1,15 +1,14 @@
 import { anyPass } from 'remeda'
-import type { ConnectionModel, ElementModel, LikeC4Model, RelationshipModel } from '../../../model'
+import type { ConnectionModel, ElementModel, LikeC4Model } from '../../../model'
 import { modelConnection } from '../../../model'
 import { type AnyAux, FqnRef, ModelFqnExpr } from '../../../types'
 import { ifilter, isDescendantOf, nonexhaustive, toArray } from '../../../utils'
+import { isBidirectionalRelation } from '../../utils/is-bidirectional-relation'
 import type { Elem, Memory, PredicateCtx } from '../_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = modelConnection
 
-export function isBidirectionalRelation<A extends AnyAux>(relation: RelationshipModel<A>): boolean {
-  return relation.isBidirectional || relation.tail === 'normal'
-}
+export { isBidirectionalRelation }
 
 /**
  * Resolve connections that can originate at an element.

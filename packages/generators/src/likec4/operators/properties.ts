@@ -242,3 +242,14 @@ export const styleProperties = zodOp(common.style)(
     property('multiple'),
   ),
 )
+
+/**
+ * Renders the arrow between relationship endpoints, e.g. `->`, `<->` or `-[async]<->`.
+ */
+export function relationConnector(
+  kind: string | undefined | null,
+  isBidirectional: boolean | undefined | null,
+): string {
+  const arrow = isBidirectional ? '<->' : '->'
+  return kind ? `-[${kind}]${arrow}` : arrow
+}

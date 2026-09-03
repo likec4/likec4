@@ -299,8 +299,18 @@ export class MergedSpecification {
     links,
     id,
     tags,
+    isBidirectional,
     ...model
   }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
+    const bidirectionalRelationship = (relationship: c4.DeploymentRelationship): c4.DeploymentRelationship =>
+      isBidirectional
+        ? {
+          ...relationship,
+          isBidirectional,
+          tail: relationship.tail ?? relationship.head ?? 'normal',
+        }
+        : relationship
+
     if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
       const spec = this.specs.relationships[kind as c4.RelationshipKind]!
       const { multiple: _multiple, tags: specTags, ...restSpec } = spec
@@ -312,24 +322,28 @@ export class MergedSpecification {
           ])
           : specTags
       }
-      return {
-        ...restSpec,
-        ...model,
+      return bidirectionalRelationship(
+        {
+          ...restSpec,
+          ...model,
+          ...(links && { links }),
+          ...(tags && { tags }),
+          source,
+          target,
+          kind,
+          id,
+        } satisfies c4.DeploymentRelationship,
+      )
+    }
+    return bidirectionalRelationship(
+      {
         ...(links && { links }),
+        ...model,
         ...(tags && { tags }),
         source,
         target,
-        kind,
         id,
-      } satisfies c4.DeploymentRelationship
-    }
-    return {
-      ...(links && { links }),
-      ...model,
-      ...(tags && { tags }),
-      source,
-      target,
-      id,
-    } satisfies c4.DeploymentRelationship
+      } satisfies c4.DeploymentRelationship,
+    )
   }
 }

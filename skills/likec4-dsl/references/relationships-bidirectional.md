@@ -5,6 +5,7 @@
 LikeC4 supports `<->` in two places with related but different meanings:
 
 - In `model { ... }`, `<->` declares one semantic bidirectional relationship.
+- In `deployment { ... }`, `<->` declares one semantic bidirectional deployment relationship.
 - In `views { ... }`, `A <-> B` is a binary predicate that includes relationships between two element sets in either direction.
 
 ## Declaring relationships in the model
@@ -51,6 +52,36 @@ model {
 ```
 
 The relationship kind participates in extension matching. When extending a kinded relationship, include the kind in `extend`; also include the title whenever the relationship is titled.
+
+## Bidirectional deployment relationships
+
+Deployment relationships use the same notation and semantics:
+
+```likec4
+specification {
+  element component
+  deploymentNode vm
+  relationship sync
+}
+
+model {
+  component database
+}
+
+deployment {
+  vm vm1 {
+    db = instanceOf database
+  }
+  vm vm2 {
+    db = instanceOf database
+  }
+
+  vm1.db <-> vm2.db "replicates"
+  vm1 -[sync]<-> vm2 "heartbeat"
+}
+```
+
+There is no `extend` for deployment relationships, so extension matching does not apply here.
 
 ## Extending bidirectional relationships
 
@@ -133,6 +164,7 @@ There is no prefix `<-> X` predicate. Use `-> X ->` when you need both incoming 
 | ------------------- | -------------- | ----------------------------------------------------------- |
 | `A -> B`            | model          | Directed relationship: A initiates/calls/sends to B         |
 | `A <-> B`           | model          | One bidirectional relationship between A and B              |
+| `A <-> B`           | deployment     | One bidirectional deployment relationship between A and B   |
 | `A -[kind]-> B`     | model          | Directed relationship with relationship kind                |
 | `A -[kind]<-> B`    | model          | Bidirectional relationship with relationship kind           |
 | `A -> B` + `B -> A` | model          | Two separate directed relationships                         |
