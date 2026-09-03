@@ -5,6 +5,7 @@ import {
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import type {
+  AnyStoryView,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -82,6 +83,14 @@ export interface Input {
   where: WhereOperator | null
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
   features?: EnabledFeatures
+  /**
+   * The story this view is currently a scene of, if any. Supplied by the
+   * consumer — the routing layer — the same way `view` itself is supplied;
+   * this state machine has no way to look it up on its own (see
+   * `LikeC4Diagram.props.ts`'s `story` prop). `null`/`undefined` when the
+   * view is being shown standalone.
+   */
+  story?: AnyStoryView | null
 }
 
 export type ToggledFeatures = {
@@ -92,6 +101,7 @@ export interface Context extends Input {
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
   features: EnabledFeatures
+  story: AnyStoryView | null
   // This is used to override features from props
   toggledFeatures: ToggledFeatures
   initialized: {
@@ -156,6 +166,7 @@ export function Context({ input }: { input: Input }): Context {
       ...DefaultFeatures,
       ...input.features,
     },
+    story: input.story ?? null,
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
       enableCompareWithLatest: false,
@@ -224,7 +235,10 @@ export type Events =
     xyedges: Types.Edge[]
   }
   | { type: 'update.view-bounds'; bounds: BBox }
-  | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features'>> }
+  | {
+    type: 'update.inputs'
+    inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features'>>
+  }
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }

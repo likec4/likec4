@@ -685,6 +685,9 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
           Array.from(_views.entries()),
         ),
       ),
+      // Builder has no story-authoring helpers yet; stories is a required registry,
+      // so seed it empty until a future task adds one.
+      stories: {},
       imports: pipe(
         Array.from(_imports.entries()),
         map((

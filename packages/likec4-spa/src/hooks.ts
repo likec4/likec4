@@ -1,3 +1,4 @@
+import type { LikeC4StoryModel } from '@likec4/core/model'
 import type { LayoutedView, LayoutType, ViewId } from '@likec4/core/types'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
@@ -82,6 +83,44 @@ export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType)
   }, [$likec4model, viewId, layoutType])
 
   return [view, setLayoutType] as const
+}
+
+export function useCurrentStoryId(): ViewId {
+  const storyId = useParams({
+    select: params => params.storyId,
+    strict: false,
+  })
+  return storyId as ViewId
+}
+
+/**
+ * Returns the current story, mirroring `useCurrentView`'s subscribe/`useState`
+ * shape so it stays live across model updates (HMR).
+ *
+ * `LikeC4Model#findStory` returns a fresh `LikeC4StoryModel` wrapper per model
+ * instance (`packages/core/src/model/LikeC4Model.ts`), so a plain `deepEqual`
+ * on the wrapper itself would never match across updates. Compare the
+ * underlying `$view` data instead, and keep the previous wrapper reference
+ * when it's unchanged.
+ */
+export function useCurrentStory(): LikeC4StoryModel | null {
+  const storyId = useCurrentStoryId()
+  const $likec4model = useLikeC4ModelAtom()
+
+  const [story, setStory] = useState(() => $likec4model.get().findStory(storyId))
+  useEffect(() => {
+    return $likec4model.subscribe((next) => {
+      setStory(current => {
+        const nextStory = next.findStory(storyId)
+        if (current && nextStory && deepEqual(current.$view, nextStory.$view)) {
+          return current
+        }
+        return nextStory
+      })
+    })
+  }, [$likec4model, storyId])
+
+  return story
 }
 
 export function useCurrentProject(): Project {

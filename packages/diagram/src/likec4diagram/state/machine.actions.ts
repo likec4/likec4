@@ -828,6 +828,7 @@ export const ensureNavigationPanelActor = () =>
         input: {
           view: context.view,
           viewModel: null,
+          story: context.story,
         },
         syncSnapshot: true,
       })

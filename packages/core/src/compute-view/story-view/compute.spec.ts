@@ -1,0 +1,196 @@
+import { describe, expect, it } from 'vitest'
+import { Builder } from '../../builder'
+import { LikeC4Model } from '../../model'
+import { type ParsedLikeC4ModelData, type ParsedStoryView, type ViewId, _stage, _type } from '../../types'
+import { computeStoryView } from './compute'
+
+const builder = Builder.specification({
+  elements: {
+    el: {},
+  },
+})
+
+function buildModel(extraViews: Record<string, unknown> = {}) {
+  const parsed = builder
+    .model(({ el }, _) => _(el('v1'), el('v2')))
+    .views(({ view, $include, $rules }, _) =>
+      _(
+        view('v1', 'v1', $rules($include('v1'))),
+        view('v2', 'v2', $rules($include('v2'))),
+      )
+    )
+    .build()
+  return LikeC4Model.create({
+    ...parsed,
+    views: { ...parsed.views, ...extraViews },
+  } as unknown as ParsedLikeC4ModelData<any>)
+}
+
+describe('computeStoryView', () => {
+  it('assigns sequential scene paths', () => {
+    const model = buildModel()
+    const view = computeStoryView(
+      model,
+      {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 's' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [
+          { view: 'v1' as ViewId, astPath: '/statements@0' },
+          { view: 'v2' as ViewId, astPath: '/statements@1' },
+        ],
+      } as unknown as ParsedStoryView<any>,
+    )
+
+    // `sceneLayout` was removed once explicit `anchor` statements superseded it (see
+    // `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`) — nothing should produce
+    // it anymore.
+    expect(view).not.toHaveProperty('sceneLayout')
+    expect(view).not.toHaveProperty('nodes')
+    expect(view).not.toHaveProperty('edges')
+    expect(view).not.toHaveProperty('autoLayout')
+    expect(view.scenes.map(s => s.id)).toEqual(['step-01', 'step-02'])
+    expect(view.scenes.map(s => s.view)).toEqual(['v1', 'v2'])
+  })
+
+  it('nests alt branches into hierarchical paths and records the branch title', () => {
+    const model = buildModel()
+    const view = computeStoryView(
+      model,
+      {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 's' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [
+          { view: 'v1' as ViewId, astPath: '/statements@0' },
+          {
+            [_type]: 'alt',
+            branches: [
+              {
+                [_type]: 'when',
+                title: 'fast',
+                statements: [{ view: 'v2' as ViewId, astPath: '/x' }],
+              },
+              {
+                [_type]: 'else',
+                statements: [{ view: 'v1' as ViewId, astPath: '/y' }],
+              },
+            ],
+          },
+        ],
+      } as unknown as ParsedStoryView<any>,
+    )
+
+    expect(view.scenes.map(s => s.id)).toEqual([
+      'step-01',
+      'step-02:alt.01:when.01',
+      'step-02:alt.02:else.01',
+    ])
+    expect(view.scenes[1]!.branchTitle).toBe('fast')
+  })
+
+  it('carries a declared anchor through to the computed scene', () => {
+    const model = buildModel()
+    const view = computeStoryView(
+      model,
+      {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 's' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [
+          { view: 'v1' as ViewId, anchor: 'v1', astPath: '/statements@0' },
+        ],
+      } as unknown as ParsedStoryView<any>,
+    )
+
+    expect(view.scenes[0]!.anchor).toBe('v1')
+  })
+
+  it('has no anchor property on the computed scene when none was declared', () => {
+    const model = buildModel()
+    const view = computeStoryView(
+      model,
+      {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 's' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [
+          { view: 'v1' as ViewId, astPath: '/statements@0' },
+        ],
+      } as unknown as ParsedStoryView<any>,
+    )
+
+    expect(view.scenes[0]).not.toHaveProperty('anchor')
+  })
+
+  it('throws when a scene references a view missing from the model', () => {
+    const model = buildModel()
+
+    expect(() =>
+      computeStoryView(
+        model,
+        {
+          [_stage]: 'parsed',
+          [_type]: 'story',
+          id: 's' as ViewId,
+          title: null,
+          description: null,
+          tags: null,
+          links: null,
+          statements: [
+            { view: 'does-not-exist' as ViewId, astPath: '/statements@0' },
+          ],
+        } as unknown as ParsedStoryView<any>,
+      )
+    ).toThrowError(/does-not-exist/)
+  })
+
+  it('throws when a scene references a view that is itself a story', () => {
+    const model = buildModel({
+      nested: {
+        [_stage]: 'parsed',
+        [_type]: 'story',
+        id: 'nested' as ViewId,
+        title: null,
+        description: null,
+        tags: null,
+        links: null,
+        statements: [],
+      },
+    })
+
+    expect(() =>
+      computeStoryView(
+        model,
+        {
+          [_stage]: 'parsed',
+          [_type]: 'story',
+          id: 's' as ViewId,
+          title: null,
+          description: null,
+          tags: null,
+          links: null,
+          statements: [
+            { view: 'nested' as ViewId, astPath: '/statements@0' },
+          ],
+        } as unknown as ParsedStoryView<any>,
+      )
+    ).toThrowError(/nested/)
+  })
+})

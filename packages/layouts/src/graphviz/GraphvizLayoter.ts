@@ -129,6 +129,7 @@ export class GraphvizLayouter implements Disposable {
 
   async layout<A extends AnyAux>(params: LayoutTaskParams<A>): Promise<LayoutResult<A>> {
     const logger = this.newScopedLogger('layout')
+
     try {
       logger.trace`layouting view ${params.view.id}...`
       let dot = await this.dot(params)
@@ -160,6 +161,7 @@ export class GraphvizLayouter implements Disposable {
     hints: AILayoutHints,
   ): Promise<LayoutResult<A>> {
     const logger = this.newScopedLogger('ai-layout')
+
     try {
       logger.trace`layouting view ${view.id} using AI hints...`
       const printer = new AiLayoutViewPrinter(view, styles, hints)

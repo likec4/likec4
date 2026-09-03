@@ -45,6 +45,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         specifications,
         models,
         views,
+        stories,
         globals,
         likec4lib,
         deployments,
@@ -61,6 +62,9 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
       // Process views
       this.exportViews(views, docExports, document)
+
+      // Process stories
+      this.exportStories(stories, docExports, document)
 
       // Process global
       this.exportGlobals(globals, docExports, document)
@@ -85,6 +89,26 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       try {
         if (isTruthy(viewAst.name)) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+    }
+  }
+
+  private exportStories(
+    modelStories: ast.ModelStories[] | undefined,
+    docExports: AstNodeDescription[],
+    document: LikeC4LangiumDocument,
+  ) {
+    const stories = modelStories?.flatMap(m => m.stories)
+    if (isNullish(stories) || stories.length === 0) {
+      return
+    }
+    for (const storyAst of stories) {
+      try {
+        if (isTruthy(storyAst.name)) {
+          docExports.push(this.descriptions.createDescription(storyAst, storyAst.name, document))
         }
       } catch (e) {
         logWarnError(e)

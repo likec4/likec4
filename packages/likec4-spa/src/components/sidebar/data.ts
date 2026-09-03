@@ -1,23 +1,35 @@
-import type { LikeC4ViewModel } from '@likec4/core/model'
+import type { LikeC4StoryModel, LikeC4ViewModel } from '@likec4/core/model'
 import { compareNatural, nonexhaustive } from '@likec4/core/utils'
 import { useLikeC4Model } from '@likec4/diagram'
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'
 import { find } from 'remeda'
 
-interface DiagramTreeNodeData {
+export interface DiagramTreeNodeData {
   label: string
   value: string
-  type: 'file' | 'folder' | 'view' | 'deployment-view'
+  type: 'file' | 'folder' | 'view' | 'deployment-view' | 'story'
   // Mantine Tree treats any node with a `children` array (even an empty one) as expandable,
-  // so leaf nodes (views) must not have this property
+  // so leaf nodes (views, stories) must not have this property
   children?: DiagramTreeNodeData[]
 }
 
 export type GroupBy = 'by-files' | 'by-folders' | 'none'
 
+/**
+ * Story ids and view ids are separate namespaces (RFC 0002 §5 — a `view foo {}` and a
+ * `story foo {}` may legally coexist in the same project), but this tree's `value` field is a
+ * single flat space Mantine's `Tree`/`useTree` uses as node identity (`tree.select`, React
+ * keys). Prefixing story values keeps a same-named story and view from colliding.
+ */
+const STORY_VALUE_PREFIX = 'story:'
+
+export const storyNodeValue = (storyId: string): string => `${STORY_VALUE_PREFIX}${storyId}`
+
+export const storyIdFromNodeValue = (value: string): string => value.slice(STORY_VALUE_PREFIX.length)
+
 export const isTreeNodeData = (node: TreeNodeData): node is DiagramTreeNodeData =>
-  'type' in node && ['file', 'folder', 'view', 'deployment-view'].includes(node.type as any)
+  'type' in node && ['file', 'folder', 'view', 'deployment-view', 'story'].includes(node.type as any)
 
 function dropFilename(relativePath: string) {
   if (relativePath === '') {
@@ -38,7 +50,11 @@ function compareTreeNodes(a: DiagramTreeNodeData, b: DiagramTreeNodeData) {
   return compareNatural(a.label, b.label)
 }
 
-function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupBy): DiagramTreeNodeData[] {
+export function buildDiagramTreeData(
+  views: readonly LikeC4ViewModel[],
+  stories: readonly LikeC4StoryModel[],
+  groupBy: GroupBy,
+): DiagramTreeNodeData[] {
   const root: DiagramTreeNodeData = {
     value: '',
     label: 'Diagrams',
@@ -96,10 +112,18 @@ function buildDiagramTreeData(views: readonly LikeC4ViewModel[], groupBy: GroupB
     }
   }
 
+  for (const story of stories) {
+    root.children!.push({
+      value: storyNodeValue(story.id),
+      label: story.title ?? story.id,
+      type: 'story',
+    })
+  }
+
   return root.children!.sort(compareTreeNodes)
 }
 
 export function useDiagramsTreeData(groupBy: GroupBy = 'by-files') {
   const model = useLikeC4Model()
-  return useMemo(() => buildDiagramTreeData([...model.views()], groupBy), [model, groupBy])
+  return useMemo(() => buildDiagramTreeData([...model.views()], [...model.stories()], groupBy), [model, groupBy])
 }

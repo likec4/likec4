@@ -81,6 +81,7 @@ export function ViewEditor() {
         enableNotations={isDevelopment || hasNotations}
         enableSearch
         enableDynamicViewWalkthrough
+        enableStoryWalkthrough
         enableFocusMode
         enableElementDetails
         enableRelationshipDetails

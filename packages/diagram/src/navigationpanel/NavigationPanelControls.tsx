@@ -23,9 +23,9 @@ import {
 } from './controls'
 import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
-import { DynamicViewControls } from './walkthrough'
+import { DynamicViewControls, StoryControls } from './walkthrough'
 
-const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
+export const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
   const view = context.view
   const folder = context.viewModel?.folder
   return {
@@ -36,6 +36,12 @@ const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
     viewId: view.id,
     viewTitle: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
     isDynamicView: (context.viewModel?._type ?? view._type) === 'dynamic',
+    // Not `view._type === 'story'`: a story is never assigned to `view`
+    // itself (Task 1 pulled `story` out of the view unions), so `view._type`
+    // never reads as `'story'`. `context.story` is the consumer-supplied
+    // signal for "is the current view a scene of a story" — see
+    // `LikeC4Diagram.props.ts`'s `story` prop.
+    isStoryView: context.story != null,
   }
 }
 
@@ -44,6 +50,7 @@ export const NavigationPanelControls = memo(() => {
   const {
     enableNavigationButtons,
     enableDynamicViewWalkthrough,
+    enableStoryWalkthrough,
     enableCompareWithLatest,
     enableSearch,
   } = useEnabledFeatures()
@@ -51,6 +58,7 @@ export const NavigationPanelControls = memo(() => {
     folders,
     viewTitle,
     isDynamicView,
+    isStoryView,
   } = useSelector(actor.actorRef, selectBreadcrumbs, deepEqual)
 
   const folderBreadcrumbs = folders.flatMap(({ folderPath, title }, i) => [
@@ -142,6 +150,7 @@ export const NavigationPanelControls = memo(() => {
         <ToggleReadonly />
       </m.div>
       {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
+      {enableStoryWalkthrough && isStoryView && <StoryControls key="story-controls" />}
       {enableSearch && !enableCompareWithLatest && <SearchControl key="search-control" />}
       <LayoutWarning key="outdated-manual-layout-warning" />
     </AnimatePresence>

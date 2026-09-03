@@ -3,6 +3,7 @@ import type { IsAny } from 'type-fest'
 import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
   Any,
+  AnyStoryView,
   Aux,
   AuxFromDump,
   AuxFromLikeC4ModelData,
@@ -44,6 +45,7 @@ import type {
 import { LikeC4DeploymentModel } from './DeploymentModel'
 import { type ElementsIterator, ElementModel } from './ElementModel'
 import { type RelationshipsIterator, RelationshipModel } from './RelationModel'
+import { LikeC4StoryModel } from './story/LikeC4StoryModel'
 import type {
   $ModelData,
   $View,
@@ -84,6 +86,8 @@ export class LikeC4Model<A extends Any = Any> {
   protected readonly _internal = new DefaultMap<aux.Fqn<A>, Set<RelationshipModel<A>>>(() => new Set())
 
   protected readonly _views = new Map<aux.ViewId<A>, LikeC4ViewModel<A>>()
+
+  protected readonly _stories = new Map<aux.ViewId<A>, LikeC4StoryModel<A>>()
 
   protected readonly _rootViewFolder: LikeC4ViewsFolder<A>
   protected readonly _viewFolders = new Map<string, LikeC4ViewsFolder<A>>()
@@ -193,6 +197,11 @@ export class LikeC4Model<A extends Any = Any> {
     }
 
     this.deployment = new LikeC4DeploymentModel(this)
+
+    const stories = ($data.stories ?? {}) as Record<string, AnyStoryView<A>>
+    for (const story of Object.values(stories)) {
+      this._stories.set(story.id, new LikeC4StoryModel(this, story))
+    }
 
     if (isOnStage($data, 'computed') || isOnStage($data, 'layouted')) {
       const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
@@ -528,6 +537,41 @@ export class LikeC4Model<A extends Any = Any> {
    */
   public findView(viewId: aux.LooseViewId<A>): $ViewModel<A> | null {
     return this._views.get(viewId as aux.ViewId<A>) as $ViewModel<A> ?? null
+  }
+
+  /**
+   * Returns all stories in the model.
+   */
+  public stories(): IteratorLike<LikeC4StoryModel<A>> {
+    return this._stories.values()
+  }
+
+  /**
+   * Returns a specific story by its ID.
+   * @throws Error if story is not found\
+   * Use {@link findStory} if you don't want to throw an error
+   *
+   * @example
+   * model.story('checkout-flow')
+   * // or object with id property of scalar.ViewId
+   * model.story({
+   *   id: 'checkout-flow',
+   * })
+   */
+  public story(storyId: aux.ViewId<A> | { id: scalar.ViewId<aux.ViewId<A>> }): LikeC4StoryModel<A> {
+    const id = getId(storyId)
+    return nonNullable(this._stories.get(id), `Story ${id} not found`)
+  }
+
+  /**
+   * Returns a specific story by its ID.
+   * @returns Story if found, null otherwise
+   *
+   * @example
+   * model.findStory('checkout-flow')
+   */
+  public findStory(storyId: aux.LooseViewId<A>): LikeC4StoryModel<A> | null {
+    return this._stories.get(storyId as aux.ViewId<A>) ?? null
   }
 
   /**
@@ -914,6 +958,7 @@ export namespace LikeC4Model {
     elements: {},
     relations: {},
     views: {},
+    stories: {},
     imports: {},
   })
 

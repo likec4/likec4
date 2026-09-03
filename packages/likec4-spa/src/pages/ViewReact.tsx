@@ -71,6 +71,7 @@ export function ViewReact() {
       enableSearch
       enableFocusMode
       enableDynamicViewWalkthrough
+      enableStoryWalkthrough
       dynamicViewVariant={dynamic}
       enableElementDetails
       enableRelationshipDetails

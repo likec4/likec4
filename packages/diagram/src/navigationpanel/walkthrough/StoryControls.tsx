@@ -1,0 +1,176 @@
+import { RichText } from '@likec4/core'
+import type { ComputedStoryScene } from '@likec4/core/types'
+import { css } from '@likec4/styles/css'
+import { HStack, styled } from '@likec4/styles/jsx'
+import {
+  type ButtonProps,
+  ActionIcon,
+  Badge,
+  Button,
+  HoverCard,
+  HoverCardDropdown,
+  HoverCardTarget,
+  ScrollAreaAutosize,
+} from '@mantine/core'
+import {
+  IconArrowFork,
+  IconNotes,
+  IconPlayerSkipBackFilled,
+  IconPlayerSkipForwardFilled,
+} from '@tabler/icons-react'
+import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { forwardRef } from 'react'
+import { Markdown } from '../../base-primitives'
+import { useMantinePortalProps } from '../../hooks'
+import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { Tooltip } from '../_common'
+import { currentScene, nextScene, prevScene } from './storyScenePosition'
+
+/** Previous/Next Scene button, styled distinctly (grape) from the dynamic-view walkthrough's own prev/next pair. */
+export const StoryControlButton = forwardRef<HTMLButtonElement, ButtonProps & HTMLMotionProps<'button'>>((
+  props,
+  ref,
+) => (
+  <Button
+    variant="light"
+    color="grape"
+    size="xs"
+    fw="500"
+    {...props}
+    ref={ref}
+    component={m.button}
+    whileTap={{
+      scale: 0.95,
+    }}
+    layout="position"
+  />
+))
+StoryControlButton.displayName = 'StoryControlButton'
+
+const sceneTitleText = css({
+  fontSize: 'xs',
+  fontWeight: 'medium',
+  color: 'text',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  minWidth: '0',
+  maxWidth: '160px',
+  userSelect: 'none',
+})
+
+/**
+ * Story walkthrough controls: Previous/Next, plus the active scene's title
+ * and notes.
+ *
+ * Previously wired to a dedicated story-cursor XState actor. That actor is
+ * gone (see this task's brief and the plan's architecture note): once
+ * Next/Prev became real route navigations, the actor's only reason to exist
+ * — owning cursor state an XState machine could reach without React/router
+ * access — evaporated. The route's `$viewId` param is now the cursor, and
+ * `context.story` (supplied by the consumer alongside `view`, per
+ * `LikeC4Diagram.props.ts`) plus `context.view.id` are enough to derive scene
+ * position with a plain, pure lookup (`storyScenePosition.ts`). Next/Prev now
+ * call `diagram.navigateTo`, the same `DiagramApi` method any other
+ * navigation goes through — which emits the `navigateTo` event the consumer's
+ * `onNavigateTo` (a real route push, per Task 7) already listens for.
+ *
+ * The `scene?.branchTitle` badge below renders an `alt` branch's title, from
+ * RFC 0001's depth-first traversal design. `alt` is currently rejected by
+ * validation (see `storyAltChecks`, `packages/language-server/src/validation/story-view.ts`),
+ * so no validation-passing story can ever populate `branchTitle` — the badge
+ * is dormant, kept for when branching returns rather than deleted outright.
+ */
+export function StoryControls() {
+  const diagram = useDiagram()
+  const portalProps = useMantinePortalProps()
+
+  const { story, viewId } = useDiagramContext(s => ({ story: s.story, viewId: s.view.id }))
+
+  const scene: ComputedStoryScene<any> | null = story ? currentScene(story, viewId) : null
+  const prev = story ? prevScene(story, viewId) : null
+  const next = story ? nextScene(story, viewId) : null
+
+  return (
+    <AnimatePresence propagate mode="popLayout">
+      <StoryControlButton
+        key="story-prev"
+        disabled={!prev}
+        onClick={e => {
+          e.stopPropagation()
+          if (prev) {
+            diagram.navigateTo(prev.view)
+          }
+        }}
+        leftSection={<IconPlayerSkipBackFilled size={10} />}
+      >
+        Previous Scene
+      </StoryControlButton>
+
+      {scene?.branchTitle && (
+        <Tooltip key="story-branch-tooltip" label="Inside an alternative branch">
+          <Badge
+            component={m.div}
+            layout="position"
+            size="md"
+            radius="sm"
+            variant="light"
+            color="orange"
+            leftSection={<IconArrowFork size={11} />}
+            className={css({ maxWidth: '220px' })}
+            styles={{
+              label: {
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              },
+            }}
+          >
+            {scene.branchTitle}
+          </Badge>
+        </Tooltip>
+      )}
+
+      <HStack key="story-scene-narration" gap="xxs" css={{ minWidth: '0', flexShrink: 1 }}>
+        <styled.span className={sceneTitleText} title={scene?.title ?? scene?.view ?? undefined}>
+          {scene?.title ?? scene?.view ?? 'Story'}
+        </styled.span>
+
+        {scene?.notes && (
+          <HoverCard position="bottom-start" openDelay={200} closeDelay={150} {...portalProps}>
+            <HoverCardTarget>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                onClick={e => e.stopPropagation()}
+                aria-label="Scene notes"
+              >
+                <IconNotes size={14} />
+              </ActionIcon>
+            </HoverCardTarget>
+            <HoverCardDropdown maw={360}>
+              <ScrollAreaAutosize mah={240} type="auto">
+                <Markdown value={RichText.from(scene.notes)} fontSize="sm" />
+              </ScrollAreaAutosize>
+            </HoverCardDropdown>
+          </HoverCard>
+        )}
+      </HStack>
+
+      <StoryControlButton
+        key="story-next"
+        disabled={!next}
+        onClick={e => {
+          e.stopPropagation()
+          if (next) {
+            diagram.navigateTo(next.view)
+          }
+        }}
+        rightSection={<IconPlayerSkipForwardFilled size={10} />}
+      >
+        Next Scene
+      </StoryControlButton>
+    </AnimatePresence>
+  )
+}
+StoryControls.displayName = 'StoryControls'

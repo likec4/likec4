@@ -225,7 +225,7 @@ export function nodeRef(node: Types.Node): Fqn | DeploymentFqn | null {
 }
 
 export function findCorrespondingNode(
-  context: Pick<Context, 'lastOnNavigate' | 'xynodes'>,
+  context: Pick<Context, 'lastOnNavigate' | 'xynodes' | 'story' | 'view'>,
   event: { view: DiagramView; xynodes: Types.Node[] },
 ): {
   fromNode: null
@@ -234,14 +234,87 @@ export function findCorrespondingNode(
   fromNode: Types.Node
   toNode: Types.Node | null
 } {
+  // Click/search-driven correspondence (context.lastOnNavigate) wins whenever it
+  // resolves to a real node — it reflects an explicit user action, whereas the
+  // anchor fallback below is an implicit, DSL-declared signal for the transition.
   const fromNodeId = context.lastOnNavigate?.fromNode
   const fromNode = fromNodeId && context.xynodes.find(n => n.id === fromNodeId)
   const fromRef = fromNode && nodeRef(fromNode)
-  if (!fromNode || !fromRef) {
-    return { fromNode: null, toNode: null }
+  if (fromNode && fromRef) {
+    const toNode = event.xynodes.find(n => nodeRef(n) === fromRef) ?? null
+    return { fromNode, toNode }
   }
-  const toNode = event.xynodes.find(n => nodeRef(n) === fromRef) ?? null
-  return { fromNode, toNode }
+
+  // Fallback: no click/search-driven signal (or it didn't resolve to a real
+  // node) — try the incoming story scene's declared anchor instead.
+  const anchorFqn = findIncomingAnchor(context, event)
+  if (anchorFqn) {
+    const anchorFromNode = findPositionedNodeByRef(context.xynodes, anchorFqn)
+    if (anchorFromNode) {
+      const anchorToNode = findPositionedNodeByRef(event.xynodes, anchorFqn)
+      return { fromNode: anchorFromNode, toNode: anchorToNode }
+    }
+  }
+
+  return { fromNode: null, toNode: null }
+}
+
+/**
+ * Resolves the anchor FQN declared by the incoming story scene — but only when
+ * the outgoing view was *also* a scene of the same story. Comparing story
+ * identity on both sides (rather than relying on today's routing tearing the
+ * diagram actor down at story boundaries) is what keeps anchor continuity from
+ * leaking across story boundaries, e.g. deep-linking directly into a mid-story
+ * scene from an unrelated view that happens to render the same model element.
+ *
+ * `story.scenes` is a flattened array keyed by view id, but the same view id
+ * can legitimately appear more than once (e.g. the same view referenced from
+ * two different `alt` branches) — each occurrence is a distinct scene with its
+ * own, potentially different, `anchor`. Since this lookup only has the
+ * incoming *view id* to go on (not which occurrence is actually being
+ * entered — see `docs/superpowers/plans/2026-08-04-story-scene-anchor.md`),
+ * it cannot safely pick one when several matching occurrences disagree on
+ * `anchor`. In that case it fails safe and returns `null`, which degrades to
+ * the ordinary fit-to-bounds path — the same graceful-degradation behavior
+ * already used for every other "can't resolve this anchor confidently" case
+ * (anchor not found in the outgoing/incoming node lists, sequence-mode nodes,
+ * etc.). When every matching occurrence agrees (including all being
+ * anchor-less), or there's only one match, this resolves exactly as if the
+ * view id were unique.
+ */
+function findIncomingAnchor(
+  context: Pick<Context, 'story' | 'view'>,
+  event: { view: DiagramView },
+): Fqn | null {
+  const story = context.story
+  if (!story || !('scenes' in story)) {
+    return null
+  }
+  const outgoingIsPartOfStory = story.scenes.some(s => s.view === context.view.id)
+  if (!outgoingIsPartOfStory) {
+    return null
+  }
+  const matchingScenes = story.scenes.filter(s => s.view === event.view.id)
+  if (matchingScenes.length === 0) {
+    return null
+  }
+  const [firstScene, ...rest] = matchingScenes
+  const firstAnchor = firstScene!.anchor ?? null
+  const allAgree = rest.every(s => (s.anchor ?? null) === firstAnchor)
+  return allAgree ? firstAnchor : null
+}
+
+/**
+ * Same `nodeRef` correlation `findCorrespondingNode` already relies on, but
+ * excludes `seq-actor` nodes: a dynamic view rendered in sequence mode
+ * positions actor nodes along a single shared lifeline-header row rather than
+ * in the view's ordinary free-form layout, so a coordinate match there would
+ * produce a misleading pan target. This degrades gracefully to the ordinary
+ * fit-to-bounds path, matching this feature's documented sequence-mode
+ * limitation.
+ */
+function findPositionedNodeByRef(nodes: Types.Node[], ref: Fqn | DeploymentFqn): Types.Node | null {
+  return nodes.find(n => n.type !== 'seq-actor' && nodeRef(n) === ref) ?? null
 }
 
 export function calcViewportForBounds(

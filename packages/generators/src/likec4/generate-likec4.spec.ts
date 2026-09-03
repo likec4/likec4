@@ -200,6 +200,38 @@ describe('generateLikeC4', () => {
     })
     await expect(output).toMatchFileSnapshot('__snapshots__/likec4.generate.snap')
   })
+
+  it('throws instead of silently dropping stories (generator has no story emission)', ({ expect }) => {
+    const parsed = builder.build()
+    expect(() =>
+      generateLikeC4({
+        relations: parsed.relations,
+        elements: parsed.elements,
+        deployments: parsed.deployments,
+        specification: parsed.specification,
+        // A story is not a view and this generator does not know how to emit `story { }`
+        // blocks (see RFC 0001/0002). Passing a non-empty `stories` record must fail loudly
+        // rather than have it silently stripped by the `likec4data` zod schema, which has no
+        // `stories` key.
+        stories: {
+          'a-story': {},
+        },
+      })
+    ).toThrow(/[Ss]tory views are not supported/)
+  })
+
+  it('does not throw when stories is empty or absent', ({ expect }) => {
+    const parsed = builder.build()
+    expect(() =>
+      generateLikeC4({
+        relations: parsed.relations,
+        elements: parsed.elements,
+        deployments: parsed.deployments,
+        specification: parsed.specification,
+        stories: {},
+      })
+    ).not.toThrow()
+  })
 })
 
 describe('print', () => {

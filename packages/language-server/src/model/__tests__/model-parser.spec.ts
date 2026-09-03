@@ -1,11 +1,24 @@
 import {
   type ViewRulePredicate,
+  invariant,
   isViewRulePredicate,
   ModelRelationExpr,
 } from '@likec4/core'
 import { indexBy, values } from 'remeda'
 import { describe } from 'vitest'
+import type { ParsedAstView } from '../../ast'
 import { createTestServices, testFileScope as it } from '../../test'
+
+/**
+ * A story view has `statements`, not `rules` (RFC 0001: a story owns no view rules).
+ * These fixtures always construct an element, dynamic, or deployment view, so assert
+ * that here rather than widening the fixtures' assertions to tolerate a story view.
+ */
+function rulesOf(view: ParsedAstView | null | undefined) {
+  invariant(view, 'Expected a parsed view')
+  invariant('rules' in view, `Expected view ${view.id} to have rules (got a story view?)`)
+  return view.rules
+}
 
 describe('LikeC4ModelParser', () => {
   it('parses strings with escaped quotes', async ({ expect, validate, t }) => {
@@ -586,7 +599,7 @@ describe('LikeC4ModelParser', () => {
 
       const doc = t.likec4.ModelParser.parse(langiumDocument)!
 
-      const rules = doc?.c4Views?.[0]?.rules!
+      const rules = rulesOf(doc?.c4Views?.[0])
       const includeRule = rules[0] as ViewRulePredicate
       const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
 
@@ -630,7 +643,7 @@ describe('LikeC4ModelParser', () => {
 
       const doc = t.likec4.ModelParser.parse(langiumDocument)!
 
-      const rules = doc?.c4Views?.[0]?.rules!
+      const rules = rulesOf(doc?.c4Views?.[0])
       const includeRule = rules[0] as ViewRulePredicate
       const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
 
@@ -675,7 +688,7 @@ describe('LikeC4ModelParser', () => {
 
       const doc = t.likec4.ModelParser.parse(langiumDocument)
 
-      const rules = doc.c4Views[0]?.rules!
+      const rules = rulesOf(doc.c4Views[0])
       const includeRule = rules[0] as ViewRulePredicate
       const withPredicate = includeRule.include?.[0] as ModelRelationExpr.Custom
 
@@ -712,7 +725,7 @@ describe('LikeC4ModelParser', () => {
 
         const doc = t.likec4.ModelParser.parse(langiumDocument)
 
-        const rules = doc.c4Views[0]?.rules!
+        const rules = rulesOf(doc.c4Views[0])
         const includeRule = rules[0] as ViewRulePredicate
         const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
 
@@ -749,7 +762,7 @@ describe('LikeC4ModelParser', () => {
 
         const doc = t.likec4.ModelParser.parse(langiumDocument)
 
-        const rules = doc.c4Views[0]?.rules!
+        const rules = rulesOf(doc.c4Views[0])
         const includeRule = rules[0] as ViewRulePredicate
         const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
 
@@ -790,7 +803,7 @@ describe('LikeC4ModelParser', () => {
 
         const doc = t.likec4.ModelParser.parse(langiumDocument)
 
-        const rules = doc.c4Views[0]?.rules!
+        const rules = rulesOf(doc.c4Views[0])
         const includeRule = rules[0] as ViewRulePredicate
         const wherePredicate = includeRule.include?.[0] as ModelRelationExpr.Where
 
@@ -1029,7 +1042,7 @@ describe('LikeC4ModelParser', () => {
       `)
       const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
-      expect(doc.c4Views[0]!.rules).toEqual([{
+      expect(rulesOf(doc.c4Views[0])).toEqual([{
         style: {
           color: 'red',
         },
@@ -1079,7 +1092,7 @@ describe('LikeC4ModelParser', () => {
       `)
       const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
-      const ranks = doc.c4Views[0]!.rules.filter(rule => 'rank' in rule)
+      const ranks = rulesOf(doc.c4Views[0]).filter(rule => 'rank' in rule)
       expect(ranks).toEqual([
         {
           rank: 'same',
@@ -1135,7 +1148,7 @@ describe('LikeC4ModelParser', () => {
       `)
       const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
-      expect(doc.c4Views[0]!.rules).toEqual([{
+      expect(rulesOf(doc.c4Views[0])).toEqual([{
         include: [{
           isBidirectional: false,
           source: {
@@ -1173,7 +1186,7 @@ describe('LikeC4ModelParser', () => {
       `)
       const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
-      expect(doc.c4Views[0]!.rules).toEqual([{
+      expect(rulesOf(doc.c4Views[0])).toEqual([{
         include: [{
           isBidirectional: false,
           source: {
@@ -1211,7 +1224,7 @@ describe('LikeC4ModelParser', () => {
       `)
       const doc = t.likec4.ModelParser.parse(langiumDocument)
       expect(doc.c4Views).toHaveLength(1)
-      expect(doc.c4Views[0]!.rules).toEqual([{
+      expect(rulesOf(doc.c4Views[0])).toEqual([{
         include: [{
           isBidirectional: false,
           source: {
@@ -1255,7 +1268,7 @@ describe('LikeC4ModelParser', () => {
       `)
         const doc = t.likec4.ModelParser.parse(langiumDocument)
         expect(doc.c4Views).toHaveLength(1)
-        expect(doc.c4Views[0]!.rules).toEqual([{
+        expect(rulesOf(doc.c4Views[0])).toEqual([{
           include: [{
             isBidirectional: true,
             source: {
@@ -1299,7 +1312,7 @@ describe('LikeC4ModelParser', () => {
       `)
         const doc = t.likec4.ModelParser.parse(langiumDocument)
         expect(doc.c4Views).toHaveLength(1)
-        expect(doc.c4Views[0]!.rules).toEqual([{
+        expect(rulesOf(doc.c4Views[0])).toEqual([{
           include: [{
             where: {
               condition: {
@@ -1352,7 +1365,7 @@ describe('LikeC4ModelParser', () => {
       `)
         const doc = t.likec4.ModelParser.parse(langiumDocument)
         expect(doc.c4Views).toHaveLength(1)
-        expect(doc.c4Views[0]!.rules).toEqual([{
+        expect(rulesOf(doc.c4Views[0])).toEqual([{
           include: [{
             where: {
               condition: {

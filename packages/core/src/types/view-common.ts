@@ -89,7 +89,7 @@ export interface ViewAutoLayout {
   nodeSep?: number
 }
 
-export type ViewType = 'element' | 'dynamic' | 'deployment'
+export type ViewType = 'element' | 'dynamic' | 'deployment' | 'story'
 
 export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   readonly id: aux.StrictViewId<A>
