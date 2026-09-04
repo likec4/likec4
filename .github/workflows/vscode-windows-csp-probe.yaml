@@ -89,6 +89,14 @@ jobs:
           }
           '@ | Set-Content -Encoding utf8 (Join-Path $env:FIXTURE 'model.c4')
 
+      - name: Start controlled Bootstrap CDN
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-bootstrap-icon-cors-server.ps1 -EvidencePath $env:EVIDENCE
+          $response = Invoke-WebRequest -UseBasicParsing https://icons.like-c4.dev/bootstrap/boxes.svg
+          if ($response.Content -notmatch '<svg') { throw 'Controlled SVG endpoint did not respond.' }
+          if ($response.Headers['Access-Control-Allow-Origin']) { throw 'Controlled SVG endpoint unexpectedly sent a CORS header.' }
+
       - name: Build v1.59.3 baseline extension
         shell: pwsh
         env:
@@ -125,6 +133,18 @@ jobs:
             -ExtensionPath "$PWD\\packages\\vscode" `
             -FixturePath $env:FIXTURE `
             -OutputPath "$env:EVIDENCE\\pr.png"
+
+      - name: Remove controlled Bootstrap CDN
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:ICON_CDN_PID) { Stop-Process -Id $env:ICON_CDN_PID -Force -ErrorAction SilentlyContinue }
+          if ($env:ICON_CDN_PORT) { netsh http delete sslcert ipport="0.0.0.0:$env:ICON_CDN_PORT" }
+          if ($env:ICON_CDN_HOSTS_BACKUP -and (Test-Path $env:ICON_CDN_HOSTS_BACKUP)) { Copy-Item -Force $env:ICON_CDN_HOSTS_BACKUP "$env:WINDIR\System32\drivers\etc\hosts" }
+          if ($env:ICON_CDN_CERT_THUMBPRINT) {
+            Remove-Item -Force "Cert:\LocalMachine\My\$env:ICON_CDN_CERT_THUMBPRINT" -ErrorAction SilentlyContinue
+            Remove-Item -Force "Cert:\LocalMachine\Root\$env:ICON_CDN_CERT_THUMBPRINT" -ErrorAction SilentlyContinue
+          }
 
       - name: Upload probe evidence
         if: always()
