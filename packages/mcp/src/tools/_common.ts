@@ -250,6 +250,25 @@ export const locationSchema = z.object({
   }).describe('Range in the file'),
 }).nullable()
 
+export const linksSchema = z.array(z.object({
+  title: z.string().nullable().describe('Optional link title'),
+  url: z.string().describe('Link URL'),
+  relative: z.string().nullable().describe('Relative path (if URL is relative to workspace root)'),
+})).describe('External links associated with this element')
+
+/**
+ * Serializes the links of an element or deployment entity for MCP responses.
+ */
+export function serializeLinks(
+  element: ElementModel<AnyAux> | DeploymentElementModel<AnyAux>,
+): z.infer<typeof linksSchema> {
+  return (element.links ?? []).map(link => ({
+    title: link.title ?? null,
+    url: link.url,
+    relative: link.relative ?? null,
+  }))
+}
+
 export const projectIdSchema = z.string()
   .refine((_v): _v is ProjectId => true)
   .default('default' as ProjectId)

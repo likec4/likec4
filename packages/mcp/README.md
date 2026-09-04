@@ -67,7 +67,7 @@ OPTIONS
 - `query-by-tags`: Search elements and deployment nodes by tags with boolean logic (allOf, anyOf, noneOf).
 - `query-by-tag-pattern`: Search elements by tag patterns using prefix, contains, or suffix matching.
 - `find-relationship-paths`: Discover all relationship chains between two elements with bounded BFS traversal. Supports `includeIndirect` to control implied relationships.
-- `batch-read-elements`: Read full details for multiple elements in a single request.
+- `batch-read-elements`: Read full details for multiple elements in a single request, including links and sourceLocation.
 - `subgraph-summary`: Summarize descendants of an element with depth, metadata, and relationship counts.
 - `element-diff`: Compare two elements and show differences in properties, tags, metadata, and relationships.
 - `open-view`: Opens the LikeC4 view (available if MCP is running in the editor)
