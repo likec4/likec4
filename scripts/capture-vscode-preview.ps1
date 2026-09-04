@@ -20,6 +20,11 @@ $extensionsPath = Join-Path $env:RUNNER_TEMP "likec4-$Label-extensions"
 $evidenceDirectory = Split-Path -Parent $OutputPath
 $stdoutPath = Join-Path $evidenceDirectory "$Label-vscode.stdout.log"
 $stderrPath = Join-Path $evidenceDirectory "$Label-vscode.stderr.log"
+$debugPort = switch ($Label) {
+  'baseline' { 9222 }
+  'pr' { 9223 }
+  default { throw "Unsupported capture label: $Label" }
+}
 
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $userDataPath, $extensionsPath
 @($userDataPath, $extensionsPath, $evidenceDirectory) | ForEach-Object {
@@ -40,40 +45,38 @@ $arguments = @(
   '--disable-workspace-trust',
   '--skip-welcome',
   '--skip-release-notes',
+  "--remote-debugging-port=$debugPort",
   $FixturePath
 )
 
-Start-Process -FilePath $codeCommand.Source -ArgumentList $arguments -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
-Start-Sleep -Seconds 12
+try {
+  Start-Process -FilePath $codeCommand.Source -ArgumentList $arguments -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+  Start-Sleep -Seconds 12
 
-$window = Get-Process Code | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -Last 1
-if ($null -eq $window) {
-  throw "No VS Code window found. See $stdoutPath and $stderrPath"
+  $window = Get-Process Code | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -Last 1
+  if ($null -eq $window) {
+    throw "No VS Code window found. See $stdoutPath and $stderrPath"
+  }
+
+  $shell = New-Object -ComObject WScript.Shell
+  if (-not $shell.AppActivate($window.Id)) {
+    throw "Could not activate VS Code window $($window.Id)."
+  }
+
+  Add-Type -AssemblyName System.Windows.Forms
+  [System.Windows.Forms.SendKeys]::SendWait('^+p')
+  Start-Sleep -Seconds 1
+  [System.Windows.Forms.SendKeys]::SendWait('LikeC4: Open Preview')
+  Start-Sleep -Seconds 1
+  [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+  Start-Sleep -Seconds 3
+  [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+  Start-Sleep -Seconds 20
+
+  node ./scripts/capture-vscode-webview.mjs --port $debugPort --output $OutputPath --console "$OutputPath.console.json"
+  if ($LASTEXITCODE -ne 0) {
+    throw "CDP capture failed for $Label. See $stdoutPath and $stderrPath"
+  }
+} finally {
+  Get-Process Code -ErrorAction SilentlyContinue | Stop-Process -Force
 }
-
-$shell = New-Object -ComObject WScript.Shell
-if (-not $shell.AppActivate($window.Id)) {
-  throw "Could not activate VS Code window $($window.Id)."
-}
-
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
-
-[System.Windows.Forms.SendKeys]::SendWait('^+p')
-Start-Sleep -Seconds 1
-[System.Windows.Forms.SendKeys]::SendWait('LikeC4: Open Preview')
-Start-Sleep -Seconds 1
-[System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
-Start-Sleep -Seconds 3
-[System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
-Start-Sleep -Seconds 20
-
-$bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-$bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
-$graphics = [System.Drawing.Graphics]::FromImage($bitmap)
-$graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
-$bitmap.Save($OutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
-$graphics.Dispose()
-$bitmap.Dispose()
-
-Get-Process Code -ErrorAction SilentlyContinue | Stop-Process -Force
