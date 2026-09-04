@@ -48,11 +48,14 @@ const bootstrapIcons = new DefaultMap<string, ElementIconRenderer>(name => {
   return lazy(async () => {
     try {
       const { base64data } = await extensionApi.readBootstrapIcon(name)
+      if (!base64data) {
+        bootstrapIcons.delete(name)
+      }
       return {
         default: bootstrapIconRendererFromDataUrl(base64data),
       }
-    } catch (error) {
-      console.error(error)
+    } catch {
+      bootstrapIcons.delete(name)
       return {
         default: () => null,
       }
