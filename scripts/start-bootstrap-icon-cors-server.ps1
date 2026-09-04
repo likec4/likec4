@@ -64,7 +64,7 @@ try {
     if ([string]::IsNullOrEmpty($origin)) {
       $origin = '-'
     }
-    [System.IO.File]::AppendAllText($logPath, "{0} {1} {2}`n" -f $context.Request.HttpMethod, $context.Request.Url.AbsolutePath, $origin)
+    [System.IO.File]::AppendAllText($logPath, ("{0} {1} {2}`n" -f $context.Request.HttpMethod, $context.Request.Url.AbsolutePath, $origin))
 
     if ($allowedPaths -contains $context.Request.Url.AbsolutePath) {
       $payload = [System.Text.Encoding]::UTF8.GetBytes($svg)
