@@ -9,6 +9,7 @@ import {
   FetchProjectsOverview,
   GetLastClickedNode,
   OnOpenView,
+  ReadBootstrapIcon,
   ReadLocalIcon,
   ViewChangeReq,
   WebviewMsgs,
@@ -107,6 +108,7 @@ export const useMessenger = createSingletonComposable(() => {
     handleFetchComputedModel: requestHandler(FetchComputedModel),
     handleFetchLayoutedView: requestHandler(FetchLayoutedView),
     handleFetchProjectsOverview: requestHandler(FetchProjectsOverview),
+    handleReadBootstrapIcon: requestHandler(ReadBootstrapIcon),
     handleReadLocalIcon: requestHandler(ReadLocalIcon),
     handleViewChange: requestHandler(ViewChangeReq),
 

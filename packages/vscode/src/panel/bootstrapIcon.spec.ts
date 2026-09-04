@@ -2,12 +2,17 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
+import { ReadBootstrapIcon } from '@likec4/vscode-preview/protocol'
 import { describe, expect, it, vi } from 'vitest'
 import { createBootstrapIconLoader, isBootstrapIconName } from './bootstrapIcon'
 
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"/>'
 
 describe('bootstrap icon loader', () => {
+  it('defines a dedicated Bootstrap-icon request', () => {
+    expect(ReadBootstrapIcon.method).toBe('read-bootstrap-icon')
+  })
+
   it('accepts only bounded Bootstrap icon names', () => {
     expect(isBootstrapIconName('boxes')).toBe(true)
     expect(isBootstrapIconName('buildings-fill')).toBe(true)
