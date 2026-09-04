@@ -17,6 +17,7 @@ for (let index = 2; index < process.argv.length; index += 2) {
 const port = Number(argumentsByName.get('--port'))
 const outputPath = argumentsByName.get('--output')
 const consolePath = argumentsByName.get('--console')
+const targetsPath = `${outputPath}.targets.json`
 
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error('Pass --port with a valid TCP port.')
@@ -45,6 +46,21 @@ const findTarget = async () => {
       }
       const targets = await response.json()
       const target = targets.find(targetMatches)
+      await writeFile(
+        targetsPath,
+        `${
+          JSON.stringify(
+            {
+              endpoint,
+              observedAt: new Date().toISOString(),
+              targets,
+              selectedTarget: target ?? null,
+            },
+            null,
+            2,
+          )
+        }\n`,
+      )
       if (target?.webSocketDebuggerUrl) {
         return target
       }
