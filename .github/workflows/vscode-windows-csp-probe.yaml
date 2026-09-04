@@ -73,6 +73,15 @@ jobs:
               }
             }
 
+            element sentinel {
+              style {
+                icon bootstrap:buildings-fill
+                iconColor #ff00ff
+                iconSize large
+                iconPosition top
+              }
+            }
+
             color pale-white #eff7ff
           }
 
@@ -81,11 +90,12 @@ jobs:
               #prod
               description 'System finansowo-księgowy.'
             }
+            sentinel corsSentinel 'CORS sentinel'
           }
 
           views {
             view index {
-              include *
+              include sap, corsSentinel
             }
           }
           '@ | Set-Content -Encoding utf8 (Join-Path $env:FIXTURE 'model.c4')
@@ -134,6 +144,14 @@ jobs:
             -ExtensionPath "$PWD\\packages\\vscode" `
             -FixturePath $env:FIXTURE `
             -OutputPath "$env:EVIDENCE\\pr.png"
+
+      - name: Assert CORS red and host-loader green
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/assert-vscode-bootstrap-cors-probe.ps1 `
+            -BaselineConsole "$env:EVIDENCE\baseline.png.console.json" -RepairConsole "$env:EVIDENCE\pr.png.console.json" `
+            -BaselinePng "$env:EVIDENCE\baseline.png" -RepairPng "$env:EVIDENCE\pr.png" `
+            -OutputPath "$env:EVIDENCE\probe-result.json"
 
       - name: Remove controlled Bootstrap CDN
         if: always()
