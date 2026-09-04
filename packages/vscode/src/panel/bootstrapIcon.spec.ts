@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
 import { describe, expect, it, vi } from 'vitest'
 import { createBootstrapIconLoader, isBootstrapIconName } from './bootstrapIcon'
 
@@ -35,7 +39,7 @@ describe('bootstrap icon loader', () => {
 
   it('rejects non-SVG and oversized responses', async () => {
     const nonSvg = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response('x', { headers: { 'content-type': 'text/html' } }),
+      new Response('x', { headers: { 'content-type': 'image/svg+xmlfoo' } }),
     )
     const oversized = vi.fn<typeof fetch>().mockResolvedValue(
       new Response('x'.repeat(256 * 1024 + 1), { headers: { 'content-type': 'image/svg+xml' } }),
@@ -47,7 +51,10 @@ describe('bootstrap icon loader', () => {
 
   it('returns null on fetch failure and caches only successful results', async () => {
     const failing = vi.fn<typeof fetch>().mockRejectedValue(new Error('offline'))
-    await expect(createBootstrapIconLoader(failing)('boxes')).resolves.toEqual({ base64data: null })
+    const loadFailing = createBootstrapIconLoader(failing)
+    await expect(loadFailing('boxes')).resolves.toEqual({ base64data: null })
+    await expect(loadFailing('boxes')).resolves.toEqual({ base64data: null })
+    expect(failing).toHaveBeenCalledTimes(2)
 
     const succeeding = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(svg, { headers: { 'content-type': 'image/svg+xml' } }),
