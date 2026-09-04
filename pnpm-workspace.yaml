@@ -79,13 +79,13 @@ catalogs:
     '@types/ws': ^8.18.1
     ws: ^8.21.0
   astro:
-    "@astrojs/check": 0.9.9
-    "@astrojs/react": 6.0.1
+    "@astrojs/check": 0.9.10
+    "@astrojs/react": 6.0.5
     "@astrojs/starlight": 0.41.3
     "@astrojs/starlight-tailwind": 5.0.0
     "@expressive-code/plugin-collapsible-sections": 0.44.1
     "@expressive-code/plugin-line-numbers": 0.44.1
-    astro: 7.1.0
+    astro: 7.2.10
     astro-og-canvas: 0.13.0
     astro-skills: 0.1.1
     shiki: 4.1.0
