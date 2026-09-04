@@ -102,6 +102,12 @@ jobs:
           }
           '@ | Set-Content -Encoding utf8 (Join-Path $env:FIXTURE 'model.c4')
 
+      - name: Parse CORS assertion script
+        shell: pwsh
+        run: |
+          $source = Get-Content -LiteralPath ./scripts/assert-vscode-bootstrap-cors-probe.ps1 -Raw
+          $null = [ScriptBlock]::Create($source)
+
       - name: Start controlled Bootstrap CDN
         shell: pwsh
         run: |

@@ -27,7 +27,7 @@ function Read-ConsoleEntries {
   try {
     return @(Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json)
   } catch {
-    throw "Cannot parse console log $Path: $($_.Exception.Message)"
+    throw "Cannot parse console log ${Path}: $($_.Exception.Message)"
   }
 }
 
