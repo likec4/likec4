@@ -8,7 +8,15 @@
 import { invariant } from '@likec4/core'
 import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
-import { includedInViews, includedInViewsSchema, locationSchema, mkLocate, projectIdSchema } from './_common'
+import {
+  includedInViews,
+  includedInViewsSchema,
+  linksSchema,
+  locationSchema,
+  mkLocate,
+  projectIdSchema,
+  serializeLinks,
+} from './_common'
 
 export const readDeployment = likec4Tool({
   name: 'read-deployment',
@@ -98,11 +106,7 @@ Example response (deployed instance):
     tags: z.array(z.string()),
     project: z.string(),
     metadata: z.record(z.union([z.string(), z.array(z.string())])),
-    links: z.array(z.object({
-      title: z.string().nullable().describe('Optional link title'),
-      url: z.string().describe('Link URL'),
-      relative: z.string().nullable().describe('Relative path (if URL is relative to workspace root)'),
-    })).describe('External links associated with this deployment entity'),
+    links: linksSchema.describe('External links associated with this deployment entity'),
     shape: z.string(),
     color: z.string(),
     children: z.array(z.string()).describe('Children of this deployment node (Array of Deployment ids)'),
@@ -133,11 +137,7 @@ Example response (deployed instance):
     tags: [...element.tags],
     project: projectId,
     metadata: element.getMetadata(),
-    links: (element.links ?? []).map(link => ({
-      title: link.title ?? null,
-      url: link.url,
-      relative: link.relative ?? null,
-    })),
+    links: serializeLinks(element),
     shape: element.shape,
     color: element.color,
     children: element.isInstance() ? [] : [...element.children()].map(c => c.id),

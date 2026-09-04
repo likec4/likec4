@@ -5,7 +5,15 @@
 import { invariant } from '@likec4/core'
 import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
-import { elementSummarySchema, projectIdSchema, serializeElement } from './_common'
+import {
+  elementSummarySchema,
+  linksSchema,
+  locationSchema,
+  mkLocate,
+  projectIdSchema,
+  serializeElement,
+  serializeLinks,
+} from './_common'
 
 const MAX_IDS = 50
 
@@ -17,13 +25,15 @@ const elementDetailSchema = elementSummarySchema.extend({
   children: z.array(z.string()).describe('Direct child element ids'),
   incomingCount: z.number().describe('Number of incoming relationships'),
   outgoingCount: z.number().describe('Number of outgoing relationships'),
+  links: linksSchema,
+  sourceLocation: locationSchema,
 })
 
 export const batchReadElements = likec4Tool({
   name: 'batch-read-elements',
   description: `
 Read details of multiple elements in a single call, reducing round-trips.
-Returns a compact summary for each element including metadata, description, technology, shape, children, and relationship counts.
+Returns a compact summary for each element including metadata, description, technology, shape, children, relationship counts, links and source location.
 
 Request:
 - ids: string[] — array of element ids (FQNs) to read (max 50)
@@ -45,6 +55,8 @@ Response (JSON object):
   - incomingCount: number — number of incoming relationships
   - outgoingCount: number — number of outgoing relationships
   - includedInViews: View[] — views that include this element
+  - links: Array<{ title: string|null, url: string, relative: string|null }> — external links associated with this element
+  - sourceLocation: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location if available
 - notFound: string[] — ids that were not found in the project
 
 View (object) fields:
@@ -58,6 +70,8 @@ Notes:
 - Maximum 50 element ids per call.
 - Elements not found are listed in notFound array (not an error).
 - More efficient than multiple read-element calls when you need summary data for many elements.
+- Returns the same "links" and "sourceLocation" as read-element, so it fully replaces read-element for that case.
+- Call read-element only when you also need relationships, deployedInstances, defaultView or project.
 
 Example response:
 {
@@ -78,7 +92,14 @@ Example response:
       "outgoingCount": 3,
       "includedInViews": [
         { "id": "system-overview", "title": "System Overview", "type": "element" }
-      ]
+      ],
+      "links": [
+        { "title": "Documentation", "url": "https://docs.example.com/frontend", "relative": null }
+      ],
+      "sourceLocation": {
+        "path": "/abs/path/project/model.c4",
+        "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 25, "character": 0 } }
+      }
     }
   ],
   "notFound": []
@@ -102,6 +123,7 @@ Example response:
 
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const model = await languageServices.computedModel(projectId)
+  const locate = mkLocate(languageServices, projectId)
 
   const elements: z.infer<typeof elementDetailSchema>[] = []
   const notFound: string[] = []
@@ -122,6 +144,8 @@ Example response:
       children: [...element.children()].map(c => c.id),
       incomingCount: element.allIncoming.size,
       outgoingCount: element.allOutgoing.size,
+      links: serializeLinks(element),
+      sourceLocation: locate({ element: element.id }),
     })
   }
 

@@ -57,7 +57,7 @@ Available tools:
 - query-by-metadata — Search elements by metadata key-value pairs with exact/contains/exists matching. Input: { key, value?, matchMode?, project? }.
 - query-by-tags — Advanced tag filtering with boolean logic (allOf, anyOf, noneOf). Input: { allOf?, anyOf?, noneOf?, project? }.
 - find-relationship-paths — Discover all paths (chains of relationships) between two elements with BFS traversal. Input: { sourceId, targetId, maxDepth?, includeIndirect?, project? }.
-- batch-read-elements — Read details of multiple elements in a single call, reducing round-trips. Input: { ids, project? }.
+- batch-read-elements — Read details of multiple elements in a single call, reducing round-trips. Includes links and sourceLocation, same as read-element. Input: { ids, project? }.
 - query-by-tag-pattern — Search elements by tag prefix/contains/suffix patterns. Input: { pattern, matchMode?, project? }.
 - element-diff — Compare two elements side-by-side showing differences in properties, tags, metadata, and relationships. Input: { element1Id, element2Id, project? }.
 - subgraph-summary — Compact summary of all descendants of a parent element with metadata, tags, and relationship counts. Input: { elementId, maxDepth?, metadataKeys?, project? }.

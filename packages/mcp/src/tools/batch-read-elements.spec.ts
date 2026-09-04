@@ -139,4 +139,91 @@ describe('batch-read-elements tool', () => {
     expect(c.incomingCount).toBe(2)
     expect(c.outgoingCount).toBe(0)
   })
+
+  describe('links and sourceLocation', () => {
+    const MIXED_LINKS_DSL = `
+      specification {
+        element system
+        element container
+      }
+      model {
+        cloud = system 'Cloud System' {
+          link https://likec4.dev/docs/dsl/model/
+          link https://github.com/likec4/likec4 'GitHub Repository'
+
+          ui = container 'Frontend' {
+            link ./README.md 'Local Docs'
+          }
+        }
+        backend = system 'Backend'
+      }
+    `
+    const IDS = ['cloud', 'cloud.ui', 'backend']
+
+    // Link shapes (titled/untitled/relative) are covered per-tool in mcp-tools-links.spec.ts.
+    // This asserts what only a batch call can get wrong: attributing links to the right element.
+    it('should attribute links to the right element in a mixed batch', async () => {
+      await using pair = await createMCPTestPair(MIXED_LINKS_DSL)
+
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: { ids: IDS, project: 'default' },
+      })
+
+      expect(result.structuredContent).toBeDefined()
+      const elements = structured(result)['elements'] as Array<any>
+      expect(elements).toHaveLength(3)
+
+      const urlsById = Object.fromEntries(
+        elements.map((e: any) => [e.id, e.links.map((l: any) => l.url)]),
+      )
+
+      expect(urlsById).toEqual({
+        'cloud': ['https://likec4.dev/docs/dsl/model/', 'https://github.com/likec4/likec4'],
+        'cloud.ui': ['./README.md'],
+        'backend': [],
+      })
+    })
+
+    it('should return the same links and sourceLocation as read-element', async () => {
+      await using pair = await createMCPTestPair(MIXED_LINKS_DSL)
+
+      const batch = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: { ids: IDS, project: 'default' },
+      })
+      const elements = structured(batch)['elements'] as Array<any>
+      expect(elements).toHaveLength(IDS.length)
+
+      for (const id of IDS) {
+        const single = await pair.client.callTool({
+          name: 'read-element',
+          arguments: { id, project: 'default' },
+        })
+        const expected = structured(single)
+        const actual = elements.find((e: any) => e.id === id)
+
+        expect(actual.links).toEqual(expected['links'])
+        expect(actual.sourceLocation).toEqual(expected['sourceLocation'])
+      }
+    })
+
+    it('should return sourceLocation for every element', async () => {
+      await using pair = await createMCPTestPair(MIXED_LINKS_DSL)
+
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: { ids: IDS, project: 'default' },
+      })
+      const elements = structured(result)['elements'] as Array<any>
+
+      for (const element of elements) {
+        const location = element.sourceLocation
+        expect(location).not.toBeNull()
+        expect(typeof location.path).toBe('string')
+        expect(typeof location.range.start.line).toBe('number')
+        expect(typeof location.range.start.character).toBe('number')
+      }
+    })
+  })
 })
