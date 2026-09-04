@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
 const bootstrapIconName = /^[a-z0-9][a-z0-9-]{0,127}$/
 const maxSvgBytes = 256 * 1024
 const bootstrapIconUrl = (name: string) => `https://icons.like-c4.dev/bootstrap/${name}.svg`
@@ -19,8 +23,8 @@ export function createBootstrapIconLoader(fetcher: typeof fetch = fetch) {
     }
     try {
       const response = await fetcher(bootstrapIconUrl(name), { signal: AbortSignal.timeout(10_000) })
-      const contentType = response.headers.get('content-type')?.toLowerCase() ?? ''
-      if (!response.ok || !contentType.startsWith('image/svg+xml')) {
+      const contentType = response.headers.get('content-type')?.split(';', 1)[0]?.trim().toLowerCase() ?? ''
+      if (!response.ok || contentType !== 'image/svg+xml') {
         return { base64data: null }
       }
       const bytes = new Uint8Array(await response.arrayBuffer())
