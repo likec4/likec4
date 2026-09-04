@@ -8,7 +8,15 @@
 import { invariant } from '@likec4/core'
 import * as z from 'zod/v3'
 import { likec4Tool } from '../utils'
-import { includedInViews, includedInViewsSchema, locationSchema, mkLocate, projectIdSchema } from './_common'
+import {
+  includedInViews,
+  includedInViewsSchema,
+  linksSchema,
+  locationSchema,
+  mkLocate,
+  projectIdSchema,
+  serializeLinks,
+} from './_common'
 
 export const readElement = likec4Tool({
   name: 'read-element',
@@ -119,11 +127,7 @@ Example response:
     tags: z.array(z.string()),
     project: z.string(),
     metadata: z.record(z.union([z.string(), z.array(z.string())])),
-    links: z.array(z.object({
-      title: z.string().nullable().describe('Optional link title'),
-      url: z.string().describe('Link URL'),
-      relative: z.string().nullable().describe('Relative path (if URL is relative to workspace root)'),
-    })).describe('External links associated with this element'),
+    links: linksSchema,
     shape: z.string(),
     color: z.string(),
     children: z.array(z.string()).describe('Children of this element (Array of FQNs)'),
@@ -182,11 +186,7 @@ Example response:
     tags: [...element.tags],
     project: projectId,
     metadata: element.getMetadata(),
-    links: (element.links ?? []).map(link => ({
-      title: link.title ?? null,
-      url: link.url,
-      relative: link.relative ?? null,
-    })),
+    links: serializeLinks(element),
     shape: element.shape,
     color: element.color,
     children: [...element.children()].map(c => c.id),
