@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/vscode-windows-csp-probe.yaml'
+      - 'scripts/assert-vscode-bootstrap-cors-probe.ps1'
       - 'scripts/capture-vscode-preview.ps1'
       - 'scripts/start-bootstrap-icon-cors-server.ps1'
       - 'packages/vscode/**'
