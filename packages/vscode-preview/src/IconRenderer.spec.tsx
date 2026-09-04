@@ -7,28 +7,33 @@
 
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
-import { IconRenderer, localIconRendererFromDataUrl } from './IconRenderer'
+import { bootstrapIconRendererFromDataUrl, IconRenderer, localIconRendererFromDataUrl } from './IconRenderer'
 
 vi.mock('./vscode', () => ({
   ExtensionApi: {
     readLocalIcon: vi.fn<(_: string) => Promise<{ base64data: string | null }>>(),
+    readBootstrapIcon: vi.fn<(_: string) => Promise<{ base64data: string | null }>>(),
   },
 }))
 
 describe('IconRenderer', () => {
-  it('renders bootstrap icons as a colorable mask instead of an image', () => {
-    const html = renderToStaticMarkup(
-      <IconRenderer
-        node={{
-          id: 'test',
-          title: 'Test',
-          icon: 'bootstrap:file-earmark-code',
-        }} />,
+  it('renders host-provided Bootstrap SVG data as a colorable mask', () => {
+    const BootstrapIcon = bootstrapIconRendererFromDataUrl(
+      'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJjdXJyZW50Q29sb3IiLz4=',
     )
+    const html = renderToStaticMarkup(<BootstrapIcon node={{ id: 'test', title: 'Test', icon: 'bootstrap:boxes' }} />)
 
-    expect(html).not.toContain('<img')
-    expect(html).toContain('https://icons.like-c4.dev/bootstrap/file-earmark-code.svg')
     expect(html).toContain('background-color:currentColor')
+    expect(html).toContain('mask-image:url(')
+    expect(html).not.toContain('icons.like-c4.dev')
+    expect(html).not.toContain('<img')
+  })
+
+  it('renders nothing when the host does not return a Bootstrap SVG', () => {
+    const BootstrapIcon = bootstrapIconRendererFromDataUrl(null)
+    const html = renderToStaticMarkup(<BootstrapIcon node={{ id: 'test', title: 'Test', icon: 'bootstrap:boxes' }} />)
+
+    expect(html).toBe('')
   })
 
   it('keeps non-bootstrap bundled icons as CDN images', () => {
