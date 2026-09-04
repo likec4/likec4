@@ -30,7 +30,7 @@ const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, millise
 
 const targetMatches = target => {
   const url = target.url?.toLowerCase() ?? ''
-  return url.includes('extensionid=likec4.likec4-vscode') || url.includes('likec4') || url.includes('webview')
+  return target.type === 'iframe' && url.includes('extensionid=likec4.likec4-vscode')
 }
 
 const findTarget = async () => {
@@ -132,7 +132,7 @@ const main = async () => {
 
     await cdp(socket, 1, 'Log.enable')
     await cdp(socket, 2, 'Page.enable')
-    await cdp(socket, 3, 'Page.reload', { ignoreCache: true })
+    await cdp(socket, 3, 'Runtime.evaluate', { expression: 'location.reload()' })
     await sleep(12_000)
     const screenshot = await cdp(socket, 4, 'Page.captureScreenshot', { format: 'png' })
 
