@@ -97,9 +97,28 @@ try {
     '-Prefix',
     $urlPrefix
   ) -PassThru
-  Start-Sleep -Milliseconds 500
-  if ($server.HasExited) {
-    throw "Controlled Bootstrap CDN server exited. See $serverLogPath"
+
+  $readinessUrl = "${urlPrefix}bootstrap/boxes.svg"
+  $readinessDeadline = [DateTime]::UtcNow.AddSeconds(15)
+  $readinessError = $null
+  $serverReady = $false
+  while ([DateTime]::UtcNow -lt $readinessDeadline) {
+    if ($server.HasExited) {
+      throw "Controlled Bootstrap CDN server exited. See $serverLogPath"
+    }
+    try {
+      $response = Invoke-WebRequest -UseBasicParsing -Uri $readinessUrl -TimeoutSec 2
+      if ($response.StatusCode -eq 200 -and $response.Content -match '<svg') {
+        $serverReady = $true
+        break
+      }
+    } catch {
+      $readinessError = $_.Exception.Message
+    }
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $serverReady) {
+    throw "Controlled Bootstrap CDN did not become ready at $readinessUrl. Last error: $readinessError"
   }
 
   @(
@@ -117,6 +136,7 @@ try {
   }
   if ($hostsBackupCreated -and (Test-Path $backupPath)) {
     Copy-Item -Force $backupPath $hostsPath
+    Clear-DnsClientCache -ErrorAction SilentlyContinue
   }
   if ($null -ne $cert) {
     Remove-Item -Force "Cert:\LocalMachine\My\$($cert.Thumbprint)" -ErrorAction SilentlyContinue

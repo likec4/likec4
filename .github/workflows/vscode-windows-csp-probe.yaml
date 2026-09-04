@@ -9,6 +9,7 @@ on:
     paths:
       - '.github/workflows/vscode-windows-csp-probe.yaml'
       - 'scripts/capture-vscode-preview.ps1'
+      - 'scripts/start-bootstrap-icon-cors-server.ps1'
       - 'packages/vscode/**'
       - 'packages/vscode-preview/**'
   workflow_dispatch:
@@ -93,7 +94,7 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-bootstrap-icon-cors-server.ps1 -EvidencePath $env:EVIDENCE
-          $response = Invoke-WebRequest -UseBasicParsing https://icons.like-c4.dev/bootstrap/boxes.svg
+          $response = Invoke-WebRequest -UseBasicParsing https://icons.like-c4.dev/bootstrap/boxes.svg -Headers @{ Origin = 'vscode-webview://probe' }
           if ($response.Content -notmatch '<svg') { throw 'Controlled SVG endpoint did not respond.' }
           if ($response.Headers['Access-Control-Allow-Origin']) { throw 'Controlled SVG endpoint unexpectedly sent a CORS header.' }
 
@@ -140,7 +141,10 @@ jobs:
         run: |
           if ($env:ICON_CDN_PID) { Stop-Process -Id $env:ICON_CDN_PID -Force -ErrorAction SilentlyContinue }
           if ($env:ICON_CDN_PORT) { netsh http delete sslcert ipport="0.0.0.0:$env:ICON_CDN_PORT" }
-          if ($env:ICON_CDN_HOSTS_BACKUP -and (Test-Path $env:ICON_CDN_HOSTS_BACKUP)) { Copy-Item -Force $env:ICON_CDN_HOSTS_BACKUP "$env:WINDIR\System32\drivers\etc\hosts" }
+          if ($env:ICON_CDN_HOSTS_BACKUP -and (Test-Path $env:ICON_CDN_HOSTS_BACKUP)) {
+            Copy-Item -Force $env:ICON_CDN_HOSTS_BACKUP "$env:WINDIR\System32\drivers\etc\hosts"
+            Clear-DnsClientCache -ErrorAction SilentlyContinue
+          }
           if ($env:ICON_CDN_CERT_THUMBPRINT) {
             Remove-Item -Force "Cert:\LocalMachine\My\$env:ICON_CDN_CERT_THUMBPRINT" -ErrorAction SilentlyContinue
             Remove-Item -Force "Cert:\LocalMachine\Root\$env:ICON_CDN_CERT_THUMBPRINT" -ErrorAction SilentlyContinue
