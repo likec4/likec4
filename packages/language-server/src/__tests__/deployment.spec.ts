@@ -213,4 +213,55 @@ describe('Deployment model:', () => {
       ])
     })
   })
+
+  describe('bidirectional relations', () => {
+    test('valid bidirectional deployment relation').valid`
+      specification {
+        deploymentNode node
+      }
+      deployment {
+        node n1
+        node n2
+        n1 <-> n2
+      }
+    `
+
+    test('valid kinded bidirectional deployment relation').valid`
+      specification {
+        deploymentNode node
+        relationship sync
+      }
+      deployment {
+        node n1
+        node n2
+        n1 -[sync]<-> n2
+      }
+    `
+
+    it('builds a bidirectional deployment relation with a tail arrow', async ({ expect }) => {
+      const { parse, validateAll, buildModel } = createTestServices()
+      await parse(`
+        specification {
+          deploymentNode node
+        }
+        deployment {
+          node n1
+          node n2
+          n1 <-> n2 'syncs'
+        }
+      `)
+      const { errors } = await validateAll()
+      expect(errors).toEqual([])
+
+      const model = await buildModel()
+      const relation = Object.values(model.deployments.relations)[0]
+      expect(relation).toMatchObject({
+        source: { deployment: 'n1' },
+        target: { deployment: 'n2' },
+        title: 'syncs',
+        isBidirectional: true,
+        tail: 'normal',
+      })
+    })
+  })
 })

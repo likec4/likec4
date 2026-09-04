@@ -444,4 +444,35 @@ describe('deployment', () => {
       }"
     `)
   })
+
+  it('should print bidirectional relations', () => {
+    expectDeployment({
+      elements: [
+        { id: 'n1', kind: 'node' },
+        { id: 'n2', kind: 'node' },
+        { id: 'n3', kind: 'node' },
+      ],
+      relations: [
+        { source: { deployment: 'n1' }, target: { deployment: 'n2' }, title: 'syncs', isBidirectional: true },
+        {
+          source: { deployment: 'n1' },
+          target: { deployment: 'n3' },
+          kind: 'async',
+          isBidirectional: true,
+        },
+      ],
+    }).toMatchInlineSnapshot(`
+      "deployment {
+        n1 = node
+        
+        n2 = node
+        
+        n3 = node
+        
+        n1 <-> n2 'syncs'
+        
+        n1 -[async]<-> n3
+      }"
+    `)
+  })
 })

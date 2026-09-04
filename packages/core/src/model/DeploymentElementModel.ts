@@ -667,6 +667,10 @@ export class DeploymentRelationModel<A extends Any = Any> implements AnyRelation
     return this.$relationship.tail
   }
 
+  get isBidirectional(): boolean {
+    return this.$relationship.isBidirectional === true
+  }
+
   public *views(): IteratorLike<LikeC4ViewModel.DeploymentView<A>> {
     for (const view of this.$model.views()) {
       if (view.includesRelation(this.id)) {
