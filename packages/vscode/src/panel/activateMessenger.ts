@@ -9,6 +9,7 @@ import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
 import { performanceMark, showEditorNextToPreview } from '../utils'
+import { createBootstrapIconLoader } from './bootstrapIcon'
 import { useDiagramPanel } from './useDiagramPanel'
 
 export function activateMessenger() {
@@ -17,6 +18,7 @@ export function activateMessenger() {
   const preview = useDiagramPanel()
 
   const { logger, output } = useExtensionLogger('messenger')
+  const loadBootstrapIcon = createBootstrapIconLoader()
 
   logger.debug('activating messenger <-> preview panel')
 
@@ -205,6 +207,14 @@ export function activateMessenger() {
       // Return null for any errors (file not found, permission denied, etc.)
       return { base64data: null }
     }
+  })
+
+  messenger.handleReadBootstrapIcon(async (name) => {
+    const result = await loadBootstrapIcon(name)
+    if (!result.base64data) {
+      logger.warn('readBootstrapIcon failed', { name })
+    }
+    return result
   })
 
   return messenger
