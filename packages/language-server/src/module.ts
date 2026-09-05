@@ -18,7 +18,7 @@ import type {
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
-import { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
+import { NoFileSystem, NoLikeC4ManualLayouts, NoopFileSystemProvider } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
   LikeC4GeneratedModule,
@@ -111,7 +111,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       LangiumDocuments: services => new LangiumDocuments(services),
       ProjectsManager: services => new ProjectsManager(services),
       WorkspaceManager: services => new LikeC4WorkspaceManager(services),
-      FileSystemProvider: () => context.fileSystemProvider(),
+      FileSystemProvider: services => context.fileSystemProvider(services),
       FileSystemWatcher: services => context.fileSystemWatcher(services),
       ManualLayouts: services => context.manualLayouts(services),
     },
@@ -314,7 +314,11 @@ export function createSharedServices(context: Partial<LanguageServicesContext> =
     ...context,
   }
   return inject(
-    createDefaultSharedModule(moduleContext),
+    createDefaultSharedModule({
+      ...moduleContext,
+      // The LikeC4 module below supplies the provider with the extended services.
+      fileSystemProvider: () => new NoopFileSystemProvider(),
+    }),
     LikeC4GeneratedSharedModule,
     createLikeC4SharedModule(moduleContext),
   )

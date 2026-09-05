@@ -1,6 +1,5 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import { isLikeC4Config, loadConfig } from '@likec4/config/node'
-import { compareNaturalHierarchically } from '@likec4/core/utils'
 import { fdir } from 'fdir'
 import { URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
@@ -9,6 +8,7 @@ import { unlink, writeFile as fsWriteFile } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
+import type { LikeC4SharedServices } from '../module'
 import { compareByUri, compareByUriDeepFirst } from '../utils'
 import { WithChokidarWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './noop'
@@ -25,7 +25,7 @@ function isLikeC4File(path: string, isDirectory: boolean = false): boolean {
 export const WithFileSystem = (
   enableWatcher = false,
 ): FileSystemModuleContext => ({
-  fileSystemProvider: () => new SymLinkTraversingFileSystemProvider(),
+  fileSystemProvider: services => new SymLinkTraversingFileSystemProvider(services),
   ...(enableWatcher ? WithChokidarWatcher : NoFileSystemWatcher),
 })
 
@@ -35,6 +35,20 @@ export const WithFileSystem = (
  */
 class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider implements FileSystemProvider {
   #logger = rootLogger.getChild('filesystem')
+
+  constructor(private services: LikeC4SharedServices) {
+    super()
+  }
+
+  private isExcluded(path: string): boolean {
+    // Read the current matcher lazily: editor exclusions are configured after
+    // service construction and can change before a project reload.
+    return this.services.workspace.ProjectsManager.isExcludedByWorkspace(URI.file(path))
+  }
+
+  private excludeDirectory = (name: string, path: string): boolean => {
+    return isNodeModulesOrRepo(name) || this.isExcluded(path)
+  }
 
   override async readFile(uri: URI): Promise<string> {
     if (isLikeC4Builtin(uri)) {
@@ -52,6 +66,9 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     folderPath: URI,
     opts?: { recursive?: boolean; maxDepth?: number },
   ): Promise<FileNode[]> {
+    if (this.isExcluded(folderPath.fsPath)) {
+      return []
+    }
     const recursive = opts?.recursive ?? true
     const maxDepth = opts?.maxDepth ?? Infinity
     const entries = [] as FileNode[]
@@ -59,9 +76,9 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(isNodeModulesOrRepo)
+        .exclude(this.excludeDirectory)
         .withFullPaths()
-        .filter(isLikeC4File)
+        .filter(path => isLikeC4File(path) && !this.isExcluded(path))
 
       if (!recursive) {
         crawler = crawler.withMaxDepth(1)
@@ -98,13 +115,16 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     directory: URI,
     filter: (filepath: string, isDirectory: boolean) => boolean,
   ): Promise<FileNode[]> {
+    if (this.isExcluded(directory.fsPath)) {
+      return []
+    }
     const entries = [] as FileNode[]
     try {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(isNodeModulesOrRepo)
+        .exclude(this.excludeDirectory)
         .withFullPaths()
-        .filter(filter)
+        .filter((path, isDirectory) => !this.isExcluded(path) && filter(path, isDirectory))
         .crawl(directory.fsPath)
         .withPromise()
       for (const path of crawled) {
