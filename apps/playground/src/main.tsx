@@ -1,8 +1,7 @@
+import { LikeC4MantineProvider } from '@likec4/diagram'
 import { configureLogger, getAnsiColorFormatter, getConsoleSink } from '@likec4/log'
-import { MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import ReactDOM from 'react-dom/client'
-import { theme } from './mantine'
 import { Routes } from './router'
 
 configureLogger({
@@ -25,9 +24,9 @@ configureLogger({
 })
 
 ReactDOM.createRoot(document.getElementById('likec4-root')!).render(
-  <MantineProvider defaultColorScheme="dark" theme={theme}>
+  <LikeC4MantineProvider defaultColorScheme="dark">
     <ModalsProvider>
       <Routes />
     </ModalsProvider>
-  </MantineProvider>,
+  </LikeC4MantineProvider>,
 )

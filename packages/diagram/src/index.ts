@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-export { IconRendererProvider } from './context/IconRenderer'
+export { DefaultIconRenderer, IconRendererProvider } from './context/IconRenderer'
 
 export {
   LikeC4Diagram,

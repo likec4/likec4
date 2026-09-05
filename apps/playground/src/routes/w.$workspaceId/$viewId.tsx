@@ -1,6 +1,5 @@
-import { useDrawioContextMenu } from '$components/drawio/DrawioContextMenuProvider'
 import { usePlayground, usePlaygroundActorRef, usePlaygroundSnapshot } from '$/hooks/usePlayground'
-import { IconRenderer } from '$components/IconRenderer'
+import { useDrawioContextMenu } from '$components/drawio/DrawioContextMenuProvider'
 import type { scalar, ViewId } from '@likec4/core/types'
 import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
@@ -115,7 +114,6 @@ function WorkspaceDiagramPage() {
                 // Otherwise reactflow intercepts "Space" key
                 panActivationKeyCode: null,
               }}
-              renderIcon={IconRenderer}
               onCanvasContextMenu={onCanvasContextMenu}
               onNavigateTo={(nextView, event) => {
                 event?.stopPropagation()

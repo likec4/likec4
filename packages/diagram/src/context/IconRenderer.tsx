@@ -27,7 +27,7 @@ import {
   useContext,
   useMemo,
 } from 'react'
-import type { ElementIconRenderer } from '../LikeC4Diagram.props'
+import type { ElementIconRenderer, ElementIconRendererProps } from '../LikeC4Diagram.props'
 
 const IconRendererContext = createContext<ElementIconRenderer | null>(null)
 
@@ -91,7 +91,7 @@ export function IconRenderer({
       icon = <RenderIcon node={element} />
       break
     default:
-      icon = null
+      icon = <DefaultIconRenderer node={element} />
       break
   }
 
@@ -218,4 +218,42 @@ function decodeSvgDataUrl(dataUrl: string): string | null {
   } catch {
     return null
   }
+}
+
+const iconUrl = (group: string, name: string) =>
+  `https://icons.likec4.dev/${encodeURIComponent(group)}/${encodeURIComponent(name)}.svg`
+
+function BootstrapIconMask({ name, ...props }: Omit<ElementIconRendererProps, 'node'> & { name: string }) {
+  const url = iconUrl('bootstrap', name)
+  const style = {
+    display: 'inline-block',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'currentColor',
+    maskImage: `url("${url}")`,
+    maskRepeat: 'no-repeat',
+    maskPosition: 'center',
+    maskSize: 'contain',
+    WebkitMaskImage: `url("${url}")`,
+    WebkitMaskRepeat: 'no-repeat',
+    WebkitMaskPosition: 'center',
+    WebkitMaskSize: 'contain',
+  } satisfies CSSProperties
+  return <span {...props} aria-hidden="true" style={style} />
+}
+
+export function DefaultIconRenderer({ node, ...props }: ElementIconRendererProps) {
+  if (!node.icon || node.icon === 'none') {
+    return null
+  }
+  const [group, name, ...rest] = node.icon.split(':') as [string, string, ...string[]]
+  if (!group || !name || rest.length > 0) {
+    return null
+  }
+
+  if (group === 'bootstrap') {
+    return <BootstrapIconMask {...props} name={name} />
+  }
+
+  return <img {...props} src={iconUrl(group, name)} />
 }

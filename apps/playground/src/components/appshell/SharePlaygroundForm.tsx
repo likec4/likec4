@@ -37,7 +37,7 @@ const Alert = MantineAlert.withProps({
   radius: 'sm',
   classNames: {
     root: css({
-      maxW: 400,
+      maxW: '[400px]',
       padding: 'xs',
     }),
     body: css({
@@ -84,7 +84,7 @@ export function SharePlaygroundForm() {
       <div
         className={css({
           alignSelf: 'flex-start',
-          opacity: 0.85,
+          opacity: '[0.85]',
           fontSize: 'sm',
           fontWeight: 'medium',
         })}>
@@ -128,8 +128,8 @@ export function SharePlaygroundForm() {
                 <Group gap={'xs'}>
                   <UnstyledButton
                     className={css({
-                      fontSize: 'x-small',
-                      color: 'mantine.dimmed',
+                      fontSize: 'xs',
+                      color: 'text.dimmed',
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
@@ -142,15 +142,15 @@ export function SharePlaygroundForm() {
                   <UnstyledButton
                     disabled={pincode.length < 4}
                     className={css({
-                      fontSize: 'x-small',
-                      color: 'mantine.dimmed',
+                      fontSize: 'xs',
+                      color: 'text.dimmed',
                       transition: 'all',
                       _hover: {
                         textDecoration: 'underline',
                         y: '[-1px]',
                       },
                       _disabled: {
-                        opacity: 0.5,
+                        opacity: '0.5',
                         pointerEvents: 'none',
                       },
                     })}
@@ -248,7 +248,7 @@ export function SharePlaygroundForm() {
                       cursor: 'pointer',
                       // borderColor: 'transparent',
                       // backgroundColor: 'transparent',
-                      color: 'mantine.green',
+                      color: 'grass.9',
                       fontSize: 'xs',
                       userSelect: 'all',
                     }),

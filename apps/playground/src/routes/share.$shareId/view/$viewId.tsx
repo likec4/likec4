@@ -1,5 +1,4 @@
 import type { LocalWorkspace } from '#worker/types'
-import { IconRenderer } from '$components/IconRenderer'
 import { useWorkspaces } from '$hooks/useWorkspaces'
 import type { DiagramView } from '@likec4/core'
 import { LikeC4Diagram, useLikeC4Model } from '@likec4/diagram'
@@ -70,7 +69,6 @@ function RouteComponent() {
         enableElementTags
         enableSearch
         enableNotations={hasNotations}
-        renderIcon={IconRenderer}
         onNavigateTo={onNavigateTo}
       >
         {sharedPlayground.forkable && <ForkPlaygroundWorkspace workspace={sharedPlayground.localWorkspace} />}
