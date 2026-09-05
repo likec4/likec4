@@ -221,7 +221,7 @@ function decodeSvgDataUrl(dataUrl: string): string | null {
 }
 
 const iconUrl = (group: string, name: string) =>
-  `https://icons.likec4.dev/${encodeURIComponent(group)}/${encodeURIComponent(name)}.svg`
+  `https://icons.like-c4.dev/${encodeURIComponent(group)}/${encodeURIComponent(name)}.svg`
 
 function BootstrapIconMask({ name, ...props }: Omit<ElementIconRendererProps, 'node'> & { name: string }) {
   const url = iconUrl('bootstrap', name)
