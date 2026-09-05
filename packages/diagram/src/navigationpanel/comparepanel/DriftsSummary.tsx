@@ -214,12 +214,12 @@ function NodeDrifts(
         truncate
         css={{
           maxWidth: {
-            base: 160,
-            '@/sm': 180,
-            '@/md': 250,
+            base: '[160px]',
+            '@/sm': '[180px]',
+            '@/md': '[250px]',
           },
         }}
-        color={'likec4.compare.manual.outline'}
+        color={'likec4.compare.outline'}
         fontSize={'xs'}
         lineHeight={'sm'}
         fontWeight={'medium'}>
@@ -260,10 +260,12 @@ const DriftsGroup = styled(m.div, {
     cursor: 'default',
     rounded: 'sm',
     backgroundColor: 'likec4.compare.manual/10',
-    border: '1px solid {colors.likec4.compare.manual.outline/20}',
+    borderWidth: 'default',
+    borderStyle: 'solid',
+    borderColor: 'likec4.compare.outline/20',
     _hover: {
       backgroundColor: 'likec4.compare.manual/20',
-      borderColor: 'likec4.compare.manual.outline/25',
+      borderColor: 'likec4.compare.outline/25',
     },
   }),
 }, {

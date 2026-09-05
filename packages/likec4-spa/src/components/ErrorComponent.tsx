@@ -61,7 +61,7 @@ function FallbackDialog({ error, resetErrorBoundary, children }: PropsWithChildr
         maxHeight: '[min(calc(100vh - ({spacing.10} * 3)), 500px)]',
         background: `likec4.overlay.body`,
         rounded: 'sm',
-        borderWidth: 3,
+        borderWidth: 'extra',
         borderColor: `likec4.overlay.border`,
         shadow: 'xl',
         outline: 'none',
@@ -72,7 +72,7 @@ function FallbackDialog({ error, resetErrorBoundary, children }: PropsWithChildr
         flexWrap: 'nowrap',
         _backdrop: {
           cursor: 'zoom-out',
-          backdropFilter: `blur(18px)`,
+          backdropFilter: `[blur(18px)]`,
           bg: '[color-mix(in oklab, {colors.likec4.overlay.backdrop} 60%, transparent)]',
         },
       })}
@@ -92,7 +92,7 @@ function FallbackDialog({ error, resetErrorBoundary, children }: PropsWithChildr
         <IconX style={{ width: 20, height: 20 }} />
       </ThemeIcon>
       <VStack flex={'1'} gap={'2'} h="stretch" overflow={'hidden'}>
-        <Txt flex="0">
+        <Txt flex="[0]">
           Oops, something went wrong
         </Txt>
         <ScrollAreaAutosize
@@ -105,7 +105,9 @@ function FallbackDialog({ error, resetErrorBoundary, children }: PropsWithChildr
               _hover: {
                 background: 'surface.sunken.hover',
               },
-              border: '2px solid {colors.surface.sunken.border}',
+              borderWidth: 'strong',
+              borderStyle: 'solid',
+              borderColor: 'border.subtle',
               rounded: 'sm',
             }),
             content: css({
@@ -116,7 +118,7 @@ function FallbackDialog({ error, resetErrorBoundary, children }: PropsWithChildr
             {errorString}
           </Txt>
         </ScrollAreaAutosize>
-        <HStack gap={'md'} my="sm" flex="0">
+        <HStack gap={'md'} my="sm" flex="[0]">
           {children}
           <Text fz={'sm'} c={'dimmed'}>
             See console for more details and report the issue if it persists.

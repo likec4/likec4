@@ -20,6 +20,7 @@ import {
 } from '@mantine/core'
 
 import { type JSX, useMemo } from 'react'
+import { map } from 'remeda'
 
 function t(name: Token) {
   return token.var(name)
@@ -42,7 +43,7 @@ const shades = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const
 type ColorsWithShades = 'likec4.accent'
 
 const mapColor = (color: ColorsWithShades): MantineColorsTuple => {
-  return shades.map((shade) => t(`colors.${color}.${shade}`)) as unknown as MantineColorsTuple
+  return map(shades, shade => t(`colors.${color}.${shade}`))
 }
 
 const titles = [
@@ -74,25 +75,35 @@ const likec4Theme = createTheme({
     semibold: t('fontWeights.semibold'),
     bold: t('fontWeights.bold'),
   },
-  fontSizes: sizes('fontSizes'),
-  spacing: sizes('spacing'),
+  fontSizes: {
+    ...sizes('fontSizes'),
+    xxs: t('fontSizes.xxs'),
+  },
+  spacing: {
+    ...sizes('spacing'),
+    xxs: t('spacing.xxs'),
+  },
   radius: sizes('radii'),
   shadows: sizes('shadows'),
   lineHeights: sizes('lineHeights'),
   components: {
     Card: Card.extend({
+      defaultProps: {
+        radius: 'md',
+      },
       classNames: {
         root: css({
           bg: 'surface.default',
-          rounded: 'md',
         }),
       },
     }),
     Paper: Paper.extend({
+      defaultProps: {
+        radius: 'md',
+      },
       classNames: {
         root: css({
           bg: 'surface.default',
-          rounded: 'md',
         }),
       },
     }),

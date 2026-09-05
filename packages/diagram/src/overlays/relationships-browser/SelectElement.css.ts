@@ -17,7 +17,7 @@ export const label = css({
 
 export const scrollArea = css({
   maxHeight: [
-    '70vh',
-    'calc(100cqh - 70px)',
+    '[70vh]',
+    '[calc(100cqh - 70px)]',
   ],
 })

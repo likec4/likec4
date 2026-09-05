@@ -133,7 +133,7 @@ function AIChatWindowContent({ onClose }: { onClose: () => void }) {
       <VStack w="100%">
         <HStack cursor={'move'} justify="space-between">
           <HStack>
-            <Txt textStyle="likec4.panel" noUserSelect>AI Assistant</Txt>
+            <Txt textStyle="likec4.panel" nouserselect>AI Assistant</Txt>
             <Badge size="xs" radius={'sm'} variant="light">{AIAdapter}</Badge>
           </HStack>
           <CloseButton

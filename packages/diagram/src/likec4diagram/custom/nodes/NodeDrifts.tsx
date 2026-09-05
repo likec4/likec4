@@ -19,8 +19,8 @@ export function NodeDrifts({
         display: 'contents',
 
         '& + .likec4-element-shape': {
-          outlineColor: 'likec4.compare.manual.outline',
-          outlineWidth: '4px',
+          outlineColor: 'likec4.compare.outline',
+          outlineWidth: '[4px]',
           outlineStyle: 'dashed',
           outlineOffset: '1.5',
         },

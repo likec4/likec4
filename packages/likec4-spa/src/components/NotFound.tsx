@@ -8,7 +8,7 @@ const classes = {
   content: css({
     paddingTop: '[120px]',
     position: 'relative',
-    zIndex: '1',
+    zIndex: '[1]',
     sm: {
       paddingTop: '[220px]',
     },
@@ -16,7 +16,7 @@ const classes = {
   image: css({
     position: 'absolute',
     inset: '0',
-    opacity: 0.2,
+    opacity: '0.2',
   }),
   inner: css({
     position: 'relative',
@@ -26,7 +26,7 @@ const classes = {
     paddingBottom: '[80px]',
   }),
   description: css({
-    maxWidth: rem(540),
+    maxWidth: '[540px]',
     margin: 'auto',
     marginTop: 'xl',
     marginBottom: '[calc({spacing.xl}*1.5)]',

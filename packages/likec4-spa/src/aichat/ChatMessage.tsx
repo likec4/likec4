@@ -49,7 +49,7 @@ export const ChatMessage = ({ message }: { message: TypedUIMessage }) => {
         paddingBlock: '1',
         marginInlineEnd: '2',
         rounded: 'sm',
-        backgroundColor: 'default.hover',
+        backgroundColor: 'surface.hover',
         whiteSpace: 'pre-wrap',
       })}
       textPartRenderer={role === 'user' ? UserMessageTextPart : MarkdownTextPart} />

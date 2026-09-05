@@ -237,8 +237,8 @@ const foundedViewClass = hstack({
   },
   _focus: {
     outline: 'none',
-    color: 'mantine.primary.lightColor!',
-    backgroundColor: 'mantine.primary.lightHover!',
+    color: 'primary.text.light!',
+    backgroundColor: 'primary.body.lightHover!',
   },
 })
 const inheritColor = css({

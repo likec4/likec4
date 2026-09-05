@@ -28,13 +28,13 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         maxHeight: '[calc(100vh - ({spacing.10} * 3))]',
         background: `likec4.overlay.body`,
         rounded: 'sm',
-        borderWidth: 3,
+        borderWidth: 'extra',
         borderColor: `likec4.overlay.border`,
         shadow: 'xl',
         outline: 'none',
         _backdrop: {
           cursor: 'zoom-out',
-          backdropFilter: `blur(18px)`,
+          backdropFilter: `[blur(18px)]`,
           bg: '[color-mix(in oklab, {colors.likec4.overlay.backdrop} 60%, transparent)]',
         },
       })}

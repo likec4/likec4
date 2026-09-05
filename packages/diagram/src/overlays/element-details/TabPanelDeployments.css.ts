@@ -21,13 +21,6 @@ const label = css({
   '& > *': {
     transition: 'fast',
   },
-  _hover: {
-    transitionTimingFunction: 'out',
-    '& > :not([data-no-transform])': {
-      transitionTimingFunction: 'out',
-      transform: 'translateX(1px)',
-    },
-  },
   //   '.mantine-Button-root:hover & > :not([data-no-transform])': {
   // transitionTimingFunction: 'out',
   //   transform: 'translateX(1px)',

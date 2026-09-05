@@ -1,4 +1,4 @@
-import { type DynamicViewFlow } from '@likec4/core'
+import type { DynamicViewFlow } from '@likec4/core'
 import { type RecipeVariant, css, cx, sva } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import { useDiagram } from '../../../hooks'
@@ -14,15 +14,17 @@ const labelStyle = css.raw({
 })
 
 const withBorder = css.raw({
-  border: '{borderWidths.2} solid {colors.colorPalette.border}',
+  borderWidth: 'strong',
+  borderStyle: 'solid',
+  borderColor: 'colorPalette.border',
 })
 
 const withBackground = css.raw({
   background: 'colorPalette',
   ['&[data-state="hovered"]']: {
     background: 'colorPalette.hovered',
-    transition: 'faster',
-    transitionDelay: 'faster',
+    transition: 'fastest',
+    transitionDelay: 'fastest',
     transitionTimingFunction: 'out',
     transitionProperty: 'background',
   },
@@ -49,7 +51,7 @@ const recipe = sva({
       flex: '1',
       color: `[oklch(from {colors.colorPalette.text} l calc(c - 0.15) h)]`,
       fontSize: 'xs',
-      lineHeight: 'xxs',
+      lineHeight: 'xs',
       fontWeight: 'medium',
       truncate: true,
     }),

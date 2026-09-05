@@ -16,6 +16,7 @@ export const borders = defineTokens.borders({
   subtle: { value: '{borderWidths.default} solid {colors.border.subtle}' },
   default: { value: '{borderWidths.default} solid {colors.border.default}' },
   strong: { value: '{borderWidths.strong} solid {colors.border.strong}' },
+  panel: { value: '{borderWidths.default} solid {colors.likec4.panel.border}' },
 })
 
 export const zIndex = defineTokens.zIndex({
@@ -43,9 +44,25 @@ export const zIndex = defineTokens.zIndex({
 
 export const opacity = defineTokens.opacity({
   '0': { value: 0 },
+  '0.05': { value: 0.05 },
+  '0.1': { value: 0.1 },
+  '0.15': { value: 0.15 },
+  '0.2': { value: 0.2 },
+  '0.25': { value: 0.25 },
+  '0.3': { value: 0.3 },
+  '0.35': { value: 0.35 },
+  '0.4': { value: 0.4 },
+  '0.45': { value: 0.45 },
   '0.5': { value: 0.5 },
-  '0.7': { value: 0.75 },
+  '0.55': { value: 0.55 },
+  '0.6': { value: 0.6 },
+  '0.65': { value: 0.65 },
+  '0.7': { value: 0.7 },
+  '0.75': { value: 0.75 },
+  '0.8': { value: 0.8 },
+  '0.85': { value: 0.85 },
   '0.9': { value: 0.9 },
+  '0.95': { value: 0.95 },
   '1': { value: 1 },
   disabled: { value: 0.6 },
 })
@@ -55,6 +72,10 @@ export const cursor = defineTokens.cursor({
   pointer: { value: 'pointer' },
   none: { value: 'none' },
   inherit: { value: 'inherit' },
+  grab: { value: 'grab', description: 'draggable affordance at rest' },
+  grabbing: { value: 'grabbing', description: 'active drag' },
+  move: { value: 'move' },
+  'zoom-out': { value: 'zoom-out' },
 })
 
 export const blurs = defineTokens.blurs({

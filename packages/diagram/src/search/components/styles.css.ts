@@ -34,8 +34,8 @@ export const pickview = css({
   top: '[2rem]',
   left: '[50%]',
   width: '100%',
-  maxWidth: '600px',
-  minWidth: '200px',
+  maxWidth: '[600px]',
+  minWidth: '[200px]',
   transform: 'translateX(-50%)',
   zIndex: '[903]',
 })

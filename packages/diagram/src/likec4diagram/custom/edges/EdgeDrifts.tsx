@@ -21,13 +21,13 @@ export function EdgeDrifts({
         'react-flow__edge-path',
         css({
           pointerEvents: 'none',
-          stroke: 'likec4.compare.manual.outline',
+          stroke: 'likec4.compare.outline',
           fill: 'none',
           strokeWidth: {
-            base: '8px',
-            _whenHovered: '12px',
+            base: '[8px]',
+            _whenHovered: '[12px]',
           },
-          strokeOpacity: 0.5,
+          strokeOpacity: '0.5',
         }),
       )}
       d={svgPath}

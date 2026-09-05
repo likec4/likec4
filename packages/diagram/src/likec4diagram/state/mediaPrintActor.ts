@@ -4,8 +4,7 @@ export type MediaPrintEvent =
   | { type: 'media.print.on' }
   | { type: 'media.print.off' }
 
-export interface MediaPrintActorLogic
-  extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, MediaPrintEvent>
+export interface MediaPrintActorLogic extends CallbackActorLogic<AnyEventObject, NonReducibleUnknown, MediaPrintEvent>
 {}
 
 /**

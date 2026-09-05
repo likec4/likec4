@@ -110,16 +110,16 @@ export const ComparePanel = memo(() => {
               pointerEvents: 'all',
               height: 'auto',
               overflow: 'hidden',
-              maxHeight: 'calc(100cqh - 180px)',
+              maxHeight: '[calc(100cqh - 180px)]',
               '@/md': {
-                minWidth: '200px',
+                minWidth: '[200px]',
               },
             })}
           >
             <DriftsSummary />
             {ctx.canApplyLatest && (
               <>
-                <m.div layout="position" className={css({ flex: '0' })}>
+                <m.div layout="position" className={css({ flex: '[0]' })}>
                   <Divider orientation="horizontal" size={'xs'} mb={'xs'} />
                   <HStack>
                     <Tooltip

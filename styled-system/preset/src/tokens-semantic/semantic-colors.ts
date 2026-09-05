@@ -129,11 +129,28 @@ export const colors = defineSemanticTokens.colors({
         description: 'Primary body focused color',
         value: '{colors.likec4.accent.7}',
       }),
+      light: value({
+        description: 'Primary light wash — tinted background behind accent text',
+        value: 'color-mix(in oklab, {colors.likec4.accent.6} 10%, transparent)',
+        dark: 'color-mix(in oklab, {colors.likec4.accent.4} 15%, transparent)',
+      }),
+      lightHover: value({
+        description: 'Hover state of the primary light wash',
+        value: 'color-mix(in oklab, {colors.likec4.accent.6} 16%, transparent)',
+        dark: 'color-mix(in oklab, {colors.likec4.accent.4} 22%, transparent)',
+      }),
     },
-    text: value({
-      description: 'Primary text color',
-      value: white,
-    }),
+    text: {
+      DEFAULT: value({
+        description: 'Primary text color (on a filled primary body)',
+        value: white,
+      }),
+      light: value({
+        description: 'Accent text color, for use on primary.body.light',
+        value: '{colors.likec4.accent.7}',
+        dark: '{colors.likec4.accent.3}',
+      }),
+    },
     border: {
       DEFAULT: value({
         value: '{colors.likec4.accent.6}',

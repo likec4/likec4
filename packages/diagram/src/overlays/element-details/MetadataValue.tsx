@@ -37,12 +37,12 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
           padding: 'xs',
           userSelect: 'all',
           color: 'text',
-          lineHeight: 1.4,
+          lineHeight: 'md',
           whiteSpace: isExpanded ? 'pre-wrap' : 'nowrap',
           overflow: isExpanded ? 'visible' : 'hidden',
           textOverflow: isExpanded ? 'unset' : 'ellipsis',
           wordBreak: isExpanded ? 'break-word' : 'normal',
-          minWidth: 0,
+          minWidth: '0',
           width: '100%',
         })}
       >
@@ -69,7 +69,7 @@ function MultiValueDisplay({
                 fontSize: 'xs',
                 color: 'mantine.gray[5]',
                 fontWeight: 'medium',
-                flexShrink: 0,
+                flexShrink: '0',
                 _dark: {
                   color: 'mantine.dark[3]',
                 },
@@ -79,10 +79,10 @@ function MultiValueDisplay({
             </Text>
             <Box
               className={css({
-                minHeight: '32px',
+                minHeight: '[32px]',
                 display: 'flex',
                 alignItems: 'center',
-                flex: 1,
+                flex: '1',
               })}
             >
               <TruncatedValue value={value} isExpanded={true} />
@@ -96,13 +96,13 @@ function MultiValueDisplay({
   return (
     <Box
       className={css({
-        minHeight: '32px',
+        minHeight: '[32px]',
         display: 'flex',
         alignItems: 'center',
         padding: 'xs',
         gap: 'xs',
         flexWrap: 'wrap',
-        minWidth: 0, // Allow shrinking
+        minWidth: '0', // Allow shrinking
         overflow: 'hidden', // Prevent overflow
       })}
     >
@@ -115,14 +115,15 @@ function MultiValueDisplay({
               backgroundColor: 'white',
               color: 'text',
               borderRadius: 'sm',
-              border: '1px solid',
+              borderWidth: 'default',
+              borderStyle: 'solid',
               borderColor: 'mantine.gray[3]',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              maxWidth: 'min(200px, 100%)',
-              minWidth: '60px',
-              flex: '0 1 auto',
+              maxWidth: '[min(200px, 100%)]',
+              minWidth: '[60px]',
+              flex: '[0 1 auto]',
               userSelect: 'all',
               _dark: {
                 backgroundColor: 'mantine.dark[9]',
@@ -139,7 +140,7 @@ function MultiValueDisplay({
                 fontSize: 'xs',
                 color: 'mantine.gray[5]',
                 fontWeight: 'medium',
-                flexShrink: 0,
+                flexShrink: '0',
                 _dark: {
                   color: 'mantine.dark[3]',
                 },
@@ -187,13 +188,14 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
               padding: '[4px 8px]',
               borderRadius: 'sm',
               whiteSpace: 'nowrap',
-              transition: 'all 150ms ease',
+              transitionProperty: 'common',
+              transition: 'medium',
               _hover: {
                 backgroundColor: 'mantine.gray[1]',
-                color: 'mantine.primary[6]',
+                color: 'primary.body',
                 _dark: {
                   backgroundColor: 'mantine.dark[7]',
-                  color: 'mantine.primary[4]',
+                  color: 'primary.body.hover',
                 },
               },
             })}
@@ -257,7 +259,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
           : (
             <Box
               className={css({
-                minHeight: '32px',
+                minHeight: '[32px]',
                 display: 'flex',
                 alignItems: 'center',
               })}

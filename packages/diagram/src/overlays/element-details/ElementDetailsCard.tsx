@@ -601,7 +601,7 @@ function ElementMetata({
           className={css({
             display: 'grid',
             gridTemplateColumns: 'min-content 1fr',
-            gridAutoRows: 'min-content',
+            gridAutoRows: '[min-content]',
             gap: `[12px 16px]`,
             alignItems: 'baseline',
             justifyItems: 'stretch',

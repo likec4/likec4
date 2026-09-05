@@ -28,9 +28,5 @@ export const elementLabel = css({
     borderStyle: 'solid',
     color: 'text.default',
     background: 'surface.hover',
-    '& > *': {
-      transitionTimingFunction: 'out',
-      transform: 'translateX(1px)',
-    },
   },
 })

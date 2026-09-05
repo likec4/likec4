@@ -130,7 +130,7 @@ export function SequenceActorNode(props: Types.NodeProps<'seq-actor'>) {
           transition: 'fast',
           translateX: '-1/2',
           translate: 'auto',
-          zIndex: 'z-0',
+          zIndex: 'base',
         })}
         style={{
           backgroundColor: 'var(--likec4-palette-stroke)',
@@ -179,7 +179,7 @@ export function SequenceParallelArea(props: Types.NodeProps<'seq-parallel'>) {
         paddingTop: '0.5',
         fontSize: 'xs',
         fontWeight: 'bold',
-        letterSpacing: '.75px',
+        letterSpacing: '[0.75px]',
         color: '[var(--_color)/75]',
       }}
     >

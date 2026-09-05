@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
 
 export const root = css({
-  height: '30px',
+  height: 'control.sm',
   paddingLeft: 'sm',
   paddingRight: '1',
   borderRadius: 'sm',
@@ -16,10 +16,8 @@ export const root = css({
   },
   cursor: 'pointer',
   background: {
-    base: 'default',
-    _light: 'white',
-    _dark: 'mantine.dark[6]',
-    _hover: 'default.hover',
+    base: 'surface.default',
+    _hover: 'surface.hover',
   },
 
   width: '100%',
@@ -42,7 +40,7 @@ export const placeholder = css({
   fontSize: 'sm', // mantine.fontSizes.sm,
   fontWeight: 'medium',
   paddingRight: '2.5', // 10px
-  color: 'text.placeholder',
+  color: 'text.non-essential',
   flex: '1',
   sm: {
     paddingRight: '[30px]',
@@ -53,12 +51,12 @@ export const placeholder = css({
 })
 
 export const shortcut = css({
-  fontSize: '11px',
+  fontSize: 'xxs',
   fontWeight: 'bold',
-  lineHeight: 1,
+  lineHeight: 'tight',
   padding: '[4px 7px]',
   borderRadius: 'sm',
-  border: '1px solid',
+  border: 'default',
   transition: 'fast',
   _light: {
     color: 'mantine.gray[7]',

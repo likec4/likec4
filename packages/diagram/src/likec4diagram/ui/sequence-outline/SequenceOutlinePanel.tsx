@@ -94,7 +94,7 @@ const SectionLabel = styled('div', {
   base: {
     textStyle: 'dimmed.xs',
     fontWeight: 'semibold',
-    letterSpacing: 'wider',
+    letterSpacing: 'caps.sm',
     textTransform: 'uppercase',
     userSelect: 'none',
   },
@@ -107,8 +107,8 @@ const StepNum = styled('div', {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: '22px',
-    height: '18px',
+    minWidth: '[22px]',
+    height: '[18px]',
     paddingInline: '1',
     rounded: 'sm',
     bg: 'surface.sunken',
@@ -149,13 +149,14 @@ const rowBase = css.raw({
   cursor: 'pointer',
   color: 'text',
   userSelect: 'none',
-  transition: 'background-color 120ms ease',
+  transitionProperty: 'background',
+  transition: 'fast',
   _hover: {
     bg: 'surface.sunken/60',
   },
   '&[data-selected="true"]': {
-    bg: 'mantine.primary.light',
-    color: 'mantine.primary.lightColor',
+    bg: 'primary.body.light',
+    color: 'primary.text.light',
   },
 })
 
@@ -176,7 +177,7 @@ const LabelSpan = styled('span', {
  * Height of the leading step badge; also the line-height of the first label line
  * so that a multiline label keeps its first line aligned with the badge/arrow.
  */
-const rowLeadingHeight = '18px'
+const rowLeadingHeight = '[18px]'
 
 /** Groups the step badge and arrow so they stay centered against the first label line. */
 const leadingIcons = css.raw({
@@ -245,7 +246,7 @@ export const SequenceOutlinePanel = memo(() => {
               gap: '0',
               padding: '0',
               pointerEvents: 'all',
-              maxWidth: '85cqw',
+              maxWidth: '[85cqw]',
               height: '100cqh',
               maxHeight: '100cqh',
               cursor: 'default',
@@ -313,7 +314,7 @@ const OutlineHeader = ({
         width: '100%',
         paddingInline: '2.5',
         paddingBlock: '2',
-        borderBottom: '1px solid {colors.likec4.panel.border}',
+        borderBottom: 'panel',
       }}>
       <HStack
         css={{
@@ -329,7 +330,7 @@ const OutlineHeader = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxSize: '20px',
+            boxSize: '[20px]',
             rounded: 'sm',
             colorPalette: 'subflow.loop',
             bg: 'colorPalette.label',
@@ -351,7 +352,7 @@ const OutlineHeader = ({
           >
             {title ?? 'Sequence'}
           </styled.div>
-          <Txt size={'xxs'} dimmed noUserSelect>
+          <Txt size={'xxs'} dimmed nouserselect>
             {stepCount} {stepCount === 1 ? 'step' : 'steps'}
           </Txt>
         </VStack>
@@ -542,10 +543,10 @@ const StepRow = ({ node, elementProps, selected }: StepRowProps) => {
         <Markdown
           value={RichText.from(notes)}
           fontSize={'sm'}
-          textScale={0.9}
+          textScale={0.95}
           className={css({
             background: 'surface.sunken',
-            border: '1px solid {colors.surface.sunken.border}',
+            border: 'subtle',
             rounded: 'md',
             cursor: 'default',
             marginBlockStart: '1',
@@ -578,7 +579,8 @@ const FlowRow = ({ node, expanded, elementProps }: FlowRowProps) => {
         className={css({
           flex: 'none',
           color: 'text.dimmed',
-          transition: 'transform 150ms ease',
+          transitionProperty: 'common',
+          transition: 'medium',
           '&[data-expanded="true"]': { transform: 'rotate(90deg)' },
         })}
         data-expanded={expanded}

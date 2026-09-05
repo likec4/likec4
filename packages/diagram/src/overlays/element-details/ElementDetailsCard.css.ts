@@ -56,8 +56,8 @@ export const card = css({
 })
 
 export const cardHeader = css({
-  flex: '0',
-  cursor: '[move]',
+  flex: '[0]',
+  cursor: 'move',
 })
 
 export const title = css({
@@ -141,10 +141,6 @@ export const viewButton = css({
 
   '& > *': {
     transition: `[all 130ms {easings.inOut}]`,
-  },
-  '&:hover > *': {
-    transitionTimingFunction: 'out',
-    transform: 'translateX(1.6px)',
   },
 })
 
