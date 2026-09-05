@@ -44,13 +44,16 @@ export const selectCompareLayoutState = ({ context }: DiagramActorSnapshot): {
     enableReadOnly,
   } = deriveToggledFeatures(context)
 
+  const hasEditor = context.features.enableEditor
+  const isEditable = !enableReadOnly && hasEditor
+
   return ({
-    hasEditor: context.features.enableEditor,
+    hasEditor,
     isEnabled: true as const,
-    isEditable: !enableReadOnly,
+    isEditable,
     isActive: enableCompareWithLatest === true,
     drifts,
-    canApplyLatest: !drifts.includes('type-changed'),
+    canApplyLatest: hasEditor && !drifts.includes('type-changed'),
     layout: context.view._layout ?? 'auto',
   })
 }

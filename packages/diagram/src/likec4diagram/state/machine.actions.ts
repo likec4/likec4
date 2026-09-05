@@ -494,9 +494,10 @@ export const notationsHighlight = () =>
 export const tagHighlight = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'tag.highlight')
+    const tag = event.tag.startsWith('#') ? event.tag.slice(1) : event.tag
     return {
       xynodes: context.xynodes.map((n) => {
-        if (n.data.tags?.includes(event.tag)) {
+        if (n.data.tags && n.data.tags.includes(tag)) {
           return Base.setDimmed(n, false)
         }
         return Base.setDimmed(n, true)

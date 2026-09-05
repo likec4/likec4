@@ -27,7 +27,7 @@ export function ComparePanelControls() {
       <LayoutTypeSwitcher
         value={ctx.layout}
         onChange={switchLayout} />
-      {ctx.hasEditor && (
+      {ctx.isEditable && (
         <HStack gap={'1'}>
           <Divider />
           <CompareActionsMenu

@@ -129,50 +129,50 @@ export function DriftsSummary() {
   }
 
   const { view, nodes, edges } = selected
-  if (view.length === 0 && nodes.length === 0 && edges.length === 0) {
-    return null
-  }
+  const hasDrifts = view.length > 0 || nodes.length > 0 || edges.length > 0
 
   return (
     <AnimatePresence>
-      <m.div
-        key={`drifts-summary`}
-        layout="size"
-        variants={variants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        layoutDependency={selected}
-        className={vstack({
-          mx: '[calc({spacing.2} * -1)]',
-          px: '2',
-          flex: '1',
-          height: '100%',
-          overflow: 'scroll',
-          gap: '4',
-        })}
-      >
-        {hasAtLeast(view, 1) && <ViewDrifts drifts={view} />}
-        {nodes.length > 0 && (
-          <m.div key={`nodes-drifts`} layout>
-            <SectionHeader>Elements:</SectionHeader>
-            <div className={vstack({ mt: '2', gap: '2' })}>
-              {map(
-                nodes,
-                (node) => <NodeDrifts key={node.id} {...node} {...handlers} />,
-              )}
-            </div>
-          </m.div>
-        )}
-        {edges.length > 0 && (
-          <m.div key={`edges-drifts`} layout>
-            <SectionHeader>Relationships:</SectionHeader>
-            <div className={vstack({ mt: '2', gap: '2' })}>
-              {map(edges, (edge) => <EdgeDrifts key={edge.edgeId} {...edge} {...handlers} />)}
-            </div>
-          </m.div>
-        )}
-      </m.div>
+      {hasDrifts && (
+        <m.div
+          key={`drifts-summary`}
+          layout="size"
+          variants={variants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          layoutDependency={selected}
+          className={vstack({
+            mx: '[calc({spacing.2} * -1)]',
+            px: '2',
+            flex: '1',
+            height: '100%',
+            overflow: 'scroll',
+            gap: '4',
+          })}
+        >
+          {hasAtLeast(view, 1) && <ViewDrifts drifts={view} />}
+          {nodes.length > 0 && (
+            <m.div key={`nodes-drifts`} layout>
+              <SectionHeader>Elements:</SectionHeader>
+              <div className={vstack({ mt: '2', gap: '2' })}>
+                {map(
+                  nodes,
+                  (node) => <NodeDrifts key={node.id} {...node} {...handlers} />,
+                )}
+              </div>
+            </m.div>
+          )}
+          {edges.length > 0 && (
+            <m.div key={`edges-drifts`} layout>
+              <SectionHeader>Relationships:</SectionHeader>
+              <div className={vstack({ mt: '2', gap: '2' })}>
+                {map(edges, (edge) => <EdgeDrifts key={edge.edgeId} {...edge} {...handlers} />)}
+              </div>
+            </m.div>
+          )}
+        </m.div>
+      )}
     </AnimatePresence>
   )
 }
@@ -212,6 +212,7 @@ function NodeDrifts(
     >
       <Txt
         truncate
+        medium
         css={{
           maxWidth: {
             base: '[160px]',
@@ -221,8 +222,7 @@ function NodeDrifts(
         }}
         color={'likec4.compare.outline'}
         fontSize={'xs'}
-        lineHeight={'sm'}
-        fontWeight={'medium'}>
+        lineHeight={'sm'}>
         {name}
       </Txt>
       {map(drifts, (drift, i) => <DriftLabel key={key + drift + i}>{drift}</DriftLabel>)}
