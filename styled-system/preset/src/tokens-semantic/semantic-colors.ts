@@ -1,314 +1,179 @@
 import { defineSemanticTokens } from '@pandacss/dev'
-import { mantine } from '../generated.ts'
+import type { SemanticToken, TokenDataTypes } from '@pandacss/types'
+import { defaultMantineColors, mantine } from '../generated.ts'
 import { alpha } from '../helpers.ts'
+import { likec4 } from './semantic-colors.likec4.ts'
 import { radixColors } from './semantic-colors.radix.ts'
 import { subflow } from './semantic-colors.subflow.ts'
+import { surface } from './semantic-colors.surface.ts'
+import { black, dark, gray, value, white, yellow } from './value.ts'
 
 export const colors = defineSemanticTokens.colors({
+  surface,
+
   text: {
-    DEFAULT: {
+    DEFAULT: value({
       description: 'Default text color',
-      value: mantine.colors.text,
-    },
-    bright: {
-      description: 'Bright text color',
-      value: 'var(--mantine-color-bright)',
-    },
-    dimmed: {
-      description: 'Dimmed text color',
-      value: mantine.colors.dimmed,
-    },
-    placeholder: {
-      description: 'Placeholder text color',
-      value: mantine.colors.placeholder,
-    },
-  },
-  default: {
-    DEFAULT: {
-      description: 'Default color',
-      value: mantine.colors.default,
-    },
-    color: {
-      description: 'Default text color',
-      value: mantine.colors.defaultColor,
-    },
-    border: {
-      description: 'Default border color',
-      value: mantine.colors.defaultBorder,
-    },
-    hover: {
-      description: 'Default hover color',
-      value: mantine.colors.defaultHover,
-    },
-  },
-  disabled: {
-    text: {
-      description: 'Disabled text color',
-      value: mantine.colors.disabledText,
-    },
-    border: {
-      description: 'Disabled border color',
-      value: mantine.colors.disabledBorder,
-    },
-    body: {
-      description: 'Disabled body color',
-      value: mantine.colors.disabledBody,
-    },
-  },
-
-  surface: {
-    canvas: {
-      description: 'Canvas surface color (Diagram background)',
-      value: {
-        base: mantine.colors.body,
-        _dark: mantine.colors.dark[7],
-      },
-    },
+      value: black,
+      dark: dark[0],
+    }),
     default: {
-      DEFAULT: {
-        description: 'Default surface color (ui/panels/cards)',
-        value: {
-          base: mantine.colors.body,
-          _dark: mantine.colors.dark[6],
-        },
-      },
-      border: {
-        description: 'LikeC4 overlay border color',
-        value: alpha(mantine.colors.defaultBorder, 50),
-      },
+      value: '{colors.text}',
     },
-    sunken: {
-      DEFAULT: {
-        description: '',
-        value: {
-          base: mantine.colors.gray[0],
-          _dark: alpha(mantine.colors.dark[8], 65),
-        },
-      },
-      border: {
-        value: alpha(mantine.colors.defaultBorder, 70),
-      },
-      hover: {
-        value: {
-          base: mantine.colors.gray[1],
-          _dark: alpha(mantine.colors.dark[8], 80),
-        },
-      },
+    bright: value({
+      description: 'Bright text color',
+      value: black,
+      dark: white,
+    }),
+    dimmed: value({
+      description: 'Dimmed text color',
+      value: gray[6],
+      dark: dark[2],
+    }),
+    'non-essential': value({
+      description: 'Non-essential text color',
+      value: gray[5],
+      dark: dark[3],
+    }),
+    // type-colour axis: display leads, heading steps down, body = default.
+    // dark: display eases ~8% off full white so the biggest bold type doesn't shout.
+    display: value({
+      description: 'Page titles, hero, big numerals (h1/h2)',
+      value: '{colors.text}',
+      dark: 'color-mix(in srgb, {colors.text} 92%, {colors.surface.canvas})',
+    }),
+    heading: value({
+      description: 'Section headings (h3-h6)',
+      value: 'color-mix(in srgb, {colors.text} 78%, {colors.text.dimmed})',
+      dark: 'color-mix(in srgb, {colors.text} 55%, {colors.text.dimmed})',
+    }),
+    link: value({
+      description: 'Link color',
+      value: '{colors.likec4.accent.6}',
+      dark: '{colors.likec4.accent.4}',
+    }),
+    'on-primary': value(white),
+    'on-inverse': value({
+      description: 'On inverse color',
+      value: 'rgba(255,255,255,0.92)',
+      dark: 'rgba(0,0,0,0.88)',
+    }),
+  },
+
+  // borders
+  border: {
+    subtle: value({
+      description: 'Subtle border color',
+      value: gray[3],
+      dark: dark[5],
+    }),
+    default: value({
+      description: 'Default border color',
+      value: gray[4],
+      dark: dark[4],
+    }),
+    strong: value({
+      description: 'Strong border color',
+      value: gray[5],
+      dark: dark[3],
+    }),
+    focus: value({
+      description: 'Focus border color',
+      value: '{colors.likec4.accent.6}',
+      dark: '{colors.likec4.accent.4}',
+    }),
+  },
+
+  disabled: {
+    body: value({
+      description: 'Disabled body color',
+      value: gray[2],
+      dark: `color-mix(in oklab, ${dark[7]} 75%, ${dark[6]})`,
+    }),
+    text: value({
+      description: 'Disabled text color',
+      value: gray[5],
+      dark: dark[3],
+    }),
+    border: value({
+      description: 'Disabled border color',
+      value: gray[3],
+      dark: dark[5],
+    }),
+  },
+
+  // highlight (text mark)
+  highlight: {
+    body: value({
+      description: 'Highlight body color',
+      value: yellow[2],
+      dark: yellow[5],
+    }),
+    text: value({
+      description: 'Highlight text color',
+      value: black,
+    }),
+  },
+
+  primary: {
+    body: {
+      DEFAULT: value({
+        description: 'Primary body color',
+        value: '{colors.likec4.accent.6}',
+      }),
+      hover: value({
+        description: 'Primary body hover color',
+        value: '{colors.likec4.accent.5}',
+      }),
+      focused: value({
+        description: 'Primary body focused color',
+        value: '{colors.likec4.accent.7}',
+      }),
+    },
+    text: value({
+      description: 'Primary text color',
+      value: white,
+    }),
+    border: {
+      DEFAULT: value({
+        value: '{colors.likec4.accent.6}',
+      }),
+      hover: value({
+        value: '{colors.likec4.accent.5}',
+      }),
+      focused: value({
+        value: '{colors.likec4.accent.7}',
+      }),
     },
   },
 
-  body: {
-    description: 'Use {colors.surface.default} instead',
-    deprecated: true,
-    value: '{colors.surface.canvas}',
+  warning: {
+    body: value({
+      description: 'Warning body color',
+      value: yellow[2],
+      dark: yellow[5],
+    }),
+    text: value({
+      description: 'Highlight text color',
+      value: black,
+    }),
   },
 
   diagram: {
     background: {
-      DEFAULT: {
+      DEFAULT: value({
         description: 'Background color',
-        value: mantine.colors.body,
-      },
-      pattern: {
+        value: '{colors.surface.canvas}',
+      }),
+      pattern: value({
         description: 'Background pattern color',
-        value: {
-          base: mantine.colors.gray[4],
-          _dark: alpha(mantine.colors.dark[4], 70),
-        },
-      },
+        value: gray[4],
+        dark: alpha(dark[4], 70),
+      }),
     },
   },
-  likec4: {
-    background: {
-      DEFAULT: {
-        description: 'Background color',
-        value: mantine.colors.body,
-      },
-      pattern: {
-        description: 'Background pattern color',
-        value: {
-          base: mantine.colors.gray[4],
-          _dark: alpha(mantine.colors.dark[4], 70),
-        },
-      },
-    },
-    mixColor: {
-      description: 'Color to be used in color-mix',
-      value: {
-        base: '#000',
-        _dark: '#fff',
-      },
-    },
-    tag: {
-      bg: {
-        DEFAULT: { value: `{colors.tomato.9}` },
-        hover: { value: `{colors.tomato.10}` },
-      },
-      border: {
-        value: `{colors.tomato.8}`,
-      },
-      text: {
-        value: `{colors.tomato.3}`,
-      },
-    },
-    panel: {
-      bg: {
-        DEFAULT: {
-          description: 'LikeC4 panel background color',
-          value: {
-            base: mantine.colors.body,
-            _dark: mantine.colors.dark[6],
-          },
-        },
-      },
-      border: {
-        description: 'LikeC4 panel border color',
-        value: {
-          base: 'transparent',
-          _light: mantine.colors.gray[2],
-        },
-      },
-      text: {
-        DEFAULT: {
-          description: 'LikeC4 panel text color',
-          value: alpha(mantine.colors.text, 85),
-        },
-        dimmed: {
-          description: 'LikeC4 panel dimmed text color',
-          value: '{colors.text.dimmed}',
-        },
-      },
-      action: {
-        DEFAULT: {
-          description: 'LikeC4 panel action text color (Links/Icons)',
-          value: alpha(mantine.colors.text, 90),
-        },
-        disabled: {
-          description: 'LikeC4 action icon text color when disabled',
-          value: '{colors.text.dimmed}',
-        },
-        hover: {
-          description: 'LikeC4 panel action text color on hover',
-          value: 'var(--mantine-color-bright)',
-        },
-        bg: {
-          DEFAULT: {
-            description: 'LikeC4 action icon background color',
-            value: {
-              base: mantine.colors.gray[1],
-              _dark: alpha(mantine.colors.dark[7], 70),
-            },
-          },
-          hover: {
-            description: 'LikeC4 action icon background color on hover',
-            value: {
-              base: mantine.colors.gray[2],
-              _dark: mantine.colors.dark[8],
-            },
-          },
-        },
-        warning: {
-          DEFAULT: {
-            description: 'LikeC4 action icon text color',
-            value: mantine.colors.orange[6],
-          },
-          hover: {
-            description: 'LikeC4 action icon text color on hover',
-            value: {
-              base: mantine.colors.orange[7],
-              _dark: mantine.colors.orange[5],
-            },
-          },
-          bg: {
-            DEFAULT: {
-              description: 'LikeC4 action icon background color',
-              value: {
-                base: alpha(mantine.colors.orange[1], 90),
-                _dark: alpha(mantine.colors.orange[9], 10),
-              },
-            },
-            hover: {
-              description: 'LikeC4 action icon background color on hover',
-              value: {
-                base: alpha(mantine.colors.orange[3], 70),
-                _dark: alpha(mantine.colors.orange[9], 20),
-              },
-            },
-          },
-        },
-      },
-    },
-    dropdown: {
-      bg: {
-        DEFAULT: {
-          description: 'LikeC4 dropdown background color',
-          value: {
-            base: `#FFF`,
-            _dark: mantine.colors.dark[6],
-          },
-        },
-      },
-      border: {
-        description: 'LikeC4 dropdown border color',
-        value: '{colors.likec4.panel.border}',
-      },
-    },
-    overlay: {
-      backdrop: {
-        DEFAULT: {
-          description: 'LikeC4 overlay backdrop color',
-          value: {
-            base: `rgb(15 15 15)`,
-            _dark: `rgb(34 34 34)`,
-          },
-        },
-      },
-      body: {
-        DEFAULT: {
-          description: 'LikeC4 overlay body color',
-          value: {
-            base: mantine.colors.body,
-            _dark: mantine.colors.dark[6],
-          },
-        },
-      },
-      border: {
-        description: 'LikeC4 overlay border color',
-        value: alpha(mantine.colors.defaultBorder, 50),
-      },
-    },
-    walkthrough: {
-      parallelFrame: {
-        description: 'LikeC4 walkthrough parallel frame color',
-        value: {
-          _light: mantine.colors.orange[8],
-          _dark: mantine.colors.orange[6],
-        },
-      },
-    },
-    compare: {
-      manual: {
-        DEFAULT: {
-          description: 'LikeC4 Compare color for manual changes',
-          value: {
-            _light: mantine.colors.orange[8],
-            _dark: mantine.colors.orange[6],
-          },
-        },
-        outline: {
-          description: 'LikeC4 Compare color for outline around nodes with manual changes',
-          value: {
-            _light: mantine.colors.orange[8],
-            _dark: alpha(mantine.colors.orange[6], 80),
-          },
-        },
-      },
-      latest: {
-        description: 'LikeC4 Compare color for latest changes',
-        value: mantine.colors.green[6],
-      },
-    },
-  },
+
+  likec4,
   subflow,
   ...radixColors,
 })

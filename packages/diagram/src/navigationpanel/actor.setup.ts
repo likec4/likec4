@@ -1,11 +1,10 @@
 import type { LayoutedView, ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import { setup } from 'xstate'
-import type { CurrentViewModel } from '../hooks/useCurrentViewModel'
 
 export interface Input {
-  view: LayoutedView
-  viewModel: CurrentViewModel | null
+  viewId: ViewId
+  viewFolder?: string | undefined
 }
 
 export type Events =
@@ -55,9 +54,8 @@ export type DropdownColumnItem =
   }
 
 export interface Context {
-  view: LayoutedView
-
-  viewModel: CurrentViewModel | null
+  viewId: ViewId
+  viewFolder: string
   /**
    * Who activated the dropdown
    * (if `click` then the dropdown is always open until dismissed)
@@ -78,7 +76,8 @@ export type Tags = 'active'
 
 export function Context({ input }: { input: Input }): Context {
   return {
-    ...input,
+    viewId: input.viewId,
+    viewFolder: input.viewFolder ?? '',
     activatedBy: 'hover',
     selectedFolder: '',
     searchQuery: '',

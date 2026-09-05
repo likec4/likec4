@@ -71,6 +71,7 @@ export {
   useLikeC4Model,
   useLikeC4Specification,
   useLikeC4ViewModel,
+  useOptionalLikeC4Model,
 } from './hooks/useLikeC4Model'
 
 export {
@@ -129,5 +130,6 @@ export {
 
 export { SearchControl } from './components/SearchControl'
 
-export { DefaultMantineProvider } from './context/DefaultMantineProvider'
+export { DefaultMantineProvider, LikeC4MantineProvider } from './LikeC4MantineProvider'
+
 export { FramerMotionConfig } from './context/FramerMotionConfig'

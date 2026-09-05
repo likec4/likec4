@@ -5,11 +5,10 @@ import { IconLock, IconLockOpen2 } from '@tabler/icons-react'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { isTruthy } from 'remeda'
-import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { deriveToggledFeatures } from '../../likec4diagram/state/machine.setup'
 
-const selector = (ctx: DiagramContext) => {
+const selector = selectDiagramContext((ctx) => {
   const toggledFeatures = deriveToggledFeatures(ctx)
 
   // Disable readonly toggle, if any of these conditions is true:
@@ -27,10 +26,10 @@ const selector = (ctx: DiagramContext) => {
     disabled: comparingLatest,
     isReadOnly,
   })
-}
+})
 
 export const ToggleReadonly = () => {
-  const { visible, disabled, isReadOnly } = useDiagramContext(selector)
+  const { visible, disabled, isReadOnly } = useDiagramSelector(selector)
   const diagram = useDiagram()
 
   return (
@@ -71,10 +70,10 @@ export const ToggleReadonly = () => {
           <IconLock size={14} stroke={2} style={{ display: !isReadOnly ? 'none' : undefined }} />
           <m.div
             className={css({
-              fontSize: '11px',
+              fontSize: 'xxs',
               fontWeight: 'bold',
-              lineHeight: 1,
-              opacity: 0.8,
+              lineHeight: 'snug',
+              opacity: '0.9',
             })}
             style={{
               display: isReadOnly ? 'block' : 'none',

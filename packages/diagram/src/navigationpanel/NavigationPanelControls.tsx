@@ -8,8 +8,10 @@ import { useSelector } from '@xstate/react'
 import { deepEqual } from 'fast-equals'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
+import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
+import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
 import { BreadcrumbsSeparator } from './_common'
 import type { NavigationPanelActorSnapshot } from './actor'
 import {
@@ -25,19 +27,11 @@ import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
 
-const selectBreadcrumbs = ({ context }: NavigationPanelActorSnapshot) => {
-  const view = context.view
-  const folder = context.viewModel?.folder
-  return {
-    folders: !folder || folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
-      folderPath: s.path,
-      title: s.title,
-    })),
-    viewId: view.id,
-    viewTitle: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
-    isDynamicView: (context.viewModel?._type ?? view._type) === 'dynamic',
-  }
-}
+const selectViewData = selectDiagramContext(s => ({
+  viewId: s.view.id,
+  viewTitle: (s.view.title && extractViewTitleFromPath(s.view.title)) ?? 'Untitled View',
+  isDynamicView: s.view._type === 'dynamic',
+}))
 
 export const NavigationPanelControls = memo(() => {
   const actor = useNavigationActor()
@@ -47,11 +41,18 @@ export const NavigationPanelControls = memo(() => {
     enableCompareWithLatest,
     enableSearch,
   } = useEnabledFeatures()
+  const viewModel = useOptionalCurrentViewModel()
   const {
-    folders,
+    viewId,
     viewTitle,
     isDynamicView,
-  } = useSelector(actor.actorRef, selectBreadcrumbs, deepEqual)
+  } = useDiagramSelector(selectViewData)
+
+  const folder = viewModel?.folder
+  const folders = !folder || folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
+    folderPath: s.path,
+    title: s.title,
+  }))
 
   const folderBreadcrumbs = folders.flatMap(({ folderPath, title }, i) => [
     <UnstyledButton
@@ -62,16 +63,16 @@ export const NavigationPanelControls = memo(() => {
         'mantine-active',
         css({
           userSelect: 'none',
-          maxWidth: '200px',
+          maxWidth: '[200px]',
           display: {
             base: 'none',
             '@/md': 'block',
           },
         }),
       )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      // initial={{ opacity: 0 }}
+      // animate={{ opacity: 1 }}
+      // exit={{ opacity: 0 }}
       title={title}
       onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.folder', folderPath })}
       onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}

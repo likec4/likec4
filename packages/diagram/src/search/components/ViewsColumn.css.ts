@@ -26,7 +26,7 @@ export const viewButtonDescription = css({
   marginTop: '1',
   // transition: transitions.fast,
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '13px',
+  fontSize: 'sm',
   lineHeight: '1.4',
   [`:where(.likec4-view-btn[data-disabled]) &`]: {
     opacity: 0.85,

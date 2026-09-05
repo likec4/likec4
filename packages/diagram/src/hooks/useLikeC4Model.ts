@@ -30,13 +30,22 @@ export function useLikeC4ViewModel<A extends Any = t.aux.UnknownLayouted>(
 }
 
 export function useLikeC4Specification(): t.Specification<t.aux.UnknownLayouted> {
-  const model = useLikeC4Model()
-  const _specification = model.specification
+  const model = useOptionalLikeC4Model()
+  const _specification = model?.specification ?? null
 
-  const [specification, setSpecification] = useState(_specification)
+  const [specification, setSpecification] = useState<t.Specification<t.aux.UnknownLayouted>>(() =>
+    _specification ?? ({
+      elements: {},
+      deployments: {},
+      relationships: {},
+      tags: {},
+    })
+  )
 
   useEffect(() => {
-    setSpecification(current => deepEqual(current, _specification) ? current : _specification)
+    if (_specification) {
+      setSpecification(current => deepEqual(current, _specification) ? current : _specification)
+    }
   }, [_specification])
 
   return specification

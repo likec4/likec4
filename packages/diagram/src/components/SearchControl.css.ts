@@ -7,12 +7,12 @@ export const root = css({
   borderRadius: 'sm',
   // TODO
   // color: fallbackVar('var(--search-color)', 'mantine.placeholder)',
-  border: '1px solid',
+  border: 'default',
   borderColor: {
-    base: 'default.border',
+    base: 'border.default',
     _light: 'mantine.gray[4]',
     _dark: 'mantine.dark[4]',
-    _hover: 'default.border',
+    _hover: 'border.default',
   },
   cursor: 'pointer',
   background: {

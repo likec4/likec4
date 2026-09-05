@@ -2,14 +2,15 @@ import { useDebouncedState } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 import type { EditorActorRef } from '../editor/actor/machine'
 import type { EditorActorStateTag } from '../editor/actor/types'
-import { selectDiagramActor, useDiagramSnapshot } from './useDiagram'
+import { selectDiagramSnapshot, useDiagramSelector } from './useDiagram'
 
-const select = selectDiagramActor(s => {
-  return s.children.editor ?? null
-})
+const select = selectDiagramSnapshot(
+  s => s.children.editor ?? null,
+  Object.is,
+)
 
 export function useEditorActorRef(): EditorActorRef | null {
-  return useDiagramSnapshot(select, Object.is)
+  return useDiagramSelector(select)
 }
 
 export function useEditorActorStateHasTag(tag: EditorActorStateTag) {

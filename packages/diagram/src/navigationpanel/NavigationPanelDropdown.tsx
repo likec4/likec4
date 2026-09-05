@@ -45,8 +45,9 @@ import {
 } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
+import { type CurrentViewModel, useOptionalCurrentViewModel } from '../custom'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
-import { useLikeC4Model } from '../hooks/useLikeC4Model'
+import { useLikeC4Model, useOptionalLikeC4Model } from '../hooks/useLikeC4Model'
 import { Tooltip } from './_common'
 import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
@@ -66,11 +67,12 @@ const scopedKeydownHandler: KeyboardEventHandler<HTMLElement> = createScopedKeyd
   orientation: 'vertical',
 })
 
-const hasSearchQuerySelector = selectNavigationContext(s => s.searchQuery.trim().length >= 2)
+const hasSearchQuerySelector = selectNavigationContext(s => s.searchQuery)
 
 export const NavigationPanelDropdown = memo(() => {
   const actor = useNavigationActor()
-  const hasSearchQuery = useNavigationActorSelector(hasSearchQuerySelector)
+  const searchQuery = useNavigationActorSelector(hasSearchQuerySelector)
+  const hasSearchQuery = searchQuery.trim().length >= 2
 
   useOnDiagramEvent('paneClick', () => {
     actor.closeDropdown()
@@ -104,7 +106,7 @@ export const NavigationPanelDropdown = memo(() => {
       <ProjectsMenu />
       <HStack gap="xs">
         <SearchInput
-          defaultValue={actor.actorRef.getSnapshot().context.searchQuery}
+          defaultValue={searchQuery}
           onChange={setSearchQuery}
         />
         {
@@ -147,16 +149,14 @@ export const NavigationPanelDropdown = memo(() => {
 })
 NavigationPanelDropdown.displayName = 'NavigationPanelDropdown'
 
-function selectSearchQuery(s: NavigationPanelActorSnapshot) {
-  return normalizeViewPath(s.context.searchQuery)
-}
+const selectSearchQuery = selectNavigationContext(s => normalizeViewPath(s.searchQuery))
 
 const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
 
 const SearchResults = memo(() => {
   const likec4model = useLikeC4Model()
   const actor = useNavigationActor()
-  const searchQuery = useSelector(actor.actorRef, selectSearchQuery)
+  const searchQuery = useNavigationActorSelector(selectSearchQuery)
   const deferredSearchQuery = useDeferredValue(searchQuery)
   const isSearchByPath = deferredSearchQuery.includes(VIEW_FOLDERS_SEPARATOR)
   const highlight = isSearchByPath ? deferredSearchQuery.split(VIEW_FOLDERS_SEPARATOR) : deferredSearchQuery
@@ -264,12 +264,11 @@ function FoundedView(
         css({
           '& > mark': {
             backgroundColor: {
-              base: 'mantine.yellow[2]/90',
-              _dark: 'mantine.yellow[5]/80',
-              _groupFocus: '[transparent]',
+              base: 'highlight.body/80',
+              _groupFocus: 'transparent',
             },
             color: {
-              _groupFocus: '[inherit!]',
+              _groupFocus: 'inherit!',
             },
           },
         }),
@@ -344,21 +343,21 @@ const folderIcon = (
     // stroke={1.5}
     className={css({
       opacity: {
-        base: 0.3,
-        _groupHover: 0.5,
-        _groupActive: 0.5,
-        _groupFocus: 0.5,
+        base: '[0.3]',
+        _groupHover: '0.5',
+        _groupActive: '0.5',
+        _groupFocus: '0.5',
       },
     })} />
 )
 
 const viewTypeIconCss = css({
   opacity: {
-    base: 0.3,
-    _dark: 0.5,
-    _groupHover: 0.8,
-    _groupActive: 0.8,
-    _groupFocus: 0.8,
+    base: '[0.3]',
+    _dark: '0.5',
+    _groupHover: '[0.8]',
+    _groupActive: '[0.8]',
+    _groupFocus: '[0.8]',
   },
 })
 const ViewTypeIcon = {
@@ -405,7 +404,10 @@ type FolderColumnData = {
 
 function folderColumn(
   folder: LikeC4ViewsFolder,
-  context: Pick<NavigationPanelActorContext, 'selectedFolder' | 'viewModel'>,
+  context: {
+    selectedFolder: string
+    viewModel: CurrentViewModel
+  },
 ): FolderColumnData {
   return {
     folderPath: folder.path,
@@ -422,16 +424,19 @@ function folderColumn(
         viewId: s.id,
         title: s.title ?? s.id,
         description: s.description.nonEmpty && s.description.text || null,
-        selected: s.id === context.viewModel?.id,
+        selected: s.id === context.viewModel.id,
       })),
     ],
   }
 }
 
-const selectColumns = selectNavigationContext((ctx): FolderColumnData[] => {
-  const viewModel = ctx.viewModel
+const selectColumns = (viewModel: CurrentViewModel | null, selectedFolder: string): FolderColumnData[] => {
   if (!viewModel) {
     return []
+  }
+  const ctx = {
+    selectedFolder,
+    viewModel,
   }
   const likec4model = viewModel.$model
   const columns = [
@@ -444,10 +449,15 @@ const selectColumns = selectNavigationContext((ctx): FolderColumnData[] => {
     }
   }
   return columns
-}, deepEqual)
+}
+
+const selectState = selectNavigationContext(c => c.selectedFolder)
 
 const FolderColumns = memo(() => {
-  const columns = useNavigationActorSelector(selectColumns)
+  const selectedFolder = useNavigationActorSelector(selectState)
+  const viewModel = useOptionalCurrentViewModel()
+  const columns = selectColumns(viewModel, selectedFolder)
+
   return (
     <HStack gap="xs" alignItems="stretch">
       {columns.flatMap((column, i) => [

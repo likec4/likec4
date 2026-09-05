@@ -378,9 +378,12 @@ export const emitOnLayoutTypeChange = () =>
     if (context.toggledFeatures.enableCompareWithLatest === true) {
       // Check if we are switching from manual to auto layout while a sync is pending
       if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
-        typedSystem(system).editorActorRef?.send({
-          type: 'cancel',
-        })
+        enqueue.sendTo(
+          typedSystem.editorActor,
+          {
+            type: 'cancel',
+          },
+        )
       }
 
       const currentViewport = context.viewport

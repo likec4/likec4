@@ -135,7 +135,7 @@ function ExportButton() {
   }
 
   return (
-    <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
+    <Menu shadow="md" width={200} trigger="click-hover" openDelay={300}>
       <MenuTarget>
         <Button
           variant="subtle"
@@ -225,10 +225,10 @@ function ExportButton() {
         {enabledFormats.has('drawio') && (
           <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
         )}
-        <MenuItem disabled>Export to Miro</MenuItem>
-        <MenuItem disabled>Export to Notion</MenuItem>
         {
           /*
+          <MenuItem disabled>Export to Miro</MenuItem>
+        <MenuItem disabled>Export to Notion</MenuItem>
         <MenuDivider />
         <MenuLabel>All views</MenuLabel>
         <MenuItem disabled>

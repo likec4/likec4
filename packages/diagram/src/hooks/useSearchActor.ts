@@ -1,10 +1,11 @@
 import type { SearchActorRef } from '../search/searchActor'
-import { selectDiagramActor, useDiagramSnapshot } from './useDiagram'
+import { selectDiagramSnapshot, useDiagramSelector } from './useDiagram'
 
-const select = selectDiagramActor(s => {
-  return s.children.search ?? null
-})
+const select = selectDiagramSnapshot(
+  s => s.children.search ?? null,
+  Object.is,
+)
 
 export function useSearchActorRef(): SearchActorRef | null {
-  return useDiagramSnapshot(select, Object.is)
+  return useDiagramSelector(select)
 }

@@ -17,9 +17,9 @@ export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles =
   if (isTagColorSpecified(spec) && isValidColor(color)) {
     const text = getContrastedColorsAPCA(color).hiContrast
     return `
-      --colors-likec4-tag-bg: ${color};
-      --colors-likec4-tag-bg-hover: color-mix(in oklab, ${color}, var(--colors-likec4-mix-color) 20%);
-      --colors-likec4-tag-text: ${text};
+  --colors-likec4-tag-bg: ${color};
+  --colors-likec4-tag-bg-hover: color-mix(in oklab, ${color}, var(--colors-likec4-mix-color) 20%);
+  --colors-likec4-tag-text: ${text};
     `
   }
   if (radixColors.includes(color)) {
@@ -28,10 +28,10 @@ export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles =
       textcolor = 'rgba(0 0 0 / 0.85)'
     }
     return `
-    --colors-likec4-tag-border: var(--colors-${color}-8);
-    --colors-likec4-tag-bg: var(--colors-${color}-9);
-    --colors-likec4-tag-bg-hover: var(--colors-${color}-10);
-    --colors-likec4-tag-text: ${textcolor};
+  --colors-likec4-tag-border: var(--colors-${color}-8);
+  --colors-likec4-tag-bg: var(--colors-${color}-9);
+  --colors-likec4-tag-bg-hover: var(--colors-${color}-10);
+  --colors-likec4-tag-text: ${textcolor};
     `
   }
   // Theme color (e.g. `primary`, `secondary`) or a project-defined custom color —
@@ -39,9 +39,9 @@ export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles =
   if (styles.isThemeColor(color)) {
     const { fill, hiContrast } = styles.tagColor(color)
     return `
-    --colors-likec4-tag-bg: ${fill};
-    --colors-likec4-tag-bg-hover: color-mix(in oklab, ${fill}, var(--colors-likec4-mix-color) 20%);
-    --colors-likec4-tag-text: ${hiContrast};
+  --colors-likec4-tag-bg: ${fill};
+  --colors-likec4-tag-bg-hover: color-mix(in oklab, ${fill}, var(--colors-likec4-mix-color) 20%);
+  --colors-likec4-tag-text: ${hiContrast};
     `
   }
   return ''
@@ -68,19 +68,25 @@ function generateStylesheet(
   )
 }
 
-export function TagStylesProvider({ children, id }: PropsWithChildren<{ id: string }>) {
+type TagStylesProviderProps = PropsWithChildren<{
+  /**
+   * Root element selector to scope the tag styles to (e.g., "#diagram-root")
+   * Must be a valid CSS selector
+   */
+  rootSelector: string
+}>
+
+export function TagStylesProvider({ children, rootSelector }: TagStylesProviderProps) {
   const tags = useLikeC4Specification().tags
   const styles = useLikeC4Styles()
   const nonce = useMantineStyleNonce()?.()
-  const stylesheet = generateStylesheet(tags, `#${id}`, styles)
+  const stylesheet = generateStylesheet(tags, rootSelector, styles)
 
   return (
-    <>
+    <TagStylesContext.Provider value={tags}>
       {stylesheet !== '' && <TagStylesheet nonce={nonce} stylesheet={stylesheet} />}
-      <TagStylesContext.Provider value={tags}>
-        {children}
-      </TagStylesContext.Provider>
-    </>
+      {children}
+    </TagStylesContext.Provider>
   )
 }
 

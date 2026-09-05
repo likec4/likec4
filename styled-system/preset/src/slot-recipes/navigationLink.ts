@@ -14,8 +14,7 @@ export const navigationLink = defineSlotRecipe({
       backgroundColor: {
         _hover: {
           '&:not([data-active])': {
-            base: mantine.colors.gray[1],
-            _dark: mantine.colors.dark[5],
+            base: 'surface.hover',
           },
         },
       },

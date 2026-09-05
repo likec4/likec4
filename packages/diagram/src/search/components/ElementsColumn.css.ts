@@ -15,6 +15,7 @@ export const treeRoot = css(
   }),
   {
     containerType: 'inline-size',
+    px: '4',
     height: '100%',
   },
 )
@@ -43,8 +44,8 @@ export const elementTitleAndId = css({
 // export const elementTitle = css(title)
 export const elementId = css({
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '10px',
-  lineHeight: '1.3',
+  fontSize: 'xxs',
+  lineHeight: 'sm',
   display: 'block',
   fontWeight: 'medium',
   whiteSpace: 'nowrap',
@@ -64,12 +65,12 @@ export const elementIcon = css({
 })
 
 export const elementViewsCount = css({
-  flex: 0,
+  flex: '[0]',
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '10px',
+  fontSize: 'xxs',
   fontWeight: 'medium',
   whiteSpace: 'nowrap',
-  lineHeight: '1.1',
+  lineHeight: '[1.1]',
   [whenContainerIsNarrow]: {
     display: 'none',
   },

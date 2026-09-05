@@ -8,7 +8,7 @@ import {
   IconSearch,
 } from '@tabler/icons-react'
 import { isMacOs } from '@xyflow/system'
-import * as m from 'motion/react-m'
+import { m } from 'motion/react'
 import { useDiagram } from '../../hooks/useDiagram'
 
 export function SearchControl() {
@@ -44,10 +44,10 @@ export function SearchControl() {
       <IconSearch size={14} stroke={2.5} />
       <Box
         css={{
-          fontSize: '11px',
+          fontSize: 'xs',
           fontWeight: 'bold',
-          lineHeight: 1,
-          opacity: 0.8,
+          lineHeight: '1',
+          opacity: '0.7',
           whiteSpace: 'nowrap',
         }}>
         {isMac ? '⌘ + K' : 'Ctrl + K'}

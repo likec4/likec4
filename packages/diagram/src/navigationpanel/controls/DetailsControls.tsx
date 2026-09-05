@@ -1,7 +1,7 @@
 import { extractViewTitleFromPath } from '@likec4/core/model'
 import { RichText } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { Box, HStack, styled } from '@likec4/styles/jsx'
+import { Box, HStack, styled, Txt } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
 import {
   type PopoverProps,
@@ -10,31 +10,26 @@ import {
   Text,
   UnstyledButton,
 } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { IconId, IconLink } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { useState } from 'react'
 import { ElementTag, Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
-import { useDiagram, useOnDiagramEvent } from '../../hooks/useDiagram'
+import { useCurrentViewModel } from '../../hooks'
+import { selectDiagramContext, useDiagram, useDiagramSelector, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
-import { selectNavigationContext, useNavigationActorSelector } from '../hooks'
 
-const selector = selectNavigationContext(context => {
-  const view = context.view
+const selector = selectDiagramContext(({ view }) => {
   return {
     id: view.id,
-    title: context.viewModel?.title ?? (view.title && extractViewTitleFromPath(view.title)) ?? 'Untitled View',
-    description: context.viewModel?.description ?? RichText.from(view.description),
-    tags: view.tags ?? [],
-    links: view.links ?? [],
+    links: view.links?.length ?? 0,
   }
 })
 
-type ViewDetailsCardData = ReturnType<typeof selector['0']>
-
 export const DetailsControls = (props: PopoverProps) => {
-  const [opened, setOpened] = useState(false)
-  const data = useNavigationActorSelector(selector)
+  const [opened, handlers] = useDisclosure(false)
+  const data = useDiagramSelector(selector)
   const portalProps = useMantinePortalProps()
 
   return (
@@ -46,17 +41,17 @@ export const DetailsControls = (props: PopoverProps) => {
         mainAxis: 4,
       }}
       opened={opened}
-      onChange={setOpened}
+      onChange={handlers.set}
       {...portalProps}
       {...props}
     >
-      <ViewDetailsCardTrigger linksCount={data.links.length} onOpen={() => setOpened(true)} />
-      {opened && <ViewDetailsCardDropdown data={data} onClose={() => setOpened(false)} />}
+      <ViewDetailsCardTrigger linksCount={data.links} onClick={handlers.toggle} />
+      {opened && <ViewDetailsCardDropdown onClose={handlers.close} />}
     </Popover>
   )
 }
 
-const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; onOpen: () => void }) => (
+const ViewDetailsCardTrigger = ({ linksCount, onClick }: { linksCount: number; onClick: () => void }) => (
   <Popover.Target>
     <UnstyledButton
       component={m.button}
@@ -67,7 +62,7 @@ const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; on
       }}
       onClick={e => {
         e.stopPropagation()
-        onOpen()
+        onClick()
       }}
       className={cx(
         'group',
@@ -94,14 +89,14 @@ const ViewDetailsCardTrigger = ({ linksCount, onOpen }: { linksCount: number; on
       )}>
       <IconId size={16} stroke={1.8} />
       {linksCount > 0 && (
-        <HStack gap={'[1px]'}>
+        <HStack gap="0.5">
           <IconLink size={14} stroke={2} />
           <Box
             css={{
-              fontSize: '11px',
+              fontSize: 'xxs',
               fontWeight: 'bold',
-              lineHeight: 1,
-              opacity: 0.8,
+              lineHeight: '1',
+              opacity: '0.7',
             }}>
             {linksCount}
           </Box>
@@ -121,17 +116,14 @@ const SectionHeader = styled('div', {
   },
 })
 
-const ViewDetailsCardDropdown = ({
-  data: {
-    id,
-    title,
-    description,
-    tags,
-    links,
-  },
-  onClose,
-}: { data: ViewDetailsCardData; onClose: () => void }) => {
+const ViewDetailsCardDropdown = ({ onClose }: { onClose: () => void }) => {
+  const viewModel = useCurrentViewModel()
   const diagram = useDiagram()
+
+  const title = viewModel.title
+  const description = viewModel.description
+  const tags = viewModel.tags
+  const links = viewModel.links
 
   useOnDiagramEvent('paneClick', onClose)
   useOnDiagramEvent('nodeClick', onClose)
@@ -147,26 +139,26 @@ const ViewDetailsCardDropdown = ({
           padding: 'md',
           paddingBottom: 'lg',
           pointerEvents: 'all',
-          maxWidth: 'calc(100cqw - 52px)',
-          minWidth: '200px',
-          maxHeight: 'calc(100cqh - 100px)',
+          maxWidth: '[calc(100cqw - 52px)]',
+          minWidth: '[200px]',
+          maxHeight: '[calc(100cqh - 100px)]',
           width: 'max-content',
           cursor: 'default',
           overflow: 'auto',
           overscrollBehavior: 'contain',
           '@/sm': {
-            minWidth: 400,
-            maxWidth: 550,
+            minWidth: '[400px]',
+            maxWidth: '[550px]',
           },
           '@/lg': {
-            maxWidth: 700,
+            maxWidth: '[700px]',
           },
         }),
       )}>
       <section>
-        <Text component="div" fw={500} size="xl" lh={'sm'}>{title}</Text>
+        <Txt textStyle={'h4'}>{title}</Txt>
         <HStack alignItems={'flex-start'} mt="1">
-          <ViewBadge label="id" value={id} />
+          <ViewBadge label="id" value={viewModel.id} />
           <HStack gap="xs" flexWrap="wrap">
             {tags.map((tag) => (
               <ElementTag
@@ -240,7 +232,7 @@ const ViewBadge = ({
             overflow: 'visible',
           }),
           section: css({
-            opacity: 0.5,
+            opacity: '0.5',
             userSelect: 'none',
             marginInlineEnd: '0.5',
           }),

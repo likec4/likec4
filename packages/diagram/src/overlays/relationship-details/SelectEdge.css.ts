@@ -34,7 +34,7 @@ export const edgeLabel = cx(
     gridColumnStart: 1,
     gridColumnEnd: 4,
     borderBottom: `1px solid`,
-    borderBottomColor: 'default.border',
+    borderBottomColor: 'border.default',
     marginBottom: '0',
     padding: '[0 4px 5px 4px]',
     width: '100%',

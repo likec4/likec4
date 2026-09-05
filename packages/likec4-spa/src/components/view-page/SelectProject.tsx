@@ -11,7 +11,7 @@ export function SelectProject() {
   if (projects.length < 2) return null
 
   return (
-    <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
+    <Menu shadow="md" width={200} trigger="click-hover" openDelay={300}>
       <MenuTarget>
         <Button
           variant="subtle"

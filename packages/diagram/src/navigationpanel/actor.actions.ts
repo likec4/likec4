@@ -32,20 +32,20 @@ export const updateSelectedFolder = () =>
 
 export const resetSelectedFolder = () =>
   actor.assign({
-    selectedFolder: ({ context }) => context.viewModel?.folder.path ?? '',
+    selectedFolder: ({ context }) => context.viewFolder,
   })
 
 export const updateInputs = () =>
   actor.assign(({ context, event }) => {
     assertEvent(event, 'update.inputs')
-    const viewChanged = event.inputs.viewModel?.id !== context.viewModel?.id
+    const viewChanged = event.inputs.viewId !== context.viewId
     let selectedFolder = context.selectedFolder
-    if (!event.inputs.viewModel?.folder.path.startsWith(selectedFolder)) {
-      selectedFolder = event.inputs.viewModel?.folder.path ?? ''
+    if (event.inputs.viewFolder && !event.inputs.viewFolder.startsWith(selectedFolder)) {
+      selectedFolder = event.inputs.viewFolder
     }
     return {
-      view: event.inputs.view,
-      viewModel: event.inputs.viewModel,
+      viewId: event.inputs.viewId,
+      viewFolder: event.inputs.viewFolder ?? '',
       selectedFolder,
       // allow dropdown to close on mouse leave if view changed
       activatedBy: viewChanged ? 'hover' : context.activatedBy,

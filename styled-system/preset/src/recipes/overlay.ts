@@ -97,7 +97,7 @@ export const overlay = defineRecipe({
           _backdrop: {
             display: 'none',
             backdropFilter: 'none',
-            background: '[transparent]',
+            background: 'transparent',
           },
         },
       },

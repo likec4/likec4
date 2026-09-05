@@ -73,8 +73,19 @@ function generateBuiltInColorStyles(styles: LikeC4StylesLib, rootSelector: strin
   )
 }
 
-export function LikeC4Styles({ id }: { id: string }): JSX.Element {
-  const rootSelector = `#${id}`
+interface LikeC4StylesProps {
+  /**
+   * Root element selector to scope the styles to (e.g., "#diagram-root")
+   * Must be a valid CSS selector
+   */
+  rootSelector: string
+}
+
+/**
+ * Component that renders LikeC4 theme colors as CSS variables
+ * scoped to the provided root selector
+ */
+export function LikeC4Styles({ rootSelector }: LikeC4StylesProps): JSX.Element {
   const nonce = useMantineStyleNonce()?.()
   const $styles = useLikeC4Styles()
 
@@ -85,7 +96,7 @@ export function LikeC4Styles({ id }: { id: string }): JSX.Element {
 
   return (
     <MemoizedStyle
-      id={id}
+      id={$styles.fingerprint}
       nonce={nonce}
       colorsStyles={colorsStyles} />
   )
@@ -104,7 +115,8 @@ const MemoizedStyle = memo<{
   <style
     type="text/css"
     data-likec4-colors={id}
-    dangerouslySetInnerHTML={{ __html: colorsStyles }}
-    nonce={nonce || undefined} />
+    nonce={nonce || undefined}>
+    {colorsStyles}
+  </style>
 ))
 MemoizedStyle.displayName = 'MemoizedStyle'

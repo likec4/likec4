@@ -116,15 +116,17 @@ export function generateCombinedProjects(
         ? hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(`Project does not enable ${exportFormat} export: `))
         : null
 
+      const registryName = fnName + 'Registry'
+
       const code = `
-export let ${fnName}Fn = {
+export let ${registryName} = {
 ${cases.join(',\n')}
 }      
 
 export async function ${fnName}(projectId) {
-  let fn = ${fnName}Fn[projectId]
+  let fn = ${registryName}[projectId]
   if (!fn) {
-    const projects = Object.keys(${fnName}Fn)
+    const projects = Object.keys(${registryName})
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     ${
         exportFormat
@@ -135,7 +137,7 @@ export async function ${fnName}(projectId) {
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
-    fn = ${fnName}Fn[projectId]
+    fn = ${registryName}[projectId]
     `
       }
   }
@@ -144,12 +146,15 @@ export async function ${fnName}(projectId) {
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    const update = md.${fnName}Fn
+    if (!import.meta.hot.data.$update) {
+      import.meta.hot.data.$update = ${registryName}
+    }
+    const update = md.${registryName}
     if (update) {
-      ${fnName}Fn = update
+      Object.assign(import.meta.hot.data.$update, update)
     } else {
       import.meta.hot.invalidate()
-    }
+    }    
   })
 }
     `

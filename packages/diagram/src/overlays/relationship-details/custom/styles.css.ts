@@ -5,7 +5,7 @@ export const emptyNode = css({
   h: '100%',
   borderWidth: '3px',
   borderStyle: 'dashed',
-  borderColor: 'default.border',
+  borderColor: 'border.default',
   rounded: 'md',
   display: 'flex',
   justifyContent: 'center',

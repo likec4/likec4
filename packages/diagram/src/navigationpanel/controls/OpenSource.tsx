@@ -16,6 +16,7 @@ export const OpenSource = () => {
   return (
     <Tooltip label="Open View Source">
       <PanelActionIcon
+        layout="position"
         // variant="filled"
         onClick={e => {
           e.stopPropagation()

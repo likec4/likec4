@@ -43,22 +43,19 @@ export const instanceLabel = cx(
     width: '100%',
     justifyContent: 'stretch',
     flexWrap: 'nowrap',
-    height: '36px',
+    height: '[36px]',
     paddingInlineStart: '[16px]',
     paddingInlineEnd: '2.5', // 10px
     borderRadius: 'sm',
     alignItems: 'center',
-    color: 'mantine.gray[7]',
-    _dark: {
-      color: 'mantine.gray.lightColor',
-    },
+    color: 'text.default',
     _hover: {
-      background: 'mantine.gray.lightHover',
+      background: 'surface.hover',
     },
     '& .tabler-icon': {
       transition: 'fast',
-      width: '90%',
-      opacity: 0.65,
+      boxSize: '[90%]',
+      opacity: '[0.65]',
     },
   }),
 )

@@ -6,11 +6,12 @@ export const node = css({
 
 export const label = css({
   _hover: {
-    backgroundColor: 'mantine.gray[0]',
-    _dark: {
-      backgroundColor: 'default.hover',
-      color: 'white',
-    },
+    backgroundColor: 'surface.hover',
+    // backgroundColor: 'mantine.gray[0]',
+    // _dark: {
+    //   backgroundColor: 'mantine.gray[0]',
+    //   color: 'white',
+    // },
   },
 })
 

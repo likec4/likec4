@@ -8,8 +8,8 @@ export const treeNodeLabel = css({
 export const elementLabel = css({
   display: 'inline-flex',
   transition: 'fast',
-  border: `1px dashed`,
-  borderColor: 'default.border',
+  border: 'default',
+  borderStyle: 'dashed',
   borderRadius: 'sm',
   px: 'md',
   py: 'xs',
@@ -26,8 +26,8 @@ export const elementLabel = css({
   _hover: {
     transitionTimingFunction: 'out',
     borderStyle: 'solid',
-    color: 'default.color',
-    background: 'default.hover',
+    color: 'text.default',
+    background: 'surface.hover',
     '& > *': {
       transitionTimingFunction: 'out',
       transform: 'translateX(1px)',

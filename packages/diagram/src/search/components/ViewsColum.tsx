@@ -22,6 +22,7 @@ import {
   VisuallyHidden,
 } from '@mantine/core'
 import { IconStack2, IconZoomScan } from '@tabler/icons-react'
+import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useMemo, useRef } from 'react'
 import { first } from 'remeda'
@@ -33,9 +34,9 @@ import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
-  <Box className={styles.emptyBoX}>
+  <m.div layout="position" className={styles.emptyBoX}>
     Nothing found
-  </Box>
+  </m.div>
 )
 
 const useFoundViews = () => {
@@ -66,6 +67,10 @@ export const ViewsColumn = memo(() => {
   const ref = useRef<HTMLDivElement>(null)
   const [views, search, currentViewId] = useFoundViews()
 
+  if (views.length === 0) {
+    return <NothingFound />
+  }
+
   return (
     <Stack
       ref={ref}
@@ -88,7 +93,6 @@ export const ViewsColumn = memo(() => {
           return
         }
       }}>
-      {views.length === 0 && <NothingFound />}
       {views.length > 0 && (
         <VisuallyHidden>
           <UnstyledButton
@@ -101,7 +105,7 @@ export const ViewsColumn = memo(() => {
         </VisuallyHidden>
       )}
       {views.map((view, i) => (
-        <m.div layoutId={`@view${view.id}`} key={view.id}>
+        <m.div layout layoutId={`@view${view.id}`} key={view.id}>
           <ViewButton
             view={view}
             currentViewId={currentViewId ?? ''}
@@ -166,7 +170,7 @@ export function ViewButton(
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
-          <Highlight component="div" highlight={search} className={btn.title!}>
+          <Highlight component="div" highlight={search} className={btn.title!} lineClamp={1}>
             {view.titleOrUntitled}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}

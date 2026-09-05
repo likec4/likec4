@@ -2,7 +2,6 @@ import { definePreset } from '@pandacss/dev'
 import { animationStyles, keyframes } from './animations.ts'
 import { conditions } from './conditions.ts'
 import { vars as likec4vars } from './defaults/vars.ts'
-import { breakpoints, mantine } from './generated.ts'
 import { globalCss } from './globalCss.ts'
 import { globalVars } from './globalVars.ts'
 import { layerStyles } from './layer-styles.ts'
@@ -15,7 +14,14 @@ import { tokens } from './tokens/index.ts'
 import { utilities } from './utilities.ts'
 
 export const theme = {
-  breakpoints,
+  // desktop-first; values align to the layout width variants (wide = xl)
+  breakpoints: {
+    xs: '36em',
+    sm: '48em',
+    md: '62em',
+    lg: '75em',
+    xl: '88em',
+  },
   textStyles,
   layerStyles,
   tokens,
@@ -56,5 +62,4 @@ export const likec4preset = /* @__PURE__ */ definePreset({
 
 export const vars = {
   likec4: likec4vars,
-  mantine,
 }

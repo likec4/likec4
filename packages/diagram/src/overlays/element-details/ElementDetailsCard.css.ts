@@ -4,6 +4,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 import { css } from '@likec4/styles/css'
+import { flex } from '@likec4/styles/patterns'
 
 export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
@@ -55,8 +56,8 @@ export const card = css({
 })
 
 export const cardHeader = css({
-  flex: 0,
-  cursor: 'move',
+  flex: '0',
+  cursor: '[move]',
 })
 
 export const title = css({
@@ -65,7 +66,7 @@ export const title = css({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 'bold',
-  fontSize: '24px',
+  fontSize: '[24px]',
   lineHeight: 'xs',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -75,9 +76,8 @@ export const title = css({
 
 const iconSize = '40px'
 export const elementIcon = css({
-  flex: `0 0 ${iconSize}`,
-  height: iconSize,
-  width: iconSize,
+  flex: `[0 0 ${iconSize}]`,
+  boxSize: `[${iconSize}]`,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -91,11 +91,11 @@ export const elementIcon = css({
     height: 'auto',
     maxHeight: '100%',
     pointerEvents: 'none',
-    filter: `
+    filter: `[
     drop-shadow(0 0 3px rgb(0 0 0 / 10%))
     drop-shadow(0 1px 8px rgb(0 0 0 / 5%))
     drop-shadow(1px 1px 16px rgb(0 0 0 / 2%))
-  `,
+  ]`,
   },
   '& img': {
     objectFit: 'contain',
@@ -107,22 +107,19 @@ const iconColor = '--icon-color'
 export const viewButton = css({
   // display: 'flex',
   width: '100%',
-  background: 'body',
+  background: 'surface.default',
   borderRadius: 'sm',
   padding: `[10px 8px]`,
   // gap: 6,
   // alignItems: 'flex-start',
   transition: 'fast',
-  border: `1px dashed`,
-  borderColor: 'default.border',
+  border: `default`,
+  borderStyle: 'dashed',
   [viewTitleColor]: '{colors.mantine.dark[1]}',
   _hover: {
-    background: 'default.hover',
+    background: 'surface.hover',
     [iconColor]: '{colors.mantine.dark[1]}',
-    [viewTitleColor]: '{colors.default.color}',
-  },
-  _dark: {
-    background: 'mantine.dark[6]',
+    [viewTitleColor]: '{colors.text}',
   },
   _light: {
     [iconColor]: '{colors.mantine.gray[6]}',
@@ -138,12 +135,12 @@ export const viewButton = css({
     color: `[var(${iconColor}, {colors.mantine.dark[2]})]`,
     '--ti-size': '22px',
     _hover: {
-      color: 'default.color',
+      color: 'text',
     },
   },
 
   '& > *': {
-    transition: `all 130ms {easings.inOut}`,
+    transition: `[all 130ms {easings.inOut}]`,
   },
   '&:hover > *': {
     transitionTimingFunction: 'out',
@@ -154,14 +151,13 @@ export const viewButton = css({
 export const viewButtonTitle = css({
   transition: 'fast',
   color: `[var(${viewTitleColor}, {colors.mantine.gray[7]})]`,
-  fontSize: '15px',
+  fontSize: '[15px]',
   fontWeight: 'medium',
-  lineHeight: '1.4',
+  lineHeight: '[1.4]',
 })
 
-export const tabsRoot = css({
-  flex: 1,
-  display: 'flex',
+export const tabsRoot = flex({
+  flex: '1',
   flexDirection: 'column',
   justifyContent: 'stretch',
   overflow: 'hidden',
@@ -190,14 +186,14 @@ export const tabsTab = css({
   color: 'mantine.gray[7]',
   _hover: {
     transitionTimingFunction: 'out',
-    color: 'default.color',
+    color: 'text',
     background: 'mantine.gray[3]',
   },
   ['&[data-active]']: {
     transition: 'none',
     background: 'white',
     shadow: 'xs',
-    color: 'default.color',
+    color: 'text',
   },
   _dark: {
     color: 'mantine.dark[1]',
@@ -214,7 +210,7 @@ export const tabsTab = css({
 })
 
 export const tabsPanel = css({
-  flex: 1,
+  flex: '1',
   overflow: 'hidden',
   position: 'relative',
   '&:not(:has(.mantine-ScrollArea-root))': {
@@ -232,10 +228,10 @@ export const tabsPanel = css({
 })
 
 export const propertiesGrid = css({
-  flex: 1,
+  flex: '1',
   display: 'grid',
-  gridTemplateColumns: 'min-content 1fr',
-  gridAutoRows: 'min-content max-content',
+  gridTemplateColumns: '[min-content 1fr]',
+  gridAutoRows: '[min-content max-content]',
   gap: `[24px 20px]`,
   alignItems: 'baseline',
   justifyItems: 'stretch',
@@ -249,19 +245,17 @@ export const propertyLabel = css({
 
 export const resizeHandle = css({
   position: 'absolute',
-  width: '14px',
-  height: '14px',
-  border: `3.5px solid`,
-  borderColor: 'mantine.dark[3]',
+  boxSize: '[14px]',
+  border: `[3.5px solid {colors.mantine.dark[3]}]`,
   borderTop: 'none',
   borderLeft: 'none',
   borderRadius: 'xs',
   bottom: '0.5',
   right: '0.5',
   transition: 'fast',
-  cursor: 'se-resize',
+  cursor: '[se-resize]',
   _hover: {
-    borderWidth: '4px',
+    borderWidth: '[4px]',
     borderColor: 'mantine.dark[1]',
   },
 })

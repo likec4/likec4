@@ -1,3 +1,4 @@
+import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
 import {
   createBrowserHistory,
   createHashHistory,
@@ -13,11 +14,15 @@ import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
+const _projects = projects.length > 0
+  ? map(projects, p => p.id)
+  : ['default' as ProjectId] satisfies NonEmptyArray<ProjectId>
+
 const router = createTanstackRouter<RouteTree, 'always', true>({
   routeTree,
   context: {
-    projectId: projects[0].id,
-    projects: map(projects, p => p.id),
+    projectId: _projects[0],
+    projects: _projects,
   },
   InnerWrap: LikeC4ProjectsContext,
   basepath,

@@ -45,7 +45,6 @@
     "./src": "./src/index.ts"
   },
   "dependencies": {
-    "remeda": "catalog:utils",
     "@radix-ui/colors": "catalog:css"
   },
   "peerDependencies": {
@@ -53,6 +52,7 @@
     "@pandacss/types": "catalog:css"
   },
   "devDependencies": {
+    "remeda": "catalog:utils",
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
     "@types/react": "catalog:react",

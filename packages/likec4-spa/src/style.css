@@ -39,12 +39,12 @@ html, body {
 }
 
 .transparent-bg {
-  --likec4-background-color: transparent !important;
+  --colors-diagram-background: transparent !important;
   --xy-background-color: transparent !important;
   background-color: transparent !important;
 
   body {
-    --likec4-background-color: transparent !important;
+    --colors-diagram-background: transparent !important;
     --xy-background-color: transparent !important;
     background-color: transparent !important;
   }

@@ -14,11 +14,11 @@ export type RootContainerContextType = {
 const RootContainerContext = createContext<RootContainerContextType | null>(null)
 export const RootContainerContextProvider = RootContainerContext.Provider
 
-export function useRootContainerContext() {
+export function useRootContainerContext(): RootContainerContextType | null {
   return useContext(RootContainerContext)
 }
 
-export function useRootContainer() {
+export function useRootContainer(): RootContainerContextType {
   const ctx = useRootContainerContext()
   if (!ctx) {
     throw new Error('useRootContainer must be used within a RootContainer')
@@ -26,11 +26,11 @@ export function useRootContainer() {
   return ctx
 }
 
-export function useRootContainerRef() {
+export function useRootContainerRef(): RefObject<HTMLDivElement | null> {
   return useRootContainer().ref
 }
 
-export function useRootContainerElement() {
+export function useRootContainerElement(): HTMLDivElement | null {
   return useRootContainer().ref.current
 }
 

@@ -18,7 +18,7 @@ export const Endpoint = ({ children, likec4color }: PropsWithChildren<{ likec4co
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        maxWidth: '160px',
+        truncate: true,
         paddingX: '1',
         paddingY: '0.5',
         rounded: 'xs',
@@ -30,7 +30,9 @@ export const Endpoint = ({ children, likec4color }: PropsWithChildren<{ likec4co
           _light: 'var(--likec4-palette-hiContrast)',
           _dark: 'var(--likec4-palette-loContrast)',
         },
-      })}>
+      })}
+      style={{ minWidth: 0, maxWidth: 160 }}
+    >
       {children}
     </div>
   )
@@ -44,6 +46,6 @@ export const RelationshipTitle = styled('div', {
     userSelect: 'all',
     overflowWrap: 'anywhere',
     wordBreak: 'break-word',
-    minWidth: 0,
+    minWidth: '0',
   },
 })

@@ -14,7 +14,7 @@ export const previewBg = css({
   padding: '0',
   margin: '0',
   backgroundOrigin: 'padding-box',
-  backgroundImage: `radial-gradient({colors.default.border} 15%, {colors.body} 15%)`,
+  backgroundImage: `radial-gradient({colors.border.default} 15%, {colors.body} 15%)`,
   backgroundPosition: '0 0',
   backgroundSize: '12px 12px',
   _after: {
@@ -24,12 +24,12 @@ export const previewBg = css({
     left: '0',
     right: '0',
     bottom: '0',
-    zIndex: '1',
+    zIndex: '[1]',
   },
 })
 
 export const cardLink = css({
   position: 'absolute',
   inset: '0',
-  zIndex: 5,
+  zIndex: '[5]',
 })

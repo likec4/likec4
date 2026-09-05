@@ -159,12 +159,13 @@ export function LikeC4Diagram<A extends Any = Any>({
                 enableRelationshipBrowser: enableRelationshipBrowser && hasLikeC4Model,
                 enableSearch: enableSearch && hasLikeC4Model,
                 enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
-                enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
+                enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough &&
+                  hasLikeC4Model,
                 enableNotations,
                 enableVscode: !!onOpenSource,
                 enableControls: controls,
-                enableElementTags,
-                enableCompareWithLatest,
+                enableElementTags: enableElementTags && hasLikeC4Model,
+                enableCompareWithLatest: enableCompareWithLatest,
                 enableNotes,
               }}
             >
@@ -183,8 +184,8 @@ export function LikeC4Diagram<A extends Any = Any>({
                   onInitialized,
                   onLayoutTypeChange,
                 }}>
-                <LikeC4Styles id={id} />
-                <TagStylesProvider id={id}>
+                <LikeC4Styles rootSelector={`#${id}`} />
+                <TagStylesProvider rootSelector={`#${id}`}>
                   <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
                     <XYFlowProvider
                       fitView={fitView}

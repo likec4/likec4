@@ -12,7 +12,19 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
         },
       },
     },
+
+    field: {
+      description: 'LikeC4 field layer',
+      value: {
+        backgroundColor: 'surface.field',
+        border: 'default',
+        _hover: {
+          backgroundColor: 'surface.field.hover',
+        },
+      },
+    },
   },
+
   likec4: {
     tag: {
       description: 'LikeC4 tag layer',

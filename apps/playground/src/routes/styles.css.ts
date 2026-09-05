@@ -12,7 +12,7 @@ export const resize = css({
   boxSizing: 'border-box',
   borderLeft: '0px solid transparent',
   transition: 'all 175ms ease-in-out',
-  backgroundColor: 'default.border',
+  backgroundColor: 'border.default',
   backgroundClip: 'content-box',
   outline: 'none',
   ['&:is([data-separator="active"],[data-separator="hover"])']: {
