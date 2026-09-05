@@ -50,16 +50,16 @@ catalog:
   graphology-types: ^0.24.8
   memfs: ^4.57.8
   nano-staged: ^1.0.2
-  oxlint: 1.72.0
-  oxlint-tsgolint: 0.24.0
-  pako: ^2.1.0
+  oxlint: 1.81.0
+  oxlint-tsgolint: 0.25.0
+  pako: ^2.2.0
   playwright: 1.60.0
   rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
-  tsx: 4.22.5
+  tsx: 4.23.13
   turbo: 2.10.12
   typescript: 6.0.3
-  wireit: 0.14.12
+  wireit: 0.14.13
   zx: 8.8.5
 
 catalogMode: prefer
@@ -94,8 +94,8 @@ catalogs:
     starlight-links-validator: 0.25.2
     starlight-package-managers: 0.12.0
   cloudflare:
-    "@cloudflare/vite-plugin": ~1.39.0
-    wrangler: ~4.95.0
+    "@cloudflare/vite-plugin": ~1.54.4
+    wrangler: ~4.129.0
   css:
     "@pandacss/dev": ^1.12.1
     "@pandacss/preset-panda": ^1.12.1
@@ -172,11 +172,11 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
     "@rolldown/plugin-node-polyfills": ^1.0.3
-    tsdown: ^0.22.9
-    "@tsdown/css": ^0.22.11
-    rolldown: ^1.2.0
+    tsdown: ^0.23.0
+    "@tsdown/css": ^0.23.0
+    rolldown: ^1.2.7
   utils:
-    "@logtape/logtape": ^2.1.1
+    "@logtape/logtape": ^2.3.3
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
@@ -187,20 +187,20 @@ catalogs:
     date-fns: ^4.4.0
     defu: ^6.1.7
     esm-env: ^1.2.2
-    fast-equals: ^6.0.2
+    fast-equals: ^6.0.3
     immer: ^11.1.18
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
     nanoid: 5.1.16
-    natural-compare-lite: ^1.4.0
+    natural-compare-lite: ^1.4.1
     object-hash: ^3.0.0
     ohash: ^2.0.12
     p-debounce: 5.1.0
     p-limit: 7.3.2
     p-queue: 8.1.1
     p-timeout: 7.0.1
-    package-manager-detector: 1.6.0
+    package-manager-detector: 1.8.0
     package-up: ^5.0.0
     pathe: ^2.0.3
     remeda: ^2.45.0
@@ -282,3 +282,4 @@ minimumReleaseAgeExclude:
   - '@pandacss/shared@1.12.1'
   - '@pandacss/token-dictionary@1.12.1'
   - '@pandacss/types@1.12.1'
+  - '@logtape/logtape@2.3.3'

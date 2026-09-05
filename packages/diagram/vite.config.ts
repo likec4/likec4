@@ -12,14 +12,6 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   mode: 'production',
-  resolve: {
-    alias: {
-      '@likec4/styles': resolve('styled-system'),
-    },
-    // alias: [
-    //   { find: /^@likec4\/styles\/(.+)$/, replacement: resolve('styled-system', '$1', 'index') },
-    // ],
-  },
   oxc: {
     jsx: {
       development: false,

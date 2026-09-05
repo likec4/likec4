@@ -11,10 +11,18 @@
     "lib": [
       "ESNext",
       "DOM"
-    ]
+    ],
+    "paths": {
+      "@likec4/styles/*": [
+        "./styled-system/*/index.d.mts",
+        "./styled-system/*/index.mjs",
+        "./styled-system/*"
+      ]
+    }
   },
-  "files": [
-    "src/index.ts"
+  "include": [
+    "src/",
+    "styled-system/"
   ],
   "references": [
     {

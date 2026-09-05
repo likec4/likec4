@@ -77,7 +77,7 @@ export default defineConfig({
         codeSplitting: {
           groups: [
             codeSplittingGroup(/styled-system/, 'styled-system', { priority: 12, minShareCount: 1 }),
-            codeSplittingGroup(/node_modules\/d3-/, 'libs/d3', { priority: 11 }),
+            codeSplittingGroup(/node_modules\/d3/, 'libs/d3', { priority: 11 }),
             codeSplittingGroup(/node_modules\/@floating-ui/, 'libs/@floating-ui', { priority: 10 }),
             codeSplittingGroup(/node_modules\/@mantine/, 'libs/@mantine', { priority: 9 }),
             codeSplittingGroup(/node_modules\/@tanstack\/ai/, 'libs/@tanstack-ai', { priority: 8 }),
