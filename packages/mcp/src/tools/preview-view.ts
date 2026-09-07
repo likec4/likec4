@@ -130,7 +130,9 @@ Use "preview-view" to iterate on a new view definition before creating it for re
 
       const layouted = await preview.viewsService.layoutView({
         viewId: viewModel.id,
-        projectId,
+        // `fromSources` builds a separate workspace. Its project ID is not
+        // necessarily the ID used by the source workspace.
+        projectId: model.$data.projectId,
       })
       if (!layouted) {
         return toolError(`Failed to layout preview view "${rawViewId}".`)

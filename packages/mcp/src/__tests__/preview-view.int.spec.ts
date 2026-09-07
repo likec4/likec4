@@ -34,6 +34,23 @@ describe('preview-view tool', () => {
     expect(nodes.length).toBeGreaterThan(0)
   })
 
+  it('renders a preview for a project with a non-default ID', async () => {
+    await using pair = await createMCPTestPair({
+      dsl: DSL,
+      projectConfig: { name: 'named-project' },
+    })
+    const result = await pair.client.callTool({
+      name: 'preview-view',
+      arguments: {
+        project: 'named-project',
+        dsl: 'view draft of other { include * }',
+      },
+    })
+
+    expect(result.isError).toBeFalsy()
+    expect(structured(result)['project']).toBe('named-project')
+  })
+
   it('does not persist the preview — the real project is unaffected', async () => {
     await using pair = await createMCPTestPair(DSL)
     await pair.client.callTool({
