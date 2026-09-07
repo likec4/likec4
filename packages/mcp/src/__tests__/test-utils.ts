@@ -59,7 +59,9 @@ export async function createMCPTestPair(
 ): Promise<MCPTestPair> {
   const opts: MCPTestPairOptions = typeof input === 'string' ? { dsl: input } : (input ?? {})
 
-  const testServices = createTestServices({ projectConfig: opts.projectConfig })
+  const testServices = opts.projectConfig
+    ? createTestServices({ projectConfig: opts.projectConfig })
+    : createTestServices()
   const { addDocument, validate, validateAll, buildLikeC4Model, services } = testServices
 
   if (opts.dsl) {
