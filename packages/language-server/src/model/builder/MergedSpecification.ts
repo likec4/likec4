@@ -51,6 +51,29 @@ export function deriveTechnologyFromIcon(icon: string | undefined): string | und
 }
 
 /**
+ * Marks the relationship as bidirectional and defaults its tail, so it renders an arrow on both ends.
+ * An explicitly styled tail wins.
+ */
+function applyBidirectional(rel: c4.Relationship, isBidirectional: boolean | undefined): c4.Relationship
+function applyBidirectional(
+  rel: c4.DeploymentRelationship,
+  isBidirectional: boolean | undefined,
+): c4.DeploymentRelationship
+function applyBidirectional(
+  rel: c4.Relationship | c4.DeploymentRelationship,
+  isBidirectional: boolean | undefined,
+): c4.Relationship | c4.DeploymentRelationship {
+  if (!isBidirectional) {
+    return rel
+  }
+  return {
+    ...rel,
+    isBidirectional,
+    tail: rel.tail ?? rel.head ?? 'normal',
+  }
+}
+
+/**
  * The `MergedSpecification` class is responsible for merging multiple parsed
  * LikeC4Langium documents into a single specification. It consolidates tags,
  * elements, deployments, relationships, and colors from the provided documents
@@ -198,15 +221,6 @@ export class MergedSpecification {
     isBidirectional,
     ...model
   }: ParsedAstRelation): c4.Relationship | null => {
-    const bidirectionalRelationship = (relationship: c4.Relationship): c4.Relationship =>
-      isBidirectional
-        ? {
-          ...relationship,
-          isBidirectional,
-          tail: relationship.tail ?? relationship.head ?? 'normal',
-        }
-        : relationship
-
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       const { multiple: _multiple, tags: specTags, ...spec } = this.specs.relationships[kind]
       if (specTags && isNonEmptyArray(specTags)) {
@@ -217,7 +231,7 @@ export class MergedSpecification {
           ])
           : specTags
       }
-      return bidirectionalRelationship(
+      return applyBidirectional(
         {
           ...spec,
           ...model,
@@ -230,9 +244,10 @@ export class MergedSpecification {
           kind,
           id,
         } satisfies c4.Relationship,
+        isBidirectional,
       )
     }
-    return bidirectionalRelationship(
+    return applyBidirectional(
       {
         ...(links && { links }),
         ...model,
@@ -242,6 +257,7 @@ export class MergedSpecification {
         id,
         title,
       } satisfies c4.Relationship,
+      isBidirectional,
     )
   }
 
@@ -302,15 +318,6 @@ export class MergedSpecification {
     isBidirectional,
     ...model
   }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
-    const bidirectionalRelationship = (relationship: c4.DeploymentRelationship): c4.DeploymentRelationship =>
-      isBidirectional
-        ? {
-          ...relationship,
-          isBidirectional,
-          tail: relationship.tail ?? relationship.head ?? 'normal',
-        }
-        : relationship
-
     if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
       const spec = this.specs.relationships[kind as c4.RelationshipKind]!
       const { multiple: _multiple, tags: specTags, ...restSpec } = spec
@@ -322,7 +329,7 @@ export class MergedSpecification {
           ])
           : specTags
       }
-      return bidirectionalRelationship(
+      return applyBidirectional(
         {
           ...restSpec,
           ...model,
@@ -333,9 +340,10 @@ export class MergedSpecification {
           kind,
           id,
         } satisfies c4.DeploymentRelationship,
+        isBidirectional,
       )
     }
-    return bidirectionalRelationship(
+    return applyBidirectional(
       {
         ...(links && { links }),
         ...model,
@@ -344,6 +352,7 @@ export class MergedSpecification {
         target,
         id,
       } satisfies c4.DeploymentRelationship,
+      isBidirectional,
     )
   }
 }
