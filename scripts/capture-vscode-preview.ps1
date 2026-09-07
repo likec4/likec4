@@ -73,6 +73,11 @@ try {
   [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
   Start-Sleep -Seconds 20
 
+  # The language server can return focus to the source editor after the preview opens.
+  # The preview is the preceding editor tab, so activate it before CDP captures the workbench.
+  [System.Windows.Forms.SendKeys]::SendWait('^{PGUP}')
+  Start-Sleep -Seconds 2
+
   node ./scripts/capture-vscode-webview.mjs --port $debugPort --output $OutputPath --console "$OutputPath.console.json"
   if ($LASTEXITCODE -ne 0) {
     throw "CDP capture failed for $Label. See $stdoutPath and $stderrPath"
