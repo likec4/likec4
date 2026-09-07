@@ -1,16 +1,14 @@
-import type {
-  LikeC4Project,
-  ProjectId,
-} from '@likec4/core/types'
+import type { ProjectId } from '@likec4/core/types'
 import { useOptionalLikeC4Model } from '../context/LikeC4ModelContext'
 import { type LikeC4ProjectsContext, useOptionalProjectsContext } from '../context/LikeC4ProjectsContext'
+import type { LikeC4ProjectData } from '../LikeC4ProjectsProvider'
 
-const emptyProjects: ReadonlyArray<LikeC4Project> = []
+const emptyProjects: ReadonlyArray<LikeC4ProjectData> = []
 function onProjectChange(id: ProjectId) {
   console.warn(`Triggered callback to change project to ${id}, but no <LikeC4ProjectsProvider/> found`)
 }
 const emptyContext: LikeC4ProjectsContext = {
-  projects: emptyProjects,
+  projects: emptyProjects as ReadonlyArray<LikeC4ProjectData>,
   onProjectChange: onProjectChange,
 }
 
@@ -21,7 +19,7 @@ export function useLikeC4ProjectsContext(): LikeC4ProjectsContext {
 /**
  * @returns The list of available projects, or empty array if no projects are available.
  */
-export function useLikeC4Projects(): ReadonlyArray<LikeC4Project> {
+export function useLikeC4Projects(): ReadonlyArray<LikeC4ProjectData> {
   return useLikeC4ProjectsContext().projects
 }
 
@@ -59,7 +57,7 @@ export function useLikeC4ProjectId(): ProjectId {
  * Requires LikeC4ModelProvider in the tree.
  * Falls back to model's project if LikeC4ProjectsProvider is not available.
  */
-export function useLikeC4Project(): LikeC4Project {
+export function useLikeC4Project(): LikeC4ProjectData {
   const modelCtx = useOptionalLikeC4Model()
   const projectsCtx = useOptionalProjectsContext()
   if (!modelCtx) {

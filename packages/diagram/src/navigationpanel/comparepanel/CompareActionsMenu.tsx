@@ -21,11 +21,9 @@ export function CompareActionsMenu({
       shadow="lg"
       position="bottom-start"
       offset={{ mainAxis: 4 }}
-      disabled={disabled}
     >
       <Menu.Target>
         <UnstyledButton
-          disabled={disabled}
           className={cx(
             'mantine-active',
             hstack({
@@ -47,7 +45,7 @@ export function CompareActionsMenu({
 
       <Menu.Dropdown>
         <Menu.Item
-          disabled={!onApplyLatestToManual}
+          disabled={disabled}
           onClick={onApplyLatestToManual}
           rightSection={onApplyLatestToManual &&
             (
@@ -71,7 +69,7 @@ export function CompareActionsMenu({
           Sync with latest
           {!onApplyLatestToManual && <Box textStyle={'xs'}>view type is changed</Box>}
         </Menu.Item>
-        <Menu.Item onClick={onResetManualLayout}>Remove manual layout</Menu.Item>
+        <Menu.Item onClick={onResetManualLayout}>Reset layout</Menu.Item>
       </Menu.Dropdown>
     </Menu>
   )

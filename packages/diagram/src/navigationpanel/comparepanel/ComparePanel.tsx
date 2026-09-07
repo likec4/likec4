@@ -6,7 +6,6 @@ import { useIsMounted } from '@react-hookz/web'
 import { type Variants, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useState } from 'react'
-import { useEnabledFeatures } from '../../context'
 import { useCallbackRef, useMantinePortalProps } from '../../hooks'
 import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
 import { Tooltip } from '../_common'
@@ -31,7 +30,6 @@ const variants = {
 export const ComparePanel = memo(() => {
   const portalProps = useMantinePortalProps()
   const isMounted = useIsMounted()
-  const { enableCompareWithLatest } = useEnabledFeatures()
   const [ctx, ops] = useDiagramCompareLayout()
 
   const [isProcessing, setIsProcessing] = useState(false)
@@ -72,12 +70,12 @@ export const ComparePanel = memo(() => {
 
   return (
     <AnimatePresence>
-      {enableCompareWithLatest && (
+      {ctx.state === 'comparing' && (
         <>
           <m.div
             key={'ComparePanel'}
             layout="size"
-            layoutDependency={ctx.drifts || ctx.layout}
+            layoutDependency={ctx.layout}
             className={hstack({
               gap: '2',
               layerStyle: 'likec4.panel',
@@ -97,7 +95,7 @@ export const ComparePanel = memo(() => {
           <m.div
             key={'ListOfDrifts'}
             layout="size"
-            layoutDependency={ctx.drifts || ctx.layout}
+            layoutDependency={ctx.layout}
             variants={variants}
             initial="initial"
             animate="animate"
@@ -138,23 +136,21 @@ export const ComparePanel = memo(() => {
                         Apply changes
                       </Button>
                     </Tooltip>
-                    {!isProcessing && (
-                      <Tooltip
-                        openDelay={100}
-                        disabled={ctx.layout !== 'manual'}
-                        label="Reset manual layout"
-                        {...portalProps}
-                      >
-                        <Button
-                          hidden={isProcessing}
-                          size="xs"
-                          color="orange"
-                          variant="subtle"
-                          onClick={onResetManualLayout}>
-                          Reset
-                        </Button>
-                      </Tooltip>
-                    )}
+                    <Tooltip
+                      openDelay={100}
+                      disabled={ctx.layout !== 'manual'}
+                      label="Reset manual layout"
+                      {...portalProps}
+                    >
+                      <Button
+                        disabled={isProcessing}
+                        size="xs"
+                        color="orange"
+                        variant="subtle"
+                        onClick={onResetManualLayout}>
+                        Reset
+                      </Button>
+                    </Tooltip>
                   </HStack>
                 </m.div>
               </>

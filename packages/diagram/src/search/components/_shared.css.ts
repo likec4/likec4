@@ -1,4 +1,5 @@
 import { css, sva } from '@likec4/styles/css'
+import { emptyBox } from '@likec4/styles/recipes'
 
 // export const titleColor = '--title-color'
 // export const descriptionColor = '---description-color'
@@ -55,13 +56,12 @@ const button = css.raw({
 export const focusable = 'likec4-focusable'
 
 const iconSize = {
-  ref: 'var(--likec4-icon-size, 24px)',
+  ref: '24px',
 }
 
 const icon = css.raw({
   color: {
     base: 'text.dimmed',
-    _light: 'mantine.gray[5]',
     _groupHover: 'likec4.accent.0',
     _groupFocus: 'likec4.accent.0',
   },
@@ -146,20 +146,7 @@ const description = css.raw(descriptionColor, {
   },
 })
 
-export const emptyBoX = css({
-  width: '100%',
-  height: '100%',
-  border: 'strong',
-  borderStyle: 'dashed',
-  rounded: 'md',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  fontSize: 'md',
-  color: 'text.dimmed',
-  padding: 'md',
-  paddingBlock: 'xl',
-})
+export const emptyBoX = emptyBox({ fullsize: true })
 
 export const buttonsva = sva({
   slots: ['root', 'icon', 'title', 'description', 'descriptionColor'],

@@ -1,4 +1,5 @@
 import { defineSemanticTokens } from '@pandacss/dev'
+import { alpha } from '../helpers.ts'
 import { dark, gray, value, white } from './value.ts'
 
 export const { surface } = defineSemanticTokens.colors({
@@ -33,11 +34,11 @@ export const { surface } = defineSemanticTokens.colors({
       DEFAULT: value({
         description: 'Input / select / textarea fills (scoped role, not a 4th general surface)',
         value: gray[1],
-        dark: dark[5],
+        dark: alpha(dark[5], 0.8),
       }),
       hover: value({
         description: 'Input / select / textarea hover color',
-        value: gray[2],
+        value: `color-mix(in oklab, ${gray[1]} 10%, ${gray[2]})`,
         dark: `color-mix(in oklab, ${dark[4]} 25%, ${dark[5]})`,
       }),
     },
@@ -48,7 +49,7 @@ export const { surface } = defineSemanticTokens.colors({
     }),
     selected: value({
       description: 'Selected / active item (quiet wash; selected border stays solid 2px)',
-      value: '{colors.likec4.accent.7}',
+      value: '{colors.likec4.accent.6}',
       dark: '{colors.likec4.accent.5}',
     }),
   },

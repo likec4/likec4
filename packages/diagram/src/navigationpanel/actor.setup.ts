@@ -13,7 +13,7 @@ export type Events =
   | { type: 'searchQuery.change'; value: string }
   | { type: 'searchQuery.changed' }
   | { type: 'select.folder'; folderPath: string }
-  | { type: 'select.view'; viewId: ViewId }
+  | { type: 'select.view'; viewId: ViewId; viewFolder?: string | undefined }
   // Events from the UI
   // - From breadcrumbs
   | { type: 'breadcrumbs.mouseLeave' }

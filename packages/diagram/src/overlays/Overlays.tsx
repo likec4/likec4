@@ -103,28 +103,37 @@ function OverlaysSurface({ overlaysActorRef }: OverlaysProps) {
     switch (overlay.type) {
       case 'relationshipsBrowser':
         return (
-          <Overlay
+          <ErrorBoundary
             key={overlay.actorRef.sessionId}
-            overlayLevel={index}
-            onClose={() => close(overlay.actorRef)}>
-            <RelationshipsBrowser actorRef={overlay.actorRef} />
-          </Overlay>
+            onReset={() => close(overlay.actorRef)}>
+            <Overlay
+              overlayLevel={index}
+              onClose={() => close(overlay.actorRef)}>
+              <RelationshipsBrowser actorRef={overlay.actorRef} />
+            </Overlay>
+          </ErrorBoundary>
         )
       case 'relationshipDetails':
         return (
-          <Overlay
-            overlayLevel={index}
+          <ErrorBoundary
             key={overlay.actorRef.sessionId}
-            onClose={() => close(overlay.actorRef)}>
-            <RelationshipDetails actorRef={overlay.actorRef} />
-          </Overlay>
+            onReset={() => close(overlay.actorRef)}>
+            <Overlay
+              overlayLevel={index}
+              onClose={() => close(overlay.actorRef)}>
+              <RelationshipDetails actorRef={overlay.actorRef} />
+            </Overlay>
+          </ErrorBoundary>
         )
       case 'elementDetails':
         return (
-          <ElementDetails
+          <ErrorBoundary
             key={overlay.actorRef.sessionId}
-            actorRef={overlay.actorRef}
-            onClose={() => close(overlay.actorRef)} />
+            onReset={() => close(overlay.actorRef)}>
+            <ElementDetails
+              actorRef={overlay.actorRef}
+              onClose={() => close(overlay.actorRef)} />
+          </ErrorBoundary>
         )
       default:
         nonexhaustive(overlay)
@@ -133,13 +142,13 @@ function OverlaysSurface({ overlaysActorRef }: OverlaysProps) {
 
   return (
     <DiagramFeatures.Overlays>
-      <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
-        <LayoutGroup>
-          <AnimatePresence propagate mode="popLayout">
+      <LayoutGroup id={overlaysActorRef.sessionId}>
+        <AnimatePresence propagate mode="popLayout">
+          <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
             {overlaysReact}
-          </AnimatePresence>
-        </LayoutGroup>
-      </ErrorBoundary>
+          </ErrorBoundary>
+        </AnimatePresence>
+      </LayoutGroup>
     </DiagramFeatures.Overlays>
   )
 }

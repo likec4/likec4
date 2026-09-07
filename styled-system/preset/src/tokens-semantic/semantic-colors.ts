@@ -6,7 +6,7 @@ import { likec4 } from './semantic-colors.likec4.ts'
 import { radixColors } from './semantic-colors.radix.ts'
 import { subflow } from './semantic-colors.subflow.ts'
 import { surface } from './semantic-colors.surface.ts'
-import { black, dark, gray, value, white, yellow } from './value.ts'
+import { black, dark, gray, orange, value, white, yellow } from './value.ts'
 
 export const colors = defineSemanticTokens.colors({
   surface,
@@ -49,7 +49,7 @@ export const colors = defineSemanticTokens.colors({
     }),
     link: value({
       description: 'Link color',
-      value: '{colors.likec4.accent.6}',
+      value: '{colors.likec4.accent.5}',
       dark: '{colors.likec4.accent.4}',
     }),
     'on-primary': value(white),
@@ -57,6 +57,11 @@ export const colors = defineSemanticTokens.colors({
       description: 'On inverse color',
       value: 'rgba(255,255,255,0.92)',
       dark: 'rgba(0,0,0,0.88)',
+    }),
+    warning: value({
+      description: 'Warning text color',
+      value: orange[6],
+      dark: orange[5],
     }),
   },
 
@@ -80,7 +85,10 @@ export const colors = defineSemanticTokens.colors({
     focus: value({
       description: 'Focus border color',
       value: '{colors.likec4.accent.6}',
-      dark: '{colors.likec4.accent.4}',
+    }),
+    outline: value({
+      description: 'Outline border color',
+      value: '{colors.likec4.accent.7}',
     }),
   },
 

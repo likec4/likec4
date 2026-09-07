@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { invariant } from '@likec4/core'
+import { invariant, memoizeProp } from '@likec4/core'
 import type {
   BuildOptions,
   Cancellation,
@@ -13,7 +13,7 @@ import type {
   LangiumDocument,
   LangiumDocumentFactory,
 } from 'langium'
-import { DefaultWorkspaceManager, Disposable } from 'langium'
+import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
 import { filter, hasAtLeast, isNot, pipe, sort, uniqueBy } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
@@ -233,15 +233,26 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public get workspaceUri(): URI {
-    const workspace = this.workspace()
-    invariant(workspace, 'Workspace not initialized')
-    return URI.parse(workspace.uri)
+    return memoizeProp(this, 'workspaceUri', () => {
+      const workspace = this.workspace()
+      invariant(workspace, 'Workspace not initialized')
+      return URI.parse(workspace.uri)
+    })
+  }
+
+  /**
+   * Returns relative path from workspace to the given URI
+   */
+  public relativePath(uri: URI): string {
+    return UriUtils.relative(this.workspaceUri, uri)
   }
 
   public get workspaceURL(): URL {
-    const workspace = this.workspace()
-    invariant(workspace, 'Workspace not initialized')
-    return new URL(workspace.uri)
+    return memoizeProp(this, 'workspaceURL', () => {
+      const workspace = this.workspace()
+      invariant(workspace, 'Workspace not initialized')
+      return new URL(workspace.uri)
+    })
   }
 
   /**

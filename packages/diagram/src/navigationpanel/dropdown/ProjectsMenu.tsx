@@ -1,6 +1,6 @@
 import { css } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
-import { Button, Menu, MenuDropdown, MenuItem, MenuTarget } from '@mantine/core'
+import { Button, Menu, MenuDropdown, MenuItem, MenuTarget, ScrollArea } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { memo } from 'react'
 import type { LikeC4ProjectsContext } from '../../context/LikeC4ProjectsContext'
@@ -21,12 +21,12 @@ function WithProjectsMenu({
 }: LikeC4ProjectsContext) {
   const projectId = useLikeC4ProjectId()
   return (
-    <HStack gap="0.5" alignItems="baseline">
+    <HStack gap="1" alignItems="baseline">
       <Box
         css={{
           fontWeight: 'normal',
           fontSize: 'xxs',
-          color: 'likec4.panel.text.dimmed',
+          color: 'text.dimmed',
           userSelect: 'none',
         }}>
         Project
@@ -35,7 +35,12 @@ function WithProjectsMenu({
         withinPortal={false} // if we render menu in portal, NavigationPanelDropdown receives onMouseLeave event
         shadow="md"
         position="bottom-start"
-        offset={{ mainAxis: 2 }}>
+        classNames={{
+          itemLabel: css({
+            fontSize: 'xs',
+          }),
+        }}
+        offset={{ mainAxis: 3 }}>
         <MenuTarget>
           <Button
             tabIndex={-1}
@@ -43,15 +48,15 @@ function WithProjectsMenu({
             variant="subtle"
             size="compact-xs"
             color="gray"
+            radius={'sm'}
             classNames={{
               root: css({
                 fontWeight: 'normal',
                 fontSize: 'xxs',
                 height: 'auto',
-                lineHeight: 'snug',
-                color: {
-                  _light: 'mantine.gray[9]',
-                },
+                lineHeight: 'tight',
+                px: '1',
+                py: '0.5',
               }),
               section: css({
                 '&:is([data-position="right"])': {
@@ -65,19 +70,21 @@ function WithProjectsMenu({
         </MenuTarget>
 
         <MenuDropdown>
-          {projects.map(({ id, title }) => (
-            <MenuItem
-              key={id}
-              onClick={(e) => {
-                if (projectId === id) {
-                  e.stopPropagation()
-                  return
-                }
-                onProjectChange(id)
-              }}>
-              {title ?? id}
-            </MenuItem>
-          ))}
+          <ScrollArea.Autosize mah={'calc(100cqh - 200px)'}>
+            {projects.map(({ id, title }) => (
+              <MenuItem
+                key={id}
+                onClick={(e) => {
+                  if (projectId === id) {
+                    e.stopPropagation()
+                    return
+                  }
+                  onProjectChange(id)
+                }}>
+                {title ?? id}
+              </MenuItem>
+            ))}
+          </ScrollArea.Autosize>
         </MenuDropdown>
       </Menu>
     </HStack>

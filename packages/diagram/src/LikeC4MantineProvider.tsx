@@ -3,6 +3,7 @@ import type { Token, TokenCategory, Tokens } from '@likec4/styles/tokens'
 import { token } from '@likec4/styles/tokens'
 import {
   type CSSVariablesResolver,
+  type DefaultMantineColor,
   type MantineColorsTuple,
   type MantineProviderProps,
   Card,
@@ -59,6 +60,7 @@ const likec4Theme = createTheme({
   primaryColor: 'likec4',
   cursorType: 'pointer',
   autoContrast: true,
+  primaryShade: { light: 5, dark: 6 },
   colors: {
     likec4: mapColor('likec4.accent'),
   },
@@ -142,13 +144,8 @@ const likec4Theme = createTheme({
       defaultProps: {
         color: 'dark',
         fz: 'xs',
+        withArrow: false,
       },
-      // classNames: {
-      //   tooltip: css({
-      //     // layerStyle: 'tooltip',
-      //     fontSize: 'xs',
-      //   }),
-      // },
     }),
     SegmentedControl: SegmentedControl.extend({
       vars: (theme, props) => ({
@@ -168,7 +165,7 @@ const likec4Theme = createTheme({
     Menu: Menu.extend({
       defaultProps: {
         radius: 'sm',
-        shadow: 'md',
+        shadow: 'lg',
       },
     }),
     // Select: Select.extend({
@@ -241,3 +238,25 @@ export function LikeC4MantineProvider({
  * @deprecated Use LikeC4MantineProvider instead
  */
 export const DefaultMantineProvider = LikeC4MantineProvider
+
+type ExtendedCustomColors =
+  | 'likec4'
+  | DefaultMantineColor
+
+type ExtendedSizes =
+  | 'xxs'
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl'
+
+declare module '@mantine/core' {
+  export interface MantineThemeSizesOverride {
+    fontSizes: Record<ExtendedSizes, string>
+    spacing: Record<ExtendedSizes, string>
+  }
+  export interface MantineThemeColorsOverride {
+    colors: Record<ExtendedCustomColors, MantineColorsTuple>
+  }
+}

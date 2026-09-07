@@ -9,11 +9,22 @@ import {
 } from '@tabler/icons-react'
 import { isMacOs } from '@xyflow/system'
 import { m } from 'motion/react'
+import { useRef } from 'react'
 import { useDiagram } from '../../hooks/useDiagram'
 
 export function SearchControl() {
   const diagram = useDiagram()
   const isMac = isMacOs()
+
+  const searchControlAnimation = useRef({
+    initial: { opacity: 0, translateX: -10 },
+    animate: { opacity: 1, translateX: 0 },
+    exit: { opacity: 0, translateX: -20 },
+    whileTap: {
+      scale: 0.95,
+      translateY: 1,
+    },
+  })
 
   return (
     <UnstyledButton
@@ -23,16 +34,12 @@ export function SearchControl() {
         e.stopPropagation()
         diagram.openSearch()
       }}
-      whileTap={{
-        scale: 0.95,
-        translateY: 1,
-      }}
+      {...searchControlAnimation.current}
       className={cx(
         'group',
         hstack({
           gap: 'xxs',
           paddingInline: 'sm',
-          paddingBlock: 'xxs',
           userSelect: 'none',
           layerStyle: 'likec4.panel.action.filled',
           display: {

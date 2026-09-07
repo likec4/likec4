@@ -8,7 +8,7 @@ import { AnimatePresence, m } from 'motion/react'
 import { memo } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
 import { Markdown } from '../../base-primitives'
-import { selectDiagramActorContext, useDiagramSnapshot } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagramSelector, useDiagramSnapshot } from '../../hooks/useDiagram'
 
 const SectionHeader = styled('div', {
   base: {
@@ -20,7 +20,7 @@ const SectionHeader = styled('div', {
   },
 })
 
-const selectWalkthroughNotes = selectDiagramActorContext((s) => {
+const selectWalkthroughNotes = selectDiagramContext((s) => {
   const isActive = isNonNull(s.activeWalkthrough)
   const activeStepIndex = isActive ? s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) : -1
   return {
@@ -33,7 +33,7 @@ const selectWalkthroughNotes = selectDiagramActorContext((s) => {
 })
 
 export const WalkthroughPanel = memo(() => {
-  const { isActive, notes: _notes } = useDiagramSnapshot(selectWalkthroughNotes)
+  const { isActive, notes: _notes } = useDiagramSelector(selectWalkthroughNotes)
 
   const notes = _notes ? RichText.from(_notes) : RichText.EMPTY
 

@@ -105,8 +105,14 @@ function _applyChangesToManualLayout(
       return removeDrift(latest)
     }
 
-    const sourceNode = nodesMap.get(latest.source)!
-    const targetNode = nodesMap.get(latest.target)!
+    const sourceNode = nonNullable(
+      nodesMap.get(latest.source),
+      `Source node ${latest.source} not found in processed nodes`,
+    )
+    const targetNode = nonNullable(
+      nodesMap.get(latest.target),
+      `Target node ${latest.target} not found in processed nodes`,
+    )
 
     // Add control points - that trigger proper edge rendering
     return makeAsStraightLine(latest, sourceNode, targetNode)
@@ -205,6 +211,11 @@ function applyFromManualEdge(edges: {
       draft.labelBBox.x = manual.labelBBox.x
       draft.labelBBox.y = manual.labelBBox.y
     }
+    if (manual.isLabelCustomized === true) {
+      draft.isLabelCustomized = true
+    } else {
+      delete draft.isLabelCustomized
+    }
 
     draft.drifts = null
   })
@@ -232,6 +243,9 @@ function makeAsStraightLine(
     if (edge.labelBBox) {
       draft.labelBBox!.x = labelPos.x
       draft.labelBBox!.y = labelPos.y
+      if (edge.isLabelCustomized === true) {
+        delete draft.isLabelCustomized
+      }
     }
     delete draft.drifts
   })

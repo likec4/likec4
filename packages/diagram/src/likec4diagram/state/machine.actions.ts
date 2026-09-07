@@ -9,6 +9,7 @@ import {
   nonNullable,
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
+import { getViewFolderPath } from '@likec4/core/model'
 import type {
   DiagramNode,
   DiagramView,
@@ -22,7 +23,7 @@ import type {
 import { difference, isString } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy, mapToObj, pipe } from 'remeda'
+import { hasAtLeast, isTruthy, mapToObj } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   assertEvent,
@@ -38,7 +39,7 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
-import { cancelFitDiagram, fitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
+import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
@@ -826,11 +827,13 @@ export const ensureNavigationPanelActor = () =>
     const enabled = check('enabled: NavigationPanel')
     const running = typedSystem(system).navigationActorRef
     if (enabled && !running) {
+      const viewFolder = context.view.title ? getViewFolderPath(context.view.title) : ''
       enqueue.spawnChild('navigationPanel', {
         id: 'navigationPanel',
         systemId: 'navigationPanel',
         input: {
           viewId: context.view.id,
+          viewFolder: viewFolder ?? '',
         },
         syncSnapshot: true,
       })

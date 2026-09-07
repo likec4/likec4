@@ -100,7 +100,7 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
   return (
     <AnimatePresence
       onExitComplete={() => {
-        diagram.searchActor().send({ type: 'animation.presence.end' })
+        searchActorRef.send({ type: 'animation.presence.end' })
       }}>
       {isOpened && (
         <Overlay
@@ -113,7 +113,7 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
             dialog: dialogCss,
             body: bodyCss,
           }}
-          openDelay={0}
+          openDelay={100}
           onClose={close}
           data-likec4-search="true"
         >
@@ -182,7 +182,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
-              <AnimatePresence propagate mode="popLayout">
+              <AnimatePresence initial={false}>
                 <ElementsColumn />
               </AnimatePresence>
             </LayoutGroup>
@@ -195,7 +195,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-views">
-              <AnimatePresence propagate mode="popLayout">
+              <AnimatePresence initial={false}>
                 <ViewsColumn />
               </AnimatePresence>
             </LayoutGroup>

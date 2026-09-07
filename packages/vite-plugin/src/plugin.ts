@@ -261,6 +261,7 @@ export function LikeC4VitePlugin({
     const selectDataToCompare = map((p) => ({
       id: p.id,
       title: p.title,
+      path: p.path,
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
       exportFormats: effectiveWebappExportFormats(p.config),

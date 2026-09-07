@@ -50,7 +50,7 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
 
   const { viewId, mode } = useDiagramSelector(select)
   const viewModel = useOptionalCurrentViewModel()
-  const viewFolder = !!viewModel && viewModel.id === viewId ? viewModel.folder?.path : undefined
+  const viewFolder = !!viewModel && viewModel.id === viewId ? viewModel.folder.path : undefined
 
   useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewId, viewFolder } })
@@ -59,6 +59,7 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
   return (
     <VStack
       css={{
+        zIndex: 'panel',
         alignItems: 'flex-start',
         pointerEvents: 'none',
         position: 'absolute',
@@ -87,42 +88,44 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
       <NavigationPanelActorContextProvider value={actorRef}>
         {mode !== 'walkthrough-flow' && (
           <>
-            <Popover
-              offset={{
-                mainAxis: 4,
-              }}
-              opened={opened}
-              position="bottom-start"
-              trapFocus={opened}
-              {...portalProps}
-              clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-              onDismiss={() => actorRef.send({ type: 'dropdown.dismiss' })}
-            >
-              <LayoutGroup>
-                <PopoverTarget>
-                  <m.div
-                    layout
-                    layoutDependency={mode}
-                    className={hstack({
-                      layerStyle: 'likec4.panel',
-                      position: 'relative',
-                      gap: 'xs',
-                      cursor: 'pointer',
-                      pointerEvents: 'all',
-                      width: '100%',
-                    })}
-                    onMouseLeave={() => actorRef.send({ type: 'breadcrumbs.mouseLeave' })}
-                  >
-                    <AnimatePresence propagate initial={false}>
+            <LayoutGroup>
+              <AnimatePresence propagate initial={false}>
+                <Popover
+                  offset={{
+                    mainAxis: 4,
+                  }}
+                  opened={opened}
+                  position="bottom-start"
+                  trapFocus={opened}
+                  keepMounted={false}
+                  {...portalProps}
+                  clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
+                  onDismiss={() => actorRef.send({ type: 'dropdown.dismiss' })}
+                >
+                  <PopoverTarget>
+                    <m.div
+                      layout="size"
+                      layoutDependency={[mode, viewId]}
+                      className={hstack({
+                        layerStyle: 'likec4.panel',
+                        position: 'relative',
+                        gap: 'xs',
+                        cursor: 'pointer',
+                        pointerEvents: 'all',
+                        width: '100%',
+                      })}
+                      data-panel="navigation"
+                      onMouseLeave={() => actorRef.send({ type: 'breadcrumbs.mouseLeave' })}
+                    >
                       {mode === 'walkthrough'
                         ? <ActiveWalkthroughControls />
                         : <NavigationPanelControls />}
-                    </AnimatePresence>
-                  </m.div>
-                </PopoverTarget>
-              </LayoutGroup>
-              {opened && <NavigationPanelDropdown />}
-            </Popover>
+                    </m.div>
+                  </PopoverTarget>
+                  <NavigationPanelDropdown />
+                </Popover>
+              </AnimatePresence>
+            </LayoutGroup>
             <ComparePanel />
             {mode === 'walkthrough' && <WalkthroughPanel />}
             <EditorPanel />

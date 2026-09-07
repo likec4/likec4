@@ -20,8 +20,9 @@ import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLite
 export { k }
 
 export type ProjectData = LikeC4Project & {
-  folder: URI
-  config: Readonly<LikeC4ProjectConfig>
+  readonly folder: URI
+  readonly path: string
+  readonly config: Readonly<LikeC4ProjectConfig>
 }
 export type ProjectsData = NonEmptyArray<ProjectData>
 

@@ -26,6 +26,9 @@ export const updateSelectedFolder = () =>
     if (event.type === 'breadcrumbs.click.root') {
       return { selectedFolder: '' } // reset to root
     }
+    if (event.type === 'select.view') {
+      return { selectedFolder: event.viewFolder ?? '' }
+    }
     assertEvent(event, ['breadcrumbs.click.folder', 'select.folder'])
     return { selectedFolder: event.folderPath }
   })
@@ -45,7 +48,7 @@ export const updateInputs = () =>
     }
     return {
       viewId: event.inputs.viewId,
-      viewFolder: event.inputs.viewFolder ?? '',
+      viewFolder: event.inputs.viewFolder ?? context.viewFolder,
       selectedFolder,
       // allow dropdown to close on mouse leave if view changed
       activatedBy: viewChanged ? 'hover' : context.activatedBy,

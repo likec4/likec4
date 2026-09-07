@@ -9,6 +9,7 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { type Fqn, preferSummary } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
+import { vstack } from '@likec4/styles/patterns'
 import {
   type ElementProps,
   type UnstyledButtonProps,
@@ -21,11 +22,11 @@ import {
   UnstyledButton,
   VisuallyHidden,
 } from '@mantine/core'
-import { IconStack2, IconZoomScan } from '@tabler/icons-react'
-import { AnimatePresence } from 'motion/react'
-import * as m from 'motion/react-m'
+import { m } from 'motion/react'
 import { memo, useMemo, useRef } from 'react'
 import { first } from 'remeda'
+import { EmptyBox } from '../../components/EmptyBox'
+import { ViewIcon } from '../../components/ViewIcon'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
 import { useSearchContext } from '../SearchContext'
@@ -34,9 +35,9 @@ import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
-  <m.div layout="position" className={styles.emptyBoX}>
+  <EmptyBox fullsize as={m.div}>
     Nothing found
-  </m.div>
+  </EmptyBox>
 )
 
 const useFoundViews = () => {
@@ -68,14 +69,15 @@ export const ViewsColumn = memo(() => {
   const [views, search, currentViewId] = useFoundViews()
 
   if (views.length === 0) {
-    return <NothingFound />
+    return <NothingFound key="nothing-found" />
   }
 
   return (
-    <Stack
+    <m.div
+      key="views-column"
       ref={ref}
-      renderRoot={props => <m.div layout {...props} />}
-      gap={8}
+      layout
+      className={vstack({ gap: '2' })}
       data-likec4-search-views
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -105,7 +107,7 @@ export const ViewsColumn = memo(() => {
         </VisuallyHidden>
       )}
       {views.map((view, i) => (
-        <m.div layout layoutId={`@view${view.id}`} key={view.id}>
+        <m.div layout="position" key={`@view${view.id}`}>
           <ViewButton
             view={view}
             currentViewId={currentViewId ?? ''}
@@ -114,7 +116,7 @@ export const ViewsColumn = memo(() => {
           />
         </m.div>
       ))}
-    </Stack>
+    </m.div>
   )
 })
 
@@ -164,9 +166,7 @@ export function ViewButton(
         },
       })}>
       <ThemeIcon variant="transparent" className={btn.icon!}>
-        {view.isDeploymentView()
-          ? <IconStack2 stroke={1.8} />
-          : <IconZoomScan stroke={1.8} />}
+        <ViewIcon type={view._type} size={16} />
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">

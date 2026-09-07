@@ -16,6 +16,7 @@ export const borders = defineTokens.borders({
   subtle: { value: '{borderWidths.default} solid {colors.border.subtle}' },
   default: { value: '{borderWidths.default} solid {colors.border.default}' },
   strong: { value: '{borderWidths.strong} solid {colors.border.strong}' },
+  outline: { value: '{borderWidths.strong} solid {colors.border.outline}' },
   panel: { value: '{borderWidths.default} solid {colors.likec4.panel.border}' },
 })
 
@@ -24,6 +25,9 @@ export const zIndex = defineTokens.zIndex({
   '0': { value: 0, deprecated: 'Use zIndex.base instead' },
   base: { value: 0 },
   sticky: { value: 100, description: 'sticky headers, nav rail' },
+  /// Floating windows should be below dropdowns and panels but above sticky
+  floating: { value: 150, description: 'floating windows' },
+  panel: { value: 200, description: 'panels' },
   dropdown: { value: 1000, description: 'menus, popovers, selects' },
   overlay: { value: 2000, description: 'modals, drawers (+ their scrim)' },
   tooltip: { value: 3000 },

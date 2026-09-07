@@ -22,6 +22,7 @@ export const overlay = defineRecipe({
       boxSizing: 'border-box',
       margin: '0',
       position: 'fixed',
+      zIndex: 'overlay',
       width: '100vw',
       height: '100vh',
       maxWidth: '100vw',
@@ -87,6 +88,7 @@ export const overlay = defineRecipe({
       true: {
         dialog: {
           inset: '0',
+          shadow: 'none',
           padding: '0',
         },
       },

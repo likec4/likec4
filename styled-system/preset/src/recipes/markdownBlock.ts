@@ -147,7 +147,7 @@ export const markdownBlock = defineRecipe({
       marginTop: 'var(--typography-spacing)',
       marginBottom: 'var(--typography-spacing)',
       overflowX: 'auto',
-      fontFamily: 'var(--mantine-font-family-monospace)',
+      fontFamily: '{fonts.mono}',
       fontSize: 'var(--text-fz-sm)',
       borderRadius: 'sm',
 
@@ -159,7 +159,7 @@ export const markdownBlock = defineRecipe({
       lineHeight: '1',
       padding: '1px 4px',
       borderRadius: 'xs',
-      fontFamily: 'var(--mantine-font-family-monospace)',
+      fontFamily: '{fonts.mono}',
       fontSize: 'var(--text-fz-sm)',
 
       backgroundColor: 'var(--code-background)',
@@ -267,11 +267,11 @@ export const markdownBlock = defineRecipe({
       marginBottom: 'var(--typography-spacing)',
 
       _light: {
-        ['--table-border-color']: mantine.colors.gray['3'],
+        ['--table-border-color']: '{colors.gray[3]}',
       },
 
       _dark: {
-        ['--table-border-color']: 'var(--mantine-color-dark-4)',
+        ['--table-border-color']: '{colors.dark[4]}',
       },
 
       '& :where(caption)': {
@@ -314,10 +314,7 @@ export const markdownBlock = defineRecipe({
       margin: '0',
       borderRadius: 'var(--mantine-radius-sm)',
       padding: 'xs',
-      backgroundColor: {
-        base: mantine.colors.gray[1],
-        _dark: mantine.colors.dark[5],
-      },
+      backgroundColor: '{colors.surface.sunken}',
       '&:not(:first-child)': {
         marginTop: 'var(--typography-spacing)',
       },

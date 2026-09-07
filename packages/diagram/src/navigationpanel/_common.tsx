@@ -13,7 +13,7 @@ import {
 import { IconChevronRight } from '@tabler/icons-react'
 import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
-import { forwardRef } from 'react'
+import { type ReactNode, forwardRef } from 'react'
 
 export const Tooltip = MantineTooltip.withProps({
   color: 'dark',
@@ -26,57 +26,55 @@ export const Tooltip = MantineTooltip.withProps({
   withinPortal: false,
 })
 
-export const BreadcrumbsSeparator = () => (
-  <ThemeIcon
-    variant="transparent"
-    size={16}
-    className={css({
-      display: {
-        base: 'none',
-        '@/md': 'flex',
-      },
-      color: 'text.non-essential',
-    })}>
-    <IconChevronRight />
-  </ThemeIcon>
-)
-
-export const Breadcrumbs = MantineBreadcrumbs.withProps({
-  separator: <BreadcrumbsSeparator />,
-  separatorMargin: 4,
-})
-
 export type PanelActionIconProps =
   & Partial<NavigationPanelActionIconVariant>
   & Omit<ActionIconProps, keyof NavigationPanelActionIconVariant>
   & Omit<HTMLMotionProps<'button'>, keyof NavigationPanelActionIconVariant>
+  & {
+    tooltip?: ReactNode
+  }
+
+const panelActionIconAnimation = {
+  whileHover: {
+    scale: 1.085,
+  },
+  whileTap: {
+    scale: 1,
+    translateY: 1,
+  },
+}
 
 export const PanelActionIcon = forwardRef<HTMLButtonElement, PanelActionIconProps>(({
   variant = 'default',
   className,
   disabled = false,
   type,
+  tooltip,
   ...others
-}, ref) => (
-  <ActionIcon
-    size="md"
-    variant="transparent"
-    radius="sm"
-    component={m.button}
-    {...!disabled && {
-      whileHover: {
-        scale: 1.085,
-      },
-      whileTap: {
-        scale: 1,
-        translateY: 1,
-      },
-    }}
-    disabled={disabled}
-    {...others}
-    className={cx(
-      className,
-      navigationPanelActionIcon({ variant, type }),
-    )}
-    ref={ref} />
-))
+}, ref) => {
+  const content = (
+    <ActionIcon
+      size="md"
+      variant="transparent"
+      radius="sm"
+      component={m.button}
+      {...(!disabled ? panelActionIconAnimation : undefined)}
+      disabled={disabled}
+      {...others}
+      className={cx(
+        className,
+        navigationPanelActionIcon({ variant, type }),
+      )}
+      ref={ref} />
+  )
+
+  if (tooltip) {
+    return (
+      <Tooltip label={tooltip}>
+        {content}
+      </Tooltip>
+    )
+  }
+
+  return content
+})

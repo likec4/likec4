@@ -3074,9 +3074,6 @@ importers:
       '@likec4/style-preset':
         specifier: workspace:*
         version: link:../preset
-      '@pandacss/dev':
-        specifier: catalog:css
-        version: 1.12.1(typescript@6.0.3)
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -3084,12 +3081,9 @@ importers:
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
-      '@pandabox/panda-plugins':
-        specifier: ^0.0.8
-        version: 0.0.8
-      '@pandabox/utils':
-        specifier: ^0.0.5
-        version: 0.0.5
+      '@pandacss/dev':
+        specifier: catalog:css
+        version: 1.12.1(typescript@6.0.3)
       '@pandacss/types':
         specifier: catalog:css
         version: 1.12.1
@@ -5660,17 +5654,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@pandabox/panda-plugins@0.0.8':
-    resolution: {integrity: sha512-rT2I3lxNG5c1XUwJH7hFrqVR3upkI8OpoxvW802OuLfPCg8j3nvG31VthzmeZ6SitRixxOY4J419HgChY20kRQ==}
-
-  '@pandabox/postcss-plugins@0.0.2':
-    resolution: {integrity: sha512-sOhfLohVcjPmA6mgYElLiNwnolEiM7Wqk4OBPSYC/k1Rpx2QyNenwBuB4mRtN9oV21N29fgfNZfTqMbT/fwQpw==}
-    peerDependencies:
-      postcss: ^8.4.35
-
-  '@pandabox/utils@0.0.5':
-    resolution: {integrity: sha512-+Qp6dLiWD3rGfq6PVTmWtXqD5OJ82XrekvJzsHWssjBoqLSlJKnALVy+bDRxojMRxTGna5JI85iLjb2EzRJbdw==}
-
   '@pandacss/config@1.12.1':
     resolution: {integrity: sha512-9hPF1VnA4Tkv1ej2sZYYGi2qcpUN44cnB6ge33qyAzhKetT84w4qpjYH9UP8Yu2A2qgWrGkV1AREb/4vqOKluQ==}
     engines: {node: '>=20'}
@@ -5736,9 +5719,6 @@ packages:
     resolution: {integrity: sha512-Vg5ib3dy6B1rI/WT2GyQ9fqBVXhw1g+elSuZvjfCx/5U18N18lDNOq15SkncaFgfStMmpMvUloW669H75lk7Ag==}
     engines: {node: '>=20'}
 
-  '@pandacss/shared@0.36.1':
-    resolution: {integrity: sha512-yiGHfGNpOkphCsx8sYGsL8RhyPKeqcGgrrrQCNzwgkJRGXDqTVw9qNbD4tkILI8Qe+S+5aCiLkWCfoUtqJ+Btg==}
-
   '@pandacss/shared@1.12.1':
     resolution: {integrity: sha512-tG1XHOh6G3sr+25dQ9yoiVMqv0fwoqN1tF7UCzD7yRmjX0SQn1kxlLGf1DCSxMuqI5vmVc0x5HTYLyNrPmJJWg==}
     engines: {node: '>=20'}
@@ -5746,9 +5726,6 @@ packages:
   '@pandacss/token-dictionary@1.12.1':
     resolution: {integrity: sha512-Bwhu0wzthGccViypx/8hXIe+1XXCkNxxgWe5SB4naQPtYXwIdvNe3k0YABK9TXCxjxMvIdvhH2UrGrZP8SM50g==}
     engines: {node: '>=20'}
-
-  '@pandacss/types@0.36.1':
-    resolution: {integrity: sha512-F0mGFtXT2j1hNFi5Z1AXPxEYcHoaedyJyScEbsGga4aa2KlJCEPEX9UDdgltMlrhSilM7nq7RbrDMToZ/cwvOg==}
 
   '@pandacss/types@1.12.1':
     resolution: {integrity: sha512-ucDQwuOrSKhXDuTFMB/VZsrH4zK1DtOvrkCMuzNL9brJiUS8+5IcGR4uP2/jNXm05/iI6zaBbWjwGhbRDsFicQ==}
@@ -14416,20 +14393,6 @@ snapshots:
   '@pagefind/windows-x64@1.5.2':
     optional: true
 
-  '@pandabox/panda-plugins@0.0.8':
-    dependencies:
-      '@pandabox/postcss-plugins': 0.0.2(postcss@8.5.28)
-      postcss: 8.5.28
-
-  '@pandabox/postcss-plugins@0.0.2(postcss@8.5.28)':
-    dependencies:
-      postcss: 8.5.28
-
-  '@pandabox/utils@0.0.5':
-    dependencies:
-      '@pandacss/shared': 0.36.1
-      '@pandacss/types': 0.36.1
-
   '@pandacss/config@1.12.1':
     dependencies:
       '@pandacss/logger': 1.12.1
@@ -14606,8 +14569,6 @@ snapshots:
       table: 6.9.0
       wordwrapjs: 5.1.1
 
-  '@pandacss/shared@0.36.1': {}
-
   '@pandacss/shared@1.12.1': {}
 
   '@pandacss/token-dictionary@1.12.1':
@@ -14617,8 +14578,6 @@ snapshots:
       '@pandacss/types': 1.12.1
       picomatch: 4.0.4
       ts-pattern: 5.9.0
-
-  '@pandacss/types@0.36.1': {}
 
   '@pandacss/types@1.12.1': {}
 
@@ -18583,7 +18542,7 @@ snapshots:
 
   minimatch@10.2.3:
     dependencies:
-      brace-expansion: 5.0.5
+      brace-expansion: 5.0.9
 
   minimatch@10.2.4:
     dependencies:
@@ -20694,7 +20653,7 @@ snapshots:
       lightningcss: 1.33.0
       picomatch: 4.0.7
       postcss: 8.5.28
-      rolldown: 1.2.6
+      rolldown: 1.2.7
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 22.19.19
@@ -20709,7 +20668,7 @@ snapshots:
       lightningcss: 1.33.0
       picomatch: 4.0.7
       postcss: 8.5.28
-      rolldown: 1.2.6
+      rolldown: 1.2.7
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 24.12.4
