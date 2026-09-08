@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import { ProjectId } from '@likec4/core/types'
 import { fromSources } from '@likec4/language-services/node'
 import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
@@ -128,9 +136,12 @@ Use "preview-view" to iterate on a new view definition before creating it for re
         return toolError(`View "${rawViewId}" was not found after building the preview.`)
       }
 
+      const previewProjectId = preview.projectsManager.ensureProjectId(ProjectId(model.$data.projectId))
       const layouted = await preview.viewsService.layoutView({
         viewId: viewModel.id,
-        projectId,
+        // `fromSources` builds a separate workspace. Its project ID is not
+        // necessarily the ID used by the source workspace.
+        projectId: previewProjectId,
       })
       if (!layouted) {
         return toolError(`Failed to layout preview view "${rawViewId}".`)

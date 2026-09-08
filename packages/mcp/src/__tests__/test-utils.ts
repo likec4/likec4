@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
+import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import { createTestServices } from '@likec4/language-server/test'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
@@ -33,6 +41,8 @@ export function textContent(result: unknown): Array<{ type: string; text?: strin
 export interface MCPTestPairOptions {
   /** A single DSL document. Mutually exclusive with `docs`. */
   dsl?: string
+  /** Optional project configuration for the language-server test workspace. */
+  projectConfig?: Partial<LikeC4ProjectJsonConfig>
   /** Multiple DSL documents keyed by file name (e.g. `'spec.c4'`, `'model.c4'`). */
   docs?: Record<string, string>
   /** When true, the helper does not assert validation errors are empty. */
@@ -56,7 +66,9 @@ export async function createMCPTestPair(
 ): Promise<MCPTestPair> {
   const opts: MCPTestPairOptions = typeof input === 'string' ? { dsl: input } : (input ?? {})
 
-  const testServices = createTestServices()
+  const testServices = opts.projectConfig
+    ? createTestServices({ projectConfig: opts.projectConfig })
+    : createTestServices()
   const { addDocument, validate, validateAll, buildLikeC4Model, services } = testServices
 
   if (opts.dsl) {
