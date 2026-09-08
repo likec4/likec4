@@ -1,0 +1,142 @@
+---
+title: Deploy no GitHub Pages
+description: Como publicar um site estático com seus diagramas de arquitetura no GitHub Pages
+---
+
+:::note
+Você pode consultar o repositório <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a>.  
+Ele gera e publica um site estático no GitHub Pages.
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/likec4/template)
+:::
+
+## Usar a CLI do LikeC4
+
+Prefira usar a [CLI do LikeC4](/tooling/cli/) diretamente nos seus scripts, pois ela oferece mais controle.  
+Exemplo de workflow (ele usa `bun` para acelerar a preparação, mas você pode usar o runtime que preferir):
+
+```yaml
+# Sample workflow for building and deploying a website to GitHub Pages
+name: Deploy Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_call:    
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
+# Allow only one concurrent deployment, skipping runs queued between the run in progress and the latest queued.
+# However, do NOT cancel in-progress runs, as we want to allow these production deployments to be completed.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5    
+      - uses: oven-sh/setup-bun@v2        
+
+      - uses: actions/configure-pages@v4
+        id: pages        
+
+      - name: build
+        run: |
+          bunx likec4@latest build \
+            --base "${{ steps.pages.outputs.base_path || '/' }}" \
+            --output dist      
+          
+      - name: upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  # Deployment job
+  deploy-pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-pages
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+```
+
+## Workflow do GitHub Actions
+
+Use a [LikeC4 GitHub Action](/tooling/github/) para gerar e publicar um site estático no GitHub Pages.
+
+```yaml
+# Sample workflow for building and deploying a website to GitHub Pages
+name: Deploy Pages
+
+on:
+  # Runs on pushes targeting the default branch and c4 files
+  push:
+    branches: ["main"]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
+# Allow only one concurrent deployment, skipping runs queued between the run in progress and the latest queued.
+# However, do NOT cancel in-progress runs, as we want to allow these production deployments to be completed.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
+        
+      - name: Build
+        uses: likec4/actions@v1
+        with:
+          action: build
+          output: dist
+          # required if you don't set a custom domain for the repository
+          # https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#types-of-github-pages-sites
+          base: ${{ steps.pages.outputs.base_path }}
+          likec4-version: latest
+          
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  # Deployment job
+  deploy-pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-pages
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```

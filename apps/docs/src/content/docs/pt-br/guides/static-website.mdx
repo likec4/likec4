@@ -1,0 +1,48 @@
+---
+title: Publicar um site estático
+description: Como gerar e publicar um site estático com o LikeC4
+sidebar:
+  order: 1
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+## Pré-requisitos
+
+Você precisa ter o [Node.js](https://nodejs.org) instalado.  
+A versão mínima suportada é a 20.x, mas recomendamos usar a versão estável mais recente.  
+
+Você também pode usar o [LikeC4 Docker](/tooling/docker/).
+
+## Build
+
+Execute o comando `build`, que prepara uma pasta com arquivos estáticos prontos para publicação em qualquer hospedagem.
+
+```sh
+npx likec4 build -o ./dist
+```
+
+Opções disponíveis:
+
+| Opção                   | Descrição                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `-o, --output`          | Diretório de saída                                                                                |
+| `--base`                | URL base a partir da qual o app é servido, por exemplo "/", "/pages/" ou "./" para um app realocável |
+| `--use-hash-history`    | Navegação baseada em hash, por exemplo "/#/view" em vez de "/view"                                |
+| `--use-dot`             | Usa binários locais do Graphviz ("dot") em vez do WASM incluído                                   |
+| `--title`               | Título base das páginas do app (o padrão é "LikeC4")                                              |
+| `--output-single-file`  | Gera um único arquivo HTML autocontido                                                            |
+
+Para ver todas as opções disponíveis, execute:
+
+```sh
+npx likec4 build -h
+```
+
+## Publicar
+
+A CLI do LikeC4 usa o Vite para gerar o site.  
+
+Todos os exemplos da [documentação do Vite](https://vitejs.dev/guide/static-deploy.html) se aplicam ao LikeC4; basta substituir `vite build` por `likec4 build`.
