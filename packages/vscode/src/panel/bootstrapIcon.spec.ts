@@ -203,6 +203,31 @@ describe('bootstrap icon loader', () => {
     })
   })
 
+  it('stops reading an oversized streamed response before it buffers the body', async () => {
+    const reader = {
+      read: vi.fn()
+        .mockResolvedValueOnce({ done: false, value: new Uint8Array(256 * 1024) })
+        .mockResolvedValueOnce({ done: false, value: new Uint8Array(1) }),
+      cancel: vi.fn().mockResolvedValue(undefined),
+    }
+    const response = {
+      ok: true,
+      headers: new Headers({ 'content-type': 'image/svg+xml' }),
+      body: { getReader: () => reader },
+      arrayBuffer: vi.fn(),
+    } as unknown as Response
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(response)
+    const fileSystem = missingFileSystem()
+
+    await expect(createBootstrapIconLoader(storageUri, fileSystem, fetcher)('boxes')).resolves.toEqual({
+      base64data: null,
+    })
+
+    expect(reader.cancel).toHaveBeenCalledOnce()
+    expect(response.arrayBuffer).not.toHaveBeenCalled()
+    expect(fileSystem.writeFile).not.toHaveBeenCalled()
+  })
+
   it('returns null on fetch failure and does not cache successful results in process', async () => {
     const failing = vi.fn<typeof fetch>().mockRejectedValue(new Error('offline'))
     const loadFailing = createBootstrapIconLoader(storageUri, missingFileSystem(), failing)

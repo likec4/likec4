@@ -1,6 +1,5 @@
 ---
-"@likec4/vscode-preview": patch
 "likec4-vscode": patch
 ---
 
-Render Bootstrap icons in the VS Code preview when webview CORS blocks the icon CDN.
+Load Bootstrap icons in the VS Code preview through the extension host. The webview does not fetch Bootstrap SVG files from the CDN.

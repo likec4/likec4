@@ -2,4 +2,4 @@
 'likec4-vscode': patch
 ---
 
-Restore Bootstrap icons and their configured colors in the VS Code preview.
+Allow inline style attributes in the VS Code webview CSP so configured Bootstrap icon colors can apply.

@@ -17,6 +17,36 @@ export const isBootstrapIconName = (name: string) => bootstrapIconName.test(name
 const bootstrapIconCacheUri = (storageUri: vscode.Uri, name: string) =>
   vscode.Uri.joinPath(storageUri, 'bootstrap-icons', `${name}.svg`)
 
+async function readBoundedResponseBody(response: Response): Promise<Uint8Array | null> {
+  const reader = response.body?.getReader()
+  if (!reader) {
+    return null
+  }
+
+  const chunks: Uint8Array[] = []
+  let totalBytes = 0
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) {
+      break
+    }
+    totalBytes += value.byteLength
+    if (totalBytes > maxSvgBytes) {
+      await reader.cancel()
+      return null
+    }
+    chunks.push(value)
+  }
+
+  const bytes = new Uint8Array(totalBytes)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return bytes
+}
+
 export function createBootstrapIconLoader(
   storageUri: vscode.Uri,
   fileSystem: IconFileSystem = vscode.workspace.fs,
@@ -43,8 +73,8 @@ export function createBootstrapIconLoader(
       if (!response.ok || contentType !== 'image/svg+xml') {
         return { base64data: null }
       }
-      const bytes = new Uint8Array(await response.arrayBuffer())
-      if (bytes.byteLength > maxSvgBytes) {
+      const bytes = await readBoundedResponseBody(response)
+      if (!bytes) {
         return { base64data: null }
       }
       const base64data = `data:image/svg+xml;base64,${Buffer.from(bytes).toString('base64')}`
