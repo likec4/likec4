@@ -32,6 +32,16 @@ export default defineConfig({
       routeMiddleware: './src/routeData.ts',
       title: 'LikeC4',
       description: 'Architecture-as-a-code, toolchain for your architecture diagrams',
+      locales: {
+        root: {
+          label: 'English',
+          lang: 'en',
+        },
+        'pt-br': {
+          label: 'Português (Brasil)',
+          lang: 'pt-BR',
+        },
+      },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/likec4/likec4' },
         { icon: 'discord', label: 'Discord', href: 'https://discord.gg/86ZSpjKAdA' },
@@ -51,10 +61,11 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Getting started',
+          translations: { 'pt-BR': 'Primeiros passos' },
           items: [
             {
               label: 'Tutorial',
-              link: '/tutorial',
+              slug: 'tutorial',
             },
           ],
         },
@@ -64,21 +75,26 @@ export default defineConfig({
         },
         {
           label: 'Showcases',
+          translations: { 'pt-BR': 'Exemplos' },
           items: [{ autogenerate: { directory: 'showcases' } }],
         },
         {
           label: 'Tooling',
+          translations: { 'pt-BR': 'Ferramentas' },
           items: [{ autogenerate: { directory: 'tooling' } }],
         },
         {
           label: 'Guides',
+          translations: { 'pt-BR': 'Guias' },
           items: [{ autogenerate: { directory: 'guides', collapsed: true } }],
         },
         {
           label: 'Changelog',
+          translations: { 'pt-BR': 'Histórico de alterações' },
           items: [
             {
               label: 'Latest',
+              translations: { 'pt-BR': 'Mais recente' },
               badge: { text: version, variant: 'success' },
               link: `https://github.com/likec4/likec4/releases/tag/v${version}`,
               attrs: {
@@ -89,6 +105,7 @@ export default defineConfig({
             },
             {
               label: 'Releases',
+              translations: { 'pt-BR': 'Versões' },
               link: 'https://github.com/likec4/likec4/releases',
               attrs: {
                 target: '_blank',

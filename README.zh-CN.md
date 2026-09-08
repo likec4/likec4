@@ -1,6 +1,6 @@
 # 代码即架构
 
-[English](./README.md) | [日本語](./README.ja.md)
+[English](./README.md) | [Português (Brasil)](./README.pt-BR.md) | [日本語](./README.ja.md)
 
 使用由代码生成且始终保持最新的实时图表，可视化、协作并演进软件架构。
 
