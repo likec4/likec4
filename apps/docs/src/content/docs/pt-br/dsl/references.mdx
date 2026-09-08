@@ -1,0 +1,194 @@
+---
+title: Referências
+description: Como referenciar elementos no LikeC4
+sidebar:
+  label: Referências
+  order: 5
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+O LikeC4 usa escopo léxico com hoisting, quase como no JavaScript.
+
+## Escopo
+
+Para entender referências, precisamos primeiro entender escopos.
+Exemplo:
+
+```likec4
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+}
+```
+
+Cada elemento é único no modelo, então podemos adicionar um relacionamento referenciando-os, assim:
+
+```likec4 'frontend -> api'
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+  frontend -> api
+}
+```
+
+Mas, se adicionarmos `service2` com outra `api`:
+
+```diff lang="likec4"
+model {
+  service service1 {
+    component api
+    component frontend
+  }
++  service service2 {
++    component api
++  }
+
+  frontend -> api // ⛔️ Error: 'api' not found
+}
+```
+
+A referência fica ambígua, pois há dois componentes `api` no modelo.
+
+Cada elemento cria um novo escopo dentro de `{...}`, então `api` é único dentro de `service1` e `service2`,
+mas não no escopo de `model`.
+
+Podemos resolver isso movendo o relacionamento para o escopo de `service2`:
+
+```likec4 {9-11}
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+  service service2 {
+    component api
+
+    frontend -> api // ✅ This is OK,
+                    //    'api' is unique in 'service2'
+                    //    'frontend' is unique in 'model'
+  }
+}
+```
+
+## Hoisting
+
+<Aside>
+  **Hoisting** é um mecanismo que move a referência para o topo do escopo.
+</Aside>
+
+No LikeC4, além de passar por hoisting em seu escopo, o elemento também _"sobe"_ para os escopos superiores se permanecer único.
+
+Podemos referenciar algo que ainda não foi declarado, mas que passará por hoisting mais adiante.
+O relacionamento na linha 8 referencia `graphql`, definido abaixo na linha 15:
+
+```likec4 showLineNumbers copy
+model {
+
+  service service1 {
+    component api
+    component frontend
+
+    frontend -> api // ✅ This is OK, references to 'api' from 'service1'
+    frontend -> graphql // ✅ This is OK, references to unique 'graphql'
+  }
+
+  frontend -> api // ⛔️ Error: 'api' is ambiguous
+
+  service service2 {
+    component api
+    component graphql
+
+    frontend -> api  // ✅ This is OK, references to 'api' from 'service2'
+  }
+
+}
+```
+
+<Aside>
+As linhas 7 e 17 são iguais: `frontend -> api`
+Mas elas referenciam elementos diferentes:
+{'-'} A linha 7 referencia `service1.api`
+{'-'} A linha 17 referencia `service2.api`
+</Aside>
+
+## Nomes totalmente qualificados
+
+Elementos de nível superior (posicionados diretamente no bloco `model`) ficam disponíveis globalmente.
+Você pode usar nomes totalmente qualificados (FQN) para referenciar elementos aninhados.
+
+Exemplo:
+
+```likec4 {11,12}
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+  service service2 {
+    component api
+  }
+
+  frontend -> api // ⛔️ Error: 'api' not found
+  frontend -> service1.api // ✅ This is OK
+  frontend -> service2.api // ✅ This is OK
+}
+```
+
+Ou ainda:
+
+```likec4 {6}
+model {
+  service service1 {
+    component api
+    component frontend {
+      -> api
+      -> service2.api    // references to outer scope
+    }
+  }
+  service service2 {
+    component api
+  }
+}
+```
+
+Algumas partes podem ser omitidas se o FQN permanecer único:
+
+```likec4
+model {
+  service service {
+    component backend1  {
+      component api
+    }
+    component backend2  {
+      component api
+      component graphql
+    }
+  }
+
+  frontend -> service.backend1.api // ✅ Non-ambiguous fully qualified name
+
+  frontend -> backend1.api  // ✅ This is OK, 'api' is unique in 'backend1',
+                            //    and 'backend1' is unique in the model
+                            //    We may omit 'service'
+
+  frontend -> backend2.api  // ✅ This is also OK
+
+  frontend -> service.api   // ⛔️ Error: 'api' is ambiguous in 'service'
+
+  frontend -> service.graphql // ✅ This is also OK, we omit 'backend2'
+                              //    as 'graphql' is unique in 'service'
+}
+```
+
+<Aside type='caution'>
+Embora omitir partes do FQN deixe o código mais legível e as referências mais curtas,
+isso pode causar erros quando você refatora o modelo.
+</Aside>

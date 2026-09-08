@@ -1,7 +1,7 @@
 ---
 title: Aplicar regras e validar seu modelo
 description: Como aplicar regras personalizadas ao seu modelo LikeC4 ou validar sua consistência
-sidebar: 
+sidebar:
   label: Validar seu modelo
   order: 1
 ---
@@ -9,7 +9,7 @@ sidebar:
 import { Card, Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers';
 
-Às vezes você pode querer aplicar regras personalizadas ao seu modelo ou validar sua consistência.  
+Às vezes você pode querer aplicar regras personalizadas ao seu modelo ou validar sua consistência.
 Aqui vai uma receita simples de como fazer isso.
 
 :::note
@@ -20,7 +20,7 @@ Consulte o repositório <a href="https://github.com/likec4/template" target='_bl
 
 ## Testar seu modelo
 
-Neste exemplo, vamos usar o [Vitest](https://vitest.dev) junto com a [API do LikeC4](/tooling/model-api/).  
+Neste exemplo, vamos usar o [Vitest](https://vitest.dev) junto com a [API do LikeC4](/tooling/model-api/).
 A API do LikeC4 oferece métodos para consultar e percorrer o modelo, perfeita para escrever testes que reforçam suas regras.
 
 <PackageManagers
@@ -66,7 +66,7 @@ test('elements of kind `app` have technology', ({ expect }) => {
 ```
 
 :::note
-Chamadas para `LikeC4.fromWorkspace('..')` são memoizadas (por caminho absoluto).  
+Chamadas para `LikeC4.fromWorkspace('..')` são memoizadas (por caminho absoluto).
 Você pode chamá-la várias vezes sem impacto de performance, por exemplo em `beforeEach`.
 
 Você também pode usar a função [`provide`](https://vitest.dev/advanced/api/vitest.html#provide) do Vitest para reutilizar o mesmo caminho do workspace.
@@ -98,7 +98,7 @@ test('Relationships should have metadata', ({ expect }) => {
   expect.hasAssertions()
   for (const r of likec4model.relationships()) {
     expect.soft(
-      r.getMetadata('key'), // here we get type checking 
+      r.getMetadata('key'), // here we get type checking
       `Relationship ${r.source.id} -> ${r.target.id} has no metadata`
     ).toBeDefined()
   }
@@ -134,7 +134,7 @@ likec4test('Relationships should have metadata', ({ expect, likec4 }) => {
   expect.hasAssertions()
   for (const r of likec4.relationships()) {
     expect.soft(
-      r.getMetadata('key'), // here we get type checking 
+      r.getMetadata('key'), // here we get type checking
       `Relationship ${r.source.id} -> ${r.target.id} has no metadata`
     ).toBeDefined()
   }
@@ -143,5 +143,5 @@ likec4test('Relationships should have metadata', ({ expect, likec4 }) => {
 
 ## Conclusão
 
-Essa abordagem facilita aplicar restrições personalizadas e validar a consistência do seu modelo.  
+Essa abordagem facilita aplicar restrições personalizadas e validar a consistência do seu modelo.
 Executar essas verificações no pipeline de CI é rápido e fornece feedback imediato quando o modelo quebra suas regras.

@@ -16,7 +16,7 @@ O `model` descreve a arquitetura como um conjunto de elementos hierárquicos e r
 ## Elemento
 
 Um elemento é um bloco básico de construção. Ele representa uma parte lógica da arquitetura.
-Qualquer elemento deve ter um [`kind`](/dsl/specification#element-kind) e um `name` (_identifier_):
+Qualquer elemento deve ter um [`kind`](/pt-br/dsl/specification/#tipo-de-elemento) e um `name` (_identifier_):
 
 ```likec4
 specification {
@@ -152,7 +152,7 @@ model {
 ```
 
 :::tip
-Você pode definir propriedades de elementos na [especificação](/dsl/specification#element-kind) quando elas forem comuns a todos os elementos daquele tipo:
+Você pode definir propriedades de elementos na [especificação](/pt-br/dsl/specification/#tipo-de-elemento) quando elas forem comuns a todos os elementos daquele tipo:
 
 ```likec4
 specification {
@@ -180,7 +180,7 @@ Esse comportamento é habilitado por padrão. Para desativá-lo, defina `inferTe
 
 ### Tags
 
-[Tags](/dsl/specification/#tag) de elementos são definidas em um bloco aninhado e devem vir primeiro, antes de qualquer outra propriedade:
+[Tags](/pt-br/dsl/specification/#tag) de elementos são definidas em um bloco aninhado e devem vir primeiro, antes de qualquer outra propriedade:
 
 ```likec4 copy
 model {
@@ -205,7 +205,7 @@ model {
 
 :::tip
 
-Você pode adicionar tags na [especificação](/dsl/specification/#tag), quando isso for comum a todos os elementos do tipo:
+Você pode adicionar tags na [especificação](/pt-br/dsl/specification/#tag), quando isso for comum a todos os elementos do tipo:
 
 ```likec4
 specification {
@@ -568,7 +568,7 @@ e:
 
 :::caution
 Você não pode ter elementos com o mesmo nome dentro do mesmo pai.
-Isso é explicado em detalhes em [referências](/dsl/references).
+Isso é explicado em detalhes em [referências](/pt-br/dsl/references).
 
 ```likec4 filename="nested-elements.c4"
 model {
