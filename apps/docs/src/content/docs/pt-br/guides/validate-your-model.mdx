@@ -35,12 +35,12 @@ Suponha que queremos exigir que todo elemento do tipo `app` tenha uma `technolog
 
 ```ts
 // test/metadata.spec.ts
-import { LikeC4 } from './LikeC4'
+import { LikeC4 } from 'likec4'
 import { test } from 'vitest'
 
 // Initialize and compute LikeC4 Model
 const likec4 = await LikeC4.fromWorkspace('..')
-const model = likec4.computedModel()
+const model = await likec4.computedModel()
 
 // With `test.for` we generate tests for each element of kind `app`
 // This improves the output, showing each test failure separately
@@ -66,10 +66,9 @@ test('elements of kind `app` have technology', ({ expect }) => {
 ```
 
 :::note
-Chamadas para `LikeC4.fromWorkspace('..')` são memoizadas (por caminho absoluto).
-Você pode chamá-la várias vezes sem impacto de performance, por exemplo em `beforeEach`.
+Inicializar o workspace pode levar tempo. Se vários testes precisarem do mesmo modelo, prefira inicializá-lo uma vez e reutilizar a instância.
 
-Você também pode usar a função [`provide`](https://vitest.dev/advanced/api/vitest.html#provide) do Vitest para reutilizar o mesmo caminho do workspace.
+Você também pode usar a função [`provide`](https://vitest.dev/advanced/api/vitest.html#provide) do Vitest para compartilhar dados entre o setup e os testes.
 :::
 
 ## Pré-gerar o modelo

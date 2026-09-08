@@ -28,11 +28,9 @@ on:
   workflow_call:
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Sets default permissions of the GITHUB_TOKEN
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in progress and the latest queued.
 # However, do NOT cancel in-progress runs, as we want to allow these production deployments to be completed.
@@ -64,6 +62,9 @@ jobs:
 
   # Deployment job
   deploy-pages:
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -89,11 +90,9 @@ on:
   push:
     branches: ["main"]
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Sets default permissions of the GITHUB_TOKEN
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in progress and the latest queued.
 # However, do NOT cancel in-progress runs, as we want to allow these production deployments to be completed.
@@ -130,6 +129,9 @@ jobs:
 
   # Deployment job
   deploy-pages:
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
