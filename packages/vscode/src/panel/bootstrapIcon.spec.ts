@@ -7,6 +7,10 @@ import { describe, expect, it, vi } from 'vitest'
 import { createBootstrapIconLoader, isBootstrapIconName } from './bootstrapIcon'
 
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"/>'
+const svgBytes = new TextEncoder().encode(svg)
+const storageUri = { fsPath: '/global-storage' }
+const storageDirPath = '/global-storage/bootstrap-icons'
+const storageFilePath = '/global-storage/bootstrap-icons/boxes.svg'
 
 describe('bootstrap icon loader', () => {
   it('defines a dedicated Bootstrap-icon request', () => {
@@ -30,6 +34,76 @@ describe('bootstrap icon loader', () => {
     await expect(load('boxes')).resolves.toEqual({
       base64data: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
     })
+    expect(fetcher).toHaveBeenCalledWith(
+      'https://icons.like-c4.dev/bootstrap/boxes.svg',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
+  })
+
+  it('reads a valid icon from global storage before it fetches', async () => {
+    const fileSystem = {
+      readFile: vi.fn().mockResolvedValue(svgBytes),
+      writeFile: vi.fn(),
+      createDirectory: vi.fn(),
+    }
+    const fetcher = vi.fn<typeof fetch>()
+    const load = createBootstrapIconLoader(storageUri as never, fileSystem, fetcher)
+
+    await expect(load('boxes')).resolves.toEqual({
+      base64data: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+    })
+    expect(fileSystem.readFile).toHaveBeenCalledWith(expect.objectContaining({ fsPath: storageFilePath }))
+    expect(fileSystem.createDirectory).not.toHaveBeenCalled()
+    expect(fileSystem.writeFile).not.toHaveBeenCalled()
+    expect(fetcher).not.toHaveBeenCalled()
+  })
+
+  it('fetches and caches a missing icon in global storage', async () => {
+    const fileSystem = {
+      readFile: vi.fn().mockRejectedValue(new Error('FileNotFound')),
+      createDirectory: vi.fn().mockResolvedValue(undefined),
+      writeFile: vi.fn().mockResolvedValue(undefined),
+    }
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(svg, { headers: { 'content-type': 'image/svg+xml' } }),
+    )
+    const load = createBootstrapIconLoader(storageUri as never, fileSystem, fetcher)
+
+    await expect(load('boxes')).resolves.toEqual({
+      base64data: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+    })
+    expect(fileSystem.readFile).toHaveBeenCalledWith(expect.objectContaining({ fsPath: storageFilePath }))
+    expect(fileSystem.createDirectory).toHaveBeenCalledWith(expect.objectContaining({ fsPath: storageDirPath }))
+    expect(fileSystem.writeFile).toHaveBeenCalledWith(
+      expect.objectContaining({ fsPath: storageFilePath }),
+      svgBytes,
+    )
+    expect(fetcher).toHaveBeenCalledWith(
+      'https://icons.like-c4.dev/bootstrap/boxes.svg',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
+  })
+
+  it('still returns fetched data if caching to global storage fails', async () => {
+    const fileSystem = {
+      readFile: vi.fn().mockRejectedValue(new Error('FileNotFound')),
+      createDirectory: vi.fn().mockResolvedValue(undefined),
+      writeFile: vi.fn().mockRejectedValue(new Error('disk full')),
+    }
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(svg, { headers: { 'content-type': 'image/svg+xml' } }),
+    )
+    const load = createBootstrapIconLoader(storageUri as never, fileSystem, fetcher)
+
+    await expect(load('boxes')).resolves.toEqual({
+      base64data: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+    })
+    expect(fileSystem.readFile).toHaveBeenCalledWith(expect.objectContaining({ fsPath: storageFilePath }))
+    expect(fileSystem.createDirectory).toHaveBeenCalledWith(expect.objectContaining({ fsPath: storageDirPath }))
+    expect(fileSystem.writeFile).toHaveBeenCalledWith(
+      expect.objectContaining({ fsPath: storageFilePath }),
+      svgBytes,
+    )
     expect(fetcher).toHaveBeenCalledWith(
       'https://icons.like-c4.dev/bootstrap/boxes.svg',
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
