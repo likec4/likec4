@@ -61,7 +61,7 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
 }
 
 export interface FileSystemModuleContext extends FileSystemWatcherModuleContext {
-  fileSystemProvider: () => FileSystemProvider
+  fileSystemProvider: (services: LikeC4SharedServices) => FileSystemProvider
 }
 
 export interface FileSystemWatcherModuleContext {
