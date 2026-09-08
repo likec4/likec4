@@ -56,10 +56,21 @@ describe('elementExprToPredicate', () => {
     no({ id: 'customer' })
   })
 
-  it('returns a function that checks if the node id matches the descedant element expression', () => {
+  it('returns a function that checks if the node id matches the children element expression', () => {
     const { yes, no } = test$expr('cloud.*')
-    yes({ id: 'cloud.backend.storage' })
     yes({ id: 'cloud.frontend' })
+    yes({ id: 'cloud.backend' })
+    // only direct children, not deeper descendants
+    no({ id: 'cloud.backend.storage' })
+    no({ id: 'cloud' })
+    no({ id: 'customer' })
+  })
+
+  it('returns a function that checks if the node id matches the descendants element expression', () => {
+    const { yes, no } = test$expr('cloud.**')
+    yes({ id: 'cloud.frontend' })
+    yes({ id: 'cloud.backend' })
+    yes({ id: 'cloud.backend.storage' })
     no({ id: 'cloud' })
     no({ id: 'customer' })
   })
