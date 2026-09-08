@@ -547,8 +547,8 @@ function applyEdgesManualLayout(
           }
           case !!edge.labelBBox && !!next.labelBBox: {
             // Both have labelBBox, check for changes below
-            const sizeChanged = next.labelBBox.width > (edge.labelBBox.width + MAX_ALLOWED_DRIFT) ||
-              next.labelBBox.height > (edge.labelBBox.height + MAX_ALLOWED_DRIFT)
+            const sizeChanged = next.labelBBox.width * next.labelBBox.height >
+              (edge.labelBBox.width + MAX_ALLOWED_DRIFT) * (edge.labelBBox.height + MAX_ALLOWED_DRIFT)
 
             if (sizeChanged) {
               // Take width/height from next
