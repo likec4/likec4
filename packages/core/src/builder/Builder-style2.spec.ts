@@ -1,6 +1,7 @@
 import type { PartialDeep } from 'type-fest'
 import { describe, expect, it } from 'vitest'
 import { type ParsedLikeC4ModelData, isViewRuleStyle } from '../types'
+import { invariant } from '../utils'
 import { Builder } from './Builder'
 
 describe('Builder (style 2)', () => {
@@ -434,7 +435,11 @@ describe('Builder (style 2)', () => {
       iconPosition: 'right',
     })
 
-    const styleRule = m.views.index.rules.find(isViewRuleStyle)
+    // A story view has `statements`, not `rules` (RFC 0001); this fixture builds an
+    // element view via `view(...)`, so assert that rather than casting the access away.
+    const indexView = m.views.index
+    invariant('rules' in indexView, 'Expected view "index" to have rules (got a story view?)')
+    const styleRule = indexView.rules.find(isViewRuleStyle)
     expect(styleRule?.style).toMatchObject({
       iconColor: 'red',
       iconSize: 'sm',

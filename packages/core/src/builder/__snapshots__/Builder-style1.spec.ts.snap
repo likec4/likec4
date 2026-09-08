@@ -135,6 +135,7 @@ exports[`Builder (style1) > should build nested elements and relTo 1`] = `
       },
     },
   },
+  "stories": {},
   "views": {},
 }
 `;
@@ -186,6 +187,7 @@ exports[`Builder (style1) > should build view  1`] = `
     "relationships": {},
     "tags": {},
   },
+  "stories": {},
   "views": {
     "1": {
       "_stage": "parsed",
@@ -308,6 +310,7 @@ exports[`Builder (style1) > should build viewOf  1`] = `
     "relationships": {},
     "tags": {},
   },
+  "stories": {},
   "views": {
     "1": {
       "_stage": "parsed",

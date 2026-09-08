@@ -46,6 +46,12 @@ import {
   checkSpecificationRule,
   checkTag,
 } from './specification'
+import {
+  storyAltChecks,
+  storySceneChecks,
+  storySubflowChecks,
+  storyViewChecks,
+} from './story-view'
 import { viewChecks, viewOrderChecks } from './view'
 import { viewRuleRankChecks } from './view-checks'
 import {
@@ -83,6 +89,7 @@ const isValidatableAstNode = isAnyOf(
   ast.isViewRule,
   ast.isDynamicViewRule,
   ast.isLikeC4View,
+  ast.isStoryView,
   ast.isViewRuleStyleOrGlobalRef,
   ast.isDeployedInstance,
   ast.isDeploymentNode,
@@ -195,6 +202,10 @@ export function registerValidationChecks(services: LikeC4Services) {
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
     ViewRuleRank: viewRuleRankChecks(services),
     ViewOrderProperty: viewOrderChecks(services),
+    StoryView: storyViewChecks(services),
+    StoryScene: storySceneChecks(services),
+    StorySubflow: storySubflowChecks(services),
+    StoryAlt: storyAltChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

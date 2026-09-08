@@ -136,7 +136,7 @@ export function changeElementStyle(services: LikeC4Services, {
     }
     modifiedRange.end = {
       line: insertPos.line + linesToInsert.length,
-      character: (last(linesToInsert)?.length ?? 0),
+      character: last(linesToInsert)?.length ?? 0,
     }
   }
 

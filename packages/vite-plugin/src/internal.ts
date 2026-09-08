@@ -70,9 +70,17 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
         const currentView = current.views[next.id]
         return deepEqual(currentView, next) ? currentView : next
       }),
+      stories: mapValues(data.stories, (next) => {
+        const currentStory = current.stories[next.id]
+        return deepEqual(currentStory, next) ? currentStory : next
+      }),
     }
     // Check for shallow first, then deep equality to avoid unnecessary updates
-    if (shallowEqual(next.views, current.views) && deepEqual(next, current)) {
+    if (
+      shallowEqual(next.views, current.views) &&
+      shallowEqual(next.stories, current.stories) &&
+      deepEqual(next, current)
+    ) {
       return
     }
     $atom.set(next as LayoutedLikeC4ModelData)

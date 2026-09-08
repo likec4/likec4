@@ -493,6 +493,7 @@ export const likec4model: LikeC4Model<$Aux> = new LikeC4Model({
     },
   },
   imports: {},
+  stories: {},
   views: {
     index: {
       id: 'index',

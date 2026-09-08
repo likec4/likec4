@@ -38,6 +38,8 @@ export type {
 } from './DeploymentElementModel'
 export { LikeC4DeploymentModel } from './DeploymentModel'
 
+export { LikeC4StoryModel } from './story/LikeC4StoryModel'
+
 export { EdgeModel } from './view/EdgeModel'
 export { LikeC4ViewModel } from './view/LikeC4ViewModel'
 export { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'

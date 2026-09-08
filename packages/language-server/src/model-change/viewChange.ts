@@ -183,7 +183,11 @@ function collectAllTagRefs(tags: ast.Tags | undefined): Array<WithCst<ast.TagRef
   return groups.reverse().flat()
 }
 
-function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit {
+function addTag(
+  viewAst: ast.LikeC4View,
+  body: NonNullable<ast.LikeC4View['body']>,
+  tagName: scalar.Tag,
+): TextEdit {
   const tagsNode = body.tags
 
   // Append to existing tags

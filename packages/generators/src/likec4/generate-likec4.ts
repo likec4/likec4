@@ -8,7 +8,20 @@ type Params = {
 
 export { ops }
 
-export function generateLikeC4(input: schemas.likec4data.Input, params?: Params): string {
+/**
+ * `schemas.likec4data` (see `./schemas/likec4data.ts`) has no `stories` key, so a plain
+ * `zod` parse of the input silently drops any `stories` the caller passed in. Widening the
+ * accepted input type here — rather than casting inside the function body — lets us see and
+ * reject a non-empty `stories` record before it reaches that lossy parse.
+ */
+type InputWithStories = schemas.likec4data.Input & {
+  stories?: Record<string, unknown>
+}
+
+export function generateLikeC4(input: InputWithStories, params?: Params): string {
+  if (input.stories && Object.keys(input.stories).length > 0) {
+    throw new Error('Story views are not supported by this generator (POC scope)')
+  }
   params = {
     indentation: 2,
     ...params,

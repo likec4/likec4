@@ -1,4 +1,4 @@
-import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
+import type { AnyStoryView, DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
@@ -26,6 +26,7 @@ import { DiagramToggledFeaturesPersistence } from './persistence'
 export function DiagramActorProvider({
   id,
   view,
+  story = null,
   zoomable,
   pannable,
   nodesDraggable,
@@ -37,6 +38,7 @@ export function DiagramActorProvider({
 }: PropsWithChildren<{
   id: string
   view: DiagramView
+  story?: AnyStoryView | null
   zoomable: boolean
   pannable: boolean
   nodesDraggable: boolean
@@ -63,6 +65,7 @@ export function DiagramActorProvider({
       input: {
         xystore,
         view,
+        story,
         zoomable,
         pannable,
         fitViewPadding,
@@ -91,9 +94,9 @@ export function DiagramActorProvider({
     () =>
       actor.send({
         type: 'update.inputs',
-        inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
+        inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, story },
       }),
-    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable],
+    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, story],
   )
 
   useUpdateEffect(() => {

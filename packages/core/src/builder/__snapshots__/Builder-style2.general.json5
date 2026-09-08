@@ -134,6 +134,7 @@
       },
     },
   },
+  "stories": {},
   "views": {
     "cloud": {
       "_stage": "computed",

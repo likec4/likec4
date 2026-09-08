@@ -4,8 +4,10 @@ import {
   type AnyAux,
   type aux,
   type ComputedLikeC4ModelData,
+  type ComputedStoryView,
   type ComputedView,
   type ParsedLikeC4ModelData,
+  type ParsedStoryView,
   type ParsedView,
   _stage,
   isDeploymentView,
@@ -17,6 +19,7 @@ import { nonexhaustive } from '../utils'
 import { computeDeploymentView } from './deployment-view/compute'
 import { computeDynamicView } from './dynamic-view/compute'
 import { computeElementView } from './element-view/compute'
+import { computeStoryView } from './story-view/compute'
 
 export type ComputeViewResult<V> =
   | {
@@ -70,16 +73,22 @@ export function computeParsedModelData<A extends AnyParsed, B extends aux.toComp
   const likec4model = LikeC4Model.create(parsed)
   let {
     views: _views,
+    stories: _stories,
     _stage: __omitted,
     ...rest
   } = parsed as unknown as ComputedLikeC4ModelData<B>
 
   const views = mapValues(_views as unknown as Record<string, ParsedView<B>>, v => unsafeComputeView(v, likec4model))
+  const stories = mapValues(
+    _stories as unknown as Record<string, ParsedStoryView<B>>,
+    s => computeStoryView(likec4model, s),
+  )
 
   return {
     [_stage]: 'computed',
     ...rest,
     views: views as unknown as Record<ViewId<B>, ComputedView<B>>,
+    stories: stories as unknown as Record<ViewId<B>, ComputedStoryView<B>>,
   }
 }
 

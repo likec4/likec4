@@ -39,6 +39,7 @@ export const Header = memo(() => {
       return matches.some(({ routeId }) =>
         routeId === '/_single/view/$viewId/'
         || routeId === '/project/$projectId/view/$viewId/'
+        || routeId === '/project/$projectId/story/$storyId/view/$viewId'
       )
     },
   })

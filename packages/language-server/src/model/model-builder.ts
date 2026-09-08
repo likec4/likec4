@@ -13,7 +13,7 @@ import {
   _type,
   GlobalFqn,
 } from '@likec4/core'
-import { computeView } from '@likec4/core/compute-view'
+import { computeStoryView, computeView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import type * as c4 from '@likec4/core/types'
 import { loggable } from '@likec4/log'
@@ -302,11 +302,25 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         views.push(result.view)
       }
       assignNavigateTo(views)
+      const stories = [] as c4.ComputedStoryView[]
+      for (const story of values(parsedModelData.stories)) {
+        try {
+          stories.push(computeStoryView(parsedModel, story))
+        } catch (e) {
+          logger.warn(loggable(e))
+        }
+      }
       const data: c4.ComputedLikeC4ModelData = {
         ...parsedModelData,
-        manualLayouts: { ...manualLayouts?.views },
+        // `manualLayouts?.views` is keyed off LayoutedView, which no longer includes
+        // `story` (Task 1's containment redesign), so no story entry can appear here —
+        // `excludeStoryManualLayouts`'s filtering is dead. Default to `{}` (rather than
+        // leaving the field absent) to preserve `excludeStoryManualLayouts`'s prior
+        // always-defined behavior.
+        manualLayouts: manualLayouts?.views ?? {},
         [_stage]: 'computed',
         views: indexBy(views, prop('id')),
+        stories: indexBy(stories, prop('id')),
       }
       logger.debug(`computeModel${manualLayouts ? ' with manual layouts' : ''}: {status} in ${t0.pretty}`, {
         status: 'completed',

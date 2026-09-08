@@ -20,6 +20,7 @@ import {
   useTree,
 } from '@mantine/core'
 import {
+  IconBook2,
   IconFileCode,
   IconFolderFilled,
   IconFolderOpen,
@@ -30,7 +31,13 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
 import { useCurrentView, useLikeC4Views } from '../../hooks'
-import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
+import {
+  type DiagramTreeNodeData,
+  type GroupBy,
+  isTreeNodeData,
+  storyIdFromNodeValue,
+  useDiagramsTreeData,
+} from './data'
 import { SidebarDrawerOps } from './state'
 
 const isFile = (node: TreeNodeData) => isTreeNodeData(node) && node.type === 'file'
@@ -56,12 +63,20 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   const views = useLikeC4Views()
   const data = useDiagramsTreeData(groupBy)
   const navigate = useNavigate()
-  const navigateTo = (viewId: string) => {
+  const navigateTo = (node: DiagramTreeNodeData) => {
     SidebarDrawerOps.close()
+    if (node.type === 'story') {
+      void navigate({
+        to: '/story/$storyId/',
+        viewTransition: false,
+        params: { storyId: storyIdFromNodeValue(node.value) },
+      })
+      return
+    }
     void navigate({
       to: '/view/$viewId/',
       viewTransition: false,
-      params: { viewId },
+      params: { viewId: node.value },
     })
   }
   const [diagram] = useCurrentView()
@@ -132,16 +147,17 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
                     <>
                       {node.type === 'deployment-view' && <IconStack2 size={14} />}
                       {node.type === 'view' && <IconLayoutDashboard size={14} />}
+                      {node.type === 'story' && <IconBook2 size={14} />}
                     </>
                   )}
                   {hasChildren && <FolderIcon node={node} expanded={expanded} />}
                 </>
               }
               {...elementProps}
-              {...(!hasChildren && {
+              {...(!hasChildren && isTreeNodeData(node) && {
                 onClick: (e) => {
                   e.stopPropagation()
-                  navigateTo(node.value)
+                  navigateTo(node)
                 },
               })}
             >

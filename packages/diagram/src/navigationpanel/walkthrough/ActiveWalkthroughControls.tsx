@@ -93,7 +93,7 @@ export function ActiveWalkthroughControls() {
         onClick={() => diagram.walkthroughStep('prev')}
         leftSection={<IconPlayerSkipBackFilled size={10} />}
       >
-        Previous
+        Previous Step
       </PrevNextButton>
 
       <Badge
@@ -127,7 +127,7 @@ export function ActiveWalkthroughControls() {
         onClick={() => diagram.walkthroughStep('next')}
         rightSection={<IconPlayerSkipForwardFilled size={10} />}
       >
-        Next
+        Next Step
       </PrevNextButton>
       {isParallel && <ParallelFrame key="parallel-frame" />}
     </AnimatePresence>

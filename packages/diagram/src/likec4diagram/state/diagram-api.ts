@@ -93,7 +93,8 @@ export class DiagramApi<A extends Any = Unknown> {
   }
 
   /**
-   * Navigate to view
+   * Navigate to view.
+   *
    * @param viewId - Target view ID
    * @param fromNode - Node from which navigation was triggered
    * @param focusOnElement - Element FQN to focus after navigation (from search)

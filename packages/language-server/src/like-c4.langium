@@ -13,6 +13,7 @@ entry LikeC4Grammar:
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
+    stories+=ModelStories |
     globals+=Globals |
     deployments+=ModelDeployments  |
     likec4lib+=LikeC4Lib
@@ -315,6 +316,9 @@ ModelViews:
     )*
   '}';
 
+ModelStories:
+  name='stories' '{' (stories+=StoryView)* '}';
+
 type LikeC4View = ElementView | DynamicView | DeploymentView;
 LikeC4ViewRule returns LikeC4View:
   DynamicView |
@@ -357,6 +361,59 @@ DynamicViewBody: '{'
     rules+=DynamicViewRule
   )*
 '}'
+;
+
+StoryView:
+  'story' name=Id body=StoryViewBody?
+;
+
+StoryViewBody: '{'
+  tags=Tags?
+  props+=StoryViewProperty*
+  statements+=StoryStatement*
+'}'
+;
+
+StoryViewProperty:
+  ViewProperty
+;
+
+StoryStatement:
+  StoryScene | StoryAlt | StorySubflow
+;
+
+StoryScene:
+  'scene' view=[LikeC4View] body=StorySceneBody? ';'?
+;
+
+StorySceneBody: '{'
+  props+=(ViewStringProperty | NotesProperty | StoryAnchorProperty)*
+  rules+=StoryCorrespondenceRule*
+'}'
+;
+
+StoryAnchorProperty:
+  'anchor' ref=ElementRef ';'?
+;
+
+StoryCorrespondenceRule:
+  sources=ElementRefs 'becomes' targets=ElementRefs ';'?
+;
+
+ElementRefs:
+  refs+=ElementRef (',' refs+=ElementRef)*
+;
+
+// Reuses the existing SubflowKind terminal set. One rule covers every block
+// keyword, exactly as SubflowStep does for dynamic views.
+StorySubflow:
+  kind=SubflowKind title=String? '{'
+    statements+=StoryStatement*
+  '}'
+;
+
+StoryAlt:
+  'alt' title=String? '{' branches+=StorySubflow* '}'
 ;
 
 DynamicViewProperty:
@@ -1192,7 +1249,8 @@ Id returns string:
   IconPositionValue |
   RankValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' |
+  'story' | 'stories' | 'scene' | 'anchor' | 'becomes';
 
 HashId returns string:
   Hash Id;
