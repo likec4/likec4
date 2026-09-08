@@ -2,25 +2,41 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
+import * as vscode from 'vscode'
+
 const bootstrapIconName = /^[a-z0-9][a-z0-9-]{0,127}$/
 const maxSvgBytes = 256 * 1024
 const bootstrapIconUrl = (name: string) => `https://icons.like-c4.dev/bootstrap/${name}.svg`
 
 export type BootstrapIconResult = { base64data: string | null }
 
+type IconFileSystem = Pick<typeof vscode.workspace.fs, 'readFile' | 'writeFile' | 'createDirectory'>
+
 export const isBootstrapIconName = (name: string) => bootstrapIconName.test(name)
 
-export function createBootstrapIconLoader(fetcher: typeof fetch = fetch) {
-  const cache = new Map<string, string>()
+const bootstrapIconCacheUri = (storageUri: vscode.Uri, name: string) =>
+  vscode.Uri.joinPath(storageUri, 'bootstrap-icons', `${name}.svg`)
 
+export function createBootstrapIconLoader(
+  storageUri: vscode.Uri,
+  fileSystem: IconFileSystem = vscode.workspace.fs,
+  fetcher: typeof fetch = fetch,
+) {
   return async (name: string): Promise<BootstrapIconResult> => {
     if (!isBootstrapIconName(name)) {
       return { base64data: null }
     }
-    const cached = cache.get(name)
-    if (cached) {
-      return { base64data: cached }
+
+    const iconUri = bootstrapIconCacheUri(storageUri, name)
+    try {
+      const bytes = await fileSystem.readFile(iconUri)
+      if (bytes.byteLength <= maxSvgBytes) {
+        return { base64data: `data:image/svg+xml;base64,${Buffer.from(bytes).toString('base64')}` }
+      }
+    } catch {
+      // Cache misses and storage errors fall through to the CDN.
     }
+
     try {
       const response = await fetcher(bootstrapIconUrl(name), { signal: AbortSignal.timeout(10_000) })
       const contentType = response.headers.get('content-type')?.split(';', 1)[0]?.trim().toLowerCase() ?? ''
@@ -32,7 +48,12 @@ export function createBootstrapIconLoader(fetcher: typeof fetch = fetch) {
         return { base64data: null }
       }
       const base64data = `data:image/svg+xml;base64,${Buffer.from(bytes).toString('base64')}`
-      cache.set(name, base64data)
+      try {
+        await fileSystem.createDirectory(vscode.Uri.joinPath(storageUri, 'bootstrap-icons'))
+        await fileSystem.writeFile(iconUri, bytes)
+      } catch {
+        // The icon remains usable when storage is unavailable.
+      }
       return { base64data }
     } catch {
       return { base64data: null }

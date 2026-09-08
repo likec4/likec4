@@ -1,6 +1,7 @@
 import { loggable, wrapError } from '@likec4/log'
 import {
   executeCommand,
+  extensionContext,
   toValue,
 } from 'reactive-vscode'
 import * as vscode from 'vscode'
@@ -9,7 +10,7 @@ import { useExtensionLogger } from '../useExtensionLogger'
 import { useMessenger } from '../useMessenger'
 import { useRpc } from '../useRpc'
 import { performanceMark, showEditorNextToPreview } from '../utils'
-import { createBootstrapIconLoader } from './bootstrapIcon'
+import { type BootstrapIconResult, createBootstrapIconLoader } from './bootstrapIcon'
 import { useDiagramPanel } from './useDiagramPanel'
 
 export function activateMessenger() {
@@ -18,7 +19,10 @@ export function activateMessenger() {
   const preview = useDiagramPanel()
 
   const { logger, output } = useExtensionLogger('messenger')
-  const loadBootstrapIcon = createBootstrapIconLoader()
+  const storageUri = extensionContext.value?.globalStorageUri
+  const loadBootstrapIcon = storageUri
+    ? createBootstrapIconLoader(storageUri)
+    : async (): Promise<BootstrapIconResult> => ({ base64data: null })
 
   logger.debug('activating messenger <-> preview panel')
 
