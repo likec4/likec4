@@ -107,7 +107,7 @@ catalogs:
   esbuild:
     esbuild: 0.28.1
     esbuild-node-externals: 1.23.1
-    esbuild-plugins-node-modules-polyfill: 1.8.2
+    esbuild-plugins-node-modules-polyfill: 1.8.3
     esbuild-wasm: 0.28.1
   esbuild-wasm:
     esbuild: npm:esbuild-wasm@0.28.1
