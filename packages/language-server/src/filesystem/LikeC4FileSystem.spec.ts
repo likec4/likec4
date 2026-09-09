@@ -68,8 +68,9 @@ describe('workspace filesystem exclusions', () => {
     expect(await provider.readDirectory(URI.file(root))).toEqual([])
     projects.setWorkspaceExcludePatterns(['**/excluded/**', '**/likec4.config.json'])
     expect(await provider.scanProjectFiles(URI.file(root))).toEqual([])
+    // Compare through URI.file to normalize the Windows drive-letter casing
     expect((await provider.readDirectory(URI.file(root))).map(file => file.uri.fsPath))
-      .toEqual([join(root, 'model/model.c4')])
+      .toEqual([URI.file(join(root, 'model', 'model.c4')).fsPath])
   })
 
   it('prunes an excluded directory symlink while retaining supported symlink discovery', async ({ expect }) => {
