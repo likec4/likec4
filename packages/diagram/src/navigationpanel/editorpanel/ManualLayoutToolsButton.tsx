@@ -1,4 +1,5 @@
 import { css } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
 import {
   type TooltipProps,
@@ -7,6 +8,7 @@ import {
   PopoverTarget,
   TooltipGroup,
 } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import {
   IconLayoutAlignBottom,
   IconLayoutAlignCenter,
@@ -40,8 +42,8 @@ const Action = ({
         root: 'action-icon',
         icon: css({
           '& > svg': {
-            width: '70%',
-            height: '70%',
+            width: '[70%]',
+            height: '[70%]',
           },
         }),
       }}
@@ -61,7 +63,6 @@ export const ManualLayoutToolsButton = memo(() => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   return (
     <Popover
-      opened={isPopoverOpen}
       onChange={setIsPopoverOpen}
       position="right"
       offset={{
@@ -73,9 +74,11 @@ export const ManualLayoutToolsButton = memo(() => {
       {...portalProps}>
       <PopoverTarget>
         <Tooltip label="Manual layouting tools" {...manualLayoutTooltipProps(isPopoverOpen)}>
-          <PanelActionIcon>
-            <IconLayoutCollage />
-          </PanelActionIcon>
+          <Box>
+            <PanelActionIcon>
+              <IconLayoutCollage />
+            </PanelActionIcon>
+          </Box>
         </Tooltip>
       </PopoverTarget>
       <PopoverDropdown
@@ -85,71 +88,69 @@ export const ManualLayoutToolsButton = memo(() => {
           padding: '1',
           pointerEvents: 'all',
         })}>
-        <TooltipGroup>
-          <Action
-            label="Align in columns"
-            icon={<IconLayoutBoardSplit />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Column')
-            }} />
-          <Action
-            label="Align left"
-            icon={<IconLayoutAlignLeft />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Left')
-            }} />
-          <Action
-            label="Align center"
-            icon={<IconLayoutAlignCenter />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Center')
-            }} />
-          <Action
-            label="Align right"
-            icon={<IconLayoutAlignRight />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Right')
-            }} />
-          <Action
-            label="Align in rows"
-            icon={<IconLayoutBoardSplit style={{ transform: 'rotate(90deg)' }} />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Row')
-            }} />
-          <Action
-            label="Align top"
-            icon={<IconLayoutAlignTop />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Top')
-            }} />
-          <Action
-            label="Align middle"
-            icon={<IconLayoutAlignMiddle />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Middle')
-            }} />
-          <Action
-            label="Align bottom"
-            icon={<IconLayoutAlignBottom />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.align('Bottom')
-            }} />
-          <Action
-            label="Reset all control points"
-            icon={<IconRouteOff />}
-            onClick={e => {
-              e.stopPropagation()
-              diagram.resetEdgeControlPoints()
-            }} />
-        </TooltipGroup>
+        <Action
+          label="Align in columns"
+          icon={<IconLayoutBoardSplit />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Column')
+          }} />
+        <Action
+          label="Align left"
+          icon={<IconLayoutAlignLeft />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Left')
+          }} />
+        <Action
+          label="Align center"
+          icon={<IconLayoutAlignCenter />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Center')
+          }} />
+        <Action
+          label="Align right"
+          icon={<IconLayoutAlignRight />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Right')
+          }} />
+        <Action
+          label="Align in rows"
+          icon={<IconLayoutBoardSplit style={{ transform: 'rotate(90deg)' }} />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Row')
+          }} />
+        <Action
+          label="Align top"
+          icon={<IconLayoutAlignTop />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Top')
+          }} />
+        <Action
+          label="Align middle"
+          icon={<IconLayoutAlignMiddle />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Middle')
+          }} />
+        <Action
+          label="Align bottom"
+          icon={<IconLayoutAlignBottom />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.align('Bottom')
+          }} />
+        <Action
+          label="Reset all control points"
+          icon={<IconRouteOff />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.resetEdgeControlPoints()
+          }} />
       </PopoverDropdown>
     </Popover>
   )

@@ -14,9 +14,6 @@ export const Route = createFileRoute('/project/$projectId')({
       projectId: params.projectId as ProjectId,
     }
   },
-  loaderDeps() {
-    return []
-  },
   loader: async ({ context }) => {
     const projectId = context.projectId
     const likec4model = await loadModel(projectId)

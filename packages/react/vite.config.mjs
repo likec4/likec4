@@ -55,6 +55,7 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   resolve: {
+    tsconfigPaths: true,
     conditions: ['sources', 'module', 'import', 'default'],
     dedupe: [
       'react',
@@ -116,6 +117,7 @@ export default defineConfig({
         bundledPackages: [
           'react-error-boundary',
           '@likec4/diagram',
+          '@mantine/*',
           '@likec4/diagram/custom',
           '@likec4/styles/*',
           '@react-hookz/web',

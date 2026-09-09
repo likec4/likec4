@@ -1,8 +1,7 @@
 /// <reference lib="dom" />
 import { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
-import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
-import { MantineProvider } from '@mantine/core'
+import { LikeC4Diagram, LikeC4MantineProvider, LikeC4ModelProvider } from '@likec4/diagram'
 import { useApp, useDocumentTheme, useHostStyles } from '@modelcontextprotocol/ext-apps/react'
 import { type ErrorInfo, type PropsWithChildren, Component, useState } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -90,11 +89,11 @@ function RenderViewApp() {
   const likec4model = LikeC4Model.create(result.model)
 
   return (
-    <MantineProvider forceColorScheme={theme}>
+    <LikeC4MantineProvider forceColorScheme={theme}>
       <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4Diagram view={result.view} pannable zoomable fitView controls />
       </LikeC4ModelProvider>
-    </MantineProvider>
+    </LikeC4MantineProvider>
   )
 }
 

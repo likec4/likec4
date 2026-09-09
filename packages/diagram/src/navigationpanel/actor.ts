@@ -138,7 +138,10 @@ const _actorLogic = actor.createMachine({
               ],
             },
             'select.view': {
-              actions: emitNavigateTo(),
+              actions: [
+                emitNavigateTo(),
+                updateSelectedFolder(),
+              ],
             },
           },
         },
@@ -159,7 +162,10 @@ const _actorLogic = actor.createMachine({
               target: 'opened',
             },
             'select.view': {
-              actions: emitNavigateTo(),
+              actions: [
+                emitNavigateTo(),
+                updateSelectedFolder(),
+              ],
             },
           },
         },

@@ -534,7 +534,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
             pos="absolute"
             top={'4'}
             right={'4'}
-            zIndex={'999'}
+            zIndex={'dropdown'}
             onClick={stopPropagation}>
             <ActionIcon
               variant="default"

@@ -178,7 +178,10 @@ export namespace FetchProjects {
   export type Res = {
     projects: {
       [projectId: ProjectId]: {
+        /** Absolute path to project folder */
         folder: URI
+        /** Relative path from workspace to project folder */
+        path: string
         config: {
           name: string
           title?: string | undefined

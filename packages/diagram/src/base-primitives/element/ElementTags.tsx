@@ -15,7 +15,7 @@ import { stopPropagation } from '../../utils/xyflow'
 export type ElementTagProps = {
   tag: string
   cursor?: 'pointer' | 'default'
-} & Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'color'>
+} & Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'color' | 'translate'>
 
 export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
   ({ tag, cursor, className, style, ...props }, ref) => {
@@ -26,7 +26,7 @@ export const ElementTag = forwardRef<HTMLDivElement, ElementTagProps>(
         className={cx(likec4tag(), className)}
         {...props}
         style={{
-          cursor,
+          ...(cursor && { cursor }),
           ...style,
         }}
       >
@@ -163,12 +163,12 @@ function WithElementTags({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              maxWidth: '50px',
-              height: '5px',
+              maxWidth: '[50px]',
+              height: '[5px]',
               _whenHovered: {
-                height: '12px',
+                height: '[12px]',
                 borderRadius: 'sm',
-                transitionDelay: '.08s',
+                transitionDelay: 'fastest',
               },
               transition: 'fast',
             })}

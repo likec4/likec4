@@ -4,7 +4,6 @@ export const breadcrumbTitle = cva({
   base: {
     fontSize: 'sm',
     fontWeight: 'medium',
-    transition: 'fast',
     color: {
       base: 'likec4.panel.action',
       _hover: 'likec4.panel.action.hover',

@@ -50,19 +50,31 @@ export function PlaygroundsMenu() {
           <MenuLabel>Examples</MenuLabel>
           <MenuItem
             renderRoot={(props) => (
-              <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'tutorial', viewId: 'index' }} {...props} />
+              <Link
+                to={'/w/$workspaceId/$viewId/'}
+                reloadDocument
+                params={{ workspaceId: 'tutorial', viewId: 'index' }}
+                {...props} />
             )}>
             Tutorial
           </MenuItem>
           <MenuItem
             renderRoot={(props) => (
-              <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'bigbank', viewId: 'index' }} {...props} />
+              <Link
+                to={'/w/$workspaceId/$viewId/'}
+                reloadDocument
+                params={{ workspaceId: 'bigbank', viewId: 'index' }}
+                {...props} />
             )}>
             BigBank
           </MenuItem>
           <MenuItem
             renderRoot={(props) => (
-              <Link to={'/w/$workspaceId/$viewId/'} params={{ workspaceId: 'dynamic', viewId: 'index' }} {...props} />
+              <Link
+                to={'/w/$workspaceId/$viewId/'}
+                reloadDocument
+                params={{ workspaceId: 'dynamic', viewId: 'index' }}
+                {...props} />
             )}>
             Dynamic View
           </MenuItem>
@@ -70,6 +82,7 @@ export function PlaygroundsMenu() {
             renderRoot={(props) => (
               <Link
                 to={'/w/$workspaceId/$viewId/'}
+                reloadDocument
                 params={{ workspaceId: 'deployment', viewId: 'index' }}
                 {...props} />
             )}>
@@ -79,6 +92,7 @@ export function PlaygroundsMenu() {
             renderRoot={(props) => (
               <Link
                 to={'/w/$workspaceId/$viewId/'}
+                reloadDocument
                 params={{ workspaceId: 'demo-rank', viewId: 'index' }}
                 {...props} />
             )}>
@@ -97,6 +111,7 @@ export function PlaygroundsMenu() {
               renderRoot={(props) => (
                 <Link
                   to={'/w/$workspaceId/$viewId/'}
+                  reloadDocument
                   params={{ workspaceId: name, viewId: 'index' }}
                   activeProps={{
                     ['data-hovered']: true,
@@ -114,6 +129,7 @@ export function PlaygroundsMenu() {
                     if (workspaceId === name) {
                       void router.navigate({
                         to: '/w/$workspaceId/$viewId/',
+                        reloadDocument: true,
                         params: {
                           workspaceId: 'tutorial',
                           viewId: 'index',

@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
-import { DefaultMantineProvider, FramerMotionConfig } from '@likec4/diagram'
+import { FramerMotionConfig, LikeC4MantineProvider } from '@likec4/diagram'
 import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack/react-router'
 import { defaultTheme } from 'likec4:app-config'
 import { projects } from 'likec4:projects'
@@ -39,20 +39,13 @@ export const Route = createRootRouteWithContext<Context>()({
       }),
     ],
   },
-  beforeLoad: (): Context => {
-    const _projects = projects.length > 0
-      ? map(projects, p => p.id)
-      : ['default' as ProjectId] satisfies NonEmptyArray<ProjectId>
-    return {
-      projects: _projects,
-      projectId: _projects[0],
-    }
-  },
   component: RootComponent,
 })
 
 function RootComponent() {
-  const { theme } = Route.useSearch()
+  const theme = Route.useSearch({
+    select: (search) => search.theme,
+  })
   // When ?theme= is explicitly set in URL, force that color scheme without
   // writing to localStorage. This preserves the user's manual preference
   // while allowing embeds to override the appearance via URL.
@@ -61,7 +54,7 @@ function RootComponent() {
   // the build default is light or dark.
   const defaultColorScheme = theme === 'auto' ? 'auto' : defaultTheme
   return (
-    <DefaultMantineProvider
+    <LikeC4MantineProvider
       defaultColorScheme={defaultColorScheme}
       {...(forceColorScheme && { forceColorScheme })}
     >
@@ -70,6 +63,6 @@ function RootComponent() {
           <Outlet />
         </ErrorBoundary>
       </FramerMotionConfig>
-    </DefaultMantineProvider>
+    </LikeC4MantineProvider>
   )
 }

@@ -2,7 +2,6 @@ import {
   useColorScheme as usePreferredColorScheme,
   useMutationObserverTarget,
 } from '@mantine/hooks'
-import { shallowEqual } from 'fast-equals'
 import {
   type HTMLAttributes,
   type PropsWithChildren,
@@ -15,10 +14,10 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { first, isDefined, isFunction, isString, once } from 'remeda'
-import { DefaultMantineProvider } from '../context/DefaultMantineProvider'
 import { FramerMotionConfig } from '../context/FramerMotionConfig'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useId } from '../hooks/useId'
+import { LikeC4MantineProvider } from '../LikeC4MantineProvider'
 import fontsCss from '../styles-font.css?inline'
 import inlinedStyles from '../styles.css?inline'
 
@@ -139,7 +138,7 @@ export function ShadowRoot({
       <MemoizedStyle nonce={nonce} cssstyle={cssstyle} />
       <ShadowRootHost {...props} data-likec4-instance={id}>
         <div ref={mantineRootRef} data-mantine-color-scheme={colorScheme} className={'likec4-shadow-root'}>
-          <DefaultMantineProvider
+          <LikeC4MantineProvider
             defaultColorScheme={colorScheme}
             getRootElement={getRootElement}
             cssVariablesSelector={'.likec4-shadow-root'}
@@ -151,7 +150,7 @@ export function ShadowRoot({
             <FramerMotionConfig>
               {children}
             </FramerMotionConfig>
-          </DefaultMantineProvider>
+          </LikeC4MantineProvider>
         </div>
       </ShadowRootHost>
     </>

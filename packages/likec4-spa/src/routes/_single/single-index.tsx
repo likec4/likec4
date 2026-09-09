@@ -51,9 +51,9 @@ function RouteComponent() {
           gap: 'xs',
           position: 'sticky',
           top: '0',
-          zIndex: '10',
+          zIndex: '[10]',
           backgroundColor: 'likec4.panel.bg/85',
-          backdropFilter: 'blur(8px)',
+          backdropFilter: '[blur(8px)]',
         })}
       >
         <NavigationPanel.Root css={{ position: 'relative', width: 'max-content', margin: '0' }}>
@@ -134,8 +134,8 @@ function ViewCard({ view }: { view: DiagramView }) {
           mt: '1',
           transition: 'fast',
           opacity: {
-            base: 0.8,
-            _groupHover: 1,
+            base: '0.8',
+            _groupHover: '1',
           },
         })}
       />

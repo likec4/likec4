@@ -51,7 +51,7 @@ export const globalCss = defineGlobalStyles({
       _smallZoom: 'none',
     },
     willChange: 'transform',
-    zIndex: 'likec4.diagram.edge.label',
+    zIndex: '{zIndex.diagram.edge.label}',
   },
   // Constrain edge label width in the relationship-details overlay,
   // where edges lack labelBBox data. Text and technology lines are
@@ -105,6 +105,10 @@ export const globalCss = defineGlobalStyles({
     '& .react-flow': {
       '--xy-background-color': 'var(--colors-diagram-background)',
       '--xy-background-pattern-color': 'var(--colors-diagram-background-pattern)',
+      '--xy-controls-button-color': 'var(--colors-text-default)',
+      '--xy-controls-button-border-color': 'var(--colors-border-default)',
+      '--xy-controls-button-background-color': 'var(--colors-surface-default)',
+      '--xy-controls-button-background-color-hover': 'var(--colors-surface-hover)',
       '&:is(.not-initialized)': {
         opacity: 0,
       },

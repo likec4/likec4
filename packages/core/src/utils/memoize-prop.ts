@@ -20,10 +20,11 @@
 export function memoizeProp<Tag extends symbol | string, Res>(obj: object, tag: Tag, fn: () => Res): Res {
   const tagSymbol = typeof tag === 'symbol' ? tag : Symbol.for(tag)
   if (!obj.hasOwnProperty(tagSymbol)) {
+    const value = fn()
     Object.defineProperty(obj, tagSymbol, {
       enumerable: false,
       writable: false,
-      value: fn(),
+      value,
     })
   }
   return (obj as any)[tagSymbol]!

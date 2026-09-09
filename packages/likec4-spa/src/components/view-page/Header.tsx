@@ -58,14 +58,15 @@ export const Header = memo(() => {
             initial={{ opacity: 0, y: -20, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -50 }}>
-            <NavigationPanel.Body gap={'2'}>
+            <NavigationPanel.Body gap={'1'}>
               {isReactDiagramRoute
                 ? (
                   <>
                     <SelectProject />
                     {projects.length <= 1 && (
                       <Button
-                        size={isTablet ? 'sm' : 'xs'}
+                        size={isTablet ? 'compact-md' : 'xs'}
+                        fz={isTablet ? 'sm' : 'xs'}
                         leftSection={<IconShare size={14} />}
                         onClick={open}>
                         Share
@@ -78,7 +79,8 @@ export const Header = memo(() => {
                   <Button
                     component={Link}
                     to={'../'}
-                    size={isTablet ? 'sm' : 'xs'}
+                    size={isTablet ? 'compact-md' : 'xs'}
+                    fz={isTablet ? 'sm' : 'xs'}
                     variant="subtle"
                     color="gray">
                     Back to diagram
@@ -135,11 +137,12 @@ function ExportButton() {
   }
 
   return (
-    <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
+    <Menu shadow="md" width={200} trigger="click-hover" openDelay={300}>
       <MenuTarget>
         <Button
           variant="subtle"
-          size="sm"
+          size="compact-md"
+          fz="sm"
           color="gray"
           px={'sm'}
           rightSection={<IconChevronDown opacity={0.5} size={14} />}
@@ -225,10 +228,10 @@ function ExportButton() {
         {enabledFormats.has('drawio') && (
           <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
         )}
-        <MenuItem disabled>Export to Miro</MenuItem>
-        <MenuItem disabled>Export to Notion</MenuItem>
         {
           /*
+          <MenuItem disabled>Export to Miro</MenuItem>
+        <MenuItem disabled>Export to Notion</MenuItem>
         <MenuDivider />
         <MenuLabel>All views</MenuLabel>
         <MenuItem disabled>

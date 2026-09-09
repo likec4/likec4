@@ -12,6 +12,7 @@ export const navigationPanel = defineSlotRecipe({
       alignItems: 'flex-start',
       pointerEvents: 'none',
       position: 'absolute',
+      zIndex: 'panel',
       margin: '0',
       width: '100%',
       gap: 'xxs',

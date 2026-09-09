@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, notFound, Outlet } from '@tanstack/react-router'
 import { loadModel } from 'likec4:model'
 import { ErrorComponent } from '../../components/ErrorComponent'
 import { ViewOutlet } from '../../components/ViewOutlet'
@@ -7,12 +7,13 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 
 export const Route = createFileRoute('/_single')({
   staleTime: Infinity,
-  loaderDeps() {
-    return []
-  },
   loader: async ({ context }) => {
     const projectId = context.projectId
     const data = await loadModel(projectId)
+    const modelData = data.$likec4data.value
+    if (!modelData) {
+      throw notFound()
+    }
     return {
       $likec4model: data.$likec4model,
       projectId,

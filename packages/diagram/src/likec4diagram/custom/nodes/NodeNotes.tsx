@@ -118,7 +118,7 @@ function NodeNotesInternal({ data }: Pick<NodeNotesProps, 'data'> & {
               layoutId={id}
               className={css({
                 position: 'absolute',
-                zIndex: 300,
+                zIndex: '[300]',
                 top: '0',
                 left: '0',
                 display: 'flex',
@@ -131,8 +131,8 @@ function NodeNotesInternal({ data }: Pick<NodeNotesProps, 'data'> & {
                 overflow: 'hidden',
                 width: 'fit-content',
                 height: 'fit-content',
-                maxHeight: '70cqh',
-                maxWidth: '50cqw',
+                maxHeight: '[70cqh]',
+                maxWidth: '[50cqw]',
                 // minHeight: '60cqh',
               })}
               data-likec4-notes={id}
@@ -288,7 +288,7 @@ function Catch({
         css={{
           display: 'block',
           position: 'absolute',
-          zIndex: 200,
+          zIndex: '[200]',
           pointerEvents: 'all',
           left: '0',
           top: '0',

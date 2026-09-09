@@ -6,11 +6,14 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { DefaultMap } from '@likec4/core/utils'
-import { type ElementIconRenderer, type ElementIconRendererProps, IconRendererProvider } from '@likec4/diagram'
-import { type CSSProperties, lazy, memo, Suspense } from 'react'
+import {
+  type ElementIconRenderer,
+  type ElementIconRendererProps,
+  DefaultIconRenderer,
+  IconRendererProvider,
+} from '@likec4/diagram'
+import { lazy, memo, Suspense } from 'react'
 import { ExtensionApi as extensionApi } from './vscode'
-
-const iconUrl = (group: string, name: string) => `https://icons.like-c4.dev/${group}/${name}.svg`
 
 function SvgMask({ src, ...props }: Omit<ElementIconRendererProps, 'node'> & { src: string }) {
   const maskUrl = `url(${JSON.stringify(src)})`
@@ -34,41 +37,6 @@ function SvgMask({ src, ...props }: Omit<ElementIconRendererProps, 'node'> & { s
       }}
     />
   )
-}
-
-function BootstrapIconMask({ name, ...props }: Omit<ElementIconRendererProps, 'node'> & { name: string }) {
-  const url = iconUrl('bootstrap', name)
-  const style = {
-    display: 'inline-block',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'currentColor',
-    maskImage: `url("${url}")`,
-    maskRepeat: 'no-repeat',
-    maskPosition: 'center',
-    maskSize: 'contain',
-    WebkitMaskImage: `url("${url}")`,
-    WebkitMaskRepeat: 'no-repeat',
-    WebkitMaskPosition: 'center',
-    WebkitMaskSize: 'contain',
-  } satisfies CSSProperties
-  return <span {...props} aria-hidden="true" style={style} />
-}
-
-const DefaultIconRenderer: ElementIconRenderer = ({ node, ...props }) => {
-  if (!node.icon || node.icon === 'none') {
-    return null
-  }
-  const [group, name] = node.icon.split(':') as [string, string]
-  if (!group || !name) {
-    return null
-  }
-
-  if (group === 'bootstrap') {
-    return <BootstrapIconMask {...props} name={name} />
-  }
-
-  return <img {...props} src={iconUrl(group, name)} />
 }
 
 export function localIconRendererFromDataUrl(base64data: string | null): ElementIconRenderer {

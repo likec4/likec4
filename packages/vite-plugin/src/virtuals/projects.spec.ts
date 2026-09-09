@@ -64,7 +64,7 @@ describe('projects virtual module export capabilities', () => {
     expect(code).not.toContain('without-dot')
     expect(code).toContain('throw new Error("Project does not enable dot export: " + projectId)')
     expect(code).not.toContain('Falling back to project')
-    expect(code).toContain('loadDotSourcesFn = update')
+    expect(code).toContain('$update = loadDotSourcesRegistry')
     expect(code).not.toContain('??=')
   })
 
@@ -87,7 +87,7 @@ describe('projects virtual module export capabilities', () => {
     expect(code).not.toContain('</script>')
     await expect(import(`data:text/javascript,${encodeURIComponent(code)}`)).resolves.toMatchObject({
       loadDotSources: expect.any(Function),
-      loadDotSourcesFn: expect.any(Object),
+      loadDotSourcesRegistry: expect.any(Object),
     })
   })
 })

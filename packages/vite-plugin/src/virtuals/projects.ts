@@ -16,6 +16,7 @@ import { effectiveWebappExportFormats } from './export-formats'
 type ProjectData = {
   id: string
   title: string | undefined
+  path: string
   landingPage: LikeC4ProjectConfig['landingPage']
   exportFormats: WebappExportFormat[]
 }
@@ -61,6 +62,7 @@ export const projectsModule = {
       code: code(map(projects, p => ({
         id: p.id,
         title: p.title,
+        path: p.path,
         landingPage: p.config.landingPage,
         exportFormats: effectiveWebappExportFormats(p.config),
       }))),

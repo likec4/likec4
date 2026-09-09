@@ -16,9 +16,6 @@ export const patterns: ExtendablePatternConfig = {
         gap: 'sm',
       },
     },
-    box: {
-      jsx: ['Box', 'MarkdownBlock'],
-    },
     txt,
   },
 }

@@ -12,7 +12,34 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
         },
       },
     },
+
+    field: {
+      description: 'LikeC4 field layer',
+      value: {
+        color: 'text.default',
+        backgroundColor: 'surface.field',
+        _hover: {
+          backgroundColor: 'surface.field.hover',
+        },
+      },
+    },
+
+    warning: {
+      description: 'LikeC4 warning surface layer',
+      value: {
+        color: {
+          base: 'likec4.panel.action.warning',
+          _hover: 'likec4.panel.action.warning.hover',
+        },
+        borderRadius: 'sm',
+        backgroundColor: 'likec4.panel.action.warning.bg',
+        _hover: {
+          backgroundColor: 'likec4.panel.action.warning.bg.hover',
+        },
+      },
+    },
   },
+
   likec4: {
     tag: {
       description: 'LikeC4 tag layer',
@@ -59,8 +86,8 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
               base: 'pointer',
               _disabled: 'not-allowed',
             },
-            paddingInline: 'xxs',
-            paddingBlock: 'xxs',
+            paddingInline: '2',
+            paddingBlock: '1.5',
             border: 'transparent',
             borderRadius: 'sm',
             backgroundColor: {
@@ -85,8 +112,8 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
               base: 'pointer',
               _disabled: 'not-allowed',
             },
-            paddingInline: 'xxs',
-            paddingBlock: 'xxs',
+            paddingInline: '2',
+            paddingBlock: '1.5',
             border: 'transparent',
             borderRadius: 'sm',
             backgroundColor: {
@@ -103,6 +130,7 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
     dropdown: {
       description: 'LikeC4 dropdown layer',
       value: {
+        zIndex: 'dropdown',
         padding: '2',
         backgroundColor: 'likec4.dropdown.bg',
         border: '1px solid {colors.likec4.dropdown.border}',

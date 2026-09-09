@@ -16,11 +16,11 @@ export const PricingAnchor = ({
       fontSize: 'xs',
       whiteSpace: 'nowrap',
       '& .tabler-icon': {
-        width: '12px',
-        opacity: 0.75,
+        width: '[12px]',
+        opacity: '[0.75]',
       },
       '&:hover .tabler-icon': {
-        opacity: 1,
+        opacity: '[1]',
       },
     })}
   >

@@ -1,3 +1,4 @@
+import { LikeC4MantineProvider } from '@likec4/diagram'
 import { LoadingOverlay, MantineProvider } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { QueryClientProvider, useIsFetching } from '@tanstack/react-query'
@@ -8,7 +9,6 @@ import { interceptExternalLinks } from './interceptExternalLinks'
 import { queryClient } from './queries'
 import { QueryErrorBoundary } from './QueryErrorBoundary'
 import { useShowSpinner } from './state'
-import { theme } from './theme'
 import { ExtensionApi } from './vscode'
 
 const cleanupLinks = interceptExternalLinks(ExtensionApi.openExternalUrl)
@@ -39,7 +39,7 @@ const Loader = () => {
 }
 
 ReactDOM.createRoot(root).render(
-  <MantineProvider theme={theme} forceColorScheme={scheme} {...(getStyleNonce && { getStyleNonce })}>
+  <LikeC4MantineProvider forceColorScheme={scheme} {...(getStyleNonce && { getStyleNonce })}>
     <QueryClientProvider client={queryClient}>
       <IconsProvider>
         <QueryErrorBoundary>
@@ -48,5 +48,5 @@ ReactDOM.createRoot(root).render(
       </IconsProvider>
       <Loader />
     </QueryClientProvider>
-  </MantineProvider>,
+  </LikeC4MantineProvider>,
 )

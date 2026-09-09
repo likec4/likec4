@@ -22,7 +22,7 @@ export const pickviewBackdrop = css({
   width: '100%',
   height: '100%',
   backgroundColor: '[rgb(34 34 34 / 0.7)]',
-  zIndex: 902,
+  zIndex: '[902]',
   backdropFilter: 'auto',
   backdropBlur: '10px',
   _light: {
@@ -34,10 +34,10 @@ export const pickview = css({
   top: '[2rem]',
   left: '[50%]',
   width: '100%',
-  maxWidth: '600px',
-  minWidth: '200px',
+  maxWidth: '[600px]',
+  minWidth: '[200px]',
   transform: 'translateX(-50%)',
-  zIndex: 903,
+  zIndex: '[903]',
 })
 
 export const pickviewGroup = css({

@@ -205,6 +205,7 @@ export class Rpc extends ADisposable {
             } = workspace.ProjectsManager.getProject(projectId)
             return {
               folder: folderUri.toString(),
+              path: workspace.WorkspaceManager.relativePath(folderUri),
               config: {
                 name,
                 title,

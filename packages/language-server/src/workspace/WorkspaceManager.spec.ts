@@ -4,11 +4,11 @@
 
 import { LikeC4ProjectConfigOps } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
-import { describe, it, vi } from 'vitest'
+import { describe, vi } from 'vitest'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileNode } from '../filesystem'
-import { createTestServices } from '../test'
+import { test as it } from '../test'
 
 const fileNode = (uri: URI): FileNode => ({
   isFile: true,
@@ -17,8 +17,23 @@ const fileNode = (uri: URI): FileNode => ({
 })
 
 describe('WorkspaceManager', () => {
-  it('should load project include paths during workspace startup', async ({ expect }) => {
-    const testServices = createTestServices({ workspace: 'file:///test/workspace' })
+  it('should compute relative path from workspace root', async ({ create, expect }) => {
+    const t = await create({ workspace: 'file:///test/workspace' })
+    await t.initialize()
+
+    const check = (s: string) =>
+      expect(
+        t.services.shared.workspace.WorkspaceManager.relativePath(URI.parse(s)),
+      )
+
+    check('file:///test/workspace/project/model.c4').toBe('project/model.c4')
+    check('file:///test/workspace/').toBe('')
+    check('file:///test/workspace/shared/model/').toBe('shared/model')
+    check('file:///test/other/model.c4').toBe('../other/model.c4')
+  })
+
+  it('should load project include paths during workspace startup', async ({ create, expect }) => {
+    const testServices = await create({ workspace: 'file:///test/workspace' })
     try {
       const { services } = testServices
       const fs = services.shared.workspace.FileSystemProvider
@@ -84,8 +99,8 @@ describe('WorkspaceManager', () => {
     }
   })
 
-  it('should dedupe documents found by workspace and include-path startup scans', async ({ expect }) => {
-    const testServices = createTestServices({ workspace: 'file:///test/workspace' })
+  it('should dedupe documents found by workspace and include-path startup scans', async ({ expect, create }) => {
+    const testServices = create({ workspace: 'file:///test/workspace' })
     try {
       const { services } = testServices
       const fs = services.shared.workspace.FileSystemProvider
