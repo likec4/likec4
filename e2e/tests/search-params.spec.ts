@@ -119,13 +119,16 @@ test.describe('?dynamic= search parameter', () => {
   }
 
   test('view variant=sequence renders sequence when ?dynamic= is absent', async ({ page }) => {
-    await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW_VARIANT))
+    await gotoAndWaitForCanvas(page, projectViewUrl(EXPORT_CONFIG_PROJECT, DYNAMIC_VIEW_VARIANT))
 
     await expect(page.locator(SEQ_ACTOR_SELECTOR).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
   })
 
   test('?dynamic=diagram overrides view variant=sequence', async ({ page }) => {
-    await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW_VARIANT, { dynamic: 'diagram' }))
+    await gotoAndWaitForCanvas(
+      page,
+      projectViewUrl(EXPORT_CONFIG_PROJECT, DYNAMIC_VIEW_VARIANT, { dynamic: 'diagram' }),
+    )
 
     await expect(page.locator(SEQ_ACTOR_SELECTOR)).toHaveCount(0)
   })

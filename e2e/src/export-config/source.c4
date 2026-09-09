@@ -18,4 +18,10 @@ views {
   view index {
     include *
   }
+
+  dynamic view dynamic-view-variant {
+    variant sequence
+
+    app -> api
+  }
 }
