@@ -33,7 +33,7 @@ export const Route = createRootRouteWithContext<Context>()({
       stripSearchParams({
         padding: 20,
         theme: undefined,
-        dynamic: 'diagram',
+        dynamic: undefined,
         relationships: undefined,
         focusOnElement: undefined,
       }),
