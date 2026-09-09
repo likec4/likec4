@@ -3,7 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { invariant } from '@likec4/core'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { projectIdSchema } from './_common'
 
@@ -16,7 +16,7 @@ const descendantSummarySchema = z.object({
   title: z.string().describe('Human-readable title'),
   depth: z.number().describe('Depth relative to the root element (1 = direct child)'),
   tags: z.array(z.string()).describe('Assigned tags'),
-  metadata: z.record(z.union([z.string(), z.array(z.string())])).describe('Element metadata'),
+  metadata: z.record(z.string(), z.union([z.string(), z.array(z.string())])).describe('Element metadata'),
   childCount: z.number().describe('Number of direct children'),
   incomingCount: z.number().describe('Number of incoming relationships'),
   outgoingCount: z.number().describe('Number of outgoing relationships'),

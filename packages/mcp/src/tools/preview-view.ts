@@ -12,8 +12,9 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
 import { randomUUID } from 'node:crypto'
 import { relative, sep } from 'node:path'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { useLanguageServices } from '../ctx'
+import { mcpToolSchema } from '../utils'
 import { buildRenderPayload, projectIdSchema, toolError } from './_common'
 import { renderViewResourceUri } from './render-view'
 
@@ -68,17 +69,17 @@ Behavior:
 Note: preview styling may not exactly match the real project (custom theme/style extensions aren't applied to the preview). Only \`view <id> ...\` (element view) declarations are recognized for id-detection — a \`dynamic view <id> {...}\` or \`deployment view <id> {...}\` will fail with a generic "could not find a \`view <id>\`" error instead.
 
 Use "preview-view" to iterate on a new view definition before creating it for real. Use "render-view" to render a view that's already saved.`,
-      inputSchema: {
+      inputSchema: mcpToolSchema({
         dsl: z.string().describe('A single `view <id> ... { ... }` LikeC4 DSL definition'),
         project: projectIdSchema,
-      },
-      outputSchema: {
+      }),
+      outputSchema: mcpToolSchema({
         id: z.string(),
         title: z.string(),
         project: z.string(),
         view: z.record(z.string(), z.unknown()),
         model: z.record(z.string(), z.unknown()),
-      },
+      }),
       annotations: {
         readOnlyHint: true,
         idempotentHint: true,

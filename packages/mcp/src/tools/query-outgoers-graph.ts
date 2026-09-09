@@ -3,7 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { invariant } from '@likec4/core'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import {
   type GraphNode,
@@ -102,10 +102,13 @@ plus all their consumers, recursively up to maxDepth levels.
     totalNodes: z.number().describe('Total number of nodes in the graph'),
     maxDepth: z.number().describe('Maximum depth reached'),
     truncated: z.boolean().describe('True if result was truncated due to maxNodes limit'),
-    nodes: z.record(elementSummarySchema.extend({
-      outgoers: z.array(neighborSchema).describe('Outgoing relationships with details'),
-      depth: z.number().describe('Distance from target element (0 = target)'),
-    })),
+    nodes: z.record(
+      z.string(),
+      elementSummarySchema.extend({
+        outgoers: z.array(neighborSchema).describe('Outgoing relationships with details'),
+        depth: z.number().describe('Distance from target element (0 = target)'),
+      }),
+    ),
   },
 })(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)

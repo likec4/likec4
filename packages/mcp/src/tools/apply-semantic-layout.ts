@@ -1,10 +1,18 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { ProjectId } from '@likec4/core'
 import { enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { completable } from '@modelcontextprotocol/sdk/server/completable.js'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { useLanguageServices } from '../ctx'
+import { mcpToolSchema } from '../utils'
 import { toolError } from './_common'
 
 export function applySemanticLayoutTool(
@@ -15,7 +23,7 @@ export function applySemanticLayoutTool(
     'apply-semantic-layout',
     {
       description: 'Apply semantic layout to the likec4 view',
-      inputSchema: {
+      inputSchema: mcpToolSchema({
         projectId: completable(
           z.string()
             .default('default' as ProjectId)
@@ -36,11 +44,11 @@ export function applySemanticLayoutTool(
             return Array.from(model.views()).filter((view) => view.id.startsWith(value)).map(prop('id'))
           },
         ),
-      },
-      outputSchema: {
+      }),
+      outputSchema: mcpToolSchema({
         reasoning: z.string().describe('Reasoning behind the layout changes'),
         snapshotUri: z.string().nullish().describe('Where snapshot was saved (after applying layout)'),
-      },
+      }),
     },
     async (args, ctx) => {
       const projectId = languageServices.projectsManager.ensureProjectId(args.projectId as ProjectId)
