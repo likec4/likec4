@@ -6,8 +6,8 @@ export const searchParamsSchema = z.object({
     .optional()
     .catch(undefined),
   dynamic: z.enum(['diagram', 'sequence'])
-    .default('diagram')
-    .catch('diagram'),
+    .optional()
+    .catch(undefined),
   padding: z.number()
     .min(0)
     .default(20)
