@@ -74,6 +74,48 @@ require_nonnegative_integer() {
   [[ "$2" =~ ^[0-9]+$ ]] || fail "$1 must be a nonnegative integer"
 }
 
+select_main_claude_pid() {
+  local proc_root=$1
+  shift
+
+  local pid arg
+  local is_child
+  local -a argv=()
+  local -a candidates=()
+
+  for pid in "$@"; do
+    [[ "$pid" =~ ^[0-9]+$ && -r "$proc_root/$pid/cmdline" ]] || continue
+    argv=()
+    mapfile -d '' -t argv <"$proc_root/$pid/cmdline"
+    ((${#argv[@]} > 0)) || continue
+    [[ "${argv[0]##*/}" == 'claude-desktop' ]] || continue
+
+    is_child=false
+    for arg in "${argv[@]:1}"; do
+      if [[ "$arg" == '--type' || "$arg" == --type=* ]]; then
+        is_child=true
+        break
+      fi
+    done
+    [[ "$is_child" == false ]] || continue
+    candidates+=("$pid")
+  done
+
+  ((${#candidates[@]} <= 1)) || fail 'More than one main Claude Desktop process is running'
+  ((${#candidates[@]} == 1)) && printf '%s\n' "${candidates[0]}"
+  return 0
+}
+
+find_main_claude_pid() {
+  local -a pids=()
+  mapfile -t pids < <(pgrep -u "$UID" -x claude-desktop || true)
+  select_main_claude_pid /proc "${pids[@]}"
+}
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  return 0
+fi
+
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 package_dir=$(cd -- "$script_dir/.." && pwd -P)
 mcp_cli="$package_dir/dist/cli.mjs"
@@ -257,24 +299,6 @@ write_config() {
 
   chmod --reference="$config_file" "$temp_config"
   mv -- "$temp_config" "$config_file"
-}
-
-find_main_claude_pid() {
-  local pid cmdline proc_display
-  local -a candidates=()
-
-  while read -r pid; do
-    [[ -n "$pid" && -r "/proc/$pid/cmdline" && -r "/proc/$pid/environ" ]] || continue
-    cmdline=$(tr '\0' ' ' <"/proc/$pid/cmdline")
-    [[ "$cmdline" != *' --type='* ]] || continue
-    proc_display=$(tr '\0' '\n' <"/proc/$pid/environ" | sed -n 's/^DISPLAY=//p')
-    [[ "$proc_display" == "$display_name" ]] || continue
-    candidates+=("$pid")
-  done < <(pgrep -u "$UID" -x claude-desktop || true)
-
-  ((${#candidates[@]} <= 1)) || fail 'More than one main Claude Desktop process is running'
-  ((${#candidates[@]} == 1)) && printf '%s\n' "${candidates[0]}"
-  return 0
 }
 
 restart_claude() {
