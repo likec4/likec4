@@ -147,7 +147,11 @@ describe('render-view resource', () => {
   it('ships the MCP App readiness marker in the render resource', async () => {
     await using pair = await createMCPTestPair(DSL)
     const resource = await pair.client.readResource({ uri: 'ui://likec4/render-view.html' })
-    const html = resource.contents[0]?.text
+    const content = resource.contents[0]
+    if (!content || !('text' in content)) {
+      throw new Error('Expected the render-view resource to contain text')
+    }
+    const html = content.text
 
     expect(html).toContain('data-testid')
     expect(html).toContain('mcp-render-view-ready')
