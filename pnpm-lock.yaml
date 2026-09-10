@@ -261,7 +261,7 @@ catalogs:
       version: 9.6.0
   mcp:
     '@modelcontextprotocol/ext-apps':
-      specifier: ^1.7.4
+      specifier: ^1.7.5
       version: 1.7.5
     '@modelcontextprotocol/sdk':
       specifier: ^1.29.0
