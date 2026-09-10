@@ -1,16 +1,34 @@
 import { describe, expect, it } from 'vitest'
 import { createMCPTestPair, structured, textContent } from './test-utils'
 
+const UNRELATED_ELEMENTS = Array.from(
+  { length: 250 },
+  (_, index) => `unused${index} = system 'Unused ${index} ${'x'.repeat(500)}'`,
+).join('\n')
+
 const DSL = `
   specification {
     element system
+    element container
   }
   model {
-    cloud = system 'Cloud System'
+    selected = system 'Selected' {
+      child = container 'Child'
+    }
+    peer = system 'Peer'
+    unrelated = system 'Unrelated' {
+      hidden = container 'Hidden'
+    }
+    ${UNRELATED_ELEMENTS}
+    selected.child -> peer 'uses'
   }
   views {
     view index {
-      include *
+      include selected.child
+      include peer
+    }
+    view unrelatedView {
+      include unrelated.*
     }
   }
 `
@@ -57,6 +75,34 @@ describe('render-view tool', () => {
 
     const views = model['views'] as Record<string, unknown>
     expect(views['index']).toBeDefined()
+  })
+
+  it('returns a bounded view-scoped model by default', async () => {
+    await using pair = await createMCPTestPair(DSL)
+    const result = await pair.client.callTool({
+      name: 'render-view',
+      arguments: { viewId: 'index' },
+    })
+    const content = structured(result)
+    const model = content['model'] as Record<string, Record<string, unknown>>
+
+    expect(Object.keys(model['elements']!)).toEqual(['selected', 'peer', 'selected.child'])
+    expect(Object.keys(model['relations']!)).toHaveLength(1)
+    expect(Object.keys(model['views']!)).toEqual(['index'])
+    expect(JSON.stringify(content)).not.toContain('Hidden')
+    expect(Buffer.byteLength(JSON.stringify(content))).toBeLessThan(100_000)
+  })
+
+  it('returns the complete model when fullModel is true', async () => {
+    await using pair = await createMCPTestPair(DSL)
+    const result = await pair.client.callTool({
+      name: 'render-view',
+      arguments: { viewId: 'index', fullModel: true },
+    })
+    const model = structured(result)['model'] as Record<string, Record<string, unknown>>
+
+    expect(model['elements']!['unrelated']).toBeDefined()
+    expect(Object.keys(model['views']!)).toEqual(['index', 'unrelatedView'])
   })
 
   it('exposes a text fallback alongside structuredContent', async () => {

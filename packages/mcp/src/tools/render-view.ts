@@ -26,11 +26,14 @@ export function renderViewTool(mcpServer: McpServer): McpServer {
 Request:
 - viewId: string — view id (name)
 - project: string (optional) — project id. Defaults to "default" if omitted.
+- fullModel: boolean (optional) — include the complete model instead of data scoped to this view. Defaults to false.
 
 Use this when the user wants to *see* a view. Use "read-view" instead when only the view's structure (nodes/edges) is needed.`,
       inputSchema: mcpToolSchema({
         viewId: z.string().describe('View id (name)'),
         project: projectIdSchema,
+        fullModel: z.boolean().default(false)
+          .describe('Include the complete model instead of data scoped to this view'),
       }),
       outputSchema: mcpToolSchema({
         id: z.string(),
@@ -71,8 +74,8 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
 
       // LikeC4Diagram unconditionally reads model.specification (tag colors) via
       // TagStylesProvider, so the UI needs a real LikeC4Model, not just the view.
-      // buildRenderPayload ships the full model data but scopes `views` down to
-      // just this one — other views' layouts aren't needed to render a single view.
+      // buildRenderPayload scopes model records by default, so the UI receives
+      // only the data needed to render this view.
       return {
         content: [{
           type: 'text',
@@ -83,7 +86,8 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
           viewId: viewModel.id,
           title,
           layoutedView,
-          modelData: model.$data,
+          model,
+          fullModel: args.fullModel,
         }),
       }
     },
