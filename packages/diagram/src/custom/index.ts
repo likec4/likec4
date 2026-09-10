@@ -64,3 +64,9 @@ export { FramerMotionConfig } from '../context/FramerMotionConfig'
 export { NavigationPanel } from '../components/NavigationPanel'
 
 export { ErrorBoundary, ErrorFallback } from '../components/ErrorFallback'
+
+export { LikeC4MantineProvider } from '../LikeC4MantineProvider'
+
+export { LikeC4Styles } from '../LikeC4Styles'
+
+export { TagStylesProvider } from '../context/TagStylesContext'

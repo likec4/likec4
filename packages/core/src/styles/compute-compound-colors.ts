@@ -14,6 +14,7 @@ export function computeCompoundColorValues<Depth extends number = 6>(
   depth?: Depth,
 ): NTuple<ElementColorValues, Depth> {
   const d = depth ?? 6
+  invariant(d >= 1, 'Depth must be at least 1')
   let fill = chroma(base.fill)
   let stroke = chroma(base.stroke)
 

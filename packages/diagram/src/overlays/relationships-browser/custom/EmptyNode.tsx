@@ -1,5 +1,5 @@
 import { Box } from '@likec4/styles/jsx'
-import { Text } from '@mantine/core'
+import { Txt } from '@likec4/styles/jsx'
 import type { RelationshipsBrowserTypes } from '../_types'
 
 export function EmptyNode({
@@ -12,14 +12,13 @@ export function EmptyNode({
       css={{
         width: '100%',
         height: '100%',
-        border: `3px dashed`,
-        borderColor: `default.border`,
+        border: `[3px dashed {colors.border.default}]`,
         borderRadius: 'md',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <Text c={'dimmed'} fz={'lg'} fw={500}>No {column === 'incomers' ? 'incoming' : 'outgoing'}</Text>
+      <Txt textStyle={'dimmed'} fontSize={'lg'} medium>No {column === 'incomers' ? 'incoming' : 'outgoing'}</Txt>
     </Box>
   )
 }

@@ -3,7 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { invariant } from '@likec4/core'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { projectIdSchema } from './_common'
 
@@ -31,14 +31,18 @@ const diffSchema = z.object({
     common: z.array(z.string()).describe('Tags present in both elements'),
   }),
   metadata: z.object({
-    onlyInElement1: z.record(z.union([z.string(), z.array(z.string())])).describe('Metadata keys only in element1'),
-    onlyInElement2: z.record(z.union([z.string(), z.array(z.string())])).describe('Metadata keys only in element2'),
+    onlyInElement1: z.record(z.string(), z.union([z.string(), z.array(z.string())])).describe(
+      'Metadata keys only in element1',
+    ),
+    onlyInElement2: z.record(z.string(), z.union([z.string(), z.array(z.string())])).describe(
+      'Metadata keys only in element2',
+    ),
     different: z.array(z.object({
       key: z.string(),
       element1Value: z.union([z.string(), z.array(z.string())]),
       element2Value: z.union([z.string(), z.array(z.string())]),
     })).describe('Metadata keys present in both but with different values'),
-    common: z.record(z.union([z.string(), z.array(z.string())])).describe(
+    common: z.record(z.string(), z.union([z.string(), z.array(z.string())])).describe(
       'Metadata keys with identical values in both',
     ),
   }),

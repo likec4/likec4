@@ -6,16 +6,18 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 declare module 'likec4:projects' {
-  import type { WebappExportFormat } from 'likec4/config'
+  import type { RelationshipBrowserScope, WebappExportFormat } from 'likec4/config'
   import type { ProjectId } from 'likec4/model'
   type LandingPageConfig =
     | { redirect: true }
     | { include: string[] }
     | { exclude: string[] }
-  type Project = {
+  export interface Project {
     id: ProjectId
     title?: string
+    path: string
     landingPage?: LandingPageConfig
+    relationshipBrowserDefaultScope: RelationshipBrowserScope
     exportFormats: readonly WebappExportFormat[]
   }
   export const isSingleProject: boolean

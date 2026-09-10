@@ -1,4 +1,4 @@
-import { type DynamicViewFlow, type scalar, type StepPath } from '@likec4/core'
+import type { DynamicViewFlow, scalar, StepPath } from '@likec4/core'
 
 import type { TreeNodeData } from '@mantine/core'
 import { useMemo } from 'react'

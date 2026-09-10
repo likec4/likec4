@@ -92,6 +92,10 @@ export const ReadLocalIcon: RequestType</* uri */ string, ReadLocalIconResult> =
   method: 'read-local-icon',
 }
 
+export const ReadBootstrapIcon: RequestType</* name */ string, ReadLocalIconResult> = {
+  method: 'read-bootstrap-icon',
+}
+
 export const ViewChangeReq = { method: 'webview:change' } as RequestType<
   { projectId: ProjectId; viewId: ViewId; change: ViewChange },
   { success: true } | { success: false; error: string }

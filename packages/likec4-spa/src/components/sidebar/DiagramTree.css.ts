@@ -1,21 +1,23 @@
 import { css } from '@likec4/styles/css'
 
 export const navsidebar = css({
-  backdropFilter: 'blur(6px)',
-  transition: 'transform 0.21s cubic-bezier(0.4,0,0.2,1)',
+  backdropFilter: '[blur(6px)]',
+  transitionProperty: 'common',
+  transition: 'slow',
   transform: 'translateX(-100%)',
   _before: {
-    transition: 'all 0.26s ease-in-out',
+    transitionProperty: 'common',
+    transition: 'slow',
     position: 'absolute',
     content: '" "',
     inset: '0',
     background: 'mantine.gray[7]',
     opacity: '0.7',
-    zIndex: '1',
+    zIndex: '[1]',
   },
   '& > div': {
     position: 'relative',
-    zIndex: '2',
+    zIndex: '[2]',
   },
   '&[data-opened=\'true\']': {
     transform: 'translateX(0)',
@@ -25,19 +27,19 @@ export const navsidebar = css({
 export const trigger = css({
   cursor: 'pointer',
   _before: {
-    transitionProperty: 'all',
+    transitionProperty: 'common',
     transitionTimingFunction: '[cubic-bezier(0,0.31,0,1.03)]',
-    transitionDuration: '140ms',
+    transitionDuration: 'fast',
     position: 'absolute',
     content: '',
     inset: '0',
     background: 'mantine.gray[7]',
     opacity: '0',
-    zIndex: '1',
+    zIndex: '[1]',
   },
   '& > *': {
     position: 'relative',
-    zIndex: '2',
+    zIndex: '[2]',
   },
   '&:hover::before': {
     visibility: 'visible',

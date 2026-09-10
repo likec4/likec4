@@ -18,11 +18,12 @@ import {
 } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import { IconArrowDownRight, IconHelpCircle } from '@tabler/icons-react'
+import { deepEqual } from 'fast-equals'
 import { AnimatePresence, m } from 'motion/react'
 import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
 import { ElementShape } from '../../../base-primitives'
-import { useMantinePortalProps } from '../../../hooks'
+import { selectDiagramContext, useDiagramSelector, useMantinePortalProps } from '../../../hooks'
 import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
 import { useXYStore } from '../../../hooks/useXYFlow'
 import type { DiagramContext } from '../../state/types'
@@ -116,17 +117,17 @@ const ElementNotation = ({ value }: { value: ElementNotationData }) => {
   )
 }
 
-const selector = (s: DiagramContext) => ({
+const selector = selectDiagramContext((s) => ({
   id: s.view.id,
   notations: s.view.notation?.nodes ?? [],
-})
+}), deepEqual)
 
 export const NotationPanel = memo(() => {
   const height = useXYStore(s => s.height)
   const {
     id,
     notations,
-  } = useDiagramContext(selector)
+  } = useDiagramSelector(selector)
   const [isCollapsed, setCollapsed] = useLocalStorage({
     key: 'notation-webview-collapsed',
     defaultValue: true,
@@ -150,11 +151,10 @@ export const NotationPanel = memo(() => {
           }}
           className={styles.container}
         >
-          <Tooltip label="Show notation" color="dark" fz={'xs'} {...portalProps}>
+          <Tooltip label="Show notation" {...portalProps}>
             <ActionIcon
               size={'lg'}
               variant="default"
-              color="gray"
               className={styles.icon}
               onClick={() => setCollapsed(false)}
             >
@@ -197,6 +197,7 @@ export const NotationPanel = memo(() => {
                   ml={2}
                   style={{
                     alignSelf: 'center',
+                    opacity: 0.7,
                   }}
                   onClick={() => setCollapsed(true)}
                 >

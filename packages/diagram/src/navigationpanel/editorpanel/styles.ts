@@ -19,8 +19,7 @@ export const panel = css({
     ['--ai-size']: '2rem',
   },
   ['& .tabler-icon']: {
-    width: '65%',
-    height: '65%',
+    boxSize: '[65%]',
   },
   _reduceGraphics: {
     '& .action-icon': {
@@ -38,24 +37,23 @@ export const actionIconGroup = css({
 
 export const autolayoutIcon = css({
   ['& .tabler-icon']: {
-    width: '65%',
-    height: '65%',
+    boxSize: '[65%]',
   },
 })
 
 export const autolayoutButton = css({
-  flex: '1 1 40%',
+  flex: '[1 1 40%]',
   textAlign: 'center',
   fontWeight: 'medium',
   padding: '[4px 6px]',
-  fontSize: '11px',
-  zIndex: 1,
+  fontSize: '[11px]',
+  zIndex: 'base',
 })
 
 export const autolayoutIndicator = css({
   background: 'mantine.gray[2]',
   borderRadius: 'sm',
-  border: `1px solid`,
+  border: `default`,
   borderColor: 'mantine.gray[4]',
   _dark: {
     background: 'mantine.dark[5]',
@@ -75,9 +73,8 @@ export const spacingSliderBody = css({
 
 export const spacingSliderThumb = css({
   position: 'absolute',
-  width: '8px',
-  height: '8px',
-  border: `2px solid`,
+  boxSize: '[8px]',
+  border: `strong`,
   borderColor: 'mantine.gray[5]',
   borderRadius: 'sm',
   transform: 'translate(-50%, -50%)',

@@ -86,6 +86,7 @@ test('LikeC4Model in React types codegen', () => {
     | 'customer'
     | 'deploy_1'
     | 'dynamic-view-1'
+    | 'dynamic-view-variant'
     | 'graphql'
     | 'index'
     | 'mobile'

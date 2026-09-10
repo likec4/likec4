@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Fqn } from '@likec4/core/types'
 import { z } from 'zod'
 
@@ -6,12 +13,15 @@ export const searchParamsSchema = z.object({
     .optional()
     .catch(undefined),
   dynamic: z.enum(['diagram', 'sequence'])
-    .default('diagram')
-    .catch('diagram'),
+    .optional()
+    .catch(undefined),
   padding: z.number()
     .min(0)
     .default(20)
     .catch(20),
+  relationshipsScope: z.enum(['global', 'view'])
+    .optional()
+    .catch(undefined),
   relationships: z.string()
     .nonempty()
     .optional()

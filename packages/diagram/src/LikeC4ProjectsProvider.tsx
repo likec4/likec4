@@ -5,12 +5,25 @@ import type { JSX } from 'react/jsx-runtime'
 import { LikeC4ProjectsContextProvider, useOptionalProjectsContext } from './context/LikeC4ProjectsContext'
 import { useCallbackRef } from './hooks/useCallbackRef'
 
+type LandingPageConfig =
+  | { redirect: true }
+  | { include: string[] }
+  | { exclude: string[] }
+
+export interface LikeC4ProjectData {
+  readonly id: ProjectId
+  readonly title?: string | undefined
+  readonly path?: string | undefined
+  readonly landingPage?: LandingPageConfig | undefined
+  readonly exportFormats?: readonly string[] | undefined
+}
+
 export interface LikeC4ProjectsProviderProps {
   /**
    * Projects to be used in the navigation panel.
    * Current project is taken from the LikeC4Model
    */
-  projects: ReadonlyArray<LikeC4Project>
+  projects: ReadonlyArray<LikeC4ProjectData>
 
   /**
    * Optional callback when another project is selected.

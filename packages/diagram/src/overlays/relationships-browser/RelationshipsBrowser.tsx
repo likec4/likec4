@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { cx } from '@likec4/styles/css'
 import { ActionIcon, Group, Tooltip as MantineTooltip } from '@mantine/core'
 import { useClipboard, useStateHistory } from '@mantine/hooks'
@@ -201,7 +208,7 @@ const RelationshipsBrowserInner = memo(() => {
       {closeable && (
         <Panel position="top-right">
           <Group gap={4} wrap={'nowrap'}>
-            <CopyLinkButton subjectId={subjectId} />
+            <CopyLinkButton subjectId={subjectId} scope={scope} />
             <ActionIcon
               variant="default"
               color="gray"
@@ -289,6 +296,7 @@ const TopLeftPanel = ({
  */
 type CopyLinkButtonProps = {
   subjectId: string
+  scope: 'global' | 'view'
 }
 
 const Tooltip = MantineTooltip.withProps({
@@ -307,13 +315,14 @@ const Tooltip = MantineTooltip.withProps({
  * Handles both browser history routing and hash-based routing.
  * Preserves base paths when app is hosted under a sub-path.
  */
-function buildRelationshipUrl(subjectId: string): string {
+export function buildRelationshipUrl(subjectId: string, scope: 'global' | 'view'): string {
   const currentUrl = new URL(window.location.href)
 
   // Hash-based routing: /#/view/name or /base/path/index.html#/view/name
   if (currentUrl.hash.startsWith('#/')) {
     const hashUrl = new URL(currentUrl.hash.substring(1), currentUrl.origin)
     hashUrl.searchParams.set('relationships', subjectId)
+    hashUrl.searchParams.set('relationshipsScope', scope)
 
     const cleanPath = hashUrl.pathname.replace(/\/$/, '')
 
@@ -322,6 +331,7 @@ function buildRelationshipUrl(subjectId: string): string {
 
   // Standard browser history routing
   currentUrl.searchParams.set('relationships', subjectId)
+  currentUrl.searchParams.set('relationshipsScope', scope)
   return currentUrl.href
 }
 
@@ -330,7 +340,7 @@ function buildRelationshipUrl(subjectId: string): string {
  * Shows visual feedback for both success and failure states.
  * Note: Clipboard API requires HTTPS or localhost. This is a browser security restriction, not a code issue.
  */
-const CopyLinkButton = ({ subjectId }: CopyLinkButtonProps) => {
+const CopyLinkButton = ({ subjectId, scope }: CopyLinkButtonProps) => {
   const clipboard = useClipboard({ timeout: 2000 })
   const [copyError, setCopyError] = useState(false)
   const errorTimeoutRef = useRef<number | null>(null)
@@ -345,7 +355,7 @@ const CopyLinkButton = ({ subjectId }: CopyLinkButtonProps) => {
       errorTimeoutRef.current = null
     }
 
-    const url = buildRelationshipUrl(subjectId)
+    const url = buildRelationshipUrl(subjectId, scope)
 
     // Check if we're NOT in a secure context (HTTP on non-localhost)
     // Clipboard API requires HTTPS or localhost
@@ -412,7 +422,7 @@ const CopyLinkButton = ({ subjectId }: CopyLinkButtonProps) => {
         variant="default"
         color="gray"
         onClick={handleCopy}
-        aria-label="Copy link to this relationship view"
+        aria-label="Copy relationship URL"
       >
         {buttonState.icon}
       </ActionIcon>

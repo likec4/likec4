@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
 import type {
   CallToolResult,
@@ -5,7 +12,7 @@ import type {
   ServerRequest,
   ToolAnnotations,
 } from '@modelcontextprotocol/sdk/types.js'
-import type { z, ZodRawShape, ZodTypeAny } from 'zod/v3'
+import { type ZodRawShape, z } from 'zod/v4'
 
 import { hasProp } from '@likec4/core'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
@@ -22,10 +29,22 @@ export type MCPRegistrationFunction = (mcpServer: McpServer) => McpServer
 type inferArg<Args = unknown, Default = undefined> =
   // dprint-ignore
   Args extends ZodRawShape
-    ? z.objectOutputType<Args, ZodTypeAny>
+    ? z.output<z.ZodObject<Args>>
     : IsUnknown<Args> extends true
       ? unknown
       : Default
+
+const JSON_SCHEMA_2020_12 = 'https://json-schema.org/draft/2020-12/schema'
+
+/**
+ * Wraps an MCP tool schema and declares JSON Schema 2020-12.
+ *
+ * MCP SDK 1.x otherwise converts Zod schemas with draft-07 metadata. Direct tool registrations must apply this
+ * helper to both input and output schemas.
+ */
+export function mcpToolSchema<Shape extends ZodRawShape>(shape: Shape): z.ZodObject<Shape> {
+  return z.object(shape).meta({ $schema: JSON_SCHEMA_2020_12 })
+}
 
 type LikeC4ToolCallbackWithoutArgs = (
   tool: (
@@ -85,10 +104,13 @@ export function likec4Tool(
   },
 ) {
   return (tool: Function) => (mcpServer: McpServer) => {
-    const { name, description, ...rest } = config
+    const { name, description, inputSchema, outputSchema, ...rest } = config
+    const hasStructuredOutput = outputSchema !== undefined && !isEmptyish(outputSchema)
     const toolConfig = {
       description: description?.trim() ?? '',
       ...rest,
+      ...(inputSchema !== undefined ? { inputSchema: mcpToolSchema(inputSchema) } : {}),
+      ...(outputSchema !== undefined ? { outputSchema: mcpToolSchema(outputSchema) } : {}),
     }
     mcpServer.registerTool(
       name,
@@ -106,7 +128,7 @@ export function likec4Tool(
               }],
             }
           }
-          if (!isEmptyish(toolConfig.outputSchema)) {
+          if (hasStructuredOutput) {
             return {
               content: [],
               structuredContent: result,

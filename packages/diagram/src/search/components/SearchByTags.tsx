@@ -40,16 +40,16 @@ export function SearchByTags() {
         css={{
           gap: '1.5', // 6px
           flexWrap: 'wrap',
-          opacity: isFiltered ? 1 : .3,
+          opacity: isFiltered ? '1' : '0.3',
           grayscale: isFiltered ? 0 : .9,
           filter: 'auto',
           transition: 'fast',
           _groupHover: {
-            opacity: 1,
+            opacity: '1',
             grayscale: 0,
           },
           _groupFocusWithin: {
-            opacity: 1,
+            opacity: '1',
             grayscale: 0,
           },
         }}

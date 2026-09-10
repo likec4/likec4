@@ -28,10 +28,10 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
             {({ copy, copied }) => (
               <ActionIcon
                 className={css({
-                  opacity: copied ? 1 : 0.45,
+                  opacity: copied ? '1' : '0.45',
                   transition: 'fast',
                   _hover: {
-                    opacity: 1,
+                    opacity: '1',
                   },
                 })}
                 tabIndex={-1}
@@ -55,8 +55,8 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
         classNames={{
           root: css({
             flexWrap: 'nowrap',
-            minHeight: 24,
-            maxWidth: 500,
+            minHeight: '[24px]',
+            maxWidth: '[500px]',
             userSelect: 'all',
             pr: '0',
             backgroundColor: {
@@ -74,7 +74,7 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
               pointerEvents: 'none',
               _groupHover: {
                 color: '[var(--badge-color)]',
-                opacity: .7,
+                opacity: '0.7',
               },
             },
           }),
@@ -90,8 +90,8 @@ export const Link = forwardRef<HTMLDivElement, Omit<BadgeProps, 'children' | 'cl
           css={{
             transition: 'fast',
             opacity: {
-              base: 0.7,
-              _hover: 1,
+              base: '0.7',
+              _hover: '1',
             },
             textDecoration: {
               base: 'none',

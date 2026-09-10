@@ -11,7 +11,7 @@ const circle = css({
   height: '[100%]',
   borderRadius: '[50%]',
   backgroundColor: 'var(--likec4-palette-fill)',
-  border: '2px solid var(--likec4-palette-stroke)',
+  border: '[2px solid var(--likec4-palette-stroke)]',
 })
 
 const label = css({
@@ -26,7 +26,7 @@ const label = css({
   whiteSpace: 'nowrap',
   pointerEvents: 'none',
   fontSize: 'xs',
-  lineHeight: '1.2',
+  lineHeight: '[1.2]',
   color: '[var(--likec4-palette-hiContrast)]',
 })
 
@@ -58,7 +58,7 @@ export function GraphElementNode(props: Types.NodeProps<'graph-element'>) {
       <Box className={circle} />
       <Box className={label}>
         <span className={css({ fontWeight: 'medium' })}>{data.title}</span>
-        {data.technology && <span className={css({ opacity: 0.7, fontSize: 'xxs' })}>[{data.technology}]</span>}
+        {data.technology && <span className={css({ opacity: '[0.7]', fontSize: 'xxs' })}>[{data.technology}]</span>}
       </Box>
       <DefaultHandles />
     </m.div>

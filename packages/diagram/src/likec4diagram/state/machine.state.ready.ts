@@ -90,7 +90,7 @@ export const ready = machine.createStateConfig({
       ],
     },
     'layout.resetManualLayout': {
-      guard: 'not readonly',
+      guard: 'enabled: Editor',
       actions: [
         cancelEditing(),
         disableCompareWithLatest(),

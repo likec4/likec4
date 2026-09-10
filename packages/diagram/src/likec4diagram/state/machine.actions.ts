@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
@@ -9,6 +16,7 @@ import {
   nonNullable,
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
+import { getViewFolderPath } from '@likec4/core/model'
 import type {
   DiagramNode,
   DiagramView,
@@ -22,7 +30,7 @@ import type {
 import { difference, isString } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy, mapToObj, pipe } from 'remeda'
+import { hasAtLeast, isTruthy, mapToObj } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   assertEvent,
@@ -38,7 +46,7 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
-import { cancelFitDiagram, fitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
+import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
@@ -388,9 +396,12 @@ export const emitOnLayoutTypeChange = () =>
     if (context.toggledFeatures.enableCompareWithLatest === true) {
       // Check if we are switching from manual to auto layout while a sync is pending
       if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
-        typedSystem(system).editorActorRef?.send({
-          type: 'cancel',
-        })
+        enqueue.sendTo(
+          typedSystem.editorActor,
+          {
+            type: 'cancel',
+          },
+        )
       }
 
       const currentViewport = context.viewport
@@ -501,9 +512,10 @@ export const notationsHighlight = () =>
 export const tagHighlight = () =>
   machine.assign(({ context, event }) => {
     assertEvent(event, 'tag.highlight')
+    const tag = event.tag.startsWith('#') ? event.tag.slice(1) : event.tag
     return {
       xynodes: context.xynodes.map((n) => {
-        if (n.data.tags?.includes(event.tag)) {
+        if (n.data.tags && n.data.tags.includes(tag)) {
           return Base.setDimmed(n, false)
         }
         return Base.setDimmed(n, true)
@@ -759,7 +771,7 @@ export const openOverlay = () =>
             type: 'open.relationshipsBrowser',
             subject: event.fqn,
             viewId: context.view.id,
-            scope: 'view' as const,
+            scope: event.scope ?? context.relationshipBrowserScope,
             closeable: true,
             enableChangeScope: true,
             enableSelectSubject: true,
@@ -832,12 +844,13 @@ export const ensureNavigationPanelActor = () =>
     const enabled = check('enabled: NavigationPanel')
     const running = typedSystem(system).navigationActorRef
     if (enabled && !running) {
+      const viewFolder = context.view.title ? getViewFolderPath(context.view.title) : ''
       enqueue.spawnChild('navigationPanel', {
         id: 'navigationPanel',
         systemId: 'navigationPanel',
         input: {
-          view: context.view,
-          viewModel: null,
+          viewId: context.view.id,
+          viewFolder: viewFolder ?? '',
         },
         syncSnapshot: true,
       })

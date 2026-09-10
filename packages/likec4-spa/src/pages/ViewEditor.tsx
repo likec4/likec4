@@ -14,12 +14,14 @@ import { LazyAIChat } from '../aichat'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
 import { useCurrentProject, useCurrentView } from '../hooks'
+import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 import { FocusElementFromUrl, ListenForDiagramStateChanges, OpenRelationshipBrowserFromUrl } from './ViewReact'
 
 export function ViewEditor() {
   const navigate = useNavigate()
   const project = useCurrentProject()
   const [view, setLayoutType] = useCurrentView()
+  const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
   const $likec4model = useLikeC4ModelAtom()
   const { dynamic } = useSearch({ strict: false })
 
@@ -85,6 +87,8 @@ export function ViewEditor() {
         enableElementDetails
         enableRelationshipDetails
         enableRelationshipBrowser
+        relationshipBrowserScope={relationshipBrowserScope}
+        onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
         enableElementTags
         enableCompareWithLatest
         dynamicViewVariant={dynamic}
@@ -97,7 +101,7 @@ export function ViewEditor() {
         }}
       >
         <ListenForDiagramStateChanges />
-        <OpenRelationshipBrowserFromUrl />
+        <OpenRelationshipBrowserFromUrl relationshipBrowserScope={relationshipBrowserScope} />
         <FocusElementFromUrl />
         <LazyAIChat />
       </LikeC4Diagram>

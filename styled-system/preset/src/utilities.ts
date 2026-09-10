@@ -2,11 +2,9 @@ import { defineUtility } from '@pandacss/dev'
 
 const durationValues = [
   'fastest',
-  'faster',
   'fast',
-  'normal',
+  'medium',
   'slow',
-  'slower',
   'slowest',
   'none',
 ]

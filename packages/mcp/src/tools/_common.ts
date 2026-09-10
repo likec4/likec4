@@ -20,7 +20,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { Locate } from '@likec4/language-server/protocol'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
 import { URI } from 'vscode-uri'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { logger } from '../utils'
 
 /**
@@ -105,7 +105,7 @@ export const elementSummarySchema = z.object({
   kind: z.string().describe('Element kind'),
   title: z.string(),
   tags: z.array(z.string()),
-  metadata: z.record(z.union([z.string(), z.array(z.string())])),
+  metadata: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
   includedInViews: z.array(z.object({
     id: z.string().describe('View id'),
     title: z.string().describe('View title'),

@@ -39,5 +39,5 @@ html, body {
 }
 
 #root .likec4-root {
-  --colors-likec4-background: var(--vscode-editor-background);
+  --colors-diagram-background: var(--vscode-editor-background);
 }

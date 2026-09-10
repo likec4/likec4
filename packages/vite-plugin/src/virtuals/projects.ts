@@ -5,7 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { LikeC4ProjectConfig, WebappExportFormat } from '@likec4/config'
+import type { LikeC4ProjectConfig, RelationshipBrowserScope, WebappExportFormat } from '@likec4/config'
 import type { NonEmptyArray } from '@likec4/core'
 import JSON5 from 'json5'
 import { map } from 'remeda'
@@ -16,7 +16,9 @@ import { effectiveWebappExportFormats } from './export-formats'
 type ProjectData = {
   id: string
   title: string | undefined
+  path: string
   landingPage: LikeC4ProjectConfig['landingPage']
+  relationshipBrowserDefaultScope: RelationshipBrowserScope
   exportFormats: WebappExportFormat[]
 }
 
@@ -61,7 +63,9 @@ export const projectsModule = {
       code: code(map(projects, p => ({
         id: p.id,
         title: p.title,
+        path: p.path,
         landingPage: p.config.landingPage,
+        relationshipBrowserDefaultScope: p.config.webapp?.relationshipsBrowser?.defaultScope ?? 'view',
         exportFormats: effectiveWebappExportFormats(p.config),
       }))),
       moduleType: 'js',

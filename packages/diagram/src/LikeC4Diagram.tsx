@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { Any } from '@likec4/core/types'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
@@ -58,6 +65,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   onOpenSource,
   onLogoClick,
   onLayoutTypeChange,
+  onRelationshipBrowserScopeChange,
   onInitialized,
   view,
   className,
@@ -72,6 +80,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   enableElementDetails = false,
   enableRelationshipDetails = false,
   enableRelationshipBrowser = false,
+  relationshipBrowserScope = 'view',
   enableCompareWithLatest = !!onLayoutTypeChange,
   nodesSelectable,
   enableNotations = false,
@@ -159,12 +168,13 @@ export function LikeC4Diagram<A extends Any = Any>({
                 enableRelationshipBrowser: enableRelationshipBrowser && hasLikeC4Model,
                 enableSearch: enableSearch && hasLikeC4Model,
                 enableNavigationButtons: showNavigationButtons && !!onNavigateTo,
-                enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough,
+                enableDynamicViewWalkthrough: view._type === 'dynamic' && enableDynamicViewWalkthrough &&
+                  hasLikeC4Model,
                 enableNotations,
                 enableVscode: !!onOpenSource,
                 enableControls: controls,
-                enableElementTags,
-                enableCompareWithLatest,
+                enableElementTags: enableElementTags && hasLikeC4Model,
+                enableCompareWithLatest: enableCompareWithLatest,
                 enableNotes,
               }}
             >
@@ -182,9 +192,10 @@ export function LikeC4Diagram<A extends Any = Any>({
                   onLogoClick,
                   onInitialized,
                   onLayoutTypeChange,
+                  onRelationshipBrowserScopeChange,
                 }}>
-                <LikeC4Styles id={id} />
-                <TagStylesProvider id={id}>
+                <LikeC4Styles rootSelector={`#${id}`} />
+                <TagStylesProvider rootSelector={`#${id}`}>
                   <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
                     <XYFlowProvider
                       fitView={fitView}
@@ -200,6 +211,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                         nodesSelectable={nodesSelectable}
                         where={where ?? null}
                         dynamicViewVariant={dynamicViewVariant}
+                        relationshipBrowserScope={relationshipBrowserScope}
                       >
                         <CurrentViewModelProvider>
                           <LikeC4DiagramXYFlow

@@ -13,7 +13,7 @@ export const viewButton = cx(
     //   '--ti-size': '24px',
     // },
     '&[data-disabled] .mantine-ThemeIcon-root': {
-      opacity: 0.45,
+      opacity: '0.45',
     },
   }),
   _viewBtn,
@@ -26,9 +26,9 @@ export const viewButtonDescription = css({
   marginTop: '1',
   // transition: transitions.fast,
   // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: '13px',
-  lineHeight: '1.4',
+  fontSize: 'sm',
+  lineHeight: 'md',
   [`:where(.likec4-view-btn[data-disabled]) &`]: {
-    opacity: 0.85,
+    opacity: '0.85',
   },
 })

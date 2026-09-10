@@ -8,7 +8,7 @@ export const fqn = css({
   padding: '[3px 6px]',
   borderRadius: 'xs',
   background: `var(--likec4-palette-fill)/75`,
-  lineHeight: 1.2,
+  lineHeight: '[1.2]',
   color: 'var(--likec4-palette-hiContrast)',
 })
 
@@ -28,17 +28,17 @@ export const relationshipStat = css({
 })
 
 export const xyflow = css({
-  flex: '1 1 100%',
+  flex: '[1 1 100%]',
   position: 'relative',
   width: '100%',
   height: '100%',
-  background: 'body',
+  background: 'surface.sunken',
   border: 'default',
   borderRadius: 'sm',
-  _light: {
-    borderColor: 'mantine.gray[3]',
-    background: 'mantine.gray[1]',
-  },
+  // _light: {
+  //   borderColor: 'mantine.gray[3]',
+  //   background: 'mantine.gray[1]',
+  // },
 })
 
 export const panelScope = css({
@@ -51,7 +51,7 @@ export const panelScope = css({
     fontWeight: 'medium',
     lineHeight: '1',
     color: 'text.dimmed',
-    opacity: 0.85,
+    opacity: '[0.85]',
     transform: 'translateY(-100%) translateY(-2px)',
   },
   _light: {
@@ -66,11 +66,11 @@ export const edgeNum = css({
   fontSize: 'xl',
   fontWeight: 'bold',
   padding: '[1px 5px]',
-  minWidth: '24px',
+  minWidth: '[24px]',
   textAlign: 'center',
   borderRadius: 'sm',
-  background: 'mantine.dark[7]',
-  color: 'default.color',
+  background: 'surface.sunken',
+  color: 'text.default',
   [`&[data-zero]`]: {
     color: 'text.dimmed',
   },

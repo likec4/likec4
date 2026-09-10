@@ -23,11 +23,11 @@ export const LayoutWarning = memo(() => {
   const [ctx, { toggleCompare }] = useDiagramCompareLayout()
   const portalProps = useMantinePortalProps()
 
-  const { drifts, isActive, isEnabled } = ctx
+  const { drifts, state, isEnabled } = ctx
 
   return (
-    <AnimatePresence propagate>
-      {isEnabled && !isActive && (
+    <AnimatePresence>
+      {isEnabled && state !== 'comparing' && (
         <HoverCard
           position="bottom-start"
           openDelay={600}
@@ -66,7 +66,7 @@ export const LayoutWarning = memo(() => {
                   fontWeight: 'bold',
                 }),
               )}>
-              {isActive ? <>Stop Compare</> : <IconAlertTriangle size={18} />}
+              <IconAlertTriangle size={18} />
             </UnstyledButton>
           </HoverCardTarget>
           <HoverCardDropdown p={'0'}>

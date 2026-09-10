@@ -1,6 +1,6 @@
 # アーキテクチャをコードとして
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
+[English](./README.md) | [Português (Brasil)](./README.pt-BR.md) | [简体中文](./README.zh-CN.md)
 
 コードから生成され、常に最新に保たれるライブ図を使って、ソフトウェアアーキテクチャを可視化し、共同作業し、進化させます。
 

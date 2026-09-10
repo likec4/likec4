@@ -17,14 +17,8 @@ export const markdownBlock = defineRecipe({
     '--text-fz-md': 'calc(var(--text-fz) * var(--md-scale))',
     '--typography-spacing': 'calc(0.75 * var(--text-fz-md))',
     '--text-fw-headings': '600',
-    '--code-background': {
-      base: mantine.colors.gray[2],
-      _dark: mantine.colors.dark[8],
-    },
-    '--code-color': {
-      base: mantine.colors.black,
-      _dark: mantine.colors.white,
-    },
+    '--code-background': '{colors.surface.code}',
+    '--code-color': '{colors.text.bright}',
 
     _dark: {
       '--color-border-default': '#30363d',
@@ -66,7 +60,7 @@ export const markdownBlock = defineRecipe({
     '& :where(h1, h2, h3, h4, h5, h6)': {
       lineHeight: '1.5',
       textWrap: 'var(--mantine-heading-text-wrap)',
-      fontFamily: mantine.fontFamilyHeadings,
+      fontFamily: '{fonts.display}',
       marginBottom: 'var(--typography-spacing)',
     },
     '& :is(h1, h2, h3, h4, h5, h6):not(:first-child)': {
@@ -143,10 +137,7 @@ export const markdownBlock = defineRecipe({
       marginBottom: 'calc(var(--typography-spacing) / 2)',
       border: 'none',
       borderBottom: '1px solid',
-      borderColor: {
-        base: mantine.colors.gray[3],
-        _dark: mantine.colors.dark[3],
-      },
+      borderColor: 'border.strong',
     },
     '& :where(pre)': {
       px: '3',
@@ -156,7 +147,7 @@ export const markdownBlock = defineRecipe({
       marginTop: 'var(--typography-spacing)',
       marginBottom: 'var(--typography-spacing)',
       overflowX: 'auto',
-      fontFamily: 'var(--mantine-font-family-monospace)',
+      fontFamily: '{fonts.mono}',
       fontSize: 'var(--text-fz-sm)',
       borderRadius: 'sm',
 
@@ -168,7 +159,7 @@ export const markdownBlock = defineRecipe({
       lineHeight: '1',
       padding: '1px 4px',
       borderRadius: 'xs',
-      fontFamily: 'var(--mantine-font-family-monospace)',
+      fontFamily: '{fonts.mono}',
       fontSize: 'var(--text-fz-sm)',
 
       backgroundColor: 'var(--code-background)',
@@ -225,12 +216,13 @@ export const markdownBlock = defineRecipe({
         _dark: '#79c0ff',
       },
     },
-    '& :where(pre .token.selector, pre .token.attr-name, pre .token.string, pre .token.char, pre .token.builtin, pre .token.inserted)': {
-      color: {
-        base: '#116329',
-        _dark: '#a5d6ff',
+    '& :where(pre .token.selector, pre .token.attr-name, pre .token.string, pre .token.char, pre .token.builtin, pre .token.inserted)':
+      {
+        color: {
+          base: '#116329',
+          _dark: '#a5d6ff',
+        },
       },
-    },
     '& :where(pre .token.operator, pre .token.entity, pre .token.url)': {
       color: {
         base: '#953800',
@@ -275,11 +267,11 @@ export const markdownBlock = defineRecipe({
       marginBottom: 'var(--typography-spacing)',
 
       _light: {
-        ['--table-border-color']: mantine.colors.gray['3'],
+        ['--table-border-color']: '{colors.gray[3]}',
       },
 
       _dark: {
-        ['--table-border-color']: 'var(--mantine-color-dark-4)',
+        ['--table-border-color']: '{colors.dark[4]}',
       },
 
       '& :where(caption)': {
@@ -322,10 +314,7 @@ export const markdownBlock = defineRecipe({
       margin: '0',
       borderRadius: 'var(--mantine-radius-sm)',
       padding: 'xs',
-      backgroundColor: {
-        base: mantine.colors.gray[1],
-        _dark: mantine.colors.dark[5],
-      },
+      backgroundColor: '{colors.surface.sunken}',
       '&:not(:first-child)': {
         marginTop: 'var(--typography-spacing)',
       },

@@ -26,14 +26,14 @@ const select = selectDiagramContext(s => {
   if (isDynamicView(s.view) && isActiveWalkthrough) {
     const isSequenceView = s.dynamicViewVariant === 'sequence'
     return {
-      view: s.view,
+      viewId: s.view.id,
       mode: (isSequenceView && hasProp(s.view, 'flow')
         ? 'walkthrough-flow'
         : 'walkthrough') as NavigationPanelMode,
     }
   }
   return {
-    view: s.view,
+    viewId: s.view.id,
     mode: 'default' as NavigationPanelMode,
   }
 })
@@ -45,21 +45,21 @@ type NavigationPanelMode =
 
 const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
 export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
-  const {
-    view,
-    mode,
-  } = useDiagramSelector(select)
-  const viewModel = useOptionalCurrentViewModel()
   const opened = useSelector(actorRef, stateHasActiveTag)
   const portalProps = useMantinePortalProps()
 
+  const { viewId, mode } = useDiagramSelector(select)
+  const viewModel = useOptionalCurrentViewModel()
+  const viewFolder = !!viewModel && viewModel.id === viewId ? viewModel.folder.path : undefined
+
   useEffect(() => {
-    actorRef.send({ type: 'update.inputs', inputs: { viewModel, view } })
-  }, [actorRef, viewModel, view])
+    actorRef.send({ type: 'update.inputs', inputs: { viewId, viewFolder } })
+  }, [actorRef, viewId, viewFolder])
 
   return (
     <VStack
       css={{
+        zIndex: 'panel',
         alignItems: 'flex-start',
         pointerEvents: 'none',
         position: 'absolute',
@@ -69,16 +69,16 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
         width: '100%',
         gap: 'xxs',
         maxWidth: [
-          'calc(100vw)',
-          'calc(100cqw)',
+          '100vw',
+          '100cqw',
         ],
         '@/sm': {
           margin: 'xs',
           gap: 'xs',
           width: 'max-content',
           maxWidth: [
-            'calc(100vw - 2 * {spacing.md})',
-            'calc(100cqw - 2 * {spacing.md})',
+            '[calc(100vw - 2 * {spacing.md})]',
+            '[calc(100cqw - 2 * {spacing.md})]',
           ],
         },
         _print: {
@@ -88,42 +88,44 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
       <NavigationPanelActorContextProvider value={actorRef}>
         {mode !== 'walkthrough-flow' && (
           <>
-            <Popover
-              offset={{
-                mainAxis: 4,
-              }}
-              opened={opened}
-              position="bottom-start"
-              trapFocus={opened}
-              {...portalProps}
-              clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
-              onDismiss={() => actorRef.send({ type: 'dropdown.dismiss' })}
-            >
-              <LayoutGroup>
-                <PopoverTarget>
-                  <m.div
-                    layout
-                    layoutDependency={mode}
-                    className={hstack({
-                      layerStyle: 'likec4.panel',
-                      position: 'relative',
-                      gap: 'xs',
-                      cursor: 'pointer',
-                      pointerEvents: 'all',
-                      width: '100%',
-                    })}
-                    onMouseLeave={() => actorRef.send({ type: 'breadcrumbs.mouseLeave' })}
-                  >
-                    <AnimatePresence propagate initial={false}>
+            <LayoutGroup>
+              <AnimatePresence propagate initial={false}>
+                <Popover
+                  offset={{
+                    mainAxis: 4,
+                  }}
+                  opened={opened}
+                  position="bottom-start"
+                  trapFocus={opened}
+                  keepMounted={false}
+                  {...portalProps}
+                  clickOutsideEvents={['pointerdown', 'mousedown', 'click']}
+                  onDismiss={() => actorRef.send({ type: 'dropdown.dismiss' })}
+                >
+                  <PopoverTarget>
+                    <m.div
+                      layout="size"
+                      layoutDependency={[mode, viewId]}
+                      className={hstack({
+                        layerStyle: 'likec4.panel',
+                        position: 'relative',
+                        gap: 'xs',
+                        cursor: 'pointer',
+                        pointerEvents: 'all',
+                        width: '100%',
+                      })}
+                      data-panel="navigation"
+                      onMouseLeave={() => actorRef.send({ type: 'breadcrumbs.mouseLeave' })}
+                    >
                       {mode === 'walkthrough'
                         ? <ActiveWalkthroughControls />
                         : <NavigationPanelControls />}
-                    </AnimatePresence>
-                  </m.div>
-                </PopoverTarget>
-              </LayoutGroup>
-              {opened && <NavigationPanelDropdown />}
-            </Popover>
+                    </m.div>
+                  </PopoverTarget>
+                  <NavigationPanelDropdown />
+                </Popover>
+              </AnimatePresence>
+            </LayoutGroup>
             <ComparePanel />
             {mode === 'walkthrough' && <WalkthroughPanel />}
             <EditorPanel />

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, expect, it } from 'vitest'
 import { createMCPTestPair } from './test-utils'
 
@@ -36,6 +43,8 @@ const EXPECTED_TOOLS = [
   'preview-view',
 ] as const
 
+const JSON_SCHEMA_2020_12 = 'https://json-schema.org/draft/2020-12/schema'
+
 describe('createMCPServer — registration & discovery', () => {
   it('advertises tools, prompts, resources, and logging capabilities', async () => {
     await using pair = await createMCPTestPair(DSL)
@@ -66,6 +75,20 @@ describe('createMCPServer — registration & discovery', () => {
       expect(tool.description!.length).toBeGreaterThan(0)
       expect(tool.inputSchema, `tool ${tool.name} missing inputSchema`).toBeDefined()
       expect(tool.inputSchema.type).toBe('object')
+    }
+  })
+
+  it('advertises input and output schemas as JSON Schema 2020-12', async () => {
+    await using pair = await createMCPTestPair(DSL)
+    const { tools } = await pair.client.listTools()
+
+    for (const tool of tools) {
+      expect(tool.inputSchema['$schema'], `tool ${tool.name} inputSchema uses the wrong dialect`).toBe(
+        JSON_SCHEMA_2020_12,
+      )
+      expect(tool.outputSchema?.['$schema'], `tool ${tool.name} outputSchema uses the wrong dialect`).toBe(
+        JSON_SCHEMA_2020_12,
+      )
     }
   })
 

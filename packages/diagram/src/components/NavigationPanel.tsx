@@ -2,7 +2,7 @@ import { cx } from '@likec4/styles/css'
 import { createStyleContext, isCssProperty } from '@likec4/styles/jsx'
 import { navigationPanel } from '@likec4/styles/recipes'
 import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
-import * as m from 'motion/react-m'
+import { m } from 'motion/react'
 import { type HTMLAttributes, forwardRef } from 'react'
 import { Logo as LogoWithText, LogoIcon } from './Logo'
 

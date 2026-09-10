@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
@@ -17,7 +24,7 @@ import {
   useOnDiagramEvent,
 } from '../../hooks/useDiagram'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
-import type { ViewPaddings } from '../../LikeC4Diagram.props'
+import type { RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
 import type { Types } from '../types'
 import { DiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
@@ -34,6 +41,7 @@ export function DiagramActorProvider({
   where = null,
   children,
   dynamicViewVariant: _defaultVariant,
+  relationshipBrowserScope,
 }: PropsWithChildren<{
   id: string
   view: DiagramView
@@ -44,6 +52,7 @@ export function DiagramActorProvider({
   fitViewPadding: ViewPaddings
   where?: WhereOperator | null
   dynamicViewVariant?: DynamicViewDisplayVariant | undefined
+  relationshipBrowserScope: RelationshipBrowserScope
 }>) {
   const xystore = useStoreApi<Types.Node, Types.Edge>()
 
@@ -71,6 +80,7 @@ export function DiagramActorProvider({
         where,
         features,
         dynamicViewVariant: _defaultVariant,
+        relationshipBrowserScope,
       },
     },
   )
@@ -91,9 +101,17 @@ export function DiagramActorProvider({
     () =>
       actor.send({
         type: 'update.inputs',
-        inputs: { zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable },
+        inputs: {
+          zoomable,
+          where,
+          pannable,
+          fitViewPadding,
+          nodesDraggable,
+          nodesSelectable,
+          relationshipBrowserScope,
+        },
       }),
-    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable],
+    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, relationshipBrowserScope],
   )
 
   useUpdateEffect(() => {
