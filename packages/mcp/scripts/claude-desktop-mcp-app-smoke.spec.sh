@@ -96,11 +96,25 @@ xdotool() {
   [[ "${DISPLAY-}" == ':77' ]] || return 1
   case "$1" in
     search)
-      printf '700\n'
+      case "${xdotool_mode-}" in
+        fresh)
+          printf '701\n'
+          ;;
+        ambiguous)
+          printf '700\n701\n'
+          ;;
+        *)
+          printf '700\n'
+          ;;
+      esac
       ;;
     getwindowpid)
-      [[ "$2" == 700 ]] || return 1
+      [[ "$2" == 700 || "$2" == 701 ]] || return 1
       printf '202\n'
+      ;;
+    getwindowclassname)
+      [[ "$2" == 700 || "$2" == 701 ]] || return 1
+      printf 'claude\n'
       ;;
     *)
       return 1
@@ -118,5 +132,18 @@ set -e
 assert_equal 1 "$wrong_display_status" 'reject a display without a matching visible Claude window'
 assert_equal 'ERROR: No visible Claude Desktop window exists on the requested display' "$wrong_display_output" \
   'report the unmatched requested display'
+
+xdotool_mode=fresh
+selected=$(find_single_visible_claude_window ':77' "$test_root")
+assert_equal 701 "$selected" 'discover and validate the new visible window after restart'
+
+xdotool_mode=ambiguous
+set +e
+ambiguous_window_output=$(find_single_visible_claude_window ':77' "$test_root" 2>&1)
+ambiguous_window_status=$?
+set -e
+assert_equal 1 "$ambiguous_window_status" 'reject ambiguous post-restart Claude windows'
+assert_equal 'ERROR: Expected exactly one visible Claude window; found 2' "$ambiguous_window_output" \
+  'report post-restart window ambiguity'
 
 printf 'PASS: Claude Desktop display-scoped primary-process selection\n'

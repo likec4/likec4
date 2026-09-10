@@ -38,8 +38,10 @@ Options:
                         $XDG_CONFIG_HOME/Claude/claude_desktop_config.json or
                         $HOME/.config/Claude/claude_desktop_config.json).
   --claude-bin FILE     Claude Desktop executable (default: claude-desktop).
-  --window-id ID        Exact visible Claude X11 window. By default, the script
-                        requires exactly one visible window with class "claude".
+  --window-id ID        Exact visible Claude X11 window to stop before restart.
+                        The new window is always discovered after restart. By
+                        default, the script requires exactly one visible window
+                        with class "claude".
   --startup-wait SEC    Wait for the Claude window (default: 20).
   --response-wait SEC   Wait before each screenshot (default: 45).
   --verdict-wait SEC    Wait for the verdict file (default: 300).
@@ -215,6 +217,28 @@ find_main_claude_pid() {
   select_main_claude_pid_for_windows "$proc_root" "${candidates[@]}" -- "${window_pids[@]}"
 }
 
+find_single_visible_claude_window() {
+  local display=$1
+  local proc_root=${2-/proc}
+  local selected_window window_class
+  local -a visible_windows=()
+
+  mapfile -t visible_windows < <(DISPLAY="$display" xdotool search --onlyvisible --class 'claude' 2>/dev/null || true)
+  ((${#visible_windows[@]} == 1)) \
+    || fail "Expected exactly one visible Claude window; found ${#visible_windows[@]}"
+  selected_window=${visible_windows[0]}
+
+  window_class=$(DISPLAY="$display" xdotool getwindowclassname "$selected_window" 2>/dev/null) \
+    || fail "Could not read the class for the visible Claude Desktop window: $selected_window"
+  [[ "${window_class,,}" == *claude* ]] \
+    || fail "Selected X11 window is not Claude Desktop: $selected_window"
+
+  # Resolve the newly discovered window through its process tree. This rejects
+  # stale, unrelated, and ambiguously owned X11 windows before UI automation.
+  find_main_claude_pid "$display" "$selected_window" "$proc_root" >/dev/null
+  printf '%s\n' "$selected_window"
+}
+
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
   return 0
 fi
@@ -229,7 +253,7 @@ display_name=${DISPLAY-}
 config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 config_file="$config_home/Claude/claude_desktop_config.json"
 claude_bin='claude-desktop'
-window_id=''
+requested_window_id=''
 input_x=''
 input_y=''
 response_wait=45
@@ -267,7 +291,7 @@ while (($# > 0)); do
       ;;
     --window-id)
       (($# >= 2)) || fail '--window-id requires a value'
-      window_id=$2
+      requested_window_id=$2
       shift 2
       ;;
     --input-x)
@@ -405,8 +429,9 @@ write_config() {
 }
 
 restart_claude() {
+  local requested_window=${1-}
   local pid=''
-  pid=$(find_main_claude_pid "$display_name" "$window_id")
+  pid=$(find_main_claude_pid "$display_name" "$requested_window")
   if [[ -n "$pid" ]]; then
     kill -TERM "$pid"
     for _ in {1..40}; do
@@ -457,7 +482,7 @@ cleanup() {
     cleanup_failed=true
   else
     rm -rf -- "$state_dir"
-    if [[ "$claude_started" == true ]] && ! restart_claude; then
+    if [[ "$claude_started" == true ]] && ! restart_claude ''; then
       printf 'ERROR: Claude Desktop could not be restarted after config restoration.\n' >&2
       cleanup_failed=true
     fi
@@ -480,24 +505,15 @@ write_config '.mcpServers = ((.mcpServers // {}) + {($key): {
   args: [$cli, "--stdio", "--no-watch", $workspace]
 }})'
 
-restart_claude
+restart_claude "$requested_window_id"
 
-if [[ -z "$window_id" ]]; then
-  for ((attempt = 0; attempt <= startup_wait * 4; attempt++)); do
-    mapfile -t windows < <(DISPLAY="$display_name" xdotool search --onlyvisible --class 'claude' 2>/dev/null || true)
-    ((${#windows[@]} > 0)) && break
-    ((attempt == startup_wait * 4)) && break
-    sleep 0.25
-  done
-  ((${#windows[@]} == 1)) || fail "Expected exactly one visible Claude window; found ${#windows[@]}"
-  window_id=${windows[0]}
-else
-  DISPLAY="$display_name" xdotool getwindowname "$window_id" >/dev/null 2>&1 \
-    || fail "Claude window does not exist: $window_id"
-fi
-
-window_class=$(DISPLAY="$display_name" xdotool getwindowclassname "$window_id")
-[[ "${window_class,,}" == *claude* ]] || fail "Selected X11 window is not Claude Desktop: $window_id"
+for ((attempt = 0; attempt <= startup_wait * 4; attempt++)); do
+  mapfile -t windows < <(DISPLAY="$display_name" xdotool search --onlyvisible --class 'claude' 2>/dev/null || true)
+  ((${#windows[@]} > 0)) && break
+  ((attempt == startup_wait * 4)) && break
+  sleep 0.25
+done
+window_id=$(find_single_visible_claude_window "$display_name")
 
 geometry=$(DISPLAY="$display_name" xdotool getwindowgeometry --shell "$window_id")
 window_width=$(sed -n 's/^WIDTH=//p' <<<"$geometry")
