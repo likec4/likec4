@@ -83,3 +83,18 @@ graph TB
   Client -. "\`opens\`" .-> SystemFrontend
 "
 `;
+
+exports[`generate mermaid - view with group 1`] = `
+"---
+title: "Landscape view"
+---
+graph TB
+  App@{ shape: rectangle, label: "App" }
+  subgraph _gr1["\`Infra\`"]
+    _gr1.Auth@{ shape: rectangle, label: "Auth" }
+    _gr1.Portal@{ shape: rectangle, label: "Portal" }
+  end
+  App -. "\`signs in\`" .-> _gr1.Auth
+  App -. "\`authz\`" .-> _gr1.Portal
+"
+`;

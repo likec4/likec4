@@ -524,3 +524,60 @@ Label`.trimStart(),
   viewOf: null,
   width: 600,
 } as any
+
+export const fakeComputedViewWithGroups: ComputedView = {
+  id: 'index',
+  title: 'Landscape view',
+  nodes: [
+    {
+      id: 'app',
+      parent: null,
+      title: 'App',
+      children: [],
+      color: 'primary',
+      shape: 'rectangle',
+    },
+    {
+      id: '@gr1',
+      parent: null,
+      kind: '@group',
+      title: 'Infra',
+      children: ['auth', 'portal'],
+      color: 'primary',
+      shape: 'rectangle',
+    },
+    {
+      id: 'auth',
+      parent: '@gr1',
+      title: 'Auth',
+      children: [],
+      color: 'primary',
+      shape: 'rectangle',
+    },
+    {
+      id: 'portal',
+      parent: '@gr1',
+      title: 'Portal',
+      children: [],
+      color: 'primary',
+      shape: 'rectangle',
+    },
+  ],
+  edges: [
+    {
+      id: 'app:auth',
+      source: 'app',
+      target: 'auth',
+      label: 'signs in',
+    },
+    {
+      id: 'app:portal',
+      source: 'app',
+      target: 'portal',
+      label: 'authz',
+    },
+  ],
+  autoLayout: { direction: 'TB' },
+  rules: [],
+  viewOf: null,
+} as any
