@@ -1,5 +1,17 @@
 # @likec4/language-server
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3228](https://github.com/likec4/likec4/pull/3228) [`4caa142`](https://github.com/likec4/likec4/commit/4caa14264512d852e2ec115b99abbf4fd51d6abc) Thanks [@MandarinOptimizer](https://github.com/MandarinOptimizer)! - Honor editor workspace exclusions before traversing folders during project and model discovery, avoiding unnecessary scans of excluded generated files and runtime storage.
+- Updated dependencies []:
+  - @likec4/config@1.59.4
+  - @likec4/core@1.59.4
+  - @likec4/generators@1.59.4
+  - @likec4/layouts@1.59.4
+  - @likec4/log@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

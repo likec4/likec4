@@ -1,5 +1,12 @@
 # @likec4/leanix-bridge
 
+## 1.59.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @likec4/core@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

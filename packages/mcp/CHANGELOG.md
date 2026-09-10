@@ -1,5 +1,21 @@
 # @likec4/mcp
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3240](https://github.com/likec4/likec4/pull/3240) [`6050e61`](https://github.com/likec4/likec4/commit/6050e6109b979443695b5ebc17069d77611bb365) Thanks [@ckeller42](https://github.com/ckeller42)! - Advertise tool input and output schemas as JSON Schema 2020-12
+
+- [#3232](https://github.com/likec4/likec4/pull/3232) [`df5e0ad`](https://github.com/likec4/likec4/commit/df5e0ad27e3d1190e7dc1c1112ec2f2955c639e4) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix `preview-view` for projects with non-default IDs.
+- Updated dependencies [[`4caa142`](https://github.com/likec4/likec4/commit/4caa14264512d852e2ec115b99abbf4fd51d6abc)]:
+  - @likec4/language-server@1.59.4
+  - @likec4/language-services@1.59.4
+  - @likec4/config@1.59.4
+  - @likec4/core@1.59.4
+  - @likec4/diagram@1.59.4
+  - @likec4/layouts@1.59.4
+  - @likec4/log@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

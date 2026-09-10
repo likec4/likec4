@@ -1,5 +1,15 @@
 # likec4-vscode
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3228](https://github.com/likec4/likec4/pull/3228) [`4caa142`](https://github.com/likec4/likec4/commit/4caa14264512d852e2ec115b99abbf4fd51d6abc) Thanks [@MandarinOptimizer](https://github.com/MandarinOptimizer)! - Honor editor workspace exclusions before traversing folders during project and model discovery, avoiding unnecessary scans of excluded generated files and runtime storage.
+
+- [#3220](https://github.com/likec4/likec4/pull/3220) [`bbf575a`](https://github.com/likec4/likec4/commit/bbf575a2b0649a202622899fd6de95d3c4e61273) Thanks [@ckeller42](https://github.com/ckeller42)! - Load Bootstrap icons in the VS Code preview through the extension host. The webview does not fetch Bootstrap SVG files from the CDN.
+
+- [#3220](https://github.com/likec4/likec4/pull/3220) [`bbf575a`](https://github.com/likec4/likec4/commit/bbf575a2b0649a202622899fd6de95d3c4e61273) Thanks [@ckeller42](https://github.com/ckeller42)! - Allow inline style attributes in the VS Code webview CSP so configured Bootstrap icon colors can apply.
+
 ## 1.59.3
 
 ### Patch Changes
