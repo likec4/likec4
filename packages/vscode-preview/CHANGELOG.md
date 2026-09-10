@@ -1,5 +1,7 @@
 # @likec4/vscode-preview
 
+## 1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

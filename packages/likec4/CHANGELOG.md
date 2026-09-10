@@ -1,5 +1,14 @@
 # likec4
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3238](https://github.com/likec4/likec4/pull/3238) [`6bfec95`](https://github.com/likec4/likec4/commit/6bfec95f9855760c58e0efd7e89cdab3867e0462) Thanks [@cry999](https://github.com/cry999)! - Respect a dynamic view's configured variant when the URL does not explicitly select one
+- Updated dependencies []:
+  - @likec4/core@1.59.4
+  - @likec4/icons@1.46.4
+
 ## 1.59.3
 
 ### Patch Changes
