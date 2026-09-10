@@ -1,0 +1,77 @@
+---
+title: Introdução
+description: Primeiros pontos para conhecer ao começar com o LikeC4
+prev: false
+sidebar:
+  order: 1
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+LikeC4 é uma DSL para descrever arquitetura de software.
+
+Os arquivos-fonte devem ter as extensões `.likec4` ou `.c4`.
+Todas as fontes são combinadas em _um único modelo_ (explicado mais adiante em [estender o modelo](/dsl/extend)).
+
+Um projeto pode ter esta aparência:
+
+<FileTree>
+- backend
+  - service1
+    - model.c4
+    - views.c4
+  - service2
+    - model.c4
+  - ...
+- externals
+  - amazon.c4
+  - ...
+- landscape.c4
+- specs.c4
+</FileTree>
+
+## Declarações de nível superior
+
+Um arquivo-fonte deve ter pelo menos uma destas declarações:
+
+- `specification` - define os tipos de elementos usados no modelo, como **system**, **app**, **microservice**...
+- `model` - elementos de arquitetura, hierarquias, composições e relacionamentos
+- `views` - visualizações
+- `global` - predicados compartilhados globalmente (explicados mais adiante em [views](/dsl/views/predicates/#shared-global-styles))
+
+```likec4
+// example.c4
+specification {
+  //...
+}
+
+global {
+  //...
+}
+
+model {
+  //...
+}
+
+views {
+  //...
+}
+```
+
+Você pode ter várias declarações do mesmo tipo:
+
+```likec4
+// Views group 1
+views {
+}
+
+// Views group 2
+views {
+}
+```
+
+:::tip
+Por exemplo, o bloco `views` permite _"estilos locais"_ que se aplicam às visões no mesmo bloco.
+Assim, você pode agrupar visões que têm os mesmos estilos e evitar repetição.
+Explicado mais adiante em [views](/dsl/views/predicates/#shared-local-styles).
+:::

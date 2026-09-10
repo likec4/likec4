@@ -46,7 +46,7 @@ Depois, siga estas etapas:
     + }
     ```
 
-    Estes são os primeiros elementos do nosso modelo de arquitetura.  
+    Estes são os primeiros elementos do nosso modelo de arquitetura.
     Agora vamos adicionar mais detalhes.
 
 3. ##### Adicionar uma hierarquia
@@ -69,7 +69,7 @@ Depois, siga estas etapas:
     +    component backend
       }
     }
-    ```    
+    ```
 
 4. ##### Adicionar relacionamentos
 
@@ -134,7 +134,7 @@ Depois, siga estas etapas:
     +    include *
     +  }
     }
-    ```    
+    ```
 
     O resultado é este:
 
@@ -144,8 +144,8 @@ Depois, siga estas etapas:
     O predicado `include *` inclui apenas os elementos de "nível superior" e infere os relacionamentos entre eles a partir dos elementos aninhados:
     > `customer` possui um _relacionamento conhecido_ com o elemento aninhado `saas.ui`
 
-    Isso implica que:  
-    > `customer` possui _algum relacionamento_ com `saas`.  
+    Isso implica que:
+    > `customer` possui _algum relacionamento_ com `saas`.
 
     </Aside>
 
@@ -210,7 +210,7 @@ Depois, siga estas etapas:
         component ui 'Frontend' {
     +      description 'Nextjs application, hosted on Vercel'
     +      style {
-    +        icon tech:nextjs  
+    +        icon tech:nextjs
     +        shape browser
     +      }
         }
@@ -266,7 +266,7 @@ Depois, siga estas etapas:
 
     model {
       customer = actor 'Customer' {
-    -    description 'The regular customer of the system'        
+    -    description 'The regular customer of the system'
     +    description 'Our dear customer'
       }
 

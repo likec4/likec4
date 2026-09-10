@@ -1,0 +1,152 @@
+---
+title: Especificação
+description: Como adaptar o LikeC4 ao seu contexto, termos e necessidades
+sidebar:
+  label: Especificação
+  order: 2
+tableOfContents:
+  maxHeadingLevel: 6
+---
+
+Na `specification`, você define sua notação.
+
+## Tipo de elemento
+
+Define os tipos de elementos usados no modelo:
+
+```likec4 copy
+specification {
+  // Define whatever you want
+  element user
+  element cloud
+  element system
+  element application
+  element component
+  element controller
+  element microservice
+  element queue
+  element restapi
+  element graphqlMutation
+  element repository
+  element database
+  element pgTable
+}
+```
+
+Mais adiante, você verá que tipos de elementos podem ter propriedades e definir estilos:
+
+```likec4
+specification {
+  element queue {
+    title 'Kafka'
+    description 'Kafka queue'
+    technology 'kafka topic'
+    notation 'Kafka Topic'
+    style {
+      shape queue
+    }
+  }
+}
+```
+
+## Relacionamento
+
+Tipos de relacionamento podem definir tags, propriedades (`title`, `description`, `technology`, `notation`, links) e estilos visuais:
+
+```likec4
+specification {
+  relationship async {
+    #tcp
+    title 'Asynchronous'
+    description 'Communication over a message broker'
+    technology 'Kafka'
+    notation 'Async'
+    link https://example.com/async
+    multiple true
+    line dotted
+    color amber
+  }
+  relationship subscribes
+  relationship is-downstream-of
+
+  tag tcp
+}
+```
+
+Essas propriedades são herdadas por todo relacionamento desse tipo, a menos que o relacionamento as sobrescreva (tags são combinadas):
+
+```likec4
+model {
+  // inherits the title and style defined for the 'async' kind
+  ui .async backend
+
+  // overrides the title, keeps the inherited style
+  ui .async db 'reads from'
+}
+```
+
+Mais em [relacionamentos](/pt-br/dsl/relationships/#tipos-de-relacionamento).
+
+## Tag
+
+Tags podem ser usadas para marcar, agrupar ou filtrar elementos/relacionamentos/visões, ou para adicionar semântica extra, como `#deprecated`, `#epic-123` ou `#team2`.
+
+```likec4
+specification {
+  tag deprecated
+  tag epic-123
+  tag team2
+}
+```
+
+Você pode atribuir cores:
+
+```likec4
+specification {
+  tag deprecated {
+    color gray
+  }
+
+  tag team2 {
+    color #AABBCC // or using rgb/rgba (see below)
+  }
+}
+```
+
+Você pode adicionar tags aos tipos de elementos:
+
+```likec4
+specification {
+  // Now every kafka-topic will be marked with the infra and data-lake tags
+  element kafka-topic {
+    #infra #data-lake
+  }
+  tag infra
+  tag data-lake
+}
+```
+
+## Cor
+
+Cores personalizadas podem ser definidas para estender os temas integrados. Depois de definidas na especificação, elas podem ser usadas junto com as cores do tema.
+
+```likec4
+specification {
+  color custom-color1 #F00
+  color custom-color2 #AABBCC
+  color custom-color3 rgb(255, 0, 0)
+  color custom-color4 rgb(100 150 200)
+  color custom-color5 rgba(44, 8, 128, 0.9)
+  color custom-color6 rgba(255, 200, 100, 50%)
+
+  element person {
+    style {
+      color custom-color1
+    }
+  }
+}
+```
+
+:::note
+Somente cores base com códigos hexadecimais de 3, 6 ou 8 caracteres e formatos `rgb()`/`rgba()` são compatíveis. O motivo é que, para desenhar um nó, precisamos não apenas de uma cor de preenchimento, mas também de uma cor de borda e uma cor de texto. O mesmo se aplica à cor das arestas, em que são necessárias uma cor de linha, uma cor de fundo do rótulo e uma cor de texto. Portanto, o LikeC4 gera uma paleta usada para criar um esquema de cores a partir da cor base fornecida.
+:::

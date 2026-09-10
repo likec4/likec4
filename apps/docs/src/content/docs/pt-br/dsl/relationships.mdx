@@ -1,0 +1,299 @@
+---
+title: Relacionamentos
+description: Como definir conexões, fluxos de dados e interações no seu modelo
+sidebar:
+  label: Relacionamentos
+  order: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Relacionamentos descrevem as conexões, os fluxos de dados e as interações dentro do seu modelo.
+
+## Definição de relacionamento
+
+Relacionamentos normalmente são definidos com o operador **`->`**:
+
+```likec4
+model {
+  customer = actor 'Customer'
+  cloud = service 'Cloud'
+
+  customer -> cloud
+}
+```
+
+Use **`<->`** quando os dois elementos se comunicam ativamente entre si:
+
+```likec4
+model {
+  frontend = component 'Frontend'
+  backend = component 'Backend'
+
+  frontend <-> backend 'Sync'
+}
+```
+
+Relacionamentos bidirecionais são renderizados com setas nas duas pontas por padrão. Use-os para interações mútuas,
+como replicação sincronizada ou protocolos em que os dois lados iniciam comunicação significativa. O estilo do
+relacionamento ainda pode sobrescrever a ponta renderizada. Para chamadas request-response em que um lado inicia a
+interação, prefira `->`.
+
+Relacionamentos podem ser aninhados
+
+```likec4
+model {
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend
+    customer -> frontend
+  }
+}
+```
+
+Em relacionamentos aninhados, você pode usar `it` ou `this` para se referir ao pai:
+
+```likec4
+model {
+  customer = actor {
+    // as a source
+    it -> frontend
+    // as a target
+    frontend -> this
+  }
+}
+```
+
+Relacionamentos aninhados podem não declarar a origem (_"sourceless"_); nesse caso, a origem é o elemento pai
+
+```likec4
+model {
+  actor customer {
+    // same as customer -> frontend
+    -> frontend
+  }
+  service cloud {
+    component backend
+    component frontend {
+      // same as frontend -> backend
+      -> backend
+    }
+  }
+}
+```
+
+:::caution
+
+Relacionamentos _"sourceless"_ devem estar aninhados:
+
+```likec4
+model {
+  -> backend // ⛔️ Error: model can't be a source
+}
+```
+:::
+
+## Tipos de relacionamento
+
+Relacionamentos podem ter um tipo (_kind_):
+
+```likec4
+specification {
+  element system
+  // Define relationship kind
+  relationship async
+  relationship uses
+}
+
+model {
+  system1 = system 'System 1'
+  system2 = system 'System 2'
+  system3 = system 'System 3'
+
+  system1 -[async]-> system2
+  system1 -[async]<-> system3
+
+  // Or prefix with '.' to use the kind
+  system1 .uses system2
+}
+```
+
+Use `-[kind]<->` quando um relacionamento bidirecional também deve herdar um tipo de relacionamento.
+
+Isso permite adicionar semânticas mais ricas às interações entre elementos, por exemplo,
+sob uma perspectiva de tecnologia (REST, gRPC, GraphQL, Sync/Async etc.)
+ou sob uma perspectiva de negócio (delegação, informação, responsabilidade etc.).
+
+Você pode definir os tipos de relacionamento que fizerem mais sentido para o seu contexto.
+
+Um tipo de relacionamento também pode definir [tags](#tags) e propriedades padrão — `title`, `description`, `technology`, `notation` e [links](#links) — herdadas por todo relacionamento desse tipo (um relacionamento pode sobrescrever qualquer uma das propriedades; tags são combinadas):
+
+```likec4
+specification {
+  relationship async {
+    #tcp
+    title 'Asynchronous'
+    technology 'Kafka'
+  }
+  tag tcp
+}
+model {
+  // inherits tag #tcp, title 'Asynchronous' and technology 'Kafka'
+  system1 .async system2
+
+  // overrides the title, keeps the inherited tag and technology
+  system1 .async system3 'publishes events'
+}
+```
+
+<Aside type='tip'>
+  Com tipos, você pode personalizar o estilo dos relacionamentos; consulte [estilização](/dsl/styling#relationship)
+</Aside>
+
+## Propriedades de relacionamento
+
+### Título
+
+Relacionamentos podem ter um título (e é melhor que tenham):
+
+```likec4 'opens in browser'
+model {
+  customer -> frontend 'opens in browser'
+  // or nested
+  customer -> frontend {
+    title 'opens in browser'
+  }
+}
+```
+
+### Descrição
+
+```likec4 'Customer opens...'
+model {
+  customer -> frontend 'opens in browser' {
+    description 'Customer opens...'
+  }
+
+  // Or in a shorter way
+  customer -> frontend 'opens in browser' 'Customer opens...'
+}
+```
+
+Assim como nos elementos, você pode [usar Markdown](/pt-br/dsl/model#usando-markdown) em `description` com aspas triplas:
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    description '''
+      **Customer** opens the frontend in the browser
+      to interact with the system
+
+
+      | checks    |    |
+      |:--------- |:-- |
+      | check 1   | ✅ |
+      | check 2   | ⛔️ |
+      | check 3   | ✅ |
+    '''
+  }
+}
+```
+
+Blocos de código cercados por crases recebem destaque de sintaxe quando especificam uma linguagem. Para diffs, use `diff-<language>` para destacar tanto as alterações quanto a linguagem-fonte, por exemplo `diff-ts` ou `diff-python`.
+
+### Tecnologia
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    technology 'HTTPS'
+  }
+
+  // Or in a shorter way
+  // order is [title] [description] [technology]
+  customer -> frontend 'opens in browser'  'Customer opens...' 'HTTPS'
+}
+```
+
+
+### Tags
+
+Relacionamentos podem ter tags:
+
+```likec4
+model {
+  // inlined
+  frontend -> backend 'requests data' #graphql #team1
+
+  // or nested
+  customer -> frontend 'opens in browser' {
+    #graphql #team1
+  }
+}
+```
+
+### Links
+
+Relacionamentos podem ter vários links:
+
+```likec4 copy
+model {
+  customer -> frontend 'opens in browser' {
+    // External link
+    link https://any-external-link.com
+
+    // With label
+    link https://github.com/likec4/likec4 'Repository'
+
+    // or any URI
+    link ssh://bastion.internal 'SSH'
+
+    // or relative link to navigate to sources
+    link ../src/index.ts#L1-L10
+  }
+}
+```
+
+
+### Navigate To
+
+Um relacionamento pode ter uma propriedade `navigateTo`, que aponta para uma [visão dinâmica](/dsl/views/dynamic).
+Isso permite fazer _"zoom-in"_ e ver mais detalhes sobre esse relacionamento.
+
+```likec4 copy
+model {
+  webApp -> backend.api {
+    title 'requests data for the dashboard'
+    navigateTo dashboard-request-flow
+  }
+
+}
+```
+
+## Metadados de relacionamentos
+
+Igual aos [metadados de elementos](/pt-br/dsl/model/#metadados):
+
+```likec4
+model {
+  customer -> frontend 'opens in browser' {
+    metadata {
+      prop1 'value1'
+      prop2 '{
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          }
+        }
+      }'
+    }
+  }
+}
+```
