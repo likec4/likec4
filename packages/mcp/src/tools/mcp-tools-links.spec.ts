@@ -277,4 +277,94 @@ describe('MCP Tools - Links', () => {
       expect(links[1]!.title).toBeNull()
     })
   })
+
+  describe('batch-read-elements tool', () => {
+    it('should include links in each element of the batch', async () => {
+      await using pair = await createMCPTestPair(`
+        specification {
+          element system
+        }
+        model {
+          cloud = system 'Cloud System' {
+            link https://likec4.dev/docs/dsl/model/
+            link https://github.com/likec4/likec4 'GitHub Repository'
+          }
+        }
+      `)
+
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: { ids: ['cloud'], project: 'default' },
+      })
+
+      expect(result.structuredContent).toBeDefined()
+      const elements = structured(result)['elements'] as Array<any>
+      expect(elements).toHaveLength(1)
+
+      const links = elements[0].links as Array<{ url: string; title: string | null }>
+      expect(links).toBeDefined()
+      expect(links).toHaveLength(2)
+
+      expect(links[0]!.url).toBe('https://likec4.dev/docs/dsl/model/')
+      expect(links[0]!.title).toBeNull() // MCP transforms undefined to null
+
+      expect(links[1]!.url).toBe('https://github.com/likec4/likec4')
+      expect(links[1]!.title).toBe('GitHub Repository')
+    })
+
+    it('should have empty links array for elements without links', async () => {
+      await using pair = await createMCPTestPair(`
+        specification {
+          element system
+        }
+        model {
+          cloud = system 'Cloud System'
+        }
+      `)
+
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: { ids: ['cloud'], project: 'default' },
+      })
+
+      expect(result.structuredContent).toBeDefined()
+      const elements = structured(result)['elements'] as Array<any>
+      expect(elements).toHaveLength(1)
+
+      const links = elements[0].links as Array<{ url: string; title: string | null }>
+      expect(links).toBeDefined()
+      expect(Array.isArray(links)).toBe(true)
+      expect(links).toHaveLength(0)
+    })
+
+    it('should handle relative links correctly', async () => {
+      await using pair = await createMCPTestPair(`
+        specification {
+          element container
+        }
+        model {
+          ui = container 'Frontend' {
+            link ./docs/README.md 'Relative Documentation'
+            link ../CONTRIBUTING.md
+          }
+        }
+      `)
+
+      const result = await pair.client.callTool({
+        name: 'batch-read-elements',
+        arguments: { ids: ['ui'], project: 'default' },
+      })
+
+      expect(result.structuredContent).toBeDefined()
+      const elements = structured(result)['elements'] as Array<any>
+      const links = elements[0].links as Array<{ url: string; title: string | null }>
+      expect(links).toHaveLength(2)
+
+      expect(links[0]!.url).toBe('./docs/README.md')
+      expect(links[0]!.title).toBe('Relative Documentation')
+
+      expect(links[1]!.url).toBe('../CONTRIBUTING.md')
+      expect(links[1]!.title).toBeNull()
+    })
+  })
 })
