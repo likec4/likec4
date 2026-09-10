@@ -1,5 +1,19 @@
 # @likec4/language-services
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3182](https://github.com/likec4/likec4/pull/3182) [`d1099dd`](https://github.com/likec4/likec4/commit/d1099dd4cd14ab0aec891eb66622f0c070530345) Thanks [@luantaraschi](https://github.com/luantaraschi)! - `likec4 validate --file` now counts every file matched by the filter in `filteredFiles`, including files with no diagnostics. It previously counted only files that carried errors, so a clean matched file reported `filteredFiles: 0`.
+- Updated dependencies [[`17c73c1`](https://github.com/likec4/likec4/commit/17c73c18f317641f14d339b70deb76bb3c20d4b2), [`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c), [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d), [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435), [`945ac39`](https://github.com/likec4/likec4/commit/945ac390524a93df4a0a22670e73686d42c662c2), [`603d274`](https://github.com/likec4/likec4/commit/603d2747f3a1c46c1cf84857b637c1fe56f511f9), [`bdefe0b`](https://github.com/likec4/likec4/commit/bdefe0b4983a86518bf4a5359bd5ba1511c8473a), [`31d2e10`](https://github.com/likec4/likec4/commit/31d2e101937d178155e9764eaa2b5ad773fc1a0b), [`797907a`](https://github.com/likec4/likec4/commit/797907a50098c64f50c22ec301183140c38ac33f), [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6), [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e), [`5b09f1d`](https://github.com/likec4/likec4/commit/5b09f1d2880664635f40b2fb21781332144e75c9), [`d3d597a`](https://github.com/likec4/likec4/commit/d3d597ad1cdfe3b8735744353518339c794b8d28), [`61677a8`](https://github.com/likec4/likec4/commit/61677a8e5861f36c12e4f379f1623d9af455fa30)]:
+  - @likec4/language-server@1.59.3
+  - @likec4/core@1.59.3
+  - @likec4/generators@1.59.3
+  - @likec4/config@1.59.3
+  - @likec4/layouts@1.59.3
+  - @likec4/log@1.59.3
+  - @likec4/icons@1.46.4
+
 ## 1.59.2
 
 ### Patch Changes

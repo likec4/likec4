@@ -20,6 +20,7 @@ import {
 } from '../../ast'
 import { stringHash } from '../../utils/stringHash'
 import { relationFingerprint } from '../relationFingerprint'
+import { parseInlineTitleKeepingEscapedSlash, parseTitleKeepingEscapedSlash } from './Base'
 import type { WithExpressionV2 } from './FqnRefParser'
 
 export type WithModel = ReturnType<typeof ModelParser>
@@ -103,7 +104,9 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       )
 
       const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
-        title: _title,
+        title: isDefined(_title)
+          ? (parseInlineTitleKeepingEscapedSlash(astNode, 'props', 0) ?? _title)
+          : parseTitleKeepingEscapedSlash(bodyProps.title),
         summary: _summary,
         technology: _technology,
       })

@@ -15,7 +15,7 @@ import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } fro
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { vector } from '../utils'
-import { nodeToRect } from '../utils/xyflow'
+import { bezierControlPoints, nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -195,7 +195,7 @@ function makeRelativeEdgeModifier(
   anchorNode: BBox,
   staticNode: BBox,
 ): EdgeModifier {
-  const controlPoints = edge.data.controlPoints
+  const controlPoints = edge.data.controlPoints ?? bezierControlPoints(edge.data.points)
   const anchorV = vector(BBox.center(anchorNode))
   const staticV = vector(BBox.center(staticNode))
 
@@ -246,15 +246,11 @@ function makeRelativeEdgeModifier(
       id: edge.id,
       type: 'replace',
       item: produce(current, draft => {
-        if (controlPoints) {
-          draft.data.controlPoints = controlPoints.map(relativePoint)
-        } else {
-          draft.data.points = map(edge.data.points, ([x, y]) => {
-            const point = relativePoint({ x, y })
-            return [point.x, point.y] satisfies [number, number]
-          })
-          draft.data.controlPoints = controlPoints
-        }
+        draft.data.controlPoints = controlPoints.map(relativePoint)
+        draft.data.points = map(edge.data.points, ([x, y]) => {
+          const point = relativePoint({ x, y })
+          return [point.x, point.y] satisfies [number, number]
+        })
 
         if (edge.data.labelBBox) {
           draft.data.labelBBox ??= edge.data.labelBBox

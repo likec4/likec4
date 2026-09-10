@@ -1,7 +1,7 @@
 import { invariant } from '@likec4/core'
 import type { DynamicViewDisplayVariant } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
-import { type ButtonProps, Button, SegmentedControl } from '@mantine/core'
+import { type ButtonProps, type SegmentedControlItem, Button } from '@mantine/core'
 import {
   IconPlayerPlayFilled,
 } from '@tabler/icons-react'
@@ -9,9 +9,10 @@ import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
+import { DynamicViewModeSwitcher } from './DynamicViewModeSwitcher'
 
 export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProps & HTMLMotionProps<'button'>>((
   props,
@@ -35,7 +36,7 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
   />
 ))
 
-function StartWalkthroughButton() {
+export function StartWalkthroughButton() {
   const { enableCompareWithLatest } = useEnabledFeatures()
   const diagram = useDiagram()
   const actor = useNavigationActor()
@@ -58,7 +59,7 @@ function StartWalkthroughButton() {
           actor.closeDropdown()
           diagram.startWalkthrough()
         }}
-        initial={{ opacity: 0, scale: 0.6, translateX: -10 }}
+        initial={{ opacity: 0, scale: 0.9, translateX: -10 }}
         animate={{ opacity: 1, scale: 1, translateX: 0 }}
         exit={{ opacity: 0, translateX: -20 }}
         size="compact-xs"
@@ -86,50 +87,11 @@ function StartWalkthroughButton() {
   )
 }
 
-const DynamicViewModeSwitcher = forwardRef<HTMLDivElement, {
-  value: DynamicViewDisplayVariant
-  onChange: (variant: DynamicViewDisplayVariant) => void
-}>(({ value, onChange }, ref) => (
-  <m.div ref={ref} layout="position">
-    <SegmentedControl
-      size="xs"
-      value={value}
-      onChange={variant => {
-        invariant(variant === 'diagram' || variant === 'sequence', 'Invalid dynamic view variant')
-        onChange(variant)
-      }}
-      classNames={{
-        label: css({
-          fontSize: 'xxs',
-        }),
-      }}
-      data={[
-        {
-          value: 'diagram',
-          label: 'Diagram',
-        },
-        {
-          value: 'sequence',
-          label: 'Sequence',
-        },
-      ]} />
-  </m.div>
-))
-
-const selectDynamicViewVariant = selectDiagramContext(c => c.dynamicViewVariant)
-
 export function DynamicViewControls() {
-  const dynamicViewVariant = useDiagramSelector(selectDynamicViewVariant)
-  const diagram = useDiagram()
   return (
-    <AnimatePresence>
-      <DynamicViewModeSwitcher
-        value={dynamicViewVariant}
-        onChange={mode => {
-          diagram.switchDynamicViewVariant(mode)
-        }}
-      />
-      <StartWalkthroughButton key="trigger-dynamic-walkthrough" />
-    </AnimatePresence>
+    <>
+      <DynamicViewModeSwitcher />
+      <StartWalkthroughButton />
+    </>
   )
 }

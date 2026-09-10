@@ -21,6 +21,7 @@
       "dependsOn": [
         "^generate"
       ],
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "outputs": [
         "src/generated/**",
         "src/generated-lib/**",
@@ -31,11 +32,13 @@
       "outputLogs": "new-only"
     },
     "sources": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "dependsOn": [
         "^sources"
       ]
     },
     "typecheck": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "dependsOn": [
         "^typecheck",
         "sources",
@@ -66,6 +69,7 @@
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "!**/*.md",
         "!**/*.spec.ts",
         "!**/*.test-d.ts",
         "!**/__test*/**",

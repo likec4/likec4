@@ -8,7 +8,7 @@ import { AnimatePresence, m } from 'motion/react'
 import { memo } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
 import { Markdown } from '../../base-primitives'
-import { selectDiagramActorContext, useDiagramSnapshot } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagramSelector, useDiagramSnapshot } from '../../hooks/useDiagram'
 
 const SectionHeader = styled('div', {
   base: {
@@ -20,7 +20,7 @@ const SectionHeader = styled('div', {
   },
 })
 
-const selectWalkthroughNotes = selectDiagramActorContext((s) => {
+const selectWalkthroughNotes = selectDiagramContext((s) => {
   const isActive = isNonNull(s.activeWalkthrough)
   const activeStepIndex = isActive ? s.xyedges.findIndex(e => e.id === s.activeWalkthrough?.stepId) : -1
   return {
@@ -33,7 +33,7 @@ const selectWalkthroughNotes = selectDiagramActorContext((s) => {
 })
 
 export const WalkthroughPanel = memo(() => {
-  const { isActive, notes: _notes } = useDiagramSnapshot(selectWalkthroughNotes)
+  const { isActive, notes: _notes } = useDiagramSelector(selectWalkthroughNotes)
 
   const notes = _notes ? RichText.from(_notes) : RichText.EMPTY
 
@@ -49,18 +49,18 @@ export const WalkthroughPanel = memo(() => {
             padding: 'md',
             paddingTop: 'xxs',
             pointerEvents: 'all',
-            maxWidth: 300,
+            maxWidth: '[300px]',
             height: 'max-content',
-            maxHeight: 'calc(100cqh - 100px)',
+            maxHeight: '[calc(100cqh - 100px)]',
             width: 'max-content',
             cursor: 'default',
             overflow: 'hidden',
             '@/sm': {
-              minWidth: 400,
-              maxWidth: 550,
+              minWidth: '[400px]',
+              maxWidth: '[550px]',
             },
             '@/lg': {
-              maxWidth: 700,
+              maxWidth: '[700px]',
             },
           })}
           initial={{

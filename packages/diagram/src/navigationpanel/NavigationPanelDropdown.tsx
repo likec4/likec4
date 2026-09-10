@@ -33,6 +33,7 @@ import {
 } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
+import { m } from 'motion/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   type ComponentPropsWithoutRef,
@@ -44,9 +45,12 @@ import {
   useState,
 } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
+import { EmptyBox } from '../components/EmptyBox'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
+import { viewIcon } from '../components/ViewIcon'
+import { type CurrentViewModel, useOptionalCurrentViewModel } from '../custom'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
-import { useLikeC4Model } from '../hooks/useLikeC4Model'
+import { useLikeC4Model, useOptionalLikeC4Model } from '../hooks/useLikeC4Model'
 import { Tooltip } from './_common'
 import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
@@ -66,11 +70,12 @@ const scopedKeydownHandler: KeyboardEventHandler<HTMLElement> = createScopedKeyd
   orientation: 'vertical',
 })
 
-const hasSearchQuerySelector = selectNavigationContext(s => s.searchQuery.trim().length >= 2)
+const hasSearchQuerySelector = selectNavigationContext(s => s.searchQuery)
 
 export const NavigationPanelDropdown = memo(() => {
   const actor = useNavigationActor()
-  const hasSearchQuery = useNavigationActorSelector(hasSearchQuerySelector)
+  const searchQuery = useNavigationActorSelector(hasSearchQuerySelector)
+  const hasSearchQuery = searchQuery.trim().length >= 2
 
   useOnDiagramEvent('paneClick', () => {
     actor.closeDropdown()
@@ -104,21 +109,9 @@ export const NavigationPanelDropdown = memo(() => {
       <ProjectsMenu />
       <HStack gap="xs">
         <SearchInput
-          defaultValue={actor.actorRef.getSnapshot().context.searchQuery}
+          defaultValue={searchQuery}
           onChange={setSearchQuery}
         />
-        {
-          /* <Button
-          variant="default"
-          size={'xs'}
-          onClick={(e) => {
-            e.stopPropagation()
-            actor.send({ type: 'dropdown.dismiss' })
-          }}
-        >
-          Close
-        </Button> */
-        }
       </HStack>
       <ScrollAreaAutosize
         scrollbars="x"
@@ -147,16 +140,14 @@ export const NavigationPanelDropdown = memo(() => {
 })
 NavigationPanelDropdown.displayName = 'NavigationPanelDropdown'
 
-function selectSearchQuery(s: NavigationPanelActorSnapshot) {
-  return normalizeViewPath(s.context.searchQuery)
-}
+const selectSearchQuery = selectNavigationContext(s => normalizeViewPath(s.searchQuery))
 
 const compare = compareNaturalHierarchically(VIEW_FOLDERS_SEPARATOR)
 
 const SearchResults = memo(() => {
   const likec4model = useLikeC4Model()
   const actor = useNavigationActor()
-  const searchQuery = useSelector(actor.actorRef, selectSearchQuery)
+  const searchQuery = useNavigationActorSelector(selectSearchQuery)
   const deferredSearchQuery = useDeferredValue(searchQuery)
   const isSearchByPath = deferredSearchQuery.includes(VIEW_FOLDERS_SEPARATOR)
   const highlight = isSearchByPath ? deferredSearchQuery.split(VIEW_FOLDERS_SEPARATOR) : deferredSearchQuery
@@ -183,7 +174,13 @@ const SearchResults = memo(() => {
     })
   }, [likec4model, deferredSearchQuery, isSearchByPath])
 
-  if (found.length === 0) return <div>no results</div>
+  if (found.length === 0) {
+    return (
+      <EmptyBox style={{ minWidth: 200 }}>
+        no results
+      </EmptyBox>
+    )
+  }
 
   return (
     <ScrollAreaAutosize
@@ -237,8 +234,8 @@ const foundedViewClass = hstack({
   },
   _focus: {
     outline: 'none',
-    color: 'mantine.primary.lightColor!',
-    backgroundColor: 'mantine.primary.lightHover!',
+    color: 'primary.text.light!',
+    backgroundColor: 'primary.body.lightHover!',
   },
 })
 const inheritColor = css({
@@ -253,7 +250,7 @@ function FoundedView(
 ) {
   const folder = view.folder
 
-  const viewIcon = ViewTypeIcon[view.id === 'index' ? 'index' : view._type]
+  const icon = viewIcon(view.id === 'index' ? 'index' : view._type)
   const viewLabel = (
     <Highlight
       key={view.id}
@@ -264,12 +261,11 @@ function FoundedView(
         css({
           '& > mark': {
             backgroundColor: {
-              base: 'mantine.yellow[2]/90',
-              _dark: 'mantine.yellow[5]/80',
-              _groupFocus: '[transparent]',
+              base: 'highlight.body/80',
+              _groupFocus: 'transparent',
             },
             color: {
-              _groupFocus: '[inherit!]',
+              _groupFocus: 'inherit!',
             },
           },
         }),
@@ -292,7 +288,7 @@ function FoundedView(
         {...props}
         className={className}
       >
-        {viewIcon}
+        {icon}
         {viewLabel}
       </UnstyledButton>
     )
@@ -319,7 +315,7 @@ function FoundedView(
   ))
   breadcrumbs.push(
     <HStack gap="[4px]">
-      {viewIcon}
+      {icon}
       {viewLabel}
     </HStack>,
   )
@@ -344,34 +340,13 @@ const folderIcon = (
     // stroke={1.5}
     className={css({
       opacity: {
-        base: 0.3,
-        _groupHover: 0.5,
-        _groupActive: 0.5,
-        _groupFocus: 0.5,
+        base: '0.3',
+        _groupHover: '0.5',
+        _groupActive: '0.5',
+        _groupFocus: '0.5',
       },
     })} />
 )
-
-const viewTypeIconCss = css({
-  opacity: {
-    base: 0.3,
-    _dark: 0.5,
-    _groupHover: 0.8,
-    _groupActive: 0.8,
-    _groupFocus: 0.8,
-  },
-})
-const ViewTypeIcon = {
-  index: <IconStarFilled size={16} className={viewTypeIconCss} />,
-  element: (
-    <IconZoomScan
-      size={18}
-      stroke={2}
-      className={viewTypeIconCss} />
-  ),
-  deployment: <IconStack2 size={16} stroke={1.5} className={viewTypeIconCss} />,
-  dynamic: <IconDirectionSignFilled size={18} className={viewTypeIconCss} />,
-}
 
 const ColumnScrollArea = ScrollAreaAutosize.withProps({
   scrollbars: 'y',
@@ -405,7 +380,10 @@ type FolderColumnData = {
 
 function folderColumn(
   folder: LikeC4ViewsFolder,
-  context: Pick<NavigationPanelActorContext, 'selectedFolder' | 'viewModel'>,
+  context: {
+    selectedFolder: string
+    viewModel: CurrentViewModel
+  },
 ): FolderColumnData {
   return {
     folderPath: folder.path,
@@ -420,18 +398,21 @@ function folderColumn(
         type: 'view' as const,
         viewType: s.id === 'index' ? 'index' as const : s._type,
         viewId: s.id,
-        title: s.title ?? s.id,
+        title: s.titleOrId,
         description: s.description.nonEmpty && s.description.text || null,
-        selected: s.id === context.viewModel?.id,
+        selected: s.id === context.viewModel.id,
       })),
     ],
   }
 }
 
-const selectColumns = selectNavigationContext((ctx): FolderColumnData[] => {
-  const viewModel = ctx.viewModel
+const selectColumns = (viewModel: CurrentViewModel | null, selectedFolder: string): FolderColumnData[] => {
   if (!viewModel) {
     return []
+  }
+  const ctx = {
+    selectedFolder,
+    viewModel,
   }
   const likec4model = viewModel.$model
   const columns = [
@@ -444,10 +425,15 @@ const selectColumns = selectNavigationContext((ctx): FolderColumnData[] => {
     }
   }
   return columns
-}, deepEqual)
+}
+
+const selectState = selectNavigationContext(c => c.selectedFolder)
 
 const FolderColumns = memo(() => {
-  const columns = useNavigationActorSelector(selectColumns)
+  const selectedFolder = useNavigationActorSelector(selectState)
+  const viewModel = useOptionalCurrentViewModel()
+  const columns = selectColumns(viewModel, selectedFolder)
+
   return (
     <HStack gap="xs" alignItems="stretch">
       {columns.flatMap((column, i) => [
@@ -471,7 +457,7 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
     if (item.type === 'folder') {
       actor.send({ type: 'select.folder', folderPath: item.folderPath })
     } else {
-      actor.send({ type: 'select.view', viewId: item.viewId })
+      actor.send({ type: 'select.view', viewId: item.viewId, viewFolder: data.folderPath })
     }
   }
 
@@ -494,6 +480,8 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
               key={`${data.folderPath}/${item.type}/${i}`}
               columnItem={item}
               onClick={onItemClicked(item)}
+              miw={'250px'}
+              maw={'clamp(300px, 30cqw, 400px)'}
             />
           ))}
         </VStack>
@@ -502,7 +490,10 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
   )
 }
 
-function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } & NavigationLinkProps) {
+function FolderColumnItem({
+  columnItem,
+  ...props
+}: { columnItem: ColumnItem } & NavigationLinkProps) {
   switch (columnItem.type) {
     case 'folder':
       return (
@@ -513,8 +504,6 @@ function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } &
           label={columnItem.title}
           leftSection={folderIcon}
           rightSection={btnRightSection}
-          maw="300px"
-          miw="200px"
           {...props}
         />
       )
@@ -534,9 +523,7 @@ function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } &
             active={columnItem.selected}
             label={columnItem.title}
             description={columnItem.description}
-            leftSection={ViewTypeIcon[columnItem.viewType]}
-            maw="300px"
-            miw="200px"
+            leftSection={viewIcon(columnItem.viewType)}
             {...props}
           />
         </Tooltip>
@@ -547,14 +534,17 @@ function FolderColumnItem({ columnItem, ...props }: { columnItem: ColumnItem } &
 }
 
 function SearchInput(props: {
-  value?: string
-  defaultValue?: string
-  onChange?: (value: string) => void
+  defaultValue: string
+  onChange: (value: string) => void
 }) {
   const [_value, handleChange] = useUncontrolled({
     ...props,
     finalValue: '',
   })
+  useEffect(() => {
+    handleChange(props.defaultValue)
+  }, [props.defaultValue])
+
   return (
     <Input
       size="xs"
@@ -568,18 +558,7 @@ function SearchInput(props: {
       classNames={{
         wrapper: css({
           flexGrow: 1,
-          backgroundColor: {
-            base: 'mantine.gray[1]',
-            _dark: 'mantine.dark[5]/80',
-            _hover: {
-              base: 'mantine.gray[2]',
-              _dark: 'mantine.dark[4]',
-            },
-            _focus: {
-              base: 'mantine.gray[2]',
-              _dark: 'mantine.dark[4]',
-            },
-          },
+          layerStyle: 'surface.field',
           rounded: 'sm',
         }),
         input: css({
@@ -597,7 +576,7 @@ function SearchInput(props: {
       leftSection={<IconSearch size={14} />}
       rightSectionPointerEvents="all"
       rightSectionWidth={'min-content'}
-      rightSection={!props.value || isEmpty(props.value)
+      rightSection={isEmpty(_value)
         ? null
         : (
           <Button

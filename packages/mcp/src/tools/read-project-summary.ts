@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { keys } from 'remeda'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { projectConfigSchema, projectIdSchema, serializeConfig } from './_common'
 

@@ -36,15 +36,14 @@ export const sizes = defineTokens.sizes({
     description: 'Full viewport height (vh)',
     value: '100vh',
   },
-  '100%': {
-    value: '100%',
-  },
-  '50%': {
-    value: '50%',
-  },
-  spacing,
-  full: {
-    value: '100%',
+  '100%': { value: '100%' },
+  '50%': { value: '50%' },
+  full: { value: '100%' },
+  // control heights (the only allowed set)
+  control: {
+    sm: { value: '30px' },
+    md: { value: '36px' },
+    lg: { value: '42px' },
   },
   ['action-icon']: {
     DEFAULT: {

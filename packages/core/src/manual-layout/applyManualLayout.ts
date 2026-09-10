@@ -348,7 +348,7 @@ function applyNodesManualLayout(
       const willBeCompound = next.children.length > 0
 
       // Should not happen, but just in case check for drifts in model/deployment refs
-      if (changed(draft.modelRef, next.modelRef) || changed(draft.deploymentRef, next.deploymentRef)) {
+      if (changed(node.modelRef, next.modelRef) || changed(node.deploymentRef, next.deploymentRef)) {
         nodeDrifts.add('modelRef-changed')
       }
 
@@ -360,15 +360,15 @@ function applyNodesManualLayout(
         nodeDrifts.add('became-leaf')
       }
 
-      if (changed(draft.parent, next.parent)) {
+      if (changed(node.parent, next.parent)) {
         nodeDrifts.add('parent-changed')
       }
 
       // Node size is considered changed if only it became larger than allowed drift
-      const sizeNotChanged = draft.width + MAX_ALLOWED_DRIFT >= next.width
-        && draft.height + MAX_ALLOWED_DRIFT >= next.height
+      const sizeNotChanged = node.width + MAX_ALLOWED_DRIFT >= next.width
+        && node.height + MAX_ALLOWED_DRIFT >= next.height
 
-      if (changed(draft.shape, next.shape)) {
+      if (changed(node.shape, next.shape)) {
         // Auto-apply shape only if size not changed
         if (sizeNotChanged) {
           draft.shape = next.shape
@@ -502,8 +502,18 @@ function applyEdgesManualLayout(
 
       draft.color = next.color
       draft.line = next.line
+      if (next.head !== undefined) {
+        draft.head = next.head
+      }
+      if (next.tail !== undefined) {
+        draft.tail = next.tail
+      }
+      if (next.kind !== undefined) {
+        draft.kind = next.kind
+      }
       draft.navigateTo = next.navigateTo ?? null
       draft.tags = next.tags ? [...next.tags] : null
+      draft.relations = [...next.relations]
 
       if (changed(edge.notes, next.notes)) {
         // If notes was added/removed - consider it drifted
@@ -526,11 +536,12 @@ function applyEdgesManualLayout(
         switch (true) {
           case next.labelBBox && !edge.labelBBox: {
             // Label added, consider it drifted
+            // we can't add label without
             edgeDrifts.add('label-added')
             break
           }
           case edge.labelBBox && !next.labelBBox: {
-            // Add detect drift
+            // We keep label
             edgeDrifts.add('label-removed')
             break
           }
@@ -560,7 +571,7 @@ function applyEdgesManualLayout(
               }
               if (next.description) {
                 draft.description = patchMarkdownOrString(
-                  edge.description,
+                  draft.description,
                   next.description,
                 )
               }

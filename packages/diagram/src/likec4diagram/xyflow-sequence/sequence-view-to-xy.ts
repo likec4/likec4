@@ -160,6 +160,7 @@ function toCompoundArea(
     },
     draggable: false,
     selectable: false,
+    deletable: false,
     focusable: false,
     style: {
       pointerEvents: 'none',

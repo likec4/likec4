@@ -2,7 +2,7 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { elementSummarySchema, projectIdSchema, serializeElement } from './_common'
 

@@ -1,5 +1,12 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { ifilter } from '@likec4/core/utils'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool, logger } from '../utils'
 import { includedInViews, includedInViewsSchema } from './_common'
 
@@ -15,7 +22,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
-      metadata: z.record(z.union([z.string(), z.array(z.string())])),
+      metadata: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
       tags: z.array(z.string()),
     }),
     z.object({
@@ -28,7 +35,7 @@ const searchResultSchema = z.array(
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
-      metadata: z.record(z.union([z.string(), z.array(z.string())])),
+      metadata: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
       tags: z.array(z.string()),
     }),
   ]),

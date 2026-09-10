@@ -9,11 +9,19 @@ export const txt = definePattern({
       description: 'Whether the text should be inline (default: false)',
       type: 'boolean',
     },
+    medium: {
+      description: 'Font weight medium (default: false)',
+      type: 'boolean',
+    },
+    semibold: {
+      description: 'Font weight semibold (default: false)',
+      type: 'boolean',
+    },
     dimmed: {
       description: 'Whether the text should be dimmed (default: false)',
       type: 'boolean',
     },
-    noUserSelect: {
+    nouserselect: {
       description: 'Whether the text should not be selectable (default: false)',
       type: 'boolean',
     },
@@ -25,37 +33,41 @@ export const txt = definePattern({
       type: 'token',
       value: 'fontSizes',
     },
+    fw: {
+      type: 'token',
+      value: 'fontWeights',
+    },
     likec4color: {
       type: 'enum',
       value: [...ThemeColors] as Array<LiteralUnion<ThemeColor>>,
     },
   },
   defaultValues: {
-    inline: false,
-    dimmed: false,
     size: 'md',
-    noUserSelect: false,
   },
   transform(props, _helpers) {
-    const { inline, size, dimmed, lh, likec4color, noUserSelect, ...rest } = props
+    const { inline, size, dimmed, lh, fw, likec4color, nouserselect, medium, semibold, ...rest } = props
     if (dimmed && likec4color) {
       throw new Error('dimmed and likec4color are mutually exclusive')
     }
-    const hasNoTextStyle = rest['textStyle'] == null
+    const hasNoTextStyle = !(typeof rest['textStyle'] === 'string' && rest['textStyle'] !== '')
+    const hasLhOrFw = !!lh || !!fw
     return {
       cursor: 'default',
       ...(inline && { display: 'inline-block' }),
       ...(likec4color && { 'data-likec4-color': likec4color }),
-      ...(noUserSelect && { userSelect: 'none' }),
+      ...(nouserselect && { userSelect: 'none' }),
+      ...(hasNoTextStyle && !hasLhOrFw && {
+        textStyle: dimmed ? `dimmed.${size}` : size,
+      }),
+      ...(hasNoTextStyle && hasLhOrFw && {
+        fontSize: size,
+        // color: dimmed ? 'text.dimmed' : 'text',
+      }),
+      ...(medium && { fontWeight: 'medium' }),
+      ...(semibold && { fontWeight: 'semibold' }),
       ...(lh && { lineHeight: lh }),
-      ...(hasNoTextStyle ?
-        {
-          textStyle: dimmed ? `dimmed.${size}` : size,
-        } :
-        {
-          fontSize: size,
-          color: dimmed ? 'text.dimmed' : 'text',
-        }),
+      ...(fw && { fontWeight: fw }),
       ...rest,
     }
   },

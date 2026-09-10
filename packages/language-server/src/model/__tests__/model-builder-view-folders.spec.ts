@@ -397,6 +397,79 @@ describe('LikeC4ModelBuilder -- view folders', () => {
     expect(implicitView!.title).toBe('Auto / Multi Line Title')
   })
 
+  it('escaped slash in an explicit view title does not create a folder', async ({ expect }) => {
+    const { validate, buildLikeC4Model } = createTestServices({ projectConfig: {} })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+      }
+      views {
+        view v1 {
+          title 'Cost \\/ Benefit'
+          include *
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+    const model = await buildLikeC4Model()
+    expect(model.hasViewFolders).toBe(false)
+    expect(model.view('v1').title).toBe('Cost / Benefit')
+  })
+
+  it('escaped slash in an inline element title does not split the implicit view into a subfolder', async ({ expect }) => {
+    const { validate, buildModel, buildLikeC4Model } = createTestServices({
+      projectConfig: { implicitViews: true },
+    })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1 'Cache\\/Redis'
+      }
+    `)
+    expect(errors).toEqual([])
+
+    const computed = await buildModel()
+    // the element's own title is unaffected and shows a plain slash
+    expect(computed.elements['sys1']?.title).toBe('Cache/Redis')
+
+    const model = await buildLikeC4Model()
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
+    ])
+    expect(model.view('__sys1').title).toBe('Cache/Redis')
+  })
+
+  it('escaped slash in a body-style element title does not split the implicit view into a subfolder', async ({ expect }) => {
+    const { validate, buildModel, buildLikeC4Model } = createTestServices({
+      projectConfig: { implicitViews: true },
+    })
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1 {
+          title 'Cache\\/Redis'
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+
+    const computed = await buildModel()
+    expect(computed.elements['sys1']?.title).toBe('Cache/Redis')
+
+    const model = await buildLikeC4Model()
+    expect([...model.viewFolder('Auto').views]).toEqual([
+      model.view('__sys1'),
+    ])
+    expect(model.view('__sys1').title).toBe('Cache/Redis')
+  })
+
   it('implicit views skip elements with explicit scoped views', async ({ expect }) => {
     const { validate, buildModel } = createTestServices({
       projectConfig: { implicitViews: true },

@@ -79,6 +79,7 @@ test('Model Codegen with valid types', () => {
     | 'customer'
     | 'deploy_1'
     | 'dynamic-view-1'
+    | 'dynamic-view-variant'
     | 'graphql'
     | 'index'
     | 'mobile'

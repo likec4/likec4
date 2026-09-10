@@ -1,6 +1,7 @@
 import { cx } from '@likec4/styles/css'
 import { overlay } from '@likec4/styles/recipes'
 import {
+  FocusTrap,
   RemoveScroll,
 } from '@mantine/core'
 import { useFocusTrap, useMergedRef } from '@mantine/hooks'
@@ -80,6 +81,17 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   const isPresent = useIsPresent()
 
   useEffect(() => {
+    const dialog = dialogRef.current
+    if (dialog && !dialog.open) {
+      dialog.showModal()
+    }
+    // If openDelay is 0, open immediately
+    if (openDelay === 0) {
+      setOpened(true)
+    }
+  }, [])
+
+  useEffect(() => {
     if (isPresent) {
       return
     }
@@ -95,17 +107,6 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
       }
     }
   }, [isPresent])
-
-  useLayoutEffect(() => {
-    const dialog = dialogRef.current
-    if (dialog && !dialog.open) {
-      dialog.showModal()
-    }
-    // If openDelay is 0, open immediately
-    if (openDelay === 0) {
-      setOpened(true)
-    }
-  }, [])
 
   // Debounce opening to avoid flicker
   useTimeoutEffect(
@@ -157,7 +158,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     <m.dialog
       ref={useMergedRef(
         dialogRef,
-        focusTrapRef,
+        // focusTrapRef,
         ref,
       )}
       className={cx(
@@ -197,6 +198,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     >
       <RemoveScroll forwardProps>
         <div
+          ref={focusTrapRef}
           className={cx(
             classes?.body,
             'likec4-overlay-body',

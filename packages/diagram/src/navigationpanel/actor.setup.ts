@@ -1,11 +1,10 @@
 import type { LayoutedView, ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import { setup } from 'xstate'
-import type { CurrentViewModel } from '../hooks/useCurrentViewModel'
 
 export interface Input {
-  view: LayoutedView
-  viewModel: CurrentViewModel | null
+  viewId: ViewId
+  viewFolder?: string | undefined
 }
 
 export type Events =
@@ -14,7 +13,7 @@ export type Events =
   | { type: 'searchQuery.change'; value: string }
   | { type: 'searchQuery.changed' }
   | { type: 'select.folder'; folderPath: string }
-  | { type: 'select.view'; viewId: ViewId }
+  | { type: 'select.view'; viewId: ViewId; viewFolder?: string | undefined }
   // Events from the UI
   // - From breadcrumbs
   | { type: 'breadcrumbs.mouseLeave' }
@@ -55,9 +54,8 @@ export type DropdownColumnItem =
   }
 
 export interface Context {
-  view: LayoutedView
-
-  viewModel: CurrentViewModel | null
+  viewId: ViewId
+  viewFolder: string
   /**
    * Who activated the dropdown
    * (if `click` then the dropdown is always open until dismissed)
@@ -78,7 +76,8 @@ export type Tags = 'active'
 
 export function Context({ input }: { input: Input }): Context {
   return {
-    ...input,
+    viewId: input.viewId,
+    viewFolder: input.viewFolder ?? '',
     activatedBy: 'hover',
     selectedFolder: '',
     searchQuery: '',

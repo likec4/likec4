@@ -100,7 +100,7 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
   return (
     <AnimatePresence
       onExitComplete={() => {
-        diagram.searchActor().send({ type: 'animation.presence.end' })
+        searchActorRef.send({ type: 'animation.presence.end' })
       }}>
       {isOpened && (
         <Overlay
@@ -113,7 +113,7 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
             dialog: dialogCss,
             body: bodyCss,
           }}
-          openDelay={0}
+          openDelay={100}
           onClose={close}
           data-likec4-search="true"
         >
@@ -155,14 +155,14 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
           e.stopPropagation()
           moveFocusToSearchInput(contentRef.current)
         }}>
-        <VStack flex={1} px={'sm'}>
+        <VStack flex={'1'} px={'sm'}>
           <LikeC4SearchInput />
           <SearchByTags />
         </VStack>
       </Group>
       <Grid>
         <GridCol span={6}>
-          <Title component={'div'} order={6} c="dimmed" pl="sm">Elements</Title>
+          <Title component={'div'} order={6} c="dimmed" pl="md">Elements</Title>
         </GridCol>
         <GridCol span={6}>
           <Title component={'div'} order={6} c="dimmed" pl="sm">Views</Title>
@@ -182,7 +182,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
-              <AnimatePresence mode="popLayout" anchorY="top">
+              <AnimatePresence initial={false}>
                 <ElementsColumn />
               </AnimatePresence>
             </LayoutGroup>
@@ -195,7 +195,9 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-views">
-              <ViewsColumn />
+              <AnimatePresence initial={false}>
+                <ViewsColumn />
+              </AnimatePresence>
             </LayoutGroup>
           </ScrollArea>
         </GridCol>

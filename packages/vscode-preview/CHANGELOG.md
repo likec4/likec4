@@ -1,5 +1,11 @@
 # @likec4/vscode-preview
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3144](https://github.com/likec4/likec4/pull/3144) [`b381f20`](https://github.com/likec4/likec4/commit/b381f2010893f9ad1c735e4f634503106c0fd1f7) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix Bootstrap icons in the VS Code preview so `iconColor` colors them correctly.
+
 ## 1.59.2
 
 ## 1.59.1

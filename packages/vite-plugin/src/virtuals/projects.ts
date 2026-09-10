@@ -16,6 +16,7 @@ import { effectiveWebappExportFormats } from './export-formats'
 type ProjectData = {
   id: string
   title: string | undefined
+  path: string
   landingPage: LikeC4ProjectConfig['landingPage']
   relationshipBrowserDefaultScope: RelationshipBrowserScope
   exportFormats: WebappExportFormat[]
@@ -62,6 +63,7 @@ export const projectsModule = {
       code: code(map(projects, p => ({
         id: p.id,
         title: p.title,
+        path: p.path,
         landingPage: p.config.landingPage,
         relationshipBrowserDefaultScope: p.config.webapp?.relationshipsBrowser?.defaultScope ?? 'view',
         exportFormats: effectiveWebappExportFormats(p.config),

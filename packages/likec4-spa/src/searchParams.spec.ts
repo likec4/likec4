@@ -28,7 +28,7 @@ describe('searchParamsSchema', () => {
 
   it('should parse default search params', () => {
     const parsed = searchParamsSchema.parse({})
-    expect(parsed.dynamic).toBe('diagram')
+    expect(parsed.dynamic).toBeUndefined()
     expect(parsed.padding).toBe(20)
     expect(parsed.relationshipsScope).toBeUndefined()
     expect(parsed.relationships).toBeUndefined()

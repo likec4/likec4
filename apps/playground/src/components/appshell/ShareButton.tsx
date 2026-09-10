@@ -24,7 +24,7 @@ const Alert = MantineAlert.withProps({
   radius: 'sm',
   classNames: {
     root: css({
-      maxW: 400,
+      maxW: '[400px]',
       padding: 'xs',
     }),
     body: css({

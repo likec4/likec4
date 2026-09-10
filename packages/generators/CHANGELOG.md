@@ -1,5 +1,39 @@
 # @likec4/generators
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3150](https://github.com/likec4/likec4/pull/3150) [`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c) Thanks [@merlincat11](https://github.com/merlincat11)! - Add optional view order metadata for sorting sibling views in navigation.
+
+- [#3210](https://github.com/likec4/likec4/pull/3210) [`bdefe0b`](https://github.com/likec4/likec4/commit/bdefe0b4983a86518bf4a5359bd5ba1511c8473a) Thanks [@davydkov](https://github.com/davydkov)! - Fix generated output using CRLF line endings on Windows. Markdown, Mermaid, D2, PlantUML and LikeC4 DSL exports now always emit LF, so generated files are byte-identical across platforms.
+
+- [#3147](https://github.com/likec4/likec4/pull/3147) [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e) Thanks [@farhan523](https://github.com/farhan523)! - Allow referencing global predicate groups inside view groups, so a reusable set of predicates can be scoped into a named group:
+
+  ```likec4
+  views {
+    view of newServices {
+      include cloud.new.*
+
+      group 'Microservices' {
+        global predicate microservices
+      }
+    }
+  }
+  ```
+
+- [#3160](https://github.com/likec4/likec4/pull/3160) [`5b09f1d`](https://github.com/likec4/likec4/commit/5b09f1d2880664635f40b2fb21781332144e75c9) Thanks [@StefanStuehrmann](https://github.com/StefanStuehrmann)! - Add a Markdown generator and `export markdown` CLI command. `generateMarkdown` renders a
+  project's views as a single GitHub-flavored Markdown document (optionally with a project
+  overview from `options.description`), reusing `generateMermaid` for each embedded diagram.
+  `likec4 export markdown [path]` writes one `README.md` per project into that project's own
+  folder — following the `export png`/`json` precedent of iterating all projects by default,
+  with `--project` to restrict to one — so the rendered architecture is browsable directly on
+  GitHub, with no server and no manual diagram assembly.
+- Updated dependencies [[`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c), [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d), [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435), [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6), [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e), [`61677a8`](https://github.com/likec4/likec4/commit/61677a8e5861f36c12e4f379f1623d9af455fa30)]:
+  - @likec4/core@1.59.3
+  - @likec4/config@1.59.3
+  - @likec4/log@1.59.3
+
 ## 1.59.2
 
 ### Patch Changes

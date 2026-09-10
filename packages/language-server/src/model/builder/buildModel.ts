@@ -369,6 +369,14 @@ export function buildModelData(
     }
   }
 
+  // Element titles may still carry an escaped `\/` (kept around so the implicit-view
+  // title built above isn't split into extra folders) - resolve it to a plain `/` now
+  // that every consumer of `elements[fqn].title` has run.
+  const elementsForOutput = mapValues(
+    elements,
+    el => el.title.includes('\\/') ? { ...el, title: el.title.replaceAll('\\/', '/') } : el,
+  )
+
   return {
     data: {
       [_stage]: 'parsed',
@@ -394,7 +402,7 @@ export function buildModelData(
         ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(compareNatural) }),
         customColors,
       },
-      elements,
+      elements: elementsForOutput,
       relations,
       globals: c4Specification.globals,
       views,

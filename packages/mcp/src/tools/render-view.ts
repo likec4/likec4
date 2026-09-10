@@ -1,8 +1,16 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { useLanguageServices } from '../ctx'
+import { mcpToolSchema } from '../utils'
 import { buildRenderPayload, projectIdSchema, toolError } from './_common'
 
 export const renderViewResourceUri = 'ui://likec4/render-view.html'
@@ -20,11 +28,11 @@ Request:
 - project: string (optional) — project id. Defaults to "default" if omitted.
 
 Use this when the user wants to *see* a view. Use "read-view" instead when only the view's structure (nodes/edges) is needed.`,
-      inputSchema: {
+      inputSchema: mcpToolSchema({
         viewId: z.string().describe('View id (name)'),
         project: projectIdSchema,
-      },
-      outputSchema: {
+      }),
+      outputSchema: mcpToolSchema({
         id: z.string(),
         title: z.string(),
         project: z.string(),
@@ -35,7 +43,7 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
             'Layouted model data (specification, elements, relations, deployments), scoped to this view only. '
               + 'Consumed by the paired UI to build a LikeC4Model for LikeC4ModelProvider — LikeC4Diagram requires one in context.',
           ),
-      },
+      }),
       annotations: {
         readOnlyHint: true,
         idempotentHint: true,

@@ -5,6 +5,7 @@ import JSON5 from 'json5'
 import { writeFileSync } from 'node:fs'
 import {
   mapToObj,
+  pick,
   range,
 } from 'remeda'
 const mantineVars = themeToVars({})
@@ -102,6 +103,8 @@ export const breakpoints = ${JSON5.stringify(DEFAULT_THEME.breakpoints, null, 2)
 export const tokens = ${JSON5.stringify(tokens, null, 2)}
 
 export const mantine = ${JSON5.stringify(mantineVars, null, 2)} as const
+
+export const defaultMantineColors = ${JSON5.stringify(DEFAULT_THEME.colors, null, 2)} as const
 `
 
 writeFileSync('./src/generated.ts', ts)

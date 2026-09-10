@@ -12,9 +12,10 @@ declare module 'likec4:projects' {
     | { redirect: true }
     | { include: string[] }
     | { exclude: string[] }
-  type Project = {
+  export interface Project {
     id: ProjectId
     title?: string
+    path: string
     landingPage?: LandingPageConfig
     relationshipBrowserDefaultScope: RelationshipBrowserScope
     exportFormats: readonly WebappExportFormat[]

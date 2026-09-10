@@ -21,6 +21,7 @@ import {
   FetchProjectsOverview,
   GetLastClickedNode,
   OnOpenView,
+  ReadBootstrapIcon,
   ReadLocalIcon,
   ViewChangeReq,
   WebviewMsgs,
@@ -124,6 +125,10 @@ export const ExtensionApi = {
   // Read local icon file and convert to base64 data URI
   readLocalIcon: async (uri: string) => {
     return await messenger.sendRequest(ReadLocalIcon, HOST_EXTENSION, uri)
+  },
+
+  readBootstrapIcon: async (name: string) => {
+    return await messenger.sendRequest(ReadBootstrapIcon, HOST_EXTENSION, name)
   },
 
   onOpenViewNotification: (handler: Handler<typeof OnOpenView>) => {

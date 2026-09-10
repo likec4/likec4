@@ -1,5 +1,16 @@
 # @likec4/config
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3078](https://github.com/likec4/likec4/pull/3078) [`61677a8`](https://github.com/likec4/likec4/commit/61677a8e5861f36c12e4f379f1623d9af455fa30) Thanks [@ckeller42](https://github.com/ckeller42)! - Allow generated webapps to limit available export formats from project config.
+
+  Omitting `webapp.exportFormats` keeps all current formats enabled; an empty list hides webapp exports.
+- Updated dependencies [[`0888635`](https://github.com/likec4/likec4/commit/0888635f3269978599d0fd724529f876332b362c), [`39dc9cf`](https://github.com/likec4/likec4/commit/39dc9cfc729d2e92d9dd0bb4553ed5abca0a3e5d), [`dc7eba2`](https://github.com/likec4/likec4/commit/dc7eba24559706f2e41ee5f8bfd66e79363de435), [`260ac73`](https://github.com/likec4/likec4/commit/260ac730bdfdeb5a27d4a23497b14ad3e2670de6), [`8a4a690`](https://github.com/likec4/likec4/commit/8a4a6905d5cfd63c1c2e443ea93ad86aba474d5e)]:
+  - @likec4/core@1.59.3
+  - @likec4/log@1.59.3
+
 ## 1.59.2
 
 ### Patch Changes

@@ -27,6 +27,22 @@ On the UI, this view will be displayed as:
 
 ![organize views](../../../../assets/views/organize.png)
 
+:::note
+If a title needs to contain a `/` without creating a folder, escape it with a backslash:
+
+```likec4
+views {
+  view {
+    title 'Cost \/ Benefit'
+  }
+}
+```
+
+This view keeps the single title `Cost / Benefit` and is not nested under a `Cost` folder.
+The same escape works for element titles, which is useful when `implicitViews` is enabled and an
+auto-generated view would otherwise be split into an unwanted subfolder.
+:::
+
 ## Order views
 
 Views in the same folder can be ordered with `order` followed by a non-negative integer.

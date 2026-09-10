@@ -304,7 +304,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         {...props}
         className={css({
           '& .react-flow__edge-interaction': {
-            cursor: enabledEditing && selected ? 'copy' : undefined,
+            cursor: enabledEditing && selected ? '[copy]' : 'inherit',
           },
         })}>
         <EdgePath

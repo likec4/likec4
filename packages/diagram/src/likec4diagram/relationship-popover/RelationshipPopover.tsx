@@ -324,6 +324,8 @@ const RelationshipPopoverInternal = ({
       className={cx(
         css({
           layerStyle: 'likec4.dropdown',
+          border: 'subtle',
+          rounded: 'sm',
           p: '0',
           pointerEvents: {
             base: 'all',

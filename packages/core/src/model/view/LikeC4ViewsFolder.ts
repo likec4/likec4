@@ -2,6 +2,7 @@ import { isEmptyish, last } from 'remeda'
 import type { aux, NonEmptyArray } from '../../types'
 import { invariant, memoizeProp } from '../../utils'
 import type { LikeC4Model } from '../LikeC4Model'
+import { unescapeViewPathSegment } from '../utils'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
 
 export class LikeC4ViewsFolder<A extends aux.Any = aux.Any> {
@@ -46,7 +47,7 @@ export class LikeC4ViewsFolder<A extends aux.Any = aux.Any> {
     this.$model = $model
     this.path = path.join('/')
     this.isRoot = this.path === ''
-    this.title = last(path)
+    this.title = unescapeViewPathSegment(last(path))
     if (this.isRoot) {
       this.parentPath = undefined
     } else {

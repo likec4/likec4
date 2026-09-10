@@ -1,0 +1,494 @@
+---
+title: Modelo
+description: Como definir elementos de arquitetura no LikeC4
+sidebar:
+  label: Modelo
+  order: 3
+tableOfContents:
+  # minHeadingLevel: 3
+  maxHeadingLevel: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+O `model` descreve a arquitetura como um conjunto de elementos hierárquicos e relacionamentos entre eles.
+
+## Elemento
+
+Um elemento é um bloco básico de construção. Ele representa uma parte lógica da arquitetura.
+Qualquer elemento deve ter um [`kind`](/pt-br/dsl/specification/#tipo-de-elemento) e um `name` (_identifier_):
+
+```likec4
+specification {
+  element actor
+  element service
+}
+
+model {
+  // element of kind 'actor' with the name 'customer'
+  actor customer
+  // element of kind 'service' named as 'cloud'
+  service cloud
+
+  // also possible with '=' and the name goes first
+  cloud = service
+}
+```
+
+O nome de um elemento é necessário para referências.
+Ele pode conter letras, dígitos, hifens e underscores, mas não pode começar com um dígito nem conter `.`
+
+| nome       | válido |
+| :--------- | :----- |
+| api        | ✅     |
+| Api2       | ✅     |
+| \_api      | ✅     |
+| \__Api-1   | ✅     |
+| 1api       | ⛔️    |
+| a.pi       | ⛔️    |
+
+
+## Propriedades do elemento
+
+### Título
+
+```likec4 'SaaS' copy
+specification {
+  element softwareSystem
+}
+model {
+  // Title can be inlined
+  saas = softwareSystem 'SaaS'
+
+  // or nested
+  saas = softwareSystem {
+    title 'SaaS'
+
+    // You can use `:` (optional)
+    title: 'SaaS'
+  }
+
+  // If title is not specified, name will be used by default
+  saas = softwareSystem
+}
+```
+
+:::note
+Você pode usar aspas simples ou duplas:
+```likec4
+model {
+  service cloud 'Cloud Service'
+  // Or
+  service cloud "Cloud Service"
+}
+```
+Se precisar de aspas dentro da string, escape com uma barra invertida:
+```likec4
+model {
+  service cloud 'Cloud\'s Service'
+  service cloud "Cloud\"s Service"
+}
+```
+:::
+
+### Descrição
+
+```likec4  'Provides services to customers' copy
+model {
+  // Can be inlined
+  saas = softwareSystem 'SaaS' 'Provides services to customers'
+
+  // or nested
+  saas = softwareSystem {
+    title 'SaaS'
+    description 'Provides services to customers'
+  }
+}
+```
+
+Um elemento pode ter um `summary` curto (opcional; usa `description` como fallback):
+
+```likec4 copy
+model {
+  saas = softwareSystem {
+    title 'SaaS'
+    summary 'Provides services to customers'
+    description '
+      Detailed description
+      ...
+    '
+  }
+}
+```
+
+Se `summary` for informado, ele será exibido no diagrama, e a `description` será exibida no diálogo de detalhes.
+Se você não informar `description`, o summary será usado.
+
+Para definição inline:
+```likec4 copy
+model {
+  // [title] [summary]
+  saas = softwareSystem 'SaaS' 'Provides services to customers' {
+    description '
+      Detailed description
+      ...
+    '
+  }
+}
+```
+
+### Tecnologia
+
+```likec4 copy
+model {
+  api = service {
+    technology 'REST'
+  }
+
+  // Structurizr DSL style:
+  // <name> = softwareSystem [title] [summary] [technology]
+  saas = softwareSystem 'SaaS' 'Provides services to customers' 'SaaS'
+}
+```
+
+:::tip
+Você pode definir propriedades de elementos na [especificação](/pt-br/dsl/specification/#tipo-de-elemento) quando elas forem comuns a todos os elementos daquele tipo:
+
+```likec4
+specification {
+  element mobileApp {
+    title 'Mobile App'
+    description 'Universal mobile application'
+    technology 'React Native'
+  }
+}
+```
+
+Isso permite definir propriedades uma vez e reutilizá-las no modelo.
+Propriedades da definição do elemento sobrescrevem as propriedades da especificação.
+:::
+
+:::note[Tecnologia inferida automaticamente]
+Se um elemento tiver um ícone incluído (`aws:`, `azure:`, `gcp:` ou `tech:`), mas nenhuma tecnologia explícita,
+o LikeC4 deriva automaticamente um rótulo de tecnologia legível a partir do nome do ícone.
+Por exemplo, `icon tech:apache-flink` produz a tecnologia **"Apache Flink"**, e `icon aws:simple-storage-service` produz **"Simple Storage Service"**.
+
+Ícones `bootstrap:` são excluídos porque são ícones genéricos de UI.
+
+Esse comportamento é habilitado por padrão. Para desativá-lo, defina `inferTechnologyFromIcon` como `false` na [configuração do projeto](/dsl/config).
+:::
+
+### Tags
+
+[Tags](/pt-br/dsl/specification/#tag) de elementos são definidas em um bloco aninhado e devem vir primeiro, antes de qualquer outra propriedade:
+
+```likec4 copy
+model {
+  appV1 = application 'App v1' {
+    #deprecated
+    description 'Old version of the application'
+  }
+
+  // multiple tags
+  appV2 = application {
+    #next, #serverless
+    #team2
+    title 'App v2'
+  }
+
+  appV3 = application {
+    title 'App v3'
+    #team3 // ⛔️ Error: tags must be defined first
+  }
+}
+```
+
+:::tip
+
+Você pode adicionar tags na [especificação](/pt-br/dsl/specification/#tag), quando isso for comum a todos os elementos do tipo:
+
+```likec4
+specification {
+  element lambda {
+    #serverless
+  }
+}
+```
+:::
+
+### Links
+
+Um elemento pode ter vários links:
+
+```likec4 copy
+model {
+  bastion = application 'Bastion' {
+    // External link
+    link https://any-external-link.com
+
+    // With label
+    link https://github.com/likec4/likec4 'Repository'
+
+    // or any URI
+    link ssh://bastion.internal 'SSH'
+
+    // or relative link to navigate to sources
+    link ../src/index.ts#L1-L10
+  }
+}
+```
+
+### Metadados
+
+Metadados de elementos são um conjunto de pares chave-valor definidos em um bloco aninhado:
+
+```likec4 copy
+model {
+  app = application 'App' {
+    metadata {
+      prop1 'value1'
+      prop2 '
+        apiVersion: apps/v1
+        kind: StatefulSet
+        metadata:
+          name: app-statefulset
+        spec: {}
+      '
+      prop3 '{
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          }
+        }
+      }'
+    }
+  }
+}
+```
+
+Valores de metadados podem ser strings, booleanos sem aspas ou arrays de strings.
+Para dados complexos, você pode usar strings em formato JSON ou YAML.
+
+### Valores de array
+
+Você também pode usar arrays para valores de metadados com sintaxe de array literal:
+
+```likec4 copy
+model {
+  app = application 'App' {
+    metadata {
+      tags ['frontend', 'react', 'typescript']
+      environments ['dev', 'staging', 'prod']
+      version '2.1.0'
+    }
+  }
+}
+```
+
+Valores simples e arrays podem ser misturados no mesmo bloco de metadados:
+
+```likec4 copy
+model {
+  api = service 'API Gateway' {
+    metadata {
+      version '3.2.1'
+      maintainer 'Platform Team'
+      tags ['backend', 'gateway', 'microservice']
+      regions ['us-east-1', 'eu-west-1']
+      critical true
+    }
+  }
+}
+```
+
+Veja mais exemplos com vários padrões de metadados mistos:
+
+```likec4 copy
+model {
+  // E-commerce application with mixed metadata types
+  frontend = application 'Frontend App' {
+    metadata {
+      framework 'React'
+      version '18.2.0'
+      features ['shopping-cart', 'user-auth', 'payment', 'search']
+      deployment_targets ['staging', 'production']
+      team_lead 'Alice Johnson'
+      developers ['Bob Smith', 'Carol Davis', 'David Wilson']
+      release_cycle 'weekly'
+      supported_browsers ['Chrome', 'Firefox', 'Safari', 'Edge']
+      accessibility_level 'WCAG 2.1 AA'
+      has_mobile_app true
+    }
+  }
+
+  // Database service with operational metadata
+  database = service 'PostgreSQL Cluster' {
+    metadata {
+      engine 'PostgreSQL'
+      version '15.3'
+      instances ['primary', 'replica-1', 'replica-2']
+      backup_schedule 'daily'
+      backup_retention_days '30'
+      monitoring_endpoints ['metrics', 'logs', 'traces']
+      alert_channels ['slack', 'email', 'pagerduty']
+      maintenance_window 'Sunday 2-4 AM UTC'
+      data_classification 'sensitive'
+      encryption_at_rest true
+    }
+  }
+
+  // Microservice with complex deployment metadata
+  payment = service 'Payment Service' {
+    metadata {
+      language 'Go'
+      version '2.1.4'
+      port '8080'
+      health_check_path '/health'
+      dependencies ['database', 'redis', 'external-payment-api']
+      environments ['dev', 'test', 'stage', 'prod']
+      scaling_policy 'auto'
+      min_replicas '2'
+      max_replicas '10'
+      circuit_breaker_enabled true
+      rate_limits ['1000/minute', '100/second']
+      compliance_standards ['PCI-DSS', 'SOC2']
+    }
+  }
+}
+```
+
+### Comportamento das propriedades de metadados
+
+**Ordenação alfabética**: propriedades de metadados são ordenadas automaticamente em ordem alfabética quando exibidas, independentemente da ordem em que foram definidas na DSL. Isso garante uma apresentação consistente em todos os elementos.
+
+**Duplicação de propriedades**: quando o mesmo nome de propriedade é definido várias vezes, todos os valores são reunidos em um array, preservando a ordem de definição:
+
+```likec4 copy
+model {
+  service = component 'Payment Service' {
+    metadata {
+      version '1.0.0'               // First value
+      version '2.0.0'               // Second value
+      // Result: version: ['1.0.0', '2.0.0']
+
+      owner ['team-a', 'team-b']    // First: array values
+      owner 'team-c'                // Second: single value
+      // Result: owner: ['team-a', 'team-b', 'team-c']
+
+      tags 'primary'                // First: single value
+      tags ['backend', 'critical']  // Second: array values
+      // Result: tags: ['primary', 'backend', 'critical']
+
+      ports ['8080', '9090']        // First: array values
+      ports ['3000', '4000']        // Second: array values
+      // Result: ports: ['8080', '9090', '3000', '4000']
+    }
+  }
+}
+```
+
+Esse comportamento se aplica a **todas as chaves duplicadas**.
+
+## Usando Markdown
+
+Você pode usar Markdown em `description` (e `summary`) com aspas triplas:
+
+```likec4 copy
+model {
+  mobile = application {
+    title 'Mobile Application'
+    description '''
+      ### Multi-platform application
+
+      [React Native](https://reactnative.dev)
+    '''
+  }
+
+  web = application {
+    description """
+      ### Web Application
+
+      > Provides services to customers through
+      > the web interface.
+
+      | checks     |     |
+      | :--------- | :-- |
+      | check 1    | ✅  |
+      | check 2    | ⛔️  |
+      | check 3    | ✅  |
+    """
+  }
+}
+```
+
+## Estruturando o modelo
+
+Qualquer elemento pode atuar como um contêiner e incluir outros elementos.
+Assim, você define a estrutura e os detalhes internos do elemento.
+
+```likec4 filename="nested-elements.c4"
+model {
+  // service1 has backend and frontend
+  service service1 {
+    component backend {
+      // backend has api
+      component api
+    }
+    component frontend
+  }
+
+  // or use '='
+  service2 = service {
+    backend = component {
+      api = component
+    }
+    frontend = component
+  }
+}
+```
+
+Elementos aninhados são _"namespaced"_: o nome do pai é usado como prefixo.
+Assim, o modelo acima tem elementos com estes nomes totalmente qualificados:
+
+- `service1`
+- `service1.backend`
+- `service1.backend.api`
+- `service1.frontend`
+
+e:
+
+- `service2`
+- `service2.backend`
+- `service2.backend.api`
+- `service2.frontend`
+
+:::caution
+Você não pode ter elementos com o mesmo nome dentro do mesmo pai.
+Isso é explicado em detalhes em [referências](/pt-br/dsl/references).
+
+```likec4 filename="nested-elements.c4"
+model {
+
+  service service1 'Service 1' {
+    component backend
+
+    component backend // ⛔️ Error: 'service1.backend' already defined
+  }
+
+  service service2 'Service 2' {
+    component backend // ✅ This is OK - 'service2.backend'
+
+    component legacy {
+      component backend // ✅ This is OK - 'service2.legacy.backend'
+    }
+  }
+
+  component backend // ✅ This is OK - 'backend'
+}
+```
+:::

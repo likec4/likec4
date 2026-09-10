@@ -2,7 +2,7 @@
   "name": "@likec4/styles",
   "description": "Shared PandaCSS preset and generated styles, used in LikeC4",
   "license": "MIT",
-  "version": "1.59.2",
+  "version": "1.59.3",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -63,24 +63,27 @@
     "./dev": "./dev.mjs"
   },
   "dependencies": {
-    "@likec4/style-preset": "workspace:*",
-    "@pandacss/dev": "catalog:css"
+    "@likec4/style-preset": "workspace:*"
   },
   "peerDependencies": {
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css",
     "react": "^19.2.x"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
+    },
+    "@pandacss/types": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
     "@types/node": "catalog:",
     "@likec4/devops": "workspace:*",
     "@types/picomatch": "catalog:externals",
-    "@pandabox/panda-plugins": "^0.0.8",
-    "@pandabox/utils": "^0.0.5",
     "@likec4/tsconfig": "workspace:*",
     "@types/react": "catalog:react",
     "react": "catalog:react",

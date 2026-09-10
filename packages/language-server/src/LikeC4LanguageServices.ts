@@ -10,7 +10,7 @@ import {
 import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
-import { TextDocument, URI } from 'langium'
+import { TextDocument, URI, UriUtils } from 'langium'
 import { entries, filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
 import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
@@ -22,9 +22,27 @@ import type { LikeC4ModelChanges } from './model-change/ModelChanges'
 import type { LikeC4Services } from './module'
 import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/LikeC4Views'
-import { ProjectsManager } from './workspace'
+import { type LikeC4WorkspaceManager, ProjectsManager } from './workspace'
 
 const logger = mainLogger.getChild('LanguageServices')
+
+export interface LikeC4ProjectData {
+  readonly id: ProjectId
+  /**
+   * Absolute path to project folder
+   */
+  readonly folder: URI
+  /**
+   * Relative path from workspace to project folder
+   */
+  readonly path: string
+  /**
+   * Project title
+   */
+  readonly title: string
+  readonly documents: ReadonlyArray<URI>
+  readonly config: Readonly<LikeC4ProjectConfig>
+}
 
 export interface LikeC4LanguageServices {
   readonly views: LikeC4Views
@@ -37,24 +55,22 @@ export interface LikeC4LanguageServices {
   /**
    * Returns all projects with relevant documents
    */
-  projects(): NonEmptyArray<{
-    id: ProjectId
-    folder: URI
-    title: string
-    documents: ReadonlyArray<URI>
-    config: Readonly<LikeC4ProjectConfig>
+  projects(): NonEmptyArray<LikeC4ProjectData>
+
+  /**
+   * Returns project by ID, returns default project if no ID is specified
+   */
+  project(projectId?: ProjectId): LikeC4ProjectData
+
+  /**
+   * Computes and layouts projects overview - a special diagram
+   * that shows all projects and their relationships
   }>
 
   /**
    * Returns project by ID, returns default project if no ID is specified
    */
-  project(projectId?: ProjectId): {
-    id: ProjectId
-    folder: URI
-    title: string
-    documents: ReadonlyArray<URI>
-    config: Readonly<LikeC4ProjectConfig>
-  }
+  project(projectId?: ProjectId): LikeC4ProjectData
 
   /**
    * Computes and layouts projects overview - a special diagram
@@ -152,10 +168,12 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   public readonly builder: LikeC4ModelBuilder
   public readonly editor: LikeC4ModelChanges
   public readonly projectsManager: ProjectsManager
+  public readonly workspaceManager: LikeC4WorkspaceManager
 
   constructor(private services: LikeC4Services) {
     this.builder = services.likec4.ModelBuilder
     this.projectsManager = services.shared.workspace.ProjectsManager
+    this.workspaceManager = services.shared.workspace.WorkspaceManager
     this.editor = services.likec4.ModelChanges
   }
 
@@ -164,20 +182,20 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   }
 
   get workspaceUri(): URI {
-    return this.services.shared.workspace.WorkspaceManager.workspaceUri
+    try {
+      return this.workspaceManager.workspaceUri
+    } catch (error) {
+      logger.warn('Failed to get workspace URI, using default folder', { error })
+      return URI.file('/')
+      // ignore - workspace not initialized
+    }
   }
 
   get workspacePath(): string {
     return this.workspaceUri.fsPath
   }
 
-  projects(): NonEmptyArray<{
-    id: ProjectId
-    folder: URI
-    title: string
-    documents: ReadonlyArray<URI>
-    config: LikeC4ProjectConfig
-  }> {
+  projects(): NonEmptyArray<LikeC4ProjectData> {
     const projectsManager = this.services.shared.workspace.ProjectsManager
     const projectsWithDocs = pipe(
       this.services.shared.workspace.LangiumDocuments.groupedByProject(),
@@ -188,6 +206,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         return {
           id,
           folder: folderUri,
+          path: this.workspaceManager.relativePath(folderUri),
           title: config.title ?? config.name,
           documents: map(docs, prop('uri')),
           config,
@@ -210,19 +229,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     return [{
       id,
       folder: folderUri,
+      path: this.workspaceManager.relativePath(folderUri),
       title: config.title ?? config.name,
       documents: [],
       config,
     }]
   }
 
-  project(projectId?: ProjectId): {
-    id: ProjectId
-    folder: URI
-    title: string
-    documents: ReadonlyArray<URI>
-    config: LikeC4ProjectConfig
-  } {
+  project(projectId?: ProjectId): LikeC4ProjectData {
     const { id, folderUri, config } = this.projectsManager.ensureProject(projectId)
     const documents = map(
       this.services.shared.workspace.LangiumDocuments.projectDocuments(id).toArray(),
@@ -231,6 +245,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     return {
       id,
       folder: folderUri,
+      path: this.workspaceManager.relativePath(folderUri),
       title: config.title ?? config.name,
       documents,
       config,

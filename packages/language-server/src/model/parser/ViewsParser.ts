@@ -19,7 +19,7 @@ import {
   ViewOps,
 } from '../../ast'
 import { safeCall, stringHash } from '../../utils'
-import { parseViewOrder, removeIndent, toSingleLine } from './Base'
+import { parseTitleKeepingEscapedSlash, parseViewOrder, removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentView } from './DeploymentViewParser'
 import type { WithPredicates } from './PredicatesParser'
 
@@ -104,13 +104,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const { title = null, description = null } = this.parseBaseProps(
-        pipe(
-          props,
-          filter(ast.isViewStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
+      const viewBodyProps = pipe(
+        props,
+        filter(ast.isViewStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
+      const { title = null, description = null } = this.parseBaseProps(viewBodyProps, {
+        title: parseTitleKeepingEscapedSlash(viewBodyProps.title),
+      })
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
@@ -281,13 +282,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const { title = null, description = null } = this.parseBaseProps(
-        pipe(
-          props,
-          filter(ast.isViewStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
+      const dynamicViewBodyProps = pipe(
+        props,
+        filter(ast.isViewStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
       )
+      const { title = null, description = null } = this.parseBaseProps(dynamicViewBodyProps, {
+        title: parseTitleKeepingEscapedSlash(dynamicViewBodyProps.title),
+      })
 
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)

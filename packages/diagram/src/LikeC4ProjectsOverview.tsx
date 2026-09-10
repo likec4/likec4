@@ -32,7 +32,7 @@ export function LikeC4ProjectsOverview({
   return (
     <EnsureMantine>
       <FramerMotionConfig>
-        <LikeC4Styles id={id} />
+        <LikeC4Styles rootSelector={`#${id}`} />
         <RootContainer id={id} className={className}>
           <ProjectsOverview
             view={view}

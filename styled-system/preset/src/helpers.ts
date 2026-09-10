@@ -19,3 +19,15 @@ export function rem(pixels: number) {
   // return `${(pixels / 16).toPrecision(3)}rem`
   return `${pixels}px`
 }
+
+export type Shades = readonly [string, string, string, string, string, string, string, string, string, string]
+/**
+ * Creates a ramp of colors from an array of shades
+ * @param shades Array of 10 colors
+ * @returns Object with keys 0-9 and values as objects with value property
+ */
+export function ramp(
+  shades: Shades,
+): Record<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9, { value: string }> {
+  return Object.fromEntries(shades.map((shade, index) => [index, { value: shade }])) as any
+}

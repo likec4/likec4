@@ -77,6 +77,7 @@ test('Generated model has expected view ids', () => {
     'customer',
     'deploy_1',
     'dynamic-view-1',
+    'dynamic-view-variant',
     'graphql',
     'index',
     'mobile',

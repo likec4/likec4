@@ -19,19 +19,23 @@ import {
 } from '@mantine/hooks'
 import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
+import { deepEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { forwardRef, useState } from 'react'
-import type { DiagramContext } from '../../hooks/useDiagram'
-import { useDiagram, useDiagramContext } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
+import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { PanelActionIcon } from '../_common'
 import { Tooltip } from './_common'
 import * as css from './styles'
 
-const selector = (state: DiagramContext) => ({
-  viewId: state.view.id,
-  isManualLayout: state.view._layout === 'manual',
-  autoLayout: state.view.autoLayout,
-})
+const selector = selectDiagramContext(
+  (state) => ({
+    viewId: state.view.id,
+    isManualLayout: state.view._layout === 'manual',
+    autoLayout: state.view.autoLayout,
+  }),
+  deepEqual,
+)
 
 export const ChangeAutoLayoutButton = () => {
   const diagram = useDiagram()
@@ -41,7 +45,8 @@ export const ChangeAutoLayoutButton = () => {
     autoLayout,
     viewId,
     isManualLayout,
-  } = useDiagramContext(selector)
+  } = useDiagramSelector(selector)
+  const portalProps = useMantinePortalProps()
 
   const { ref, hovered: isSpacingHovered } = useHover()
 
@@ -86,16 +91,17 @@ export const ChangeAutoLayoutButton = () => {
       clickOutsideEvents={[
         'pointerdown',
       ]}
-      radius="xs"
-      shadow="lg"
       offset={{
-        mainAxis: 10,
-      }}>
+        mainAxis: 12,
+      }}
+      {...portalProps}>
       <PopoverTarget>
         <Tooltip label="Change Auto Layout">
-          <PanelActionIcon>
-            <IconLayoutDashboard />
-          </PanelActionIcon>
+          <Box>
+            <PanelActionIcon>
+              <IconLayoutDashboard />
+            </PanelActionIcon>
+          </Box>
         </Tooltip>
       </PopoverTarget>
       <PopoverDropdown className="likec4-top-left-panel" p={8} pt={6} opacity={isSpacingHovered ? 0.6 : 1}>

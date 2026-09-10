@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, expect, it } from 'vitest'
 import { createMCPTestPair, structured, textContent } from './test-utils'
 
@@ -32,6 +39,23 @@ describe('preview-view tool', () => {
     const view = content['view'] as Record<string, unknown>
     const nodes = view['nodes'] as Array<Record<string, unknown>>
     expect(nodes.length).toBeGreaterThan(0)
+  })
+
+  it('renders a preview for a project with a non-default ID', async () => {
+    await using pair = await createMCPTestPair({
+      dsl: DSL,
+      projectConfig: { name: 'named-project' },
+    })
+    const result = await pair.client.callTool({
+      name: 'preview-view',
+      arguments: {
+        project: 'named-project',
+        dsl: 'view draft of other { include * }',
+      },
+    })
+
+    expect(result.isError).toBeFalsy()
+    expect(structured(result)['project']).toBe('named-project')
   })
 
   it('does not persist the preview — the real project is unaffected', async () => {

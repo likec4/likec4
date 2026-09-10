@@ -7,7 +7,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { type AstNode, type Reference, isAstNode, UriUtils } from 'langium'
+import { type AstNode, type Reference, GrammarUtils, isAstNode, UriUtils } from 'langium'
 import {
   filter,
   flatMap,
@@ -47,6 +47,52 @@ const logger = serverLogger.getChild('parser')
 
 // the class which this mixin is applied to
 export type GConstructor<T = {}> = new(...args: any[]) => T
+
+const BASIC_ESCAPES: Record<string, string> = { b: '\b', f: '\f', n: '\n', r: '\r', t: '\t', v: '\v', '0': '\0' }
+
+/**
+ * Mirrors langium's default string conversion, except an escaped `\/` is kept as-is,
+ * so @likec4/core's view-folder splitting can tell it apart from a real separator later on.
+ */
+function unescapeKeepingSlash(quoted: string): string {
+  let result = ''
+  for (let i = 1; i < quoted.length - 1; i++) {
+    const c = quoted[i]
+    if (c === '\\') {
+      const next = quoted[++i] ?? ''
+      result += next === '/' ? '\\/' : (BASIC_ESCAPES[next] ?? next)
+    } else {
+      result += c
+    }
+  }
+  return result
+}
+
+/**
+ * Re-reads a title's raw token text (instead of the already-unescaped AST value) so an
+ * escaped `\/` survives for the view-folder splitting logic. Returns `undefined` for
+ * markdown (triple-quoted) titles, which don't support this escape.
+ */
+export function parseTitleKeepingEscapedSlash(node: ast.MarkdownOrString | undefined): string | undefined {
+  if (!node || !isString(node.text)) {
+    return undefined
+  }
+  const raw = node.$cstNode?.text
+  return raw ? unescapeKeepingSlash(raw) : node.text
+}
+
+/**
+ * Same as {@link parseTitleKeepingEscapedSlash}, for an inline `String` property (not
+ * wrapped in `MarkdownOrString`), such as an element's positional title.
+ */
+export function parseInlineTitleKeepingEscapedSlash(
+  containerNode: AstNode | undefined,
+  property: string,
+  index = 0,
+): string | undefined {
+  const raw = GrammarUtils.findNodeForProperty(containerNode?.$cstNode, property, index)?.text
+  return raw ? unescapeKeepingSlash(raw) : undefined
+}
 
 export function toSingleLine(str: undefined | null): undefined
 export function toSingleLine(str: string): string

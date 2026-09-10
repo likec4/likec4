@@ -1,10 +1,11 @@
 import type { OverlaysActorRef } from '../overlays/overlaysActor'
-import { selectDiagramActor, useDiagramSnapshot } from './useDiagram'
+import { selectDiagramSnapshot, useDiagramSelector } from './useDiagram'
 
-const select = selectDiagramActor(s => {
-  return s.children.overlays
-})
+const select = selectDiagramSnapshot(
+  s => s.children.overlays ?? null,
+  Object.is,
+)
 
-export function useOverlaysActorRef(): OverlaysActorRef {
-  return useDiagramSnapshot(select, Object.is)!
+export function useOverlaysActorRef(): OverlaysActorRef | null {
+  return useDiagramSelector(select)
 }

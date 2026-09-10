@@ -9,8 +9,8 @@ export function ColorSchemeToggle() {
   return (
     <ActionIcon
       className={css({
-        width: '18px',
-        height: '18px',
+        width: '[18px]',
+        height: '[18px]',
       })}
       visibleFrom="lg"
       size={'md'}

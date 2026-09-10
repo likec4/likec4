@@ -267,10 +267,10 @@ function ElementTreeNode(
   const key = `@tree.${node.value}`
 
   return (
-    <m.div layoutId={key} {...elementProps as any}>
+    <m.div layout="position" layoutId={key} {...elementProps as any}>
       <ActionIcon
         variant="transparent"
-        size={16}
+        size={20}
         tabIndex={-1}
         className={clsx(styles.elementExpandIcon)}
         style={{
@@ -281,7 +281,6 @@ function ElementTreeNode(
           style={{
             transition: 'transform 150ms ease',
             transform: `rotate(${expanded ? '90deg' : '0'})`,
-            width: '100%',
           }} />
       </ActionIcon>
       <UnstyledButton
@@ -302,7 +301,11 @@ function ElementTreeNode(
         {elementIcon}
         <Box style={{ flexGrow: 1 }}>
           <Group gap={'xs'} wrap="nowrap" align="center" className={styles.elementTitleAndId}>
-            <Highlight component="div" highlight={searchTerms} className={btn.title!}>
+            <Highlight
+              component="div"
+              highlight={searchTerms}
+              className={btn.title!}
+              lineClamp={1}>
               {label}
             </Highlight>
             <Tooltip label={element.id} withinPortal={false} fz={'xs'} disabled={!element.id.includes('.')}>

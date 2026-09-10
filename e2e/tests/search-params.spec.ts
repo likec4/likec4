@@ -27,6 +27,7 @@ const EXPORT_CONFIG_PROJECT = 'export-config'
 const EXPORT_DISABLED_PROJECT = 'export-disabled'
 const STATIC_VIEW = 'index'
 const DYNAMIC_VIEW = 'dynamic-view-1'
+const DYNAMIC_VIEW_VARIANT = 'dynamic-view-variant'
 
 function projectExportUrl(projectId: string, viewId: string, extra?: Record<string, string>): string {
   const params = new URLSearchParams({ padding: '22', ...extra })
@@ -116,6 +117,18 @@ test.describe('?dynamic= search parameter', () => {
       await expect(page.locator(SEQ_ACTOR_SELECTOR)).toHaveCount(0)
     })
   }
+
+  test('view variant=sequence renders sequence when ?dynamic= is absent', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW_VARIANT))
+
+    await expect(page.locator(SEQ_ACTOR_SELECTOR).first()).toBeVisible({ timeout: TIMEOUT_CANVAS })
+  })
+
+  test('?dynamic=diagram overrides view variant=sequence', async ({ page }) => {
+    await gotoAndWaitForCanvas(page, viewUrl(DYNAMIC_VIEW_VARIANT, { dynamic: 'diagram' }))
+
+    await expect(page.locator(SEQ_ACTOR_SELECTOR)).toHaveCount(0)
+  })
 })
 
 // ---------------------------------------------------------------------------

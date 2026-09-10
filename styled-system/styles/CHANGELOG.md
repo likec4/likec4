@@ -1,5 +1,13 @@
 # @likec4/styles
 
+## 1.59.3
+
+### Patch Changes
+
+- [#3154](https://github.com/likec4/likec4/pull/3154) [`6546da5`](https://github.com/likec4/likec4/commit/6546da5b8f5e96ee2d73d6254e5fa8d8c0a63ec4) Thanks [@ckeller42](https://github.com/ckeller42)! - Preserve original colors for non-Bootstrap diagram icons, including bundled brand, cloud provider, and image-based icons. Fixes [#3153](https://github.com/likec4/likec4/issues/3153).
+- Updated dependencies [[`6546da5`](https://github.com/likec4/likec4/commit/6546da5b8f5e96ee2d73d6254e5fa8d8c0a63ec4)]:
+  - @likec4/style-preset@1.59.3
+
 ## 1.59.2
 
 ### Patch Changes

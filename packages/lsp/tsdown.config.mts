@@ -7,7 +7,9 @@ export default defineConfig({
   clean: true,
   minify: true,
   nodeProtocol: true,
-  inlineOnly: false,
+  deps: {
+    onlyBundle: false,
+  },
   outputOptions: {
     keepNames: true,
   },
@@ -15,5 +17,5 @@ export default defineConfig({
     resolve: {
       conditionNames: ['production', 'sources', 'node', 'import', 'default'],
     },
-  }
+  },
 })

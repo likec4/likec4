@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { extractViewTitleFromPath, getViewFolderPath, normalizeViewPath } from './view-title-path'
+import {
+  extractViewTitleFromPath,
+  getViewFolderPath,
+  normalizeViewPath,
+  splitViewFolderPath,
+  unescapeViewPathSegment,
+} from './view-title-path'
 
 describe('normalizeViewPath', () => {
   it('should remove spaces from path segments', () => {
@@ -88,5 +94,33 @@ describe('getViewTitleFromPath', () => {
 
   it('should handle input with only spaces', () => {
     expect(extractViewTitleFromPath('   ')).toBe('')
+  })
+})
+
+describe('escaped forward slash', () => {
+  it('normalizeViewPath keeps an escaped slash as one segment', () => {
+    expect(normalizeViewPath('Group \\/ Name')).toBe('Group \\/ Name')
+  })
+
+  it('getViewFolderPath does not split on an escaped slash', () => {
+    expect(getViewFolderPath('Group \\/ Name')).toBeNull()
+    expect(getViewFolderPath('Folder / Group \\/ Name')).toBe('Folder')
+  })
+
+  it('extractViewTitleFromPath unescapes the slash for display', () => {
+    expect(extractViewTitleFromPath('Group \\/ Name')).toBe('Group / Name')
+    expect(extractViewTitleFromPath('Folder / Group \\/ Name')).toBe('Group / Name')
+  })
+
+  it('unescapeViewPathSegment converts \\/ back to /', () => {
+    expect(unescapeViewPathSegment('Group \\/ Name')).toBe('Group / Name')
+    expect(unescapeViewPathSegment('No slash here')).toBe('No slash here')
+  })
+
+  it('splitViewFolderPath re-splits a normalized path without breaking escaped segments', () => {
+    expect(splitViewFolderPath(normalizeViewPath('Folder / Group \\/ Name'))).toEqual([
+      'Folder',
+      'Group \\/ Name',
+    ])
   })
 })
