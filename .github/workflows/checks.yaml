@@ -335,6 +335,7 @@ jobs:
       - check-tests
       - check-docs-astro
       - check-playground
+      - check-mcp-app
       - check-e2e-tests
       - check-e2e-types
     steps:
