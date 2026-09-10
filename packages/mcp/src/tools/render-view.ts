@@ -40,10 +40,11 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
         title: z.string(),
         project: z.string(),
         view: z.record(z.string(), z.unknown())
-          .describe('Full layouted view (nodes, edges, bounds), consumed by the paired render-view UI'),
+          .describe('Layouted view (nodes, edges, bounds), consumed by the paired render-view UI'),
         model: z.record(z.string(), z.unknown())
           .describe(
-            'Layouted model data (specification, elements, relations, deployments), scoped to this view only. '
+            'Layouted model data (specification, elements, relations, deployments), scoped to this view by default; '
+              + 'complete when fullModel is true. '
               + 'Consumed by the paired UI to build a LikeC4Model for LikeC4ModelProvider — LikeC4Diagram requires one in context.',
           ),
       }),
