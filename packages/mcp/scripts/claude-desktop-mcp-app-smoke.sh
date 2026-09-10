@@ -74,14 +74,13 @@ require_nonnegative_integer() {
   [[ "$2" =~ ^[0-9]+$ ]] || fail "$1 must be a nonnegative integer"
 }
 
-select_main_claude_pid() {
+list_main_claude_pids() {
   local proc_root=$1
   shift
 
   local pid arg
   local is_child
   local -a argv=()
-  local -a candidates=()
 
   for pid in "$@"; do
     [[ "$pid" =~ ^[0-9]+$ && -r "$proc_root/$pid/cmdline" ]] || continue
@@ -98,18 +97,122 @@ select_main_claude_pid() {
       fi
     done
     [[ "$is_child" == false ]] || continue
-    candidates+=("$pid")
+    printf '%s\n' "$pid"
+  done
+}
+
+read_parent_pid() {
+  local proc_root=$1
+  local pid=$2
+  local key parent_pid _
+
+  [[ "$pid" =~ ^[0-9]+$ && -r "$proc_root/$pid/status" ]] || return 1
+  while read -r key parent_pid _; do
+    if [[ "$key" == 'PPid:' ]]; then
+      [[ "$parent_pid" =~ ^[0-9]+$ ]] || return 1
+      printf '%s\n' "$parent_pid"
+      return 0
+    fi
+  done <"$proc_root/$pid/status"
+  return 1
+}
+
+process_has_ancestor() {
+  local proc_root=$1
+  local process_pid=$2
+  local ancestor_pid=$3
+  local parent_pid
+  local visited=' '
+
+  for _ in {1..256}; do
+    [[ "$process_pid" =~ ^[0-9]+$ && "$process_pid" != 0 ]] || return 1
+    [[ "$process_pid" == "$ancestor_pid" ]] && return 0
+    [[ "$visited" != *" $process_pid "* ]] || return 1
+    visited+="$process_pid "
+    parent_pid=$(read_parent_pid "$proc_root" "$process_pid") || return 1
+    process_pid=$parent_pid
+  done
+  return 1
+}
+
+select_main_claude_pid_for_windows() {
+  local proc_root=$1
+  shift
+
+  local candidate window_pid match
+  local -a candidates=()
+  local -a window_pids=()
+  local -a matches=()
+  local -a associated=()
+
+  while (($# > 0)) && [[ "$1" != '--' ]]; do
+    candidates+=("$1")
+    shift
+  done
+  (($# > 0)) || fail 'Internal error: missing Claude window PID separator'
+  shift
+  window_pids=("$@")
+
+  ((${#window_pids[@]} > 0)) || fail 'No visible Claude Desktop window exists on the requested display'
+
+  for window_pid in "${window_pids[@]}"; do
+    [[ "$window_pid" =~ ^[0-9]+$ && "$window_pid" != 0 ]] \
+      || fail 'Could not associate a visible Claude Desktop window with a process'
+    matches=()
+    for candidate in "${candidates[@]}"; do
+      if process_has_ancestor "$proc_root" "$window_pid" "$candidate"; then
+        matches+=("$candidate")
+      fi
+    done
+    ((${#matches[@]} == 1)) \
+      || fail 'Could not associate a visible Claude Desktop window with exactly one main process'
+    match=${matches[0]}
+    [[ " ${associated[*]-} " == *" $match "* ]] || associated+=("$match")
   done
 
-  ((${#candidates[@]} <= 1)) || fail 'More than one main Claude Desktop process is running'
-  ((${#candidates[@]} == 1)) && printf '%s\n' "${candidates[0]}"
-  return 0
+  ((${#associated[@]} == 1)) \
+    || fail 'Visible Claude Desktop windows belong to more than one main process on the requested display'
+  printf '%s\n' "${associated[0]}"
 }
 
 find_main_claude_pid() {
+  local display=$1
+  local requested_window=${2-}
+  local proc_root=${3-/proc}
+  local window window_pid
   local -a pids=()
+  local -a candidates=()
+  local -a visible_windows=()
+  local -a selected_windows=()
+  local -a window_pids=()
+
   mapfile -t pids < <(pgrep -u "$UID" -x claude-desktop || true)
-  select_main_claude_pid /proc "${pids[@]}"
+  mapfile -t candidates < <(list_main_claude_pids "$proc_root" "${pids[@]}")
+
+  mapfile -t visible_windows < <(DISPLAY="$display" xdotool search --onlyvisible --class 'claude' 2>/dev/null || true)
+  if ((${#candidates[@]} == 0)); then
+    ((${#visible_windows[@]} == 0)) \
+      || fail 'Could not associate a visible Claude Desktop window with a main process'
+    return 0
+  fi
+  if [[ -n "$requested_window" ]]; then
+    for window in "${visible_windows[@]}"; do
+      [[ "$window" == "$requested_window" ]] && selected_windows+=("$window")
+    done
+    ((${#selected_windows[@]} == 1)) \
+      || fail 'The selected Claude Desktop window is not uniquely visible on the requested display'
+  else
+    selected_windows=("${visible_windows[@]}")
+  fi
+
+  ((${#selected_windows[@]} > 0)) || fail 'No visible Claude Desktop window exists on the requested display'
+  for window in "${selected_windows[@]}"; do
+    window_pid=$(DISPLAY="$display" xdotool getwindowpid "$window" 2>/dev/null) \
+      || fail 'Could not read the process for a visible Claude Desktop window'
+    window_pids+=("$window_pid")
+  done
+
+  select_main_claude_pid_for_windows "$proc_root" "${candidates[@]}" -- "${window_pids[@]}"
 }
 
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
@@ -303,7 +406,7 @@ write_config() {
 
 restart_claude() {
   local pid=''
-  pid=$(find_main_claude_pid)
+  pid=$(find_main_claude_pid "$display_name" "$window_id")
   if [[ -n "$pid" ]]; then
     kill -TERM "$pid"
     for _ in {1..40}; do
