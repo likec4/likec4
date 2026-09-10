@@ -7,13 +7,16 @@ import { NL, toStringLF } from '../newline'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
-const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
+const safeChars = (value: string): string => value.replace(/\W/g, '_')
+
+const fqnName = (nodeId: string): string => nodeId.split('.').map(safeChars).map(capitalizeFirstLetter).join('')
 
 type Node = AnyView['nodes'][number]
 type Edge = AnyView['edges'][number]
 
 const nodeName = (node: Node): string => {
-  return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
+  const prefix = node.parent ? node.parent + '.' : ''
+  return fqnName(prefix && node.id.startsWith(prefix) ? node.id.slice(prefix.length) : node.id)
 }
 
 const toSingleQuotes = (str: string): string => str.replace(/\\?"/g, `'`)
