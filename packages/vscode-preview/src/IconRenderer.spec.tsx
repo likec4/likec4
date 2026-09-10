@@ -5,30 +5,90 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it, vi } from 'vitest'
-import { IconRenderer, localIconRendererFromDataUrl } from './IconRenderer'
+import { renderToReadableStream, renderToStaticMarkup } from 'react-dom/server'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { bootstrapIconRendererFromDataUrl, IconRenderer, localIconRendererFromDataUrl } from './IconRenderer'
+import { ExtensionApi } from './vscode'
 
 vi.mock('./vscode', () => ({
   ExtensionApi: {
     readLocalIcon: vi.fn<(_: string) => Promise<{ base64data: string | null }>>(),
+    readBootstrapIcon: vi.fn<(_: string) => Promise<{ base64data: string | null }>>(),
   },
 }))
 
 describe('IconRenderer', () => {
-  it('renders bootstrap icons as a colorable mask instead of an image', () => {
-    const html = renderToStaticMarkup(
-      <IconRenderer
-        node={{
-          id: 'test',
-          title: 'Test',
-          icon: 'bootstrap:file-earmark-code',
-        }} />,
+  const bootstrapIconDataUrl = 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJjdXJyZW50Q29sb3IiLz4='
+  const readBootstrapIcon = vi.mocked(ExtensionApi.readBootstrapIcon)
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders host-provided Bootstrap SVG data as a colorable mask', async () => {
+    readBootstrapIcon.mockResolvedValue({ base64data: bootstrapIconDataUrl })
+
+    const html = await renderToHtml(
+      <IconRenderer node={{ id: 'test', title: 'Test', icon: 'bootstrap:boxes' }} />,
     )
 
-    expect(html).not.toContain('<img')
-    expect(html).toContain('https://icons.like-c4.dev/bootstrap/file-earmark-code.svg')
+    expect(readBootstrapIcon).toHaveBeenCalledOnce()
+    expect(readBootstrapIcon).toHaveBeenCalledWith('boxes')
     expect(html).toContain('background-color:currentColor')
+    expect(html).toContain('mask-image:url(')
+    expect(html).toContain('data:image/svg+xml;base64,')
+    expect(html).not.toContain('icons.like-c4.dev')
+    expect(html).not.toContain('<img')
+  })
+
+  it('keeps the synchronous Bootstrap mask helper for callers with host data', () => {
+    const BootstrapIcon = bootstrapIconRendererFromDataUrl(
+      bootstrapIconDataUrl,
+    )
+    const html = renderToStaticMarkup(<BootstrapIcon node={{ id: 'test', title: 'Test', icon: 'bootstrap:boxes' }} />)
+
+    expect(html).toContain('background-color:currentColor')
+    expect(html).toContain('mask-image:url(')
+    expect(html).not.toContain('icons.like-c4.dev')
+    expect(html).not.toContain('<img')
+  })
+
+  it('renders nothing when the host returns no Bootstrap SVG, then retries', async () => {
+    readBootstrapIcon
+      .mockResolvedValueOnce({ base64data: null })
+      .mockResolvedValueOnce({ base64data: bootstrapIconDataUrl })
+
+    const firstHtml = await renderToHtml(
+      <IconRenderer node={{ id: 'test-empty', title: 'Test', icon: 'bootstrap:empty-retry' }} />,
+    )
+    const secondHtml = await renderToHtml(
+      <IconRenderer node={{ id: 'test-empty', title: 'Test', icon: 'bootstrap:empty-retry' }} />,
+    )
+
+    expect(firstHtml).not.toContain('mask-image:url(')
+    expect(firstHtml).not.toContain('<span')
+    expect(readBootstrapIcon).toHaveBeenNthCalledWith(1, 'empty-retry')
+    expect(readBootstrapIcon).toHaveBeenNthCalledWith(2, 'empty-retry')
+    expect(secondHtml).toContain('mask-image:url(')
+  })
+
+  it('renders nothing when the host rejects, then retries', async () => {
+    readBootstrapIcon
+      .mockRejectedValueOnce(new Error('temporary host failure'))
+      .mockResolvedValueOnce({ base64data: bootstrapIconDataUrl })
+
+    const firstHtml = await renderToHtml(
+      <IconRenderer node={{ id: 'test-error', title: 'Test', icon: 'bootstrap:error-retry' }} />,
+    )
+    const secondHtml = await renderToHtml(
+      <IconRenderer node={{ id: 'test-error', title: 'Test', icon: 'bootstrap:error-retry' }} />,
+    )
+
+    expect(firstHtml).not.toContain('mask-image:url(')
+    expect(firstHtml).not.toContain('<span')
+    expect(readBootstrapIcon).toHaveBeenNthCalledWith(1, 'error-retry')
+    expect(readBootstrapIcon).toHaveBeenNthCalledWith(2, 'error-retry')
+    expect(secondHtml).toContain('mask-image:url(')
   })
 
   it('keeps non-bootstrap bundled icons as CDN images', () => {
@@ -156,3 +216,18 @@ describe('IconRenderer', () => {
     expect(html).toBe('')
   })
 })
+
+async function renderToHtml(element: React.ReactNode): Promise<string> {
+  const stream = await renderToReadableStream(element)
+  const reader = stream.getReader()
+  const decoder = new TextDecoder()
+  let html = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) {
+      return html + decoder.decode()
+    }
+    html += decoder.decode(value, { stream: true })
+  }
+}
