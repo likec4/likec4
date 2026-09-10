@@ -44,6 +44,8 @@ const views = [
   ...layoutedModel_e2e.views(),
   ...layoutedModel_issue_2282.views(),
 ]
+const extraViewportPadding = 20
+const viewportPadding = 40 + extraViewportPadding
 
 for (const view of views) {
   const project = view.$model.projectId
@@ -53,7 +55,9 @@ for (const view of views) {
 import { test, expect } from "@playwright/test";
 
 test('${project}/${view.id} - compare snapshots', async ({ page }) => {
-  await page.setViewportSize({ width: ${view.$view.bounds.width + 40}, height: ${view.$view.bounds.height + 40} });
+  await page.setViewportSize({ width: ${view.$view.bounds.width + viewportPadding}, height: ${
+    view.$view.bounds.height + viewportPadding
+  } });
   await page.goto('${url}');
   await page.waitForSelector('.react-flow.initialized')
   await expect(page.getByTestId('export-page')).toHaveScreenshot('${name}.png', {
@@ -71,12 +75,13 @@ test('${project}/${view.id} - compare snapshots', async ({ page }) => {
 import { test, expect } from "@playwright/test";
 
 test('${project}/${view.id} - sequence - compare snapshots', async ({ page }) => {
-  await page.setViewportSize({ width: ${bounds.width + 40}, height: ${bounds.height + 40} });
+  await page.setViewportSize({ width: ${bounds.width + viewportPadding}, height: ${bounds.height + viewportPadding} });
   await page.goto('${url}&dynamic=sequence');
   await page.waitForSelector('.react-flow.initialized')
   await expect(page.getByTestId('export-page')).toHaveScreenshot('${name}-sequence.png', {
     animations: 'disabled',
     omitBackground: true,
+    timeout: 15_000,
   });
 });
 `

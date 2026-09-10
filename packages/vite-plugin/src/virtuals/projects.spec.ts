@@ -6,7 +6,7 @@ import { describe, it } from 'vitest'
 import { generateCombinedProjects } from './_shared'
 import { projectsModule } from './projects'
 
-describe('projects virtual module export capabilities', () => {
+describe('projects virtual module capabilities', () => {
   it('publishes effective export formats for every project', async ({ expect }) => {
     const result = await projectsModule.load.call({} as any, {
       projects: [
@@ -21,6 +21,9 @@ describe('projects virtual module export capabilities', () => {
           config: {
             webapp: {
               exportFormats: ['drawio', 'jpg', 'dot'],
+              relationshipsBrowser: {
+                defaultScope: 'global',
+              },
             },
           },
         },
@@ -33,6 +36,8 @@ describe('projects virtual module export capabilities', () => {
     const code = typeof result === 'string' ? result : result.code
     expect(code).toContain('exportFormats: [\n      \'png\',')
     expect(code).toContain('id: \'configured\'')
+    expect(code).toContain('relationshipBrowserDefaultScope: \'view\'')
+    expect(code).toContain('relationshipBrowserDefaultScope: \'global\'')
     expect(code).toContain('exportFormats: [\n      \'jpg\',\n      \'dot\',\n      \'drawio\'')
   })
 

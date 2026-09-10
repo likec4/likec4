@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as t from '@likec4/core/types'
 import type {
   DynamicViewDisplayVariant,
@@ -9,7 +16,7 @@ import type { RefObject } from 'react'
 import type { PartialDeep } from 'type-fest'
 import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
-import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import type { OpenSourceParams, RelationshipBrowserScope } from '../../LikeC4Diagram.props'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
@@ -124,8 +131,8 @@ export class DiagramApi<A extends Any = Unknown> {
   /**
    * Open relationships browser
    */
-  openRelationshipsBrowser(fqn: Fqn<A>): void {
-    this.send({ type: 'open.relationshipsBrowser', fqn })
+  openRelationshipsBrowser(fqn: Fqn<A>, scope?: RelationshipBrowserScope): void {
+    this.send({ type: 'open.relationshipsBrowser', fqn, ...(scope && { scope }) })
   }
 
   /**
