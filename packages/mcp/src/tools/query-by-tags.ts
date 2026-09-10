@@ -4,7 +4,7 @@
 
 import { invariant } from '@likec4/core'
 import { isDeploymentNodeModel } from '@likec4/core/model'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { type ElementSummary, elementSummarySchema, projectIdSchema, serializeElement } from './_common'
 

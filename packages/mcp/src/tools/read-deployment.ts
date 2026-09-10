@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { invariant } from '@likec4/core'
-import * as z from 'zod/v3'
+import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { includedInViews, includedInViewsSchema, locationSchema, mkLocate, projectIdSchema } from './_common'
 
@@ -97,7 +97,7 @@ Example response (deployed instance):
     technology: z.string().nullable(),
     tags: z.array(z.string()),
     project: z.string(),
-    metadata: z.record(z.union([z.string(), z.array(z.string())])),
+    metadata: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
     links: z.array(z.object({
       title: z.string().nullable().describe('Optional link title'),
       url: z.string().describe('Link URL'),
