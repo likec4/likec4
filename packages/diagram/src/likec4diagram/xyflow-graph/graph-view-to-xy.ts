@@ -20,10 +20,17 @@ import type { Types } from '../types'
  */
 export const GraphNodeDiameter = 20
 
+/**
+ * Joins a list of optional sentence fragments into one screen-reader label, ending each
+ * fragment with a period.
+ */
 function sentence(parts: Array<string | null | undefined>): string {
   return parts.filter((part): part is string => !!part).map(part => part.endsWith('.') ? part : `${part}.`).join(' ')
 }
 
+/**
+ * Screen-reader label for a graph-mode circle: title, technology, and description.
+ */
 function nodeAriaLabel(node: DiagramNode): string {
   const title = readableText(node.title) ?? node.id
   const description = readableText(node.description)
@@ -34,6 +41,9 @@ function nodeAriaLabel(node: DiagramNode): string {
   ])
 }
 
+/**
+ * Screen-reader label for a graph-mode edge: source, target, and technology.
+ */
 function edgeAriaLabel(edge: DiagramEdge, source: DiagramNode, target: DiagramNode): string {
   const sourceTitle = readableText(source.title) ?? source.id
   const targetTitle = readableText(target.title) ?? target.id
