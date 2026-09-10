@@ -103,6 +103,8 @@ export const navigating = machine.createStateConfig({
           ...convertToXYFlow({
             currentViewId: context.view.id,
             dynamicViewVariant: context.dynamicViewVariant,
+            // Navigating to a (potentially different) view always resets the graph variant
+            elementViewVariant: 'diagram',
             view: event.view,
             where: context.where,
             collapsedSequenceFlows,
@@ -157,6 +159,7 @@ export const navigating = machine.createStateConfig({
             dynamicViewVariant: fromHistory.dynamicViewVariant
               ?? (eventWithXYData.view._type === 'dynamic' ? eventWithXYData.view.variant : undefined)
               ?? context.dynamicViewVariant,
+            elementViewVariant: 'diagram',
             viewportChangedManually: viewportBefore?.wasChangedManually ?? fromHistory.viewportChangedManually,
             viewport: viewportBefore?.value ?? fromHistory.viewport,
             viewportBefore: null,
@@ -267,6 +270,7 @@ export const navigating = machine.createStateConfig({
           dynamicViewVariant: eventWithXYData.view._type === 'dynamic'
             ? eventWithXYData.view.variant
             : context.dynamicViewVariant,
+          elementViewVariant: 'diagram',
           navigationHistory: {
             currentIndex: updatedHistory.length - 1,
             history: updatedHistory,

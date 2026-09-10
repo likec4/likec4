@@ -36,6 +36,7 @@ import type { DiagramContext } from './state/types'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
+import { useGraphForceSimulation } from './xyflow-graph/useGraphForceSimulation'
 
 const edgeTypes = {
   relationship: BuiltinEdges.RelationshipEdge,
@@ -51,6 +52,7 @@ const builtinNodes = {
   'seq-actor': BuiltinNodes.SequenceActorNode,
   'seq-parallel': BuiltinNodes.SequenceParallelArea,
   'seq-subflow': BuiltinNodes.SequenceSubflowArea,
+  'graph-element': BuiltinNodes.GraphElementNode,
 }
 function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   if (!nodeTypes || isEmpty(nodeTypes)) {
@@ -65,6 +67,7 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
     'seq-actor': nodeTypes.seqActor ?? builtinNodes['seq-actor'],
     'seq-parallel': nodeTypes.seqParallel ?? builtinNodes['seq-parallel'],
     'seq-subflow': nodeTypes.seqSubflow ?? builtinNodes['seq-subflow'],
+    'graph-element': nodeTypes.graphElement ?? builtinNodes['graph-element'],
   }
 }
 
@@ -92,14 +95,22 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
 
   const isNotEditingEdge = enableReadOnly || editorSnapshot?.context.editing?.subject !== 'edge'
 
+  const isGraphVariant = ctx.elementViewVariant === 'graph' && ctx.view._type === 'element'
+
   let nodesDraggable = !enableReadOnly && ctx.nodesDraggable
   // if dynamic view display mode is sequence, disable nodes draggable
   if ((ctx.dynamicViewVariant === 'sequence' && ctx.view._type === 'dynamic')) {
     nodesDraggable = false
   }
+  // in "graph" display variant, dragging is a physics-driven, non-persisting interaction -
+  // it doesn't mutate the model, so it stays available even in read-only mode
+  if (isGraphVariant) {
+    nodesDraggable = ctx.nodesDraggable
+  }
 
   return ({
     enableReadOnly,
+    isGraphVariant,
     initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
     nodes: ctx.xynodes,
     edges: ctx.xyedges,
@@ -142,6 +153,7 @@ export function LikeC4DiagramXYFlow({
   const diagram = useDiagram()
   let {
     enableReadOnly,
+    isGraphVariant,
     initialized,
     nodes,
     edges,
@@ -169,6 +181,7 @@ export function LikeC4DiagramXYFlow({
 
   const isReducedGraphics = reducedGraphics,
     layoutConstraints = useLayoutConstraints(),
+    graphForceHandlers = useGraphForceSimulation({ enabled: isGraphVariant, nodes, edges }),
     $isPanning = $panning,
     isPanning = useTimeout(() => {
       $isPanning.set(true)
@@ -320,7 +333,7 @@ export function LikeC4DiagramXYFlow({
       edgesFocusable
       elevateEdgesOnSelect={!enableReadOnly}
       zIndexMode="manual"
-      {...(nodesDraggable && layoutConstraints)}
+      {...(nodesDraggable && (isGraphVariant ? graphForceHandlers : layoutConstraints))}
       {...props}
       {...safeReactFlowProps}
       nodesDraggable={nodesDraggable}

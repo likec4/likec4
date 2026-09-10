@@ -5,6 +5,7 @@ import {
   CompoundElementNode,
   DeploymentNode,
   ElementNode,
+  GraphElementNode,
   SequenceActorNode,
   SequenceParallelArea,
   SequenceSubflowArea,
@@ -20,6 +21,7 @@ export const BuiltinNodes = {
   SequenceActorNode,
   SequenceParallelArea,
   SequenceSubflowArea,
+  GraphElementNode,
 }
 
 export const BuiltinEdges = {
