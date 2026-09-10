@@ -72,6 +72,53 @@ jobs:
             packages/*/package.tgz
           if-no-files-found: error
 
+  check-mcp-app:
+    name: 🧩 MCP App browser
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04-arm
+    needs:
+      - check-build
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: 🛠️ Setup pnpm
+        uses: pnpm/action-setup@v6
+        env:
+          NODE_ENV: development
+
+      - name: 🛠️ Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .tool-versions
+          cache: 'pnpm'
+
+      - name: 📦 download tarballs
+        uses: actions/download-artifact@v8
+        with:
+          name: tarballs
+          path: packages
+
+      - name: 🛠️ install MCP App test dependencies
+        working-directory: e2e
+        run: |
+          pnpm install
+          pnpm install:chromium
+
+      - name: 🔬 run MCP App browser contract
+        working-directory: e2e
+        run: pnpm test:mcp-app
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: mcp-app-playwright-report
+          path: e2e/playwright-report/
+          compression-level: 9
+          retention-days: 5
+
   check-on-windows:
     name: ⊞ windows build
     timeout-minutes: 20
