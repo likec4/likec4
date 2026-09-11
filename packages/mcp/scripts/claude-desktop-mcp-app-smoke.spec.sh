@@ -89,6 +89,10 @@ assert_equal 'ERROR: Visible Claude Desktop windows belong to more than one main
   "$ambiguity_output" 'report the display ambiguity'
 
 pgrep() {
+  if [[ "${pgrep_mode-}" == new_only ]]; then
+    printf '106\n'
+    return
+  fi
   printf '101\n106\n'
 }
 
@@ -103,14 +107,27 @@ xdotool() {
         ambiguous)
           printf '700\n701\n'
           ;;
+        stale_then_fresh)
+          xdotool_search_count=$(<"$xdotool_search_state")
+          ((xdotool_search_count += 1))
+          printf '%s\n' "$xdotool_search_count" >"$xdotool_search_state"
+          if ((xdotool_search_count == 1)); then
+            printf '700\n'
+          else
+            printf '701\n'
+          fi
+          ;;
         *)
           printf '700\n'
           ;;
       esac
       ;;
     getwindowpid)
-      [[ "$2" == 700 || "$2" == 701 ]] || return 1
-      printf '202\n'
+      case "$2" in
+        700) printf '202\n' ;;
+        701) printf '206\n' ;;
+        *) return 1 ;;
+      esac
       ;;
     getwindowclassname)
       [[ "$2" == 700 || "$2" == 701 ]] || return 1
@@ -145,5 +162,12 @@ set -e
 assert_equal 1 "$ambiguous_window_status" 'reject ambiguous post-restart Claude windows'
 assert_equal 'ERROR: Expected exactly one visible Claude window; found 2' "$ambiguous_window_output" \
   'report post-restart window ambiguity'
+
+xdotool_mode=stale_then_fresh
+xdotool_search_state="$test_root/xdotool-search-count"
+printf '0\n' >"$xdotool_search_state"
+pgrep_mode=new_only
+selected=$(wait_for_single_visible_claude_window ':77' 1 "$test_root")
+assert_equal 701 "$selected" 'wait for the replacement window after a stale Electron child'
 
 printf 'PASS: Claude Desktop display-scoped primary-process selection\n'

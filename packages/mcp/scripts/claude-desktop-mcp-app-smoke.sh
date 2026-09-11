@@ -239,6 +239,24 @@ find_single_visible_claude_window() {
   printf '%s\n' "$selected_window"
 }
 
+wait_for_single_visible_claude_window() {
+  local display=$1
+  local startup_wait=$2
+  local proc_root=${3-/proc}
+  local window_id=''
+
+  for ((attempt = 0; attempt <= startup_wait * 4; attempt++)); do
+    if window_id=$(find_single_visible_claude_window "$display" "$proc_root" 2>/dev/null); then
+      printf '%s\n' "$window_id"
+      return 0
+    fi
+    ((attempt == startup_wait * 4)) && break
+    sleep 0.25
+  done
+
+  return 1
+}
+
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
   return 0
 fi
@@ -507,13 +525,8 @@ write_config '.mcpServers = ((.mcpServers // {}) + {($key): {
 
 restart_claude "$requested_window_id"
 
-for ((attempt = 0; attempt <= startup_wait * 4; attempt++)); do
-  mapfile -t windows < <(DISPLAY="$display_name" xdotool search --onlyvisible --class 'claude' 2>/dev/null || true)
-  ((${#windows[@]} > 0)) && break
-  ((attempt == startup_wait * 4)) && break
-  sleep 0.25
-done
-window_id=$(find_single_visible_claude_window "$display_name")
+window_id=$(wait_for_single_visible_claude_window "$display_name" "$startup_wait") \
+  || fail 'Could not discover a visible Claude Desktop window owned by the restarted process'
 
 geometry=$(DISPLAY="$display_name" xdotool getwindowgeometry --shell "$window_id")
 window_width=$(sed -n 's/^WIDTH=//p' <<<"$geometry")

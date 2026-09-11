@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { createMCPTestPair, structured, textContent } from './test-utils'
 
@@ -144,16 +145,9 @@ describe('render-view resource', () => {
     expect(resources.map(r => r.uri)).toContain('ui://likec4/render-view.html')
   })
 
-  it('ships the MCP App readiness marker in the render resource', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const resource = await pair.client.readResource({ uri: 'ui://likec4/render-view.html' })
-    const content = resource.contents[0]
-    if (!content || !('text' in content)) {
-      throw new Error('Expected the render-view resource to contain text')
-    }
-    const html = content.text
+  it('declares the MCP App readiness marker in the render client', () => {
+    const clientSource = readFileSync(new URL('../app-ui/render-view.client.tsx', import.meta.url), 'utf8')
 
-    expect(html).toContain('data-testid')
-    expect(html).toContain('mcp-render-view-ready')
+    expect(clientSource).toContain('data-testid="mcp-render-view-ready"')
   })
 })

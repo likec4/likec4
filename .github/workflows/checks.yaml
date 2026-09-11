@@ -83,6 +83,8 @@ jobs:
       actions: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: 🛠️ Setup pnpm
         uses: pnpm/action-setup@v6
