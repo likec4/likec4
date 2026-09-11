@@ -395,7 +395,7 @@ describe('buildRenderPayload', () => {
         layoutedView: view,
         model: LikeC4Model.create(data),
       })
-      const payloadModel = payload.model as typeof data
+      const payloadModel = payload.model as unknown as typeof data
 
       expect(payload.view.nodes[0]?.icon).toMatch(/^data:image\/svg\+xml/)
       expect(payloadModel.elements['root.child']?.style.icon).toMatch(/^data:image\/svg\+xml/)
