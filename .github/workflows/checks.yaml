@@ -233,7 +233,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: tarballs
-          path: packages
+          path: .
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
@@ -303,7 +303,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: tarballs
-          path: packages
+          path: .
 
       - name: 🛠️ install e2e dependencies
         working-directory: e2e
