@@ -2,8 +2,9 @@
 import { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { LikeC4Diagram, LikeC4MantineProvider, LikeC4ModelProvider } from '@likec4/diagram'
+import type { McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { useApp, useDocumentTheme, useHostStyles } from '@modelcontextprotocol/ext-apps/react'
-import { type ErrorInfo, type PropsWithChildren, Component, useState } from 'react'
+import { type ErrorInfo, type PropsWithChildren, Component, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 interface RenderViewResult {
@@ -59,10 +60,14 @@ class DiagramErrorBoundary extends Component<PropsWithChildren, { error: Error |
 function RenderViewApp() {
   const [result, setResult] = useState<RenderViewResult | null>(null)
   const [errorText, setErrorText] = useState<string | null>(null)
+  const [hostContext, setHostContext] = useState<McpUiHostContext | undefined>()
+  const [fullscreenPending, setFullscreenPending] = useState(false)
 
   const { app, isConnected, error: connectError } = useApp({
     appInfo: { name: 'LikeC4 Render View', version: '0.0.0' },
-    capabilities: {},
+    capabilities: {
+      availableDisplayModes: ['inline', 'fullscreen'],
+    },
     // The SDK's default auto-resize measures content height by temporarily
     // setting documentElement's height to "max-content". Our layout fills
     // the host-given space (html/body/#root are all height:100%), so with no
@@ -72,6 +77,9 @@ function RenderViewApp() {
     // a content-driven size, so auto-resize is disabled entirely.
     autoResize: false,
     onAppCreated: (app) => {
+      app.onhostcontextchanged = (context) => {
+        setHostContext(previous => ({ ...previous, ...context }))
+      }
       app.ontoolresult = (result) => {
         if (result.isError) {
           const text = result.content?.find((c): c is { type: 'text'; text: string } => c.type === 'text')?.text
@@ -90,8 +98,31 @@ function RenderViewApp() {
     },
   })
 
-  useHostStyles(app, app?.getHostContext())
+  useEffect(() => {
+    if (isConnected && app) {
+      setHostContext(app.getHostContext())
+    }
+  }, [app, isConnected])
+
+  useHostStyles(app, hostContext)
   const theme = useDocumentTheme()
+
+  const supportsFullscreen = hostContext?.availableDisplayModes?.includes('fullscreen') ?? false
+  const isFullscreen = hostContext?.displayMode === 'fullscreen'
+
+  const requestFullscreen = async () => {
+    if (!app) return
+
+    setFullscreenPending(true)
+    try {
+      const { mode } = await app.requestDisplayMode({ mode: 'fullscreen' })
+      setHostContext(previous => ({ ...previous, displayMode: mode }))
+    } catch (error) {
+      console.error('Failed to request fullscreen display mode:', error)
+    } finally {
+      setFullscreenPending(false)
+    }
+  }
 
   if (connectError) {
     return <div id="root">Failed to connect to host: {connectError.message}</div>
@@ -112,7 +143,21 @@ function RenderViewApp() {
     <div
       data-size={result.render.size}
       data-testid="mcp-render-view-ready"
-      style={{ height: '100%', width: '100%', minHeight: minimumCanvasHeight[result.render.size] }}>
+      style={{
+        height: '100%',
+        width: '100%',
+        minHeight: minimumCanvasHeight[result.render.size],
+        position: 'relative',
+      }}>
+      {supportsFullscreen && (
+        <button
+          aria-label="Fullscreen"
+          disabled={fullscreenPending || isFullscreen}
+          onClick={() => void requestFullscreen()}
+          style={{ position: 'fixed', top: 8, right: 8, zIndex: 2_147_483_647 }}>
+          Fullscreen
+        </button>
+      )}
       <LikeC4MantineProvider forceColorScheme={theme}>
         <LikeC4ModelProvider likec4model={likec4model}>
           <LikeC4Diagram

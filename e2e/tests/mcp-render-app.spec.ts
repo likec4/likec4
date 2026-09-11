@@ -4,7 +4,17 @@
 
 import { type FrameLocator, type Page, expect, test } from '@playwright/test'
 
-type Mode = 'scoped' | 'full' | 'preview' | 'compact' | 'standard' | 'large' | 'no-fit' | 'zoom'
+type Mode =
+  | 'scoped'
+  | 'full'
+  | 'preview'
+  | 'compact'
+  | 'standard'
+  | 'large'
+  | 'no-fit'
+  | 'zoom'
+  | 'fullscreen-supported'
+  | 'fullscreen-unsupported'
 
 const minimumCanvasHeight = {
   compact: 360,
@@ -152,4 +162,23 @@ test('renders the explicit zoom render-view MCP App at zoom 0.75', async ({ page
   const fittedViewport = await settledViewport(app)
   expect(fittedViewport.zoom).toBeGreaterThan(0.75)
   expect(fittedViewport.zoom).toBeLessThan(1)
+})
+
+test('MCP App fullscreen control is hidden without host support', async ({ page }) => {
+  await page.goto('/case/fullscreen-unsupported')
+  const app = page.frameLocator('iframe')
+  await expect(app.getByTestId('mcp-render-view-ready')).toBeVisible()
+  await expect(app.getByRole('button', { name: 'Fullscreen' })).toHaveCount(0)
+})
+
+test('MCP App fullscreen control requests the supported standard display mode', async ({ page }) => {
+  await page.goto('/case/fullscreen-supported')
+  const app = page.frameLocator('iframe')
+  const fullscreen = app.getByRole('button', { name: 'Fullscreen' })
+  await expect(fullscreen).toBeVisible()
+  await expect(page.getByTestId('app-capabilities')).toContainText('"inline"')
+  await expect(page.getByTestId('app-capabilities')).toContainText('"fullscreen"')
+  await fullscreen.click()
+  await expect(fullscreen).toBeDisabled()
+  await expect(page.getByTestId('fullscreen-request')).toHaveText('fullscreen')
 })
