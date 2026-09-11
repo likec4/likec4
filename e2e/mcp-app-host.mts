@@ -15,7 +15,9 @@ const MODEL = `specification {
 }
 
 model {
-  api = component 'API'
+  api = component 'API' {
+    icon ./node.svg
+  }
   worker = component 'Worker'
   unused = component 'Unused'
   api -> worker 'calls'
@@ -167,6 +169,7 @@ const workspace = await mkdtemp(join(tmpdir(), 'likec4-mcp-app-e2e-'))
 await Promise.all([
   writeFile(join(workspace, 'likec4.config.json'), JSON.stringify({ name: 'mcp-app-e2e' })),
   writeFile(join(workspace, 'model.c4'), MODEL),
+  writeFile(join(workspace, 'node.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M0 0h1v1H0z"/></svg>'),
 ])
 
 const transport = new StdioClientTransport({
