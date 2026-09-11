@@ -56,19 +56,26 @@ bridge.oninitialized = () => {
   bridge.sendToolInput({ arguments: toolArguments })
   bridge.sendToolResult(toolResult)
 }
-bridge.onrequestdisplaymode = async ({ mode }) => {
+if (globalThis.__MCP_APP_CASE__.displayModeRequestResult) {
+bridge.onrequestdisplaymode = ({ mode }) => {
   const requestedDisplayModes = globalThis.__MCP_APP_CASE__.requestedDisplayModes ?? []
   requestedDisplayModes.push(mode)
   globalThis.__MCP_APP_CASE__.requestedDisplayModes = requestedDisplayModes
   globalThis.__MCP_APP_CASE__.fullscreenRequest = mode
   document.querySelector('[data-testid="fullscreen-request"]')!.textContent = mode
+  return { mode: globalThis.__MCP_APP_CASE__.displayModeRequestResult }
+}
+}
+document.querySelector('[data-testid="send-host-context-change"]')?.addEventListener('click', async () => {
+  const displayMode = globalThis.__MCP_APP_CASE__.hostContextChangeDisplayMode
+  if (!displayMode) return
   bridge.setHostContext({
-    displayMode: 'fullscreen',
+    displayMode,
     availableDisplayModes: globalThis.__MCP_APP_CASE__.availableDisplayModes,
   })
-  await bridge.sendHostContextChange({ displayMode: 'fullscreen' })
-  return { mode: 'fullscreen' }
-}
+  await bridge.sendHostContextChange({ displayMode })
+  document.querySelector('[data-testid="host-context-change"]')!.textContent = displayMode
+})
 await bridge.connect(new PostMessageTransport(iframe.contentWindow!, iframe.contentWindow!))
 iframe.src = iframe.dataset.src!
 `
@@ -82,7 +89,8 @@ type Mode =
   | 'large'
   | 'no-fit'
   | 'zoom'
-  | 'fullscreen-supported'
+  | 'fullscreen-response'
+  | 'fullscreen-host-context-change'
   | 'fullscreen-unsupported'
 
 type RenderOptions = {
@@ -95,6 +103,8 @@ interface RenderCase {
   toolArguments: Record<string, unknown>
   toolResult: Record<string, unknown>
   availableDisplayModes?: Array<'inline' | 'fullscreen'>
+  displayModeRequestResult?: 'inline' | 'fullscreen'
+  hostContextChangeDisplayMode?: 'fullscreen'
   metadata: {
     nodeCount: number
     edgeCount: number
@@ -224,12 +234,20 @@ function hostPage(mode: Mode, renderCase: RenderCase): string {
     <iframe title="LikeC4 render-view" data-src="/case/${mode}/resource"></iframe>
   </div>
   <output data-testid="fullscreen-request"></output>
+  <output data-testid="host-context-change"></output>
+  ${
+    renderCase.hostContextChangeDisplayMode
+      ? '<button data-testid="send-host-context-change">Send host context change</button>'
+      : ''
+  }
   <output data-testid="app-capabilities"></output>
   <script>globalThis.__MCP_APP_CASE__ = ${
     serializeForScript({
       toolArguments: renderCase.toolArguments,
       toolResult: renderCase.toolResult,
       availableDisplayModes: renderCase.availableDisplayModes ?? ['inline'],
+      displayModeRequestResult: renderCase.displayModeRequestResult,
+      hostContextChangeDisplayMode: renderCase.hostContextChangeDisplayMode,
     })
   }</script>
   <script type="module" src="/bridge.js"></script>
@@ -343,9 +361,15 @@ try {
     large: createRenderCase({ viewId: 'index', render: { size: 'large' } }, largeResult),
     'no-fit': createRenderCase({ viewId: 'index', render: { fitView: false } }, noFitResult),
     zoom: createRenderCase({ viewId: 'index', render: { initialZoom: 0.75 } }, zoomResult),
-    'fullscreen-supported': {
+    'fullscreen-response': {
       ...createRenderCase({ viewId: 'index' }, scopedResult),
       availableDisplayModes: ['inline', 'fullscreen'],
+      displayModeRequestResult: 'fullscreen',
+    },
+    'fullscreen-host-context-change': {
+      ...createRenderCase({ viewId: 'index' }, scopedResult),
+      availableDisplayModes: ['inline', 'fullscreen'],
+      hostContextChangeDisplayMode: 'fullscreen',
     },
     'fullscreen-unsupported': {
       ...createRenderCase({ viewId: 'index' }, scopedResult),
@@ -372,13 +396,19 @@ try {
     }
 
     const pathname = new URL(request.url ?? '/', `http://${request.headers.host ?? '127.0.0.1'}`).pathname
-    const pageMatch = /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-supported|fullscreen-unsupported)$/.exec(pathname)
-    const metadataMatch = /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-supported|fullscreen-unsupported)\/metadata$/.exec(
-      pathname,
-    )
-    const resourceMatch = /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-supported|fullscreen-unsupported)\/resource$/.exec(
-      pathname,
-    )
+    const pageMatch =
+      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-host-context-change|fullscreen-unsupported)$/
+        .exec(pathname)
+    const metadataMatch =
+      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-host-context-change|fullscreen-unsupported)\/metadata$/
+        .exec(
+          pathname,
+        )
+    const resourceMatch =
+      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-host-context-change|fullscreen-unsupported)\/resource$/
+        .exec(
+          pathname,
+        )
 
     if (pageMatch) {
       const mode = pageMatch[1] as Mode

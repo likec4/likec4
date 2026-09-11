@@ -13,7 +13,8 @@ type Mode =
   | 'large'
   | 'no-fit'
   | 'zoom'
-  | 'fullscreen-supported'
+  | 'fullscreen-response'
+  | 'fullscreen-host-context-change'
   | 'fullscreen-unsupported'
 
 const minimumCanvasHeight = {
@@ -171,8 +172,8 @@ test('MCP App fullscreen control is hidden without host support', async ({ page 
   await expect(app.getByRole('button', { name: 'Fullscreen' })).toHaveCount(0)
 })
 
-test('MCP App fullscreen control requests the supported standard display mode', async ({ page }) => {
-  await page.goto('/case/fullscreen-supported')
+test('MCP App accepts a fullscreen request response without a host-context notification', async ({ page }) => {
+  await page.goto('/case/fullscreen-response')
   const app = page.frameLocator('iframe')
   const fullscreen = app.getByRole('button', { name: 'Fullscreen' })
   await expect(fullscreen).toBeVisible()
@@ -181,4 +182,18 @@ test('MCP App fullscreen control requests the supported standard display mode', 
   await fullscreen.click()
   await expect(fullscreen).toBeDisabled()
   await expect(page.getByTestId('fullscreen-request')).toHaveText('fullscreen')
+  await expect(page.getByTestId('host-context-change')).toBeEmpty()
+})
+
+test('MCP App applies a fullscreen host-context change without a display-mode request', async ({ page }) => {
+  await page.goto('/case/fullscreen-host-context-change')
+  const app = page.frameLocator('iframe')
+  const fullscreen = app.getByRole('button', { name: 'Fullscreen' })
+  await expect(fullscreen).toBeEnabled()
+
+  await page.getByTestId('send-host-context-change').click()
+
+  await expect(page.getByTestId('host-context-change')).toHaveText('fullscreen')
+  await expect(fullscreen).toBeDisabled()
+  await expect(page.getByTestId('fullscreen-request')).toBeEmpty()
 })
