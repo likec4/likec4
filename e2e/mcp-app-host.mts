@@ -50,18 +50,27 @@ await bridge.connect(new PostMessageTransport(iframe.contentWindow!, iframe.cont
 iframe.src = iframe.dataset.src!
 `
 
-type Mode = 'scoped' | 'full'
+type Mode = 'scoped' | 'full' | 'compact' | 'standard' | 'large' | 'no-fit' | 'zoom'
+
+type RenderOptions = {
+  size: 'compact' | 'standard' | 'large'
+  fitView: boolean
+  initialZoom?: number
+}
 
 interface RenderCase {
   toolArguments: {
     viewId: string
     fullModel?: boolean
+    render?: Partial<RenderOptions>
   }
   toolResult: Record<string, unknown>
   metadata: {
     nodeCount: number
     edgeCount: number
     hasUnusedElement: boolean
+    render: RenderOptions
+    expectedZoom: number
   }
 }
 
@@ -87,6 +96,23 @@ function asArray(value: unknown, label: string): unknown[] {
   return value
 }
 
+function asRenderOptions(value: unknown): RenderOptions {
+  const render = asRecord(value, 'render-view structuredContent.render')
+  const size = render['size']
+  const fitView = render['fitView']
+  const initialZoom = render['initialZoom']
+  if (size !== 'compact' && size !== 'standard' && size !== 'large') {
+    throw new Error('render-view structuredContent.render.size is invalid')
+  }
+  if (typeof fitView !== 'boolean') {
+    throw new Error('render-view structuredContent.render.fitView is invalid')
+  }
+  if (initialZoom !== undefined && typeof initialZoom !== 'number') {
+    throw new Error('render-view structuredContent.render.initialZoom is invalid')
+  }
+  return { size, fitView, ...(initialZoom === undefined ? {} : { initialZoom }) }
+}
+
 function createRenderCase(
   toolArguments: RenderCase['toolArguments'],
   result: unknown,
@@ -100,6 +126,7 @@ function createRenderCase(
   const view = asRecord(structuredContent['view'], 'render-view view')
   const model = asRecord(structuredContent['model'], 'render-view model')
   const elements = asRecord(model['elements'], 'render-view model.elements')
+  const render = asRenderOptions(structuredContent['render'])
 
   return {
     toolArguments,
@@ -108,6 +135,9 @@ function createRenderCase(
       nodeCount: asArray(view['nodes'], 'render-view view.nodes').length,
       edgeCount: asArray(view['edges'], 'render-view view.edges').length,
       hasUnusedElement: Object.hasOwn(elements, 'unused'),
+      render,
+      // The two-node fixture fits in the 1280x720 host at the diagram's maximum fit zoom of 1.
+      expectedZoom: render.initialZoom ?? 1,
     },
   }
 }
@@ -198,9 +228,24 @@ async function close(): Promise<void> {
 try {
   await client.connect(transport)
 
-  const [scopedResult, fullResult, resource, browserBuild] = await Promise.all([
+  const [
+    scopedResult,
+    fullResult,
+    compactResult,
+    standardResult,
+    largeResult,
+    noFitResult,
+    zoomResult,
+    resource,
+    browserBuild,
+  ] = await Promise.all([
     client.callTool({ name: 'render-view', arguments: { viewId: 'index' } }),
     client.callTool({ name: 'render-view', arguments: { viewId: 'index', fullModel: true } }),
+    client.callTool({ name: 'render-view', arguments: { viewId: 'index', render: { size: 'compact' } } }),
+    client.callTool({ name: 'render-view', arguments: { viewId: 'index', render: { size: 'standard' } } }),
+    client.callTool({ name: 'render-view', arguments: { viewId: 'index', render: { size: 'large' } } }),
+    client.callTool({ name: 'render-view', arguments: { viewId: 'index', render: { fitView: false } } }),
+    client.callTool({ name: 'render-view', arguments: { viewId: 'index', render: { initialZoom: 0.75 } } }),
     client.readResource({ uri: 'ui://likec4/render-view.html' }),
     build({
       absWorkingDir: e2eRoot,
@@ -220,6 +265,11 @@ try {
   const cases: Record<Mode, RenderCase> = {
     scoped: createRenderCase({ viewId: 'index' }, scopedResult),
     full: createRenderCase({ viewId: 'index', fullModel: true }, fullResult),
+    compact: createRenderCase({ viewId: 'index', render: { size: 'compact' } }, compactResult),
+    standard: createRenderCase({ viewId: 'index', render: { size: 'standard' } }, standardResult),
+    large: createRenderCase({ viewId: 'index', render: { size: 'large' } }, largeResult),
+    'no-fit': createRenderCase({ viewId: 'index', render: { fitView: false } }, noFitResult),
+    zoom: createRenderCase({ viewId: 'index', render: { initialZoom: 0.75 } }, zoomResult),
   }
   if (cases.scoped.metadata.hasUnusedElement || !cases.full.metadata.hasUnusedElement) {
     throw new Error('render-view model scoping does not match the expected contract')
@@ -241,9 +291,9 @@ try {
     }
 
     const pathname = new URL(request.url ?? '/', `http://${request.headers.host ?? '127.0.0.1'}`).pathname
-    const pageMatch = /^\/case\/(scoped|full)$/.exec(pathname)
-    const metadataMatch = /^\/case\/(scoped|full)\/metadata$/.exec(pathname)
-    const resourceMatch = /^\/case\/(scoped|full)\/resource$/.exec(pathname)
+    const pageMatch = /^\/case\/(scoped|full|compact|standard|large|no-fit|zoom)$/.exec(pathname)
+    const metadataMatch = /^\/case\/(scoped|full|compact|standard|large|no-fit|zoom)\/metadata$/.exec(pathname)
+    const resourceMatch = /^\/case\/(scoped|full|compact|standard|large|no-fit|zoom)\/resource$/.exec(pathname)
 
     if (pageMatch) {
       const mode = pageMatch[1] as Mode
