@@ -70,6 +70,7 @@ jobs:
           compression-level: 0
           path: |
             packages/*/package.tgz
+            styled-system/styles/package.tgz
           if-no-files-found: error
 
   check-mcp-app:
@@ -101,7 +102,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: tarballs
-          path: packages
+          path: .
 
       - name: 🛠️ install MCP App test dependencies
         working-directory: e2e
