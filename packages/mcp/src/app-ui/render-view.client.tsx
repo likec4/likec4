@@ -19,6 +19,11 @@ interface RenderViewResult {
   }
 }
 
+const defaultRenderOptions = {
+  size: 'standard',
+  fitView: true,
+} as const satisfies RenderViewResult['render']
+
 const minimumCanvasHeight = {
   compact: 360,
   standard: 540,
@@ -74,8 +79,12 @@ function RenderViewApp() {
           return
         }
         const structured = result.structuredContent as Partial<RenderViewResult> | undefined
-        if (structured?.view && structured?.model && structured?.render) {
-          setResult({ view: structured.view, model: structured.model, render: structured.render })
+        if (structured?.view && structured?.model) {
+          setResult({
+            view: structured.view,
+            model: structured.model,
+            render: structured.render ?? defaultRenderOptions,
+          })
         }
       }
     },
@@ -110,8 +119,8 @@ function RenderViewApp() {
             view={result.view}
             pannable
             zoomable
-            fitView={result.render.initialZoom === undefined && result.render.fitView}
-            initialZoom={result.render.initialZoom}
+            fitView
+            initialZoom={result.render.initialZoom ?? (result.render.fitView ? undefined : 1)}
             controls
             enableElementDetails
             enableRelationshipDetails

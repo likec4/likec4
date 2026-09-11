@@ -133,6 +133,7 @@ describe('preview-view tool', () => {
     expect(result.isError).toBeFalsy()
     const content = structured(result)
     const model = content['model'] as Record<string, unknown>
+    expect(content['render']).toBeUndefined()
     expect(model).toBeDefined()
     expect(model['specification']).toBeDefined()
     expect(model['elements']).toBeDefined()
