@@ -8,5 +8,7 @@ allowBuilds:
 
 overrides:
   "@likec4/core": "file:../packages/core/package.tgz"
+  "@likec4/diagram": "file:../packages/diagram/package.tgz"
   "@likec4/icons": "file:../packages/icons/package.tgz"
+  "@likec4/styles": "file:../styled-system/styles/package.tgz"
   "likec4": "file:../packages/likec4/package.tgz"

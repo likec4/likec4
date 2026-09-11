@@ -72,7 +72,7 @@ interface RenderCase {
       width: number
       height: number
     }
-    expectedZoom: number
+    expectedZoom: number | null
   }
 }
 
@@ -160,8 +160,7 @@ function createRenderCase(
         width: asNumber(bounds['width'], 'render-view view.bounds.width'),
         height: asNumber(bounds['height'], 'render-view view.bounds.height'),
       },
-      // The two-node fixture fits in the 1280x720 host at the diagram's maximum fit zoom of 1.
-      expectedZoom: render.initialZoom ?? 1,
+      expectedZoom: render.initialZoom ?? (render.fitView ? null : 1),
     },
   }
 }
@@ -171,6 +170,9 @@ function serializeForScript(value: unknown): string {
 }
 
 function hostPage(mode: Mode, renderCase: RenderCase): string {
+  // Matching the canvas to the content width makes fit padding select a zoom
+  // below 1 while an explicit zoom of 1 can remain centered.
+  const canvasWidth = renderCase.metadata.viewBounds.width
   return `<!doctype html>
 <html>
 <head>
@@ -179,7 +181,7 @@ function hostPage(mode: Mode, renderCase: RenderCase): string {
   <title>LikeC4 MCP App E2E — ${mode}</title>
   <style>
     html, body { margin: 0; padding: 0; }
-    .iframe-container { width: 1280px; height: 720px; }
+    .iframe-container { width: ${canvasWidth}px; height: 720px; }
     iframe { display: block; width: 100%; height: 100%; border: 0; }
   </style>
 </head>
