@@ -71,6 +71,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   className,
   controls = true,
   fitView = true,
+  initialZoom,
   fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
   zoomable = true,
@@ -206,6 +207,8 @@ export function LikeC4Diagram<A extends Any = Any>({
                         view={view}
                         zoomable={zoomable}
                         pannable={pannable}
+                        fitView={fitView}
+                        initialZoom={initialZoom}
                         fitViewPadding={fitViewPadding}
                         nodesDraggable={hasEditor}
                         nodesSelectable={nodesSelectable}
