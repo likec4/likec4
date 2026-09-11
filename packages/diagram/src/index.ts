@@ -7,6 +7,8 @@
 
 export { DefaultIconRenderer, IconRendererProvider } from './context/IconRenderer'
 
+export { MaxZoom, MinZoom } from './base/const'
+
 export {
   LikeC4Diagram,
   type LikeC4DiagramProps,

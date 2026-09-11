@@ -35,6 +35,8 @@ export function DiagramActorProvider({
   view,
   zoomable,
   pannable,
+  fitView,
+  initialZoom,
   nodesDraggable,
   nodesSelectable,
   fitViewPadding,
@@ -47,6 +49,8 @@ export function DiagramActorProvider({
   view: DiagramView
   zoomable: boolean
   pannable: boolean
+  fitView: boolean
+  initialZoom?: number | undefined
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
@@ -74,6 +78,8 @@ export function DiagramActorProvider({
         view,
         zoomable,
         pannable,
+        fitView,
+        initialZoom,
         fitViewPadding,
         nodesDraggable,
         nodesSelectable,
@@ -105,13 +111,26 @@ export function DiagramActorProvider({
           zoomable,
           where,
           pannable,
+          fitView,
+          initialZoom,
           fitViewPadding,
           nodesDraggable,
           nodesSelectable,
           relationshipBrowserScope,
         },
       }),
-    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, relationshipBrowserScope],
+    [
+      actor,
+      zoomable,
+      where,
+      pannable,
+      fitView,
+      initialZoom,
+      fitViewPadding,
+      nodesDraggable,
+      nodesSelectable,
+      relationshipBrowserScope,
+    ],
   )
 
   useUpdateEffect(() => {

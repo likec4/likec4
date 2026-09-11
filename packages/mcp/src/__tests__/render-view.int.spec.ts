@@ -85,6 +85,38 @@ describe('render-view tool', () => {
     expect(views['index']).toBeDefined()
   })
 
+  it('normalizes render options for the embedded diagram', async () => {
+    await using pair = await createMCPTestPair(DSL)
+    const defaultResult = await pair.client.callTool({
+      name: 'render-view',
+      arguments: { viewId: 'index' },
+    })
+    const customResult = await pair.client.callTool({
+      name: 'render-view',
+      arguments: {
+        viewId: 'index',
+        render: { size: 'large', fitView: false, initialZoom: 0.75 },
+      },
+    })
+
+    expect(structured(defaultResult)['render']).toEqual({ size: 'standard', fitView: true })
+    expect(structured(customResult)['render']).toEqual({ size: 'large', fitView: false, initialZoom: 0.75 })
+  })
+
+  it('rejects an out-of-range render initialZoom', async () => {
+    await using pair = await createMCPTestPair(DSL)
+    const result = await pair.client.callTool({
+      name: 'render-view',
+      arguments: {
+        viewId: 'index',
+        render: { initialZoom: 4 },
+      },
+    })
+
+    expect(result.isError).toBe(true)
+    expect(textContent(result)[0]?.text).toMatch(/initialZoom/)
+  })
+
   it('returns a bounded view-scoped model by default', async () => {
     await using pair = await createMCPTestPair(DSL)
     const result = await pair.client.callTool({

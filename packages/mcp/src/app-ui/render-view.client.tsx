@@ -12,7 +12,23 @@ interface RenderViewResult {
   // LikeC4Diagram unconditionally reads model.specification (tag colors), so
   // it needs a real LikeC4Model in a LikeC4ModelProvider, not just the view.
   model: Parameters<typeof LikeC4Model.create>[0]
+  render: {
+    size: 'compact' | 'standard' | 'large'
+    fitView: boolean
+    initialZoom?: number
+  }
 }
+
+const defaultRenderOptions = {
+  size: 'standard',
+  fitView: true,
+} as const satisfies RenderViewResult['render']
+
+const minimumCanvasHeight = {
+  compact: 360,
+  standard: 540,
+  large: 720,
+} as const
 
 // No error boundary here would mean any render failure (e.g. an unexpected
 // LikeC4Diagram runtime requirement) unmounts the whole tree silently — the
@@ -64,7 +80,11 @@ function RenderViewApp() {
         }
         const structured = result.structuredContent as Partial<RenderViewResult> | undefined
         if (structured?.view && structured?.model) {
-          setResult({ view: structured.view, model: structured.model })
+          setResult({
+            view: structured.view,
+            model: structured.model,
+            render: structured.render ?? defaultRenderOptions,
+          })
         }
       }
     },
@@ -89,7 +109,10 @@ function RenderViewApp() {
   const likec4model = LikeC4Model.create(result.model)
 
   return (
-    <div data-testid="mcp-render-view-ready" style={{ height: '100%', width: '100%' }}>
+    <div
+      data-size={result.render.size}
+      data-testid="mcp-render-view-ready"
+      style={{ height: '100%', width: '100%', minHeight: minimumCanvasHeight[result.render.size] }}>
       <LikeC4MantineProvider forceColorScheme={theme}>
         <LikeC4ModelProvider likec4model={likec4model}>
           <LikeC4Diagram
@@ -97,6 +120,7 @@ function RenderViewApp() {
             pannable
             zoomable
             fitView
+            initialZoom={result.render.initialZoom ?? (result.render.fitView ? undefined : 1)}
             controls
             enableElementDetails
             enableRelationshipDetails
