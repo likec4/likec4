@@ -2,8 +2,78 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
+import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core'
+import { LikeC4Model } from '@likec4/core/model'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { buildRenderPayload, projectConfigSchema, serializeConfig } from './_common'
+
+const selectedView = {
+  _stage: 'layouted',
+  _type: 'deployment',
+  id: 'selected',
+  nodes: [
+    { id: 'root.child', modelRef: 'root.child', tags: [], style: {} },
+    { id: 'prod.node.app', deploymentRef: 'prod.node.app', tags: [], style: {} },
+  ],
+  edges: [{ id: 'edge', source: 'root.child', target: 'prod.node.app', relations: ['r1', 'dr1'] }],
+} as unknown as LayoutedView
+
+const modelData = {
+  _stage: 'layouted',
+  projectId: 'default',
+  project: { id: 'default', styles: {}, manualLayouts: {} },
+  specification: { elements: {}, deployments: {}, relationships: {}, tags: {} },
+  globals: { predicates: {}, dynamicPredicates: {}, styles: {} },
+  elements: {
+    root: { id: 'root', kind: 'system', title: 'Root', style: {} },
+    'root.child': { id: 'root.child', kind: 'system', title: 'Child', style: {} },
+    unused: { id: 'unused', kind: 'system', title: 'Unused', style: {} },
+  },
+  imports: {
+    external: [
+      { id: 'service', kind: 'system', title: 'Service', style: {} },
+      { id: 'service.api', kind: 'system', title: 'API', style: {} },
+      { id: 'unused', kind: 'system', title: 'Unused import', style: {} },
+    ],
+  },
+  relations: {
+    r1: {
+      id: 'r1',
+      source: { model: 'root.child' },
+      target: { project: 'external', model: 'service.api' },
+    },
+    unused: { id: 'unused', source: { model: 'unused' }, target: { model: 'root' } },
+  },
+  deployments: {
+    elements: {
+      prod: { id: 'prod', kind: 'environment', title: 'Prod', style: {} },
+      'prod.node': { id: 'prod.node', kind: 'node', title: 'Node', style: {} },
+      'prod.node.app': { id: 'prod.node.app', element: 'root.child', style: {} },
+      unused: { id: 'unused', kind: 'environment', title: 'Unused', style: {} },
+    },
+    relations: {
+      dr1: {
+        id: 'dr1',
+        source: { deployment: 'prod.node.app' },
+        target: { deployment: 'prod.node.app', element: 'root.child' },
+      },
+      unused: {
+        id: 'unused',
+        source: { deployment: 'unused' },
+        target: { deployment: 'prod' },
+      },
+    },
+  },
+  views: {
+    selected: selectedView,
+    other: { ...selectedView, id: 'other' },
+  },
+  manualLayouts: { unused: { hash: 'unused' } },
+} as unknown as LayoutedLikeC4ModelData
 
 describe('serializeConfig', () => {
   it('should serialize minimal config with name only', () => {
@@ -299,29 +369,96 @@ describe('projectConfigSchema', () => {
 })
 
 describe('buildRenderPayload', () => {
-  it('shapes a render/preview response from model data and a single layouted view', () => {
-    const modelData = {
-      specification: { elements: {} },
-      elements: { cloud: {} },
-      relations: {},
-      deployments: {},
-      views: { other: { id: 'other' } },
+  it('inlines local SVG icons without changing the source view or model', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'likec4-mcp-'))
+    const iconPath = join(directory, 'node.svg')
+    writeFileSync(iconPath, '<svg><path /></svg>')
+    const iconUri = pathToFileURL(iconPath).href
+    const view = {
+      ...selectedView,
+      nodes: selectedView.nodes.map(node => node.id === 'root.child' ? { ...node, icon: iconUri } : node),
+    } as LayoutedView
+    const data = {
+      ...modelData,
+      elements: {
+        ...modelData.elements,
+        'root.child': { ...modelData.elements['root.child'], style: { icon: iconUri } },
+      },
+      views: { ...modelData.views, selected: view },
+    } as unknown as LayoutedLikeC4ModelData
+
+    try {
+      const payload = buildRenderPayload({
+        projectId: 'default',
+        viewId: 'selected',
+        title: 'Selected',
+        layoutedView: view,
+        model: LikeC4Model.create(data),
+      })
+      const payloadModel = payload.model as unknown as typeof data
+
+      expect(payload.view.nodes[0]?.icon).toMatch(/^data:image\/svg\+xml/)
+      expect(payloadModel.elements['root.child']?.style.icon).toMatch(/^data:image\/svg\+xml/)
+      expect(view.nodes[0]?.icon).toBe(iconUri)
+      expect(data.elements['root.child']?.style.icon).toBe(iconUri)
+    } finally {
+      rmSync(directory, { recursive: true, force: true })
     }
-    const layoutedView = { id: 'index', nodes: [], edges: [] } as any
+  })
+
+  it('replaces unreadable local SVG icons with null', () => {
+    const iconUri = pathToFileURL(join(tmpdir(), 'missing-node.svg')).href
+    const view = {
+      ...selectedView,
+      nodes: selectedView.nodes.map(node => node.id === 'root.child' ? { ...node, icon: iconUri } : node),
+    } as LayoutedView
 
     const payload = buildRenderPayload({
       projectId: 'default',
-      viewId: 'index',
-      title: 'Index',
-      layoutedView,
-      modelData,
+      viewId: 'selected',
+      title: 'Selected',
+      layoutedView: view,
+      model: LikeC4Model.create(modelData),
     })
 
-    expect(payload.id).toBe('index')
-    expect(payload.title).toBe('Index')
-    expect(payload.project).toBe('default')
-    expect(payload.view).toBe(layoutedView)
-    expect(payload.model['specification']).toBe(modelData.specification)
-    expect(payload.model['views']).toEqual({ index: layoutedView })
+    expect(payload.view.nodes[0]?.icon).toBeNull()
+  })
+
+  it('keeps only records required by the selected view', () => {
+    const payload = buildRenderPayload({
+      projectId: 'default',
+      viewId: 'selected',
+      title: 'Selected',
+      layoutedView: selectedView,
+      model: LikeC4Model.create(modelData),
+    })
+    const scoped = payload.model as unknown as typeof modelData
+
+    expect(Object.keys(scoped.elements)).toEqual(['root', 'root.child'])
+    expect(Object.keys(scoped.imports)).toEqual(['external'])
+    expect(scoped.imports['external']?.map(element => element.id)).toEqual(['service', 'service.api'])
+    expect(Object.keys(scoped.relations)).toEqual(['r1'])
+    expect(Object.keys(scoped.deployments.elements)).toEqual(['prod', 'prod.node', 'prod.node.app'])
+    expect(Object.keys(scoped.deployments.relations)).toEqual(['dr1'])
+    expect(Object.keys(scoped.views)).toEqual(['selected'])
+    expect(scoped.manualLayouts).toEqual({})
+  })
+
+  it('keeps the complete model when fullModel is true', () => {
+    const payload = buildRenderPayload({
+      projectId: 'default',
+      viewId: 'selected',
+      title: 'Selected',
+      layoutedView: selectedView,
+      model: LikeC4Model.create(modelData),
+      fullModel: true,
+    })
+    const full = payload.model as unknown as typeof modelData
+
+    expect(full.elements['unused']).toBeDefined()
+    expect(full.imports['external']?.some(element => element.id === 'unused')).toBe(true)
+    expect(full.deployments.elements['unused']).toBeDefined()
+    expect(Object.keys(full.views)).toEqual(['selected', 'other'])
+    expect(full.manualLayouts).toEqual(modelData.manualLayouts)
   })
 })

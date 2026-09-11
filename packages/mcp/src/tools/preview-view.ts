@@ -61,6 +61,7 @@ export function previewViewTool(mcpServer: McpServer): McpServer {
 Request:
 - dsl: string — a single \`view <id> ... { ... }\` definition. It must reference elements that already exist in the target project.
 - project: string (optional) — project id. Defaults to "default" if omitted.
+- fullModel: boolean (optional) — include the complete model instead of data scoped to this view. Defaults to false.
 
 Behavior:
 - The view id must be new (not already present in the project). If the view id matches an existing view, an error is returned — use a different id, or use "render-view" to render an existing view.
@@ -72,6 +73,8 @@ Use "preview-view" to iterate on a new view definition before creating it for re
       inputSchema: mcpToolSchema({
         dsl: z.string().describe('A single `view <id> ... { ... }` LikeC4 DSL definition'),
         project: projectIdSchema,
+        fullModel: z.boolean().default(false)
+          .describe('Include the complete model instead of data scoped to this view'),
       }),
       outputSchema: mcpToolSchema({
         id: z.string(),
@@ -160,7 +163,8 @@ Use "preview-view" to iterate on a new view definition before creating it for re
           viewId: viewModel.id,
           title,
           layoutedView: layouted.diagram,
-          modelData: model.$data,
+          model,
+          fullModel: args.fullModel,
         }),
       }
     },
