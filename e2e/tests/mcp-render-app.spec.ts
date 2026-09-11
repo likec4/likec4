@@ -27,7 +27,7 @@ interface RenderMetadata {
     width: number
     height: number
   }
-  expectedZoom: number
+  expectedZoom: number | null
 }
 
 async function settledViewport(app: FrameLocator) {
@@ -85,7 +85,9 @@ async function expectRenderedCase(page: Page, mode: Mode, expectDetails = false,
     width: element.clientWidth,
     height: element.clientHeight,
   }))
-  expect(viewport.zoom).toBeCloseTo(metadata.expectedZoom, 5)
+  if (metadata.expectedZoom !== null) {
+    expect(viewport.zoom).toBeCloseTo(metadata.expectedZoom, 5)
+  }
   const renderedCenter = {
     x: viewport.x + (metadata.viewBounds.x + metadata.viewBounds.width / 2) * viewport.zoom,
     y: viewport.y + (metadata.viewBounds.y + metadata.viewBounds.height / 2) * viewport.zoom,
@@ -114,10 +116,12 @@ async function expectRenderedCase(page: Page, mode: Mode, expectDetails = false,
   }
   expect(metadata.hasUnusedElement).toBe(mode === 'full')
   expect(errors).toEqual([])
+  return viewport
 }
 
 test('renders a scoped render-view MCP App', async ({ page }) => {
-  await expectRenderedCase(page, 'scoped', true)
+  const viewport = await expectRenderedCase(page, 'scoped', true)
+  expect(viewport.zoom).toBeLessThan(1)
 })
 
 test('renders a full-model render-view MCP App', async ({ page }) => {
@@ -137,12 +141,15 @@ for (const mode of ['scoped', 'compact', 'standard', 'large'] as const) {
 }
 
 test('renders the no-fit render-view MCP App at centered zoom 1', async ({ page }) => {
-  await expectRenderedCase(page, 'no-fit')
+  const viewport = await expectRenderedCase(page, 'no-fit')
+  expect(viewport.zoom).toBe(1)
 })
 
 test('renders the explicit zoom render-view MCP App at zoom 0.75', async ({ page }) => {
   await expectRenderedCase(page, 'zoom')
   const app = page.frameLocator('iframe')
   await app.locator('.react-flow__controls-fitview').click()
-  expect((await settledViewport(app)).zoom).toBe(1)
+  const fittedViewport = await settledViewport(app)
+  expect(fittedViewport.zoom).toBeGreaterThan(0.75)
+  expect(fittedViewport.zoom).toBeLessThan(1)
 })

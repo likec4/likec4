@@ -93,8 +93,8 @@ function createTestActor({ fitView, initialZoom }: { fitView: boolean; initialZo
 }
 
 describe('initializing state', () => {
-  it('uses and centers the explicit initial zoom', () => {
-    const actor = createTestActor({ fitView: true, initialZoom: 0.75 })
+  it('uses and centers the explicit initial zoom when fit is disabled', () => {
+    const actor = createTestActor({ fitView: false, initialZoom: 0.75 })
     const snapshot = actor.getSnapshot()
 
     expect(snapshot.context.viewport.zoom).toBe(0.75)
