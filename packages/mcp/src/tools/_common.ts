@@ -20,6 +20,7 @@ import type { AnyAux, ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { Locate } from '@likec4/language-server/protocol'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
+import { readFileSync } from 'node:fs'
 import { URI } from 'vscode-uri'
 import * as z from 'zod/v4'
 import { logger } from '../utils'
@@ -390,6 +391,32 @@ function buildViewScopedModel(model: RenderModel, layoutedView: LayoutedView): R
   }
 }
 
+function inlineLocalSvgIcon(icon: unknown): string | null | undefined {
+  if (typeof icon !== 'string' || !icon.startsWith('file:') || !icon.toLowerCase().split(/[?#]/)[0]?.endsWith('.svg')) {
+    return icon as string | null | undefined
+  }
+  try {
+    return `data:image/svg+xml,${encodeURIComponent(readFileSync(URI.parse(icon).fsPath, 'utf8'))}`
+  } catch {
+    return null
+  }
+}
+
+function inlineLocalSvgIcons(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(inlineLocalSvgIcons)
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        key === 'icon' ? inlineLocalSvgIcon(nestedValue) : inlineLocalSvgIcons(nestedValue),
+      ]),
+    )
+  }
+  return value
+}
+
 export function buildRenderPayload(params: {
   projectId: string
   viewId: string
@@ -412,7 +439,7 @@ export function buildRenderPayload(params: {
     id: params.viewId,
     title: params.title,
     project: params.projectId,
-    view: params.layoutedView,
-    model,
+    view: inlineLocalSvgIcons(params.layoutedView) as LayoutedView,
+    model: inlineLocalSvgIcons(model) as Record<string, unknown>,
   }
 }

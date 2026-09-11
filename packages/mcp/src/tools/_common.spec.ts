@@ -4,6 +4,10 @@
 
 import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { buildRenderPayload, projectConfigSchema, serializeConfig } from './_common'
 
@@ -365,6 +369,61 @@ describe('projectConfigSchema', () => {
 })
 
 describe('buildRenderPayload', () => {
+  it('inlines local SVG icons without changing the source view or model', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'likec4-mcp-'))
+    const iconPath = join(directory, 'node.svg')
+    writeFileSync(iconPath, '<svg><path /></svg>')
+    const iconUri = pathToFileURL(iconPath).href
+    const view = {
+      ...selectedView,
+      nodes: selectedView.nodes.map(node => node.id === 'root.child' ? { ...node, icon: iconUri } : node),
+    } as LayoutedView
+    const data = {
+      ...modelData,
+      elements: {
+        ...modelData.elements,
+        'root.child': { ...modelData.elements['root.child'], style: { icon: iconUri } },
+      },
+      views: { ...modelData.views, selected: view },
+    } as unknown as LayoutedLikeC4ModelData
+
+    try {
+      const payload = buildRenderPayload({
+        projectId: 'default',
+        viewId: 'selected',
+        title: 'Selected',
+        layoutedView: view,
+        model: LikeC4Model.create(data),
+      })
+      const payloadModel = payload.model as typeof data
+
+      expect(payload.view.nodes[0]?.icon).toMatch(/^data:image\/svg\+xml/)
+      expect(payloadModel.elements['root.child']?.style.icon).toMatch(/^data:image\/svg\+xml/)
+      expect(view.nodes[0]?.icon).toBe(iconUri)
+      expect(data.elements['root.child']?.style.icon).toBe(iconUri)
+    } finally {
+      rmSync(directory, { recursive: true, force: true })
+    }
+  })
+
+  it('replaces unreadable local SVG icons with null', () => {
+    const iconUri = pathToFileURL(join(tmpdir(), 'missing-node.svg')).href
+    const view = {
+      ...selectedView,
+      nodes: selectedView.nodes.map(node => node.id === 'root.child' ? { ...node, icon: iconUri } : node),
+    } as LayoutedView
+
+    const payload = buildRenderPayload({
+      projectId: 'default',
+      viewId: 'selected',
+      title: 'Selected',
+      layoutedView: view,
+      model: LikeC4Model.create(modelData),
+    })
+
+    expect(payload.view.nodes[0]?.icon).toBeNull()
+  })
+
   it('keeps only records required by the selected view', () => {
     const payload = buildRenderPayload({
       projectId: 'default',
