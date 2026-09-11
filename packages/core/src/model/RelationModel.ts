@@ -38,6 +38,7 @@ export interface AnyRelationshipModel<A extends AnyAux = AnyAux> extends WithTag
   readonly line: RelationshipLineType
   readonly head: RelationshipArrowType
   readonly tail: RelationshipArrowType | undefined
+  readonly isBidirectional: boolean
   isDeploymentRelation(): this is DeploymentRelationModel<A>
   isModelRelation(): this is RelationshipModel<A>
   views(): ViewsIterator<A>

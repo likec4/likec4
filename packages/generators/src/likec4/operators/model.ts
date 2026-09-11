@@ -24,6 +24,7 @@ import {
   descriptionProperty,
   linksProperty,
   metadataProperty,
+  relationConnector,
   styleProperties,
   summaryProperty,
   tagsProperty,
@@ -162,7 +163,7 @@ function hasRelationProps(rel: schemas.model.relationship.Data): boolean {
 export const relationship = zodOp(schemas.model.relationship)(
   spaceBetween(
     property('source', fqnRef()),
-    print(rel => rel.kind ? `-[${rel.kind}]->` : '->'),
+    print(rel => relationConnector(rel.kind, rel.isBidirectional)),
     property('target', fqnRef()),
     property(
       'title',

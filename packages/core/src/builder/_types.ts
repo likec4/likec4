@@ -151,11 +151,6 @@ export type NewRelationProps<Kind, Tag, Metadata> = {
   links?: NonEmptyArray<string | { title?: string; url: string }>
 }
 
-export type NewDeploymentRelationProps<Kind, Tag, Metadata> = Omit<
-  NewRelationProps<Kind, Tag, Metadata>,
-  'isBidirectional'
->
-
 export type Invalid<Message extends string> = Tagged<Message, 'Error'>
 export type Warn<Id, Existing> = IsLiteral<Existing> extends true ? Id extends Existing ? Invalid<'Already exists'> : Id
   : Id
@@ -193,7 +188,7 @@ export interface Types<
 
   NewElementProps: NewElementProps<Tag, Metadata<MetadataKey>>
   NewRelationshipProps: NewRelationProps<RelationshipKind, Tag, Metadata<MetadataKey>>
-  NewDeploymentRelationshipProps: NewDeploymentRelationProps<RelationshipKind, Tag, Metadata<MetadataKey>>
+  NewDeploymentRelationshipProps: NewRelationProps<RelationshipKind, Tag, Metadata<MetadataKey>>
   NewViewProps: NewViewProps<Tag>
 
   NewDeploymentNodeProps: NewDeploymentNodeProps<Tag, Metadata<MetadataKey>>

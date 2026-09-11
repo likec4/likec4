@@ -1,10 +1,12 @@
-import { anyPass, filter, pipe } from 'remeda'
+import { anyPass, flatMap, pipe } from 'remeda'
 import type { LikeC4DeploymentModel, RelationshipModel } from '../../../model'
 import type { AnyAux, RelationExpr } from '../../../types'
 import { FqnExpr } from '../../../types'
 import { invariant, isAncestor } from '../../../utils'
+import { isBidirectionalRelation } from '../../utils/is-bidirectional-relation'
 import type { Connection, Elem, PredicateExecutor } from '../_types'
-import { findConnectionsBetween, resolveElements, resolveModelElements } from '../utils'
+import { findConnectionsFrom, narrowToBidirectional, resolveElements, resolveModelElements } from '../utils'
+import { filterOutgoingConnections } from './relation-outgoing'
 import { applyPredicate, excludeModelRelations, resolveAscendingSiblings } from './utils'
 
 // from visible element incoming to this
@@ -14,11 +16,11 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
 
     if (FqnExpr.isWildcard(expr.incoming)) {
       for (const source of sources) {
-        if (source.allOutgoing.isEmpty) {
+        if (source.allOutgoing.isEmpty && source.allIncoming.isEmpty) {
           continue
         }
         const targets = [...resolveAscendingSiblings(source)]
-        const toInclude = applyPredicate(findConnectionsBetween(source, targets, 'directed'), where)
+        const toInclude = applyPredicate(findConnectionsFrom(source, targets), where)
         stage.addConnections(toInclude)
       }
       return stage
@@ -27,7 +29,7 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
 
     const targets = resolveElements(model, expr.incoming)
     for (const source of sources) {
-      const toInclude = applyPredicate(findConnectionsBetween(source, targets, 'directed'), where)
+      const toInclude = applyPredicate(findConnectionsFrom(source, targets), where)
       stage.addConnections(toInclude)
     }
 
@@ -47,10 +49,18 @@ export const IncomingRelationPredicate: PredicateExecutor<RelationExpr.Incoming>
       return stage
     }
 
-    const isIncoming = filterIncomingConnections(resolveElements(model, expr.incoming))
+    const targets = resolveElements(model, expr.incoming)
+    const isIncoming = filterIncomingConnections(targets)
+    const isOutgoing = filterOutgoingConnections(targets)
     const toExclude = pipe(
       memory.connections,
-      filter(isIncoming),
+      flatMap(connection => {
+        if (isIncoming(connection)) {
+          return [connection]
+        }
+        // `a <-> b` also flows into `a`, so `exclude -> a` must drop it
+        return isOutgoing(connection) ? narrowToBidirectional(connection) : []
+      }),
       applyPredicate(where),
     )
     stage.excludeConnections(toExclude)
@@ -97,5 +107,8 @@ export function resolveAllIncomingRelations<A extends AnyAux>(
   modelRef: FqnExpr.ModelRef<A>,
 ): Set<RelationshipModel<A>> {
   const targets = resolveModelElements(model, modelRef)
-  return new Set(targets.flatMap(e => [...e.allIncoming]))
+  return new Set(targets.flatMap(e => [
+    ...e.allIncoming,
+    ...[...e.allOutgoing].filter(isBidirectionalRelation),
+  ]))
 }

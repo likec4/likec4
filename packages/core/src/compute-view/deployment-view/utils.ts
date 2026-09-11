@@ -17,11 +17,44 @@ import { stringHash } from '../../utils/string-hash'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import type { ComputedNodeSource } from '../utils/buildComputedNodes'
 import { buildComputedNodes } from '../utils/buildComputedNodes'
+import { isBidirectionalRelation } from '../utils/is-bidirectional-relation'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = deploymentConnection
+
+/**
+ * Resolve connections that can originate at `source`.
+ *
+ * Relationships declared as bidirectional can be selected from either endpoint,
+ * while their connection retains the direction declared in the model.
+ */
+export function findConnectionsFrom<A extends AnyAux>(
+  source: DeploymentElementModel<A>,
+  targets: Iterable<DeploymentElementModel<A>>,
+): readonly DeploymentConnectionModel<A>[] {
+  return findConnectionsBetween(source, targets, 'both').flatMap(connection => {
+    if (connection.source === source) {
+      return [connection]
+    }
+    return narrowToBidirectional(connection)
+  })
+}
+
+/**
+ * Keeps only bidirectional relations of the connection, drops the connection if none left.
+ */
+export function narrowToBidirectional<A extends AnyAux>(
+  connection: DeploymentConnectionModel<A>,
+): readonly DeploymentConnectionModel<A>[] {
+  const model = new Set([...connection.relations.model].filter(isBidirectionalRelation))
+  const deployment = new Set([...connection.relations.deployment].filter(isBidirectionalRelation))
+  if (model.size === 0 && deployment.size === 0) {
+    return []
+  }
+  return [connection.update({ model, deployment })]
+}
 
 type Predicate<T> = (x: T) => boolean
 

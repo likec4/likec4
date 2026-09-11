@@ -227,6 +227,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         id,
         source,
         target,
+        isBidirectional: astNode.isBidirectional || undefined,
         ...titleDescAndTech,
         metadata,
         kind,

@@ -62,6 +62,7 @@ export function isDeployedInstance<A extends AnyAux>(el: DeploymentElement<A>): 
 export interface DeploymentRelationship<A extends AnyAux = Unknown> extends AbstractRelationship<A> {
   readonly source: FqnRef.DeploymentRef<A>
   readonly target: FqnRef.DeploymentRef<A>
+  readonly isBidirectional?: boolean
 }
 /**
  * Backward compatibility alias

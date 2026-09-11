@@ -885,11 +885,7 @@ ExtendDeploymentBody:  '{'
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  (
-    dotKind=RelationKindDotRef |
-    '-[' kind=[RelationshipKind] ']->' |
-    '->'
-  )
+  RelationConnector
   target=FqnRef
   (title=String  // title
     (description=String  // description
