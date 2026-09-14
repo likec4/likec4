@@ -134,15 +134,19 @@ test('renders a preview-view MCP App with default render options', async ({ page
 
 for (const mode of ['scoped', 'compact', 'standard', 'large'] as const) {
   test(`keeps fit-to-view enabled for the ${mode} render-view MCP App`, async ({ page }) => {
-    await expectRenderedCase(page, mode)
+    const viewport = await expectRenderedCase(page, mode)
     const metadata = await (await page.request.get(`/case/${mode}/metadata`)).json() as RenderMetadata
     expect(metadata.render.fitView).toBe(true)
+    expect(viewport.zoom).toBeLessThan(1)
   })
 }
 
 test('renders the no-fit render-view MCP App at centered zoom 1', async ({ page }) => {
   const viewport = await expectRenderedCase(page, 'no-fit')
   expect(viewport.zoom).toBe(1)
+  const app = page.frameLocator('iframe')
+  await app.locator('.react-flow__controls-zoomin').click()
+  expect((await settledViewport(app)).zoom).toBeGreaterThan(viewport.zoom)
 })
 
 test('renders the explicit zoom render-view MCP App at zoom 0.75', async ({ page }) => {

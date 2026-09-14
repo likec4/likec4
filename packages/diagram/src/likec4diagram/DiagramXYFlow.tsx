@@ -119,7 +119,7 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
     nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
-    enableControls: ctx.features.enableControls && ctx.features.enableFitView,
+    enableControls: ctx.features.enableControls,
     ...(controlledViewport && {
       viewport: controlledViewport,
     }),
