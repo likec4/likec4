@@ -21,3 +21,13 @@ test('view with manual layout renders on interactive route (#2882)', async ({ pa
   const errorText = page.locator('text=Something went wrong')
   await expect(errorText).not.toBeVisible()
 })
+
+test('view with orthogonal routing and manual layout renders on interactive route', async ({ page }) => {
+  test.setTimeout(30_000)
+  await page.goto('/project/e2e/view/ortho-routing/')
+
+  await expect(canvas(page)).toBeVisible({ timeout: TIMEOUT_CANVAS })
+
+  const errorText = page.locator('text=Something went wrong')
+  await expect(errorText).not.toBeVisible()
+})

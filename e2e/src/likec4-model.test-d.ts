@@ -88,6 +88,7 @@ test('Model Codegen with valid types', () => {
     | 'multiple-merged'
     | 'view-with-custom-colors'
     | 'flow-control-1'
+    | 'ortho-routing'
   >()
   expectTypeOf(m1.view('cloud-to-amazon')).toEqualTypeOf<LikeC4ViewModel<A, LayoutedView<A>>>()
 })
