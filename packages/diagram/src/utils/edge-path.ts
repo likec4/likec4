@@ -1,18 +1,19 @@
 import {
   type BBox,
   type Segment,
+  continuesRun,
   distanceBetween,
   isOrthoSpline,
   nearlyEqual,
   polylineToSegments,
   splineToPolyline,
 } from '@likec4/core/geometry'
-import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
+import type { DiagramEdge, EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { first, last } from 'remeda'
-import { bezierControlPoints, bezierPath, getNodeIntersectionFromCenterToPoint } from './xyflow'
+import { bezierControlPoints, bezierPath, getNodeIntersectionFromCenterToPoint, isEqualRects } from './xyflow'
 
 /**
  * One end of an edge: the node centre (as xyflow reports it) and the node rectangle.
@@ -28,8 +29,11 @@ export type EdgeEnd = {
 export type Endpoints<T> = {
   source: T
   target: T
-  dir?: 'forward' | 'back' | 'both' | undefined
+  dir?: DiagramEdge['dir'] | undefined
 }
+
+/** the axis a straight run lies on */
+export type Axis = 'h' | 'v'
 
 type EdgeEndpoints = Endpoints<EdgeEnd>
 
@@ -37,8 +41,6 @@ type EdgeEndpoints = Endpoints<EdgeEnd>
 export function inDrawingOrder<T>({ source, target, dir }: Endpoints<T>): [from: T, to: T] {
   return dir === 'back' ? [target, source] : [source, target]
 }
-
-export type { Segment }
 
 /**
  * A drawn edge: its SVG path data and, under ortho routing, its straight pieces
@@ -75,13 +77,7 @@ function segmentCollector(): { add: (from: XYPosition, to: XYPosition) => void; 
     segments,
     add(from, to) {
       const previous = segments[segments.length - 1]
-      const continues = previous
-        && previous[1] === from
-        && ((nearlyEqual(previous[0].x, from.x) && nearlyEqual(from.x, to.x) &&
-          Math.sign(to.y - from.y) === Math.sign(from.y - previous[0].y))
-          || (nearlyEqual(previous[0].y, from.y) && nearlyEqual(from.y, to.y) &&
-            Math.sign(to.x - from.x) === Math.sign(from.x - previous[0].x)))
-      if (continues) {
+      if (previous && previous[1] === from && continuesRun(previous, from, to)) {
         previous[1] = to
       } else {
         segments.push([from, to])
@@ -194,20 +190,26 @@ export function orthoPolyline(
 }
 
 /**
- * Orthogonal route from one node to the other through the given anchors,
- * clipped at the node borders, with rounded corners.
+ * Orthogonal route from one node to the other through the given anchors, clipped at the node borders.
  */
-function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): DrawnEdge {
+function orthoRoute(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): XYPosition[] {
   const { points } = orthoPolyline(anchors, from.center, to.center)
   clipStart(points, from.node, ORTHO_NODE_MARGIN)
   points.reverse()
   clipStart(points, to.node, ORTHO_NODE_MARGIN)
   points.reverse()
+  return points
+}
+
+/**
+ * Draws an orthogonal route with rounded corners.
+ */
+export function drawnFromRoute(points: XYPosition[]): DrawnEdge {
   return roundedPath(points, ORTHO_CORNER_RADIUS)
 }
 
-function isSameNode(a: BBox, b: BBox): boolean {
-  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): DrawnEdge {
+  return drawnFromRoute(orthoRoute(anchors, from, to))
 }
 
 /** point of the node border closest to `p` (its own position when `p` is inside) */
@@ -238,6 +240,41 @@ function orthoSelfLoopPath(controlPoints: ReadonlyArray<XYPosition>, node: BBox)
 }
 
 /**
+ * The orthogonal route of an edited edge, before drawing, with the node boxes it starts and ends on
+ * in drawing order, so that it can be moved onto its own track when it shares a run with another edge.
+ * `null` for a self-loop, which keeps its own shape.
+ */
+export function editedEdgeRoute({
+  controlPoints,
+  ...edge
+}: EdgeEndpoints & {
+  controlPoints: ReadonlyArray<XYPosition>
+}): { points: XYPosition[]; bounds: { from: BBox; to: BBox } } | null {
+  const [from, to] = inDrawingOrder(edge)
+  if (isEqualRects(from.node, to.node)) {
+    return null
+  }
+  return { points: orthoRoute(controlPoints, from, to), bounds: { from: from.node, to: to.node } }
+}
+
+/**
+ * The polyline an untouched edge is drawn along under ortho routing: its Graphviz corners,
+ * or the re-route of legacy curved geometry.
+ */
+export function layoutedEdgeRoute({
+  points,
+  ...edge
+}: EdgeEndpoints & {
+  points: NonEmptyArray<Point>
+}): XYPosition[] {
+  if (isOrthoSpline(points)) {
+    return splineToPolyline(points)
+  }
+  const [from, to] = inDrawingOrder(edge)
+  return orthoRoute(bezierControlPoints(points), from, to)
+}
+
+/**
  * An edited edge (one that has control points), drawn from source to target
  * (or from target to source for `dir: 'back'`), clipped at the node borders.
  * Under ortho routing the control points are corners of an orthogonal route.
@@ -252,7 +289,7 @@ export function editedEdgePath({
 }): DrawnEdge {
   const [from, to] = inDrawingOrder(edge)
   if (routing === 'ortho') {
-    return isSameNode(from.node, to.node)
+    return isEqualRects(from.node, to.node)
       ? orthoSelfLoopPath(controlPoints, from.node)
       : orthoPath(controlPoints, from, to)
   }
@@ -286,6 +323,5 @@ export function layoutedEdgePath({
     const [from, to] = inDrawingOrder(edge)
     return orthoPath(bezierControlPoints(points), from, to)
   }
-  // every cubic is straight: the on-curve points are the corners
   return { d: bezierPath(points), segments: polylineToSegments(splineToPolyline(points)) }
 }

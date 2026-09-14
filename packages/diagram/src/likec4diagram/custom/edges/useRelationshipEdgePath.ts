@@ -7,8 +7,10 @@ import { getNodeDimensions } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import { isTruthy } from 'remeda'
+import { useTrackRoutes } from '../../../hooks/useEdgeTracks'
 import { useXYStore } from '../../../hooks/useXYFlow'
-import { type DrawnEdge, editedEdgePath, layoutedEdgePath } from '../../../utils/edge-path'
+import { type DrawnEdge, layoutedEdgePath } from '../../../utils/edge-path'
+import { trackedEdgePath } from '../../../utils/edge-tracks'
 import type { Types } from '../../types'
 
 /**
@@ -16,6 +18,7 @@ import type { Types } from '../../types'
  */
 export function useRelationshipEdgePath({
   props: {
+    id,
     sourceX,
     sourceY,
     source,
@@ -54,6 +57,7 @@ export function useRelationshipEdgePath({
   )
 
   const isModified = isTruthy(data.controlPoints) || isControlPointDragging
+  const trackRoutes = useTrackRoutes(routing, isModified)
 
   const sourceCenterPos = vector(sourceX, sourceY).trunc()
   const targetCenterPos = vector(targetX, targetY).trunc()
@@ -83,7 +87,8 @@ export function useRelationshipEdgePath({
     dir: data.dir,
     routing,
   }
-  return isModified
-    ? editedEdgePath({ ...endpoints, controlPoints })
-    : layoutedEdgePath({ ...endpoints, points: data.points })
+  if (!isModified) {
+    return layoutedEdgePath({ ...endpoints, points: data.points })
+  }
+  return trackedEdgePath({ ...endpoints, id, controlPoints, others: trackRoutes.values() })
 }

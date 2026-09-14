@@ -15,9 +15,11 @@ import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } fro
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import { useCurrentViewRouting } from '../hooks/useCurrentView'
 import { useDiagram } from '../hooks/useDiagram'
+import { selectTrackRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import { editedEdgePath } from '../utils/edge-path'
+import type { TrackRoute } from '../utils/edge-tracks'
+import { trackedEdgePath } from '../utils/edge-tracks'
 import { isLeafNodeType, nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
@@ -142,7 +144,8 @@ class Leaf extends Rect {
   }
 }
 
-type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange<Types.AnyEdge>
+/** a replace change for the edge, or `null` when nothing moved */
+type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange<Types.AnyEdge> | null
 
 /**
  * Creates a modifier function that moves edge points according to the given rectangle's diff.
@@ -156,15 +159,12 @@ function makeEdgeModifier(
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
     const { x: dx, y: dy } = anchor.diff
     if (dx === 0 && dy === 0) {
-      return {
-        id: edge.id,
-        type: 'replace',
-        item: produce(current, draft => {
-          draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
-          draft.data.controlPoints = controlPoints
-          draft.data.labelBBox = edge.data.labelBBox
-        }),
-      }
+      const item = produce(current, draft => {
+        draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
+        draft.data.controlPoints = controlPoints
+        draft.data.labelBBox = edge.data.labelBBox
+      })
+      return item === current ? null : { id: edge.id, type: 'replace', item }
     }
     return {
       id: edge.id,
@@ -189,6 +189,15 @@ function makeEdgeModifier(
   }
 }
 
+/** what every edge modifier of one drag shares */
+type DragContext = {
+  routing: EdgeRouting
+  /** leaf node boxes after the moving nodes shifted */
+  obstaclesAt: (shift: XYPoint) => BBox[]
+  /** routes of the edges of the view, for keeping an edge on its own track */
+  otherRoutes: () => ReadonlyMap<string, TrackRoute>
+}
+
 /**
  * Creates a modifier function that moves edge points when one of its nodes is moved.
  */
@@ -196,10 +205,8 @@ function makeRelativeEdgeModifier(
   edge: Types.AnyEdge,
   movingRect: Rect,
   ends: { source: BBox; target: BBox; isSourceMoving: boolean },
-  routing: EdgeRouting,
-  obstaclesAt: (shift: XYPoint) => BBox[],
+  { routing, obstaclesAt, otherRoutes }: DragContext,
 ): EdgeModifier {
-  // anchor is the end that moves with the rect, static is the other one
   const [anchorNode, staticNode] = ends.isSourceMoving ? [ends.source, ends.target] : [ends.target, ends.source]
   const controlPoints = edge.data.controlPoints ?? initialControlPoints(edge.data.points, routing)
   const anchorV = vector(BBox.center(anchorNode))
@@ -211,28 +218,24 @@ function makeRelativeEdgeModifier(
   const routeAfterMove = (controlPoints: ReadonlyArray<XYPoint>, shift: XYPoint) => {
     const moved = { ...anchorNode, x: anchorNode.x + shift.x, y: anchorNode.y + shift.y }
     const [source, target] = ends.isSourceMoving ? [moved, staticNode] : [staticNode, moved]
-    return editedEdgePath({
+    const endpoints = {
       source: { center: BBox.center(source), node: source },
       target: { center: BBox.center(target), node: target },
       dir: edge.data.dir,
-      controlPoints,
-      routing,
-    })
+    }
+    return trackedEdgePath({ ...endpoints, id: edge.id, controlPoints, routing, others: otherRoutes().values() })
   }
 
   return (edgeLookup) => {
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
     const { x: dx, y: dy } = movingRect.diff
     if (dx === 0 && dy === 0) {
-      return {
-        id: edge.id,
-        type: 'replace',
-        item: produce(current, draft => {
-          draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
-          draft.data.controlPoints = edge.data.controlPoints
-          draft.data.labelBBox = edge.data.labelBBox
-        }),
-      }
+      const item = produce(current, draft => {
+        draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
+        draft.data.controlPoints = edge.data.controlPoints
+        draft.data.labelBBox = edge.data.labelBBox
+      })
+      return item === current ? null : { id: edge.id, type: 'replace', item }
     }
     const d = vector(dx, dy)
 
@@ -397,12 +400,27 @@ export function createLayoutConstraints(
   // moving nodes may have nested nodes as well
   const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
 
-  // leaf node boxes an edge label must stay clear of, at their position after the moving nodes shifted
   const leafNodes = [...nodeLookup.values()]
     .filter(n => isLeafNodeType(n.type))
     .map(n => ({ rect: nodeToRect(n), moving: movingNodes.has(n.id) }))
-  const obstaclesAt = (shift: XYPoint): BBox[] =>
-    leafNodes.map(({ rect, moving }) => moving ? { ...rect, x: rect.x + shift.x, y: rect.y + shift.y } : rect)
+  // every edge of one frame asks for the same shift: build the obstacle list once per shift
+  let lastObstacles: { key: string; boxes: BBox[] } | null = null
+  const dragContext: DragContext = {
+    routing,
+    obstaclesAt: shift => {
+      const key = `${shift.x},${shift.y}`
+      if (lastObstacles?.key !== key) {
+        lastObstacles = {
+          key,
+          boxes: leafNodes.map(({ rect, moving }) =>
+            moving ? { ...rect, x: rect.x + shift.x, y: rect.y + shift.y } : rect
+          ),
+        }
+      }
+      return lastObstacles.boxes
+    },
+    otherRoutes: () => selectTrackRoutes(xyflowApi.getState()),
+  }
   for (const edge of edges) {
     const isSourceMoving = movingNodes.has(edge.source)
     const isTargetMoving = movingNodes.has(edge.target)
@@ -441,8 +459,7 @@ export function createLayoutConstraints(
         edge,
         movingRect,
         { source: sourceNode, target: targetNode, isSourceMoving },
-        routing,
-        obstaclesAt,
+        dragContext,
       ),
     )
   }
@@ -529,7 +546,10 @@ export function createLayoutConstraints(
     }
 
     for (const fm of _edgeModifiers) {
-      edgeUpdates.push(fm(edgeLookup))
+      const change = fm(edgeLookup)
+      if (change) {
+        edgeUpdates.push(change)
+      }
     }
     if (edgeUpdates.length > 0) {
       triggerEdgeChanges(edgeUpdates)
