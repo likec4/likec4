@@ -66,14 +66,13 @@ bridge.onrequestdisplaymode = ({ mode }) => {
   return { mode: globalThis.__MCP_APP_CASE__.displayModeRequestResult }
 }
 }
-document.querySelector('[data-testid="send-host-context-change"]')?.addEventListener('click', async () => {
+document.querySelector('[data-testid="send-host-context-change"]')?.addEventListener('click', () => {
   const displayMode = globalThis.__MCP_APP_CASE__.hostContextChangeDisplayMode
   if (!displayMode) return
   bridge.setHostContext({
     displayMode,
     availableDisplayModes: globalThis.__MCP_APP_CASE__.availableDisplayModes,
   })
-  await bridge.sendHostContextChange({ displayMode })
   document.querySelector('[data-testid="host-context-change"]')!.textContent = displayMode
 })
 await bridge.connect(new PostMessageTransport(iframe.contentWindow!, iframe.contentWindow!))
