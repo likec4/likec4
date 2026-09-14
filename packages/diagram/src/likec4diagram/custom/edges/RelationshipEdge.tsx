@@ -30,9 +30,10 @@ import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
 import { snapCorner } from '../../../utils/edge-corners'
-import { edgeLabelAnchor } from '../../../utils/edge-label'
+import { edgeLabelPosition } from '../../../utils/edge-label'
 import {
   isSamePoint,
+  leafNodeRects,
 } from '../../../utils/xyflow'
 import type { Types } from '../../types'
 import { EdgeDrifts } from './EdgeDrifts'
@@ -105,14 +106,15 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const svgPathRef = useRef<SVGPathElement>(null)
 
-  // Top-left of the label centred on the anchor of the (edited) edge path
-  const labelTopLeftAt = (path: SVGPathElement): XYPosition => {
-    const anchor = edgeLabelAnchor({ path, segments: edgePath.segments, routing })
-    return {
-      x: anchor.x - (labelBBox?.width ?? 0) / 2,
-      y: anchor.y - (labelBBox?.height ?? 0) / 2,
-    }
-  }
+  const labelTopLeftAt = (path: SVGPathElement): XYPosition =>
+    edgeLabelPosition({
+      path,
+      segments: edgePath.segments,
+      routing,
+      size: { width: labelBBox?.width ?? 0, height: labelBBox?.height ?? 0 },
+      obstacles: leafNodeRects(xyflowStore.getState().nodeLookup.values()),
+      customized: data.isLabelCustomized ?? false,
+    })
 
   // Offset of the label from its auto position, captured when an edge edit starts.
   // Zero for auto-positioned labels (so they re-centre on the anchor), preserved

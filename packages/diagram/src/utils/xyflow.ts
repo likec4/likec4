@@ -86,6 +86,20 @@ export function isEqualRects(a: Rect, b: Rect): boolean {
     && Math.trunc(a.height) === Math.trunc(b.height)
 }
 
+/**
+ * Rectangles of the leaf nodes (no compounds, no view groups), the boxes an edge label must stay clear of
+ */
+export function leafNodeRects(nodes: Iterable<MinimalInternalNode & { type?: string | undefined }>): Rect[] {
+  const rects: Rect[] = []
+  for (const node of nodes) {
+    if (node.type === 'compound-element' || node.type === 'compound-deployment' || node.type === 'view-group') {
+      continue
+    }
+    rects.push(nodeToRect(node))
+  }
+  return rects
+}
+
 export function nodeToRect(nd: MinimalInternalNode): Rect {
   return ({
     x: Math.trunc(nd.internals.positionAbsolute.x),

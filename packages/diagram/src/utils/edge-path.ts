@@ -1,4 +1,12 @@
-import { type BBox, distanceBetween, isOrthoSpline, nearlyEqual, splineToPolyline } from '@likec4/core/geometry'
+import {
+  type BBox,
+  type Segment,
+  distanceBetween,
+  isOrthoSpline,
+  nearlyEqual,
+  polylineToSegments,
+  splineToPolyline,
+} from '@likec4/core/geometry'
 import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
@@ -30,10 +38,7 @@ export function inDrawingOrder<T>({ source, target, dir }: Endpoints<T>): [from:
   return dir === 'back' ? [target, source] : [source, target]
 }
 
-/**
- * A straight piece of a drawn edge, as `[from, to]`.
- */
-export type Segment = [XYPosition, XYPosition]
+export type { Segment }
 
 /**
  * A drawn edge: its SVG path data and, under ortho routing, its straight pieces
@@ -282,10 +287,5 @@ export function layoutedEdgePath({
     return orthoPath(bezierControlPoints(points), from, to)
   }
   // every cubic is straight: the on-curve points are the corners
-  const { add, segments } = segmentCollector()
-  const polyline = splineToPolyline(points)
-  for (let i = 1; i < polyline.length; i++) {
-    add(polyline[i - 1]!, polyline[i]!)
-  }
-  return { d: bezierPath(points), segments }
+  return { d: bezierPath(points), segments: polylineToSegments(splineToPolyline(points)) }
 }
