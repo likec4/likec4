@@ -83,6 +83,8 @@ export interface Input {
   xystore: XYStoreApi
   zoomable: boolean
   pannable: boolean
+  fitView?: boolean | undefined
+  initialZoom?: number | undefined
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
@@ -159,6 +161,7 @@ export interface Context extends Input {
 export function Context({ input }: { input: Input }): Context {
   return {
     ...input,
+    fitView: input.fitView ?? true,
     relationshipBrowserScope: input.relationshipBrowserScope ?? 'view',
     xynodes: [],
     xyedges: [],

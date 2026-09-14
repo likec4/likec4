@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import { MaxZoom, MinZoom } from '@likec4/diagram'
 import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
@@ -14,6 +15,12 @@ import { mcpToolSchema } from '../utils'
 import { buildRenderPayload, projectIdSchema, toolError } from './_common'
 
 export const renderViewResourceUri = 'ui://likec4/render-view.html'
+
+const renderOptionsSchema = z.object({
+  size: z.enum(['compact', 'standard', 'large']).default('standard'),
+  fitView: z.boolean().default(true),
+  initialZoom: z.number().min(MinZoom).max(MaxZoom).optional(),
+}).default({ size: 'standard', fitView: true })
 
 export function renderViewTool(mcpServer: McpServer): McpServer {
   registerAppTool(
@@ -27,6 +34,9 @@ Request:
 - viewId: string — view id (name)
 - project: string (optional) — project id. Defaults to "default" if omitted.
 - fullModel: boolean (optional) — include the complete model instead of data scoped to this view. Defaults to false.
+- render.size: "compact", "standard", or "large" (optional) — initial canvas size hint. Defaults to "standard".
+- render.fitView: boolean (optional) — fit the diagram into the canvas initially. Defaults to true.
+- render.initialZoom: number (optional) — initial zoom level. This overrides render.fitView.
 
 Use this when the user wants to *see* a view. Use "read-view" instead when only the view's structure (nodes/edges) is needed.`,
       inputSchema: mcpToolSchema({
@@ -34,6 +44,7 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
         project: projectIdSchema,
         fullModel: z.boolean().default(false)
           .describe('Include the complete model instead of data scoped to this view'),
+        render: renderOptionsSchema,
       }),
       outputSchema: mcpToolSchema({
         id: z.string(),
@@ -47,6 +58,7 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
               + 'complete when fullModel is true. '
               + 'Consumed by the paired UI to build a LikeC4Model for LikeC4ModelProvider — LikeC4Diagram requires one in context.',
           ),
+        render: renderOptionsSchema,
       }),
       annotations: {
         readOnlyHint: true,
@@ -82,14 +94,17 @@ Use this when the user wants to *see* a view. Use "read-view" instead when only 
           type: 'text',
           text: `Rendered view "${title}"`,
         }],
-        structuredContent: buildRenderPayload({
-          projectId,
-          viewId: viewModel.id,
-          title,
-          layoutedView,
-          model,
-          fullModel: args.fullModel,
-        }),
+        structuredContent: {
+          ...buildRenderPayload({
+            projectId,
+            viewId: viewModel.id,
+            title,
+            layoutedView,
+            model,
+            fullModel: args.fullModel,
+          }),
+          render: args.render,
+        },
       }
     },
   )

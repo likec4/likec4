@@ -71,6 +71,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   className,
   controls = true,
   fitView = true,
+  initialZoom,
   fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
   zoomable = true,
@@ -126,6 +127,7 @@ export function LikeC4Diagram<A extends Any = Any>({
 
   const bounds = pickViewBounds(view, dynamicViewVariant)
   const fitViewPadding = useNormalizedViewPadding(_fitViewPadding)
+  const initialFitView = initialZoom === undefined && fitView
 
   if (initialRef.current == null) {
     initialRef.current = {
@@ -198,7 +200,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                 <TagStylesProvider rootSelector={`#${id}`}>
                   <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
                     <XYFlowProvider
-                      fitView={fitView}
+                      fitView={initialFitView}
                       {...initialRef.current}
                     >
                       <DiagramActorProvider
@@ -206,6 +208,8 @@ export function LikeC4Diagram<A extends Any = Any>({
                         view={view}
                         zoomable={zoomable}
                         pannable={pannable}
+                        fitView={fitView}
+                        initialZoom={initialZoom}
                         fitViewPadding={fitViewPadding}
                         nodesDraggable={hasEditor}
                         nodesSelectable={nodesSelectable}

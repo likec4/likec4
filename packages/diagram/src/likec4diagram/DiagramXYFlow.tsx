@@ -29,10 +29,9 @@ import {
 import { useDiagram } from '../hooks/useDiagram'
 import { useEditorActorStateHasTag } from '../hooks/useEditorActor'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
-import type { LikeC4DiagramProperties, NodeRenderers, ViewPadding, ViewPaddings } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties, NodeRenderers, ViewPaddings } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
-import type { DiagramContext } from './state/types'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -68,8 +67,14 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   }
 }
 
-const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
-  const bounds = viewBounds(ctx)
+export function resolveControlledViewport(
+  enableFitView: boolean,
+  initialZoom: number | undefined,
+  bounds: { x: number; y: number },
+): Viewport | undefined {
+  if (enableFitView || initialZoom !== undefined) {
+    return undefined
+  }
   return {
     x: -bounds.x,
     y: -bounds.y,
@@ -87,6 +92,11 @@ export function resolveInteractionEnabled(
 
 const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
+  const controlledViewport = resolveControlledViewport(
+    ctx.features.enableFitView,
+    ctx.initialZoom,
+    viewBounds(ctx),
+  )
 
   const editorSnapshot = enableReadOnly ? null : children.editor?.getSnapshot()
 
@@ -110,8 +120,8 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
     enableControls: ctx.features.enableControls && ctx.features.enableFitView,
-    ...(!ctx.features.enableFitView && {
-      viewport: viewportToTopLeft(ctx),
+    ...(controlledViewport && {
+      viewport: controlledViewport,
     }),
   })
 }, ({ nodes: aNodes, edges: aEdges, ...a }, { nodes: bNodes, edges: bEdges, ...b }) => {
