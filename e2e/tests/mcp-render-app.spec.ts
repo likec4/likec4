@@ -134,9 +134,10 @@ test('renders a preview-view MCP App with default render options', async ({ page
 
 for (const mode of ['scoped', 'compact', 'standard', 'large'] as const) {
   test(`keeps fit-to-view enabled for the ${mode} render-view MCP App`, async ({ page }) => {
-    await expectRenderedCase(page, mode)
+    const viewport = await expectRenderedCase(page, mode)
     const metadata = await (await page.request.get(`/case/${mode}/metadata`)).json() as RenderMetadata
     expect(metadata.render.fitView).toBe(true)
+    expect(viewport.zoom).toBeLessThan(1)
   })
 }
 

@@ -119,7 +119,7 @@ function RenderViewApp() {
             view={result.view}
             pannable
             zoomable
-            fitView
+            fitView={result.render.fitView}
             initialZoom={result.render.initialZoom ?? (result.render.fitView ? undefined : 1)}
             controls
             enableElementDetails
