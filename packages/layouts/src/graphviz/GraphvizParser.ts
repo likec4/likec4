@@ -17,6 +17,7 @@ import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import { EDGE_LABEL_MAX_CHARS, EDGE_LABEL_MAX_LINES, wrap } from './dot-labels'
+import { nudgeLabelOffEndpoints } from './nudge-edge-label'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx } from './utils'
 
@@ -246,6 +247,15 @@ export function parseGraphvizJson(
     edges.push(
       parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
     )
+  }
+
+  if (view.routing === 'ortho') {
+    // Graphviz places external labels (xlabel) without reserving space,
+    // so on short edges they land on the endpoint boxes
+    const nodesById = new Map(nodes.map(n => [n.id, n]))
+    for (let i = 0; i < edges.length; i++) {
+      edges[i] = nudgeLabelOffEndpoints(edges[i]!, nodesById)
+    }
   }
 
   return diagram

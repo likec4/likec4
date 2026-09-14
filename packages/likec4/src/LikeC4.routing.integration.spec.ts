@@ -236,5 +236,52 @@ describe('view routing', () => {
       expectOrthoEdges(expect, m.view('flow').$view)
       expectOrthoEdges(expect, m.view('deployed').$view)
     })
+
+    it('keeps a label off the boxes of its own endpoints when the gap can hold it', async ({ expect }) => {
+      const likec4 = await LikeC4.fromSource(`
+        specification {
+          element component
+        }
+        model {
+          a = component 'A'
+          b = component 'B'
+          a -> b 'a label that is wider than the gap between the two boxes'
+        }
+        views {
+          // vertical edge, gap just tall enough for the label
+          view tall {
+            routing ortho
+            include *
+            autoLayout TopBottom 48
+          }
+          // horizontal edge, gap wide enough for the label but Graphviz starts it at the midpoint
+          view wide {
+            routing ortho
+            include *
+            autoLayout LeftRight 300
+          }
+        }
+      `)
+      expect(likec4.hasErrors()).toBe(false)
+      const m = await likec4.layoutedModel()
+      const overlaps = (
+        bbox: { x: number; y: number; width: number; height: number },
+        r: { x: number; y: number; width: number; height: number },
+      ) =>
+        !(bbox.x + bbox.width <= r.x || r.x + r.width <= bbox.x || bbox.y + bbox.height <= r.y ||
+          r.y + r.height <= bbox.y)
+      for (const viewId of ['tall', 'wide']) {
+        const view = m.view(viewId).$view
+        const edge = view.edges[0]!
+        const bbox = edge.labelBBox
+        expect(bbox, `${viewId}: label box`).toBeTruthy()
+        for (const id of [edge.source, edge.target]) {
+          const node = view.nodes.find(n => n.id === id)!
+          expect(overlaps(bbox!, node), `${viewId}: label overlaps ${id}`).toBe(false)
+        }
+      }
+      // spline views are not touched: the layouts package pins their output byte for byte
+      // in the GraphvizWasmAdapter snapshots, which are unchanged by the nudge
+    })
   })
 })
