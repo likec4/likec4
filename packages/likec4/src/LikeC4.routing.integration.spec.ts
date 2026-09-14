@@ -1,4 +1,5 @@
 import type { LayoutedView } from '@likec4/core'
+import { BBox, isOrthoSpline } from '@likec4/core/geometry'
 import { fromSources } from '@likec4/language-services/node'
 import type { ExpectStatic } from 'vitest'
 import { describe, it } from 'vitest'
@@ -158,7 +159,6 @@ describe('view routing', () => {
   })
 
   describe('ortho layout', () => {
-    const near = (a: number, b: number) => Math.abs(a - b) <= 1
     const expectOrthoEdges = (
       expect: ExpectStatic,
       view: LayoutedView,
@@ -167,11 +167,7 @@ describe('view routing', () => {
       for (const edge of view.edges) {
         const pts = edge.points
         expect((pts.length - 1) % 3, `edge ${edge.id} points`).toBe(0)
-        for (let i = 0; i + 3 < pts.length; i += 3) {
-          const [ax, ay] = pts[i]!
-          const [bx, by] = pts[i + 3]!
-          expect(near(ax, bx) || near(ay, by), `edge ${edge.id} segment ${i / 3} is axis-aligned`).toBe(true)
-        }
+        expect(isOrthoSpline(pts), `edge ${edge.id} is axis-aligned`).toBe(true)
         if (edge.label) {
           expect(edge.labelBBox, `edge ${edge.id} keeps its label`).toBeTruthy()
         }
@@ -264,12 +260,6 @@ describe('view routing', () => {
       `)
       expect(likec4.hasErrors()).toBe(false)
       const m = await likec4.layoutedModel()
-      const overlaps = (
-        bbox: { x: number; y: number; width: number; height: number },
-        r: { x: number; y: number; width: number; height: number },
-      ) =>
-        !(bbox.x + bbox.width <= r.x || r.x + r.width <= bbox.x || bbox.y + bbox.height <= r.y ||
-          r.y + r.height <= bbox.y)
       for (const viewId of ['tall', 'wide']) {
         const view = m.view(viewId).$view
         const edge = view.edges[0]!
@@ -277,7 +267,7 @@ describe('view routing', () => {
         expect(bbox, `${viewId}: label box`).toBeTruthy()
         for (const id of [edge.source, edge.target]) {
           const node = view.nodes.find(n => n.id === id)!
-          expect(overlaps(bbox!, node), `${viewId}: label overlaps ${id}`).toBe(false)
+          expect(BBox.intersects(bbox!, node), `${viewId}: label overlaps ${id}`).toBe(false)
         }
       }
       // spline views are not touched: the layouts package pins their output byte for byte

@@ -1,10 +1,18 @@
-import type { BBox, XYPoint } from '@likec4/core/geometry'
+import {
+  type BBox,
+  type XYPoint,
+  distanceBetween,
+  isOrthoSpline,
+  nearlyEqual,
+  projectOnSegment,
+  splineToPolyline,
+} from '@likec4/core/geometry'
 import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { first, last } from 'remeda'
-import { bezierControlPoints, bezierPath, distanceBetweenPoints, getNodeIntersectionFromCenterToPoint } from './xyflow'
+import { bezierControlPoints, bezierPath, getNodeIntersectionFromCenterToPoint } from './xyflow'
 
 // Geometry of relationship edges. Every function takes the view's edge routing,
 // so each routing keeps its own implementation here; hooks and components only
@@ -17,43 +25,17 @@ export function viewRouting(view: { readonly routing?: EdgeRouting | undefined }
   return view.routing ?? 'spline'
 }
 
-const near = (a: number, b: number) => Math.abs(a - b) <= 1
-
-/**
- * Whether every cubic of a Graphviz spline is axis-aligned, as `splines=ortho` produces.
- * Legacy geometry (a snapshot saved under spline routing) is not.
- */
-function isOrthoPoints(points: NonEmptyArray<Point>): boolean {
-  for (let i = 0; i + 3 < points.length; i += 3) {
-    // all four points of the cubic must share an axis, not only its endpoints (a legacy arc has them aligned too)
-    const cubic = [points[i]!, points[i + 1]!, points[i + 2]!, points[i + 3]!]
-    const sameX = cubic.every(([x]) => near(x, cubic[0]![0]))
-    const sameY = cubic.every(([, y]) => near(y, cubic[0]![1]))
-    if (!sameX && !sameY) {
-      return false
-    }
-  }
-  return true
-}
-
 /**
  * Corners of an ortho spline: the on-curve points (every third one), endpoints excluded,
  * consecutive duplicates and collinear middles dropped.
  */
 function orthoCorners(points: NonEmptyArray<Point>): XYPoint[] {
-  const anchors: XYPoint[] = []
-  for (let i = 0; i < points.length; i += 3) {
-    const [x, y] = points[i]!
-    const p = { x: Math.trunc(x), y: Math.trunc(y) }
-    const prev = anchors[anchors.length - 1]
-    if (!prev || !(near(prev.x, p.x) && near(prev.y, p.y))) {
-      anchors.push(p)
-    }
-  }
+  const anchors = splineToPolyline(points).map(p => ({ x: Math.trunc(p.x), y: Math.trunc(p.y) }))
   const corners: XYPoint[] = []
   for (let i = 1; i < anchors.length - 1; i++) {
     const a = anchors[i - 1]!, b = anchors[i]!, c = anchors[i + 1]!
-    const straight = (near(a.y, b.y) && near(b.y, c.y)) || (near(a.x, b.x) && near(b.x, c.x))
+    const straight = (nearlyEqual(a.y, b.y) && nearlyEqual(b.y, c.y)) ||
+      (nearlyEqual(a.x, b.x) && nearlyEqual(b.x, c.x))
     if (!straight) {
       corners.push(b)
     }
@@ -70,7 +52,7 @@ export function initialControlPoints(
   points: NonEmptyArray<Point>,
   routing: EdgeRouting,
 ): XYPoint[] {
-  if (routing !== 'ortho' || !isOrthoPoints(points)) {
+  if (routing !== 'ortho' || !isOrthoSpline(points)) {
     return bezierControlPoints(points)
   }
   const corners = orthoCorners(points)
@@ -121,11 +103,11 @@ function clipStart(points: XYPosition[], node: BBox, margin: number): void {
     return
   }
   switch (true) {
-    case near(p0.y, p1.y): {
+    case nearlyEqual(p0.y, p1.y): {
       points[0] = { x: p1.x > p0.x ? node.x + node.width + margin : node.x - margin, y: p0.y }
       break
     }
-    case near(p0.x, p1.x): {
+    case nearlyEqual(p0.x, p1.x): {
       points[0] = { x: p0.x, y: p1.y > p0.y ? node.y + node.height + margin : node.y - margin }
       break
     }
@@ -139,8 +121,8 @@ function roundedPath(points: XYPosition[], radius: number): string {
   let d = `M ${points[0]!.x},${points[0]!.y}`
   for (let i = 1; i < points.length - 1; i++) {
     const prev = points[i - 1]!, corner = points[i]!, next = points[i + 1]!
-    const din = distanceBetweenPoints(prev, corner)
-    const dout = distanceBetweenPoints(corner, next)
+    const din = distanceBetween(prev, corner)
+    const dout = distanceBetween(corner, next)
     const r = Math.min(radius, din / 2, dout / 2)
     if (r < MIN_ROUNDED_RADIUS) {
       d += ` L ${corner.x},${corner.y}`
@@ -170,11 +152,11 @@ function orthoPolyline(
   let direction: 'h' | 'v' | null = null
   const push = (q: XYPosition, index: number) => {
     const p = points[points.length - 1]!
-    if (near(p.x, q.x) && near(p.y, q.y)) {
+    if (nearlyEqual(p.x, q.x) && nearlyEqual(p.y, q.y)) {
       return
     }
-    if (near(p.x, q.x) || near(p.y, q.y)) {
-      direction = near(p.y, q.y) ? 'h' : 'v'
+    if (nearlyEqual(p.x, q.x) || nearlyEqual(p.y, q.y)) {
+      direction = nearlyEqual(p.y, q.y) ? 'h' : 'v'
       points.push(q)
       insertAt.push(index)
       return
@@ -290,7 +272,7 @@ export function layoutedEdgePath({
   points: NonEmptyArray<Point>
   routing: EdgeRouting
 }): string {
-  if (routing === 'ortho' && !isOrthoPoints(points)) {
+  if (routing === 'ortho' && !isOrthoSpline(points)) {
     const [from, to] = ends(edge)
     return orthoPath(bezierControlPoints(points), from, to)
   }
@@ -327,9 +309,9 @@ export function straightSegments(d: string): Array<[XYPosition, XYPosition]> {
     // consecutive pieces of one straight run (split by a collinear point or a straight cubic) form one segment
     const continues = previous
       && previous[1] === from
-      && ((near(previous[0].x, from.x) && near(from.x, to.x) &&
+      && ((nearlyEqual(previous[0].x, from.x) && nearlyEqual(from.x, to.x) &&
         Math.sign(to.y - from.y) === Math.sign(from.y - previous[0].y))
-        || (near(previous[0].y, from.y) && near(from.y, to.y) &&
+        || (nearlyEqual(previous[0].y, from.y) && nearlyEqual(from.y, to.y) &&
           Math.sign(to.x - from.x) === Math.sign(from.x - previous[0].x)))
     if (continues) {
       previous[1] = to
@@ -348,7 +330,7 @@ export function straightSegments(d: string): Array<[XYPosition, XYPosition]> {
         case op === 'C': {
           const xs = [current.x, args[0]!, args[2]!, end.x]
           const ys = [current.y, args[1]!, args[3]!, end.y]
-          if (xs.every(x => near(x, current!.x)) || ys.every(y => near(y, current!.y))) {
+          if (xs.every(x => nearlyEqual(x, current!.x)) || ys.every(y => nearlyEqual(y, current!.y))) {
             add(current, end)
           }
           break
@@ -368,7 +350,7 @@ function longestSegmentMidpoint(d: string): XYPosition | null {
   let best: [XYPosition, XYPosition] | null = null
   let bestLength = -1
   for (const segment of straightSegments(d)) {
-    const length = distanceBetweenPoints(segment[0], segment[1])
+    const length = distanceBetween(segment[0], segment[1])
     if (length > bestLength) {
       bestLength = length
       best = segment
@@ -446,15 +428,6 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
     x: snap(point.x, [prev.x, next.x]),
     y: snap(point.y, [prev.y, next.y]),
   }
-}
-
-/** closest point of the segment `[a, b]` to `p`, and its distance */
-function projectOnSegment(p: XYPosition, a: XYPosition, b: XYPosition): { point: XYPosition; distance: number } {
-  const dx = b.x - a.x, dy = b.y - a.y
-  const length2 = dx * dx + dy * dy
-  const t = length2 === 0 ? 0 : Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / length2))
-  const point = { x: a.x + dx * t, y: a.y + dy * t }
-  return { point, distance: distanceBetweenPoints(p, point) }
 }
 
 /**

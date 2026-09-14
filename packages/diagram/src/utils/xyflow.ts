@@ -205,10 +205,6 @@ export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point): boole
   return Math.hypot(bx - ax, by - ay) < 2.1
 }
 
-export function distanceBetweenPoints(a: XYPosition, b: XYPosition): number {
-  return Math.hypot(b.x - a.x, b.y - a.y)
-}
-
 export function stopPropagation(e: ReactMouseEvent): void {
   e.nativeEvent.stopImmediatePropagation()
   e.stopPropagation()

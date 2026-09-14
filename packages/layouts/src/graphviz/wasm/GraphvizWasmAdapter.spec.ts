@@ -1,6 +1,7 @@
 import type { ComputedView } from '@likec4/core'
 import { Builder } from '@likec4/core/builder'
 import { computeProjectsView } from '@likec4/core/compute-view'
+import { isOrthoSpline } from '@likec4/core/geometry'
 import { map, pick } from 'remeda'
 import { describe, it } from 'vitest'
 import {
@@ -50,15 +51,10 @@ describe('GraphvizWasmAdapter:', () => {
     const diagram = await dotLayout(computedCloudOrthoView)
     expect(diagram.routing).toBe('ortho')
     expect(diagram.edges.length).toBeGreaterThan(0)
-    const near = (a: number, b: number) => Math.abs(a - b) <= 1
     for (const edge of diagram.edges) {
       const pts = edge.points
       expect((pts.length - 1) % 3, `edge ${edge.id} points`).toBe(0)
-      for (let i = 0; i + 3 < pts.length; i += 3) {
-        const [ax, ay] = pts[i]!
-        const [bx, by] = pts[i + 3]!
-        expect(near(ax, bx) || near(ay, by), `edge ${edge.id} segment ${i / 3} is axis-aligned`).toBe(true)
-      }
+      expect(isOrthoSpline(pts), `edge ${edge.id} is axis-aligned`).toBe(true)
       if (edge.label) {
         expect(edge.labelBBox, `edge ${edge.id} keeps its label`).toBeTruthy()
       }

@@ -1,5 +1,5 @@
-import { type XYPoint, BBox } from '@likec4/core/geometry'
-import type { DiagramEdge, DiagramNode, NodeId, Point } from '@likec4/core/types'
+import { type XYPoint, BBox, distanceBetween, projectOnSegment, splineToPolyline } from '@likec4/core/geometry'
+import type { DiagramEdge, DiagramNode, NodeId } from '@likec4/core/types'
 
 /** distance between two candidate positions along the route (1px: a tight gap may leave a single clear spot) */
 const STEP = 1
@@ -13,35 +13,11 @@ const MARGIN = 6
 type EdgeGeometry = Pick<DiagramEdge, 'source' | 'target' | 'points' | 'labelBBox'>
 type NodeGeometry = Pick<DiagramNode, 'x' | 'y' | 'width' | 'height' | 'children'>
 
-function intersects(a: BBox, b: BBox): boolean {
-  return !(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y)
-}
-
-/**
- * On-curve points of a Graphviz spline (every third point), consecutive duplicates removed.
- * Under `splines=ortho` these are the corners of the route.
- */
-function polylineOf(points: ReadonlyArray<Point>): XYPoint[] {
-  const result: XYPoint[] = []
-  for (let i = 0; i < points.length; i += 3) {
-    const [x, y] = points[i]!
-    const prev = result[result.length - 1]
-    if (!prev || prev.x !== x || prev.y !== y) {
-      result.push({ x, y })
-    }
-  }
-  return result
-}
-
-function segmentLength(a: XYPoint, b: XYPoint): number {
-  return Math.hypot(b.x - a.x, b.y - a.y)
-}
-
 function pointAt(polyline: XYPoint[], distance: number): XYPoint {
   let rest = Math.max(0, distance)
   for (let i = 0; i + 1 < polyline.length; i++) {
     const a = polyline[i]!, b = polyline[i + 1]!
-    const len = segmentLength(a, b)
+    const len = distanceBetween(a, b)
     if (rest <= len || i + 2 === polyline.length) {
       const t = len === 0 ? 0 : Math.min(1, rest / len)
       return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }
@@ -56,14 +32,10 @@ function closestDistanceAlong(polyline: XYPoint[], p: XYPoint): number {
   let best = 0, bestDist = Infinity, walked = 0
   for (let i = 0; i + 1 < polyline.length; i++) {
     const a = polyline[i]!, b = polyline[i + 1]!
-    const len = segmentLength(a, b)
-    const t = len === 0
-      ? 0
-      : Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / (len * len)))
-    const q = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }
-    const d = segmentLength(p, q)
-    if (d < bestDist) {
-      bestDist = d
+    const len = distanceBetween(a, b)
+    const { t, distance } = projectOnSegment(p, a, b)
+    if (distance < bestDist) {
+      bestDist = distance
       best = walked + len * t
     }
     walked += len
@@ -90,14 +62,14 @@ export function nudgeLabelOffEndpoints<E extends EdgeGeometry>(
     .map(id => nodes.get(id))
     .filter((n): n is NodeGeometry => !!n && n.children.length === 0)
     .map(n => BBox.expand(n, MARGIN))
-  if (!obstacles.some(o => intersects(bbox, o))) {
+  if (!obstacles.some(o => BBox.intersects(bbox, o))) {
     return edge
   }
-  const polyline = polylineOf(edge.points)
+  const polyline = splineToPolyline(edge.points)
   if (polyline.length < 2) {
     return edge
   }
-  const total = polyline.reduce((sum, p, i) => i === 0 ? 0 : sum + segmentLength(polyline[i - 1]!, p), 0)
+  const total = polyline.reduce((sum, p, i) => i === 0 ? 0 : sum + distanceBetween(polyline[i - 1]!, p), 0)
   const center = BBox.center(bbox)
   const along = closestDistanceAlong(polyline, center)
   const anchor = pointAt(polyline, along)
@@ -119,7 +91,7 @@ export function nudgeLabelOffEndpoints<E extends EdgeGeometry>(
         continue
       }
       const candidate = candidateAt(distance)
-      if (!obstacles.some(o => intersects(candidate, o))) {
+      if (!obstacles.some(o => BBox.intersects(candidate, o))) {
         return { ...edge, labelBBox: candidate }
       }
     }
