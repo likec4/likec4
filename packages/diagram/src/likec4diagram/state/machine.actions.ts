@@ -37,7 +37,7 @@ import {
 } from 'xstate'
 import { Base } from '../../base'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
-import { viewRouting } from '../../utils/edge-geometry'
+import { viewRouting } from '../../utils/view-routing'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'

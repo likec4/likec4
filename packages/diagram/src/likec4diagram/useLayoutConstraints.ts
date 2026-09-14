@@ -16,7 +16,7 @@ import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import { useCurrentViewRouting } from '../hooks/useCurrentView'
 import { useDiagram } from '../hooks/useDiagram'
 import { vector } from '../utils'
-import { initialControlPoints } from '../utils/edge-geometry'
+import { initialControlPoints } from '../utils/edge-corners'
 import { nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 

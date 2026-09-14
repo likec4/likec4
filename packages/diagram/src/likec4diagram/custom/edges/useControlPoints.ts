@@ -4,7 +4,7 @@ import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { initialControlPoints, insertCorner } from '../../../utils/edge-geometry'
+import { initialControlPoints, insertCorner } from '../../../utils/edge-corners'
 import type { Types } from '../../types'
 
 export function useControlPoints({

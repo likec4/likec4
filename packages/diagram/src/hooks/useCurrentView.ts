@@ -1,5 +1,5 @@
 import type { EdgeRouting, LayoutedView, ViewId } from '@likec4/core/types'
-import { viewRouting } from '../utils/edge-geometry'
+import { viewRouting } from '../utils/view-routing'
 import { selectDiagramContext, useDiagramSelector } from './useDiagram'
 
 const selectViewId = selectDiagramContext(s => s.view.id)

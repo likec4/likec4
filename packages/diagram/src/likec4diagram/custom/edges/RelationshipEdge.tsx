@@ -29,7 +29,8 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
-import { edgeLabelAnchor, snapCorner } from '../../../utils/edge-geometry'
+import { snapCorner } from '../../../utils/edge-corners'
+import { edgeLabelAnchor } from '../../../utils/edge-label'
 import {
   isSamePoint,
 } from '../../../utils/xyflow'
@@ -106,7 +107,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   // Top-left of the label centred on the anchor of the (edited) edge path
   const labelTopLeftAt = (path: SVGPathElement): XYPosition => {
-    const anchor = edgeLabelAnchor({ path, d: edgePath, routing })
+    const anchor = edgeLabelAnchor({ path, segments: edgePath.segments, routing })
     return {
       x: anchor.x - (labelBBox?.width ?? 0) / 2,
       y: anchor.y - (labelBBox?.height ?? 0) / 2,
@@ -134,7 +135,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     const topLeft = labelTopLeftAt(path)
     const offset = labelOffsetRef.current
     setLabelPos({ x: topLeft.x + offset.x, y: topLeft.y + offset.y })
-  }, [edgePath, isControlPointDragging, routing])
+  }, [edgePath.d, isControlPointDragging, routing])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
     // Persist the label at its new auto position plus its captured offset
@@ -317,7 +318,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         })}>
         <EdgePath
           edgeProps={props}
-          svgPath={edgePath}
+          svgPath={edgePath.d}
           ref={svgPathRef}
           isDragging={isControlPointDragging}
           {...enabledEditing && {
@@ -326,7 +327,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
         {enableCompareWithLatest && (
           <EdgeDrifts
             edgeProps={props}
-            svgPath={edgePath}
+            svgPath={edgePath.d}
           />
         )}
         {labelBBox && (

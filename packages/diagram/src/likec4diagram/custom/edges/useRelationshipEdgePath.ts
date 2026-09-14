@@ -8,11 +8,11 @@ import { shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import { isTruthy } from 'remeda'
 import { useXYStore } from '../../../hooks/useXYFlow'
-import { editedEdgePath, layoutedEdgePath } from '../../../utils/edge-geometry'
+import { type DrawnEdge, editedEdgePath, layoutedEdgePath } from '../../../utils/edge-path'
 import type { Types } from '../../types'
 
 /**
- * @returns SVG path data string for relationship edge
+ * @returns SVG path of the relationship edge, with its straight segments under ortho routing
  */
 export function useRelationshipEdgePath({
   props: {
@@ -32,7 +32,7 @@ export function useRelationshipEdgePath({
   controlPoints: XYPosition[]
   isControlPointDragging: boolean
   routing: EdgeRouting
-}): string {
+}): DrawnEdge {
   // Subscribe to mimimal node changes to update edge path when nodes move
   const [
     sourceNodeWidth,
@@ -77,13 +77,13 @@ export function useRelationshipEdgePath({
     height: targetNodeHeight,
   }
 
-  const ends = {
+  const endpoints = {
     source: { center: sourceCenterPos.toObject(), node: sourceNd },
     target: { center: targetCenterPos.toObject(), node: targetNd },
     dir: data.dir,
     routing,
   }
   return isModified
-    ? editedEdgePath({ ...ends, controlPoints })
-    : layoutedEdgePath({ ...ends, points: data.points })
+    ? editedEdgePath({ ...endpoints, controlPoints })
+    : layoutedEdgePath({ ...endpoints, points: data.points })
 }
