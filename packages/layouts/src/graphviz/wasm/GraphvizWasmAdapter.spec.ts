@@ -6,6 +6,7 @@ import { describe, it } from 'vitest'
 import {
   computedAmazonView,
   computedCloud3levels,
+  computedCloudOrthoView,
   computedCloudView,
   computedIndexView,
   issue577_fail,
@@ -43,6 +44,25 @@ describe('GraphvizWasmAdapter:', () => {
   it('computedCloudView', async ({ expect }) => {
     const diagram = await dotLayout(computedCloudView)
     expect(diagram).toMatchSnapshot()
+  })
+
+  it('computedCloudOrthoView routes every edge orthogonally', async ({ expect }) => {
+    const diagram = await dotLayout(computedCloudOrthoView)
+    expect(diagram.routing).toBe('ortho')
+    expect(diagram.edges.length).toBeGreaterThan(0)
+    const near = (a: number, b: number) => Math.abs(a - b) <= 1
+    for (const edge of diagram.edges) {
+      const pts = edge.points
+      expect((pts.length - 1) % 3, `edge ${edge.id} points`).toBe(0)
+      for (let i = 0; i + 3 < pts.length; i += 3) {
+        const [ax, ay] = pts[i]!
+        const [bx, by] = pts[i + 3]!
+        expect(near(ax, bx) || near(ay, by), `edge ${edge.id} segment ${i / 3} is axis-aligned`).toBe(true)
+      }
+      if (edge.label) {
+        expect(edge.labelBBox, `edge ${edge.id} keeps its label`).toBeTruthy()
+      }
+    }
   })
 
   it('reproduce #577', async ({ expect }) => {

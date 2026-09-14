@@ -1,4 +1,6 @@
+import type { LayoutedView } from '@likec4/core'
 import { fromSources } from '@likec4/language-services/node'
+import type { ExpectStatic } from 'vitest'
 import { describe, it } from 'vitest'
 import { LikeC4 } from './LikeC4'
 
@@ -153,5 +155,86 @@ describe('view routing', () => {
     expect(m.view('flow').$view.routing).toBe('ortho')
     expect(m.view('flowSugar').$view.routing).toBe('ortho')
     expect(m.view('deployed').$view.routing).toBe('ortho')
+  })
+
+  describe('ortho layout', () => {
+    const near = (a: number, b: number) => Math.abs(a - b) <= 1
+    const expectOrthoEdges = (
+      expect: ExpectStatic,
+      view: LayoutedView,
+    ) => {
+      expect(view.edges.length).toBeGreaterThan(0)
+      for (const edge of view.edges) {
+        const pts = edge.points
+        expect((pts.length - 1) % 3, `edge ${edge.id} points`).toBe(0)
+        for (let i = 0; i + 3 < pts.length; i += 3) {
+          const [ax, ay] = pts[i]!
+          const [bx, by] = pts[i + 3]!
+          expect(near(ax, bx) || near(ay, by), `edge ${edge.id} segment ${i / 3} is axis-aligned`).toBe(true)
+        }
+        if (edge.label) {
+          expect(edge.labelBBox, `edge ${edge.id} keeps its label`).toBeTruthy()
+        }
+      }
+    }
+
+    it('routes every edge orthogonally and keeps every label', async ({ expect }) => {
+      const likec4 = await LikeC4.fromSource(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component cloud {
+            component ui 'UI'
+            component api 'API'
+            component worker 'Worker'
+            ui -> api 'fetches'
+            api -> worker 'enqueues'
+          }
+          component amazon {
+            component db 'DB'
+            component replica 'Replica'
+            db -> replica 'replicates'
+          }
+          cloud.api -> amazon.db 'reads and writes'
+          cloud.worker -> amazon.db 'writes'
+          cloud -> amazon 'uses'
+        }
+        deployment {
+          node prod {
+            instanceOf cloud.ui
+            instanceOf cloud.api
+            instanceOf amazon.db
+          }
+        }
+        views {
+          view cloud of cloud {
+            routing ortho
+            include *, amazon.*
+            // flat same-rank edge: Graphviz drops its label under ortho unless it is an xlabel
+            rank same { amazon.db, amazon.replica }
+          }
+          dynamic view flow {
+            routing ortho
+            cloud.ui -> cloud.api 'request'
+            cloud.api -> cloud.api 'retries'
+            cloud.api -> amazon.db 'query'
+          }
+          deployment view deployed {
+            routing ortho
+            include *
+          }
+        }
+      `)
+      expect(likec4.hasErrors()).toBe(false)
+      const m = await likec4.layoutedModel()
+      const cloud = m.view('cloud').$view
+      const flat = cloud.edges.find(e => e.label === 'replicates')
+      expect(flat?.labelBBox, 'flat same-rank edge keeps its label').toBeTruthy()
+      expectOrthoEdges(expect, cloud)
+      expectOrthoEdges(expect, m.view('flow').$view)
+      expectOrthoEdges(expect, m.view('deployed').$view)
+    })
   })
 })

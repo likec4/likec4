@@ -62,7 +62,7 @@ const FontName = 'Arial'
 
 const logger = createLogger('dot')
 
-type ViewToPrint = Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout'>
+type ViewToPrint = Pick<ComputedView, 'id' | 'nodes' | 'edges' | 'autoLayout' | 'routing'>
 type NodeOf<V extends ViewToPrint> = V['nodes'][number]
 type EdgeOf<V extends ViewToPrint> = V['edges'][number]
 
@@ -301,6 +301,23 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     return this
   }
 
+  /**
+   * Whether the view is routed orthogonally (`routing ortho`).
+   */
+  protected get isOrtho(): boolean {
+    return this.view.routing === 'ortho'
+  }
+
+  /**
+   * Attribute to use for an edge label.
+   * Edges with a compound endpoint use `xlabel` (a regular label is not supported with `lhead`/`ltail`).
+   * Under `splines=ortho` Graphviz drops regular labels on same-rank edges and self-loops
+   * and warns about it, so ortho views emit every edge label as `xlabel`.
+   */
+  protected edgeLabelAttr(hasCompoundEndpoint: boolean): typeof _.xlabel | typeof _.label {
+    return hasCompoundEndpoint || this.isOrtho ? _.xlabel : _.label
+  }
+
   protected createGraph(): RootGraphModel {
     const autoLayout = this.view.autoLayout
     const direction = autoLayout.direction
@@ -311,7 +328,7 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       [_.compound]: true,
       [_.rankdir]: direction,
       [_.TBbalance]: 'min',
-      [_.splines]: 'spline',
+      [_.splines]: this.isOrtho ? 'ortho' : 'spline',
       [_.outputorder]: 'nodesfirst',
       [_.nodesep]: pxToInch(autoLayout.nodeSep ?? 110),
       [_.ranksep]: pxToInch(autoLayout.rankSep ?? 120),
