@@ -89,11 +89,22 @@ function RenderViewApp() {
   const likec4model = LikeC4Model.create(result.model)
 
   return (
-    <LikeC4MantineProvider forceColorScheme={theme}>
-      <LikeC4ModelProvider likec4model={likec4model}>
-        <LikeC4Diagram view={result.view} pannable zoomable fitView controls />
-      </LikeC4ModelProvider>
-    </LikeC4MantineProvider>
+    <div data-testid="mcp-render-view-ready" style={{ height: '100%', width: '100%' }}>
+      <LikeC4MantineProvider forceColorScheme={theme}>
+        <LikeC4ModelProvider likec4model={likec4model}>
+          <LikeC4Diagram
+            view={result.view}
+            pannable
+            zoomable
+            fitView
+            controls
+            enableElementDetails
+            enableRelationshipDetails
+            reactFlowProps={{ elementsSelectable: true }}
+          />
+        </LikeC4ModelProvider>
+      </LikeC4MantineProvider>
+    </div>
   )
 }
 

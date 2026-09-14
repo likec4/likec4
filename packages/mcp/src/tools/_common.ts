@@ -6,12 +6,13 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import { invariant } from '@likec4/core'
+import { FqnRef, GlobalFqn, invariant } from '@likec4/core'
 import type { LayoutedView } from '@likec4/core'
 import type {
   DeploymentElementModel,
   ElementModel,
   IncomingFilter,
+  LikeC4Model,
   LikeC4ViewModel,
   OutgoingFilter,
 } from '@likec4/core/model'
@@ -19,6 +20,7 @@ import type { AnyAux, ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { Locate } from '@likec4/language-server/protocol'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
+import { readFileSync } from 'node:fs'
 import { URI } from 'vscode-uri'
 import * as z from 'zod/v4'
 import { logger } from '../utils'
@@ -307,26 +309,137 @@ export interface RenderPayload {
   model: Record<string, unknown>
 }
 
-/**
- * Shapes the `{ id, title, project, view, model }` response shared by `render-view`
- * and `preview-view` — both feed a single layouted view plus the rest of a computed
- * model's data into the same paired MCP App UI.
- */
-export function buildRenderPayload<M extends object>(params: {
+type RenderModel = LikeC4Model.Computed | LikeC4Model.Layouted
+
+function pickRecord<T>(record: Readonly<Record<string, T>>, ids: ReadonlySet<string>): Record<string, T> {
+  return Object.fromEntries(Object.entries(record).filter(([id]) => ids.has(id)))
+}
+
+function buildViewScopedModel(model: RenderModel, layoutedView: LayoutedView): Record<string, unknown> {
+  const elementIds = new Set<string>()
+  const deploymentIds = new Set<string>()
+  const relationIds = new Set<string>()
+  const deploymentRelationIds = new Set<string>()
+
+  const includeElement = (id: string) => {
+    const element = model.element(id)
+    elementIds.add(element.id)
+    for (const ancestor of element.ancestors()) {
+      elementIds.add(ancestor.id)
+    }
+  }
+
+  const includeDeployment = (id: string) => {
+    const element = model.deployment.element(id)
+    deploymentIds.add(element.id)
+    for (const ancestor of element.ancestors()) {
+      deploymentIds.add(ancestor.id)
+    }
+    if (element.isInstance()) {
+      includeElement(element.element.id)
+    }
+  }
+
+  const includeDeploymentRef = (ref: FqnRef.DeploymentRef<AnyAux>) => {
+    includeDeployment(ref.deployment)
+    if (FqnRef.isInsideInstanceRef(ref)) {
+      includeElement(ref.element)
+    }
+  }
+
+  if (layoutedView._type === 'element' && layoutedView.viewOf) {
+    includeElement(layoutedView.viewOf)
+  }
+  for (const node of layoutedView.nodes) {
+    if (node.modelRef) includeElement(node.modelRef)
+    if (node.deploymentRef) includeDeployment(node.deploymentRef)
+  }
+  for (const edge of layoutedView.edges) {
+    for (const id of edge.relations) {
+      const relation = model.relationship(id)
+      if (relation.isModelRelation()) {
+        relationIds.add(relation.id)
+        includeElement(relation.source.id)
+        includeElement(relation.target.id)
+      } else {
+        deploymentRelationIds.add(relation.id)
+        includeDeploymentRef(relation.$relationship.source)
+        includeDeploymentRef(relation.$relationship.target)
+      }
+    }
+  }
+
+  const data = model.$data
+  const imports = Object.fromEntries(
+    Object.entries(data.imports).flatMap(([projectId, elements]) => {
+      const selected = elements.filter(element => elementIds.has(GlobalFqn(projectId, element.id)))
+      return selected.length > 0 ? [[projectId, selected]] : []
+    }),
+  )
+
+  return {
+    ...data,
+    elements: pickRecord(data.elements, elementIds),
+    imports,
+    relations: pickRecord(data.relations, relationIds),
+    deployments: {
+      elements: pickRecord(data.deployments.elements, deploymentIds),
+      relations: pickRecord(data.deployments.relations, deploymentRelationIds),
+    },
+    views: { [layoutedView.id]: layoutedView },
+    manualLayouts: {},
+  }
+}
+
+function inlineLocalSvgIcon(icon: unknown): string | null | undefined {
+  if (typeof icon !== 'string' || !icon.startsWith('file:') || !icon.toLowerCase().split(/[?#]/)[0]?.endsWith('.svg')) {
+    return icon as string | null | undefined
+  }
+  try {
+    return `data:image/svg+xml,${encodeURIComponent(readFileSync(URI.parse(icon).fsPath, 'utf8'))}`
+  } catch {
+    return null
+  }
+}
+
+function inlineLocalSvgIcons(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(inlineLocalSvgIcons)
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        key === 'icon' ? inlineLocalSvgIcon(nestedValue) : inlineLocalSvgIcons(nestedValue),
+      ]),
+    )
+  }
+  return value
+}
+
+export function buildRenderPayload(params: {
   projectId: string
   viewId: string
   title: string
   layoutedView: LayoutedView
-  modelData: M
+  model: RenderModel
+  fullModel?: boolean
 }): RenderPayload {
+  const model = params.fullModel
+    ? {
+      ...params.model.$data,
+      views: {
+        ...params.model.$data.views,
+        [params.viewId]: params.layoutedView,
+      },
+    }
+    : buildViewScopedModel(params.model, params.layoutedView)
+
   return {
     id: params.viewId,
     title: params.title,
     project: params.projectId,
-    view: params.layoutedView,
-    model: {
-      ...params.modelData,
-      views: { [params.viewId]: params.layoutedView },
-    },
+    view: inlineLocalSvgIcons(params.layoutedView) as LayoutedView,
+    model: inlineLocalSvgIcons(model) as Record<string, unknown>,
   }
 }

@@ -215,7 +215,7 @@ test.describe('webapp.exportFormats configuration', () => {
   test('blocks direct text export routes for disabled formats', async ({ page }) => {
     await page.goto(projectTextExportUrl(EXPORT_CONFIG_PROJECT, STATIC_VIEW, 'dot'))
 
-    await expect(page.getByRole('heading', { name: 'Project not found' })).toBeVisible()
+    await expect(page.getByRole('alert')).toContainText('The diagram index does not exist or contains errors')
   })
 
   test('keeps direct text export routes available for enabled formats', async ({ page }) => {
