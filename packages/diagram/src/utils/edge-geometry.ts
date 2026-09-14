@@ -1,16 +1,14 @@
-import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core'
 import type { BBox, XYPoint } from '@likec4/core/geometry'
+import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { first, last } from 'remeda'
 import { bezierControlPoints, bezierPath, distanceBetweenPoints, getNodeIntersectionFromCenterToPoint } from './xyflow'
 
-/**
- * Geometry of relationship edges. Every function takes the view's edge routing,
- * so each routing keeps its own implementation here; hooks and components only
- * gather the inputs and render the results.
- */
+// Geometry of relationship edges. Every function takes the view's edge routing,
+// so each routing keeps its own implementation here; hooks and components only
+// gather the inputs and render the results.
 
 /**
  * Edge routing of a view, `spline` when the view does not set one.
@@ -157,15 +155,20 @@ function roundedPath(points: XYPosition[], radius: number): string {
 }
 
 /**
- * Orthogonal route from one node to the other through the given anchors:
+ * Unclipped orthogonal polyline from one centre to the other through the anchors:
  * one elbow is inserted between anchors that do not share an axis, continuing the incoming direction
- * (the larger delta first when leaving the node); the ends are clipped at the node borders
- * and the corners are rounded.
+ * (the larger delta first when leaving the node). `insertAt[i]` is the control point index at which
+ * a corner placed on the segment ending at `points[i]` belongs.
  */
-function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): string {
-  const points: XYPosition[] = [{ x: Math.trunc(from.center.x), y: Math.trunc(from.center.y) }]
+function orthoPolyline(
+  anchors: ReadonlyArray<XYPosition>,
+  from: XYPosition,
+  to: XYPosition,
+): { points: XYPosition[]; insertAt: number[] } {
+  const points: XYPosition[] = [{ x: Math.trunc(from.x), y: Math.trunc(from.y) }]
+  const insertAt: number[] = [0]
   let direction: 'h' | 'v' | null = null
-  const push = (q: XYPosition) => {
+  const push = (q: XYPosition, index: number) => {
     const p = points[points.length - 1]!
     if (near(p.x, q.x) && near(p.y, q.y)) {
       return
@@ -173,17 +176,27 @@ function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEn
     if (near(p.x, q.x) || near(p.y, q.y)) {
       direction = near(p.y, q.y) ? 'h' : 'v'
       points.push(q)
+      insertAt.push(index)
       return
     }
     const horizontalFirst = direction ? direction === 'h' : Math.abs(q.x - p.x) >= Math.abs(q.y - p.y)
     points.push(horizontalFirst ? { x: q.x, y: p.y } : { x: p.x, y: q.y })
+    insertAt.push(index)
     direction = horizontalFirst ? 'v' : 'h'
     points.push(q)
+    insertAt.push(index)
   }
-  for (const a of anchors) {
-    push({ x: Math.trunc(a.x), y: Math.trunc(a.y) })
-  }
-  push({ x: Math.trunc(to.center.x), y: Math.trunc(to.center.y) })
+  anchors.forEach((a, index) => push({ x: Math.trunc(a.x), y: Math.trunc(a.y) }, index))
+  push({ x: Math.trunc(to.x), y: Math.trunc(to.y) }, anchors.length)
+  return { points, insertAt }
+}
+
+/**
+ * Orthogonal route from one node to the other through the given anchors,
+ * clipped at the node borders, with rounded corners.
+ */
+function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): string {
+  const { points } = orthoPolyline(anchors, from.center, to.center)
   clipStart(points, from.node, ORTHO_NODE_MARGIN)
   points.reverse()
   clipStart(points, to.node, ORTHO_NODE_MARGIN)
@@ -191,13 +204,47 @@ function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEn
   return roundedPath(points, ORTHO_CORNER_RADIUS)
 }
 
-type EdgeEnds = {
-  source: EdgeEnd
-  target: EdgeEnd
+function isSameNode(a: BBox, b: BBox): boolean {
+  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+}
+
+/** point of the node border closest to `p` (its own position when `p` is inside) */
+function borderPointToward(node: BBox, p: XYPosition): XYPosition {
+  return {
+    x: Math.trunc(Math.max(node.x, Math.min(node.x + node.width, p.x))),
+    y: Math.trunc(Math.max(node.y, Math.min(node.y + node.height, p.y))),
+  }
+}
+
+/** default corners of an edited self-loop that lost all its corners: a loop above the node */
+const SELF_LOOP_SIZE = 80
+
+/**
+ * Orthogonal route of a self-loop: leaves the node border below the first corner,
+ * visits the corners, and re-enters below the last one, so the route never
+ * retraces itself through the node centre.
+ */
+function orthoSelfLoopPath(controlPoints: ReadonlyArray<XYPosition>, node: BBox): string {
+  const corners = controlPoints.length > 0 ? controlPoints : [
+    { x: node.x + node.width / 2 - SELF_LOOP_SIZE / 2.5, y: node.y - SELF_LOOP_SIZE },
+    { x: node.x + node.width / 2 + SELF_LOOP_SIZE / 2.5, y: node.y - SELF_LOOP_SIZE },
+  ]
+  const exit = borderPointToward(node, first(corners)!)
+  const entry = borderPointToward(node, last(corners)!)
+  const { points } = orthoPolyline(corners, exit, entry)
+  return roundedPath(points, ORTHO_CORNER_RADIUS)
+}
+
+type Ends<T> = {
+  source: T
+  target: T
   dir?: 'forward' | 'back' | 'both' | undefined
 }
 
-function ends({ source, target, dir }: EdgeEnds): [from: EdgeEnd, to: EdgeEnd] {
+type EdgeEnds = Ends<EdgeEnd>
+
+/** the ends in drawing order: a `back` edge is drawn from the target to the source */
+function ends<T>({ source, target, dir }: Ends<T>): [from: T, to: T] {
   return dir === 'back' ? [target, source] : [source, target]
 }
 
@@ -216,7 +263,9 @@ export function editedEdgePath({
 }): string {
   const [from, to] = ends(edge)
   if (routing === 'ortho') {
-    return orthoPath(controlPoints, from, to)
+    return isSameNode(from.node, to.node)
+      ? orthoSelfLoopPath(controlPoints, from.node)
+      : orthoPath(controlPoints, from, to)
   }
   const points: XYPosition[] = [
     from.center,
@@ -352,4 +401,104 @@ export function edgeLabelAnchor({ path, d, routing }: {
     x: Math.round(point.x),
     y: Math.round(point.y),
   }
+}
+
+/** how close (flow units) a dragged corner must come to a neighbour's axis to snap onto it */
+const SNAP_TOLERANCE = 8
+
+/** node centres of the edge, in the order the edge is declared */
+type CornerEditing = Ends<XYPosition> & {
+  controlPoints: ReadonlyArray<XYPosition>
+  routing: EdgeRouting
+}
+
+/**
+ * Position of a dragged corner. Under ortho routing it snaps to the x or y of the previous
+ * or next anchor (the node centres for the end corners) when within tolerance,
+ * so a careful drag keeps segments straight and a deliberate one creates an elbow.
+ * Snapping both axes onto the same neighbour makes the corner coincide with it,
+ * which the drawn route then skips.
+ */
+export function snapCorner({ index, point, controlPoints, routing, ...edge }: CornerEditing & {
+  index: number
+  point: XYPosition
+}): XYPosition {
+  if (routing !== 'ortho') {
+    return point
+  }
+  const [from, to] = ends(edge)
+  const prev = controlPoints[index - 1] ?? from
+  const next = controlPoints[index + 1] ?? to
+  const snap = (value: number, candidates: number[]) => {
+    let best = value, bestDistance = SNAP_TOLERANCE + 1
+    for (const raw of candidates) {
+      // node centres may be fractional; corners are stored as integers
+      const candidate = Math.trunc(raw)
+      const distance = Math.abs(candidate - value)
+      if (distance <= SNAP_TOLERANCE && distance < bestDistance) {
+        best = candidate
+        bestDistance = distance
+      }
+    }
+    return best
+  }
+  return {
+    x: snap(point.x, [prev.x, next.x]),
+    y: snap(point.y, [prev.y, next.y]),
+  }
+}
+
+/** closest point of the segment `[a, b]` to `p`, and its distance */
+function projectOnSegment(p: XYPosition, a: XYPosition, b: XYPosition): { point: XYPosition; distance: number } {
+  const dx = b.x - a.x, dy = b.y - a.y
+  const length2 = dx * dx + dy * dy
+  const t = length2 === 0 ? 0 : Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / length2))
+  const point = { x: a.x + dx * t, y: a.y + dy * t }
+  return { point, distance: distanceBetweenPoints(p, point) }
+}
+
+/**
+ * Control points after inserting a new one where the user clicked.
+ * Under spline routing the raw point is inserted before the segment (between consecutive anchors)
+ * it is closest to. Under ortho routing the point is projected onto the drawn route
+ * (elbow legs included), so the new corner lies exactly on the line until it is dragged.
+ */
+export function insertCorner({ point, controlPoints, routing, ...edge }: CornerEditing & {
+  point: XYPosition
+}): XYPosition[] {
+  const [from, to] = ends(edge)
+  const result = [...controlPoints]
+  if (routing === 'ortho') {
+    const { points, insertAt } = orthoPolyline(controlPoints, from, to)
+    let best = { index: 0, point, distance: Infinity }
+    for (let i = 1; i < points.length; i++) {
+      const candidate = projectOnSegment(point, points[i - 1]!, points[i]!)
+      if (candidate.distance < best.distance) {
+        best = { index: insertAt[i]!, point: candidate.point, distance: candidate.distance }
+      }
+    }
+    result.splice(best.index, 0, { x: Math.round(best.point.x), y: Math.round(best.point.y) })
+    return result
+  }
+  const anchors = [from, ...controlPoints, to]
+  const newPoint = { x: Math.round(point.x), y: Math.round(point.y) }
+  let insertionIndex = 0
+  let minDistance = Infinity
+  for (let i = 0; i < anchors.length - 1; i++) {
+    const a = anchors[i]!, b = anchors[i + 1]!
+    const abx = b.x - a.x, aby = b.y - a.y
+    const apx = newPoint.x - a.x, apy = newPoint.y - a.y
+    const bpx = newPoint.x - b.x, bpy = newPoint.y - b.y
+    // is the pointer alongside the segment?
+    if ((abx * apx + aby * apy) * (abx * bpx + aby * bpy) < 0) {
+      // distance to the segment approximated by a straight line
+      const distanceToEdge = Math.abs(abx * apy - aby * apx) / Math.hypot(abx, aby)
+      if (distanceToEdge < minDistance) {
+        minDistance = distanceToEdge
+        insertionIndex = i
+      }
+    }
+  }
+  result.splice(insertionIndex, 0, newPoint)
+  return result
 }

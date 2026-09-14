@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { EdgeRouting } from '@likec4/core/types'
 import type { EdgeId } from '@likec4/core/types'
 import { css, cx as clsx } from '@likec4/styles/css'
 import { useRafEffect } from '@react-hookz/web'
@@ -28,7 +29,7 @@ import { useDiagram } from '../../../hooks/useDiagram'
 import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
-import { edgeLabelAnchor } from '../../../utils/edge-geometry'
+import { edgeLabelAnchor, snapCorner } from '../../../utils/edge-geometry'
 import {
   isSamePoint,
 } from '../../../utils/xyflow'
@@ -112,15 +113,15 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     }
   }
 
-  // Offset of the label from the edge center, captured when an edge edit starts.
-  // Zero for auto-positioned labels (so they re-center), preserved for manually
-  // moved ones (so the label follows the edge while keeping its offset).
+  // Offset of the label from its auto position, captured when an edge edit starts.
+  // Zero for auto-positioned labels (so they re-centre on the anchor), preserved
+  // for manually moved ones (so the label follows the edge while keeping its offset).
   const labelOffsetRef = useRef<XYPosition>({ x: 0, y: 0 })
   const captureLabelOffset = useCallbackRef(() => {
     const path = svgPathRef.current
     if (data.isLabelCustomized && path && labelBBox) {
-      const center = labelTopLeftAt(path)
-      labelOffsetRef.current = { x: labelBBox.x - center.x, y: labelBBox.y - center.y }
+      const topLeft = labelTopLeftAt(path)
+      labelOffsetRef.current = { x: labelBBox.x - topLeft.x, y: labelBBox.y - topLeft.y }
     } else {
       labelOffsetRef.current = { x: 0, y: 0 }
     }
@@ -129,25 +130,25 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   useRafEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
-    // Move the label together with the edge, preserving its offset from the edge center
-    const center = labelTopLeftAt(path)
+    // Move the label together with the edge, preserving its offset from the auto position
+    const topLeft = labelTopLeftAt(path)
     const offset = labelOffsetRef.current
-    setLabelPos({ x: center.x + offset.x, y: center.y + offset.y })
+    setLabelPos({ x: topLeft.x + offset.x, y: topLeft.y + offset.y })
   }, [edgePath, isControlPointDragging, routing])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
-    // Persist the label at the new edge center plus its captured offset
-    const center = labelBBox && svgPathRef.current
+    // Persist the label at its new auto position plus its captured offset
+    const topLeft = labelBBox && svgPathRef.current
       ? labelTopLeftAt(svgPathRef.current)
       : null
-    if (center) {
+    if (topLeft) {
       const offset = labelOffsetRef.current
       diagram.updateEdgeData(id as EdgeId, {
         controlPoints,
         labelBBox: {
           ...labelBBox,
-          x: center.x + offset.x,
-          y: center.y + offset.y,
+          x: topLeft.x + offset.x,
+          y: topLeft.y + offset.y,
         },
       })
     } else {
@@ -360,6 +361,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
           edgeProps={props}
           controlPoints={controlPoints}
           onMove={setControlPoints}
+          routing={routing}
           onStartMove={onControlPointerStartMove}
           onCancelMove={onControlPointerCancelMove}
           onFinishMove={onControlPointerFinishMove}
@@ -374,6 +376,7 @@ RelationshipEdge.displayName = 'RelationshipEdge'
 function ControlPoints({
   isControlPointDragging,
   edgeProps,
+  routing,
   controlPoints,
   onMove,
   onStartMove,
@@ -385,6 +388,7 @@ function ControlPoints({
   edgeProps: Types.EdgeProps<'relationship'>
   controlPoints: XYPosition[]
   onMove: (points: XYPosition[]) => void
+  routing: EdgeRouting
   onStartMove: () => void
   onCancelMove: () => void
   onFinishMove: (points: XYPosition[]) => void
@@ -423,10 +427,15 @@ function ControlPoints({
           animationFrameId = null
           const { x, y } = xyflow.screenToFlowPosition(clientPoint, { snapToGrid: false })
           cp = [...cp]
-          cp[index] = {
-            x: Math.trunc(x),
-            y: Math.trunc(y),
-          }
+          cp[index] = snapCorner({
+            index,
+            point: { x: Math.trunc(x), y: Math.trunc(y) },
+            controlPoints: cp,
+            source: { x: edgeProps.sourceX, y: edgeProps.sourceY },
+            target: { x: edgeProps.targetX, y: edgeProps.targetY },
+            dir: edgeProps.data.dir,
+            routing,
+          })
           onMove(cp)
         })
       }

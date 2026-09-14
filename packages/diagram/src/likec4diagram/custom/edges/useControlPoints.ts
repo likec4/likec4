@@ -1,11 +1,10 @@
-import type { EdgeRouting } from '@likec4/core'
-import { type Vector, vector } from '@likec4/core/geometry'
+import type { EdgeRouting } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import { initialControlPoints } from '../../../utils/edge-geometry'
+import { initialControlPoints, insertCorner } from '../../../utils/edge-geometry'
 import type { Types } from '../../types'
 
 export function useControlPoints({
@@ -28,46 +27,18 @@ export function useControlPoints({
   ])
 
   /**
-   * Find index where to insert new control point
-   * coordinates must be in flow space
+   * Inserts a new control point where the user clicked (coordinates in flow space)
    */
-  const insertControlPoint = useCallbackRef(({ x, y }: XYPosition) => {
-    const sourceV = vector(sourceX, sourceY)
-    const targetV = vector(targetX, targetY)
-
-    const points: Vector[] = [
-      data.dir === 'back' ? targetV : sourceV,
-      ...controlPoints.map(vector) || [],
-      data.dir === 'back' ? sourceV : targetV,
-    ]
-
-    const newPointV = vector(x, y).round()
-
-    let insertionIndex = 0
-    let minDistance = Infinity
-    for (let i = 0; i < points.length - 1; i++) {
-      const a = points[i]!,
-        b = points[i + 1]!,
-        fromCurrentToNext = b.subtract(a),
-        fromCurrentToNew = newPointV.subtract(a),
-        fromNextToNew = newPointV.subtract(b)
-
-      // Is pointer above the current segment?
-      if (fromCurrentToNext.dot(fromCurrentToNew) * fromCurrentToNext.dot(fromNextToNew) < 0) {
-        // Calculate distance by approximating edge segment with a staight line
-        const distanceToEdge = Math.abs(fromCurrentToNext.cross(fromCurrentToNew)) / fromCurrentToNext.length()
-
-        if (distanceToEdge < minDistance) {
-          minDistance = distanceToEdge
-          insertionIndex = i
-        }
-      }
-    }
-    const newControlPoints = controlPoints.slice()
-    newControlPoints.splice(insertionIndex, 0, { x: newPointV.x, y: newPointV.y })
-
+  const insertControlPoint = useCallbackRef((point: XYPosition) => {
+    const newControlPoints = insertCorner({
+      point,
+      controlPoints,
+      source: { x: sourceX, y: sourceY },
+      target: { x: targetX, y: targetY },
+      dir: data.dir,
+      routing,
+    })
     setControlPoints(newControlPoints)
-
     return newControlPoints
   })
 

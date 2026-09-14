@@ -1,6 +1,6 @@
 // oxlint-disable exhaustive-deps
-import type { EdgeRouting } from '@likec4/core'
 import { vector } from '@likec4/core/geometry'
+import type { EdgeRouting } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'

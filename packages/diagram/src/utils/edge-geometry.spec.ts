@@ -4,8 +4,10 @@ import {
   edgeLabelAnchor,
   editedEdgePath,
   initialControlPoints,
+  insertCorner,
   layoutedEdgePath,
   pathCommands,
+  snapCorner,
   straightSegments,
   viewRouting,
 } from './edge-geometry'
@@ -185,6 +187,32 @@ describe('edge-geometry with ortho routing', () => {
     expect(Math.hypot(before[0]! - 300, before[1]! - 154)).toBeLessThanOrEqual(2)
   })
 
+  it('draws an edited self-loop as a loop around its corners without retracing', () => {
+    const node = { x: 100, y: 100, width: 100, height: 100 }
+    const end = { center: { x: 150, y: 150 }, node }
+    const d = editedEdgePath({
+      source: end,
+      target: end,
+      controlPoints: [{ x: 118, y: 20 }, { x: 182, y: 20 }],
+      routing: 'ortho',
+    })
+    expect(isAxisAligned(d)).toBe(true)
+    const cmds = commands(d)
+    expect(cmds[0]).toEqual({ op: 'M', args: [118, 100] })
+    expect(cmds.at(-1)!.args.slice(-2)).toEqual([182, 100])
+    // up, across, down: three runs, none of them retraced
+    expect(straightSegments(d)).toHaveLength(3)
+  })
+
+  it('draws a default loop above the node for an edited self-loop without corners', () => {
+    const node = { x: 100, y: 100, width: 100, height: 100 }
+    const end = { center: { x: 150, y: 150 }, node }
+    const d = editedEdgePath({ source: end, target: end, controlPoints: [], routing: 'ortho' })
+    expect(isAxisAligned(d)).toBe(true)
+    expect(straightSegments(d)).toHaveLength(3)
+    expect(straightSegments(d).every(([a, b]) => a.y <= 100 && b.y <= 100)).toBe(true)
+  })
+
   it('renders untouched ortho edges straight from their Graphviz points', () => {
     const d = layoutedEdgePath({ points: orthoSpline, source, target, routing: 'ortho' })
     expect(d.startsWith('M 100,50')).toBe(true)
@@ -229,5 +257,88 @@ describe('edge-geometry with ortho routing', () => {
       // the horizontal run from the source border (x 202) to the corner at x 550 is the longest
       expect(edgeLabelAnchor({ path, d, routing: 'ortho' })).toEqual({ x: 372, y: 150 })
     })
+  })
+
+  describe('corner editing', () => {
+    const from = { x: 150, y: 150 }
+    const to = { x: 550, y: 450 }
+    const edge = { source: from, target: to }
+
+    it('snaps a dragged corner to the axis of a neighbouring corner within tolerance', () => {
+      const controlPoints = [{ x: 300, y: 150 }, { x: 300, y: 300 }, { x: 500, y: 300 }]
+      // the middle corner drifts 5px right and 3px down while dragging
+      const snapped = snapCorner({ index: 1, point: { x: 305, y: 303 }, controlPoints, ...edge, routing: 'ortho' })
+      expect(snapped).toEqual({ x: 300, y: 300 })
+    })
+
+    it('snaps the end corners to the node centres', () => {
+      const controlPoints = [{ x: 300, y: 150 }]
+      expect(snapCorner({ index: 0, point: { x: 300, y: 157 }, controlPoints, ...edge, routing: 'ortho' })).toEqual({
+        x: 300,
+        y: 150,
+      })
+    })
+
+    it('leaves a corner alone beyond the tolerance, so an elbow appears', () => {
+      const controlPoints = [{ x: 300, y: 150 }, { x: 300, y: 300 }]
+      expect(snapCorner({ index: 1, point: { x: 320, y: 300 }, controlPoints, ...edge, routing: 'ortho' })).toEqual({
+        x: 320,
+        y: 300,
+      })
+    })
+
+    it('does not snap under spline routing', () => {
+      const controlPoints = [{ x: 300, y: 150 }, { x: 300, y: 300 }]
+      expect(snapCorner({ index: 1, point: { x: 305, y: 303 }, controlPoints, ...edge, routing: 'spline' })).toEqual({
+        x: 305,
+        y: 303,
+      })
+    })
+
+    it('inserts a corner projected onto the segment it was clicked on', () => {
+      // route: from (150,150) right to (300,150), down to (300,300), right to (550,300), down to (550,450)
+      const controlPoints = [{ x: 300, y: 150 }, { x: 300, y: 300 }, { x: 550, y: 300 }]
+      const result = insertCorner({ point: { x: 420, y: 306 }, controlPoints, ...edge, routing: 'ortho' })
+      expect(result).toEqual([{ x: 300, y: 150 }, { x: 300, y: 300 }, { x: 420, y: 300 }, { x: 550, y: 300 }])
+    })
+
+    it('inserts a corner on an elbow leg between two corners that do not share an axis', () => {
+      // corners (300,150) and (400,300): the elbow is at (400,150); clicking the vertical leg inserts between them
+      const controlPoints = [{ x: 300, y: 150 }, { x: 400, y: 300 }]
+      const result = insertCorner({ point: { x: 404, y: 220 }, controlPoints, ...edge, routing: 'ortho' })
+      expect(result).toEqual([{ x: 300, y: 150 }, { x: 400, y: 220 }, { x: 400, y: 300 }])
+    })
+
+    it('inserts the raw point under spline routing, as before', () => {
+      const controlPoints = [{ x: 300, y: 200 }]
+      const result = insertCorner({ point: { x: 200, y: 172 }, controlPoints, ...edge, routing: 'spline' })
+      expect(result).toEqual([{ x: 200, y: 172 }, { x: 300, y: 200 }])
+    })
+  })
+
+  it('snaps an end corner to a fractional node centre as an integer', () => {
+    const result = snapCorner({
+      index: 0,
+      point: { x: 300, y: 154 },
+      controlPoints: [{ x: 300, y: 154 }],
+      source: { x: 150.5, y: 150.5 },
+      target: { x: 550, y: 450 },
+      routing: 'ortho',
+    })
+    expect(result).toEqual({ x: 300, y: 150 })
+  })
+
+  it('reads the ends in drawing order for a back edge', () => {
+    // drawn from the target: the first corner snaps to the target centre's y
+    const result = snapCorner({
+      index: 0,
+      point: { x: 400, y: 455 },
+      controlPoints: [{ x: 400, y: 455 }],
+      source: { x: 150, y: 150 },
+      target: { x: 550, y: 450 },
+      dir: 'back',
+      routing: 'ortho',
+    })
+    expect(result).toEqual({ x: 400, y: 450 })
   })
 })
