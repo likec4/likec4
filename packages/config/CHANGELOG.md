@@ -1,5 +1,14 @@
 # @likec4/config
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3218](https://github.com/likec4/likec4/pull/3218) [`4b59d64`](https://github.com/likec4/likec4/commit/4b59d6464a2ff347ffc6380037f5c5899a38b5de) Thanks [@ckeller42](https://github.com/ckeller42)! - Configure the default relationship-browser scope and share links that preserve the selected scope.
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad)]:
+  - @likec4/core@1.59.4
+  - @likec4/log@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

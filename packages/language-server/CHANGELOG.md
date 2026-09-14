@@ -1,5 +1,19 @@
 # @likec4/language-server
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3227](https://github.com/likec4/likec4/pull/3227) [`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Deployment relationships now support the `<->` and `-[kind]<->` bidirectional syntax introduced in v1.59.3.
+
+- [#3228](https://github.com/likec4/likec4/pull/3228) [`4caa142`](https://github.com/likec4/likec4/commit/4caa14264512d852e2ec115b99abbf4fd51d6abc) Thanks [@MandarinOptimizer](https://github.com/MandarinOptimizer)! - Honor editor workspace exclusions before traversing folders during project and model discovery, avoiding unnecessary scans of excluded generated files and runtime storage.
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad), [`57c097c`](https://github.com/likec4/likec4/commit/57c097c53acdc28347922763aa39e96c3d4d8a5d), [`4b59d64`](https://github.com/likec4/likec4/commit/4b59d6464a2ff347ffc6380037f5c5899a38b5de)]:
+  - @likec4/core@1.59.4
+  - @likec4/generators@1.59.4
+  - @likec4/config@1.59.4
+  - @likec4/layouts@1.59.4
+  - @likec4/log@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes
