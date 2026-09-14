@@ -8,8 +8,7 @@ import { shallowEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import { isTruthy } from 'remeda'
 import { useXYStore } from '../../../hooks/useXYFlow'
-import { editedEdgePath } from '../../../utils/edge-geometry'
-import { bezierPath } from '../../../utils/xyflow'
+import { editedEdgePath, layoutedEdgePath } from '../../../utils/edge-geometry'
 import type { Types } from '../../types'
 
 /**
@@ -56,10 +55,6 @@ export function useRelationshipEdgePath({
 
   const isModified = isTruthy(data.controlPoints) || isControlPointDragging
 
-  if (!isModified) {
-    return bezierPath(data.points)
-  }
-
   const sourceCenterPos = vector(sourceX, sourceY).trunc()
   const targetCenterPos = vector(targetX, targetY).trunc()
 
@@ -82,11 +77,13 @@ export function useRelationshipEdgePath({
     height: targetNodeHeight,
   }
 
-  return editedEdgePath({
+  const ends = {
     source: { center: sourceCenterPos.toObject(), node: sourceNd },
     target: { center: targetCenterPos.toObject(), node: targetNd },
-    controlPoints,
     dir: data.dir,
     routing,
-  })
+  }
+  return isModified
+    ? editedEdgePath({ ...ends, controlPoints })
+    : layoutedEdgePath({ ...ends, points: data.points })
 }
