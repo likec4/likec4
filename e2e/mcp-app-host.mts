@@ -90,6 +90,7 @@ type Mode =
   | 'no-fit'
   | 'zoom'
   | 'fullscreen-response'
+  | 'fullscreen-inline-response'
   | 'fullscreen-host-context-change'
   | 'fullscreen-unsupported'
 
@@ -366,6 +367,11 @@ try {
       availableDisplayModes: ['inline', 'fullscreen'],
       displayModeRequestResult: 'fullscreen',
     },
+    'fullscreen-inline-response': {
+      ...createRenderCase({ viewId: 'index' }, scopedResult),
+      availableDisplayModes: ['inline', 'fullscreen'],
+      displayModeRequestResult: 'inline',
+    },
     'fullscreen-host-context-change': {
       ...createRenderCase({ viewId: 'index' }, scopedResult),
       availableDisplayModes: ['inline', 'fullscreen'],
@@ -397,15 +403,15 @@ try {
 
     const pathname = new URL(request.url ?? '/', `http://${request.headers.host ?? '127.0.0.1'}`).pathname
     const pageMatch =
-      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-host-context-change|fullscreen-unsupported)$/
+      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-inline-response|fullscreen-host-context-change|fullscreen-unsupported)$/
         .exec(pathname)
     const metadataMatch =
-      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-host-context-change|fullscreen-unsupported)\/metadata$/
+      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-inline-response|fullscreen-host-context-change|fullscreen-unsupported)\/metadata$/
         .exec(
           pathname,
         )
     const resourceMatch =
-      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-host-context-change|fullscreen-unsupported)\/resource$/
+      /^\/case\/(scoped|full|preview|compact|standard|large|no-fit|zoom|fullscreen-response|fullscreen-inline-response|fullscreen-host-context-change|fullscreen-unsupported)\/resource$/
         .exec(
           pathname,
         )

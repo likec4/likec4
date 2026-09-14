@@ -185,6 +185,17 @@ test('MCP App accepts a fullscreen request response without a host-context notif
   await expect(page.getByTestId('host-context-change')).toBeEmpty()
 })
 
+test('MCP App keeps fullscreen available when the host returns inline', async ({ page }) => {
+  await page.goto('/case/fullscreen-inline-response')
+  const app = page.frameLocator('iframe')
+  const fullscreen = app.getByRole('button', { name: 'Fullscreen' })
+
+  await fullscreen.click()
+
+  await expect(page.getByTestId('fullscreen-request')).toHaveText('fullscreen')
+  await expect(fullscreen).toBeEnabled()
+})
+
 test('MCP App applies a fullscreen host-context change without a display-mode request', async ({ page }) => {
   await page.goto('/case/fullscreen-host-context-change')
   const app = page.frameLocator('iframe')
