@@ -1,5 +1,6 @@
 export { CompoundActions } from './CompoundActions'
 export { DeploymentElementActions, ElementActions } from './ElementActions'
+export { GraphElementNode } from './GraphElementNode'
 export {
   CompoundDeploymentNode,
   CompoundDetailsButtonWithHandler,
