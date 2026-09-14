@@ -3,11 +3,7 @@ import type { BBox } from '../geometry/bbox'
 import type { IsAnyOrNever } from './_common'
 import type { _stage, _type } from './const'
 import type * as scalar from './scalar'
-import type {
-  ViewAutoLayout,
-  ViewType,
-  ViewWithNotation,
-} from './view-common'
+import type { EdgeRouting, ViewAutoLayout, ViewType, ViewWithNotation } from './view-common'
 import type { DynamicViewFlowData } from './view-dynamic-flow'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
 
@@ -55,6 +51,10 @@ type ViewManualLayoutSnapshotPerType = Simplify<
     readonly edges: ReadonlyArray<DiagramEdge>
     readonly bounds: BBox
     readonly autoLayout: ViewAutoLayout
+    /**
+     * Edge routing the view had when the snapshot was saved (informational; the latest view decides)
+     */
+    readonly routing?: EdgeRouting
   }
   & ViewWithNotation
   & (
