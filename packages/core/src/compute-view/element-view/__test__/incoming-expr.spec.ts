@@ -16,7 +16,7 @@ describe('incoming-expr', () => {
         _(
           component('a'),
           component('b'),
-          rel('a', 'b', { tail: 'normal' }),
+          rel('a', 'b', { isBidirectional: true }),
         )
       )
     const test = TestHelper.from(builder)
