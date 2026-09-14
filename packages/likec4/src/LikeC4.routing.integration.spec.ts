@@ -233,7 +233,7 @@ describe('view routing', () => {
       expectOrthoEdges(expect, m.view('deployed').$view)
     })
 
-    it('keeps a label off the boxes of its own endpoints when the gap can hold it', async ({ expect }) => {
+    it('places every label beside the longest straight run of its edge, clear of every node', async ({ expect }) => {
       const likec4 = await LikeC4.fromSource(`
         specification {
           element component
@@ -241,37 +241,56 @@ describe('view routing', () => {
         model {
           a = component 'A'
           b = component 'B'
+          c = component 'C'
           a -> b 'a label that is wider than the gap between the two boxes'
+          b -> c 'calls'
+          a -> c 'reads'
         }
         views {
           // vertical edge, gap just tall enough for the label
           view tall {
             routing ortho
-            include *
+            include a, b
             autoLayout TopBottom 48
           }
           // horizontal edge, gap wide enough for the label but Graphviz starts it at the midpoint
           view wide {
             routing ortho
-            include *
+            include a, b
             autoLayout LeftRight 300
+          }
+          // three labelled edges around three boxes
+          view triangle {
+            routing ortho
+            include *
           }
         }
       `)
       expect(likec4.hasErrors()).toBe(false)
       const m = await likec4.layoutedModel()
-      for (const viewId of ['tall', 'wide']) {
+      for (const viewId of ['tall', 'wide', 'triangle']) {
         const view = m.view(viewId).$view
-        const edge = view.edges[0]!
-        const bbox = edge.labelBBox
-        expect(bbox, `${viewId}: label box`).toBeTruthy()
-        for (const id of [edge.source, edge.target]) {
-          const node = view.nodes.find(n => n.id === id)!
-          expect(BBox.intersects(bbox!, node), `${viewId}: label overlaps ${id}`).toBe(false)
+        for (const edge of view.edges) {
+          const bbox = edge.labelBBox
+          expect(bbox, `${viewId}: label box of ${edge.id}`).toBeTruthy()
+          for (const node of view.nodes) {
+            expect(BBox.intersects(bbox!, node), `${viewId}: label of ${edge.id} overlaps ${node.id}`).toBe(false)
+          }
         }
       }
+      // beside the line, not on it: the vertical run of `tall` and the horizontal run of `wide`
+      const tall = m.view('tall').$view.edges[0]!
+      const lineX = tall.points[0]![0]
+      const tallBox = tall.labelBBox!
+      expect(tallBox.x >= lineX || tallBox.x + tallBox.width <= lineX, 'tall: label beside the line').toBe(true)
+      const wide = m.view('wide').$view.edges[0]!
+      const lineY = wide.points[0]![1]
+      const wideBox = wide.labelBBox!
+      expect(wideBox.y + wideBox.height <= lineY || wideBox.y >= lineY, 'wide: label beside the line').toBe(true)
+      // an L-shaped route cannot be forced out of dot with a small model (it straightens every edge it can),
+      // so the longest-run rule for bends is pinned on real-shaped points in the layouts package spec
       // spline views are not touched: the layouts package pins their output byte for byte
-      // in the GraphvizWasmAdapter snapshots, which are unchanged by the nudge
+      // in the GraphvizWasmAdapter snapshots, which are unchanged by the label placement
     })
   })
 })

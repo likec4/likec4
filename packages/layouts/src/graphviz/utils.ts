@@ -3,7 +3,7 @@ import { invariant } from '@likec4/core/utils'
 import { scale, toHex, transparentize } from 'khroma'
 import type { ArrowType, Color } from 'ts-graphviz'
 
-export function isCompound(node: ComputedNode) {
+export function isCompound(node: Pick<ComputedNode, 'children'>): boolean {
   return node.children.length > 0
 }
 
