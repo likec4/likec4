@@ -1,7 +1,14 @@
 import type { NonEmptyArray, Point } from '@likec4/core'
-import type { XYPosition } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
-import { edgeLabelAnchor, editedEdgePath, initialControlPoints, layoutedEdgePath, viewRouting } from './edge-geometry'
+import {
+  edgeLabelAnchor,
+  editedEdgePath,
+  initialControlPoints,
+  layoutedEdgePath,
+  pathCommands,
+  straightSegments,
+  viewRouting,
+} from './edge-geometry'
 
 // cubic segments of a real layouted edge, as Graphviz reports them
 // (taken from the saved layout of the dev workspace's amazon view)
@@ -63,34 +70,13 @@ describe('edge-geometry with spline routing', () => {
       getTotalLength: () => 200,
       getPointAtLength: (distance: number) => ({ x: distance, y: distance / 2 + 0.4 }),
     }
-    expect(edgeLabelAnchor(path, 'spline')).toEqual({ x: 100, y: 50 })
+    expect(edgeLabelAnchor({ path, d: 'M 0,0 L 200,100', routing: 'spline' })).toEqual({ x: 100, y: 50 })
   })
 })
 
 // --- ortho routing ---
 
-/** splits an SVG path into absolute commands with their numeric arguments */
-function commands(d: string): Array<{ op: string; args: number[] }> {
-  return [...d.matchAll(/([MLQC])([^MLQC]*)/g)].map(m => ({
-    op: m[1]!,
-    args: m[2]!.trim().split(/[\s,]+/).filter(Boolean).map(Number),
-  }))
-}
-
-/** straight (L) segments of a path as [from, to] pairs */
-function straightSegments(d: string): Array<[XYPosition, XYPosition]> {
-  const result: Array<[XYPosition, XYPosition]> = []
-  let current: XYPosition | null = null
-  for (const { op, args } of commands(d)) {
-    const end = { x: args[args.length - 2]!, y: args[args.length - 1]! }
-    if (op === 'L' && current) {
-      result.push([current, end])
-    }
-    current = end
-  }
-  return result
-}
-
+const commands = pathCommands
 const isAxisAligned = (d: string) => straightSegments(d).every(([a, b]) => a.x === b.x || a.y === b.y)
 
 // a Graphviz ortho spline: right, then down, with a zero-length cubic and collinear middle points
@@ -214,5 +200,34 @@ describe('edge-geometry with ortho routing', () => {
   it('keeps untouched spline edges as Bezier paths', () => {
     const d = layoutedEdgePath({ points: spline, source, target, routing: 'spline' })
     expect(commands(d).some(c => c.op === 'C')).toBe(true)
+  })
+
+  describe('label anchor', () => {
+    const path = {
+      getTotalLength: () => 1000,
+      getPointAtLength: () => ({ x: -1, y: -1 }),
+    }
+
+    it('anchors the label at the midpoint of the longest segment', () => {
+      const d = 'M 0,0 L 100,0 L 100,50 L 300,50 L 300,80'
+      expect(edgeLabelAnchor({ path, d, routing: 'ortho' })).toEqual({ x: 200, y: 50 })
+    })
+
+    it('picks the first of equally long segments', () => {
+      const d = 'M 0,0 L 100,0 L 100,100 L 150,100'
+      expect(edgeLabelAnchor({ path, d, routing: 'ortho' })).toEqual({ x: 50, y: 0 })
+    })
+
+    it('measures the straight cubics of an untouched ortho edge the same way', () => {
+      const d = layoutedEdgePath({ points: orthoSpline, source, target, routing: 'ortho' })
+      // right 60px, then down 120px: the vertical run wins
+      expect(edgeLabelAnchor({ path, d, routing: 'ortho' })).toEqual({ x: 160, y: 110 })
+    })
+
+    it('ignores the rounded corners when measuring segments', () => {
+      const d = editedEdgePath({ source, target, controlPoints: [{ x: 550, y: 150 }], routing: 'ortho' })
+      // the horizontal run from the source border (x 202) to the corner at x 550 is the longest
+      expect(edgeLabelAnchor({ path, d, routing: 'ortho' })).toEqual({ x: 372, y: 150 })
+    })
   })
 })

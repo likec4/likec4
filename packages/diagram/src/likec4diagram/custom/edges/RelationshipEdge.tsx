@@ -103,6 +103,15 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const svgPathRef = useRef<SVGPathElement>(null)
 
+  // Top-left of the label centred on the anchor of the (edited) edge path
+  const labelTopLeftAt = (path: SVGPathElement): XYPosition => {
+    const anchor = edgeLabelAnchor({ path, d: edgePath, routing })
+    return {
+      x: anchor.x - (labelBBox?.width ?? 0) / 2,
+      y: anchor.y - (labelBBox?.height ?? 0) / 2,
+    }
+  }
+
   // Offset of the label from the edge center, captured when an edge edit starts.
   // Zero for auto-positioned labels (so they re-center), preserved for manually
   // moved ones (so the label follows the edge while keeping its offset).
@@ -110,7 +119,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const captureLabelOffset = useCallbackRef(() => {
     const path = svgPathRef.current
     if (data.isLabelCustomized && path && labelBBox) {
-      const center = edgeLabelAnchor(path, routing)
+      const center = labelTopLeftAt(path)
       labelOffsetRef.current = { x: labelBBox.x - center.x, y: labelBBox.y - center.y }
     } else {
       labelOffsetRef.current = { x: 0, y: 0 }
@@ -121,14 +130,16 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
     // Move the label together with the edge, preserving its offset from the edge center
-    const center = edgeLabelAnchor(path, routing)
+    const center = labelTopLeftAt(path)
     const offset = labelOffsetRef.current
     setLabelPos({ x: center.x + offset.x, y: center.y + offset.y })
   }, [edgePath, isControlPointDragging, routing])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
     // Persist the label at the new edge center plus its captured offset
-    const center = labelBBox && svgPathRef.current ? edgeLabelAnchor(svgPathRef.current, routing) : null
+    const center = labelBBox && svgPathRef.current
+      ? labelTopLeftAt(svgPathRef.current)
+      : null
     if (center) {
       const offset = labelOffsetRef.current
       diagram.updateEdgeData(id as EdgeId, {

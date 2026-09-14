@@ -257,9 +257,96 @@ export interface MeasurablePath {
 }
 
 /**
- * Anchor of the edge label on an edited edge.
+ * Absolute commands of an SVG path as produced by this module (`M`, `L`, `Q`, `C`) with their numbers.
  */
-export function edgeLabelAnchor(path: MeasurablePath, _routing: EdgeRouting): XYPosition {
+export function pathCommands(d: string): Array<{ op: string; args: number[] }> {
+  return [...d.matchAll(/([MLQC])([^MLQC]*)/g)].map(([, op, rest]) => ({
+    op: op!,
+    args: rest!.trim().split(/[\s,]+/).filter(Boolean).map(Number),
+  }))
+}
+
+/**
+ * Straight segments of an SVG path as `[from, to]` pairs: `L` commands, and `C` commands
+ * whose four points share an axis (how an untouched ortho edge is drawn from its Graphviz points).
+ */
+export function straightSegments(d: string): Array<[XYPosition, XYPosition]> {
+  const segments: Array<[XYPosition, XYPosition]> = []
+  let current: XYPosition | null = null
+  const add = (from: XYPosition, to: XYPosition) => {
+    const previous = segments[segments.length - 1]
+    // consecutive pieces of one straight run (split by a collinear point or a straight cubic) form one segment
+    const continues = previous
+      && previous[1] === from
+      && ((near(previous[0].x, from.x) && near(from.x, to.x) &&
+        Math.sign(to.y - from.y) === Math.sign(from.y - previous[0].y))
+        || (near(previous[0].y, from.y) && near(from.y, to.y) &&
+          Math.sign(to.x - from.x) === Math.sign(from.x - previous[0].x)))
+    if (continues) {
+      previous[1] = to
+    } else {
+      segments.push([from, to])
+    }
+  }
+  for (const { op, args } of pathCommands(d)) {
+    const end = { x: args[args.length - 2]!, y: args[args.length - 1]! }
+    if (current) {
+      switch (true) {
+        case op === 'L': {
+          add(current, end)
+          break
+        }
+        case op === 'C': {
+          const xs = [current.x, args[0]!, args[2]!, end.x]
+          const ys = [current.y, args[1]!, args[3]!, end.y]
+          if (xs.every(x => near(x, current!.x)) || ys.every(y => near(y, current!.y))) {
+            add(current, end)
+          }
+          break
+        }
+      }
+    }
+    current = end
+  }
+  return segments
+}
+
+/**
+ * Midpoint of the longest straight segment of an SVG path; ties go to the first one.
+ * Rounded corners (`Q`) shorten the segments they join by at most a corner radius each.
+ */
+function longestSegmentMidpoint(d: string): XYPosition | null {
+  let best: [XYPosition, XYPosition] | null = null
+  let bestLength = -1
+  for (const segment of straightSegments(d)) {
+    const length = distanceBetweenPoints(segment[0], segment[1])
+    if (length > bestLength) {
+      bestLength = length
+      best = segment
+    }
+  }
+  if (!best) {
+    return null
+  }
+  const [a, b] = best
+  return { x: Math.round((a.x + b.x) / 2), y: Math.round((a.y + b.y) / 2) }
+}
+
+/**
+ * Anchor of the edge label on an edited edge:
+ * half the path length under spline routing, the midpoint of the longest segment under ortho.
+ */
+export function edgeLabelAnchor({ path, d, routing }: {
+  path: MeasurablePath
+  d: string
+  routing: EdgeRouting
+}): XYPosition {
+  if (routing === 'ortho') {
+    const anchor = longestSegmentMidpoint(d)
+    if (anchor) {
+      return anchor
+    }
+  }
   const point = path.getPointAtLength(path.getTotalLength() * 0.5)
   return {
     x: Math.round(point.x),
