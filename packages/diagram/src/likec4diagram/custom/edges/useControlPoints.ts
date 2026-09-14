@@ -1,12 +1,11 @@
+import type { EdgeRouting } from '@likec4/core'
 import { type Vector, vector } from '@likec4/core/geometry'
 import type { XYPosition } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
-import {
-  bezierControlPoints,
-} from '../../../utils/xyflow'
+import { initialControlPoints } from '../../../utils/edge-geometry'
 import type { Types } from '../../types'
 
 export function useControlPoints({
@@ -15,16 +14,17 @@ export function useControlPoints({
   targetX,
   targetY,
   data,
-}: Types.EdgeProps<'relationship'>) {
+}: Types.EdgeProps<'relationship'>, routing: EdgeRouting) {
   const [controlPoints, setControlPoints] = useState<XYPosition[]>(() =>
-    data.controlPoints ?? bezierControlPoints(data.points)
+    data.controlPoints ?? initialControlPoints(data.points, routing)
   )
   useUpdateEffect(() => {
-    const next = data.controlPoints ?? bezierControlPoints(data.points)
+    const next = data.controlPoints ?? initialControlPoints(data.points, routing)
     setControlPoints(prev => deepEqual(prev, next) ? prev : next)
   }, [
     data.points,
     data.controlPoints ?? [],
+    routing,
   ])
 
   /**

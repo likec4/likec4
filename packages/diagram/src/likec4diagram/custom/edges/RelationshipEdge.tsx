@@ -23,10 +23,12 @@ import {
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
+import { useCurrentViewRouting } from '../../../hooks/useCurrentView'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
+import { edgeLabelAnchor } from '../../../utils/edge-geometry'
 import {
   isSamePoint,
 } from '../../../utils/xyflow'
@@ -35,14 +37,6 @@ import { EdgeDrifts } from './EdgeDrifts'
 import * as edgesCss from './edges.css'
 import { useControlPoints } from './useControlPoints'
 import { useRelationshipEdgePath } from './useRelationshipEdgePath'
-
-const getEdgeCenter = (path: SVGPathElement) => {
-  const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
-  return {
-    x: Math.round(dompoint.x),
-    y: Math.round(dompoint.y),
-  }
-}
 
 export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props) => {
   const [isControlPointDragging, setIsControlPointDragging] = useState(false)
@@ -63,6 +57,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     enableCompareWithLatest,
   } = useEnabledFeatures()
   const enabledEditing = !enableReadOnly
+  const routing = useCurrentViewRouting()
   const {
     id,
     selected = false,
@@ -79,12 +74,13 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     controlPoints,
     setControlPoints,
     insertControlPoint,
-  } = useControlPoints(props)
+  } = useControlPoints(props, routing)
 
   let edgePath = useRelationshipEdgePath({
     props,
     controlPoints,
     isControlPointDragging,
+    routing,
   })
 
   let labelX = labelBBox?.x ?? 0,
@@ -114,7 +110,7 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   const captureLabelOffset = useCallbackRef(() => {
     const path = svgPathRef.current
     if (data.isLabelCustomized && path && labelBBox) {
-      const center = getEdgeCenter(path)
+      const center = edgeLabelAnchor(path, routing)
       labelOffsetRef.current = { x: labelBBox.x - center.x, y: labelBBox.y - center.y }
     } else {
       labelOffsetRef.current = { x: 0, y: 0 }
@@ -125,14 +121,14 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
     // Move the label together with the edge, preserving its offset from the edge center
-    const center = getEdgeCenter(path)
+    const center = edgeLabelAnchor(path, routing)
     const offset = labelOffsetRef.current
     setLabelPos({ x: center.x + offset.x, y: center.y + offset.y })
-  }, [edgePath, isControlPointDragging])
+  }, [edgePath, isControlPointDragging, routing])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
     // Persist the label at the new edge center plus its captured offset
-    const center = labelBBox && svgPathRef.current ? getEdgeCenter(svgPathRef.current) : null
+    const center = labelBBox && svgPathRef.current ? edgeLabelAnchor(svgPathRef.current, routing) : null
     if (center) {
       const offset = labelOffsetRef.current
       diagram.updateEdgeData(id as EdgeId, {

@@ -1,4 +1,5 @@
-import type { LayoutedView, ViewId } from '@likec4/core/types'
+import type { EdgeRouting, LayoutedView, ViewId } from '@likec4/core/types'
+import { viewRouting } from '../utils/edge-geometry'
 import { selectDiagramContext, useDiagramSelector } from './useDiagram'
 
 const selectViewId = selectDiagramContext(s => s.view.id)
@@ -18,4 +19,13 @@ const selectView = selectDiagramContext(s => s.view)
  */
 export function useCurrentView(): LayoutedView {
   return useDiagramSelector(selectView)
+}
+
+const selectViewRouting = selectDiagramContext(s => viewRouting(s.view))
+/**
+ * Returns edge routing of the current view (`spline` unless the view sets `ortho`)
+ * Should be used only inside LikeC4Diagram
+ */
+export function useCurrentViewRouting(): EdgeRouting {
+  return useDiagramSelector(selectViewRouting)
 }

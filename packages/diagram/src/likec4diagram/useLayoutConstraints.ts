@@ -1,4 +1,4 @@
-import { type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
+import { type EdgeRouting, type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
 import { type Dimensions, type XYPoint, BBox } from '@likec4/core/geometry'
 import { invariant, isome } from '@likec4/core/utils'
 import type {
@@ -13,9 +13,11 @@ import { produce } from 'immer'
 import { useMemo, useRef } from 'react'
 import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
+import { useCurrentViewRouting } from '../hooks/useCurrentView'
 import { useDiagram } from '../hooks/useDiagram'
 import { vector } from '../utils'
-import { bezierControlPoints, nodeToRect } from '../utils/xyflow'
+import { initialControlPoints } from '../utils/edge-geometry'
+import { nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -194,8 +196,9 @@ function makeRelativeEdgeModifier(
   movingRect: Rect,
   anchorNode: BBox,
   staticNode: BBox,
+  routing: EdgeRouting,
 ): EdgeModifier {
-  const controlPoints = edge.data.controlPoints ?? bezierControlPoints(edge.data.points)
+  const controlPoints = edge.data.controlPoints ?? initialControlPoints(edge.data.points, routing)
   const anchorV = vector(BBox.center(anchorNode))
   const staticV = vector(BBox.center(staticNode))
 
@@ -266,6 +269,7 @@ function makeRelativeEdgeModifier(
 export function createLayoutConstraints(
   xyflowApi: XYStoreApi,
   editingNodeIds: NonEmptyArray<string>,
+  routing: EdgeRouting,
 ) {
   const { parentLookup, nodeLookup, edges } = xyflowApi.getState()
   const rects = new Map<string, Leaf | CompoundRect>()
@@ -406,6 +410,7 @@ export function createLayoutConstraints(
         movingRect,
         anchorNode,
         staticNode,
+        routing,
       ),
     )
   }
@@ -547,6 +552,7 @@ type LayoutConstraints = {
 export function useLayoutConstraints(): LayoutConstraints {
   const xystore = useXYStoreApi()
   const diagram = useDiagram()
+  const routing = useCurrentViewRouting()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>(undefined)
   return useMemo((): LayoutConstraints => {
     return ({
@@ -559,7 +565,7 @@ export function useLayoutConstraints(): LayoutConstraints {
         )
         if (hasAtLeast(draggingNodes, 1)) {
           diagram.startEditing('node')
-          solverRef.current = createLayoutConstraints(xystore, draggingNodes)
+          solverRef.current = createLayoutConstraints(xystore, draggingNodes, routing)
         }
       },
       onNodeDrag: (_event) => {
@@ -579,5 +585,5 @@ export function useLayoutConstraints(): LayoutConstraints {
         solverRef.current = undefined
       },
     })
-  }, [xystore, diagram])
+  }, [xystore, diagram, routing])
 }
