@@ -44,7 +44,7 @@ The view name is used as the image filename during export and as part of the URL
 
 ### View properties
 
-Views can have a `title`, `description`, `tags` and `links`:
+Views can have a `title`, `description`, `tags`, `links` and [`routing`](/dsl/views/predicates/#edge-routing):
 
 ```likec4
 views {
@@ -61,6 +61,8 @@ views {
 
     link https://my.jira/epic/12 'Epic-12'
 
+    // Draw relationships with right-angle bends
+    routing ortho
   }
 
 }

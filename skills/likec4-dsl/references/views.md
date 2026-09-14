@@ -54,8 +54,20 @@ style ELEMENT_EXPRESSION, ... {
   // Apply style properties to elements matching the expressions
 }
 global style STYLE_GROUP_IDENTIFIER
-autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep] [nodeSep]
+autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep] [nodeSep] [spline|ortho]
 ```
+
+Edge routing (view property, valid in element, dynamic and deployment views):
+
+```likec4
+view {
+  routing ortho   // spline (default, curved) | ortho (right-angle bends)
+  include *
+}
+```
+
+Precedence: `routing` property → `autoLayout` trailing value → `styles.defaults.view.routing` in config → `spline`.
+Applies to manually laid-out views too; switching routing never invalidates a saved layout.
 
 See [Predicates](./predicates.md) for more information on predicates and expressions.
 

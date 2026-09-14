@@ -154,11 +154,16 @@ Theme customization and default styling.
       "relationship": {
         "color": "gray",
         "line": "dashed"
+      },
+      "view": {
+        "routing": "ortho"
       }
     }
   }
 }
 ```
+
+`defaults.view.routing`: default edge routing for views, `spline` (curved, default) or `ortho`; a view's `routing` property overrides it.
 
 ### `extends`
 

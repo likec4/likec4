@@ -877,10 +877,35 @@ Parameters are:
 - direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
 - rank distance: optional, must be a positive number
 - node distance. optional, must be a positive number
+- edge routing: optional, `spline` or `ortho` (see [Edge routing](#edge-routing))
 
 <Aside>
 Manual changes are supported in VSCode extension, but functionality is limited.  
 Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is much appreciated.
+</Aside>
+
+## Edge routing
+
+By default, relationships are drawn as curves.  
+Set `routing ortho` to draw them with horizontal and vertical segments and right-angle bends:
+
+```likec4
+view {
+  routing ortho
+  include *
+}
+```
+
+Possible values are `spline` (default, curved) and `ortho` (orthogonal).  
+The value can also be appended to `autoLayout`, for example `autoLayout LeftRight 120 110 ortho`.  
+Precedence: the view `routing` property, then `autoLayout`, then the project default [`styles.defaults.view.routing`](/dsl/config/#default-styles), then `spline`.
+
+Routing also applies to manually laid-out views: node positions and edited connections are kept and drawn with right angles,
+so switching a view or a whole project to `ortho` never invalidates a saved layout.
+
+<Aside type="caution">
+Orthogonal routing is done by Graphviz and has a known limitation: a route may occasionally cut through a group box it does not belong to.  
+Widen the view with the `autoLayout` spacing parameters, or adjust the connection by editing its control points.
 </Aside>
 
 

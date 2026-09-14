@@ -66,7 +66,7 @@
     },
     {
       "name": "entity.name.type.enum.likec4",
-      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|xsmall|xs|small|sm|medium|md|large|lg|xl|xlarge|diagram|sequence)\\b"
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft|xsmall|xs|small|sm|medium|md|large|lg|xl|xlarge|diagram|sequence|spline|ortho)\\b"
     },
     {
       "name": "variable.other.property.likec4",
@@ -80,7 +80,7 @@
     { "include": "#colors" },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(alt|and|as|autoLayout|border|break|catch|color|crow|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|else|finally|from|global|group|element|exclude|extend|extends|head|icon|iconColor|iconPosition|iconSize|icons|if|import|include|includeAncestors|instance(Of)?|it|kind|line|likec4lib|link|loop|metadata|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|opt|or|order|parallel|par|predicateGroup|predicate|rank|relationship|shape|solid|specification|styleGroup|style|tag|tail|technology|this|title|try|vee|view|views|when|where|source|target|with)\\b"
+      "match": "\\b(alt|and|as|autoLayout|border|break|catch|color|crow|dashed|description|deployment|deploymentNode|diamond|dot|dotted|dynamic|else|finally|from|global|group|element|exclude|extend|extends|head|icon|iconColor|iconPosition|iconSize|icons|if|import|include|includeAncestors|instance(Of)?|it|kind|line|likec4lib|link|loop|metadata|model|navigateTo|node|none|not|normal|odiamond|odot|of|onormal|opacity|open|opt|or|order|parallel|par|predicateGroup|predicate|rank|relationship|routing|shape|solid|specification|styleGroup|style|tag|tail|technology|this|title|try|vee|view|views|when|where|source|target|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",
