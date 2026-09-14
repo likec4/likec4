@@ -122,6 +122,26 @@ describe('view', () => {
     `)
   })
 
+  it('should print view routing', () => {
+    expect(
+      view(
+        'index',
+        {
+          routing: 'ortho',
+        },
+        $include('*'),
+      ),
+    ).toMatchInlineSnapshot(`
+      "views {
+        view index {
+          routing ortho
+          
+          include *
+        }
+      }"
+    `)
+  })
+
   it('should print multiple element views', () => {
     expect(
       view(
