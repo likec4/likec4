@@ -144,6 +144,9 @@ for (const mode of ['scoped', 'compact', 'standard', 'large'] as const) {
 test('renders the no-fit render-view MCP App at centered zoom 1', async ({ page }) => {
   const viewport = await expectRenderedCase(page, 'no-fit')
   expect(viewport.zoom).toBe(1)
+  const app = page.frameLocator('iframe')
+  await app.locator('.react-flow__controls-zoomin').click()
+  expect((await settledViewport(app)).zoom).toBeGreaterThan(viewport.zoom)
 })
 
 test('renders the explicit zoom render-view MCP App at zoom 0.75', async ({ page }) => {
