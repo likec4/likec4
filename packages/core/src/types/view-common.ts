@@ -91,6 +91,13 @@ export interface ViewAutoLayout {
 
 export type ViewType = 'element' | 'dynamic' | 'deployment'
 
+/**
+ * Edge routing of a view:
+ * - `spline` (default): curved edges
+ * - `ortho`: orthogonal edges (horizontal and vertical segments)
+ */
+export type EdgeRouting = 'spline' | 'ortho'
+
 export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
   readonly id: aux.StrictViewId<A>
   readonly title: string | null
@@ -99,6 +106,11 @@ export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTa
    * Optional per-view navigation order.
    */
   readonly order?: number
+  /**
+   * Edge routing of the view.
+   * On computed and layouted views it is resolved (view, then project default) and present only when `ortho`.
+   */
+  readonly routing?: EdgeRouting
   /**
    * Source file containing this view, relative to the project root.
    * Undefined if the view is auto-generated.

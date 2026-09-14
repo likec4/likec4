@@ -10,6 +10,7 @@ import {
 import { type AstNode, type Reference, GrammarUtils, isAstNode, UriUtils } from 'langium'
 import {
   filter,
+  findLast,
   flatMap,
   groupBy,
   isArray,
@@ -158,6 +159,18 @@ export function parseViewOrder(prop: ast.ViewOrderProperty | undefined): number 
     return undefined
   }
   return Number.isSafeInteger(prop.value) && prop.value >= 0 ? prop.value : undefined
+}
+
+/**
+ * Returns the edge routing of a view: the `routing` property wins over the `autoLayout` sugar
+ * (the last `autoLayout` rule, matching how compute-view picks the auto-layout rule).
+ */
+export function parseViewRouting(
+  props: ReadonlyArray<ast.ViewProperty | ast.DynamicViewProperty>,
+  rules: ReadonlyArray<ast.ViewRule | ast.DynamicViewRule | ast.DeploymentViewRule>,
+): c4.EdgeRouting | undefined {
+  return props.find(ast.isViewRoutingProperty)?.value
+    ?? findLast(rules, ast.isViewRuleAutoLayout)?.routing
 }
 
 export type Base = GConstructor<BaseParser>

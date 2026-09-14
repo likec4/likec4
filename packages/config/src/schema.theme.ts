@@ -58,6 +58,10 @@ const line = z
   .enum(['dashed', 'solid', 'dotted'])
   .meta({ id: 'LineType' })
 
+const routing = z
+  .enum(['spline', 'ortho'])
+  .meta({ id: 'EdgeRouting' })
+
 const themeColor = z
   .enum(ThemeColors)
   .meta({ id: 'ThemeColorName' })
@@ -225,6 +229,18 @@ const LikeC4Config_Styles_Defaults_Relationship = z
       'Override default values for relationship style properties\nThese values will be used if such property is not defined',
   })
 
+const LikeC4Config_Styles_Defaults_View = z
+  .strictObject({
+    routing: routing.optional().meta({
+      description:
+        'Default edge routing for views: `spline` (curved) or `ortho` (orthogonal)\nA view can override it with its `routing` property',
+    }),
+  })
+  .meta({
+    id: 'ViewDefaultValues',
+    description: 'Override default values for view settings\nThese values will be used if a view does not define them',
+  })
+
 const LikeC4Config_Styles_Defaults = z
   .strictObject({
     color: color.optional().meta({
@@ -246,6 +262,10 @@ const LikeC4Config_Styles_Defaults = z
     relationship: LikeC4Config_Styles_Defaults_Relationship.optional().meta({
       description:
         'Override default values for relationship style properties\nThese values will be used if such property is not defined',
+    }),
+    view: LikeC4Config_Styles_Defaults_View.optional().meta({
+      description:
+        'Override default values for view settings\nThese values will be used if a view does not define them',
     }),
   })
   .meta({
@@ -293,11 +313,12 @@ function normalizeDefaults(
   if (!defaults) {
     return undefined
   }
-  const { relationship, group, ...rest } = defaults
+  const { relationship, group, view, ...rest } = defaults
   return exact({
     ...rest,
     relationship: relationship && exact(relationship) satisfies LikeC4ProjectStyleDefaults['relationship'],
     group: group && exact(group) satisfies LikeC4ProjectStyleDefaults['group'],
+    view: view && exact(view) satisfies LikeC4ProjectStyleDefaults['view'],
   }) satisfies LikeC4ProjectStyleDefaults
 }
 

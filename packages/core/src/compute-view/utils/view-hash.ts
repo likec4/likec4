@@ -8,6 +8,8 @@ export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 
     id: view.id,
     __: view._type ?? 'element',
     autoLayout: view.autoLayout,
+    // only when set, so views with the default routing keep their hash
+    ...(view.routing && { routing: view.routing }),
     nodes: pipe(
       view.nodes,
       map(n => ({
