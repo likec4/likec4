@@ -1,5 +1,5 @@
 import { type EdgeRouting, type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
-import { type Dimensions, type XYPoint, BBox } from '@likec4/core/geometry'
+import { type Dimensions, type XYPoint, BBox, placeLabelAlongSegments } from '@likec4/core/geometry'
 import { invariant, isome } from '@likec4/core/utils'
 import type {
   EdgeChange,
@@ -17,7 +17,8 @@ import { useCurrentViewRouting } from '../hooks/useCurrentView'
 import { useDiagram } from '../hooks/useDiagram'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import { nodeToRect } from '../utils/xyflow'
+import { editedEdgePath } from '../utils/edge-path'
+import { isLeafNodeType, nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -194,16 +195,30 @@ function makeEdgeModifier(
 function makeRelativeEdgeModifier(
   edge: Types.AnyEdge,
   movingRect: Rect,
-  anchorNode: BBox,
-  staticNode: BBox,
+  ends: { source: BBox; target: BBox; isSourceMoving: boolean },
   routing: EdgeRouting,
+  obstaclesAt: (shift: XYPoint) => BBox[],
 ): EdgeModifier {
+  // anchor is the end that moves with the rect, static is the other one
+  const [anchorNode, staticNode] = ends.isSourceMoving ? [ends.source, ends.target] : [ends.target, ends.source]
   const controlPoints = edge.data.controlPoints ?? initialControlPoints(edge.data.points, routing)
   const anchorV = vector(BBox.center(anchorNode))
   const staticV = vector(BBox.center(staticNode))
 
   const staticToAnchor = anchorV.subtract(staticV)
   const staticToAnchorLength = staticToAnchor.length()
+
+  const routeAfterMove = (controlPoints: ReadonlyArray<XYPoint>, shift: XYPoint) => {
+    const moved = { ...anchorNode, x: anchorNode.x + shift.x, y: anchorNode.y + shift.y }
+    const [source, target] = ends.isSourceMoving ? [moved, staticNode] : [staticNode, moved]
+    return editedEdgePath({
+      source: { center: BBox.center(source), node: source },
+      target: { center: BBox.center(target), node: target },
+      dir: edge.data.dir,
+      controlPoints,
+      routing,
+    })
+  }
 
   return (edgeLookup) => {
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
@@ -257,9 +272,24 @@ function makeRelativeEdgeModifier(
 
         if (edge.data.labelBBox) {
           draft.data.labelBBox ??= edge.data.labelBBox
-          const { x, y } = relativePoint(edge.data.labelBBox)
-          draft.data.labelBBox.x = x
-          draft.data.labelBBox.y = y
+          // an orthogonal route jumps to new axes when a node moves, so an auto-placed label
+          // is placed on the new route instead of being carried along with the old one
+          const segments = routing === 'ortho' && !edge.data.isLabelCustomized
+            ? routeAfterMove(draft.data.controlPoints, { x: dx, y: dy }).segments
+            : []
+          if (segments.length > 0) {
+            const { x, y } = placeLabelAlongSegments({
+              segments,
+              size: edge.data.labelBBox,
+              obstacles: obstaclesAt({ x: dx, y: dy }),
+            })
+            draft.data.labelBBox.x = x
+            draft.data.labelBBox.y = y
+          } else {
+            const { x, y } = relativePoint(edge.data.labelBBox)
+            draft.data.labelBBox.x = x
+            draft.data.labelBBox.y = y
+          }
         }
       }),
     }
@@ -366,6 +396,13 @@ export function createLayoutConstraints(
 
   // moving nodes may have nested nodes as well
   const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
+
+  // leaf node boxes an edge label must stay clear of, at their position after the moving nodes shifted
+  const leafNodes = [...nodeLookup.values()]
+    .filter(n => isLeafNodeType(n.type))
+    .map(n => ({ rect: nodeToRect(n), moving: movingNodes.has(n.id) }))
+  const obstaclesAt = (shift: XYPoint): BBox[] =>
+    leafNodes.map(({ rect, moving }) => moving ? { ...rect, x: rect.x + shift.x, y: rect.y + shift.y } : rect)
   for (const edge of edges) {
     const isSourceMoving = movingNodes.has(edge.source)
     const isTargetMoving = movingNodes.has(edge.target)
@@ -398,19 +435,14 @@ export function createLayoutConstraints(
       map(nodeToRect),
     )
 
-    // Determine anchor (moving point) and static point
-    const [anchorNode, staticNode] = isSourceMoving
-      ? [sourceNode, targetNode]
-      : [targetNode, sourceNode]
-
     edgeModifiers.set(
       edge,
       makeRelativeEdgeModifier(
         edge,
         movingRect,
-        anchorNode,
-        staticNode,
+        { source: sourceNode, target: targetNode, isSourceMoving },
         routing,
+        obstaclesAt,
       ),
     )
   }

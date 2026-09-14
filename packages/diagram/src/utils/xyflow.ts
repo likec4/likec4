@@ -87,15 +87,21 @@ export function isEqualRects(a: Rect, b: Rect): boolean {
 }
 
 /**
- * Rectangles of the leaf nodes (no compounds, no view groups), the boxes an edge label must stay clear of
+ * Whether a node of this type is a leaf (not a compound, not a view group)
+ */
+export function isLeafNodeType(type: string | undefined): boolean {
+  return type !== 'compound-element' && type !== 'compound-deployment' && type !== 'view-group'
+}
+
+/**
+ * Rectangles of the leaf nodes, the boxes an edge label must stay clear of
  */
 export function leafNodeRects(nodes: Iterable<MinimalInternalNode & { type?: string | undefined }>): Rect[] {
   const rects: Rect[] = []
   for (const node of nodes) {
-    if (node.type === 'compound-element' || node.type === 'compound-deployment' || node.type === 'view-group') {
-      continue
+    if (isLeafNodeType(node.type)) {
+      rects.push(nodeToRect(node))
     }
-    rects.push(nodeToRect(node))
   }
   return rects
 }
