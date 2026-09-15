@@ -37,7 +37,7 @@ patchedDependencies:
   "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
 
 catalog:
-  "@changesets/changelog-github": ^1.0.0
+  "@changesets/changelog-github": ^1.0.1
   "@changesets/cli": ^3.0.1
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
