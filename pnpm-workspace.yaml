@@ -213,7 +213,7 @@ catalogs:
     unctx: ^2.5.0
     unstorage: ^1.17.5
   vite:
-    "@rolldown/plugin-babel": ^0.2.3
+    "@rolldown/plugin-babel": ^0.2.4
     "@vitejs/plugin-react": ^6.1.1
     birpc: ^4.2.0
     rollup: ^4.63.1
