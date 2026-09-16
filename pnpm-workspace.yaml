@@ -38,7 +38,7 @@ patchedDependencies:
 
 catalog:
   "@changesets/changelog-github": ^1.0.0
-  "@changesets/cli": ^3.0.1
+  "@changesets/cli": ^3.0.2
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.2.8
   "@types/node": ~22.19.19
