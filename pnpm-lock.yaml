@@ -338,8 +338,8 @@ catalogs:
       version: 0.23.0
   utils:
     '@logtape/logtape':
-      specifier: ^2.3.3
-      version: 2.3.3
+      specifier: ^2.3.4
+      version: 2.3.4
     '@lume/kiwi':
       specifier: ^0.4.4
       version: 0.4.4
@@ -2305,7 +2305,7 @@ importers:
     dependencies:
       '@logtape/logtape':
         specifier: catalog:utils
-        version: 2.3.3
+        version: 2.3.4
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -5438,8 +5438,8 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@logtape/logtape@2.3.3':
-    resolution: {integrity: sha512-H8AqgCq6M6Wu97FVPyfE5UT4w6H+Wdt9iGzLKPgtJRI/jrG9HbzzNUw9JL1LarkZD8xeKx9FqKfcLaXr0hGJuw==}
+  '@logtape/logtape@2.3.4':
+    resolution: {integrity: sha512-oW5Q6EOdjemL94c324j2fUn+2nRGuODwmOKmrwY6YAVkjqNWYVgkzpfbckFc4CKmDDCMk+GiwNfPybMZB3QqNQ==}
 
   '@lume/kiwi@0.4.4':
     resolution: {integrity: sha512-ie0YTKgiZqD4TXlJ4eUbfi4UEoKs6YlLRYNTfPm5eUXwfudTBmPRs7Qcxz2SWKDpVTwThv3sWG6zwtyAA0nPpw==}
@@ -14112,7 +14112,7 @@ snapshots:
       '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@logtape/logtape@2.3.3': {}
+  '@logtape/logtape@2.3.4': {}
 
   '@lume/kiwi@0.4.4': {}
 
