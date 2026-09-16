@@ -197,6 +197,25 @@ deployment {
 }
 ```
 
+Use **`<->`** (or **`-[kind]<->`**) when both nodes actively communicate with each other:
+
+```likec4
+deployment {
+  environment prod {
+    vm vm1 {
+      db = instanceOf database 'Primary DB'
+    }
+    vm vm2 {
+      db = instanceOf database 'Standby DB'
+    }
+    vm1.db <-> vm2.db 'replicates'
+  }
+}
+```
+
+Like in the logical model, bidirectional relationships render with arrows at both ends by default,
+and can be included or excluded from either endpoint in view predicates.
+
 :::tip
 Relationships can be defined for nested elements of deployed instances:
 

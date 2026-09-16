@@ -83,8 +83,8 @@ catalogs:
     "@astrojs/react": 6.0.1
     "@astrojs/starlight": 0.41.3
     "@astrojs/starlight-tailwind": 5.0.0
-    "@expressive-code/plugin-collapsible-sections": 0.44.1
-    "@expressive-code/plugin-line-numbers": 0.44.1
+    "@expressive-code/plugin-collapsible-sections": 0.44.2
+    "@expressive-code/plugin-line-numbers": 0.44.2
     astro: 7.1.0
     astro-og-canvas: 0.13.0
     astro-skills: 0.1.1
@@ -105,12 +105,12 @@ catalogs:
     postcss: 8.5.28
     tailwindcss: ^4.3.2
   esbuild:
-    esbuild: 0.28.1
+    esbuild: 0.28.2
     esbuild-node-externals: 1.23.1
     esbuild-plugins-node-modules-polyfill: 1.8.3
     esbuild-wasm: 0.28.1
   esbuild-wasm:
-    esbuild: npm:esbuild-wasm@0.28.1
+    esbuild: npm:esbuild-wasm@0.28.2
   externals:
     "@hpcc-js/wasm-graphviz": 1.22.2
     "@types/picomatch": ^4.0.3

@@ -135,6 +135,11 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   fitView?: boolean | undefined
 
   /**
+   * Initial centered zoom level. When set, it overrides automatic fit-to-view.
+   */
+  initialZoom?: number | undefined
+
+  /**
    * Padding around the diagram (number - pixels)
    * @default 16 - 16px
    *

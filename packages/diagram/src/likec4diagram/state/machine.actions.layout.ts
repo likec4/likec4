@@ -119,7 +119,7 @@ export const centerOnNodeOrEdge = () =>
     }
   })
 
-function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
+function fitBoundsInViewport(context: Context, bounds: BBox, duration: number, zoom?: number) {
   let { width, height, panZoom, transform } = nonNullable(context.xystore).getState()
   let left = undefined
 
@@ -128,12 +128,13 @@ function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
     width -= left
   }
 
-  const maxZoom = calcMaxZoom(context, transform)
+  const minZoom = zoom ?? MinZoom
+  const maxZoom = zoom ?? calcMaxZoom(context, transform)
   const viewport = getViewportForBounds(
     bounds,
     width,
     height,
-    MinZoom,
+    minZoom,
     maxZoom,
     context.fitViewPadding,
   )
@@ -150,12 +151,13 @@ function fitBoundsInViewport(context: Context, bounds: BBox, duration: number) {
   })
 }
 
-export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
+export const fitDiagram = (params?: { duration?: number; bounds?: BBox; zoom?: number | undefined }) =>
   machine.createAction(({ context, event }) => {
-    let bounds: BBox | undefined, duration: number | undefined
+    let bounds: BBox | undefined, duration: number | undefined, zoom: number | undefined
     if (params) {
       bounds = params.bounds
       duration = params.duration
+      zoom = params.zoom
     } else if (event.type === 'xyflow.fitDiagram') {
       bounds = event.bounds
       duration = event.duration
@@ -163,7 +165,7 @@ export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
     // Default values
     bounds ??= viewBounds(context)
     duration ??= 450
-    fitBoundsInViewport(context, bounds, duration)
+    fitBoundsInViewport(context, bounds, duration, zoom)
   })
 
 export const fitFocusedBounds = (params?: { duration?: number }) =>
