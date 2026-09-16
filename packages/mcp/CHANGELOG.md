@@ -1,5 +1,33 @@
 # @likec4/mcp
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3240](https://github.com/likec4/likec4/pull/3240) [`6050e61`](https://github.com/likec4/likec4/commit/6050e6109b979443695b5ebc17069d77611bb365) Thanks [@ckeller42](https://github.com/ckeller42)! - Advertise tool input and output schemas as JSON Schema 2020-12
+
+- [#3232](https://github.com/likec4/likec4/pull/3232) [`df5e0ad`](https://github.com/likec4/likec4/commit/df5e0ad27e3d1190e7dc1c1112ec2f2955c639e4) Thanks [@ckeller42](https://github.com/ckeller42)! - Fix `preview-view` for projects with non-default IDs.
+
+- [#3249](https://github.com/likec4/likec4/pull/3249) [`dd113dd`](https://github.com/likec4/likec4/commit/dd113dd0c7840de1837b568ffae8c1b5e6a5121b) Thanks [@ckeller42](https://github.com/ckeller42)! - Let render-view callers set the initial canvas size hint and viewport behavior for embedded diagrams.
+
+- [#3252](https://github.com/likec4/likec4/pull/3252) [`cd0d5c9`](https://github.com/likec4/likec4/commit/cd0d5c957db59dfc1b5a10c5c682695f7bf4617d) Thanks [@ckeller42](https://github.com/ckeller42)! - Honor the render-view `fitView` option without hiding navigation controls.
+
+- [#3253](https://github.com/likec4/likec4/pull/3253) [`4f56b2d`](https://github.com/likec4/likec4/commit/4f56b2d4f0011c39805ed5ec0d12f167b869d2d6) Thanks [@ckeller42](https://github.com/ckeller42)! - Open interactive render-view diagrams in fullscreen when the MCP App host supports it.
+
+- [#3246](https://github.com/likec4/likec4/pull/3246) [`f9cdd54`](https://github.com/likec4/likec4/commit/f9cdd54cf7c1e78141b629daacbb281e13dbcc63) Thanks [@ckeller42](https://github.com/ckeller42)! - Render workspace-local SVG icons and open element and relationship details in interactive MCP App diagrams.
+
+- [#3226](https://github.com/likec4/likec4/pull/3226) [`a4e691b`](https://github.com/likec4/likec4/commit/a4e691b8d20ea4af0c5010e1de8f9c0ab5aadfa0) Thanks [@parse](https://github.com/parse)! - `batch-read-elements` now returns `links` and `sourceLocation` for each element, matching `read-element`. Reading those for many elements no longer needs one call per element.
+
+- [#3246](https://github.com/likec4/likec4/pull/3246) [`f9cdd54`](https://github.com/likec4/likec4/commit/f9cdd54cf7c1e78141b629daacbb281e13dbcc63) Thanks [@ckeller42](https://github.com/ckeller42)! - Reduce `render-view` and `preview-view` payloads by returning only model data required by the selected view. Set `fullModel` to `true` to request the complete model.
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad), [`cd0d5c9`](https://github.com/likec4/likec4/commit/cd0d5c957db59dfc1b5a10c5c682695f7bf4617d), [`dd113dd`](https://github.com/likec4/likec4/commit/dd113dd0c7840de1837b568ffae8c1b5e6a5121b), [`4b59d64`](https://github.com/likec4/likec4/commit/4b59d6464a2ff347ffc6380037f5c5899a38b5de), [`4caa142`](https://github.com/likec4/likec4/commit/4caa14264512d852e2ec115b99abbf4fd51d6abc)]:
+  - @likec4/core@1.59.4
+  - @likec4/language-server@1.59.4
+  - @likec4/diagram@1.59.4
+  - @likec4/config@1.59.4
+  - @likec4/language-services@1.59.4
+  - @likec4/layouts@1.59.4
+  - @likec4/log@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

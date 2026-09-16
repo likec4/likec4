@@ -1,5 +1,18 @@
 # @likec4/diagram
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3252](https://github.com/likec4/likec4/pull/3252) [`cd0d5c9`](https://github.com/likec4/likec4/commit/cd0d5c957db59dfc1b5a10c5c682695f7bf4617d) Thanks [@ckeller42](https://github.com/ckeller42)! - Honor the render-view `fitView` option without hiding navigation controls.
+
+- [#3249](https://github.com/likec4/likec4/pull/3249) [`dd113dd`](https://github.com/likec4/likec4/commit/dd113dd0c7840de1837b568ffae8c1b5e6a5121b) Thanks [@ckeller42](https://github.com/ckeller42)! - Let embedded diagrams start centered at a caller-defined zoom.
+
+- [#3218](https://github.com/likec4/likec4/pull/3218) [`4b59d64`](https://github.com/likec4/likec4/commit/4b59d6464a2ff347ffc6380037f5c5899a38b5de) Thanks [@ckeller42](https://github.com/ckeller42)! - Configure the default relationship-browser scope and share links that preserve the selected scope.
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad)]:
+  - @likec4/core@1.59.4
+  - @likec4/styles@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes
