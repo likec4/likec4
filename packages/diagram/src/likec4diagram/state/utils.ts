@@ -214,6 +214,7 @@ export function nodeRef(node: Types.Node): Fqn | DeploymentFqn | null {
       return node.data.modelFqn
     case 'deployment':
     case 'compound-deployment':
+    case 'graph-element':
       return node.data.modelFqn ?? node.data.deploymentFqn
     case 'seq-parallel':
     case 'seq-subflow':
