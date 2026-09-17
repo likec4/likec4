@@ -697,7 +697,6 @@ view apiApp of internetBankingSystem.apiApplication {
     color primary
     multiple true
   }
-
   // apply to apiApplication and nested
   style apiApplication._ {
     color primary
@@ -844,13 +843,16 @@ Estilos globais e grupos podem ser usados como estilos locais de `views`:
 global {
   style mute_all * { color muted }
   styleGroup theme1 { //...
+  }
   styleGroup theme2 { //...
+  }
 }
 
 // All views within this block have styles from 'theme1'
 views {
   global style theme1
   view view1 { //... 
+  }
 }
 
 // All views have 'mute_all' style and all from 'theme2'
@@ -858,6 +860,7 @@ views {
   global style mute_all
   global style theme2
   view view2 { //... 
+  }
 }
 ```
 :::
