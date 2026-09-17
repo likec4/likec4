@@ -1,0 +1,165 @@
+---
+title: Visões
+description: Como visualizar a arquitetura de software em diagramas usando o LikeC4
+sidebar:
+  label: Visões
+  order: 8
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6
+---
+
+import { Aside, TabItem, Tabs } from '@astrojs/starlight/components';
+
+O LikeC4 é baseado em modelos. As visões são projeções do modelo a partir de diferentes perspectivas, escopos e níveis de detalhe, como:
+
+-	Visões gerais de sistemas/serviços
+-	Interações entre componentes em casos de uso específicos
+-	Fluxos de dados e diagramas de sequência
+
+O LikeC4 não impõe regras específicas, como um número rígido de níveis ou o que deve ser incluído — isso depende totalmente de você e do seu contexto.  
+
+## Definição de visão
+
+As visões são definidas na seção `views`.  
+Elas podem ter nome (que deve ser único) ou não ter nome (não podem ser referenciadas, mas ainda podem ser exportadas):
+
+```likec4
+views {
+  // with name
+  view index {
+  }
+  // unnamed
+  view {
+  }
+}
+```
+
+O nome da visão é usado como nome do arquivo de imagem durante a exportação e como parte da URL ao compartilhar, portanto é recomendável definir um.
+
+<Aside title="Visão padrão">
+  `index` é uma visão especial e é renderizada por padrão quando nenhum nome de visão é especificado.  
+  Se ela não estiver definida, será gerada e incluirá os elementos de nível superior.
+</Aside>
+
+### Propriedades da visão
+
+As visões podem ter `title`, `description`, `tags` e `links`:
+
+```likec4
+views {
+
+  view epic12 {
+    #next, #epic-12
+    title "Cloud System - Changes in Epic-12"
+
+    // Description can be Markdown with triple quotes
+    description """
+      This diagram shows the **high-level**
+      components and interactions.
+    """
+
+    link https://my.jira/epic/12 'Epic-12'
+
+  }
+
+}
+```
+
+As propriedades devem ser definidas antes de qualquer [predicado](/pt-br/dsl/views/predicates/).  
+
+## Visões com escopo
+
+Uma visão pode ser definida para um elemento específico (`view of ...`).  
+Nesse caso, a visão herdará o [escopo](/pt-br/dsl/references#escopo) desse elemento:
+
+:::note
+Você aprenderá sobre `include` e `exclude` na seção de [predicados](/pt-br/dsl/views/predicates/).
+:::
+
+```likec4
+views {
+
+  view {
+    include api // ⛔️ Error: 'api' is not found
+  }
+
+  view of cloud.backend {
+    include api // ✅ This is OK, resolves to 'cloud.backend.api'
+  }
+
+  view of legacy {
+    include api // ✅ This is OK, resolves to 'legacy.api'
+  }
+
+}
+```
+
+Além disso, uma visão com escopo se torna a visão padrão do elemento:
+
+```likec4
+views {
+
+  view {
+    // on click navigates to 'view1',
+    // because it is default for 'cloud.backend'
+    include cloud.backend
+  }
+
+  view view1 of cloud.backend {
+    include *
+  }
+
+}
+```
+
+Você pode definir várias visões para o mesmo elemento; a visão padrão é determinada pela ordem em que elas aparecem.
+
+## Estender visões
+
+Visões podem ser estendidas para evitar duplicação, criar uma "baseline" ou, por exemplo, "slides" para uma apresentação:
+
+```likec4
+views {
+
+  view view1 {
+    include *
+  }
+
+  view view2 extends view1 {
+    title 'Same as View1, but with more details'
+
+    style * {
+      color muted
+    }
+
+    include some.backend
+  }
+
+  // cascade inheritance
+  view view3 extends view2 {
+    title 'Same as View2, but with more details'
+
+    include * -> some.backend
+  }
+
+}
+```
+
+Os predicados e as regras de estilo das visões estendidas são aplicados depois dos definidos nas visões ancestrais.
+
+Uma visão estendida também herda o escopo:
+
+```likec4
+views {
+
+  view view1 of cloud.backend {
+    title 'Backend components'
+  }
+
+  view view2 extends view1 {
+    include api // ✅ This is OK, references 'cloud.backend.api'
+  }
+
+}
+```
