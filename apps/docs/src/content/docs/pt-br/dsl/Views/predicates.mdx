@@ -1,0 +1,967 @@
+---
+title: Predicados de visão
+description: Como visualizar a arquitetura de software em diagramas usando o LikeC4
+sidebar:
+  label: Predicados
+  order: 8
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+As visões não são estáticas: elas são geradas a partir do modelo. Qualquer alteração no modelo é aplicada imediatamente e atualiza as visões.
+Dois tipos de predicados definem o que fica visível: predicados de elementos e de relacionamentos.
+
+<Aside>
+  As visões contêm elementos e suas conexões (relacionamentos).  
+  As conexões representam relacionamentos combinados — diretos entre elementos e/ou derivados de seus elementos aninhados.
+</Aside>
+
+## Predicados de elementos
+
+Predicados de elementos definem explicitamente quais elementos ficam visíveis. Cada elemento incluído traz seus relacionamentos com os elementos que já estão visíveis.
+
+```likec4
+view {
+  // Only backend is visible
+  include backend
+
+  // Add frontend to the view 
+  // and its relationships with backend
+  include frontend 
+
+  // Add authService to the view 
+  // and its relationships with visible (backend and frontend)
+  include authService
+
+  // Add children of messageBroker,
+  // and their relationships among themselves and visible (backend, frontend and authService)
+  include messageBroker.*
+
+  // Add all descendants of messageBroker,
+  // and their relationships among themselves and visible (backend, frontend and authService)
+  include messageBroker.**
+
+  // Exclude emailsQueue and its relationships
+  exclude messageBroker.emailsQueue
+}
+```
+
+<Aside>
+  A ordem é significativa; os predicados são aplicados na ordem em que são definidos na visão.  
+  Exclusões se aplicam apenas a elementos/relacionamentos incluídos anteriormente.
+</Aside>
+
+### Combinando
+
+Predicados podem ser combinados. O exemplo abaixo é equivalente ao anterior:
+
+```likec4
+view {
+  include
+    backend,
+    frontend,
+    authService,
+    messageBroker.**
+
+  exclude messageBroker.emailsQueue
+}
+```
+
+### Curinga
+
+Predicados curinga podem ser usados para referenciar "tudo" (mas o comportamento difere entre visões com e sem escopo).  
+Considere o seguinte modelo:
+
+```likec4
+model {
+  actor customer {
+    -> webApp 'uses in browser via HTTPS'
+  }
+  system cloud {
+    container backend {
+      component api    
+    }
+    container ui {
+      component webApp {
+        -> api 'requests data'
+      }
+    }
+  }
+}
+views {
+
+  // Unscoped view - wildcard refers to top-level elements
+  view {
+    include *
+    // Visible top-level elements: customer, cloud
+    // and derived relationship customer -> cloud
+  }
+
+  // Scoped view - wildcard refers to element and its children
+  view of cloud.ui {
+    include *
+    // Visible:
+    // - cloud.ui
+    // - cloud.ui.webApp
+    // - customer
+    // - relationship customer -> cloud.ui.webApp
+    // - cloud.backend
+    // - cloud.ui.webApp -> cloud.backend, derived from cloud.ui.webApp -> cloud.backend.api
+  }
+}
+```
+
+### Com sobrescritas
+
+Você pode modificar propriedades de um elemento especificamente para a visão:
+
+```likec4
+// Include the element and override its properties
+include cloud.backend with {
+  title 'Backend components'
+  description '...'
+  technology 'Java, Spring'
+  icon tech:java
+  color amber
+  shape browser
+  multiple true
+}
+// Include all nested elements, change color and textSize
+include cloud.* with {
+  color amber
+  textSize small
+}  
+```
+
+`with` pode ser usado apenas dentro de `include`.
+
+### Com navegação personalizada
+
+Você pode definir navegação e links personalizados entre visões:
+
+```likec4 title="example.c4"
+
+view view2 {
+  include *
+  include cloud.backend with {
+    // navigate to 'view3' on click
+    navigateTo view3
+  }
+}
+
+view view3 {
+  include *
+  include cloud.backend with {
+    // navigate back to 'view2'
+    navigateTo view2
+  }
+}
+```
+
+### Por tipo ou tag do elemento
+
+```likec4
+// elements by kind
+include element.kind != system
+exclude element.kind = container
+
+// elements by tag
+include element.tag != #V2
+exclude element.tag = #next
+```
+
+:::caution
+Esses predicados podem ser descontinuados no futuro; considere usar o operador [`where`](#filtro).
+:::
+
+### Seletores de elementos
+
+#### Filhos `.*`
+
+O seletor de filhos inclui os filhos do elemento e seus relacionamentos com os elementos visíveis.
+
+```likec4
+include cloud.*
+
+// Same as
+include cloud.backend
+include cloud.ui
+```
+
+#### Descendentes `.**`
+
+O seletor de descendentes inclui os descendentes do elemento **SE** eles tiverem um relacionamento com elementos visíveis.
+
+```likec4
+include cloud.**
+
+// Same as
+include cloud.backend
+include cloud.ui
+include cloud.ui.webApp
+```
+
+#### Expandir `._`
+
+O seletor de expansão inclui os filhos do elemento **SE** eles tiverem um relacionamento com elementos visíveis.
+Todos os outros filhos são omitidos.
+
+```likec4
+include cloud._
+
+// Same as
+include cloud
+include -> cloud.* ->
+```
+
+## Predicados de relacionamentos
+
+Predicados de relacionamentos incluem elementos apenas quando eles possuem relacionamentos que atendem às condições especificadas pelo predicado.
+
+### Relacionamentos direcionados
+
+Inclua elementos quando eles tiverem relacionamentos **direcionados** (ou quando seus elementos aninhados tiverem):
+
+```likec4
+// Include customer and cloud:
+include customer -> cloud
+
+// Include customer and nested elements of cloud (that have relationships):
+include customer -> cloud.*
+```
+
+### Qualquer relacionamento
+
+Inclua elementos quando eles tiverem qualquer relacionamento:
+
+```likec4
+include customer <-> cloud
+```
+
+### Entrada
+
+Inclua elementos quando eles tiverem relacionamentos de entrada vindos de elementos já visíveis.  
+Veja um exemplo baseado no modelo do [exemplo com curinga](#curinga):
+
+```likec4 wrap title="incoming predicate.c4"
+view {
+  // visible element
+  include customer
+
+  // include nothing, customer has no relation to backend
+  include -> backend
+
+  // add ui,
+  // because customer has a relationship with nested ui.webApp
+  include -> ui
+
+  // add backend, because visible ui has a relationship to backend
+  // derived from ui.webApp -> backend.api
+  include -> backend
+}
+
+// This view includes customer and ui
+view {
+  include
+    customer,
+    -> cloud.*
+}
+```
+
+:::tip
+Predicados de relacionamentos são úteis para refinar seus diagramas, permitindo restringir o escopo e concentrar-se em partes específicas do sistema.
+:::
+
+### Saída
+
+Inclua elementos somente quando eles tiverem relacionamentos de saída para elementos já visíveis:
+
+```likec4
+include customer ->
+include cloud.* ->
+```
+
+### Entrada/saída
+
+Inclua elementos aninhados de `cloud` que tenham qualquer relacionamento com elementos visíveis:
+
+```likec4
+include -> cloud.* ->
+```
+
+### Personalização de relacionamentos
+
+Relacionamentos podem ser personalizados dentro da visão:
+
+```likec4
+include
+  // Make lines red and solid
+  cloud.* <-> amazon.* with {
+    color red
+    line solid
+  },
+  // or only directed 
+  customer -> cloud.*  with {
+    // Override label
+    title 'Customer uses cloud'
+    navigateTo dynamicview1
+  }, 
+```
+:::tip
+Às vezes, conexões podem ter o título `[...]`. Isso indica que a conexão foi combinada a partir de vários relacionamentos com títulos diferentes e não foi possível derivar um título definitivo.  
+Você pode alterar o título ou definir `multiple true` para renderizar cada relacionamento como uma aresta separada:
+
+```likec4
+include
+  customer -> cloud with {
+    // Render each relationship separately
+    multiple true
+  },
+  // or override the merged title
+  customer -> cloud with {
+    title 'Customer uses cloud'
+  },
+```
+:::
+
+:::caution
+Só é possível personalizar relacionamentos com endpoints conhecidos  
+(ou seja, [direcionados](#relacionamentos-direcionados) ou [entre quaisquer elementos](#qualquer-relacionamento)).
+
+Por exemplo, `* -> *` pode ser personalizado (em outras palavras, todos os relacionamentos da visão), mas o relacionamento de saída `cloud.* ->` não pode.
+:::
+
+### Navegação de relacionamentos
+
+Para personalizar a [navegação](/pt-br/dsl/relationships/#navigate-to) a partir de um relacionamento:
+
+```likec4
+include
+  webApp -> backend.api with {
+    navigateTo dashboardRequestFlow
+  }
+```
+
+## Filtro
+
+O operador `where` restringe os resultados aplicando condições adicionais:
+
+```likec4
+// include only microservices from nested
+include cloud.*
+  where kind is microservice
+
+// only microservices and not deprecated
+include cloud.*
+  where
+    kind == microservice and // possible to use 'is' or '=='
+    tag != #deprecated       // possible to use 'is not' or '!='
+
+// Use logical operators
+include cloud.*
+  where
+    not (kind is microservice or kind is webapp)
+    and tag is not #legacy
+    and (tag is #v1 or tag is #v2)
+```
+
+<br/>
+
+**Predicados de relacionamentos**
+
+Quando `where` é usado com predicados de elementos, ele é aplicado aos elementos.    
+Quando é usado com predicados de relacionamentos, ele é aplicado aos relacionamentos.
+
+```likec4
+include
+  // only relationships with tag #messaging
+  cloud.* <-> amazon.*
+    where tag is #messaging,
+
+  // only incoming http-requests
+  -> backend
+    where kind is http-request
+  -[http-request]-> backend
+  .http-request backend
+```
+
+Também é possível filtrar relacionamentos pela tag ou pelo tipo de seus endpoints.
+```likec4
+include
+  // only relationships outgoing from elements with with tag #next
+  cloud.* -> amazon.*
+    where source.tag is #next,
+
+  // only incoming relations of elements with kind microservice
+  -> *
+    where target.kind is microservice
+```
+
+<br/>
+
+**Junto com `with`**
+
+É possível usar `where` junto com `with`, mas `where` deve ser definido primeiro:
+
+```likec4
+include *
+  where kind is microservice
+  with {
+    color amber
+  }  
+```
+
+<br/>
+
+:::tip
+Resultados menos verbosos e mais satisfatórios são obtidos usando `where` em predicados `exclude`.  
+Por exemplo:
+
+```likec4
+
+// only keep elements tagged with #v1
+exclude * where tag is not #v1
+
+// only keep relationships tagged with #commands
+exclude * -> * where tag is not #commands
+
+```
+
+Junto com [grupos de predicados](#grupos-globais-de-predicados), você pode definir uma "baseline" (que inclui tudo) e depois filtrar itens nas visões herdadas.
+
+:::
+
+### Filtro de metadados
+
+`where` também pode filtrar por valores de metadados de elementos ou relacionamentos:
+
+```likec4
+// include only elements with environment="production"
+include cloud.*
+  where metadata.environment is "production"
+
+// exclude elements without a version metadata key
+exclude *
+  where not metadata.version
+
+// combine with other filters
+include cloud.*
+  where
+    metadata.environment is "production"
+    and kind is not database
+```
+
+Valores booleanos de metadados podem ser comparados diretamente com `true` ou `false` (sem aspas):
+
+```likec4
+// matches elements where critical is true
+include *
+  where metadata.critical is true
+```
+
+Quando um valor de metadado é um array (por exemplo, `regions ['us-east-1', 'eu-west-1']`), `is` verifica se o array **contém** o valor:
+
+```likec4
+// matches if "us-east-1" is one of the regions
+include *
+  where metadata.regions is "us-east-1"
+```
+
+Para predicados de relacionamentos, filtre pelos próprios metadados do relacionamento ou pelos metadados de seus endpoints:
+
+```likec4
+include
+  // only relationships with protocol="grpc"
+  cloud.* -> amazon.*
+    where metadata.protocol is "grpc",
+
+  // only relations from elements with env="production"
+  cloud.* -> *
+    where source.metadata.environment is "production",
+
+  // only relations to staging targets
+  * -> *
+    where target.metadata.environment is "staging"
+```
+
+Os mesmos filtros de metadados funcionam com predicados `exclude`:
+
+```likec4
+// remove relationships with protocol="http"
+exclude * -> *
+  where metadata.protocol is "http"
+
+// remove relationships targeting staging elements
+exclude * -> *
+  where target.metadata.environment is "staging"
+```
+
+Em visões de deployment, `source.metadata.*` e `target.metadata.*` seguem as regras de metadados de deployment.
+Os metadados definidos em uma instância implantada substituem os metadados do elemento correspondente no modelo.
+
+## Grupos globais de predicados
+
+Se você perceber que está repetindo os mesmos predicados em várias visões, pode defini-los como um grupo global:
+
+```likec4
+global {
+  predicateGroup microservices {
+    include cloud.*
+      where kind is microservice
+    exclude *
+      where tag is #deprecated
+  }
+}
+
+views {
+  view of newServices {
+    include cloud.new.*
+    global predicate microservices
+  }
+
+  view of newBackendServices {
+    // Keep in mind that order is significant
+    global predicate microservices
+    include cloud.backend.*
+  }
+}
+```
+
+## Grupos
+
+É possível agrupar elementos, e isso é renderizado como um limite ao redor deles:
+
+```likec4
+view {
+
+  group {
+    include backend
+  }
+
+  // with title
+  group 'Frontend' {
+    include frontend.*
+  }
+
+  // with style
+  group 'Service Bus' {
+    color amber
+    opacity 20%
+    border solid
+
+    include messageBroker.*
+  }
+}
+```
+
+Grupos podem ser aninhados:
+
+```likec4
+view {
+  group 'Third-parties' {
+    group 'Integrations' {      
+      group 'Analytics' {}
+      group 'Marketing' {}
+    }  
+    group 'Monitoring' {}
+  }
+}
+```
+
+Grupos também podem referenciar [grupos globais de predicados](#grupos-globais-de-predicados), permitindo reutilizar um conjunto de predicados
+e manter os elementos correspondentes dentro do grupo:
+
+```likec4
+global {
+  predicateGroup microservices {
+    include cloud.*
+      where kind is microservice
+  }
+}
+
+views {
+  view of newServices {
+    include cloud.new.*
+
+    group 'Microservices' {
+      global predicate microservices
+    }
+  }
+}
+```
+:::note
+A ordem dos predicados é significativa.
+<details>
+<summary>Como os predicados de elementos são agrupados?</summary>
+
+Para predicados de elementos, o elemento permanece no primeiro grupo em que foi incluído.
+
+```likec4
+group {
+  include backend   //wins
+  group {
+    include backend //ignored
+  }
+}
+group {  
+  group {
+    include api //wins
+  }
+  include api   //ignored
+}
+```
+É possível alterar isso:
+
+```likec4
+group {
+  include backend   
+  group {
+    exclude backend 
+    include backend //wins
+  }
+}
+```
+</details>
+<details>
+<summary>Como os predicados de relacionamentos são agrupados?</summary>
+
+Para predicados de relacionamentos, o último "vence":
+
+```likec4 
+group {
+  include -> backend  
+  group {
+    include -> backend //wins
+  }
+}
+
+
+group {  
+  group {
+    include -> backend
+  }
+  include -> backend   //wins
+}
+```
+</details> 
+:::
+
+<Aside type="caution" title="Hierarquia de elementos e grupos">
+  Um elemento é incluído no grupo somente quando não há um elemento pai dele na visão.  
+  Isso pode gerar resultados inesperados.  
+  
+  Exemplo:
+  ```likec4
+  group {
+    include cloud
+    group 'Backend' {
+      include cloud.backend.api // ⛔️ no, will be nested in 'cloud'
+    }
+  }
+
+  group 'Amazon' {    
+    group 'Queues' {
+      include amazon.sqs.queue1 // ⛔️ no, will be nested in 'amazon' from below
+    }
+    include cloud -> amazon
+  }
+  ```  
+</Aside>
+
+## Predicados de estilo
+
+Predicados de estilo definem como os elementos são renderizados e são aplicados na ordem em que foram definidos, combinando-se com os anteriores:
+
+```likec4
+view apiApp of internetBankingSystem.apiApplication {
+
+  include *
+
+  // apply to all elements
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  // apply only to these elements
+  style singlePageApplication, mobileApp {
+    color secondary
+    size xlarge
+  }
+
+  // apply only to nested of apiApplication
+  style apiApplication.* {
+    color primary
+    multiple true
+  }
+
+  // apply to apiApplication and nested
+  style apiApplication._ {
+    color primary
+  }
+
+  // apply only to elements with specific tag
+  style element.tag = #deprecated {
+    color muted
+  }
+
+  // apply to elements not tagged
+  style element.tag != #deprecated {
+    opacity 20%
+  }
+}
+```
+
+:::caution
+[`Group`](#grupos) ainda não aceita predicados `style` aninhados.
+:::
+
+### Estilos locais compartilhados
+
+Estilos podem ser compartilhados dentro de um bloco `views` (_"estilos locais"_):
+
+```likec4
+views {
+  // apply to all views in this block
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  view of apiApp {
+    include *
+    style cloud.web.* {
+      color green
+    }
+  }
+
+  view of mobileApp {
+    include *
+    style cloud.ui.* {
+      color amber
+    }    
+  }
+}
+
+views {
+  // Styles from previous block are not applied here
+  // ...
+}
+```
+
+<Aside title="Ordem">
+Os estilos são aplicados na ordem em que são definidos.  
+Primeiro são aplicados os estilos locais do bloco `views` e depois os da `view`.
+</Aside>
+
+:::caution
+As [sobrescritas](#com-sobrescritas) são sempre aplicadas por último, depois de todos os estilos.
+:::
+
+### Estilos globais compartilhados
+
+Estilos podem ser compartilhados globalmente.  
+Estilos globais devem ter um nome e ser definidos no bloco `global`:
+
+```likec4  {4,9,15,25,33-34}
+global {
+  // Format:
+  //  style <name> <targets> { ... }
+  style mute_all * {
+    color muted
+    opacity 10%
+  }
+
+  style applications
+    singlePageApplication._,
+    mobileApp._ {
+      color secondary
+    } 
+
+  style mute_deprecated
+    element.tag = #deprecated {
+      color muted
+    }  
+}
+
+views {
+  view of singlePageApplication {  
+    // Styles are applied in the order they are defined
+    // 1. Apply global style
+    global style mute_all
+
+    // 2. Then this
+    style cloud.* {
+      color green
+    }
+
+    // 3. and 4.
+    global style applications
+    global style mute_deprecated    
+  }  
+}
+```
+
+### Grupos de estilos compartilhados
+
+Estilos globais podem ser agrupados:
+
+```likec4 {3,18}
+global {
+  // Define style group
+  styleGroup common_styles {
+    style singlePageApplication, mobileApp {
+      color secondary
+    }
+    style element.tag = #deprecated {
+      color muted
+    }
+  }
+}
+
+views {  
+  view mobileApp of mobileApp {
+    include *
+
+    // Apply styles from group
+    global style common_styles
+
+    // Override
+    style mobileApp {
+      color primary
+    }
+  }
+}
+```
+
+:::tip
+Estilos globais e grupos podem ser usados como estilos locais de `views`:
+
+```likec4
+global {
+  style mute_all * { color muted }
+  styleGroup theme1 { //...
+  styleGroup theme2 { //...
+}
+
+// All views within this block have styles from 'theme1'
+views {
+  global style theme1
+  view view1 { //... 
+}
+
+// All views have 'mute_all' style and all from 'theme2'
+views {
+  global style mute_all
+  global style theme2
+  view view2 { //... 
+}
+```
+:::
+
+## Layout automático
+
+```likec4
+view {
+  include *
+  autoLayout LeftRight 120 110
+}
+```
+
+Os parâmetros são:
+- direção: os valores possíveis são `TopBottom` (padrão), `BottomTop`, `LeftRight`, `RightLeft`.
+- distância entre ranks: opcional, deve ser um número positivo
+- distância entre nós: opcional, deve ser um número positivo
+
+<Aside>
+Alterações manuais são aceitas na extensão do VSCode, mas a funcionalidade é limitada.  
+Seu <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> é muito bem-vindo.
+</Aside>
+
+## Estender visões
+
+Visões podem ser estendidas para evitar duplicação, criar uma "baseline" ou, por exemplo, "slides" para uma apresentação:
+
+```likec4
+views {
+
+  view view1 {
+    include *
+  }
+
+  view view2 extends view1 {
+    title 'Same as View1, but with more details'
+
+    style * {
+      color muted
+    }
+
+    include some.backend
+  }
+
+  // cascade inheritance
+  view view3 extends view2 {
+    title 'Same as View2, but with more details'
+
+    include * -> some.backend
+  }
+
+}
+```
+
+Os predicados e as regras de estilo das visões estendidas são aplicados depois dos definidos nas visões ancestrais.
+
+Uma visão estendida também herda o escopo:
+
+```likec4
+views {
+
+  view view1 of cloud.backend {
+    title 'Backend components'
+  }
+
+  view view2 extends view1 {
+    include api // ✅ This is OK, references 'cloud.backend.api'
+  }
+
+}
+```
+## Restrições de rank
+
+Você pode manter elementos específicos no mesmo nível horizontal/vertical (ou empurrá-los para o início/fim do layout)
+adicionando um bloco `rank` explícito à visão.
+Essas restrições de rank são encaminhadas ao mecanismo de layout Graphviz para produzir os efeitos de layout desejados.
+
+```likec4
+view checkoutFlow {
+  include *
+
+  // keep the API nodes aligned
+  rank same {
+    cloud.backend.api,
+    cloud.backend.billingApi,
+  }
+
+  // make customers appear at the beginning of the diagram, exclusive of the elements
+  rank source {
+    customer
+  }
+
+  // render reporting systems at the end, exclusive of the elements
+  rank sink {
+    analytics,
+    dataWarehouse
+  }
+}
+```
+
+- Valores de rank permitidos: `same`, `min`, `max`, `source`, `sink`. Se omitido, `same` é assumido.
+- Os alvos são `FqnRef`s comuns, portanto você pode referenciar elementos aninhados como em outras regras. Alvos inexistentes ou duplicados são ignorados.
+- A restrição afeta apenas os elementos que realmente permanecem na visão calculada. Se um predicado remover posteriormente um elemento, ele também deixa de participar do bloco `rank`.
+- Regras de rank também participam do tiling manual de nós compostos, permitindo que restrições definidas pelo autor sejam combinadas com o layout automático em vez de entrar em conflito com ele.
+
+Use restrições de rank com moderação — elas são mais úteis para ancorar colunas/linhas críticas
+(por exemplo, nós de entrada versus saída ou agrupamentos semânticos no lugar de containers) e obter um layout melhor.
