@@ -482,6 +482,7 @@ const OutlineBody = (
 
 /** Sticky "you are here" trail: the fragments the active step is nested inside. */
 const ActiveTrail = ({ ancestors, tree }: { ancestors: readonly string[]; tree: OutlineTreeNodeData[] }) => {
+  const diagram = useDiagram()
   const trail = collectTrail(tree, ancestors)
   // At the root you are not inside anything — the toolbar label already says where you are.
   if (trail.length === 0) return null
@@ -511,23 +512,57 @@ const ActiveTrail = ({ ancestors, tree }: { ancestors: readonly string[]; tree: 
         const { paletteClass, tag } = flowPresentation[node.nodeProps.type as FlowType]
         const label = node.nodeProps.title ? `${tag} ${node.nodeProps.title}` : tag
         const last = i === trail.length - 1
+        const firstStep = firstStepOf(node.children)
         return (
           <Fragment key={node.value}>
             {i > 0 && <IconChevronRight size={10} />}
-            {last
-              ? (
-                <styled.b
-                  className={paletteClass}
-                  css={{ fontWeight: 'extrabold', color: 'colorPalette.text' }}>
-                  {label}
-                </styled.b>
-              )
-              : <span>{label}</span>}
+            <styled.button
+              type="button"
+              className={last ? paletteClass : undefined}
+              title={`Jump to the first step of ${label}`}
+              disabled={!firstStep}
+              onClick={() => firstStep && diagram.walkthroughStep({ step: firstStep })}
+              css={{
+                appearance: 'none',
+                border: 'none',
+                background: 'transparent',
+                padding: '0',
+                font: 'inherit',
+                letterSpacing: '[inherit]',
+                textTransform: 'inherit',
+                cursor: 'pointer',
+                rounded: 'sm',
+                transitionProperty: 'colors',
+                transition: 'fast',
+                ...last
+                  ? { fontWeight: 'extrabold', color: 'colorPalette.text' }
+                  : { color: 'inherit', _hover: { color: 'text' } },
+                _disabled: { cursor: 'default' },
+                _focusVisible: {
+                  outline: '[2px solid {colors.primary.border}]',
+                  outlineOffset: '[2px]',
+                },
+              }}>
+              {label}
+            </styled.button>
           </Fragment>
         )
       })}
     </HStack>
   )
+}
+
+/** The first step inside a fragment — where the breadcrumb jumps to. */
+function firstStepOf(nodes: OutlineTreeNodeData[]): StepPath | null {
+  for (const node of nodes) {
+    if (isOutlineFlowNode(node)) {
+      const found = firstStepOf(node.children)
+      if (found) return found
+    } else {
+      return node.value
+    }
+  }
+  return null
 }
 
 function collectTrail(nodes: OutlineTreeNodeData[], ancestors: readonly string[]) {
