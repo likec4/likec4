@@ -17,7 +17,7 @@ import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
-import { MinZoom } from '../base/const'
+import { IS_SERVER } from '../base/const'
 import { useDiagramEventHandlers } from '../context'
 import { useRootContainer } from '../context/RootContainerContext'
 import {
@@ -110,11 +110,14 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
 
   return ({
     enableReadOnly,
-    initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
+    // During SSR, consider initialized as true to avoid flashing
+    initialized: IS_SERVER || (ctx.initialized.xydata && ctx.initialized.xyflow),
     nodes: ctx.xynodes,
     edges: ctx.xyedges,
     pannable: ctx.pannable,
     zoomable: ctx.zoomable,
+    minZoom: ctx.minZoom,
+    maxZoom: ctx.maxZoom,
     nodesDraggable,
     nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
     fitViewPadding: ctx.fitViewPadding,
@@ -335,19 +338,27 @@ export function LikeC4DiagramXYFlow({
       {...safeReactFlowProps}
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}>
-      {enableControls && <Controls padding={props.fitViewPadding} />}
+      {enableControls && (
+        <Controls
+          fitViewPadding={props.fitViewPadding}
+          minZoom={props.minZoom}
+          maxZoom={props.maxZoom}
+        />
+      )}
       {children}
     </BaseXYFlow>
   )
 }
 
-const Controls = ({ padding }: { padding: ViewPaddings }) => (
+const Controls = (
+  { fitViewPadding, minZoom, maxZoom }: Pick<typeof selectXYProps.Out, 'fitViewPadding' | 'minZoom' | 'maxZoom'>,
+) => (
   <XYFlowControls
     showInteractive={false}
     fitViewOptions={{
-      padding,
-      minZoom: MinZoom,
-      maxZoom: 1,
+      padding: fitViewPadding,
+      minZoom,
+      maxZoom,
       duration: 350,
     }}
     position="bottom-left"

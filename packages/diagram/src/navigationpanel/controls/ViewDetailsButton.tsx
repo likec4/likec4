@@ -62,7 +62,7 @@ export function ViewDetailsButton({ onOpen }: ViewDetailsButtonProps) {
         }
 
         initialsRef.current.dimensions.initialHeight = Math.max(100, height)
-        initialsRef.current.dimensions.initialWidth = clamp(viewport.width * 0.3, { min: 200, max: 500 })
+        initialsRef.current.dimensions.initialWidth = clamp(viewport.width * 0.3, { min: 250, max: 500 })
       }
       handlers.open()
       onOpen()

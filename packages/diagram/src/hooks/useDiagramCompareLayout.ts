@@ -12,7 +12,7 @@ import { useCallbackRef } from './useCallbackRef'
 
 export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
   isEnabled: false
-  hasEditor: false
+  hasEditor: boolean
   isEditable: false
   state: 'inactive'
   drifts: null
@@ -27,10 +27,11 @@ export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
   canApplyLatest: boolean
   layout: t.LayoutType
 } {
+  const hasEditor = context.features.enableEditor
   const drifts = context.view.drifts ?? null
   if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
     return ({
-      hasEditor: false as const,
+      hasEditor,
       isEnabled: false as const,
       isEditable: false as const,
       state: 'inactive' as const,
@@ -45,7 +46,6 @@ export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
     enableReadOnly,
   } = deriveToggledFeatures(context)
 
-  const hasEditor = !!context.features.enableEditor
   const isEditable = !enableReadOnly && hasEditor
 
   return ({

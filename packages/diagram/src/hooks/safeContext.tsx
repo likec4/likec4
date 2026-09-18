@@ -27,7 +27,9 @@ export function useDiagram(): DiagramApi {
 type SelectAndCompare<A, B> = [
   selector: (snapshot: A) => B,
   compare: (a: B, b: B) => boolean,
-]
+] & {
+  readonly Out: B
+}
 
 type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
   /**
@@ -105,7 +107,7 @@ export function createSafeContextForActor<
     return [
       selector,
       compare ?? shallowEqual,
-    ]
+    ] as SelectAndCompare<Snapshot, T>
   }
   // -----------------
   // context selector overloads
@@ -117,7 +119,7 @@ export function createSafeContextForActor<
     return [
       (snapshot: Snapshot) => selector((snapshot as any).context),
       compare ?? shallowEqual,
-    ]
+    ] as SelectAndCompare<Snapshot, T>
   }
   // -----------------
   // useActorRef hook

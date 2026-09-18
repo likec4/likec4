@@ -85,6 +85,8 @@ export interface Input {
   pannable: boolean
   fitView?: boolean | undefined
   initialZoom?: number | undefined
+  minZoom: number
+  maxZoom: number
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings

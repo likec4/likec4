@@ -10,6 +10,7 @@ import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
 import { isNullish } from 'remeda'
+import { MaxZoom, MinZoom } from '../../base/const'
 import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
@@ -41,6 +42,8 @@ export function DiagramActorProvider({
   nodesSelectable,
   fitViewPadding,
   where = null,
+  minZoom = MinZoom,
+  maxZoom = MaxZoom,
   children,
   dynamicViewVariant: _defaultVariant,
   relationshipBrowserScope,
@@ -51,6 +54,8 @@ export function DiagramActorProvider({
   pannable: boolean
   fitView: boolean
   initialZoom?: number | undefined
+  minZoom?: number | undefined
+  maxZoom?: number | undefined
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
@@ -80,6 +85,8 @@ export function DiagramActorProvider({
         pannable,
         fitView,
         initialZoom,
+        minZoom,
+        maxZoom,
         fitViewPadding,
         nodesDraggable,
         nodesSelectable,
@@ -113,6 +120,8 @@ export function DiagramActorProvider({
           pannable,
           fitView,
           initialZoom,
+          minZoom,
+          maxZoom,
           fitViewPadding,
           nodesDraggable,
           nodesSelectable,
@@ -126,6 +135,8 @@ export function DiagramActorProvider({
       pannable,
       fitView,
       initialZoom,
+      minZoom,
+      maxZoom,
       fitViewPadding,
       nodesDraggable,
       nodesSelectable,

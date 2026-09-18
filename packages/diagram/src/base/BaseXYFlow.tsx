@@ -127,7 +127,6 @@ export function BaseXYFlow<
     children,
     colorMode,
     fitViewPadding = 0,
-    fitView = true,
     zoomOnDoubleClick = false,
     onViewportResize,
     onMoveEnd,
@@ -140,15 +139,17 @@ export function BaseXYFlow<
     nodesFocusable = nodesDraggable || nodesSelectable,
     edgesFocusable = false,
     showControls = false,
+    minZoom = MinZoom,
+    maxZoom = MaxZoom,
     ...props
   }: BaseXYFlowProps<NodeType, EdgeType>,
 ) {
   const fitViewOptions = useMemo(() => ({
-    minZoom: MinZoom,
-    maxZoom: 1,
+    minZoom,
+    maxZoom,
     padding: fitViewPadding,
     includeHiddenNodes: false,
-  }), [fitViewPadding])
+  }), [fitViewPadding, minZoom, maxZoom])
 
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   const isZoomTooSmall = useIsZoomTooSmall()
@@ -204,9 +205,8 @@ export function BaseXYFlow<
         zoomActivationKeyCode: null,
       })}
       zoomOnDoubleClick={zoomOnDoubleClick}
-      maxZoom={zoomable ? MaxZoom : 1}
-      minZoom={zoomable ? MinZoom : 1}
-      fitView={fitView}
+      maxZoom={zoomable ? maxZoom : 1}
+      minZoom={zoomable ? minZoom : 1}
       fitViewOptions={fitViewOptions}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"

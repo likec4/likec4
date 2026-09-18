@@ -245,7 +245,7 @@ export function findCorrespondingNode(
 }
 
 export function calcViewportForBounds(
-  context: Pick<Context, 'xystore' | 'fitViewPadding'>,
+  context: Pick<Context, 'xystore' | 'fitViewPadding' | 'minZoom'>,
   bounds: BBox,
 ): Viewport {
   let {
@@ -258,7 +258,7 @@ export function calcViewportForBounds(
     bounds,
     width,
     height,
-    MinZoom,
+    context.minZoom,
     maxZoom,
     context.fitViewPadding,
   )

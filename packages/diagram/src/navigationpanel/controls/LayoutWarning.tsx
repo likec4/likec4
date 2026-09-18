@@ -79,7 +79,7 @@ export const LayoutWarning = memo(() => {
                 Model has changed since this view was last updated.
               </Text>
               <Text mt={4} size="sm" lh="xs">
-                Detected changes:
+                Detected drifts:
                 {drifts.map((drift) => (
                   <Fragment key={drift}>
                     <br />

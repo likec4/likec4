@@ -41,8 +41,8 @@ const outlinePanelWidth = ({ activeWalkthrough, xystore }: Pick<Context, 'active
   }
   const { width } = xystore.getState()
   return clamp(roundDpr(width * 0.3), {
-    min: 180,
-    max: 400,
+    min: 240,
+    max: 500,
   })
 }
 

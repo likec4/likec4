@@ -18,7 +18,6 @@ import {
 import {
   assertEvent,
 } from 'xstate'
-import { MinZoom } from '../../base'
 import { calcEdgeBounds } from '../../utils/view-bounds'
 import { type Context, isActiveSequenceWalkthrough, machine } from './machine.setup'
 import {
@@ -128,7 +127,7 @@ function fitBoundsInViewport(context: Context, bounds: BBox, duration: number, z
     width -= left
   }
 
-  const minZoom = zoom ?? MinZoom
+  const minZoom = zoom ?? context.minZoom
   const maxZoom = zoom ?? calcMaxZoom(context, transform)
   const viewport = getViewportForBounds(
     bounds,

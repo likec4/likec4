@@ -103,7 +103,7 @@ export function ViewDetailsWindow() {
         <DataList size="xs" gap={'sm'} orientation="horizontal" labelWidth={50}>
           {viewModel.hasManualLayout && (
             <DataList.Item>
-              <DataList.ItemLabel>State</DataList.ItemLabel>
+              <DataList.ItemLabel>Layout</DataList.ItemLabel>
               <DataList.ItemValue>
                 <ManualLayoutState />
               </DataList.ItemValue>
@@ -390,7 +390,6 @@ function EditableTags({
 
 function ManualLayoutState() {
   const isMounted = useIsMounted()
-  const { enableEditor } = useEnabledFeatures()
   const [ctx, ops] = useDiagramCompareLayout()
 
   const [isProcessing, setIsProcessing] = useToggle()
@@ -429,7 +428,7 @@ function ManualLayoutState() {
         }),
       }}
       closeOnItemClick={false}
-      disabled={!enableEditor}
+      disabled={!ctx.hasEditor}
       offset={{ mainAxis: 4 }}
     >
       <Menu.Target>
@@ -445,10 +444,10 @@ function ManualLayoutState() {
               marginInlineStart: 4,
             },
           }}
-          disabled={!enableEditor}
-          rightSection={enableEditor ? <IconChevronDown size={12} stroke={3} opacity={0.7} /> : undefined}
+          disabled={!ctx.hasEditor}
+          rightSection={ctx.hasEditor ? <IconChevronDown size={12} stroke={3} opacity={0.7} /> : undefined}
         >
-          {ctx.isEnabled ? 'out of sync' : 'up to date'}
+          {ctx.isEnabled ? 'out of sync' : 'manual'}
         </Button>
       </Menu.Target>
 
@@ -463,8 +462,7 @@ function ManualLayoutState() {
               position="right-start"
               label={
                 <>
-                  Resets all manual adjustments and deletes snapshot.<br />
-                  <br />
+                  Reset manual layout adjustments and delete snapshot.<br />
                   You can undo this action.
                 </>
               }

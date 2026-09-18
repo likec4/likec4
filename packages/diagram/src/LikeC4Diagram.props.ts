@@ -304,6 +304,18 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * Override ReactFlow props
    */
   reactFlowProps?: OverrideReactFlowProps | undefined
+
+  /**
+   * Minimum zoom level
+   * @default 0.05
+   */
+  minZoom?: number | undefined
+
+  /**
+   * Maximum zoom level
+   * @default 3
+   */
+  maxZoom?: number | undefined
 }
 
 export type OpenSourceParams<A extends Any = Unknown> =

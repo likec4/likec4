@@ -1,13 +1,14 @@
-import { css, cva, cx } from '@likec4/styles/css'
-import { type HTMLStyledProps, Box, isCssProperty, splitCssProps, styled } from '@likec4/styles/jsx'
+import { cx } from '@likec4/styles/css'
+import { Box } from '@likec4/styles/jsx'
 import { floatingWindow } from '@likec4/styles/recipes'
 import {
   type FloatingWindowProps as MantineFloatingWindowProps,
   CloseButton,
   FloatingWindow as MantineFloatingWindow,
 } from '@mantine/core'
-import { useHover, useSessionStorage } from '@mantine/hooks'
-import { type PropsWithChildren, useRef } from 'react'
+import { useSessionStorage } from '@mantine/hooks'
+import { useRafCallback } from '@react-hookz/web'
+import { useRef } from 'react'
 import { useId, useMantinePortalProps } from '../hooks'
 
 export interface FloatingWindowProps extends MantineFloatingWindowProps {
@@ -65,10 +66,26 @@ export function FloatingWindow({
   // Store initial state in ref on first render
   const initialStateRef = useRef(windowState)
 
+  // Update ref when windowState changes
+  const [updateWindowState] = useRafCallback(
+    (update: Pick<MantineFloatingWindowProps, 'dimensions' | 'initialPosition'>) => {
+      setWindowState((state) => ({
+        dimensions: {
+          ...state.dimensions,
+          ...update.dimensions,
+        },
+        initialPosition: {
+          ...state.initialPosition,
+          ...update.initialPosition,
+        },
+      }))
+    },
+  )
+
   return (
     <MantineFloatingWindow
       constrainToViewport
-      constrainOffset={8}
+      constrainOffset={4}
       dragHandleSelector=".drag-handle"
       excludeDragHandleSelector="button, .nodrag, .mantine-ScrollArea-root"
       className={cx(floatingWindow(), className)}
@@ -76,24 +93,21 @@ export function FloatingWindow({
       {...props}
       {...initialStateRef.current}
       onPositionChange={(position) => {
-        setWindowState((state) => ({
-          ...state,
+        updateWindowState({
           initialPosition: {
             top: position.y,
             left: position.x,
           },
-        }))
+        })
         props.onPositionChange?.(position)
       }}
       onSizeChange={(size) => {
-        setWindowState((state) => ({
-          ...state,
+        updateWindowState({
           dimensions: {
-            ...state.dimensions,
             initialHeight: size.height,
             initialWidth: size.width,
           },
-        }))
+        })
         props.onSizeChange?.(size)
       }}
     >
