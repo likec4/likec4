@@ -12,17 +12,7 @@ import { extractViewTitleFromPath } from '@likec4/core/model'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
-import {
-  type RenderTreeNodePayload,
-  ActionIcon,
-  Button,
-  CloseButton,
-  ScrollArea,
-  Spoiler,
-  Tooltip,
-  Tree,
-  useTree,
-} from '@mantine/core'
+import { Button, CloseButton, ScrollArea, Spoiler } from '@mantine/core'
 import {
   IconAlertTriangle,
   IconArrowFork,
@@ -31,20 +21,17 @@ import {
   IconChevronRight,
   IconCornerDownRight,
   IconDirectionSignFilled,
-  IconListTree,
   IconPlayerSkipBackFilled,
   IconPlayerSkipForwardFilled,
   IconPlayerStop,
   IconRepeat,
 } from '@tabler/icons-react'
 import { AnimatePresence, m } from 'motion/react'
-import { type ReactNode, memo, useMemo } from 'react'
-import { mapToObj, only } from 'remeda'
+import { type ReactNode, Fragment, memo, useEffect, useRef } from 'react'
 import { Markdown, PortalToContainer } from '../../../custom'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../../hooks/safeContext'
-import { useOnDiagramEvent } from '../../../hooks/useDiagram'
 import type { DiagramContext } from '../../state/types'
-import { type OutlineTreeNodeData, useTreeData } from './state'
+import { type OutlineTreeNodeData, isOutlineFlowNode, useTreeData } from './state'
 
 // -----------------------------------------------------------------------------
 // Flow-type presentation
@@ -87,119 +74,84 @@ const flowPresentation: Record<FlowType, FlowPresentation> = {
 }
 
 // -----------------------------------------------------------------------------
-// Styled primitives
+// Depth of field
 // -----------------------------------------------------------------------------
 
-const SectionLabel = styled('div', {
-  base: {
-    textStyle: 'dimmed.xs',
-    fontWeight: 'semibold',
-    letterSpacing: 'caps.sm',
-    textTransform: 'uppercase',
-    userSelect: 'none',
-  },
-})
+/**
+ * The outline reads as a stack of planes: the nesting level the walkthrough is standing on
+ * renders at full strength, and every level *above* it steps back in contrast, saturation
+ * and surface tone. `--seq-r` is that distance (0 = you are here, capped at 3).
+ *
+ * The recession is relative, not absolute — it is recomputed as the walkthrough enters and
+ * leaves a fragment, so stepping back out to the root flattens the panel again.
+ */
+const MAX_RECESSION = 3
+const recessionOf = (depth: number, activeDepth: number) => Math.min(MAX_RECESSION, Math.max(0, activeDepth - depth))
 
-/** Numeric step badge (e.g. `12`). */
-const StepNum = styled('div', {
-  base: {
-    flex: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: '[22px]',
-    height: '[18px]',
-    paddingInline: '1',
-    rounded: 'sm',
-    bg: 'surface.sunken',
-    color: 'text.dimmed',
-    fontSize: '[10px]',
-    fontWeight: 'bold',
-    fontVariantNumeric: 'tabular-nums',
-    userSelect: 'none',
-  },
-})
+/** Per-level falloff, applied once per step of `--seq-r`. */
+const OPACITY_STEP = 0.26
+const SATURATION_STEP = 0.286
+/**
+ * Depth is mixed toward black rather than toward the canvas token: in dark mode canvas is
+ * darker than the panel, but in light mode the two are both white, so only a neutral shade
+ * recedes in both schemes.
+ */
+const SHADE_STEP = '4.55%'
 
-/** Small pill tag for the sub-flow operator (`loop`, `par`, `try`, …). */
-const FlowTag = styled('div', {
-  base: {
-    flex: 'none',
-    paddingInline: '1.5',
-    paddingBlock: '0.5',
-    rounded: 'sm',
-    bg: 'colorPalette.label',
-    color: 'colorPalette.text',
-    fontSize: '[9px]',
-    fontWeight: 'bold',
-    lineHeight: 'xs',
-    letterSpacing: 'tight',
-    textTransform: 'uppercase',
-    userSelect: 'none',
-  },
-})
-
-const rowBase = css.raw({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '2',
-  width: '100%',
-  paddingInline: '1.5',
-  paddingBlock: '1',
-  rounded: 'md',
-  cursor: 'pointer',
-  color: 'text',
-  userSelect: 'none',
-  transitionProperty: 'background',
-  transition: 'fast',
+const recessed = css.raw({
+  opacity: `[calc(1 - var(--seq-r, 0) * ${OPACITY_STEP})]`,
+  filter: `[saturate(calc(1 - var(--seq-r, 0) * ${SATURATION_STEP}))]`,
+  transitionProperty: '[opacity, filter]',
+  transition: 'slow',
+  // Nothing that has receded should be unreadable when you reach for it.
   _hover: {
-    bg: 'surface.sunken/60',
-  },
-  '&[data-selected="true"]': {
-    bg: 'primary.body.light',
-    color: 'primary.text.light',
+    opacity: '[1]',
+    filter: '[none]',
   },
 })
 
-const labelText = css.raw({
-  flex: '1',
-  minWidth: '0',
-  fontSize: 'xs',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-})
-
-const LabelSpan = styled('span', {
-  base: labelText,
+/** A nesting level, as a full-bleed tonal band. Tone only — no border, no radius, no card. */
+const levelBand = css.raw({
+  position: 'relative',
+  marginInline: '-2',
+  paddingInline: '2',
+  background: `[color-mix(in srgb, {colors.likec4.panel.bg}, #000 calc(var(--seq-r, 0) * ${SHADE_STEP}))]`,
+  transitionProperty: 'background',
+  transition: 'slow',
 })
 
 /**
- * Height of the leading step badge; also the line-height of the first label line
- * so that a multiline label keeps its first line aligned with the badge/arrow.
+ * A fragment nested *below* the level you are standing on: structure, not colour.
+ *
+ * Fills do not survive nesting — five levels of translucent fragment tint compound into mud,
+ * and a fragment you are not inside has no claim on the eye. Depth is carried by an indent and
+ * a hairline in the fragment's own colour; the tag pill and icon already say which kind it is.
  */
-const rowLeadingHeight = '[18px]'
-
-/** Groups the step badge and arrow so they stay centered against the first label line. */
-const leadingIcons = css.raw({
-  flex: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '2',
-  height: rowLeadingHeight,
+const nestedBand = css.raw({
+  background: 'transparent',
+  marginInline: '0',
+  marginBlock: '0.5',
+  paddingInline: '0',
+  paddingLeft: '2',
+  borderLeft: '[1px solid {colors.colorPalette.border}]',
+  rounded: '0',
 })
 
-/** Multiline label: preserves explicit newlines, wraps long lines, first line aligned with the badge. */
-const multilineLabelText = css.raw({
-  flex: '1',
-  minWidth: '0',
-  fontSize: 'xs',
-  lineHeight: rowLeadingHeight,
-  whiteSpace: 'pre-line',
-  overflowWrap: 'anywhere',
-})
-
-const MultilineLabelSpan = styled('span', {
-  base: multilineLabelText,
+/** The fragment you are standing inside, framed the way the canvas frames it. */
+const activeFrame = css.raw({
+  background: '[linear-gradient(var(--seq-frame-bg), var(--seq-frame-bg)), {colors.likec4.panel.bg}]',
+  // Clear of the frame line on every side, so the step does not sit on the border.
+  paddingInline: '3',
+  paddingBlock: '1.5',
+  marginBlock: '1',
+  _after: {
+    content: '""',
+    position: 'absolute',
+    inset: '[0 6px]',
+    border: '[1px solid {colors.colorPalette.border}]',
+    rounded: 'md',
+    pointerEvents: 'none',
+  },
 })
 
 // -----------------------------------------------------------------------------
@@ -282,31 +234,47 @@ type SequenceOutlinePanelBodyProps = {
   collapsed: DiagramContext['collapsedSequenceFlows']
 }
 function SequenceOutlinePanelBody(props: SequenceOutlinePanelBodyProps) {
+  const tree = useTreeData(props.flow, props.collapsed)
+  const stepnum = findStepNumber(tree, props.activeStep) ?? 1
+
   return (
     <>
       <OutlineHeader
         title={props.title}
         flow={props.flow}
         description={props.description}
+        stepnum={stepnum}
       />
       <OutlineBody
         activeStep={props.activeStep}
         flow={props.flow}
+        tree={tree}
         collapsed={props.collapsed} />
     </>
   )
+}
+
+function findStepNumber(nodes: OutlineTreeNodeData[], step: StepPath): number | null {
+  for (const node of nodes) {
+    if (isOutlineFlowNode(node)) {
+      const found = findStepNumber(node.children, step)
+      if (found !== null) return found
+    } else if (node.value === step) {
+      return node.nodeProps.stepnum
+    }
+  }
+  return null
 }
 
 const OutlineHeader = ({
   title,
   flow,
   description,
-}: Pick<
-  SequenceOutlinePanelBodyProps,
-  'title' | 'flow' | 'description'
->) => {
+  stepnum,
+}: Pick<SequenceOutlinePanelBodyProps, 'title' | 'flow' | 'description'> & { stepnum: number }) => {
   const diagram = useDiagram()
   const stepCount = flow.stepsCount
+  const pad = String(stepCount).length
   return (
     <VStack
       css={{
@@ -319,7 +287,7 @@ const OutlineHeader = ({
       <HStack
         css={{
           gap: '2.5',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           width: '100%',
           padding: '0',
         }}
@@ -352,9 +320,39 @@ const OutlineHeader = ({
           >
             {title ?? 'Sequence'}
           </styled.div>
-          <Txt size={'xxs'} dimmed nouserselect>
-            {stepCount} {stepCount === 1 ? 'step' : 'steps'}
-          </Txt>
+          <styled.div
+            css={{
+              marginTop: '0.5',
+              textStyle: 'dimmed.xxs',
+              fontWeight: 'medium',
+              letterSpacing: 'caps.sm',
+              textTransform: 'uppercase',
+              fontVariantNumeric: 'tabular-nums',
+              userSelect: 'none',
+            }}
+          >
+            Step {String(stepnum).padStart(pad, '0')} / {stepCount}
+          </styled.div>
+          <Box
+            css={{
+              height: '[2px]',
+              marginTop: '1.5',
+              rounded: 'xs',
+              bg: 'border.subtle',
+              overflow: 'hidden',
+            }}
+          >
+            <styled.div
+              css={{
+                height: '100%',
+                rounded: 'xs',
+                bg: 'primary.body',
+                transitionProperty: '[width]',
+                transition: 'slow',
+              }}
+              style={{ width: `${stepnum / stepCount * 100}%` }}
+            />
+          </Box>
         </VStack>
         <Box
           css={{
@@ -386,47 +384,14 @@ const OutlineHeader = ({
 }
 
 const OutlineBody = (
-  { activeStep, flow, collapsed }: Pick<
-    SequenceOutlinePanelBodyProps,
-    'activeStep' | 'flow' | 'collapsed'
-  >,
+  { activeStep, flow, tree }: Pick<SequenceOutlinePanelBodyProps, 'activeStep' | 'flow' | 'collapsed'> & {
+    tree: OutlineTreeNodeData[]
+  },
 ) => {
   const diagram = useDiagram()
-  const treeData = useTreeData(flow, collapsed)
-  const initialExpandedState = useMemo(() => mapToObj(flowAncestors(activeStep), id => [id, true]), [])
-
-  const tree = useTree({
-    initialSelectedState: [activeStep],
-    initialExpandedState,
-    multiple: false,
-    onSelectedStateChange(selected) {
-      const step = only(selected as StepPath[])
-      if (step && flow.isStep(step)) {
-        diagram.walkthroughStep({ step })
-      }
-    },
-  })
-
-  useOnDiagramEvent('walkthroughStep', ({ stepId }) => {
-    if (!tree.selectedState.includes(stepId)) {
-      const ancestors = flowAncestors(stepId)
-      if (ancestors.length > 0) {
-        const expanded = { ...tree.expandedState }
-        for (const parent of ancestors) {
-          expanded[parent] = true
-        }
-        tree.setExpandedState(expanded)
-      }
-      tree.setSelectedState([stepId])
-    }
-  })
-
-  const allCollapsed = useMemo(
-    () => Object.values(tree.expandedState).every(v => !v),
-    [tree.expandedState],
-  )
-
-  const { prev, next } = flow.prevAndNext(activeStep, flowId => collapsed[flowId] ?? false)
+  const ancestors = flowAncestors(activeStep)
+  const activeDepth = ancestors.length
+  const { prev, next } = flow.prevAndNext(activeStep, () => false)
 
   return (
     <>
@@ -440,22 +405,17 @@ const OutlineBody = (
           paddingBottom: '1',
         }}
       >
-        <SectionLabel flex={'1'}>Outline</SectionLabel>
-        <Tooltip
-          label={allCollapsed ? 'Expand all' : 'Collapse all'}
-          fz="xs"
-          openDelay={500}
-          withinPortal={false}
-        >
-          <ActionIcon
-            tabIndex={-1}
-            variant="subtle"
-            size="sm"
-            onClick={() => (allCollapsed ? tree.expandAllNodes() : tree.collapseAllNodes())}
-          >
-            <IconListTree size={14} />
-          </ActionIcon>
-        </Tooltip>
+        <styled.div
+          css={{
+            flex: '1',
+            textStyle: 'dimmed.xs',
+            fontWeight: 'semibold',
+            letterSpacing: 'caps.sm',
+            textTransform: 'uppercase',
+            userSelect: 'none',
+          }}>
+          Outline
+        </styled.div>
         <Button
           tabIndex={-1}
           size="compact-xs"
@@ -482,114 +442,390 @@ const OutlineBody = (
         type="auto"
         overscrollBehavior="contain"
         className={css({ flex: '1', width: '100%', minHeight: '0' })}
+        classNames={{
+          viewport: css({
+            paddingInline: '2',
+            paddingBottom: '4',
+            background: `[color-mix(in srgb, {colors.likec4.panel.bg}, #000 calc(var(--seq-r, 0) * ${SHADE_STEP}))]`,
+            transitionProperty: 'background',
+            transition: 'slow',
+          }),
+        }}
+        style={{
+          ['--seq-r' as string]: recessionOf(0, activeDepth),
+          ['--seq-badge-bg' as string]: 'var(--colors-primary-body)',
+          ['--seq-badge-fg' as string]: 'var(--colors-primary-text)',
+        }}
       >
-        <Tree
-          levelOffset="var(--spacing-2\.5)"
-          data={treeData}
-          tree={tree}
-          selectOnClick
-          classNames={{
-            root: css({ paddingInline: '2', paddingBottom: '3' }),
-          }}
-          styles={{
-            node: {
-              paddingInlineStart: 'var(--label-offset)',
-            },
-          }}
-          renderNode={renderTreeNode}
-        />
+        <ActiveTrail ancestors={ancestors} tree={tree} />
+        <OutlineNodes
+          nodes={tree}
+          depth={0}
+          activeStep={activeStep}
+          activeDepth={activeDepth}
+          ancestors={ancestors} />
       </ScrollArea>
     </>
   )
 }
 
-// -----------------------------------------------------------------------------
-// Node renderers
-// -----------------------------------------------------------------------------
+/** Sticky "you are here" trail: the fragments the active step is nested inside. */
+const ActiveTrail = ({ ancestors, tree }: { ancestors: readonly string[]; tree: OutlineTreeNodeData[] }) => {
+  const trail = collectTrail(tree, ancestors)
+  // At the root you are not inside anything — the toolbar label already says where you are.
+  if (trail.length === 0) return null
+  return (
+    <HStack
+      css={{
+        position: 'sticky',
+        top: '0',
+        zIndex: 'sticky',
+        gap: '1.5',
+        flexWrap: 'wrap',
+        marginInline: '-2',
+        marginBottom: '1.5',
+        paddingInline: '2.5',
+        paddingBlock: '1.5',
+        bg: 'likec4.panel.bg',
+        borderBottom: 'panel',
+        textStyle: 'dimmed.xxs',
+        fontWeight: 'semibold',
+        letterSpacing: 'caps.sm',
+        textTransform: 'uppercase',
+        userSelect: 'none',
+        '& svg': { flex: 'none', opacity: '[0.5]' },
+      }}
+    >
+      {trail.map((node, i) => {
+        const { paletteClass, tag } = flowPresentation[node.nodeProps.type as FlowType]
+        const label = node.nodeProps.title ? `${tag} ${node.nodeProps.title}` : tag
+        const last = i === trail.length - 1
+        return (
+          <Fragment key={node.value}>
+            {i > 0 && <IconChevronRight size={10} />}
+            {last
+              ? (
+                <styled.b
+                  className={paletteClass}
+                  css={{ fontWeight: 'extrabold', color: 'colorPalette.text' }}>
+                  {label}
+                </styled.b>
+              )
+              : <span>{label}</span>}
+          </Fragment>
+        )
+      })}
+    </HStack>
+  )
+}
 
-type OutlineTreeNodeProps = Omit<RenderTreeNodePayload, 'node'> & { node: OutlineTreeNodeData }
+function collectTrail(nodes: OutlineTreeNodeData[], ancestors: readonly string[]) {
+  const trail: Extract<OutlineTreeNodeData, { children: OutlineTreeNodeData[] }>[] = []
+  const walk = (list: OutlineTreeNodeData[]) => {
+    for (const node of list) {
+      if (isOutlineFlowNode(node) && ancestors.includes(node.value)) {
+        trail.push(node)
+        walk(node.children)
+        return
+      }
+    }
+  }
+  walk(nodes)
+  return trail
+}
 
-const renderTreeNode = ((payload: OutlineTreeNodeProps) => {
-  return payload.node.nodeProps.type === 'step'
-    ? <StepRow {...(payload as StepRowProps)} />
-    : <FlowRow {...(payload as FlowRowProps)} />
-}) as (payload: RenderTreeNodePayload) => ReactNode
+type OutlineNodesProps = {
+  nodes: OutlineTreeNodeData[]
+  depth: number
+  activeStep: StepPath
+  activeDepth: number
+  ancestors: readonly string[]
+}
 
-type StepRowProps = OutlineTreeNodeProps & { node: Extract<OutlineTreeNodeData, { nodeProps: { type: 'step' } }> }
+const OutlineNodes = ({ nodes, depth, activeStep, activeDepth, ancestors }: OutlineNodesProps) => {
+  const recession = recessionOf(depth, activeDepth)
 
-const StepRow = ({ node, elementProps, selected }: StepRowProps) => {
-  const { stepnum, source, target, label, notes } = node.nodeProps
   return (
     <>
-      <Box {...elementProps} className={cx(elementProps.className, css(rowBase, { alignItems: 'flex-start' }))}>
-        <Box className={css(leadingIcons)}>
-          <StepNum>{stepnum}</StepNum>
+      {nodes.map(node => {
+        if (!isOutlineFlowNode(node)) {
+          return (
+            <StepRow
+              key={node.value}
+              node={node}
+              active={node.value === activeStep}
+              recession={recession} />
+          )
+        }
+        const onPath = ancestors.includes(node.value)
+        const innerDistance = activeDepth - (depth + 1)
+        const innerRecession = recessionOf(depth + 1, activeDepth)
+        const { paletteClass } = flowPresentation[node.nodeProps.type as FlowType]
+
+        return (
+          <Box
+            key={node.value}
+            className={cx(
+              paletteClass,
+              css(
+                levelBand,
+                innerDistance < 0 && nestedBand,
+                innerDistance === 0 && onPath && activeFrame,
+              ),
+            )}
+            style={{
+              ['--seq-r' as string]: innerRecession,
+              ['--seq-frame-bg' as string]: 'var(--colors-color-palette)',
+              ['--seq-badge-bg' as string]: 'var(--colors-color-palette-text)',
+              ['--seq-badge-fg' as string]: 'var(--colors-likec4-panel-bg)',
+            }}
+          >
+            <FlowRow node={node} recession={recession} />
+            <OutlineNodes
+              nodes={node.children}
+              depth={depth + 1}
+              activeStep={activeStep}
+              activeDepth={activeDepth}
+              ancestors={ancestors} />
+          </Box>
+        )
+      })}
+    </>
+  )
+}
+
+// -----------------------------------------------------------------------------
+// Rows
+// -----------------------------------------------------------------------------
+
+type StepNode = Extract<OutlineTreeNodeData, { nodeProps: { type: 'step' } }>
+
+const StepRow = ({ node, active, recession }: { node: StepNode; active: boolean; recession: number }) => {
+  const diagram = useDiagram()
+  const { stepnum, source, target, label, notes } = node.nodeProps
+
+  if (active) {
+    return <ActiveStepCard node={node} />
+  }
+
+  return (
+    <HStack
+      css={css.raw(recessed, {
+        alignItems: 'baseline',
+        gap: '2',
+        width: '100%',
+        paddingInline: '1.5',
+        paddingBlock: '1',
+        rounded: 'md',
+        cursor: 'pointer',
+        color: 'text',
+        userSelect: 'none',
+        _hover: {
+          background: '[var(--colors-color-palette-hovered, {colors.surface.sunken})]',
+        },
+      })}
+      style={{ ['--seq-r' as string]: recession }}
+      onClick={() => diagram.walkthroughStep({ step: node.value })}
+    >
+      <StepBadge>{stepnum}</StepBadge>
+      <styled.span
+        css={{
+          flex: '1',
+          minWidth: '0',
+          fontSize: 'xs',
+          lineHeight: '[18px]',
+          whiteSpace: 'pre-line',
+          overflowWrap: 'anywhere',
+        }}>
+        {label ?? `${source} → ${target}`}
+      </styled.span>
+      {notes && <NotesDot />}
+    </HStack>
+  )
+}
+
+/** The step you are on: lifted onto its own surface, with room for its notes. */
+const ActiveStepCard = ({ node }: { node: StepNode }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const { stepnum, source, target, label, notes } = node.nodeProps
+
+  useEffect(() => {
+    ref.current?.scrollIntoView({
+      block: 'nearest',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    })
+  }, [node.value])
+
+  return (
+    <Box
+      ref={ref}
+      css={{
+        marginBlock: '2',
+        paddingInline: '3',
+        paddingBlock: '2.5',
+        rounded: 'md',
+        background: '[var(--colors-color-palette-label, {colors.surface.sunken})]',
+        boxShadow: 'md',
+        cursor: 'default',
+        _reduceGraphicsOnPan: {
+          boxShadow: 'none',
+          outline: '[1px solid {colors.border.subtle}]',
+        },
+      }}
+    >
+      <HStack css={{ alignItems: 'baseline', gap: '2', width: '100%' }}>
+        <StepBadge active>{stepnum}</StepBadge>
+        <styled.span
+          css={{
+            flex: '1',
+            minWidth: '0',
+            fontSize: 'md',
+            fontWeight: 'medium',
+            lineHeight: '[20px]',
+            color: 'text',
+            whiteSpace: 'pre-line',
+            overflowWrap: 'anywhere',
+            textWrap: 'balance',
+          }}>
+          {label ?? `${source} → ${target}`}
+        </styled.span>
+      </HStack>
+      {label && (
+        <styled.div
+          css={{
+            marginTop: '1',
+            marginLeft: '[30px]',
+            textStyle: 'dimmed.xxs',
+            color: '[color-mix(in srgb, {colors.text}, transparent 20%)]',
+            fontWeight: 'medium',
+            letterSpacing: 'caps.sm',
+            textTransform: 'uppercase',
+            userSelect: 'none',
+          }}>
+          {source}
           <IconArrowRight
-            size={13}
-            className={css({ flex: 'none', color: 'text.dimmed' })}
-          />
-        </Box>
-        {label
-          ? <MultilineLabelSpan>{label}</MultilineLabelSpan>
-          : (
-            <HStack css={{ gap: '1', minWidth: '0', flex: '1', minHeight: rowLeadingHeight }}>
-              <LabelSpan css={{ flex: 'none', color: 'text.dimmed' }}>{source}</LabelSpan>
-              <IconArrowRight size={11} className={css({ flex: 'none', color: 'text.dimmed' })} />
-              <LabelSpan>{target}</LabelSpan>
-            </HStack>
-          )}
-      </Box>
+            size={12}
+            className={css({
+              display: 'inline',
+              verticalAlign: '[-0.15em]',
+              marginInline: '1',
+            })} />
+          {target}
+        </styled.div>
+      )}
       {notes && (
         <Markdown
           value={RichText.from(notes)}
           fontSize={'sm'}
           textScale={0.95}
           className={css({
-            background: 'surface.sunken',
-            border: 'subtle',
-            rounded: 'md',
-            cursor: 'default',
-            marginBlockStart: '1',
-            marginBlockEnd: '2',
-            paddingInline: '4',
-            paddingBlock: '2',
+            marginTop: '2.5',
+            paddingTop: '2.5',
+            borderTop: 'subtle',
+            color: 'text',
           })}
-          style={{
-            marginInlineStart: 'calc(-1 * var(--label-offset))',
-            display: selected ? 'block' : 'none',
-          }}
         />
       )}
-    </>
-  )
-}
-
-type FlowRowProps = OutlineTreeNodeProps & { node: Extract<OutlineTreeNodeData, { nodeProps: { type: FlowType } }> }
-
-const FlowRow = ({ node, expanded, elementProps }: FlowRowProps) => {
-  const { type, title } = node.nodeProps
-  const { paletteClass, tag, Icon } = flowPresentation[type]
-  return (
-    <Box
-      {...elementProps}
-      className={cx(elementProps.className, paletteClass, css(rowBase))}
-    >
-      <IconChevronRight
-        size={14}
-        className={css({
-          flex: 'none',
-          color: 'text.dimmed',
-          transitionProperty: 'common',
-          transition: 'medium',
-          '&[data-expanded="true"]': { transform: 'rotate(90deg)' },
-        })}
-        data-expanded={expanded}
-      />
-      <Icon size={14} className={css({ flex: 'none', color: 'colorPalette.text' })} />
-      <styled.span css={{ ...labelText, fontWeight: 'medium' }}>
-        {title ?? tag}
-      </styled.span>
-      <FlowTag>{tag}</FlowTag>
     </Box>
   )
 }
+
+const stepBadgeBase = css.raw({
+  flex: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minWidth: '[20px]',
+  height: '[18px]',
+  paddingInline: '1',
+  rounded: 'sm',
+  bg: 'surface.sunken',
+  color: 'text.dimmed',
+  fontSize: '[10px]',
+  fontWeight: 'bold',
+  fontVariantNumeric: 'tabular-nums',
+  userSelect: 'none',
+})
+
+const stepBadgeActive = css.raw({
+  minWidth: '[22px]',
+  height: '[20px]',
+  // Composited over the panel rather than the tinted card, so the alpha lands predictably.
+  background: '[linear-gradient(var(--seq-badge-bg), var(--seq-badge-bg)), {colors.likec4.panel.bg}]',
+  color: '[var(--seq-badge-fg)]',
+  fontSize: '[11px]',
+})
+
+const StepBadge = ({ children, active }: { children: ReactNode; active?: boolean }) => (
+  <div className={css(stepBadgeBase, active && stepBadgeActive)}>{children}</div>
+)
+
+/** Marks a step that carries notes, without letting the note reflow the list. */
+const NotesDot = () => (
+  <Box
+    css={{
+      flex: 'none',
+      alignSelf: 'flex-start',
+      boxSize: '[5px]',
+      marginTop: '[7px]',
+      rounded: 'pill',
+      bg: 'text.dimmed',
+    }}
+  />
+)
+
+type FlowNode = Extract<OutlineTreeNodeData, { children: OutlineTreeNodeData[] }>
+
+const FlowRow = ({ node, recession }: { node: FlowNode; recession: number }) => {
+  const { tag, Icon } = flowPresentation[node.nodeProps.type as FlowType]
+  return (
+    <HStack
+      css={css.raw(recessed, {
+        alignItems: 'center',
+        gap: '1.5',
+        marginTop: '2',
+        marginBottom: '0.5',
+        paddingInline: '1.5',
+        paddingBlock: '0.5',
+        color: 'text',
+        userSelect: 'none',
+      })}
+      style={{ ['--seq-r' as string]: recession }}
+    >
+      <Icon size={13} className={css({ flex: 'none', color: 'colorPalette.text' })} />
+      <styled.span
+        css={{
+          flex: '1',
+          minWidth: '0',
+          fontSize: 'xs',
+          fontWeight: 'medium',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}>
+        {node.nodeProps.title ?? tag}
+      </styled.span>
+      <FlowTag>{tag}</FlowTag>
+    </HStack>
+  )
+}
+
+/** Small pill tag for the sub-flow operator (`loop`, `par`, `try`, …). */
+const flowTagBase = css.raw({
+  flex: 'none',
+  paddingInline: '1.5',
+  paddingBlock: '0.5',
+  rounded: 'sm',
+  bg: 'colorPalette.label',
+  color: 'colorPalette.text',
+  fontSize: '[9px]',
+  fontWeight: 'bold',
+  lineHeight: 'xs',
+  letterSpacing: 'tight',
+  textTransform: 'uppercase',
+  userSelect: 'none',
+})
+
+const FlowTag = ({ children, dimmed }: { children: ReactNode; dimmed?: boolean }) => (
+  <div className={css(flowTagBase, dimmed && { opacity: '[0.7]' })}>{children}</div>
+)
