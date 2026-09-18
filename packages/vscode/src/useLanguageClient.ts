@@ -2,7 +2,7 @@ import useDocumentSelector from '#useDocumentSelector'
 import useEnvLanguageClient from '#useLanguageClient'
 import { watchDebounced } from '@reactive-vscode/vueuse'
 import {
-  createSingletonComposable,
+  defineService,
   useDisposable,
   watch,
 } from 'reactive-vscode'
@@ -26,7 +26,7 @@ function stateName(state: State) {
 /**
  * Reactively provides language client instance (based on environment) and methods to start/restart it
  */
-export const useLanguageClient = createSingletonComposable(() => {
+export const useLanguageClient = defineService(() => {
   const isActivated = useIsActivated()
   const { logger } = useExtensionLogger('lc')
 

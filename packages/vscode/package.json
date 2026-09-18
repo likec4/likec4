@@ -39,7 +39,7 @@
     "vsce:publish": "pnpx vsce publish --skip-duplicate"
   },
   "engines": {
-    "vscode": "^1.110.0"
+    "vscode": "^1.100.0"
   },
   "keywords": [
     "architecture",
@@ -352,7 +352,7 @@
     "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@reactive-vscode/vueuse": "^0.4.1",
+    "@reactive-vscode/vueuse": "^1.0.2",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
     "@types/vscode": "catalog:vscode",
@@ -368,8 +368,8 @@
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
     "playwright": "catalog:",
-    "pretty-ms": "^9.3.0",
-    "reactive-vscode": "^0.4.1",
+    "pretty-ms": "^9.3.1",
+    "reactive-vscode": "^1.0.2",
     "remeda": "catalog:utils",
     "tsdown": "catalog:tsdown",
     "tslib": "^2.8.1",
@@ -378,13 +378,13 @@
     "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "vscode-ext-gen": "^1.0.2",
+    "vscode-ext-gen": "^1.6.0",
     "vscode-jsonrpc": "catalog:vscode",
     "vscode-languageclient": "catalog:vscode",
     "vscode-languageserver": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
-    "vscode-messenger": "^0.5.1",
-    "vscode-messenger-common": "^0.5.1",
+    "vscode-messenger": "catalog:vscode",
+    "vscode-messenger-common": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
     "zod": "catalog:externals",
     "zx": "catalog:"

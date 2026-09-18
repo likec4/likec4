@@ -1,7 +1,7 @@
-import { defineConfigObject } from 'reactive-vscode'
-import { type NestedScopedConfigs, scopedConfigs } from './meta'
+import { defineConfig } from 'reactive-vscode'
+import { type NestedScopedConfigs, scopedConfigs } from './meta.ts'
 
-export const config = defineConfigObject<NestedScopedConfigs>(
+export const config = defineConfig<NestedScopedConfigs>(
   scopedConfigs.scope,
-  scopedConfigs.defaults,
+  // scopedConfigs.defaults,
 )

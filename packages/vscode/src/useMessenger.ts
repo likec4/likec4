@@ -15,7 +15,7 @@ import {
   WebviewMsgs,
 } from '@likec4/vscode-preview/protocol'
 import {
-  createSingletonComposable,
+  defineService,
   useDisposable,
 } from 'reactive-vscode'
 import type { IsNever } from 'type-fest'
@@ -30,7 +30,7 @@ import {
 } from 'vscode-messenger-common'
 import { useExtensionLogger } from './useExtensionLogger'
 
-export const useMessenger = createSingletonComposable(() => {
+export const useMessenger = defineService(() => {
   const { logger } = useExtensionLogger('messenger')
   const messenger = new Messenger()
 

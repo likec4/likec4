@@ -1,9 +1,9 @@
 import useDocumentSelector from '#useDocumentSelector'
 import {
-  createSingletonComposable,
+  defineService,
   extensionContext,
+  onDeactivate,
   toValue,
-  tryOnScopeDispose,
   useDisposable,
 } from 'reactive-vscode'
 import * as vscode from 'vscode'
@@ -12,7 +12,7 @@ import { LanguageClient as BrowserLanguageClient } from 'vscode-languageclient/b
 import { useExtensionLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 
-const useLanguageClient = createSingletonComposable(() => {
+const useLanguageClient = defineService(() => {
   const { output } = useExtensionLogger()
   // Create a worker. The worker main file implements the language server.
   const serverMain = vscode.Uri.joinPath(
@@ -26,9 +26,10 @@ const useLanguageClient = createSingletonComposable(() => {
 
   const worker = new Worker(serverMain, {
     name: 'LikeC4 Language Server',
+    type: 'module',
   })
 
-  tryOnScopeDispose(() => {
+  onDeactivate(() => {
     worker.terminate()
   })
 

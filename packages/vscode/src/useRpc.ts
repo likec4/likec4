@@ -18,25 +18,39 @@ import {
   ValidateLayout,
 } from '@likec4/language-server/protocol'
 import { loggable } from '@likec4/log'
-import { createSingletonComposable, useDisposable } from 'reactive-vscode'
-import type vscode from 'vscode'
+import { defineService, useDisposable } from 'reactive-vscode'
+import type { Location, Uri } from 'vscode'
 import type { DocumentUri } from 'vscode-languageserver-types'
 import { useExtensionLogger } from './useExtensionLogger'
 import { useLanguageClient } from './useLanguageClient'
 
-export const useRpc = createSingletonComposable(() => {
+const maxWait = <T>(
+  ms: number,
+  promise: Promise<T>,
+) =>
+  Promise.race([
+    new Promise<T>(resolve => setTimeout(resolve, ms)),
+    promise,
+  ])
+
+export const useRpc = defineService(() => {
   const { client } = useLanguageClient()
   const { logger } = useExtensionLogger('rpc')
   let previousOperation = Promise.resolve(null as any)
 
-  async function queue<T>(op: () => Promise<T>): Promise<T> {
+  function queue<T>(op: () => Promise<T>): Promise<T> {
     const opPromise = previousOperation.then(op)
-    // ignore failures
-    previousOperation = opPromise.catch((err) => {
-      logger.debug(loggable(err))
-      return {} as any
-    })
-    return await opPromise
+    // ignore failures, and limit waiting time (i.e. previous operation hangs)
+    previousOperation = previousOperation.then(() =>
+      maxWait(
+        1_000,
+        opPromise.catch((err) => {
+          logger.debug(loggable(err))
+          return {} as any
+        }),
+      )
+    )
+    return opPromise
   }
 
   return {
@@ -80,7 +94,7 @@ export const useRpc = createSingletonComposable(() => {
       await client.sendRequest(BuildDocuments.req, { docs })
     },
 
-    async locate(params: Locate.Params): Promise<vscode.Location | null> {
+    async locate(params: Locate.Params): Promise<Location | null> {
       const loc = await client.sendRequest(Locate.req, params)
       if (!loc) {
         return null
@@ -125,7 +139,7 @@ export const useRpc = createSingletonComposable(() => {
       return await queue(() => client.sendRequest(FetchProjectsOverview.req))
     },
 
-    async notifyDidChangeSnapshot(event: 'update' | 'delete', snapshot: vscode.Uri) {
+    async notifyDidChangeSnapshot(event: 'update' | 'delete', snapshot: Uri) {
       await client.sendNotification(
         DidChangeSnapshotNotification.type,
         {

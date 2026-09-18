@@ -69,8 +69,8 @@ export type OpenViewPayload = {
   projectId: ProjectId
 } | {
   screen: 'projects'
-  viewId?: never
-  projectId?: never
+  viewId?: undefined
+  projectId?: undefined
 }
 export const OnOpenView: NotificationType<OpenViewPayload> = {
   method: 'on-open-view',

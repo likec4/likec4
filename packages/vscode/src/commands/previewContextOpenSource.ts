@@ -1,4 +1,5 @@
-import { executeCommand, useCommand } from 'reactive-vscode'
+import { useCommand } from 'reactive-vscode'
+import { commands as cmd } from 'vscode'
 import { commands } from '../meta'
 import type { PreviewPanel } from './types'
 
@@ -12,9 +13,9 @@ export function registerPreviewContextOpenSourceCommand({ sendTelemetry, preview
     sendTelemetry(commands.previewContextOpenSource)
     const { element, deployment } = await preview.getLastClickedElement()
     if (deployment) {
-      await executeCommand(commands.locate, { deployment })
+      await cmd.executeCommand(commands.locate, { deployment })
     } else if (element) {
-      await executeCommand(commands.locate, { element })
+      await cmd.executeCommand(commands.locate, { element })
     }
   })
 }

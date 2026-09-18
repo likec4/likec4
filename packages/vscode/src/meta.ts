@@ -12,7 +12,7 @@ export const extensionId = `${publisher}.${name}`
 /**
  * Type union of all commands
  */
-export type CommandKey = 
+export type CommandKey =
   | "likec4.open-preview"
   | "likec4.restart"
   | "likec4.reload-projects"
@@ -24,7 +24,7 @@ export type CommandKey =
   | "likec4.semantic-layout-with-ai"
 
 /**
- * Commands map registed by `likec4.likec4-vscode`
+ * Commands map registered by `likec4.likec4-vscode`
  */
 export const commands = {
   /**
@@ -75,9 +75,62 @@ export const commands = {
 } satisfies Record<string, CommandKey>
 
 /**
+ * Type union of all languages
+ */
+export type LanguageKey =
+  | "json5"
+  | "likec4-snapshot"
+  | "likec4"
+
+/**
+ * Languages map registed by `likec4.likec4-vscode`
+ */
+export const languages = {
+  json5: "json5",
+  likec4Snapshot: "likec4-snapshot",
+  likec4: "likec4",
+} satisfies Record<string, LanguageKey>
+
+/**
+ * Type union of all chatParticipants
+ */
+export type ChatParticipantKey =
+  | "likec4.layout-assistant"
+
+export interface ChatParticipantTypeMap {
+  "likec4.layout-assistant": 
+   | "semantic"
+}
+
+export type ChatParticipantItem<T extends keyof ChatParticipantTypeMap> = ChatParticipantTypeMap[T]
+
+/**
+ * ChatParticipants map registed by `likec4.likec4-vscode`
+ */
+export const chatParticipants = {
+  /**
+   * likec4-layout
+   * @fullName `LikeC4 Layout Assistant`
+   * @description `What view would you like to enhance?`
+   * @id `likec4.layout-assistant`
+   */
+  likec4LayoutAssistant: "likec4.layout-assistant",
+} satisfies Record<string, ChatParticipantKey>
+
+export const chatParticipantCommandsMap = {
+  likec4LayoutAssistant: {
+  /**
+   * semantic
+   * @description `Suggest improvements to the diagram layout based on its semantics`
+   */
+  semantic: "semantic",
+  } satisfies Record<string, ChatParticipantItem<"likec4.layout-assistant">>,
+}
+
+/**
  * Type union of all configs
  */
-export type ConfigKey = 
+export type ConfigKey =
   | "likec4.graphviz.mode"
   | "likec4.graphviz.path"
   | "likec4.trace.extension"
@@ -127,7 +180,7 @@ export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
  */
 export const configs = {
   /**
-   * 
+   *
    * @key `likec4.graphviz.mode`
    * @default `"wasm"`
    * @type `string`
@@ -137,7 +190,7 @@ export const configs = {
     default: "wasm",
   } as ConfigItem<"likec4.graphviz.mode">,
   /**
-   * 
+   *
    * @key `likec4.graphviz.path`
    * @default `""`
    * @type `string`
@@ -167,7 +220,7 @@ export const configs = {
     default: "off",
   } as ConfigItem<"likec4.trace.server">,
   /**
-   * 
+   *
    * @key `likec4.formatting.quoteStyle`
    * @default `"auto"`
    * @type `string`
@@ -177,7 +230,7 @@ export const configs = {
     default: "auto",
   } as ConfigItem<"likec4.formatting.quoteStyle">,
   /**
-   * 
+   *
    * @key `likec4.node.path`
    * @default `""`
    * @type `string`
@@ -187,7 +240,7 @@ export const configs = {
     default: "",
   } as ConfigItem<"likec4.node.path">,
   /**
-   * 
+   *
    * @key `likec4.exclude`
    * @default `[]`
    * @type `array`

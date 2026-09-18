@@ -2,7 +2,7 @@ import { nonNullable } from '@likec4/core'
 import { join } from 'pathe'
 import {
   computed,
-  createSingletonComposable,
+  defineService,
   extensionContext,
   toValue,
   useDisposable,
@@ -18,7 +18,7 @@ function isMcpStdioServerDefinition(server: vscode.McpServerDefinition): server 
   return 'args' in server && 'command' in server
 }
 
-export const useMcpRegistration = createSingletonComposable(() => {
+export const useMcpRegistration = defineService(() => {
   const { logger } = useExtensionLogger()
 
   if (!vscode.lm?.registerMcpServerDefinitionProvider) {

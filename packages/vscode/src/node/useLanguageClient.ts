@@ -1,20 +1,19 @@
 import useDocumentSelector from '#useDocumentSelector'
-import path from 'node:path'
+import { watchDebounced } from '@reactive-vscode/vueuse'
 import {
-  createSingletonComposable,
+  defineService,
   extensionContext,
   onDeactivate,
   toValue,
   useDisposable,
-  useOutputChannel,
-  watch,
 } from 'reactive-vscode'
-import { once } from 'remeda'
+import { first, once } from 'remeda'
 import * as vscode from 'vscode'
 import {
   type LanguageClientOptions,
   type ServerOptions,
   LanguageClient as NodeLanguageClient,
+  RevealOutputChannelOn,
   State,
   TransportKind,
 } from 'vscode-languageclient/node'
@@ -23,15 +22,14 @@ import { globPattern, isVirtual } from '../const'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { isLikeC4Source } from '../utils.ts'
 
-const useLanguageClient = createSingletonComposable(() => {
+const useLanguageClient = defineService(() => {
   const { output } = useExtensionLogger()
 
-  const serverModule = extensionContext.value!.asAbsolutePath(
-    path.join(
-      'dist',
-      'node',
-      'language-server.mjs',
-    ),
+  const serverModule = vscode.Uri.joinPath(
+    extensionContext.value!.extensionUri,
+    'dist',
+    'node',
+    'language-server.mjs',
   )
 
   // Computed once — changes require extension host restart (prompted by the watcher below)
@@ -41,7 +39,7 @@ const useLanguageClient = createSingletonComposable(() => {
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
     run: {
-      module: serverModule,
+      module: serverModule.fsPath,
       transport: TransportKind.ipc,
       runtime: nodeRuntime,
       options: {
@@ -49,7 +47,7 @@ const useLanguageClient = createSingletonComposable(() => {
       },
     },
     debug: {
-      module: serverModule,
+      module: serverModule.fsPath,
       runtime: nodeRuntime,
       transport: TransportKind.ipc,
       options: {
@@ -74,11 +72,11 @@ const useLanguageClient = createSingletonComposable(() => {
 
   const documentSelector = useDocumentSelector()
 
-  const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
+  const workspaceFolder = first(vscode.workspace.workspaceFolders ?? [])
 
   const clientOptions: LanguageClientOptions = {
     documentSelector: toValue(documentSelector) as any,
-    outputChannel: useOutputChannel('LikeC4 Language Server', 'log'),
+    outputChannel: useDisposable(vscode.window.createOutputChannel('LikeC4 Language Server', 'log')),
     diagnosticCollectionName: 'likec4',
     markdown: {
       isTrusted: true,
@@ -139,17 +137,21 @@ const useLanguageClient = createSingletonComposable(() => {
     }),
   )
 
-  watch(() => config.node.path, (_newPath, oldPath) => {
-    if (oldPath === undefined) return
-    vscode.window.showInformationMessage(
+  let restartPromptPromise: PromiseLike<any> | undefined
+
+  watchDebounced(() => config.node.path, () => {
+    restartPromptPromise ??= vscode.window.showInformationMessage(
       'Run command "Restart Extension Host" to use the updated Node.js path',
       'Restart Now',
     ).then((selection) => {
+      restartPromptPromise = undefined
       if (!selection) {
         return
       }
       vscode.commands.executeCommand('workbench.action.restartExtensionHost')
     })
+  }, {
+    debounce: 2_000,
   })
 
   onDeactivate(async () => {

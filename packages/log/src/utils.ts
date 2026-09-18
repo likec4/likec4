@@ -11,12 +11,12 @@ export const parseStack = (stack: string): string[] => {
   const lines = stack
     .split('\n')
     .map((l) => {
-      let replaced = l.trim()
+      let replaced = l.trimEnd()
         .replace('file://', '')
-      // // Remove c:\Users\<user>... -> @vscode...
-      // .replace(/[A-Za-z]:\\Users\\[^\\]+\\/g, '@vscode\\')
-      // // Remove /Users/<user>/... -> @vscode/...
-      // .replace(/\/Users\/[^/]+\//g, '@vscode/')
+        // Remove C:\Users\...
+        .replace(/[A-Za-z]:\\Users\\[^\\]+\\/i, '@vscode\\')
+        // Remove /Users/... -> @vscode/...
+        .replace(/\/Users\/[^/]+\//, '@vscode/')
       return replaced
     })
   return lines
@@ -28,9 +28,9 @@ export const parseStack = (stack: string): string[] => {
  * @param indentation - Number of spaces (default 2)
  * @returns Indented string
  */
-export function indent(value: string | string[], indentation = 2): string {
+export function indent(value: string | string[], indentation: string | number = 2): string {
   value = Array.isArray(value) ? value : value.split('\n')
-  const prefix = ' '.repeat(indentation)
+  const prefix = typeof indentation === 'string' ? indentation : ' '.repeat(indentation)
   return value.map((l) => `${prefix}${l}`).join('\n')
 }
 
@@ -43,11 +43,11 @@ export function loggable(error: unknown): string {
   if (typeof error === 'string') {
     return error
   }
-  if (error instanceof Error) {
+  if (isError(error)) {
     const mergedErr = mergeErrorCause(error)
     if (mergedErr.stack) {
       const stack = parseStack(mergedErr.stack)
-      return mergedErr.message + '\n' + indent(stack.slice(1))
+      return mergedErr.message + '\n' + indent(stack.slice(1), '\t')
     }
     return mergedErr.message
   }
@@ -91,4 +91,8 @@ type NormalizeError<ErrorArg> = ErrorArg extends Error ? ErrorArg : Error
  */
 export function wrapError<ErrorArg>(error: ErrorArg, newMessage: string): NormalizeError<ErrorArg> {
   return wrapErrorMessage(error, newMessage)
+}
+
+export function isError(error: unknown): error is Error {
+  return error instanceof Error
 }
