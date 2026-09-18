@@ -1,31 +1,32 @@
-import { type scalar } from '@likec4/core/types'
+import * as types from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import {
   Button,
   DataList,
   Divider,
+  Loader,
+  Menu,
   Pill,
   ScrollArea,
   TagsInput,
   Textarea,
+  Tooltip,
 } from '@mantine/core'
-import { Loader, Menu, Tooltip } from '@mantine/core'
 import { useToggle, useUncontrolled } from '@mantine/hooks'
 import { useIsMounted } from '@react-hookz/web'
 import {
   IconChevronDown,
   IconFileSymlink,
+  IconInfoCircle,
 } from '@tabler/icons-react'
-import { IconInfoCircle } from '@tabler/icons-react'
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
-import { difference } from 'remeda'
+import { useEffect, useEffectEvent, useRef } from 'react'
 import { Markdown } from '../../base-primitives'
 import { EmptyBox } from '../../components/EmptyBox'
 import { Link } from '../../components/Link'
 import { ViewIcon } from '../../components/ViewIcon'
 import { IfEnabled, useEnabledFeatures } from '../../context'
-import { useCurrentViewModel, useMantinePortalProps, useUpdateEffect } from '../../hooks'
+import { useCurrentViewModel, useUpdateEffect } from '../../hooks'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useDiagram } from '../../hooks/useDiagram'
 import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
@@ -48,7 +49,8 @@ export function ViewDetailsWindow() {
   const { enableReadOnly } = useEnabledFeatures()
   const title = viewModel.titleOrUntitled
   const description = viewModel.description
-  const tags = viewModel.tags as scalar.Tag[]
+  const tags = viewModel.tags as types.scalar.Tag[]
+  const alltags = viewModel.$model.tagsFromSpecification
   const links = viewModel.links
 
   const changeTitle = (title: string) => {
@@ -61,16 +63,13 @@ export function ViewDetailsWindow() {
     })
   }
 
-  const changeTags = (nextTags: scalar.Tag[]) => {
+  const changeTags = (nextTags: types.scalar.Tag[]) => {
     if (nextTags.length === tags.length && nextTags.every(t => tags.includes(t))) {
       return
     }
     diagram.triggerChange({
       op: 'change-property',
-      tag: {
-        add: difference(nextTags, tags),
-        remove: difference(tags, nextTags),
-      },
+      tags: nextTags,
     })
   }
 
@@ -97,26 +96,26 @@ export function ViewDetailsWindow() {
                   const viewId = diagram.currentView.id
                   diagram.openSource({ view: viewId })
                 }}
-                children={<IconFileSymlink style={{ width: '65%', height: '65%' }} />} />
+                children={<IconFileSymlink style={{ width: '70%', height: '70%' }} />} />
             </IfEnabled>
           </HStack>
         </HStack>
-        <DataList size="xs" gap={'sm'} orientation="horizontal" labelWidth={80}>
+        <DataList size="xs" gap={'sm'} orientation="horizontal" labelWidth={50}>
           {viewModel.hasManualLayout && (
             <DataList.Item>
-              <DataList.ItemLabel>Manual layout</DataList.ItemLabel>
+              <DataList.ItemLabel>State</DataList.ItemLabel>
               <DataList.ItemValue>
                 <ManualLayoutState />
               </DataList.ItemValue>
             </DataList.Item>
           )}
-          {viewModel.$model.tags.length > 0 && (
+          {alltags.length > 0 && (
             <DataList.Item>
-              <DataList.ItemLabel>View tags</DataList.ItemLabel>
+              <DataList.ItemLabel>Tags</DataList.ItemLabel>
               <DataList.ItemValue>
                 {(tags.length > 0 || !enableReadOnly) && (
                   <EditableTags
-                    alltags={viewModel.$model.tags}
+                    alltags={alltags}
                     tags={tags}
                     readOnly={enableReadOnly}
                     onChange={changeTags} />
@@ -203,9 +202,9 @@ function EditableTitle({
       onFocus={(e) => {
         toggle(true)
         const length = _value.length
-        e.currentTarget.setSelectionRange(length, length)
+        e.currentTarget.setSelectionRange(length, null)
       }}
-      onBlur={(e) => {
+      onBlur={() => {
         toggle(false)
         // Revert to initial value on blur
         handleChange(initialValue.current)
@@ -268,14 +267,15 @@ function EditableTags({
   alltags: ReadonlyArray<string>
   tags: ReadonlyArray<string>
   readOnly: boolean
-  onChange: (tags: scalar.Tag[]) => void
+  onChange: (tags: types.scalar.Tag[]) => void
 }) {
   const [isApplying, toggleApplying] = useToggle()
-  const portalProps = useMantinePortalProps()
 
   const [value, handleChange] = useUncontrolled<string[]>({
     defaultValue: [...tags],
   })
+
+  const hasChanges = value.length !== tags.length || value.some((v) => !tags.includes(v))
 
   const revert = useEffectEvent(() => {
     handleChange([...tags])
@@ -286,6 +286,12 @@ function EditableTags({
     revert()
   }, [tags])
 
+  useUpdateEffect(() => {
+    if (isApplying && !hasChanges) {
+      toggleApplying(false)
+    }
+  }, [hasChanges, isApplying])
+
   useEffect(() => {
     if (readOnly) {
       revert()
@@ -294,15 +300,15 @@ function EditableTags({
 
   const commitChanges = useEffectEvent(() => {
     toggleApplying(true)
-    onChange(value as scalar.Tag[])
+    onChange(value as types.scalar.Tag[])
   })
 
   const canAdd = !readOnly && value.length < alltags.length
 
-  const notCommitted = !readOnly && (value.length !== tags.length || value.some((v) => !tags.includes(v)))
+  const notCommitted = !readOnly && hasChanges
 
   return (
-    <HStack alignItems={'baseline'} flexWrap={'nowrap'} gap={'1'}>
+    <VStack gap={'2'}>
       <TagsInput
         variant="unstyled"
         size="xs"
@@ -328,6 +334,7 @@ function EditableTags({
             }),
           ),
           inputField: css({
+            py: '1',
             minWidth: '[40px]',
           }),
         }}
@@ -356,7 +363,7 @@ function EditableTags({
         )}
       />
       {notCommitted && (
-        <>
+        <HStack gap={'2'}>
           <Button
             loading={isApplying}
             miw="min-content"
@@ -375,9 +382,9 @@ function EditableTags({
           >
             Revert
           </Button>
-        </>
+        </HStack>
       )}
-    </HStack>
+    </VStack>
   )
 }
 

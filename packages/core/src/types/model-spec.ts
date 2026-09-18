@@ -33,7 +33,7 @@ export interface ElementSpecification {
   technology?: string
   notation?: string
   links?: NonEmptyArray<Link>
-  style: {
+  style: Readonly<{
     shape?: ElementShape
     icon?: Icon
     iconColor?: Color
@@ -50,11 +50,11 @@ export interface ElementSpecification {
      * @default false
      */
     multiple?: boolean
-  }
+  }>
 }
 
 export interface TagSpecification {
-  color: ThemeColor | CustomColor | ColorLiteral
+  readonly color: ThemeColor | CustomColor | ColorLiteral
 }
 
 /**
@@ -87,20 +87,20 @@ export interface RelationshipSpecification {
 }
 
 export type Specification<A> = A extends Any ? {
-    tags: {
-      [key in aux.Tag<A>]: TagSpecification
+    readonly tags: {
+      readonly [key in aux.Tag<A>]: TagSpecification
     }
-    elements: {
-      [key in aux.ElementKind<A>]: Partial<ElementSpecification>
+    readonly elements: {
+      readonly [key in aux.ElementKind<A>]: Partial<ElementSpecification>
     }
-    deployments: {
-      [key in aux.DeploymentKind<A>]: Partial<ElementSpecification>
+    readonly deployments: {
+      readonly [key in aux.DeploymentKind<A>]: Partial<ElementSpecification>
     }
-    relationships: {
-      [key in aux.RelationKind<A>]: Partial<RelationshipSpecification>
+    readonly relationships: {
+      readonly [key in aux.RelationKind<A>]: Partial<RelationshipSpecification>
     }
     // dprint-ignore
-    metadataKeys?: IsNever<aux.MetadataKey<A>> extends true ? never : aux.MetadataKey<A>[]
-    customColors?: CustomColorDefinitions
+    readonly metadataKeys?: IsNever<aux.MetadataKey<A>> extends true ? never : aux.MetadataKey<A>[]
+    readonly customColors?: CustomColorDefinitions
   } :
   never

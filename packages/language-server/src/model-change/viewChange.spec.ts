@@ -48,8 +48,17 @@ async function testDoc(expect: ExpectStatic, document: string) {
     return vol.readFileSync(documentUri.fsPath, 'utf-8')
   }
 
-  async function change(params: ChangeView.Params) {
-    await services.likec4.ModelChanges.applyChange(params)
+  async function change(
+    viewId: string,
+    change: ChangeView.Params['change'] | {
+      op: 'change-property'
+      tags?: string[]
+    },
+  ) {
+    await services.likec4.ModelChanges.applyChange({
+      viewId: viewId as any,
+      change: change as ChangeView.Params['change'],
+    })
     return readFromMemory()
   }
 
@@ -176,12 +185,9 @@ describe('viewChange', () => {
       )
 
       // Initial change - set title
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          title: 'New Title',
-        },
+      await change('index', {
+        op: 'change-property',
+        title: 'New Title',
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -195,12 +201,9 @@ describe('viewChange', () => {
       `)
 
       // Second change - update title
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          title: 'Updated Title',
-        },
+      await change('index', {
+        op: 'change-property',
+        title: 'Updated Title',
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -227,13 +230,10 @@ describe('viewChange', () => {
       )
 
       // Initial change - set title and description
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          title: 'New Title',
-          description: { md: 'New Description' },
-        },
+      await change('index', {
+        op: 'change-property',
+        title: 'New Title',
+        description: { md: 'New Description' },
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -261,12 +261,9 @@ describe('viewChange', () => {
       `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          description: { md: 'Some Description' },
-        },
+      await change('index', {
+        op: 'change-property',
+        description: { md: 'Some Description' },
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -281,12 +278,9 @@ describe('viewChange', () => {
       `)
 
       // Update existing description
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          description: { md: 'Updated Description' },
-        },
+      await change('index', {
+        op: 'change-property',
+        description: { md: 'Updated Description' },
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -314,12 +308,9 @@ describe('viewChange', () => {
       `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          description: { md: 'New Description' },
-        },
+      await change('index', {
+        op: 'change-property',
+        description: { md: 'New Description' },
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -348,12 +339,9 @@ describe('viewChange', () => {
       `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          title: 'New Title',
-        },
+      await change('index', {
+        op: 'change-property',
+        title: 'New Title',
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -377,12 +365,9 @@ describe('viewChange', () => {
       `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          title: 'New Title',
-        },
+      await change('index', {
+        op: 'change-property',
+        title: 'New Title',
       })
       // Formatter will take care of spacing - we just check that the title is there
       expect(read()).toMatchInlineSnapshot(`
@@ -394,14 +379,35 @@ describe('viewChange', () => {
       `)
     })
 
-    it('should add tag to view with no tags', async ({ expect }) => {
+    it('should set title on view with empty body', async ({ expect }) => {
       const { change, read } = await testDoc(
         expect,
         `
-          specification {
-            tag mytag
-          }
           views {
+            view index { }
+          }
+      `,
+      )
+
+      await change('index', {
+        op: 'change-property',
+        title: 'Folder / New Title',
+      })
+      // Formatter will take care of spacing - we just check that the title is there
+      expect(read()).toMatchInlineSnapshot(`
+        "
+        views {
+          view index {
+            title 'Folder / New Title' }
+        }"
+      `)
+    })
+
+    it('should stay in folder', async ({ expect }) => {
+      const { change, read } = await testDoc(
+        expect,
+        `
+          views "Root / A" {
             view index {
               include *
             }
@@ -409,21 +415,43 @@ describe('viewChange', () => {
         `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { add: 'mytag' as any },
-        },
+      await change('index', {
+        op: 'change-property',
+        title: 'Root/ A     / New Title',
+      })
+      expect(read(), 'truncate common path (and normalize)').toMatchInlineSnapshot(`
+        "
+        views "Root / A" {
+          view index {
+            title 'New Title'
+            include *
+          }
+        }"
+      `)
+
+      await change('index', {
+        op: 'change-property',
+        title: 'New Title',
       })
       expect(read()).toMatchInlineSnapshot(`
         "
-        specification {
-          tag mytag
-        }
-        views {
+        views "Root / A" {
           view index {
-            #mytag
+            title 'New Title'
+            include *
+          }
+        }"
+      `)
+
+      await change('index', {
+        op: 'change-property',
+        title: 'Root/ B/ New',
+      })
+      expect(read(), 'should not fail, only truncate common path').toMatchInlineSnapshot(`
+        "
+        views "Root / A" {
+          view index {
+            title 'B / New'
             include *
           }
         }"
@@ -449,12 +477,9 @@ describe('viewChange', () => {
         `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { add: 'newtag' as any },
-        },
+      await change('index', {
+        op: 'change-property',
+        tags: ['existing1', 'existing2', 'existing3', 'newtag'],
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -466,7 +491,7 @@ describe('viewChange', () => {
         }
         views {
           view index {
-            #existing1, #existing2 #existing3, #newtag
+            #existing1 #existing2 #existing3 #newtag
             include *
           }
         }"
@@ -494,12 +519,9 @@ describe('viewChange', () => {
         `,
       )
 
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { remove: 'first' as any },
-        },
+      await change('index', {
+        op: 'change-property',
+        tags: ['second'],
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -518,13 +540,10 @@ describe('viewChange', () => {
           }
         }"
       `)
-      // Now remove from index2
-      await change({
-        viewId: 'index2' as any,
-        change: {
-          op: 'change-property',
-          tag: { remove: 'first' as any },
-        },
+      // Now update index2
+      await change('index2', {
+        op: 'change-property',
+        tags: ['second'],
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -553,20 +572,25 @@ describe('viewChange', () => {
             tag lonely
           }
           views {
-            view index {
+            view index1 {
               #lonely
+              include *
+            }
+            view index2 {
+
+                #lonely
               include *
             }
           }
         `,
       )
-
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { remove: 'lonely' as any },
-        },
+      await change('index1', {
+        op: 'change-property',
+        tags: [],
+      })
+      await change('index2', {
+        op: 'change-property',
+        tags: [],
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -574,7 +598,10 @@ describe('viewChange', () => {
           tag lonely
         }
         views {
-          view index {
+          view index1 {
+            include *
+          }
+          view index2 {
             include *
           }
         }"
@@ -599,13 +626,10 @@ describe('viewChange', () => {
         `,
       )
 
-      // Remove #b from "#a #b, #c" — middle of first space-separated group
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { remove: 'b' as any },
-        },
+      // Replace tags with #a and #c (removing #b)
+      await change('index', {
+        op: 'change-property',
+        tags: ['a', 'c'],
       })
       expect(read()).toMatchInlineSnapshot(`
         "
@@ -616,220 +640,7 @@ describe('viewChange', () => {
         }
         views {
           view index {
-            #a, #c
-            include *
-          }
-        }"
-      `)
-    })
-
-    it('should remove middle tag from comma-separated chain', async ({ expect }) => {
-      const { change, read } = await testDoc(
-        expect,
-        `
-          specification {
-            tag a
-            tag b
-            tag c
-          }
-          views {
-            view index {
-              #a, #b, #c
-              include *
-            }
-          }
-        `,
-      )
-
-      // Remove #b from "#a, #b, #c" — middle node in linked list
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { remove: 'b' as any },
-        },
-      })
-      expect(read()).toMatchInlineSnapshot(`
-        "
-        specification {
-          tag a
-          tag b
-          tag c
-        }
-        views {
-          view index {
-            #a, #c
-            include *
-          }
-        }"
-      `)
-    })
-
-    it('should add tag to mixed space-comma group', async ({ expect }) => {
-      const { change, read } = await testDoc(
-        expect,
-        `
-          specification {
-            tag a
-            tag b
-            tag c
-            tag d
-          }
-          views {
-            view index {
-              #a #b, #c
-              include *
-            }
-          }
-        `,
-      )
-
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { add: 'd' as any },
-        },
-      })
-      expect(read()).toMatchInlineSnapshot(`
-        "
-        specification {
-          tag a
-          tag b
-          tag c
-          tag d
-        }
-        views {
-          view index {
-            #a #b, #c, #d
-            include *
-          }
-        }"
-      `)
-    })
-
-    it('should add multiple tags from an array', async ({ expect }) => {
-      const { change, read } = await testDoc(
-        expect,
-        `
-          specification {
-            tag a
-            tag b
-            tag c
-          }
-          views {
-            view index {
-              #a
-              include *
-            }
-          }
-        `,
-      )
-
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { add: ['b', 'c'] as any },
-        },
-      })
-      expect(read()).toMatchInlineSnapshot(`
-        "
-        specification {
-          tag a
-          tag b
-          tag c
-        }
-        views {
-          view index {
-            #a, #b, #c
-            include *
-          }
-        }"
-      `)
-    })
-
-    it('should remove multiple tags from an array', async ({ expect }) => {
-      const { change, read } = await testDoc(
-        expect,
-        `
-          specification {
-            tag a
-            tag b
-            tag c
-          }
-          views {
-            view index {
-              #a, #b, #c
-              include *
-            }
-          }
-        `,
-      )
-
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: { remove: ['a', 'c'] as any },
-        },
-      })
-      expect(read()).toMatchInlineSnapshot(`
-        "
-        specification {
-          tag a
-          tag b
-          tag c
-        }
-        views {
-          view index {
-            #b
-            include *
-          }
-        }"
-      `)
-    })
-
-    it('should add and remove tags in the same change', async ({ expect }) => {
-      const { change, read } = await testDoc(
-        expect,
-        `
-          specification {
-            tag a
-            tag b
-            tag c
-            tag d
-          }
-          views {
-            view index {
-              #a, #b
-              include *
-            }
-          }
-        `,
-      )
-
-      await change({
-        viewId: 'index' as any,
-        change: {
-          op: 'change-property',
-          tag: {
-            add: ['c', 'd'] as any,
-            remove: ['a'] as any,
-          },
-        },
-      })
-      expect(read()).toMatchInlineSnapshot(`
-        "
-        specification {
-          tag a
-          tag b
-          tag c
-          tag d
-        }
-        views {
-          view index {
-            #b, #c, #d
+            #a #c
             include *
           }
         }"

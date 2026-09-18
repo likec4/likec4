@@ -45,12 +45,9 @@ export namespace ViewChange {
      */
     description?: scalar.MarkdownOrString
     /**
-     * Add or remove tags
+     * Replace tags
      */
-    tag?: {
-      add?: scalar.Tag | scalar.Tag[]
-      remove?: scalar.Tag | scalar.Tag[]
-    }
+    tags?: scalar.Tag[]
   }
 }
 

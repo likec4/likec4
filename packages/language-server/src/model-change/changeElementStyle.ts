@@ -6,6 +6,7 @@ import {
   _type,
   invariant,
   isAncestor,
+  nonNullable,
 } from '@likec4/core'
 import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
@@ -19,11 +20,11 @@ const { findNodeForKeyword } = GrammarUtils
 const asViewStyleRule = (target: string, style: ViewChange.ChangeElementStyle['style'], indent = 0) => {
   const indentStr = indent > 0 ? ' '.repeat(indent) : ''
   return [
-    indentStr + `style ${target} {`,
+    indentStr + `\tstyle ${target} {`,
     ...entries(style).map(([key, value]) =>
-      indentStr + `  ${key} ${key === 'opacity' ? value.toString() + '%' : value}`
+      indentStr + `\t\t${key} ${key === 'opacity' ? value.toString() + '%' : value}`
     ),
-    indentStr + `}`,
+    indentStr + `\t}`,
   ]
 }
 
@@ -70,12 +71,16 @@ export function changeElementStyle(services: LikeC4Services, {
   // Should never happen
   invariant(viewAst.body, `View ${view.id} has no body`)
 
-  const viewCstNode = viewAst.$cstNode
-  invariant(viewCstNode, 'viewCstNode')
-  const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end
-    ?? viewAst.body.$cstNode?.range.end
-  invariant(insertPos, 'insertPos is not defined')
-  const indent = viewCstNode.range.start.character + 2
+  const viewCstNode = nonNullable(viewAst.$cstNode, 'cant find view cst node')
+  const viewBodyCstNode = nonNullable(viewAst.body.$cstNode, 'cant find view body cst node')
+
+  const indent = viewCstNode.range.start.character
+
+  const insertPos = nonNullable(findNodeForKeyword(viewBodyCstNode, '}'), 'cant find closing brace').range.start
+  insertPos.character = 0
+
+  const edits = [] as TextEdit[]
+
   const fqnIndex = services.likec4.FqnIndex
   const styleRules = filter(
     viewAst.body.rules,
@@ -120,23 +125,23 @@ export function changeElementStyle(services: LikeC4Services, {
     }
   }
 
-  const edits = [] as TextEdit[]
-
   if (insert.length > 0) {
+    modifiedRange.start = {
+      line: insertPos.line,
+      character: indent + 2,
+    }
     const linesToInsert = insert.flatMap(({ fqn }) => asViewStyleRule(fqn, style, indent))
+    const textToInsert = linesToInsert.join('\n') + '\n'
     edits.push(
       TextEdit.insert(
         insertPos,
-        '\n' + linesToInsert.join('\n'),
+        textToInsert,
       ),
     )
-    modifiedRange.start = {
-      line: insertPos.line + 1,
-      character: indent,
-    }
+
     modifiedRange.end = {
-      line: insertPos.line + linesToInsert.length,
-      character: (last(linesToInsert)?.length ?? 0),
+      line: insertPos.line + linesToInsert.length - 1,
+      character: last(linesToInsert)?.length ?? 0,
     }
   }
 
@@ -150,32 +155,39 @@ export function changeElementStyle(services: LikeC4Services, {
         // replace existing  property
         if (ruleProp && ruleProp.$cstNode) {
           const { range: { start, end } } = ruleProp.$cstNode
+          const replacement = key + ' ' + value
           includeRange({
             start,
-            end,
+            end: {
+              ...end,
+              character: start.character + replacement.length,
+            },
           })
-          edits.push(TextEdit.replace({ start, end }, key + ' ' + value))
+          edits.push(TextEdit.replace({ start, end }, replacement))
           continue
         }
         // insert new style property right after the opening brace
-        const insertPos = findNodeForKeyword(ruleCstNode, '{')?.range.end
-        invariant(insertPos, 'Opening brace not found')
-        const indentStr = ' '.repeat(ruleCstNode.range.start.character) + '\t'
-        const insertKeyValue = indentStr + key + ' ' + value
+
+        const insertPos = nonNullable(findNodeForKeyword(ruleCstNode, '}'), 'cant find closing brace').range.start
+        const indentStr = ' '.repeat(ruleCstNode.range.start.character) + '  '
+        const insertKeyValue = key + ' ' + value
         edits.push(
           TextEdit.insert(
-            insertPos,
-            '\n' + insertKeyValue,
+            {
+              line: insertPos.line,
+              character: 0,
+            },
+            indentStr + insertKeyValue + '\n',
           ),
         )
         includeRange({
           start: {
-            line: insertPos.line + 1,
+            line: insertPos.line,
             character: indentStr.length,
           },
           end: {
-            line: insertPos.line + 1,
-            character: insertKeyValue.length,
+            line: insertPos.line,
+            character: indentStr.length + insertKeyValue.length,
           },
         })
       }

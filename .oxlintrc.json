@@ -59,9 +59,9 @@
         ]
       }
     ],
-    "react_perf/jsx-no-jsx-as-prop": "warn",
+    "react_perf/jsx-no-jsx-as-prop": "off",
     "promise/no-new-statics": "error",
-    "react/exhaustive-deps": "warn",
+    "react/exhaustive-deps": "off",
     "no-unused-expressions": "off",
     "typescript/no-base-to-string": "error",
     "typescript/no-import-type-side-effects": "error",

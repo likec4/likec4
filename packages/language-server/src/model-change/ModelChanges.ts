@@ -101,7 +101,6 @@ export class LikeC4ModelChanges {
           error: 'No changes to apply',
         }
       }
-
       // Apply the text edits to the document
       const applyResult = await this.applyTextEdits(lookup.doc, edits)
       if (!applyResult) {
