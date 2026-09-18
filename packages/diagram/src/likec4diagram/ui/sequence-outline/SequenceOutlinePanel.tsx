@@ -144,14 +144,25 @@ const activeFrame = css.raw({
   paddingInline: '3',
   paddingBlock: '1.5',
   marginBlock: '1',
-  _after: {
-    content: '""',
-    position: 'absolute',
-    inset: '[0 6px]',
-    border: '[1px solid {colors.colorPalette.border}]',
-    rounded: 'md',
-    pointerEvents: 'none',
-  },
+})
+
+/**
+ * Shared-layout transitions. The frame, the card and the badge each carry a `layoutId`, so
+ * walking a step moves one element rather than swapping two — the frame travels to the branch
+ * you entered and the card slides to the step you landed on. House easing, one exponential
+ * ease-out; `MotionConfig` already drops these under reduced motion and reduced graphics.
+ */
+const SEQ_TRANSITION = { duration: 0.24, ease: [0.2, 0.8, 0.2, 1] } as const
+const SEQ_FRAME_LAYOUT_ID = 'likec4-seq-active-frame'
+const SEQ_CARD_LAYOUT_ID = 'likec4-seq-active-card'
+const SEQ_BADGE_LAYOUT_ID = 'likec4-seq-active-badge'
+
+const activeFrameBorder = css({
+  position: 'absolute',
+  inset: '[0 6px]',
+  border: '[1px solid {colors.colorPalette.border}]',
+  rounded: 'md',
+  pointerEvents: 'none',
 })
 
 // -----------------------------------------------------------------------------
@@ -580,6 +591,12 @@ const OutlineNodes = ({ nodes, depth, activeStep, activeDepth, ancestors }: Outl
               ['--seq-badge-fg' as string]: 'var(--colors-likec4-panel-bg)',
             }}
           >
+            {innerDistance === 0 && onPath && (
+              <m.div
+                layoutId={SEQ_FRAME_LAYOUT_ID}
+                className={activeFrameBorder}
+                transition={SEQ_TRANSITION} />
+            )}
             <FlowRow node={node} recession={recession} />
             <OutlineNodes
               nodes={node.children}
@@ -657,9 +674,14 @@ const ActiveStepCard = ({ node }: { node: StepNode }) => {
   }, [node.value])
 
   return (
-    <Box
+    <m.div
       ref={ref}
-      css={{
+      layoutId={SEQ_CARD_LAYOUT_ID}
+      // Position only: the card's height changes with its notes, and animating that would
+      // stretch the text inside it.
+      layout="position"
+      transition={SEQ_TRANSITION}
+      className={css({
         marginBlock: '2',
         paddingInline: '3',
         paddingBlock: '2.5',
@@ -671,7 +693,7 @@ const ActiveStepCard = ({ node }: { node: StepNode }) => {
           boxShadow: 'none',
           outline: '[1px solid {colors.border.subtle}]',
         },
-      }}
+      })}
     >
       <HStack css={{ alignItems: 'baseline', gap: '2', width: '100%' }}>
         <StepBadge active>{stepnum}</StepBadge>
@@ -726,7 +748,7 @@ const ActiveStepCard = ({ node }: { node: StepNode }) => {
           })}
         />
       )}
-    </Box>
+    </m.div>
   )
 }
 
@@ -756,9 +778,18 @@ const stepBadgeActive = css.raw({
   fontSize: '[11px]',
 })
 
-const StepBadge = ({ children, active }: { children: ReactNode; active?: boolean }) => (
-  <div className={css(stepBadgeBase, active && stepBadgeActive)}>{children}</div>
-)
+const StepBadge = ({ children, active }: { children: ReactNode; active?: boolean }) =>
+  active
+    ? (
+      <m.div
+        layoutId={SEQ_BADGE_LAYOUT_ID}
+        layout="position"
+        transition={SEQ_TRANSITION}
+        className={css(stepBadgeBase, stepBadgeActive)}>
+        {children}
+      </m.div>
+    )
+    : <div className={css(stepBadgeBase)}>{children}</div>
 
 /** Marks a step that carries notes, without letting the note reflow the list. */
 const NotesDot = () => (
