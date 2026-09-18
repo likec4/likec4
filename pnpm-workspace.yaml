@@ -127,7 +127,7 @@ catalogs:
     "@hono/node-server": ^2.1.1
     "@hono/oauth-providers": ^0.8.8
     "@hono/zod-validator": ^0.8.0
-    hono: ^4.13.5
+    hono: ^4.13.8
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
