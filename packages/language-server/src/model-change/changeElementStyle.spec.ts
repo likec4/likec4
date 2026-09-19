@@ -259,4 +259,48 @@ views {
   }
 }"`)
   })
+
+  it('inserts a style inside an empty dynamic view', async ({ expect }) => {
+    {
+      const { change, read } = await testDoc(
+        expect,
+        `
+specification {
+  element system
+}
+model {
+  user = system 'User'
+  app = system 'Application'
+}
+views {
+  dynamic view target {}
+}`,
+      )
+
+      await change({
+        viewId: 'target' as ViewId,
+        change: {
+          op: 'change-element-style',
+          targets: ['user' as Fqn],
+          style: { shape: 'person' },
+        },
+      })
+
+      expect(read()).toMatchInlineSnapshot(`
+"
+specification {
+  element system
+}
+model {
+  user = system 'User'
+  app = system 'Application'
+}
+views {
+  dynamic view target {
+    style user {
+      shape person
+    }}
+}"`)
+    }
+  })
 })

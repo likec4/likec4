@@ -74,6 +74,7 @@ export function changeElementStyle(services: LikeC4Services, {
   invariant(viewCstNode, 'viewCstNode')
   const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end
     ?? (ast.isDynamicViewBody(viewAst.body) ? last(viewAst.body.steps)?.$cstNode?.range.end : undefined)
+    ?? findNodeForKeyword(viewAst.body.$cstNode, '}')?.range.start
   invariant(insertPos, 'insertPos is not defined')
   const indent = viewCstNode.range.start.character + 2
   const fqnIndex = services.likec4.FqnIndex
