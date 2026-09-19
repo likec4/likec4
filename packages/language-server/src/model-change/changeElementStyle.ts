@@ -72,9 +72,17 @@ export function changeElementStyle(services: LikeC4Services, {
 
   const viewCstNode = viewAst.$cstNode
   invariant(viewCstNode, 'viewCstNode')
-  const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end
-    ?? viewAst.body.$cstNode?.range.end
-  invariant(insertPos, 'insertPos is not defined')
+  // Insert after the last rule, or after whatever precedes the closing brace (steps, properties, or `{`)
+  const closingBrace = findNodeForKeyword(viewAst.body.$cstNode, '}')
+  invariant(closingBrace?.container, 'Closing brace not found')
+  const siblings = closingBrace.container.content
+  const anchor = last(viewAst.body.rules)?.$cstNode ?? siblings[siblings.indexOf(closingBrace) - 1]
+  invariant(anchor, 'anchor is not defined')
+  const insertPos = anchor.range.end
+  // Keep `}` on its own line, e.g. for `view x extends y {}`
+  const insertSuffix = closingBrace.range.start.line === insertPos.line
+    ? '\n' + ' '.repeat(viewCstNode.range.start.character)
+    : ''
   const indent = viewCstNode.range.start.character + 2
   const fqnIndex = services.likec4.FqnIndex
   const styleRules = filter(
@@ -127,7 +135,7 @@ export function changeElementStyle(services: LikeC4Services, {
     edits.push(
       TextEdit.insert(
         insertPos,
-        '\n' + linesToInsert.join('\n'),
+        '\n' + linesToInsert.join('\n') + insertSuffix,
       ),
     )
     modifiedRange.start = {
@@ -136,7 +144,7 @@ export function changeElementStyle(services: LikeC4Services, {
     }
     modifiedRange.end = {
       line: insertPos.line + linesToInsert.length,
-      character: (last(linesToInsert)?.length ?? 0),
+      character: last(linesToInsert)?.length ?? 0,
     }
   }
 
