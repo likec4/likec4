@@ -110,7 +110,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
               return acc
             }
             const parsed = removeIndent(parseMarkdownAsString(prop.value))
-            if (parsed) {
+            if (isDefined(parsed)) {
               acc.custom[prop.key] = parsed
             }
             return acc
@@ -341,7 +341,7 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
               return acc
             }
             const value = removeIndent(parseMarkdownAsString(prop.value))
-            if (value) {
+            if (isDefined(value)) {
               acc[prop.key] = value
             }
             return acc
