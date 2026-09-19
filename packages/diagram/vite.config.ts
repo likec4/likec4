@@ -43,10 +43,10 @@ export default defineConfig({
     rolldownOptions: {
       external: [
         ...Object.keys(packageJson.dependencies || {}).map((dep) => new RegExp(`^${dep}(\\/.*)?$`)),
-        /framer-motion/,
-        /motion/,
-        /motion-dom/,
-        /motion-utils/,
+        // NOTE: must be anchored, otherwise relative imports like './motion' are treated as external
+        /^framer-motion(\/.*)?$/,
+        /^motion-dom(\/.*)?$/,
+        /^motion-utils(\/.*)?$/,
       ],
       output: {
         keepNames: true,
