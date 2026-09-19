@@ -9,6 +9,7 @@ import type {
   ComputedDynamicView,
   ComputedElementView,
 } from './view-computed'
+import type { DynamicViewFlowData } from './view-dynamic-flow'
 import type {
   LayoutedDeploymentView,
   LayoutedDynamicView,
@@ -123,4 +124,10 @@ export function isDeploymentView<V extends AnyView<any>>(view: V): view is ViewW
 
 export function isDynamicView<V extends AnyView<any>>(view: V): view is ViewWithType<V, 'dynamic'> {
   return view._type === 'dynamic'
+}
+
+export function isDynamicViewWithFlow<V extends AnyView<any>>(
+  view: V,
+): view is ViewWithType<V, 'dynamic'> & { flow: DynamicViewFlowData } {
+  return view._type === 'dynamic' && 'flow' in view && !!view.flow
 }

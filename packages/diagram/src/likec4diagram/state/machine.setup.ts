@@ -38,6 +38,7 @@ import {
   assertEvent,
   setup,
 } from 'xstate'
+import { MaxZoom, MinZoom } from '../../base'
 import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
@@ -85,8 +86,8 @@ export interface Input {
   pannable: boolean
   fitView?: boolean | undefined
   initialZoom?: number | undefined
-  minZoom: number
-  maxZoom: number
+  minZoom?: number | undefined
+  maxZoom?: number | undefined
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
@@ -158,6 +159,9 @@ export interface Context extends Input {
   collapsedSequenceFlows: {
     [flowId: StepPath]: boolean
   }
+
+  minZoom: number
+  maxZoom: number
 }
 
 export function Context({ input }: { input: Input }): Context {
@@ -199,6 +203,8 @@ export function Context({ input }: { input: Input }): Context {
     ) ?? 'diagram',
     activeWalkthrough: null,
     collapsedSequenceFlows: {},
+    minZoom: input.minZoom ?? MinZoom,
+    maxZoom: input.maxZoom ?? MaxZoom,
   }
 }
 

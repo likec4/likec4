@@ -556,11 +556,6 @@ describe('DynamicViewFlow.prevAndNext', () => {
     expect(result2).toEqual({ prev: sp('step-02:opt.02:alt.01:when.01'), next: sp('step-03') })
   })
 
-  it('should throw when target is a subflow (not a step)', () => {
-    expect(() => flow.prevAndNext(sp('step-02:opt'))).toThrow('step-02:opt is a subflow, not a step')
-    expect(() => flow.prevAndNext(sp('step-02:opt.02:alt'))).toThrow('is a subflow, not a step')
-  })
-
   it('should handle single step flow', () => {
     const singleStepView = baseModel
       .views(({ dynamicView, $step }, _) => _(dynamicView('single').with($step('a.child1 -> a.child2'))))
@@ -629,5 +624,306 @@ describe('DynamicViewFlow.prevAndNext', () => {
 
     const result3 = complexFlow.prevAndNext(sp('step-02:try.03:finally.01'))
     expect(result3).toEqual({ prev: sp('step-02:try.02:catch.01'), next: sp('step-03') })
+  })
+
+  describe('with exclude (collapsed subflows)', () => {
+    // The UI collapses subflows; `exclude` hides their steps from navigation.
+    // An excluded subflow is still descended into, so a target inside one is
+    // still found — only its *other* steps stop counting as prev/next.
+    //
+    // step-01                              first
+    // opt                                  opt
+    //   step-02:opt.01                     optStep
+    //   alt                                alt
+    //     when                             when
+    //       step-02:opt.02:alt.01:when.01  whenStep
+    //     else                             els
+    //       step-02:opt.02:alt.02:else.01  elseStep
+    // step-03                              last
+    const first = sp('step-01')
+    const opt = sp('step-02:opt')
+    const optStep = sp('step-02:opt.01')
+    const alt = sp('step-02:opt.02:alt')
+    const when = sp('step-02:opt.02:alt.01:when')
+    const whenStep = sp('step-02:opt.02:alt.01:when.01')
+    const els = sp('step-02:opt.02:alt.02:else')
+    const elseStep = sp('step-02:opt.02:alt.02:else.01')
+    const last = sp('step-03')
+
+    const collapse = (...ids: StepPath[]) => (subflow: { id: StepPath }) => ids.includes(subflow.id)
+
+    it('hides every step of a collapsed subflow', () => {
+      expect(flow.prevAndNext(first, collapse(opt))).toEqual({ prev: null, next: last })
+      expect(flow.prevAndNext(last, collapse(opt))).toEqual({ prev: first, next: null })
+    })
+
+    it('hides only the collapsed nested subflow, keeping its siblings', () => {
+      expect(flow.prevAndNext(optStep, collapse(alt))).toEqual({ prev: first, next: last })
+      expect(flow.prevAndNext(last, collapse(alt))).toEqual({ prev: optStep, next: null })
+    })
+
+    it('hides a single collapsed branch of an alt', () => {
+      expect(flow.prevAndNext(whenStep, collapse(els))).toEqual({ prev: optStep, next: last })
+      expect(flow.prevAndNext(elseStep, collapse(when))).toEqual({ prev: optStep, next: last })
+    })
+
+    it('still finds the target when it sits inside a collapsed subflow', () => {
+      // `when` is collapsed, but `whenStep` is the target — it is found anyway,
+      // and navigation continues from the next *visible* step.
+      expect(flow.prevAndNext(whenStep, collapse(when))).toEqual({ prev: optStep, next: elseStep })
+      // Collapsing the outer `opt` hides its siblings too.
+      expect(flow.prevAndNext(whenStep, collapse(opt))).toEqual({ prev: first, next: last })
+    })
+
+    it('keeps exclusion scoped to the collapsed subflow (reset on leave)', () => {
+      // Nothing after `opt` is affected by `opt` being collapsed.
+      expect(flow.prevAndNext(last, collapse(opt))).toEqual({ prev: first, next: null })
+      expect(flow.prevAndNext(first, collapse(when))).toEqual({ prev: null, next: optStep })
+    })
+
+    it('behaves like the unfiltered call when exclude never matches', () => {
+      expect(flow.prevAndNext(whenStep, () => false)).toEqual(flow.prevAndNext(whenStep))
+      expect(flow.prevAndNext(first, collapse(sp('step-99:opt')))).toEqual(flow.prevAndNext(first))
+    })
+
+    it('leaves only top-level steps when every subflow is collapsed', () => {
+      const collapseAll = () => true
+      expect(flow.prevAndNext(first, collapseAll)).toEqual({ prev: null, next: last })
+      expect(flow.prevAndNext(last, collapseAll)).toEqual({ prev: first, next: null })
+    })
+
+    it('matches the documented example — exclude everything but the alt', () => {
+      // `flow.prevAndNext('02', s => s.id !== 'alt')` => { prev: '01', next: '04' }
+      expect(flow.prevAndNext(whenStep, s => s.id !== alt)).toEqual({ prev: first, next: last })
+    })
+
+    it('keeps navigation inside the open branch when only ancestors stay expanded', () => {
+      // The realistic UI case: only the ancestors of the active step stay open.
+      const collapseAllBut = (target: StepPath) => (subflow: { id: StepPath }) => !flowHelpers.includes(subflow, target)
+      expect(flow.prevAndNext(whenStep, collapseAllBut(whenStep))).toEqual({ prev: optStep, next: last })
+      expect(flow.prevAndNext(elseStep, collapseAllBut(elseStep))).toEqual({ prev: optStep, next: last })
+    })
+  })
+
+  describe('with a subflow as the target', () => {
+    const first = sp('step-01')
+    const opt = sp('step-02:opt')
+    const optStep = sp('step-02:opt.01')
+    const alt = sp('step-02:opt.02:alt')
+    const last = sp('step-03')
+
+    it('does not descend into the target subflow', () => {
+      expect(flow.prevAndNext(opt)).toEqual({ prev: first, next: last })
+    })
+
+    it('resolves prev/next around a nested subflow target', () => {
+      expect(flow.prevAndNext(alt)).toEqual({ prev: optStep, next: last })
+    })
+  })
+})
+
+describe('DynamicViewFlow.stepsBefore / stepsAfter', () => {
+  // Both helpers return `AnyStep[]` — a mix of step paths (strings) and subflow
+  // objects — so normalize everything to a path for readable assertions.
+  const paths = (steps: DynamicViewFlow.AnyStep[]) => steps.map(s => typeof s === 'string' ? s : s.id)
+
+  // 01
+  // alt
+  //   when
+  //     02
+  //   else
+  //     03
+  // 04
+  const altView = baseModel
+    .views(({ dynamicView, $step }, _) =>
+      _(
+        dynamicView('alt').with(
+          $step('a.child1 -> a.child2'),
+          $step.alt(
+            $step.when($step('a.child2 -> b.child1')),
+            $step.else($step('a.child2 -> b.child2')),
+          ),
+          $step('b.child1 -> shopify'),
+        ),
+      )
+    )
+    .toLikeC4Model()
+    .view('alt')
+    .$view
+  invariant(isDynamicView(altView))
+
+  const altFlow = DynamicViewFlow.from(altView)
+
+  const step01 = sp('step-01')
+  const alt = sp('step-02:alt')
+  const when = sp('step-02:alt.01:when')
+  const step02 = sp('step-02:alt.01:when.01')
+  const els = sp('step-02:alt.02:else')
+  const step03 = sp('step-02:alt.02:else.01')
+  const step04 = sp('step-03')
+
+  describe('stepsBefore', () => {
+    it('returns nothing for the very first step', () => {
+      expect(altFlow.stepsBefore(step01)).toEqual([])
+    })
+
+    it('stops at the target subflow, excluding it', () => {
+      expect(paths(altFlow.stepsBefore(alt))).toEqual([step01])
+    })
+
+    it('includes the enclosing subflow of the target branch', () => {
+      expect(paths(altFlow.stepsBefore(when))).toEqual([step01, alt])
+    })
+
+    it('walks only the branch that contains the target step', () => {
+      expect(paths(altFlow.stepsBefore(step02))).toEqual([step01, alt, when])
+    })
+
+    it('includes earlier sibling branches of an alt', () => {
+      expect(paths(altFlow.stepsBefore(step03))).toEqual([step01, alt, when, step02, els])
+    })
+
+    it('includes every branch of an alt when the target is after it', () => {
+      expect(paths(altFlow.stepsBefore(step04))).toEqual([step01, alt, when, step02, els, step03])
+    })
+
+    it('returns everything for an unknown step path', () => {
+      expect(paths(altFlow.stepsBefore(sp('step-99')))).toEqual([
+        step01,
+        alt,
+        when,
+        step02,
+        els,
+        step03,
+        step04,
+      ])
+    })
+
+    it('stepPathsBefore mirrors stepsBefore as plain paths', () => {
+      expect(altFlow.stepPathsBefore(step03)).toEqual(paths(altFlow.stepsBefore(step03)))
+    })
+  })
+
+  describe('stepsAfter', () => {
+    it('returns everything after the very first step', () => {
+      expect(paths(altFlow.stepsAfter(step01))).toEqual([alt, when, step02, els, step03, step04])
+    })
+
+    it('skips the contents of the target subflow', () => {
+      expect(paths(altFlow.stepsAfter(alt))).toEqual([step04])
+    })
+
+    it('returns the following sibling branch when the target is a branch', () => {
+      expect(paths(altFlow.stepsAfter(when))).toEqual([els, step03, step04])
+    })
+
+    it('continues from a step nested in a branch', () => {
+      expect(paths(altFlow.stepsAfter(step02))).toEqual([els, step03, step04])
+    })
+
+    it('returns nothing for the last step', () => {
+      expect(altFlow.stepsAfter(step04)).toEqual([])
+    })
+
+    it('returns nothing for an unknown step path', () => {
+      expect(altFlow.stepsAfter(sp('step-99'))).toEqual([])
+    })
+  })
+
+  describe('with try / catch / finally', () => {
+    // 01
+    // try
+    //   block
+    //     02
+    //   catch
+    //     03
+    //   finally
+    //     loop
+    //       04
+    // 05
+    const tryView = baseModel
+      .views(({ dynamicView, $step }, _) =>
+        _(
+          dynamicView('trycatch').with(
+            $step('a.child1 -> a.child2'),
+            $step.try({
+              try: [$step('a.child2 -> b.child1')],
+              catch: [$step('a.child2 -> b.child2')],
+              finally: [$step.loop($step('b.child1 -> b.child2'))],
+            }),
+            $step('b.child1 -> shopify'),
+          ),
+        )
+      )
+      .toLikeC4Model()
+      .view('trycatch')
+      .$view
+    invariant(isDynamicView(tryView))
+
+    const tryFlow = DynamicViewFlow.from(tryView)
+
+    const first = sp('step-01')
+    const tryFlowId = sp('step-02:try')
+    const block = sp('step-02:try.01:block')
+    const blockStep = sp('step-02:try.01:block.01')
+    const katch = sp('step-02:try.02:catch')
+    const catchStep = sp('step-02:try.02:catch.01')
+    const finallyFlow = sp('step-02:try.03:finally')
+    const loop = sp('step-02:try.03:finally.01:loop')
+    const loopStep = sp('step-02:try.03:finally.01:loop.01')
+    const last = sp('step-03')
+
+    it('stepsBefore walks earlier try branches when the target is inside one', () => {
+      expect(paths(tryFlow.stepsBefore(catchStep))).toEqual([
+        first,
+        tryFlowId,
+        block,
+        blockStep,
+        katch,
+      ])
+    })
+
+    it('stepsBefore walks every try branch for a step after the try', () => {
+      expect(paths(tryFlow.stepsBefore(last))).toEqual([
+        first,
+        tryFlowId,
+        block,
+        blockStep,
+        katch,
+        catchStep,
+        finallyFlow,
+        loop,
+        loopStep,
+      ])
+    })
+
+    it('stepsAfter descends through nested loop subflows', () => {
+      expect(paths(tryFlow.stepsAfter(catchStep))).toEqual([
+        finallyFlow,
+        loop,
+        loopStep,
+        last,
+      ])
+    })
+
+    it('stepsAfter skips the whole try subtree when the target is the try itself', () => {
+      expect(paths(tryFlow.stepsAfter(tryFlowId))).toEqual([last])
+    })
+
+    it('stepsAfter skips only the nested loop when the target is the loop', () => {
+      expect(paths(tryFlow.stepsAfter(loop))).toEqual([last])
+    })
+
+    it('stepsBefore and stepsAfter never overlap and never contain the target', () => {
+      for (const path of tryFlow.paths) {
+        const before = new Set(paths(tryFlow.stepsBefore(path)))
+        const after = new Set(paths(tryFlow.stepsAfter(path)))
+        expect(before.has(path)).toBe(false)
+        expect(after.has(path)).toBe(false)
+        for (const p of after) {
+          expect(before.has(p)).toBe(false)
+        }
+      }
+    })
   })
 })

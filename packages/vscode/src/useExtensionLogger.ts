@@ -17,6 +17,8 @@ import * as vscode from 'vscode'
 
 const output = defineLogger('LikeC4 Extension')
 
+export type OutputLogger = typeof output
+
 type OutputChannelSinkProps = {
   /**
    * The text formatter to use.  Defaults to {@link defaultTextFormatter}.
@@ -122,13 +124,6 @@ export const useConfigureLogger = defineService(() => {
   const logger = rootLogger.getChild('vscode')
 
   configureLogger()
-
-  // onDeactivate(async () => {
-  //   output.trace('Extension logger deactivating')
-  //   // await nextTick(() => {
-  //   //   output.dispose()
-  //   // })
-  // })
 
   return {
     output,
