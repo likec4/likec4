@@ -1,3 +1,54 @@
+## [1.59.4](https://github.com/likec4/likec4/compare/v1.59.3...v1.59.4) (2026-09-21)
+
+### 🚀 Features
+
+- **Redesigned Sequence Walkthrough Outline**:\
+  The current step is lifted onto its own card with a larger label, the participants it connects, and its notes rendered inline. Nested fragments now read as depth — the `loop` / `par` / `alt` / `try` you are standing inside is framed and tinted in the colour the canvas draws that frame with, while levels above and below step back. The outline animates between steps, and breadcrumb segments are clickable, so you can jump back to the first step of an enclosing fragment in one click. Motion is skipped under reduced motion and while panning.
+
+- **Zoom and Viewport Control for Embedded Diagrams**:\
+  New `minZoom` and `maxZoom` props control the zoom range of embedded diagrams, and the view renders on the first paint instead of starting from an empty canvas. Embedded diagrams can also start centered at a caller-defined zoom, and `render-view` callers can set the initial canvas size hint and viewport behavior. [#3249](https://github.com/likec4/likec4/pull/3249)
+
+- **Better Write-back of UI Edits**:\
+  Edits made from the UI are written back to the source more faithfully — element style rules are inserted inside the view body with correct indentation and existing properties are updated in place instead of drifting, renaming a view no longer repeats the folder path it already lives in, and view tags are written as a complete set (clearing the last tag removes the tags line; `ViewChange.ChangeProperty` now takes `tags` instead of `tag: { add, remove }`). Fixes [#3265](https://github.com/likec4/likec4/issues/3265)
+
+- **Configurable Relationship-browser Scope**:\
+  Configure the default relationship-browser scope, and share links that preserve the selected scope. Thanks [@ckeller42](https://github.com/ckeller42), [#3218](https://github.com/likec4/likec4/pull/3218)
+
+- **Richer MCP App Diagrams**:\
+  `render-view` renders workspace-local SVG icons and opens element and relationship details in interactive diagrams, opens fullscreen where the MCP App host supports it, and returns smaller payloads by including only the model data the selected view needs (set `fullModel: true` for the complete model). Tool input and output schemas are advertised as JSON Schema 2020-12. Thanks [@ckeller42](https://github.com/ckeller42), [#3246](https://github.com/likec4/likec4/pull/3246), [#3253](https://github.com/likec4/likec4/pull/3253), [#3240](https://github.com/likec4/likec4/pull/3240)
+
+- **`batch-read-elements` Returns Links and Source Locations**:\
+  `batch-read-elements` now returns `links` and `sourceLocation` for each element, matching `read-element`, so reading those for many elements no longer needs one call per element. Thanks [@parse](https://github.com/parse), [#3226](https://github.com/likec4/likec4/pull/3226)
+
+- **Bidirectional Deployment Relationships**:\
+  Deployment relationships support the `<->` and `-[kind]<->` syntax introduced in v1.59.3. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist), [#3227](https://github.com/likec4/likec4/pull/3227)
+
+- **Hide Title and Technology in Views**:\
+  Element and relationship `title` / `technology` can be hidden in views by setting an empty string in `with { ... }`. Thanks [@chiliec](https://github.com/chiliec), [#3267](https://github.com/likec4/likec4/pull/3267)
+
+- **Respect Editor Workspace Exclusions**:\
+  Project and model discovery honors editor workspace exclusions before traversing folders, avoiding unnecessary scans of excluded generated files and runtime storage. Thanks [@MandarinOptimizer](https://github.com/MandarinOptimizer), [#3228](https://github.com/likec4/likec4/pull/3228)
+
+### 🐞 Bug Fixes
+
+- Lowered the minimum required VS Code version back to 1.100, so the extension installs on Antigravity IDE.
+
+- Fixed Bootstrap icons in the VS Code preview — they are loaded through the extension host instead of the CDN, and inline style attributes are allowed in the webview CSP so configured icon colors apply. Thanks [@ckeller42](https://github.com/ckeller42), [#3220](https://github.com/likec4/likec4/pull/3220)
+
+- Fixed visual style edits leaking out of the selected view when it has no style rules, including dynamic views and empty views that extend another view. This prevents duplicate shared styles and unintended changes to other views. Thanks [@cry999](https://github.com/cry999), [#3268](https://github.com/likec4/likec4/pull/3268)
+
+- Fixed Mermaid export producing invalid output for views with a `group`. The subgraph id no longer starts with `@`, which Mermaid reserves for the `node@{ ... }` shape syntax, and grouped elements keep their own ids. Thanks [@humb1t](https://github.com/humb1t), [#3244](https://github.com/likec4/likec4/pull/3244)
+
+- Fixed dynamic view steps ignoring the relationship kind's default `title` from the specification, consistent with `technology`. Thanks [@chiliec](https://github.com/chiliec), [#3266](https://github.com/likec4/likec4/pull/3266)
+
+- Fixed a dynamic view's configured variant being ignored when the URL does not explicitly select one. Thanks [@cry999](https://github.com/cry999), [#3238](https://github.com/likec4/likec4/pull/3238)
+
+- Fixed `preview-view` for projects with non-default IDs. Thanks [@ckeller42](https://github.com/ckeller42), [#3232](https://github.com/likec4/likec4/pull/3232)
+
+- Fixed the `render-view` `fitView` option hiding navigation controls. Thanks [@ckeller42](https://github.com/ckeller42), [#3252](https://github.com/likec4/likec4/pull/3252)
+
+- Fixed elements reporting tags that are missing from the specification, which could happen for imported elements. `LikeC4Model.tagsFromSpecification` returns all declared tags.
+
 ## [1.59.3](https://github.com/likec4/likec4/compare/v1.59.2...v1.59.3) (2026-09-02)
 
 ### 🚀 Features
