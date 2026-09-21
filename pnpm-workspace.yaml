@@ -156,7 +156,7 @@ catalogs:
     babel-plugin-react-compiler: ^1.0.0
     clsx: ^2.1.1
     motion: ^12.43.0
-    nanostores: 1.5.2
+    nanostores: 1.5.3
     react: 19.2.8
     react-dom: 19.2.8
     react-error-boundary: ^6.1.4
