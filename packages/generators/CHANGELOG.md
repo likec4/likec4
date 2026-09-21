@@ -1,5 +1,17 @@
 # @likec4/generators
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3227](https://github.com/likec4/likec4/pull/3227) [`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Deployment relationships now support the `<->` and `-[kind]<->` bidirectional syntax introduced in v1.59.3.
+
+- [#3244](https://github.com/likec4/likec4/pull/3244) [`57c097c`](https://github.com/likec4/likec4/commit/57c097c53acdc28347922763aa39e96c3d4d8a5d) Thanks [@humb1t](https://github.com/humb1t)! - Fix Mermaid export producing invalid output for views with a `group`. The subgraph id no longer starts with `@`, which Mermaid reserves for the `node@{ ... }` shape syntax, and grouped elements keep their own ids instead of being truncated by the length of the generated group id (which left short ids, such as `auth`, with an empty id).
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad), [`add966b`](https://github.com/likec4/likec4/commit/add966b37a0df38e57b84181c3d67f973c099dd2), [`f0f3ec6`](https://github.com/likec4/likec4/commit/f0f3ec65212ff0bd0e7d2849d11bebeeeb070c90), [`4b59d64`](https://github.com/likec4/likec4/commit/4b59d6464a2ff347ffc6380037f5c5899a38b5de)]:
+  - @likec4/core@1.59.4
+  - @likec4/config@1.59.4
+  - @likec4/log@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

@@ -70,6 +70,7 @@ jobs:
           compression-level: 0
           path: |
             packages/*/package.tgz
+            styled-system/preset/package.tgz
             styled-system/styles/package.tgz
           if-no-files-found: error
 

@@ -1,5 +1,26 @@
 # @likec4/diagram
 
+## 1.59.4
+
+### Patch Changes
+
+- [`f0f3ec6`](https://github.com/likec4/likec4/commit/f0f3ec65212ff0bd0e7d2849d11bebeeeb070c90) Thanks [@davydkov](https://github.com/davydkov)! - Add `minZoom` and `maxZoom` props to control the zoom range of embedded diagrams, and render the view on the first paint instead of starting from an empty canvas.
+
+- [#3252](https://github.com/likec4/likec4/pull/3252) [`cd0d5c9`](https://github.com/likec4/likec4/commit/cd0d5c957db59dfc1b5a10c5c682695f7bf4617d) Thanks [@ckeller42](https://github.com/ckeller42)! - Honor the render-view `fitView` option without hiding navigation controls.
+
+- [#3249](https://github.com/likec4/likec4/pull/3249) [`dd113dd`](https://github.com/likec4/likec4/commit/dd113dd0c7840de1837b568ffae8c1b5e6a5121b) Thanks [@ckeller42](https://github.com/ckeller42)! - Let embedded diagrams start centered at a caller-defined zoom.
+
+- [`e956380`](https://github.com/likec4/likec4/commit/e9563807a92d02a7c361d6072e36d6b5da82f3a7) Thanks [@davydkov](https://github.com/davydkov)! - Redesigned the sequence walkthrough outline. The current step is lifted onto its own card with a larger label, the participants it connects, and its notes rendered inline instead of as a collapsing block. Nested fragments now read as depth: the `loop` / `par` / `alt` / `try` you are standing inside is framed and tinted in the same colour the canvas draws that frame with, levels above it step back in contrast, saturation and surface tone, and levels below it show as an indent and a hairline in their own colour. The recession flattens again as the walkthrough leaves a branch. A breadcrumb above the list names the fragments the current step is nested in, and the header shows the step position with a progress meter.
+
+- [`1e34c19`](https://github.com/likec4/likec4/commit/1e34c19483ec1d21f40c9cc57ce57482fb7f1961) Thanks [@davydkov](https://github.com/davydkov)! - Breadcrumb segments in the sequence outline are now clickable — each one jumps the walkthrough to the first step of that fragment, so you can step back out to the top of an enclosing `alt`, `try` or `loop` in one click.
+
+- [#3218](https://github.com/likec4/likec4/pull/3218) [`4b59d64`](https://github.com/likec4/likec4/commit/4b59d6464a2ff347ffc6380037f5c5899a38b5de) Thanks [@ckeller42](https://github.com/ckeller42)! - Configure the default relationship-browser scope and share links that preserve the selected scope.
+
+- [`a091122`](https://github.com/likec4/likec4/commit/a091122b86bb6f9d1f209a7018a221764c0fa916) Thanks [@davydkov](https://github.com/davydkov)! - The sequence outline now animates between steps. The active step card, its number badge, and the frame around the current fragment each travel to their new position instead of disappearing and reappearing, so walking into or out of a branch reads as one continuous move. Motion is skipped under reduced motion and while panning.
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad), [`add966b`](https://github.com/likec4/likec4/commit/add966b37a0df38e57b84181c3d67f973c099dd2), [`f0f3ec6`](https://github.com/likec4/likec4/commit/f0f3ec65212ff0bd0e7d2849d11bebeeeb070c90)]:
+  - @likec4/core@1.59.4
+  - @likec4/styles@1.59.4
+
 ## 1.59.3
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # likec4
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3238](https://github.com/likec4/likec4/pull/3238) [`6bfec95`](https://github.com/likec4/likec4/commit/6bfec95f9855760c58e0efd7e89cdab3867e0462) Thanks [@cry999](https://github.com/cry999)! - Respect a dynamic view's configured variant when the URL does not explicitly select one
+
+- [#3267](https://github.com/likec4/likec4/pull/3267) [`488d850`](https://github.com/likec4/likec4/commit/488d850b9c1d2a0c65c551140dd983361544e69a) Thanks [@chiliec](https://github.com/chiliec)! - Allow hiding element and relationship `title`/`technology` in views via an empty string in `with { ... }`
+- Updated dependencies [[`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad), [`add966b`](https://github.com/likec4/likec4/commit/add966b37a0df38e57b84181c3d67f973c099dd2), [`f0f3ec6`](https://github.com/likec4/likec4/commit/f0f3ec65212ff0bd0e7d2849d11bebeeeb070c90)]:
+  - @likec4/core@1.59.4
+  - @likec4/icons@1.46.4
+
 ## 1.59.3
 
 ### Patch Changes
