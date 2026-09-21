@@ -22,10 +22,13 @@ export const apiShareRoute = factory.createApp()
     await kv.ensureAccess(shareId, metadata.shareOptions)
 
     // TODO: temporary solution for backwards compatibility
-    const tagSpecs = value.model.specification.tags as Record<string, TagSpecification> | string[] | undefined
-    if (isArray(tagSpecs)) {
-      value.model.specification.tags = mapToObj(
-        tagSpecs,
+    // `specification` is readonly, but the stored value may carry the legacy `string[]` shape
+    const specification = value.model.specification as {
+      tags?: Record<string, TagSpecification> | string[]
+    }
+    if (isArray(specification.tags)) {
+      specification.tags = mapToObj(
+        specification.tags,
         tag => [tag, { color: defaultTheme.colors.muted.elements.fill }],
       )
     }

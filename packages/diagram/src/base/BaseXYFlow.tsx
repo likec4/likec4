@@ -146,7 +146,8 @@ export function BaseXYFlow<
 ) {
   const fitViewOptions = useMemo(() => ({
     minZoom,
-    maxZoom,
+    // Fit-to-view never scales up beyond 1, even if `maxZoom` allows it
+    maxZoom: Math.min(maxZoom, 1),
     padding: fitViewPadding,
     includeHiddenNodes: false,
   }), [fitViewPadding, minZoom, maxZoom])
