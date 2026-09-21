@@ -20,11 +20,11 @@ const { findNodeForKeyword } = GrammarUtils
 const asViewStyleRule = (target: string, style: ViewChange.ChangeElementStyle['style'], indent = 0) => {
   const indentStr = indent > 0 ? ' '.repeat(indent) : ''
   return [
-    indentStr + `\tstyle ${target} {`,
+    indentStr + `style ${target} {`,
     ...entries(style).map(([key, value]) =>
-      indentStr + `\t\t${key} ${key === 'opacity' ? value.toString() + '%' : value}`
+      indentStr + `  ${key} ${key === 'opacity' ? value.toString() + '%' : value}`
     ),
-    indentStr + `\t}`,
+    indentStr + `}`,
   ]
 }
 
@@ -74,10 +74,18 @@ export function changeElementStyle(services: LikeC4Services, {
   const viewCstNode = nonNullable(viewAst.$cstNode, 'cant find view cst node')
   const viewBodyCstNode = nonNullable(viewAst.body.$cstNode, 'cant find view body cst node')
 
-  const indent = viewCstNode.range.start.character
-
-  const insertPos = nonNullable(findNodeForKeyword(viewBodyCstNode, '}'), 'cant find closing brace').range.start
-  insertPos.character = 0
+  // Insert after the last rule, or after whatever precedes the closing brace (steps, properties, or `{`)
+  const closingBrace = nonNullable(findNodeForKeyword(viewBodyCstNode, '}'), 'cant find closing brace')
+  invariant(closingBrace.container, 'Closing brace has no container')
+  const siblings = closingBrace.container.content
+  const anchor = last(viewAst.body.rules)?.$cstNode ?? siblings[siblings.indexOf(closingBrace) - 1]
+  invariant(anchor, 'anchor is not defined')
+  const insertPos = anchor.range.end
+  // Keep `}` on its own line, e.g. for `view x extends y {}`
+  const insertSuffix = closingBrace.range.start.line === insertPos.line
+    ? '\n' + ' '.repeat(viewCstNode.range.start.character)
+    : ''
+  const indent = viewCstNode.range.start.character + 2
 
   const edits = [] as TextEdit[]
 
@@ -126,21 +134,19 @@ export function changeElementStyle(services: LikeC4Services, {
   }
 
   if (insert.length > 0) {
-    modifiedRange.start = {
-      line: insertPos.line,
-      character: indent + 2,
-    }
     const linesToInsert = insert.flatMap(({ fqn }) => asViewStyleRule(fqn, style, indent))
-    const textToInsert = linesToInsert.join('\n') + '\n'
     edits.push(
       TextEdit.insert(
         insertPos,
-        textToInsert,
+        '\n' + linesToInsert.join('\n') + insertSuffix,
       ),
     )
-
+    modifiedRange.start = {
+      line: insertPos.line + 1,
+      character: indent,
+    }
     modifiedRange.end = {
-      line: insertPos.line + linesToInsert.length - 1,
+      line: insertPos.line + linesToInsert.length,
       character: last(linesToInsert)?.length ?? 0,
     }
   }

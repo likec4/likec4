@@ -202,6 +202,131 @@ describe('Dynamic view step fields', () => {
     })
   })
 
+  describe('Title inheritance', () => {
+    it('should inherit title from specification when step has kind but no explicit title', () => {
+      const edge = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            discover: {
+              title: ':8761',
+              technology: 'HTTP',
+            },
+          },
+        })
+        .model(({ el }, _) =>
+          _(
+            el('gateway'),
+            el('discovery'),
+          )
+        )
+        .views(({ dynamicView, $step }, _) =>
+          _(
+            dynamicView(
+              'test',
+              $step('gateway -> discovery', {
+                with: {
+                  kind: 'discover',
+                },
+              }),
+            ),
+          )
+        )
+        .toLikeC4Model()
+        .view('test')
+        .$view.edges[0]!
+
+      expect(edge).toMatchObject({
+        source: 'gateway',
+        target: 'discovery',
+        kind: 'discover',
+        label: ':8761',
+        technology: 'HTTP',
+      })
+    })
+
+    it('should prefer explicit step title over specification', () => {
+      const edge = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            discover: {
+              title: ':8761',
+            },
+          },
+        })
+        .model(({ el }, _) =>
+          _(
+            el('gateway'),
+            el('discovery'),
+          )
+        )
+        .views(({ dynamicView, $step }, _) =>
+          _(
+            dynamicView(
+              'test',
+              $step('gateway -> discovery', {
+                title: 'custom',
+                with: {
+                  kind: 'discover',
+                },
+              }),
+            ),
+          )
+        )
+        .toLikeC4Model()
+        .view('test')
+        .$view.edges[0]!
+
+      expect(edge).toMatchObject({
+        kind: 'discover',
+        label: 'custom',
+      })
+    })
+
+    it('should prefer model relationship title over specification', () => {
+      const edge = Builder
+        .specification({
+          elements: ['el'],
+          relationships: {
+            discover: {
+              title: ':8761',
+            },
+          },
+        })
+        .model(({ el, rel }, _) =>
+          _(
+            el('gateway'),
+            el('discovery'),
+            rel('gateway', 'discovery', {
+              kind: 'discover',
+              title: 'from model',
+            }),
+          )
+        )
+        .views(({ dynamicView, $step }, _) =>
+          _(
+            dynamicView(
+              'test',
+              $step('gateway -> discovery', {
+                with: {
+                  kind: 'discover',
+                },
+              }),
+            ),
+          )
+        )
+        .toLikeC4Model()
+        .view('test')
+        .$view.edges[0]!
+
+      expect(edge).toMatchObject({
+        kind: 'discover',
+        label: 'from model',
+      })
+    })
+  })
+
   describe('Description inheritance', () => {
     it('should inherit description from model relationship', () => {
       const edge = Builder
