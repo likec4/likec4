@@ -287,7 +287,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
             source,
             target,
             navigateTo,
-            title: stepTitle ?? title,
+            title: stepTitle ?? title ?? kindSpec?.title,
             relations: relations ?? [],
             isBackward: targetColumn < sourceColumn,
           }))
