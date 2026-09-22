@@ -136,6 +136,7 @@ export function LikeC4Diagram<A extends Any = Any>({
     const { xynodes, xyedges } = convertToXYFlow({
       view,
       dynamicViewVariant: dynamicViewVariant ?? 'diagram',
+      elementViewVariant: 'diagram',
       where: where ?? null,
       currentViewId: view.id,
       collapsedSequenceFlows: {},
