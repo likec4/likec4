@@ -65,7 +65,6 @@ model {
 views {
 
   view cloud_ui of cloud.ui {
-    routing ortho
     include *
     include cloud
 
@@ -84,7 +83,6 @@ views {
       opacity 20%
       border dashed
     }
-    autoLayout TopBottom 230 130
   }
 
   view mobile of mobile {
