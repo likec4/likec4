@@ -38,7 +38,7 @@ export function splineToPolyline(points: ReadonlyArray<Point>): XYPoint[] {
   const result: XYPoint[] = []
   for (let i = 0; i < points.length; i += 3) {
     const [x, y] = points[i]!
-    const prev = result[result.length - 1]
+    const prev = result.at(-1)
     if (!prev || !(nearlyEqual(prev.x, x) && nearlyEqual(prev.y, y))) {
       result.push({ x, y })
     }

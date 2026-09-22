@@ -60,11 +60,8 @@ function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
     }
     const at = axis === 'h' ? a.y : a.x
     const [lo, hi] = axis === 'h' ? [Math.min(a.x, b.x), Math.max(a.x, b.x)] : [Math.min(a.y, b.y), Math.max(a.y, b.y)]
-    const previous = runs[runs.length - 1]
-    if (
-      previous && previous.axis === axis && previous.indices[previous.indices.length - 1] === i - 1 &&
-      nearlyEqual(previous.at, at)
-    ) {
+    const previous = runs.at(-1)
+    if (previous?.axis === axis && previous.indices.at(-1) === i - 1 && nearlyEqual(previous.at, at)) {
       previous.lo = Math.min(previous.lo, lo)
       previous.hi = Math.max(previous.hi, hi)
       previous.indices.push(i)
@@ -94,11 +91,20 @@ function offsetsOf(members: ReadonlyArray<{ id: string; movable: boolean }>): Ma
   const movable = members.filter(m => m.movable).map(m => m.id).sort()
   const fixed = members.some(m => !m.movable)
   movable.forEach((id, k) => {
-    // Alternate around a fixed route; otherwise center the group on the original track.
-    const slot = fixed ? (k % 2 === 0 ? k / 2 + 1 : -(k + 1) / 2) : k - (movable.length - 1) / 2
-    offsets.set(id, slot * TRACK_SPACING)
+    offsets.set(id, trackSlot(k, movable.length, fixed) * TRACK_SPACING)
   })
   return offsets
+}
+
+/**
+ * Returns the track slot of the `k`-th movable route: alternating on both sides of a fixed route,
+ * otherwise centered on the original track.
+ */
+function trackSlot(k: number, count: number, aroundFixed: boolean): number {
+  if (!aroundFixed) {
+    return k - (count - 1) / 2
+  }
+  return k % 2 === 0 ? k / 2 + 1 : -(k + 1) / 2
 }
 
 /**
@@ -164,8 +170,8 @@ export function keepOwnTrack(route: TrackRoute, others: ReadonlyArray<TrackRoute
     if (run === runs[0]) {
       offset = clampToSide(offset, run, route.points[0]!, route.bounds.from)
     }
-    if (run === runs[runs.length - 1]) {
-      offset = clampToSide(offset, run, route.points[route.points.length - 1]!, route.bounds.to)
+    if (run === runs.at(-1)) {
+      offset = clampToSide(offset, run, route.points.at(-1)!, route.bounds.to)
     }
     for (const i of run.indices) {
       if (run.axis === 'h') {

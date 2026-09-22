@@ -78,7 +78,7 @@ function segmentCollector(): { add: (from: XYPosition, to: XYPosition) => void; 
   return {
     segments,
     add(from, to) {
-      const previous = segments[segments.length - 1]
+      const previous = segments.at(-1)
       if (previous && previous[1] === from && continuesRun(previous, from, to)) {
         previous[1] = to
       } else {
@@ -154,7 +154,7 @@ function roundedPath(points: XYPosition[], radius: number): DrawnEdge {
     add(start, a)
     start = b
   }
-  const end = points[points.length - 1]!
+  const end = points.at(-1)!
   add(start, end)
   return { d: d + ` L ${end.x},${end.y}`, segments }
 }
@@ -176,7 +176,7 @@ export function orthoPolyline(
   const insertAt: number[] = [0]
   let direction: 'h' | 'v' | null = null
   const push = (q: XYPosition, index: number) => {
-    const p = points[points.length - 1]!
+    const p = points.at(-1)!
     if (nearlyEqual(p.x, q.x) && nearlyEqual(p.y, q.y)) {
       return
     }
@@ -186,7 +186,7 @@ export function orthoPolyline(
       insertAt.push(index)
       return
     }
-    const prev = points[points.length - 2]
+    const prev = points.at(-2)
     let horizontalFirst: boolean
     if (!direction || !prev) {
       horizontalFirst = Math.abs(q.x - p.x) >= Math.abs(q.y - p.y)

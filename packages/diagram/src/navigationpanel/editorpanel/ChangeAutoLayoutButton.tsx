@@ -62,9 +62,8 @@ export const ChangeAutoLayoutButton = () => {
     setControlsRefs(controlsRefs)
   }
 
-  const setRoutingRef = (name: EdgeRouting) => (node: HTMLButtonElement) => {
-    routingRefs[name] = node
-    setRoutingRefs(routingRefs)
+  const setRoutingRef = (name: EdgeRouting) => (node: HTMLButtonElement | null) => {
+    setRoutingRefs(refs => refs[name] === node ? refs : { ...refs, [name]: node })
   }
 
   const setAutoLayout = (direction: AutoLayoutDirection) => (event: ReactMouseEvent<HTMLButtonElement>) => {

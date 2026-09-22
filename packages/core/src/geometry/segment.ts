@@ -57,7 +57,7 @@ export function polylineToSegments(points: ReadonlyArray<XYPoint>): Segment[] {
     if (nearlyEqual(from.x, to.x) && nearlyEqual(from.y, to.y)) {
       continue
     }
-    const previous = segments[segments.length - 1]
+    const previous = segments.at(-1)
     if (previous && continuesRun(previous, from, to)) {
       previous[1] = to
     } else {

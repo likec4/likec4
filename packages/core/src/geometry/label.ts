@@ -60,7 +60,7 @@ export function placeLabelsAlongRoutes(
       occupied.push(route.labelBBox)
     }
   }
-  for (const route of [...routes].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)) {
+  for (const route of [...routes].sort(compareIds)) {
     if (!route.labelBBox || placed.has(route.id)) {
       continue
     }
@@ -98,46 +98,24 @@ export function placeLabelAlongSegments({ segments, size, obstacles, routes = []
   let fallback: BBox | null = null
   for (const { segment: [a, b], length } of byLength) {
     const horizontal = Math.abs(b.x - a.x) >= Math.abs(b.y - a.y)
-    const beside = (p: XYPoint, otherSide: boolean): BBox =>
-      horizontal
-        ? {
-          x: Math.round(p.x - size.width / 2),
-          y: Math.round(otherSide ? p.y + GAP : p.y - GAP - size.height),
-          width: size.width,
-          height: size.height,
-        }
-        : {
-          x: Math.round(otherSide ? p.x - GAP - size.width : p.x + GAP),
-          y: Math.round(p.y - size.height / 2),
-          width: size.width,
-          height: size.height,
-        }
     const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
-    fallback ??= beside(mid, false)
+    fallback ??= labelBeside(mid, size, horizontal, false)
     const ux = length === 0 ? 0 : (b.x - a.x) / length
     const uy = length === 0 ? 0 : (b.y - a.y) / length
-    // A clear interval starts or ends at an obstacle boundary. Check those positions
-    // exactly so a narrow gap is not skipped by stepping along the route.
-    const shifts = new Set([0, length / 2, -length / 2])
-    const extent = horizontal ? size.width : size.height
-    const origin = horizontal ? mid.x : mid.y
-    const direction = horizontal ? ux : uy
-    if (direction !== 0) {
-      for (const obstacle of blocked) {
-        const start = horizontal ? obstacle.x : obstacle.y
-        const end = start + (horizontal ? obstacle.width : obstacle.height)
-        for (const coordinate of [Math.floor(start - extent) + extent / 2, Math.ceil(end) + extent / 2]) {
-          const shift = (coordinate - origin) / direction
-          if (Math.abs(shift) <= length / 2) {
-            shifts.add(shift)
-          }
-        }
-      }
-    }
-    for (const along of [...shifts].sort((a, b) => Math.abs(a) - Math.abs(b) || b - a)) {
+    const shifts = shiftsAlong(
+      {
+        origin: horizontal ? mid.x : mid.y,
+        direction: horizontal ? ux : uy,
+        length,
+        extent: horizontal ? size.width : size.height,
+      },
+      blocked,
+      horizontal,
+    )
+    for (const along of shifts) {
       const p = { x: mid.x + ux * along, y: mid.y + uy * along }
       for (const otherSide of [false, true]) {
-        const box = beside(p, otherSide)
+        const box = labelBeside(p, size, horizontal, otherSide)
         if (isClear(box)) {
           return box
         }
@@ -145,4 +123,60 @@ export function placeLabelAlongSegments({ segments, size, obstacles, routes = []
     }
   }
   return fallback ?? { x: 0, y: 0, width: size.width, height: size.height }
+}
+
+function compareIds(a: LabelRoute, b: LabelRoute): number {
+  if (a.id < b.id) {
+    return -1
+  }
+  return a.id > b.id ? 1 : 0
+}
+
+/**
+ * Returns the label box beside point `p` on a segment: above a horizontal segment or right of a
+ * vertical one, or on the opposite side when `otherSide` is set.
+ */
+function labelBeside(p: XYPoint, size: Dimensions, horizontal: boolean, otherSide: boolean): BBox {
+  if (horizontal) {
+    return {
+      x: Math.round(p.x - size.width / 2),
+      y: Math.round(otherSide ? p.y + GAP : p.y - GAP - size.height),
+      width: size.width,
+      height: size.height,
+    }
+  }
+  return {
+    x: Math.round(otherSide ? p.x - GAP - size.width : p.x + GAP),
+    y: Math.round(p.y - size.height / 2),
+    width: size.width,
+    height: size.height,
+  }
+}
+
+/**
+ * Returns candidate shifts along a segment from its midpoint, nearest first.
+ *
+ * Includes the midpoint, both ends, and every position where the label sits flush against an
+ * obstacle boundary. A clear interval starts or ends at an obstacle boundary, so checking those
+ * positions exactly avoids skipping a narrow gap when stepping along the route.
+ */
+function shiftsAlong(
+  { origin, direction, length, extent }: { origin: number; direction: number; length: number; extent: number },
+  blocked: ReadonlyArray<BBox>,
+  horizontal: boolean,
+): number[] {
+  const shifts = new Set([0, length / 2, -length / 2])
+  if (direction !== 0) {
+    for (const obstacle of blocked) {
+      const start = horizontal ? obstacle.x : obstacle.y
+      const end = start + (horizontal ? obstacle.width : obstacle.height)
+      for (const coordinate of [Math.floor(start - extent) + extent / 2, Math.ceil(end) + extent / 2]) {
+        const shift = (coordinate - origin) / direction
+        if (Math.abs(shift) <= length / 2) {
+          shifts.add(shift)
+        }
+      }
+    }
+  }
+  return [...shifts].sort((a, b) => Math.abs(a) - Math.abs(b) || b - a)
 }
