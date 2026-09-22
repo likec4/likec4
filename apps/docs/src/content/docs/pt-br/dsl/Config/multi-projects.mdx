@@ -1,0 +1,170 @@
+---
+title: Vários projetos
+description: Saiba como dividir seu modelo LikeC4 em vários projetos
+sidebar: 
+  label: Vários projetos
+  order: 14
+---
+
+import { Card, FileTree, Aside } from '@astrojs/starlight/components';
+
+Às vezes, você pode querer dividir seu modelo LikeC4 em vários modelos, com base em domínios, equipes ou qualquer outro critério.
+
+Você pode fazer isso criando vários projetos no seu workspace e vinculando-os entre si.  
+Também pode usar esse recurso para compartilhar seu modelo com outras equipes ou projetos.
+
+Crie arquivos `likec4.config.json` nas pastas que você deseja transformar em projetos:
+
+<FileTree>
+- cloud
+  - **likec4.config.json**
+  - service1.c4
+  - service2.c4
+  - ...
+- externals
+  - **likec4.config.json**
+  - amazon.c4
+  - ...
+</FileTree>
+
+Os projetos podem ser aninhados.  
+Nesse caso, os arquivos do projeto aninhado não fazem parte do projeto pai.
+
+<FileTree>
+- cloud
+  - likec4.config.json
+  - service1.c4
+  - service2.c4
+  - nested
+    - likec4.config.json
+    - service3.c4 // fará parte do projeto 'nested', não do projeto 'cloud'
+</FileTree>
+
+## Importar elementos
+
+Você pode importar elementos de outros projetos usando a palavra-chave `import`.
+
+```likec4
+import { serviceA } from 'projectA'
+
+model {
+  serviceB = service {
+    -> serviceA.api 'calls serviceA'
+  }
+}
+```
+
+<Aside type='caution' title="Limitações">
+No momento, aplicam-se as seguintes limitações:
+- Os projetos referenciados devem estar carregados no mesmo workspace
+- Apenas elementos de **model** no nível superior podem ser importados
+</Aside>
+
+## Compartilhar especificação
+
+Você pode compartilhar arquivos de especificação (ou qualquer outra fonte LikeC4) entre vários projetos usando a opção de configuração `include`.
+
+### Usando caminhos de inclusão
+
+Adicione uma configuração `include` ao seu projeto para incluir arquivos de diretórios fora da pasta do projeto:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "cloud",
+  "include": {
+    "paths": ["../shared"]
+  }
+}
+```
+
+<FileTree>
+- shared
+  - specs.c4
+  - common-styles.c4
+- cloud
+  - likec4.config.json
+  - services.c4
+  - ...
+- externals
+  - likec4.config.json
+  - amazon.c4
+  - ...
+</FileTree>
+
+Os projetos `cloud` e `externals` podem incluir a especificação compartilhada:
+
+```json title="cloud/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "cloud",
+  "include": {
+    "paths": ["../shared"]
+  }
+}
+```
+
+```json title="externals/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "externals",
+  "include": {
+    "paths": ["../shared"]
+  }
+}
+```
+
+### Configuração de inclusão
+
+A configuração `include` aceita um objeto com as seguintes propriedades:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "my-project",
+  "include": {
+    "paths": ["../shared", "../common/specs"],
+    "maxDepth": 5,
+    "fileThreshold": 50
+  }
+}
+```
+
+- **`paths`** - Array de caminhos relativos de diretórios (obrigatório)
+- **`maxDepth`** - Profundidade máxima de diretórios a percorrer (padrão: 3, intervalo: 1-20)
+- **`fileThreshold`** - Emite um aviso quando mais arquivos do que esse limite forem carregados (padrão: 30)
+
+<Aside type='tip' title="Otimização de desempenho">
+Use `maxDepth` para limitar a navegação em diretórios muito profundos e `fileThreshold` para detectar quando você está incluindo diretórios grandes sem querer.  
+Se receber avisos sobre carregamento lento, considere reduzir `maxDepth` ou tornar os caminhos de inclusão mais específicos.
+</Aside>
+
+<Aside type='tip' title="Resolução de caminhos">
+Os caminhos de inclusão são relativos à pasta do projeto (a pasta que contém o arquivo de configuração).  
+O LikeC4 percorre recursivamente os diretórios incluídos em busca de arquivos `.c4`.
+</Aside>
+
+<Aside type='caution' title="Requisitos dos caminhos">
+Os caminhos de inclusão devem ser relativos. Caminhos absolutos, letras de unidade (como `C:\`) e URLs não são permitidos.
+</Aside>
+
+### Usando links simbólicos (alternativa)
+
+Como alternativa, você pode usar links simbólicos para compartilhar arquivos:
+
+<FileTree>
+- shared
+  - specs.c4
+- cloud
+  - specs.c4 // -> ../shared/specs.c4
+  - likec4.config.json
+  - ...
+- externals
+  - specs.c4 // -> ../shared/specs.c4
+  - likec4.config.json
+  - ...
+</FileTree>
+
+<Aside type='note'>
+Em geral, a configuração `include` é preferível a links simbólicos, pois é mais portável e mais fácil de gerenciar.
+</Aside>
