@@ -86,16 +86,10 @@ export function isEqualRects(a: Rect, b: Rect): boolean {
     && Math.trunc(a.height) === Math.trunc(b.height)
 }
 
-/**
- * Returns true for a leaf node type, excluding compounds and view groups.
- */
 export function isLeafNodeType(type: string | undefined): boolean {
   return type !== 'compound-element' && type !== 'compound-deployment' && type !== 'view-group'
 }
 
-/**
- * Returns leaf node bounds to use as label-placement obstacles.
- */
 export function leafNodeRects(nodes: Iterable<MinimalInternalNode & { type?: string | undefined }>): Rect[] {
   const rects: Rect[] = []
   for (const node of nodes) {

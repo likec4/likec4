@@ -15,17 +15,13 @@ import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { first, last } from 'remeda'
 import { bezierControlPoints, bezierPath, getNodeIntersectionFromCenterToPoint, isEqualRects } from './xyflow'
 
-/**
- * An edge endpoint with its XYFlow handle center and node bounds.
- */
+/** An edge endpoint: the XYFlow handle center and the node bounds. */
 export type EdgeEnd = {
   readonly center: XYPosition
   readonly node: BBox
 }
 
-/**
- * The source and target in declaration order, with the drawing direction.
- */
+/** Source and target in declaration order; `dir: 'back'` draws from target to source. */
 export type Endpoints<T> = {
   source: T
   target: T
@@ -37,17 +33,12 @@ export type Axis = 'h' | 'v'
 
 type EdgeEndpoints = Endpoints<EdgeEnd>
 
-/**
- * Returns endpoints in drawing order, reversing them for `dir: 'back'`.
- */
+/** Endpoints in drawing order, reversed for `dir: 'back'`. */
 export function inDrawingOrder<T>({ source, target, dir }: Endpoints<T>): [from: T, to: T] {
   return dir === 'back' ? [target, source] : [source, target]
 }
 
-/**
- * SVG path data and straight segments used for label placement.
- * Orthogonal segments exclude rounded corners. Spline paths have no straight segments.
- */
+/** SVG path data plus the straight segments used for label placement (empty for splines). */
 export type DrawnEdge = {
   readonly d: string
   readonly segments: ReadonlyArray<Segment>
@@ -60,18 +51,14 @@ const catmullRom = d3line<XYPosition>()
   .x(d => Math.trunc(d.x))
   .y(d => Math.trunc(d.y))
 
-/** Gap between an orthogonal edge and its endpoint node borders, in diagram units. */
+// Orthogonal drawing, in diagram units
 const ORTHO_NODE_MARGIN = 2
-/** Corner radius in diagram units, limited to half the shorter adjacent segment. */
 const ORTHO_CORNER_RADIUS = 8
-/** Minimum corner radius in diagram units; smaller corners remain sharp. */
 const MIN_ROUNDED_RADIUS = 1
 
 /**
- * Collects connected straight segments in drawing order.
- *
- * Merges consecutive collinear segments only when they share the same endpoint object.
- * A rounded corner separates segments because the following segment starts at a different point.
+ * Collects straight segments, merging collinear pieces only when they share the same endpoint object,
+ * so a rounded corner, which starts the next piece at a new point, splits them.
  */
 function segmentCollector(): { add: (from: XYPosition, to: XYPosition) => void; segments: Segment[] } {
   const segments: Segment[] = []
@@ -92,10 +79,7 @@ function inside(p: XYPosition, r: BBox, margin: number): boolean {
   return p.x >= r.x - margin && p.x <= r.x + r.width + margin && p.y >= r.y - margin && p.y <= r.y + r.height + margin
 }
 
-/**
- * Drops the leading points that lie inside the node and moves the first point onto the node border.
- * Segments are axis-aligned, so the clipped point keeps one coordinate.
- */
+/** Drops leading points inside the node and moves the first point onto its border. */
 function clipStart(points: XYPosition[], node: BBox, margin: number): void {
   while (points.length > 2 && inside(points[1]!, node, margin)) {
     points.shift()
@@ -117,10 +101,8 @@ function clipStart(points: XYPosition[], node: BBox, margin: number): void {
 }
 
 /**
- * Returns an SVG path with rounded corners and its straight segments.
- *
- * Leaves corners sharp when the available radius is below `MIN_ROUNDED_RADIUS` or the path reverses.
- * Returns empty path data and segments for fewer than two points.
+ * Draws the polyline with rounded corners; a corner stays sharp when the radius would be below
+ * `MIN_ROUNDED_RADIUS` or the path reverses.
  */
 function roundedPath(points: XYPosition[], radius: number): DrawnEdge {
   if (points.length < 2) {
@@ -160,12 +142,9 @@ function roundedPath(points: XYPosition[], radius: number): DrawnEdge {
 }
 
 /**
- * Returns an orthogonal polyline through the anchors, before clipping to node borders.
- *
- * Inserts a bend between anchors that don't share an axis, continuing the incoming direction
- * unless that would double back over the previous segment.
- * The first segment follows the larger coordinate difference from the starting node.
- * Each `insertAt[i]` gives the control point insertion index for the segment ending at `points[i]`.
+ * Orthogonal polyline through the anchors, before clipping at the nodes. Between anchors that don't
+ * share an axis it inserts a bend, continuing the incoming axis unless that would double back.
+ * `insertAt[i]` is the control point index to insert at for the segment ending at `points[i]`.
  */
 export function orthoPolyline(
   anchors: ReadonlyArray<XYPosition>,
@@ -208,9 +187,6 @@ export function orthoPolyline(
   return { points, insertAt }
 }
 
-/**
- * Returns an orthogonal route through the anchors, clipped to the endpoint node borders.
- */
 function orthoRoute(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEnd): XYPosition[] {
   const { points } = orthoPolyline(anchors, from.center, to.center)
   clipStart(points, from.node, ORTHO_NODE_MARGIN)
@@ -220,9 +196,6 @@ function orthoRoute(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeE
   return points
 }
 
-/**
- * Returns SVG path data with rounded corners and straight segments for label placement.
- */
 export function drawnFromRoute(points: XYPosition[]): DrawnEdge {
   return roundedPath(points, ORTHO_CORNER_RADIUS)
 }
@@ -231,7 +204,6 @@ function orthoPath(anchors: ReadonlyArray<XYPosition>, from: EdgeEnd, to: EdgeEn
   return drawnFromRoute(orthoRoute(anchors, from, to))
 }
 
-/** Clamps `p` to the node bounds. Points inside the node retain their position. */
 function borderPointToward(node: BBox, p: XYPosition): XYPosition {
   return {
     x: Math.trunc(Math.max(node.x, Math.min(node.x + node.width, p.x))),
@@ -239,14 +211,11 @@ function borderPointToward(node: BBox, p: XYPosition): XYPosition {
   }
 }
 
-/** Height in diagram units of the default self-loop above its node. */
-const SELF_LOOP_SIZE = 80
+const SELF_LOOP_SIZE = 80 // height of the default loop above the node
 
 /**
- * Returns an orthogonal self-loop through the supplied corners.
- *
- * Uses the node bounds nearest the first and last corners as endpoints.
- * With no corners, creates a loop above the node.
+ * Self-loop through the corners, or a default loop above the node; the endpoints are the node
+ * border points nearest the first and last corner.
  */
 function orthoSelfLoopPath(controlPoints: ReadonlyArray<XYPosition>, node: BBox): DrawnEdge {
   const corners = controlPoints.length > 0 ? controlPoints : [
@@ -259,12 +228,7 @@ function orthoSelfLoopPath(controlPoints: ReadonlyArray<XYPosition>, node: BBox)
   return roundedPath(points, ORTHO_CORNER_RADIUS)
 }
 
-/**
- * Returns an edited orthogonal route and its endpoint node bounds in drawing order.
- *
- * The route can move between tracks to separate shared segments.
- * Returns `null` for a self-loop, which uses a separate path.
- */
+/** Route of an edited edge with its endpoint bounds in drawing order, or `null` for a self-loop. */
 export function editedEdgeRoute({
   controlPoints,
   ...edge
@@ -279,10 +243,8 @@ export function editedEdgeRoute({
 }
 
 /**
- * Returns the orthogonal polyline for an edge without editing handles.
- *
- * Uses the Graphviz corners for orthogonal geometry. For saved spline geometry, derives
- * handles from the curve and routes through them without moving nodes.
+ * Polyline of an unedited edge: the Graphviz corners, or a route through the spline handles when
+ * the saved geometry is curved.
  */
 export function layoutedEdgeRoute({
   points,
@@ -298,11 +260,8 @@ export function layoutedEdgeRoute({
 }
 
 /**
- * Returns a path through editing handles, clipped to the endpoint node borders.
- *
- * Draws from source to target, or from target to source for `dir: 'back'`.
- * For orthogonal routing, treats the handles as corners and returns straight segments
- * for label placement. For spline routing, returns a curve with no straight segments.
+ * Path through the editing handles, clipped at the node borders: orthogonal with straight segments,
+ * or a curve without segments.
  */
 export function editedEdgePath({
   controlPoints,
@@ -329,11 +288,8 @@ export function editedEdgePath({
 }
 
 /**
- * Returns a path for an edge without editing handles.
- *
- * Preserves the Graphviz spline when its geometry matches the routing mode.
- * For saved curves displayed with orthogonal routing, derives handles from the curve
- * and routes through them without moving nodes.
+ * Path of an unedited edge: the Graphviz spline as is, or re-routed orthogonally when a curved
+ * layout is shown with ortho routing.
  */
 export function layoutedEdgePath({
   points,

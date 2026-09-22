@@ -9,21 +9,16 @@ import type { EdgeRouting } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { firstBy } from 'remeda'
 
-/**
- * The subset of `SVGPathElement` needed to place a label along a path.
- */
+/** The part of `SVGPathElement` needed to place a label along the path. */
 export interface MeasurablePath {
   getTotalLength(): number
   getPointAtLength(distance: number): { x: number; y: number }
 }
 
 /**
- * Returns the label's top-left position for an edge being edited.
- *
- * For spline routing, centers the label at half the path length. For orthogonal routing,
- * places automatic labels beside straight segments while avoiding obstacles where space permits.
- * For customized labels, returns a base position centered on the longest segment.
- * The caller adds the saved offset to preserve manual placement.
+ * Top-left position of the label of an edge being edited: centered at half the path length for
+ * splines; beside a straight run for ortho routing, avoiding obstacles unless the label is customized,
+ * in which case the caller adds the saved offset to the returned base position.
  */
 export function edgeLabelPosition({ path, segments, routing, size, obstacles, routes = [], customized = false }: {
   path: MeasurablePath

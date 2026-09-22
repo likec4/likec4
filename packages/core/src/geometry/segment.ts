@@ -1,21 +1,13 @@
 import { nearlyEqual } from './spline'
 import type { XYPoint } from './types'
 
-/**
- * Returns the Euclidean distance between two points, in their coordinate units.
- */
 export function distanceBetween(a: XYPoint, b: XYPoint): number {
   return Math.hypot(b.x - a.x, b.y - a.y)
 }
 
 /**
- * Projects a point onto a line segment.
- *
- * @param p The point to project.
- * @param a The segment start.
- * @param b The segment end.
- * @returns The closest point, its position `t` from 0 at `a` to 1 at `b`, and its distance from `p`.
- * For a zero-length segment, returns `a` with `t` set to 0.
+ * Projects `p` onto segment `ab`: the closest point, its position `t` (0 at `a`, 1 at `b`) and the
+ * distance. A zero-length segment returns `a` with `t` 0.
  */
 export function projectOnSegment(p: XYPoint, a: XYPoint, b: XYPoint): { point: XYPoint; t: number; distance: number } {
   const dx = b.x - a.x, dy = b.y - a.y
@@ -25,16 +17,12 @@ export function projectOnSegment(p: XYPoint, a: XYPoint, b: XYPoint): { point: X
   return { point, t, distance: distanceBetween(p, point) }
 }
 
-/**
- * A straight route segment, stored as `[from, to]`.
- */
+/** A straight route segment. */
 export type Segment = [from: XYPoint, to: XYPoint]
 
 /**
- * Checks whether a segment follows the axis and direction of a preceding segment.
- *
- * The caller must check that the segments connect; this function only checks their alignment.
- * Coordinates use the one-unit tolerance from {@link nearlyEqual}.
+ * True when `from` to `to` continues `previous` on the same axis and direction, within one unit.
+ * Does not check that the segments connect.
  */
 export function continuesRun(previous: Segment, from: XYPoint, to: XYPoint): boolean {
   return (nearlyEqual(previous[0].x, from.x) && nearlyEqual(from.x, to.x) &&
@@ -44,11 +32,8 @@ export function continuesRun(previous: Segment, from: XYPoint, to: XYPoint): boo
 }
 
 /**
- * Returns the straight segments of a polyline in drawing order.
- *
- * Merges consecutive segments that share an axis and direction. Skips consecutive points
- * whose coordinates are equal within the tolerance from {@link nearlyEqual}.
- * Returns an empty array when no segment remains.
+ * Straight segments of a polyline in drawing order, merging collinear pieces that head the same way
+ * and skipping points that repeat within one unit.
  */
 export function polylineToSegments(points: ReadonlyArray<XYPoint>): Segment[] {
   const segments: Segment[] = []

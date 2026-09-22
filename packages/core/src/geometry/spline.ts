@@ -1,20 +1,13 @@
 import type { Point, XYPoint } from './types'
 
-/**
- * Checks whether two coordinates differ by at most one diagram unit.
- *
- * This tolerance accounts for small coordinate differences in Graphviz output.
- */
+/** Coordinates within one diagram unit count as equal, to absorb Graphviz rounding. */
 export function nearlyEqual(a: number, b: number): boolean {
   return Math.abs(a - b) <= 1
 }
 
 /**
- * Checks whether each cubic segment of a Graphviz spline is horizontal or vertical.
- *
- * Expects `1 + 3n` points for `n` cubic segments. All four points of each segment must share
- * an x or y coordinate within the tolerance from {@link nearlyEqual}.
- * Returns true when there are no complete cubic segments; does not validate the point count.
+ * True when every cubic of a Graphviz spline (`1 + 3n` points) is horizontal or vertical within
+ * one unit. Trivially true without a complete cubic.
  */
 export function isOrthoSpline(points: ReadonlyArray<Point>): boolean {
   for (let i = 0; i + 3 < points.length; i += 3) {
@@ -29,10 +22,8 @@ export function isOrthoSpline(points: ReadonlyArray<Point>): boolean {
 }
 
 /**
- * Returns the points on a Graphviz spline, removing consecutive duplicates.
- *
- * Reads every third point, starting with the first, and compares coordinates with {@link nearlyEqual}.
- * For `splines=ortho`, these points describe the route corners. Returns an empty array for empty input.
+ * Every third point of a Graphviz spline, without consecutive duplicates. For `splines=ortho`
+ * these are the route corners.
  */
 export function splineToPolyline(points: ReadonlyArray<Point>): XYPoint[] {
   const result: XYPoint[] = []

@@ -6,12 +6,8 @@ type EdgeGeometry = Pick<DiagramEdge, 'id' | 'points' | 'labelBBox'>
 type NodeGeometry = Pick<DiagramNode, 'x' | 'y' | 'width' | 'height' | 'children'>
 
 /**
- * Returns orthogonal edges with labels placed beside straight route segments.
- *
- * Avoids leaf nodes, other labels, and relationship lines where space permits. Compound boxes
- * remain available because relationships can run inside them. Graphviz's external labels reserve
- * no routing space, so dense views can still require manual adjustment.
- * Preserves edges without labels and the input edge order.
+ * Places the labels of orthogonal edges beside straight runs, avoiding leaf nodes, other labels and
+ * routes. Compound boxes are not obstacles because routes run inside them.
  */
 export function placeEdgeLabels<E extends EdgeGeometry>(
   edges: ReadonlyArray<E>,

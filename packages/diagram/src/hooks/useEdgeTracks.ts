@@ -12,11 +12,8 @@ const cache = new WeakMap<
 >()
 
 /**
- * Returns relationship routes by edge identifier before track separation.
- *
- * Edited routes follow their control points and can move between tracks. Unedited routes
- * retain their Graphviz positions. Excludes edited self-loops, which use a separate path.
- * Caches results by the store's `edges` and `nodes` arrays.
+ * Relationship routes by edge id before track separation: edited routes may move, unedited ones keep
+ * their Graphviz position. Cached per store `edges` and `nodes`.
  */
 export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, TrackRoute> {
   const cached = cache.get(state.edges)
@@ -52,11 +49,7 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
   return routes
 }
 
-/**
- * Returns visible orthogonal routes and labels after track separation.
- *
- * Includes edited self-loops and excludes hidden edges. Marks manually positioned labels as fixed.
- */
+/** Visible orthogonal routes and labels after track separation, including edited self-loops. */
 export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
   const trackRoutes = selectTrackRoutes(state)
   const others = [...trackRoutes.values()]
@@ -90,11 +83,7 @@ export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
 
 const selectNone = () => none
 
-/**
- * Returns the view's relationship routes when orthogonal track separation is enabled.
- *
- * Returns an empty map without subscribing to route changes for spline routing or when disabled.
- */
+/** Track routes for ortho routing when enabled; otherwise an empty map without subscribing. */
 export function useTrackRoutes(routing: EdgeRouting, enabled: boolean): ReadonlyMap<string, TrackRoute> {
   return useXYStore(enabled && routing === 'ortho' ? selectTrackRoutes : selectNone)
 }

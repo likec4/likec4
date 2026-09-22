@@ -91,11 +91,7 @@ export interface ViewAutoLayout {
 
 export type ViewType = 'element' | 'dynamic' | 'deployment'
 
-/**
- * The routing mode for relationships in a view:
- * - `spline`: curved edges, the built-in default.
- * - `ortho`: horizontal and vertical segments with right-angle bends.
- */
+/** Edge routing of a view: curved `spline` (default) or `ortho` with right-angle bends. */
 export type EdgeRouting = 'spline' | 'ortho'
 
 export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTags<A>, aux.WithOptionalLinks {
@@ -107,9 +103,8 @@ export interface BaseViewProperties<A extends AnyAux> extends aux.WithOptionalTa
    */
   readonly order?: number
   /**
-   * The view's routing mode, inherited from the project default when omitted in source.
-   * The view property takes precedence over the last `autoLayout` rule's routing parameter.
-   * Computed and layouted views include this field only when the resolved value is `ortho`.
+   * Routing mode. Computed and layouted views set it only when it resolves to `ortho`;
+   * when absent, treat it as `spline`.
    */
   readonly routing?: EdgeRouting
   /**

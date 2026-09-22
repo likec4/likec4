@@ -11,26 +11,19 @@ import {
   editedEdgeRoute,
 } from './edge-path'
 
-/** Target spacing between shared tracks, in diagram units. */
+// Track separation, in diagram units
 const TRACK_SPACING = 12
-/** Minimum distance from a shifted endpoint to a node corner, in diagram units. */
 const END_INSET = 8
-/** Maximum separation for shared tracks, accounting for handles offset from node centers. */
-const SAME_TRACK = 4
+const SAME_TRACK = 4 // runs this close share a track; handles can sit off the node center
 
-/**
- * An orthogonal edge polyline and the constraints on moving it between tracks.
- */
+/** An orthogonal edge polyline and whether it may move to another track. */
 export type TrackRoute =
   & { id: string; points: ReadonlyArray<XYPoint> }
   & (
-    /** An unedited route retains its Graphviz position. */
     | { movable: false }
-    /** A movable route with endpoint node bounds in drawing order. */
     | { movable: true; bounds: { from: BBox; to: BBox } }
   )
 
-/** A straight run with its axis, perpendicular coordinate, extent, and point indices. */
 interface Run {
   axis: Axis
   at: number
@@ -40,9 +33,7 @@ interface Run {
   indices: number[]
 }
 
-/**
- * Returns straight runs, merging collinear pieces so each run shifts as a whole.
- */
+/** Straight runs, merging collinear pieces so each run shifts as a whole. */
 function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
   const runs: Run[] = []
   for (let i = 1; i < points.length; i++) {
@@ -72,20 +63,13 @@ function runsOf(points: ReadonlyArray<XYPoint>): Run[] {
   return runs
 }
 
-/**
- * Checks whether parallel runs are within `SAME_TRACK` units and overlap by more than one unit.
- */
 function shareTrack(a: Run, b: Run): boolean {
   return a.axis === b.axis
     && Math.abs(a.at - b.at) <= SAME_TRACK
     && Math.min(a.hi, b.hi) - Math.max(a.lo, b.lo) > 1
 }
 
-/**
- * Returns track offsets for edited routes in stable identifier order.
- *
- * Leaves unedited routes fixed and assigns edited routes to adjacent free tracks.
- */
+/** Track offsets for the movable routes of a group, in stable id order. */
 function offsetsOf(members: ReadonlyArray<{ id: string; movable: boolean }>): Map<string, number> {
   const offsets = new Map<string, number>()
   const movable = members.filter(m => m.movable).map(m => m.id).sort()
@@ -96,10 +80,7 @@ function offsetsOf(members: ReadonlyArray<{ id: string; movable: boolean }>): Ma
   return offsets
 }
 
-/**
- * Returns the track slot of the `k`-th movable route: alternating on both sides of a fixed route,
- * otherwise centered on the original track.
- */
+/** Slot of the k-th movable route: alternating around a fixed route, otherwise centered on the original track. */
 function trackSlot(k: number, count: number, aroundFixed: boolean): number {
   if (!aroundFixed) {
     return k - (count - 1) / 2
@@ -107,11 +88,7 @@ function trackSlot(k: number, count: number, aroundFixed: boolean): number {
   return k % 2 === 0 ? k / 2 + 1 : -(k + 1) / 2
 }
 
-/**
- * Returns routes connected to a run through overlapping shared tracks.
- *
- * Includes transitive overlaps so every route computes the same group.
- */
+/** Routes sharing a track with this run, following transitive overlaps so every route computes the same group. */
 function trackMembers(
   own: { id: string; run: Run },
   others: ReadonlyArray<{ id: string; movable: boolean; runs: Run[] }>,
@@ -134,9 +111,6 @@ function trackMembers(
   return [...members].map(([id, movable]) => ({ id, movable }))
 }
 
-/**
- * Limits a track offset to keep the endpoint on its node side.
- */
 function clampToSide(offset: number, run: Run, end: XYPoint, box: BBox): number {
   const [value, lo, hi] = run.axis === 'h'
     ? [end.y, box.y + END_INSET, box.y + box.height - END_INSET]
@@ -145,11 +119,9 @@ function clampToSide(offset: number, run: Run, end: XYPoint, box: BBox): number 
 }
 
 /**
- * Returns a route shifted to separate segments that share tracks with other edges.
- *
- * Groups overlapping parallel runs within `SAME_TRACK` diagram units, including transitive overlaps.
- * Moves each run perpendicular to its axis. At node borders, limits shifts to the available side length,
- * so endpoints can remain closer than `TRACK_SPACING`. Unedited routes retain their positions.
+ * Shifts the route's runs that share a track with other edges, each run as a whole and perpendicular
+ * to its axis. The first and last run are limited to the node side, so endpoints can end up closer
+ * than `TRACK_SPACING`. Unedited routes never move.
  */
 export function keepOwnTrack(route: TrackRoute, others: ReadonlyArray<TrackRoute>): XYPoint[] {
   if (!route.movable || route.points.length < 2) {
@@ -184,12 +156,7 @@ export function keepOwnTrack(route: TrackRoute, others: ReadonlyArray<TrackRoute
   return route.points.map((p, i) => ({ x: p.x + (dx[i] ?? 0), y: p.y + (dy[i] ?? 0) }))
 }
 
-/**
- * Returns an edited edge path with track separation and rounded orthogonal corners.
- *
- * Applies track separation where endpoint space permits. Self-loops and spline routes
- * use their existing path construction.
- */
+/** Path of an edited edge with track separation applied; self-loops and splines use the plain path. */
 export function trackedEdgePath({ id, controlPoints, routing, others, ...endpoints }: Endpoints<EdgeEnd> & {
   id: string
   controlPoints: ReadonlyArray<XYPosition>

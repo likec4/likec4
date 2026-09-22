@@ -2,50 +2,31 @@ import { BBox } from './bbox'
 import { type Segment, distanceBetween } from './segment'
 import type { Dimensions, XYPoint } from './types'
 
-/** Preferred gap between a route and its label, in diagram units. */
+// Spacing around labels, in diagram units
 const GAP = 4
-/** Clearance from node and label boxes, in diagram units. */
 const CLEARANCE = 6
-/** Clearance from relationship lines, in diagram units. */
 const ROUTE_CLEARANCE = 2
 
-/**
- * Route geometry, label dimensions, and obstacles for automatic label placement.
- */
 export interface LabelPlacement {
-  /** The route segments, in drawing order. */
   segments: ReadonlyArray<Segment>
-  /** The label dimensions, in diagram units. */
   size: Dimensions
-  /** The node and label boxes to avoid when a clear position exists. */
   obstacles: ReadonlyArray<BBox>
-  /** The relationship segments to avoid, including unlabeled routes. Defaults to an empty list. */
+  /** Relationship segments to avoid, including unlabeled routes. Defaults to none. */
   routes?: ReadonlyArray<Segment>
 }
 
-/** A route and its label box; fixed labels keep their position during automatic placement. */
+/** A route and its label box. */
 export interface LabelRoute {
-  /** The unique route identifier, used to order label placement. */
   id: string
-  /** The route segments, in drawing order. */
   segments: ReadonlyArray<Segment>
-  /** The existing label box, or `null` for a route without a label. */
   labelBBox: BBox | null
-  /** If true, preserves the label position. If false or omitted, places the label automatically. */
+  /** Keeps the label where it is instead of placing it automatically. */
   fixed?: boolean
 }
 
 /**
- * Places route labels together to avoid nodes, other labels, and relationship lines.
- *
- * Reserves fixed labels and labels without segments before placing automatic labels.
- * Processes automatic labels in identifier order, reserving each position for subsequent labels.
- * Uses all route segments as obstacles, including routes without labels.
- * If no clear position exists, uses the fallback from {@link placeLabelAlongSegments}.
- *
- * @param routes The routes and existing label boxes, with unique identifiers.
- * @param obstacles The node boxes and other reserved areas to avoid.
- * @returns The placed and fixed label boxes by route identifier. Omits routes without labels.
+ * Places the labels of several routes together, so each avoids nodes, other labels and every route.
+ * Fixed labels and labels of routes without segments keep their boxes; the rest are placed in id order.
  */
 export function placeLabelsAlongRoutes(
   routes: ReadonlyArray<LabelRoute>,
@@ -77,14 +58,9 @@ export function placeLabelsAlongRoutes(
 }
 
 /**
- * Returns a label box beside a route, preferring the midpoint of its longest segment.
- *
- * Tries positions above horizontal segments or to the right of vertical segments first.
- * If a position overlaps an obstacle, tries the opposite side, positions along the segment,
- * and then shorter segments. Equal-length segments retain their input order.
- *
- * @returns The first clear label box. If all candidates overlap obstacles, returns the first
- * candidate beside the longest segment. With no segments, returns a box at the origin.
+ * Places a label beside the route, preferring the midpoint of its longest segment: above a horizontal
+ * run or right of a vertical one, then the other side, then along the run, then shorter runs.
+ * Falls back to the first candidate when nothing is clear.
  */
 export function placeLabelAlongSegments({ segments, size, obstacles, routes = [] }: LabelPlacement): BBox {
   const blocked = [
@@ -132,10 +108,6 @@ function compareIds(a: LabelRoute, b: LabelRoute): number {
   return a.id > b.id ? 1 : 0
 }
 
-/**
- * Returns the label box beside point `p` on a segment: above a horizontal segment or right of a
- * vertical one, or on the opposite side when `otherSide` is set.
- */
 function labelBeside(p: XYPoint, size: Dimensions, horizontal: boolean, otherSide: boolean): BBox {
   if (horizontal) {
     return {
@@ -154,11 +126,8 @@ function labelBeside(p: XYPoint, size: Dimensions, horizontal: boolean, otherSid
 }
 
 /**
- * Returns candidate shifts along a segment from its midpoint, nearest first.
- *
- * Includes the midpoint, both ends, and every position where the label sits flush against an
- * obstacle boundary. A clear interval starts or ends at an obstacle boundary, so checking those
- * positions exactly avoids skipping a narrow gap when stepping along the route.
+ * Candidate offsets from the segment midpoint, nearest first. Includes the positions where the label
+ * sits flush against an obstacle boundary, so a narrow gap between obstacles is not skipped.
  */
 function shiftsAlong(
   { origin, direction, length, extent }: { origin: number; direction: number; length: number; extent: number },

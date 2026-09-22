@@ -4,11 +4,7 @@ import type { XYPosition } from '@xyflow/react'
 import { type Endpoints, inDrawingOrder, orthoPolyline } from './edge-path'
 import { bezierControlPoints } from './xyflow'
 
-/**
- * Returns the interior corners of an orthogonal Graphviz spline.
- *
- * Removes endpoints, consecutive duplicates, and intermediate collinear points.
- */
+/** Interior corners of an orthogonal Graphviz spline. */
 function orthoCorners(points: NonEmptyArray<Point>): XYPosition[] {
   const anchors = splineToPolyline(points).map(p => ({ x: Math.trunc(p.x), y: Math.trunc(p.y) }))
   const corners: XYPosition[] = []
@@ -24,11 +20,8 @@ function orthoCorners(points: NonEmptyArray<Point>): XYPosition[] {
 }
 
 /**
- * Returns editing handles derived from an edge's layout points.
- *
- * For orthogonal geometry, returns the route corners or a single midpoint for a straight edge.
- * For spline geometry, derives handles from the curve, including saved curves displayed with
- * orthogonal routing.
+ * Editing handles from the layout points: the corners of an orthogonal route (its midpoint when
+ * straight), otherwise handles derived from the curve.
  */
 export function initialControlPoints(
   points: NonEmptyArray<Point>,
@@ -46,21 +39,16 @@ export function initialControlPoints(
   return [{ x: Math.trunc((ax + bx) / 2), y: Math.trunc((ay + by) / 2) }]
 }
 
-/** Maximum distance from an adjacent anchor axis for snapping, in diagram units. */
-const SNAP_TOLERANCE = 8
+const SNAP_TOLERANCE = 8 // diagram units
 
-/** Node centers in declaration order, with the route handles and routing mode. */
 type CornerEditing = Endpoints<XYPosition> & {
   controlPoints: ReadonlyArray<XYPosition>
   routing: EdgeRouting
 }
 
 /**
- * Returns a dragged corner's position after applying orthogonal snapping.
- *
- * Snaps each coordinate to the nearest adjacent anchor axis within `SNAP_TOLERANCE`.
- * The first and last corners use the endpoint node centers as their outer anchors.
- * Coincident corners are skipped when the route is drawn. Returns the input point for spline routing.
+ * Snaps a dragged corner to the axes of its neighbours, or the node centers at the ends, within
+ * `SNAP_TOLERANCE`. Returns the point unchanged for splines.
  */
 export function snapCorner({ index, point, controlPoints, routing, ...edge }: CornerEditing & {
   index: number
@@ -92,11 +80,8 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
 }
 
 /**
- * Returns control points with a corner inserted at the clicked position.
- *
- * For orthogonal routing, projects the point onto the nearest drawn segment, including
- * segments added between unaligned anchors. For spline routing, inserts the rounded point
- * using the nearest straight segment between anchors as an approximation.
+ * Inserts a corner at the clicked point: projected onto the nearest drawn segment for ortho routing,
+ * or the rounded point for splines.
  */
 export function insertCorner({ point, controlPoints, routing, ...edge }: CornerEditing & {
   point: XYPosition
