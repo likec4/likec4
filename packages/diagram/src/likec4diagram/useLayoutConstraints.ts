@@ -1,8 +1,7 @@
 import { type EdgeRouting, type NonEmptyArray, DefaultMap, nonNullable } from '@likec4/core'
-import { type Dimensions, type XYPoint, BBox, placeLabelAlongSegments } from '@likec4/core/geometry'
+import { type Dimensions, type XYPoint, BBox, placeLabelsAlongRoutes } from '@likec4/core/geometry'
 import { invariant, isome } from '@likec4/core/utils'
 import type {
-  EdgeChange,
   EdgeReplaceChange,
   InternalNode as RFInternalNode,
   NodeChange,
@@ -15,12 +14,10 @@ import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } fro
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
 import { useCurrentViewRouting } from '../hooks/useCurrentView'
 import { useDiagram } from '../hooks/useDiagram'
-import { selectTrackRoutes } from '../hooks/useEdgeTracks'
+import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import type { TrackRoute } from '../utils/edge-tracks'
-import { trackedEdgePath } from '../utils/edge-tracks'
-import { isLeafNodeType, nodeToRect } from '../utils/xyflow'
+import { leafNodeRects, nodeToRect } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
@@ -189,15 +186,6 @@ function makeEdgeModifier(
   }
 }
 
-/** what every edge modifier of one drag shares */
-type DragContext = {
-  routing: EdgeRouting
-  /** leaf node boxes after the moving nodes shifted */
-  obstaclesAt: (shift: XYPoint) => BBox[]
-  /** routes of the edges of the view, for keeping an edge on its own track */
-  otherRoutes: () => ReadonlyMap<string, TrackRoute>
-}
-
 /**
  * Creates a modifier function that moves edge points when one of its nodes is moved.
  */
@@ -205,7 +193,7 @@ function makeRelativeEdgeModifier(
   edge: Types.AnyEdge,
   movingRect: Rect,
   ends: { source: BBox; target: BBox; isSourceMoving: boolean },
-  { routing, obstaclesAt, otherRoutes }: DragContext,
+  routing: EdgeRouting,
 ): EdgeModifier {
   const [anchorNode, staticNode] = ends.isSourceMoving ? [ends.source, ends.target] : [ends.target, ends.source]
   const controlPoints = edge.data.controlPoints ?? initialControlPoints(edge.data.points, routing)
@@ -214,17 +202,6 @@ function makeRelativeEdgeModifier(
 
   const staticToAnchor = anchorV.subtract(staticV)
   const staticToAnchorLength = staticToAnchor.length()
-
-  const routeAfterMove = (controlPoints: ReadonlyArray<XYPoint>, shift: XYPoint) => {
-    const moved = { ...anchorNode, x: anchorNode.x + shift.x, y: anchorNode.y + shift.y }
-    const [source, target] = ends.isSourceMoving ? [moved, staticNode] : [staticNode, moved]
-    const endpoints = {
-      source: { center: BBox.center(source), node: source },
-      target: { center: BBox.center(target), node: target },
-      dir: edge.data.dir,
-    }
-    return trackedEdgePath({ ...endpoints, id: edge.id, controlPoints, routing, others: otherRoutes().values() })
-  }
 
   return (edgeLookup) => {
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
@@ -275,24 +252,9 @@ function makeRelativeEdgeModifier(
 
         if (edge.data.labelBBox) {
           draft.data.labelBBox ??= edge.data.labelBBox
-          // an orthogonal route jumps to new axes when a node moves, so an auto-placed label
-          // is placed on the new route instead of being carried along with the old one
-          const segments = routing === 'ortho' && !edge.data.isLabelCustomized
-            ? routeAfterMove(draft.data.controlPoints, { x: dx, y: dy }).segments
-            : []
-          if (segments.length > 0) {
-            const { x, y } = placeLabelAlongSegments({
-              segments,
-              size: edge.data.labelBBox,
-              obstacles: obstaclesAt({ x: dx, y: dy }),
-            })
-            draft.data.labelBBox.x = x
-            draft.data.labelBBox.y = y
-          } else {
-            const { x, y } = relativePoint(edge.data.labelBBox)
-            draft.data.labelBBox.x = x
-            draft.data.labelBBox.y = y
-          }
+          const { x, y } = relativePoint(edge.data.labelBBox)
+          draft.data.labelBBox.x = x
+          draft.data.labelBBox.y = y
         }
       }),
     }
@@ -305,6 +267,7 @@ export function createLayoutConstraints(
   routing: EdgeRouting,
 ) {
   const { parentLookup, nodeLookup, edges } = xyflowApi.getState()
+  const initialNodeRects = new Map([...nodeLookup].map(([id, node]) => [id, nodeToRect(node)]))
   const rects = new Map<string, Leaf | CompoundRect>()
 
   /** Maps node id to all its ancestors */
@@ -400,27 +363,6 @@ export function createLayoutConstraints(
   // moving nodes may have nested nodes as well
   const movingNodes = new Set(editingNodeIds.flatMap(id => [id, ...nestedOf.get(id)]))
 
-  const leafNodes = [...nodeLookup.values()]
-    .filter(n => isLeafNodeType(n.type))
-    .map(n => ({ rect: nodeToRect(n), moving: movingNodes.has(n.id) }))
-  // every edge of one frame asks for the same shift: build the obstacle list once per shift
-  let lastObstacles: { key: string; boxes: BBox[] } | null = null
-  const dragContext: DragContext = {
-    routing,
-    obstaclesAt: shift => {
-      const key = `${shift.x},${shift.y}`
-      if (lastObstacles?.key !== key) {
-        lastObstacles = {
-          key,
-          boxes: leafNodes.map(({ rect, moving }) =>
-            moving ? { ...rect, x: rect.x + shift.x, y: rect.y + shift.y } : rect
-          ),
-        }
-      }
-      return lastObstacles.boxes
-    },
-    otherRoutes: () => selectTrackRoutes(xyflowApi.getState()),
-  }
   for (const edge of edges) {
     const isSourceMoving = movingNodes.has(edge.source)
     const isTargetMoving = movingNodes.has(edge.target)
@@ -459,7 +401,7 @@ export function createLayoutConstraints(
         edge,
         movingRect,
         { source: sourceNode, target: targetNode, isSourceMoving },
-        dragContext,
+        routing,
       ),
     )
   }
@@ -521,7 +463,7 @@ export function createLayoutConstraints(
     applyConstraints(rectsToUpdate)
 
     const nodeUpdates: NodeChange<Types.Node>[] = []
-    const edgeUpdates: EdgeChange<Types.AnyEdge>[] = []
+    let edgeUpdates: EdgeReplaceChange<Types.AnyEdge>[] = []
 
     for (const r of rectsToUpdate) {
       nodeUpdates.push({
@@ -550,6 +492,41 @@ export function createLayoutConstraints(
       if (change) {
         edgeUpdates.push(change)
       }
+    }
+    if (routing === 'ortho' && edgeUpdates.length > 0 && hasChanges()) {
+      // Place labels only after every edge and node has its final geometry for this frame.
+      // React may not have applied triggerNodeChanges yet, so project the node boxes from the constraints.
+      const finalNodeLookup = new Map([...nodeLookup].map(([id, node]) => {
+        const rect = rects.get(id)
+        const initial = initialNodeRects.get(id)!
+        const shift = findMovingAncestor(id)?.diff ?? { x: 0, y: 0 }
+        const positionAbsolute = rect?.positionAbsolute ?? { x: initial.x + shift.x, y: initial.y + shift.y }
+        const dimensions = rect?.dimensions ?? initial
+        return [id, {
+          ...node,
+          measured: { width: dimensions.width, height: dimensions.height },
+          internals: { ...node.internals, positionAbsolute },
+        }]
+      }))
+      const updatedEdges = new Map(edgeUpdates.map(change => [change.id, change.item]))
+      const state = xyflowApi.getState()
+      const routes = selectLabelRoutes({
+        ...state,
+        nodeLookup: finalNodeLookup,
+        edges: state.edges.map(edge => updatedEdges.get(edge.id) ?? edge),
+      }).map(route => ({ ...route, fixed: route.fixed || !updatedEdges.has(route.id) }))
+      const labels = placeLabelsAlongRoutes(routes, leafNodeRects(finalNodeLookup.values()))
+      edgeUpdates = edgeUpdates.map(change => {
+        const labelBBox = labels.get(change.id)
+        return labelBBox ?
+          {
+            ...change,
+            item: produce(change.item, draft => {
+              draft.data.labelBBox = labelBBox
+            }),
+          } :
+          change
+      })
     }
     if (edgeUpdates.length > 0) {
       triggerEdgeChanges(edgeUpdates)

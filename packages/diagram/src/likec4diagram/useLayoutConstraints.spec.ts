@@ -1,6 +1,7 @@
 import { BBox } from '@likec4/core/geometry'
 import type { NonEmptyArray, Point } from '@likec4/core/types'
 import { describe, expect, it, vi } from 'vitest'
+import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import type { XYStoreApi } from '../hooks/useXYFlow'
 import type { Types } from './types'
 import { createLayoutConstraints } from './useLayoutConstraints'
@@ -21,24 +22,33 @@ function fakeStore(
     data: {},
   }]))
   const edgeLookup = new Map(edges.map(e => [e.id, { ...e, type: 'relationship' }]))
-  const triggerEdgeChanges = vi.fn<(changes: unknown[]) => void>()
+  const triggerEdgeChanges = vi.fn<(changes: Array<{ id: string; item: Types.RelationshipEdge }>) => void>(
+    (changes) => {
+      for (const change of changes) {
+        edgeLookup.set(change.id, change.item)
+      }
+      state.edges = [...edgeLookup.values()]
+    },
+  )
   const state = {
     nodeLookup,
+    nodes: [...nodeLookup.values()],
     parentLookup: new Map(),
     edges: [...edgeLookup.values()],
     edgeLookup,
     triggerNodeChanges: vi.fn<(changes: unknown[]) => void>(),
     triggerEdgeChanges,
   }
+  const api = { getState: () => state } as unknown as XYStoreApi
   return {
-    api: { getState: () => state } as unknown as XYStoreApi,
+    api,
     moveNode: (id: string, x: number, y: number) => {
       const node = nodeLookup.get(id)!
       node.position = { x, y }
       node.internals.positionAbsolute = { x, y }
     },
     edgeAfterDrag: (id: string) => {
-      const changes = triggerEdgeChanges.mock.calls.at(-1)![0] as Array<{ id: string; item: Types.RelationshipEdge }>
+      const changes = triggerEdgeChanges.mock.calls.at(-1)![0]
       return changes.find(c => c.id === id)!.item
     },
   }
@@ -87,5 +97,65 @@ describe('createLayoutConstraints under ortho routing', () => {
     expect(placed.width).toBe(40)
     expect(placed.y).toBe(172)
     expect(placed.x).toBeGreaterThan(54)
+  })
+
+  it('places all moved labels against the final tracks while preserving a hand-moved label', () => {
+    const fixedLabel = { x: 60, y: 109, width: 40, height: 16 }
+    const edges = [
+      { ...edge(false), id: 'auto-1' },
+      { ...edge(false), id: 'auto-2' },
+      {
+        id: 'manual',
+        source: 'd',
+        target: 'e',
+        data: {
+          ...edge(true).data,
+          points: [[450, 60], [450, 140], [450, 220], [450, 300]] satisfies NonEmptyArray<Point>,
+          labelBBox: fixedLabel,
+        },
+      },
+    ]
+    const store = fakeStore([a, b, c, { ...a, id: 'd', x: 400 }, { ...b, id: 'e', x: 400 }], edges)
+    const solver = createLayoutConstraints(store.api, ['b'], 'ortho')
+    store.moveNode('b', 200, 300)
+    solver.flushPending()
+
+    const routes = selectLabelRoutes(store.api.getState())
+    const manual = routes.find(route => route.id === 'manual')!.labelBBox!
+    expect(manual).toEqual(fixedLabel)
+    for (const route of routes.filter(route => route.id !== 'manual')) {
+      const label = route.labelBBox!
+      for (const other of routes.filter(other => other.id !== route.id)) {
+        expect(BBox.intersects(label, other.labelBBox!), `${route.id} clear of ${other.id}`).toBe(false)
+      }
+      for (const other of routes) {
+        for (const [from, to] of other.segments) {
+          const line = BBox.fromPoints([[from.x, from.y], [to.x, to.y]])
+          expect(
+            BBox.intersects(label, BBox.expand(line, 1)),
+            `${route.id} clear of track ${other.id}`,
+          ).toBe(false)
+        }
+      }
+    }
+  })
+
+  it('restores the original labels when a drag returns to its starting position', () => {
+    const original = edge(false)
+    const store = fakeStore([a, b], [original])
+    const solver = createLayoutConstraints(store.api, ['b'], 'ortho')
+    store.moveNode('b', 200, 300)
+    solver.flushPending()
+    store.moveNode('b', 0, 300)
+    solver.flushPending()
+    expect(store.edgeAfterDrag('a-b').data.labelBBox).toEqual(original.data.labelBBox)
+  })
+
+  it('leaves spline label interpolation unchanged', () => {
+    const store = fakeStore([a, b, c], [edge(false)])
+    const solver = createLayoutConstraints(store.api, ['b'], 'spline')
+    store.moveNode('b', 200, 300)
+    solver.flushPending()
+    expect(store.edgeAfterDrag('a-b').data.labelBBox).toEqual({ x: 148, y: 172, width: 40, height: 16 })
   })
 })

@@ -1,4 +1,4 @@
-import type { Segment } from '@likec4/core/geometry'
+import { type Segment, BBox } from '@likec4/core/geometry'
 import { describe, expect, it } from 'vitest'
 import { orthoSpline, source, spline, target } from './__fixtures__/edges'
 import { edgeLabelPosition } from './edge-label'
@@ -52,10 +52,31 @@ describe('edge label position', () => {
       expect(placed.x >= 226 || placed.x + size.width <= 174).toBe(true)
     })
 
+    it('keeps an edited label clear of another label and a nearby relationship', () => {
+      const segments = [seg(0, 100, 400, 100)]
+      const label = { x: 170, y: 76, ...size }
+      const routes = [...segments, seg(0, 110, 400, 110)]
+      const placed = {
+        ...edgeLabelPosition({ path, segments, routing: 'ortho', size, obstacles: [label], routes }),
+        ...size,
+      }
+      expect(BBox.intersects(placed, label)).toBe(false)
+      // The second relationship crosses every label placed below the edited route.
+      expect(placed.y + placed.height).toBeLessThan(100)
+    })
+
     it('centres a hand-moved label on the longest run itself, ignoring obstacles', () => {
       const segments = [seg(0, 100, 200, 100), seg(200, 100, 200, 150)]
       const across = { x: 80, y: 0, width: 40, height: 200 }
-      expect(edgeLabelPosition({ path, segments, routing: 'ortho', size, obstacles: [across], customized: true }))
+      expect(edgeLabelPosition({
+        path,
+        segments,
+        routing: 'ortho',
+        size,
+        obstacles: [across],
+        routes: [seg(0, 95, 200, 95)],
+        customized: true,
+      }))
         .toEqual({ x: 70, y: 90 })
     })
 

@@ -69,6 +69,10 @@ view {
 Precedence: `routing` property → `autoLayout` trailing value → `styles.defaults.view.routing` in config → `spline`.
 Applies to manually laid-out views too; switching routing never invalidates a saved layout.
 
+Known orthogonal routing limitations include routes crossing unrelated group boxes and closely packed parallel routes from Graphviz.
+Increasing `autoLayout` spacing gives nodes more room but does not guarantee separation between routes. Show fewer relationships or edit individual connections to improve crowded views.
+Edited edges that share a straight run move onto separate tracks where space permits; untouched Graphviz routes keep their positions.
+
 See [Predicates](./predicates.md) for more information on predicates and expressions.
 
 **Important:**

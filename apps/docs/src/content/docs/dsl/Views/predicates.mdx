@@ -904,8 +904,11 @@ Routing also applies to manually laid-out views: node positions and edited conne
 so switching a view or a whole project to `ortho` never invalidates a saved layout.
 
 <Aside type="caution">
-Orthogonal routing is done by Graphviz and has a known limitation: a route may occasionally cut through a group box it does not belong to.  
-Widen the view with the `autoLayout` spacing parameters, or adjust the connection by editing its control points.
+Graphviz's orthogonal router can draw a route through a group box it does not belong to, or place parallel routes so close together that they are hard to distinguish.
+Increasing the `autoLayout` spacing can give nodes more room, but does not guarantee more space between routes.
+
+For a crowded view, show fewer relationships or adjust individual connections by editing their control points.
+Edited edges that share a straight run move onto separate tracks where space permits. Untouched Graphviz routes keep their original positions, so they can remain closely packed.
 </Aside>
 
 

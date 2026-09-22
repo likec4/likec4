@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { placeLabelAlongSegments } from './label'
+import { BBox } from './bbox'
+import { type LabelRoute, placeLabelAlongSegments, placeLabelsAlongRoutes } from './label'
 import type { Segment } from './segment'
 
 const seg = (x1: number, y1: number, x2: number, y2: number): Segment => [{ x: x1, y: y1 }, { x: x2, y: y2 }]
@@ -44,5 +45,73 @@ describe('placeLabelAlongSegments', () => {
     const wall = { x: -100, y: -100, width: 500, height: 500 }
     expect(placeLabelAlongSegments({ segments: [seg(0, 100, 200, 100)], size, obstacles: [wall] }))
       .toEqual({ x: 70, y: 76, width: 60, height: 20 })
+  })
+
+  it('slides past a crossing relationship without covering the line', () => {
+    const crossing = seg(100, 50, 100, 150)
+    const box = placeLabelAlongSegments({
+      segments: [seg(0, 100, 200, 100)],
+      size,
+      obstacles: [],
+      routes: [crossing],
+    })
+    expect(BBox.intersects(box, { x: 98, y: 50, width: 4, height: 100 })).toBe(false)
+    expect(box.y + box.height <= 100 || box.y >= 100).toBe(true)
+  })
+
+  it('finds a narrow clear position between routes that lies between sampling steps', () => {
+    const crossings = [100, 140].map(y => seg(0, y, 400, y))
+    const box = placeLabelAlongSegments({
+      segments: [seg(100, 60, 100, 170)],
+      size: { width: 60, height: 35 },
+      obstacles: [
+        { x: 0, y: 0, width: 400, height: 60 },
+        { x: 0, y: 180, width: 400, height: 60 },
+      ],
+      routes: crossings,
+    })
+    expect(box.y).toBeGreaterThanOrEqual(102)
+    expect(box.y + box.height).toBeLessThanOrEqual(138)
+  })
+})
+
+describe('placeLabelsAlongRoutes', () => {
+  const route = (id: string, x: number): LabelRoute => ({
+    id,
+    segments: [seg(x, 0, x, 300)],
+    labelBBox: { x: x + 4, y: 140, ...size },
+  })
+
+  it('keeps neighbouring labels clear of each other and both routes', () => {
+    const routes = [route('a', 100), route('b', 120)]
+    const placed = placeLabelsAlongRoutes(routes, [])
+    expect(BBox.intersects(placed.get('a')!, placed.get('b')!)).toBe(false)
+    for (const box of placed.values()) {
+      for (const x of [100, 120]) {
+        expect(BBox.intersects(box, { x: x - 1, y: 0, width: 2, height: 300 })).toBe(false)
+      }
+    }
+    expect(placeLabelsAlongRoutes([...routes].reverse(), [])).toEqual(placed)
+  })
+
+  it('reserves a hand-moved label before placing automatic labels', () => {
+    const automatic = route('a', 100)
+    const fixed = { ...route('z', 300), fixed: true, labelBBox: automatic.labelBBox }
+    const placed = placeLabelsAlongRoutes([automatic, fixed], [])
+    expect(placed.get('z')).toBe(fixed.labelBBox)
+    expect(BBox.intersects(placed.get('a')!, placed.get('z')!)).toBe(false)
+  })
+
+  it('avoids an unlabelled route and reserves labels on routes without segments', () => {
+    const routes: LabelRoute[] = [
+      route('a', 100),
+      { id: 'unlabelled', segments: [seg(120, 0, 120, 300)], labelBBox: null },
+      { id: 'no-segments', segments: [], labelBBox: { x: 36, y: 140, ...size } },
+    ]
+    const placed = placeLabelsAlongRoutes(routes, [])
+    expect(placed.has('unlabelled')).toBe(false)
+    expect(placed.get('no-segments')).toBe(routes[2]!.labelBBox)
+    expect(BBox.intersects(placed.get('a')!, placed.get('no-segments')!)).toBe(false)
+    expect(BBox.intersects(placed.get('a')!, { x: 119, y: 0, width: 2, height: 300 })).toBe(false)
   })
 })

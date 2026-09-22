@@ -1,6 +1,6 @@
 import type { NonEmptyArray, Point } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
-import { selectTrackRoutes } from './useEdgeTracks'
+import { selectLabelRoutes, selectTrackRoutes } from './useEdgeTracks'
 import type { XYStoreState } from './useXYFlow'
 
 const node = (id: string, x: number, y: number) =>
@@ -79,5 +79,44 @@ describe('selectTrackRoutes', () => {
   it('is cached per edges array', () => {
     const s = state([])
     expect(selectTrackRoutes(s)).toBe(selectTrackRoutes(s))
+  })
+})
+
+describe('selectLabelRoutes', () => {
+  it('uses separate visible tracks for parallel edited edges', () => {
+    const s = state(['a-b', 'a-b-2'].map(id => ({
+      id,
+      type: 'relationship',
+      source: 'a',
+      target: 'b',
+      data: {
+        points: [[50, 60], [50, 300]],
+        controlPoints: [{ x: 50, y: 180 }],
+        labelBBox: { x: 54, y: 172, width: 40, height: 16 },
+        dir: 'forward',
+      },
+    })))
+    const labels = selectLabelRoutes(s)
+    expect(labels.map(route => route.segments[0]![0].x)).toEqual([44, 56])
+    expect(labels.map(route => route.labelBBox)).toEqual([
+      { x: 54, y: 172, width: 40, height: 16 },
+      { x: 54, y: 172, width: 40, height: 16 },
+    ])
+  })
+
+  it('includes edited self-loops as obstacles even without labels', () => {
+    const s = state([{
+      id: 'loop',
+      type: 'relationship',
+      source: 'a',
+      target: 'a',
+      data: {
+        points: [[50, 0], [50, -80]],
+        controlPoints: [{ x: 10, y: -80 }, { x: 90, y: -80 }],
+      },
+    }])
+    const [loop] = selectLabelRoutes(s)
+    expect(loop!.labelBBox).toBeNull()
+    expect(loop!.segments.length).toBeGreaterThan(0)
   })
 })

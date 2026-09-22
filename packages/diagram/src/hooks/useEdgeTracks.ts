@@ -1,6 +1,7 @@
+import { type LabelRoute, type Segment, polylineToSegments } from '@likec4/core/geometry'
 import type { EdgeRouting } from '@likec4/core/types'
-import { editedEdgeRoute, layoutedEdgeRoute } from '../utils/edge-path'
-import type { TrackRoute } from '../utils/edge-tracks'
+import { drawnFromRoute, editedEdgePath, editedEdgeRoute, layoutedEdgeRoute } from '../utils/edge-path'
+import { type TrackRoute, keepOwnTrack } from '../utils/edge-tracks'
 import { nodeToRect } from '../utils/xyflow'
 import { type XYStoreState, useXYStore } from './useXYFlow'
 
@@ -9,6 +10,20 @@ const cache = new WeakMap<
   XYStoreState['edges'],
   { nodes: XYStoreState['nodes']; routes: ReadonlyMap<string, TrackRoute> }
 >()
+
+// Match the handle centre xyflow reports to the edge, which can sit off the box centre.
+function edgeEnd(state: XYStoreState, id: string, handle: 'source' | 'target') {
+  const node = state.nodeLookup.get(id)
+  if (!node) {
+    return null
+  }
+  const rect = nodeToRect(node)
+  const bounds = node.internals.handleBounds?.[handle]?.[0]
+  const center = bounds
+    ? { x: Math.trunc(rect.x + bounds.x + bounds.width / 2), y: Math.trunc(rect.y + bounds.y + bounds.height / 2) }
+    : { x: Math.trunc(rect.x + rect.width / 2), y: Math.trunc(rect.y + rect.height / 2) }
+  return { center, node: rect }
+}
 
 /**
  * Routes of every relationship edge of an ortho view, by edge id, as drawn from the store data:
@@ -21,24 +36,11 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
     return cached.routes
   }
   const routes = new Map<string, TrackRoute>()
-  // the centre an edge is drawn from is the handle position xyflow reports to the edge, not the box centre
-  const end = (id: string, handle: 'source' | 'target') => {
-    const node = state.nodeLookup.get(id)
-    if (!node) {
-      return null
-    }
-    const rect = nodeToRect(node)
-    const bounds = node.internals.handleBounds?.[handle]?.[0]
-    const center = bounds
-      ? { x: Math.trunc(rect.x + bounds.x + bounds.width / 2), y: Math.trunc(rect.y + bounds.y + bounds.height / 2) }
-      : { x: Math.trunc(rect.x + rect.width / 2), y: Math.trunc(rect.y + rect.height / 2) }
-    return { center, node: rect }
-  }
   for (const edge of state.edges) {
     if (edge.type !== 'relationship') {
       continue
     }
-    const source = end(edge.source, 'source'), target = end(edge.target, 'target')
+    const source = edgeEnd(state, edge.source, 'source'), target = edgeEnd(state, edge.target, 'target')
     if (!source || !target) {
       continue
     }
@@ -59,6 +61,37 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
   }
   cache.set(state.edges, { nodes: state.nodes, routes })
   return routes
+}
+
+/** Visible orthogonal routes and their labels, including track shifts and edited self-loops. */
+export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
+  const trackRoutes = selectTrackRoutes(state)
+  const others = [...trackRoutes.values()]
+  return state.edges.flatMap((edge): LabelRoute[] => {
+    if (edge.type !== 'relationship' || edge.hidden) {
+      return []
+    }
+    const route = trackRoutes.get(edge.id)
+    let segments: ReadonlyArray<Segment>
+    if (route) {
+      segments = route.movable
+        ? drawnFromRoute(keepOwnTrack(route, others)).segments
+        : polylineToSegments(route.points)
+    } else {
+      const source = edgeEnd(state, edge.source, 'source'), target = edgeEnd(state, edge.target, 'target')
+      if (!source || !target || !edge.data.controlPoints) {
+        return []
+      }
+      segments = editedEdgePath({
+        source,
+        target,
+        dir: edge.data.dir,
+        controlPoints: edge.data.controlPoints,
+        routing: 'ortho',
+      }).segments
+    }
+    return [{ id: edge.id, segments, labelBBox: edge.data.labelBBox ?? null, fixed: !!edge.data.isLabelCustomized }]
+  })
 }
 
 const selectNone = () => none

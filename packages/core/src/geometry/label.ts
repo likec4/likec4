@@ -6,8 +6,8 @@ import type { Dimensions, XYPoint } from './types'
 const GAP = 4
 /** free space kept between the label and an obstacle */
 const CLEARANCE = 6
-/** distance between candidate positions when sliding along a run */
-const STEP = 8
+/** free space kept between the label and a relationship line */
+const ROUTE_CLEARANCE = 2
 
 /**
  * What a label needs to be placed along a route
@@ -19,6 +19,50 @@ export interface LabelPlacement {
   size: Dimensions
   /** boxes the label must not touch */
   obstacles: ReadonlyArray<BBox>
+  /** relationship segments the label must not cover, including unlabelled relationships */
+  routes?: ReadonlyArray<Segment>
+}
+
+/** A route and its label box; fixed labels keep their position during automatic placement. */
+export interface LabelRoute {
+  id: string
+  segments: ReadonlyArray<Segment>
+  labelBBox: BBox | null
+  fixed?: boolean
+}
+
+/**
+ * Places labels together, reserving manually positioned labels first and each automatic label
+ * as it is placed. All routes are obstacles, including those without labels. Stable id order
+ * gives the same result when the caller changes the order of the routes.
+ */
+export function placeLabelsAlongRoutes(
+  routes: ReadonlyArray<LabelRoute>,
+  obstacles: ReadonlyArray<BBox>,
+): ReadonlyMap<string, BBox> {
+  const placed = new Map<string, BBox>()
+  const occupied = [...obstacles]
+  const segments = routes.flatMap(route => route.segments)
+  for (const route of routes) {
+    if (route.labelBBox && (route.fixed || route.segments.length === 0)) {
+      placed.set(route.id, route.labelBBox)
+      occupied.push(route.labelBBox)
+    }
+  }
+  for (const route of [...routes].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)) {
+    if (!route.labelBBox || placed.has(route.id)) {
+      continue
+    }
+    const box = placeLabelAlongSegments({
+      segments: route.segments,
+      size: route.labelBBox,
+      obstacles: occupied,
+      routes: segments,
+    })
+    placed.set(route.id, box)
+    occupied.push(box)
+  }
+  return placed
 }
 
 /**
@@ -27,8 +71,11 @@ export interface LabelPlacement {
  * the other side of the line is tried, then the label slides along the run, then the next
  * longest run is tried. When nothing is clear, the first spot is used anyway.
  */
-export function placeLabelAlongSegments({ segments, size, obstacles }: LabelPlacement): BBox {
-  const blocked = obstacles.map(o => BBox.expand(o, CLEARANCE))
+export function placeLabelAlongSegments({ segments, size, obstacles, routes = [] }: LabelPlacement): BBox {
+  const blocked = [
+    ...obstacles.map(o => BBox.expand(o, CLEARANCE)),
+    ...routes.map(([a, b]) => BBox.expand(BBox.fromPoints([[a.x, a.y], [b.x, b.y]]), ROUTE_CLEARANCE)),
+  ]
   const isClear = (box: BBox) => !blocked.some(o => BBox.intersects(o, box))
   const byLength = segments
     .map((segment, index) => ({ segment, index, length: distanceBetween(segment[0], segment[1]) }))
@@ -54,14 +101,30 @@ export function placeLabelAlongSegments({ segments, size, obstacles }: LabelPlac
     fallback ??= beside(mid, false)
     const ux = length === 0 ? 0 : (b.x - a.x) / length
     const uy = length === 0 ? 0 : (b.y - a.y) / length
-    for (let shift = 0; shift <= length / 2; shift += STEP) {
-      for (const along of shift === 0 ? [0] : [shift, -shift]) {
-        const p = { x: mid.x + ux * along, y: mid.y + uy * along }
-        for (const otherSide of [false, true]) {
-          const box = beside(p, otherSide)
-          if (isClear(box)) {
-            return box
+    // A clear interval starts or ends at an obstacle boundary. Check those positions
+    // exactly so a narrow gap is not skipped by stepping along the route.
+    const shifts = new Set([0, length / 2, -length / 2])
+    const extent = horizontal ? size.width : size.height
+    const origin = horizontal ? mid.x : mid.y
+    const direction = horizontal ? ux : uy
+    if (direction !== 0) {
+      for (const obstacle of blocked) {
+        const start = horizontal ? obstacle.x : obstacle.y
+        const end = start + (horizontal ? obstacle.width : obstacle.height)
+        for (const coordinate of [Math.floor(start - extent) + extent / 2, Math.ceil(end) + extent / 2]) {
+          const shift = (coordinate - origin) / direction
+          if (Math.abs(shift) <= length / 2) {
+            shifts.add(shift)
           }
+        }
+      }
+    }
+    for (const along of [...shifts].sort((a, b) => Math.abs(a) - Math.abs(b) || b - a)) {
+      const p = { x: mid.x + ux * along, y: mid.y + uy * along }
+      for (const otherSide of [false, true]) {
+        const box = beside(p, otherSide)
+        if (isClear(box)) {
+          return box
         }
       }
     }

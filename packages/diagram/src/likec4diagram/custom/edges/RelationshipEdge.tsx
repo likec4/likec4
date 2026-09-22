@@ -26,6 +26,7 @@ import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useCurrentViewRouting } from '../../../hooks/useCurrentView'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { selectLabelRoutes } from '../../../hooks/useEdgeTracks'
 import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
@@ -106,15 +107,39 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const svgPathRef = useRef<SVGPathElement>(null)
 
-  const labelTopLeftAt = (path: SVGPathElement): XYPosition =>
-    edgeLabelPosition({
+  const labelTopLeftAt = (path: SVGPathElement): XYPosition => {
+    const state = xyflowStore.getState()
+    const others = routing === 'ortho' && !data.isLabelCustomized
+      ? selectLabelRoutes(state).filter(route => route.id !== id)
+      : []
+    // Other edges can change tracks when these locally edited corners are committed.
+    const committedRoutes = routing === 'ortho' && !data.isLabelCustomized
+      ? selectLabelRoutes({
+        ...state,
+        edges: state.edges.map(edge =>
+          edge.id === id && edge.type === 'relationship'
+            ? { ...edge, data: { ...edge.data, controlPoints } }
+            : edge
+        ),
+      })
+      : []
+    return edgeLabelPosition({
       path,
       segments: edgePath.segments,
       routing,
       size: { width: labelBBox?.width ?? 0, height: labelBBox?.height ?? 0 },
-      obstacles: leafNodeRects(xyflowStore.getState().nodeLookup.values()),
+      obstacles: [
+        ...leafNodeRects(state.nodeLookup.values()),
+        ...others.flatMap(route => route.labelBBox ? [route.labelBBox] : []),
+      ],
+      routes: [
+        ...edgePath.segments,
+        ...others.flatMap(route => route.segments),
+        ...committedRoutes.flatMap(route => route.segments),
+      ],
       customized: data.isLabelCustomized ?? false,
     })
+  }
 
   // Offset of the label from its auto position, captured when an edge edit starts.
   // Zero for auto-positioned labels (so they re-centre on the anchor), preserved
