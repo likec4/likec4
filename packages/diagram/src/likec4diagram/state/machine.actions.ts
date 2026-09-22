@@ -37,6 +37,7 @@ import {
 } from 'xstate'
 import { Base } from '../../base'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import { viewRouting } from '../../utils/view-routing'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
 import { createLayoutConstraints } from '../useLayoutConstraints'
@@ -432,7 +433,7 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
       console.warn('At least 2 nodes must be selected to align')
       return
     }
-    const constraints = createLayoutConstraints(xystore, nodesToAlign)
+    const constraints = createLayoutConstraints(xystore, nodesToAlign, viewRouting(context.view))
     const aligner = getAligner(mode)
 
     const nodes = nodesToAlign.map(id => ({

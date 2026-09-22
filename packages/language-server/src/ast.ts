@@ -161,6 +161,7 @@ export interface ParsedAstElementView {
    * Optional per-view navigation order.
    */
   order?: number
+  routing?: c4.EdgeRouting
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: c4.ElementViewRule[]
@@ -176,6 +177,7 @@ export interface ParsedAstDynamicView {
    * Optional per-view navigation order.
    */
   order?: number
+  routing?: c4.EdgeRouting
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   steps: c4.Step.Any[]
@@ -193,6 +195,7 @@ export interface ParsedAstDeploymentView {
    * Optional per-view navigation order.
    */
   order?: number
+  routing?: c4.EdgeRouting
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<c4.Link> | null
   rules: Array<c4.DeploymentViewRule>

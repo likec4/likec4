@@ -12,11 +12,13 @@ import {
   _stage,
 } from '@likec4/core'
 import type { ComputedProjectsView, LayoutedProjectsView } from '@likec4/core/compute-view'
+import { BBox } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
 import { logger } from '@likec4/log'
 import { hasAtLeast, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import { EDGE_LABEL_MAX_CHARS, EDGE_LABEL_MAX_LINES, wrap } from './dot-labels'
+import { placeEdgeLabels } from './place-edge-label'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx } from './utils'
 
@@ -246,6 +248,15 @@ export function parseGraphvizJson(
     edges.push(
       parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
     )
+  }
+
+  if (view.routing === 'ortho') {
+    const placed = placeEdgeLabels(edges, nodes)
+    diagram = {
+      ...diagram,
+      edges: placed,
+      bounds: BBox.merge(bounds, ...placed.flatMap(edge => edge.labelBBox ? [edge.labelBBox] : [])),
+    }
   }
 
   return diagram

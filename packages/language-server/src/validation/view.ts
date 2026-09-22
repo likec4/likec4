@@ -1,5 +1,5 @@
 import type { ValidationCheck } from 'langium'
-import { CstUtils } from 'langium'
+import { AstUtils, CstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
@@ -50,6 +50,26 @@ export const viewOrderChecks = (_services: LikeC4Services): ValidationCheck<ast.
       accept('error', 'View order must be a non-negative safe integer', {
         node,
         property: 'value',
+      })
+    }
+  })
+}
+
+/**
+ * Warns when both the view property and an `autoLayout` parameter set routing.
+ * The property takes precedence.
+ */
+export const viewRuleAutoLayoutChecks = (_services: LikeC4Services): ValidationCheck<ast.ViewRuleAutoLayout> => {
+  return tryOrLog((el, accept) => {
+    if (!el.routing) {
+      return
+    }
+    const view = AstUtils.getContainerOfType(el, ast.isLikeC4View)
+    const props: ReadonlyArray<ast.ViewProperty | ast.DynamicViewProperty> = view?.body?.props ?? []
+    if (props.some(ast.isViewRoutingProperty)) {
+      accept('warning', 'The view "routing" property overrides this autoLayout routing value.', {
+        node: el,
+        property: 'routing',
       })
     }
   })

@@ -877,11 +877,55 @@ Parameters are:
 - direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
 - rank distance: optional, must be a positive number
 - node distance. optional, must be a positive number
+- edge routing: optional, possible values are `spline` or `ortho`. See [Edge routing](#edge-routing).
 
 <Aside>
 Manual changes are supported in VSCode extension, but functionality is limited.  
 Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is much appreciated.
 </Aside>
+
+## Edge routing
+
+To draw relationships with horizontal and vertical segments, set `routing ortho` in your view:
+
+```likec4
+view {
+  routing ortho
+  include *
+}
+```
+
+Use `spline` for curved relationships or `ortho` for right-angle bends. The default is `spline`.
+Routing applies to element, dynamic, and deployment views. Sequence diagrams use their own layout and ignore this setting.
+
+You can also set routing as the last `autoLayout` parameter:
+
+```likec4
+autoLayout LeftRight 120 110 ortho
+```
+
+LikeC4 uses the first routing value defined in this precedence order:
+
+1. The view's `routing` property.
+2. The last `autoLayout` rule's routing parameter.
+3. The project default, [`styles.defaults.view.routing`](/dsl/config/#default-styles).
+4. The built-in default, `spline`.
+
+If you set routing in both the view property and `autoLayout`, the property takes precedence. The language server reports a warning on the `autoLayout` parameter.
+
+In the web editor, switch routing from the layout panel; the change is written back to the view source.
+
+Changing routing preserves saved node positions and connection control points. LikeC4 renders the saved layout with the selected routing mode. Changing routing alone doesn't invalidate the layout or report layout drift.
+
+### Routing limitations
+
+Graphviz can route an orthogonal relationship through an unrelated group box. It can also place parallel routes so close together that they are hard to distinguish.
+
+To reduce crowding, show fewer relationships or edit individual connections. Increasing `autoLayout` spacing gives nodes more room, but doesn't guarantee more space between routes.
+
+Edited edges that share a straight segment move onto separate tracks where space at their endpoints permits. Unedited Graphviz routes keep their original positions.
+
+Automatic labels avoid nodes, other labels, and relationship lines where space permits. Dense views can still contain label overlaps if no clear position is available.
 
 
 ## Extend views

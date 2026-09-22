@@ -126,7 +126,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
     const label = edgelabel(edge)
     if (label) {
       e.attributes.set(
-        hasCompoundEndpoint ? _.xlabel : _.label,
+        this.edgeLabelAttr(hasCompoundEndpoint),
         label,
       )
     }

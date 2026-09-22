@@ -154,11 +154,16 @@ Theme customization and default styling.
       "relationship": {
         "color": "gray",
         "line": "dashed"
+      },
+      "view": {
+        "routing": "ortho"
       }
     }
   }
 }
 ```
+
+Set `styles.defaults.view.routing` to `spline` for curved relationships or `ortho` for right-angle bends. The default is `spline`. A view's `routing` property or `autoLayout` routing parameter overrides this project default. See [Edge routing](./views.md#edge-routing) for precedence and limitations.
 
 ### `extends`
 

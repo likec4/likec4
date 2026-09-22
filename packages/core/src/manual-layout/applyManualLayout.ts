@@ -300,6 +300,12 @@ export function applyManualLayout<
       draft.variant = autoLayouted.variant
     }
 
+    if (autoLayouted.routing) {
+      draft.routing = autoLayouted.routing
+    } else {
+      delete draft.routing
+    }
+
     if (isElementView(autoLayouted) && draft._type === 'element') {
       if (autoLayouted.viewOf) {
         draft.viewOf = autoLayouted.viewOf
