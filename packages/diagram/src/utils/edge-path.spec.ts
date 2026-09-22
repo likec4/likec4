@@ -1,7 +1,7 @@
 import type { NonEmptyArray, Point } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { orthoSpline, source, spline, target } from './__fixtures__/edges'
-import { type DrawnEdge, editedEdgePath, layoutedEdgePath } from './edge-path'
+import { type DrawnEdge, editedEdgePath, layoutedEdgePath, orthoPolyline } from './edge-path'
 
 const controlPoints = [{ x: 300, y: 200 }, { x: 400, y: 380 }]
 
@@ -174,5 +174,32 @@ describe('edge path with ortho routing', () => {
   it('re-routes an arc between axis-aligned endpoints as legacy curved geometry', () => {
     const arc: NonEmptyArray<Point> = [[100, 100], [150, 40], [250, 40], [300, 100]]
     expect(isAxisAligned(layoutedEdgePath({ points: arc, source, target, routing: 'ortho' }))).toBe(true)
+  })
+})
+
+describe('ortho polyline without backtracking', () => {
+  it('turns instead of reversing when the next anchor lies behind the incoming direction', () => {
+    // GraphQL sits right of Backend V2; the single corner is above Backend V2, so the route arrives
+    // at the corner going up while the target centre is below it
+    const { points } = orthoPolyline([{ x: 343, y: 353 }], { x: 962, y: 441 }, { x: 249, y: 543 })
+    expect(points).toEqual([
+      { x: 962, y: 441 },
+      { x: 343, y: 441 },
+      { x: 343, y: 353 },
+      { x: 249, y: 353 },
+      { x: 249, y: 543 },
+    ])
+  })
+
+  it('draws a corner that reverses direction sharp instead of as a loop', () => {
+    // corners forming a spike: up to (300,50) and straight back down
+    const path = editedEdgePath({
+      source,
+      target,
+      controlPoints: [{ x: 300, y: 150 }, { x: 300, y: 50 }, { x: 300, y: 250 }],
+      routing: 'ortho',
+    })
+    expect(path.d).not.toContain('Q 300,50')
+    expect(path.d).toMatch(/L 300,50 L 300,/)
   })
 })

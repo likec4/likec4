@@ -119,7 +119,7 @@ function clipStart(points: XYPosition[], node: BBox, margin: number): void {
 /**
  * Returns an SVG path with rounded corners and its straight segments.
  *
- * Leaves corners sharp when the available radius is below `MIN_ROUNDED_RADIUS`.
+ * Leaves corners sharp when the available radius is below `MIN_ROUNDED_RADIUS` or the path reverses.
  * Returns empty path data and segments for fewer than two points.
  */
 function roundedPath(points: XYPosition[], radius: number): DrawnEdge {
@@ -134,7 +134,9 @@ function roundedPath(points: XYPosition[], radius: number): DrawnEdge {
     const din = distanceBetween(prev, corner)
     const dout = distanceBetween(corner, next)
     const r = Math.min(radius, din / 2, dout / 2)
-    if (r < MIN_ROUNDED_RADIUS) {
+    // A corner that reverses direction has no arc to draw; keep it sharp.
+    const reverses = (prev.x - corner.x) * (next.x - corner.x) + (prev.y - corner.y) * (next.y - corner.y) > 0
+    if (r < MIN_ROUNDED_RADIUS || reverses) {
       d += ` L ${corner.x},${corner.y}`
       add(start, corner)
       start = corner
@@ -160,7 +162,8 @@ function roundedPath(points: XYPosition[], radius: number): DrawnEdge {
 /**
  * Returns an orthogonal polyline through the anchors, before clipping to node borders.
  *
- * Inserts a bend between anchors that don't share an axis, continuing the incoming direction.
+ * Inserts a bend between anchors that don't share an axis, continuing the incoming direction
+ * unless that would double back over the previous segment.
  * The first segment follows the larger coordinate difference from the starting node.
  * Each `insertAt[i]` gives the control point insertion index for the segment ending at `points[i]`.
  */
@@ -183,7 +186,17 @@ export function orthoPolyline(
       insertAt.push(index)
       return
     }
-    const horizontalFirst = direction ? direction === 'h' : Math.abs(q.x - p.x) >= Math.abs(q.y - p.y)
+    const prev = points[points.length - 2]
+    let horizontalFirst: boolean
+    if (!direction || !prev) {
+      horizontalFirst = Math.abs(q.x - p.x) >= Math.abs(q.y - p.y)
+    } else {
+      // Continue along the incoming axis unless that would run back over the previous segment.
+      const reverses = direction === 'h'
+        ? Math.sign(q.x - p.x) !== Math.sign(p.x - prev.x)
+        : Math.sign(q.y - p.y) !== Math.sign(p.y - prev.y)
+      horizontalFirst = reverses ? direction !== 'h' : direction === 'h'
+    }
     points.push(horizontalFirst ? { x: q.x, y: p.y } : { x: p.x, y: q.y })
     insertAt.push(index)
     direction = horizontalFirst ? 'v' : 'h'
