@@ -120,7 +120,6 @@ views {
 
   view backend of backend {
     title 'Backend V2'
-    routing ortho
     include
       *,
       cloud,
