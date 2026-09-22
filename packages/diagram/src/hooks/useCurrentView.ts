@@ -23,8 +23,9 @@ export function useCurrentView(): LayoutedView {
 
 const selectViewRouting = selectDiagramContext(s => viewRouting(s.view))
 /**
- * Returns edge routing of the current view (`spline` unless the view sets `ortho`)
- * Should be used only inside LikeC4Diagram
+ * Returns the current view's resolved routing mode, defaulting to `spline`.
+ *
+ * Use this hook inside `LikeC4Diagram`.
  */
 export function useCurrentViewRouting(): EdgeRouting {
   return useDiagramSelector(selectViewRouting)

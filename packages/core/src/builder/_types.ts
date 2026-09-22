@@ -133,7 +133,7 @@ export type NewViewProps<Tag> = {
    */
   order?: number
   /**
-   * Edge routing of the view: `spline` (default) or `ortho`
+   * Edge routing: `spline` for curves or `ortho` for right-angle bends. Inherits the project default when omitted.
    */
   routing?: EdgeRouting
   tags?: [Tag, ...Tag[]]

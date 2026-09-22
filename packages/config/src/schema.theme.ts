@@ -233,12 +233,12 @@ const LikeC4Config_Styles_Defaults_View = z
   .strictObject({
     routing: routing.optional().meta({
       description:
-        'Default edge routing for views: `spline` (curved) or `ortho` (orthogonal)\nA view can override it with its `routing` property',
+        'Default edge routing: `spline` for curves or `ortho` for right-angle bends.\nA view can override this default with its `routing` property or `autoLayout` routing parameter.',
     }),
   })
   .meta({
     id: 'ViewDefaultValues',
-    description: 'Override default values for view settings\nThese values will be used if a view does not define them',
+    description: 'Default view settings.\nExplicit settings in a view override these defaults.',
   })
 
 const LikeC4Config_Styles_Defaults = z
@@ -264,8 +264,7 @@ const LikeC4Config_Styles_Defaults = z
         'Override default values for relationship style properties\nThese values will be used if such property is not defined',
     }),
     view: LikeC4Config_Styles_Defaults_View.optional().meta({
-      description:
-        'Override default values for view settings\nThese values will be used if a view does not define them',
+      description: 'Default view settings.\nExplicit settings in a view override these defaults.',
     }),
   })
   .meta({

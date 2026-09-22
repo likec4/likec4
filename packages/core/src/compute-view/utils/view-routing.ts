@@ -1,9 +1,10 @@
 import type { EdgeRouting } from '../../types'
 
 /**
- * Strips the parsed `routing` from a view and re-adds it resolved
- * (the view's own value, then the project default), present only when `ortho`,
- * so views with the default `spline` routing stay unchanged.
+ * Returns a view with routing resolved from its parsed value or the project default.
+ *
+ * The parser resolves the view property and `autoLayout` parameter before this step.
+ * Omits `routing` when the resolved value is `spline` to preserve existing model output.
  */
 export function withResolvedRouting<V extends { readonly routing?: EdgeRouting | undefined }>(
   view: V,

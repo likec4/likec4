@@ -302,17 +302,17 @@ export abstract class DotPrinter<V extends ViewToPrint> {
   }
 
   /**
-   * Whether the view is routed orthogonally (`routing ortho`).
+   * Returns true when the view uses orthogonal routing.
    */
   protected get isOrtho(): boolean {
     return this.view.routing === 'ortho'
   }
 
   /**
-   * Attribute to use for an edge label.
-   * Edges with a compound endpoint use `xlabel` (a regular label is not supported with `lhead`/`ltail`).
-   * Under `splines=ortho` Graphviz drops regular labels on same-rank edges and self-loops
-   * and warns about it, so ortho views emit every edge label as `xlabel`.
+   * Returns the Graphviz attribute for an edge label.
+   * Uses `xlabel` for compound endpoints, where `lhead` and `ltail` need external labels.
+   * Also uses `xlabel` for orthogonal routing to preserve labels on same-rank edges and self-loops.
+   * Other edges use `label`.
    */
   protected edgeLabelAttr(hasCompoundEndpoint: boolean): typeof _.xlabel | typeof _.label {
     return hasCompoundEndpoint || this.isOrtho ? _.xlabel : _.label

@@ -56,7 +56,7 @@ export const viewOrderChecks = (_services: LikeC4Services): ValidationCheck<ast.
 }
 
 /**
- * Warns when routing is set both as the view `routing` property and as `autoLayout` sugar.
+ * Warns when both the view property and an `autoLayout` parameter set routing.
  * The property takes precedence.
  */
 export const viewRuleAutoLayoutChecks = (_services: LikeC4Services): ValidationCheck<ast.ViewRuleAutoLayout> => {
@@ -67,7 +67,7 @@ export const viewRuleAutoLayoutChecks = (_services: LikeC4Services): ValidationC
     const view = AstUtils.getContainerOfType(el, ast.isLikeC4View)
     const props: ReadonlyArray<ast.ViewProperty | ast.DynamicViewProperty> = view?.body?.props ?? []
     if (props.some(ast.isViewRoutingProperty)) {
-      accept('warning', 'Routing is already set by the view "routing" property, which takes precedence', {
+      accept('warning', 'The view "routing" property overrides this autoLayout routing value.', {
         node: el,
         property: 'routing',
       })

@@ -18,12 +18,12 @@ export interface MeasurablePath {
 }
 
 /**
- * Top-left of the label of an edge being edited.
- * Under spline routing the label is centred on half the path length.
- * Under ortho routing an auto-placed label sits beside the middle of the longest straight run,
- * clear of nodes, other labels, and routes, the same rule the layout side applies to untouched edges.
- * A label the user moved by hand (`customized`) keeps its offset from a base that does not flip sides
- * as the route changes: the middle of the longest run itself.
+ * Returns the label's top-left position for an edge being edited.
+ *
+ * For spline routing, centers the label at half the path length. For orthogonal routing,
+ * places automatic labels beside straight segments while avoiding obstacles where space permits.
+ * For customized labels, returns a base position centered on the longest segment.
+ * The caller adds the saved offset to preserve manual placement.
  */
 export function edgeLabelPosition({ path, segments, routing, size, obstacles, routes = [], customized = false }: {
   path: MeasurablePath
@@ -39,7 +39,7 @@ export function edgeLabelPosition({ path, segments, routing, size, obstacles, ro
       const { x, y } = placeLabelAlongSegments({ segments, size, obstacles, routes })
       return { x, y }
     }
-    // the longest run, the first one on a tie
+    // Use the longest segment, retaining the first on equal lengths.
     const [a, b] = firstBy(segments, [s => distanceBetween(s[0], s[1]), 'desc'])!
     return centredAt({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, size)
   }

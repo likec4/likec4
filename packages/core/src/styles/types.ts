@@ -122,9 +122,10 @@ export interface LikeC4StyleDefaults {
     readonly arrow: RelationshipArrowType
   }
   /**
-   * Default values for view settings
+   * Default view settings, applied when a view doesn't override them.
    */
   readonly view: {
+    /** The project routing default: `spline` for curves or `ortho` for right-angle bends. */
     readonly routing: EdgeRouting
   }
 }

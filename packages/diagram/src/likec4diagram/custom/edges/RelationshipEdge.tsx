@@ -141,9 +141,8 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
     })
   }
 
-  // Offset of the label from its auto position, captured when an edge edit starts.
-  // Zero for auto-positioned labels (so they re-centre on the anchor), preserved
-  // for manually moved ones (so the label follows the edge while keeping its offset).
+  // Capture manual label offsets when editing starts. Automatic labels use zero offset
+  // so they follow the placement algorithm; manually positioned labels retain their offset.
   const labelOffsetRef = useRef<XYPosition>({ x: 0, y: 0 })
   const captureLabelOffset = useCallbackRef(() => {
     const path = svgPathRef.current
@@ -158,14 +157,14 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
   useRafEffect(() => {
     const path = svgPathRef.current
     if (!path || !isControlPointDragging) return
-    // Move the label together with the edge, preserving its offset from the auto position
+    // Move the label with the edge and preserve its offset from the automatic position.
     const topLeft = labelTopLeftAt(path)
     const offset = labelOffsetRef.current
     setLabelPos({ x: topLeft.x + offset.x, y: topLeft.y + offset.y })
   }, [edgePath.d, isControlPointDragging, routing])
 
   const updateEdgeData = useCallbackRef((controlPoints: XYPosition[]) => {
-    // Persist the label at its new auto position plus its captured offset
+    // Save the automatic label position plus the captured offset.
     const topLeft = labelBBox && svgPathRef.current
       ? labelTopLeftAt(svgPathRef.current)
       : null

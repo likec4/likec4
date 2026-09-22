@@ -9,6 +9,10 @@
 'likec4-vscode': patch
 ---
 
-Add orthogonal edge routing: set `routing ortho` on a view, append it to `autoLayout`, or set `styles.defaults.view.routing` in the project config to draw relationships with horizontal and vertical segments and right-angle bends. Views without the option keep their curved edges, and saved manual layouts stay valid when routing changes.
+Add orthogonal edge routing to draw relationships with horizontal and vertical segments. Set `routing ortho` in a view, append `ortho` to `autoLayout`, or set `styles.defaults.view.routing` in the project configuration. The default remains `spline`. Changing routing preserves saved node positions and connection control points.
 
-In orthogonal views automatic edge labels prefer long straight runs and avoid node boxes, other labels, and relationship lines where space permits. Labels are placed together after layout or a node move, and labels moved by hand keep their position or offset during editing. Edited edges that run along the same line are drawn on their own tracks, 12 units apart, and edges that leave the same side of a node start from different points on that side. When an edge is edited under the default routing, its label now stays centred on the edge instead of jumping by half its size.
+Place automatic labels beside long straight segments, avoiding nodes, other labels, and relationship lines where space permits. Labels update after layout and node moves. Manually positioned labels retain their position or offset during editing.
+
+Separate shared segments of edited orthogonal edges into tracks with a target spacing of 12 diagram units. Track shifts also separate connection points along node borders, subject to the space available at each endpoint.
+
+Keep edited edge labels centered under spline routing, preventing the initial jump by half the label's size.

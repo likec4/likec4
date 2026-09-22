@@ -52,7 +52,7 @@ type ViewManualLayoutSnapshotPerType = Simplify<
     readonly bounds: BBox
     readonly autoLayout: ViewAutoLayout
     /**
-     * Edge routing the view had when the snapshot was saved (informational; the latest view decides)
+     * The routing mode when the snapshot was saved. Rendering uses the current view setting.
      */
     readonly routing?: EdgeRouting
   }

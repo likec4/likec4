@@ -136,7 +136,7 @@ Configure where manual layout data is stored.
 
 ### `styles`
 
-Theme customization and default styling.
+To customize theme colors and project defaults, add a `styles` section to your configuration:
 
 ```json
 {
@@ -163,7 +163,7 @@ Theme customization and default styling.
 }
 ```
 
-`defaults.view.routing`: default edge routing for views, `spline` (curved, default) or `ortho`; a view's `routing` property overrides it.
+Set `styles.defaults.view.routing` to `spline` for curved relationships or `ortho` for right-angle bends. The default is `spline`. A view's `routing` property or `autoLayout` routing parameter overrides this project default. See [Edge routing](./views.md#edge-routing) for precedence and limitations.
 
 ### `extends`
 

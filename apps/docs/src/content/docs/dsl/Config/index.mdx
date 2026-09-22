@@ -454,8 +454,9 @@ You can override sizes used in LikeC4:
 
 ### Default styles
 
-You can override default values for style properties by adding a `styles.defaults` section to the config file.  
-These values will be applied to all elements, relationships and views, unless properties are explicitly defined in the specification.
+To set project defaults for elements, relationships, and views, add a `styles.defaults` section to your configuration file. Explicit style properties override these defaults.
+
+For example, this configuration sets default element and relationship styles and enables orthogonal routing for views:
 
 ```jsonc
 {
@@ -486,12 +487,14 @@ These values will be applied to all elements, relationships and views, unless pr
       // Defaults for views
       "view": {
         // Edge routing: "spline" (curved, default) or "ortho" (right-angle bends)
-        // A view can override it with its `routing` property
+        // Override this default with routing or autoLayout in a view.
         "routing": "ortho"
       }
     }
   }
 }
 ```
+
+A view's `routing` property or `autoLayout` routing parameter overrides `styles.defaults.view.routing`. See [Edge routing](/dsl/views/predicates/#edge-routing) for precedence and limitations.
 
 <AdvancedCustomizationTip />

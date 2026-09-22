@@ -2,39 +2,50 @@ import { BBox } from './bbox'
 import { type Segment, distanceBetween } from './segment'
 import type { Dimensions, XYPoint } from './types'
 
-/** free space between the line and the label */
+/** Preferred gap between a route and its label, in diagram units. */
 const GAP = 4
-/** free space kept between the label and an obstacle */
+/** Clearance from node and label boxes, in diagram units. */
 const CLEARANCE = 6
-/** free space kept between the label and a relationship line */
+/** Clearance from relationship lines, in diagram units. */
 const ROUTE_CLEARANCE = 2
 
 /**
- * What a label needs to be placed along a route
+ * Route geometry, label dimensions, and obstacles for automatic label placement.
  */
 export interface LabelPlacement {
-  /** straight runs of the route, in drawing order */
+  /** The route segments, in drawing order. */
   segments: ReadonlyArray<Segment>
-  /** size of the label box */
+  /** The label dimensions, in diagram units. */
   size: Dimensions
-  /** boxes the label must not touch */
+  /** The node and label boxes to avoid when a clear position exists. */
   obstacles: ReadonlyArray<BBox>
-  /** relationship segments the label must not cover, including unlabelled relationships */
+  /** The relationship segments to avoid, including unlabeled routes. Defaults to an empty list. */
   routes?: ReadonlyArray<Segment>
 }
 
 /** A route and its label box; fixed labels keep their position during automatic placement. */
 export interface LabelRoute {
+  /** The unique route identifier, used to order label placement. */
   id: string
+  /** The route segments, in drawing order. */
   segments: ReadonlyArray<Segment>
+  /** The existing label box, or `null` for a route without a label. */
   labelBBox: BBox | null
+  /** If true, preserves the label position. If false or omitted, places the label automatically. */
   fixed?: boolean
 }
 
 /**
- * Places labels together, reserving manually positioned labels first and each automatic label
- * as it is placed. All routes are obstacles, including those without labels. Stable id order
- * gives the same result when the caller changes the order of the routes.
+ * Places route labels together to avoid nodes, other labels, and relationship lines.
+ *
+ * Reserves fixed labels and labels without segments before placing automatic labels.
+ * Processes automatic labels in identifier order, reserving each position for subsequent labels.
+ * Uses all route segments as obstacles, including routes without labels.
+ * If no clear position exists, uses the fallback from {@link placeLabelAlongSegments}.
+ *
+ * @param routes The routes and existing label boxes, with unique identifiers.
+ * @param obstacles The node boxes and other reserved areas to avoid.
+ * @returns The placed and fixed label boxes by route identifier. Omits routes without labels.
  */
 export function placeLabelsAlongRoutes(
   routes: ReadonlyArray<LabelRoute>,
@@ -66,10 +77,14 @@ export function placeLabelsAlongRoutes(
 }
 
 /**
- * Label box beside a route made of straight runs: centred on the middle of the longest run,
- * above a horizontal run or to the right of a vertical one. When that spot touches an obstacle,
- * the other side of the line is tried, then the label slides along the run, then the next
- * longest run is tried. When nothing is clear, the first spot is used anyway.
+ * Returns a label box beside a route, preferring the midpoint of its longest segment.
+ *
+ * Tries positions above horizontal segments or to the right of vertical segments first.
+ * If a position overlaps an obstacle, tries the opposite side, positions along the segment,
+ * and then shorter segments. Equal-length segments retain their input order.
+ *
+ * @returns The first clear label box. If all candidates overlap obstacles, returns the first
+ * candidate beside the longest segment. With no segments, returns a box at the origin.
  */
 export function placeLabelAlongSegments({ segments, size, obstacles, routes = [] }: LabelPlacement): BBox {
   const blocked = [

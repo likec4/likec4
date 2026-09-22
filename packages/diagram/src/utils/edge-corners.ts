@@ -5,8 +5,9 @@ import { type Endpoints, inDrawingOrder, orthoPolyline } from './edge-path'
 import { bezierControlPoints } from './xyflow'
 
 /**
- * Corners of an ortho spline: the on-curve points (every third one), endpoints excluded,
- * consecutive duplicates and collinear middles dropped.
+ * Returns the interior corners of an orthogonal Graphviz spline.
+ *
+ * Removes endpoints, consecutive duplicates, and intermediate collinear points.
  */
 function orthoCorners(points: NonEmptyArray<Point>): XYPosition[] {
   const anchors = splineToPolyline(points).map(p => ({ x: Math.trunc(p.x), y: Math.trunc(p.y) }))
@@ -23,9 +24,11 @@ function orthoCorners(points: NonEmptyArray<Point>): XYPosition[] {
 }
 
 /**
- * Initial control points of an edge that has none yet, derived from its layouted points.
- * Under ortho routing these are the corners of the route (the midpoint for a straight edge);
- * spline routing, and legacy curved geometry under ortho, derive handles from the curve.
+ * Returns editing handles derived from an edge's layout points.
+ *
+ * For orthogonal geometry, returns the route corners or a single midpoint for a straight edge.
+ * For spline geometry, derives handles from the curve, including saved curves displayed with
+ * orthogonal routing.
  */
 export function initialControlPoints(
   points: NonEmptyArray<Point>,
@@ -43,21 +46,21 @@ export function initialControlPoints(
   return [{ x: Math.trunc((ax + bx) / 2), y: Math.trunc((ay + by) / 2) }]
 }
 
-/** how close (flow units) a dragged corner must come to a neighbour's axis to snap onto it */
+/** Maximum distance from an adjacent anchor axis for snapping, in diagram units. */
 const SNAP_TOLERANCE = 8
 
-/** node centres of the edge, in the order the edge is declared */
+/** Node centers in declaration order, with the route handles and routing mode. */
 type CornerEditing = Endpoints<XYPosition> & {
   controlPoints: ReadonlyArray<XYPosition>
   routing: EdgeRouting
 }
 
 /**
- * Position of a dragged corner. Under ortho routing it snaps to the x or y of the previous
- * or next anchor (the node centres for the end corners) when within tolerance,
- * so a careful drag keeps segments straight and a deliberate one creates an elbow.
- * Snapping both axes onto the same neighbour makes the corner coincide with it,
- * which the drawn route then skips.
+ * Returns a dragged corner's position after applying orthogonal snapping.
+ *
+ * Snaps each coordinate to the nearest adjacent anchor axis within `SNAP_TOLERANCE`.
+ * The first and last corners use the endpoint node centers as their outer anchors.
+ * Coincident corners are skipped when the route is drawn. Returns the input point for spline routing.
  */
 export function snapCorner({ index, point, controlPoints, routing, ...edge }: CornerEditing & {
   index: number
@@ -72,7 +75,7 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
   const snap = (value: number, candidates: number[]) => {
     let best = value, bestDistance = SNAP_TOLERANCE + 1
     for (const raw of candidates) {
-      // node centres may be fractional; corners are stored as integers
+      // Store integer corner coordinates even when node centers have fractional coordinates.
       const candidate = Math.trunc(raw)
       const distance = Math.abs(candidate - value)
       if (distance <= SNAP_TOLERANCE && distance < bestDistance) {
@@ -89,10 +92,11 @@ export function snapCorner({ index, point, controlPoints, routing, ...edge }: Co
 }
 
 /**
- * Control points after inserting a new one where the user clicked.
- * Under spline routing the raw point is inserted before the segment (between consecutive anchors)
- * it is closest to. Under ortho routing the point is projected onto the drawn route
- * (elbow legs included), so the new corner lies exactly on the line until it is dragged.
+ * Returns control points with a corner inserted at the clicked position.
+ *
+ * For orthogonal routing, projects the point onto the nearest drawn segment, including
+ * segments added between unaligned anchors. For spline routing, inserts the rounded point
+ * using the nearest straight segment between anchors as an approximation.
  */
 export function insertCorner({ point, controlPoints, routing, ...edge }: CornerEditing & {
   point: XYPosition
@@ -120,9 +124,9 @@ export function insertCorner({ point, controlPoints, routing, ...edge }: CornerE
     const abx = b.x - a.x, aby = b.y - a.y
     const apx = newPoint.x - a.x, apy = newPoint.y - a.y
     const bpx = newPoint.x - b.x, bpy = newPoint.y - b.y
-    // is the pointer alongside the segment?
+    // Check whether the pointer projects between the segment endpoints.
     if ((abx * apx + aby * apy) * (abx * bpx + aby * bpy) < 0) {
-      // distance to the segment approximated by a straight line
+      // Approximate the curve with the straight segment between its anchors.
       const distanceToEdge = Math.abs(abx * apy - aby * apx) / Math.hypot(abx, aby)
       if (distanceToEdge < minDistance) {
         minDistance = distanceToEdge

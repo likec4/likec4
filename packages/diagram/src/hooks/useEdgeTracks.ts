@@ -11,7 +11,7 @@ const cache = new WeakMap<
   { nodes: XYStoreState['nodes']; routes: ReadonlyMap<string, TrackRoute> }
 >()
 
-// Match the handle centre xyflow reports to the edge, which can sit off the box centre.
+// Match the XYFlow handle center, which can differ from the node box center.
 function edgeEnd(state: XYStoreState, id: string, handle: 'source' | 'target') {
   const node = state.nodeLookup.get(id)
   if (!node) {
@@ -26,9 +26,11 @@ function edgeEnd(state: XYStoreState, id: string, handle: 'source' | 'target') {
 }
 
 /**
- * Routes of every relationship edge of an ortho view, by edge id, as drawn from the store data:
- * edited edges through their corners (movable), untouched edges along their Graphviz corners (fixed).
- * Cached per `edges` and `nodes` arrays, which the store replaces whenever an edge or a node changes.
+ * Returns relationship routes by edge identifier before track separation.
+ *
+ * Edited routes follow their control points and can move between tracks. Unedited routes
+ * retain their Graphviz positions. Excludes edited self-loops, which use a separate path.
+ * Caches results by the store's `edges` and `nodes` arrays.
  */
 export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, TrackRoute> {
   const cached = cache.get(state.edges)
@@ -63,7 +65,11 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
   return routes
 }
 
-/** Visible orthogonal routes and their labels, including track shifts and edited self-loops. */
+/**
+ * Returns visible orthogonal routes and labels after track separation.
+ *
+ * Includes edited self-loops and excludes hidden edges. Marks manually positioned labels as fixed.
+ */
 export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
   const trackRoutes = selectTrackRoutes(state)
   const others = [...trackRoutes.values()]
@@ -97,8 +103,9 @@ export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
 const selectNone = () => none
 
 /**
- * Routes of the other edges of the view, for keeping an edge on its own track.
- * Empty, and not subscribed to, under spline routing or when the edge is untouched.
+ * Returns the view's relationship routes when orthogonal track separation is enabled.
+ *
+ * Returns an empty map without subscribing to route changes for spline routing or when disabled.
  */
 export function useTrackRoutes(routing: EdgeRouting, enabled: boolean): ReadonlyMap<string, TrackRoute> {
   return useXYStore(enabled && routing === 'ortho' ? selectTrackRoutes : selectNone)

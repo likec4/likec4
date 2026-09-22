@@ -136,7 +136,7 @@ export const BBox = {
   },
 
   /**
-   * Returns true if `a` and `b` overlap (boxes that only touch do not intersect)
+   * Returns true if `a` and `b` overlap. Returns false when they only touch.
    */
   intersects(a: BBox, b: BBox): boolean {
     return !(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y)

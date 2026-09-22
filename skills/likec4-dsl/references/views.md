@@ -57,22 +57,6 @@ global style STYLE_GROUP_IDENTIFIER
 autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep] [nodeSep] [spline|ortho]
 ```
 
-Edge routing (view property, valid in element, dynamic and deployment views):
-
-```likec4
-view {
-  routing ortho   // spline (default, curved) | ortho (right-angle bends)
-  include *
-}
-```
-
-Precedence: `routing` property → `autoLayout` trailing value → `styles.defaults.view.routing` in config → `spline`.
-Applies to manually laid-out views too; switching routing never invalidates a saved layout.
-
-Known orthogonal routing limitations include routes crossing unrelated group boxes and closely packed parallel routes from Graphviz.
-Increasing `autoLayout` spacing gives nodes more room but does not guarantee separation between routes. Show fewer relationships or edit individual connections to improve crowded views.
-Edited edges that share a straight run move onto separate tracks where space permits; untouched Graphviz routes keep their positions.
-
 See [Predicates](./predicates.md) for more information on predicates and expressions.
 
 **Important:**
@@ -81,6 +65,32 @@ See [Predicates](./predicates.md) for more information on predicates and express
 - `exclude` only removes elements that were included by previous rules.
 - `style` rules override previously applied styles.
   - Style cascade (each override the previous): Spec defaults → element properties → local styles → view-level styles → customized predicates
+
+## Edge routing
+
+To draw relationships with right-angle bends, set `routing ortho` in a view:
+
+```likec4
+view {
+  routing ortho
+  include *
+}
+```
+
+Use `spline` for curved relationships or `ortho` for horizontal and vertical segments. The default is `spline`. Routing applies to element, dynamic, and deployment views. Sequence diagrams ignore this setting.
+
+LikeC4 uses the first value defined in this precedence order:
+
+1. The view's `routing` property.
+2. The last `autoLayout` rule's routing parameter.
+3. The project default, `styles.defaults.view.routing`.
+4. The built-in default, `spline`.
+
+If both the view property and `autoLayout` set routing, the property takes precedence and the language server reports a warning. Changing routing alone preserves saved node positions and control points without invalidating the layout.
+
+Graphviz can route relationships through unrelated group boxes or place parallel routes close together. To reduce crowding, show fewer relationships or edit individual connections. Increasing `autoLayout` spacing gives nodes more room, but doesn't guarantee separation between routes.
+
+Edited edges that share a straight segment move onto separate tracks where space at their endpoints permits. Unedited Graphviz routes keep their positions. Automatic label placement avoids nodes, other labels, and routes where space permits; dense views can still contain overlaps.
 
 ## Dynamic View Rules
 

@@ -27,7 +27,7 @@ export function useControlPoints({
   ])
 
   /**
-   * Inserts a new control point where the user clicked (coordinates in flow space)
+   * Inserts a control point at the clicked position, expressed in diagram coordinates.
    */
   const insertControlPoint = useCallbackRef((point: XYPosition) => {
     const newControlPoints = insertCorner({

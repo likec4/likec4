@@ -162,8 +162,10 @@ export function parseViewOrder(prop: ast.ViewOrderProperty | undefined): number 
 }
 
 /**
- * Returns the edge routing of a view: the `routing` property wins over the `autoLayout` sugar
- * (the last `autoLayout` rule, matching how compute-view picks the auto-layout rule).
+ * Returns routing from the view property or the last `autoLayout` rule.
+ *
+ * The view property takes precedence. Returns `undefined` when neither defines routing;
+ * project defaults are applied during view computation.
  */
 export function parseViewRouting(
   props: ReadonlyArray<ast.ViewProperty | ast.DynamicViewProperty>,

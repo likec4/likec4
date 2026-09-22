@@ -141,7 +141,7 @@ class Leaf extends Rect {
   }
 }
 
-/** a replace change for the edge, or `null` when nothing moved */
+/** An edge replacement, or `null` when its geometry is unchanged. */
 type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange<Types.AnyEdge> | null
 
 /**
@@ -495,7 +495,7 @@ export function createLayoutConstraints(
     }
     if (routing === 'ortho' && edgeUpdates.length > 0 && hasChanges()) {
       // Place labels only after every edge and node has its final geometry for this frame.
-      // React may not have applied triggerNodeChanges yet, so project the node boxes from the constraints.
+      // React might not have applied triggerNodeChanges yet; derive node boxes from the constraints.
       const finalNodeLookup = new Map([...nodeLookup].map(([id, node]) => {
         const rect = rects.get(id)
         const initial = initialNodeRects.get(id)!

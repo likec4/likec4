@@ -300,8 +300,7 @@ export function applyManualLayout<
       draft.variant = autoLayouted.variant
     }
 
-    // Edge routing is a live view setting, not part of the saved geometry:
-    // the latest view decides, the snapshot only carries what it was saved with
+    // Apply the current routing mode while preserving the snapshot's geometry.
     if (autoLayouted.routing) {
       draft.routing = autoLayouted.routing
     } else {

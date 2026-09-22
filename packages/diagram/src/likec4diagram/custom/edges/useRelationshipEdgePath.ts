@@ -14,7 +14,7 @@ import { trackedEdgePath } from '../../../utils/edge-tracks'
 import type { Types } from '../../types'
 
 /**
- * @returns SVG path of the relationship edge, with its straight segments under ortho routing
+ * @returns The SVG path data and, for orthogonal routing, straight segments for label placement.
  */
 export function useRelationshipEdgePath({
   props: {
