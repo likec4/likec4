@@ -344,10 +344,10 @@ describe('compute-element-view', () => {
           icon: 'http://some-icon' as IconUrl,
         },
       },
-      // cloud.*
+      // cloud.**
       // shape: browser
       {
-        targets: [$expr('cloud.*')],
+        targets: [$expr('cloud.**')],
         style: {
           shape: 'browser',
         },
