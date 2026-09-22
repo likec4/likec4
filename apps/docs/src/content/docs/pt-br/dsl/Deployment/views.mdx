@@ -1,0 +1,236 @@
+---
+title: Visões de deployment
+description: Como visualizar deployments com o LikeC4
+sidebar: 
+  # label: Deployment views
+  order: 12
+---
+
+import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+As visões de deployment permitem visualizar o modelo de deployment usando a mesma abordagem das [visões do modelo](/pt-br/dsl/views/predicates) — predicados.
+
+## Definição da visão
+
+```likec4 {17-23}
+deployment {
+  environment prod {
+    zone eu {
+      zone zone1 {
+        instanceOf frontend.ui
+        instanceOf backend.api
+      }
+      zone zone2 {
+        instanceOf frontend.ui
+        instanceOf backend.api
+      }
+      instanceOf database
+    }    
+  }
+}
+views {
+  deployment view index {
+    title 'Production Deployment'
+    link https://likec4.dev
+
+    include prod.**
+    // ...
+  }
+}
+```
+
+## Predicados da visão
+
+As visões de deployment são baseadas nos mesmos [predicados](/pt-br/dsl/views/predicates) das visões do modelo.  
+Porém, elas fazem referência a nós e instâncias de deployment.
+
+<Aside type='caution' title='Em desenvolvimento'>
+  Os recursos a seguir ainda não são suportados ou não funcionam como esperado:
+ 
+  - expressões `with`
+  - estilos e predicados compartilhados
+  - navegador de relacionamentos e popups de detalhes de elementos e relacionamentos (funcionam com o modelo lógico)
+
+  ```likec4
+  deployment view prod {
+    include *                                   // works
+    include * where tag is #next                // works (see details below)
+    include * with { color: red }               // does not work
+
+    include * -> *                              // works
+    include * -> * where tag is #next           // works
+    include * -> * where source.tag is #next    // works (see details below)
+    include * -> * with { color: red }          // does not work
+
+    global style applications                   // does not work    
+  }
+  ```
+</Aside>
+
+### Filtragem
+
+A filtragem em visões de deployment segue os mesmos princípios das visões normais, mas considera nós de deployment, relacionamentos, tags e metadados definidos no modelo de deployment.
+Quando uma condição sobre um elemento é verificada, aplicam-se as seguintes regras:
+- para instâncias de deployment, as tags são combinadas entre as definidas no modelo e as definidas no modelo de deployment;
+- para um filho de uma instância de deployment, são usadas as tags definidas no filho no modelo;
+- para um nó de deployment, são usadas as tags definidas no modelo de deployment;
+- para instâncias de deployment, é usado o tipo do elemento do modelo;
+- para um filho de uma instância de deployment, é usado o tipo desse filho;
+- para um nó de deployment, é usado o tipo desse nó de deployment;
+- para instâncias de deployment, os metadados definidos no modelo de deployment substituem os metadados do elemento do modelo;
+- para endpoints de relacionamentos, `source.metadata.*` e `target.metadata.*` seguem as mesmas regras de metadados das instâncias implantadas;
+- para nós de deployment, são usados os metadados definidos no modelo de deployment;
+- tags não são herdadas de nós ou elementos pais.
+
+```likec4
+model {
+  element cloud {
+    element frontend {
+      #next
+      -> backend "rel1"
+    }
+    element backend {
+      #next
+      -> db "rel2"
+    }
+    element db
+  }
+}
+deployment {
+  environment prod { // Resulting tags: #alpha
+    #alpha
+    zone eu { // Resulting tags: #beta
+      #beta
+      instanceOf frontend { // Resulting tags: #next, #gamma
+          #gamma
+      }
+      instanceOf backend { // Resulting tags: #next, #sigma
+          #sigma
+      }
+      eu -> prod.db "rel3"
+    }
+    instanceOf db { // Resulting tags: #delta
+      #delta
+    }
+  }
+}
+views {
+  deployment view some {
+    include prod.eu.frontend -> prod.eu.backend
+      where source.tag is #next // includes relation "rel1"
+    include prod.eu.frontend -> prod.eu.backend
+      where source.tag is #gamma // includes relation "rel1"
+    include prod.eu -> prod.db
+      where source.tag is #beta // includes relation "rel3"
+    include prod.eu -> prod.db
+      where source.tag is #sigma // does not include any relations
+    include eu.* -> prod.db
+      where source.tag is #sigma // includes relations "rel2"
+  }
+}
+```
+
+Predicados de metadados também podem ser usados com `include` e `exclude`:
+
+```likec4
+deployment {
+  environment prod {
+    instanceOf backend {
+      metadata {
+        zone 'public'
+      }
+    }
+    instanceOf database {
+      metadata {
+        zone 'restricted'
+      }
+    }
+  }
+}
+
+views {
+  deployment view prod {
+    include * -> *
+    exclude * -> *
+      where target.metadata.zone is "restricted"
+  }
+}
+```
+
+### Incluir ancestrais
+
+Às vezes, é útil visualizar exatamente como os elementos estão implantados. Nesse caso, você pode usar
+o atributo `includeAncestors` em uma visão de deployment.
+
+O objetivo desse atributo é forçar a exibição de todos os ancestrais dos elementos que já estão visíveis no diagrama final.  
+Ele não afeta os relacionamentos visíveis. Trata-se apenas de uma preferência de representação que permite visualizar como cada elemento relevante está implantado.
+
+```likec4
+specification {
+  element service
+
+  deploymentNode hypervisor {
+    style {
+      color green
+    }
+  }
+  deploymentNode vm {
+    style {
+      color red
+    }
+  }
+  deploymentNode app_server {
+    style {
+      color sky
+    }
+  }
+}
+
+model {
+  svc1 = service
+  svc2 = service
+
+  svc1 -> svc2
+}
+
+deployment {
+  hyp1 = hypervisor {
+    vm = vm {
+      tomcat1 = app_server "tomcat" {
+        instanceOf svc1
+      }
+    }
+  }
+  hyp2 = hypervisor {
+    vm = vm {
+      tomcat2 = app_server "tomcat" {
+        instanceOf svc2
+      }
+    }
+  }
+}
+
+views {
+  view index {
+    title 'Landscape'
+    include *
+  }
+
+  deployment view ancestors_test {
+    includeAncestors: true
+
+    include hyp1.tomcat1.svc1
+    include hyp2.tomcat2.svc2
+  }
+}
+```
+
+
+<br/>
+<br/>
+  <LinkCard
+    title="Experimente online"
+    description="Abra o exemplo de deployment no playground do LikeC4"
+    href="https://playground.likec4.dev/w/deployment/index/"
+    target="_blank"
+  />
