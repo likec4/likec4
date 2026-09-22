@@ -22,7 +22,7 @@ import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import { useCurrentViewRouting } from '../../hooks/useCurrentView'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
@@ -62,9 +62,13 @@ export const ChangeAutoLayoutButton = () => {
     setControlsRefs(controlsRefs)
   }
 
-  const setRoutingRef = (name: EdgeRouting) => (node: HTMLButtonElement | null) => {
-    setRoutingRefs(refs => refs[name] === node ? refs : { ...refs, [name]: node })
-  }
+  // Stable per value, so React attaches each ref once instead of on every render
+  const routingRef = useMemo(() => {
+    const callback = (name: EdgeRouting) => (node: HTMLButtonElement | null) => {
+      setRoutingRefs(refs => refs[name] === node ? refs : { ...refs, [name]: node })
+    }
+    return { spline: callback('spline'), ortho: callback('ortho') }
+  }, [])
 
   const setAutoLayout = (direction: AutoLayoutDirection) => (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -177,11 +181,11 @@ export const ChangeAutoLayoutButton = () => {
           <Flex gap={2} wrap={'wrap'} justify={'stretch'} maw={160}>
             <UnstyledButton
               className={css.autolayoutButton}
-              ref={setRoutingRef('spline')}
+              ref={routingRef.spline}
               onClick={setRouting('spline')}>
               Spline
             </UnstyledButton>
-            <UnstyledButton className={css.autolayoutButton} ref={setRoutingRef('ortho')} onClick={setRouting('ortho')}>
+            <UnstyledButton className={css.autolayoutButton} ref={routingRef.ortho} onClick={setRouting('ortho')}>
               Ortho
             </UnstyledButton>
           </Flex>

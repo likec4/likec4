@@ -4,16 +4,14 @@ import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
+import { useXYStoreApi } from '../../../hooks/useXYFlow'
 import { initialControlPoints, insertCorner } from '../../../utils/edge-corners'
+import { edgeEndCenters } from '../../../utils/edge-endpoints'
 import type { Types } from '../../types'
 
-export function useControlPoints({
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  data,
-}: Types.EdgeProps<'relationship'>, routing: EdgeRouting) {
+export function useControlPoints(props: Types.EdgeProps<'relationship'>, routing: EdgeRouting) {
+  const { data } = props
+  const xyflowStore = useXYStoreApi()
   const [controlPoints, setControlPoints] = useState<XYPosition[]>(() =>
     data.controlPoints ?? initialControlPoints(data.points, routing)
   )
@@ -33,8 +31,7 @@ export function useControlPoints({
     const newControlPoints = insertCorner({
       point,
       controlPoints,
-      source: { x: sourceX, y: sourceY },
-      target: { x: targetX, y: targetY },
+      ...edgeEndCenters(xyflowStore.getState().nodeLookup, props),
       dir: data.dir,
       routing,
     })

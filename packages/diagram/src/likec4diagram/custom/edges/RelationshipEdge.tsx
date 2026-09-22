@@ -30,6 +30,7 @@ import { useSetState } from '../../../hooks/useSetState'
 import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYFlow, useXYStoreApi } from '../../../hooks/useXYFlow'
 import { snapCorner } from '../../../utils/edge-corners'
+import { edgeEndCenters } from '../../../utils/edge-endpoints'
 import { edgeLabelPosition } from '../../../utils/edge-label'
 import {
   isSamePoint,
@@ -458,8 +459,7 @@ function ControlPoints({
             index,
             point: { x: Math.trunc(x), y: Math.trunc(y) },
             controlPoints: cp,
-            source: { x: edgeProps.sourceX, y: edgeProps.sourceY },
-            target: { x: edgeProps.targetX, y: edgeProps.targetY },
+            ...edgeEndCenters(xyflowStore.getState().nodeLookup, edgeProps),
             dir: edgeProps.data.dir,
             routing,
           })
