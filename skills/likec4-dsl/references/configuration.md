@@ -136,7 +136,7 @@ Configure where manual layout data is stored.
 
 ### `styles`
 
-To customize theme colors and project defaults, add a `styles` section to your configuration:
+Theme customization and default styling.
 
 ```json
 {
