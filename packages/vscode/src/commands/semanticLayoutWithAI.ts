@@ -1,6 +1,6 @@
 import { type AILayoutProvider, type AILayoutRequest, enhanceLayoutWithAI } from '@likec4/layouts/ai'
 import { loggable } from '@likec4/log'
-import { defineService, ref, toValue, useCommand, useOutputChannel } from 'reactive-vscode'
+import { defineLogger, ref, toValue, useCommand } from 'reactive-vscode'
 import { hasAtLeast, once } from 'remeda'
 import * as vscode from 'vscode'
 import { hasAI } from '../const.ts'
@@ -8,6 +8,8 @@ import { commands } from '../meta.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useMessenger } from '../useMessenger.ts'
 import type { PreviewPanel, RpcClient } from './types'
+
+type OutputLogger = ReturnType<typeof defineLogger>
 
 export interface SemanticLayoutAICmdDeps {
   sendTelemetry(commandId: string): void
@@ -163,12 +165,9 @@ export function registerSemanticLayoutWithAICommand({ sendTelemetry, rpc, previe
   })
 }
 
-const useAIOutputChannel = defineService(() => {
-  const out = useOutputChannel('LikeC4 AI Layout')
-  return out
-})
+const useAIOutputChannel = once(() => defineLogger('LikeC4 AI Layout'))
 
-async function selectModel(output: vscode.OutputChannel): Promise<vscode.LanguageModelChat | null> {
+async function selectModel(output: OutputLogger): Promise<vscode.LanguageModelChat | null> {
   if (!vscode.lm?.selectChatModels) {
     output.appendLine('Language model API not available')
     return null
@@ -221,7 +220,7 @@ class VscodeAILayoutProvider implements AILayoutProvider<vscode.CancellationToke
   readonly name = 'VSCode Language Model'
 
   constructor(
-    private readonly logger: vscode.LogOutputChannel,
+    private readonly logger: OutputLogger,
     private readonly onStartReceivingFromModel: () => void,
   ) {
   }

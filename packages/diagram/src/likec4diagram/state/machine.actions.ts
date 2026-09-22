@@ -1165,6 +1165,7 @@ export const collapseOrExpandSequenceFlow = () =>
     enqueue.assign({
       collapsedSequenceFlows: {
         ...context.collapsedSequenceFlows,
+        // We only need to toggle
         ...mapToObj(targets, id => [id, !isCollapsed]),
       },
     })

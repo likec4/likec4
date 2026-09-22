@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.59.3",
+  "version": "1.59.4",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -56,7 +56,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:vitest",
     "vite": "catalog:vite",
-    "vscode-messenger-common": "^0.5.1",
-    "vscode-messenger-webview": "^0.5.1"
+    "vscode-messenger-common": "catalog:vscode",
+    "vscode-messenger-webview": "catalog:vscode"
   }
 }

@@ -45,9 +45,12 @@ export const initializing = machine.createStateConfig({
 export const isReady = machine.createStateConfig({
   always: [{
     guard: 'isReady',
-    actions: [
-      fitDiagram({ duration: 0 }),
-      assign(({ context }) => ({
+    actions: machine.enqueueActions(({ context, enqueue }) => {
+      enqueue(fitDiagram({
+        duration: 0,
+        zoom: context.initialZoom ?? (context.fitView ? undefined : 1),
+      }))
+      enqueue(assign(({ context }) => ({
         navigationHistory: {
           currentIndex: 0,
           history: [{
@@ -56,9 +59,9 @@ export const isReady = machine.createStateConfig({
             viewportChangedManually: false,
           }],
         },
-      })),
-      emitInitialized(),
-    ],
+      })))
+      enqueue(emitInitialized())
+    }),
     target: 'ready',
   }, {
     target: 'initializing',

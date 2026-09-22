@@ -1,4 +1,5 @@
 import { type scalar, type ViewChange, type ViewId, nonNullable } from '@likec4/core'
+import { splitViewFolderPath, VIEW_FOLDERS_SEPARATOR } from '@likec4/core/model'
 import {
   type AnyOp,
   indent,
@@ -84,9 +85,9 @@ export const changePropertyHandler = viewChangeHandler(
       )
     }
 
-    if (change.tag !== undefined) {
+    if (change.tags !== undefined) {
       edits.push(
-        ...updateViewTags(viewAst, change.tag),
+        ...updateViewTags(viewAst, change.tags),
       )
     }
 
@@ -137,6 +138,14 @@ const doubleIndent = (op: AnyOp): AnyOp =>
 function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
   const existing = findExistingViewProperty(viewAst, 'title')
 
+  const parents = splitViewFolderPath(viewAst.$container.folder ?? '')
+  const viewpath = splitViewFolderPath(title)
+  while (viewpath[0] && parents[0] === viewpath[0]) {
+    viewpath.shift()
+    parents.shift()
+  }
+  title = viewpath.join(` ${VIEW_FOLDERS_SEPARATOR} `)
+
   const titleOut = withctx({ title })(
     ops.props.titleProperty(),
   )
@@ -164,34 +173,37 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
     ).trimEnd(),
   )
 }
-function collectAllTagRefs(tags: ast.Tags | undefined): Array<WithCst<ast.TagRef>> {
-  // Linked list: body.tags is the last comma-separated group, prev points backward.
-  // Within each group, values are in document order.
-  // We collect groups in reverse, then reverse the groups (not their contents) to get document order.
-  const groups: Array<Array<WithCst<ast.TagRef>>> = []
-  let iter = tags
-  while (iter) {
-    const group: Array<WithCst<ast.TagRef>> = []
-    for (const ref of iter.values) {
-      if (ref.$cstNode) {
-        group.push(ref as WithCst<ast.TagRef>)
-      }
-    }
-    groups.push(group)
-    iter = iter.prev
-  }
-  return groups.reverse().flat()
-}
 
-function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit {
+function replaceTags(
+  viewAst: ast.LikeC4View,
+  body: NonNullable<ast.LikeC4View['body']>,
+  tags: scalar.Tag[],
+): TextEdit | undefined {
   const tagsNode = body.tags
 
-  // Append to existing tags
+  const printTags = print(tags.map(t => `#${t}`).join(' '))
+
+  // Replace existing tags
   if (tagsNode?.$cstNode) {
-    return TextEdit.insert(
-      tagsNode.$cstNode.range.end,
-      `, #${tagName}`,
+    if (tags.length === 0) {
+      return TextEdit.del({
+        // after "{" (view body start)
+        start: findInsertPosition(
+          viewAst,
+          body => body.$cstNode?.range.start,
+        ),
+        end: tagsNode.$cstNode.range.end,
+      })
+    }
+    return TextEdit.replace(
+      tagsNode.$cstNode.range,
+      materialize(printTags),
     )
+  }
+
+  // No existing tags, and no tags to add - nothing to do
+  if (tags.length === 0) {
+    return undefined
   }
 
   // Insert new tags line at body start (right after "{")
@@ -202,78 +214,20 @@ function addTag(viewAst: ast.LikeC4View, body: NonNullable<ast.LikeC4View['body'
     ),
     materialize(
       doubleIndent(
-        print(`#${tagName}`),
+        printTags,
       ),
     ).trimEnd(),
   )
 }
 
-function removeTag(body: NonNullable<ast.LikeC4View['body']>, tagName: scalar.Tag): TextEdit | undefined {
-  const allRefs = collectAllTagRefs(body.tags)
-  const targetIndex = allRefs.findIndex(ref => ref.tag.ref?.name === tagName)
-
-  if (targetIndex < 0) {
-    return undefined
-  }
-
-  // Only one tag — remove the entire tags line (including its trailing newline)
-  if (allRefs.length === 1) {
-    const tagsNode = body.tags
-    if (tagsNode?.$cstNode) {
-      const { start } = tagsNode.$cstNode.range
-      return TextEdit.del({
-        start: Position.create(start.line, 0),
-        end: Position.create(start.line + 1, 0),
-      })
-    }
-    return undefined
-  }
-
-  const target = allRefs[targetIndex]!
-
-  if (targetIndex > 0) {
-    // Not first — remove from previous tag end to this tag end
-    const prev = allRefs[targetIndex - 1]!
-    return TextEdit.del({
-      start: prev.$cstNode.range.end,
-      end: target.$cstNode.range.end,
-    })
-  }
-
-  // First tag — remove from this tag start to next tag start
-  const next = allRefs[targetIndex + 1]!
-  return TextEdit.del({
-    start: target.$cstNode.range.start,
-    end: next.$cstNode.range.start,
-  })
-}
-
 function updateViewTags(
   viewAst: ast.LikeC4View,
-  tag: NonNullable<ViewChange.ChangeProperty['tag']>,
+  tags: NonNullable<ViewChange.ChangeProperty['tags']>,
 ): TextEdit[] {
-  const edits: TextEdit[] = []
   const body = nonNullable(viewAst.body, 'View body is required')
+  const edit = replaceTags(viewAst, body, tags)
 
-  if (tag.add) {
-    const names = Array.isArray(tag.add) ? tag.add : [tag.add]
-    for (const name of names) {
-      if (name) {
-        edits.push(addTag(viewAst, body, name))
-      }
-    }
-  }
-  if (tag.remove) {
-    const names = Array.isArray(tag.remove) ? tag.remove : [tag.remove]
-    for (const name of names) {
-      const edit = name ? removeTag(body, name) : undefined
-      if (edit) {
-        edits.push(edit)
-      }
-    }
-  }
-
-  return edits
+  return edit ? [edit] : []
 }
 
 function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit[] {

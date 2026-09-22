@@ -3,13 +3,18 @@ import {
   nonNullable,
 } from '@likec4/core'
 import {
+  type DynamicViewFlow,
   type Predicate,
   dynamicViewFlow,
+  flowAncestors,
+  flowGuards,
+  flowHelpers,
   isDynamicView,
+  isDynamicViewWithFlow,
   isStepPath,
   parentFlow,
 } from '@likec4/core/types'
-import { clamp, firstBy, isNumber, map } from 'remeda'
+import { clamp, find, firstBy, isNumber, map } from 'remeda'
 import { assertEvent, enqueueActions } from 'xstate'
 import { assign, raise } from 'xstate/actions'
 import { Base } from '../../base'
@@ -20,6 +25,7 @@ import {
   assignViewportBefore,
   cancelEditing,
   cancelFitDiagram,
+  collapseOrExpandSequenceFlow,
   emitEdgeClick,
   emitPaneClick,
   fitFocusedBounds,
@@ -41,9 +47,24 @@ const outlinePanelWidth = ({ activeWalkthrough, xystore }: Pick<Context, 'active
   }
   const { width } = xystore.getState()
   return clamp(roundDpr(width * 0.3), {
-    min: 180,
-    max: 400,
+    min: 240,
+    max: 500,
   })
+}
+
+const guardContext = (context: Context) => {
+  const { activeWalkthrough, view } = context
+  invariant(isDynamicViewWithFlow(view), 'View must be a dynamic view with flows')
+  invariant(activeWalkthrough, 'Active walkthrough must not be null')
+  return { activeWalkthrough, view }
+}
+
+/**
+ * Creates a predicate that checks if a step is collapsed based on the current state
+ */
+const isCollapsed = (context: Context) => (step: DynamicViewFlow.AnyStep): boolean => {
+  const path = flowHelpers.extractPath(step)
+  return context.collapsedSequenceFlows[path] ?? false
 }
 
 const updateActiveWalkthroughState = () =>
@@ -144,6 +165,34 @@ const clearWalkthroughState = () =>
     })
   })
 
+const checkIfActiveStepCollapsed = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    const { activeWalkthrough, view } = guardContext(context)
+    const checkIsCollapsed = isCollapsed(context)
+    const someIsCollapsed = find(
+      flowAncestors(activeWalkthrough.stepId),
+      checkIsCollapsed,
+    )
+    // If subflow is not collapsed, do nothing
+    if (!someIsCollapsed) {
+      return
+    }
+    const flow = dynamicViewFlow(view)
+    const { prev, next } = flow.prevAndNext(
+      activeWalkthrough.stepId,
+      checkIsCollapsed, // Skip collapsed steps
+    )
+    const goToStep = prev ?? next
+    if (!goToStep) {
+      // Dont cry
+      return
+    }
+    enqueue.raise({
+      type: 'walkthrough.step',
+      stepId: goToStep,
+    })
+  })
+
 const emitWalkthroughStarted = () =>
   machine.emit(({ context }) => {
     const edge = nonNullable(
@@ -227,6 +276,13 @@ export const walkthrough = machine.createStateConfig({
     'key.arrow.down': {
       actions: raise({ type: 'walkthrough.step', direction: 'next' }),
     },
+    'sequence.flow.*': {
+      actions: [
+        collapseOrExpandSequenceFlow(),
+        resetLastClickedNode(),
+        checkIfActiveStepCollapsed(),
+      ],
+    },
     'walkthrough.step': {
       actions: [
         enqueueActions(({ enqueue, context, event }) => {
@@ -239,7 +295,7 @@ export const walkthrough = machine.createStateConfig({
             invariant(isDynamicView(context.view))
             const { stepId } = activeWalkthrough
             const flow = dynamicViewFlow(context.view)
-            const prevNext = flow.prevAndNext(stepId, flowId => context.collapsedSequenceFlows[flowId] ?? false)
+            const prevNext = flow.prevAndNext(stepId, isCollapsed(context))
             predicate = (edge) => edge.data.id === prevNext[event.direction]
           } else {
             predicate = (edge) => edge.data.id === event.stepId

@@ -8,7 +8,7 @@ import {
 import * as vscode from 'vscode'
 import { activateExtension } from '../activate'
 import { globPattern } from '../const'
-import { useConfigureLogger } from '../useExtensionLogger'
+import { type OutputLogger, useConfigureLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 
 export const { activate, deactivate } = defineExtension(async () => {
@@ -41,7 +41,7 @@ export const { activate, deactivate } = defineExtension(async () => {
   }
 })
 
-async function recursiveSearchSources(output: vscode.LogOutputChannel) {
+async function recursiveSearchSources(output: OutputLogger) {
   output.info(`recursiveSearchSources`)
   const sources = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)

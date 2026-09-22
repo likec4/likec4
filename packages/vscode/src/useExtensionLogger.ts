@@ -12,15 +12,12 @@ import {
   rootLogger,
 } from '@likec4/log'
 import type { TelemetryReporter } from '@vscode/extension-telemetry'
-import { defineService } from 'reactive-vscode'
+import { defineLogger, defineService } from 'reactive-vscode'
 import * as vscode from 'vscode'
 
-let outputChannel: vscode.LogOutputChannel | undefined
-function getOutput(): vscode.LogOutputChannel {
-  return outputChannel ??= vscode.window.createOutputChannel('LikeC4 Extension', {
-    log: true,
-  })
-}
+const output = defineLogger('LikeC4 Extension')
+
+export type OutputLogger = typeof output
 
 type OutputChannelSinkProps = {
   /**
@@ -35,7 +32,7 @@ function getOutputChannelSink(props?: OutputChannelSinkProps): Sink {
     },
   })
   return (logObj) => {
-    const output = getOutput()
+    // const output = getOutput()
     try {
       switch (logObj.level) {
         case 'trace':
@@ -117,12 +114,12 @@ function configureLogger(telemetry?: TelemetryReporter) {
       ],
     })
   } catch (e) {
-    getOutput().error(e as any)
+    output.error(e as any)
   }
 }
 
 export const useConfigureLogger = defineService(() => {
-  const output = getOutput()
+  // const output = output()
   output.trace('Initializing extension logger')
   const logger = rootLogger.getChild('vscode')
 
@@ -144,7 +141,7 @@ export function useExtensionLogger(prefix?: string) {
       logger.warn(loggable(e))
       return
     }
-    const error = new Error(`Unknown error: ${e}`)
+    const error = new Error(`Unknown error`, { cause: e })
     try {
       Error.captureStackTrace(error, logWarn)
     } catch {
@@ -158,7 +155,7 @@ export function useExtensionLogger(prefix?: string) {
       logger.error(loggable(e))
       return
     }
-    const error = new Error(`Unknown error: ${e}`)
+    const error = new Error(`Unknown error`, { cause: e })
     try {
       Error.captureStackTrace(error, logError)
     } catch {

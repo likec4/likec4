@@ -6,14 +6,14 @@ export default defineProject({
     conditions: ['sources', 'node'],
     // Seems vitest doesn't resolve conditions
     alias: {
-      '@likec4/style-preset/defaults': resolve(__dirname, '../../styled-system/preset/src/defaults/index.ts'),
-      '@likec4/core': resolve(__dirname, '../core/src'),
-      '@likec4/log': resolve(__dirname, '../log/src'),
-      '@likec4/layouts': resolve(__dirname, '../layouts/src'),
-      '@likec4/config': resolve(__dirname, '../config/src'),
-      '@likec4/language-server': resolve(__dirname, '../language-server/src'),
-      '@likec4/language-services': resolve(__dirname, '../language-services/src'),
-      '@likec4/generators': resolve(__dirname, '../generators/src'),
+      '@likec4/style-preset/defaults': resolve(import.meta.dirname, '../../styled-system/preset/src/defaults/index.ts'),
+      '@likec4/core': resolve(import.meta.dirname, '../core/src'),
+      '@likec4/log': resolve(import.meta.dirname, '../log/src'),
+      '@likec4/layouts': resolve(import.meta.dirname, '../layouts/src'),
+      '@likec4/config': resolve(import.meta.dirname, '../config/src'),
+      '@likec4/language-server': resolve(import.meta.dirname, '../language-server/src'),
+      '@likec4/language-services': resolve(import.meta.dirname, '../language-services/src'),
+      '@likec4/generators': resolve(import.meta.dirname, '../generators/src'),
     },
   },
   test: {

@@ -17,7 +17,7 @@ import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { BaseXYFlow } from '../base/BaseXYFlow'
-import { MinZoom } from '../base/const'
+import { IS_SERVER } from '../base/const'
 import { useDiagramEventHandlers } from '../context'
 import { useRootContainer } from '../context/RootContainerContext'
 import {
@@ -29,10 +29,9 @@ import {
 import { useDiagram } from '../hooks/useDiagram'
 import { useEditorActorStateHasTag } from '../hooks/useEditorActor'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
-import type { LikeC4DiagramProperties, NodeRenderers, ViewPadding, ViewPaddings } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties, NodeRenderers, ViewPaddings } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
-import type { DiagramContext } from './state/types'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useLayoutConstraints } from './useLayoutConstraints'
@@ -71,8 +70,14 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   }
 }
 
-const viewportToTopLeft = (ctx: DiagramContext): Viewport => {
-  const bounds = viewBounds(ctx)
+export function resolveControlledViewport(
+  enableFitView: boolean,
+  initialZoom: number | undefined,
+  bounds: { x: number; y: number },
+): Viewport | undefined {
+  if (enableFitView || initialZoom !== undefined) {
+    return undefined
+  }
   return {
     x: -bounds.x,
     y: -bounds.y,
@@ -90,6 +95,11 @@ export function resolveInteractionEnabled(
 
 const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
   const { enableReadOnly } = deriveToggledFeatures(ctx)
+  const controlledViewport = resolveControlledViewport(
+    ctx.features.enableFitView,
+    ctx.initialZoom,
+    viewBounds(ctx),
+  )
 
   const editorSnapshot = enableReadOnly ? null : children.editor?.getSnapshot()
 
@@ -111,18 +121,21 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
   return ({
     enableReadOnly,
     isGraphVariant,
-    initialized: ctx.initialized.xydata && ctx.initialized.xyflow,
+    // During SSR, consider initialized as true to avoid flashing
+    initialized: IS_SERVER || (ctx.initialized.xydata && ctx.initialized.xyflow),
     nodes: ctx.xynodes,
     edges: ctx.xyedges,
     pannable: ctx.pannable,
     zoomable: ctx.zoomable,
+    minZoom: ctx.minZoom,
+    maxZoom: ctx.maxZoom,
     nodesDraggable,
     nodesSelectable: ctx.nodesSelectable && isNotEditingEdge,
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
-    enableControls: ctx.features.enableControls && ctx.features.enableFitView,
-    ...(!ctx.features.enableFitView && {
-      viewport: viewportToTopLeft(ctx),
+    enableControls: ctx.features.enableControls,
+    ...(controlledViewport && {
+      viewport: controlledViewport,
     }),
   })
 }, ({ nodes: aNodes, edges: aEdges, ...a }, { nodes: bNodes, edges: bEdges, ...b }) => {
@@ -338,19 +351,28 @@ export function LikeC4DiagramXYFlow({
       {...safeReactFlowProps}
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}>
-      {enableControls && <Controls padding={props.fitViewPadding} />}
+      {enableControls && (
+        <Controls
+          fitViewPadding={props.fitViewPadding}
+          minZoom={props.minZoom}
+          maxZoom={props.maxZoom}
+        />
+      )}
       {children}
     </BaseXYFlow>
   )
 }
 
-const Controls = ({ padding }: { padding: ViewPaddings }) => (
+const Controls = (
+  { fitViewPadding, minZoom, maxZoom }: Pick<typeof selectXYProps.Out, 'fitViewPadding' | 'minZoom' | 'maxZoom'>,
+) => (
   <XYFlowControls
     showInteractive={false}
     fitViewOptions={{
-      padding,
-      minZoom: MinZoom,
-      maxZoom: 1,
+      padding: fitViewPadding,
+      minZoom,
+      // Fit-to-view never scales up beyond 1, even if `maxZoom` allows it
+      maxZoom: Math.min(maxZoom, 1),
       duration: 350,
     }}
     position="bottom-left"

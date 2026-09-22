@@ -1,9 +1,17 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 /// <reference lib="dom" />
 import { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import { LikeC4Diagram, LikeC4MantineProvider, LikeC4ModelProvider } from '@likec4/diagram'
+import type { McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { useApp, useDocumentTheme, useHostStyles } from '@modelcontextprotocol/ext-apps/react'
-import { type ErrorInfo, type PropsWithChildren, Component, useState } from 'react'
+import { type ErrorInfo, type PropsWithChildren, Component, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 interface RenderViewResult {
@@ -12,7 +20,23 @@ interface RenderViewResult {
   // LikeC4Diagram unconditionally reads model.specification (tag colors), so
   // it needs a real LikeC4Model in a LikeC4ModelProvider, not just the view.
   model: Parameters<typeof LikeC4Model.create>[0]
+  render: {
+    size: 'compact' | 'standard' | 'large'
+    fitView: boolean
+    initialZoom?: number
+  }
 }
+
+const defaultRenderOptions = {
+  size: 'standard',
+  fitView: true,
+} as const satisfies RenderViewResult['render']
+
+const minimumCanvasHeight = {
+  compact: 360,
+  standard: 540,
+  large: 720,
+} as const
 
 // No error boundary here would mean any render failure (e.g. an unexpected
 // LikeC4Diagram runtime requirement) unmounts the whole tree silently — the
@@ -43,10 +67,14 @@ class DiagramErrorBoundary extends Component<PropsWithChildren, { error: Error |
 function RenderViewApp() {
   const [result, setResult] = useState<RenderViewResult | null>(null)
   const [errorText, setErrorText] = useState<string | null>(null)
+  const [hostContext, setHostContext] = useState<McpUiHostContext | undefined>()
+  const [fullscreenPending, setFullscreenPending] = useState(false)
 
   const { app, isConnected, error: connectError } = useApp({
     appInfo: { name: 'LikeC4 Render View', version: '0.0.0' },
-    capabilities: {},
+    capabilities: {
+      availableDisplayModes: ['inline', 'fullscreen'],
+    },
     // The SDK's default auto-resize measures content height by temporarily
     // setting documentElement's height to "max-content". Our layout fills
     // the host-given space (html/body/#root are all height:100%), so with no
@@ -56,6 +84,9 @@ function RenderViewApp() {
     // a content-driven size, so auto-resize is disabled entirely.
     autoResize: false,
     onAppCreated: (app) => {
+      app.onhostcontextchanged = (context) => {
+        setHostContext(previous => ({ ...previous, ...context }))
+      }
       app.ontoolresult = (result) => {
         if (result.isError) {
           const text = result.content?.find((c): c is { type: 'text'; text: string } => c.type === 'text')?.text
@@ -64,14 +95,41 @@ function RenderViewApp() {
         }
         const structured = result.structuredContent as Partial<RenderViewResult> | undefined
         if (structured?.view && structured?.model) {
-          setResult({ view: structured.view, model: structured.model })
+          setResult({
+            view: structured.view,
+            model: structured.model,
+            render: structured.render ?? defaultRenderOptions,
+          })
         }
       }
     },
   })
 
-  useHostStyles(app, app?.getHostContext())
+  useEffect(() => {
+    if (isConnected && app) {
+      setHostContext(app.getHostContext())
+    }
+  }, [app, isConnected])
+
+  useHostStyles(app, hostContext)
   const theme = useDocumentTheme()
+
+  const supportsFullscreen = hostContext?.availableDisplayModes?.includes('fullscreen') ?? false
+  const isFullscreen = hostContext?.displayMode === 'fullscreen'
+
+  const requestFullscreen = async () => {
+    if (!app) return
+
+    setFullscreenPending(true)
+    try {
+      const { mode } = await app.requestDisplayMode({ mode: 'fullscreen' })
+      setHostContext(previous => ({ ...previous, displayMode: mode }))
+    } catch (error) {
+      console.error('Failed to request fullscreen display mode:', error)
+    } finally {
+      setFullscreenPending(false)
+    }
+  }
 
   if (connectError) {
     return <div id="root">Failed to connect to host: {connectError.message}</div>
@@ -89,11 +147,40 @@ function RenderViewApp() {
   const likec4model = LikeC4Model.create(result.model)
 
   return (
-    <LikeC4MantineProvider forceColorScheme={theme}>
-      <LikeC4ModelProvider likec4model={likec4model}>
-        <LikeC4Diagram view={result.view} pannable zoomable fitView controls />
-      </LikeC4ModelProvider>
-    </LikeC4MantineProvider>
+    <div
+      data-size={result.render.size}
+      data-testid="mcp-render-view-ready"
+      style={{
+        height: '100%',
+        width: '100%',
+        minHeight: minimumCanvasHeight[result.render.size],
+        position: 'relative',
+      }}>
+      {supportsFullscreen && (
+        <button
+          aria-label="Fullscreen"
+          disabled={fullscreenPending || isFullscreen}
+          onClick={() => void requestFullscreen()}
+          style={{ position: 'fixed', top: 8, right: 8, zIndex: 2_147_483_647 }}>
+          Fullscreen
+        </button>
+      )}
+      <LikeC4MantineProvider forceColorScheme={theme}>
+        <LikeC4ModelProvider likec4model={likec4model}>
+          <LikeC4Diagram
+            view={result.view}
+            pannable
+            zoomable
+            fitView={result.render.fitView}
+            initialZoom={result.render.initialZoom ?? (result.render.fitView ? undefined : 1)}
+            controls
+            enableElementDetails
+            enableRelationshipDetails
+            reactFlowProps={{ elementsSelectable: true }}
+          />
+        </LikeC4ModelProvider>
+      </LikeC4MantineProvider>
+    </div>
   )
 }
 

@@ -94,6 +94,9 @@ export const ready = machine.createStateConfig({
       actions: [
         cancelEditing(),
         disableCompareWithLatest(),
+        assign({
+          viewportChangedManually: false,
+        }),
         triggerChange({
           op: 'reset-manual-layout',
         }),

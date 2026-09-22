@@ -23,3 +23,5 @@ export const FitViewPaddings = {
 } satisfies Record<string, ViewPadding>
 
 export const MAX_COMPOUND_DEPTH = 5
+
+export const IS_SERVER = typeof window === 'undefined'

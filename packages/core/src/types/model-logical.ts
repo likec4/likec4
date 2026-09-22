@@ -1,3 +1,4 @@
+import type { Simplify } from 'type-fest'
 import { defaultStyle } from '../styles/LikeC4Styles'
 import type {
   BorderStyle,
@@ -48,28 +49,24 @@ export interface ElementStyle {
   readonly textSize?: TextSize
 }
 
-type WithSizes = Pick<ElementStyle, 'size' | 'padding' | 'textSize' | 'iconSize'>
+type PartialSizes = Pick<ElementStyle, 'size' | 'padding' | 'textSize' | 'iconSize'>
+type WithSizes<S extends PartialSizes> = Simplify<S & Required<Pick<S, keyof PartialSizes>>>
 
 /**
  * Ensures that the sizes are set to default values if they are not set
  */
-export function ensureSizes<S extends WithSizes>(
-  {
-    size,
-    padding,
-    textSize,
-    iconSize,
-    ...rest
-  }: S,
+export function ensureSizes<S extends PartialSizes>(
+  style: S,
   defaultSize = defaultStyle.defaults.size,
-): Omit<S, keyof WithSizes> & Required<WithSizes> {
+): WithSizes<S> {
+  let { size, textSize, padding, iconSize } = style
   size ??= defaultSize
   textSize ??= size
   padding ??= size
   iconSize ??= size
 
   return {
-    ...rest,
+    ...style,
     size,
     padding,
     textSize,

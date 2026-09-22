@@ -4,8 +4,6 @@
     "../../.oxlintrc.json"
   ],
   "rules": {
-    "react_perf/jsx-no-jsx-as-prop": "warn",
-    "react/exhaustive-deps": "warn",
     "typescript/no-floating-promises": "off"
   }
 }

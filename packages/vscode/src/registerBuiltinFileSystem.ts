@@ -1,6 +1,6 @@
 import { Scheme } from '@likec4/language-server/likec4lib'
 import * as BuildIn from '@likec4/language-server/likec4lib'
-import { createSingletonComposable, useDisposable } from 'reactive-vscode'
+import { defineService, useDisposable } from 'reactive-vscode'
 import * as vscode from 'vscode'
 
 class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
@@ -52,7 +52,7 @@ class BuiltInFileSystemProvider implements vscode.FileSystemProvider {
   }
 }
 
-export const registerBuiltinFileSystem = createSingletonComposable(() => {
+export const registerBuiltinFileSystem = defineService(() => {
   useDisposable(vscode.workspace.registerFileSystemProvider(Scheme, new BuiltInFileSystemProvider(), {
     isReadonly: true,
     isCaseSensitive: false,

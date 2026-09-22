@@ -20,9 +20,6 @@ export function SelectProject() {
       closeDelay={200}
       position="bottom-start"
       classNames={{
-        itemLabel: css({
-          fontSize: 'sm',
-        }),
         itemSection: css({
           maxWidth: '[250px]',
         }),
@@ -34,6 +31,7 @@ export function SelectProject() {
           fz={'sm'}
           color="gray"
           px={'sm'}
+          maw="250"
           rightSection={<IconChevronDown opacity={0.5} size={14} />}
           visibleFrom="md">
           {project.title ?? project.id}
@@ -68,7 +66,9 @@ export function SelectProject() {
               )}
               rightSection={!!path && <Txt fontSize={'xxs'} color={'text.non-essential'} truncate>{path}</Txt>}
             >
-              {title ?? id}
+              <Txt fontSize="sm" truncate maxWidth={'[300px]'}>
+                {title ?? id}
+              </Txt>
             </MenuItem>
           ))}
         </ScrollArea.Autosize>

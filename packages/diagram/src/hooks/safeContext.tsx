@@ -1,7 +1,7 @@
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
 import { invariant } from 'motion'
-import { type Provider, createContext, useContext } from 'react'
+import { type Provider, createContext, use, useContext } from 'react'
 import { isFunction } from 'remeda'
 import type { AnyActorRef, SnapshotFrom } from 'xstate'
 import type { DiagramApi } from '../likec4diagram/state/diagram-api'
@@ -14,7 +14,7 @@ DiagramApiSafeContext.displayName = 'DiagramApiSafeContext'
 export const DiagramApiContextProvider: Provider<DiagramApi> = DiagramApiSafeContext.Provider
 
 export function useDiagram(): DiagramApi {
-  const ctx = useContext(DiagramApiSafeContext)
+  const ctx = use(DiagramApiSafeContext)
   if (ctx === null) {
     throw new Error('DiagramApi is not provided')
   }
@@ -50,8 +50,7 @@ type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
   selectSnapshot<T>(
     select: (state: Snapshot) => T,
     compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
-  ): SelectAndCompare<Snapshot, T>
-
+  ): SelectAndCompare<Snapshot, T> & { Out: T }
   /**
    * @param select - Function to extract a value from the actor's context
    * @param compare - Optional comparison function. If not provided, shallow equality is used.
@@ -59,7 +58,7 @@ type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
   selectContext<T>(
     select: (state: Context) => T,
     compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
-  ): SelectAndCompare<Snapshot, T>
+  ): SelectAndCompare<Snapshot, T> & { Out: T }
 
   useActorSelector<T>(select: (state: Snapshot) => T): T
   useActorSelector<T>(selectorCompare: SelectAndCompare<Snapshot, T>): T
@@ -105,7 +104,7 @@ export function createSafeContextForActor<
     return [
       selector,
       compare ?? shallowEqual,
-    ]
+    ] as SelectAndCompare<Snapshot, T>
   }
   // -----------------
   // context selector overloads
@@ -117,7 +116,7 @@ export function createSafeContextForActor<
     return [
       (snapshot: Snapshot) => selector((snapshot as any).context),
       compare ?? shallowEqual,
-    ]
+    ] as SelectAndCompare<Snapshot, T>
   }
   // -----------------
   // useActorRef hook

@@ -10,6 +10,7 @@ import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
 import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
 import { isNullish } from 'remeda'
+import { MaxZoom, MinZoom } from '../../base/const'
 import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
@@ -35,10 +36,14 @@ export function DiagramActorProvider({
   view,
   zoomable,
   pannable,
+  fitView,
+  initialZoom,
   nodesDraggable,
   nodesSelectable,
   fitViewPadding,
   where = null,
+  minZoom = MinZoom,
+  maxZoom = MaxZoom,
   children,
   dynamicViewVariant: _defaultVariant,
   relationshipBrowserScope,
@@ -47,6 +52,10 @@ export function DiagramActorProvider({
   view: DiagramView
   zoomable: boolean
   pannable: boolean
+  fitView: boolean
+  initialZoom?: number | undefined
+  minZoom?: number | undefined
+  maxZoom?: number | undefined
   nodesDraggable: boolean
   nodesSelectable: boolean
   fitViewPadding: ViewPaddings
@@ -74,6 +83,10 @@ export function DiagramActorProvider({
         view,
         zoomable,
         pannable,
+        fitView,
+        initialZoom,
+        minZoom,
+        maxZoom,
         fitViewPadding,
         nodesDraggable,
         nodesSelectable,
@@ -105,13 +118,30 @@ export function DiagramActorProvider({
           zoomable,
           where,
           pannable,
+          fitView,
+          initialZoom,
+          minZoom,
+          maxZoom,
           fitViewPadding,
           nodesDraggable,
           nodesSelectable,
           relationshipBrowserScope,
         },
       }),
-    [actor, zoomable, where, pannable, fitViewPadding, nodesDraggable, nodesSelectable, relationshipBrowserScope],
+    [
+      actor,
+      zoomable,
+      where,
+      pannable,
+      fitView,
+      initialZoom,
+      minZoom,
+      maxZoom,
+      fitViewPadding,
+      nodesDraggable,
+      nodesSelectable,
+      relationshipBrowserScope,
+    ],
   )
 
   useUpdateEffect(() => {

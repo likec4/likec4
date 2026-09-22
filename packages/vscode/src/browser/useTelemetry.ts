@@ -1,8 +1,8 @@
 import {
-  createSingletonComposable,
+  defineService,
 } from 'reactive-vscode'
 
-const useTelemetry = createSingletonComposable(() => {
+const useTelemetry = defineService(() => {
   return {
     get reporter() {
       throw new Error('Telemetry reporter is not available in this environment')

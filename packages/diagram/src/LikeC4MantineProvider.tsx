@@ -145,6 +145,9 @@ const likec4Theme = createTheme({
         color: 'dark',
         fz: 'xs',
         withArrow: false,
+        openDelay: 600,
+        closeDelay: 120,
+        offset: 8,
       },
     }),
     SegmentedControl: SegmentedControl.extend({

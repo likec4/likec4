@@ -6,6 +6,7 @@ import {
   _type,
   invariant,
   isAncestor,
+  nonNullable,
 } from '@likec4/core'
 import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
@@ -70,12 +71,24 @@ export function changeElementStyle(services: LikeC4Services, {
   // Should never happen
   invariant(viewAst.body, `View ${view.id} has no body`)
 
-  const viewCstNode = viewAst.$cstNode
-  invariant(viewCstNode, 'viewCstNode')
-  const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end
-    ?? viewAst.body.$cstNode?.range.end
-  invariant(insertPos, 'insertPos is not defined')
+  const viewCstNode = nonNullable(viewAst.$cstNode, 'cant find view cst node')
+  const viewBodyCstNode = nonNullable(viewAst.body.$cstNode, 'cant find view body cst node')
+
+  // Insert after the last rule, or after whatever precedes the closing brace (steps, properties, or `{`)
+  const closingBrace = nonNullable(findNodeForKeyword(viewBodyCstNode, '}'), 'cant find closing brace')
+  invariant(closingBrace.container, 'Closing brace has no container')
+  const siblings = closingBrace.container.content
+  const anchor = last(viewAst.body.rules)?.$cstNode ?? siblings[siblings.indexOf(closingBrace) - 1]
+  invariant(anchor, 'anchor is not defined')
+  const insertPos = anchor.range.end
+  // Keep `}` on its own line, e.g. for `view x extends y {}`
+  const insertSuffix = closingBrace.range.start.line === insertPos.line
+    ? '\n' + ' '.repeat(viewCstNode.range.start.character)
+    : ''
   const indent = viewCstNode.range.start.character + 2
+
+  const edits = [] as TextEdit[]
+
   const fqnIndex = services.likec4.FqnIndex
   const styleRules = filter(
     viewAst.body.rules,
@@ -120,14 +133,12 @@ export function changeElementStyle(services: LikeC4Services, {
     }
   }
 
-  const edits = [] as TextEdit[]
-
   if (insert.length > 0) {
     const linesToInsert = insert.flatMap(({ fqn }) => asViewStyleRule(fqn, style, indent))
     edits.push(
       TextEdit.insert(
         insertPos,
-        '\n' + linesToInsert.join('\n'),
+        '\n' + linesToInsert.join('\n') + insertSuffix,
       ),
     )
     modifiedRange.start = {
@@ -136,7 +147,7 @@ export function changeElementStyle(services: LikeC4Services, {
     }
     modifiedRange.end = {
       line: insertPos.line + linesToInsert.length,
-      character: (last(linesToInsert)?.length ?? 0),
+      character: last(linesToInsert)?.length ?? 0,
     }
   }
 
@@ -150,32 +161,39 @@ export function changeElementStyle(services: LikeC4Services, {
         // replace existing  property
         if (ruleProp && ruleProp.$cstNode) {
           const { range: { start, end } } = ruleProp.$cstNode
+          const replacement = key + ' ' + value
           includeRange({
             start,
-            end,
+            end: {
+              ...end,
+              character: start.character + replacement.length,
+            },
           })
-          edits.push(TextEdit.replace({ start, end }, key + ' ' + value))
+          edits.push(TextEdit.replace({ start, end }, replacement))
           continue
         }
         // insert new style property right after the opening brace
-        const insertPos = findNodeForKeyword(ruleCstNode, '{')?.range.end
-        invariant(insertPos, 'Opening brace not found')
-        const indentStr = ' '.repeat(ruleCstNode.range.start.character) + '\t'
-        const insertKeyValue = indentStr + key + ' ' + value
+
+        const insertPos = nonNullable(findNodeForKeyword(ruleCstNode, '}'), 'cant find closing brace').range.start
+        const indentStr = ' '.repeat(ruleCstNode.range.start.character) + '  '
+        const insertKeyValue = key + ' ' + value
         edits.push(
           TextEdit.insert(
-            insertPos,
-            '\n' + insertKeyValue,
+            {
+              line: insertPos.line,
+              character: 0,
+            },
+            indentStr + insertKeyValue + '\n',
           ),
         )
         includeRange({
           start: {
-            line: insertPos.line + 1,
+            line: insertPos.line,
             character: indentStr.length,
           },
           end: {
-            line: insertPos.line + 1,
-            character: insertKeyValue.length,
+            line: insertPos.line,
+            character: indentStr.length + insertKeyValue.length,
           },
         })
       }

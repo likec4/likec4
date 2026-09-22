@@ -1,6 +1,5 @@
 import { loggable, wrapError } from '@likec4/log'
 import {
-  executeCommand,
   extensionContext,
   toValue,
 } from 'reactive-vscode'
@@ -110,7 +109,7 @@ export function activateMessenger() {
   })
 
   messenger.onWebviewLocate(async (params) => {
-    await executeCommand(commands.locate, params)
+    await vscode.commands.executeCommand(commands.locate, params)
   })
 
   messenger.onWebviewOpenExternalUrl(async ({ url }) => {

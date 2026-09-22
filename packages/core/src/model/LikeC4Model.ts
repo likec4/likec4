@@ -1,4 +1,4 @@
-import { entries, hasAtLeast, isEmpty, map, pipe, prop, sort, sortBy, values } from 'remeda'
+import { entries, hasAtLeast, isEmpty, keys, map, pipe, prop, sort, sortBy, values } from 'remeda'
 import type { IsAny } from 'type-fest'
 import { LikeC4Styles } from '../styles/LikeC4Styles'
 import type {
@@ -22,7 +22,6 @@ import type {
   WhereOperator,
 } from '../types'
 import { _stage, GlobalFqn, isGlobalFqn, isOnStage, whereOperatorAsPredicate } from '../types'
-import type * as aux from '../types/_aux'
 import type {
   AnyComputed,
   AnyLayouted,
@@ -32,6 +31,7 @@ import type {
   UnknownLayouted,
   UnknownParsed,
 } from '../types/_aux'
+import * as aux from '../types/_aux'
 import * as scalar from '../types/scalar'
 import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
@@ -679,11 +679,22 @@ export class LikeC4Model<A extends Any = Any> {
   }
 
   /**
-   * Returns array of all tags used in the model, sorted naturally.\
-   * Use {@link specification.tags} to get all defined tags
+   * Returns array of used tags, sorted naturally.\
+   * Use {@link tagsFromSpecification} to get all defined tags
    */
   get tags(): aux.Tags<A> {
     return memoizeProp(this, 'tags', () => sort([...this._allTags.keys()], compareNatural))
+  }
+
+  /**
+   * Returns all tags defined in the specification, sorted naturally.
+   */
+  get tagsFromSpecification(): aux.Tags<A> {
+    return memoizeProp(this, 'tagsFromSpecification', () =>
+      pipe(
+        keys(this.specification.tags) as aux.Tag<A>[],
+        sort(compareNatural),
+      ))
   }
 
   /**
@@ -829,6 +840,7 @@ export class LikeC4Model<A extends Any = Any> {
       this,
       Object.freeze({
         ...element,
+        tags: this.onlyExistingTags(element.tags),
         id,
       }),
     )
@@ -883,6 +895,17 @@ export class LikeC4Model<A extends Any = Any> {
       this._incoming.get(targetAncestor).add(rel)
     }
     return rel
+  }
+
+  /**
+   * Imported elements can have tags that are not defined in the specification.
+   * This method filters out such tags.
+   */
+  private onlyExistingTags(tags: aux.Tags<A> | null | undefined): aux.Tags<A> {
+    if (!tags || tags.length === 0) {
+      return []
+    }
+    return tags.filter((tag) => tag in this.$data.specification.tags)
   }
 }
 

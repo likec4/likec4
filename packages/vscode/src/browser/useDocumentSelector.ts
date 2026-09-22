@@ -1,8 +1,8 @@
-import { computed, createSingletonComposable, shallowRef } from 'reactive-vscode'
+import { computed, defineService, shallowRef } from 'reactive-vscode'
 import type { TextDocumentFilter } from 'vscode-languageclient'
 import { languageId } from '../const'
 
-const useDocumentSelector = createSingletonComposable(() => {
+const useDocumentSelector = defineService(() => {
   const selector = shallowRef(
     [
       { language: languageId, scheme: 'file' },

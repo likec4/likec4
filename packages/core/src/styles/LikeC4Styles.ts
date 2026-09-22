@@ -1,7 +1,7 @@
 import { DefaultTagColorValues, isDefaultTagColor } from '@likec4/style-preset/defaults'
 import chroma from 'chroma-js'
 import { defu } from 'defu'
-import { isDeepEqual, isEmptyish } from 'remeda'
+import { isDeepEqual, isEmptyish, pick } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import type {
   ComputedNodeStyle,
@@ -26,6 +26,7 @@ import type {
   LikeC4StylesConfig,
   LikeC4Theme,
   RelationshipColorValues,
+  ShapeSize,
   SpacingSize,
   TextSize,
   ThemeColor,
@@ -209,8 +210,24 @@ export class LikeC4Styles {
    * values.iconSize // number
    * ```
    */
-  nodeSizes(nodestyles: ComputedNodeStyle) {
-    const sizes = ensureSizes(nodestyles, this.defaults.size)
+  nodeSizes(nodestyles: ComputedNodeStyle): Readonly<{
+    sizes: Readonly<{
+      iconSize: IconSize
+      size: ShapeSize
+      padding: SpacingSize
+      textSize: TextSize
+    }>
+    values: Readonly<{
+      sizes: { width: number; height: number }
+      padding: number
+      textSize: number
+      iconSize: number
+    }>
+  }> {
+    const sizes = pick(
+      ensureSizes(nodestyles, this.defaults.size),
+      ['size', 'textSize', 'padding', 'iconSize'],
+    )
     return {
       sizes,
       values: {
@@ -218,8 +235,8 @@ export class LikeC4Styles {
         padding: this.padding(sizes.padding),
         textSize: this.fontSize(sizes.textSize),
         iconSize: this.iconSize(sizes.iconSize),
-      },
-    }
+      } as const,
+    } as const
   }
 
   /**
@@ -250,7 +267,9 @@ export class LikeC4Styles {
   /**
    * Get color values for a tag (including default tag colors)
    */
-  tagColor(tag: typeof DefaultTagColors[number] | ThemeColor | CustomColor | ColorLiteral): ThemeColorValues['elements'] {
+  tagColor(
+    tag: typeof DefaultTagColors[number] | ThemeColor | CustomColor | ColorLiteral,
+  ): ThemeColorValues['elements'] {
     if (this.isThemeColor(tag)) {
       return this.theme.colors[tag].elements
     }

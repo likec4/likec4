@@ -38,6 +38,8 @@ function WithProjectsMenu({
         classNames={{
           itemLabel: css({
             fontSize: 'xs',
+            truncate: true,
+            maxWidth: '[250px]',
           }),
         }}
         offset={{ mainAxis: 3 }}>
@@ -49,6 +51,7 @@ function WithProjectsMenu({
             size="compact-xs"
             color="gray"
             radius={'sm'}
+            maw={300}
             classNames={{
               root: css({
                 fontWeight: 'normal',

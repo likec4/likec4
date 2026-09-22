@@ -6,6 +6,7 @@ import {
   type LogRecord,
   type TextFormatter,
   type TextFormatterOptions,
+  defaultConsoleFormatter,
   getAnsiColorFormatter as getLogtapeAnsiColorFormatter,
   getTextFormatter as getLogtapeTextFormatter,
 } from '@logtape/logtape'
@@ -57,16 +58,13 @@ export function errorFromLogRecord(record: LogRecord): Error | null {
 export function appendErrorToMessage(values: FormattedValues, color = false): FormattedValues {
   const error = getErrorFromLogRecord(values.record)
   if (error) {
-    let errorMessage = error.message
-    if (error.stack) {
-      errorMessage = errorMessage + '\n' + indent(error.stack.split('\n').slice(1))
-    }
+    let errorMessage = '\n' + indent(error.stack || error.message, '\t')
     if (color) {
-      errorMessage = `${ansiColors.red}${errorMessage}${RESET}`
+      errorMessage = `${RESET}${ansiColors.red}${errorMessage}${RESET}`
     }
     return {
       ...values,
-      message: values.message + '\n' + indent(errorMessage),
+      message: values.message + errorMessage,
     }
   }
   return values
@@ -169,27 +167,17 @@ export function getConsoleFormatter(options?: {
   messageFormatter?: TextFormatter
 }): ConsoleFormatter {
   const formatter = options?.messageFormatter
-  if (formatter) {
-    return (record: LogRecord) => {
-      const { properties } = record
-      if (properties && Object.keys(properties).length > 0) {
-        return [
-          formatter(record),
-          properties,
-        ]
-      }
-      return [formatter(record)]
-    }
+  if (!formatter) {
+    return defaultConsoleFormatter
   }
-
   return (record: LogRecord) => {
-    const { message, properties } = record
+    const { properties } = record
     if (properties && Object.keys(properties).length > 0) {
       return [
-        ...message,
+        formatter(record),
         properties,
       ]
     }
-    return message
+    return [formatter(record)]
   }
 }

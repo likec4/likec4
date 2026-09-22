@@ -135,6 +135,11 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   fitView?: boolean | undefined
 
   /**
+   * Initial centered zoom level. When set, it overrides automatic fit-to-view.
+   */
+  initialZoom?: number | undefined
+
+  /**
    * Padding around the diagram (number - pixels)
    * @default 16 - 16px
    *
@@ -299,6 +304,18 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
    * Override ReactFlow props
    */
   reactFlowProps?: OverrideReactFlowProps | undefined
+
+  /**
+   * Minimum zoom level
+   * @default 0.05
+   */
+  minZoom?: number | undefined
+
+  /**
+   * Maximum zoom level
+   * @default 3
+   */
+  maxZoom?: number | undefined
 }
 
 export type OpenSourceParams<A extends Any = Unknown> =

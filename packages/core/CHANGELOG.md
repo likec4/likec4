@@ -1,5 +1,20 @@
 # @likec4/core
 
+## 1.59.4
+
+### Patch Changes
+
+- [#3227](https://github.com/likec4/likec4/pull/3227) [`4e6ee7a`](https://github.com/likec4/likec4/commit/4e6ee7afc526f3dcacd2b5fb03c9d669c3b78cad) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Deployment relationships now support the `<->` and `-[kind]<->` bidirectional syntax introduced in v1.59.3.
+
+- [#3266](https://github.com/likec4/likec4/pull/3266) [`add966b`](https://github.com/likec4/likec4/commit/add966b37a0df38e57b84181c3d67f973c099dd2) Thanks [@chiliec](https://github.com/chiliec)! - Apply relationship kind's default `title` from specification to dynamic view steps that have no own title (consistent with `technology`)
+
+- [`f0f3ec6`](https://github.com/likec4/likec4/commit/f0f3ec65212ff0bd0e7d2849d11bebeeeb070c90) Thanks [@davydkov](https://github.com/davydkov)! - Improve how edits made from the UI are written back to the source:
+
+  - Element style rules are inserted inside the view body with correct indentation, and existing style properties are updated in place instead of drifting.
+  - View tags are written as a complete set. Clearing the last tag removes the tags line, and `ViewChange.ChangeProperty` now takes `tags` instead of `tag: { add, remove }`.
+  - Renaming a view no longer repeats the folder path it already lives in.
+  - Elements no longer report tags that are missing from the specification, which could happen for imported elements. `LikeC4Model.tagsFromSpecification` returns all declared tags.
+
 ## 1.59.3
 
 ### Patch Changes

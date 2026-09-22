@@ -10,7 +10,7 @@ import {
   pipe,
   purry,
 } from 'remeda'
-import type { IsEqual, Simplify } from 'type-fest'
+import type { IsEqual, SetRequired, Simplify } from 'type-fest'
 import {
   compareNaturalHierarchically,
   DefaultWeakMap,
@@ -21,7 +21,8 @@ import {
 import type { IsAnyOrNever, IterableContainer } from './_common'
 import * as scalar from './scalar'
 import { isStepPath } from './scalar'
-import type { ProcessedDynamicView } from './view'
+import { type ProcessedDynamicView, isDynamicViewWithFlow } from './view'
+import type { ComputedDeploymentView, ComputedDynamicView } from './view-computed'
 import type { LayoutedDynamicView } from './view-layouted'
 import type { AnyStep } from './view-parsed.dynamic'
 
@@ -360,6 +361,10 @@ export const flowHelpers = {
 
   isBefore,
   includes,
+
+  extractPath: (step: DynamicViewFlow.AnyStep): scalar.StepPath => {
+    return flowGuards.isStepPath(step) ? step : step.id
+  },
 }
 
 /**
@@ -552,7 +557,7 @@ export function walkthroughFlow(
     return (view: ProcessedDynamicView<any>) => walkthroughFlow(view, args[0])
   }
   const [view, callback] = args
-  if (!view.flow) {
+  if (!isDynamicViewWithFlow(view)) {
     throw new Error(`Dynamic view ${view.id} does not have a flow`)
   }
   /**
@@ -729,11 +734,16 @@ export function dynamicViewFlow<V extends ProcessedDynamicView<any>>(view: V): D
   return DynamicViewFlow.from(view)
 }
 
+type WithFlow<V> = V & { flow: DynamicViewFlowData }
+
 export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynamicView> {
-  private static cache = new DefaultWeakMap((view: ProcessedDynamicView<any>) => new DynamicViewFlow(view))
+  private static cache = new DefaultWeakMap((view: WithFlow<ProcessedDynamicView<any>>) => new DynamicViewFlow(view))
 
   public static from<V extends ProcessedDynamicView<any>>(view: V): DynamicViewFlow<V> {
-    return this.cache.get(view) as DynamicViewFlow<V>
+    if (!isDynamicViewWithFlow(view)) {
+      throw new Error(`Dynamic view "${view.id}" does not have a flow, probably it is a stale snapshot`)
+    }
+    return this.cache.get(view as WithFlow<ProcessedDynamicView<any>>) as DynamicViewFlow<V>
   }
 
   public static readonly guards = flowGuards
@@ -749,21 +759,18 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   /**
    * View (flow is defined)
    */
-  public readonly view: V & { flow: DynamicViewFlowData }
+  public readonly view: WithFlow<V>
 
   private levelById = new Map<scalar.StepPath, number>()
   private byId = new Map<scalar.StepPath, DynamicViewFlow.SubFlow.Any>()
 
   public readonly stepsCount: number
 
-  private constructor(view: V) {
-    if (!view.flow) {
-      throw new Error(`Dynamic view "${view.id}" does not have a flow, probably it is a stale snapshot`)
-    }
-    this.view = view as V & { flow: DynamicViewFlowData }
+  private constructor(view: WithFlow<V>) {
+    this.view = view
     let stepsCount = 0
     walkthroughFlow(view, {
-      step: ({ step, level }) => {
+      step: ({ step, edge, level }) => {
         this.levelById.set(step, level)
         stepsCount++
       },
@@ -848,38 +855,73 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   }
 
   /**
-   * Returns previous and next steps for the given step
-   * (only steps are considered, subflows are excluded)
+   * Returns previous and next steps (edges) for the given step
+   * @example
+   * ```ts
+   * // 01
+   * // alt
+   * //   when
+   * //     02
+   * //   else
+   * //.    03
+   * // 04
+   * flow.prevAndNext('else') // => {prev: '02', next: '04'}
+   * flow.prevAndNext('02') // => {prev: '01', next: '03'}
+   * flow.prevAndNext('02', s => s.id !== 'alt') // => {prev: '01', next: '04'}
+   * ```
+   *
+   * @param targetStep - The step to find previous and next for
+   * @param exclude - Optional function to exclude certain subflows from the search
    */
   prevAndNext(
     targetStep: scalar.StepPath,
-    skipFlow?: (flowId: scalar.StepPath) => boolean,
+    exclude?: (subflow: DynamicViewFlow.SubFlow.Any) => boolean,
   ): { prev: scalar.StepPath | null; next: scalar.StepPath | null } {
-    invariant(!this.isSubflow(targetStep), `${targetStep} is a subflow, not a step`)
-    let prev: scalar.StepPath | null = null
-    let next: scalar.StepPath | null = null
-    let stepBefore: scalar.StepPath | null = null
+    const result = {
+      prev: null as scalar.StepPath | null,
+      next: null as scalar.StepPath | null,
+    }
+
+    let weFoundTarget = false
+    let isExcluded = false
+
     walkthroughFlow(this.view, {
-      step: ({ step: currentStep, stopAndReturn }) => {
-        // Step before was the target - set next to current step
-        if (stepBefore === targetStep) {
-          next = currentStep
-          stopAndReturn()
+      step: ({ step: current, stopAndReturn }) => {
+        if (current === targetStep) {
+          weFoundTarget = true
+          return
         }
-        // We found the target step, so prev is the last visited
-        if (currentStep === targetStep) {
-          prev = stepBefore
+        // Skip excluded steps
+        if (isExcluded) {
+          return
         }
-        stepBefore = currentStep
+        // We already found the target step,
+        // So current step is the next step
+        if (weFoundTarget) {
+          result.next = current
+          return stopAndReturn()
+        }
+        result.prev = current
       },
       subflow: ({ subflow }) => {
-        if (skipFlow?.(subflow.id)) {
+        // We found the target subflow
+        // Don't go deeper
+        if (subflow.id === targetStep) {
+          weFoundTarget = true
           return false
+        }
+        // If not excluded yet, check if we should exclude this subflow
+        // Return a cleanup function to reset the exclusion when leaving this subflow
+        if (!isExcluded && exclude?.(subflow)) {
+          isExcluded = true
+          return () => {
+            isExcluded = false
+          }
         }
         return true
       },
     })
-    return { prev, next }
+    return result
   }
 
   /**
@@ -933,9 +975,21 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   }
 
   /**
-   * Returns all steps that come before the given step in the flow.
+   * Returns all steps (and flows) that come before the given step in the flow.
+   * @example
+   * ```ts
+   * // 01
+   * // alt
+   * //   when
+   * //     02
+   * //   else
+   * //.    03
+   * flow.stepsBefore('when') // => ['01', 'alt']
+   * flow.stepsBefore('03') // => ['01', 'alt', 'when', '02', 'else']
+   * ```
+   *
    * @param step The step to find predecessors for.
-   * @returns An array of step paths that come before the given step.
+   * @returns An array of step
    */
   stepsBefore(step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
     return stepsBefore(this.view, step)
@@ -949,20 +1003,36 @@ export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynam
   stepPathsBefore(step: scalar.StepPath): scalar.StepPath[] {
     return stepsBefore(this.view, step).map(asStepPath)
   }
+
+  /**
+   * Returns all steps (and flows) that come after the given step in the flow.
+   * @example
+   * ```ts
+   * // 01
+   * // alt
+   * //   when
+   * //     02
+   * //   else
+   * //.    03
+   * flow.stepsAfter('when') // => ['else', '03'] when not traversing its nested flows
+   * flow.stepsAfter('02') // => ['else', '03']
+   * flow.stepsAfter('alt') // => []
+   * ```
+   *
+   * @param step The step to find predecessors for.
+   * @returns An array of step
+   */
+  stepsAfter(step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
+    return stepsAfter(this.view, step)
+  }
 }
 
-/**
- * Returns all steps that come before the given step in the flow.
- */
-export function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
-  const hasStep = includes(_step)
-
+function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
   const result: DynamicViewFlow.AnyStep[] = []
-
   walkthroughFlow(view, {
     step: ({ step, stopAndReturn }) => {
       if (step === _step) {
-        stopAndReturn()
+        return stopAndReturn()
       }
       result.push(step)
     },
@@ -971,22 +1041,41 @@ export function stepsBefore(view: ProcessedDynamicView<any>, _step: scalar.StepP
         return stopAndReturn()
       }
       result.push(subflow)
-      // Handle branches in alt
-      if (subflow._type === 'alt') {
-        // We pick the branch that contains the step, or all branches if none contains it
-        return {
-          next: hasStep(subflow) ? find(subflow.flow, hasStep) : firstBy(subflow.flow, flowHelpers.hasSteps),
-        }
-      }
-      // Handle branches in try
-      if (subflow._type === 'try') {
-        // We pick the branch that contains the step, or all branches if none contains it
-        return {
-          next: hasStep(subflow) ? subflow.flow : firstBy(subflow.flow, flowGuards.type.isTryBlock),
-        }
-      }
       return true
     },
   })
   return result
+}
+
+function stepsAfter(view: ProcessedDynamicView<any>, _step: scalar.StepPath): DynamicViewFlow.AnyStep[] {
+  const hasStep = includes(_step)
+
+  let accumulator: DynamicViewFlow.AnyStep[] | undefined
+
+  walkthroughFlow(view, {
+    step: ({ step }) => {
+      // Set the accumulator when we reach the target step
+      if (step === _step) {
+        accumulator = []
+        return
+      }
+      // Add the step to the accumulator if it exists
+      accumulator?.push(step)
+    },
+    subflow: ({ subflow }) => {
+      if (subflow.id === _step) {
+        accumulator = []
+        // We don't want traverse inside
+        return false
+      }
+      // If we haven't started accumulating yet,
+      // check if this subflow contains the step or we can skip it
+      if (!accumulator) {
+        return hasStep(subflow)
+      }
+      accumulator.push(subflow)
+      return true
+    },
+  })
+  return accumulator ?? []
 }

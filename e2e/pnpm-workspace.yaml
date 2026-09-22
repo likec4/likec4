@@ -1,9 +1,28 @@
+packages:
+  - .
+
 allowBuilds:
   esbuild: true
   sharp: false
   workerd: true
 
+# Every `@likec4/*` package in the transitive closure must be listed here, not just the
+# direct dependencies of this workspace. `pnpm pack` rewrites `workspace:*` to an exact
+# version, so a packed tarball asks for e.g. `@likec4/language-services@<version>` from the
+# registry. On a release commit that version is not published yet, and the install fails with
+# ERR_PNPM_NO_MATCHING_VERSION. Overriding every one of them to its local tarball keeps the
+# whole closure resolving from the build instead of from npm.
 overrides:
+  "@likec4/config": "file:../packages/config/package.tgz"
   "@likec4/core": "file:../packages/core/package.tgz"
+  "@likec4/diagram": "file:../packages/diagram/package.tgz"
+  "@likec4/generators": "file:../packages/generators/package.tgz"
   "@likec4/icons": "file:../packages/icons/package.tgz"
+  "@likec4/language-server": "file:../packages/language-server/package.tgz"
+  "@likec4/language-services": "file:../packages/language-services/package.tgz"
+  "@likec4/layouts": "file:../packages/layouts/package.tgz"
+  "@likec4/log": "file:../packages/log/package.tgz"
+  "@likec4/mcp": "file:../packages/mcp/package.tgz"
+  "@likec4/style-preset": "file:../styled-system/preset/package.tgz"
+  "@likec4/styles": "file:../styled-system/styles/package.tgz"
   "likec4": "file:../packages/likec4/package.tgz"

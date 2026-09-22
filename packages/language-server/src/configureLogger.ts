@@ -5,7 +5,7 @@ import {
   getConsoleStderrSink,
   getTextFormatter,
 } from '@likec4/log'
-import { isDevelopment } from 'std-env'
+import { isColorSupported, isDevelopment } from 'std-env'
 import type { Connection } from 'vscode-languageserver'
 import { getTelemetrySink, serverLogger } from './logger'
 
@@ -39,7 +39,7 @@ export type ConfigureLanguageServerLoggerOptions = {
 
   /**
    * Whether to use colors in logging.
-   * @default false
+   * If not specified, detects if terminal color output is supported based on `NO_COLOR`, `FORCE_COLOR`, TTY, and CI environment
    */
   colors?: boolean
 }
@@ -50,7 +50,7 @@ export function configureLanguageServerLogger({
   useStdErr = false,
   logLevel: lowestLevel = isDevelopment ? 'debug' : 'warning' as const,
   nonBlocking = false,
-  colors = false,
+  colors = isColorSupported,
 }: ConfigureLanguageServerLoggerOptions = {}): void {
   const telemetry = !!connection && enableTelemetry && !isDevelopment
 
@@ -59,9 +59,7 @@ export function configureLanguageServerLogger({
     sinks: {
       // dprint-ignore
       console: useStdErr
-        ? getConsoleStderrSink({
-            formatter: getTextFormatter()
-        })
+        ? getConsoleStderrSink()
         : getConsoleSink({ 
             formatter: colors ? getAnsiColorFormatter() : getTextFormatter(),
             nonBlocking

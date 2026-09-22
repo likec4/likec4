@@ -60,5 +60,6 @@ export {
   extractViewTitleFromPath,
   getViewFolderPath,
   normalizeViewPath,
+  splitViewFolderPath,
   VIEW_FOLDERS_SEPARATOR,
 } from './utils'

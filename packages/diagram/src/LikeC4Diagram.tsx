@@ -33,6 +33,7 @@ import type {
   ViewPadding,
   ViewPaddings,
 } from './LikeC4Diagram.props'
+import { convertToXYFlow } from './likec4diagram/convert-to-xyflow'
 import { LikeC4DiagramUI } from './likec4diagram/DiagramUI'
 import { LikeC4DiagramXYFlow } from './likec4diagram/DiagramXYFlow'
 import { DiagramActorProvider } from './likec4diagram/state/DiagramActorProvider'
@@ -71,6 +72,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   className,
   controls = true,
   fitView = true,
+  initialZoom,
   fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
   pannable = true,
   zoomable = true,
@@ -96,12 +98,14 @@ export function LikeC4Diagram<A extends Any = Any>({
   where,
   reactFlowProps,
   renderNodes,
+  minZoom = MinZoom,
+  maxZoom = MaxZoom,
   children,
 }: LikeC4DiagramProps<A>): JSX.Element {
   const id = useId()
   const initialRef = useRef<{
-    defaultNodes: Types.Node[]
-    defaultEdges: Types.Edge[]
+    initialNodes: Types.Node[]
+    initialEdges: Types.Edge[]
     initialWidth: number
     initialHeight: number
     initialFitViewOptions?: FitViewOptions
@@ -126,20 +130,28 @@ export function LikeC4Diagram<A extends Any = Any>({
 
   const bounds = pickViewBounds(view, dynamicViewVariant)
   const fitViewPadding = useNormalizedViewPadding(_fitViewPadding)
+  const initialFitView = initialZoom === undefined && fitView
 
   if (initialRef.current == null) {
+    const { xynodes, xyedges } = convertToXYFlow({
+      view,
+      dynamicViewVariant: dynamicViewVariant ?? 'diagram',
+      where: where ?? null,
+      currentViewId: view.id,
+      collapsedSequenceFlows: {},
+    })
     initialRef.current = {
-      defaultEdges: [],
-      defaultNodes: [],
+      initialNodes: xynodes,
+      initialEdges: xyedges,
       initialWidth: initialWidth ?? bounds.width,
       initialHeight: initialHeight ?? bounds.height,
       initialFitViewOptions: {
-        maxZoom: MaxZoom,
-        minZoom: MinZoom,
+        maxZoom,
+        minZoom,
         padding: fitViewPadding,
       },
-      initialMaxZoom: MaxZoom,
-      initialMinZoom: MinZoom,
+      initialMaxZoom: initialZoom ?? maxZoom,
+      initialMinZoom: initialZoom ?? minZoom,
     }
   }
 
@@ -198,7 +210,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                 <TagStylesProvider rootSelector={`#${id}`}>
                   <RootContainer id={id} className={className} reduceGraphics={isReducedGraphicsMode}>
                     <XYFlowProvider
-                      fitView={fitView}
+                      fitView={initialFitView}
                       {...initialRef.current}
                     >
                       <DiagramActorProvider
@@ -206,6 +218,8 @@ export function LikeC4Diagram<A extends Any = Any>({
                         view={view}
                         zoomable={zoomable}
                         pannable={pannable}
+                        fitView={fitView}
+                        initialZoom={initialZoom}
                         fitViewPadding={fitViewPadding}
                         nodesDraggable={hasEditor}
                         nodesSelectable={nodesSelectable}
