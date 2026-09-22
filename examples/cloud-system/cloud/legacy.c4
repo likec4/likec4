@@ -35,6 +35,7 @@ views {
   }
 
   view cloud_legacy_backend of cloud.legacy.backend {
+    routing ortho
     include
       *,
 
