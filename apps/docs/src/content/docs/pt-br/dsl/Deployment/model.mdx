@@ -1,0 +1,246 @@
+---
+title: Modelo de deployment
+description: Como definir um modelo de deployment no LikeC4
+sidebar: 
+  label: Modelo
+  order: 11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+O modelo de deployment representa outra camada, o _modelo físico_, com sua própria estrutura e seus próprios elementos (nós de deployment).  
+Ele referencia o [modelo lógico](/pt-br/dsl/model) e herda seus relacionamentos.
+
+## Especificação
+
+Primeiro, seguindo a [mesma abordagem](/pt-br/dsl/specification/#tipo-de-elemento), os tipos de nós de deployment devem ser definidos dentro da especificação:
+
+```likec4
+specification {
+  deploymentNode environment
+  deploymentNode zone
+  deploymentNode kubernetes {
+    // Nodes have same styling options
+    style {
+      color blue
+      icon tech:kubernetes
+      multiple true
+    }
+  }
+  deploymentNode vm {
+    // Common properties for the kind
+    notation 'Virtual Machine'
+    technology 'VMware'
+  }
+}
+```
+
+Você pode definir o que for necessário para representar seu modelo de deployment e sua linguagem ubíqua.
+
+## Nós de deployment
+
+O modelo de deployment é um conjunto de nós organizados em uma estrutura hierárquica:
+
+```likec4
+deployment {
+  environment prod {
+    zone eu {
+      zone zone1 {
+        vm vm1
+        vm vm2
+      }
+      // You can also use '=' with the name coming first
+      zone2 = zone {        
+        vm1 = vm
+        vm2 = vm
+      }
+    }  
+  }
+}
+```
+
+Os nomes dos nós devem ser únicos dentro de seu container (nó pai); aplicam-se as mesmas regras usadas para nomes de elementos no modelo lógico.
+
+Os nós podem ter propriedades assim como os [elementos lógicos](/pt-br/dsl/model/#propriedades-do-elemento).
+
+```likec4
+deployment {
+  environment prod 'Production' {
+    #live #sla-customer 
+    technology 'OpenTofu'
+    summary 'Production environment'
+    description '''
+      ## Detailed description
+      
+      With **Markdown** support
+
+    '''
+    
+    link https://likec4.dev
+
+    zone eu {
+      title 'EU Region' 
+      // ...
+    }
+  }
+}
+```
+
+### Estender nós
+
+Assim como no modelo lógico, você pode usar [`extend`](/pt-br/dsl/extend/#estender-elemento) em nós de deployment:
+
+```likec4
+// File: 'deployments/prod.c4'
+deployment {
+  environment prod
+}
+
+// File: 'deployments/prod/zone-eu.c4'
+deployment {
+  extend prod {
+    zone eu
+  }
+}
+```
+
+As mesmas [regras](/pt-br/dsl/extend/#estender-elemento) se aplicam à extensão de nós:
+- o nó estendido deve ser referenciado por um nome totalmente qualificado;
+- é possível definir [propriedades adicionais](/pt-br/dsl/extend/#propriedades-adicionais).
+
+## Instâncias implantadas
+
+O operador `instanceOf` _“implanta”_ elementos do modelo lógico em nós de deployment:
+
+```likec4
+deployment {
+  environment prod {
+    zone eu {
+      zone zone1 {
+        // 'frontend.ui' is a logical element
+        // by default, instance has same name, 
+        // i.e. it becomes 'prod.eu.zone1.ui'
+        instanceOf frontend.ui
+        // this becomes 'prod.eu.zone1.api'
+        instanceOf backend.api
+      }
+
+      zone zone2 {
+        // or use '=' with the name coming first
+        ui = instanceOf frontend.ui
+
+        // two instances of same element
+        api1 = instanceOf backend.api
+        api2 = instanceOf backend.api
+      }
+
+      // Deploy to any level, not only leaf nodes
+      // Assume database shared between zones
+      db = instanceOf database
+    }    
+  }
+}
+```
+
+A instância implantada herda as propriedades e a estilização do elemento.  
+É possível sobrescrevê-las:
+
+```likec4
+deployment {
+  environment prod {
+    zone eu { 
+      db = instanceOf database {
+        title 'Primary DB'
+        technology 'PostgreSQL with streaming replication'
+        icon tech:postgresql
+        style {
+          color red
+        }
+      }
+    }
+  }
+}
+```
+
+## Relacionamentos de deployment
+
+O modelo de deployment herda os relacionamentos do modelo lógico.  
+Mas também permite definir relacionamentos específicos:
+
+```likec4
+deployment {
+  environment prod {
+    vm vm1 {          
+      db = instanceOf database 'Primary DB'
+    }
+    vm vm2 {
+      db = instanceOf database 'Standby DB'
+    }    
+    vm2.db -> vm1.db 'replicates' 
+  }
+}
+```
+
+Como você pode ver, o relacionamento ocorre entre instâncias diferentes do mesmo elemento lógico.  
+Podemos assumir que não precisamos desse relacionamento no modelo lógico, mas que ele faz sentido no deployment.
+
+Relacionamentos de deployment podem ter um tipo e possuem as [mesmas propriedades](/pt-br/dsl/relationships/#propriedades-do-relacionamento) dos relacionamentos lógicos:
+
+```likec4
+deployment {
+  environment prod {
+    vm2.db -[streaming]-> vm1.db {
+      #next, #live
+      title 'replicates'
+      description 'Streaming replication'
+    }
+  }
+}
+```
+
+Use **`<->`** (ou **`-[kind]<->`**) quando os dois nós se comunicarem ativamente entre si:
+
+```likec4
+deployment {
+  environment prod {
+    vm vm1 {
+      db = instanceOf database 'Primary DB'
+    }
+    vm vm2 {
+      db = instanceOf database 'Standby DB'
+    }
+    vm1.db <-> vm2.db 'replicates'
+  }
+}
+```
+
+Assim como no modelo lógico, relacionamentos bidirecionais são renderizados com setas nas duas extremidades por padrão
+e podem ser incluídos ou excluídos a partir de qualquer endpoint nos predicados da visão.
+
+:::tip
+Relacionamentos podem ser definidos para elementos aninhados de instâncias implantadas:
+
+```likec4
+model {
+  component database {
+    component repl_log
+  }
+}
+deployment {
+  vm vm1 {          
+    db = instanceOf database 'Primary DB'
+  }
+  vm vm2 {
+    db = instanceOf database 'Standby DB'
+  } 
+
+  // 'repl_log' is a nested element of deployed instance
+  vm2.db -> vm1.db.repl_log 'replicates'
+}
+```
+:::
+
+:::note
+Consulte esta <a href="https://github.com/likec4/likec4/discussions/1269" target='_blank'>discussão no GitHub</a> para acompanhar o desenvolvimento.  
+Sinta-se à vontade para compartilhar suas ideias.
+:::
