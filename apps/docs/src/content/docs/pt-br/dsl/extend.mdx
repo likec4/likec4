@@ -1,0 +1,352 @@
+---
+title: Estendendo o modelo
+description: Como estender o modelo com elementos, relacionamentos e propriedades adicionais definidos em outros arquivos
+sidebar: 
+  label: Estendendo o modelo
+  order: 6
+---
+
+import { Aside, FileTree, TabItem, Tabs } from '@astrojs/starlight/components';
+
+Você pode estender o modelo criando novos arquivos e pastas.  
+Quando os arquivos-fonte do LikeC4 são processados, eles são _combinados_ em um único modelo de arquitetura.
+
+Você pode organizar o workspace como preferir.
+
+## Exemplo
+
+Considere o seguinte workspace:
+
+<FileTree>
+- cloud
+  - service1.c4
+  - service2.c4
+  - ...
+- externals
+  - amazon.c4
+- landscape.c4
+- specs.c4
+</FileTree>
+
+<Tabs>
+  <TabItem label="specs.c4">
+    Este arquivo define a especificação:
+
+    ```likec4
+    specification {
+      element actor {
+        style {
+          shape person
+        }
+      }
+      element system
+      element service
+    }
+    ```
+  </TabItem>
+  <TabItem label="landscape.c4">
+    Este arquivo define os elementos de nível superior e a visão de landscape:
+
+    ```likec4
+    model {
+      customer = actor 'Customer'
+      cloud = system 'Cloud System'
+    }
+    views {
+      view index of cloud {
+        title "Cloud System - Landscape"
+        include *
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="externals/amazon.c4">
+    Mantemos as definições dos sistemas externos separadamente, dentro da pasta `externals/`:
+    
+    ```likec4
+    model {
+      amazon = system 'Amazon Web Services' {
+        rds = service 'Database'
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+## Estender elemento
+
+`extend` é uma forma de enriquecer o modelo e definir elementos aninhados em um arquivo separado.
+
+Não queremos sobrecarregar o arquivo _landscape.c4_ com os detalhes internos de `cloud`.  
+Em um arquivo separado, estendemos `cloud` e definimos `cloud.service1`:
+
+```likec4
+// cloud/service1.c4
+model {
+  // cloud is defined in landscape.c4
+  extend cloud {
+    // extend and define cloud.service1
+    service1 = service 'Service 1'
+  }
+}
+```
+
+A extensão do elemento herda o escopo do alvo (ou, mais precisamente, do _**pai**_).  
+Por exemplo:
+
+```likec4
+// cloud/service2.c4
+model {
+  // cloud is defined in landscape.c4
+  extend cloud {
+    // extend and define cloud.service2
+    service2 = service 'Some Service 2'
+
+    service2 -> service1 // ✅ service1 is known inside 'cloud'
+  }
+}
+```
+
+<Aside type='caution'>
+Um elemento estendido deve ser referenciado por seu nome totalmente qualificado.  
+
+Exemplo:
+
+```likec4
+model {
+  extend service2       // ⛔️ Error: service2 not found in the global scope
+  extend cloud.service2 // ✅ Resolved by fully qualified name
+}
+```
+</Aside>
+
+### Propriedades adicionais
+
+Você pode estender um elemento adicionando tags, links e metadados:
+
+```likec4
+model {
+  extend cloud {
+    // Add tags
+    #additional-tag, #another-tag
+
+    // Add metadata
+    metadata {
+      prop1 'value1'
+    }
+
+    // Add links
+    link ../src/index.ts#L1-L10
+  }
+}
+```
+
+#### Combinação de metadados
+
+Ao estender elementos com metadados, chaves duplicadas do elemento original e da extensão são combinadas em arrays:
+
+```likec4
+model {
+  component api {
+    metadata {
+      version '1.0.0'
+      tags 'backend'
+      regions 'us-east-1'
+    }
+  }
+}
+
+// In another file
+model {
+  extend api {
+    metadata {
+      tags 'microservice'        // Merges with existing 'backend'
+      regions ['eu-west-1']      // Merges with existing 'us-east-1'
+      owner 'platform-team'      // New key
+    }
+  }
+}
+
+// Result:
+{
+  version: '1.0.0',
+  tags: ['backend', 'microservice'],     // Merged and kept as array
+  regions: ['us-east-1', 'eu-west-1'],  // Merged and kept as array
+  owner: 'platform-team'
+}
+```
+
+**Comportamento da combinação:**
+- valores duplicados são removidos automaticamente;
+- se, após a remoção de duplicatas, restar apenas um valor único, ele será armazenado como string (e não como array);
+- arrays dos dois lados são combinados e têm suas duplicatas removidas.
+
+```likec4
+model {
+  component api {
+    metadata {
+      environment 'production'
+      tags ['backend', 'api']
+    }
+  }
+}
+
+model {
+  extend api {
+    metadata {
+      environment 'production'   // Duplicate value
+      tags ['api', 'critical']   // 'api' is duplicate
+    }
+  }
+}
+
+// Result:
+{
+  environment: 'production',           // Single value (de-duplicated)
+  tags: ['backend', 'api', 'critical'] // Merged and de-duplicated
+}
+```
+
+Você pode estender o mesmo elemento várias vezes em arquivos diferentes, e todos os metadados serão combinados corretamente:
+
+```likec4
+// file1.c4
+model {
+  component api {
+    metadata {
+      version '2.0.0'
+      tags 'backend'
+    }
+  }
+}
+
+// file2.c4
+model {
+  extend api {
+    metadata {
+      tags 'rest'
+      owner 'team-a'
+    }
+  }
+}
+
+// file3.c4
+model {
+  extend api {
+    metadata {
+      tags 'microservice'
+      regions ['us', 'eu']
+    }
+  }
+}
+
+// Result:
+{
+  version: '2.0.0',
+  tags: ['backend', 'rest', 'microservice'],
+  owner: 'team-a',
+  regions: ['us', 'eu']
+}
+```
+
+## Estender relacionamento
+
+De forma semelhante à extensão de elementos, você pode estender relacionamentos para adicionar metadados, tags e links a partir de arquivos separados.
+
+<Aside type='caution'>
+**Limitação do modelo de deployment**: atualmente, a extensão de relacionamentos é suportada apenas no modelo lógico.  
+Relacionamentos do modelo de deployment não podem ser estendidos neste momento.
+</Aside>
+
+Os relacionamentos são identificados de forma única por:
+- elemento de origem;
+- elemento de destino;
+- tipo do relacionamento (se especificado);
+- título (se especificado).
+
+```likec4
+// base.c4
+specification {
+  element component
+  relationship sync
+}
+
+model {
+  component frontend
+  component api
+  
+  // Untyped relation with title
+  frontend -> api "Makes requests"
+  
+  // Typed relation with same title (different relation!)
+  frontend -[sync]-> api "Makes requests"
+}
+
+// extend-ops.c4
+model {
+  // Extend the untyped relation
+  extend frontend -> api "Makes requests" {
+    metadata {
+      latency_p95 '150ms'
+      rate_limit '1000req/s'
+    }
+  }
+  
+  // Extend the sync relation (different from above!)
+  extend frontend -[sync]-> api "Makes requests" {
+    metadata {
+      latency_p95 '80ms'
+      cache_enabled 'true'
+    }
+  }
+}
+```
+
+<Aside type='note'>
+**Normalização do título**: relacionamentos sem título e relacionamentos com título de string vazia (`""`) são tratados da mesma forma. Ambos são normalizados internamente para uma string vazia. Isso significa que `extend a -> b` corresponderá tanto a `a -> b` quanto a `a -> b ""`.
+</Aside>
+
+### Combinação de metadados
+
+Extensões de relacionamentos seguem as mesmas regras de combinação de metadados das extensões de elementos:
+- novas chaves são adicionadas;
+- chaves duplicadas com valores diferentes tornam-se arrays;
+- chaves duplicadas com o mesmo valor têm as duplicatas removidas.
+
+```likec4
+// base.c4
+model {
+  api -> database "Queries data" {
+    metadata {
+      protocol 'TCP'
+    }
+  }
+}
+
+// extend-1.c4
+model {
+  extend api -> database "Queries data" {
+    metadata {
+      protocol 'SSL'        // Creates array
+      timeout '5s'          // New key
+    }
+  }
+}
+
+// extend-2.c4
+model {
+  extend api -> database "Queries data" {
+    metadata {
+      protocol 'TLS'        // Adds to array
+      retry_policy 'exponential'  // New key
+    }
+  }
+}
+
+// Result:
+{
+  protocol: ['TCP', 'SSL', 'TLS'],
+  timeout: '5s',
+  retry_policy: 'exponential'
+}
+```
