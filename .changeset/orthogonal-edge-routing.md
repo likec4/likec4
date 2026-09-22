@@ -16,3 +16,5 @@ Place automatic labels beside long straight segments, avoiding nodes, other labe
 Separate shared segments of edited orthogonal edges into tracks with a target spacing of 12 diagram units. Track shifts also separate connection points along node borders, subject to the space available at each endpoint.
 
 Keep edited edge labels centered under spline routing, preventing the initial jump by half the label's size.
+
+Keep labels and separated tracks aligned with edited edges when connection handles are offset from node centers.

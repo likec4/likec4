@@ -1,8 +1,8 @@
 import { type LabelRoute, type Segment, polylineToSegments } from '@likec4/core/geometry'
 import type { EdgeRouting } from '@likec4/core/types'
+import { edgeEndFromNode } from '../utils/edge-endpoints'
 import { drawnFromRoute, editedEdgePath, editedEdgeRoute, layoutedEdgeRoute } from '../utils/edge-path'
 import { type TrackRoute, keepOwnTrack } from '../utils/edge-tracks'
-import { nodeToRect } from '../utils/xyflow'
 import { type XYStoreState, useXYStore } from './useXYFlow'
 
 const none: ReadonlyMap<string, TrackRoute> = new Map()
@@ -10,20 +10,6 @@ const cache = new WeakMap<
   XYStoreState['edges'],
   { nodes: XYStoreState['nodes']; routes: ReadonlyMap<string, TrackRoute> }
 >()
-
-// Match the XYFlow handle center, which can differ from the node box center.
-function edgeEnd(state: XYStoreState, id: string, handle: 'source' | 'target') {
-  const node = state.nodeLookup.get(id)
-  if (!node) {
-    return null
-  }
-  const rect = nodeToRect(node)
-  const bounds = node.internals.handleBounds?.[handle]?.[0]
-  const center = bounds
-    ? { x: Math.trunc(rect.x + bounds.x + bounds.width / 2), y: Math.trunc(rect.y + bounds.y + bounds.height / 2) }
-    : { x: Math.trunc(rect.x + rect.width / 2), y: Math.trunc(rect.y + rect.height / 2) }
-  return { center, node: rect }
-}
 
 /**
  * Returns relationship routes by edge identifier before track separation.
@@ -42,7 +28,8 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
     if (edge.type !== 'relationship') {
       continue
     }
-    const source = edgeEnd(state, edge.source, 'source'), target = edgeEnd(state, edge.target, 'target')
+    const source = edgeEndFromNode(state.nodeLookup.get(edge.source), 'source')
+    const target = edgeEndFromNode(state.nodeLookup.get(edge.target), 'target')
     if (!source || !target) {
       continue
     }
@@ -84,7 +71,8 @@ export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
         ? drawnFromRoute(keepOwnTrack(route, others)).segments
         : polylineToSegments(route.points)
     } else {
-      const source = edgeEnd(state, edge.source, 'source'), target = edgeEnd(state, edge.target, 'target')
+      const source = edgeEndFromNode(state.nodeLookup.get(edge.source), 'source')
+      const target = edgeEndFromNode(state.nodeLookup.get(edge.target), 'target')
       if (!source || !target || !edge.data.controlPoints) {
         return []
       }

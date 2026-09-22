@@ -1,14 +1,12 @@
-// oxlint-disable exhaustive-deps
-import { vector } from '@likec4/core/geometry'
 import type { EdgeRouting } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
-import { getNodeDimensions } from '@xyflow/system'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import { isTruthy } from 'remeda'
 import { useTrackRoutes } from '../../../hooks/useEdgeTracks'
 import { useXYStore } from '../../../hooks/useXYFlow'
+import { edgeEndFromNode } from '../../../utils/edge-endpoints'
 import { type DrawnEdge, layoutedEdgePath } from '../../../utils/edge-path'
 import { trackedEdgePath } from '../../../utils/edge-tracks'
 import type { Types } from '../../types'
@@ -19,12 +17,8 @@ import type { Types } from '../../types'
 export function useRelationshipEdgePath({
   props: {
     id,
-    sourceX,
-    sourceY,
     source,
     target,
-    targetX,
-    targetY,
     data,
   },
   controlPoints,
@@ -36,59 +30,24 @@ export function useRelationshipEdgePath({
   isControlPointDragging: boolean
   routing: EdgeRouting
 }): DrawnEdge {
-  // Subscribe to mimimal node changes to update edge path when nodes move
-  const [
-    sourceNodeWidth,
-    sourceNodeHeight,
-    targetNodeWidth,
-    targetNodeHeight,
-  ] = useXYStore(
-    useCallback(({ nodeLookup }) => {
-      const sourceNode = getNodeDimensions(nonNullable(nodeLookup.get(source), `source node ${source} not found`))
-      const targetNode = getNodeDimensions(nonNullable(nodeLookup.get(target), `target node ${target} not found`))
-      return [
-        Math.ceil(sourceNode.width),
-        Math.ceil(sourceNode.height),
-        Math.ceil(targetNode.width),
-        Math.ceil(targetNode.height),
-      ] as const
-    }, [source, target]),
-    shallowEqual,
+  const endpoints = useXYStore(
+    useCallback(({ nodeLookup }) => ({
+      source: nonNullable(edgeEndFromNode(nodeLookup.get(source), 'source'), `source node ${source} not found`),
+      target: nonNullable(edgeEndFromNode(nodeLookup.get(target), 'target'), `target node ${target} not found`),
+    }), [source, target]),
+    deepEqual,
   )
 
   const isModified = isTruthy(data.controlPoints) || isControlPointDragging
   const trackRoutes = useTrackRoutes(routing, isModified)
 
-  const sourceCenterPos = vector(sourceX, sourceY).trunc()
-  const targetCenterPos = vector(targetX, targetY).trunc()
-
-  const sourceNd = {
-    // Calculate node top-left from center position
-    ...sourceCenterPos
-      .subtract(vector(sourceNodeWidth, sourceNodeHeight).divide(2))
-      .trunc()
-      .toObject(),
-    width: sourceNodeWidth,
-    height: sourceNodeHeight,
-  }
-  const targetNd = {
-    // Calculate node top-left from center position
-    ...targetCenterPos
-      .subtract(vector(targetNodeWidth, targetNodeHeight).divide(2))
-      .trunc()
-      .toObject(),
-    width: targetNodeWidth,
-    height: targetNodeHeight,
-  }
-
-  const endpoints = {
-    source: { center: sourceCenterPos.toObject(), node: sourceNd },
-    target: { center: targetCenterPos.toObject(), node: targetNd },
+  const edge = {
+    ...endpoints,
     dir: data.dir,
     routing,
   }
   if (!isModified) {
-    return layoutedEdgePath({ ...endpoints, points: data.points })
+    return layoutedEdgePath({ ...edge, points: data.points })
   }
-  return trackedEdgePath({ ...endpoints, id, controlPoints, others: trackRoutes.values() })
+  return trackedEdgePath({ ...edge, id, controlPoints, others: trackRoutes.values() })
 }
