@@ -5,8 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { EdgeRouting } from '@likec4/core/types'
-import type { EdgeId } from '@likec4/core/types'
+import type { EdgeId, EdgeRouting } from '@likec4/core/types'
 import { css, cx as clsx } from '@likec4/styles/css'
 import { useRafEffect } from '@react-hookz/web'
 import type { XYPosition } from '@xyflow/react'
@@ -109,11 +108,12 @@ export const RelationshipEdge = memoEdge<Types.EdgeProps<'relationship'>>((props
 
   const labelTopLeftAt = (path: SVGPathElement): XYPosition => {
     const state = xyflowStore.getState()
-    const others = routing === 'ortho' && !data.isLabelCustomized
+    const placeAutomatically = routing === 'ortho' && !data.isLabelCustomized
+    const others = placeAutomatically
       ? selectLabelRoutes(state).filter(route => route.id !== id)
       : []
     // Other edges can change tracks when these locally edited corners are committed.
-    const committedRoutes = routing === 'ortho' && !data.isLabelCustomized
+    const committedRoutes = placeAutomatically
       ? selectLabelRoutes({
         ...state,
         edges: state.edges.map(edge =>

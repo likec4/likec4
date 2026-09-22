@@ -301,9 +301,6 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     return this
   }
 
-  /**
-   * Returns true when the view uses orthogonal routing.
-   */
   protected get isOrtho(): boolean {
     return this.view.routing === 'ortho'
   }

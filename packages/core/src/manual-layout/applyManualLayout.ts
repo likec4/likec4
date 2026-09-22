@@ -300,7 +300,6 @@ export function applyManualLayout<
       draft.variant = autoLayouted.variant
     }
 
-    // Apply the current routing mode while preserving the snapshot's geometry.
     if (autoLayouted.routing) {
       draft.routing = autoLayouted.routing
     } else {
