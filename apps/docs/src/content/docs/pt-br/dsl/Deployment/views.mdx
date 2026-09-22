@@ -53,16 +53,16 @@ Porém, elas fazem referência a nós e instâncias de deployment.
 
   ```likec4
   deployment view prod {
-    include *                                   // works
-    include * where tag is #next                // works (see details below)
-    include * with { color: red }               // does not work
+    include *                                   // funciona
+    include * where tag is #next                // funciona (veja os detalhes abaixo)
+    include * with { color: red }               // não funciona
 
-    include * -> *                              // works
-    include * -> * where tag is #next           // works
-    include * -> * where source.tag is #next    // works (see details below)
-    include * -> * with { color: red }          // does not work
+    include * -> *                              // funciona
+    include * -> * where tag is #next           // funciona
+    include * -> * where source.tag is #next    // funciona (veja os detalhes abaixo)
+    include * -> * with { color: red }          // não funciona
 
-    global style applications                   // does not work    
+    global style applications                   // não funciona    
   }
   ```
 </Aside>
