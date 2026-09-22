@@ -1,13 +1,12 @@
-import { type AutoLayoutDirection, invariant } from '@likec4/core'
+import type { AutoLayoutDirection } from '@likec4/core'
+import type { EdgeRouting } from '@likec4/core/types'
 import {
-  type SegmentedControlItem,
   Box,
   Flex,
   FloatingIndicator,
   Popover,
   PopoverDropdown,
   PopoverTarget,
-  SegmentedControl,
   Text,
   UnstyledButton,
 } from '@mantine/core'
@@ -40,15 +39,14 @@ const selector = selectDiagramContext(
   deepEqual,
 )
 
-const routingOptions = [
-  { value: 'spline', label: 'Spline' },
-  { value: 'ortho', label: 'Ortho' },
-] satisfies SegmentedControlItem[]
-
 export const ChangeAutoLayoutButton = () => {
   const diagram = useDiagram()
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null)
   const [controlsRefs, setControlsRefs] = useState<Record<AutoLayoutDirection, HTMLButtonElement | null>>({} as any)
+  const [routingRefs, setRoutingRefs] = useState<Record<EdgeRouting, HTMLButtonElement | null>>({
+    spline: null,
+    ortho: null,
+  })
   const {
     autoLayout,
     viewId,
@@ -62,6 +60,11 @@ export const ChangeAutoLayoutButton = () => {
   const setControlRef = (name: AutoLayoutDirection) => (node: HTMLButtonElement) => {
     controlsRefs[name] = node
     setControlsRefs(controlsRefs)
+  }
+
+  const setRoutingRef = (name: EdgeRouting) => (node: HTMLButtonElement) => {
+    routingRefs[name] = node
+    setRoutingRefs(routingRefs)
   }
 
   const setAutoLayout = (direction: AutoLayoutDirection) => (event: ReactMouseEvent<HTMLButtonElement>) => {
@@ -89,8 +92,8 @@ export const ChangeAutoLayoutButton = () => {
     })
   }
 
-  const setRouting = (value: string) => {
-    invariant(value === 'spline' || value === 'ortho', 'Invalid routing')
+  const setRouting = (value: EdgeRouting) => (event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     diagram.triggerChange({ op: 'change-routing', routing: value })
   }
 
@@ -164,16 +167,25 @@ export const ChangeAutoLayoutButton = () => {
               />
             </>
           )}
-          <Box mt={isManualLayout ? 0 : 10} mb={4}>
+          <FloatingIndicator
+            target={routingRefs[routing]}
+            parent={rootRef}
+            className={css.autolayoutIndicator}
+          />
+          <Box mt={isManualLayout ? 0 : 10} mb={10}>
             <Text inline fz={'xs'} c={'dimmed'} fw={500}>Routing:</Text>
           </Box>
-          <SegmentedControl
-            size="xs"
-            fullWidth
-            value={routing}
-            data={routingOptions}
-            onChange={setRouting}
-          />
+          <Flex gap={2} wrap={'wrap'} justify={'stretch'} maw={160}>
+            <UnstyledButton
+              className={css.autolayoutButton}
+              ref={setRoutingRef('spline')}
+              onClick={setRouting('spline')}>
+              Spline
+            </UnstyledButton>
+            <UnstyledButton className={css.autolayoutButton} ref={setRoutingRef('ortho')} onClick={setRouting('ortho')}>
+              Ortho
+            </UnstyledButton>
+          </Flex>
         </Box>
       </PopoverDropdown>
     </Popover>
