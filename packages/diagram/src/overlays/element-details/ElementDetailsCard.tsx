@@ -74,6 +74,7 @@ const Tooltip = MantineTooltip.withProps({
   label: '',
   children: null,
   offset: 4,
+  withinPortal: false,
 })
 
 const SmallLabel = Text.withProps({
