@@ -199,7 +199,7 @@ catalogs:
     p-debounce: 5.1.0
     p-limit: 7.3.2
     p-queue: 8.1.1
-    p-timeout: 7.0.1
+    p-timeout: 7.0.2
     package-manager-detector: 1.8.0
     package-up: ^5.0.0
     pathe: ^2.0.3
