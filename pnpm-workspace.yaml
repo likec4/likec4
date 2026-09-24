@@ -86,7 +86,7 @@ catalogs:
     "@expressive-code/plugin-collapsible-sections": 0.44.2
     "@expressive-code/plugin-line-numbers": 0.44.2
     astro: 7.2.8
-    astro-og-canvas: 0.13.0
+    astro-og-canvas: 0.13.2
     astro-skills: 0.1.1
     shiki: 4.1.0
     starlight-heading-badges: 0.8.0
