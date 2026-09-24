@@ -196,7 +196,7 @@ catalogs:
     natural-compare-lite: ^1.4.1
     object-hash: ^3.0.0
     ohash: ^2.0.12
-    p-debounce: 5.1.0
+    p-debounce: 5.1.1
     p-limit: 7.3.2
     p-queue: 8.1.1
     p-timeout: 7.0.1
