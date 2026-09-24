@@ -143,7 +143,7 @@ catalogs:
     "@modelcontextprotocol/sdk": ^1.29.0
     "@modelcontextprotocol/ext-apps": "^1.7.5"
   obuild:
-    obuild: 0.4.31
+    obuild: 0.4.40
   react:
     "@floating-ui/dom": ^1.7.6
     "@nanostores/media-query": 0.1.2
