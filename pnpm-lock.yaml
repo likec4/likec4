@@ -15,7 +15,16 @@ catalogs:
     '@tanstack/ai-client':
       specifier: ^0.8.0
       version: 0.8.0
+    '@tanstack/ai-gemini':
+      specifier: ^0.10.0
+      version: 0.10.0
+    '@tanstack/ai-ollama':
+      specifier: ^0.6.10
+      version: 0.6.10
     '@tanstack/ai-openai':
+      specifier: ^0.8.2
+      version: 0.8.2
+    '@tanstack/ai-openrouter':
       specifier: ^0.8.2
       version: 0.8.2
     '@tanstack/ai-react':
@@ -380,8 +389,8 @@ catalogs:
       specifier: ^2.0.12
       version: 2.0.12
     p-debounce:
-      specifier: 5.1.0
-      version: 5.1.0
+      specifier: 5.1.1
+      version: 5.1.1
     p-limit:
       specifier: 7.3.2
       version: 7.3.2
@@ -761,7 +770,7 @@ importers:
         version: 25.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@statelyai/inspect':
         specifier: ^0.4.0
-        version: 0.4.0(ws@8.21.0)(xstate@5.32.6)
+        version: 0.4.0(ws@8.21.3)(xstate@5.32.6)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.46.0(react@19.2.8)
@@ -1477,7 +1486,7 @@ importers:
         version: 4.0.7
       pretty-ms:
         specifier: ^9.3.0
-        version: 9.3.0
+        version: 9.3.1
       remeda:
         specifier: catalog:utils
         version: 2.45.0
@@ -1805,7 +1814,7 @@ importers:
         version: 0.6.10(@tanstack/ai@0.14.0)
       '@tanstack/ai-openai':
         specifier: catalog:ai
-        version: 0.8.2(@tanstack/ai-client@0.8.0)(@tanstack/ai@0.14.0)(ws@8.21.0)(zod@4.4.3)
+        version: 0.8.2(@tanstack/ai-client@0.8.0)(@tanstack/ai@0.14.0)(ws@8.21.3)(zod@4.4.3)
       '@tanstack/ai-openrouter':
         specifier: catalog:ai
         version: 0.8.2(@tanstack/ai@0.14.0)
@@ -2004,7 +2013,7 @@ importers:
         version: 8.5.28
       pretty-ms:
         specifier: ^9.3.0
-        version: 9.3.0
+        version: 9.3.1
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -2650,7 +2659,7 @@ importers:
         version: 2.1.0
       p-debounce:
         specifier: catalog:utils
-        version: 5.1.0
+        version: 5.1.1
       package-manager-detector:
         specifier: catalog:utils
         version: 1.8.0
@@ -3232,9 +3241,6 @@ packages:
 
   '@astrojs/markdown-remark@7.2.0':
     resolution: {integrity: sha512-+YxmVQu1Bd+MFfSzjq1rOJvD9+nIOJzz5YIIhdIH01RrxRkKbyKoEgyIqP3yv51MhzMDgd79QaPv+kCVPT8vHw==}
-
-  '@astrojs/markdown-satteri@0.3.4':
-    resolution: {integrity: sha512-6Lvt/bQZEBW+zzdhPblvfZEy5PGEYJaUsUqaCgwHeRPxZJL1gc9I+DRLKWJjjYTWDzVUTzXlMq4WwSK+X34CVw==}
 
   '@astrojs/markdown-satteri@0.3.8':
     resolution: {integrity: sha512-n8ItpFTCmlDsVR5+rwDmehSf+jFCYLWmZiisZNGuF7xILqYhsVeBfcha4qgS2Seq3fAc9Tm58ZVrvqFQ6RQgRQ==}
@@ -5212,9 +5218,6 @@ packages:
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
     engines: {node: '>=6.0.0'}
 
-  '@jridgewell/sourcemap-codec@1.5.5':
-    resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
-
   '@jridgewell/sourcemap-codec@1.6.0':
     resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
 
@@ -5489,12 +5492,6 @@ packages:
     peerDependencies:
       nanostores: ^1.2.0
       react: 19.2.8
-
-  '@napi-rs/wasm-runtime@1.1.6':
-    resolution: {integrity: sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg==}
-    peerDependencies:
-      '@emnapi/core': ^1.7.1
-      '@emnapi/runtime': ^1.7.1
 
   '@napi-rs/wasm-runtime@1.2.4':
     resolution: {integrity: sha512-AJxoUD2/15ESHbvpcyjU274nsAPLuOtPHCk0vKJM5pj//Fg/B1FXNWjPnXTT9PymCYYiHo4zPj0ZomXBKhoy7g==}
@@ -8468,10 +8465,6 @@ packages:
       typescript:
         optional: true
 
-  iconv-lite@0.7.1:
-    resolution: {integrity: sha512-2Tth85cXwGFHfvRgZWszZSvdo+0Xsqmw8k8ZwxScfcBneNUraK+dxRxRm24nszx80Y0TVio8kKLt5sLE7ZCLlw==}
-    engines: {node: '>=0.10.0'}
-
   iconv-lite@0.7.3:
     resolution: {integrity: sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==}
     engines: {node: '>=0.10.0'}
@@ -9537,8 +9530,8 @@ packages:
       vite-plus:
         optional: true
 
-  p-debounce@5.1.0:
-    resolution: {integrity: sha512-3DNQmB7HPRMSuZ9P8JQFzEr7156s1S5Lqpi3mSrsZe5AHvl4ONfGrdB5azWqeOpNejQiemgQBkyU+IDKR5nwyg==}
+  p-debounce@5.1.1:
+    resolution: {integrity: sha512-BHp4jJ6t45tLOWzC/m9X2LIbZJz2mlay+pAwQrm/oRJlvLJhxyJrwtTUW6bz/+99coiC+iNpnk1P0s8/RfXd0A==}
     engines: {node: '>=20'}
 
   p-limit@3.1.0:
@@ -9825,10 +9818,6 @@ packages:
   pretty-bytes@7.1.0:
     resolution: {integrity: sha512-nODzvTiYVRGRqAOvE84Vk5JDPyyxsVk0/fbA/bq7RqlnhksGpset09XTxbpvLTIjoaF7K8Z8DG8yHtKGTPSYRw==}
     engines: {node: '>=20'}
-
-  pretty-ms@9.3.0:
-    resolution: {integrity: sha512-gjVS5hOP+M3wMm5nmNOucbIrqudzs9v/57bWRHQWLYklXqoXKrVfYW2W9+glfGsqtPgpiz5WwyEEB+ksXIx3gQ==}
-    engines: {node: '>=18'}
 
   pretty-ms@9.3.1:
     resolution: {integrity: sha512-HzMy3Geq23nVALD/M2LliU+F+M+gVNsvkQWWqeBZ8HDiCgzo6YPJ/Omrmtq24EFrIsk0a3EkQGEd7bDOo+IhGA==}
@@ -10252,10 +10241,6 @@ packages:
 
   satteri@0.9.4:
     resolution: {integrity: sha512-BKob126Tay84diOZsnVNH/Q/c+3njPJTCad3w5zLKa6j8bVjxskPNHDtxrMwYK4bN/RlqUSdMnPwKY4k65EMOQ==}
-
-  sax@1.6.0:
-    resolution: {integrity: sha512-6R3J5M4AcbtLUdZmRv2SygeVaM7IhrLXu9BmnOGmmACak8fiUtOsYNWUS4uK7upbmHIBbLBeFeI//477BKLBzA==}
-    engines: {node: '>=11.0.0'}
 
   sax@1.6.1:
     resolution: {integrity: sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q==}
@@ -10709,10 +10694,6 @@ packages:
   type-fest@4.41.0:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
-
-  type-is@2.0.1:
-    resolution: {integrity: sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAMrMBiAZyV9oALtXO8hsrHbMXF9x6L3grlFuwW2oAz7cav+Gw==}
-    engines: {node: '>= 0.6'}
 
   type-is@2.1.0:
     resolution: {integrity: sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==}
@@ -11653,7 +11634,7 @@ snapshots:
     dependencies:
       '@astrojs/compiler': 2.13.1
       '@astrojs/yaml2ts': 0.2.4
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
       '@volar/kit': 2.4.28(typescript@6.0.3)
       '@volar/language-core': 2.4.28
       '@volar/language-server': 2.4.28(typescript@6.0.3)
@@ -11696,14 +11677,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/markdown-satteri@0.3.4':
-    dependencies:
-      '@astrojs/internal-helpers': 0.10.1
-      '@astrojs/prism': 4.0.2
-      github-slugger: 2.0.0
-      hast-util-from-html: 2.0.3
-      satteri: 0.9.4
-
   '@astrojs/markdown-satteri@0.3.8':
     dependencies:
       '@astrojs/internal-helpers': 0.10.4
@@ -11711,7 +11684,7 @@ snapshots:
       github-slugger: 2.0.0
       satteri: 0.10.5
 
-  '@astrojs/mdx@7.0.1(@astrojs/markdown-satteri@0.3.4)(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))':
+  '@astrojs/mdx@7.0.1(@astrojs/markdown-satteri@0.3.8)(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))':
     dependencies:
       '@astrojs/internal-helpers': 0.10.0
       '@astrojs/markdown-remark': 7.2.0
@@ -11729,7 +11702,7 @@ snapshots:
       unist-util-visit: 5.1.0
       vfile: 6.0.3
     optionalDependencies:
-      '@astrojs/markdown-satteri': 0.3.4
+      '@astrojs/markdown-satteri': 0.3.8
     transitivePeerDependencies:
       - supports-color
 
@@ -11776,8 +11749,8 @@ snapshots:
 
   '@astrojs/starlight@0.41.3(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))(typescript@6.0.3)':
     dependencies:
-      '@astrojs/markdown-satteri': 0.3.4
-      '@astrojs/mdx': 7.0.1(@astrojs/markdown-satteri@0.3.4)(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
+      '@astrojs/markdown-satteri': 0.3.8
+      '@astrojs/mdx': 7.0.1(@astrojs/markdown-satteri@0.3.8)(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
       '@astrojs/sitemap': 3.7.3
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.5
@@ -12064,7 +12037,7 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.11.1
       '@emnapi/runtime': 1.11.1
-      '@napi-rs/wasm-runtime': 1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
+      '@napi-rs/wasm-runtime': 1.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
     optional: true
 
   '@bruits/satteri-win32-arm64-msvc@0.10.5':
@@ -13644,7 +13617,7 @@ snapshots:
       google-auth-library: 10.6.2(supports-color@10.1.0)
       p-retry: 4.6.2
       protobufjs: 7.5.6
-      ws: 8.21.0
+      ws: 8.21.3
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.29.0(supports-color@10.1.0)(zod@4.4.3)
     transitivePeerDependencies:
@@ -13895,8 +13868,6 @@ snapshots:
 
   '@jridgewell/resolve-uri@3.1.2': {}
 
-  '@jridgewell/sourcemap-codec@1.5.5': {}
-
   '@jridgewell/sourcemap-codec@1.6.0': {}
 
   '@jridgewell/trace-mapping@0.3.31':
@@ -13907,7 +13878,7 @@ snapshots:
   '@jridgewell/trace-mapping@0.3.9':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
 
   '@jsonjoy.com/base64@1.1.2(tslib@2.8.1)':
     dependencies:
@@ -14295,13 +14266,6 @@ snapshots:
     dependencies:
       nanostores: 1.5.3
       react: 19.2.8
-
-  '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
-    dependencies:
-      '@emnapi/core': 1.11.1
-      '@emnapi/runtime': 1.11.1
-      '@tybys/wasm-util': 0.10.3
-    optional: true
 
   '@napi-rs/wasm-runtime@1.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
@@ -14983,18 +14947,6 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@statelyai/inspect@0.4.0(ws@8.21.0)(xstate@5.32.6)':
-    dependencies:
-      fast-safe-stringify: 2.1.1
-      isomorphic-ws: 5.0.0(ws@8.21.0)
-      partysocket: 0.0.25
-      safe-stable-stringify: 2.5.0
-      superjson: 1.13.3
-      uuid: 9.0.1
-      xstate: 5.32.6
-    transitivePeerDependencies:
-      - ws
-
   '@statelyai/inspect@0.4.0(ws@8.21.3)(xstate@5.32.6)':
     dependencies:
       fast-safe-stringify: 2.1.1
@@ -15112,15 +15064,6 @@ snapshots:
     dependencies:
       '@tanstack/ai': 0.14.0
       ollama: 0.6.3
-
-  '@tanstack/ai-openai@0.8.2(@tanstack/ai-client@0.8.0)(@tanstack/ai@0.14.0)(ws@8.21.0)(zod@4.4.3)':
-    dependencies:
-      '@tanstack/ai': 0.14.0
-      '@tanstack/ai-client': 0.8.0
-      openai: 6.36.0(ws@8.21.0)(zod@4.4.3)
-      zod: 4.4.3
-    transitivePeerDependencies:
-      - ws
 
   '@tanstack/ai-openai@0.8.2(@tanstack/ai-client@0.8.0)(@tanstack/ai@0.14.0)(ws@8.21.3)(zod@4.4.3)':
     dependencies:
@@ -16998,7 +16941,7 @@ snapshots:
       is-plain-obj: 4.1.0
       is-stream: 4.0.1
       npm-run-path: 6.0.0
-      pretty-ms: 9.3.0
+      pretty-ms: 9.3.1
       signal-exit: 4.1.0
       strip-final-newline: 4.0.0
       yoctocolors: 2.1.1
@@ -17038,7 +16981,7 @@ snapshots:
       send: 1.2.1(supports-color@10.1.0)
       serve-static: 2.2.1(supports-color@10.1.0)
       statuses: 2.0.2
-      type-is: 2.0.1
+      type-is: 2.1.0
       vary: 1.1.2
     transitivePeerDependencies:
       - supports-color
@@ -17611,10 +17554,6 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  iconv-lite@0.7.1:
-    dependencies:
-      safer-buffer: 2.1.2
-
   iconv-lite@0.7.3:
     dependencies:
       safer-buffer: 2.1.2
@@ -17733,10 +17672,6 @@ snapshots:
   isexe@3.1.1: {}
 
   isomorphic-timers-promises@1.0.1: {}
-
-  isomorphic-ws@5.0.0(ws@8.21.0):
-    dependencies:
-      ws: 8.21.0
 
   isomorphic-ws@5.0.0(ws@8.21.3):
     dependencies:
@@ -18035,7 +17970,7 @@ snapshots:
 
   magic-string@0.30.21:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.5
+      '@jridgewell/sourcemap-codec': 1.6.0
 
   magic-string@1.4.1:
     dependencies:
@@ -18900,11 +18835,6 @@ snapshots:
       regex: 6.1.0
       regex-recursion: 6.0.2
 
-  openai@6.36.0(ws@8.21.0)(zod@4.4.3):
-    optionalDependencies:
-      ws: 8.21.0
-      zod: 4.4.3
-
   openai@6.36.0(ws@8.21.3)(zod@4.4.3):
     optionalDependencies:
       ws: 8.21.3
@@ -18946,7 +18876,7 @@ snapshots:
       '@oxlint/binding-win32-x64-msvc': 1.81.0
       oxlint-tsgolint: 0.25.0
 
-  p-debounce@5.1.0: {}
+  p-debounce@5.1.1: {}
 
   p-limit@3.1.0:
     dependencies:
@@ -19206,10 +19136,6 @@ snapshots:
 
   pretty-bytes@7.1.0: {}
 
-  pretty-ms@9.3.0:
-    dependencies:
-      parse-ms: 4.0.0
-
   pretty-ms@9.3.1:
     dependencies:
       parse-ms: 4.0.0
@@ -19301,7 +19227,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       http-errors: 2.0.1
-      iconv-lite: 0.7.1
+      iconv-lite: 0.7.3
       unpipe: 1.0.0
 
   rc9@3.0.0:
@@ -19823,8 +19749,6 @@ snapshots:
       '@bruits/satteri-win32-arm64-msvc': 0.9.4
       '@bruits/satteri-win32-x64-msvc': 0.9.4
 
-  sax@1.6.0: {}
-
   sax@1.6.1: {}
 
   scheduler@0.27.0: {}
@@ -20056,7 +19980,7 @@ snapshots:
       '@types/node': 24.12.4
       '@types/sax': 1.2.7
       arg: 5.0.2
-      sax: 1.6.0
+      sax: 1.6.1
 
   skills-ref@0.1.5:
     dependencies:
@@ -20113,7 +20037,7 @@ snapshots:
   starlight-heading-badges@0.8.0(@astrojs/starlight@0.41.3(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))(typescript@6.0.3)):
     dependencies:
       '@astrojs/markdown-remark': 7.2.0
-      '@astrojs/markdown-satteri': 0.3.4
+      '@astrojs/markdown-satteri': 0.3.8
       '@astrojs/starlight': 0.41.3(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))(typescript@6.0.3)
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0
@@ -20124,7 +20048,7 @@ snapshots:
 
   starlight-links-validator@0.25.2(@astrojs/starlight@0.41.3(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))(typescript@6.0.3))(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)):
     dependencies:
-      '@astrojs/markdown-satteri': 0.3.4
+      '@astrojs/markdown-satteri': 0.3.8
       '@astrojs/starlight': 0.41.3(astro@7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))(typescript@6.0.3)
       '@types/picomatch': 4.0.3
       astro: 7.2.8(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.3)(@types/node@24.12.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
@@ -20386,12 +20310,6 @@ snapshots:
       '@turbo/windows-arm64': 2.10.12
 
   type-fest@4.41.0: {}
-
-  type-is@2.0.1:
-    dependencies:
-      content-type: 1.0.5
-      media-typer: 1.1.0
-      mime-types: 3.0.2
 
   type-is@2.1.0:
     dependencies:
