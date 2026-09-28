@@ -155,8 +155,9 @@ function makeEdgeModifier(
   return (edgeLookup) => {
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
     // Edges without control points follow fixed points, control points make them attach to the resized node border
+    const canDeriveControlPoints = edge.data.points.length >= 4 && (edge.data.points.length - 1) % 3 === 0
     const controlPoints = edge.data.controlPoints
-      ?? (isEndpointResized() ? bezierControlPoints(edge.data.points) : null)
+      ?? (isEndpointResized() && canDeriveControlPoints ? bezierControlPoints(edge.data.points) : null)
     const { x: dx, y: dy } = anchor.diff
     if (dx === 0 && dy === 0) {
       const item = produce(current, draft => {
@@ -248,7 +249,7 @@ function makeRelativeEdgeModifier(
       id: edge.id,
       type: 'replace',
       item: produce(current, draft => {
-        draft.data.controlPoints = controlPoints.map(relativePoint)
+        draft.data.controlPoints = controlPoints?.map(relativePoint) ?? null
         draft.data.points = map(edge.data.points, ([x, y]) => {
           const point = relativePoint({ x, y })
           return [point.x, point.y] satisfies [number, number]
