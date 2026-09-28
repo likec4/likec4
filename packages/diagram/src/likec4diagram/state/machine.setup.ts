@@ -50,6 +50,7 @@ import { searchActorLogic } from '../../search/searchActor'
 import { defineActors } from '../../utils/defineActors'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
+import type { DistributionMode } from './distributors'
 import { type HotKeyEvent, hotkeyActorLogic } from './hotkeyActor'
 import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
@@ -73,6 +74,8 @@ export interface NavigationHistoryEntry {
   // If there was an active walkthrough
   activeWalkthrough?: null | StepPath
 }
+
+export type ResizeMode = 'Width' | 'Height'
 
 export interface NavigationHistory {
   history: ReadonlyArray<NavigationHistoryEntry>
@@ -137,6 +140,10 @@ export interface Context extends Input {
     clicks: number
     timestamp: number
   }
+  /**
+   * Ids of selected nodes, in the order they were selected
+   */
+  nodeSelectionOrder: ReadonlyArray<string>
   focusedNode: NodeId | null
   autoUnfocusTimer: boolean
   activeElementDetails: null | {
@@ -186,6 +193,7 @@ export function Context({ input }: { input: Input }): Context {
     viewportChangedManually: false,
     lastOnNavigate: null,
     lastClickedNode: null,
+    nodeSelectionOrder: [],
     focusedNode: null,
     autoUnfocusTimer: false,
     activeElementDetails: null,
@@ -257,6 +265,8 @@ export type Events =
   | { type: 'navigate.back' }
   | { type: 'navigate.forward' }
   | { type: 'layout.align'; mode: AlignmentMode }
+  | { type: 'layout.distribute'; mode: DistributionMode }
+  | { type: 'layout.resize'; mode: ResizeMode }
   | { type: 'layout.resetEdgeControlPoints' }
   | { type: 'layout.resetManualLayout' }
   | { type: 'focus.node'; nodeId: NodeId; autoUnfocus?: boolean }

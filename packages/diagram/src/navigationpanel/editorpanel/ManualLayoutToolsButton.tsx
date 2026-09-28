@@ -18,6 +18,10 @@ import {
   IconLayoutAlignTop,
   IconLayoutBoardSplit,
   IconLayoutCollage,
+  IconLayoutDistributeHorizontal,
+  IconLayoutDistributeVertical,
+  IconRulerMeasure,
+  IconRulerMeasure2,
   IconRouteOff,
 } from '@tabler/icons-react'
 import { memo, useState } from 'react'
@@ -143,6 +147,34 @@ export const ManualLayoutToolsButton = memo(() => {
           onClick={e => {
             e.stopPropagation()
             diagram.align('Bottom')
+          }} />
+        <Action
+          label="Distribute horizontally"
+          icon={<IconLayoutDistributeHorizontal />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.distribute('Horizontal')
+          }} />
+        <Action
+          label="Distribute vertically"
+          icon={<IconLayoutDistributeVertical />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.distribute('Vertical')
+          }} />
+        <Action
+          label="Make same width"
+          icon={<IconRulerMeasure />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.resize('Width')
+          }} />
+        <Action
+          label="Make same height"
+          icon={<IconRulerMeasure2 />}
+          onClick={e => {
+            e.stopPropagation()
+            diagram.resize('Height')
           }} />
         <Action
           label="Reset all control points"

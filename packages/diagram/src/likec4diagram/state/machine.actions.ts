@@ -28,7 +28,7 @@ import type {
   ViewId,
 } from '@likec4/core/types'
 import { difference, isString } from '@likec4/core/utils'
-import { type Rect, nodeToRect } from '@xyflow/system'
+import { type NodeChange, type Rect, getNodeDimensions, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy, mapToObj } from 'remeda'
 import type { Writable } from 'type-fest'
@@ -36,6 +36,7 @@ import {
   assertEvent,
 } from 'xstate'
 import { Base } from '../../base'
+import type { XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
@@ -46,7 +47,9 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
+import { type DistributionMode, getDistributer } from './distributors'
 import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
+import type { ResizeMode } from './machine.setup'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
@@ -413,6 +416,84 @@ export const emitOnLayoutTypeChange = () =>
     })
   })
 
+/**
+ * Returns selected nodes, excluding those that are ancestors of other selected nodes.
+ * Selected compound nodes are moved as a whole, keeping children positions relative to them.
+ */
+export function selectedNodesWithoutAncestors(xystore: XYStoreApi): string[] {
+  const { nodeLookup } = xystore.getState()
+  const selected = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
+  const ancestorsOfSelected = new Set<string>()
+  for (const id of selected) {
+    let parentId = nodeLookup.get(id)?.parentId
+    while (parentId && !ancestorsOfSelected.has(parentId)) {
+      ancestorsOfSelected.add(parentId)
+      parentId = nodeLookup.get(parentId)?.parentId
+    }
+  }
+  return [...difference(selected, ancestorsOfSelected)]
+}
+
+/**
+ * Updates the order in which nodes were selected, based on xyflow select changes
+ */
+export function updateNodeSelectionOrder(
+  order: ReadonlyArray<string>,
+  changes: ReadonlyArray<NodeChange>,
+): ReadonlyArray<string> {
+  let next = order
+  for (const change of changes) {
+    if (change.type !== 'select') {
+      continue
+    }
+    const isInOrder = next.includes(change.id)
+    if (change.selected && !isInOrder) {
+      next = [...next, change.id]
+    }
+    if (!change.selected && isInOrder) {
+      next = next.filter(id => id !== change.id)
+    }
+  }
+  return next
+}
+
+/**
+ * Sorts node ids by selection order, nodes with unknown order go last
+ */
+export function sortBySelectionOrder(ids: ReadonlyArray<string>, order: ReadonlyArray<string>): string[] {
+  const indexOf = (id: string) => {
+    const index = order.indexOf(id)
+    return index === -1 ? Infinity : index
+  }
+  return [...ids].sort((a, b) => indexOf(a) - indexOf(b))
+}
+
+export const layoutResize = (params?: { mode: ResizeMode }) =>
+  machine.createAction(({ context, event }) => {
+    let mode
+    if (params) {
+      mode = params.mode
+    } else {
+      assertEvent(event, 'layout.resize')
+      mode = event.mode
+    }
+    const xystore = nonNullable(context.xystore, 'xystore is not initialized')
+    const { nodeLookup } = xystore.getState()
+    const nodesToResize = sortBySelectionOrder(selectedNodesWithoutAncestors(xystore), context.nodeSelectionOrder)
+
+    if (!hasAtLeast(nodesToResize, 2)) {
+      console.warn('At least 2 nodes must be selected to resize')
+      return
+    }
+    const [referenceId, ...others] = nodesToResize
+    const reference = getNodeDimensions(nonNullable(nodeLookup.get(referenceId), `Node ${referenceId} not found`))
+    const constraints = createLayoutConstraints(xystore, nodesToResize)
+    for (const id of others) {
+      constraints.resize(id, mode === 'Width' ? { width: reference.width } : { height: reference.height })
+    }
+    constraints.updateXYFlow()
+  })
+
 export const layoutAlign = (params?: { mode: AlignmentMode }) =>
   machine.createAction(({ context, event }) => {
     let mode
@@ -423,10 +504,8 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
       mode = event.mode
     }
     const xystore = nonNullable(context.xystore, 'xystore is not initialized')
-    const { nodeLookup, parentLookup } = xystore.getState()
-
-    const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
-    const nodesToAlign = [...difference(selectedNodes, new Set(parentLookup.keys()))]
+    const { nodeLookup } = xystore.getState()
+    const nodesToAlign = selectedNodesWithoutAncestors(xystore)
 
     if (!hasAtLeast(nodesToAlign, 2)) {
       console.warn('At least 2 nodes must be selected to align')
@@ -445,6 +524,41 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
       rect.positionAbsolute = {
         ...rect.positionAbsolute,
         ...aligner.applyPosition(toNodeRect(node)),
+      }
+    }
+    constraints.updateXYFlow()
+  })
+
+export const layoutDistribute = (params?: { mode: DistributionMode }) =>
+  machine.createAction(({ context, event }) => {
+    let mode
+    if (params) {
+      mode = params.mode
+    } else {
+      assertEvent(event, 'layout.distribute')
+      mode = event.mode
+    }
+    const xystore = nonNullable(context.xystore, 'xystore is not initialized')
+    const { nodeLookup } = xystore.getState()
+    const nodesToDistribute = selectedNodesWithoutAncestors(xystore)
+
+    if (!hasAtLeast(nodesToDistribute, 3)) {
+      console.warn('At least 3 nodes must be selected to distribute')
+      return
+    }
+    const constraints = createLayoutConstraints(xystore, nodesToDistribute)
+    const distributor = getDistributer(mode)
+
+    const nodes = nodesToDistribute.map(id => ({
+      node: nonNullable(nodeLookup.get(id)),
+      rect: nonNullable(constraints.rects.get(id)),
+    }))
+    distributor.computeLayout(nodes.map(({ node }) => toNodeRect(node)))
+
+    for (const { rect, node } of nodes) {
+      rect.positionAbsolute = {
+        ...rect.positionAbsolute,
+        ...distributor.applyPosition(toNodeRect(node)),
       }
     }
     constraints.updateXYFlow()
