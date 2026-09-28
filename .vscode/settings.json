@@ -114,4 +114,5 @@
     "connectionId": "likec4",
     "projectKey": "likec4_likec4"
   },
+  "dprint.path": "node_modules/.bin/dprint"
 }

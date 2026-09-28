@@ -22,6 +22,8 @@ import {
   handleNavigate,
   highlightNodeOrEdge,
   layoutAlign,
+  layoutDistribute,
+  layoutResize,
   notationsHighlight,
   onEdgeDoubleClick,
   onEdgeMouseEnter,
@@ -78,6 +80,22 @@ export const ready = machine.createStateConfig({
       actions: [
         startEditing('node'),
         layoutAlign(),
+        stopEditing(true),
+      ],
+    },
+    'layout.distribute': {
+      guard: 'not readonly',
+      actions: [
+        startEditing('node'),
+        layoutDistribute(),
+        stopEditing(true),
+      ],
+    },
+    'layout.resize': {
+      guard: 'not readonly',
+      actions: [
+        startEditing('node'),
+        layoutResize(),
         stopEditing(true),
       ],
     },
