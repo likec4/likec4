@@ -150,10 +150,13 @@ type EdgeModifier = (edgeLookup: EdgeLookup<Types.AnyEdge>) => EdgeReplaceChange
 function makeEdgeModifier(
   edge: Types.AnyEdge,
   anchor: Rect,
+  isEndpointResized: () => boolean,
 ): EdgeModifier {
-  const controlPoints = edge.data.controlPoints ?? null
   return (edgeLookup) => {
     const current = nonNullable(edgeLookup.get(edge.id), `Edge ${edge.id} not found`)
+    // Edges without control points follow fixed points, control points make them attach to the resized node border
+    const controlPoints = edge.data.controlPoints
+      ?? (isEndpointResized() ? bezierControlPoints(edge.data.points) : null)
     const { x: dx, y: dy } = anchor.diff
     if (dx === 0 && dy === 0) {
       const item = produce(current, draft => {
@@ -194,6 +197,7 @@ function makeRelativeEdgeModifier(
   movingRect: Rect,
   ends: { source: BBox; target: BBox; isSourceMoving: boolean },
   routing: EdgeRouting,
+  isEndpointResized: () => boolean,
 ): EdgeModifier {
   const [anchorNode, staticNode] = ends.isSourceMoving ? [ends.source, ends.target] : [ends.target, ends.source]
   const controlPoints = edge.data.controlPoints ?? initialControlPoints(edge.data.points, routing)
@@ -209,7 +213,7 @@ function makeRelativeEdgeModifier(
     if (dx === 0 && dy === 0) {
       const item = produce(current, draft => {
         draft.data.points = edge.data.points as NonEmptyArray<[number, number]>
-        draft.data.controlPoints = edge.data.controlPoints
+        draft.data.controlPoints = edge.data.controlPoints ?? (isEndpointResized() ? controlPoints : null)
         draft.data.labelBBox = edge.data.labelBBox
       })
       return item === current ? null : { id: edge.id, type: 'replace', item }
@@ -371,6 +375,10 @@ export function createLayoutConstraints(
       continue
     }
 
+    const sourceRect = rects.get(edge.source)
+    const targetRect = rects.get(edge.target)
+    const isEndpointResized = () => !!sourceRect?.isResized || !!targetRect?.isResized
+
     // We update edges, where both source and target are moving nodes
     if (isSourceMoving && isTargetMoving) {
       // Find the anchor rectangle for the edge
@@ -379,7 +387,7 @@ export function createLayoutConstraints(
         ?? findMovingAncestor(edge.source)
         ?? findMovingAncestor(edge.target)
       invariant(!!r, 'At least one of the edge nodes should have a moving ancestor')
-      edgeModifiers.set(edge, makeEdgeModifier(edge, r))
+      edgeModifiers.set(edge, makeEdgeModifier(edge, r, isEndpointResized))
       continue
     }
 
@@ -402,6 +410,7 @@ export function createLayoutConstraints(
         movingRect,
         { source: sourceNode, target: targetNode, isSourceMoving },
         routing,
+        isEndpointResized,
       ),
     )
   }
@@ -473,7 +482,7 @@ export function createLayoutConstraints(
         position: r.position,
         positionAbsolute: r.positionAbsolute,
       })
-      if (r instanceof CompoundRect) {
+      if (r instanceof CompoundRect || r.isResized) {
         nodeUpdates.push({
           id: r.id,
           type: 'dimensions',
@@ -560,8 +569,30 @@ export function createLayoutConstraints(
     return isome(rectsToUpdate, r => r.isMoved || r.isResized)
   }
 
+  /**
+   * Resizes a node, keeping its top-left corner.
+   * Compound nodes are not shrunk below the size required to fit their children.
+   */
+  function resize(id: string, { width, height }: Partial<Dimensions>): void {
+    const rect = nonNullable(rects.get(id), `Rect ${id} not found`)
+    let minWidth = 0
+    let minHeight = 0
+    for (const child of parentLookup.get(id)?.values() ?? []) {
+      const childDimensions = getNodeDimensions(child)
+      minWidth = Math.max(minWidth, child.position.x + childDimensions.width + Rect.RightPadding)
+      minHeight = Math.max(minHeight, child.position.y + childDimensions.height + Rect.BottomPadding)
+    }
+    if (width !== undefined) {
+      rect.maxX = rect.minX + Math.ceil(Math.max(width, minWidth))
+    }
+    if (height !== undefined) {
+      rect.maxY = rect.minY + Math.ceil(Math.max(height, minHeight))
+    }
+  }
+
   return {
     rects: rects as ReadonlyMap<string, Leaf | CompoundRect>,
+    resize,
     onMove,
     updateXYFlow,
     hasChanges,
