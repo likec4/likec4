@@ -15,8 +15,7 @@ const SortedElementShapes = [...ElementShapes].sort()
 
 export function ElementToolbar(props: Types.NodeProps<'element' | 'seq-actor'> & { data: { modelFqn: Fqn } }) {
   const { enableVscode, enableRelationshipBrowser, enableNotes } = useEnabledFeatures()
-
-  const increaseOffset = !!(enableNotes && props.data.notes)
+  const increaseOffset = props.type === 'seq-actor' && !!(enableNotes && props.data.notes)
 
   const {
     data: {

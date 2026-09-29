@@ -520,8 +520,11 @@ function applyEdgesManualLayout(
         if (isNullish(edge.notes) !== isNullish(next.notes)) {
           edgeDrifts.add('notes-changed')
         }
-        // Keep old notes if removed
-        draft.notes = next.notes ?? edge.notes!
+        if (isNullish(next.notes)) {
+          delete draft.notes
+        } else {
+          draft.notes = next.notes
+        }
       }
 
       if (next.astPath) {

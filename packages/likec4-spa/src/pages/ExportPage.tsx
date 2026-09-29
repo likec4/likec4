@@ -5,14 +5,21 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
+import {
+  type BBox,
+  type LayoutedView,
+  type NodeNotation,
+  type RichTextOrEmpty,
+  type ViewId,
+  RichText,
+} from '@likec4/core'
 import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
 import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
-import { useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 import {
   computeExportPageLayout,
@@ -125,7 +132,7 @@ export function ExportPage() {
     return <div>Loading...</div>
   }
 
-  return <GuardedExportPage diagram={diagram} isJpeg={isJpeg} />
+  return <GuardedExportPage key={diagram.id} diagram={diagram} isJpeg={isJpeg} />
 }
 
 /**
@@ -144,11 +151,42 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   })
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
+  const [initialized, setInitialized] = useState(false)
+  const [committedLayoutKey, setCommittedLayoutKey] = useState<string | null>(null)
+  const [contentBounds, setContentBounds] = useState<
+    {
+      view: LayoutedView
+      dynamic: typeof dynamic
+      bounds: BBox
+      ready: boolean
+    } | null
+  >(null)
+  const onContentBoundsChange = useCallback(({ viewId, bounds, ready }: {
+    viewId: ViewId
+    bounds: BBox
+    ready: boolean
+  }) => {
+    if (viewId !== diagram.id) {
+      return
+    }
+    setContentBounds(previous =>
+      previous?.view === diagram
+        && previous.dynamic === dynamic
+        && previous.ready === ready
+        && previous.bounds.x === bounds.x
+        && previous.bounds.y === bounds.y
+        && previous.bounds.width === bounds.width
+        && previous.bounds.height === bounds.height
+        ? previous
+        : { view: diagram, dynamic, bounds, ready }
+    )
+  }, [diagram, dynamic])
 
   // to track if download has already occurred
   const downloadedRef = useRef(false)
 
-  const bounds = pickViewBounds(diagram, dynamic)
+  const currentContent = contentBounds?.view === diagram && contentBounds.dynamic === dynamic ? contentBounds : null
+  const bounds = currentContent?.bounds ?? pickViewBounds(diagram, dynamic)
   const viewDescription = RichText.from(diagram.description)
   const showDescription = isExportSearchFlagEnabled(description) && viewDescription.nonEmpty
   const viewTitle = diagram.title ?? diagram.id
@@ -160,10 +198,38 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     description: showDescription ? { title: viewTitle, text: viewDescription.text } : null,
     notationEntries: showNotation ? notationEntries.length : 0,
   })
+  const layoutKey = [
+    diagram.id,
+    dynamic,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+    layout.width,
+    layout.height,
+    layout.diagram.top,
+  ].join(':')
+  const exportReady = initialized && currentContent?.ready === true && committedLayoutKey === layoutKey
 
-  const downloadDiagram = () => {
+  useLayoutEffect(() => {
+    if (!initialized || !viewportRef.current) {
+      return
+    }
+    const viewports = viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')
+    if (viewports.length === 0) {
+      return
+    }
+    const x = Math.round(-bounds.x + padding)
+    const y = Math.round(-bounds.y + padding)
+    viewports.forEach(el => {
+      el.style.transform = `translate(${x}px, ${y}px)`
+    })
+    setCommittedLayoutKey(layoutKey)
+  }, [initialized, layoutKey, bounds.x, bounds.y, padding])
+
+  const downloadDiagram = useCallback(() => {
     const viewport = viewportRef.current
-    if (!download || !viewport || !diagram || downloadedRef.current) {
+    if (!download || !viewport || downloadedRef.current) {
       return
     }
     const loadingOverlay = loadingOverlayRef.current
@@ -183,12 +249,19 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
         viewport,
       })
     }
-  }
+  }, [download, diagram, isJpeg, quality])
+
+  useEffect(() => {
+    if (exportReady) {
+      downloadDiagram()
+    }
+  }, [exportReady, downloadDiagram])
 
   return (
     <Box
       ref={viewportRef}
       data-testid="export-page"
+      data-likec4-export-ready={exportReady ? 'true' : 'false'}
       css={{
         position: 'fixed',
         top: '0',
@@ -245,23 +318,8 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
           enableSearch={false}
           nodesSelectable={false}
           enableElementTags={false}
-          onInitialized={() => {
-            if (!viewportRef.current) {
-              console.error('viewportRef.current is null')
-              return
-            }
-            const x = Math.round(-bounds.x + padding)
-            const y = Math.round(-bounds.y + padding)
-
-            const viewports = [...viewportRef.current.querySelectorAll<HTMLDivElement>('.react-flow__viewport')]
-            viewports.forEach((el) => {
-              el.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-            })
-
-            if (download) {
-              window.setTimeout(downloadDiagram, 500)
-            }
-          }}
+          onContentBoundsChange={onContentBoundsChange}
+          onInitialized={() => setInitialized(true)}
         />
       </Box>
       {layout.description && (

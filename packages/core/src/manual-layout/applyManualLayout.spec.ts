@@ -457,6 +457,22 @@ describe('applyManualLayout', () => {
       expect(edges.edge1.notes).toBe(layoutedEdges.edge1.notes)
     })
 
+    it('should remove an edge note from a saved manual layout when the current view removes it', () => {
+      const { result, edges, snapshotEdges, layoutedEdges } = testApplyManualLayout({
+        edges: {
+          edge1: edge => {
+            delete edge.notes
+          },
+        },
+      })
+
+      expect(snapshotEdges.edge1.notes).toEqual({ txt: 'Initial note' })
+      expect(layoutedEdges.edge1.notes).toBeUndefined()
+      expect(edges.edge1.notes).toBeUndefined()
+      expect(edges.edge1.drifts).toEqual(['notes-changed'])
+      expect(result.drifts).toEqual(['edges-drift'])
+    })
+
     it('should detect direction-changed drift when edge direction reversed', () => {
       const { result, edges } = testApplyManualLayout({
         edges: {

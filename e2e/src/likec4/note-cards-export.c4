@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+views {
+  view note-cards-export {
+    title 'View note card export'
+
+    include customer with {
+      notes '''
+        This long element note belongs to the Cloud System Customer. It stays visible in the export at a fixed card width, even when the text wraps over several lines. The complete text must fit inside the exported image.
+
+        ![Note image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iNzIiPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iNzIiIGZpbGw9IiNkM2I0NWEiLz48dGV4dCB4PSIxMiIgeT0iNDIiIGZvbnQtc2l6ZT0iMjAiPk5vdGUgaW1hZ2U8L3RleHQ+PC9zdmc+)
+      '''
+    }
+    include cloud
+    include customer -> cloud with {
+      notes '''
+        This relationship note explains the customer to cloud connection. Its dashed leader and target dot must remain visible inside the exported image.
+      '''
+    }
+
+    autoLayout LeftRight
+  }
+}

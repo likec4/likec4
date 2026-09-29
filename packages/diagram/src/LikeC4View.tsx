@@ -4,7 +4,7 @@ import { Box } from '@likec4/styles/jsx'
 import { ActionIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import type { CSSProperties, ReactNode } from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
@@ -392,6 +392,26 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
   const likec4model = useOptionalLikeC4Model()
   const [layoutType, setLayoutType] = useState(initialLayoutType)
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
+  const dynamicViewVariant = props.dynamicViewVariant
+  const [contentBounds, setContentBounds] = useState<
+    {
+      viewId: string
+      variant: t.DynamicViewDisplayVariant | undefined
+      bounds: t.BBox
+    } | null
+  >(null)
+  const onContentBoundsChange = useCallback(({ viewId, bounds }: { viewId: t.ViewId; bounds: t.BBox }) => {
+    setContentBounds(previous =>
+      previous?.viewId === viewId
+        && previous.variant === dynamicViewVariant
+        && previous.bounds.x === bounds.x
+        && previous.bounds.y === bounds.y
+        && previous.bounds.width === bounds.width
+        && previous.bounds.height === bounds.height
+        ? previous
+        : { viewId, variant: dynamicViewVariant, bounds }
+    )
+  }, [dynamicViewVariant])
   const onNavigateTo = (viewId: t.aux.ViewId<t.aux.UnknownLayouted> | null) => {
     // reset layout type if we navigate to a different view
     if (viewId && viewId !== browserViewId) {
@@ -452,7 +472,9 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
 
   const browserProps = isBoolean(browser) ? {} : browser
 
-  const bounds = pickViewBounds(view, props.dynamicViewVariant)
+  const bounds = enableNotes && contentBounds?.viewId === view.id && contentBounds.variant === dynamicViewVariant
+    ? contentBounds.bounds
+    : pickViewBounds(view, props.dynamicViewVariant)
 
   return (
     <ShadowRoot
@@ -483,6 +505,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
         enableRelationshipBrowser={enableRelationshipBrowser}
         enableElementTags={false}
         enableNotes={enableNotes}
+        onContentBoundsChange={onContentBoundsChange}
         controls={controls}
         reduceGraphics={reduceGraphics}
         className={cx(

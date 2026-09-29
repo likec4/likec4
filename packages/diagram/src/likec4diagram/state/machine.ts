@@ -57,6 +57,7 @@ const _diagramMachine = machine.createMachine({
         assignDynamicViewVariant(),
         assign({
           viewportChangedManually: false,
+          noteBounds: null,
         }),
         raiseUpdateView(),
       ],
@@ -73,6 +74,23 @@ const _diagramMachine = machine.createMachine({
           },
         }
       }),
+    },
+    'notes.bounds': {
+      guard: ({ context, event }) => {
+        if (context.view.id !== event.viewId || context.dynamicViewVariant === 'sequence') return false
+        const previous = context.noteBounds
+        const next = event.bounds
+        return previous !== next && (!previous || !next || previous.x !== next.x || previous.y !== next.y ||
+          previous.width !== next.width || previous.height !== next.height)
+      },
+      actions: [
+        assign(({ event }) => ({ noteBounds: event.bounds })),
+        machine.enqueueActions(({ context, enqueue }) => {
+          if (context.features.enableFitView && !context.viewportChangedManually) {
+            enqueue.raise({ type: 'xyflow.fitDiagram', duration: 0 })
+          }
+        }),
+      ],
     },
     'update.features': {
       actions: updateFeatures(),

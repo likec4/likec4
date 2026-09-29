@@ -78,11 +78,15 @@ export function findDiagramEdge(ctx: Context, xyedgeId: string): DiagramEdge | n
  * If {@link nextView} is provided, returns the bounds of the next view.
  */
 export function viewBounds(
-  ctx: Pick<Context, 'view' | 'dynamicViewVariant'>,
+  ctx: Pick<Context, 'view' | 'dynamicViewVariant' | 'noteBounds' | 'features'>,
   nextView?: DiagramView,
 ): BBox {
   const view = nextView ?? ctx.view
-  return pickViewBounds(view, ctx.dynamicViewVariant)
+  const base = pickViewBounds(view, ctx.dynamicViewVariant)
+  if (nextView || !ctx.features.enableNotes || ctx.dynamicViewVariant === 'sequence' || !ctx.noteBounds) {
+    return base
+  }
+  return BBox.merge(base, ctx.noteBounds)
 }
 
 export function focusedBounds(params: { context: Context }): { bounds: BBox; duration?: number } {

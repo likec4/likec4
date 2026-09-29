@@ -110,6 +110,9 @@ export type ViewPadding = PaddingWithUnit | ViewPaddings
 export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   view: LayoutedView<A>
 
+  /** Reports measured content bounds after note cards and their assets settle. */
+  onContentBoundsChange?: OnContentBoundsChange | undefined
+
   className?: string | undefined
 
   /**
@@ -368,6 +371,9 @@ export type OnCanvasClick = (event: ReactMouseEvent) => void
 export type OnCanvasContextMenu = (event: ReactMouseEvent) => void
 
 export type OnInitialized = (params: { diagram: DiagramApi; xyflow: XYFlowInstance }) => void
+
+/** Measured extent of the rendered diagram, including visible view note cards. */
+export type OnContentBoundsChange = (value: { viewId: t.ViewId; bounds: t.BBox; ready: boolean }) => void
 
 export type OnLayoutTypeChange = (layoutType: LayoutType) => void
 

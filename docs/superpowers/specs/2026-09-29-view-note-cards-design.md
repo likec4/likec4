@@ -2,7 +2,7 @@
 
 Date: 2026-09-29
 
-Status: Design approved; written spec pending user review
+Status: Approved for implementation
 
 ## Purpose
 
@@ -36,14 +36,14 @@ The card is visible when the rendered note has nonempty text, using the existing
 
 ### Host behavior
 
-| Host | First-version behavior |
-| --- | --- |
-| Full SPA diagram and editor, VS Code preview (`LikeC4Diagram`) | Cards on by the existing `enableNotes=true` default. |
-| SPA full-size embed (`EmbedPage`) | Explicitly enable cards and size the embed from measured content bounds. |
-| SPA and CLI PNG/JPG export (`ExportPage`) | Cards on; wait for measured content before capture. |
-| Static thumbnails | Cards off. |
-| Public `LikeC4View` | Keep its current default off; `enableNotes=true` shows cards and uses measured bounds. |
-| `StaticLikeC4Diagram` | Keep its current default off; allow an explicit `enableNotes=true` for the full-size embed. |
+| Host                                                           | First-version behavior                                                                      |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Full SPA diagram and editor, VS Code preview (`LikeC4Diagram`) | Cards on by the existing `enableNotes=true` default.                                        |
+| SPA full-size embed (`EmbedPage`)                              | Explicitly enable cards and size the embed from measured content bounds.                    |
+| SPA and CLI PNG/JPG export (`ExportPage`)                      | Cards on; wait for measured content before capture.                                         |
+| Static thumbnails                                              | Cards off.                                                                                  |
+| Public `LikeC4View`                                            | Keep its current default off; `enableNotes=true` shows cards and uses measured bounds.      |
+| `StaticLikeC4Diagram`                                          | Keep its current default off; allow an explicit `enableNotes=true` for the full-size embed. |
 
 The repository has no native LikeC4 SVG export. This feature adds none.
 
