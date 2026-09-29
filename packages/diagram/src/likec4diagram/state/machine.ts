@@ -84,12 +84,16 @@ const _diagramMachine = machine.createMachine({
           previous.width !== next.width || previous.height !== next.height)
       },
       actions: [
-        assign(({ event }) => ({ noteBounds: event.bounds })),
-        machine.enqueueActions(({ context, enqueue }) => {
-          if (context.features.enableFitView && !context.viewportChangedManually) {
+        machine.enqueueActions(({ context, event, enqueue }) => {
+          if (
+            event.type === 'notes.bounds' && event.bounds && !context.noteBounds && context.features.enableFitView &&
+            !context.viewportChangedManually
+          )
+          {
             enqueue.raise({ type: 'xyflow.fitDiagram', duration: 0 })
           }
         }),
+        assign(({ event }) => ({ noteBounds: event.bounds })),
       ],
     },
     'update.features': {

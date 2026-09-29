@@ -179,7 +179,8 @@ export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
   enableRelationshipBrowser?: boolean | undefined
 
   /**
-   * Display element notes, if they are present in the view
+   * Show view notes beside elements and relationships in regular diagrams.
+   * Sequence diagrams keep their existing note control.
    *
    * @default false
    */
@@ -316,7 +317,8 @@ export interface LikeC4BrowserProps {
   enableCompareWithLatest?: boolean | undefined
 
   /**
-   * Display element notes, if they are present in the view
+   * Show view notes beside elements and relationships in regular diagrams.
+   * Sequence diagrams keep their existing note control.
    *
    * @default true
    */

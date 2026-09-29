@@ -270,7 +270,8 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   enableElementTags?: boolean | undefined
 
   /**
-   * Display element notes, if they are present in the view
+   * Show view notes beside elements and relationships in regular diagrams.
+   * Sequence diagrams keep their existing note control.
    *
    * @default true
    */

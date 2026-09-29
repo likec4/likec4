@@ -122,7 +122,8 @@ async function downloadAsJpeg({
  */
 export function ExportPage() {
   const [diagram] = useCurrentView()
-  const { format } = useSearch({ strict: false })
+  const search = useSearch({ strict: false })
+  const { format } = search
   const imageFormat = format ?? 'png'
   const isJpeg = imageFormat === 'jpeg'
 
@@ -132,7 +133,19 @@ export function ExportPage() {
     return <div>Loading...</div>
   }
 
-  return <GuardedExportPage key={diagram.id} diagram={diagram} isJpeg={isJpeg} />
+  const exportKey = JSON.stringify([
+    diagram.id,
+    diagram.hash,
+    imageFormat,
+    search.dynamic,
+    search.theme,
+    search.padding,
+    search.notation,
+    search.description,
+    search.quality,
+    search.download,
+  ])
+  return <GuardedExportPage key={exportKey} diagram={diagram} isJpeg={isJpeg} />
 }
 
 /**

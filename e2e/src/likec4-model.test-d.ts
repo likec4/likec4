@@ -86,6 +86,8 @@ test('Model Codegen with valid types', () => {
     | 'multiple-expanded'
     | 'multiple-explicit'
     | 'multiple-merged'
+    | 'note-cards-delayed-image'
+    | 'note-cards-export'
     | 'view-with-custom-colors'
     | 'flow-control-1'
   >()

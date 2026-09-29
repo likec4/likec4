@@ -59,6 +59,24 @@ autoLayout TopBottom|BottomTop|LeftRight|RightLeft [rankSep] [nodeSep]
 
 See [Predicates](./predicates.md) for more information on predicates and expressions.
 
+### View-scoped notes
+
+Add Markdown or plain-text notes to an element or a relationship with `include ... with { notes ... }` inside a view:
+
+```likec4
+view operations {
+  include api with { notes 'Owned by the Platform team' }
+  include database
+  include api -> database with {
+    notes '''
+      **Retry policy:** Wait 30 seconds before retrying.
+    '''
+  }
+}
+```
+
+In a regular diagram, each note is a full-text card beside its rendered target, connected by a straight dashed line. Placement is automatic. These notes belong to the view and do not add `notes` to the model element or relationship. Dynamic views in diagram mode use the same cards for step notes; sequence mode keeps its existing note presentation.
+
 **Important:**
 
 - Rules order matters, as every next rule applies on top of the previous, accumulating result.
@@ -171,7 +189,7 @@ customer -> frontend "places order" {
   description "Detailed description"
   technology "HTTPS"
   notes '''
-    Additional notes displayed in sidebar.
+    Additional information for this step.
     Supports **Markdown** formatting.
   '''
   color red

@@ -170,4 +170,27 @@ describe('initializing state', () => {
     expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(before)
     actor.stop()
   })
+
+  it('fits once when notes appear and leaves late card resizing to an explicit fit', () => {
+    const actor = createTestActor({ fitView: true })
+    actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: true } })
+    actor.send({
+      type: 'notes.bounds',
+      viewId: view.id,
+      bounds: { x: 1900, y: 250, width: 320, height: 180 },
+    })
+    const firstFit = actor.getSnapshot().context.xyflow!.getViewport()
+
+    actor.send({
+      type: 'notes.bounds',
+      viewId: view.id,
+      bounds: { x: 1900, y: 250, width: 620, height: 180 },
+    })
+    expect(viewBounds(actor.getSnapshot().context).width).toBe(2420)
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(firstFit)
+
+    actor.send({ type: 'xyflow.fitDiagram' })
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).not.toEqual(firstFit)
+    actor.stop()
+  })
 })

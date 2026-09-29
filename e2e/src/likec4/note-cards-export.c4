@@ -22,4 +22,19 @@ views {
 
     autoLayout LeftRight
   }
+
+  view note-cards-delayed-image {
+    title 'View note with delayed image'
+
+    include customer with {
+      notes '''
+        The delayed image must finish loading before this diagram is ready for export.
+
+        ![Delayed note image](https://example.invalid/likec4-note.svg)
+      '''
+    }
+    include cloud
+
+    autoLayout LeftRight
+  }
 }

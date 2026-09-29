@@ -138,6 +138,26 @@ include cloud.* with {
 
 `with` may be used only within `include`.
 
+### View notes
+
+Use `notes` in a view override to document an element or a relationship in that view. The note text supports Markdown:
+
+```likec4
+view operations {
+  include api with {
+    notes 'Owned by the Platform team'
+  }
+  include database
+  include api -> database with {
+    notes '''
+      **Retry policy:** Wait 30 seconds before retrying.
+    '''
+  }
+}
+```
+
+In a regular diagram, each note appears in a card beside its rendered element or relationship. A dashed line connects the card to its target. The card shows the full text and is placed automatically. The note belongs to this view; it does not change the model element or relationship.
+
 ### With custom navigation
 
 You can define custom navigation and links between views:

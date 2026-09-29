@@ -2,6 +2,7 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
+import { RichText } from '@likec4/core'
 import { type Point, convertPoint } from '@likec4/core/geometry'
 import type { BBox, scalar, ViewId, XYPoint } from '@likec4/core/types'
 import { ViewportPortal } from '@xyflow/react'
@@ -32,7 +33,7 @@ type Note = {
 type EdgeRoute = { anchor: XYPoint; tangent?: XYPoint; segments: NoteSegment[] }
 
 function hasNotes(notes: scalar.MarkdownOrString | null | undefined): notes is scalar.MarkdownOrString {
-  return !!(notes?.md?.trim() || notes?.txt?.trim())
+  return RichText.from(notes).nonEmpty
 }
 
 function midpoint(points: readonly Point[]): XYPoint {
@@ -100,6 +101,7 @@ export function NoteLayer({
   const notes = useMemo<Note[]>(() => {
     if (!active) return []
     const visibleNodes = new Set(nodes.filter(node => !node.hidden).map(node => node.id))
+    const nodeTitles = new Map(nodes.map(node => [node.id, node.data.title || node.id]))
     return [
       ...nodes.filter(node => !node.hidden && hasNotes(node.data.notes)).map(node => ({
         id: node.id,
@@ -114,7 +116,8 @@ export function NoteLayer({
         edge => ({
           id: edge.id,
           kind: 'edge' as const,
-          label: `${edge.source} to ${edge.target}`,
+          label: `${nodeTitles.get(edge.source) ?? edge.source} to ${nodeTitles.get(edge.target) ?? edge.target}`
+            + (edge.data.label ? `: ${edge.data.label}` : ''),
           notes: edge.data.notes!,
         }),
       ),
@@ -314,19 +317,21 @@ export function NoteLayer({
       }),
     }
     : result
-  const ready = !active || notes.length === 0 ||
-    (measured && fontsReadyKey === noteKey && measurement.imagesReady &&
+  const placementReady = !active || notes.length === 0 ||
+    (measured && fontsReadyKey === noteKey &&
       (routes.key === routeKey || (dragging && !!stableResult)) && !!displayResult)
+  const ready = placementReady && (!active || notes.length === 0 || measurement.imagesReady)
   const bounds = displayResult?.bounds ?? architectureBounds
 
   useEffect(() => {
     if (dragging) return
+    if (active && notes.length > 0 && !placementReady) return
     diagram.send({
       type: 'notes.bounds',
       viewId,
-      bounds: active && ready && displayResult ? displayResult.bounds : null,
+      bounds: active && notes.length > 0 && displayResult ? displayResult.bounds : null,
     })
-  }, [diagram, viewId, active, ready, dragging, bounds.x, bounds.y, bounds.width, bounds.height])
+  }, [diagram, viewId, active, notes.length, placementReady, dragging, bounds.x, bounds.y, bounds.width, bounds.height])
 
   useEffect(() => {
     notifyContentBounds({ viewId, bounds, ready })
@@ -340,7 +345,7 @@ export function NoteLayer({
         data-likec4-note-leaders
         style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', pointerEvents: 'none', zIndex: 299 }}
       >
-        {ready && displayResult?.placements.map(placed => (
+        {placementReady && displayResult?.placements.map(placed => (
           <g key={placed.id} data-note-target={placed.id}>
             <line
               x1={placed.leader.from.x}
@@ -376,7 +381,7 @@ export function NoteLayer({
             style={{
               left: placement?.bounds.x ?? 0,
               top: placement?.bounds.y ?? 0,
-              visibility: ready && placement ? 'visible' : 'hidden',
+              visibility: placementReady && placement ? 'visible' : 'hidden',
             }}
           />
         )

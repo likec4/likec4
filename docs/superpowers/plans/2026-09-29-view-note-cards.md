@@ -1,5 +1,7 @@
 # View Note Cards Implementation Plan
 
+Status: Implemented and reviewed locally; release validation pending. The task checkboxes below preserve the original implementation plan. They do not claim that every listed test or interim commit was run.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Show full view-scoped notes as warm paper cards beside elements and relationship edges in regular diagrams, with clear dashed leaders and complete PNG/JPG exports.

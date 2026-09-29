@@ -93,6 +93,8 @@ test('LikeC4Model in React types codegen', () => {
     | 'multiple-expanded'
     | 'multiple-explicit'
     | 'multiple-merged'
+    | 'note-cards-delayed-image'
+    | 'note-cards-export'
     | 'view-with-custom-colors'
     | 'flow-control-1'
 
