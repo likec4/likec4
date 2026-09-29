@@ -18,6 +18,7 @@ import {
   triggerChange,
   updateFeatures,
   updateInputs,
+  updateNodeSelectionOrder,
 } from './machine.actions'
 import type {
   BaseDiagramMachineLogic,
@@ -88,6 +89,9 @@ const _diagramMachine = machine.createMachine({
         return {
           xynodes: event.nodes ? applyNodeChanges(event.nodes, context.xynodes) : context.xynodes,
           xyedges: event.edges ? applyEdgeChanges(event.edges, context.xyedges) : context.xyedges,
+          nodeSelectionOrder: event.nodes
+            ? updateNodeSelectionOrder(context.nodeSelectionOrder, event.nodes)
+            : context.nodeSelectionOrder,
         }
       }),
     },

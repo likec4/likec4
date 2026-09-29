@@ -22,6 +22,8 @@ import {
   handleNavigate,
   highlightNodeOrEdge,
   layoutAlign,
+  layoutDistribute,
+  layoutResize,
   notationsHighlight,
   onEdgeDoubleClick,
   onEdgeMouseEnter,
@@ -32,6 +34,7 @@ import {
   raiseFitDiagram,
   resetEdgesControlPoints,
   resetLastClickedNode,
+  selectedNodesWithoutAncestors,
   setViewport,
   startEditing,
   stopEditing,
@@ -74,10 +77,35 @@ export const ready = machine.createStateConfig({
   },
   on: {
     'layout.align': {
-      guard: 'not readonly',
+      guard: and([
+        'not readonly',
+        ({ context }) => selectedNodesWithoutAncestors(context.xystore).length >= 2,
+      ]),
       actions: [
         startEditing('node'),
         layoutAlign(),
+        stopEditing(true),
+      ],
+    },
+    'layout.distribute': {
+      guard: and([
+        'not readonly',
+        ({ context }) => selectedNodesWithoutAncestors(context.xystore).length >= 3,
+      ]),
+      actions: [
+        startEditing('node'),
+        layoutDistribute(),
+        stopEditing(true),
+      ],
+    },
+    'layout.resize': {
+      guard: and([
+        'not readonly',
+        ({ context }) => selectedNodesWithoutAncestors(context.xystore).length >= 2,
+      ]),
+      actions: [
+        startEditing('node'),
+        layoutResize(),
         stopEditing(true),
       ],
     },

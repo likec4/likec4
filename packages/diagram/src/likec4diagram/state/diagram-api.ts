@@ -21,6 +21,8 @@ import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
+import type { DistributionMode } from './distributors'
+import type { ResizeMode } from './machine.setup'
 import type {
   DiagramActorRef,
   DiagramContext,
@@ -230,6 +232,20 @@ export class DiagramApi<A extends Any = Unknown> {
    */
   align(mode: AlignmentMode): void {
     this.send({ type: 'layout.align', mode })
+  }
+
+  /**
+   * Distribute nodes
+   */
+  distribute(mode: DistributionMode): void {
+    this.send({ type: 'layout.distribute', mode })
+  }
+
+  /**
+   * Make selected nodes the same width or height as the first selected node
+   */
+  resize(mode: ResizeMode): void {
+    this.send({ type: 'layout.resize', mode })
   }
 
   /**
