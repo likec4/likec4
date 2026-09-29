@@ -138,6 +138,30 @@ specification {
 <LikeC4ThemeView viewId="sizes1_example" interactive={false}/>
 <LikeC4ThemeView viewId="sizes2_example" interactive={false}/>
 
+### Sizing
+
+By default, `size` sets the minimum size of an element: elements with longer titles or descriptions grow to fit their content.  
+Set `sizing fixed` to draw every element of the same `size` with exactly the same width and height:
+
+```likec4 "sizing fixed" copy
+specification {
+  element element {
+    style {
+      size small
+      sizing fixed
+    }
+  }
+}
+```
+
+With fixed sizing, the title font and the icon shrink to fit the element, and long descriptions are truncated.  
+The `padding` and `textSize` properties no longer change the element's size.
+
+Supported values: `auto` (default), `fixed`.
+
+<LikeC4ThemeView viewId="sizing_auto_example" interactive={false}/>
+<LikeC4ThemeView viewId="sizing_fixed_example" interactive={false}/>
+
 ### Opacity
 
 If an element is displayed as a group (like a container), you can set its opacity:

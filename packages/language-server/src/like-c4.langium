@@ -1040,6 +1040,13 @@ PaddingSizeProperty:
 TextSizeProperty:
   key='textSize' ':'? value=SizeValue ';'?;
 
+SizingValue returns string:
+  'auto' |
+  'fixed';
+
+SizingProperty:
+  key='sizing' ':'? value=SizingValue ';'?;
+
 type SizeProperty = ShapeSizeProperty | PaddingSizeProperty | TextSizeProperty | IconSizeProperty;
 
 StyleProperty:
@@ -1054,7 +1061,8 @@ StyleProperty:
   PaddingSizeProperty |
   TextSizeProperty |
   IconSizeProperty |
-  IconPositionProperty
+  IconPositionProperty |
+  SizingProperty
 ;
 
 ElementStyleProperty:
@@ -1186,6 +1194,7 @@ Id returns string:
   DynamicViewDisplayVariantValue |
   DynamicViewFlowKeyword |
   IconPositionValue |
+  SizingValue |
   RankValue |
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';

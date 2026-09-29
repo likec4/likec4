@@ -295,6 +295,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         ast.isSizeProperty,
         ast.isIconPositionProperty,
         ast.isIconSizeProperty,
+        ast.isSizingProperty,
         ast.isDynamicViewDisplayVariantProperty,
       ),
       mark => {

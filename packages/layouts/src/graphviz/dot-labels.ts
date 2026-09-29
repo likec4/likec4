@@ -102,12 +102,16 @@ export function nodeLabel(
   const hasIcon = isTruthy(node.icon)
   const iconPosition = node.style.iconPosition ?? 'left'
   const hasIconOnSide = hasIcon && (iconPosition === 'left' || iconPosition === 'right')
+  const isFixed = node.style.sizing === 'fixed'
+  const fitted = isFixed ? styles.fitNodeContent(node) : null
+  const textSize = fitted?.textSize ?? values.textSize
+  const iconSize = fitted?.iconSize ?? values.iconSize
   const lines = [
     wrapWithFont({
       text: node.title,
-      fontsize: values.textSize,
-      maxchars: maxchars(size),
-      maxLines: isSmOrXs ? 1 : 3,
+      fontsize: textSize,
+      maxchars: fitted?.maxchars ?? maxchars(size),
+      maxLines: fitted?.maxLines ?? (isSmOrXs ? 1 : 3),
     }),
   ]
   if (size !== 'xs') {
@@ -115,7 +119,7 @@ export function nodeLabel(
       lines.push(
         wrapWithFont({
           text: node.technology,
-          fontsize: Math.ceil(values.textSize * 0.65),
+          fontsize: Math.ceil(textSize * 0.65),
           maxchars: hasIconOnSide ? 35 : 45,
           maxLines: 1,
           color: colorValues.loContrast,
@@ -127,9 +131,9 @@ export function nodeLabel(
       lines.push(
         wrapWithFont({
           text: description,
-          fontsize: Math.ceil(values.textSize * 0.75),
+          fontsize: Math.ceil(textSize * 0.75),
           maxchars: hasIconOnSide ? 35 : 45,
-          maxLines: isSmOrXs ? 3 : 5,
+          maxLines: isFixed ? 1 : isSmOrXs ? 3 : 5,
           color: colorValues.loContrast,
         }),
       )
@@ -145,7 +149,7 @@ export function nodeLabel(
       // if first row, prepend columns with ROWSPAN
       if (idx === 0) {
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
-        const iconWidth = Math.ceil(values.iconSize + 16)
+        const iconWidth = Math.ceil(iconSize + 16)
         let leftwidth = iconWidth
         const sidePad = 16
 
@@ -170,7 +174,7 @@ export function nodeLabel(
     }
   let rows = lines.map(rowMapper).join('')
   if (hasIcon && (iconPosition === 'top' || iconPosition === 'bottom')) {
-    const iconRow = `<TR><TD HEIGHT="${Math.ceil(values.iconSize + 8)}"> </TD></TR>`
+    const iconRow = `<TR><TD HEIGHT="${Math.ceil(iconSize + 8)}"> </TD></TR>`
     rows = iconPosition === 'top' ? `${iconRow}${rows}` : `${rows}${iconRow}`
   }
   return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`
