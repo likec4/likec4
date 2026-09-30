@@ -222,7 +222,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                         fitView={fitView}
                         initialZoom={initialZoom}
                         fitViewPadding={fitViewPadding}
-                        nodesDraggable={hasEditor}
+                        nodesDraggable
                         nodesSelectable={nodesSelectable}
                         where={where ?? null}
                         dynamicViewVariant={dynamicViewVariant}
