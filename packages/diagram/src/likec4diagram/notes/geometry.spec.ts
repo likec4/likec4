@@ -51,6 +51,15 @@ function expectClearOf(card: NotePlacement, obstacles: readonly NoteObstacle[]) 
 }
 
 describe('placeNoteCards', () => {
+  it('models the compound heading and border as four obstacles', () => {
+    expect(compoundFrameObstacles({ x: -19, y: -19, width: 178, height: 158 }, 'group')).toEqual([
+      { bounds: { x: -19, y: -19, width: 178, height: 40 }, ownerId: 'group' },
+      { bounds: { x: -19, y: 21, width: 4, height: 118 }, ownerId: 'group' },
+      { bounds: { x: 155, y: 21, width: 4, height: 118 }, ownerId: 'group' },
+      { bounds: { x: -19, y: 135, width: 178, height: 4 }, ownerId: 'group' },
+    ])
+  })
+
   it('keeps architecture bounds when there are no notes', () => {
     expect(place([])).toEqual({ placements: [], bounds: architectureBounds })
   })
@@ -86,6 +95,9 @@ describe('placeNoteCards', () => {
     const frame = compoundFrameObstacles({ x: -50, y: -50, width: 200, height: 180 }, 'group')
     const card = place([target], frame).placements[0]!
     expectClearOf(card, frame)
+    expect(card.leader.to).toEqual({ x: 100, y: 40 })
+    expect(Math.hypot(card.leader.from.x - card.leader.to.x, card.leader.from.y - card.leader.to.y))
+      .toBeGreaterThan(NOTE_CARD_GAP * 2)
   })
 
   it('scores edge crossings after overlap and skips the target edge', () => {
