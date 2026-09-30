@@ -8,6 +8,17 @@ const viewUrl = '/project/e2e/view/note-cards-export/'
 const exportUrl = (format: 'png' | 'jpeg') =>
   `/project/e2e/export/note-cards-export/?padding=22${format === 'jpeg' ? '&format=jpeg' : ''}`
 
+function overlapArea(a: { x: number; y: number; width: number; height: number }, b: {
+  x: number
+  y: number
+  width: number
+  height: number
+}) {
+  const width = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x))
+  const height = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y))
+  return width * height
+}
+
 test('regular diagram shows full note cards and straight dashed leaders for their targets', async ({ page }) => {
   await page.goto(viewUrl)
 
@@ -44,6 +55,65 @@ test('regular diagram shows full note cards and straight dashed leaders for thei
   )
   expect(targets.map(target => target.targetType).sort()).toEqual(['edge', 'node'])
   expect(targets.every(target => target.hasCard && target.straight && target.dashed && target.hasDot)).toBe(true)
+
+  const elementNodes = page.locator('.react-flow__node-element')
+  await expect(elementNodes.first()).toBeVisible()
+  const elementBoxes = await Promise.all((await elementNodes.all()).map(element => element.boundingBox()))
+  for (const card of await cards.all()) {
+    const cardBox = await card.boundingBox()
+    expect(cardBox).not.toBeNull()
+    if (!cardBox) continue
+    for (const elementBox of elementBoxes) {
+      expect(elementBox).not.toBeNull()
+      if (!elementBox) continue
+      expect(overlapArea(cardBox, elementBox)).toBe(0)
+    }
+  }
+})
+
+test('element and relationship cards stay outside the compound frame', async ({ page }) => {
+  await page.goto('/project/e2e/view/note-cards-compound-frame/')
+  const cards = page.locator('[data-likec4-note-card]')
+  const frames = page.locator('.react-flow__node-compound-element')
+  await expect(cards).toHaveCount(2)
+  await expect(page.locator('[data-likec4-note-leaders] g[data-note-target]')).toHaveCount(2)
+  await expect(frames.first()).toBeVisible()
+
+  const frameBoxes = await Promise.all((await frames.all()).map(frame => frame.boundingBox()))
+  for (const card of await cards.all()) {
+    const cardBox = await card.boundingBox()
+    expect(cardBox).not.toBeNull()
+    if (!cardBox) continue
+    for (const frameBox of frameBoxes) {
+      expect(frameBox).not.toBeNull()
+      if (!frameBox) continue
+      expect(overlapArea(cardBox, frameBox)).toBe(0)
+    }
+  }
+})
+
+test('fit view includes both note cards in a narrow viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 700 })
+  await page.goto(viewUrl)
+  const canvas = page.locator('.react-flow').first()
+  const cards = page.locator('[data-likec4-note-card]')
+  await expect(cards).toHaveCount(2)
+  await page.locator('.react-flow__controls-fitview').click()
+
+  await expect.poll(async () => {
+    const frame = await canvas.boundingBox()
+    if (!frame) return false
+    for (const card of await cards.all()) {
+      const box = await card.boundingBox()
+      if (
+        !box || box.x < frame.x - 1 || box.y < frame.y - 1 ||
+        box.x + box.width > frame.x + frame.width + 1 || box.y + box.height > frame.y + frame.height + 1
+      ) {
+        return false
+      }
+    }
+    return true
+  }).toBe(true)
 })
 
 test('dynamic diagram shows relationship note cards, while sequence mode keeps its current treatment', async ({ page }) => {
