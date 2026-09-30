@@ -31,80 +31,8 @@ const elementDetailSchema = elementSummarySchema.extend({
 
 export const batchReadElements = likec4Tool({
   name: 'batch-read-elements',
-  description: `
-Read details of multiple elements in a single call, reducing round-trips.
-Returns a compact summary for each element including metadata, description, technology, shape, children, relationship counts, links and source location.
-
-Request:
-- ids: string[] — array of element ids (FQNs) to read (max 50)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response (JSON object):
-- elements: Array of element details, each with:
-  - id: string — element id (FQN)
-  - name: string — element name
-  - kind: string — element kind
-  - title: string — human-readable title
-  - description: string|null — optional description
-  - technology: string|null — optional technology
-  - tags: string[] — assigned tags
-  - metadata: Record<string, string | string[]> — element metadata
-  - shape: string — rendered shape
-  - color: string — rendered color
-  - children: string[] — direct child element ids
-  - incomingCount: number — number of incoming relationships
-  - outgoingCount: number — number of outgoing relationships
-  - includedInViews: View[] — views that include this element
-  - links: Array<{ title: string|null, url: string, relative: string|null }> — external links associated with this element
-  - sourceLocation: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location if available
-- notFound: string[] — ids that were not found in the project
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
-
-Notes:
-- Read-only, idempotent, no side effects.
-- Safe to call repeatedly.
-- Maximum 50 element ids per call.
-- Elements not found are listed in notFound array (not an error).
-- More efficient than multiple read-element calls when you need summary data for many elements.
-- Returns the same "links" and "sourceLocation" as read-element, so it fully replaces read-element for that case.
-- Call read-element only when you also need relationships, deployedInstances, defaultView or project.
-
-Example response:
-{
-  "elements": [
-    {
-      "id": "shop.frontend",
-      "name": "frontend",
-      "kind": "container",
-      "title": "Frontend",
-      "description": "User-facing web app",
-      "technology": "React",
-      "tags": ["public"],
-      "metadata": { "owner": "web-team" },
-      "shape": "browser",
-      "color": "#2F80ED",
-      "children": ["shop.frontend.auth"],
-      "incomingCount": 2,
-      "outgoingCount": 3,
-      "includedInViews": [
-        { "id": "system-overview", "title": "System Overview", "type": "element" }
-      ],
-      "links": [
-        { "title": "Documentation", "url": "https://docs.example.com/frontend", "relative": null }
-      ],
-      "sourceLocation": {
-        "path": "/abs/path/project/model.c4",
-        "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 25, "character": 0 } }
-      }
-    }
-  ],
-  "notFound": []
-}
-`,
+  description:
+    `Read summaries of up to 50 elements in one call: properties, metadata, children, relationship counts, the views that include them, links and source location. Ids not found are listed in notFound instead of failing the call. Use read-element only when you also need relationships, deployedInstances, defaultView or project.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,
