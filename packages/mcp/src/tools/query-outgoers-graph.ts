@@ -21,64 +21,8 @@ const neighborSchema = z.object({
 
 export const queryOutgoersGraph = likec4Tool({
   name: 'query-outgoers-graph',
-  description: `
-Query the complete graph of all elements that receive output from the target element (recursive outgoers/consumers).
-
-This tool performs a breadth-first traversal to discover all downstream dependencies - elements that directly or
-indirectly consume output from the target element. It returns the complete subgraph in a single response,
-making it much more efficient than repeated individual queries.
-
-Request:
-- elementId: string — target element id (FQN) to start from
-- includeIndirect: boolean (optional, default: true) — include relationships through nested elements
-- maxDepth: number (optional, default: 10, max: 50) — maximum traversal depth to prevent infinite recursion
-- maxNodes: number (optional, default: 200, max: 2000) — maximum number of nodes to return
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response Structure:
-{
-  "target": "element.id",
-  "totalNodes": number,
-  "maxDepth": number,
-  "truncated": boolean,
-  "nodes": {
-    "element.id": {
-      "id": "element.id",
-      "name": "name",
-      "kind": "kind",
-      "title": "title",
-      "tags": ["tag1", "tag2"],
-      "metadata": {},
-      "includedInViews": [...],
-      "outgoers": [
-        {
-          "elementId": "id1",
-          "relationshipLabel": "sends data to",
-          "technology": "Kafka"
-        }
-      ],
-      "depth": number
-    }
-  }
-}
-
-Use Cases:
-- Find all consumers/dependents of an element
-- Trace data lineage downstream
-- Assess impact of changes (blast radius)
-- Build complete consumer trees
-- Answer "what depends on this?" questions
-
-Notes:
-- Read-only, idempotent, no side effects
-- Cycle detection prevents infinite loops
-- Result size limited to maxNodes to prevent huge responses
-- If truncated=true, increase maxNodes or reduce maxDepth to get more specific results
-
-Example:
-For an API service, this returns all clients, services, and systems that consume its output,
-plus all their consumers, recursively up to maxDepth levels.
-`,
+  description:
+    `Recursive downstream traversal: every element that consumes output from the target, directly or transitively, returned as one graph with each node's depth and outgoers. Answers "what depends on this?" (blast radius) in one call instead of repeated query-graph calls. Stops at maxDepth or maxNodes; if truncated is true, raise maxNodes or lower maxDepth.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,
