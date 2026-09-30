@@ -249,12 +249,34 @@ export function NoteLayer({
         width: internal?.measured?.width ?? node.measured?.width ?? node.initialWidth ?? 0,
         height: internal?.measured?.height ?? node.measured?.height ?? node.initialHeight ?? 0,
       }
-      obstacles.push({
-        bounds: node.type?.startsWith('compound-') || node.type === 'view-group'
-          ? { ...bounds, height: Math.min(bounds.height, 40) }
-          : bounds,
-        ownerId: node.id,
-      })
+      if (node.type?.startsWith('compound-') || node.type === 'view-group') {
+        const border = 4
+        obstacles.push({ bounds: { ...bounds, height: Math.min(bounds.height, 40) }, ownerId: node.id })
+        obstacles.push({
+          bounds: { x: bounds.x, y: bounds.y + 40, width: border, height: Math.max(0, bounds.height - 40) },
+          ownerId: node.id,
+        })
+        obstacles.push({
+          bounds: {
+            x: bounds.x + bounds.width - border,
+            y: bounds.y + 40,
+            width: border,
+            height: Math.max(0, bounds.height - 40),
+          },
+          ownerId: node.id,
+        })
+        obstacles.push({
+          bounds: {
+            x: bounds.x,
+            y: bounds.y + bounds.height - border,
+            width: bounds.width,
+            height: border,
+          },
+          ownerId: node.id,
+        })
+      } else {
+        obstacles.push({ bounds, ownerId: node.id })
+      }
       const size = sizes[node.id]
       if (size && hasNotes(node.data.notes)) {
         targets.push({ id: node.id, kind: 'node', bounds, size })

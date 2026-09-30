@@ -101,6 +101,10 @@ function nodeCandidates(target: NodeNoteTarget): NotePlacement[] {
     { x: x - diagonalGap - cardWidth, y: y - diagonalGap - cardHeight, anchor: { x, y } },
     { x: midX - cardWidth / 2, y: y - NOTE_CARD_GAP - cardHeight, anchor: { x: midX, y } },
     { x: right + diagonalGap, y: y - diagonalGap - cardHeight, anchor: { x: right, y } },
+    { x: right + NOTE_CARD_GAP * 2, y: midY - cardHeight / 2, anchor: { x: right, y: midY } },
+    { x: midX - cardWidth / 2, y: bottom + NOTE_CARD_GAP * 2, anchor: { x: midX, y: bottom } },
+    { x: x - NOTE_CARD_GAP * 2 - cardWidth, y: midY - cardHeight / 2, anchor: { x, y: midY } },
+    { x: midX - cardWidth / 2, y: y - NOTE_CARD_GAP * 2 - cardHeight, anchor: { x: midX, y } },
   ]
   return candidates.map(({ x, y, anchor }) => {
     const bounds = { x, y, width: cardWidth, height: cardHeight }
@@ -120,7 +124,7 @@ function distanceToBox(point: XYPoint, box: BBox): number {
 }
 
 /** Move the card along a direction until its nearest boundary is one gap away. */
-function edgeCandidate(target: EdgeNoteTarget, direction: XYPoint): NotePlacement {
+function edgeCandidate(target: EdgeNoteTarget, direction: XYPoint, gap = NOTE_CARD_GAP): NotePlacement {
   const { anchor, size } = target
   const length = Math.hypot(direction.x, direction.y)
   const nx = direction.x / length
@@ -132,13 +136,13 @@ function edgeCandidate(target: EdgeNoteTarget, direction: XYPoint): NotePlacemen
     height: size.height,
   })
   let low = 0
-  let high = Math.max(size.width, size.height) + NOTE_CARD_GAP
-  while (distanceToBox(anchor, boxAt(high)) < NOTE_CARD_GAP) {
+  let high = Math.max(size.width, size.height) + gap
+  while (distanceToBox(anchor, boxAt(high)) < gap) {
     high *= 2
   }
   for (let i = 0; i < 32; i++) {
     const middle = (low + high) / 2
-    if (distanceToBox(anchor, boxAt(middle)) < NOTE_CARD_GAP) {
+    if (distanceToBox(anchor, boxAt(middle)) < gap) {
       low = middle
     } else {
       high = middle
@@ -159,14 +163,37 @@ function edgeCandidates(target: EdgeNoteTarget): NotePlacement[] {
   const normal = tangentLength > 1e-9
     ? { x: -tangent!.y / tangentLength, y: tangent!.x / tangentLength }
     : { x: 1, y: 0 }
-  return [
+  const directions = [
     normal,
     { x: -normal.x, y: -normal.y },
     { x: 1, y: 0 },
     { x: 0, y: 1 },
     { x: -1, y: 0 },
     { x: 0, y: -1 },
-  ].map(direction => edgeCandidate(target, direction))
+  ]
+  const candidates = directions.map(direction => edgeCandidate(target, direction))
+  // If both sides of the edge are occupied, move the card farther along the normal.
+  for (const direction of directions.slice(0, 2)) {
+    for (const gap of [NOTE_CARD_GAP + target.size.height / 2, NOTE_CARD_GAP + target.size.height]) {
+      const centered = edgeCandidate(target, direction, gap)
+      candidates.push(centered)
+      const slide = target.size.width / 4
+      const tangent = { x: -direction.y, y: direction.x }
+      for (const side of [-1, 1]) {
+        const bounds = {
+          ...centered.bounds,
+          x: centered.bounds.x + tangent.x * slide * side,
+          y: centered.bounds.y + tangent.y * slide * side,
+        }
+        candidates.push({
+          ...centered,
+          bounds,
+          leader: { from: nearestBoundaryPoint(bounds, target.anchor), to: target.anchor },
+        })
+      }
+    }
+  }
+  return candidates
 }
 
 function overlapArea(a: BBox, b: BBox): number {

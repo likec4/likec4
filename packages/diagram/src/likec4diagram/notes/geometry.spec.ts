@@ -40,6 +40,18 @@ describe('placeNoteCards', () => {
       .toBeCloseTo(NOTE_CARD_GAP)
   })
 
+  it('places a node card beyond its compound border', () => {
+    const compoundBorders = [
+      { bounds: { x: -19, y: -19, width: 178, height: 4 } },
+      { bounds: { x: -19, y: -19, width: 4, height: 158 } },
+      { bounds: { x: 155, y: -19, width: 4, height: 158 } },
+      { bounds: { x: -19, y: 135, width: 178, height: 4 } },
+    ]
+    const card = place([node], compoundBorders).placements[0]!
+    expect(card.bounds.x).toBeGreaterThanOrEqual(159)
+    expect(card.leader.to).toEqual({ x: 120, y: 60 })
+  })
+
   it('scores edge crossings after overlap and skips the target edge', () => {
     const rightCrossing = { from: { x: 132, y: 45 }, to: { x: 132, y: 75 }, ownerId: 'other' }
     const card = place([node], [], [rightCrossing]).placements[0]!
@@ -94,6 +106,39 @@ describe('placeNoteCards', () => {
     const lowerObstacle = { bounds: { x: -100, y: 100, width: 400, height: 200 } }
     const card = place([edge], [lowerObstacle]).placements[0]!
     expect(card.bounds.y + card.bounds.height).toBeCloseTo(80 - NOTE_CARD_GAP)
+  })
+
+  it('moves an edge card clear of nodes on both sides of the connection', () => {
+    const edge: EdgeNoteTarget = {
+      id: 'customer-dashboard',
+      kind: 'edge',
+      anchor: { x: 430, y: 90 },
+      tangent: { x: 1, y: 0 },
+      size: { width: NOTE_CARD_WIDTH, height: 180 },
+    }
+    const customer = { bounds: { x: 0, y: 0, width: 320, height: 180 } }
+    const dashboard = { bounds: { x: 560, y: 0, width: 320, height: 180 } }
+    const card = place([edge], [customer, dashboard]).placements[0]!
+    expect(card.bounds.y).toBeGreaterThanOrEqual(180)
+    expect(card.bounds.x).toBe(310)
+    expect(card.leader.to).toEqual(edge.anchor)
+  })
+
+  it('moves an edge card along the connection to clear a compound border', () => {
+    const edge: EdgeNoteTarget = {
+      id: 'customer-dashboard',
+      kind: 'edge',
+      anchor: { x: 430, y: 90 },
+      tangent: { x: 1, y: 0 },
+      size: { width: NOTE_CARD_WIDTH, height: 180 },
+    }
+    const customer = { bounds: { x: 0, y: 0, width: 320, height: 180 } }
+    const dashboard = { bounds: { x: 560, y: 0, width: 320, height: 180 } }
+    const compoundBorder = { bounds: { x: 540, y: 210, width: 400, height: 4 } }
+    const card = place([edge], [customer, dashboard, compoundBorder]).placements[0]!
+    expect(card.bounds.y).toBeGreaterThanOrEqual(180)
+    expect(card.bounds.x + card.bounds.width).toBeLessThanOrEqual(540)
+    expect(card.leader.to).toEqual(edge.anchor)
   })
 
   it('keeps a diagonal edge leader at the specified gap', () => {
