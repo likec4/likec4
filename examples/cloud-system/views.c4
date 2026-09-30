@@ -37,4 +37,28 @@ views {
       color custom
     }
   }
+
+  view noteCards {
+    title 'View notes for elements and connections'
+
+    include customer
+    include cloud.ui.dashboard with {
+      notes '''
+        **Customer Dashboard** is the browser entry point for account features.
+
+        This note applies to the dashboard in this view. Other views can give it different context.
+      '''
+    }
+    include customer -> cloud.ui.dashboard with {
+      title 'opens in browser'
+      notes '''
+        The customer opens the dashboard over HTTPS and signs in before using paid features.
+
+        - Browser traffic uses the public entry point.
+        - Account actions use this connection in this overview.
+      '''
+    }
+
+    autoLayout LeftRight
+  }
 }

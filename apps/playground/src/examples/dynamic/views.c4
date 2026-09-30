@@ -51,4 +51,26 @@ views {
       *,
       cloud.backend._
   }
+
+  view noteCards {
+    title 'View notes for elements and connections'
+
+    include customer
+    include cloud.ui.web with {
+      notes '''
+        **Customer Dashboard** is the browser entry point for this flow.
+
+        This note belongs to this view. It leaves the model definition of the dashboard unchanged.
+      '''
+    }
+    include customer -> cloud.ui.web with {
+      notes '''
+        The customer opens the dashboard over a secure browser connection.
+
+        The dashed line from this card points to the connection, not to either element.
+      '''
+    }
+
+    autoLayout LeftRight
+  }
 }
