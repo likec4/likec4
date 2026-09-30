@@ -34,6 +34,35 @@ export interface NoteObstacle {
   ownerId?: string
 }
 
+/** Keep cards off a compound's heading and visible border while leaving its interior free. */
+export function compoundFrameObstacles(bounds: BBox, ownerId: string): NoteObstacle[] {
+  const headerHeight = Math.min(bounds.height, 40)
+  const border = 4
+  const sideHeight = Math.max(0, bounds.height - headerHeight)
+  return [
+    { bounds: { ...bounds, height: headerHeight }, ownerId },
+    { bounds: { x: bounds.x, y: bounds.y + headerHeight, width: border, height: sideHeight }, ownerId },
+    {
+      bounds: {
+        x: bounds.x + bounds.width - border,
+        y: bounds.y + headerHeight,
+        width: border,
+        height: sideHeight,
+      },
+      ownerId,
+    },
+    {
+      bounds: {
+        x: bounds.x,
+        y: bounds.y + bounds.height - border,
+        width: bounds.width,
+        height: border,
+      },
+      ownerId,
+    },
+  ]
+}
+
 export interface NoteSegment {
   from: XYPoint
   to: XYPoint
@@ -178,12 +207,12 @@ function edgeCandidates(target: EdgeNoteTarget): NotePlacement[] {
       const centered = edgeCandidate(target, direction, gap)
       candidates.push(centered)
       const slide = target.size.width / 4
-      const tangent = { x: -direction.y, y: direction.x }
+      const slideAxis = { x: -direction.y, y: direction.x }
       for (const side of [-1, 1]) {
         const bounds = {
           ...centered.bounds,
-          x: centered.bounds.x + tangent.x * slide * side,
-          y: centered.bounds.y + tangent.y * slide * side,
+          x: centered.bounds.x + slideAxis.x * slide * side,
+          y: centered.bounds.y + slideAxis.y * slide * side,
         }
         candidates.push({
           ...centered,
@@ -266,6 +295,50 @@ function better(a: readonly number[], b: readonly number[]): boolean {
   return false
 }
 
+/** Move a blocked card outward until it clears nearby bodies, within one card span. */
+function nudgeClear(
+  candidate: NotePlacement,
+  obstacles: readonly NoteObstacle[],
+  placed: readonly NotePlacement[],
+): NotePlacement | null {
+  const { from, to } = candidate.leader
+  const length = Math.hypot(from.x - to.x, from.y - to.y)
+  if (length < 1e-9) return null
+  const direction = { x: (from.x - to.x) / length, y: (from.y - to.y) / length }
+  const blockers = [
+    ...obstacles.filter(obstacle => obstacle.ownerId !== candidate.id).map(obstacle => obstacle.bounds),
+    ...placed.map(card => card.bounds),
+  ]
+  const maxOffset = Math.max(candidate.bounds.width, candidate.bounds.height)
+  let moved = 0
+  let bounds = candidate.bounds
+  for (let attempt = 0; attempt <= blockers.length; attempt++) {
+    const overlapping = blockers.filter(blocker => overlapArea(bounds, blocker) > 0)
+    if (overlapping.length === 0) {
+      return {
+        ...candidate,
+        bounds,
+        leader: { from: nearestBoundaryPoint(bounds, to), to },
+      }
+    }
+    let step = 0
+    for (const blocker of overlapping) {
+      const exits: number[] = []
+      if (direction.x > 1e-9) exits.push((blocker.x + blocker.width - bounds.x) / direction.x)
+      if (direction.x < -1e-9) exits.push((blocker.x - bounds.x - bounds.width) / direction.x)
+      if (direction.y > 1e-9) exits.push((blocker.y + blocker.height - bounds.y) / direction.y)
+      if (direction.y < -1e-9) exits.push((blocker.y - bounds.y - bounds.height) / direction.y)
+      if (exits.length === 0) return null
+      step = Math.max(step, Math.min(...exits))
+    }
+    step += NOTE_TARGET_DOT_RADIUS + 1
+    moved += step
+    if (moved > maxOffset) return null
+    bounds = { ...bounds, x: bounds.x + direction.x * step, y: bounds.y + direction.y * step }
+  }
+  return null
+}
+
 function contentBounds(architectureBounds: BBox, placements: readonly NotePlacement[]): BBox {
   let minX = architectureBounds.x
   let minY = architectureBounds.y
@@ -299,6 +372,15 @@ export function placeNoteCards(
       if (better(candidateScore, bestScore)) {
         best = candidate
         bestScore = candidateScore
+      }
+    }
+    if (bestScore[0] > 0) {
+      const nudged = nudgeClear(best, obstacles, placements)
+      if (nudged) {
+        const nudgedScore = score(nudged, target.id, obstacles, segments, placements)
+        if (better(nudgedScore, bestScore)) {
+          best = nudged
+        }
       }
     }
     placements.push(best)

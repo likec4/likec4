@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { type EdgeNoteTarget, type NodeNoteTarget, NOTE_CARD_GAP, NOTE_CARD_WIDTH, placeNoteCards } from './geometry'
+import {
+  type EdgeNoteTarget,
+  type NodeNoteTarget,
+  type NoteObstacle,
+  type NotePlacement,
+  compoundFrameObstacles,
+  NOTE_CARD_GAP,
+  NOTE_CARD_WIDTH,
+  placeNoteCards,
+} from './geometry'
 
 const architectureBounds = { x: 0, y: 0, width: 200, height: 120 }
 const node: NodeNoteTarget = {
@@ -15,6 +24,30 @@ function place(
   segments = [] as { from: { x: number; y: number }; to: { x: number; y: number }; ownerId?: string }[],
 ) {
   return placeNoteCards({ architectureBounds, targets, obstacles, segments })
+}
+
+function expectClearOf(card: NotePlacement, obstacles: readonly NoteObstacle[]) {
+  for (const { bounds } of obstacles) {
+    const width = Math.max(
+      0,
+      Math.min(card.bounds.x + card.bounds.width, bounds.x + bounds.width) - Math.max(card.bounds.x, bounds.x),
+    )
+    const height = Math.max(
+      0,
+      Math.min(card.bounds.y + card.bounds.height, bounds.y + bounds.height) - Math.max(card.bounds.y, bounds.y),
+    )
+    expect(width * height).toBe(0)
+  }
+  const { from } = card.leader
+  const { x, y, width, height } = card.bounds
+  expect(from.x).toBeGreaterThanOrEqual(x)
+  expect(from.x).toBeLessThanOrEqual(x + width)
+  expect(from.y).toBeGreaterThanOrEqual(y)
+  expect(from.y).toBeLessThanOrEqual(y + height)
+  expect(
+    [x, x + width].some(side => Math.abs(from.x - side) < 1e-6) ||
+      [y, y + height].some(side => Math.abs(from.y - side) < 1e-6),
+  ).toBe(true)
 }
 
 describe('placeNoteCards', () => {
@@ -41,15 +74,18 @@ describe('placeNoteCards', () => {
   })
 
   it('places a node card beyond its compound border', () => {
-    const compoundBorders = [
-      { bounds: { x: -19, y: -19, width: 178, height: 4 } },
-      { bounds: { x: -19, y: -19, width: 4, height: 158 } },
-      { bounds: { x: 155, y: -19, width: 4, height: 158 } },
-      { bounds: { x: -19, y: 135, width: 178, height: 4 } },
-    ]
+    const compoundBorders = compoundFrameObstacles({ x: -19, y: -19, width: 178, height: 158 }, 'group')
     const card = place([node], compoundBorders).placements[0]!
     expect(card.bounds.x).toBeGreaterThanOrEqual(159)
     expect(card.leader.to).toEqual({ x: 120, y: 60 })
+    expectClearOf(card, compoundBorders)
+  })
+
+  it('clears a compound border when 48 units of space is not enough', () => {
+    const target: NodeNoteTarget = { ...node, bounds: { x: 0, y: 0, width: 100, height: 80 } }
+    const frame = compoundFrameObstacles({ x: -50, y: -50, width: 200, height: 180 }, 'group')
+    const card = place([target], frame).placements[0]!
+    expectClearOf(card, frame)
   })
 
   it('scores edge crossings after overlap and skips the target edge', () => {
@@ -122,6 +158,7 @@ describe('placeNoteCards', () => {
     expect(card.bounds.y).toBeGreaterThanOrEqual(180)
     expect(card.bounds.x).toBe(310)
     expect(card.leader.to).toEqual(edge.anchor)
+    expectClearOf(card, [customer, dashboard])
   })
 
   it('moves an edge card along the connection to clear a compound border', () => {
@@ -138,6 +175,22 @@ describe('placeNoteCards', () => {
     const card = place([edge], [customer, dashboard, compoundBorder]).placements[0]!
     expect(card.bounds.y).toBeGreaterThanOrEqual(180)
     expect(card.bounds.x + card.bounds.width).toBeLessThanOrEqual(540)
+    expect(card.leader.to).toEqual(edge.anchor)
+    expectClearOf(card, [customer, dashboard, compoundBorder])
+  })
+
+  it('nudges a short edge card past taller elements', () => {
+    const edge: EdgeNoteTarget = {
+      id: 'customer-dashboard',
+      kind: 'edge',
+      anchor: { x: 430, y: 150 },
+      tangent: { x: 1, y: 0 },
+      size: { width: NOTE_CARD_WIDTH, height: 60 },
+    }
+    const customer = { bounds: { x: 0, y: 0, width: 320, height: 300 } }
+    const dashboard = { bounds: { x: 560, y: 0, width: 320, height: 300 } }
+    const card = place([edge], [customer, dashboard]).placements[0]!
+    expectClearOf(card, [customer, dashboard])
     expect(card.leader.to).toEqual(edge.anchor)
   })
 
