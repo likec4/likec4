@@ -50,6 +50,7 @@ const content = css({
   lineHeight: '[1.45]',
   '& img': { maxWidth: '100%', height: 'auto' },
   '& pre': { whiteSpace: 'pre-wrap', overflowX: 'visible', overflowWrap: 'anywhere' },
+  '& pre .code-line': { minWidth: '0' },
   '& table': { maxWidth: '100%', tableLayout: 'fixed', overflowWrap: 'anywhere' },
   '& a': { textDecoration: 'underline', color: 'inherit' },
 })

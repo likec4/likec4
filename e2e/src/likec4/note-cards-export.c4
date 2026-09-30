@@ -34,6 +34,10 @@ views {
       notes '''
         This long element note belongs to the Cloud System Customer. It stays visible in the export at a fixed card width, even when the text wraps over several lines. The complete text must fit inside the exported image.
 
+        ```typescript
+        const this_is_a_long_code_identifier_that_has_seventy_or_more_characters_in_one_line = true
+        ```
+
         ![Note image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iNzIiPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iNzIiIGZpbGw9IiNkM2I0NWEiLz48dGV4dCB4PSIxMiIgeT0iNDIiIGZvbnQtc2l6ZT0iMjAiPk5vdGUgaW1hZ2U8L3RleHQ+PC9zdmc+)
       '''
     }

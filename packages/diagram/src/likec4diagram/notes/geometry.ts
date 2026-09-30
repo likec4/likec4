@@ -146,38 +146,18 @@ function nodeCandidates(target: NodeNoteTarget): NotePlacement[] {
   })
 }
 
-function distanceToBox(point: XYPoint, box: BBox): number {
-  const dx = Math.max(box.x - point.x, 0, point.x - box.x - box.width)
-  const dy = Math.max(box.y - point.y, 0, point.y - box.y - box.height)
-  return Math.hypot(dx, dy)
-}
-
-/** Move the card along a direction until its nearest boundary is one gap away. */
+/** Place the nearest card boundary one gap away along the direction. */
 function edgeCandidate(target: EdgeNoteTarget, direction: XYPoint, gap = NOTE_CARD_GAP): NotePlacement {
   const { anchor, size } = target
   const length = Math.hypot(direction.x, direction.y)
   const nx = direction.x / length
   const ny = direction.y / length
-  const boxAt = (distance: number): BBox => ({
-    x: anchor.x + nx * distance - size.width / 2,
-    y: anchor.y + ny * distance - size.height / 2,
+  const bounds = {
+    x: anchor.x + nx * gap + (Math.sign(nx) - 1) * size.width / 2,
+    y: anchor.y + ny * gap + (Math.sign(ny) - 1) * size.height / 2,
     width: size.width,
     height: size.height,
-  })
-  let low = 0
-  let high = Math.max(size.width, size.height) + gap
-  while (distanceToBox(anchor, boxAt(high)) < gap) {
-    high *= 2
   }
-  for (let i = 0; i < 32; i++) {
-    const middle = (low + high) / 2
-    if (distanceToBox(anchor, boxAt(middle)) < gap) {
-      low = middle
-    } else {
-      high = middle
-    }
-  }
-  const bounds = boxAt(high)
   return {
     id: target.id,
     kind: target.kind,
@@ -199,6 +179,10 @@ function edgeCandidates(target: EdgeNoteTarget): NotePlacement[] {
     { x: 0, y: 1 },
     { x: -1, y: 0 },
     { x: 0, y: -1 },
+    { x: 1, y: 1 },
+    { x: -1, y: 1 },
+    { x: -1, y: -1 },
+    { x: 1, y: -1 },
   ]
   const candidates = directions.map(direction => edgeCandidate(target, direction))
   // If both sides of the edge are occupied, move the card farther along the normal.
@@ -237,6 +221,12 @@ function cross(a: XYPoint, b: XYPoint, c: XYPoint): number {
 
 /** Proper intersections and collinear overlap count; shared endpoints do not. */
 function segmentsCross(a: NoteSegment, b: NoteSegment): boolean {
+  if (
+    Math.max(a.from.x, a.to.x) < Math.min(b.from.x, b.to.x) ||
+    Math.max(b.from.x, b.to.x) < Math.min(a.from.x, a.to.x) ||
+    Math.max(a.from.y, a.to.y) < Math.min(b.from.y, b.to.y) ||
+    Math.max(b.from.y, b.to.y) < Math.min(a.from.y, a.to.y)
+  ) return false
   const ab1 = cross(a.from, a.to, b.from)
   const ab2 = cross(a.from, a.to, b.to)
   const ba1 = cross(b.from, b.to, a.from)
@@ -253,13 +243,44 @@ function segmentsCross(a: NoteSegment, b: NoteSegment): boolean {
   return ab1 * ab2 < -epsilon && ba1 * ba2 < -epsilon
 }
 
+/** Length hidden behind a box; touching the box boundary does not hide a line. */
+function coveredLength(segment: NoteSegment, box: BBox): number {
+  if (
+    Math.max(segment.from.x, segment.to.x) <= box.x ||
+    Math.min(segment.from.x, segment.to.x) >= box.x + box.width ||
+    Math.max(segment.from.y, segment.to.y) <= box.y ||
+    Math.min(segment.from.y, segment.to.y) >= box.y + box.height
+  ) return 0
+  let start = 0
+  let end = 1
+  for (const [axis, extent] of [['x', 'width'], ['y', 'height']] as const) {
+    const delta = segment.to[axis] - segment.from[axis]
+    const lower = box[axis] + 1e-6
+    const upper = box[axis] + box[extent] - 1e-6
+    if (lower >= upper) return 0
+    if (Math.abs(delta) < 1e-9) {
+      if (segment.from[axis] <= lower || segment.from[axis] >= upper) return 0
+    } else {
+      const a = (lower - segment.from[axis]) / delta
+      const b = (upper - segment.from[axis]) / delta
+      start = Math.max(start, Math.min(a, b))
+      end = Math.min(end, Math.max(a, b))
+      if (end <= start) return 0
+    }
+  }
+  return (end - start) * Math.hypot(segment.to.x - segment.from.x, segment.to.y - segment.from.y)
+}
+
+type CandidateScore = [overlap: number, occlusion: number, crossings: number, leaderLength: number]
+
 function score(
   candidate: NotePlacement,
   targetId: string,
   obstacles: readonly NoteObstacle[],
   segments: readonly NoteSegment[],
   placed: readonly NotePlacement[],
-): [overlap: number, crossings: number, leaderLength: number] {
+  best?: CandidateScore,
+): CandidateScore {
   let overlap = 0
   for (const obstacle of obstacles) {
     if (obstacle.ownerId !== targetId) {
@@ -268,6 +289,21 @@ function score(
   }
   for (const card of placed) {
     overlap += overlapArea(candidate.bounds, card.bounds)
+  }
+  if (best && overlap > best[0] + 1e-6) return [overlap, Infinity, Infinity, Infinity]
+  let occlusion = 0
+  for (const obstacle of obstacles) {
+    if (obstacle.ownerId !== targetId) occlusion += coveredLength(candidate.leader, obstacle.bounds)
+  }
+  for (const card of placed) {
+    occlusion += coveredLength(candidate.leader, card.bounds)
+    occlusion += coveredLength(card.leader, candidate.bounds)
+  }
+  for (const segment of segments) {
+    occlusion += coveredLength(segment, candidate.bounds)
+  }
+  if (best && Math.abs(overlap - best[0]) < 1e-6 && occlusion > best[1] + 1e-6) {
+    return [overlap, occlusion, Infinity, Infinity]
   }
   let crossings = 0
   for (const segment of segments) {
@@ -282,6 +318,7 @@ function score(
   }
   return [
     overlap,
+    occlusion,
     crossings,
     Math.hypot(candidate.leader.to.x - candidate.leader.from.x, candidate.leader.to.y - candidate.leader.from.y),
   ]
@@ -295,11 +332,12 @@ function better(a: readonly number[], b: readonly number[]): boolean {
   return false
 }
 
-/** Move a blocked card outward until it clears nearby bodies, within one card span. */
+/** Move a blocked card outward until it clears bodies, cards, and target dots. */
 function nudgeClear(
   candidate: NotePlacement,
   obstacles: readonly NoteObstacle[],
   placed: readonly NotePlacement[],
+  maxOffset = Math.max(candidate.bounds.width, candidate.bounds.height),
 ): NotePlacement | null {
   const { from, to } = candidate.leader
   const length = Math.hypot(from.x - to.x, from.y - to.y)
@@ -309,9 +347,8 @@ function nudgeClear(
     ...obstacles.filter(obstacle => obstacle.ownerId !== candidate.id).map(obstacle => obstacle.bounds),
     ...placed.map(card => card.bounds),
   ]
-  const maxOffset = Math.max(candidate.bounds.width, candidate.bounds.height)
   let moved = 0
-  let bounds = candidate.bounds
+  const bounds = { ...candidate.bounds }
   for (let attempt = 0; attempt <= blockers.length; attempt++) {
     const overlapping = blockers.filter(blocker => overlapArea(bounds, blocker) > 0)
     if (overlapping.length === 0) {
@@ -334,9 +371,19 @@ function nudgeClear(
     step += NOTE_TARGET_DOT_RADIUS + 1
     moved += step
     if (moved > maxOffset) return null
-    bounds = { ...bounds, x: bounds.x + direction.x * step, y: bounds.y + direction.y * step }
+    bounds.x += direction.x * step
+    bounds.y += direction.y * step
   }
   return null
+}
+
+function targetDotBounds(point: XYPoint): BBox {
+  return {
+    x: point.x - NOTE_TARGET_DOT_RADIUS,
+    y: point.y - NOTE_TARGET_DOT_RADIUS,
+    width: NOTE_TARGET_DOT_RADIUS * 2,
+    height: NOTE_TARGET_DOT_RADIUS * 2,
+  }
 }
 
 function contentBounds(architectureBounds: BBox, placements: readonly NotePlacement[]): BBox {
@@ -363,27 +410,45 @@ export function placeNoteCards(
     return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
   })
   const placements: NotePlacement[] = []
+  // ponytail: scan a readable note set; add spatial indexing only if normal views become slow.
+  const protectedObstacles = [...obstacles]
+  // Protect relationship target dots before node cards are placed.
+  for (const target of ordered) {
+    if (target.kind !== 'edge') continue
+    protectedObstacles.push({
+      ownerId: target.id,
+      bounds: targetDotBounds(target.anchor),
+    })
+  }
   for (const target of ordered) {
     const candidates = target.kind === 'node' ? nodeCandidates(target) : edgeCandidates(target)
     let best = candidates[0]!
-    let bestScore = score(best, target.id, obstacles, segments, placements)
+    let bestScore = score(best, target.id, protectedObstacles, segments, placements)
     for (const candidate of candidates.slice(1)) {
-      const candidateScore = score(candidate, target.id, obstacles, segments, placements)
+      const candidateScore = score(candidate, target.id, protectedObstacles, segments, placements, bestScore)
       if (better(candidateScore, bestScore)) {
         best = candidate
         bestScore = candidateScore
       }
     }
-    if (bestScore[0] > 0) {
-      const nudged = nudgeClear(best, obstacles, placements)
-      if (nudged) {
-        const nudgedScore = score(nudged, target.id, obstacles, segments, placements)
+    // Prefer a nearby nudge; extend farther only when all nearby positions are occupied.
+    for (const maxOffset of [Math.max(target.size.width, target.size.height), Infinity]) {
+      if (bestScore[0] === 0 && (bestScore[1] === 0 || maxOffset === Infinity)) break
+      for (const candidate of candidates) {
+        const nudged = nudgeClear(candidate, protectedObstacles, placements, maxOffset)
+        if (!nudged) continue
+        const nudgedScore = score(nudged, target.id, protectedObstacles, segments, placements, bestScore)
         if (better(nudgedScore, bestScore)) {
           best = nudged
+          bestScore = nudgedScore
         }
       }
     }
     placements.push(best)
+    protectedObstacles.push({
+      ownerId: best.id,
+      bounds: targetDotBounds(best.leader.to),
+    })
   }
   return { placements, bounds: contentBounds(architectureBounds, placements) }
 }

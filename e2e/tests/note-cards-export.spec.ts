@@ -29,6 +29,18 @@ test('regular diagram shows full note cards and straight dashed leaders for thei
   await expect(cards.nth(1)).toBeVisible()
   await expect(cards.filter({ hasText: 'The complete text must fit inside the exported image.' })).toHaveCount(1)
   await expect(cards.filter({ hasText: 'Its dashed leader and target dot must remain visible' })).toHaveCount(1)
+  await expect(cards.locator('.code-line')).toHaveText(
+    'const this_is_a_long_code_identifier_that_has_seventy_or_more_characters_in_one_line = true',
+  )
+  for (const card of await cards.all()) {
+    const size = await card.evaluate(element => ({
+      width: element instanceof HTMLElement ? element.offsetWidth : 0,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+    }))
+    expect(size.width).toBe(240)
+    expect(size.scrollWidth).toBeLessThanOrEqual(size.clientWidth + 1)
+  }
   await expect(leaders).toHaveCount(2)
   await expect(page.locator('.react-flow__node-element .__paper-front')).toHaveCount(0)
 
@@ -275,6 +287,9 @@ for (const format of ['png', 'jpeg'] as const) {
       expect(box.y).toBeGreaterThanOrEqual(diagramArea.y - 1)
       expect(box.x + box.width).toBeLessThanOrEqual(diagramArea.x + diagramArea.width + 1)
       expect(box.y + box.height).toBeLessThanOrEqual(diagramArea.y + diagramArea.height + 1)
+    }
+    for (const card of await cards.all()) {
+      expect(await card.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
     }
 
     const screenshot = await exportPage.screenshot({ type: format, scale: 'css' })

@@ -234,59 +234,66 @@ export function NoteLayer({
 
   const measured = measurement.key === noteKey && notes.every(note => (measurement.sizes[note.id]?.height ?? 0) > 0)
   const sizes = measurement.sizes
-  const targets: NoteTarget[] = []
-  const obstacles: { bounds: BBox; ownerId?: string }[] = []
-  const segments: { from: XYPoint; to: XYPoint; ownerId?: string }[] = []
-  if (active && measured) {
-    const state = xystore.getState()
-    const visibleNodes = new Set(nodes.filter(node => !node.hidden).map(node => node.id))
-    for (const node of nodes) {
-      if (node.hidden) continue
-      const internal = state.nodeLookup.get(node.id)
-      const position = internal?.internals.positionAbsolute ?? node.data
-      const bounds = {
-        x: position.x,
-        y: position.y,
-        width: internal?.measured?.width ?? node.measured?.width ?? node.initialWidth ?? 0,
-        height: internal?.measured?.height ?? node.measured?.height ?? node.initialHeight ?? 0,
+  const geometry = useMemo(() => {
+    const targets: NoteTarget[] = []
+    const obstacles: { bounds: BBox; ownerId?: string }[] = []
+    const segments: { from: XYPoint; to: XYPoint; ownerId?: string }[] = []
+    if (active && measured) {
+      const state = xystore.getState()
+      const visibleNodes = new Set(nodes.filter(node => !node.hidden).map(node => node.id))
+      for (const node of nodes) {
+        if (node.hidden) continue
+        const internal = state.nodeLookup.get(node.id)
+        const position = internal?.internals.positionAbsolute ?? node.data
+        const bounds = {
+          x: position.x,
+          y: position.y,
+          width: internal?.measured?.width ?? node.measured?.width ?? node.initialWidth ?? 0,
+          height: internal?.measured?.height ?? node.measured?.height ?? node.initialHeight ?? 0,
+        }
+        if (node.type?.startsWith('compound-') || node.type === 'view-group') {
+          obstacles.push(...compoundFrameObstacles(bounds, node.id))
+        } else {
+          obstacles.push({ bounds, ownerId: node.id })
+        }
+        const size = sizes[node.id]
+        if (size && hasNotes(node.data.notes)) {
+          targets.push({ id: node.id, kind: 'node', bounds, size })
+        }
       }
-      if (node.type?.startsWith('compound-') || node.type === 'view-group') {
-        obstacles.push(...compoundFrameObstacles(bounds, node.id))
-      } else {
-        obstacles.push({ bounds, ownerId: node.id })
-      }
-      const size = sizes[node.id]
-      if (size && hasNotes(node.data.notes)) {
-        targets.push({ id: node.id, kind: 'node', bounds, size })
+      for (const edge of edges) {
+        if (
+          edge.hidden || edge.type !== 'relationship' || !visibleNodes.has(edge.source)
+          || !visibleNodes.has(edge.target)
+        ) continue
+        const route = routes.key === routeKey ? routes.byId[edge.id] : undefined
+        if (route) segments.push(...route.segments)
+        if (edge.data.labelBBox) {
+          obstacles.push({ bounds: edge.data.labelBBox })
+        }
+        if (!hasNotes(edge.data.notes)) continue
+        const size = sizes[edge.id]
+        if (!size) continue
+        targets.push({
+          id: edge.id,
+          kind: 'edge',
+          anchor: route?.anchor ?? midpoint(edge.data.points),
+          ...(route?.tangent && { tangent: route.tangent }),
+          size,
+        })
       }
     }
-    for (const edge of edges) {
-      if (
-        edge.hidden || edge.type !== 'relationship' || !visibleNodes.has(edge.source)
-        || !visibleNodes.has(edge.target)
-      ) continue
-      const route = routes.key === routeKey ? routes.byId[edge.id] : undefined
-      if (route) segments.push(...route.segments)
-      if (edge.data.labelBBox) {
-        obstacles.push({ bounds: edge.data.labelBBox })
-      }
-      if (!hasNotes(edge.data.notes)) continue
-      const size = sizes[edge.id]
-      if (!size) continue
-      targets.push({
-        id: edge.id,
-        kind: 'edge',
-        anchor: route?.anchor ?? midpoint(edge.data.points),
-        ...(route?.tangent && { tangent: route.tangent }),
-        size,
-      })
-    }
-  }
-  // Read these subscriptions when node positions or the rendered edge path changes.
-  void xyNodes
-  const result = active && measured
-    ? placeNoteCards({ architectureBounds, targets, obstacles, segments })
-    : null
+    return { architectureBounds, targets, obstacles, segments }
+  }, [active, measured, sizes, xystore, xyNodes, nodes, edges, routes, routeKey, architectureBounds])
+  const { targets } = geometry
+  const stableResult = settled?.key === noteKey ? settled.result : null
+  const frozenResult = dragging ? stableResult : null
+  const result = useMemo(() => active && measured ? frozenResult ?? placeNoteCards(geometry) : null, [
+    active,
+    measured,
+    frozenResult,
+    geometry,
+  ])
   const resultKey = JSON.stringify(result)
   useEffect(() => {
     if (dragging || !result) return
@@ -299,7 +306,6 @@ export function NoteLayer({
     })
     return () => cancelAnimationFrame(frame)
   }, [dragging, noteKey, resultKey])
-  const stableResult = settled?.key === noteKey ? settled.result : null
   const displayResult = dragging && stableResult
     ? {
       ...stableResult,

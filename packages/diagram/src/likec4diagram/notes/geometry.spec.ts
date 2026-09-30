@@ -111,6 +111,39 @@ describe('placeNoteCards', () => {
     expect(ownCard.bounds.x).toBe(144)
   })
 
+  it('keeps a node card off a relationship path that does not cross its leader', () => {
+    const relationship = { from: { x: 160, y: 60 }, to: { x: 400, y: 60 }, ownerId: 'other' }
+    const card = place([node], [], [relationship]).placements[0]!
+    expect(card.bounds.y).toBeGreaterThan(100)
+  })
+
+  it('keeps a relationship leader out of a nearby label', () => {
+    const edge: EdgeNoteTarget = {
+      id: 'api-db',
+      kind: 'edge',
+      anchor: { x: 0, y: 0 },
+      tangent: { x: 1, y: 0 },
+      size: { width: NOTE_CARD_WIDTH, height: 60 },
+    }
+    const label = { bounds: { x: -30, y: 2, width: 60, height: 20 } }
+    const card = place([edge], [label]).placements[0]!
+    expect(card.bounds.y + card.bounds.height).toBeLessThan(0)
+    expect(card.leader.to).toEqual(edge.anchor)
+  })
+
+  it('protects a relationship target dot before placing node cards', () => {
+    const edge: EdgeNoteTarget = {
+      id: 'api-db',
+      kind: 'edge',
+      anchor: { x: 200, y: 60 },
+      tangent: { x: 1, y: 0 },
+      size: { width: NOTE_CARD_WIDTH, height: 60 },
+    }
+    const result = place([node, edge])
+    expectClearOf(result.placements[0]!, [{ bounds: { x: 197, y: 57, width: 6, height: 6 } }])
+    expectClearOf(result.placements[1]!, [{ bounds: result.placements[0]!.bounds }])
+  })
+
   it('sorts nodes before edges by ID and avoids previously placed cards', () => {
     const laterNode = { ...node, id: 'z' }
     const firstNode = { ...node, id: 'a' }
@@ -125,6 +158,7 @@ describe('placeNoteCards', () => {
     expect(result.placements.map(p => p.id)).toEqual(['a', 'z', '0'])
     expect(result.placements[0]!.bounds).toEqual({ x: 144, y: 30, width: 240, height: 60 })
     expect(result.placements[1]!.bounds.y).toBeGreaterThan(100)
+    expect(place([firstNode, laterNode, edge])).toEqual(result)
   })
 
   it('places an edge card on the path normal with a straight 24-unit leader', () => {
@@ -206,7 +240,27 @@ describe('placeNoteCards', () => {
     expect(card.leader.to).toEqual(edge.anchor)
   })
 
-  it('keeps a diagonal edge leader at the specified gap', () => {
+  it('nudges another candidate when the best initial direction cannot clear a body nearby', () => {
+    const edge: EdgeNoteTarget = {
+      id: 'api-db',
+      kind: 'edge',
+      anchor: { x: 0, y: 0 },
+      tangent: { x: 0, y: 1 },
+      size: { width: NOTE_CARD_WIDTH, height: 60 },
+    }
+    const bodies = [
+      { bounds: { x: -200, y: -100, width: 100, height: 200 } },
+      { bounds: { x: 250, y: -300, width: 500, height: 600 } },
+      { bounds: { x: -50, y: -300, width: 100, height: 100 } },
+      { bounds: { x: -50, y: 200, width: 100, height: 100 } },
+    ]
+    const path = { from: { x: 0, y: -200 }, to: { x: 0, y: 200 }, ownerId: edge.id }
+    const card = place([edge], bodies, [path]).placements[0]!
+    expectClearOf(card, bodies)
+    expect(Math.hypot(card.leader.from.x, card.leader.from.y)).toBeLessThan(NOTE_CARD_WIDTH)
+  })
+
+  it('keeps a diagonal edge leader on the normal at the specified gap', () => {
     const edge: EdgeNoteTarget = {
       id: 'api-db',
       kind: 'edge',
@@ -215,6 +269,8 @@ describe('placeNoteCards', () => {
       size: { width: NOTE_CARD_WIDTH, height: 80 },
     }
     const card = place([edge]).placements[0]!
+    expect(card.leader.from.x - card.leader.to.x).toBeCloseTo(-NOTE_CARD_GAP / Math.SQRT2)
+    expect(card.leader.from.y - card.leader.to.y).toBeCloseTo(NOTE_CARD_GAP / Math.SQRT2)
     expect(Math.hypot(card.leader.to.x - card.leader.from.x, card.leader.to.y - card.leader.from.y))
       .toBeCloseTo(NOTE_CARD_GAP)
   })
@@ -237,6 +293,7 @@ describe('placeNoteCards', () => {
     const result = place([node], [obstacle])
     expect(result.placements).toHaveLength(1)
     expect(result.placements[0]!.bounds.width).toBe(NOTE_CARD_WIDTH)
+    expectClearOf(result.placements[0]!, [obstacle])
     expect(result.bounds.width).toBeGreaterThan(architectureBounds.width)
   })
 })
