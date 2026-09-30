@@ -209,6 +209,7 @@ const customElementProperties = z.object({
   size: common.size,
   padding: common.size,
   textSize: common.size,
+  sizing: common.sizing,
 }).partial()
 
 const customRelationProperties = z.object({

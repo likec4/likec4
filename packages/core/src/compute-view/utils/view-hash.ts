@@ -26,6 +26,8 @@ export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 
         multiple: n.style.multiple ?? null,
         textSize: n.style.textSize ?? null,
         padding: n.style.padding ?? null,
+        // Only when set, to keep existing hashes stable
+        ...(n.style.sizing && { sizing: n.style.sizing }),
         children: n.children,
       })),
       mapToObj(({ id, ...node }) => [id, node]),

@@ -77,6 +77,7 @@ describe('LikeC4CompletionProvider', () => {
         'textSize',
         'iconSize',
         'iconPosition',
+        'sizing',
       ],
     })
     await completion({
@@ -584,6 +585,7 @@ describe('LikeC4CompletionProvider', () => {
         'textSize',
         'iconSize',
         'iconPosition',
+        'sizing',
       ],
       disposeAfterCheck: true,
     })

@@ -448,14 +448,14 @@ ViewRulePredicate:
 ;
 
 ViewRuleGlobalPredicateRef:
-  'global' 'predicate' predicate=[GlobalPredicateGroup];
+  'global' 'predicate' predicate=[GlobalPredicateGroup:Id];
 
 DynamicViewIncludePredicate:
   'include' exprs=Expressions
 ;
 
 DynamicViewGlobalPredicateRef:
-  'global' 'predicate' predicate=[GlobalDynamicPredicateGroup];
+  'global' 'predicate' predicate=[GlobalDynamicPredicateGroup:Id];
 
 
 ViewRuleStyle:
@@ -467,7 +467,7 @@ ViewRuleStyle:
   '}';
 
 ViewRuleGlobalStyle:
-  'global' 'style' style=[GlobalStyleId];
+  'global' 'style' style=[GlobalStyleId:Id];
 
 ViewRuleStyleOrGlobalRef:
   ViewRuleStyle | ViewRuleGlobalStyle;
@@ -947,17 +947,17 @@ Globals:
   '}';
 
 GlobalPredicateGroup:
-  'predicateGroup' name=IdTerminal '{'
+  'predicateGroup' name=Id '{'
     predicates+=ViewRulePredicate*
   '}';
 
 GlobalDynamicPredicateGroup:
-  'dynamicPredicateGroup' name=IdTerminal '{'
+  'dynamicPredicateGroup' name=Id '{'
     predicates+=DynamicViewIncludePredicate*
   '}';
 
 GlobalStyleId:
-  name=IdTerminal;
+  name=Id;
 
 GlobalStyle:
   'style' id=GlobalStyleId targets=FqnExpressions '{'
@@ -1040,6 +1040,13 @@ PaddingSizeProperty:
 TextSizeProperty:
   key='textSize' ':'? value=SizeValue ';'?;
 
+SizingValue returns string:
+  'auto' |
+  'fixed';
+
+SizingProperty:
+  key='sizing' ':'? value=SizingValue ';'?;
+
 type SizeProperty = ShapeSizeProperty | PaddingSizeProperty | TextSizeProperty | IconSizeProperty;
 
 StyleProperty:
@@ -1054,7 +1061,8 @@ StyleProperty:
   PaddingSizeProperty |
   TextSizeProperty |
   IconSizeProperty |
-  IconPositionProperty
+  IconPositionProperty |
+  SizingProperty
 ;
 
 ElementStyleProperty:
@@ -1166,6 +1174,7 @@ MarkdownOrString:
 
 CustomColorId returns string:
   IdTerminal |
+  SizingValue |
   ElementShape |
   ArrowType |
   LineOptions |
@@ -1186,6 +1195,7 @@ Id returns string:
   DynamicViewDisplayVariantValue |
   DynamicViewFlowKeyword |
   IconPositionValue |
+  SizingValue |
   RankValue |
   // Allow reserved keywords as Id
   'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship';

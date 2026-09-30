@@ -415,6 +415,10 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     node.attributes.set(_.width, pxToInch(width))
     node.attributes.set(_.height, pxToInch(height))
 
+    const isFixed = element.style.sizing === 'fixed'
+    if (isFixed) {
+      node.attributes.set(_.fixedsize, true)
+    }
     if (!this.styles.isDefaultColor(element.color)) {
       const colorValues = this.styles.colors(element.color).elements
       node.attributes.apply({
@@ -447,15 +451,19 @@ export abstract class DotPrinter<V extends ViewToPrint> {
       }
       case 'queue': {
         node.attributes.apply({
-          [_.width]: pxToInch(width),
-          [_.height]: pxToInch(height - 8),
+          ...(!isFixed && {
+            [_.width]: pxToInch(width),
+            [_.height]: pxToInch(height - 8),
+          }),
           [_.margin]: `${pxToInch(hasIcon ? paddingX : paddingX + 4)},${pxToInch(padding)}`,
         })
         break
       }
       case 'component': {
         node.attributes.apply({
-          [_.width]: pxToInch(width + 10),
+          ...(!isFixed && {
+            [_.width]: pxToInch(width + 10),
+          }),
           [_.margin]: `${pxToInch(paddingX + 20)},${pxToInch(padding)}`,
         })
         break
