@@ -27,7 +27,7 @@ const likec4 = await LikeC4.fromWorkspace('src', {
   throwIfInvalid: true,
 })
 
-assert.deepEqual(likec4.projects().sort(), ['e2e', 'export-config', 'export-disabled', 'issue-2282'])
+assert.deepEqual(likec4.projects().sort(), ['e2e', 'export-config', 'export-disabled', 'issue-2282', 'note-placement'])
 
 // Check e2e workspace
 const computedModel = likec4.syncComputedModel('e2e')

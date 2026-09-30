@@ -104,6 +104,137 @@ test('element and relationship cards stay outside the compound frame', async ({ 
   }
 })
 
+for (
+  const [view, count, nodeCount, frameCount, edgeCount] of [
+    ['sparse', 6, 4, 0, 3],
+    ['readableNested', 9, 12, 3, 14],
+  ] as const
+) {
+  test(`${count}-note example keeps cards, paths, leaders, and target dots clear`, async ({ page }) => {
+    await page.goto(`/project/note-placement/export/${view}/?padding=22`)
+    await expect(page.getByTestId('export-page')).toHaveAttribute('data-likec4-export-ready', 'true')
+    await expect(page.locator('[data-likec4-note-card]')).toHaveCount(count)
+    await expect(page.locator('[data-note-target]')).toHaveCount(count)
+    await expect(page.locator('[data-note-target] line')).toHaveCount(count)
+    await expect(page.locator('[data-note-target] circle')).toHaveCount(count)
+    await expect(page.locator('.react-flow__node-element')).toHaveCount(nodeCount)
+    await expect(page.locator('.react-flow__node-compound-element')).toHaveCount(frameCount)
+    const relationships = page.locator('.react-flow__edge[data-id]')
+    await expect(relationships).toHaveCount(edgeCount)
+    for (const relationship of await relationships.all()) {
+      const path = relationship.locator('.react-flow__edge-path:not(.hide-on-reduced-graphics)')
+      await expect(path).toHaveCount(1)
+      // Horizontal SVG paths have zero-height boxes, so Playwright's visibility check does not apply.
+      await expect(path).not.toHaveCSS('display', 'none')
+      await expect(path).toHaveCSS('visibility', 'visible')
+      expect(await path.evaluate(element => element instanceof SVGPathElement ? element.getTotalLength() : 0))
+        .toBeGreaterThan(0)
+    }
+    for (const card of await page.locator('[data-likec4-note-card]').all()) {
+      await expect(card).toBeVisible()
+    }
+
+    const collisions = await page.evaluate(() => {
+      type Box = { x: number; y: number; width: number; height: number }
+      type Segment = { from: DOMPoint; to: DOMPoint }
+      const through = ({ from, to }: Segment, box: Box) => {
+        let start = 0
+        let end = 1
+        for (const [axis, extent] of [['x', 'width'], ['y', 'height']] as const) {
+          const delta = to[axis] - from[axis]
+          const lower = box[axis] + 0.01
+          const upper = box[axis] + box[extent] - 0.01
+          if (Math.abs(delta) < 1e-9) {
+            if (from[axis] <= lower || from[axis] >= upper) return false
+          } else {
+            const a = (lower - from[axis]) / delta
+            const b = (upper - from[axis]) / delta
+            start = Math.max(start, Math.min(a, b))
+            end = Math.min(end, Math.max(a, b))
+            if (end <= start) return false
+          }
+        }
+        return end > start
+      }
+      const overlap = (a: Box, b: Box) =>
+        Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 0.01 &&
+        Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 0.01
+      const cards = [...document.querySelectorAll<HTMLElement>('[data-likec4-note-card]')].map(element => ({
+        id: element.dataset['likec4NoteCard'],
+        bounds: element.getBoundingClientRect(),
+        overflow: element.scrollWidth > element.clientWidth + 1,
+      }))
+      const nodes = [...document.querySelectorAll<HTMLElement>('.react-flow__node-element')].map(element => ({
+        id: element.dataset['id'],
+        bounds: element.getBoundingClientRect(),
+      }))
+      const leaders = [...document.querySelectorAll<SVGLineElement>('[data-note-target] line')].map(line => {
+        const transform = line.getScreenCTM()
+        if (!transform) throw new Error('Missing note leader transform')
+        return {
+          id: line.parentElement?.dataset['noteTarget'],
+          dot: line.parentElement?.querySelector('circle')?.getBoundingClientRect(),
+          from: new DOMPoint(line.x1.baseVal.value, line.y1.baseVal.value).matrixTransform(transform),
+          to: new DOMPoint(line.x2.baseVal.value, line.y2.baseVal.value).matrixTransform(transform),
+        }
+      })
+      const edges = [...document.querySelectorAll<SVGPathElement>(
+        '.react-flow__edge-path:not(.hide-on-reduced-graphics)',
+      )].flatMap(path => {
+        const transform = path.getScreenCTM()
+        if (!transform) throw new Error('Missing relationship path transform')
+        const length = path.getTotalLength()
+        return Array.from({ length: 100 }, (_, i) => ({
+          from: path.getPointAtLength(length * i / 100).matrixTransform(transform),
+          to: path.getPointAtLength(length * (i + 1) / 100).matrixTransform(transform),
+        }))
+      })
+      const zoom = cards[0]!.bounds.width / 240
+      const frames = [...document.querySelectorAll('.react-flow__node-compound-element')].flatMap(element => {
+        const b = element.getBoundingClientRect()
+        const header = Math.min(b.height, 40 * zoom)
+        const border = 4 * zoom
+        return [
+          { x: b.x, y: b.y, width: b.width, height: header },
+          { x: b.x, y: b.y + header, width: border, height: b.height - header },
+          { x: b.right - border, y: b.y + header, width: border, height: b.height - header },
+          { x: b.x, y: b.bottom - border, width: b.width, height: border },
+        ]
+      })
+      const violations: string[] = []
+      for (const card of cards) {
+        if (card.overflow) violations.push(`text overflow: ${card.id}`)
+        for (const node of nodes) {
+          if (overlap(card.bounds, node.bounds)) violations.push(`card/node: ${card.id}/${node.id}`)
+        }
+        if (frames.some(frame => overlap(card.bounds, frame))) violations.push(`card/frame: ${card.id}`)
+        if (edges.some(edge => through(edge, card.bounds))) violations.push(`card/relationship: ${card.id}`)
+        for (const other of cards) {
+          if (other.id !== card.id && overlap(card.bounds, other.bounds)) {
+            violations.push(`card/card: ${card.id}/${other.id}`)
+          }
+        }
+        for (const leader of leaders) {
+          if (leader.id === card.id) continue
+          if (through(leader, card.bounds)) violations.push(`hidden leader: ${card.id}/${leader.id}`)
+          if (leader.dot && overlap(leader.dot, card.bounds)) {
+            violations.push(`hidden target dot: ${card.id}/${leader.id}`)
+          }
+        }
+      }
+      for (const leader of leaders) {
+        for (const node of nodes) {
+          if (leader.id !== node.id && through(leader, node.bounds)) {
+            violations.push(`leader/node: ${leader.id}/${node.id}`)
+          }
+        }
+      }
+      return violations
+    })
+    expect(collisions).toEqual([])
+  })
+}
+
 test('fit view includes both note cards in a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 700 })
   await page.goto(viewUrl)

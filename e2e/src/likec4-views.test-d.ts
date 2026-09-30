@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type { DiagramView, LayoutedView, LikeC4ViewModel, ViewId } from 'likec4/model'
 import { expectTypeOf, test } from 'vitest'
 import {
@@ -93,6 +100,7 @@ test('LikeC4Model in React types codegen', () => {
     | 'multiple-expanded'
     | 'multiple-explicit'
     | 'multiple-merged'
+    | 'note-cards-compound-frame'
     | 'note-cards-delayed-image'
     | 'note-cards-export'
     | 'view-with-custom-colors'
