@@ -293,11 +293,20 @@ export const elementNodeData = defineRecipe({
       }),
       false: parts({}),
     },
+    sizing: {
+      fixed: parts({
+        description: {
+          lineClamp: 1,
+        },
+      }),
+      auto: parts({}),
+    },
   },
   defaultVariants: {
     iconPosition: 'left',
     withIconColor: false,
     withIconBlend: false,
+    sizing: 'auto',
   },
   staticCss: ['*'],
 })

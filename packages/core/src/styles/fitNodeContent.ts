@@ -139,7 +139,7 @@ export function fitNodeContent(input: FitNodeContentInput): FittedNodeContent {
     }
   }
 
-  const showTechnology = input.hasTechnology && !isSmOrXs
+  const showTechnology = input.hasTechnology && size !== 'xs'
   const showDescription = input.hasDescription && size !== 'xs'
 
   const reserved = (fs: number) => {

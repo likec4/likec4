@@ -96,6 +96,7 @@ const Root = forwardRef<
           iconPosition: data.style.iconPosition,
           withIconColor: hasIconColor,
           withIconBlend: shouldBlendIconWithPalette(data.icon, hasIconColor),
+          sizing: data.style.sizing ?? 'auto',
         }),
         'likec4-element',
       )}
@@ -216,7 +217,11 @@ const Description = forwardRef<
       hideIfEmpty
       style={{
         // Workaround for lineClamp not working with nested TABLE elements (if markdown has tables)
-        maxHeight: desc.isMarkdown ? '8rem' : undefined,
+        maxHeight: desc.isMarkdown
+          ? data.style.sizing === 'fixed'
+            ? 'calc(var(--likec4-text-size) * 0.74 * 1.2)'
+            : '8rem'
+          : undefined,
       }}
       ref={ref}
     />
