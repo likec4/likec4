@@ -61,7 +61,7 @@ See [Predicates](./predicates.md) for more information on predicates and express
 
 ### View-scoped notes
 
-Add Markdown or plain-text notes to an element or a relationship with `include ... with { notes ... }` inside a view:
+Add Markdown or plain text to an element or a relationship with `include ... with { notes ... }` inside a view:
 
 ```likec4
 view operations {
@@ -75,7 +75,7 @@ view operations {
 }
 ```
 
-In a regular diagram, each note is a full-text card beside its rendered target, connected by a straight dashed line. Placement is automatic. These notes belong to the view and do not add `notes` to the model element or relationship. Dynamic views in diagram mode use the same cards for step notes; sequence mode keeps its existing note presentation.
+In a regular diagram, LikeC4 shows each note in a card beside its target. A straight dashed line connects the card to the target. LikeC4 places the card automatically. The note applies to this view only. It does not change the model element or relationship. In diagram mode, dynamic views use the same cards for step notes. Sequence mode keeps its existing note display.
 
 **Important:**
 

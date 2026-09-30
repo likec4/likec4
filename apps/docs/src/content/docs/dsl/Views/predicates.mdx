@@ -140,7 +140,7 @@ include cloud.* with {
 
 ### View notes
 
-Use `notes` in a view override to document an element or a relationship in that view. The note text supports Markdown:
+Use `notes` inside a view to add text to an element or a relationship. The text supports Markdown:
 
 ```likec4
 view operations {
@@ -156,7 +156,7 @@ view operations {
 }
 ```
 
-In a regular diagram, each note appears in a card beside its rendered element or relationship. A dashed line connects the card to its target. The card shows the full text and is placed automatically. The note belongs to this view; it does not change the model element or relationship.
+In a regular diagram, LikeC4 shows each note in a card beside its target. A straight dashed line connects the card to the target. The card shows all note text. LikeC4 places the card automatically. The note applies to this view only. It does not change the model element or relationship.
 
 ### With custom navigation
 
