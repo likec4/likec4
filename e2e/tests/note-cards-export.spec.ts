@@ -357,6 +357,42 @@ test('export readiness waits for a note image to finish loading', async ({ page 
   await expect(exportPage).toHaveAttribute('data-likec4-export-ready', 'true')
 })
 
+for (const route of ['view', 'embed'] as const) {
+  test(`${route} fits the complete note after its delayed image loads`, async ({ page }) => {
+    await page.setViewportSize({ width: 900, height: 700 })
+    const imageGate = Promise.withResolvers<void>()
+    await page.route('https://example.invalid/likec4-note.svg', async request => {
+      await imageGate.promise
+      await request.fulfill({
+        contentType: 'image/svg+xml',
+        body:
+          '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="1500"><rect width="240" height="1500" fill="#d3b45a"/></svg>',
+      })
+    })
+    try {
+      await page.goto(`/project/e2e/${route}/note-cards-delayed-image/`, { waitUntil: 'domcontentloaded' })
+      const card = page.locator('[data-likec4-note-card]')
+      const image = card.locator('img')
+      await expect(card).toBeVisible()
+      await expect(image).toHaveJSProperty('complete', false)
+      imageGate.resolve()
+      await expect(image).toHaveJSProperty('complete', true)
+      await expect(image).toHaveJSProperty('naturalHeight', 1500)
+
+      // Initial fitting must include the loaded image without a user clicking Fit.
+      await expect.poll(async () => {
+        const frame = await page.locator('.react-flow').first().boundingBox()
+        const box = await card.boundingBox()
+        return !!frame && !!box && box.x >= frame.x - 1 && box.y >= frame.y - 1
+          && box.x + box.width <= frame.x + frame.width + 1
+          && box.y + box.height <= frame.y + frame.height + 1
+      }).toBe(true)
+    } finally {
+      imageGate.resolve()
+    }
+  })
+}
+
 test('same-view export query switch from PNG to JPEG settles the new format', async ({ page }) => {
   await page.goto(exportUrl('png'))
   const exportPage = page.getByTestId('export-page')

@@ -12,9 +12,30 @@ import {
   NOTE_CARD_GAP,
   NOTE_CARD_WIDTH,
   placeNoteCards,
+  routeMidpoint,
 } from './geometry'
 
 const architectureBounds = { x: 0, y: 0, width: 200, height: 120 }
+
+describe('routeMidpoint', () => {
+  it('interpolates halfway between two endpoints', () => {
+    expect(routeMidpoint([[10, 20], [110, 60]])).toEqual({ x: 60, y: 40 })
+  })
+
+  it('uses distance along unequal segments', () => {
+    expect(routeMidpoint([[0, 0], [20, 0], [20, 100]])).toEqual({ x: 20, y: 40 })
+  })
+
+  it('skips zero-length segments', () => {
+    expect(routeMidpoint([[0, 0], [0, 0], [80, 0]])).toEqual({ x: 40, y: 0 })
+  })
+
+  it('handles empty and degenerate routes', () => {
+    expect(routeMidpoint([])).toEqual({ x: 0, y: 0 })
+    expect(routeMidpoint([[10, 20]])).toEqual({ x: 10, y: 20 })
+    expect(routeMidpoint([[10, 20], [10, 20]])).toEqual({ x: 10, y: 20 })
+  })
+})
 const node: NodeNoteTarget = {
   id: 'api',
   kind: 'node',

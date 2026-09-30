@@ -3,7 +3,7 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import { RichText } from '@likec4/core'
-import { type Point, convertPoint } from '@likec4/core/geometry'
+import { convertPoint } from '@likec4/core/geometry'
 import type { BBox, scalar, ViewId, XYPoint } from '@likec4/core/types'
 import { ViewportPortal } from '@xyflow/react'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
@@ -21,6 +21,7 @@ import {
   compoundFrameObstacles,
   NOTE_TARGET_DOT_RADIUS,
   placeNoteCards,
+  routeMidpoint,
 } from './geometry'
 import { NoteCard } from './NoteCard'
 
@@ -35,11 +36,6 @@ type EdgeRoute = { anchor: XYPoint; tangent?: XYPoint; segments: NoteSegment[] }
 
 function hasNotes(notes: scalar.MarkdownOrString | null | undefined): notes is scalar.MarkdownOrString {
   return RichText.from(notes).nonEmpty
-}
-
-function midpoint(points: readonly Point[]): XYPoint {
-  if (points.length === 0) return { x: 0, y: 0 }
-  return convertPoint(points[Math.floor((points.length - 1) / 2)]!)
 }
 
 function nearestBoundaryPoint(box: BBox, point: XYPoint): XYPoint {
@@ -75,19 +71,19 @@ export function NoteLayer({
   const notifyContentBounds = useCallbackRef(onContentBoundsChange)
   const diagram = useDiagram()
   const editor = useEditorActorRef()
-  const editingEdge = useSyncExternalStore(
+  const movingTarget = useSyncExternalStore(
     useCallback(listener => {
       const subscription = editor?.subscribe(listener)
       return () => subscription?.unsubscribe()
     }, [editor]),
-    useCallback(() => editor?.getSnapshot().context.editing?.subject === 'edge' || false, [editor]),
+    useCallback(() => !!editor?.getSnapshot().context.editing, [editor]),
     () => false,
   )
   const active = enableNotes && variant === 'diagram'
   const { ref: rootRef } = useRootContainer()
   const xystore = useXYStoreApi()
   const xyNodes = useXYStore(state => state.nodes)
-  const dragging = xyNodes.some(node => node.dragging) || editingEdge
+  const dragging = xyNodes.some(node => node.dragging) || movingTarget
   const [measurement, setMeasurement] = useState<{
     key: string
     sizes: Record<string, { width: number; height: number }>
@@ -149,8 +145,9 @@ export function NoteLayer({
   }, [cardElements, noteKey, notes])
 
   useEffect(() => {
+    if (!active || notes.length === 0) return
     let cancelled = false
-    void document.fonts.ready.then(() => {
+    void (document.fonts?.ready ?? Promise.resolve()).then(() => {
       if (!cancelled) {
         setFontsReadyKey(noteKey)
       }
@@ -158,7 +155,7 @@ export function NoteLayer({
     return () => {
       cancelled = true
     }
-  }, [noteKey])
+  }, [active, notes.length, noteKey])
 
   useEffect(() => {
     if (notes.length === 0) return
@@ -218,7 +215,7 @@ export function NoteLayer({
             })
           }
         }
-        const anchor = path && length > 0 ? path.getPointAtLength(length / 2) : midpoint(edge.data.points)
+        const anchor = path && length > 0 ? path.getPointAtLength(length / 2) : routeMidpoint(edge.data.points)
         let tangent: XYPoint | undefined
         if (path && length > 0) {
           const before = path.getPointAtLength(length * 0.49)
@@ -277,7 +274,7 @@ export function NoteLayer({
         targets.push({
           id: edge.id,
           kind: 'edge',
-          anchor: route?.anchor ?? midpoint(edge.data.points),
+          anchor: route?.anchor ?? routeMidpoint(edge.data.points),
           ...(route?.tangent && { tangent: route.tangent }),
           size,
         })
@@ -331,17 +328,30 @@ export function NoteLayer({
 
   useEffect(() => {
     if (dragging) return
-    if (active && notes.length > 0 && !placementReady) return
+    if (!ready) return
     diagram.send({
       type: 'notes.bounds',
       viewId,
       bounds: active && notes.length > 0 && displayResult ? displayResult.bounds : null,
     })
-  }, [diagram, viewId, active, notes.length, placementReady, dragging, bounds.x, bounds.y, bounds.width, bounds.height])
+  }, [
+    diagram,
+    viewId,
+    nodes,
+    edges,
+    active,
+    notes.length,
+    ready,
+    dragging,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+  ])
 
   useEffect(() => {
     notifyContentBounds({ viewId, bounds, ready })
-  }, [viewId, bounds.x, bounds.y, bounds.width, bounds.height, ready, notifyContentBounds])
+  }, [viewId, nodes, edges, bounds.x, bounds.y, bounds.width, bounds.height, ready, notifyContentBounds])
 
   const placements = new Map(displayResult?.placements.map(placed => [placed.id, placed]) ?? [])
   return (

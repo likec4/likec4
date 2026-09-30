@@ -2,11 +2,35 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { BBox, XYPoint } from '@likec4/core/geometry'
+import { type BBox, type Point, type XYPoint, convertPoint } from '@likec4/core/geometry'
 
 export const NOTE_CARD_WIDTH = 240
 export const NOTE_CARD_GAP = 24
 export const NOTE_TARGET_DOT_RADIUS = 3
+
+/** Halfway along the fallback polyline when the rendered SVG path is unavailable. */
+export function routeMidpoint(points: readonly Point[]): XYPoint {
+  const first = points[0]
+  if (!first) return { x: 0, y: 0 }
+  let remaining = 0
+  for (let index = 1; index < points.length; index++) {
+    const from = convertPoint(points[index - 1]!)
+    const to = convertPoint(points[index]!)
+    remaining += Math.hypot(to.x - from.x, to.y - from.y)
+  }
+  remaining /= 2
+  for (let index = 1; index < points.length; index++) {
+    const from = convertPoint(points[index - 1]!)
+    const to = convertPoint(points[index]!)
+    const length = Math.hypot(to.x - from.x, to.y - from.y)
+    if (length > 0 && remaining <= length) {
+      const ratio = remaining / length
+      return { x: from.x + (to.x - from.x) * ratio, y: from.y + (to.y - from.y) * ratio }
+    }
+    remaining -= length
+  }
+  return convertPoint(first)
+}
 
 export interface NoteCardSize {
   width: number
