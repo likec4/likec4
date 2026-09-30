@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, SnapshotFrom, StateValueFrom } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'

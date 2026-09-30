@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
 import type { BBox, XYPoint } from '@likec4/core/geometry'
 
 export const NOTE_CARD_WIDTH = 240
