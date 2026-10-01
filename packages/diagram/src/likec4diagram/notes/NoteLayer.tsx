@@ -19,6 +19,7 @@ import {
   type NoteSegment,
   type NoteTarget,
   compoundFrameObstacles,
+  nearestBoundaryPoint,
   NOTE_TARGET_DOT_RADIUS,
   placeNoteCards,
   routeMidpoint,
@@ -38,19 +39,6 @@ function hasNotes(notes: scalar.MarkdownOrString | null | undefined): notes is s
   return RichText.from(notes).nonEmpty
 }
 
-function nearestBoundaryPoint(box: BBox, point: XYPoint): XYPoint {
-  const x = Math.max(box.x, Math.min(point.x, box.x + box.width))
-  const y = Math.max(box.y, Math.min(point.y, box.y + box.height))
-  if (x !== point.x || y !== point.y) return { x, y }
-  const distances = [
-    { distance: x - box.x, point: { x: box.x, y } },
-    { distance: box.x + box.width - x, point: { x: box.x + box.width, y } },
-    { distance: y - box.y, point: { x, y: box.y } },
-    { distance: box.y + box.height - y, point: { x, y: box.y + box.height } },
-  ]
-  return distances.reduce((best, next) => next.distance < best.distance ? next : best).point
-}
-
 /** A presentation layer in the transformed viewport. It does not add layout nodes. */
 export function NoteLayer({
   viewId,
@@ -59,14 +47,14 @@ export function NoteLayer({
   nodes,
   edges,
   onContentBoundsChange,
-}: {
+}: Readonly<{
   viewId: ViewId
   variant: 'diagram' | 'sequence'
   architectureBounds: BBox
   nodes: Types.Node[]
   edges: Types.Edge[]
   onContentBoundsChange?: ((value: { viewId: ViewId; bounds: BBox; ready: boolean }) => void) | undefined
-}) {
+}>) {
   const { enableNotes } = useEnabledFeatures()
   const notifyContentBounds = useCallbackRef(onContentBoundsChange)
   const diagram = useDiagram()
@@ -235,50 +223,49 @@ export function NoteLayer({
     const targets: NoteTarget[] = []
     const obstacles: { bounds: BBox; ownerId?: string }[] = []
     const segments: { from: XYPoint; to: XYPoint; ownerId?: string }[] = []
-    if (active && measured) {
-      const state = xystore.getState()
-      const visibleNodes = new Set(nodes.filter(node => !node.hidden).map(node => node.id))
-      for (const node of nodes) {
-        if (node.hidden) continue
-        const internal = state.nodeLookup.get(node.id)
-        const position = internal?.internals.positionAbsolute ?? node.data
-        const bounds = {
-          x: position.x,
-          y: position.y,
-          width: internal?.measured?.width ?? node.measured?.width ?? node.initialWidth ?? 0,
-          height: internal?.measured?.height ?? node.measured?.height ?? node.initialHeight ?? 0,
-        }
-        if (node.type?.startsWith('compound-') || node.type === 'view-group') {
-          obstacles.push(...compoundFrameObstacles(bounds, node.id))
-        } else {
-          obstacles.push({ bounds, ownerId: node.id })
-        }
-        const size = sizes[node.id]
-        if (size && hasNotes(node.data.notes)) {
-          targets.push({ id: node.id, kind: 'node', bounds, size })
-        }
+    if (!active || !measured) return { architectureBounds, targets, obstacles, segments }
+    const state = xystore.getState()
+    const visibleNodes = new Set(nodes.filter(node => !node.hidden).map(node => node.id))
+    for (const node of nodes) {
+      if (node.hidden) continue
+      const internal = state.nodeLookup.get(node.id)
+      const position = internal?.internals.positionAbsolute ?? node.data
+      const bounds = {
+        x: position.x,
+        y: position.y,
+        width: internal?.measured?.width ?? node.measured?.width ?? node.initialWidth ?? 0,
+        height: internal?.measured?.height ?? node.measured?.height ?? node.initialHeight ?? 0,
       }
-      for (const edge of edges) {
-        if (
-          edge.hidden || edge.type !== 'relationship' || !visibleNodes.has(edge.source)
-          || !visibleNodes.has(edge.target)
-        ) continue
-        const route = routes.key === routeKey ? routes.byId[edge.id] : undefined
-        if (route) segments.push(...route.segments)
-        if (edge.data.labelBBox) {
-          obstacles.push({ bounds: edge.data.labelBBox })
-        }
-        if (!hasNotes(edge.data.notes)) continue
-        const size = sizes[edge.id]
-        if (!size) continue
-        targets.push({
-          id: edge.id,
-          kind: 'edge',
-          anchor: route?.anchor ?? routeMidpoint(edge.data.points),
-          ...(route?.tangent && { tangent: route.tangent }),
-          size,
-        })
+      if (node.type?.startsWith('compound-') || node.type === 'view-group') {
+        obstacles.push(...compoundFrameObstacles(bounds, node.id))
+      } else {
+        obstacles.push({ bounds, ownerId: node.id })
       }
+      const size = sizes[node.id]
+      if (size && hasNotes(node.data.notes)) {
+        targets.push({ id: node.id, kind: 'node', bounds, size })
+      }
+    }
+    for (const edge of edges) {
+      if (
+        edge.hidden || edge.type !== 'relationship' || !visibleNodes.has(edge.source)
+        || !visibleNodes.has(edge.target)
+      ) continue
+      const route = routes.key === routeKey ? routes.byId[edge.id] : undefined
+      if (route) segments.push(...route.segments)
+      if (edge.data.labelBBox) {
+        obstacles.push({ bounds: edge.data.labelBBox })
+      }
+      if (!hasNotes(edge.data.notes)) continue
+      const size = sizes[edge.id]
+      if (!size) continue
+      targets.push({
+        id: edge.id,
+        kind: 'edge',
+        anchor: route?.anchor ?? routeMidpoint(edge.data.points),
+        ...(route?.tangent && { tangent: route.tangent }),
+        size,
+      })
     }
     return { architectureBounds, targets, obstacles, segments }
   }, [active, measured, sizes, xystore, xyNodes, nodes, edges, routes, routeKey, architectureBounds])

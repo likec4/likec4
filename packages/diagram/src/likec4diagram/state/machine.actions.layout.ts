@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 // oxlint-disable triple-slash-reference
 // oxlint-disable no-floating-promises
 import {
@@ -103,6 +110,7 @@ export const centerOnNodeOrEdge = () =>
 
       return {
         type: 'xyflow.fitDiagram',
+        explicit: true,
         bounds,
       }
     }
@@ -114,6 +122,7 @@ export const centerOnNodeOrEdge = () =>
     const bounds = getNodesBounds([node], xystate)
     return {
       type: 'xyflow.fitDiagram',
+      explicit: true,
       bounds,
     }
   })

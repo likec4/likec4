@@ -250,7 +250,7 @@ export function LikeC4DiagramXYFlow({
       onEdgesChange={useCallbackRef((changes) => {
         diagram.send({ type: 'xyflow.applyChanges', edges: changes })
       })}
-      onFitView={useCallbackRef(() => diagram.send({ type: 'xyflow.fitDiagram' }))}
+      onFitView={useCallbackRef(() => diagram.send({ type: 'xyflow.fitDiagram', explicit: true }))}
       background={initialized ? background : 'transparent'}
       // Fitview is handled in onInit
       fitView={false}
@@ -349,7 +349,7 @@ export function LikeC4DiagramXYFlow({
       nodesSelectable={nodesSelectable}>
       {enableControls && (
         <Controls
-          onFitView={() => diagram.send({ type: 'xyflow.fitDiagram' })}
+          onFitView={() => diagram.send({ type: 'xyflow.fitDiagram', explicit: true })}
           fitViewPadding={props.fitViewPadding}
           minZoom={props.minZoom}
           maxZoom={props.maxZoom}

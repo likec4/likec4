@@ -127,19 +127,19 @@ function clamp(value: number, lower: number, upper: number): number {
 }
 
 /** Nearest point on a card boundary, including when the target lies inside the card. */
-function nearestBoundaryPoint(box: BBox, point: XYPoint): XYPoint {
+export function nearestBoundaryPoint(box: BBox, point: XYPoint): XYPoint {
   const x = clamp(point.x, box.x, box.x + box.width)
   const y = clamp(point.y, box.y, box.y + box.height)
   if (x !== point.x || y !== point.y) {
     return { x, y }
   }
+  const first = { distance: point.x - box.x, point: { x: box.x, y } }
   const distances = [
-    { distance: point.x - box.x, point: { x: box.x, y } },
     { distance: box.x + box.width - point.x, point: { x: box.x + box.width, y } },
     { distance: point.y - box.y, point: { x, y: box.y } },
     { distance: box.y + box.height - point.y, point: { x, y: box.y + box.height } },
   ]
-  return distances.reduce((best, next) => next.distance < best.distance ? next : best).point
+  return distances.reduce((best, next) => next.distance < best.distance ? next : best, first).point
 }
 
 function nodeCandidates(target: NodeNoteTarget): NotePlacement[] {
@@ -435,7 +435,8 @@ export function placeNoteCards(
 ): NotePlacementResult {
   const ordered = [...targets].sort((a, b) => {
     if (a.kind !== b.kind) return a.kind === 'node' ? -1 : 1
-    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+    if (a.id === b.id) return 0
+    return a.id < b.id ? -1 : 1
   })
   const placements: NotePlacement[] = []
   // ponytail: scan a readable note set; add spatial indexing only if normal views become slow.

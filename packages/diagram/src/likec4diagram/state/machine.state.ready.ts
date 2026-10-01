@@ -213,6 +213,7 @@ export const ready = machine.createStateConfig({
       actions: centerOnNodeOrEdge(),
     },
     'xyflow.fitDiagram': {
+      guard: ({ event, context }) => event.explicit === true || context.features.enableFitView,
       actions: [
         assign({
           viewportChangedManually: false,

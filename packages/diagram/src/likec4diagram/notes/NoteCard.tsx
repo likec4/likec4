@@ -62,14 +62,14 @@ export function NoteCard({
   style,
   measureRef,
   onContentSettled,
-}: {
+}: Readonly<{
   id: string
   label: string
   notes: scalar.MarkdownOrString
   style: CSSProperties
   measureRef: Ref<HTMLDivElement>
   onContentSettled: () => void
-}) {
+}>) {
   return (
     <div
       ref={measureRef}

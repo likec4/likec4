@@ -227,7 +227,7 @@ export type Events =
   | { type: 'xyflow.nodeMouseLeave'; node: Types.Node | NodeId }
   | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
-  | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox }
+  | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox; explicit?: boolean }
   | { type: 'notes.bounds'; viewId: ViewId; bounds: BBox | null }
   | { type: 'xyflow.setViewport'; duration?: number; viewport: Viewport }
   | { type: 'xyflow.centerViewport'; nodeId: NodeId; duration?: number }

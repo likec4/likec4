@@ -151,8 +151,16 @@ describe('initializing state', () => {
   it('keeps the explicit fit action available when automatic fit is disabled', () => {
     const actor = createTestActor({ fitView: false })
     expect(actor.getSnapshot().context.xyflow!.getViewport().zoom).toBe(1)
-    actor.send({ type: 'xyflow.fitDiagram' })
+    actor.send({ type: 'xyflow.fitDiagram', explicit: true })
     expect(actor.getSnapshot().context.xyflow!.getViewport().zoom).toBeLessThan(1)
+    actor.stop()
+  })
+
+  it('preserves the viewport for internal fit events when automatic fit is disabled', () => {
+    const actor = createTestActor({ fitView: false })
+    const before = actor.getSnapshot().context.xyflow!.getViewport()
+    actor.send({ type: 'xyflow.fitDiagram' })
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(before)
     actor.stop()
   })
 
@@ -189,7 +197,7 @@ describe('initializing state', () => {
     expect(viewBounds(actor.getSnapshot().context).width).toBe(2420)
     expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(firstFit)
 
-    actor.send({ type: 'xyflow.fitDiagram' })
+    actor.send({ type: 'xyflow.fitDiagram', explicit: true })
     expect(actor.getSnapshot().context.xyflow!.getViewport()).not.toEqual(firstFit)
     actor.stop()
   })
