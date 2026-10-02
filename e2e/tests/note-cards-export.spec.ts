@@ -2,11 +2,29 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
+import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 const viewUrl = '/project/e2e/view/note-cards-export/'
 const exportUrl = (format: 'png' | 'jpeg') =>
   `/project/e2e/export/note-cards-export/?padding=22${format === 'jpeg' ? '&format=jpeg' : ''}`
+
+async function expectCardsInsideViewport(page: Page) {
+  await expect(page.locator('[data-likec4-note-card]')).toHaveCount(2)
+  await expect.poll(() =>
+    page.evaluate(() => {
+      const viewport = document.querySelector('.react-flow')?.getBoundingClientRect()
+      if (!viewport) return false
+      const cards = [...document.querySelectorAll('[data-likec4-note-card]')]
+      return cards.length === 2 && cards.every(card => {
+        const bounds = card.getBoundingClientRect()
+        return getComputedStyle(card).visibility === 'visible' && bounds.width > 0 && bounds.height > 0 &&
+          bounds.left >= viewport.left - 1 &&
+          bounds.top >= viewport.top - 1 && bounds.right <= viewport.right + 1 && bounds.bottom <= viewport.bottom + 1
+      })
+    })
+  ).toBe(true)
+}
 
 function overlapArea(a: { x: number; y: number; width: number; height: number }, b: {
   x: number
@@ -17,6 +35,121 @@ function overlapArea(a: { x: number; y: number; width: number; height: number },
   const width = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x))
   const height = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y))
   return width * height
+}
+
+async function expectNoteClearance(page: Page, { allowLeaderLabelOverlap = false } = {}) {
+  await expect(page.locator('[data-likec4-note-card]').first()).toBeVisible()
+  await expect(page.locator('.likec4-edge-label-container').first()).toBeVisible()
+  const collisions = await page.evaluate(allowLeaderLabelOverlap => {
+    type Box = { x: number; y: number; width: number; height: number }
+    type Segment = { from: DOMPoint; to: DOMPoint }
+    const through = ({ from, to }: Segment, box: Box) => {
+      let start = 0
+      let end = 1
+      for (const [axis, extent] of [['x', 'width'], ['y', 'height']] as const) {
+        const delta = to[axis] - from[axis]
+        const lower = box[axis] + 0.01
+        const upper = box[axis] + box[extent] - 0.01
+        if (Math.abs(delta) < 1e-9) {
+          if (from[axis] <= lower || from[axis] >= upper) return false
+        } else {
+          const a = (lower - from[axis]) / delta
+          const b = (upper - from[axis]) / delta
+          start = Math.max(start, Math.min(a, b))
+          end = Math.min(end, Math.max(a, b))
+          if (end <= start) return false
+        }
+      }
+      return end > start
+    }
+    const overlap = (a: Box, b: Box) =>
+      Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 0.01 &&
+      Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 0.01
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-likec4-note-card]')].map(element => ({
+      id: element.dataset['likec4NoteCard'],
+      bounds: element.getBoundingClientRect(),
+      overflow: element.scrollWidth > element.clientWidth + 1,
+    }))
+    const nodes = [...document.querySelectorAll<HTMLElement>('.react-flow__node-element')].map(element => ({
+      id: element.dataset['id'],
+      bounds: element.getBoundingClientRect(),
+    }))
+    const labels = [...document.querySelectorAll<HTMLElement>('.likec4-edge-label-container')]
+      .map(element => ({
+        id: element.querySelector('[data-edge-id]')?.getAttribute('data-edge-id'),
+        bounds: element.getBoundingClientRect(),
+      }))
+      .filter(label => label.bounds.width > 0 && label.bounds.height > 0)
+    const leaders = [...document.querySelectorAll<SVGLineElement>('[data-note-target] line')].map(line => {
+      const transform = line.getScreenCTM()
+      if (!transform) throw new Error('Missing note leader transform')
+      return {
+        id: line.parentElement?.dataset['noteTarget'],
+        dot: line.parentElement?.querySelector('circle')?.getBoundingClientRect(),
+        from: new DOMPoint(line.x1.baseVal.value, line.y1.baseVal.value).matrixTransform(transform),
+        to: new DOMPoint(line.x2.baseVal.value, line.y2.baseVal.value).matrixTransform(transform),
+      }
+    })
+    const edges = [...document.querySelectorAll<SVGPathElement>(
+      '.react-flow__edge-path:not(.hide-on-reduced-graphics)',
+    )].flatMap(path => {
+      const transform = path.getScreenCTM()
+      if (!transform) throw new Error('Missing relationship path transform')
+      const length = path.getTotalLength()
+      return Array.from({ length: 100 }, (_, i) => ({
+        from: path.getPointAtLength(length * i / 100).matrixTransform(transform),
+        to: path.getPointAtLength(length * (i + 1) / 100).matrixTransform(transform),
+      }))
+    })
+    const zoom = cards[0]!.bounds.width / 240
+    const frames = [...document.querySelectorAll('.react-flow__node-compound-element')].flatMap(element => {
+      const b = element.getBoundingClientRect()
+      const header = Math.min(b.height, 40 * zoom)
+      const border = 4 * zoom
+      return [
+        { x: b.x, y: b.y, width: b.width, height: header },
+        { x: b.x, y: b.y + header, width: border, height: b.height - header },
+        { x: b.right - border, y: b.y + header, width: border, height: b.height - header },
+        { x: b.x, y: b.bottom - border, width: b.width, height: border },
+      ]
+    })
+    const violations: string[] = []
+    for (const card of cards) {
+      if (card.overflow) violations.push(`text overflow: ${card.id}`)
+      for (const node of nodes) {
+        if (overlap(card.bounds, node.bounds)) violations.push(`card/node: ${card.id}/${node.id}`)
+      }
+      if (labels.some(label => overlap(card.bounds, label.bounds))) violations.push(`card/label: ${card.id}`)
+      if (frames.some(frame => overlap(card.bounds, frame))) violations.push(`card/frame: ${card.id}`)
+      if (edges.some(edge => through(edge, card.bounds))) violations.push(`card/relationship: ${card.id}`)
+      for (const other of cards) {
+        if (other.id !== card.id && overlap(card.bounds, other.bounds)) {
+          violations.push(`card/card: ${card.id}/${other.id}`)
+        }
+      }
+      for (const leader of leaders) {
+        if (leader.id === card.id) continue
+        if (through(leader, card.bounds)) violations.push(`hidden leader: ${card.id}/${leader.id}`)
+        if (leader.dot && overlap(leader.dot, card.bounds)) {
+          violations.push(`hidden target dot: ${card.id}/${leader.id}`)
+        }
+      }
+    }
+    for (const leader of leaders) {
+      for (const label of labels) {
+        if (!allowLeaderLabelOverlap && label.id !== leader.id && through(leader, label.bounds)) {
+          violations.push(`leader/label: ${leader.id}/${label.id}`)
+        }
+      }
+      for (const node of nodes) {
+        if (leader.id !== node.id && through(leader, node.bounds)) {
+          violations.push(`leader/node: ${leader.id}/${node.id}`)
+        }
+      }
+    }
+    return violations
+  }, allowLeaderLabelOverlap)
+  expect(collisions).toEqual([])
 }
 
 test('regular diagram shows full note cards and straight dashed leaders for their targets', async ({ page }) => {
@@ -91,6 +224,8 @@ test('element and relationship cards stay outside the compound frame', async ({ 
   await expect(page.locator('[data-likec4-note-leaders] g[data-note-target]')).toHaveCount(2)
   await expect(frames.first()).toBeVisible()
 
+  await expectNoteClearance(page)
+
   const frameBoxes = await Promise.all((await frames.all()).map(frame => frame.boundingBox()))
   for (const card of await cards.all()) {
     const cardBox = await card.boundingBox()
@@ -134,106 +269,26 @@ for (
       await expect(card).toBeVisible()
     }
 
-    const collisions = await page.evaluate(() => {
-      type Box = { x: number; y: number; width: number; height: number }
-      type Segment = { from: DOMPoint; to: DOMPoint }
-      const through = ({ from, to }: Segment, box: Box) => {
-        let start = 0
-        let end = 1
-        for (const [axis, extent] of [['x', 'width'], ['y', 'height']] as const) {
-          const delta = to[axis] - from[axis]
-          const lower = box[axis] + 0.01
-          const upper = box[axis] + box[extent] - 0.01
-          if (Math.abs(delta) < 1e-9) {
-            if (from[axis] <= lower || from[axis] >= upper) return false
-          } else {
-            const a = (lower - from[axis]) / delta
-            const b = (upper - from[axis]) / delta
-            start = Math.max(start, Math.min(a, b))
-            end = Math.min(end, Math.max(a, b))
-            if (end <= start) return false
-          }
-        }
-        return end > start
-      }
-      const overlap = (a: Box, b: Box) =>
-        Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 0.01 &&
-        Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 0.01
-      const cards = [...document.querySelectorAll<HTMLElement>('[data-likec4-note-card]')].map(element => ({
-        id: element.dataset['likec4NoteCard'],
-        bounds: element.getBoundingClientRect(),
-        overflow: element.scrollWidth > element.clientWidth + 1,
-      }))
-      const nodes = [...document.querySelectorAll<HTMLElement>('.react-flow__node-element')].map(element => ({
-        id: element.dataset['id'],
-        bounds: element.getBoundingClientRect(),
-      }))
-      const leaders = [...document.querySelectorAll<SVGLineElement>('[data-note-target] line')].map(line => {
-        const transform = line.getScreenCTM()
-        if (!transform) throw new Error('Missing note leader transform')
-        return {
-          id: line.parentElement?.dataset['noteTarget'],
-          dot: line.parentElement?.querySelector('circle')?.getBoundingClientRect(),
-          from: new DOMPoint(line.x1.baseVal.value, line.y1.baseVal.value).matrixTransform(transform),
-          to: new DOMPoint(line.x2.baseVal.value, line.y2.baseVal.value).matrixTransform(transform),
-        }
-      })
-      const edges = [...document.querySelectorAll<SVGPathElement>(
-        '.react-flow__edge-path:not(.hide-on-reduced-graphics)',
-      )].flatMap(path => {
-        const transform = path.getScreenCTM()
-        if (!transform) throw new Error('Missing relationship path transform')
-        const length = path.getTotalLength()
-        return Array.from({ length: 100 }, (_, i) => ({
-          from: path.getPointAtLength(length * i / 100).matrixTransform(transform),
-          to: path.getPointAtLength(length * (i + 1) / 100).matrixTransform(transform),
-        }))
-      })
-      const zoom = cards[0]!.bounds.width / 240
-      const frames = [...document.querySelectorAll('.react-flow__node-compound-element')].flatMap(element => {
-        const b = element.getBoundingClientRect()
-        const header = Math.min(b.height, 40 * zoom)
-        const border = 4 * zoom
-        return [
-          { x: b.x, y: b.y, width: b.width, height: header },
-          { x: b.x, y: b.y + header, width: border, height: b.height - header },
-          { x: b.right - border, y: b.y + header, width: border, height: b.height - header },
-          { x: b.x, y: b.bottom - border, width: b.width, height: border },
-        ]
-      })
-      const violations: string[] = []
-      for (const card of cards) {
-        if (card.overflow) violations.push(`text overflow: ${card.id}`)
-        for (const node of nodes) {
-          if (overlap(card.bounds, node.bounds)) violations.push(`card/node: ${card.id}/${node.id}`)
-        }
-        if (frames.some(frame => overlap(card.bounds, frame))) violations.push(`card/frame: ${card.id}`)
-        if (edges.some(edge => through(edge, card.bounds))) violations.push(`card/relationship: ${card.id}`)
-        for (const other of cards) {
-          if (other.id !== card.id && overlap(card.bounds, other.bounds)) {
-            violations.push(`card/card: ${card.id}/${other.id}`)
-          }
-        }
-        for (const leader of leaders) {
-          if (leader.id === card.id) continue
-          if (through(leader, card.bounds)) violations.push(`hidden leader: ${card.id}/${leader.id}`)
-          if (leader.dot && overlap(leader.dot, card.bounds)) {
-            violations.push(`hidden target dot: ${card.id}/${leader.id}`)
-          }
-        }
-      }
-      for (const leader of leaders) {
-        for (const node of nodes) {
-          if (leader.id !== node.id && through(leader, node.bounds)) {
-            violations.push(`leader/node: ${leader.id}/${node.id}`)
-          }
-        }
-      }
-      return violations
-    })
-    expect(collisions).toEqual([])
+    // Crowded views may partially hide a straight leader; cards must still clear every label.
+    await expectNoteClearance(page, { allowLeaderLabelOverlap: view === 'readableNested' })
   })
 }
+
+test('navigation and browser history fit the cards in each noted view', async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 700 })
+  await page.goto('/project/e2e/view/note-cards-compound-frame/')
+  await expectCardsInsideViewport(page)
+
+  await page.keyboard.press('Control+k')
+  await page.getByRole('textbox', { name: /Search by title/ }).fill('View note card export')
+  await page.getByRole('button', { name: /View note card export/ }).click()
+  await expect(page).toHaveURL(/\/view\/note-cards-export\//)
+  await expectCardsInsideViewport(page)
+
+  await page.goBack()
+  await expect(page).toHaveURL(/\/view\/note-cards-compound-frame\//)
+  await expectCardsInsideViewport(page)
+})
 
 test('fit view includes both note cards in a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 700 })
@@ -335,7 +390,7 @@ test('export readiness waits for a note image to finish loading', async ({ page 
       status: 200,
       contentType: 'image/svg+xml',
       body:
-        '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60"><rect width="120" height="60" fill="#d3b45a"/></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60"><rect width="120" height="60" fill="#d3b45a"/><text x="60" y="34" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#362f1c">SVG TEST IMAGE</text></svg>',
     })
   })
 

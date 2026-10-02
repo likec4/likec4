@@ -33,7 +33,7 @@ type Note = {
   notes: scalar.MarkdownOrString
 }
 
-type EdgeRoute = { anchor: XYPoint; tangent?: XYPoint; segments: NoteSegment[] }
+type EdgeRoute = { anchor: XYPoint; tangent?: XYPoint; segments: NoteSegment[]; labelBounds?: BBox }
 
 function hasNotes(notes: scalar.MarkdownOrString | null | undefined): notes is scalar.MarkdownOrString {
   return RichText.from(notes).nonEmpty
@@ -110,7 +110,7 @@ export function NoteLayer({
   }, [active, nodes, edges])
 
   const noteKey = JSON.stringify([viewId, notes.map(note => [note.kind, note.id, note.notes])])
-  const routeKey = JSON.stringify([viewId, pathVersion, edges.map(edge => [edge.id, edge.hidden])])
+  const routeKey = JSON.stringify([viewId, pathVersion, fontsReadyKey, edges.map(edge => [edge.id, edge.hidden])])
   const measure = useCallback(() => {
     const next: Record<string, { width: number; height: number }> = {}
     for (const note of notes) {
@@ -210,7 +210,17 @@ export function NoteLayer({
           const after = path.getPointAtLength(length * 0.51)
           tangent = { x: after.x - before.x, y: after.y - before.y }
         }
-        byId[edge.id] = { anchor, ...(tangent && { tangent }), segments }
+        const label = rootRef.current?.querySelector<HTMLElement>(
+          `.likec4-edge-label[data-edge-id="${CSS.escape(edge.id)}"]`,
+        )?.getBoundingClientRect()
+        const screenToFlow = path?.getScreenCTM()?.inverse()
+        let labelBounds: BBox | undefined
+        if (label && label.width > 0 && label.height > 0 && screenToFlow) {
+          const from = new DOMPoint(label.left, label.top).matrixTransform(screenToFlow)
+          const to = new DOMPoint(label.right, label.bottom).matrixTransform(screenToFlow)
+          labelBounds = { x: from.x, y: from.y, width: to.x - from.x, height: to.y - from.y }
+        }
+        byId[edge.id] = { anchor, ...(tangent && { tangent }), segments, ...(labelBounds && { labelBounds }) }
       }
       setRoutes({ key: routeKey, byId })
     })
@@ -253,8 +263,9 @@ export function NoteLayer({
       ) continue
       const route = routes.key === routeKey ? routes.byId[edge.id] : undefined
       if (route) segments.push(...route.segments)
-      if (edge.data.labelBBox) {
-        obstacles.push({ bounds: edge.data.labelBBox })
+      const labelBounds = route?.labelBounds ?? edge.data.labelBBox
+      if (labelBounds) {
+        obstacles.push({ bounds: labelBounds })
       }
       if (!hasNotes(edge.data.notes)) continue
       const size = sizes[edge.id]

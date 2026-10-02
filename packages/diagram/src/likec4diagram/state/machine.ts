@@ -97,6 +97,7 @@ const _diagramMachine = machine.createMachine({
             !context.viewportChangedManually
           )
           {
+            enqueue(cancelFitDiagram())
             enqueue.raise({ type: 'xyflow.fitDiagram', duration: 0 })
           }
         }),

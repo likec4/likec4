@@ -5,6 +5,8 @@ The [notes.c4](notes.c4) file contains two regular diagrams:
 - `sparse`: Four services with six notes.
 - `readableNested`: Three groups with twelve services and nine notes.
 
+In the nested diagram, some straight leaders cross relationship labels. The cards remain clear of the labels. Crowded views use the available space and can hide part of a leader.
+
 Run this command from the repository root:
 
 ```sh

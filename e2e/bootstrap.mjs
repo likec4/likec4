@@ -55,7 +55,7 @@ for (const view of views) {
   const imageRoute = project === 'e2e' && view.id === 'note-cards-delayed-image'
     ? `await page.route('https://example.invalid/likec4-note.svg', route => route.fulfill({
     contentType: 'image/svg+xml',
-    body: '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60"><rect width="120" height="60" fill="#d3b45a"/></svg>',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60"><rect width="120" height="60" fill="#d3b45a"/><text x="60" y="34" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#362f1c">SVG TEST IMAGE</text></svg>',
   }));`
     : ''
   const settleExport = `const exportPage = page.getByTestId('export-page');
