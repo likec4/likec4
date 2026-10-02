@@ -123,6 +123,29 @@ jobs:
           compression-level: 9
           retention-days: 5
 
+  check-on-macos:
+    name: macOS ARM64 tests
+    timeout-minutes: 20
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Runner platform
+        run: |
+          sw_vers
+          uname -m
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: Generate
+        run: pnpm ci:generate
+
+      - name: Test
+        env:
+          NODE_ENV: test
+        run: pnpm ci:test
+
   check-on-windows:
     name: ⊞ windows build
     timeout-minutes: 20

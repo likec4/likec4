@@ -18,7 +18,7 @@ runs:
     - name: 🛠️ Cache for turbo
       uses: rharkor/caching-for-turbo@v2.4.2
       with:
-        cache-prefix: 'turbo_cache_${{ runner.arch }}'
+        cache-prefix: 'turbo_cache_${{ runner.os }}_${{ runner.arch }}'
 
     - run: pnpm install --prefer-offline
       shell: sh
