@@ -4,11 +4,12 @@
 
 import type { LayoutedElementView } from '@likec4/core/types'
 import { scalar } from '@likec4/core/types'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback } from 'xstate'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramMachine } from './machine'
+import { viewBounds } from './utils'
 
 const viewportSize = { width: 1000, height: 800 }
 
@@ -60,6 +61,10 @@ function createTestActor({ fitView, initialZoom }: { fitView: boolean; initialZo
 
   const xyflow = {
     getViewport: () => initialViewport ?? { x: 0, y: 0, zoom: 1 },
+    setViewport: (nextViewport: { x: number; y: number; zoom: number }) => {
+      initialViewport = nextViewport
+      return Promise.resolve(true)
+    },
   } as unknown as XYFlowInstance
 
   const actor = createActor(
@@ -120,5 +125,146 @@ describe('initializing state', () => {
     expect(viewportCenter(snapshot.context.viewport, viewportSize)).toEqual(viewBoundsCenter(view))
 
     actor.stop()
+  })
+
+  it('fits measured note bounds and ignores bounds from another view', () => {
+    const actor = createTestActor({ fitView: true })
+    actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: true } })
+    actor.send({
+      type: 'notes.bounds',
+      viewId: view.id,
+      bounds: { x: 1900, y: 250, width: 320, height: 180 },
+    })
+
+    expect(viewBounds(actor.getSnapshot().context)).toEqual({ x: 100, y: 200, width: 2120, height: 1000 })
+    const fitted = actor.getSnapshot().context.xyflow!.getViewport()
+    expect(Math.abs(viewportCenter(fitted, viewportSize).x - 1160)).toBeLessThan(3)
+
+    actor.send({
+      type: 'notes.bounds',
+      viewId: scalar.ViewId('view:other'),
+      bounds: { x: -500, y: -500, width: 100, height: 100 },
+    })
+    expect(viewBounds(actor.getSnapshot().context).x).toBe(100)
+
+    actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: false } })
+    expect(viewBounds(actor.getSnapshot().context)).toEqual(view.bounds)
+    actor.stop()
+  })
+
+  it('keeps the explicit fit action available when automatic fit is disabled', () => {
+    const actor = createTestActor({ fitView: false })
+    expect(actor.getSnapshot().context.xyflow!.getViewport().zoom).toBe(1)
+    actor.send({ type: 'xyflow.fitDiagram', explicit: true })
+    expect(actor.getSnapshot().context.xyflow!.getViewport().zoom).toBeLessThan(1)
+    actor.stop()
+  })
+
+  it('preserves the viewport for internal fit events when automatic fit is disabled', () => {
+    const actor = createTestActor({ fitView: false })
+    const before = actor.getSnapshot().context.xyflow!.getViewport()
+    actor.send({ type: 'xyflow.fitDiagram' })
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(before)
+    actor.stop()
+  })
+
+  it('does not auto-fit new note bounds after the user moves the viewport', () => {
+    const actor = createTestActor({ fitView: true })
+    actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: true } })
+    const before = actor.getSnapshot().context.xyflow!.getViewport()
+    actor.send({ type: 'xyflow.viewportMoved', viewport: before, manually: true })
+    actor.send({
+      type: 'notes.bounds',
+      viewId: view.id,
+      bounds: { x: 1900, y: 250, width: 320, height: 180 },
+    })
+    expect(viewBounds(actor.getSnapshot().context).width).toBe(2120)
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(before)
+    actor.stop()
+  })
+
+  it('fits once when notes appear and leaves late card resizing to an explicit fit', () => {
+    const actor = createTestActor({ fitView: true })
+    actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: true } })
+    actor.send({
+      type: 'notes.bounds',
+      viewId: view.id,
+      bounds: { x: 1900, y: 250, width: 320, height: 180 },
+    })
+    const firstFit = actor.getSnapshot().context.xyflow!.getViewport()
+
+    actor.send({
+      type: 'notes.bounds',
+      viewId: view.id,
+      bounds: { x: 1900, y: 250, width: 620, height: 180 },
+    })
+    expect(viewBounds(actor.getSnapshot().context).width).toBe(2420)
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(firstFit)
+
+    actor.send({ type: 'xyflow.fitDiagram', explicit: true })
+    expect(actor.getSnapshot().context.xyflow!.getViewport()).not.toEqual(firstFit)
+    actor.stop()
+  })
+})
+
+describe('note bounds during navigation', () => {
+  const nextView = { ...view, id: scalar.ViewId('view:next') }
+  const firstNoteBounds = { x: 1900, y: 250, width: 320, height: 180 }
+  const nextNoteBounds = { x: 1900, y: 250, width: 1200, height: 180 }
+
+  it('fits the new cards after navigating between noted views', () => {
+    vi.useFakeTimers()
+    const actor = createTestActor({ fitView: true })
+    try {
+      actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: true } })
+      actor.send({ type: 'notes.bounds', viewId: view.id, bounds: firstNoteBounds })
+      actor.send({ type: 'navigate.to', viewId: nextView.id })
+      actor.send({ type: 'update.view', view: nextView, source: 'external', xynodes: [], xyedges: [] })
+
+      expect(actor.getSnapshot().context.noteBounds).toBeNull()
+      const before = actor.getSnapshot().context.xyflow!.getViewport()
+      actor.send({ type: 'notes.bounds', viewId: nextView.id, bounds: nextNoteBounds })
+      const fitted = actor.getSnapshot().context.xyflow!.getViewport()
+      expect(fitted.zoom).toBeLessThan(before.zoom)
+      expect(viewBounds(actor.getSnapshot().context).width).toBe(3000)
+
+      vi.advanceTimersByTime(150)
+      expect(actor.getSnapshot().context.xyflow!.getViewport()).toEqual(fitted)
+    } finally {
+      actor.stop()
+      vi.useRealTimers()
+    }
+  })
+
+  it.each([false, true])('clears history note bounds and preserves manual viewport=%s', manually => {
+    vi.useFakeTimers()
+    const actor = createTestActor({ fitView: true })
+    try {
+      actor.send({ type: 'update.features', features: { ...DefaultFeatures, enableFitView: true, enableNotes: true } })
+      actor.send({ type: 'notes.bounds', viewId: view.id, bounds: firstNoteBounds })
+      actor.send({
+        type: 'xyflow.viewportMoved',
+        viewport: actor.getSnapshot().context.xyflow!.getViewport(),
+        manually,
+      })
+      actor.send({ type: 'navigate.to', viewId: nextView.id })
+      actor.send({ type: 'update.view', view: nextView, source: 'external', xynodes: [], xyedges: [] })
+      vi.advanceTimersByTime(150)
+      actor.send({ type: 'notes.bounds', viewId: nextView.id, bounds: nextNoteBounds })
+
+      actor.send({ type: 'navigate.back' })
+      actor.send({ type: 'update.view', view, source: 'external', xynodes: [], xyedges: [] })
+      vi.advanceTimersByTime(150)
+      expect(actor.getSnapshot().context.noteBounds).toBeNull()
+      expect(actor.getSnapshot().context.viewportChangedManually).toBe(manually)
+      const before = actor.getSnapshot().context.xyflow!.getViewport()
+      actor.send({ type: 'notes.bounds', viewId: view.id, bounds: nextNoteBounds })
+      const after = actor.getSnapshot().context.xyflow!.getViewport()
+      const expected = manually ? before : { zoom: viewportSize.width / 3000 }
+      expect(after).toMatchObject(expected)
+    } finally {
+      actor.stop()
+      vi.useRealTimers()
+    }
   })
 })

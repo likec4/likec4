@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import {
   type DiagramEdge,
   type DiagramEdgeDriftReason,
@@ -520,8 +527,11 @@ function applyEdgesManualLayout(
         if (isNullish(edge.notes) !== isNullish(next.notes)) {
           edgeDrifts.add('notes-changed')
         }
-        // Keep old notes if removed
-        draft.notes = next.notes ?? edge.notes!
+        if (isNullish(next.notes)) {
+          delete draft.notes
+        } else {
+          draft.notes = next.notes
+        }
       }
 
       if (next.astPath) {

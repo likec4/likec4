@@ -68,6 +68,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   onLayoutTypeChange,
   onRelationshipBrowserScopeChange,
   onInitialized,
+  onContentBoundsChange,
   view,
   className,
   controls = true,
@@ -232,6 +233,7 @@ export function LikeC4Diagram<A extends Any = Any>({
                             background={background}
                             reactFlowProps={reactFlowProps}
                             renderNodes={renderNodes}
+                            onContentBoundsChange={onContentBoundsChange ?? undefined}
                           >
                             {children}
                           </LikeC4DiagramXYFlow>

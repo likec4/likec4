@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { assign, sendTo, spawnChild, stopChild } from 'xstate/actions'
 import { and } from 'xstate/guards'
 import {
@@ -206,7 +213,7 @@ export const ready = machine.createStateConfig({
       actions: centerOnNodeOrEdge(),
     },
     'xyflow.fitDiagram': {
-      guard: 'enabled: FitView',
+      guard: ({ event, context }) => event.explicit === true || context.features.enableFitView,
       actions: [
         assign({
           viewportChangedManually: false,

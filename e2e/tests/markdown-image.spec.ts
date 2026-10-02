@@ -42,3 +42,19 @@ test('markdown image in description renders in element details (#2505)', async (
     { timeout: 10000, message: 'Image should load successfully (naturalWidth > 0)' },
   ).toBe(true)
 })
+
+test('compact element descriptions omit images while details retain them', async ({ page }) => {
+  await page.goto('/project/e2e/view/note-cards-export/')
+  await expect(canvas(page)).toBeVisible({ timeout: TIMEOUT_CANVAS })
+
+  const cloud = page.locator('[data-id="cloud"]')
+  const image = cloud.locator('.likec4-element-description img[alt="LikeC4 Logo"]')
+  await expect(image).toBeAttached()
+  await expect(image).toBeHidden()
+
+  await cloud.hover()
+  const detailsButton = cloud.getByRole('button', { name: 'Open details' })
+  await detailsButton.focus()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('dialog[open] img[alt="LikeC4 Logo"]')).toBeVisible()
+})

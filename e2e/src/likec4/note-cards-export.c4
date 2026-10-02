@@ -1,0 +1,68 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+views {
+  view note-cards-compound-frame {
+    title 'View notes near a compound frame'
+
+    include customer
+    include cloud.ui.dashboard with {
+      notes '''
+        The Customer Dashboard is the browser entry point for account features.
+
+        This note applies to the dashboard in this view. Other views can give it different context.
+      '''
+    }
+    include customer -> cloud.ui.dashboard with {
+      title 'opens in browser'
+      notes '''
+        The customer opens the dashboard over HTTPS and signs in before using paid features.
+
+        - Browser traffic uses the public entry point.
+        - Account actions use this connection in this overview.
+      '''
+    }
+
+    autoLayout LeftRight
+  }
+
+  view note-cards-export {
+    title 'View note card export'
+
+    include customer with {
+      notes '''
+        This long element note belongs to the Cloud System Customer. It stays visible in the export at a fixed card width, even when the text wraps over several lines. The complete text must fit inside the exported image.
+
+        ```typescript
+        const this_is_a_long_code_identifier_that_has_seventy_or_more_characters_in_one_line = true
+        ```
+
+        ![Note image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iNzIiPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iNzIiIGZpbGw9IiNkM2I0NWEiLz48dGV4dCB4PSIxMiIgeT0iNDIiIGZvbnQtc2l6ZT0iMjAiPk5vdGUgaW1hZ2U8L3RleHQ+PC9zdmc+)
+      '''
+    }
+    include cloud
+    include customer -> cloud with {
+      notes '''
+        This relationship note explains the customer to cloud connection. Its dashed leader and target dot must remain visible inside the exported image.
+      '''
+    }
+
+    autoLayout LeftRight
+  }
+
+  view note-cards-delayed-image {
+    title 'View note with delayed image'
+
+    include customer with {
+      notes '''
+        The delayed image must finish loading before this diagram is ready for export.
+
+        ![Delayed note image](https://example.invalid/likec4-note.svg)
+      '''
+    }
+    include cloud
+
+    autoLayout LeftRight
+  }
+}

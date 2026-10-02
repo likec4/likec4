@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { describe, expect, it } from 'vitest'
 
 import { indexBy } from 'remeda'
@@ -455,6 +462,22 @@ describe('applyManualLayout', () => {
       expect(edges.edge1.line).toBe('dashed')
       expect(edges.edge1.tags).toEqual(['tag-3'])
       expect(edges.edge1.notes).toBe(layoutedEdges.edge1.notes)
+    })
+
+    it('should remove an edge note from a saved manual layout when the current view removes it', () => {
+      const { result, edges, snapshotEdges, layoutedEdges } = testApplyManualLayout({
+        edges: {
+          edge1: edge => {
+            delete edge.notes
+          },
+        },
+      })
+
+      expect(snapshotEdges.edge1.notes).toEqual({ txt: 'Initial note' })
+      expect(layoutedEdges.edge1.notes).toBeUndefined()
+      expect(edges.edge1.notes).toBeUndefined()
+      expect(edges.edge1.drifts).toEqual(['notes-changed'])
+      expect(result.drifts).toEqual(['edges-drift'])
     })
 
     it('should detect direction-changed drift when edge direction reversed', () => {

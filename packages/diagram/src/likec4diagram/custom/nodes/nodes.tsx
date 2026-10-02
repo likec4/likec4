@@ -27,7 +27,6 @@ import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
 import { NodeDrifts } from './NodeDrifts'
-import { NodeNotes } from './NodeNotes'
 import { CompoundDeploymentToolbar, CompoundElementToolbar } from './toolbar/CompoundToolbar'
 import { DeploymentElementToolbar, ElementToolbar } from './toolbar/ElementToolbar'
 
@@ -96,8 +95,7 @@ export function CompoundDetailsButtonWithHandler(
  * Renders an element node.
  */
 export function ElementNode(props: Types.NodeProps<'element'>) {
-  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } =
-    useEnabledFeatures()
+  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
@@ -107,15 +105,13 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
       <ElementActions {...props} />
       {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <ElementToolbar {...props} />}
-      {enableNotes && <NodeNotes {...props} />}
       <DefaultHandles direction={props.data.viewLayoutDir} />
     </ElementNodeContainer>
   )
 }
 
 export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
-  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } =
-    useEnabledFeatures()
+  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
@@ -125,7 +121,6 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
       <DeploymentElementActions {...props} />
       {enableElementDetails && <ElementDetailsButtonWithHandler {...props} />}
       {!enableReadOnly && <DeploymentElementToolbar {...props} />}
-      {enableNotes && <NodeNotes {...props} />}
       <DefaultHandles direction={props.data.viewLayoutDir} />
     </ElementNodeContainer>
   )

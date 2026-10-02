@@ -22,6 +22,8 @@ tests/*.spec.ts
 !tests/manual-layout-views.spec.ts
 !tests/webcomponent-overlay.spec.ts
 !tests/diagram-a11y.spec.ts
+!tests/note-cards-export.spec.ts
+!tests/note-cards-live.spec.ts
 
 pnpm-lock.yaml
 package-lock.json

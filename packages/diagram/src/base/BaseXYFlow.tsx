@@ -90,6 +90,7 @@ export type BaseXYFlowProps<NodeType extends BaseNode, EdgeType extends BaseEdge
     background?: 'transparent' | 'solid' | XYBackground
     fitViewPadding?: ViewPadding | undefined
     onViewportResize?: undefined | (() => void)
+    onFitView?: undefined | (() => void)
   }
   & SetRequired<
     Omit<
@@ -129,6 +130,7 @@ export function BaseXYFlow<
     fitViewPadding = 0,
     zoomOnDoubleClick = false,
     onViewportResize,
+    onFitView,
     onMoveEnd,
     onNodeMouseEnter,
     onNodeMouseLeave,
@@ -183,7 +185,8 @@ export function BaseXYFlow<
         void xyflow.zoomOut()
         return
       case 'reset':
-        void xyflow.fitView(fitViewOptions)
+        if (onFitView) onFitView()
+        else void xyflow.fitView(fitViewOptions)
         return
     }
   })
