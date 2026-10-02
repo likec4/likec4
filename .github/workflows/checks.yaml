@@ -251,6 +251,16 @@ jobs:
         working-directory: e2e
         run: pnpm test
 
+      - name: 🛠️ install Graphviz binary
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends graphviz
+          dot -V
+
+      - name: ⚙️ run note card tests with Graphviz binary
+        working-directory: e2e
+        run: pnpm test:notes:binary
+
       - id: cloudflare
         if: ${{ failure() && github.repository_owner == 'likec4' }}
         name: ⚙️ publish playwright-report
