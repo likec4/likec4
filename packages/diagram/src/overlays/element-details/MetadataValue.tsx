@@ -17,9 +17,15 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
   const textRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (textRef.current) {
-      setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth)
-    }
+    const textElement = textRef.current
+    if (!textElement) return
+    // Measure on resize, not just on mount: the dialog is opened (showModal) after mount,
+    // the panel may be hidden by Tabs, and the dialog can be resized.
+    const observer = new ResizeObserver(() => {
+      setIsTruncated(textElement.scrollWidth > textElement.clientWidth)
+    })
+    observer.observe(textElement)
+    return () => observer.disconnect()
   }, [value])
 
   return (
@@ -27,7 +33,7 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
       label={isTruncated && !isExpanded ? value : null}
       multiline
       w={300}
-      withinPortal
+      withinPortal={false}
     >
       <Text
         ref={textRef}
@@ -247,6 +253,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
         className={css({
           justifySelf: 'stretch',
           alignSelf: 'start',
+          minWidth: '0',
         })}
       >
         {hasMultipleElements
