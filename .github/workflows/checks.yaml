@@ -359,6 +359,7 @@ jobs:
       - check-types
       - check-build
       - check-on-windows
+      - check-on-macos
       - check-tests
       - check-docs-astro
       - check-playground

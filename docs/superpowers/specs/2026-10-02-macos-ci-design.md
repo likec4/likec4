@@ -1,7 +1,11 @@
 # macOS ARM64 CI testing
 
 Date: 2026-10-02
-Status: Design approved; written spec awaiting user review.
+Status: Approved and implemented.
+
+The initial implementation at `3c6d623f76b6e5e9e207eb3e00a15c968d626434` passed
+[GitHub CI](https://github.com/likec4/likec4/actions/runs/36986219843) on 2026-10-02.
+The macOS job ran on macOS 26.6.2 ARM64.
 
 ## Purpose
 
@@ -37,6 +41,9 @@ Steps:
 The job inherits the workflow's environment and default `contents: read` permission.
 It needs no secrets or artifact permissions. A setup, generation, or test failure fails the job.
 Do not use `continue-on-error` or add automatic retries.
+
+Add `check-on-macos` to `check-quality-gate.needs`, matching the existing Windows dependency.
+The quality gate must wait for macOS and must not report success when the macOS job fails.
 
 ## Cache isolation
 
