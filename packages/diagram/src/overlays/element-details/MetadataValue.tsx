@@ -14,12 +14,22 @@ interface MetadataValueProps {
 
 function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: boolean }) {
   const [isTruncated, setIsTruncated] = useState(false)
+  const [portalTarget, setPortalTarget] = useState<HTMLDialogElement | null>(null)
   const textRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (textRef.current) {
-      setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth)
-    }
+    const textElement = textRef.current
+    if (!textElement) return
+    // Portal the tooltip into the dialog: it stays in the top layer (above the backdrop)
+    // and is not clipped by the card / scroll area.
+    setPortalTarget(textElement.closest('dialog'))
+    // Measure on resize, not just on mount: the dialog is opened (showModal) after mount,
+    // the panel may be hidden by Tabs, and the dialog can be resized.
+    const observer = new ResizeObserver(() => {
+      setIsTruncated(textElement.scrollWidth > textElement.clientWidth)
+    })
+    observer.observe(textElement)
+    return () => observer.disconnect()
   }, [value])
 
   return (
@@ -27,7 +37,7 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
       label={isTruncated && !isExpanded ? value : null}
       multiline
       w={300}
-      withinPortal
+      portalProps={portalTarget ? { target: portalTarget } : {}}
     >
       <Text
         ref={textRef}
@@ -247,6 +257,7 @@ export function MetadataValue({ label, value }: MetadataValueProps) {
         className={css({
           justifySelf: 'stretch',
           alignSelf: 'start',
+          minWidth: '0',
         })}
       >
         {hasMultipleElements
