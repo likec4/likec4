@@ -33,6 +33,7 @@ import type { ExpandableConnection, ExpandableRelation } from '../utils/relation
 import { resolveGlobalRulesInElementView } from '../utils/resolve-global-rules'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
+import { withResolvedRouting } from '../utils/view-routing'
 import type { Connection, Elem, PredicateCtx } from './_types'
 import { type NodesGroup, type Stage, Memory } from './memory'
 import { ActiveGroupMemory } from './memory/memory'
@@ -328,7 +329,7 @@ export function computeElementView<A extends AnyAux>(
   const ranks = collectRankConstraints(rules, nodes)
 
   return calcViewLayoutHash({
-    ...view,
+    ...withResolvedRouting(view, likec4model.$styles.defaults.view.routing),
     _stage: 'computed',
     autoLayout: {
       direction: autoLayoutRule?.direction ?? 'TB',

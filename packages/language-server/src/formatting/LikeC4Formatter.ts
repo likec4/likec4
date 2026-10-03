@@ -331,6 +331,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isRelationStringProperty(node)
       || ast.isViewStringProperty(node)
       || ast.isViewOrderProperty(node)
+      || ast.isViewRoutingProperty(node)
       || ast.isNotationProperty(node)
       || ast.isNotesProperty(node)
       || ast.isSpecificationElementStringProperty(node)
@@ -356,6 +357,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         'title',
         'description',
         'order',
+        'routing',
         'technology',
         'summary',
         'notation',
@@ -416,6 +418,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       f.keyword('autoLayout').append(FormattingOptions.oneSpace)
       f.property('rankSep').prepend(FormattingOptions.oneSpace)
       f.property('nodeSep').prepend(FormattingOptions.oneSpace)
+      f.property('routing').prepend(FormattingOptions.oneSpace)
     })
   }
 

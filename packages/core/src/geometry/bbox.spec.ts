@@ -459,3 +459,14 @@ describe('BBox and RectBox conversion', () => {
     expect(convertedBack.y2).toBeCloseTo(originalRect.y2)
   })
 })
+
+describe('BBox.intersects', () => {
+  it('is true when the boxes overlap', () => {
+    expect(BBox.intersects({ x: 0, y: 0, width: 10, height: 10 }, { x: 5, y: 5, width: 10, height: 10 })).toBe(true)
+  })
+
+  it('is false when the boxes only touch or are apart', () => {
+    expect(BBox.intersects({ x: 0, y: 0, width: 10, height: 10 }, { x: 10, y: 0, width: 10, height: 10 })).toBe(false)
+    expect(BBox.intersects({ x: 0, y: 0, width: 10, height: 10 }, { x: 0, y: 20, width: 10, height: 10 })).toBe(false)
+  })
+})

@@ -1,11 +1,13 @@
 import type { ComputedView } from '@likec4/core'
 import { Builder } from '@likec4/core/builder'
 import { computeProjectsView } from '@likec4/core/compute-view'
+import { BBox, isOrthoSpline, polylineToSegments, splineToPolyline } from '@likec4/core/geometry'
 import { map, pick } from 'remeda'
 import { describe, it } from 'vitest'
 import {
   computedAmazonView,
   computedCloud3levels,
+  computedCloudOrthoView,
   computedCloudView,
   computedIndexView,
   issue577_fail,
@@ -45,6 +47,32 @@ describe('GraphvizWasmAdapter:', () => {
     expect(diagram).toMatchSnapshot()
   })
 
+  it('computedCloudOrthoView routes every edge orthogonally', async ({ expect }) => {
+    const diagram = await dotLayout(computedCloudOrthoView)
+    expect(diagram.routing).toBe('ortho')
+    expect(diagram.edges.length).toBeGreaterThan(0)
+    for (const edge of diagram.edges) {
+      const pts = edge.points
+      expect((pts.length - 1) % 3, `edge ${edge.id} points`).toBe(0)
+      expect(isOrthoSpline(pts), `edge ${edge.id} is axis-aligned`).toBe(true)
+      if (edge.label) {
+        expect(edge.labelBBox, `edge ${edge.id} keeps its label`).toBeTruthy()
+      }
+      if (edge.labelBBox) {
+        for (const other of diagram.edges) {
+          if (other.id === edge.id) continue
+          if (other.labelBBox) {
+            expect(BBox.intersects(edge.labelBBox, other.labelBBox), `labels ${edge.id} and ${other.id}`).toBe(false)
+          }
+          for (const [a, b] of polylineToSegments(splineToPolyline(other.points))) {
+            const line = BBox.expand(BBox.fromPoints([[a.x, a.y], [b.x, b.y]]), 1)
+            expect(BBox.intersects(edge.labelBBox, line), `label ${edge.id} covers route ${other.id}`).toBe(false)
+          }
+        }
+      }
+    }
+  })
+
   it('reproduce #577', async ({ expect }) => {
     // was failing with invalid URL
     const diagram = await dotLayout(issue577_fail)
@@ -53,6 +81,38 @@ describe('GraphvizWasmAdapter:', () => {
 
     // was valid
     expect(await dotLayout(issue577_valid)).toBeDefined()
+  })
+
+  it('includes labels moved outside the original Graphviz bounds', async ({ expect }) => {
+    const model = Builder.specification({ elements: { service: {} } })
+      .model(({ service, rel }, _) =>
+        _(
+          service('n0', { title: 'Service 0' }),
+          service('n1', { title: 'Service 1' }),
+          service('n2', { title: 'Service 2' }),
+          service('n3', { title: 'Service 3' }),
+          service('n4', { title: 'Service 4' }),
+          service('n5', { title: 'Service 5' }),
+          rel('n3', 'n1', { title: 'relationship 0 with details' }),
+          rel('n5', 'n2', { title: 'relationship 1 with details' }),
+          rel('n5', 'n0', { title: 'relationship 2 with details' }),
+          rel('n2', 'n1', { title: 'relationship 3 with details' }),
+          rel('n2', 'n0', { title: 'relationship 4 with details' }),
+          rel('n0', 'n2', { title: 'relationship 5 with details' }),
+          rel('n0', 'n3', { title: 'relationship 6 with details' }),
+          rel('n3', 'n4', { title: 'relationship 7 with details' }),
+          rel('n2', 'n5', { title: 'relationship 8 with details' }),
+        )
+      )
+      .views(({ view, $include }, _) => _(view('index', $include('*'))))
+      .toLikeC4Model()
+    const diagram = await dotLayout({ ...model.view('index').$view, routing: 'ortho' })
+    expect(diagram.edges.some(edge => edge.labelBBox && edge.labelBBox.x < 0)).toBe(true)
+    for (const edge of diagram.edges) {
+      if (edge.labelBBox) {
+        expect(BBox.includes(diagram.bounds, edge.labelBBox), `bounds contain label ${edge.id}`).toBe(true)
+      }
+    }
   })
 
   for (const direction of ['TB', 'BT', 'LR', 'RL'] as const) {

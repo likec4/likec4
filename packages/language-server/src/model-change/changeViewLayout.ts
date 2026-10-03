@@ -34,6 +34,9 @@ export function changeViewLayout(_services: LikeC4Services, {
       newRule += ` ${layout.nodeSep}`
     }
   }
+  if (existingRule?.routing) {
+    newRule += ` ${existingRule.routing}`
+  }
 
   if (existingRule && existingRule.$cstNode) {
     return TextEdit.replace(existingRule.$cstNode.range, newRule)

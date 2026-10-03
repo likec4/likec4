@@ -11,7 +11,6 @@ export {
   bezierControlPoints,
   bezierPath,
   distance,
-  distanceBetweenPoints,
   extractMinimalInternalNode,
   getNodeCenter,
   getNodeIntersection,

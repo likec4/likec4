@@ -3,6 +3,7 @@ import type {
   AnyAux,
   Aux,
   BorderStyle,
+  EdgeRouting,
   ElementShape,
   ElementSpecification as ElementKindSpecification,
   Expression,
@@ -131,6 +132,10 @@ export type NewViewProps<Tag> = {
    * Optional per-view navigation order.
    */
   order?: number
+  /**
+   * Edge routing: `spline` for curves or `ortho` for right-angle bends. Inherits the project default when omitted.
+   */
+  routing?: EdgeRouting
   tags?: [Tag, ...Tag[]]
   links?: Array<string | { title?: string; url: string }>
 }
