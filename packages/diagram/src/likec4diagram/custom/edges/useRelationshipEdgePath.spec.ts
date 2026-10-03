@@ -3,10 +3,8 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import { selectLabelRoutes, selectTrackRoutes } from '../../../hooks/useEdgeTracks'
-import { type XYStoreState, useXYStore } from '../../../hooks/useXYFlow'
+import * as hooks from '../../../hooks/useXYFlow'
 import { useRelationshipEdgePath } from './useRelationshipEdgePath'
-
-vi.mock('../../../hooks/useXYFlow', () => ({ useXYStore: vi.fn<typeof useXYStore>() }))
 
 describe('useRelationshipEdgePath', () => {
   it.each(['forward', 'back'] as const)('matches the selected %s route with offset handles', (dir) => {
@@ -31,7 +29,7 @@ describe('useRelationshipEdgePath', () => {
           dir,
         },
       })),
-    } as unknown as XYStoreState
+    } as unknown as hooks.XYStoreState
     state.nodeLookup.get('a')!.internals.handleBounds = {
       source: [{ type: 'source', nodeId: 'a', position: Position.Bottom, x: 47, y: 30, width: 6, height: 6 }],
       target: null,
@@ -40,7 +38,7 @@ describe('useRelationshipEdgePath', () => {
       source: null,
       target: [{ type: 'target', nodeId: 'b', position: Position.Top, x: 47, y: 30, width: 6, height: 6 }],
     }
-    vi.mocked(useXYStore).mockImplementation(selector => selector(state))
+    vi.spyOn(hooks, 'useXYStore').mockImplementation(selector => selector(state))
 
     const edge = state.edges.find(edge => edge.type === 'relationship')!
     const selected = selectLabelRoutes(state).find(route => route.id === edge.id)!
