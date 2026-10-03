@@ -14,11 +14,15 @@ interface MetadataValueProps {
 
 function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: boolean }) {
   const [isTruncated, setIsTruncated] = useState(false)
+  const [portalTarget, setPortalTarget] = useState<HTMLDialogElement | null>(null)
   const textRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const textElement = textRef.current
     if (!textElement) return
+    // Portal the tooltip into the dialog: it stays in the top layer (above the backdrop)
+    // and is not clipped by the card / scroll area.
+    setPortalTarget(textElement.closest('dialog'))
     // Measure on resize, not just on mount: the dialog is opened (showModal) after mount,
     // the panel may be hidden by Tabs, and the dialog can be resized.
     const observer = new ResizeObserver(() => {
@@ -33,7 +37,7 @@ function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: bool
       label={isTruncated && !isExpanded ? value : null}
       multiline
       w={300}
-      withinPortal={false}
+      portalProps={portalTarget ? { target: portalTarget } : {}}
     >
       <Text
         ref={textRef}
