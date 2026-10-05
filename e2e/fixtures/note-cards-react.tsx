@@ -15,9 +15,11 @@ const { useLikeC4Model } = await loadModel('notes-live')
 function App() {
   const model = useLikeC4Model()
   const [measurement, setMeasurement] = useState<{ bounds: BBox; ready: boolean } | null>(null)
+  const [updates, setUpdates] = useState<{ label: string | null | undefined; ready: boolean }[]>([])
   return (
     <LikeC4ModelProvider likec4model={model}>
       <output
+        data-updates={JSON.stringify(updates)}
         data-testid="content-bounds"
         data-ready={measurement?.ready ?? false}
         data-width={measurement?.bounds.width}
@@ -27,7 +29,12 @@ function App() {
           viewId="update"
           keepAspectRatio
           enableNotes
-          onContentBoundsChange={setMeasurement} />
+          onContentBoundsChange={value => {
+            setMeasurement(value)
+            setUpdates(
+              previous => [...previous, { label: model.$data.views.update?.edges[0]?.label, ready: value.ready }],
+            )
+          }} />
       </div>
     </LikeC4ModelProvider>
   )

@@ -79,7 +79,11 @@ export function NoteLayer({
   }>({ key: '', sizes: {}, imagesReady: false })
   const [fontsReadyKey, setFontsReadyKey] = useState<string | null>(null)
   const [pathVersion, setPathVersion] = useState(0)
-  const [routes, setRoutes] = useState<{ key: string; byId: Record<string, EdgeRoute> }>({ key: '', byId: {} })
+  const [routes, setRoutes] = useState<{ key: string; edges: Types.Edge[] | null; byId: Record<string, EdgeRoute> }>({
+    key: '',
+    edges: null,
+    byId: {},
+  })
   const [settled, setSettled] = useState<{ key: string; result: NotePlacementResult } | null>(null)
   const cardElements = useMemo(() => new Map<string, HTMLDivElement>(), [])
 
@@ -222,11 +226,13 @@ export function NoteLayer({
         }
         byId[edge.id] = { anchor, ...(tangent && { tangent }), segments, ...(labelBounds && { labelBounds }) }
       }
-      setRoutes({ key: routeKey, byId })
+      setRoutes({ key: routeKey, edges, byId })
     })
     return () => cancelAnimationFrame(frame)
   }, [active, notes.length, edges, routeKey, rootRef])
 
+  // ponytail: reuse the edge-array identity already used by the route rebuild effect.
+  const routesReady = routes.key === routeKey && routes.edges === edges
   const measured = measurement.key === noteKey && notes.every(note => (measurement.sizes[note.id]?.height ?? 0) > 0)
   const sizes = measurement.sizes
   const geometry = useMemo(() => {
@@ -261,7 +267,7 @@ export function NoteLayer({
         edge.hidden || edge.type !== 'relationship' || !visibleNodes.has(edge.source)
         || !visibleNodes.has(edge.target)
       ) continue
-      const route = routes.key === routeKey ? routes.byId[edge.id] : undefined
+      const route = routesReady ? routes.byId[edge.id] : undefined
       if (route) segments.push(...route.segments)
       const labelBounds = route?.labelBounds ?? edge.data.labelBBox
       if (labelBounds) {
@@ -279,7 +285,7 @@ export function NoteLayer({
       })
     }
     return { architectureBounds, targets, obstacles, segments }
-  }, [active, measured, sizes, xystore, xyNodes, nodes, edges, routes, routeKey, architectureBounds])
+  }, [active, measured, sizes, xystore, xyNodes, nodes, edges, routes, routesReady, architectureBounds])
   const { targets } = geometry
   const stableResult = settled?.key === noteKey ? settled.result : null
   const frozenResult = dragging ? stableResult : null
@@ -320,7 +326,7 @@ export function NoteLayer({
     : result
   const placementReady = !active || notes.length === 0 ||
     (measured && fontsReadyKey === noteKey &&
-      (routes.key === routeKey || (dragging && !!stableResult)) && !!displayResult)
+      (routesReady || (dragging && !!stableResult)) && !!displayResult)
   const ready = placementReady && (!active || notes.length === 0 || measurement.imagesReady)
   const bounds = displayResult?.bounds ?? architectureBounds
 

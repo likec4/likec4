@@ -79,6 +79,27 @@ test.describe('note cards in the live editor', () => {
     }).toBe(true)
   })
 
+  test('same-ID edge updates report pending before the new note bounds are ready', async ({ page }) => {
+    await writeFile(join(directory, 'model.c4'), source)
+    const fixturePath = pathToFileURL(resolve('fixtures/note-cards-react.html')).pathname
+    await page.goto(`${baseURL}/@fs${fixturePath}`)
+    const measurement = page.getByTestId('content-bounds')
+    await expect(measurement).toHaveAttribute('data-ready', 'true')
+    const edge = page.locator('.react-flow__edge[data-id]').first()
+    const edgeId = await edge.getAttribute('data-id')
+    await writeFile(join(directory, 'model.c4'), source.replace('\'opens\'', '\'opens with an updated label\''))
+    const updates = () =>
+      measurement.evaluate(element => {
+        const values: { label: string; ready: boolean }[] = JSON.parse(element.getAttribute('data-updates') ?? '[]')
+        return values.filter(value => value.label === 'opens with an updated label')
+      })
+    await expect.poll(updates).not.toHaveLength(0)
+    expect((await updates())[0]?.ready).toBe(false)
+    await expect(edge).toHaveAttribute('data-id', edgeId ?? '')
+    await expect(measurement).toHaveAttribute('data-ready', 'true')
+    await writeFile(join(directory, 'model.c4'), source)
+  })
+
   test('card placement stays fixed during a drag and clears the target after drop', async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 700 })
     await page.goto(`${baseURL}/view/update/`)
