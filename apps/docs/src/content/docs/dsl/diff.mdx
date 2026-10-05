@@ -1,10 +1,12 @@
 ---
 title: Model diffs
-description: Describe a planned change of the model, apply or discard it, and remove elements safely
+description: Describe a planned change of the model, compare the model before and after it, apply or discard it, and remove elements safely
 sidebar:
   label: Model diffs
   order: 7
 ---
+
+import { Aside } from '@astrojs/starlight/components';
 
 A diff is a named change set of the model.
 It describes a planned change (for example, an RFC) without changing the model:
@@ -63,6 +65,24 @@ Two diffs overlap if they change the same part of the model:
 
 Overlaps are reported as warnings on both diffs. They are never resolved automatically:
 the owners of the diffs agree on the change, and the one who applies a diff confirms it.
+
+## Compare the model before and after the diff
+
+The panel at the top right of the diagram shows **As-is (no diff)** by default.
+Select a diff there, then switch between:
+
+- **As-is**: the model before the diff
+- **Changes**: both states in one diagram, added elements and relationships in green, removed in red (faded), modified in orange
+- **To-be**: the model after the diff
+
+Elements keep their positions when you switch, because all three modes use the same layout.
+
+<Aside type="note">
+  Compare views are available in the [playground](https://playground.likec4.dev), in the development server (`likec4 start`) and in static builds (`likec4 build`).
+  A static build includes the diffs of its sources.
+  To build a site without a diff, [exclude](/dsl/config/#exclude-files) its file in the project configuration.
+  Views that reference elements added by an excluded diff become invalid.
+</Aside>
 
 ## Apply or discard a diff
 
@@ -144,6 +164,11 @@ Other diffs are never changed: if the apply breaks one of them, the result names
 A diff with errors cannot be applied.
 A diff that overlaps with other diffs is applied only after you confirm that the owners of these diffs agreed.
 
+In the playground, select the diff, expand the panel and use **Review and apply** or **Discard**.
+The review shows the changes of each file and the overlaps with other diffs.
+**Approve and apply** writes the changes, and **Roll back** restores the files.
+Roll back is possible while the changed files are not modified.
+
 In the editor, put the cursor on the diff name and use the code actions **Apply diff** or **Discard diff**.
 From the command line:
 
@@ -175,6 +200,9 @@ Some references are removed only on request:
 References in diffs are never changed: the dry run lists them to fix manually, by the owners of the diffs.
 
 In the editor, put the cursor on the element name and use the code action **Safe delete**.
+In the playground, the code action **Preview removal impact** shows what is removed (in red) and the orphans (in orange).
+You can also pick the element in the **Safe delete** field of the expanded panel.
+**Review and delete** shows the changes of each file before they are applied, and **Roll back** restores the files.
 From the command line:
 
 ```bash
