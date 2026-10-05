@@ -23,6 +23,7 @@ Homogeneity: Playwright specs use `test.describe` + `test()`/`test.beforeEach`; 
 ## Pending (optional)
 
 - [x] Static site: navigation between views (`tests/static-navigation.spec.ts`; runs with main config, likec4 start 5173).
+- [x] Static site: model diff selector and compare view modes (`tests/static-build-model-diffs.spec.ts`; `src/model-diffs` project).
 - [x] Docs: smoke test for main pages (`tests/docs-smoke.spec.ts`; `pnpm test:docs` with `playwright.docs.config.ts`, port 4321).
 
 ## How to run
