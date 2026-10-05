@@ -369,6 +369,10 @@ Three getters on the `LikeC4` class, documented in `tooling/model-api.mdx`:
 | `likec4 diff discard <diff> [path]`   | `--project`, `--dry-run`                                                |
 | `likec4 safe-delete <element> [path]` | `--dry-run`, `--orphans`, `--scoped-views`, `--dynamic-steps`, `--json` |
 
+- Without `--project`, `diff list` covers all projects, and `diff apply`, `diff discard` and `safe-delete` use the only
+  project that has the diff or element (`findProject` in `cli/model-edits.ts`). With `--json`, logs go to stderr,
+  so stdout has only JSON.
+
 - `packages/likec4/src/cli/model-edits.ts` prints previews (line diff) and edit results for both commands.
 - MCP tools `list-diffs` and `removal-impact` are read-only (`readOnlyHint: true`).
   The MCP server cannot change the model.
@@ -435,6 +439,8 @@ and edits go through its refactor preview. Compare views are not in the VS Code 
 | `packages/mcp/src/tools/model-diff-tools.spec.ts`, `createMCPServer.int.spec.ts` | MCP tools                                                                                                                                                      |
 | `packages/vite-plugin/src/virtuals/diffs.spec.ts`                                | virtual module content                                                                                                                                         |
 | `e2e/tests/static-build-model-diffs.spec.ts` (`e2e/src/model-diffs`)             | diff selector and compare modes in a static build                                                                                                              |
+| `packages/likec4/src/cli/model-edits.spec.ts`                                    | CLI: the project of a diff or element (`findProject`)                                                                                                          |
+| `e2e/src/likec4-cli-diff.spec.ts`                                                | CLI in a workspace with several projects: `diff list --json`, `diff apply --dry-run`, `safe-delete` of an unknown element                                      |
 
 ## 10. Known limitations
 
