@@ -1,0 +1,220 @@
+---
+title: Model diffs
+description: Describe a planned change of the model, compare the model before and after it, apply or discard it, and remove elements safely
+sidebar:
+  label: Model diffs
+  order: 7
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A diff is a named change set of the model.
+It describes a planned change (for example, an RFC) without changing the model:
+the model stays "as is" until you apply the diff.
+
+## Syntax
+
+```likec4
+diff rfc1 'RFC-1: Payments service' {
+  description 'Replace the SOAP gateway with a Payments service'
+
+  remove {
+    // removes the element, its descendants and all their relationships
+    shop.legacyPayments
+    // removes a relationship (matched by source, target, kind, title and direction)
+    shop.orders -> bank 'checks fraud score'
+  }
+
+  add {
+    extend shop {
+      payments = container 'Payments Service'
+    }
+    shop.orders -> shop.payments 'requests payments'
+
+    // adds tags, links and metadata to an existing element
+    extend shop.orders {
+      #next
+    }
+  }
+}
+```
+
+- `remove` lists elements and relationships of the model.
+- `add` contains model elements, relationships and `extend` blocks, with the same syntax as the `model` block.
+- A diff can span several files: diffs with the same name are merged.
+
+Views can reference elements added by a diff.
+In the model "as is" these references are ignored, so the view shows only existing elements.
+A view scoped to an element added by a diff (`view of`) exists only in the "to-be" state.
+
+### Validation
+
+- A removed element or relationship must exist in the model.
+  If the model changed since the diff was written, the entry is reported as an error.
+- An added element must not exist in the model.
+- A diff cannot remove elements added by a diff, and cannot extend relationships.
+
+### Overlapping diffs
+
+Two diffs overlap if they change the same part of the model:
+
+- both remove the same element or relationship, or both add the same element or relationship
+- both set the same metadata key of an element to different values
+- one removes an element that the other extends, relates to or adds children to
+- one uses an element that only the other adds
+
+Overlaps are reported as warnings on both diffs. They are never resolved automatically:
+the owners of the diffs agree on the change, and the one who applies a diff confirms it.
+
+## Compare the model before and after the diff
+
+The panel at the top right of the diagram shows **As-is (no diff)** by default.
+Select a diff there, then switch between:
+
+- **As-is**: the model before the diff
+- **Changes**: both states in one diagram, added elements and relationships in green, removed in red (faded), modified in orange
+- **To-be**: the model after the diff
+
+Elements keep their positions when you switch, because all three modes use the same layout.
+
+<Aside type="note">
+  Compare views are available in the [playground](https://playground.likec4.dev), in the development server (`likec4 start`) and in static builds (`likec4 build`).
+  A static build includes the diffs of its sources.
+  To build a site without a diff, [exclude](/dsl/config/#exclude-files) its file in the project configuration.
+  Views that reference elements added by an excluded diff become invalid.
+</Aside>
+
+## Apply or discard a diff
+
+- **Apply** removes the entries of `remove` with everything that references them (see [safe delete](#safe-delete)),
+  merges the `add` blocks into the model, and deletes the diff.
+  Views scoped to removed elements and dynamic view steps with removed elements are removed too.
+- **Discard** deletes the diff. The model does not change.
+
+Apply writes the final content into the files that define the model:
+
+- `extend` of an existing element goes into the element definition: tags and links are added if missing, metadata keys override existing ones, child elements and relationships go to the end of the element body.
+- A relationship goes to the `model` block that defines the root element of its source.
+- New root elements go to the `model` block with the most root elements.
+
+Apply keeps only the model changes.
+The title, the description and the comments of the diff are deleted with it, and so are the comment lines right above the diff.
+Comments inside the braces of an added element move with the element.
+To keep the reasoning of a diff, write it into the model (for example, the `description` of an element) or into the commit message.
+
+For example, apply this diff:
+
+```likec4
+model {
+  shop = system 'Online Shop' {
+    orders = container 'Order Service'
+    legacyPayments = container 'Legacy Payment Gateway'
+  }
+  bank = system 'Bank'
+
+  shop.orders -> shop.legacyPayments 'charges'
+  shop.legacyPayments -> bank 'calls SOAP API'
+}
+
+// RFC-1 was approved in the architecture review
+diff rfc1 'RFC-1: Payments service' {
+  description 'Replace the SOAP gateway with a Payments service'
+
+  remove {
+    // The Payments service replaces the gateway
+    shop.legacyPayments
+  }
+
+  add {
+    extend shop {
+      // Owned by the payments team
+      payments = container 'Payments Service' {
+        // Calls the REST API of the bank
+        technology 'Go'
+      }
+    }
+    shop.orders -> shop.payments 'charges'
+    shop.payments -> bank 'calls REST API'
+  }
+}
+```
+
+The model after the apply.
+The gateway and its relationships are removed, `payments` is in the definition of `shop`,
+and only the comment inside `payments` is kept:
+
+```likec4
+model {
+  shop = system 'Online Shop' {
+    orders = container 'Order Service'
+    payments = container 'Payments Service' {
+      // Calls the REST API of the bank
+      technology 'Go'
+    }
+  }
+  bank = system 'Bank'
+
+  shop.orders -> shop.payments 'charges'
+  shop.payments -> bank 'calls REST API'
+}
+```
+
+Other diffs are never changed: if the apply breaks one of them, the result names it, and its owner updates it.
+
+A diff with errors cannot be applied.
+A diff that overlaps with other diffs is applied only after you confirm that the owners of these diffs agreed.
+
+In the playground, select the diff, expand the panel and use **Review and apply** or **Discard**.
+The review shows the changes of each file and the overlaps with other diffs.
+**Approve and apply** writes the changes, and **Roll back** restores the files.
+Roll back is possible while the changed files are not modified.
+
+In the editor, put the cursor on the diff name and use the code actions **Apply diff** or **Discard diff**.
+From the command line:
+
+```bash
+npx likec4 diff list
+# Print the changes and the overlaps without writing files
+npx likec4 diff apply rfc1 --dry-run
+npx likec4 diff apply rfc1
+# The owners of the overlapping diffs agreed
+npx likec4 diff apply rfc1 --accept-overlaps
+npx likec4 diff discard rfc1
+```
+
+## Safe delete
+
+Safe delete removes an element and everything that references it, in one edit:
+
+- the element and its descendants (also children added with `extend` in other files)
+- relationships of removed elements, `extend` blocks, deployed instances and their deployment relationships
+- references in view predicates and style rules (also of deployment views), global predicates and styles,
+  and imports in other projects
+
+Some references are removed only on request:
+
+- views scoped to a removed element (`view of`)
+- dynamic view steps with a removed element
+- **orphans**: elements that lose all their relationships (they are only suggested)
+
+References in diffs are never changed: the dry run lists them to fix manually, by the owners of the diffs.
+
+In the editor, put the cursor on the element name and use the code action **Safe delete**.
+In the playground, the code action **Preview removal impact** shows what is removed (in red) and the orphans (in orange).
+You can also pick the element in the **Safe delete** field of the expanded panel.
+**Review and delete** shows the changes of each file before they are applied, and **Roll back** restores the files.
+From the command line:
+
+```bash
+# report what the removal takes with it
+npx likec4 safe-delete shop.legacyPayments --dry-run
+
+# remove it, together with orphans and dynamic view steps
+npx likec4 safe-delete shop.legacyPayments --orphans --dynamic-steps
+```
+
+After the removal, errors left in the changed files and new errors in other files (for example, in diffs) are reported,
+and the command exits with 1.
+It also exits with 1 if the element or the diff does not exist.
+
+The [MCP server](/tooling/ai-tools/) provides the same analysis with the `removal-impact` tool, and lists diffs with `list-diffs`.

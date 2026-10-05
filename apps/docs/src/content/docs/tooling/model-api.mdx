@@ -460,6 +460,32 @@ for (const view of model.views()) {
 }
 ```
 
+### Model diffs and safe delete
+
+API to work with [model diffs](/dsl/diff/) and to remove elements safely.
+Edits change the source files of the workspace.
+If a file cannot be written, `apply` changes no file and returns `applied: false` with the reason.
+A workspace from `fromSource` has no files: `preview` works, `apply` returns `applied: false`.
+
+```ts
+import { LikeC4 } from "likec4"
+import type { DiffId } from "likec4/model"
+
+await using likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+
+// Diffs with their changes and the views they change
+const diffs = await likec4.modelDiffs.list()
+
+// What removing an element takes with it (safe delete dry run)
+const report = await likec4.removalImpact.analyze(['shop.legacyPayments'])
+
+// Preview, apply and roll back an edit of the sources
+const request = { type: 'apply-diff', diffId: 'rfc1' as DiffId, action: 'apply' } as const
+const preview = await likec4.modelEdits.preview(request) // text of each changed file, before and after
+const result = await likec4.modelEdits.apply(request)
+await likec4.modelEdits.rollback(result.edit?.id)
+```
+
 
 ## Model Builder
 

@@ -296,6 +296,55 @@ likec4 format --check
 | `--files`           | Format only specific files (repeatable)                         |
 | `--check`           | Check if files are formatted without writing changes            |
 
+### Model diffs
+
+List, apply or discard [model diffs](/dsl/diff/):
+
+```sh
+# List diffs and the views they change
+likec4 diff list
+# Print the changes of each file, without writing them
+likec4 diff apply rfc1 --dry-run
+# Apply a diff to the model
+likec4 diff apply rfc1
+# Delete a diff without changing the model
+likec4 diff discard rfc1
+```
+
+| Option              | Description                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `[path]`            | Directory with LikeC4 sources (default: current directory)                         |
+| `--project, -p`     | Select the project by name or path (multi-project workspace)                        |
+| `--json`            | `list` only: print the diffs as JSON                                                |
+| `--dry-run`         | `apply` and `discard` only: print the changes of each file, and overlaps with diffs |
+| `--accept-overlaps` | `apply` only: apply a diff that overlaps with other diffs, once their owners agreed |
+
+A diff with errors is not applied, and a diff that overlaps with other diffs is applied only with `--accept-overlaps`.
+
+### Safe delete
+
+Remove an element and everything that references it (see [safe delete](/dsl/diff/#safe-delete)):
+
+```sh
+# Report what the removal takes with it
+likec4 safe-delete cloud.legacy --dry-run
+# Remove the element
+likec4 safe-delete cloud.legacy
+```
+
+| Option            | Description                                                  |
+| ----------------- | ------------------------------------------------------------ |
+| `[path]`          | Directory with LikeC4 sources (default: current directory)  |
+| `--project, -p`   | Select the project by name or path (multi-project workspace) |
+| `--dry-run`       | Only report the impact, do not change files                  |
+| `--orphans`       | Also remove elements left without relationships              |
+| `--scoped-views`  | Also remove views scoped to removed elements                 |
+| `--dynamic-steps` | Also remove dynamic view steps with removed elements         |
+| `--json`          | Print the dry-run report as JSON                             |
+
+Both commands exit with code 1 if the diff or the element does not exist, if the edit is refused,
+or if errors are left: in the changed files, or new errors in other files (for example, in other diffs).
+
 ### Language Server (LSP)
 
 Start the LikeC4 language server for use with editors that support the Language Server Protocol:
