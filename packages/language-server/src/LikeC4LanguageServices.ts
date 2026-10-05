@@ -19,6 +19,7 @@ import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from './ast'
 import { logger as mainLogger } from './logger'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4ModelChanges } from './model-change/ModelChanges'
+import type { LikeC4ModelDiffs, LikeC4RemovalImpact } from './model-diff'
 import type { LikeC4Services } from './module'
 import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/LikeC4Views'
@@ -51,6 +52,14 @@ export interface LikeC4LanguageServices {
   readonly workspacePath: string
   readonly projectsManager: ProjectsManager
   readonly editor: LikeC4ModelChanges
+  /**
+   * Model diffs: list diffs and compare views
+   */
+  readonly modelDiffs: LikeC4ModelDiffs
+  /**
+   * Safe delete dry run: what removing an element takes with it
+   */
+  readonly removalImpact: LikeC4RemovalImpact
 
   /**
    * Returns all projects with relevant documents
@@ -179,6 +188,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
 
   get views(): LikeC4Views {
     return this.services.likec4.Views
+  }
+
+  get modelDiffs(): LikeC4ModelDiffs {
+    return this.services.likec4.ModelDiffs
+  }
+
+  get removalImpact(): LikeC4RemovalImpact {
+    return this.services.likec4.RemovalImpact
   }
 
   get workspaceUri(): URI {

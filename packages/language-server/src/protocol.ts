@@ -4,6 +4,8 @@ import type {
   ComputedLikeC4ModelData,
   DeploymentFqn,
   DiagramView,
+  DiffId,
+  DiffSummary,
   Fqn,
   LayoutedLikeC4ModelData,
   LayoutedProjectsView,
@@ -16,6 +18,28 @@ import type {
 import type { AILayoutHints } from '@likec4/layouts/ai'
 import { NotificationType, NotificationType0, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
+import type {
+  ApplyEditsResult,
+  ModelEditPreview,
+  ModelEditRequest,
+  ModelEditResult,
+  RemovalImpactReport,
+} from './model-diff'
+
+export type {
+  ApplyEditsResult,
+  DiffAction,
+  DocumentChange,
+  ModelEditPreview,
+  ModelEditRecord,
+  ModelEditRequest,
+  ModelEditResult,
+  ReferenceKind,
+  RemainingError,
+  RemovalImpactReference,
+  RemovalImpactReport,
+  SafeDeleteOptions,
+} from './model-diff'
 
 export namespace DidChangeModelNotification {
   export type Params = {
@@ -359,4 +383,116 @@ export namespace FetchProjectsOverview {
   }
   export const req = new RequestType0<Res, void>('likec4/fetch-projects-overview')
   export type Req = typeof req
+}
+
+/**
+ * Request to fetch model diffs of a project, with the views each diff changes.
+ */
+export namespace FetchDiffs {
+  export type Params = {
+    projectId?: ProjectId | undefined
+  }
+  export type Res = {
+    diffs: DiffSummary[]
+  }
+  export const req = new RequestType<Params, Res, void>('likec4/fetch-diffs')
+  export type Req = typeof req
+}
+
+/**
+ * Request to lay out a compare view: the view before and after the diff, merged into one diagram.
+ * Nodes and edges are marked with `diffStatus`.
+ */
+export namespace LayoutCompareView {
+  export type Params = {
+    viewId: ViewId
+    diffId: DiffId
+    projectId?: ProjectId | undefined
+  }
+  export type Res = {
+    /**
+     * `null` if the view exists in neither state
+     */
+    diagram: DiagramView | null
+  }
+  export const req = new RequestType<Params, Res, void>('likec4/layout-compare-view')
+  export type Req = typeof req
+}
+
+/**
+ * Request to analyze what removing an element takes with it (safe delete dry run).
+ */
+export namespace FetchRemovalImpact {
+  export type Params = {
+    fqn: Fqn
+    projectId?: ProjectId | undefined
+  }
+  export type Res = {
+    report: RemovalImpactReport | null
+    /**
+     * Removed elements and relationships, their counterparts and orphans.
+     * Nodes and edges are marked with `diffStatus`.
+     */
+    diagram: DiagramView | null
+  }
+  export const req = new RequestType<Params, Res, void>('likec4/fetch-removal-impact')
+  export type Req = typeof req
+}
+
+/**
+ * Request to preview a model edit (apply or discard a diff, safe delete an element):
+ * the text of the changed documents before and after the edit.
+ */
+export namespace PreviewModelEdit {
+  export type Params = {
+    request: ModelEditRequest
+    projectId?: ProjectId | undefined
+  }
+  export type Res = {
+    preview: ModelEditPreview | null
+    error?: string
+  }
+  export const req = new RequestType<Params, Res, void>('likec4/preview-model-edit')
+  export type Req = typeof req
+}
+
+/**
+ * Request to apply a model edit.
+ * With `token` from the preview, the edit is applied only if the changes are the same as in the preview.
+ */
+export namespace ApplyModelEdit {
+  export type Params = {
+    request: ModelEditRequest
+    token?: string | undefined
+    projectId?: ProjectId | undefined
+  }
+  export type Res = ModelEditResult
+  export const req = new RequestType<Params, Res, void>('likec4/apply-model-edit')
+  export type Req = typeof req
+}
+
+/**
+ * Request to roll back an applied model edit (the latest one if `editId` is not set).
+ * Fails if a changed document was modified after the edit.
+ */
+export namespace RollbackModelEdit {
+  export type Params = {
+    editId?: number | undefined
+  }
+  export type Res = ApplyEditsResult
+  export const req = new RequestType<Params, Res, void>('likec4/rollback-model-edit')
+  export type Req = typeof req
+}
+
+/**
+ * When server requests the client to show the removal impact of an element
+ * (sent by the "Preview removal impact" code action).
+ */
+export namespace DidRequestRemovalImpactNotification {
+  export type Params = {
+    fqn: Fqn
+    projectId: ProjectId
+  }
+  export const type = new NotificationType<Params>('likec4/onRequestRemovalImpact')
+  export type Type = typeof type
 }

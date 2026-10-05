@@ -1,12 +1,17 @@
-import { type ProjectId, FqnRef } from '@likec4/core'
+import { type ProjectId, DiffId, FqnRef } from '@likec4/core'
 import { type ValidationCheck, AstUtils, DocumentState, WorkspaceCache } from 'langium'
 import { ast } from '../ast'
+import { type DiffOverlap, findDiffOverlaps, overlapsOf } from '../model-diff/overlaps'
 import { relationFingerprint } from '../model/relationFingerprint'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom, safeCall } from '../utils'
 import { tryOrLog } from './_shared'
 
-export const modelDiffChecks = (_services: LikeC4Services): ValidationCheck<ast.ModelDiff> => {
+export const modelDiffChecks = (services: LikeC4Services): ValidationCheck<ast.ModelDiff> => {
+  const cache = new WorkspaceCache<ProjectId, DiffOverlap[]>(services.shared, DocumentState.Linked)
+  const overlapsIn = (projectId: ProjectId) =>
+    cache.get(projectId, () => findDiffOverlaps(services.likec4.ModelParser.documents(projectId).toArray()))
+
   return tryOrLog((diff, accept) => {
     if (diff.removes.length === 0 && diff.adds.length === 0) {
       accept('warning', 'Diff has no changes', {
@@ -16,6 +21,13 @@ export const modelDiffChecks = (_services: LikeC4Services): ValidationCheck<ast.
     }
     for (const node of diff.adds.flatMap(add => add.elements).filter(ast.isExtendRelation)) {
       accept('error', 'Diff cannot extend relations. Remove the relation and add a new one instead', { node })
+    }
+    const projectId = projectIdFrom(AstUtils.getDocument(diff))
+    for (const overlap of overlapsOf(overlapsIn(projectId), DiffId(diff.name))) {
+      accept('warning', `Overlaps with diff ${overlap}. Agree on it with the owners of both diffs`, {
+        node: diff,
+        property: 'name',
+      })
     }
   })
 }
