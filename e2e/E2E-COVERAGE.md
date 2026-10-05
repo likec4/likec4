@@ -18,6 +18,7 @@ Homogeneity: Playwright specs use `test.describe` + `test()`/`test.beforeEach`; 
 - [x] Playground: Export all triggers .drawio download.
 - [x] Playground: editor (Monaco) menu shows Export to DrawIO.
 - [x] CLI: `likec4 export drawio` produces file with `<mxfile` (Vitest in `e2e/src/likec4-cli-export-drawio.spec.ts`).
+- [x] CLI: `likec4 diff list`, `diff apply --dry-run` and `safe-delete` in a workspace with several projects (Vitest in `e2e/src/likec4-cli-diff.spec.ts`).
 
 ## Pending (optional)
 
