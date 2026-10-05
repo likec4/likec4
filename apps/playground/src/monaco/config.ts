@@ -167,6 +167,9 @@ export const createWrapperConfig = (params: {
         uri: monaco.Uri.parse('file:///'),
       },
       documentSelector: [{ language: LIKEC4_LANGUAGE_ID }],
+      initializationOptions: {
+        removalImpactPreview: true,
+      },
       markdown: {
         isTrusted: true,
         supportHtml: true,
