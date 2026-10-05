@@ -421,7 +421,7 @@ Load a reference file when the task involves the corresponding topic. Claude rea
 | `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, flow-control blocks (`parallel`/`opt`/`loop`/`alt`/`try`), `variant sequence` |
 | `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                                             |
 | `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                                             |
-| `references/diffs.md`                        | Planned model changes (`diff` blocks)                                                                                           |
+| `references/diffs.md`                        | Planned model changes (`diff` blocks), applying or discarding them, safe delete of elements                                     |
 | `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells                 |
 | `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                                             |
 | `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                                                  |
