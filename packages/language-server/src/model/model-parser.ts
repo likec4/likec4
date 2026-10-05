@@ -22,6 +22,7 @@ import { ADisposable } from '../utils'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
 import { DeploymentViewParser } from './parser/DeploymentViewParser'
+import { DiffParser } from './parser/DiffParser'
 import { ExpressionV2Parser } from './parser/FqnRefParser'
 import { GlobalsParser } from './parser/GlobalsParser'
 import { ImportsParser } from './parser/ImportsParser'
@@ -37,6 +38,7 @@ const DocumentParserFromMixins = pipe(
   ExpressionV2Parser,
   ImportsParser,
   ModelParser,
+  DiffParser,
   DeploymentModelParser,
   DeploymentViewParser,
   PredicatesParser,
@@ -158,6 +160,7 @@ export class LikeC4ModelParser extends ADisposable {
       },
       c4Views: [],
       c4Imports: new MultiMap(Set),
+      c4Diffs: [],
     }
     doc = Object.assign(doc, props)
     const parser = new DocumentParser(
@@ -169,6 +172,7 @@ export class LikeC4ModelParser extends ADisposable {
       parser.parseSpecification()
       parser.parseImports()
       parser.parseModel()
+      parser.parseDiffs()
       parser.parseDeployment()
       parser.parseGlobals()
       parser.parseViews()
