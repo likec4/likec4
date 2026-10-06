@@ -180,7 +180,8 @@ Compare views are derived data. They are never saved, and they do not take part 
 - References inside other diffs are never changed. The result lists errors left in the changed files and new errors
   in other files, with the diff each error is in.
 - Write path: with an LSP connection, `workspace/applyEdit` (the client asks for confirmation if it supports it).
-  Without a connection (CLI, SDK), direct file writes. If a write fails, the files written before it are restored.
+  Without a connection (CLI, SDK), direct file writes. If a write fails, the files written before it are restored;
+  the result names a file that cannot be restored.
 - Roll back: the last 20 edits are kept in memory. Roll back restores the files if they did not change since.
 
 ### 4.6 Overlap rules [4.6]

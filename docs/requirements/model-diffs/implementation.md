@@ -275,8 +275,8 @@ or into the commit message of the apply.
 - Requests: `{ type: 'apply-diff', diffId, action, acceptOverlaps? }` and `{ type: 'safe-delete', targets, options? }`.
 - `preview(request)`: before and after text of each changed document, overlaps, and a `token`
   (hash of the after texts).
-- `apply(request, { token })`: refuses a diff with errors; refuses an overlapping diff without `acceptOverlaps`;
-  refuses if the edits differ from the previewed token (the model changed after the preview).
+- `apply(request, { token? })`: refuses a diff with errors; refuses an overlapping diff without `acceptOverlaps`;
+  with the token from `preview`, refuses if the edits differ from the preview (the model changed after it).
 - History: the last 20 applied edits, in memory (lost when the server restarts).
 - `rollback(editId?)`: restores the before texts if no changed document was modified after the edit.
 

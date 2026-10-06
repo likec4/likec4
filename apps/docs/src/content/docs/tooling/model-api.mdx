@@ -464,7 +464,8 @@ for (const view of model.views()) {
 
 API to work with [model diffs](/dsl/diff/) and to remove elements safely.
 Edits change the source files of the workspace.
-If a file cannot be written, `apply` changes no file and returns `applied: false` with the reason.
+If a file cannot be written, `apply` restores the files it already wrote and returns `applied: false` with the reason.
+If a file cannot be restored either, the reason names it.
 A workspace from `fromSource` has no files: `preview` works, `apply` returns `applied: false`.
 
 ```ts
@@ -482,8 +483,10 @@ const report = await likec4.removalImpact.analyze(['shop.legacyPayments'])
 // Preview, apply and roll back an edit of the sources
 const request = { type: 'apply-diff', diffId: 'rfc1' as DiffId, action: 'apply' } as const
 const preview = await likec4.modelEdits.preview(request) // text of each changed file, before and after
-const result = await likec4.modelEdits.apply(request)
-await likec4.modelEdits.rollback(result.edit?.id)
+if ('error' in preview) throw new Error(preview.error)
+// With the token, apply refuses if the model changed after the preview
+const result = await likec4.modelEdits.apply(request, { token: preview.token })
+if (result.edit) await likec4.modelEdits.rollback(result.edit.id)
 ```
 
 
