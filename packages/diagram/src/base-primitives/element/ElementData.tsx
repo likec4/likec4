@@ -197,7 +197,7 @@ const Description = forwardRef<
   HTMLDivElement,
   SlotProps
 >((
-  { data: { description }, className, ...props },
+  { data: { description, style }, className, ...props },
   ref,
 ) => {
   if (!description) {
@@ -218,7 +218,7 @@ const Description = forwardRef<
       style={{
         // Workaround for lineClamp not working with nested TABLE elements (if markdown has tables)
         maxHeight: desc.isMarkdown
-          ? data.style.sizing === 'fixed'
+          ? style.sizing === 'fixed'
             ? 'calc(var(--likec4-text-size) * 0.74 * 1.2)'
             : '8rem'
           : undefined,
