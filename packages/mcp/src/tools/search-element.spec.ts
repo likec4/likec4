@@ -23,6 +23,9 @@ const DSL = `
     admin = system 'Admin-UI' {
       link https://github.com/acme/Acme-Store-Admin.git
     }
+    worker = system 'Queue Consumer' {
+      link https://github.com/acme/platform/tree/main/worker
+    }
   }
   deployment {
     prod = node 'Production' {
@@ -79,11 +82,13 @@ describe('search-element tool', () => {
     },
   )
 
-  it('matches a link repo name exactly', async () => {
+  it('matches a link path segment exactly, except the first', async () => {
     await using pair = await createMCPTestPair(DSL)
 
     expect((await search(pair, 'acme-store-admin')).found.map(e => e.id)).toEqual(['admin'])
+    expect((await search(pair, 'platform')).found.map(e => e.id)).toEqual(['worker'])
     expect((await search(pair, 'store-admin')).total).toBe(0)
     expect((await search(pair, 'github')).total).toBe(0)
+    expect((await search(pair, 'acme')).total).toBe(0)
   })
 })

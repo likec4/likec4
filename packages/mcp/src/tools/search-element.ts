@@ -13,8 +13,12 @@ import { includedInViews, includedInViewsSchema } from './_common'
 // Spaces, dashes, underscores and dots are interchangeable, so "store front web" finds `storefront_web`
 const normalize = (s: string) => s.toLowerCase().replace(/[\s._-]+/g, '')
 
-// Last path segment of a link, e.g. "acme-store-admin" for https://github.com/acme/Acme-Store-Admin.git
-const repoName = (url: string) => normalize(url.replace(/(\.git)?\/*$/, '').split('/').pop() ?? '')
+// Skips the first segment so an org name (github.com/acme/...) does not match every link,
+// while a repo still matches from a monorepo subfolder link (acme/platform/tree/main/worker)
+const linkPathSegments = (url: string) => {
+  const path = URL.canParse(url) ? new URL(url).pathname : url
+  return path.split('/').filter(Boolean).slice(1).map(s => normalize(s.replace(/\.git$/, '')))
+}
 
 const searchResultSchema = z.array(
   z.discriminatedUnion('type', [
@@ -65,7 +69,7 @@ Query syntax (case-insensitive):
 - meta:<key>    filters by having metadata with the given key
 - #<value>      matches assigned tags
 - <value>       matches id (FQN), title or description, ignoring spaces, dashes, underscores and dots,
-                or equals a link's last path segment (repo name)
+                or equals a path segment of a link, except the first
 
 Request:
 - search: string — at least 2 characters
@@ -159,10 +163,10 @@ Example response:
     predicate = (el) => el.tags.some(tag => tag.toLowerCase().includes(search))
   } else {
     const term = normalize(search) || search
-    logger.debug('search by id/title/description/repo: {term}', { term })
+    logger.debug('search by id/title/description/link: {term}', { term })
     predicate = (el) =>
       [el.id, el.title, el.description.text ?? ''].some(s => normalize(s).includes(term))
-      || el.links.some(l => repoName(l.url) === term)
+      || el.links.some(l => linkPathSegments(l.url).includes(term))
   }
 
   for (const project of projects) {
