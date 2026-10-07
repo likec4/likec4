@@ -17,6 +17,12 @@ const DSL = `
       description 'Renders the checkout page'
     }
     backend = system 'Backend'
+    storefront_webapp = system 'Web-UI' {
+      link https://github.com/acme/Store-Front-Web
+    }
+    admin = system 'Admin-UI' {
+      link https://github.com/acme/Acme-Store-Admin.git
+    }
   }
   deployment {
     prod = node 'Production' {
@@ -61,5 +67,23 @@ describe('search-element tool', () => {
 
     expect((await search(pair, 'kind:checkout')).total).toBe(0)
     expect((await search(pair, '#checkout')).total).toBe(0)
+  })
+
+  it.each(['store front web', 'store-front-web', 'Store_Front.Web'])(
+    'treats separators as equal: %s',
+    async query => {
+      await using pair = await createMCPTestPair(DSL)
+
+      const { found } = await search(pair, query)
+      expect(found.map(e => e.id)).toEqual(['storefront_webapp'])
+    },
+  )
+
+  it('matches a link repo name exactly', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    expect((await search(pair, 'acme-store-admin')).found.map(e => e.id)).toEqual(['admin'])
+    expect((await search(pair, 'store-admin')).total).toBe(0)
+    expect((await search(pair, 'github')).total).toBe(0)
   })
 })

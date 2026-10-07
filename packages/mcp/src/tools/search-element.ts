@@ -10,6 +10,12 @@ import * as z from 'zod/v4'
 import { likec4Tool, logger } from '../utils'
 import { includedInViews, includedInViewsSchema } from './_common'
 
+// Spaces, dashes, underscores and dots are interchangeable, so "store front web" finds `storefront_web`
+const normalize = (s: string) => s.toLowerCase().replace(/[\s._-]+/g, '')
+
+// Last path segment of a link, e.g. "acme-store-admin" for https://github.com/acme/Acme-Store-Admin.git
+const repoName = (url: string) => normalize(url.replace(/(\.git)?\/*$/, '').split('/').pop() ?? '')
+
 const searchResultSchema = z.array(
   z.discriminatedUnion('type', [
     z.object({
@@ -58,7 +64,8 @@ Query syntax (case-insensitive):
 - shape:<value> filters by shape
 - meta:<key>    filters by having metadata with the given key
 - #<value>      matches assigned tags
-- <value>       matches id (FQN), title or description
+- <value>       matches id (FQN), title or description, ignoring spaces, dashes, underscores and dots,
+                or equals a link's last path segment (repo name)
 
 Request:
 - search: string — at least 2 characters
@@ -124,6 +131,7 @@ Example response:
       id: string
       title: string
       description: { text: string | null }
+      links: readonly { url: string }[]
       kind: string
       shape: string
       tags: readonly string[]
@@ -150,11 +158,11 @@ Example response:
     logger.debug('search by tag: {search}', { search })
     predicate = (el) => el.tags.some(tag => tag.toLowerCase().includes(search))
   } else {
-    logger.debug('search by id/title/description: {search}', { search })
+    const term = normalize(search) || search
+    logger.debug('search by id/title/description/repo: {term}', { term })
     predicate = (el) =>
-      el.id.toLowerCase().includes(search)
-      || el.title.toLowerCase().includes(search)
-      || !!el.description.text?.toLowerCase().includes(search)
+      [el.id, el.title, el.description.text ?? ''].some(s => normalize(s).includes(term))
+      || el.links.some(l => repoName(l.url) === term)
   }
 
   for (const project of projects) {
