@@ -129,6 +129,27 @@ views {
 
 Use unqualified `metadata.*` for the relationship's own metadata; use `source.metadata.*` or `target.metadata.*` for endpoint metadata.
 
+## Deployment View Navigation
+
+Element `with { navigateTo VIEW_ID }` overrides are supported for deployment nodes and instances:
+
+```likec4
+views {
+  deployment view prod {
+    include server with {
+      navigateTo server_deployment
+    }
+  }
+  deployment view server_deployment {
+    include server.*
+  }
+}
+```
+
+The target must be an existing view. Overrides are view-local, support selectors and `where` filters,
+and the last matching navigation override wins. Other element `with` properties remain unsupported;
+use local `style` rules for deployment-view styling.
+
 ## Named vs. Anonymous: When It Matters
 
 | Scenario                                        | Use                                           |
