@@ -19,6 +19,7 @@ const searchResultSchema = z.array(
       name: z.string().describe('Element name'),
       kind: z.string(),
       title: z.string(),
+      description: z.string().nullable(),
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
@@ -32,6 +33,7 @@ const searchResultSchema = z.array(
       name: z.string().describe('Deployment name'),
       kind: z.string(),
       title: z.string(),
+      description: z.string().nullable(),
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
@@ -56,7 +58,7 @@ Query syntax (case-insensitive):
 - shape:<value> filters by shape
 - meta:<key>    filters by having metadata with the given key
 - #<value>      matches assigned tags
-- <value>       matches id (FQN) or title
+- <value>       matches id (FQN), title or description
 
 Request:
 - search: string — at least 2 characters
@@ -66,8 +68,8 @@ Response (JSON object):
 - found: Result[] - returns top 20 results
 
 Result (discriminated union by "type"):
-- type = "element": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
-- type = "deployment-node": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
+- type = "element": { id: string, name: string, kind: string, title: string, description: string|null, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
+- type = "deployment-node": { id: string, name: string, kind: string, title: string, description: string|null, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
 
 View (object) fields:
 - id: string — view identifier
@@ -89,6 +91,7 @@ Example response:
       "name": "frontend",
       "kind": "container",
       "title": "Frontend",
+      "description": "Customer-facing web app",
       "technology": "React",
       "shape": "rectangle",      
       "includedInViews": [
@@ -120,6 +123,7 @@ Example response:
     E extends {
       id: string
       title: string
+      description: { text: string | null }
       kind: string
       shape: string
       tags: readonly string[]
@@ -146,10 +150,11 @@ Example response:
     logger.debug('search by tag: {search}', { search })
     predicate = (el) => el.tags.some(tag => tag.toLowerCase().includes(search))
   } else {
-    logger.debug('search by id/title: {search}', { search })
+    logger.debug('search by id/title/description: {search}', { search })
     predicate = (el) =>
       el.id.toLowerCase().includes(search)
       || el.title.toLowerCase().includes(search)
+      || !!el.description.text?.toLowerCase().includes(search)
   }
 
   for (const project of projects) {
@@ -165,6 +170,7 @@ Example response:
           name: el.name,
           kind: el.kind,
           title: el.title,
+          description: el.description.text,
           technology: el.technology,
           shape: el.shape,
           tags: [...el.tags],
@@ -182,6 +188,7 @@ Example response:
           name: el.name,
           kind: el.kind,
           title: el.title,
+          description: el.description.text,
           technology: el.technology,
           shape: el.shape,
           tags: [...el.tags],
