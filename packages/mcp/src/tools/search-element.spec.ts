@@ -1,0 +1,94 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+import { describe, expect, it } from 'vitest'
+import { createMCPTestPair, structured } from '../__tests__/test-utils'
+
+const DSL = `
+  specification {
+    element system
+    deploymentNode node
+    tag public
+  }
+  model {
+    frontend = system 'Frontend' {
+      #public
+      description 'Renders the checkout page'
+    }
+    backend = system 'Backend'
+    storefront_webapp = system 'Web-UI' {
+      link https://github.com/acme/Store-Front-Web
+    }
+    admin = system 'Admin-UI' {
+      link https://github.com/acme/Acme-Store-Admin.git
+    }
+    worker = system 'Queue Consumer' {
+      link https://github.com/acme/platform/tree/main/worker
+    }
+  }
+  deployment {
+    prod = node 'Production' {
+      description 'Hosts the checkout cluster'
+    }
+  }
+`
+
+async function search(pair: Awaited<ReturnType<typeof createMCPTestPair>>, query: string) {
+  const result = await pair.client.callTool({
+    name: 'search-element',
+    arguments: { search: query },
+  })
+  return structured(result) as { total: number; found: Array<any> }
+}
+
+describe('search-element tool', () => {
+  it('returns description, null when absent', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    const { found } = await search(pair, 'kind:system')
+    const fe = found.find(e => e.id === 'frontend')
+    const be = found.find(e => e.id === 'backend')
+    expect(fe.description).toBe('Renders the checkout page')
+    expect(be.description).toBeNull()
+  })
+
+  it('matches plain-text search against description', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    const { total, found } = await search(pair, 'CHECKOUT')
+    expect(total).toBe(2)
+    expect(found.map(e => [e.type, e.id])).toEqual([
+      ['element', 'frontend'],
+      ['deployment-node', 'prod'],
+    ])
+    expect(found[1].description).toBe('Hosts the checkout cluster')
+  })
+
+  it('does not match description for prefixed searches', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    expect((await search(pair, 'kind:checkout')).total).toBe(0)
+    expect((await search(pair, '#checkout')).total).toBe(0)
+  })
+
+  it.each(['store front web', 'store-front-web', 'Store_Front.Web'])(
+    'treats separators as equal: %s',
+    async query => {
+      await using pair = await createMCPTestPair(DSL)
+
+      const { found } = await search(pair, query)
+      expect(found.map(e => e.id)).toEqual(['storefront_webapp'])
+    },
+  )
+
+  it('matches a link path segment exactly, except the first', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    expect((await search(pair, 'acme-store-admin')).found.map(e => e.id)).toEqual(['admin'])
+    expect((await search(pair, 'platform')).found.map(e => e.id)).toEqual(['worker'])
+    expect((await search(pair, 'store-admin')).total).toBe(0)
+    expect((await search(pair, 'github')).total).toBe(0)
+    expect((await search(pair, 'acme')).total).toBe(0)
+  })
+})

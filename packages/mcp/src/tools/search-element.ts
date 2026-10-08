@@ -10,6 +10,16 @@ import * as z from 'zod/v4'
 import { likec4Tool, logger } from '../utils'
 import { includedInViews, includedInViewsSchema } from './_common'
 
+// Spaces, dashes, underscores and dots are interchangeable, so "store front web" finds `storefront_web`
+const normalize = (s: string) => s.toLowerCase().replace(/[\s._-]+/g, '')
+
+// Skips the first segment so an org name (github.com/acme/...) does not match every link,
+// while a repo still matches from a monorepo subfolder link (acme/platform/tree/main/worker)
+const linkPathSegments = (url: string) => {
+  const path = URL.canParse(url) ? new URL(url).pathname : url
+  return path.split('/').filter(Boolean).slice(1).map(s => normalize(s.replace(/\.git$/, '')))
+}
+
 const searchResultSchema = z.array(
   z.discriminatedUnion('type', [
     z.object({
@@ -19,6 +29,7 @@ const searchResultSchema = z.array(
       name: z.string().describe('Element name'),
       kind: z.string(),
       title: z.string(),
+      description: z.string().nullable(),
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
@@ -32,6 +43,7 @@ const searchResultSchema = z.array(
       name: z.string().describe('Deployment name'),
       kind: z.string(),
       title: z.string(),
+      description: z.string().nullable(),
       technology: z.string().nullable(),
       shape: z.string(),
       includedInViews: includedInViewsSchema,
@@ -56,7 +68,8 @@ Query syntax (case-insensitive):
 - shape:<value> filters by shape
 - meta:<key>    filters by having metadata with the given key
 - #<value>      matches assigned tags
-- <value>       matches id (FQN) or title
+- <value>       matches id (FQN), title or description, ignoring spaces, dashes, underscores and dots,
+                or equals a path segment of a link, except the first
 
 Request:
 - search: string — at least 2 characters
@@ -66,8 +79,8 @@ Response (JSON object):
 - found: Result[] - returns top 20 results
 
 Result (discriminated union by "type"):
-- type = "element": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
-- type = "deployment-node": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
+- type = "element": { id: string, name: string, kind: string, title: string, description: string|null, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
+- type = "deployment-node": { id: string, name: string, kind: string, title: string, description: string|null, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
 
 View (object) fields:
 - id: string — view identifier
@@ -89,6 +102,7 @@ Example response:
       "name": "frontend",
       "kind": "container",
       "title": "Frontend",
+      "description": "Customer-facing web app",
       "technology": "React",
       "shape": "rectangle",      
       "includedInViews": [
@@ -120,6 +134,8 @@ Example response:
     E extends {
       id: string
       title: string
+      description: { text: string | null }
+      links: readonly { url: string }[]
       kind: string
       shape: string
       tags: readonly string[]
@@ -146,10 +162,11 @@ Example response:
     logger.debug('search by tag: {search}', { search })
     predicate = (el) => el.tags.some(tag => tag.toLowerCase().includes(search))
   } else {
-    logger.debug('search by id/title: {search}', { search })
+    const term = normalize(search) || search
+    logger.debug('search by id/title/description/link: {term}', { term })
     predicate = (el) =>
-      el.id.toLowerCase().includes(search)
-      || el.title.toLowerCase().includes(search)
+      [el.id, el.title, el.description.text ?? ''].some(s => normalize(s).includes(term))
+      || el.links.some(l => linkPathSegments(l.url).includes(term))
   }
 
   for (const project of projects) {
@@ -165,6 +182,7 @@ Example response:
           name: el.name,
           kind: el.kind,
           title: el.title,
+          description: el.description.text,
           technology: el.technology,
           shape: el.shape,
           tags: [...el.tags],
@@ -182,6 +200,7 @@ Example response:
           name: el.name,
           kind: el.kind,
           title: el.title,
+          description: el.description.text,
           technology: el.technology,
           shape: el.shape,
           tags: [...el.tags],
