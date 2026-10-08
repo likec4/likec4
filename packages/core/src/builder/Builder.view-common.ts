@@ -6,12 +6,13 @@ import type {
   AnyViewRuleStyle as ViewRuleStyle,
   AutoLayoutDirection,
   Expression,
+  ModelFqnExpr,
   ModelRelationExpr,
   NonEmptyArray,
   Step,
   WhereOperator,
 } from '../types'
-import { ModelFqnExpr } from '../types'
+import { FqnExpr } from '../types'
 import type { Participant, ParticipantOperator } from '../types/operators'
 import type { AnyTypes, Types } from './_types'
 
@@ -191,7 +192,7 @@ function $include<B extends LikeC4ViewBuilder<any, any, any>>(
 
       const custom = args[1].with
       if (custom) {
-        const isElement = ModelFqnExpr.is(expr)
+        const isElement = FqnExpr.is(expr) || FqnExpr.isWhere(expr)
         if (isElement) {
           expr = {
             custom: {
