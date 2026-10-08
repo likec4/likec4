@@ -109,6 +109,8 @@ export type ToggledFeatures = {
 }
 
 export interface Context extends Input {
+  /** Derived from measured cards. Never persisted in the view or manual layout. */
+  noteBounds: BBox | null
   relationshipBrowserScope: RelationshipBrowserScope
   xynodes: Types.Node[]
   xyedges: Types.Edge[]
@@ -176,6 +178,7 @@ export interface Context extends Input {
 export function Context({ input }: { input: Input }): Context {
   return {
     ...input,
+    noteBounds: null,
     fitView: input.fitView ?? true,
     relationshipBrowserScope: input.relationshipBrowserScope ?? 'view',
     xynodes: [],
@@ -234,7 +237,8 @@ export type Events =
   | { type: 'xyflow.nodeMouseLeave'; node: Types.Node | NodeId }
   | { type: 'xyflow.edgeMouseEnter'; edge: Types.Edge; event: MouseEvent }
   | { type: 'xyflow.edgeMouseLeave'; edge: Types.Edge; event: MouseEvent }
-  | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox }
+  | { type: 'xyflow.fitDiagram'; duration?: number; bounds?: BBox; explicit?: boolean }
+  | { type: 'notes.bounds'; viewId: ViewId; bounds: BBox | null }
   | { type: 'xyflow.setViewport'; duration?: number; viewport: Viewport }
   | { type: 'xyflow.centerViewport'; nodeId: NodeId; duration?: number }
   | { type: 'xyflow.centerViewport'; edgeId: EdgeId; duration?: number }

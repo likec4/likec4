@@ -1,0 +1,8 @@
+{
+  name: 'note-placement',
+  title: 'Note placement examples',
+  implicitViews: false,
+  include: {
+    paths: ['../../../examples/note-placement']
+  }
+}

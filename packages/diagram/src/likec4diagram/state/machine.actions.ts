@@ -210,13 +210,14 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       }
       return {
         ...update,
+        noteBounds: null,
         lastClickedNode,
         focusedNode,
         activeWalkthrough,
       }
     }
 
-    return update
+    return { ...update, noteBounds: null }
   })
 
 export const focusOnNodesAndEdges = () =>

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { defineParts, defineRecipe } from '@pandacss/dev'
 import { __v, vars } from '../const.ts'
 import { defaultSizes } from '../defaults/sizes.ts'
@@ -184,6 +191,11 @@ export const elementNodeData = defineRecipe({
 
       '& a': {
         pointerEvents: 'all',
+      },
+
+      // Compact descriptions cannot fit full images; element details retain them.
+      '& img': {
+        display: 'none',
       },
 
       '& .markdown-alert': {

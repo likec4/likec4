@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { BBox } from '@likec4/core/geometry'
 import type { NodeId } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
@@ -156,6 +163,7 @@ export const navigating = machine.createStateConfig({
 
           const nextCtx = {
             ...mergeXYNodesEdges(context, eventWithXYData),
+            noteBounds: null,
             dynamicViewVariant: fromHistory.dynamicViewVariant
               ?? (eventWithXYData.view._type === 'dynamic' ? eventWithXYData.view.variant : undefined)
               ?? context.dynamicViewVariant,
@@ -265,6 +273,7 @@ export const navigating = machine.createStateConfig({
 
         enqueue.assign({
           ...mergeXYNodesEdges(context, eventWithXYData),
+          noteBounds: null,
           viewportChangedManually: false,
           lastOnNavigate: null,
           dynamicViewVariant: eventWithXYData.view._type === 'dynamic'

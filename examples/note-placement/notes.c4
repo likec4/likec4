@@ -1,0 +1,125 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+specification {
+  element system
+  element service
+}
+
+model {
+  sparse = system 'sparse system' {
+    n0 = service 'Service 0'
+    n1 = service 'Service 1'
+    n2 = service 'Service 2'
+    n3 = service 'Service 3'
+  }
+  sparse.n0 -> sparse.n2 'request 0'
+  sparse.n0 -> sparse.n3 'event 0'
+  sparse.n1 -> sparse.n3 'request 1'
+
+  readableNested = system 'readableNested system' {
+    group0 = system 'Nested team 0' {
+      n0 = service 'Service 0'
+      n1 = service 'Service 1'
+      n2 = service 'Service 2'
+      n3 = service 'Service 3'
+    }
+    group1 = system 'Nested team 1' {
+      n4 = service 'Service 4'
+      n5 = service 'Service 5'
+      n6 = service 'Service 6'
+      n7 = service 'Service 7'
+    }
+    group2 = system 'Nested team 2' {
+      n8 = service 'Service 8'
+      n9 = service 'Service 9'
+      n10 = service 'Service 10'
+      n11 = service 'Service 11'
+    }
+  }
+  readableNested.group0.n0 -> readableNested.group1.n4 'request 0'
+  readableNested.group0.n0 -> readableNested.group1.n5 'event 0'
+  readableNested.group0.n1 -> readableNested.group1.n5 'request 1'
+  readableNested.group0.n1 -> readableNested.group1.n6 'event 1'
+  readableNested.group0.n2 -> readableNested.group1.n6 'request 2'
+  readableNested.group0.n2 -> readableNested.group1.n7 'event 2'
+  readableNested.group0.n3 -> readableNested.group1.n7 'request 3'
+  readableNested.group1.n4 -> readableNested.group2.n8 'request 4'
+  readableNested.group1.n4 -> readableNested.group2.n9 'event 4'
+  readableNested.group1.n5 -> readableNested.group2.n9 'request 5'
+  readableNested.group1.n5 -> readableNested.group2.n10 'event 5'
+  readableNested.group1.n6 -> readableNested.group2.n10 'request 6'
+  readableNested.group1.n6 -> readableNested.group2.n11 'event 6'
+  readableNested.group1.n7 -> readableNested.group2.n11 'request 7'
+}
+
+views {
+  view sparse {
+    title 'Note placement stress: sparse'
+    include sparse.n0 with {
+      notes '''
+        **Note for service 0.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include sparse.n1 with {
+      notes '''
+        **Note for service 1.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include sparse.n2 with {
+      notes '''
+        **Note for service 2.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include sparse.n3 with {
+      notes '''
+        **Note for service 3.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include sparse.n0 -> sparse.n2 with { notes 'Connection note 0. This request transfers the service result to the next layer. The target dot must be visible.' }
+    include sparse.n1 -> sparse.n3 with { notes 'Connection note 1. This request transfers the service result to the next layer. The target dot must be visible.' }
+    autoLayout LeftRight
+  }
+
+  view readableNested {
+    title 'Note placement stress: readableNested'
+    include readableNested.group0.n0 with {
+      notes '''
+        **Note for service 0.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include readableNested.group0.n1
+    include readableNested.group0.n2 with {
+      notes '''
+        **Note for service 2.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include readableNested.group0.n3
+    include readableNested.group1.n4 with {
+      notes '''
+        **Note for service 4.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include readableNested.group1.n5
+    include readableNested.group1.n6
+    include readableNested.group1.n7
+    include readableNested.group2.n8 with {
+      notes '''
+        **Note for service 8.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include readableNested.group2.n9
+    include readableNested.group2.n10
+    include readableNested.group2.n11 with {
+      notes '''
+        **Note for service 11.** This card explains the responsibility of this service in this view. Keep the complete text visible and keep the target easy to find.
+      '''
+    }
+    include readableNested.group0.n0 -> readableNested.group1.n4 with { notes 'Connection note 0. This request transfers the service result to the next layer. The target dot must be visible.' }
+    include readableNested.group0.n2 -> readableNested.group1.n6 with { notes 'Connection note 2. This request transfers the service result to the next layer. The target dot must be visible.' }
+    include readableNested.group1.n4 -> readableNested.group2.n8 with { notes 'Connection note 4. This request transfers the service result to the next layer. The target dot must be visible.' }
+    include readableNested.group1.n6 -> readableNested.group2.n10 with { notes 'Connection note 6. This request transfers the service result to the next layer. The target dot must be visible.' }
+    autoLayout LeftRight
+  }
+}

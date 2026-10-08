@@ -29,8 +29,10 @@ import {
 import { useDiagram } from '../hooks/useDiagram'
 import { useEditorActorStateHasTag } from '../hooks/useEditorActor'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
-import type { LikeC4DiagramProperties, NodeRenderers, ViewPaddings } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
+import { pickViewBounds } from '../utils/view-bounds'
 import { BuiltinEdges, BuiltinNodes } from './custom'
+import { NoteLayer } from './notes/NoteLayer'
 import { deriveToggledFeatures } from './state/machine.setup'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
@@ -134,6 +136,8 @@ const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
     fitViewPadding: ctx.fitViewPadding,
     enableFitView: ctx.features.enableFitView,
     enableControls: ctx.features.enableControls,
+    view: ctx.view,
+    dynamicViewVariant: ctx.dynamicViewVariant,
     ...(controlledViewport && {
       viewport: controlledViewport,
     }),
@@ -149,6 +153,7 @@ export type LikeC4DiagramXYFlowProps = PropsWithChildren<
       | 'background'
       | 'reactFlowProps'
       | 'renderNodes'
+      | 'onContentBoundsChange'
     >
   >
 >
@@ -157,6 +162,7 @@ export function LikeC4DiagramXYFlow({
   reactFlowProps = {},
   children,
   renderNodes,
+  onContentBoundsChange,
 }: LikeC4DiagramXYFlowProps): JSX.Element {
   const {
     nodesDraggable: nodesDraggableOverride,
@@ -174,6 +180,8 @@ export function LikeC4DiagramXYFlow({
     nodesDraggable,
     nodesSelectable,
     enableControls,
+    view,
+    dynamicViewVariant,
     ...props
   } = useDiagramSelector(selectXYProps)
   const isEditorBusy = useEditorActorStateHasTag('busy')
@@ -255,6 +263,7 @@ export function LikeC4DiagramXYFlow({
       onEdgesChange={useCallbackRef((changes) => {
         diagram.send({ type: 'xyflow.applyChanges', edges: changes })
       })}
+      onFitView={useCallbackRef(() => diagram.send({ type: 'xyflow.fitDiagram', explicit: true }))}
       background={initialized ? background : 'transparent'}
       // Fitview is handled in onInit
       fitView={false}
@@ -353,21 +362,33 @@ export function LikeC4DiagramXYFlow({
       nodesSelectable={nodesSelectable}>
       {enableControls && (
         <Controls
+          onFitView={() => diagram.send({ type: 'xyflow.fitDiagram', explicit: true })}
           fitViewPadding={props.fitViewPadding}
           minZoom={props.minZoom}
           maxZoom={props.maxZoom}
         />
       )}
+      <NoteLayer
+        viewId={view.id}
+        variant={dynamicViewVariant}
+        architectureBounds={pickViewBounds(view, dynamicViewVariant)}
+        nodes={nodes}
+        edges={edges}
+        onContentBoundsChange={onContentBoundsChange ?? undefined}
+      />
       {children}
     </BaseXYFlow>
   )
 }
 
 const Controls = (
-  { fitViewPadding, minZoom, maxZoom }: Pick<typeof selectXYProps.Out, 'fitViewPadding' | 'minZoom' | 'maxZoom'>,
+  { fitViewPadding, minZoom, maxZoom, onFitView }:
+    & Pick<typeof selectXYProps.Out, 'fitViewPadding' | 'minZoom' | 'maxZoom'>
+    & { onFitView: () => void },
 ) => (
   <XYFlowControls
     showInteractive={false}
+    onFitView={onFitView}
     fitViewOptions={{
       padding: fitViewPadding,
       minZoom,

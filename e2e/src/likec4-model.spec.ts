@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { expect, test } from 'vitest'
 import { likec4model } from './likec4-model'
 
@@ -81,6 +88,9 @@ test('Generated model has expected view ids', () => {
     'graphql',
     'index',
     'mobile',
+    'note-cards-compound-frame',
+    'note-cards-export',
+    'note-cards-delayed-image',
     'multiple-expanded',
     'multiple-explicit',
     'multiple-merged',
