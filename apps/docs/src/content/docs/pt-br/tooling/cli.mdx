@@ -122,7 +122,7 @@ Por padrão, o servidor web escuta em localhost (127.0.0.1). Para permitir conex
 ### Gerar um site estático
 
 A CLI pode gerar um site contendo os diagramas, pronto para publicação ou incorporação.  
-Após publicar o site, use o botão "Share" para obter um link direto para um diagrama específico.
+Após publicar o site, use o botão "Compartilhar" ("Share") para obter um link direto para um diagrama específico.
 
 O site resultante utiliza o caminho base informado (por padrão, `/`).
 Para gerar uma aplicação que funcione em outros caminhos, utilize `--base "./"`.
@@ -178,7 +178,7 @@ Se ele não estiver instalado, será exibido um comando de instalação.
 
 | Opção                        | Descrição                                                                                                      |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `--outdir, -o`               | Diretório de saída for PNG/JPEG files; if not specified, images are saved next to sources. `--output` is accepted as alias for compatibility. |
+| `--outdir, -o`               | Diretório de saída dos arquivos PNG/JPEG; se omitido, as imagens são salvas junto aos arquivos-fonte. `--output` é aceito como alias por compatibilidade. |
 | `--project`                  | Seleciona o projeto LikeC4 a exportar pelo nome (por exemplo, "my-project") ou pelo caminho<br/>Se omitido, exporta todos    |
 | `--theme`                    | Esquema de cores a utilizar: "light" (padrão) ou "dark"                                                                   |
 | `--dark`                     | Utiliza o tema escuro; atalho para --theme=dark                                                                        |
@@ -289,7 +289,7 @@ likec4 format --files src/model.c4 --files src/views.c4
 likec4 format --check
 ```
 
-| Option              | Description                                                     |
+| Opção               | Descrição                                                     |
 | ------------------- | --------------------------------------------------------------- |
 | `path`              | Caminho do workspace (padrão: diretório atual; usa `LIKEC4_WORKSPACE` como alternativa) |
 | `--project, -p`     | Formata apenas os projetos indicados pelo nome (repetível)            |
