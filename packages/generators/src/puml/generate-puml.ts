@@ -75,6 +75,7 @@ const pumlShape = ({ shape }: ComputedNode) => {
     case 'document':
     case 'mobile':
     case 'bucket':
+    case 'agent':
     case 'browser': {
       return 'rectangle' as const
     }

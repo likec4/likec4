@@ -62,6 +62,12 @@ specification {
     }
   }
 
+  element agent {
+    style {
+      shape agent
+    }
+  }
+
 }
 model {
 
@@ -198,6 +204,19 @@ model {
         }
       }
 
+      agent = agent {
+        title: 'Agent'
+        technology: '[ amber ]'
+        description: '''
+          Example of **Agent** shape  \
+          with markdown description  \
+          and **amber** color
+        '''
+        style {
+          color amber
+        }
+      }
+
     }
     themecolor blue {
       title "Blue"
@@ -318,6 +337,19 @@ model {
         technology: '[ blue ]'
         description: '''
           Example of **Document** shape  \
+          with markdown description  \
+          and **blue** color
+        '''
+        style {
+          color blue
+        }
+      }
+
+      agent = agent {
+        title: 'Agent'
+        technology: '[ blue ]'
+        description: '''
+          Example of **Agent** shape  \
           with markdown description  \
           and **blue** color
         '''
@@ -454,6 +486,19 @@ model {
         }
       }
 
+      agent = agent {
+        title: 'Agent'
+        technology: '[ gray ]'
+        description: '''
+          Example of **Agent** shape  \
+          with markdown description  \
+          and **gray** color
+        '''
+        style {
+          color gray
+        }
+      }
+
     }
     themecolor slate {
       title "Slate"
@@ -574,6 +619,19 @@ model {
         technology: '[ slate ]'
         description: '''
           Example of **Document** shape  \
+          with markdown description  \
+          and **slate** color
+        '''
+        style {
+          color slate
+        }
+      }
+
+      agent = agent {
+        title: 'Agent'
+        technology: '[ slate ]'
+        description: '''
+          Example of **Agent** shape  \
           with markdown description  \
           and **slate** color
         '''
@@ -710,6 +768,19 @@ model {
         }
       }
 
+      agent = agent {
+        title: 'Agent'
+        technology: '[ green ]'
+        description: '''
+          Example of **Agent** shape  \
+          with markdown description  \
+          and **green** color
+        '''
+        style {
+          color green
+        }
+      }
+
     }
     themecolor indigo {
       title "Indigo"
@@ -830,6 +901,19 @@ model {
         technology: '[ indigo ]'
         description: '''
           Example of **Document** shape  \
+          with markdown description  \
+          and **indigo** color
+        '''
+        style {
+          color indigo
+        }
+      }
+
+      agent = agent {
+        title: 'Agent'
+        technology: '[ indigo ]'
+        description: '''
+          Example of **Agent** shape  \
           with markdown description  \
           and **indigo** color
         '''
@@ -966,6 +1050,19 @@ model {
         }
       }
 
+      agent = agent {
+        title: 'Agent'
+        technology: '[ muted ]'
+        description: '''
+          Example of **Agent** shape  \
+          with markdown description  \
+          and **muted** color
+        '''
+        style {
+          color muted
+        }
+      }
+
     }
     themecolor primary {
       title "Primary"
@@ -1086,6 +1183,19 @@ model {
         technology: '[ primary ]'
         description: '''
           Example of **Document** shape  \
+          with markdown description  \
+          and **primary** color
+        '''
+        style {
+          color primary
+        }
+      }
+
+      agent = agent {
+        title: 'Agent'
+        technology: '[ primary ]'
+        description: '''
+          Example of **Agent** shape  \
           with markdown description  \
           and **primary** color
         '''
@@ -1222,6 +1332,19 @@ model {
         }
       }
 
+      agent = agent {
+        title: 'Agent'
+        technology: '[ red ]'
+        description: '''
+          Example of **Agent** shape  \
+          with markdown description  \
+          and **red** color
+        '''
+        style {
+          color red
+        }
+      }
+
     }
     themecolor secondary {
       title "Secondary"
@@ -1350,6 +1473,19 @@ model {
         }
       }
 
+      agent = agent {
+        title: 'Agent'
+        technology: '[ secondary ]'
+        description: '''
+          Example of **Agent** shape  \
+          with markdown description  \
+          and **secondary** color
+        '''
+        style {
+          color secondary
+        }
+      }
+
     }
     themecolor sky {
       title "Sky"
@@ -1470,6 +1606,19 @@ model {
         technology: '[ sky ]'
         description: '''
           Example of **Document** shape  \
+          with markdown description  \
+          and **sky** color
+        '''
+        style {
+          color sky
+        }
+      }
+
+      agent = agent {
+        title: 'Agent'
+        technology: '[ sky ]'
+        description: '''
+          Example of **Agent** shape  \
           with markdown description  \
           and **sky** color
         '''
@@ -2165,6 +2314,81 @@ views {
 
   }
 
+  view agent {
+    title "Shape: Agent"
+    include
+      colors with {
+        title "Shape: Agent"
+      },
+
+      amber.agent with {
+        title 'Amber'
+        technology '[ agent ]'
+        navigateTo themecolor_amber
+      },
+
+      blue.agent with {
+        title 'Blue'
+        technology '[ agent ]'
+        navigateTo themecolor_blue
+      },
+
+      gray.agent with {
+        title 'Gray'
+        technology '[ agent ]'
+        navigateTo themecolor_gray
+      },
+
+      slate.agent with {
+        title 'Slate'
+        technology '[ agent ]'
+        navigateTo themecolor_slate
+      },
+
+      green.agent with {
+        title 'Green'
+        technology '[ agent ]'
+        navigateTo themecolor_green
+      },
+
+      indigo.agent with {
+        title 'Indigo'
+        technology '[ agent ]'
+        navigateTo themecolor_indigo
+      },
+
+      muted.agent with {
+        title 'Muted'
+        technology '[ agent ]'
+        navigateTo themecolor_muted
+      },
+
+      primary.agent with {
+        title 'Primary'
+        technology '[ agent ]'
+        navigateTo themecolor_primary
+      },
+
+      red.agent with {
+        title 'Red'
+        technology '[ agent ]'
+        navigateTo themecolor_red
+      },
+
+      secondary.agent with {
+        title 'Secondary'
+        technology '[ agent ]'
+        navigateTo themecolor_secondary
+      },
+
+      sky.agent with {
+        title 'Sky'
+        technology '[ agent ]'
+        navigateTo themecolor_sky
+      },
+
+  }
+
 
 
   view themecolor_amber of amber {
@@ -2209,6 +2433,10 @@ views {
 
       document with {
         navigateTo document
+      },
+
+      agent with {
+        navigateTo agent
       },
 
   }
@@ -2257,6 +2485,10 @@ views {
         navigateTo document
       },
 
+      agent with {
+        navigateTo agent
+      },
+
   }
 
   view themecolor_gray of gray {
@@ -2301,6 +2533,10 @@ views {
 
       document with {
         navigateTo document
+      },
+
+      agent with {
+        navigateTo agent
       },
 
   }
@@ -2349,6 +2585,10 @@ views {
         navigateTo document
       },
 
+      agent with {
+        navigateTo agent
+      },
+
   }
 
   view themecolor_green of green {
@@ -2393,6 +2633,10 @@ views {
 
       document with {
         navigateTo document
+      },
+
+      agent with {
+        navigateTo agent
       },
 
   }
@@ -2441,6 +2685,10 @@ views {
         navigateTo document
       },
 
+      agent with {
+        navigateTo agent
+      },
+
   }
 
   view themecolor_muted of muted {
@@ -2485,6 +2733,10 @@ views {
 
       document with {
         navigateTo document
+      },
+
+      agent with {
+        navigateTo agent
       },
 
   }
@@ -2533,6 +2785,10 @@ views {
         navigateTo document
       },
 
+      agent with {
+        navigateTo agent
+      },
+
   }
 
   view themecolor_red of red {
@@ -2577,6 +2833,10 @@ views {
 
       document with {
         navigateTo document
+      },
+
+      agent with {
+        navigateTo agent
       },
 
   }
@@ -2625,6 +2885,10 @@ views {
         navigateTo document
       },
 
+      agent with {
+        navigateTo agent
+      },
+
   }
 
   view themecolor_sky of sky {
@@ -2669,6 +2933,10 @@ views {
 
       document with {
         navigateTo document
+      },
+
+      agent with {
+        navigateTo agent
       },
 
   }

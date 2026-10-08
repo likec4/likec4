@@ -49,6 +49,7 @@ const mmdshape = ({ shape, title }: Node): string => {
     case 'document': {
       return `@{ shape: doc, ${label} }`
     }
+    case 'agent':
     case 'component': {
       return `@{ shape: rectangle, ${label} }`
     }

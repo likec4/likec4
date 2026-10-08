@@ -4,7 +4,7 @@
   "version": "1.59.4",
   "private": true,
   "scripts": {
-    "update-theme-c4": "tsx scripts/generate-theme-c4.mts",
+    "update-theme-c4": "node scripts/generate-theme-c4.mjs",
     "generate": "astro sync",
     "dev": "astro dev",
     "start": "astro dev",
