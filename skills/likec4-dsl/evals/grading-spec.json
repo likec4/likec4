@@ -224,7 +224,7 @@
       "files": [],
       "expectations": [
         "The response identifies that `styles` is an invalid top-level statement.",
-        "The response mentions allowed top-level statements (`import`, `specification`, `model`, `deployment`, `views`, `global`).",
+        "The response mentions allowed top-level statements (`import`, `specification`, `model`, `deployment`, `views`, `global`, `diff`).",
         "The corrected file uses only allowed top-level statements.",
         "The corrected DSL demonstrates styling intent via valid constructs (e.g., `global styleGroup` and applying in `views`).",
         "The output is a minimal valid LikeC4 file, not only prose."
