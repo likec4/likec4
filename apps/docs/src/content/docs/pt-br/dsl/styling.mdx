@@ -1,0 +1,504 @@
+---
+title: Estilização
+description: Como personalizar os estilos dos seus diagramas para combinar com sua marca e diretrizes.
+sidebar: 
+  label: Estilização
+  order: 7
+---
+
+import { Aside, LinkCard } from '@astrojs/starlight/components';
+import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
+
+O LikeC4 oferece recursos avançados de personalização. Você pode alterar cores, formas, tamanhos e ícones de elementos e relacionamentos.
+
+## Elemento
+
+Há várias formas de estilizar elementos:
+- Estilizar todos os elementos de um tipo em `specification`
+- Estilizar um elemento específico em `model` ou `deployment`
+- Sobrescrever estilos em uma `view` (veja mais na [próxima seção](/pt-br/dsl/views/predicates/#predicados-de-estilo))
+
+### Elementos de um tipo
+
+Para estilizar todos os elementos de um tipo, use o bloco `style` em `specification`:
+
+```likec4 copy
+specification {
+  element user {
+    style {
+      // every element of 'user' kind
+      shape person // has 'person' shape
+      color amber  // and amber color
+    }
+  }
+
+  element frontend {    
+    style {
+      // every 'frontend' displayed as browser
+      shape: browser // ':' is optional, but if you prefer
+    }
+  }
+}
+```
+
+### Elemento específico
+
+Para estilizar um elemento específico, use o bloco `style` aninhado.  
+Os estilos do elemento sobrescrevem os definidos para o tipo:
+
+```likec4 copy
+specification {
+  element actor {
+    style {
+      shape person
+      color red
+    }
+  }
+}
+
+model {
+  customer = actor 'Customer' {
+    style {
+      // inherits shape and overrides color
+      color green                   
+    }
+  }
+}
+```
+
+### Por visão
+
+A [próxima seção](/pt-br/dsl/views/predicates/#predicados-de-estilo) explica como personalizar elementos em cada visão.
+
+## Propriedades de estilo
+
+### Forma
+
+```likec4 "shape person" copy
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+}
+```
+
+Formas disponíveis: `rectangle` (padrão), `component`, `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`, `bucket` e `document`.  
+
+<LikeC4ThemeView viewId="allshapes"/>
+
+### Cor
+
+```likec4 "color red" copy
+specification {
+  element actor {
+    style {
+      color red
+    }
+  }
+}
+```
+
+Cores disponíveis: `primary` (padrão), `secondary`, `muted`, `amber`, `gray`, `green`, `indigo`, `red`.
+
+<LikeC4ThemeView viewId="index"/>
+
+:::tip
+Também é possível usar cores personalizadas definidas na [especificação](/pt-br/dsl/specification/#cor).
+:::
+
+### Tamanho
+
+O tamanho de um elemento é controlado pelas seguintes propriedades:
+
+| propriedade | explicação |
+| :---------- | :-------- |
+| size        | tamanho da forma |
+| padding     | espaço ao redor do título do elemento |
+| textSize    | tamanho da fonte do título do elemento |
+
+Cada propriedade aceita: `xsmall`, `small`, `medium`, `large` ou `xlarge`  
+(ou as formas curtas `xs`, `sm`, `md`, `lg`, `xl`).  
+O tamanho padrão é `medium`.
+
+Quando o tamanho da forma é `xsmall`, apenas o título do elemento é exibido.
+
+```likec4 "size large" "textSize xl"
+specification {
+  element element {
+    style {
+      size large
+      textSize xl
+    }
+  }
+}
+```
+<LikeC4ThemeView viewId="sizes1_example" interactive={false}/>
+<LikeC4ThemeView viewId="sizes2_example" interactive={false}/>
+
+### Opacidade
+
+Se um elemento for exibido como um grupo (como um container), você pode definir sua opacidade:
+
+```likec4 "opacity 10%"
+specification {
+  element element {
+    style {
+      opacity 10%
+    }
+  }
+}
+```
+
+<LikeC4ThemeView viewId="opacity_example"/>
+
+### Borda
+
+Se um elemento for exibido como um grupo (como um container), você pode alterar o estilo da borda:
+
+```likec4 "border dotted"
+specification {
+  element element {
+    style {
+      opacity 10%
+      border dotted
+    }
+  }
+}
+```
+
+Valores aceitos: `dashed` (padrão), `dotted`, `solid`, `none`.
+
+<LikeC4ThemeView viewId="border_example"/>
+
+### Múltiplas instâncias
+
+Para exibir um elemento como várias instâncias, defina `multiple` como `true`:
+
+```likec4
+specification {
+  element element {
+    style {
+      multiple true
+    }
+  }
+}
+
+```
+
+<LikeC4ThemeView viewId="multiple_example" interactive={false} fitViewPadding={'16px'}/>
+
+### Ícone
+
+Os elementos podem ter um ícone em qualquer formato de imagem aceito pelo navegador (png, svg, webp etc.):
+
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    style {
+      // Publicly available with `https://`
+      icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+
+      // or local image, relative to current file
+      icon ../postgresql.svg
+    }
+  }
+}
+```
+
+:::tip
+`icon` pode ser definido diretamente como uma propriedade, sem o bloco `style`:
+
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+  }
+}
+```
+:::
+
+:::tip
+Use `none` para remover um `icon`:
+
+```likec4 copy
+pg = service 'PostgreSQL' {
+  icon none
+}
+```
+:::
+
+:::tip[Suporte a modos claro e escuro em SVG]
+Ao usar SVGs, você pode incluir as versões clara e escura em um único arquivo e usar uma media query `prefers-color-scheme` para alternar entre elas.
+
+O LikeC4 renderizará a versão correta com base no tema atual.
+
+```xml
+  <style>
+    .svg-dark { display: none; }
+    @media (prefers-color-scheme: dark) {
+      .svg-light { display: none; }
+      .svg-dark  { display: inline; }
+    }
+  </style>
+  <g class="svg-light">
+    <!-- Light mode icon version here -->
+  </g>
+  <g class="svg-dark">
+    <!-- Dark mode icon version here -->
+  </g>
+```
+
+Experimente mudar o tema para ver o comportamento em ação.
+
+![Exemplo de ícone com modos claro e escuro incorporados](../../../../assets/logo.svg)
+:::
+
+### Ícones incluídos
+
+O LikeC4 inclui mais de 5.000 ícones destes pacotes:
+- `aws:` de <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
+- `azure:` de <a href="https://learn.microsoft.com/en-us/azure/architecture/icons/" target='_blank'>microsoft.com</a>
+- `bootstrap:` de <a href="https://icons.getbootstrap.com/" target='_blank'>Bootstrap Icons</a> (mais de 2.000 ícones)
+- `gcp:` de <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
+- `tech:` de <a href="https://techicons.dev" target='_blank'>techicons.dev</a> e <a href="https://svglogos.dev/" target='_blank'>svglogos.dev</a>
+
+Exemplo:
+
+```likec4 copy
+model {
+  fn = service 'Lambda Function' {
+    icon aws:lambda
+  }
+  k8s = service 'K8s Service' {
+    icon gcp:google-kubernetes-engine
+  }
+  pg = storage 'PostgreSQL' {
+    icon tech:postgresql
+  }
+  ui = component 'User Interface' {
+    icon bootstrap:house
+  }
+}
+```
+
+<br/>
+
+<LikeC4ThemeView viewId="icons_example"/>
+
+<br/>
+
+:::note[Tecnologia derivada automaticamente]
+Ícones incluídos (exceto `bootstrap:`) definem automaticamente a `technology` do elemento quando ela ainda não foi informada.
+Por exemplo, `icon tech:docker` define a tecnologia como **"Docker"**. Veja [Tecnologia](/pt-br/dsl/model#tecnologia) para mais detalhes.
+:::
+
+:::tip
+Use o preenchimento automático de código do VS Code para explorar os ícones disponíveis.
+:::
+
+### Cor do ícone
+
+Use `iconColor` para sobrescrever a cor do ícone independentemente do preenchimento do elemento.  
+Aplica-se aos ícones `bootstrap:*` incluídos.
+
+```likec4 copy
+model {
+  api = service 'API' {
+    style {
+      icon tech:nodejs    // ⛔️ Not applied
+      icon bootstrap:gear // ✅ Applies to `bootstrap:*` icons.
+      iconColor indigo
+    }
+  }
+}
+```
+
+`iconColor` aceita cores do tema ou cores personalizadas definidas na [especificação](/pt-br/dsl/specification/#cor).  
+
+### Tamanho do ícone
+
+Use `iconSize` para redimensionar o ícone sem alterar o tamanho do elemento:
+
+```likec4 copy
+model {
+  api = service 'API' {
+    style {
+      icon tech:nodejs
+      iconSize sm
+    }
+  }
+}
+```
+
+`iconSize` usa os mesmos valores de [tamanho](/pt-br/dsl/styling/#tamanho) e, por padrão, usa o `size` do elemento (ou seja, se não for especificado e o tamanho for `large`, o ícone também será `large`).
+
+### Posição do ícone
+
+Use `iconPosition` para posicionar o ícone ao redor do texto do elemento:
+
+```likec4 copy
+model {
+  api = service 'API' {
+    style {
+      icon tech:nodejs
+      iconPosition top
+    }
+  }
+}
+```
+
+Valores aceitos: `left` (padrão), `right`, `top`, `bottom`.
+
+<LikeC4ThemeView viewId="icons_position_example" keepAspectRatio={false} style={{ '--likec4-view-max-height': '250px', minHeight: '250px' }}/>
+
+### Ícones com aliases
+
+Com o prefixo `@`, você pode usar pastas com aliases (saiba mais em [configuração](/pt-br/dsl/config/#aliases-de-imagens)):
+
+```likec4 copy
+model {
+  pg = service 'PostgreSQL' {
+    style {
+      // local images, based on aliased folders
+      icon @/postgresql.svg
+    }
+  }
+}
+```
+
+## Relacionamento
+
+Há várias formas de estilizar relacionamentos:
+- Estilizar todos os relacionamentos de um tipo em `specification`
+- Estilizar um relacionamento específico em `model`
+- Personalizar por `view` ([explicado aqui](/pt-br/dsl/views/predicates/#personalização-de-relacionamentos))
+
+### Relacionamentos de um tipo
+
+Relacionamentos podem ser estilizados na [especificação](/pt-br/dsl/relationships/#tipos-de-relacionamento):
+
+```likec4
+specification {
+  relationship async {
+    color amber
+    line dotted
+    head diamond
+    tail vee
+  }
+}
+```
+
+### Relacionamento específico
+
+```likec4
+model {
+  customer -> ui 'opens in browser' {
+    style {
+      line solid
+      color amber
+    }
+  }
+}
+```
+
+### Relacionamento por visão
+
+A [próxima seção](/pt-br/dsl/views/predicates/#personalização-de-relacionamentos) explica como personalizar relacionamentos por visão.
+
+## Propriedades de relacionamentos
+
+Além de `color`, os relacionamentos podem ter as seguintes propriedades:  
+
+### Linha
+
+| linha  | exemplo |
+| :----- | :-----: |
+| dashed |   ..    |
+| solid  |   ..    |
+| dotted |   ..    |
+
+Por padrão, a linha é `dashed`.
+
+### Tipo de seta
+
+O tipo de seta pode ser definido para a ponta inicial e a ponta final do relacionamento:
+
+| tipo      | exemplo |
+| :-------- | :-----: |
+| normal    |   ..    |
+| onormal   |   ..    |
+| diamond   |   ..    |
+| odiamond  |   ..    |
+| crow      |   ..    |
+| vee       |   ..    |
+| open      |   ..    |
+| none      |   ..    |
+
+> `onormal` significa "normal contornada", ou seja, sem preenchimento  
+> `odiamond` significa "losango contornado"
+
+Por padrão, a ponta final é `normal` e a ponta inicial é `none`.
+
+```likec4
+model {
+  customer -> ui 'opens in browser' {
+    style {
+      head diamond
+      tail crow
+    }
+  }
+}
+```
+
+### Múltiplos
+
+Por padrão, vários relacionamentos entre os mesmos dois elementos são combinados em uma única aresta.
+Se os títulos forem diferentes, o rótulo combinado será `[...]`.
+
+Defina `multiple` como `true` para renderizar cada relacionamento como uma aresta separada, com seu próprio rótulo:
+
+```likec4
+specification {
+  relationship async {
+    multiple true
+    line dotted
+    color amber
+  }
+}
+```
+
+Você também pode habilitar esse comportamento por visão em relacionamentos individuais:
+
+```likec4
+views {
+  view flows {
+    include *
+    include customer -> api with {
+      multiple true
+    }
+  }
+}
+```
+
+:::note
+- `multiple true` divide os relacionamentos correspondentes em arestas individuais; relacionamentos que não correspondem
+  na mesma conexão permanecem combinados.
+- Regras por visão (`with { ... }`) têm precedência sobre as configurações definidas em `specification`.
+  Defina `multiple false` para desabilitar a expansão de relacionamentos específicos em uma visão.
+- Arestas expandidas nunca são combinadas em arestas bidirecionais; apenas arestas não expandidas
+  (combinadas) participam da combinação bidirecional.
+- A expansão a partir de elementos aninhados é aceita — cada relacionamento se torna sua própria aresta
+  no nível correto do elemento.
+:::
+
+## Personalização de estilos
+
+A configuração do projeto explica como sobrescrever os estilos padrão.
+
+<LinkCard
+  title="Configuração do projeto"
+  description="Saiba como personalizar estilos no seu projeto"
+  href="/pt-br/dsl/config/#personalização-de-estilos"
+/>
