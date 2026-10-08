@@ -445,7 +445,7 @@ export function ElementDetailsCard({
                         </HStack>
                       </>
                     )}
-                    {elementModel.$element.metadata && <ElementMetata value={elementModel.$element.metadata} />}
+                    {elementModel.$element.metadata && <ElementMetadata value={elementModel.$element.metadata} />}
                   </Box>
                 </ScrollArea>
               </TabsPanel>
@@ -587,7 +587,7 @@ function ElementProperty({
   )
 }
 
-function ElementMetata({
+function ElementMetadata({
   value: metadata,
 }: {
   value: NonNullable<Element['metadata']>
