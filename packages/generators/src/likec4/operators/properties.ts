@@ -239,6 +239,7 @@ export const styleProperties = zodOp(common.style)(
     property('size'),
     property('padding'),
     property('textSize'),
+    property('sizing'),
     property('multiple'),
   ),
 )

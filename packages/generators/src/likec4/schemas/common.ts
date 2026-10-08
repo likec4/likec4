@@ -7,6 +7,7 @@ import {
   RelationshipArrowTypes,
   RelationshipLineTypes,
   Sizes,
+  Sizings,
   ThemeColors,
 } from '@likec4/core/styles'
 import {
@@ -20,6 +21,7 @@ import {
   type OrString,
   type scalar,
   type Size,
+  type Sizing,
   type SpacingSize,
   type TextSize,
   type ThemeColor,
@@ -72,6 +74,9 @@ export const size: ZSize = z.literal(Sizes)
 
 export interface ZIconPosition extends z.ZodType<IconPosition, IconPosition | OrString> {}
 export const iconPosition: ZIconPosition = z.literal(IconPositions)
+
+export interface ZSizing extends z.ZodType<Sizing, Sizing | OrString> {}
+export const sizing: ZSizing = z.literal(Sizings)
 
 export interface ZArrow extends z.ZodType<RelationshipArrowType, RelationshipArrowType | OrString> {}
 export const arrow: ZArrow = z.literal(RelationshipArrowTypes)
@@ -139,6 +144,7 @@ export namespace ZStyle {
     size?: z.input<ZSize> | undefined
     padding?: z.input<ZSize> | undefined
     textSize?: z.input<ZSize> | undefined
+    sizing?: z.input<ZSizing> | undefined
     multiple?: boolean | undefined
   }
   export interface Out {
@@ -153,6 +159,7 @@ export namespace ZStyle {
     readonly size?: Size
     readonly padding?: SpacingSize
     readonly textSize?: TextSize
+    readonly sizing?: Sizing
     readonly multiple?: boolean
   }
 }
@@ -171,6 +178,7 @@ export const style: ZStyle = z
     size: size,
     padding: size,
     textSize: size,
+    sizing: sizing,
     multiple: z.boolean(),
   })
   .partial()

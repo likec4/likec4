@@ -65,6 +65,7 @@ export type ParsedElementStyle = {
   size?: c4.ShapeSize
   padding?: c4.SpacingSize
   textSize?: c4.TextSize
+  sizing?: c4.Sizing
 }
 
 export interface ParsedAstSpecification {
@@ -325,6 +326,16 @@ export function parseAstIconPositionValue({ value }: { value: ast.IconPositionVa
     case 'right':
     case 'top':
     case 'bottom':
+      return value
+    default:
+      nonexhaustive(value)
+  }
+}
+
+export function parseAstSizingValue({ value }: { value: ast.SizingValue }): c4.Sizing {
+  switch (value) {
+    case 'auto':
+    case 'fixed':
       return value
     default:
       nonexhaustive(value)
