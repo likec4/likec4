@@ -5,7 +5,7 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
-import { AnimatePresence, LayoutGroup } from 'motion/react'
+import { LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo } from 'react'
 import { isTruthy } from 'remeda'
@@ -22,6 +22,7 @@ import {
   ToggleReadonly,
   ViewDetailsButton,
 } from './controls'
+import { ElementViewControls } from './ElementViewControls'
 import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
@@ -43,6 +44,7 @@ const selectViewData = selectDiagramContext(s => {
     viewId: s.view.id,
     viewTitle: (s.view.title && extractViewTitleFromPath(s.view.title)) ?? 'Untitled View',
     isDynamicView: s.view._type === 'dynamic',
+    isElementView: s.view._type === 'element',
     editBtnVisible: hasEditor && noActiveWalkthrough,
     editBtnDisabled: comparingLatest,
     isReadOnly,
@@ -74,6 +76,7 @@ export const NavigationPanelControls = memo(() => {
     isReadOnly,
     viewTitle,
     isDynamicView,
+    isElementView,
   } = useDiagramSelector(selectViewData)
 
   const folder = viewModel?.folder
@@ -183,6 +186,7 @@ export const NavigationPanelControls = memo(() => {
         {enableVscode && <OpenSource key="open-source" />}
         {editBtnVisible && <ToggleReadonly key="toggle-readonly" disabled={editBtnDisabled} isReadOnly={isReadOnly} />}
         {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
+        {isElementView && <ElementViewControls key="element-view-controls" />}
         {enableSearch && !enableCompareWithLatest && <SearchControl key="search-control" />}
         <LayoutWarning key="outdated-manual-layout-warning" />
       </m.div>
