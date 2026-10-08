@@ -24,73 +24,8 @@ const descendantSummarySchema = z.object({
 
 export const subgraphSummary = likec4Tool({
   name: 'subgraph-summary',
-  description: `
-Get a compact, table-friendly summary of all descendants of a parent element.
-Returns each descendant with its depth, metadata, tags, and relationship counts in a single call.
-Much more efficient than calling read-element for each descendant individually.
-
-Request:
-- elementId: string — parent element id (FQN) whose descendants to summarize
-- maxDepth: number (optional, default: 10, max: 20) — maximum depth of descendants to include
-- metadataKeys: string[] (optional) — if provided, only include these metadata keys in the response (reduces response size)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response (JSON object):
-- root: object — the root element summary
-  - id: string — element id
-  - kind: string — element kind
-  - title: string — element title
-  - childCount: number — number of direct children
-- descendants: Array of descendant summaries, each with:
-  - id: string — element id (FQN)
-  - name: string — element name
-  - kind: string — element kind
-  - title: string — human-readable title
-  - depth: number — depth relative to root (1 = direct child)
-  - tags: string[] — assigned tags
-  - metadata: Record<string, string | string[]> — element metadata (filtered by metadataKeys if provided)
-  - childCount: number — number of direct children
-  - incomingCount: number — number of incoming relationships
-  - outgoingCount: number — number of outgoing relationships
-- totalDescendants: number — total number of descendants (may differ from array length if truncated)
-- truncated: boolean — true if results were truncated due to exceeding the 200-result limit
-- truncatedByDepth: boolean — true if deeper descendants exist beyond maxDepth
-
-Notes:
-- Read-only, idempotent, no side effects.
-- Safe to call repeatedly.
-- Limited to 200 descendants in the response.
-- Use metadataKeys to reduce response size when you only need specific metadata.
-- Descendants are returned in breadth-first order (closest to root first).
-- depth=1 means direct child, depth=2 means grandchild, etc.
-
-Example response:
-{
-  "root": {
-    "id": "top.planner",
-    "kind": "subsystem",
-    "title": "Planner Subsystem",
-    "childCount": 5
-  },
-  "descendants": [
-    {
-      "id": "top.planner.nodeA",
-      "name": "nodeA",
-      "kind": "cgf-node",
-      "title": "nodeA :dwNodeTypeA",
-      "depth": 1,
-      "tags": ["is_in_dag", "target_asil_qm"],
-      "metadata": { "target_asil": "QM", "safety_info_unit_asil": "QM" },
-      "childCount": 0,
-      "incomingCount": 3,
-      "outgoingCount": 2
-    }
-  ],
-  "totalDescendants": 5,
-  "truncated": false,
-  "truncatedByDepth": false
-}
-`,
+  description:
+    `Summarize all descendants of an element in one call, breadth-first, each with depth (1 = direct child), tags, metadata, and child and relationship counts. At most 200 descendants; truncated and truncatedByDepth say what was cut. Pass metadataKeys to return only those keys. Cheaper than read-element per descendant.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,
