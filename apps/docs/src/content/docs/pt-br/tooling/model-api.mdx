@@ -1,0 +1,911 @@
+---
+title: LikeC4 API
+description: Saiba como acessar seu modelo de arquitetura programaticamente.
+head:
+  - tag: title
+    content: LikeC4 Model API
+sidebar:
+  label: LikeC4 API
+  order: 2
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 5    
+---
+
+import { Aside,  TabItem as Tab, Tabs } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+Você pode acessar e percorrer seu modelo de arquitetura programaticamente por meio da API de modelos do LikeC4.
+
+<Aside type='note'>
+A API permite consultar e percorrer o modelo definido pela DSL, mas não modificá-lo ou criar um novo por essa interface.
+</Aside>
+
+Verifique se `likec4` está incluído nas dependências:
+
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+
+## Como usar
+
+Você pode inicializar a API LikeC4 a partir de um diretório de arquivos-fonte ou de uma string contendo código DSL.
+
+### A partir de um workspace
+
+Pesquise e processe os arquivos-fonte recursivamente:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+```  
+
+O método também aceita opções:
+
+| Propriedade      | Descrição                                                                                         |
+| -----------------| --------------------------------------------------------------------------------------------------- |
+| `printErrors`    | se o modelo for inválido, os erros serão registrados no logger (padrão: `true`) |
+| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | retorna uma Promise rejeitada se o modelo for inválido (padrão: `false`) |
+| `logger`         | Utiliza `default` (console), o logger do `vite` ou uma implementação personalizada<br/>Desative com `false`  |
+| `graphviz`       | `wasm` (padrão) ou `binary`: utiliza os executáveis locais do Graphviz ("dot") ou o WASM incluído    |
+| `watch`          | Indica se alterações no workspace devem ser monitoradas (padrão: `false`)  |
+| `mcp`            | Indica se o servidor MCP deve ser iniciado.<br/> - `false` - não inicia o servidor MCP (padrão) <br/> - `"stdio"` - utiliza transporte stdio,<br/> -  `{"port": number}` - utiliza transporte HTTP na porta informada |
+
+:::tip
+Consulte [Valide seu modelo](/pt-br/guides/validate-your-model/) para ver exemplos de regras personalizadas aplicadas ao modelo com a API LikeC4.
+:::
+
+### A partir do código-fonte
+
+Processe o conteúdo de uma string:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element system
+    element user
+  }
+  model {
+    customer = user 'Customer'
+    cloud = system 'System'
+  }
+  views {
+    view index {
+      include *
+    }
+  }
+`)
+```
+
+### Liberar recursos
+
+Se você inicializou o LikeC4 no modo `watch` ou habilitou o servidor MCP, libere seus recursos:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace', {
+  watch: true,
+  mcp: { port: 33335 },
+})
+
+// Cleanup resources
+await likec4.dispose()
+```
+
+O LikeC4 também libera recursos automaticamente com a declaração `await using`:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+async function() {
+  await using likec4 = await LikeC4.fromWorkspace('/path/to/workspace', {
+    watch: true,
+    mcp: { port: 33335 },
+  })
+
+  // ...
+  // likec4 is disposed automatically
+}
+```
+
+## API
+
+Depois de inicializar o modelo, você poderá usar os métodos a seguir para consultá-lo e percorrê-lo.
+
+Existem dois tipos de modelo (com APIs semelhantes):
+
+- **LikeC4Model.Computed** — inclui visões calculadas a partir dos predicados. É rápido e síncrono, adequado à navegação, mas ainda não está pronto para renderização.
+- **LikeC4Model.Layouted** — estende o modelo calculado com dados de layout (dimensões e posições), necessários à renderização.
+
+:::tip
+A API de baixo nível está disponível em [`@likec4/core`](https://github.com/likec4/likec4/blob/main/packages/core/README.md).
+:::
+
+### Exemplo
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+
+// Validation errors
+console.log(likec4.getErrors())
+
+// Traverse the model
+const model = likec4.computedModel()
+
+// Get elements of some kind
+const elements = model.elementsOfKind('kind1')
+
+// Use where operator to filter elements:
+//  kind is 'kind1' and (tag is 'tag2' or tag is not 'tag3')
+const elements = model.elementsWhere({
+  and: [
+    { kind: 'kind1' },
+    {
+      or: [
+        { tag: 'tag2' },
+        {
+          tag: {
+            neq: 'tag3',
+          },
+        },
+      ],
+    },
+  ],
+})
+
+// Get views that include the element
+model
+  .element('cloud.backend.api')
+  .views()
+
+// Get source elements of incoming relationships (filter by tags)
+model
+  .element('cloud.backend.api')
+  .incoming() // relationships incoming to the element
+  .filter(r => r.isTagged('http')) // filter by tags
+  .map(r => r.source) // get source elements
+
+```  
+
+Para obter o modelo com layout calculado:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+
+const model = await likec4.layoutedModel()
+
+const diagram = model.view('index')
+
+// Working with metadata (including array values)
+const element = model.element('cloud.backend.api')
+
+// Get all metadata
+const allMetadata = element.getMetadata()
+console.log(allMetadata)
+// Output: { version: '3.2.1', tags: ['backend', 'gateway'], regions: ['us-east-1', 'eu-west-1'] }
+
+// Get specific metadata field (could be string or string[])
+const tags = element.getMetadata('tags')
+if (Array.isArray(tags)) {
+  console.log(`Element has ${tags.length} tags: ${tags.join(', ')}`)
+} else if (tags) {
+  console.log(`Element has single tag: ${tags}`)
+}
+
+// Filter elements by array metadata values
+const elementsWithBackendTag = model.elements().filter(el => {
+  const tags = el.getMetadata('tags')
+  return Array.isArray(tags) 
+    ? tags.includes('backend')
+    : tags === 'backend'
+})
+
+```  
+
+### LikeC4Model
+
+:::tip
+É possível gerar uma API tipada a partir do modelo. Consulte [Geração de código](/tooling/code-generation/model/).
+:::
+
+A API de modelos disponibiliza métodos para consultar e percorrer todo o modelo.
+
+```ts
+interface LikeC4Model {
+  /**
+   * Returns the root elements of the model.
+   */
+  roots(): Element[];
+  /**
+   * Returns all elements in the model.
+   */
+  elements(): Element[];
+  /**
+   * Returns a specific element by its FQN.
+   */
+  element(id: Fqn): Element;
+  /**
+   * Returns all relationships in the model.
+   */
+  relationships(): Relationship[];
+  /**
+   * Returns a specific relationship by its ID.
+   */
+  relationship(id: RelationID): Relationship;
+  /**
+   * Returns all views in the model.
+   */
+  views(): ReadonlyArray<LikeC4ViewModel>;
+  /**
+   * Returns a specific view by its ID.
+   */
+  view(viewId: ViewID): LikeC4ViewModel;
+  /**
+   * Returns the parent element of given element.
+   * @see ancestors
+   */
+  parent(element: ElementOrFqn): Element | null;
+  /**
+   * Get all children of the element (only direct children),
+   * @see descendants
+   */
+  children(element: ElementOrFqn): Element[];
+  /**
+   * Get all sibling (i.e. same parent)
+   */
+  siblings(element: ElementOrFqn): Element[];
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
+  ancestors(element: ElementOrFqn): Element[];
+  /**
+   * Get all descendant elements (i.e. children, children’s children, etc.)
+   */
+  descendants(element: ElementOrFqn): Element[];
+  /**
+   * Incoming relationships to the element and its descendants
+   * @see incomers
+   */
+  incoming(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): Relationship[];
+  /**
+   * Source elements of incoming relationships
+   */
+  incomers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): Element[];
+  /**
+   * Outgoing relationships from the element and its descendants
+   * @see outgoers
+   */
+  outgoing(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): Relationship[];
+  /**
+   * Target elements of outgoing relationships
+   */
+  outgoers(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): Element[];
+}
+```
+
+Consulte o código-fonte para conhecer os métodos: [LikeC4Model](https://github.com/likec4/likec4/blob/main/packages/core/src/model/LikeC4Model.ts).
+
+### Trabalhando com metadados de elementos
+
+Os elementos podem conter metadados com valores de string únicos ou arrays de strings. A API oferece métodos para acessar e manipular esses metadados:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element service
+    element application
+  }
+  model {
+    api = service 'API Gateway' {
+      metadata {
+        version '3.2.1'
+        maintainer 'Platform Team'
+        tags ['backend', 'gateway', 'microservice']
+        regions ['us-east-1', 'eu-west-1']
+        critical true
+      }
+    }
+    
+    frontend = application 'Frontend' {
+      metadata {
+        framework 'React'
+        features ['auth', 'dashboard', 'reports']
+        team_members ['alice', 'bob', 'carol']
+        release_branch 'main'
+      }
+    }
+  }
+`)
+
+const model = likec4.computedModel()
+
+// Get element and access metadata
+const api = model.element('api')
+
+// Check if element has any metadata
+if (api.hasMetadata()) {
+  console.log('API has metadata')
+  
+  // Get all metadata as an object
+  const metadata = api.getMetadata()
+  console.log('All metadata:', metadata)
+  
+  // Get specific metadata fields
+  const version = api.getMetadata('version')        // string: '3.2.1'
+  const tags = api.getMetadata('tags')              // string[]: ['backend', 'gateway', 'microservice']
+  const regions = api.getMetadata('regions')        // string[]: ['us-east-1', 'eu-west-1']
+  
+  // Handle array metadata values
+  if (Array.isArray(tags)) {
+    console.log(`API has ${tags.length} tags:`)
+    tags.forEach(tag => console.log(`  - ${tag}`))
+    
+    // Check if specific value exists in array
+    if (tags.includes('backend')) {
+      console.log('API is tagged as backend service')
+    }
+  }
+  
+  // Handle mixed metadata types
+  const handleMetadataValue = (key: string, value: string | string[] | undefined) => {
+    if (Array.isArray(value)) {
+      return `${key}: [${value.join(', ')}]`
+    } else if (value) {
+      return `${key}: ${value}`
+    }
+    return `${key}: undefined`
+  }
+  
+  console.log(handleMetadataValue('version', version))
+  console.log(handleMetadataValue('tags', tags))
+  console.log(handleMetadataValue('regions', regions))
+}
+
+// Advanced filtering using metadata
+const backendServices = model.elements()
+  .filter(element => {
+    const tags = element.getMetadata('tags')
+    return Array.isArray(tags) ? tags.includes('backend') : tags === 'backend'
+  })
+
+const multiRegionServices = model.elements()
+  .filter(element => {
+    const regions = element.getMetadata('regions')
+    return Array.isArray(regions) && regions.length > 1
+  })
+
+// Group elements by metadata values
+const elementsByFramework = new Map<string, typeof model.elements>()
+for (const element of model.elements()) {
+  const framework = element.getMetadata('framework')
+  if (typeof framework === 'string') {
+    if (!elementsByFramework.has(framework)) {
+      elementsByFramework.set(framework, [])
+    }
+    elementsByFramework.get(framework)!.push(element)
+  }
+}
+
+// Collect all unique tags from all elements
+const allTags = new Set<string>()
+for (const element of model.elements()) {
+  const tags = element.getMetadata('tags')
+  if (Array.isArray(tags)) {
+    tags.forEach(tag => allTags.add(tag))
+  } else if (typeof tags === 'string') {
+    allTags.add(tags)
+  }
+}
+console.log('All unique tags:', Array.from(allTags).sort())
+```
+
+:::note[Mesclagem de metadados com Extend]
+Ao utilizar [`extend`](/pt-br/dsl/extend/) para adicionar metadados a elementos, as chaves duplicadas são mescladas automaticamente:
+
+- String + String = Array (se os valores forem diferentes)
+- String + Array = Array (mesclado)
+- Array + Array = Array (mesclado)
+- Valores repetidos são removidos automaticamente
+- Arrays com um único valor são convertidos novamente em strings
+
+Isso permite enriquecer os metadados progressivamente em vários arquivos. Consulte a [documentação de extensão](/pt-br/dsl/extend/#combinação-de-metadados) para saber mais.
+:::
+
+### LikeC4DeploymentModel
+
+A API disponibiliza métodos para consultar e percorrer o modelo de implantação.
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+const model = likec4.computedModel()
+
+// Get deployment model
+const deployment = model.deployment
+
+// Get elements of some kind
+for (const instance of deployment.instancesOf('cloud.backend.api')) {
+  // ...
+}
+```
+
+### LikeC4ViewModel
+
+A API de visões permite consultar e percorrer os elementos e relacionamentos incluídos em uma visão.
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromSource(`....`)
+const model = likec4.computedModel()
+
+for (const view of model.views()) {
+  if (view.isDynamicView()) {
+    // ...
+  }
+}
+```
+
+
+## Model Builder
+
+O construtor de modelos com segurança de tipos está disponível em `@likec4/core/builder` (ou `likec4/model/builder`).  
+O Builder permite criar modelos programaticamente usando dois estilos:
+
+<Tabs>
+  <Tab label='Chain'>
+  ```ts
+  import { Builder } from "@likec4/core/builder"
+
+  const m = Builder
+    .specification({
+      elements: {
+        actor: {
+          style: {
+            shape: 'person',
+          },
+        },
+        system: {},
+        component: {},
+      },
+      relationships: {
+        likes: {},
+      },
+      tags: ['tag1', 'tag2', 'tag1'],
+    })
+    .model(({ actor, system, component, relTo, rel }, _) =>
+      _(
+        actor('alice'),
+        actor('bob'),
+        rel('alice', 'bob', {
+          tags: ['tag1'], // you get code completion for tags
+          kind: 'likes',  // code completion for kind
+        }),
+        system('cloud', { tags: ['tag1', 'tag2'] }).with(
+          component('backend').with(
+            component('api'),
+            component('db'),
+            // code completion for relationships
+            rel('cloud.backend.api', 'cloud.backend.db')
+          ),
+          component('frontend').with(
+            relTo('cloud.backend.api')
+          ),
+        ),
+      )
+    )    
+    .views(({ view, viewOf, $include, $style }, _) =>
+      _(
+        view('index', 'Index').with(
+          $include('cloud.*'),
+        ),
+        viewOf('ui', 'cloud.ui').with(
+          // code completion for predicates
+          $include('* -> cloud.**'),
+          $style('cloud.ui', { color: 'red' }),
+        ),
+      )
+    )
+    .toLikeC4Model()
+  ```
+  </Tab>
+
+  <Tab label='Composition'>
+
+  ```ts
+  import { Builder } from "@likec4/core/builder"
+
+  // Get composition functions for given specification
+  const {
+    model: {
+      model,
+      actor,
+      system,
+      component,
+      rel,
+      relTo,
+    },
+    views: {
+      view,
+      viewOf,
+      views,
+      $include,
+      $style,
+    },      
+    builder,
+  } = Builder.forSpecification({
+    elements: {
+      actor: {
+        style: {
+          shape: 'person',
+        },
+      },
+      system: {},
+      component: {},
+    },
+    relationships: {
+      likes: {},
+    },
+    tags: ['tag1', 'tag2', 'tag1'],
+  })
+
+  const b1 = builder.with(
+    model(
+      actor('alice'),
+      actor('bob'),
+      rel('alice', 'bob', {
+        tags: ['tag1'],
+        kind: 'likes',
+      }),
+      system('cloud', { tags: ['tag1', 'tag2'] }).with(
+        component('backend').with(
+          component('api'),
+          component('db'),
+          rel('cloud.backend.api', 'cloud.backend.db')
+        ),
+        component('frontend').with(
+          relTo('cloud.backend.api')
+        ),
+      ),
+    )
+  )
+
+  const b2 = b1.with(
+    views(
+      view('index', 'Index').with(
+        $include('cloud.*'),
+      ),
+      viewOf('ui', 'cloud.ui').with(
+        $include('* -> cloud.**'),
+        $style('cloud.ui', { color: 'red' }),
+      ),
+    )
+  )
+  .toLikeC4Model()
+  ```
+  </Tab>
+</Tabs>
+
+Você pode combinar os estilos conforme suas preferências e necessidades.  
+
+:::tip
+Consulte os testes unitários do repositório para ver exemplos:
+- <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style1.spec.ts">Builder-style1</a>
+- <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style2.spec.ts">Builder-style2</a>
+:::
+
+## Enriquecendo um workspace carregado
+
+Você pode carregar um workspace LikeC4 existente, fornecer o modelo processado ao [Model Builder](#model-builder),
+adicionar elementos, relacionamentos e visões programaticamente e continuar trabalhando com o modelo em memória
+ou gravar o código DSL resultante em disco.
+
+Casos de uso comuns:
+
+- Sobrepor informações de infraestrutura obtidas do estado Terraform, AWS ou Kubernetes a um modelo criado manualmente.
+- Mesclar modelos de diferentes equipes e adicionar relacionamentos entre elas.
+- Gerar visões por convenção (uma visão por equipe, ambiente etc.).
+- Atualizar um modelo a partir de um catálogo externo de serviços e gerar novamente os arquivos `.c4`.
+
+<Aside type='note'>
+O ciclo de conversão da DSL (`fromWorkspace` → `toDSL` → `fromSource`) apresenta **perda de informações** intencional:
+comentários, posições no código-fonte e formatação original não são preservados. Trate `writeDSL` como
+geração unidirecional de código, e não como um formatador.
+</Aside>
+
+### Lendo o modelo processado
+
+`likec4.parsedModel(project?)` retorna o modelo processado (elementos, relacionamentos, visões, implantações,
+definições globais e importações) *antes* do cálculo das visões:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+const parsed = await likec4.parsedModel()
+
+// element/relation lookups work the same as on computed models
+console.log(parsed.element('cloud.frontend').kind)
+console.log(Object.keys(parsed.$data.views))
+```
+
+### `LikeC4.toBuilder()` — obter um Builder inicializado a partir do disco
+
+`likec4.toBuilder(mode?, project?)` retorna um [Model Builder](#model-builder) previamente preenchido com o
+workspace carregado. Em seguida, você pode encadear `.model(...)`, `.deployment(...)` e `.views(...)` para adicionar
+conteúdo e chamar `.toLikeC4Model()` (ou `.build()`) para obter o modelo enriquecido.
+
+Por padrão, o Builder é **editável**: declarar novamente um elemento existente (mesmo FQN e mesmo
+tipo) altera o elemento, em vez de lançar uma exceção. Isso costuma ser desejável ao atualizar um modelo
+carregado. Informe `'strict'` para usar o modo estrito, em que FQNs duplicados sempre causam erro:
+
+```ts
+const editable = await likec4.toBuilder()          // editable (default)
+const strict = await likec4.toBuilder('strict')    // strict
+```
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, component }, _) =>
+    _(
+      system('monitoring').with(
+        component('grafana'),
+        component('prometheus'),
+      ),
+    )
+  )
+  .views(({ view, $include }, _) =>
+    _(
+      view('monitoring', 'Monitoring').with(
+        $include('monitoring.*'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+:::note
+Os nomes dos métodos auxiliares (`system`, `component`, …) correspondem aos **tipos de elemento da especificação carregada**:
+um método por `element <kind>` declarado na DSL. Ao carregar do disco, esses tipos só são conhecidos em tempo de execução,
+portanto `toBuilder()` retorna um Builder com tipagem flexível. Para obter tipos estáticos, com autocompletar e validação
+contra a especificação, utilize [`toTypedBuilder({ specification })`](#likec4totypedbuilder--obter-um-builder-tipado).
+:::
+
+A mesma funcionalidade de inicialização está disponível diretamente no Builder, quando você já possui os
+dados processados:
+
+```ts
+import { Builder } from "@likec4/core/builder"
+
+const builder = Builder.fromParsed(parsedData)
+```
+
+### Editável versus estrito — alterando elementos carregados
+
+`toBuilder()` utiliza o modo editável por padrão. Assim, você pode *alterar* elementos carregados (por exemplo,
+atualizar um título ou adicionar filhos) apenas declarando-os novamente:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const updated = (await likec4.toBuilder())
+  .model(({ component }, _) =>
+    _(
+      component('cloud.api', { title: 'Updated' }),
+      component('cloud.ui').with(
+        component('react'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+```
+
+No modo editável, declarar novamente um elemento com o mesmo FQN e tipo substitui suas propriedades. Declarar
+o mesmo FQN com um *tipo diferente* ainda causa erro (provavelmente um erro de programação). Para impedir
+qualquer redeclaração de FQN existente, utilize o modo estrito com `await likec4.toBuilder('strict')`
+(ou `Builder.fromParsed(data, 'strict')`).
+
+:::caution
+A edição **substitui**, não **mescla**, as propriedades. Ao declarar novamente um elemento, suas propriedades
+são substituídas exatamente pelas informações fornecidas; propriedades omitidas voltam ao valor padrão, sem
+herdar os valores do elemento carregado. Para atualizar uma propriedade e preservar as demais, leia o elemento
+existente e reutilize suas propriedades (consulte [Localizando e atualizando elementos](#localizando-e-atualizando-elementos)).
+:::
+
+### Relacionando novos elementos com os existentes
+
+Uma tarefa comum é adicionar um elemento e conectá-lo a outro já definido na DSL. FQNs existentes
+não integram o conjunto de tipos estáticos, mas podem ser referenciados como strings: o relacionamento
+será validado em relação ao modelo carregado na geração:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const enriched = (await likec4.toBuilder())
+  .model(({ system, relTo }, _) =>
+    _(
+      system('monitoring').with(
+        // `cloud.backend` is an existing element loaded from the DSL
+        relTo('cloud.backend', 'observes'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+
+// or, equivalently, from the top level via `rel`:
+//   .model(({ system, rel }, _) =>
+//     _(
+//       system('monitoring'),
+//       rel('monitoring', 'cloud.backend', 'observes'),
+//     )
+//   )
+```
+
+Referenciar um FQN inexistente causa erro durante a geração, revelando erros de digitação mesmo quando
+o compilador não consegue identificá-los.
+
+### Localizando e atualizando elementos
+
+Para descobrir o que já existe no modelo, percorra o [LikeC4Model](#likec4model) retornado por
+`computedModel()` (ou inspecione a estrutura processada com `parsedModel()`):
+
+```ts
+const model = await likec4.computedModel()
+for (const element of model.elements()) {
+  console.log(element.id, element.kind, element.title)
+}
+```
+
+Como a edição **substitui** as propriedades em vez de mesclá-las (consulte a observação acima), atualizar
+uma propriedade exige ler o elemento existente e reenviar os valores que devem ser preservados:
+
+```ts
+const existing = (await likec4.parsedModel()).element('customer')
+
+const updated = (await likec4.toBuilder())
+  .model(({ actor }, _) =>
+    _(
+      actor('customer', {
+        title: existing.title, // keep what you are not changing
+        metadata: { team: 'platform' }, // add / patch
+      }),
+    )
+  )
+  .toLikeC4Model()
+```
+
+### `Builder.specification()` — adicionar tipos e tags
+
+O método de instância `.specification(spec)` estende um Builder com novos tipos de elementos, implantação,
+relacionamentos, tags e chaves de metadados. Chaves existentes com o mesmo nome são substituídas, enquanto
+novas chaves são adicionadas. Isso é útil quando a especificação do workspace serve de base para introduzir
+tipos específicos de uma sobreposição de informações:
+
+```ts
+import { LikeC4 } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+const model = (await likec4.toBuilder())
+  .specification({
+    elements: {
+      database: { style: { shape: 'storage' } },
+    },
+    tags: {
+      experimental: { color: '#f00' },
+    },
+  })
+  .model(({ database }, _) =>
+    _(database('warehouse', { tags: ['experimental'] })),
+  )
+  .toLikeC4Model()
+```
+
+Os tipos do Builder retornado são a **união** dos tipos anteriores com os da nova especificação. Assim,
+os métodos auxiliares de tipos de elemento, tags e chaves de metadados se acumulam ao encadear chamadas
+`.specification(...)`, em vez de serem restringidos.
+
+### `LikeC4.toDSL()` e `writeDSL()` — gerar a DSL novamente
+
+`likec4.toDSL(project?)` converte o modelo processado novamente para o código-fonte DSL do LikeC4. Para gravar
+esse código em disco, utilize `writeDSL`, disponível somente em Node e exportado por `likec4`:
+
+```ts
+import { LikeC4, writeDSL } from "likec4"
+
+const likec4 = await LikeC4.fromWorkspace('./')
+
+// Render to string
+const dsl = await likec4.toDSL()
+
+// Or write to a file (default: ${targetDir}/model.c4)
+const outPath = await writeDSL(likec4, './generated')
+console.log(`Wrote DSL to ${outPath}`)
+
+// Custom filename
+await writeDSL(likec4, './generated', { fileName: 'snapshot.c4' })
+```
+
+Você pode combinar as etapas anteriores para carregar, enriquecer e gerar novamente o código em um único pipeline:
+
+```ts
+const enriched = (await likec4.toBuilder())
+  .specification({ tags: { autogenerated: { color: '#999' } } })
+  .model(({ component }, _) =>
+    _(component('cloud.new-service', { tags: ['autogenerated'] })),
+  )
+
+const data = enriched.build()
+const dsl = generateLikeC4(data)              // from @likec4/generators/likec4
+await writeFile('./generated/model.c4', dsl)  // or use writeDSL on the LikeC4 instance
+```
+
+### `LikeC4.toTypedBuilder()` — obter um Builder *tipado*
+
+Quando o modelo processado vem de um workspace, os tipos de elementos e FQNs só são conhecidos em tempo de execução.
+Por isso, o Builder retornado por `LikeC4.toBuilder()` possui tipagem flexível (`Builder<AnyTypes>`). Se o código
+utiliza a **mesma especificação** da DSL, forneça essa especificação a `toTypedBuilder` para obter um Builder
+tipado, com autocompletar para tipos de elementos, implantação, relacionamentos, tags e chaves de metadados:
+
+```ts
+const builder = await likec4.toTypedBuilder({
+  specification: {
+    elements: ['actor', 'system', 'component'],
+    tags: ['external'],
+  },
+})
+
+// `system` / `component` are statically known — no cast needed.
+builder.model(({ system, component }, _) =>
+  _(system('monitoring').with(component('grafana'))),
+)
+```
+
+A especificação fornecida é **validada** em relação ao modelo carregado (semântica de subconjunto): todo tipo, tag
+ou chave de metadados declarado precisa existir no modelo, caso contrário a chamada gera erro. Isso impede a
+divergência silenciosa entre os tipos e a DSL. O modelo carregado pode conter tipos *adicionais* não declarados,
+mas não serão gerados métodos auxiliares tipados para eles. `mode` utiliza `'editable'` por padrão, como `toBuilder`.
+
+:::caution
+**FQNs existentes continuam sem tipagem estática.** `toTypedBuilder` tipa os *tipos de elemento*, não os FQNs.
+Chamadas como `findElement('cloud.api')` e referências cruzadas como `rel('cloud.api', 'cloud.ui')` continuam
+sendo validadas somente durante a alteração do Builder, e não pelo compilador.
+
+Se não puder (ou não quiser) fornecer uma especificação, ainda será possível recorrer a uma conversão explícita de tipos em `toBuilder()`:
+
+```ts
+import type { Builder, Types } from "@likec4/core/builder"
+
+type MySpec = { elements: ['actor', 'system', 'component'] }
+const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>
+```
+:::
+
+:::tip
+Para ver exemplos funcionais, consulte
+[`Builder.fromParsed.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder.fromParsed.spec.ts)
+and
+[`LikeC4.toBuilder.spec.ts`](https://github.com/likec4/likec4/blob/main/packages/language-services/src/__tests__/LikeC4.toBuilder.spec.ts).
+:::

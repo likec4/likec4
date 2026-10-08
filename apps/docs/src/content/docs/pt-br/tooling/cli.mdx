@@ -1,0 +1,320 @@
+---
+title: LikeC4 CLI
+description: Saiba como usar a interface de linha de comando do LikeC4 em operações e automações.
+head:
+  - tag: title
+    content: LikeC4 CLI
+sidebar:
+  label: CLI
+  order: 1
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6  
+---
+
+import { Aside, LinkCard } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
+</p>
+
+A CLI `likec4` permite executar diversas operações e tarefas de automação, como:
+
+- Iniciar um servidor de desenvolvimento para pré-visualizar diagramas (com atualização automática)
+- Gerar um site estático para compartilhar e incorporar diagramas
+- Exportar para PNG, JPEG, JSON, Mermaid, Dot, D2 e DrawIO
+- Gerar [artefatos de código-fonte](/tooling/code-generation/react/):
+  - Componentes React
+  - Web Components
+  - Dados tipados
+- Formatar arquivos-fonte (com modo de verificação adequado para CI)
+
+## Instalação
+
+### Instalação local
+
+Se você utiliza um projeto npm, instale a CLI como dependência de desenvolvimento:
+
+<PackageManagers
+    pkg="likec4"
+    dev
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+
+Você pode referenciá-la diretamente em `package.json#scripts`:
+
+```json5
+{
+  scripts: {
+    dev: 'likec4 dev ...',
+    build: 'likec4 build ...'
+  }
+}
+```
+
+### Instalação global
+
+Para obter e executar o pacote sem adicioná-lo às dependências:
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="start"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+
+Para utilizá-lo em qualquer projeto sem [`npx`](https://docs.npmjs.com/cli/v11/commands/npx), faça a instalação global:
+
+```sh
+npm install --global likec4
+
+# Then, you can call `likec4` directly:
+likec4 [command]
+```                                                     
+
+## Como usar
+
+Quase todos os comandos aceitam `--help` e apresentam exemplos de utilização.
+
+```sh
+likec4 build -h
+likec4 gen react -h
+```
+
+
+### Pré-visualizar diagramas
+
+Em uma pasta com arquivos-fonte LikeC4:
+
+```sh
+likec4 serve
+# Aliases:
+likec4 start
+likec4 dev
+```
+
+O comando procura recursivamente arquivos `*.c4` e `*.likec4` na pasta atual, processa seu conteúdo e disponibiliza os diagramas por um servidor web local.  
+Qualquer alteração nos arquivos-fonte atualiza imediatamente a visualização no navegador.
+
+| Opção                        | Descrição                                                                                                     |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--port`                     | Porta do servidor de desenvolvimento (padrão: 5173, ou variável `PORT`)                                                      |
+| `--hmr-port`                 | Porta WebSocket do HMR (padrão: detectada entre 24678–24690, ou variável `HMR_PORT`)                   |
+| `--listen, -l`               | Endereço IP para escuta (padrão: `127.0.0.1`, ou `0.0.0.0` dentro de um contêiner)                                 |
+| `--no-react-hmr`             | Desativa o HMR do React (útil para CI e pré-visualizações estáticas)                                                            |
+| `--use-dot`, `--use-dot-bin` | Utiliza o executável local Graphviz (`dot`) em vez do WASM incluído; padrão `false`, ou `true` em contêineres   |
+| `--public, --public-dir`     | Diretório cujos arquivos são disponibilizados sem alterações (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)) |
+| `--allowed-host`             | Nome de host autorizado a acessar o servidor de desenvolvimento (Vite [`server.allowedHosts`](https://vite.dev/config/server-options#server-allowedhosts)); pode ser informado mais de uma vez. Por padrão, permite todos os hosts. |
+
+:::tip
+Você pode iniciar o processo em outro terminal e mantê-lo em execução enquanto edita o modelo, ou até mesmo servir vários projetos simultaneamente.
+:::
+
+<Aside type="caution">
+Por padrão, o servidor web escuta em localhost (127.0.0.1). Para permitir conexões por todas as interfaces de rede, adicione `--listen 0.0.0.0` ao comando de inicialização.
+</Aside>
+
+### Gerar um site estático
+
+A CLI pode gerar um site contendo os diagramas, pronto para publicação ou incorporação.  
+Após publicar o site, use o botão "Compartilhar" ("Share") para obter um link direto para um diagrama específico.
+
+O site resultante utiliza o caminho base informado (por padrão, `/`).
+Para gerar uma aplicação que funcione em outros caminhos, utilize `--base "./"`.
+
+```sh
+likec4 build -o ./dist
+```
+
+| Opção                        | Descrição                                                                                                      |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--output`                   | Diretório de saída                                                                                                 |
+| `--base, --base-url`         | URL base da aplicação, por exemplo, "/", "/pages/" ou "./" para permitir mudança de caminho                 |
+| `--use-hash-history`         | Navegação baseada em hash, por exemplo, "/#/view" em vez de "/view"                                                         |
+| `--use-dot`, `--use-dot-bin` | Utiliza os executáveis locais Graphviz ("dot") em vez do WASM incluído; padrão `false`, ou `true` em contêineres |
+| `--webcomponent-prefix`      | Prefixo para web components; por exemplo, "c4" gera `<c4-view ../>`                                                   |
+| `--title`                    | Título base das páginas da aplicação (padrão: "LikeC4")                                                                |
+| `--output-single-file`       | Gera um único arquivo HTML independente                                                                      |
+| `--public, --public-dir`     | Diretório cujos arquivos são copiados sem alterações para a saída (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)); também preservado com `--output-single-file` |
+
+:::note
+Internamente, a CLI utiliza Vite para gerar o site, e `likec4 build` executa `vite build`.  
+A [documentação de publicação do Vite](https://vitejs.dev/guide/static-deploy.html) também pode ajudar.
+
+O repositório [likec4/template](https://github.com/likec4/template) mostra como publicar um site LikeC4 no GitHub Pages.
+:::
+
+
+Há também um comando complementar para pré-visualizar o resultado da geração:
+
+```sh
+likec4 preview -o ./dist
+```
+
+Por exemplo, esse comando pode ser usado em CI para comparar diagramas com os de uma compilação anterior ou da branch principal.
+
+### Exportar para PNG
+
+```sh
+likec4 export png -o ./assets
+likec4 export jpg -o ./assets --quality 90
+```
+
+Esse comando inicia um servidor web local e utiliza o Playwright para capturar imagens.  
+Se pretende utilizá-lo em CI, consulte a [documentação do Playwright](https://playwright.dev/docs/ci)
+ou considere utilizar as [GitHub Actions do LikeC4](/pt-br/tooling/github/)
+
+Utilize `likec4 export jpg` para exportar arquivos JPEG. O comando oferece as mesmas opções de captura de tela, além de `--quality`.
+
+:::note
+A exportação para PNG ou JPEG exige o Playwright.
+Se ele não estiver instalado, será exibido um comando de instalação.
+:::
+
+| Opção                        | Descrição                                                                                                      |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--outdir, -o`               | Diretório de saída dos arquivos PNG/JPEG; se omitido, as imagens são salvas junto aos arquivos-fonte. `--output` é aceito como alias por compatibilidade. |
+| `--project`                  | Seleciona o projeto LikeC4 a exportar pelo nome (por exemplo, "my-project") ou pelo caminho<br/>Se omitido, exporta todos    |
+| `--theme`                    | Esquema de cores a utilizar: "light" (padrão) ou "dark"                                                                   |
+| `--dark`                     | Utiliza o tema escuro; atalho para --theme=dark                                                                        |
+| `--light`                    | Utiliza o tema claro; atalho para --theme=light                                                                      |
+| `--use-dot`, `--use-dot-bin` | Utiliza os executáveis locais Graphviz ("dot") em vez do WASM incluído; padrão `false`, ou `true` em contêineres |
+| `--seq, --sequence`          | Utiliza layout sequencial para visões dinâmicas                                                                            |
+| `--flat, --flatten`          | Coloca todas as imagens diretamente no diretório de saída, ignorando a estrutura original                                                          |
+| `-f, --filter`               | Inclui visões cujos IDs correspondam aos padrões informados<br/>(vários padrões são combinados com OU)                      |
+| `--quality, -q`              | Qualidade JPEG de 1 a 100 (padrão: 80); usada apenas por `likec4 export jpg`                                     |
+| `-i, --ignore`               | Continua mesmo se a exportação falhar em algumas visões                                                                          |
+| `-t, --timeout`              | Tempo limite do Playwright em segundos; padrão: 15                                                                 |
+| `--max-attempts`             | Máximo de tentativas de exportação de uma visão com falha; 1 desabilita novas tentativas (padrão: 3)                                             |
+| `--server-url`               | Utiliza essa URL em vez de iniciar outro servidor LikeC4                                                               |
+| `--chromium-sandbox`         | Habilita o sandbox do Chromium (consulte a documentação do Playwright)                                                                    |
+| `--notation`                 | Inclui a notação da visão nos arquivos PNG/JPEG exportados                                                                 |
+| `--description`              | Inclui o título e a descrição Markdown da visão nos arquivos PNG/JPEG exportados                                       |
+
+### Exportar para JSON
+
+```sh
+likec4 export json -o dump.json
+```
+
+### Exportar para DrawIO
+
+Exporte visões para DrawIO (`.drawio`) para editar os diagramas no [draw.io](https://draw.io) ou reutilizá-los em ferramentas compatíveis. Cada visão gera um arquivo `.drawio`.
+
+```sh
+likec4 export drawio
+likec4 export drawio -o ./diagrams
+likec4 export drawio -o ./diagrams src/
+likec4 export drawio --profile leanix -o ./diagrams
+```
+
+| Opção                        | Descrição                                                                                                                      |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `path`                       | Caminho do projeto (padrão: diretório atual)                                                                                     |
+| `--outdir, -o`               | Diretório de saída dos arquivos `.drawio` (padrão: diretório atual ou `path`)                                                      |
+| `--all-in-one`               | Gera um único arquivo `.drawio` com todas as visões em abas                                                                                  |
+| `--roundtrip`                | Aplica o layout, cores/larguras de traços e pontos intermediários das arestas a partir de comentários de intercâmbio bidirecional DrawIO nos arquivos `.c4` (por exemplo, após importação) |
+| `--uncompressed`             | Grava o XML do diagrama sem compactação (arquivo maior; útil se Draw.io não abrir a exportação compactada)                         |
+| `--profile`                  | Perfil de exportação: `default` (bidirecional) ou `leanix` (metadados gerenciados pela integração LeanIX). Padrão: `default`     |
+| `--project`                  | Seleciona projeto LikeC4 pelo nome ou caminho; se omitido, exporta todos                                                                   |
+| `--use-dot`, `--use-dot-bin` | Utiliza Graphviz (`dot`) local para layout em vez do WASM incluído; padrão `false`, ou `true` em contêineres                  |
+
+:::note
+A exportação DrawIO exige um layout. Se Graphviz não estiver instalado, a CLI usa o WASM incluído; para diagramas grandes, instale o [Graphviz](https://graphviz.org/) e utilize `--use-dot` para melhorar o desempenho. Use `--roundtrip` ao reexportar após uma importação para preservar o layout e os pontos intermediários. Use `--profile leanix` para interoperabilidade com LeanIX; consulte [Draw.io — Perfis de exportação](/pt-br/tooling/drawio/#perfis-de-exportação).
+:::
+
+### Gerar Mermaid, Dot, D2 e PlantUml
+
+Por geração de código:
+
+```sh
+likec4 gen mmd
+likec4 gen mermaid
+likec4 gen dot
+likec4 gen d2
+likec4 gen plantuml
+```
+
+Junto à [exportação para DrawIO](#exportar-para-drawio), isso permite que equipes reutilizem diagramas em Mermaid, Dot, D2, PlantUML ou DrawIO.
+
+<LinkCard
+  title="Gerar componentes"
+  description="Saiba como gerar componentes React e Web Components"
+  href="/tooling/code-generation/react/"
+/>
+
+<LinkCard
+  title="Geradores personalizados"
+  description="Saiba como definir e utilizar geradores personalizados"
+  href="/tooling/code-generation/custom/"
+/>
+
+### Validar
+
+```sh
+likec4 validate
+```
+
+Este comando verifica:
+- Erros de sintaxe
+- Divergências de layout (layout manual desatualizado)
+
+Se houver erros, o comando termina com um código de saída diferente de zero.
+
+### Formatar
+
+Formate arquivos-fonte `.c4` diretamente:
+
+```sh
+# Format all files in current workspace
+likec4 format
+# Alias
+likec4 fmt
+
+# Format a specific workspace directory
+likec4 format ./my-project
+
+# Format only specific project(s) in a multi-project workspace
+likec4 format --project alpha --project beta
+
+# Format specific files
+likec4 format --files src/model.c4 --files src/views.c4
+
+# Check mode (CI-friendly, exits with code 1 if any file needs formatting)
+likec4 format --check
+```
+
+| Opção               | Descrição                                                     |
+| ------------------- | --------------------------------------------------------------- |
+| `path`              | Caminho do workspace (padrão: diretório atual; usa `LIKEC4_WORKSPACE` como alternativa) |
+| `--project, -p`     | Formata apenas os projetos indicados pelo nome (repetível)            |
+| `--files`           | Formata apenas os arquivos indicados (repetível)                         |
+| `--check`           | Verifica a formatação sem alterar arquivos            |
+
+### Servidor de linguagem (LSP)
+
+Inicie o servidor de linguagem LikeC4 para utilizá-lo em editores compatíveis com o Language Server Protocol:
+
+```sh
+likec4 lsp --stdio
+likec4 lsp --node-ipc
+likec4 lsp --socket 3000
+likec4 lsp --pipe /tmp/likec4.pipe
+```
+
+É necessário informar uma das opções de transporte (`--stdio`, `--node-ipc`, `--socket`, `--pipe`).
+
+| Opção                        | Descrição                                                                                                     |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--stdio`                    | Utiliza transporte stdio                                                                                             |
+| `--node-ipc`                 | Utiliza transporte node-ipc                                                                                          |
+| `--socket <port>`            | Utiliza transporte socket na porta indicada                                                                          |
+| `--pipe <name>`              | Utiliza transporte pipe com o nome indicado                                                                     |
+| `--watch, -w`                | Habilita o monitoramento integrado (desabilitado por padrão)                                                                   |
+| `--no-manual-layouts`        | Desativa layouts manuais (habilitados por padrão)                                                                     |
+| `--use-dot`, `--use-dot-bin` | Utiliza Graphviz (`dot`) local para layout em vez do WASM incluído; padrão `false`, ou `true` em contêineres |
