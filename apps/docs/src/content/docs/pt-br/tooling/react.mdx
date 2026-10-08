@@ -1,0 +1,535 @@
+---
+title: Componentes React
+description: Como utilizar a biblioteca React do LikeC4
+head:
+  - tag: title
+    content: React components | LikeC4
+sidebar:
+  label: LikeC4 React
+  order: 4
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6    
+---
+
+import { Tabs, TabItem as Tab, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/%40likec4%2Fdiagram" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+</p>
+
+A biblioteca React do LikeC4 permite incorporar diagramas às suas aplicações.  
+Embora você possa utilizá-la diretamente, considere o [plugin para Vite](/pt-br/tooling/vite-plugin/)
+ou a [geração de código pela CLI](/tooling/code-generation/react/) para simplificar a experiência de desenvolvimento.
+
+<AdvancedCustomizationTip />
+
+## Como usar
+
+É necessário ter `react` e `react-dom` instalados.  
+Adicione [`@likec4/core`](https://www.npmjs.com/package/%40likec4%2Fcore) e [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram):
+
+<PackageManagers
+    pkg="@likec4/core @likec4/diagram"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+## Atalhos de teclado
+
+Diagramas em foco oferecem atalhos de teclado para zoom. Clique em um diagrama ou acesse-o pela tecla Tab; enquanto ele estiver em foco,
+esses atalhos controlam o zoom do diagrama, e não o zoom da página do navegador. Retire o foco do diagrama com Tab para utilizar o zoom do navegador.
+
+| Atalho | Ação |
+| --- | --- |
+| `Ctrl`/`Cmd` + `+` or `=` | Ampliar |
+| `Ctrl`/`Cmd` + `-` or `_` | Reduzir |
+| `Ctrl`/`Cmd` + `0` | Redefinir a área de visualização |
+
+A biblioteca React do LikeC4 pode ser utilizada de duas formas.
+
+
+### Pacote completo
+
+Esta é a maneira mais simples de utilizar a biblioteca.  
+O diagrama é renderizado no Shadow DOM, com todas as dependências incluídas e estilos gerenciados automaticamente.
+
+#### LikeC4ModelProvider
+
+A renderização do diagrama exige uma instância de `LikeC4Model.Layouted`.
+Prepare o modelo e envolva o diagrama com o componente `LikeC4ModelProvider`.  
+A seguir, algumas maneiras de preparar o modelo:
+- Utilizando geração de código pela CLI
+- Utilizando arquivos-fonte
+- Utilizando o Model Builder
+
+<br />
+
+
+<Tabs>
+  <Tab label='CLI Codegen'>
+    Prepare o modelo com a [geração de código](/tooling/code-generation/model/):
+
+    ```sh
+    likec4 codegen model --outfile ./likec4-model.ts
+    ```
+
+    Em seguida:
+
+    ```tsx copy
+    import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
+    // import model from generated file
+    import { likec4model } from './likec4-model.ts'
+
+    function App() {
+      return (
+        <LikeC4ModelProvider model={likec4model}>
+          {/* ... */}
+        </LikeC4ModelProvider>
+      )
+    }
+    ```
+  </Tab>
+
+  <Tab label='From Sources'>
+  Também é possível preparar o modelo a partir de uma string. Consulte [Utilização da API](/pt-br/tooling/model-api/#como-usar):  
+  ```tsx copy
+  import { LikeC4 } from 'likec4'
+  import { LikeC4ModelProvider } from 'likec4/react'
+  
+  const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+  const likec4model = await likec4.layoutedModel()
+
+  function App() {
+    return (
+      <LikeC4ModelProvider model={likec4model}>
+        {/* ... */}
+      </LikeC4ModelProvider>
+    )
+  }
+  ```
+  </Tab>
+
+  <Tab label='Model Builder'>   
+  Você pode preparar o modelo com o [Builder](/pt-br/tooling/model-api/#model-builder) e depois calcular o layout com `layoutLikeC4Model`:
+  
+  ```tsx copy collapse={7-52}
+  import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
+  import { Builder } from "@likec4/core/builder"
+  import { layoutLikeC4Model } from "@likec4/layouts"
+
+  const computedModel = Builder
+    .specification({
+      elements: {
+        actor: {
+          style: {
+            shape: 'person',
+          },
+        },
+        system: {},
+        component: {},
+      },
+      relationships: {
+        likes: {},
+      },
+      tags: ['tag1', 'tag2', 'tag1'],
+    })
+    .model(({ actor, system, component, relTo, rel }, _) =>
+      _(
+        actor('alice'),
+        actor('bob'),
+        rel('alice', 'bob', {
+          tags: ['tag1'], // you get code completion for tags
+          kind: 'likes',  // code completion for kind
+        }),
+        system('cloud', { tags: ['tag1', 'tag2'] }).with(
+          component('backend').with(
+            component('api'),
+            component('db'),
+            // code completion for relationships
+            rel('cloud.backend.api', 'cloud.backend.db')
+          ),
+          component('frontend').with(
+            relTo('cloud.backend.api')
+          ),
+        ),
+      )
+    )    
+    .views(({ view, viewOf, $include, $style }, _) =>
+      _(
+        view('index', 'Index').with(
+          $include('cloud.*'),
+        ),
+        viewOf('ui', 'cloud.ui').with(
+          $include('* -> cloud.**'),
+          $style('cloud.ui', { color: 'red' }),
+        ),
+      )
+    )
+    .toLikeC4Model()
+
+  // The Builder returns a computed model. To render it, you need to lay it out
+  const likec4model = await layoutLikeC4Model(computedModel)
+
+  function App() {
+    return (
+      <LikeC4ModelProvider model={likec4model}>
+        {/* ... */}
+      </LikeC4ModelProvider>
+    )
+  }      
+  ```
+  </Tab>
+
+  
+</Tabs>
+
+:::tip
+Se `likec4` estiver nas dependências, você poderá utilizar:
+- `likec4/react` em vez de `@likec4/diagram/bundle`
+- `likec4/model` em vez de `@likec4/core/model` and `@likec4/core/types`
+- `likec4/model/builder` em vez de `@likec4/core/builder`
+- `likec4/icons/all` em vez de `@likec4/icons/all`
+:::
+
+
+#### LikeC4View
+
+```tsx
+import { LikeC4View, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+
+function App() {
+  return (
+    <LikeC4ModelProvider model={likec4model}>      
+      <LikeC4View
+        viewId="index1"
+        onNodeClick={(nodeId) => console.log(nodeId)}
+      />
+      {/* Possible to have multiple views */}
+      <LikeC4View viewId="index2" />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+Consulte [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts) para conhecer as propriedades disponíveis.
+
+#### ReactLikeC4
+
+`LikeC4View` renderiza visões do modelo e permite explorá-las em uma janela de navegação.
+Esse componente atende à maioria dos cenários. Caso precise de mais funcionalidades, utilize `ReactLikeC4`:
+
+```tsx
+import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+
+function App() {
+  const [viewId, setViewId] = useState('index')
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <ReactLikeC4
+        viewId={viewId}
+        pannable
+        zoomable={false}
+        keepAspectRatio
+        showNavigationButtons
+        enableDynamicViewWalkthrough={false}
+        enableElementDetails
+        enableRelationshipDetails
+        showDiagramTitle={false}
+        onNavigateTo={setViewId}
+        onNodeClick={...}
+      />
+    </LikeC4ModelProvider>
+  )
+}
+```
+#### Hooks
+
+Hooks disponíveis dentro de `LikeC4View` ou `ReactLikeC4`:
+
+```tsx
+import {
+  useLikeC4Model,
+  useLikeC4Specification,
+  useLikeC4ViewModel,
+  useEnabledFeatures,
+  useCurrentViewId,
+
+  // XYFlow hooks
+  useXYFlow,
+  useXYStore,
+  useXYStoreApi,
+
+  // Diagram API
+  useDiagram,
+
+  // Select from state
+  useDiagramContext
+} from '@likec4/diagram/bundle'
+```
+
+#### Icons
+
+Se você utilizar os ícones integrados, instale [`@likec4/icons`](https://www.npmjs.com/package/%40likec4%2Ficons) (ou utilize `likec4/icons`):
+
+```tsx
+import type { ElementIconRenderer } from '@likec4/diagram/bundle'
+import { LikeC4ModelProvider, LikeC4View, ReactLikeC4 } from '@likec4/diagram/bundle'
+import { lazy, Suspense } from 'react'
+
+// Better to lazy load icons, bundle is quite large at the moment
+const Icon = lazy(async () => {
+  const { IconRenderer } = await import('@likec4/icons/all')
+  return { default: IconRenderer }
+})
+
+const IconRenderer: ElementIconRenderer = (props) => (
+  <Suspense>
+    <Icon {...props} />
+  </Suspense>
+)
+
+function App() {
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <LikeC4View
+        viewId="index1"
+        renderIcon={IconRenderer}
+      />
+      {/* Same for ReactLikeC4 */}
+      <ReactLikeC4
+        viewId="index2"
+        renderIcon={IconRenderer}
+      />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+### Biblioteca
+
+Se quiser utilizar o pacote como biblioteca com seu bundler, será necessário gerenciar o CSS.
+
+A biblioteca utiliza [Mantine](https://mantine.dev). Se sua aplicação já utilizar `MantineProvider`, o diagrama LikeC4 aproveitará esse provedor.
+Caso contrário, o diagrama será envolvido automaticamente por `MantineProvider`.  
+Mesmo que sua aplicação não utilize Mantine diretamente, os estilos da biblioteca são necessários para os diagramas (e o Mantine permite eliminar código não utilizado via tree-shaking).
+
+Confira as opções:
+
+#### Com estilos incluídos
+
+1. Importe todos os estilos
+
+   ```css
+   @import '@likec4/diagram/styles.css'
+   ```
+
+   Isso inclui todos os estilos, inclusive os do [Mantine](https://mantine.dev).
+
+2. Se você já utiliza Mantine
+
+   ```css
+   @layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+   @import "@mantine/core/styles.layer.css";
+   @import "@likec4/diagram/styles-min.css";
+   ```
+
+   :::caution
+   A ordem das camadas é importante: a camada `mantine` deve vir antes de `xyflow`, e `xyflow` antes de `tokens`.
+   :::
+
+3. Fonte.\
+   Por padrão, `LikeC4Diagram` utiliza a fonte [`IBM Plex Sans Variable`](https://fontsource.org/fonts/ibm-plex-sans).\
+   Você pode incluí-la no bundle, importá-la pelo [fontsource](https://fontsource.org/fonts/ibm-plex-sans), utilizar outra CDN ou usar:
+
+   ```css
+   @import '@likec4/diagram/styles-font.css'
+   ```
+
+    Você pode substituir a fonte, conforme explicado adiante.
+
+   
+#### Com PandaCSS
+
+Consulte a [documentação do PandaCSS](https://panda-css.com) para obter as instruções completas de configuração.  
+O LikeC4 disponibiliza um preset.
+
+<PackageManagers
+    pkg="@likec4/styles"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+Configure seu `panda.config.ts`:
+
+```ts
+import likec4preset from '@likec4/styles/preset'
+import { defineConfig } from '@pandacss/dev'
+
+export default defineConfig({
+  include: [
+    'src/**/*.{ts,tsx}',
+    // Include likec4 diagram source code to get the styles
+    './node_modules/@likec4/diagram/panda.buildinfo.json',
+  ],
+  importMap: [
+    '@likec4/styles',
+  ],
+  presets: [
+    likec4preset,
+  ],
+  theme: {
+    extend: {
+      // Here you can override/extend the theme
+    },
+  },
+})
+```
+
+Seu CSS global deverá ter esta estrutura:
+
+```css
+@layer reset, base, mantine, xyflow, tokens, recipes, utilities;
+@import "@mantine/core/styles.layer.css";
+@import "@likec4/diagram/styles-xyflow.css";
+@import "@likec4/diagram/styles-font.css";
+```
+
+#### Como usar
+
+O uso é semelhante ao de [ReactLikeC4](#reactlikec4), mas a importação deve ser feita de `@likec4/diagram`.
+É necessário fornecer uma instância de `DiagramView`:
+
+```tsx
+import { LikeC4Diagram, LikeC4ModelProvider, useLikeC4ViewModel } from '@likec4/diagram'
+
+function LikeC4View({viewId}: {viewId: string}) {
+  const view = useLikeC4ViewModel(viewId)
+  if (!view) {
+    return <>View not found</>
+  }
+  return (
+    <LikeC4Diagram
+      view={view.$view} 
+      readOnly
+      pannable
+      zoomable={false}
+      keepAspectRatio
+      showNavigationButtons
+      enableDynamicViewWalkthrough={false}
+      enableElementDetails
+      enableRelationshipDetails
+      showDiagramTitle={false}
+    />
+  )
+}
+
+function App() {
+  return (
+    <LikeC4ModelProvider model={likec4model}>
+      <LikeC4View viewId="index" />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+## Personalização
+
+É possível renderizar qualquer componente dentro de `LikeC4Diagram`\
+(ou de `LikeC4View`/`ReactLikeC4`, caso utilize o pacote completo):
+
+```tsx
+import { LikeC4Diagram, LikeC4ModelProvider } from '@likec4/diagram'
+import { Panel, ViewportPortal } from '@xyflow/react'
+
+function App() {
+  return (
+    <LikeC4Diagram>
+      <YourComponent />
+
+      {/* You can use components from xyflow  */}
+      <Panel position="top">
+        <p>Your component as a panel</p>
+        <a href="https://reactflow.dev/examples">Check examples</a>
+      </Panel>
+
+      <ViewportPortal>
+        <div
+          style={{
+            transform: 'translate(100px, 100px)',
+            position: 'absolute',
+          }}>
+          This div is positioned at [100, 100] on the diagram canvas
+        </div>
+      </ViewportPortal>
+    </LikeC4Diagram>
+  )
+}
+```
+
+### Renderizadores personalizados de nós
+
+`LikeC4Diagram` permite utilizar renderizadores personalizados para os nós.\
+Crie renderizadores personalizados usando os componentes básicos de `@likec4/diagram/custom`\
+(ou `@likec4/diagram/bundle/custom` na versão com dependências incluídas).\
+Consulte [customNodes.tsx](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.tsx) para ver exemplos.
+
+```tsx
+import { LikeC4Diagram } from '@likec4/diagram'
+import {
+  ElementActions,
+  ElementDetailsButtonWithHandler,
+  elementNode,
+  ElementNodeContainer,
+  ElementShape,
+  ElementTitle,
+  ElementToolbar,
+  IfNotReadOnly,
+} from '@likec4/diagram/custom'
+import { IconPlus } from '@tabler/icons-react'
+
+const customNodes = {
+  element: elementNode(({ nodeProps, nodeModel }) => (
+    <ElementNodeContainer nodeProps={nodeProps}>
+      <ElementShape {...nodeProps} />
+      <ElementTitle {...nodeProps} />
+      {/* Add extra buttons */}
+      <ElementActions
+        {...nodeProps}
+        extraButtons={[
+          {
+            key: 'plus',
+            icon: <IconPlus />,
+            onClick: () => console.log('extra'),
+          },
+        ]}
+      />
+      {/* Add extra info */}
+      <div style={{ position: 'absolute', bottom: 0 }}>
+        {nodeModel.element.getMetadata('your-attr')}
+      </div>
+    </ElementNodeContainer>
+  )),
+}
+
+function App() {
+  return (
+    <LikeC4Diagram
+      view={view}
+      renderNodes={customNodes}
+    />
+  )
+}
+```
+
+Você também pode utilizar [hooks](/pt-br/tooling/react/#hooks) para acessar o modelo e a API do diagrama.
+
+### Estilos personalizados
+
+`LikeC4Diagram` utiliza [PandaCSS](https://panda-css.com) para aplicar estilos, que podem ser personalizados.
+
+TODO: adicionar exemplo
