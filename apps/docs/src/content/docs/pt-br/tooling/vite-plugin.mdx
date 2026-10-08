@@ -1,0 +1,472 @@
+---
+title: Plugin LikeC4 para Vite
+description: Aprenda a utilizar o plugin LikeC4 para Vite e incorporar suas visões diretamente.
+head:
+  - tag: title
+    content: LikeC4 Vite Plugin
+sidebar:
+  label: Plugin LikeC4 para Vite
+  order: 4
+---
+import { Aside, LinkCard, Steps } from '@astrojs/starlight/components'
+import { PackageManagers } from 'starlight-package-managers'
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
+</p>
+
+O plugin LikeC4 para Vite permite incorporar visões diretamente, sem etapas prévias de build ou geração.  
+O plugin gera automaticamente o código necessário para renderizar visões na aplicação, com suporte a Hot Module Replacement (HMR).
+
+Isso é útil na criação de documentação, tutoriais ou outras aplicações que precisem exibir diagramas.  
+
+## Guia
+
+<br />
+
+<Steps>
+
+1. ### Criar um projeto Vite
+
+    Para começar, crie um projeto Vite com o template `react-ts`.
+
+    <PackageManagers
+       type="create"
+       pkg="vite@latest"
+       args="--template react-ts"
+       comment="create a new project with {PKG}"
+       pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+       frame="none"
+      />
+    <br />      
+    <br />      
+
+2. ### Instalar o LikeC4
+
+    Adicione a dependência `likec4`:
+    
+    <PackageManagers
+       pkg="likec4"
+       dev
+       pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+       frame="none"
+      />
+    <br />
+    <br />
+
+3. ### Configurar o Vite
+  
+    Adicione o plugin LikeC4 à configuração do Vite:
+
+    ```diff lang="ts"
+    // vite.config.ts
+    import { defineConfig } from 'vite'
+    import react from '@vitejs/plugin-react'
+    + import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+    export default defineConfig({
+      plugins: [
+        react(),
+    +     LikeC4VitePlugin(),
+      ],
+    })
+    ```
+    <br />
+    <br />
+
+4. ### Adicionar referências de tipos
+
+    Adicione as referências de tipos ao arquivo `vite-env.d.ts`  
+    (ou crie um arquivo, como `src/likec4.d.ts`)
+
+    ```diff lang="ts" {3}
+    // src/vite-env.d.ts
+    /// <reference types="vite/client" />
+    /// <reference types="likec4/vite-plugin-modules" />
+    ```
+
+    Outra opção é adicionar a referência ao `tsconfig.json`:
+
+    ```json
+    // tsconfig.json
+    {
+      "compilerOptions": {
+        "types": [
+          "likec4/vite-plugin-modules"
+        ]
+      }
+    }
+    ```
+    <br />
+    <br />
+
+5. ### Adicionar um modelo LikeC4
+
+    Crie `src/tutorial.c4` e copie o modelo a seguir, retirado do tutorial:
+
+    ```likec4 showLineNumbers copy collapse={14-57}
+    //src/tutorial.c4
+    // Tutorial - https://likec4.dev/tutorial/
+
+    specification {
+      element actor
+      element system
+      element component
+    }
+
+    model {
+      customer = actor 'Customer' {
+        description 'The regular customer of the system'
+      }
+
+      saas = system 'Our SaaS' {
+        component ui 'Frontend' {
+          description 'Nextjs application, hosted on Vercel'
+          style {
+            icon tech:nextjs
+            shape browser
+          }
+        }
+        component backend 'Backend Services' {
+          description '
+            Implements business logic
+            and exposes as REST API
+          '
+        }
+
+        // UI requests data from the Backend
+        ui -> backend 'fetches via HTTPS'
+      }
+
+      // Customer uses the UI
+      customer -> ui 'opens in browser'
+      customer -> saas 'enjoys our product'
+    }
+
+    views {
+
+      view index {
+        title 'Landscape view'
+
+        include *
+      }
+
+      view saas of saas {
+        include *
+
+        style * {
+          opacity 25%
+        }
+        style customer {
+          color muted
+        }
+      }
+
+    }
+    ```
+    <br />
+    <br />
+
+6. ### Utilizar uma visão LikeC4 na aplicação
+
+    Altere `src/main.tsx` e importe a visão LikeC4 do módulo `likec4:react`:
+
+    ```tsx
+    // src/main.tsx
+    import { createRoot } from 'react-dom/client'
+    import { LikeC4View } from 'likec4:react'
+
+    createRoot(document.getElementById('root')!).render(
+      <LikeC4View viewId='index' />
+    )
+    ```
+    <br />
+    <br />
+
+7. ### Iniciar o servidor de desenvolvimento Vite
+
+    <PackageManagers
+       type="run"
+       args="dev"
+       pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+       frame="none"
+      />
+
+    Abra o navegador e acesse `http://localhost:5173/`.  
+    O diagrama LikeC4 deverá aparecer renderizado na aplicação.
+
+</Steps>
+
+<AdvancedCustomizationTip />
+
+## Plugin
+
+### Opções
+
+| Opção          | Descrição                                                                                         |
+| -----------------| --------------------------------------------------------------------------------------------------- |
+| `workspace`      | diretório dos arquivos-fonte (padrão: raiz do Vite) |
+| `printErrors`    | se o modelo for inválido, os erros serão registrados no logger (padrão `true`) |
+| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | rejeita a Promise se o modelo for inválido (padrão `false`) |
+| `graphviz`       | `wasm` (padrão) ou `binary`: utiliza os executáveis locais Graphviz ("dot") ou o WASM incluído    |
+
+### Workspaces com múltiplos projetos
+
+Se você tiver [múltiplos projetos](/pt-br/dsl/config/multi-projects/) no workspace:
+
+```tsx "project-a" "project-b"
+// src/main.tsx
+
+// where `project-a` and `project-b` are the names of your projects
+import { LikeC4View as ProjectA_LikeC4View } from 'likec4:react/project-a'
+import { LikeC4View as ProjectB_LikeC4View } from 'likec4:react/project-b'
+
+const example = () => (
+  <>
+    <ProjectA_LikeC4View viewId='index' />
+    <ProjectB_LikeC4View viewId='index' />
+  </>
+)
+```
+<br />
+
+### Web Components
+
+Utilize o módulo virtual `likec4:webcomponents/*`, específico do projeto, para renderizar uma visão LikeC4 em HTML sem adicionar
+componentes React ao código da aplicação:
+
+```ts
+import { defineWebcomponent } from 'likec4:webcomponents/project-a'
+
+defineWebcomponent('likec4-view-project-a')
+```
+
+O elemento personalizado oferece os mesmos atributos dos web components gerados pelo LikeC4:
+
+```html
+<likec4-view-project-a
+  view-id="index"
+  browser="true"
+  dynamic-variant="sequence"
+  color-scheme="dark">
+</likec4-view-project-a>
+```
+
+O ID do projeto na importação deve corresponder a um projeto do workspace LikeC4. O nome do elemento personalizado deve seguir as
+[regras de nomenclatura de elementos personalizados](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names),
+incluindo pelo menos um hífen.
+
+### Utilização com a API
+
+Também é possível inicializar usando a [API do LikeC4](/pt-br/tooling/model-api/):
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { LikeC4 } from 'likec4'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+const { languageServices } = await LikeC4.fromSource(`
+  specification {
+    element system
+    element user
+  }
+  model {
+    customer = user 'Customer'
+    cloud = system 'System'
+  }
+  views {
+    view index {
+      include *
+    }
+  }
+`)
+
+export default defineConfig({
+  plugins: [
+    react(),
+    LikeC4VitePlugin({
+      languageServices,
+    }),
+  ],
+})
+```
+<br />
+
+### Módulos virtuais
+
+Outros módulos permitem acessar o modelo:
+
+```tsx
+// For multi-project workspaces
+import { projects } from 'likec4:projects'
+
+// Pick first one (default)
+import { useLikeC4Views, useLikeC4View } from 'likec4:single-project'
+
+// Project by name
+import { useLikeC4Views, useLikeC4View } from 'likec4:model/project-a'
+
+// Other modules
+import { loadDotSources } from 'likec4:dot'
+import { mmdSource } from 'likec4:mmd/project-a'
+```
+
+Lista completa: <a href="https://github.com/likec4/likec4/blob/main/packages/vite-plugin/src/modules.d.ts">vite-plugin/modules.d.ts</a>
+
+
+## Utilização 
+
+Veja exemplos de utilização do plugin com diferentes frameworks.
+
+### Com Astro
+
+Você também pode utilizar `LikeC4VitePlugin` com <a href="https://astro.build/" target='_blank'>Astro</a> e a ferramenta de documentação <a href="https://starlight.astro.build/" target='_blank'>Starlight</a>.  
+Configure o Astro:
+
+```js
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'Your architecture docs site',
+    }),
+  ],
+  vite: {
+    plugins: [
+      LikeC4VitePlugin({}),
+    ],
+  },  
+});
+```
+
+Para utilizar componentes React, primeiro envolva-os em componentes Astro:
+
+```astro
+// src/components/LikeC4View.astro
+---
+import { LikeC4View as ReactLikeC4View, type LikeC4ViewId } from 'likec4:react';
+interface Props {
+  viewId: LikeC4ViewId;
+}
+const { viewId } = Astro.props
+---
+
+<ReactLikeC4View
+  viewId={viewId}
+  {/* Configure view */}
+  controls={false}
+  browser={{
+    // options for likec4 browser
+    enableFocusMode: false,
+    enableSearch: false,
+  }}
+  client:only="react">
+</ReactLikeC4View>
+```
+
+Depois, você poderá utilizá-los no Markdown:
+
+```mdx
+// src/content/docs/example.mdx
+---
+title: Welcome to my docs
+---
+
+import LikeC4View from '../../components/LikeC4View.astro';
+
+## Introduction
+
+This is an example of using LikeC4 in your documentation
+
+<LikeC4View viewId="index" />
+
+```
+<br />
+
+:::tip
+Consulte o código-fonte para ver como os <a href="https://github.com/likec4/likec4/tree/main/apps/docs/src/components" target='_blank'>múltiplos projetos</a> LikeC4 são incorporados a este site.
+:::
+
+:::caution
+Não se esqueça de adicionar as referências de tipos, conforme descrito [aqui](/pt-br/tooling/vite-plugin/#adicionar-referencias-de-tipos).  
+No Astro, elas ficam no arquivo `src/env.d.ts`.
+:::
+
+### Com Next.js
+
+Como o Next.js não utiliza Vite, é necessário recorrer ao [modo biblioteca](https://vite.dev/guide/build.html#library-mode):  
+O Vite gerará uma biblioteca empacotada com diagramas LikeC4, que poderá ser importada na aplicação Next.js.  
+
+Exporte tudo de `likec4:react`:
+
+```tsx
+// src/likec4/index.tsx
+export * from 'likec4:react'
+```
+<br />
+
+Configure o Vite:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+
+export default defineConfig({
+  build: {
+    // Build views to 'lib' directory
+    outDir: 'lib',
+    lib: {
+      entry: 'src/likec4/index.tsx',
+    },
+    rollupOptions: {
+      // make sure to externalize deps that shouldn't be bundled
+      // to avoid code duplication
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/client',
+      ],
+    },
+  },  
+  plugins: [
+    react(),
+    LikeC4VitePlugin(),
+  ],
+})
+```
+
+Execute `vite build` e importe os arquivos gerados na aplicação Next.js:
+
+```tsx
+// pages/index.tsx
+import { LikeC4View } from '../lib'
+
+export default function Home() {
+  return (
+    <LikeC4View viewId="index" />
+  )
+}
+```
+
+Você pode executar `vite build --watch` para monitorar alterações nos arquivos-fonte LikeC4 e atualizar a compilação.
+
+<br />
+<br />
+
+:::tip
+Você também pode utilizar o LikeC4 com outros frameworks:
+- Pela [geração de código React](/tooling/code-generation/react/)   
+- Para ferramentas de documentação não baseadas em React, como Docusaurus, consulte [Web Components](/tooling/code-generation/webcomponent/)
+:::
