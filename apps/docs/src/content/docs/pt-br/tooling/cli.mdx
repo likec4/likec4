@@ -216,7 +216,7 @@ likec4 export drawio --profile leanix -o ./diagrams
 | Opção                        | Descrição                                                                                                                      |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `path`                       | Caminho do projeto (padrão: diretório atual)                                                                                     |
-| `--outdir, -o`               | Diretório de saída for `.drawio` files (default: current directory or `path`)                                                      |
+| `--outdir, -o`               | Diretório de saída dos arquivos `.drawio` (padrão: diretório atual ou `path`)                                                      |
 | `--all-in-one`               | Gera um único arquivo `.drawio` com todas as visões em abas                                                                                  |
 | `--roundtrip`                | Aplica o layout, cores/larguras de traços e pontos intermediários das arestas a partir de comentários de intercâmbio bidirecional DrawIO nos arquivos `.c4` (por exemplo, após importação) |
 | `--uncompressed`             | Grava o XML do diagrama sem compactação (arquivo maior; útil se Draw.io não abrir a exportação compactada)                         |
@@ -316,5 +316,5 @@ likec4 lsp --pipe /tmp/likec4.pipe
 | `--socket <port>`            | Utiliza transporte socket na porta indicada                                                                          |
 | `--pipe <name>`              | Utiliza transporte pipe com o nome indicado                                                                     |
 | `--watch, -w`                | Habilita o monitoramento integrado (desabilitado por padrão)                                                                   |
-| `--no-manual-layouts`        | Disable manual layouts (enabled by default)                                                                     |
+| `--no-manual-layouts`        | Desativa layouts manuais (habilitados por padrão)                                                                     |
 | `--use-dot`, `--use-dot-bin` | Utiliza Graphviz (`dot`) local para layout em vez do WASM incluído; padrão `false`, ou `true` em contêineres |
