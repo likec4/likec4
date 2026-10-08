@@ -47,6 +47,7 @@ export const ElementShapes = [
   'bucket',
   'document',
   'component',
+  'agent',
 ] as const
 
 export type ElementShape = typeof ElementShapes[number]

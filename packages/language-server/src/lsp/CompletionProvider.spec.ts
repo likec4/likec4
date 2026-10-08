@@ -94,6 +94,7 @@ describe('LikeC4CompletionProvider', () => {
         'queue',
         'bucket',
         'document',
+        'agent',
       ],
     })
     await completion({

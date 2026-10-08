@@ -107,6 +107,66 @@ function queueSVGPath(width: number, height: number, tilt = 0.185) {
   }
 }
 
+const agentGeometry = (h: number) => ({
+  earW: 14,
+  earH: Math.min(Math.round(h * 0.38), 150),
+  stemW: 6,
+  stemH: 22,
+  ballR: 9,
+} as const)
+
+/**
+ * Silhouette of the agent (body, ears and antenna), grown by `pad` on every side
+ */
+function agentSVGPath(w: number, h: number, pad = 0) {
+  const { earW, stemW, stemH, ballR, earH } = agentGeometry(h)
+  const r = 6 + pad
+  const er = 3 + pad
+  const cx = w / 2
+  const sw = stemW / 2 + pad
+  const R = ballR + pad
+  const jy = roundDpr(-stemH + Math.sqrt(R * R - sw * sw))
+  const left = -pad
+  const right = w + pad
+  const top = -pad
+  const bottom = h + pad
+  const earTop = (h - earH) / 2 - pad
+  const earBottom = (h + earH) / 2 + pad
+  const earLeft = -(earW - 2) - pad
+  const earRight = w + (earW - 2) + pad
+
+  return `
+    M ${left + r},${top}
+    H ${cx - sw}
+    V ${jy}
+    A ${R} ${R} 0 1 1 ${cx + sw} ${jy}
+    V ${top}
+    H ${right - r}
+    A ${r} ${r} 0 0 1 ${right} ${top + r}
+    V ${earTop}
+    H ${earRight - er}
+    A ${er} ${er} 0 0 1 ${earRight} ${earTop + er}
+    V ${earBottom - er}
+    A ${er} ${er} 0 0 1 ${earRight - er} ${earBottom}
+    H ${right}
+    V ${bottom - r}
+    A ${r} ${r} 0 0 1 ${right - r} ${bottom}
+    H ${left + r}
+    A ${r} ${r} 0 0 1 ${left} ${bottom - r}
+    V ${earBottom}
+    H ${earLeft + er}
+    A ${er} ${er} 0 0 1 ${earLeft} ${earBottom - er}
+    V ${earTop + er}
+    A ${er} ${er} 0 0 1 ${earLeft + er} ${earTop}
+    H ${left}
+    V ${top + r}
+    A ${r} ${r} 0 0 1 ${left + r} ${top}
+    Z
+  `
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 const PersonIcon = {
   width: 115,
   height: 120,
@@ -164,8 +224,13 @@ type ShapeSvgProps = {
   size?: ShapeSize | undefined
   w: number
   h: number
+  /**
+   * Rendering the copy behind the main shape (`multiple`),
+   * where protruding decorations are omitted
+   */
+  isStacked?: boolean | undefined
 }
-function ShapeSvg({ shape, w, h, size = 'md' }: ShapeSvgProps) {
+function ShapeSvg({ shape, w, h, size = 'md', isStacked = false }: ShapeSvgProps) {
   switch (shape) {
     case 'component': {
       return (
@@ -292,6 +357,28 @@ function ShapeSvg({ shape, w, h, size = 'md' }: ShapeSvgProps) {
         </>
       )
     }
+    case 'agent': {
+      const { earW, earH, stemW, stemH, ballR } = agentGeometry(h)
+      const earY = (h - earH) / 2
+      return (
+        <>
+          {/* ears and antenna are drawn first, so the body covers their overlap */}
+          {!isStacked && (
+            <g data-likec4-fill="mix-stroke" strokeWidth={0}>
+              <rect x={-earW + 2} y={earY} width={earW} height={earH} rx={3} />
+              <rect x={w - 2} y={earY} width={earW} height={earH} rx={3} />
+              <rect x={(w - stemW) / 2} y={-stemH} width={stemW} height={stemH + 2} />
+              <circle cx={w / 2} cy={-stemH} r={ballR} />
+            </g>
+          )}
+          <rect
+            width={w}
+            height={h}
+            rx={6}
+            strokeWidth={0} />
+        </>
+      )
+    }
     default: {
       return nonexhaustive(shape)
     }
@@ -324,6 +411,9 @@ function ShapeSvgOutline({ shape, w, h }: ShapeSvgProps) {
           <path d={docSVGPath(w + 6, h + 6).path} />
         </g>
       )
+      break
+    case 'agent':
+      svg = <path d={agentSVGPath(w, h, 3)} />
       break
     case 'storage':
     case 'cylinder': {
@@ -405,7 +495,7 @@ export function ElementShape(
     <>
       {isMultiple && (
         <svg aria-hidden className={className} data-likec4-shape-multiple="true" viewBox={`0 0 ${w} ${h}`}>
-          <ShapeSvg shape={data.shape} size={data.style?.size} w={w} h={h} />
+          <ShapeSvg shape={data.shape} size={data.style?.size} w={w} h={h} isStacked />
         </svg>
       )}
       <svg aria-hidden className={className} viewBox={`0 0 ${w} ${h}`}>

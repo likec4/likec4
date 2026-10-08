@@ -1148,7 +1148,8 @@ ElementShape returns string:
   'storage' |
   'queue' |
   'bucket' |
-  'document';
+  'document' |
+  'agent';
 
 Participant returns string:
   'source' | 'target';
