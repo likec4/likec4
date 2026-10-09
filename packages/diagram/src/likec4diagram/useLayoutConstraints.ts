@@ -17,7 +17,7 @@ import { useDiagram } from '../hooks/useDiagram'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
-import { leafNodeRects, nodeToRect } from '../utils/xyflow'
+import { leafNodeRects, nodeToRect, bezierControlPoints } from '../utils/xyflow'
 import type { Types } from './types'
 
 type InternalNode = RFInternalNode<Types.AnyNode>
