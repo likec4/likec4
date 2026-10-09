@@ -3,7 +3,8 @@ import type { NodeId } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
 import { isTruthy } from 'remeda'
-import { assertEvent, enqueueActions } from 'xstate'
+import { assertEvent } from 'xstate'
+import { enqueueActions, log } from 'xstate/actions'
 import { roundDpr } from '../../utils/roundDpr'
 import { parsePaddings } from '../../utils/xyflow'
 import { convertToXYFlow } from '../convert-to-xyflow'
@@ -166,9 +167,8 @@ export const navigating = machine.createStateConfig({
             collapsedSequenceFlows,
           } satisfies Partial<typeof context>
 
-          enqueue.assign(nextCtx)
-
           moveTowardsNextViewport(nextCtx.viewport)
+          enqueue.assign(nextCtx)
 
           if (wasFocused) {
             enqueue.raise({

@@ -178,6 +178,16 @@ export class DiagramApi<A extends Any = Unknown> {
     this.send({ type: 'unhighlight.all' })
   }
 
+  select(target?: { nodes?: NodeId[]; edges?: (EdgeId | t.StepPath)[] }): void {
+    const nodes = target?.nodes ?? []
+    const edges = target?.edges ?? []
+    if (nodes.length === 0 && edges.length === 0) {
+      this.send({ type: 'xyflow.resetSelection' })
+      return
+    }
+    this.send({ type: 'xyflow.select', nodes, edges })
+  }
+
   /**
    * Center viewport on a given node
    */

@@ -843,14 +843,14 @@ export const ensureNavigationPanelActor = () =>
   machine.enqueueActions(({ enqueue, check, system, context }) => {
     const enabled = check('enabled: NavigationPanel')
     const running = typedSystem(system).navigationActorRef
+    const viewFolder = context.view.title && getViewFolderPath(context.view.title) || ''
     if (enabled && !running) {
-      const viewFolder = context.view.title ? getViewFolderPath(context.view.title) : ''
       enqueue.spawnChild('navigationPanel', {
         id: 'navigationPanel',
         systemId: 'navigationPanel',
         input: {
           viewId: context.view.id,
-          viewFolder: viewFolder ?? '',
+          viewFolder,
         },
         syncSnapshot: true,
       })

@@ -2,6 +2,7 @@ import type { ProjectId } from '@likec4/core/types'
 import { Button, Container, Stack, Title } from '@mantine/core'
 import { createFileRoute, Link, notFound, Outlet, redirect } from '@tanstack/react-router'
 import { loadModel } from 'likec4:model'
+import { z } from 'zod'
 import { ErrorComponent } from '../../components/ErrorComponent'
 import { ViewOutlet } from '../../components/ViewOutlet'
 import { LikeC4IconRendererContext } from '../../context/LikeC4IconRendererContext'
@@ -9,14 +10,18 @@ import { LikeC4ModelContext } from '../../context/LikeC4ModelContext'
 
 export const Route = createFileRoute('/project/$projectId')({
   staleTime: Infinity,
-  beforeLoad: ({ params }) => {
-    return {
-      projectId: params.projectId as ProjectId,
-    }
-  },
-  loader: async ({ context }) => {
-    const projectId = context.projectId
-    const likec4model = await loadModel(projectId)
+  params: z.object({
+    projectId: z.string().transform((v) => v as ProjectId),
+  }),
+  beforeLoad: ({ params }) => ({
+    projectId: params.projectId,
+  }),
+  loader: async ({ params }) => {
+    const projectId = params.projectId
+    const likec4model = await loadModel(projectId).catch((error) => {
+      console.error(`Failed to load model for project ${projectId}`, error)
+      throw notFound()
+    })
     const data = likec4model.$likec4data.value
     if (!data) {
       throw notFound()
@@ -26,7 +31,7 @@ export const Route = createFileRoute('/project/$projectId')({
         to: '/project/$projectId/',
         search: true,
         params: {
-          projectId: data.projectId,
+          projectId: data.projectId as ProjectId,
         },
       })
     }
@@ -34,9 +39,6 @@ export const Route = createFileRoute('/project/$projectId')({
       $likec4model: likec4model.$likec4model,
       projectId,
     }
-  },
-  remountDeps({ params }) {
-    return [params.projectId]
   },
   component: RouteComponent,
   errorComponent: ErrorComponent,

@@ -8,7 +8,7 @@ import { useCurrentProject } from '../../hooks'
 
 export function SelectProject() {
   const projects = useLikeC4Projects()
-  const project = useCurrentProject()
+  const currentProject = useCurrentProject()
 
   if (projects.length < 2) return null
 
@@ -34,7 +34,7 @@ export function SelectProject() {
           maw="250"
           rightSection={<IconChevronDown opacity={0.5} size={14} />}
           visibleFrom="md">
-          {project.title ?? project.id}
+          {currentProject.title ?? currentProject.id}
         </Button>
       </MenuTarget>
 
@@ -50,13 +50,13 @@ export function SelectProject() {
           Overview
         </MenuItem>
         <MenuDivider />
-        <ScrollArea.Autosize mah={'calc(100cqh - 200px)'}>
+        <ScrollArea.Autosize mah={'calc(100cqh - 170px)'}>
           {projects.map(({ id, title, path }) => (
             <MenuItem
               key={id}
               renderRoot={(props) => (
                 <Link
-                  {...props}
+                  {...(props as {})}
                   to={'/project/$projectId/view/$viewId/'}
                   params={{
                     projectId: id,
@@ -66,7 +66,11 @@ export function SelectProject() {
               )}
               rightSection={!!path && <Txt fontSize={'xxs'} color={'text.non-essential'} truncate>{path}</Txt>}
             >
-              <Txt fontSize="sm" truncate maxWidth={'[300px]'}>
+              <Txt
+                fontSize="sm"
+                truncate
+                maxWidth={'[300px]'}
+                css={currentProject.id === id ? { color: 'text.bright', fontWeight: 'semibold' } : {}}>
                 {title ?? id}
               </Txt>
             </MenuItem>

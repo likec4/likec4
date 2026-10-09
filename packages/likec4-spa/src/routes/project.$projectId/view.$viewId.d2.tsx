@@ -3,6 +3,7 @@ import { loadD2Sources } from 'likec4:d2'
 import { ViewAsD2 } from '../../pages/ViewAsD2'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/d2')({
+  staleTime: Infinity,
   loader: async ({ context, params }) => {
     const projectId = context.projectId
     const { viewId } = params

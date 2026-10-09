@@ -237,6 +237,36 @@ export const ready = machine.createStateConfig({
         context.xystore?.getState().resetSelectedElements()
       },
     },
+    'xyflow.select': {
+      actions: assign(({ context, event }) => ({
+        xynodes: context.xynodes.map(node => {
+          let selected = false
+          if (event.nodes && event.nodes.length > 0) {
+            selected = event.nodes.includes(node.data.id)
+          }
+          if (selected !== (node.selected ?? false)) {
+            return {
+              ...node,
+              selected,
+            }
+          }
+          return node
+        }),
+        xyedges: context.xyedges.map(edge => {
+          let selected = false
+          if (event.edges && event.edges.length > 0) {
+            selected = event.edges.includes(edge.data.id)
+          }
+          if (selected !== (edge.selected ?? false)) {
+            return {
+              ...edge,
+              selected,
+            }
+          }
+          return edge
+        }),
+      })),
+    },
     'xyflow.paneDblClick': {
       actions: [
         resetLastClickedNode(),

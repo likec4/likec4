@@ -123,9 +123,15 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
  * For imported elements (`@project.a`, `@project.b`) this includes the `@project` segment.
  */
 function commonPrefix(first: string, second: string): string[] {
-  const a = first.split('.')
-  const b = second.split('.')
   const prefix = [] as string[]
+  const a = first.split('.')
+  if (a.length <= 1) {
+    return prefix
+  }
+  const b = second.split('.')
+  if (b.length <= 1) {
+    return prefix
+  }
   for (let i = 0; i < Math.min(a.length, b.length) - 1 && a[i] === b[i]; i++) {
     prefix.push(a[i]!)
   }

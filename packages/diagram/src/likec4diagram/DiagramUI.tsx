@@ -28,7 +28,7 @@ const selectChildren = selectDiagramSnapshot(s => ({
     }),
 }))
 
-export const LikeC4DiagramUI = memo(() => {
+export function LikeC4DiagramUI() {
   const {
     enableControls,
     enableNotations,
@@ -59,5 +59,4 @@ export const LikeC4DiagramUI = memo(() => {
       {enableCompareWithLatest && <LayoutDriftFrame />}
     </ErrorBoundary>
   )
-})
-LikeC4DiagramUI.displayName = 'DiagramUI'
+}
