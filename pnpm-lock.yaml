@@ -392,8 +392,8 @@ catalogs:
       specifier: 5.1.0
       version: 5.1.0
     p-limit:
-      specifier: 7.3.2
-      version: 7.3.2
+      specifier: 7.3.3
+      version: 7.3.3
     p-queue:
       specifier: 8.1.1
       version: 8.1.1
@@ -1477,7 +1477,7 @@ importers:
         version: 2.1.0
       p-limit:
         specifier: catalog:utils
-        version: 7.3.2
+        version: 7.3.3
       p-queue:
         specifier: catalog:utils
         version: 8.1.1
@@ -1710,7 +1710,7 @@ importers:
         version: 2.1.0
       p-limit:
         specifier: catalog:utils
-        version: 7.3.2
+        version: 7.3.3
       p-queue:
         specifier: catalog:utils
         version: 8.1.1
@@ -2007,7 +2007,7 @@ importers:
         version: 1.81.0(oxlint-tsgolint@0.25.0)
       p-limit:
         specifier: catalog:utils
-        version: 7.3.2
+        version: 7.3.3
       package-manager-detector:
         specifier: catalog:utils
         version: 1.8.0
@@ -2251,7 +2251,7 @@ importers:
         version: 1.81.0(oxlint-tsgolint@0.25.0)
       p-limit:
         specifier: catalog:utils
-        version: 7.3.2
+        version: 7.3.3
       postcss:
         specifier: catalog:css
         version: 8.5.28
@@ -9603,8 +9603,8 @@ packages:
     resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
     engines: {node: '>=18'}
 
-  p-limit@7.3.2:
-    resolution: {integrity: sha512-Ll0w3fU24vYpXoZmjjZIee6bJQDgG0oAyo1PdmFYI8UDwJJddaHAypxIH9avUu+t+lSsAwKVsb1jDCMIIChliw==}
+  p-limit@7.3.3:
+    resolution: {integrity: sha512-SKgVvDU5TNIxQ4r30U75BNLC6a+6GOEjngrk/ysM5+Zu3oJuk1SC5ApzIzY/7PjCEjoVPMWJ0zho/4QUiEB7TQ==}
     engines: {node: '>=20'}
 
   p-locate@5.0.0:
@@ -16071,7 +16071,7 @@ snapshots:
       mrmime: 2.0.1
       neotraverse: 1.0.1
       obug: 3.0.0
-      p-limit: 7.3.2
+      p-limit: 7.3.3
       p-queue: 9.3.0
       package-manager-detector: 1.8.0
       piccolore: 0.1.3
@@ -18994,7 +18994,7 @@ snapshots:
     dependencies:
       yocto-queue: 1.2.2
 
-  p-limit@7.3.2:
+  p-limit@7.3.3:
     dependencies:
       yocto-queue: 1.2.2
 
