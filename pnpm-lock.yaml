@@ -398,8 +398,8 @@ catalogs:
       specifier: 8.1.1
       version: 8.1.1
     p-timeout:
-      specifier: 7.0.1
-      version: 7.0.1
+      specifier: 7.0.2
+      version: 7.0.2
     package-manager-detector:
       specifier: 1.8.0
       version: 1.8.0
@@ -1483,7 +1483,7 @@ importers:
         version: 8.1.1
       p-timeout:
         specifier: catalog:utils
-        version: 7.0.1
+        version: 7.0.2
       pathe:
         specifier: catalog:utils
         version: 2.0.3
@@ -2850,7 +2850,7 @@ importers:
         version: 8.1.1
       p-timeout:
         specifier: catalog:utils
-        version: 7.0.1
+        version: 7.0.2
       pathe:
         specifier: catalog:utils
         version: 2.0.3
@@ -9625,8 +9625,8 @@ packages:
     resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
     engines: {node: '>=14.16'}
 
-  p-timeout@7.0.1:
-    resolution: {integrity: sha512-AxTM2wDGORHGEkPCt8yqxOTMgpfbEHqF51f/5fJCmwFC3C/zNcGT63SymH2ttOAaiIws2zVg4+izQCjrakcwHg==}
+  p-timeout@7.0.2:
+    resolution: {integrity: sha512-prbX4Z3YszrFNgH+MW5Zoeq3baXrMtP/MQnFeET90UB/GtGcGDQ5Usg9OCy6ETjTTntOw1SL2z9fMPUppN3Guw==}
     engines: {node: '>=20'}
 
   package-json-from-dist@1.0.1:
@@ -18994,7 +18994,7 @@ snapshots:
   p-queue@9.3.0:
     dependencies:
       eventemitter3: 5.0.4
-      p-timeout: 7.0.1
+      p-timeout: 7.0.2
 
   p-retry@4.6.2:
     dependencies:
@@ -19003,7 +19003,7 @@ snapshots:
 
   p-timeout@6.1.4: {}
 
-  p-timeout@7.0.1: {}
+  p-timeout@7.0.2: {}
 
   package-json-from-dist@1.0.1: {}
 
