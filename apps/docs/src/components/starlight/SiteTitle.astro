@@ -1,8 +1,9 @@
 ---
 import AstrolightSiteTitle from '@astrojs/starlight/components/SiteTitle.astro'
 
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 const menuItems = [
-  { name: 'Docs', href: '/tutorial' },
+  { name: isPtBr ? 'Documentação' : 'Docs', href: isPtBr ? '/pt-br/tutorial' : '/tutorial' },
   // { name: 'Sponsor', href: '/sponsor' },
   { name: 'Playground', href: 'https://playground.likec4.dev/w/tutorial/' },
 ]
