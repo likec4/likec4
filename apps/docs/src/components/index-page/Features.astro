@@ -12,6 +12,7 @@ const dslSnippet = `specification {
   relationship async
 }
 `
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 ---
 
 <section id="features" class="py-24 md:py-32 px-6">
@@ -21,19 +22,19 @@ const dslSnippet = `specification {
       <span
         class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
       >
-        Capabilities
+        {isPtBr ? "Recursos" : "Capabilities"}
       </span>
       <h2 class="lp-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-        Everything you need
+        {isPtBr ? "Tudo o que você precisa" : "Everything you need"}
       </h2>
       <p class="text-base md:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mt-4">
-        A complete toolkit for modeling, visualizing, and validating your software architecture — all from code.
+        {isPtBr ? "Um conjunto completo de ferramentas para modelar, visualizar e validar sua arquitetura de software, tudo a partir de código." : "A complete toolkit for modeling, visualizing, and validating your software architecture — all from code."}
       </p>
     </div>
 
     <!-- Bento grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-auto">
-      <!-- Large tile: Your Language (spans 2 cols, 2 rows on desktop) -->
+      <!-- Large tile: {isPtBr ? "Sua linguagem" : "Your Language"} (spans 2 cols, 2 rows on desktop) -->
       <div class="lp-reveal lp-stagger-1 md:col-span-2 lg:col-span-2 lg:row-span-2 group">
         <div class="h-full p-7 lg:p-8 bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800/70 shadow-sm dark:shadow-none rounded-xl transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <svg
@@ -47,8 +48,7 @@ const dslSnippet = `specification {
           </svg>
           <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">Your Language</h3>
           <p class="text-base font-medium leading-relaxed text-stone-500 dark:text-zinc-400 mb-6 max-w-lg font-medium">
-            Define your system with a clean DSL, designed for clarity and control. LLM-friendly syntax that AI agents
-            understand natively.
+            {isPtBr ? "Defina seu sistema com uma DSL clara e expressiva. A sintaxe é fácil de compreender e pode ser interpretada diretamente por agentes de IA." : "Define your system with a clean DSL, designed for clarity and control. LLM-friendly syntax that AI agents\n            understand natively."}
           </p>
           <!-- Syntax-highlighted code inside the tile -->
           <div class="rounded-lg overflow-hidden border border-stone-200 dark:border-zinc-800/40 text-sm">
@@ -57,7 +57,7 @@ const dslSnippet = `specification {
         </div>
       </div>
 
-      <!-- Small tile: Versioned -->
+      <!-- Small tile: {isPtBr ? "Versionamento" : "Versioned"} -->
       <div class="lp-reveal lp-stagger-2 group">
         <div class="h-full p-7 bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800/70 shadow-sm dark:shadow-none rounded-xl transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <svg
@@ -71,12 +71,12 @@ const dslSnippet = `specification {
           </svg>
           <h3 class="lp-display text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Versioned</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Store diagrams in Git, track changes, and collaborate using familiar workflows.
+            {isPtBr ? "Armazene diagramas no Git, acompanhe alterações e colabore usando fluxos de trabalho conhecidos." : "Store diagrams in Git, track changes, and collaborate using familiar workflows."}
           </p>
         </div>
       </div>
 
-      <!-- Small tile: AI-Friendly -->
+      <!-- Small tile: {isPtBr ? "Compatível com IA" : "AI-Friendly"} -->
       <div class="lp-reveal lp-stagger-3 group">
         <div class="h-full p-7 bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800/70 shadow-sm dark:shadow-none rounded-xl transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <svg
@@ -90,12 +90,12 @@ const dslSnippet = `specification {
           </svg>
           <h3 class="lp-display text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">AI-Friendly</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Expose your architecture context to AI agents via MCP server or API — no extra effort.
+            {isPtBr ? "Disponibilize o contexto da sua arquitetura para agentes de IA por meio de servidor MCP ou API, sem esforço adicional." : "Expose your architecture context to AI agents via MCP server or API — no extra effort."}
           </p>
         </div>
       </div>
 
-      <!-- Medium tile: Interactive Views -->
+      <!-- Medium tile: {isPtBr ? "Visões interativas" : "Interactive Views"} -->
       <div class="lp-reveal lp-stagger-4 group">
         <div class="h-full p-7 bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800/70 shadow-sm dark:shadow-none rounded-xl transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <svg
@@ -109,12 +109,12 @@ const dslSnippet = `specification {
           </svg>
           <h3 class="lp-display text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Interactive Views</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Navigate and explore your architecture diagrams interactively. Drill down into components and relationships.
+            {isPtBr ? "Navegue pelos diagramas de arquitetura e explore componentes e relacionamentos de forma interativa." : "Navigate and explore your architecture diagrams interactively. Drill down into components and relationships."}
           </p>
         </div>
       </div>
 
-      <!-- Medium tile: Integrate Anywhere -->
+      <!-- Medium tile: {isPtBr ? "Integração em qualquer lugar" : "Integrate Anywhere"} -->
       <div class="lp-reveal lp-stagger-5 group">
         <div class="h-full p-7 bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800/70 shadow-sm dark:shadow-none rounded-xl transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <svg
@@ -128,12 +128,12 @@ const dslSnippet = `specification {
           </svg>
           <h3 class="lp-display text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Integrate Anywhere</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Embed interactive diagrams into docs, websites or apps — via Vite Plugin, React or Web Components.
+            {isPtBr ? "Incorpore diagramas interativos à documentação, a sites ou aplicativos com o plugin Vite, React ou Web Components." : "Embed interactive diagrams into docs, websites or apps — via Vite Plugin, React or Web Components."}
           </p>
         </div>
       </div>
 
-      <!-- Small tile: Diff & Validation -->
+      <!-- Small tile: {isPtBr ? "Comparação e validação" : "Diff & Validation"} -->
       <div class="lp-reveal lp-stagger-6 group">
         <div class="h-full p-7 bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800/70 shadow-sm dark:shadow-none rounded-xl transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <svg
@@ -147,7 +147,7 @@ const dslSnippet = `specification {
           </svg>
           <h3 class="lp-display text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Diff & Validation</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Validate changes automatically. Catch architectural drift and breaking changes before they ship.
+            {isPtBr ? "Valide alterações automaticamente. Identifique desvios arquiteturais e mudanças incompatíveis antes da publicação." : "Validate changes automatically. Catch architectural drift and breaking changes before they ship."}
           </p>
         </div>
       </div>
