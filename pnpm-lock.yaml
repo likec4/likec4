@@ -1129,8 +1129,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       mnemonist:
-        specifier: 0.40.4
-        version: 0.40.4
+        specifier: 0.40.5
+        version: 0.40.5
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.1
@@ -9362,8 +9362,8 @@ packages:
   mnemonist@0.39.8:
     resolution: {integrity: sha512-vyWo2K3fjrUw8YeeZ1zF0fy6Mu59RHokURlld8ymdUPjMlD9EC9ov1/YPqTgqRvUN9nTr3Gqfz29LYAmu0PHPQ==}
 
-  mnemonist@0.40.4:
-    resolution: {integrity: sha512-ZAv+KNavneRVzu4tUeOgzkScI3W5BGwZ3rkxIpKtzzVgfTtWQFN1CgX0U72cyvyh3iTuHL3SiSmrQxTlryEIcw==}
+  mnemonist@0.40.5:
+    resolution: {integrity: sha512-egXDkYJsKZCizjk8FydZ3g8TOigBwt+dIaehgKcQSAE3DCkCTWG4N94trvwR1ZYeAHo1exxE+ZhZOUuj01HdNw==}
 
   moment@2.31.0:
     resolution: {integrity: sha512-0acOTfMiWOheYS4eoWb80yYMb/JLvVv9SHbs2PehaDzfUG0Bw855SKyk0IKTnPGa5+U2bmi3W68l1+sGLX/pvw==}
@@ -18690,7 +18690,7 @@ snapshots:
     dependencies:
       obliterator: 2.0.5
 
-  mnemonist@0.40.4:
+  mnemonist@0.40.5:
     dependencies:
       obliterator: 2.0.5
 
