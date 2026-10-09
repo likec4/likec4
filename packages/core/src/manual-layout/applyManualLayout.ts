@@ -387,6 +387,18 @@ function applyNodesManualLayout(
         nodeDrifts.add('label-changed')
       }
 
+      if (changed(node.style.sizing, next.style.sizing)) {
+        if (sizeNotChanged) {
+          if (isNullish(next.style.sizing)) {
+            delete draft.style.sizing
+          } else {
+            draft.style.sizing = next.style.sizing
+          }
+        } else {
+          nodeDrifts.add('label-changed')
+        }
+      }
+
       // Only auto-apply if size not changed, and compound state not changed
       if (!autoApplyIcon(draft, next, sizeNotChanged && willBeCompound === wasCompound)) {
         nodeDrifts.add('label-changed')

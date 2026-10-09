@@ -79,13 +79,13 @@ catalogs:
     '@types/ws': ^8.18.1
     ws: ^8.21.1
   astro:
-    "@astrojs/check": 0.9.9
-    "@astrojs/react": 6.0.1
+    "@astrojs/check": 0.9.10
+    "@astrojs/react": 6.0.6
     "@astrojs/starlight": 0.41.3
     "@astrojs/starlight-tailwind": 5.0.0
     "@expressive-code/plugin-collapsible-sections": 0.44.2
     "@expressive-code/plugin-line-numbers": 0.44.2
-    astro: 7.2.8
+    astro: 7.3.5
     astro-og-canvas: 0.13.0
     astro-skills: 0.1.1
     shiki: 4.1.0
@@ -121,47 +121,47 @@ catalogs:
     picomatch: ^4.0.5
     std-env: ^4.1.0
     type-fest: ^4.41.0
-    zod: ^4.4.3
+    zod: ^4.6.5
   hono:
     "@hono/mcp": ^0.3.2
-    "@hono/node-server": ^2.1.1
-    "@hono/oauth-providers": ^0.8.8
-    "@hono/zod-validator": ^0.8.0
-    hono: ^4.13.8
+    "@hono/node-server": ^2.1.4
+    "@hono/oauth-providers": ^0.9.0
+    "@hono/zod-validator": ^0.9.1
+    hono: ^4.13.13
     hono-sessions: ^0.8.1
   langium:
     langium: 3.5.0
     langium-cli: 3.5.2
   mantine:
-    "@mantine/colors-generator": 9.6.0
-    "@mantine/core": 9.6.0
-    "@mantine/hooks": 9.6.0
-    "@mantine/modals": 9.6.0
-    "@mantine/notifications": 9.6.0
-    "@mantine/vanilla-extract": 9.6.0
+    "@mantine/colors-generator": 9.7.1
+    "@mantine/core": 9.7.1
+    "@mantine/hooks": 9.7.1
+    "@mantine/modals": 9.7.1
+    "@mantine/notifications": 9.7.1
+    "@mantine/vanilla-extract": 9.7.1
   mcp:
     "@modelcontextprotocol/sdk": ^1.29.0
     "@modelcontextprotocol/ext-apps": "^1.7.5"
   obuild:
     obuild: 0.4.31
   react:
-    "@floating-ui/dom": ^1.7.6
+    "@floating-ui/dom": ^1.8.0
     "@nanostores/media-query": 0.1.2
-    "@nanostores/react": 1.1.0
-    "@react-hookz/web": ^25.2.0
-    "@tabler/icons-react": 3.46.0
-    "@types/react": 19.2.18
-    "@types/react-dom": 19.2.5
+    "@nanostores/react": 2.0.1
+    "@react-hookz/web": ^25.3.0
+    "@tabler/icons-react": 3.49.0
+    "@types/react": 19.3.0
+    "@types/react-dom": 19.3.0
     "@babel/core": ^7.29.7
     babel-plugin-react-compiler: ^1.0.0
     clsx: ^2.1.1
     motion: ^12.43.0
-    nanostores: 1.5.3
-    react: 19.2.8
-    react-dom: 19.2.8
-    react-error-boundary: ^6.1.4
-    react-resizable-panels: ^4.12.3
-    use-sync-external-store: ^1.6.0
+    nanostores: 1.5.5
+    react: 19.3.0
+    react-dom: 19.3.0
+    react-error-boundary: ^6.1.6
+    react-resizable-panels: ^4.14.3
+    use-sync-external-store: ^1.7.0
   tanstack:
     "@tanstack/pacer": ^0.17.3
     "@tanstack/pacer-lite": ^0.2.1
@@ -174,21 +174,21 @@ catalogs:
     "@rolldown/plugin-node-polyfills": ^1.0.3
     tsdown: ^0.23.0
     "@tsdown/css": ^0.23.0
-    rolldown: ^1.2.7
+    rolldown: ^1.2.13
   utils:
-    "@logtape/logtape": ^2.3.4
+    "@logtape/logtape": ^2.4.0
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001810
+    caniuse-lite: ^1.0.30001815
     chroma-js: 3.2.0
     citty: ^0.2.2
     consola: ^3.4.2
     date-fns: ^4.4.0
     defu: ^6.1.7
     esm-env: ^1.2.2
-    fast-equals: ^6.0.3
-    immer: ^11.1.18
+    fast-equals: ^6.1.1
+    immer: ^11.1.21
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
@@ -214,11 +214,11 @@ catalogs:
     unstorage: ^1.17.5
   vite:
     "@rolldown/plugin-babel": ^0.2.4
-    "@vitejs/plugin-react": ^6.1.1
+    "@vitejs/plugin-react": ^6.1.2
     birpc: ^4.2.0
-    rollup: ^4.63.1
-    vite: ^8.2.2
-    vite-plugin-dts: ^5.1.0
+    rollup: ^4.64.3
+    vite: ^8.3.4
+    vite-plugin-dts: ^5.1.2
     vite-plugin-node-polyfills: ^0.28.0
     vite-tsconfig-paths: ^6.1.1
   vitest:
@@ -241,12 +241,12 @@ catalogs:
     vscode-messenger-webview: 0.7.0
   xstate:
     "@xstate/react": 6.1.0
-    "@xstate/store": 4.2.3
-    "@xstate/store-react": 2.0.0
-    xstate: 5.32.6
+    "@xstate/store": 4.3.0
+    "@xstate/store-react": 2.1.0
+    xstate: 5.33.2
   xyflow:
-    "@xyflow/react": 12.11.6
-    "@xyflow/system": 0.0.82
+    "@xyflow/react": 12.12.0
+    "@xyflow/system": 0.0.83
 
 minimumReleaseAgeExclude:
   - '@astrojs/react@5.0.7 || 6.0.1'
@@ -286,3 +286,7 @@ minimumReleaseAgeExclude:
   - '@pandacss/token-dictionary@1.12.1'
   - '@pandacss/types@1.12.1'
   - '@logtape/logtape@2.3.3'
+  - '@xstate/store-react@2.1.0'
+  - '@xstate/store@4.3.0'
+  - fast-equals@6.1.1
+  - vite@8.3.4

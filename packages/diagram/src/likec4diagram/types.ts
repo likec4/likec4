@@ -219,8 +219,24 @@ export namespace Types {
     }
   >
 
+  /**
+   * Represents a leaf element rendered as a compact circle in "graph" display variant.
+   * Shares {@link LeafNodeData}'s geometry fields (x/y/width/height/style) with the other
+   * leaf node types, even though "graph" mode renders a fixed-size circle instead - this
+   * keeps generic node utilities (bounds, drifts, notes, etc.) working across all node types.
+   */
+  export type GraphElementNodeData = Simplify<
+    & LeafNodeData
+    & {
+      modelFqn: Fqn | null
+      deploymentFqn: DeploymentFqn | null
+      navigateTo: ViewId | null
+    }
+  >
+
   export type ElementNode = BaseNode<ElementNodeData, 'element'>
   export type DeploymentElementNode = BaseNode<DeploymentElementNodeData, 'deployment'>
+  export type GraphElementNode = BaseNode<GraphElementNodeData, 'graph-element'>
 
   export type SequenceActorNode = BaseNode<SequenceActorNodeData, 'seq-actor'>
   export type SequenceParallelArea = BaseNode<SequenceParallelAreaData, 'seq-parallel'>
@@ -239,6 +255,7 @@ export namespace Types {
     | SequenceActorNode
     | SequenceParallelArea
     | SequenceSubflowArea
+    | GraphElementNode
 
   export type NodeType = AnyNode['type']
 
@@ -251,6 +268,7 @@ export namespace Types {
     SequenceActorNodeData: SequenceActorNodeData
     SequenceParallelAreaData: SequenceParallelAreaData
     SequenceSubflowAreaData: SequenceSubflowData
+    GraphElementNodeData: GraphElementNodeData
   }>
 
   export type Node<Type extends NodeType = NodeType> = Extract<AnyNode, { type: Type }>

@@ -1,4 +1,4 @@
-import { BorderStyles, ElementShapes, Sizes, ThemeColors } from '@likec4/core/styles'
+import { BorderStyles, ElementShapes, Sizes, Sizings, ThemeColors } from '@likec4/core/styles'
 import { type MaybePromise, AstUtils, GrammarAST } from 'langium'
 import {
   type CompletionAcceptor,
@@ -147,6 +147,9 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         break
       case ['size', 'textSize', 'padding'].includes(keyword.value):
         acceptPropertyAndSuggest(Sizes)
+        break
+      case 'sizing' === keyword.value:
+        acceptPropertyAndSuggest(Sizings)
         break
       case 'border' === keyword.value:
         acceptPropertyAndSuggest(BorderStyles)

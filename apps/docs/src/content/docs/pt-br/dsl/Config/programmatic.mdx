@@ -1,0 +1,235 @@
+---
+title: Configuração TypeScript/JavaScript
+description: Saiba como configurar projetos LikeC4 programaticamente e estendê-los com geradores personalizados
+sidebar: 
+  label: Configuração programática
+  order: 15
+---
+
+import { Card, FileTree, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
+
+:::caution
+Este recurso é experimental e ainda não foi bem testado com IDEs.
+
+Se encontrar algum problema, reporte-o no [GitHub](https://github.com/likec4/likec4/issues).
+:::
+
+Você pode configurar seus projetos programaticamente com TypeScript ou JavaScript.  
+O nome do arquivo de configuração pode ser qualquer um dos seguintes:
+
+- `likec4.config.js`
+- `likec4.config.mjs`
+- `likec4.config.ts`
+- `likec4.config.mts`
+
+Exemplo:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  exclude: ["**/node_modules/**", "**/.cache/**"],
+  include: ["../shared", "../common/specs"],
+  imageAliases: {
+    "@": "./images",
+    "@root": "../../some-more-images"
+  }  
+})
+```
+
+:::tip
+Você também pode usar o pacote menor `@likec4/config`:
+
+```ts
+import { defineConfig } from '@likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project'
+})
+```
+
+:::
+
+## Geradores personalizados
+
+A CLI do LikeC4 possui um comando [`generate`](/tooling/cli/#generate-mermaid-dot-d2-plantuml) para gerar arquivos a partir do seu modelo.  
+Você pode definir geradores personalizados na configuração do projeto:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  generators: {
+    'hello': async ({ likec4model, ctx }) => {
+      await ctx.write({
+        path: 'hello.txt', // relative to the project root
+        content: `Project: ${likec4model.project.id}`,
+      })
+    },
+  },
+})
+```
+
+Agora você pode executar seu gerador com a [CLI](/tooling/cli):
+
+```bash
+likec4 gen hello
+```
+
+Em um workspace com [vários projetos](/pt-br/dsl/config/multi-projects), use:
+
+```bash
+likec4 gen hello --project my-project
+# Other options
+likec4 gen hello --project my-project --use-dot
+```
+
+### Geradores reutilizáveis
+
+Também existe a função auxiliar `defineGenerators` para definir geradores reutilizáveis:
+
+```ts title="example"
+// shared_generators.ts
+import { defineGenerators } from 'likec4/config'
+
+export default defineGenerators({
+  'hello': async ({ likec4model, ctx }) => {
+    await ctx.write({
+      path: 'hello.txt', // relative to the project root
+      content: `Project: ${likec4model.project.id}`,
+    })
+  },
+})
+
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+import generators from './shared_generators'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  generators,
+})
+```
+
+## Personalização de estilos
+
+Assim como na [configuração JSON](/pt-br/dsl/config/#personalização-de-estilos), você pode definir estilos na configuração TypeScript:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  styles: {
+    // Theme section allows you to override default colors and sizes
+    theme: {
+      colors: {
+        // Simple color definition - automatically generates element/relationship colors
+        primary: "#FF6B6B",
+        secondary: "#4ECDC4",
+        // Detailed color definition with specific values
+        muted: {
+          elements: {
+            fill: "#2563eb", // Background color
+            stroke: "#1d4ed8", // Border color
+            hiContrast: "#ffffff", // Title text color
+            loContrast: "#e2e8f0" // Description text color
+          },
+          relationships: {
+            line: "#1d4ed8", // Line color
+            label: "#ffffff", // Label text color
+            labelBg: "rgba(37,99,235,0.1)" // Label background color
+          }
+        },
+        // Give detailed definitions for a color from your specification
+        "custom-color-from-your-spec": { 
+          // ...
+        }
+      },
+      sizes: { // override dimensions
+        md: {
+          width: 200,
+          height: 200
+        }
+      }
+    },
+    // Override default values for style properties,
+    // These values will be used if such property is not defined
+    defaults: {
+      border: "dotted",
+      opacity: 100,
+      size: "md",
+      color: "slate",
+      group: {
+        color: "green",
+        opacity: 10,
+        border: "solid"
+      },
+      relationship: {
+        color: "indigo",
+        line: "solid",
+        arrow: "diamond"
+      }
+    }
+  }
+})
+```
+
+### Estilos reutilizáveis
+
+Também existem as funções auxiliares `defineStyle`, `defineTheme` e `defineThemeColor`.  
+Você pode exportá-las de um arquivo separado (ou publicar como um pacote para compartilhar com outras pessoas) e importá-las na sua configuração.
+
+```ts title="@your-org/likec4-theme"
+import { defineStyle, defineTheme, defineThemeColor } from 'likec4/config'
+
+const theme1 = defineTheme({
+  colors: {
+    primary: "#FF6B6B",
+  },
+})
+
+const theme2 = defineTheme({
+  colors: {
+    primary: "#4ECDC4",
+  },
+})
+
+export default defineStyle({
+  // Even use environment variable to switch between themes
+  theme: process.env['THEME'] === 'theme2' ? theme2 : theme1,
+  defaults: {
+    // ...
+  }
+})
+```
+
+E na sua configuração:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+import styles from '@your-org/likec4-theme'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  styles,
+})
+```
+
+<br/>
+
+<AdvancedCustomizationTip/>

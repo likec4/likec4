@@ -52,6 +52,7 @@ export function applyCustomElementProperties<A extends AnyAux>(
       padding,
       size,
       textSize,
+      sizing,
       ...rest
     } = omitBy(props, isNullish)
     const style: ComputedNodeStyle = exact({
@@ -64,6 +65,7 @@ export function applyCustomElementProperties<A extends AnyAux>(
       padding,
       size,
       textSize,
+      sizing,
     })
     const styleNotEmpty = !isEmptyish(style)
     const propsNotEmpty = !isEmptyish(rest)

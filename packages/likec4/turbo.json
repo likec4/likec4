@@ -12,6 +12,7 @@
       ],
       "outputs": [
         "dist/**",
+        "skills/**",
         "react/**",
         "__app__/**",
         "config/schema.json",

@@ -176,6 +176,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       xydata = convertToXYFlow({
         currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
+        elementViewVariant: context.elementViewVariant,
         view,
         where: context.where,
         collapsedSequenceFlows: context.collapsedSequenceFlows,
@@ -185,6 +186,7 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       xydata = 'xynodes' in event ? event : convertToXYFlow({
         currentViewId: context.view.id,
         dynamicViewVariant: context.dynamicViewVariant,
+        elementViewVariant: context.elementViewVariant,
         view: event.view,
         where: context.where,
         collapsedSequenceFlows: context.collapsedSequenceFlows,
@@ -243,6 +245,14 @@ export const assignDynamicViewVariant = () =>
     assertEvent(event, 'switch.dynamicViewVariant')
     return {
       dynamicViewVariant: event.variant,
+    }
+  })
+
+export const assignElementViewVariant = () =>
+  machine.assign(({ event }) => {
+    assertEvent(event, 'switch.elementViewVariant')
+    return {
+      elementViewVariant: event.variant,
     }
   })
 
@@ -834,14 +844,14 @@ export const ensureNavigationPanelActor = () =>
   machine.enqueueActions(({ enqueue, check, system, context }) => {
     const enabled = check('enabled: NavigationPanel')
     const running = typedSystem(system).navigationActorRef
+    const viewFolder = context.view.title && getViewFolderPath(context.view.title) || ''
     if (enabled && !running) {
-      const viewFolder = context.view.title ? getViewFolderPath(context.view.title) : ''
       enqueue.spawnChild('navigationPanel', {
         id: 'navigationPanel',
         systemId: 'navigationPanel',
         input: {
           viewId: context.view.id,
-          viewFolder: viewFolder ?? '',
+          viewFolder,
         },
         syncSnapshot: true,
       })

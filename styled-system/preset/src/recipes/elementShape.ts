@@ -85,7 +85,7 @@ export const elementShapeRecipe = defineRecipe({
           backgroundColor: 'var(--likec4-palette-fill)',
           borderRadius: '6px',
           zIndex: -1,
-          filter: 'brightness(0.5) !important',
+          filter: 'brightness(70%) !important',
           visibility: {
             base: 'visible',
             _smallZoom: 'hidden',
@@ -93,7 +93,7 @@ export const elementShapeRecipe = defineRecipe({
             _whenFocused: 'hidden',
             _reduceGraphicsOnPan: 'hidden',
           },
-          transition: 'normal',
+          transition: 'medium',
           _whenHovered: {
             transform: 'translate(-14px, -14px)',
           },
@@ -169,18 +169,31 @@ export const elementShapeRecipe = defineRecipe({
         multipleSvg: {
           transformOrigin: {
             base: '50% 50%',
-            _shapeQueue: '75% 25%',
-            _shapeCylinder: '50% 100%',
-            _shapeStorage: '50% 100%',
+            _shapeQueue: '75% 50%',
+            _shapeCylinder: '50% 80%',
+            _shapeStorage: '50% 80%',
+            _shapeAgent: '20% 50%',
+            _shapeBucket: '20% 50%',
           },
           transform: {
-            base: 'translate(14px, 14px) perspective(200px) translateZ(-4px)',
-            _whenHovered: 'translate(2px, 2px) perspective(200px) translateZ(-4px)',
+            base: 'translate(12px, 12px) perspective(350px) translateZ(-12px)',
+            _whenHovered: 'translate(8px, 4px) perspective(150px) translateZ(-30px)',
           },
           transitionBehavior: 'allow-discrete',
           transitionProperty: 'fill, filter, transform',
-          transitionDuration: 'faster',
-          filter: 'brightness(0.5) !important',
+          transitionDuration: {
+            base: '{durations.fast}',
+            _whenHovered: '{durations.fast}',
+          },
+          transitionDelay: {
+            base: '40ms',
+            _whenHovered: '0ms',
+          },
+          transitionTimingFunction: {
+            base: 'out',
+            _whenHovered: 'in',
+          },
+          filter: 'brightness(80%) !important',
           stroke: 'none',
           display: {
             _smallZoom: 'none',

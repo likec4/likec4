@@ -30,11 +30,8 @@ const main = defineCommand({
   },
   async run(context) {
     const workspace = resolve(context.args.workspace || '../../examples/')
-    console.info('workspace:', workspace)
 
-    context.data ??= {}
-
-    const server = context.data.server = await createServer({
+    const server = await createServer({
       configFile: false,
       logLevel: 'info',
       clearScreen: false,
@@ -77,21 +74,25 @@ const main = defineCommand({
           logLevel: context.args.verbose ? 'trace' : 'debug',
         }),
       ],
-    })
-    await server.listen()
-    server.printUrls()
+    }).then((server) => server.listen())
 
-    await new Promise<void>((resolve) => {
+    console.log('')
+    server.printUrls()
+    console.log('')
+
+    await new Promise<void>((resolve, reject) => {
       process.on('SIGINT', () => {
-        resolve()
+        console.info('Received SIGINT, stopping server...')
+        server.close().then(() => {
+          console.info('Server stopped')
+          resolve()
+        }).catch((error) => {
+          console.error('Error stopping server:', error)
+          reject(error)
+        })
       })
     })
-  },
-  async cleanup(context) {
-    console.info('\nStopping server...')
-    if (context.data?.server) {
-      await context.data.server.close()
-    }
+    process.exit(0)
   },
 })
 

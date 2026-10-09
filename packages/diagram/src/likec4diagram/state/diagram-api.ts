@@ -21,6 +21,7 @@ import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
+import type { ElementViewDisplayVariant } from './machine.setup'
 import type {
   DiagramActorRef,
   DiagramContext,
@@ -177,6 +178,16 @@ export class DiagramApi<A extends Any = Unknown> {
     this.send({ type: 'unhighlight.all' })
   }
 
+  select(target?: { nodes?: NodeId[]; edges?: (EdgeId | t.StepPath)[] }): void {
+    const nodes = target?.nodes ?? []
+    const edges = target?.edges ?? []
+    if (nodes.length === 0 && edges.length === 0) {
+      this.send({ type: 'xyflow.resetSelection' })
+      return
+    }
+    this.send({ type: 'xyflow.select', nodes, edges })
+  }
+
   /**
    * Center viewport on a given node
    */
@@ -327,6 +338,13 @@ export class DiagramApi<A extends Any = Unknown> {
    */
   switchDynamicViewVariant(variant: DynamicViewDisplayVariant): void {
     this.send({ type: 'switch.dynamicViewVariant', variant })
+  }
+
+  /**
+   * Switch element view display variant ('diagram' | 'graph')
+   */
+  switchElementViewVariant(variant: ElementViewDisplayVariant): void {
+    this.send({ type: 'switch.elementViewVariant', variant })
   }
 
   /**

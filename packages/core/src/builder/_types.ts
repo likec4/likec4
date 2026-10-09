@@ -16,6 +16,7 @@ import type {
   RelationshipLineType,
   RelationshipSpecification as RelationshipKindSpecification,
   ShapeSize,
+  Sizing,
   SpacingSize,
   SpecAux,
   TagSpecification,
@@ -97,6 +98,7 @@ export type NewElementProps<Tag, Metadata> = {
     iconSize?: ShapeSize
     iconPosition?: IconPosition
     multiple?: boolean
+    sizing?: Sizing
   }
 }
 
@@ -122,6 +124,7 @@ export type NewDeploymentNodeProps<Tag, Metadata> = {
     iconSize?: ShapeSize
     iconPosition?: IconPosition
     multiple?: boolean
+    sizing?: Sizing
   }
 }
 

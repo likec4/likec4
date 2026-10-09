@@ -67,55 +67,8 @@ const nodeSchema = z.discriminatedUnion('type', [
 
 export const readView = likec4Tool({
   name: 'read-view',
-  description: `
-Read detailed information about a LikeC4 view.
-
-Request:
-- viewId: string — view id (name)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response (JSON object):
-- id: string — view id
-- type: "element" | "deployment" | "dynamic" — view type
-- title: string — view title (falls back to id if not set)
-- description: string|null — optional description
-- tags: string[] — view tags
-- project: string — project id this view belongs to
-- nodes: Node[] — nodes included in the view
-- edges: Edge[] — relationships between nodes
-- sourceLocation: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location if available
-
-Node (discriminated union by "type"):
-- type = "element": { id: string, elementId: string, kind: string, title: string, description: string|null, technology: string|null, children: string[], shape: string, color: string, tags: string[] }
-- type = "deployment-node": { id: string, deploymentId: string, kind: string, title: string, description: string|null, technology: string|null, children: string[], shape: string, color: string, tags: string[] }
-- type = "deployed-instance": { id: string, deploymentId: string, title: string, description: string|null, technology: string|null, referencedElement: { id: string, kind: string, title: string }, shape: string, color: string, tags: string[] }
-
-Edge object:
-- { source: string, target: string, label: string|null, description: string|null, technology: string|null, tags: string[] }
-
-Notes:
-- Read-only, idempotent, no side effects.
-
-Example response:
-{
-  "id": "system-overview",
-  "type": "element",
-  "title": "System Overview",
-  "description": null,
-  "tags": [],
-  "project": "default",
-  "nodes": [
-    { "type": "logical", "id": "n1", "elementId": "shop.frontend", "kind": "container", "title": "Frontend", "description": null, "technology": "React", "children": [], "shape": "rounded-rectangle", "color": "#2F80ED", "tags": [] }
-  ],
-  "edges": [
-    { "source": "n1", "target": "n2", "label": "calls", "description": null, "technology": "HTTPS", "tags": [] }
-  ],
-  "sourceLocation": {
-    "path": "/abs/path/project/model.c4",
-    "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 30, "character": 0 } }
-  }
-}
-`,
+  description:
+    `Read a view's structure: its nodes (elements, deployment nodes or deployed instances) and the edges between them, with source location. A view without a title returns its id as the title. Use render-view to show the diagram to the user.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,

@@ -241,6 +241,7 @@ function drawioShape(shape: Node['shape']): string {
     case 'browser':
     case 'mobile':
     case 'bucket':
+    case 'agent':
       return rectStyle
     case 'cylinder':
     case 'queue':

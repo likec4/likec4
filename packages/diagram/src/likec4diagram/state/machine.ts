@@ -11,6 +11,7 @@ import {
 } from './assign'
 import {
   assignDynamicViewVariant,
+  assignElementViewVariant,
   cancelFitDiagram,
   emitOnLayoutTypeChange,
   raiseUpdateView,
@@ -61,6 +62,16 @@ const _diagramMachine = machine.createMachine({
         raiseUpdateView(),
       ],
     },
+    'switch.elementViewVariant': {
+      guard: ({ context, event }) => context.elementViewVariant !== event.variant,
+      actions: [
+        assignElementViewVariant(),
+        assign({
+          viewportChangedManually: false,
+        }),
+        raiseUpdateView(),
+      ],
+    },
     'update.inputs': {
       actions: updateInputs(),
     },
@@ -94,7 +105,7 @@ const _diagramMachine = machine.createMachine({
     'xyflow.viewportMoved': {
       actions: assign(({ event, context }) => ({
         viewportChangedManually: context.viewportChangedManually || event.manually,
-        viewport: event.viewport,
+        viewport: { ...event.viewport },
       })),
     },
     'destroy': {

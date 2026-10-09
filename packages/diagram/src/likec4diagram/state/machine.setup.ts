@@ -55,6 +55,13 @@ import { type MediaPrintEvent, mediaPrintActorLogic } from './mediaPrintActor'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 
 /**
+ * Display variant for element views: plain boxes-and-lines diagram, or a compact graph
+ * of circles (topology-focused, akin to Structurizr's "Explore" graph view).
+ * Client-side only - not persisted, no DSL/grammar impact.
+ */
+export type ElementViewDisplayVariant = 'diagram' | 'graph'
+
+/**
  * Navigation history entry represents a current view state,
  * including viewport, focused node, dynamic view variant, etc.
  */
@@ -151,6 +158,8 @@ export interface Context extends Input {
 
   // If Dynamic View
   dynamicViewVariant: DynamicViewDisplayVariant
+  // If Element View
+  elementViewVariant: ElementViewDisplayVariant
   activeWalkthrough: null | {
     stepId: StepPath
     activeFlow: StepPath | null
@@ -201,6 +210,7 @@ export function Context({ input }: { input: Input }): Context {
     dynamicViewVariant: input.dynamicViewVariant ?? (
       input.view._type === 'dynamic' ? input.view.variant : 'diagram'
     ) ?? 'diagram',
+    elementViewVariant: 'diagram',
     activeWalkthrough: null,
     collapsedSequenceFlows: {},
     minZoom: input.minZoom ?? MinZoom,
@@ -229,6 +239,7 @@ export type Events =
   | { type: 'xyflow.centerViewport'; nodeId: NodeId; duration?: number }
   | { type: 'xyflow.centerViewport'; edgeId: EdgeId; duration?: number }
   | { type: 'xyflow.resetSelection' }
+  | { type: 'xyflow.select'; nodes?: NodeId[] | undefined; edges?: EdgeId[] | undefined }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | {
@@ -262,6 +273,7 @@ export type Events =
   | { type: 'focus.node'; nodeId: NodeId; autoUnfocus?: boolean }
   | { type: 'focus.autoUnfocus' }
   | { type: 'switch.dynamicViewVariant'; variant: DynamicViewDisplayVariant }
+  | { type: 'switch.elementViewVariant'; variant: ElementViewDisplayVariant }
   | { type: 'walkthrough.start'; stepId?: StepPath | undefined }
   | { type: 'walkthrough.step'; direction: 'next' | 'prev'; stepId?: never }
   | { type: 'walkthrough.step'; stepId: StepPath; direction?: never }

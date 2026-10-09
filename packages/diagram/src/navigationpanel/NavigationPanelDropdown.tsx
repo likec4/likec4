@@ -24,16 +24,10 @@ import { useThrottledCallback, useUncontrolled } from '@mantine/hooks'
 import { useMountEffect } from '@react-hookz/web'
 import {
   IconChevronRight,
-  IconDirectionSignFilled,
   IconFolderFilled,
   IconSearch,
-  IconStack2,
-  IconStarFilled,
-  IconZoomScan,
 } from '@tabler/icons-react'
-import { useSelector } from '@xstate/react'
-import { deepEqual, shallowEqual } from 'fast-equals'
-import { m } from 'motion/react'
+import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import {
   type ComponentPropsWithoutRef,
@@ -50,9 +44,8 @@ import { type NavigationLinkProps, NavigationLink } from '../components/Navigati
 import { viewIcon } from '../components/ViewIcon'
 import { type CurrentViewModel, useOptionalCurrentViewModel } from '../custom'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
-import { useLikeC4Model, useOptionalLikeC4Model } from '../hooks/useLikeC4Model'
+import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import { Tooltip } from './_common'
-import type { NavigationPanelActorContext, NavigationPanelActorSnapshot } from './actor'
 import { ProjectsMenu } from './dropdown/ProjectsMenu'
 import {
   selectNavigationContext,
@@ -418,8 +411,8 @@ const selectColumns = (viewModel: CurrentViewModel | null, selectedFolder: strin
   const columns = [
     folderColumn(likec4model.rootViewFolder, ctx),
   ]
-  const folder = likec4model.viewFolder(ctx.selectedFolder)
-  if (!folder.isRoot) {
+  const folder = likec4model.findViewFolder(ctx.selectedFolder)
+  if (folder && !folder.isRoot) {
     for (const b of folder.breadcrumbs) {
       columns.push(folderColumn(b, ctx))
     }
@@ -465,7 +458,7 @@ function FolderColumn({ data, isLast }: { data: FolderColumnData; isLast: boolea
     if (isLast && ref.current) {
       ref.current.scrollIntoView({
         block: 'nearest',
-        inline: 'nearest',
+        inline: 'end',
         behavior: 'smooth',
       })
     }

@@ -3,6 +3,7 @@ import {
   ElementShapes,
   IconPositions,
   Sizes,
+  Sizings,
   ThemeColors,
 } from '@likec4/style-preset/defaults'
 import type { Tagged, TupleToUnion } from 'type-fest'
@@ -13,6 +14,7 @@ export {
   ElementShapes,
   IconPositions,
   Sizes,
+  Sizings,
   ThemeColors,
 } from '@likec4/style-preset/defaults'
 
@@ -26,6 +28,8 @@ export type SpacingSize = Size
 export type IconSize = Size
 
 export type IconPosition = typeof IconPositions[number]
+
+export type Sizing = typeof Sizings[number]
 
 export type BorderStyle = typeof BorderStyles[number]
 

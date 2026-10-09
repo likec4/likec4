@@ -135,6 +135,23 @@ describe('applyManualLayout', () => {
       expect(result.drifts).toBeUndefined()
     })
 
+    it('should auto-apply navigation changes without layout drift', () => {
+      const target = prepareFixtures().layouted.id
+      const { result, nodes: { customer }, snapshotNodes } = testApplyManualLayout({
+        nodes: {
+          customer: {
+            navigateTo: target,
+          },
+        },
+      })
+
+      expect(customer.navigateTo).toBe(target)
+      expect(customer.x).toBe(snapshotNodes.customer.x)
+      expect(customer.y).toBe(snapshotNodes.customer.y)
+      expect(customer.drifts).toBeUndefined()
+      expect(result.drifts).toBeUndefined()
+    })
+
     it('should auto-apply notes changes', () => {
       const { result, nodes, snapshotNodes } = testApplyManualLayout({
         nodes: {

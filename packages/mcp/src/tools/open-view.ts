@@ -11,28 +11,8 @@ import { locationSchema, mkLocate, projectIdSchema } from './_common'
 
 export const openView = likec4Tool({
   name: 'open-view',
-  description: `
-Open a LikeC4 view in the editor's preview panel.
-
-Request:
-- viewId: string — view id (name)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response (JSON object):
-- location: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null — source location of the view if available
-
-Notes:
-- Read-only and idempotent with respect to the project model. Triggers a UI action in the editor.
-- Only one preview panel can be open at a time.
-
-Example response:
-{
-  "location": {
-    "path": "/abs/path/project/model.c4",
-    "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 30, "character": 0 } }
-  }
-}
-`,
+  description:
+    `Open a LikeC4 view in the editor's preview panel, replacing any open preview, and return its source location. Changes the editor, not the model.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,
