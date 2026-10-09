@@ -79,7 +79,7 @@ const isPtBr = Astro.url.pathname.startsWith('/pt-br')
             target="_blank"
             rel="noopener noreferrer"
             class="group relative no-underline"
-            title={`@${contributor.login}{isPtBr ? " — ${contributor.contributions} contribuições" : " — ${contributor.contributions} contributions"}`}
+            title={`@${contributor.login} — ${contributor.contributions} ${isPtBr ? "contribuições" : "contributions"}`}
           >
             <img
               src={`${contributor.avatar_url}&s=80`}
