@@ -3,12 +3,13 @@ import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro'
 import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro'
 import Logo from '../Logo.astro'
 
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 const navLinks = [
-  { href: '/#features', label: 'Features' },
-  { href: '/tutorial', label: 'Docs' },
+  { href: isPtBr ? '/pt-br/#features' : '/#features', label: isPtBr ? 'Recursos' : 'Features' },
+  { href: isPtBr ? '/pt-br/tutorial' : '/tutorial', label: isPtBr ? 'Documentação' : 'Docs' },
   { href: 'https://playground.likec4.dev/w/tutorial/', label: 'Playground', target: '_blank' },
-  { href: '/sponsor', label: 'For Teams' },
-  { href: 'https://github.com/likec4/likec4/discussions', label: 'Community', target: '_blank' },
+  { href: isPtBr ? '/pt-br/sponsor' : '/sponsor', label: isPtBr ? 'Para equipes' : 'For Teams' },
+  { href: 'https://github.com/likec4/likec4/discussions', label: isPtBr ? 'Comunidade' : 'Community', target: '_blank' },
 ]
 ---
 
@@ -39,7 +40,7 @@ const navLinks = [
       <button
         id="mobile-menu-toggle"
         class="md:hidden p-2 text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 transition-colors"
-        aria-label="Toggle menu"
+        aria-label={isPtBr ? "Abrir ou fechar menu" : "Toggle menu"}
       >
         <svg
           id="menu-icon"
