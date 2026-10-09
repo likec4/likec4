@@ -265,6 +265,12 @@ export const cloudView = {
   ],
 } satisfies ElementView
 
+export const cloudOrthoView = {
+  ...cloudView,
+  id: 'cloudOrtho' as ViewId,
+  routing: 'ortho',
+} satisfies ElementView
+
 export const cloud3levels = {
   _stage: 'parsed',
   _type: 'element',

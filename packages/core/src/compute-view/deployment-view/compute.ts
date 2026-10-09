@@ -16,6 +16,7 @@ import { createRelationExpressionToPredicates } from '../utils/relationExpressio
 import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
+import { withResolvedRouting } from '../utils/view-routing'
 import { Memory } from './memory'
 import { predicateToPatch } from './predicates'
 import { StageFinal } from './stages/stage-final'
@@ -205,7 +206,7 @@ export function computeDeploymentView<M extends AnyAux>(
   const elementNotations = buildElementNotations(nodes)
 
   return calcViewLayoutHash({
-    ...view,
+    ...withResolvedRouting(view, likec4model.$styles.defaults.view.routing),
     [_stage]: 'computed',
     [_type]: 'deployment',
     autoLayout: {

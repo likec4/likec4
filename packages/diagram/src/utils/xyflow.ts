@@ -86,6 +86,20 @@ export function isEqualRects(a: Rect, b: Rect): boolean {
     && Math.trunc(a.height) === Math.trunc(b.height)
 }
 
+export function isLeafNodeType(type: string | undefined): boolean {
+  return type !== 'compound-element' && type !== 'compound-deployment' && type !== 'view-group'
+}
+
+export function leafNodeRects(nodes: Iterable<MinimalInternalNode & { type?: string | undefined }>): Rect[] {
+  const rects: Rect[] = []
+  for (const node of nodes) {
+    if (isLeafNodeType(node.type)) {
+      rects.push(nodeToRect(node))
+    }
+  }
+  return rects
+}
+
 export function nodeToRect(nd: MinimalInternalNode): Rect {
   return ({
     x: Math.trunc(nd.internals.positionAbsolute.x),
@@ -203,10 +217,6 @@ export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point): boole
   const [ax, ay] = isArray(a) ? a : [a.x, a.y]
   const [bx, by] = isArray(b) ? b : [b.x, b.y]
   return Math.hypot(bx - ax, by - ay) < 2.1
-}
-
-export function distanceBetweenPoints(a: XYPosition, b: XYPosition): number {
-  return Math.hypot(b.x - a.x, b.y - a.y)
 }
 
 export function stopPropagation(e: ReactMouseEvent): void {

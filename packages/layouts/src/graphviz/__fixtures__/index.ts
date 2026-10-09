@@ -2,7 +2,7 @@ import { computeView, withReadableEdges } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import type { ComputedElementView, LikeC4View } from '@likec4/core/types'
 import { omit } from 'remeda'
-import { amazonView, cloud3levels, cloudView, FakeModel, indexView, issue577View } from './model'
+import { amazonView, cloud3levels, cloudOrthoView, cloudView, FakeModel, indexView, issue577View } from './model'
 
 export const parsedModel = LikeC4Model.fromDump(FakeModel)
 export const computeElementView = (view: LikeC4View): ComputedElementView => {
@@ -20,6 +20,8 @@ export const [computedIndexView, computedCloudView, computedCloud3levels, comput
   // Add hasManualLayout to verify that it is preserved
   Object.assign(computeElementView(amazonView), { hasManualLayout: true }),
 ]
+
+export const computedCloudOrthoView = computeElementView(cloudOrthoView)
 
 export const issue577_fail = computeElementView(issue577View('https://icons/aws%20&%20CloudFront.svg'))
 export const issue577_valid = computeElementView(issue577View('https://icons/aws%20%20CloudFront.svg'))

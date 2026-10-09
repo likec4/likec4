@@ -28,6 +28,7 @@ import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComp
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { resolveGlobalRulesInDynamicView } from '../utils/resolve-global-rules'
 import { calcViewLayoutHash } from '../utils/view-hash'
+import { withResolvedRouting } from '../utils/view-routing'
 import { elementsFromIncludeProperties, elementsFromSteps, findRelations } from './utils'
 
 type Element<A extends AnyAux> = ElementModel<A>
@@ -368,7 +369,7 @@ class DynamicViewCompute<A extends AnyAux = AnyAux> {
     const nodeNotations = buildElementNotations(nodes)
 
     return calcViewLayoutHash({
-      ...view,
+      ...withResolvedRouting(view, this.model.$styles.defaults.view.routing),
       [_type]: 'dynamic',
       [_stage]: 'computed',
       variant: view.variant ?? 'diagram',

@@ -83,6 +83,64 @@ describe('formating', () => {
     )
   })
 
+  describe('formats view routing', () => {
+    it(
+      'formats routing properties and autoLayout routing in all view kinds',
+      async ({ expect, format }) =>
+        expect(
+          await format`
+          specification {
+            element component
+          }
+          model {
+            component sys1
+            component sys2
+          }
+          views {
+            view index {
+              routing     ortho
+              include *
+              autoLayout TopBottom 120 110     ortho
+            }
+            dynamic view flow {
+              routing  :  ortho
+              sys1 -> sys2
+              autoLayout     LeftRight     spline
+            }
+            deployment view infra {
+              routing spline
+              include *
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          specification {
+            element component
+          }
+          model {
+            component sys1
+            component sys2
+          }
+          views {
+            view index {
+              routing ortho
+              include *
+              autoLayout TopBottom 120 110 ortho
+            }
+            dynamic view flow {
+              routing: ortho
+              sys1 -> sys2
+              autoLayout LeftRight spline
+            }
+            deployment view infra {
+              routing spline
+              include *
+            }
+          }"
+        `),
+    )
+  })
+
   describe('formats imports', () => {
     it(
       'formats import rules',

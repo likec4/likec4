@@ -19,7 +19,7 @@ import {
   ViewOps,
 } from '../../ast'
 import { safeCall, stringHash } from '../../utils'
-import { parseTitleKeepingEscapedSlash, parseViewOrder, removeIndent, toSingleLine } from './Base'
+import { parseTitleKeepingEscapedSlash, parseViewOrder, parseViewRouting, removeIndent, toSingleLine } from './Base'
 import type { WithDeploymentView } from './DeploymentViewParser'
 import type { WithPredicates } from './PredicatesParser'
 
@@ -116,6 +116,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       const tags = this.convertTags(body)
       const links = this.convertLinks(body)
       const order = parseViewOrder(props.find(ast.isViewOrderProperty))
+      const routing = parseViewRouting(props, body.rules)
 
       const view: ParsedAstElementView = {
         [c4._type]: 'element',
@@ -124,6 +125,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         title: toSingleLine(title) ?? null,
         description,
         ...(order !== undefined && { order }),
+        ...(routing && { routing }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: [
@@ -298,6 +300,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       ViewOps.writeId(astNode, id as c4.ViewId)
 
       const variant = find(props, ast.isDynamicViewDisplayVariantProperty)?.value
+      const routing = parseViewRouting(props, body.rules)
 
       return {
         [c4._type]: 'dynamic',
@@ -306,6 +309,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         title: toSingleLine(title) ?? null,
         description,
         ...(order !== undefined && { order }),
+        ...(routing && { routing }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         variant,

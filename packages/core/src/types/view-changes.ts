@@ -2,7 +2,7 @@ import type { NonEmptyArray } from './_common'
 import type * as scalar from './scalar'
 import type { BorderStyle, ElementShape, ThemeColor } from './styles'
 import type { LayoutedView } from './view'
-import type { AutoLayoutDirection } from './view-common'
+import type { AutoLayoutDirection, EdgeRouting } from './view-common'
 
 export namespace ViewChange {
   export interface ChangeElementStyle {
@@ -34,6 +34,11 @@ export namespace ViewChange {
     }
   }
 
+  export interface ChangeRouting {
+    op: 'change-routing'
+    routing: EdgeRouting
+  }
+
   export interface ChangeProperty {
     op: 'change-property'
     /**
@@ -56,4 +61,5 @@ export type ViewChange =
   | ViewChange.SaveViewSnapshot
   | ViewChange.ResetManualLayout
   | ViewChange.ChangeAutoLayout
+  | ViewChange.ChangeRouting
   | ViewChange.ChangeProperty
