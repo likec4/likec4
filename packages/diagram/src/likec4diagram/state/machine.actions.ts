@@ -196,10 +196,11 @@ export const assignXYDataFromView = (view?: DiagramView) =>
     }
 
     const update = mergeXYNodesEdges(context, xydata)
+    const nodeIds = new Set(update.xynodes.map(n => n.id))
+    const nodeSelectionOrder = context.nodeSelectionOrder.filter(id => nodeIds.has(id))
 
     let { lastClickedNode, focusedNode, activeWalkthrough } = context
     if (lastClickedNode || focusedNode || activeWalkthrough) {
-      const nodeIds = new Set(update.xynodes.map(n => n.id))
       if (lastClickedNode && !nodeIds.has(lastClickedNode.id)) {
         lastClickedNode = null
       }
@@ -213,13 +214,14 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       }
       return {
         ...update,
+        nodeSelectionOrder,
         lastClickedNode,
         focusedNode,
         activeWalkthrough,
       }
     }
 
-    return update
+    return { ...update, nodeSelectionOrder }
   })
 
 export const focusOnNodesAndEdges = () =>
@@ -445,7 +447,7 @@ export function selectedNodesWithoutAncestors(xystore: XYStoreApi): string[] {
 }
 
 /**
- * Updates the order in which nodes were selected, based on xyflow select changes
+ * Updates the order in which nodes were selected, based on xyflow select and remove changes
  */
 export function updateNodeSelectionOrder(
   order: ReadonlyArray<string>,
@@ -453,6 +455,10 @@ export function updateNodeSelectionOrder(
 ): ReadonlyArray<string> {
   let next = order
   for (const change of changes) {
+    if (change.type === 'remove') {
+      next = next.filter(id => id !== change.id)
+      continue
+    }
     if (change.type !== 'select') {
       continue
     }
