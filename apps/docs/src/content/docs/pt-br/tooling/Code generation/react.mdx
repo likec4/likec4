@@ -1,0 +1,189 @@
+---
+title: Gerar componentes React
+description: Como gerar componentes React com visões do seu modelo de arquitetura.
+head:
+  - tag: title
+    content: Componentes React | LikeC4
+sidebar:
+  label: React
+  order: 8
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6    
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
+</p>
+
+Gere componentes React com visões do seu modelo de arquitetura.
+
+## Instalação
+
+Certifique-se de incluir [`likec4`](https://www.npmjs.com/package/likec4) nas dependências do projeto:
+
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+## React
+
+O comando a seguir gera um bundle JavaScript com o componente React e seu arquivo de declarações de tipos (`.d.ts`):
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen react --outfile ./src/likec4.generated.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+<br />   
+
+```sh frame="none"
+# Aliases
+npx likec4 generate react -o ./src/likec4.generated.js
+npx likec4 gen react -o ./src/likec4.generated.js
+
+```
+
+:::note
+Consulte `likec4 codegen react --help` para conhecer as opções disponíveis.
+:::
+
+<Aside type='tip' title="Plugin Vite" >
+Outra opção é utilizar o plugin Vite no modo de biblioteca, com atualização automática. Consulte este [exemplo](/pt-br/tooling/vite-plugin/#com-nextjs).
+</Aside >
+
+
+Para utilizar o componente:
+
+```tsx
+import { LikeC4View } from './likec4.generated'
+
+const App = () => {
+  return (
+    <div>
+      <LikeC4View viewId="index" />
+    </div>
+  )
+}
+```
+
+| Propriedade         | Descrição                                                                                         |
+| -----------------   | --------------------------------------------------------------------------------------------------- |
+| `viewId`            | Enumeração tipada das suas visões                                                                     |
+| `where`             | Opcional; consulte [filtro](#filtro) |
+| `injectFontCss`     | Injeta CSS com a fonte <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans Variable</a> pela CDN.<br/>O padrão é `true` |
+
+:::tip
+Consulte o <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts#L5-L156" target="_blank">código-fonte</a> para conhecer todas as propriedades.
+:::
+
+:::caution
+`LikeC4View` pode não realizar a hidratação corretamente quando renderizado no servidor; prefira a renderização no cliente.
+:::
+
+### Filtro
+
+`where` utiliza o mesmo conceito de [predicado de visão](/pt-br/dsl/views/predicates/#filtro), mas é aplicado dinamicamente e permite exibir ou ocultar elementos conforme o contexto. Por exemplo:
+
+```tsx
+import { LikeC4View } from './likec4.generated'
+
+// Keeps elements and relationships where:
+// - tag is not 'legacy'
+// - and 
+// - tag is 'v1' or 'v2'
+const App = () => {
+  return (
+    <div>
+      <LikeC4View
+        viewId="index"
+        where={{
+          and: [
+            { tag: { neq: 'legacy' } },
+            { 
+              or: [
+                { tag: { eq: 'v1' } },
+                { tag: { eq: 'v2' } }
+              ] 
+            }
+          ]
+        }}/>
+    </div>
+  )
+}
+```
+
+O layout permanece inalterado, ou seja, os elementos não são reorganizados.  
+Atenção: `where` é aplicado tanto a elementos quanto a relacionamentos.
+
+## ReactLikeC4
+
+`LikeC4View` renderiza as visões do modelo e permite explorá-las em uma janela de navegação.  
+O componente atende à maioria dos casos de uso, mas, se precisar de mais funcionalidades, utilize `ReactLikeC4`:
+
+```tsx
+import { ReactLikeC4, type LikeC4ViewId } from './likec4.generated'
+
+const App = () => {
+  const [viewId, setViewId] = useState<LikeC4ViewId>('index')
+  return (
+    <ReactLikeC4
+      viewId={viewId}
+      pannable
+      zoomable={false} 
+      keepAspectRatio
+      showNavigationButtons
+      enableDynamicViewWalkthrough={false}
+      enableElementDetails
+      enableRelationshipDetails
+      showDiagramTitle={false}
+      onNavigateTo={setViewId}
+      onNodeClick={...}
+    />
+  )
+}
+```
+
+`ReactLikeC4` é um componente de baixo nível que oferece mais controle e permite reagir aos eventos. 
+Consulte o <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4Diagram.props.ts" target="_blank">código-fonte</a> para conhecer as opções disponíveis.
+
+Compartilhe suas ideias ou tire dúvidas nas <a href="https://github.com/likec4/likec4/discussions/" target='_blank'>discussões do GitHub</a>.
+
+<Aside type='tip' title="Versão genérica" >
+A geração de código prepara um componente que já está vinculado ao seu modelo.  
+Mas também é possível utilizar um componente genérico da biblioteca:
+
+```tsx
+import { ReactLikeC4, LikeC4ModelProvider } from 'likec4/react'
+import { RenderIcon, likeC4Model } from './likec4.generated'
+
+const App = () => {
+  return (
+    <LikeC4ModelProvider likec4model={likeC4Model}>
+      <ReactLikeC4
+        viewId={"index"}
+        renderIcon={RenderIcon} // Optional, used for bundled icons
+        onEdgeClick={...}
+      />
+    </LikeC4ModelProvider>
+  )
+}
+```
+
+</Aside>
+
+## Estilização
+
+<Aside type='caution' title="Em desenvolvimento" >
+  Pendente: documentar a estilização e o uso de temas com PandaCSS.
+</Aside>
