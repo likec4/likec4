@@ -137,7 +137,8 @@
     "vite": "catalog:vite",
     "yargs": "17.7.2",
     "nano-spawn": "catalog:externals",
-    "use-sync-external-store": "catalog:react"
+    "use-sync-external-store": "catalog:react",
+    "zod": "catalog:externals"
   },
   "peerDependencies": {
     "@tanstack/ai": "catalog:ai",
@@ -242,7 +243,6 @@
     "vscode-uri": "catalog:vscode",
     "which": "^5.0.0",
     "wireit": "catalog:",
-    "zod": "catalog:externals",
     "zx": "catalog:"
   }
 }

@@ -546,9 +546,20 @@ export class LikeC4Model<A extends Any = Any> {
    * Returns a view folder by its path.
    * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
    * @throws Error if view folder is not found.
+   * @see {@link findViewFolder} for a non-throwing version.
    */
   public viewFolder(path: string): LikeC4ViewsFolder<A> {
-    return nonNullable(this._viewFolders.get(path), `View folder ${path} not found`)
+    return nonNullable(this._viewFolders.get(path), `View folder "${path}" not found`)
+  }
+
+  /**
+   * Returns a view folder by its path.
+   * Path is extracted from the view title, e.g. "Group 1/Group 2/View" -> "Group 1/Group 2"
+   * Returns null if view folder is not found.
+   * @see {@link viewFolder} for a strict (but throwing) version.
+   */
+  public findViewFolder(path: string): LikeC4ViewsFolder<A> | null {
+    return this._viewFolders.get(path) ?? null
   }
 
   /**
@@ -723,9 +734,9 @@ export class LikeC4Model<A extends Any = Any> {
   /**
    * Returns all elements, relationships and views marked with the given tag.
    */
-  public findByTag(tag: aux.Tag<A>): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
+  public findByTag(tag: aux.Tag<A>): IteratorLike<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A, $View<A>>>
   public findByTag(tag: aux.Tag<A>, type: 'elements'): IteratorLike<ElementModel<A>>
-  public findByTag(tag: aux.Tag<A>, type: 'views'): IteratorLike<LikeC4ViewModel<A>>
+  public findByTag(tag: aux.Tag<A>, type: 'views'): IteratorLike<LikeC4ViewModel<A, $View<A>>>
   public findByTag(tag: aux.Tag<A>, type: 'relationships'): IteratorLike<RelationshipModel<A>>
   public findByTag(
     tag: aux.Tag<A>,

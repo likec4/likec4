@@ -1,6 +1,6 @@
 import { defineConfig } from '@likec4/devops/tsdown'
 import { existsSync, readdirSync } from 'node:fs'
-import { copyFile, mkdir, rm } from 'node:fs/promises'
+import { copyFile, cp, mkdir, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { $, fs } from 'zx'
@@ -49,6 +49,7 @@ export default defineConfig([
         await copyReact()
         await bundleApp()
         await copyMcpAppAssets()
+        await copySkills()
       },
     },
   },
@@ -115,4 +116,13 @@ async function copyMcpAppAssets() {
   console.info(`  to: ${to}`)
 
   await fs.copy(from, to)
+}
+
+async function copySkills() {
+  const skillDir = resolve('../../skills/likec4-dsl')
+  if (!existsSync(skillDir)) {
+    throw new Error(`skills dir not found: ${skillDir}`)
+  }
+  console.info('Copy SKILLs: %s', skillDir)
+  await cp(skillDir, './skills/likec4-dsl', { recursive: true })
 }

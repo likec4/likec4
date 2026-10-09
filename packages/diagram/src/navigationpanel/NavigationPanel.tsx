@@ -1,3 +1,4 @@
+import { getViewFolderPath } from '@likec4/core/model'
 import { hasProp, isDynamicView } from '@likec4/core/types'
 import { VStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -23,10 +24,12 @@ import { WalkthroughPanel } from './walkthrough/WalkthroughPanel'
 
 const select = selectDiagramContext(s => {
   const isActiveWalkthrough = !!s.activeWalkthrough
+  const viewFolder = getViewFolderPath(s.view.title ?? '') ?? ''
   if (isDynamicView(s.view) && isActiveWalkthrough) {
     const isSequenceView = s.dynamicViewVariant === 'sequence'
     return {
       viewId: s.view.id,
+      viewFolder,
       mode: (isSequenceView && hasProp(s.view, 'flow')
         ? 'walkthrough-flow'
         : 'walkthrough') as NavigationPanelMode,
@@ -34,6 +37,7 @@ const select = selectDiagramContext(s => {
   }
   return {
     viewId: s.view.id,
+    viewFolder,
     mode: 'default' as NavigationPanelMode,
   }
 })
@@ -48,9 +52,7 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
   const opened = useSelector(actorRef, stateHasActiveTag)
   const portalProps = useMantinePortalProps()
 
-  const { viewId, mode } = useDiagramSelector(select)
-  const viewModel = useOptionalCurrentViewModel()
-  const viewFolder = !!viewModel && viewModel.id === viewId ? viewModel.folder.path : undefined
+  const { viewId, mode, viewFolder } = useDiagramSelector(select)
 
   useEffect(() => {
     actorRef.send({ type: 'update.inputs', inputs: { viewId, viewFolder } })
@@ -105,7 +107,7 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
                   <PopoverTarget>
                     <m.div
                       layout="size"
-                      layoutDependency={[mode, viewId]}
+                      layoutDependency={`mode-${mode}-viewId-${viewId}`}
                       className={hstack({
                         layerStyle: 'likec4.panel',
                         position: 'relative',
