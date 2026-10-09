@@ -198,7 +198,8 @@ export const assignXYDataFromView = (view?: DiagramView) =>
 
     const update = mergeXYNodesEdges(context, xydata)
     const nodeIds = new Set(update.xynodes.map(n => n.id))
-    const nodeSelectionOrder = context.nodeSelectionOrder.filter(id => nodeIds.has(id))
+    const selectedNodeIds = new Set(update.xynodes.filter(n => n.selected).map(n => n.id))
+    const nodeSelectionOrder = context.nodeSelectionOrder.filter(id => selectedNodeIds.has(id))
 
     let { lastClickedNode, focusedNode, activeWalkthrough } = context
     if (lastClickedNode || focusedNode || activeWalkthrough) {
@@ -504,7 +505,7 @@ export const layoutResize = (params?: { mode: ResizeMode }) =>
     }
     const [referenceId, ...others] = nodesToResize
     const reference = getNodeDimensions(nonNullable(nodeLookup.get(referenceId), `Node ${referenceId} not found`))
-    const constraints = createLayoutConstraints(xystore, nodesToResize)
+    const constraints = createLayoutConstraints(xystore, nodesToResize, viewRouting(context.view))
     for (const id of others) {
       constraints.resize(id, mode === 'Width' ? { width: reference.width } : { height: reference.height })
     }
@@ -563,7 +564,7 @@ export const layoutDistribute = (params?: { mode: DistributionMode }) =>
       console.warn('At least 3 nodes must be selected to distribute')
       return
     }
-    const constraints = createLayoutConstraints(xystore, nodesToDistribute)
+    const constraints = createLayoutConstraints(xystore, nodesToDistribute, viewRouting(context.view))
     const distributor = getDistributer(mode)
 
     const nodes = nodesToDistribute.map(id => ({
