@@ -133,6 +133,7 @@ O componente atende à maioria dos casos de uso, mas, se precisar de mais funcio
 
 ```tsx
 import { ReactLikeC4, type $ViewId } from './likec4.generated'
+import { useState } from 'react'
 
 const App = () => {
   const [viewId, setViewId] = useState<$ViewId>('index')
