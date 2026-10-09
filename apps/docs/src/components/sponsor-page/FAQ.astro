@@ -4,26 +4,28 @@ type FaqItem = {
   readonly answer: string
 }
 
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
+
 const faqs: ReadonlyArray<FaqItem> = [
   {
-    question: 'Does sponsorship mean LikeC4 becomes closed-source?',
+    question: isPtBr ? 'O patrocínio significa que o LikeC4 deixará de ser código aberto?' : 'Does sponsorship mean LikeC4 becomes closed-source?',
     answer:
-      'No. LikeC4 is and will remain MIT-licensed. Sponsorship makes it sustainable to maintain that promise. The goal is to keep the core open and accessible for everyone.',
+      isPtBr ? 'Não. O LikeC4 continuará sob a licença MIT. O patrocínio ajuda a manter esse compromisso sustentável e o núcleo acessível a todos.' : 'No. LikeC4 is and will remain MIT-licensed. Sponsorship makes it sustainable to maintain that promise. The goal is to keep the core open and accessible for everyone.',
   },
   {
-    question: 'Can you prioritize a feature for our team?',
+    question: isPtBr ? 'É possível priorizar um recurso para nossa equipe?' : 'Can you prioritize a feature for our team?',
     answer:
-      'Yes. Open an issue with context — your use case, constraints, and sample model — and sponsor to help fund the work. Team and Enterprise sponsors get direct input on prioritization.',
+      isPtBr ? 'Sim. Abra uma issue com o contexto, caso de uso, restrições e um modelo de exemplo e contribua para financiar o trabalho. Patrocinadores dos níveis Equipe e Enterprise participam diretamente da priorização.' : 'Yes. Open an issue with context — your use case, constraints, and sample model — and sponsor to help fund the work. Team and Enterprise sponsors get direct input on prioritization.',
   },
   {
-    question: 'Do you provide invoices for procurement?',
+    question: isPtBr ? 'Vocês emitem faturas para o processo de compras?' : 'Do you provide invoices for procurement?',
     answer:
-      'Yes. For Enterprise sponsors we can provide invoices, custom terms, and work with your procurement process. Reach out directly and we\'ll sort it out.',
+      isPtBr ? 'Sim. Para patrocinadores Enterprise, podemos fornecer faturas, condições personalizadas e adequação ao processo de compras. Entre em contato para alinharmos os detalhes.' : 'Yes. For Enterprise sponsors we can provide invoices, custom terms, and work with your procurement process. Reach out directly and we\'ll sort it out.',
   },
   {
-    question: 'What do sponsors actually get?',
+    question: isPtBr ? 'Quais benefícios os patrocinadores recebem?' : 'What do sponsors actually get?',
     answer:
-      'A healthier project, faster maintenance, and predictable releases. Higher tiers get public recognition, direct roadmap influence, priority support, and dedicated development time for features that benefit the ecosystem.',
+      isPtBr ? 'Um projeto mais sustentável, manutenção mais rápida e lançamentos previsíveis. Os níveis superiores oferecem reconhecimento público, influência direta no roadmap, suporte prioritário e tempo de desenvolvimento dedicado a melhorias para o ecossistema.' : 'A healthier project, faster maintenance, and predictable releases. Higher tiers get public recognition, direct roadmap influence, priority support, and dedicated development time for features that benefit the ecosystem.',
   },
 ]
 ---
@@ -35,7 +37,7 @@ const faqs: ReadonlyArray<FaqItem> = [
         class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
       >FAQ</span>
       <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-        Common questions
+        {isPtBr ? "Perguntas frequentes" : "Common questions"}
       </h2>
     </div>
 
