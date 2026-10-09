@@ -197,7 +197,8 @@ export const assignXYDataFromView = (view?: DiagramView) =>
 
     const update = mergeXYNodesEdges(context, xydata)
     const nodeIds = new Set(update.xynodes.map(n => n.id))
-    const nodeSelectionOrder = context.nodeSelectionOrder.filter(id => nodeIds.has(id))
+    const selectedNodeIds = new Set(update.xynodes.filter(n => n.selected).map(n => n.id))
+    const nodeSelectionOrder = context.nodeSelectionOrder.filter(id => selectedNodeIds.has(id))
 
     let { lastClickedNode, focusedNode, activeWalkthrough } = context
     if (lastClickedNode || focusedNode || activeWalkthrough) {
