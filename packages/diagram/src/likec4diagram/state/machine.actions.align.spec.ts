@@ -1,5 +1,6 @@
 import type { DiagramNode, LayoutedElementView } from '@likec4/core/types'
 import { scalar } from '@likec4/core/types'
+import { applyNodeChanges } from '@xyflow/react'
 import { describe, expect, it } from 'vitest'
 import { assertEvent, createActor } from 'xstate'
 import type { XYStoreApi } from '../../hooks/useXYFlow'
@@ -90,7 +91,11 @@ describe('assignXYDataFromView', () => {
     edges: [],
     bounds: { x: 0, y: 0, width: 100, height: 100 },
   } satisfies LayoutedElementView
-  const xydata = diagramToXY({ view, currentViewId: view.id, where: null })
+  const converted = diagramToXY({ view, currentViewId: view.id, where: null })
+  const xydata = {
+    ...converted,
+    xynodes: converted.xynodes.map(node => ({ ...node, selected: true })),
+  }
 
   it.each([false, true])('prunes removed IDs on view replacement (focused node: %s)', (hasFocusedNode) => {
     const input = {
@@ -117,6 +122,7 @@ describe('assignXYDataFromView', () => {
             actions: machine.assign(({ context, event }) => {
               assertEvent(event, 'xyflow.applyChanges')
               return {
+                xynodes: applyNodeChanges(event.nodes ?? [], context.xynodes),
                 nodeSelectionOrder: updateNodeSelectionOrder(context.nodeSelectionOrder, event.nodes ?? []),
               }
             }),
@@ -143,6 +149,16 @@ describe('assignXYDataFromView', () => {
       actor.send({ type: 'xyflow.applyChanges', nodes: [{ type: 'select', id: 'a', selected: true }] })
       expect(actor.getSnapshot().context.nodeSelectionOrder).toEqual(['b', 'a'])
       expect(sortBySelectionOrder(['a', 'b'], actor.getSnapshot().context.nodeSelectionOrder)).toEqual(['b', 'a'])
+
+      actor.send({
+        type: 'update.view',
+        source: 'editor',
+        view,
+        xynodes: xydata.xynodes.map(node => ({ ...node, selected: node.id !== 'b' })),
+        xyedges: [],
+      })
+      expect(actor.getSnapshot().context.nodeSelectionOrder).toEqual(['a'])
+      expect(actor.getSnapshot().context.xynodes.find(node => node.id === 'b')?.selected).toBe(false)
     } finally {
       actor.stop()
     }
