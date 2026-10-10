@@ -3,12 +3,17 @@ import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro'
 import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro'
 import Logo from '../Logo.astro'
 
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
+const isSponsorPage = /\/(?:pt-br\/)?sponsor\/?$/.test(Astro.url.pathname)
+const languageHref = isPtBr
+  ? (isSponsorPage ? '/sponsor/' : '/')
+  : (isSponsorPage ? '/pt-br/sponsor/' : '/pt-br/')
 const navLinks = [
-  { href: '/#features', label: 'Features' },
-  { href: '/tutorial', label: 'Docs' },
+  { href: isPtBr ? '/pt-br/#features' : '/#features', label: isPtBr ? 'Recursos' : 'Features' },
+  { href: isPtBr ? '/pt-br/tutorial' : '/tutorial', label: isPtBr ? 'Documentação' : 'Docs' },
   { href: 'https://playground.likec4.dev/w/tutorial/', label: 'Playground', target: '_blank' },
-  { href: '/sponsor', label: 'For Teams' },
-  { href: 'https://github.com/likec4/likec4/discussions', label: 'Community', target: '_blank' },
+  { href: isPtBr ? '/pt-br/sponsor' : '/sponsor', label: isPtBr ? 'Para equipes' : 'For Teams' },
+  { href: 'https://github.com/likec4/likec4/discussions', label: isPtBr ? 'Comunidade' : 'Community', target: '_blank' },
 ]
 ---
 
@@ -35,11 +40,19 @@ const navLinks = [
 
     <div class="flex items-center gap-3">
       <SocialIcons />
+      <a
+        href={languageHref}
+        hreflang={isPtBr ? 'en' : 'pt-BR'}
+        aria-label={isPtBr ? 'Switch to English' : 'Mudar para português brasileiro'}
+        class="text-sm font-medium text-stone-600 dark:text-zinc-300 hover:text-stone-900 dark:hover:text-white no-underline"
+      >
+        {isPtBr ? 'EN' : 'PT-BR'}
+      </a>
       <ThemeSelect />
       <button
         id="mobile-menu-toggle"
         class="md:hidden p-2 text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 transition-colors"
-        aria-label="Toggle menu"
+        aria-label={isPtBr ? "Abrir ou fechar menu" : "Toggle menu"}
       >
         <svg
           id="menu-icon"

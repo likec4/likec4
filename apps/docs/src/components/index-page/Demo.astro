@@ -60,6 +60,7 @@ const newLinesPerStep = [
   computeNewLines(steps[0]!, steps[1]!),
   computeNewLines(steps[1]!, steps[2]!),
 ]
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 ---
 
 <section id="demo" class="relative py-24 md:py-32 px-6 bg-stone-900 dark:bg-zinc-900/80">
@@ -73,7 +74,7 @@ const newLinesPerStep = [
         Demo
       </span>
       <h2 class="lp-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mt-4">
-        See it in action
+{isPtBr ? "        Veja em ação" : "        See it in action"}
       </h2>
     </div>
 
@@ -138,7 +139,7 @@ const newLinesPerStep = [
         target="_blank"
         class="group inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 dark:bg-cyan-400 text-cyan-950 dark:text-cyan-950 font-semibold text-sm rounded-lg hover:bg-cyan-400 dark:hover:bg-cyan-300 transition-all duration-200 shadow-lg shadow-cyan-500/20 no-underline"
       >
-        Launch Playground
+{isPtBr ? "        Abrir Playground" : "        Launch Playground"}
         <svg
           class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
           fill="none"
@@ -149,7 +150,7 @@ const newLinesPerStep = [
           <path d="M7 17l9.2-9.2M17 17V7H7"></path>
         </svg>
       </a>
-      <span class="text-base font-medium text-zinc-500">Try it yourself in interactive playground</span>
+      <span class="text-base font-medium text-zinc-500">{isPtBr ? "Experimente no playground interativo" : "Try it yourself in interactive playground"}</span>
     </div>
   </div>
 </section>

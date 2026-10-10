@@ -3,8 +3,9 @@ import Default from '@astrojs/starlight/components/PageFrame.astro'
 import IndexPage from '@components/index-page/IndexPage.astro'
 import SponsorPage from '@components/sponsor-page/SponsorPage.astro'
 
-const isIndexPage = Astro.locals.starlightRoute.id === ''
-const isSponsorPage = Astro.locals.starlightRoute.id === 'sponsor'
+const pathname = Astro.url.pathname.replace(/\/+$/, '')
+const isIndexPage = pathname === '' || pathname === '/pt-br'
+const isSponsorPage = pathname === '/sponsor' || pathname === '/pt-br/sponsor'
 ---
 
 {isIndexPage

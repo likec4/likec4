@@ -1,0 +1,47 @@
+---
+title: Plugin para MkDocs
+description: Plugin para incorporar diagramas LikeC4 à documentação do MkDocs.
+---
+
+import { LinkCard, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+Nossos parceiros (e patrocinadores) da [doubleslash.de](https://doubleslash.de/) desenvolveram um plugin que permite incorporar diagramas LikeC4 à documentação criada com MkDocs. 
+
+<LinkButton
+  href="https://github.com/doubleSlashde/mkdocs-likec4"
+  variant="minimal"
+  icon="external"
+  iconPlacement="start"
+>
+  {'https://github.com/doubleSlashde/mkdocs-likec4'}
+</LinkButton>
+
+Confira o [repositório do projeto](https://github.com/doubleSlashde/mkdocs-likec4) e o site da documentação para encontrar exemplos e mais detalhes.
+
+<CardGrid>
+  <LinkCard title="Documentação" href="https://doubleslashde.github.io/mkdocs-likec4/" />
+</CardGrid>
+
+
+## Início rápido
+
+1. Certifique-se de que `likec4` e `graphviz` estejam disponíveis no ambiente de build.
+
+2. Instale o plugin `mkdocs-likec4` usando `pip`:
+  ```shell
+  pip install mkdocs-likec4
+  ```
+
+3. Adicione o plugin ao arquivo `mkdocs.yml`:
+  ```yaml
+  plugins:
+    - search
+    - mkdocs-likec4
+  ```
+
+4. Comece a incorporar visões aos seus arquivos Markdown:
+  ````markdown
+  ```likec4-view
+  <your-view-id>
+  ```
+  ````

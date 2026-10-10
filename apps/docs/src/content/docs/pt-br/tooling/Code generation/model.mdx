@@ -1,0 +1,39 @@
+---
+title: Gerar LikeC4Model
+description: Como gerar um modelo LikeC4 tipado a partir da DSL para acessar sua arquitetura programaticamente.
+head:
+  - tag: title
+    content: Geração de código LikeC4Model
+sidebar:
+  label: LikeC4Model
+  order: 7
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6    
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
+</p>
+
+Gere artefatos de código-fonte a partir do modelo de arquitetura.
+
+## Modelo tipado
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen model --outfile ./likec4-model.ts"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+<Aside type='caution' title="Em desenvolvimento" >
+  Documentação em desenvolvimento.
+
+  Enquanto isso, consulte [`@likec4/core/model`](https://github.com/likec4/likec4/blob/main/packages/core/README.md).
+</Aside>
