@@ -15,9 +15,11 @@ import type {
   FileSystemModuleContext,
   FileSystemProvider,
   FileSystemWatcher,
+  LikeC4DescriptionFiles,
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
+import { DefaultLikeC4DescriptionFiles } from './filesystem/LikeC4DescriptionFiles'
 import { NoFileSystem, NoLikeC4ManualLayouts, NoopFileSystemProvider } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
@@ -89,6 +91,7 @@ interface LikeC4AddedSharedServices {
     FileSystemProvider: FileSystemProvider
     FileSystemWatcher: FileSystemWatcher
     ManualLayouts: LikeC4ManualLayouts
+    DescriptionFiles: LikeC4DescriptionFiles
   }
 }
 
@@ -117,6 +120,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       FileSystemProvider: services => context.fileSystemProvider(services),
       FileSystemWatcher: services => context.fileSystemWatcher(services),
       ManualLayouts: services => context.manualLayouts(services),
+      DescriptionFiles: services => new DefaultLikeC4DescriptionFiles(services),
     },
   })
 }
