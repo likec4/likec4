@@ -1,6 +1,6 @@
 {
   "name": "@likec4/playground",
-  "version": "1.59.4",
+  "version": "1.59.5",
   "private": true,
   "scripts": {
     "generate": "tsx scripts/generate.mts",

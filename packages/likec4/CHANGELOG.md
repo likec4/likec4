@@ -1,5 +1,27 @@
 # likec4
 
+## 1.59.5
+
+### Patch Changes
+
+- [#3310](https://github.com/likec4/likec4/pull/3310) [`1fb8e00`](https://github.com/likec4/likec4/commit/1fb8e00a8324bcd4a691025b6228e445150dcc6a) Thanks [@davydkov](https://github.com/davydkov)! - Add new `agent` element shape
+
+- [#3289](https://github.com/likec4/likec4/pull/3289) [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add `sizing` style property for elements. With `sizing fixed`, all elements of the same `size` are drawn with exactly the same width and height, regardless of title, description, icon or shape. Long titles and icons shrink to fit the element instead of making it grow. The default `sizing auto` keeps the current behavior, where `size` is the minimum size.
+
+  ```likec4
+  specification {
+    element service {
+      style {
+        size small
+        sizing fixed
+      }
+    }
+  }
+  ```
+- Updated dependencies [[`1c22fb0`](https://github.com/likec4/likec4/commit/1c22fb0bc42d9a0c7a9411efba39546aeeb55437), [`feb3f4e`](https://github.com/likec4/likec4/commit/feb3f4e4cacb9f456161145f97aeed7143160599), [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd)]:
+  - @likec4/core@1.59.5
+  - @likec4/icons@1.46.4
+
 ## 1.59.4
 
 ### Patch Changes

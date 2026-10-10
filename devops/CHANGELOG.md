@@ -1,5 +1,9 @@
 # @likec4/devops
 
+## 1.59.5
+
+No changes in this release.
+
 ## 1.59.4
 
 No changes in this release.

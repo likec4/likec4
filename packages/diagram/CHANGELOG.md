@@ -1,5 +1,33 @@
 # @likec4/diagram
 
+## 1.59.5
+
+### Patch Changes
+
+- [#3310](https://github.com/likec4/likec4/pull/3310) [`1fb8e00`](https://github.com/likec4/likec4/commit/1fb8e00a8324bcd4a691025b6228e445150dcc6a) Thanks [@davydkov](https://github.com/davydkov)! - Add new `agent` element shape
+
+- [#3223](https://github.com/likec4/likec4/pull/3223) [`e8f3404`](https://github.com/likec4/likec4/commit/e8f340445f1391b183c7dbf56960258cebbc3346) Thanks [@m-arrieta-r](https://github.com/m-arrieta-r)! - Add a "Graph" display variant for element views, alongside the existing "Diagram" view. It renders elements as compact circles with straight relationship lines, making it easier to see the topology of larger views. Switch between them with the new Diagram/Graph toggle in the navigation panel. In Graph mode, nodes are draggable and animated with a physics-based simulation (repulsion, springs along relationships, and a settle-back bounce), similar to Structurizr's Explore view.
+
+- [#3295](https://github.com/likec4/likec4/pull/3295) [`e563800`](https://github.com/likec4/likec4/commit/e5638001c7aeea12b1c9634d5456f837051b3617) Thanks [@cry999](https://github.com/cry999)! - Fix long metadata values in the element details dialog not being truncated with an ellipsis, and show the full value in a tooltip on hover without the tooltip being hidden behind the backdrop or clipped by the dialog. This also keeps long descriptions from being clipped at the edge of the dialog when the element has a long metadata value. Fixes [#3279](https://github.com/likec4/likec4/issues/3279)
+
+- [#3280](https://github.com/likec4/likec4/pull/3280) [`78dc808`](https://github.com/likec4/likec4/commit/78dc808186faf9f0b3324894df0c43d248e484e5) Thanks [@cry999](https://github.com/cry999)! - Fix tooltips in the element details dialog (title, "Open source" and "Open default view" buttons) being rendered behind the dialog backdrop. Fixes [#3256](https://github.com/likec4/likec4/issues/3256)
+
+- [#3289](https://github.com/likec4/likec4/pull/3289) [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add `sizing` style property for elements. With `sizing fixed`, all elements of the same `size` are drawn with exactly the same width and height, regardless of title, description, icon or shape. Long titles and icons shrink to fit the element instead of making it grow. The default `sizing auto` keeps the current behavior, where `size` is the minimum size.
+
+  ```likec4
+  specification {
+    element service {
+      style {
+        size small
+        sizing fixed
+      }
+    }
+  }
+  ```
+- Updated dependencies [[`1c22fb0`](https://github.com/likec4/likec4/commit/1c22fb0bc42d9a0c7a9411efba39546aeeb55437), [`feb3f4e`](https://github.com/likec4/likec4/commit/feb3f4e4cacb9f456161145f97aeed7143160599), [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd)]:
+  - @likec4/core@1.59.5
+  - @likec4/styles@1.59.5
+
 ## 1.59.4
 
 ### Patch Changes

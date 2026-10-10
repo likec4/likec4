@@ -1,5 +1,22 @@
 # @likec4/style-preset
 
+## 1.59.5
+
+### Patch Changes
+
+- [#3289](https://github.com/likec4/likec4/pull/3289) [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add `sizing` style property for elements. With `sizing fixed`, all elements of the same `size` are drawn with exactly the same width and height, regardless of title, description, icon or shape. Long titles and icons shrink to fit the element instead of making it grow. The default `sizing auto` keeps the current behavior, where `size` is the minimum size.
+
+  ```likec4
+  specification {
+    element service {
+      style {
+        size small
+        sizing fixed
+      }
+    }
+  }
+  ```
+
 ## 1.59.4
 
 No changes in this release.
