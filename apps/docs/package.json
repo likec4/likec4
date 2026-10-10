@@ -1,7 +1,7 @@
 {
   "name": "@likec4/docs-astro",
   "type": "module",
-  "version": "1.59.4",
+  "version": "1.59.5",
   "private": true,
   "scripts": {
     "update-theme-c4": "node scripts/generate-theme-c4.mjs",
