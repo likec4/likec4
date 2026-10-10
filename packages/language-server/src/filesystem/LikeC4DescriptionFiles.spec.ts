@@ -292,3 +292,69 @@ describe('descriptionFile', () => {
     expect(elements['c1']).toHaveProperty('description', { txt: 'inline' })
   })
 })
+
+it('registers a referenced file with the file system watcher', async ({ expect }) => {
+  const t = createTestServices()
+  const watch = vi
+    .spyOn(t.services.shared.workspace.FileSystemWatcher, 'watch')
+    .mockImplementation(() => {})
+  mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+
+  await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile 'spec.md'
+        }
+      }
+    `)
+
+  // A file that was not referenced when the watcher scanned the folder is not tracked by it, so
+  // its later edits would produce no events.
+  expect(watch.mock.calls.flat()).toContain('/test/workspace/src/spec.md')
+  watch.mockRestore()
+})
+
+it('keeps the model listeners when the caches are cleared', async ({ expect }) => {
+  const t = createTestServices()
+  const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
+  vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
+    .mockImplementation(async (uri: URI) => files[uri.fsPath] ?? '')
+  const descriptionFiles = t.services.shared.workspace.DescriptionFiles
+
+  await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile 'spec.md'
+        }
+      }
+    `)
+
+  const updated: string[] = []
+  descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
+  // `onProjectsUpdate` clears the caches while the services keep running, and the model builder
+  // does not register its listener a second time
+  descriptionFiles.clearCaches()
+
+  // the documents are parsed again, which refills the cache the clear emptied
+  await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile 'spec.md'
+        }
+      }
+    `)
+
+  files['/test/workspace/src/spec.md'] = '# second'
+  await descriptionFiles.handleFileSystemUpdate({ update: URI.parse('/test/workspace/src/spec.md') })
+
+  expect(updated).toHaveLength(1)
+})

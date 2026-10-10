@@ -156,10 +156,16 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         this.notifyListeners(projectId)
       }),
       // A referenced description file changed: the parsed model carries its content, so the caches
-      // of the project have to go with it
-      this.descriptionFiles.onDescriptionFileUpdate(({ projectId }) => {
-        this.cache.clear(projectId)
-        this.notifyListeners(projectId)
+      // have to go with it. Not only the ones of the project that owns the file: a project that
+      // imports from it holds a cached copy of the imported elements (see
+      // `unsafeSyncJoinedModelData`) and would keep serving the old description. A precise walk of
+      // the project graph is possible, but a description file changing is rare enough that clearing
+      // the model cache is the cheaper honest answer.
+      this.descriptionFiles.onDescriptionFileUpdate(() => {
+        this.cache.clear()
+        this.notifyListeners(
+          Array.from(this.services.shared.workspace.LangiumDocuments.all, doc => doc.uri),
+        )
       }),
     )
 

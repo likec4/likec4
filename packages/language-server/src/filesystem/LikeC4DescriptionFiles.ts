@@ -64,7 +64,13 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
 
   constructor(private services: LikeC4SharedServices) {
     super()
-    this.onDispose(Disposable.create(() => this.clearCaches()))
+    // Disposing drops the listeners too: a listener registered by a disposed service can never be
+    // unsubscribed. A cache clear is not a disposal — `onProjectsUpdate` clears the caches while the
+    // services keep running, and the model builder does not register its listener a second time.
+    this.onDispose(Disposable.create(() => {
+      this.files.clear()
+      this.listeners.length = 0
+    }))
 
     onNextTick(() => {
       this.onDispose(
@@ -78,7 +84,6 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
 
   clearCaches(): void {
     this.files.clear()
-    this.listeners.length = 0
   }
 
   get(docUri: URI, path: string): DescriptionFileContent | undefined {
@@ -118,7 +123,9 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
       try {
         const files = new Map<string, DescriptionFile>()
         for (const path of this.referencedPaths(doc)) {
-          files.set(path, await this.loadFile(doc.uri, path))
+          const file = await this.loadFile(doc.uri, path)
+          this.watchFile(file.resolved)
+          files.set(path, file)
         }
         if (files.size === 0) {
           this.files.delete(doc.uri.toString())
@@ -137,10 +144,25 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
    */
   async readFile(doc: LangiumDocument, path: string): Promise<DescriptionFileContent> {
     const file = await this.loadFile(doc.uri, path)
+    this.watchFile(file.resolved)
     const files = this.files.get(doc.uri.toString()) ?? new Map()
     files.set(path, file)
     this.files.set(doc.uri.toString(), files)
     return file.content
+  }
+
+  /**
+   * Lets the file system watcher follow a resolved description file.
+   *
+   * The watcher decides which files it follows while it scans, so a file that was not a reference yet
+   * is not tracked afterwards and its edits produce no events. `watch` re-evaluates that decision for
+   * the path it is given, which is how a file that is already on disk starts being followed.
+   */
+  private watchFile(resolved: URI | undefined): void {
+    if (!resolved || resolved.scheme !== 'file') {
+      return
+    }
+    this.services.workspace.FileSystemWatcher?.watch(resolved.fsPath)
   }
 
   /**
