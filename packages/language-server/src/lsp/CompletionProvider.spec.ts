@@ -59,7 +59,7 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 4,
-      expectedItems: ['title', 'description', 'technology', 'notation', 'summary', 'link', 'style'],
+      expectedItems: ['title', 'description', 'descriptionFile', 'technology', 'notation', 'summary', 'link', 'style'],
     })
     await completion({
       text,
@@ -377,6 +377,7 @@ describe('LikeC4CompletionProvider', () => {
       expectedItems: [
         'title',
         'description',
+        'descriptionFile',
         'order',
         'link',
         'include',
@@ -570,6 +571,7 @@ describe('LikeC4CompletionProvider', () => {
         'navigateTo',
         'title',
         'description',
+        'descriptionFile',
         'technology',
         'summary',
         'notation',
@@ -644,6 +646,7 @@ describe('LikeC4CompletionProvider', () => {
         'title',
         'technology',
         'description',
+        'descriptionFile',
         'notation',
         'notes',
         'color',

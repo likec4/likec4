@@ -5,6 +5,7 @@ import type {
   Disposable,
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,
+  LangiumDocument,
   URI,
 } from 'langium'
 import type { Location } from 'vscode-languageserver-types'
@@ -77,6 +78,34 @@ export interface FileSystemWatcher extends AsyncDisposable {
 
 export interface LikeC4ManualLayoutsModuleContext {
   manualLayouts: (services: LikeC4SharedServices) => LikeC4ManualLayouts
+}
+
+/**
+ * What a file referenced by `descriptionFile` resolved to.
+ */
+export type DescriptionFileContent =
+  | { readonly content: string }
+  | { readonly error: string }
+
+export interface LikeC4DescriptionFiles extends Disposable {
+  /**
+   * Reads the files referenced by `descriptionFile` in the given documents, so the synchronous
+   * model parser can resolve them. Called on the `Parsed` document phase, before the parser runs.
+   */
+  read(docs: LangiumDocument[]): Promise<void>
+
+  /**
+   * Resolves and reads a single file, and remembers the result for the parser.
+   */
+  readFile(doc: LangiumDocument, path: string): Promise<DescriptionFileContent>
+
+  /**
+   * The file referenced by `path` from the document at `docUri`, resolved against that document.
+   * `undefined` when the document does not reference it (or it has not been read yet).
+   */
+  get(docUri: URI, path: string): DescriptionFileContent | undefined
+
+  clearCaches(): void
 }
 
 export type ManualLayoutsSnapshot = {

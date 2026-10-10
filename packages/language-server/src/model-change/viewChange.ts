@@ -231,7 +231,10 @@ function updateViewTags(
 }
 
 function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit[] {
+  // A view described from a file is still the description: replace that property rather than adding
+  // a second one, which the validation rejects
   const existing = findExistingViewProperty(viewAst, 'description')
+    ?? findExistingViewProperty(viewAst, 'descriptionFile')
 
   const descriptionOut = withctx(
     { description },

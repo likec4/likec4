@@ -356,6 +356,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       const propertyName = formatter.keywords(
         'title',
         'description',
+        'descriptionFile',
         'order',
         'technology',
         'summary',

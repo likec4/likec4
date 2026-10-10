@@ -481,8 +481,10 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
             case ast.isRelationStringProperty(prop):
             case ast.isNotationProperty(prop): {
               if (isDefined(prop.value)) {
-                if (prop.key === 'description') {
-                  const value = removeIndent(prop.value)
+                if (prop.key === 'description' || prop.key === 'descriptionFile') {
+                  const value = this.parseDescription({
+                    [prop.key]: prop.value,
+                  })
                   if (value) {
                     step.description = value
                   }

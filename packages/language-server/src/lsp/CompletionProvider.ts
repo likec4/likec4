@@ -157,7 +157,9 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       case 'autoLayout' === keyword.value:
         acceptPropertyAndSuggest(['TopBottom', 'BottomTop', 'LeftRight', 'RightLeft'])
         break
-      case ['title', 'description', 'technology', 'summary', 'notes', 'notation'].includes(keyword.value):
+      case ['title', 'description', 'descriptionFile', 'technology', 'summary', 'notes', 'notation'].includes(
+        keyword.value,
+      ):
         acceptProperty(`'$0'`)
         break
       case 'metadata' === keyword.value:
