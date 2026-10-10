@@ -59,7 +59,7 @@ SpecificationElementKind:
   '}')?;
 
 SpecificationElementStringProperty:
-  key=('title' | 'description' | 'technology' | 'notation' | 'summary') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'descriptionFile' | 'technology' | 'notation' | 'summary') ':'? value=MarkdownOrString ';'?;
 
 SpecificationDeploymentNodeKind:
   'deploymentNode' kind=DeploymentNodeKind ('{'
@@ -92,7 +92,7 @@ SpecificationRelationshipKind:
 ;
 
 SpecificationRelationshipStringProperty:
-  key=('title' | 'description' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'descriptionFile' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
 
 // Imports -------------------------------------
 
@@ -156,7 +156,7 @@ ElementProperty:
   MetadataProperty;
 
 ElementStringProperty:
-  key=('title' | 'description' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'descriptionFile' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
 
 ExtendElementOrRelation:
   'extend' (
@@ -277,7 +277,7 @@ RelationProperty:
 ;
 
 RelationStringProperty:
-  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'technology' | 'description' | 'descriptionFile') ':'? value=MarkdownOrString ';'?;
 
 RelationStyleProperty:
   key='style' '{'
@@ -395,7 +395,7 @@ ViewProperty:
 ;
 
 ViewStringProperty:
-  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'descriptionFile') ':'? value=MarkdownOrString ';'?;
 
 ViewOrderProperty:
   key='order' value=Number ';'?;

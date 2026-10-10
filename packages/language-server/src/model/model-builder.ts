@@ -45,7 +45,7 @@ import {
   values,
 } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import type { LikeC4ManualLayouts, ManualLayoutsSnapshot } from '../filesystem'
+import type { LikeC4DescriptionFiles, LikeC4ManualLayouts, ManualLayoutsSnapshot } from '../filesystem'
 import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -123,6 +123,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private readonly cache: ProjectModelCache
   private readonly DocumentBuilder: DocumentBuilder
   private readonly manualLayouts: LikeC4ManualLayouts
+  private readonly descriptionFiles: LikeC4DescriptionFiles
   private readonly mutex: WorkspaceLock
   private readonly lastSeen: LastSeenArtifacts
 
@@ -133,6 +134,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
     this.manualLayouts = services.shared.workspace.ManualLayouts
+    this.descriptionFiles = services.shared.workspace.DescriptionFiles
     this.lastSeen = services.likec4.LastSeen
     this.cache = new ProjectModelCache(services)
 
@@ -152,6 +154,18 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       // Emit DidChangeModelNotification, that leads to incoming calls to computeModel
       this.manualLayouts.onManualLayoutUpdate(({ projectId }) => {
         this.notifyListeners(projectId)
+      }),
+      // A referenced description file changed: the parsed model carries its content, so the caches
+      // have to go with it. Not only the ones of the project that owns the file: a project that
+      // imports from it holds a cached copy of the imported elements (see
+      // `unsafeSyncJoinedModelData`) and would keep serving the old description. A precise walk of
+      // the project graph is possible, but a description file changing is rare enough that clearing
+      // the model cache is the cheaper honest answer.
+      this.descriptionFiles.onDescriptionFileUpdate(() => {
+        this.cache.clear()
+        this.notifyListeners(
+          Array.from(this.services.shared.workspace.LangiumDocuments.all, doc => doc.uri),
+        )
       }),
     )
 

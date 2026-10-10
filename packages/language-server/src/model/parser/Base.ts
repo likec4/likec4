@@ -361,6 +361,29 @@ export class BaseParser {
     return isEmpty(data) ? undefined : data
   }
 
+  /**
+   * A `descriptionFile` is deliberate, so it wins over an inline `description` of the same body
+   * (an inline description on the node still wins over both, as it does today).
+   * The two in the same body are reported as an error by the validation.
+   */
+  parseDescription(
+    props: {
+      description?: ast.MarkdownOrString | undefined
+      descriptionFile?: ast.MarkdownOrString | undefined
+    },
+  ): c4.MarkdownOrString | undefined {
+    const file = parseMarkdownAsString(props.descriptionFile)
+    if (file) {
+      const description = this.services.shared.workspace.DescriptionFiles.get(this.doc.uri, file)
+      // When the file cannot be read the validation reports it, and there is nothing to describe
+      // The content of the file is used as it is: its indentation is content, not DSL indentation
+      return description && 'content' in description
+        ? { md: description.content }
+        : undefined
+    }
+    return this.parseMarkdownOrString(props.description)
+  }
+
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
     if (ast.isMarkdownOrString(markdownOrString)) {
       return removeIndent(markdownOrString)
@@ -634,6 +657,7 @@ export class BaseParser {
       title?: ast.MarkdownOrString | undefined
       summary?: ast.MarkdownOrString | undefined
       description?: ast.MarkdownOrString | undefined
+      descriptionFile?: ast.MarkdownOrString | undefined
       technology?: ast.MarkdownOrString | undefined
     },
     override?: {
@@ -652,7 +676,7 @@ export class BaseParser {
 
     const description = override?.description
       ? { txt: removeIndent(override.description) }
-      : this.parseMarkdownOrString(props.description)
+      : this.parseDescription(props)
 
     const summary = override?.summary
       ? { txt: removeIndent(override.summary) }
