@@ -389,8 +389,8 @@ catalogs:
       specifier: ^2.0.12
       version: 2.0.12
     p-debounce:
-      specifier: 5.1.0
-      version: 5.1.0
+      specifier: 5.1.1
+      version: 5.1.1
     p-limit:
       specifier: 7.3.2
       version: 7.3.2
@@ -2665,7 +2665,7 @@ importers:
         version: 2.1.0
       p-debounce:
         specifier: catalog:utils
-        version: 5.1.0
+        version: 5.1.1
       package-manager-detector:
         specifier: catalog:utils
         version: 1.8.0
@@ -9587,8 +9587,8 @@ packages:
       vite-plus:
         optional: true
 
-  p-debounce@5.1.0:
-    resolution: {integrity: sha512-3DNQmB7HPRMSuZ9P8JQFzEr7156s1S5Lqpi3mSrsZe5AHvl4ONfGrdB5azWqeOpNejQiemgQBkyU+IDKR5nwyg==}
+  p-debounce@5.1.1:
+    resolution: {integrity: sha512-BHp4jJ6t45tLOWzC/m9X2LIbZJz2mlay+pAwQrm/oRJlvLJhxyJrwtTUW6bz/+99coiC+iNpnk1P0s8/RfXd0A==}
     engines: {node: '>=20'}
 
   p-limit@3.1.0:
@@ -18980,7 +18980,7 @@ snapshots:
       '@oxlint/binding-win32-x64-msvc': 1.81.0
       oxlint-tsgolint: 0.25.0
 
-  p-debounce@5.1.0: {}
+  p-debounce@5.1.1: {}
 
   p-limit@3.1.0:
     dependencies:
