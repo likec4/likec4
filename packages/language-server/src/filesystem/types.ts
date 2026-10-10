@@ -105,8 +105,33 @@ export interface LikeC4DescriptionFiles extends Disposable {
    */
   get(docUri: URI, path: string): DescriptionFileContent | undefined
 
+  /**
+   * Whether `uri` is a file referenced by some document, and so worth watching.
+   */
+  isReferenced(uri: URI): boolean
+
+  /**
+   * Re-reads a referenced file after it changed on disk, and notifies the listeners so the model
+   * that used it is rebuilt.
+   */
+  handleFileSystemUpdate(
+    event: { update: URI; delete?: never } | { delete: URI; update?: never },
+  ): Promise<void>
+
+  /**
+   * Registers a listener called when a referenced file changed.
+   */
+  onDescriptionFileUpdate(listener: DescriptionFileUpdateListener): Disposable
+
   clearCaches(): void
 }
+
+export type DescriptionFileUpdateEvent = {
+  readonly uri: URI
+  readonly projectId: ProjectId
+}
+
+export type DescriptionFileUpdateListener = (event: DescriptionFileUpdateEvent) => void
 
 export type ManualLayoutsSnapshot = {
   hash: string

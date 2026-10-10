@@ -43,6 +43,14 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     this.watcher = this.createWatcher(folder)
   }
 
+  /**
+   * The LikeC4 files, and the files referenced by a `descriptionFile`: a change to one of those
+   * changes the model.
+   */
+  private isWatchedFile(path: string): boolean {
+    return isAnyLikeC4File(path) || this.services.workspace.DescriptionFiles.isReferenced(URI.file(path))
+  }
+
   async dispose(): Promise<void> {
     if (this.watcher) {
       const watcher = this.watcher
@@ -63,7 +71,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       ignored: [
         path => insideNodeModulesOrRepo(path),
         // Filter out non-LikeC4 files early to avoid unnecessary processing
-        (path, stats) => !!stats && stats.isFile() && !isAnyLikeC4File(path),
+        (path, stats) => !!stats && stats.isFile() && !this.isWatchedFile(path),
         // Honor the project's `exclude` so the watcher skips excluded subtrees.
         path => this.services.workspace.ProjectsManager.isExcluded(URI.file(path)),
       ],
@@ -129,6 +137,11 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         await workspace.ManualLayouts.handleFileSystemUpdate({ update: uri })
         break
       }
+      case workspace.DescriptionFiles.isReferenced(uri): {
+        logger.debug`description file changed: ${path}`
+        await workspace.DescriptionFiles.handleFileSystemUpdate({ update: uri })
+        break
+      }
       case hasLikeC4Ext(filename): {
         logger.debug`file changed: ${path}`
         await workspace.DocumentBuilder.update([uri], [])
@@ -159,6 +172,11 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       case isManualLayoutFile(filename): {
         logger.debug`manual layout file removed: ${path}`
         await workspace.ManualLayouts.handleFileSystemUpdate({ delete: uri })
+        break
+      }
+      case workspace.DescriptionFiles.isReferenced(uri): {
+        logger.debug`description file removed: ${path}`
+        await workspace.DescriptionFiles.handleFileSystemUpdate({ delete: uri })
         break
       }
       default: {

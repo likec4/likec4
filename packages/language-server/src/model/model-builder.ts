@@ -45,7 +45,7 @@ import {
   values,
 } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
-import type { LikeC4ManualLayouts, ManualLayoutsSnapshot } from '../filesystem'
+import type { LikeC4DescriptionFiles, LikeC4ManualLayouts, ManualLayoutsSnapshot } from '../filesystem'
 import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -123,6 +123,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private readonly cache: ProjectModelCache
   private readonly DocumentBuilder: DocumentBuilder
   private readonly manualLayouts: LikeC4ManualLayouts
+  private readonly descriptionFiles: LikeC4DescriptionFiles
   private readonly mutex: WorkspaceLock
   private readonly lastSeen: LastSeenArtifacts
 
@@ -133,6 +134,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
     this.manualLayouts = services.shared.workspace.ManualLayouts
+    this.descriptionFiles = services.shared.workspace.DescriptionFiles
     this.lastSeen = services.likec4.LastSeen
     this.cache = new ProjectModelCache(services)
 
@@ -151,6 +153,12 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       }),
       // Emit DidChangeModelNotification, that leads to incoming calls to computeModel
       this.manualLayouts.onManualLayoutUpdate(({ projectId }) => {
+        this.notifyListeners(projectId)
+      }),
+      // A referenced description file changed: the parsed model carries its content, so the caches
+      // of the project have to go with it
+      this.descriptionFiles.onDescriptionFileUpdate(({ projectId }) => {
+        this.cache.clear(projectId)
         this.notifyListeners(projectId)
       }),
     )

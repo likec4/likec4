@@ -1,5 +1,7 @@
 export type {
   DescriptionFileContent,
+  DescriptionFileUpdateEvent,
+  DescriptionFileUpdateListener,
   FileNode,
   FileSystemModuleContext,
   FileSystemProvider,
