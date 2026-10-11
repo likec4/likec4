@@ -198,7 +198,7 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.8.0",
     "@types/yargs": "^17.0.35",
-    "autoprefixer": "^10.5.4",
+    "autoprefixer": "^10.6.1",
     "picomatch": "catalog:externals",
     "birpc": "catalog:vite",
     "boxen": "^8.0.1",
