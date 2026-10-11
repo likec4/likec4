@@ -255,7 +255,7 @@ catalogs:
       specifier: ^1.7.5
       version: 1.7.5
     '@modelcontextprotocol/sdk':
-      specifier: ^1.29.0
+      specifier: ^1.32.1
       version: 1.32.1
   obuild:
     obuild:
