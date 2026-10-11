@@ -10,7 +10,7 @@ import type { LikeC4EditorCallbacks } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { atom, batched, onSet } from 'nanostores'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect } from 'react'
 import { queries, queryClient } from './queries'
 import { ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
 
@@ -167,11 +167,9 @@ const projectAndView = batched(
 
 export function useComputedModelData() {
   const projectId = useStore($projectId)
-  const query = useQuery(
+  const { data: model, error, refetch } = useQuery(
     queries.fetchComputedModel(projectId),
   )
-  const model = query.data
-  const error = query.error
 
   useEffect(() => {
     if (!model) {
@@ -184,38 +182,33 @@ export function useComputedModelData() {
     projectId,
     model,
     error,
+    refetch,
   }
 }
 
 export function useDiagramView(projectId: ProjectId) {
   const { projectId: storedProjectId, viewId, layoutType } = useStore(projectAndView)
-  const modelQ = useQuery({
+  const { data: hash, isPlaceholderData } = useQuery({
     ...queries.fetchComputedModel(projectId),
     select: useCallback((d: ComputedLikeC4ModelData) => {
-      return d.views[viewId]?.hash ?? viewId
+      return d.views[viewId]?.hash ?? null
     }, [viewId]),
   })
-  const hash = modelQ.data ?? viewId
-  const isFetching = modelQ.isFetching
-  const viewQ = useQuery({
-    ...queries.fetchDiagramView(projectId, viewId, layoutType, hash),
-    enabled: !isFetching && projectId === storedProjectId,
-  })
 
-  const view = viewQ.data
-  const prev = useRef(view)
-  const error = viewQ.error
+  const { data: view, error } = useQuery({
+    ...queries.fetchDiagramView(projectId, viewId, layoutType, hash),
+    enabled: hash !== undefined && !isPlaceholderData && projectId === storedProjectId,
+  })
 
   useEffect(() => {
     if (!view) {
       return
     }
-    prev.current = view
     saveVscodeState({ viewId: view.id, view })
   }, [view])
 
-  const resolved = view ?? prev.current
-  const title = resolved?.title ?? viewId
+  // const resolved = view ?? prev.current
+  const title = view?.title ?? viewId
 
   useEffect(() => {
     ExtensionApi.updateTitle(title)
@@ -223,16 +216,19 @@ export function useDiagramView(projectId: ProjectId) {
 
   return {
     projectId,
-    viewId: resolved?.id ?? viewId,
-    layoutType: resolved?._layout ?? layoutType,
-    view: resolved,
+    viewId: view?.id ?? viewId,
+    layoutType: view?._layout ?? layoutType,
+    view,
     error,
   }
 }
 
 const editorPort: LikeC4EditorCallbacks = {
   fetchView: async (viewId, layout) => {
-    const view = await queryClient.fetchQuery(queries.fetchDiagramView($projectId.get(), viewId, layout))
+    const view = await queryClient.fetchQuery({
+      ...queries.fetchDiagramView($projectId.get(), viewId, layout),
+      staleTime: 0,
+    })
     return nonNullable(view, `View ${viewId} not found`)
   },
   handleChange: async (viewId, change) => {

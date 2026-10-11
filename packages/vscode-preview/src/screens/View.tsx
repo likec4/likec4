@@ -5,6 +5,7 @@ import { Button, Overlay } from '@mantine/core'
 import { memo, useMemo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from '../App.css'
+import { queryClient } from '../queries'
 import { ErrorMessage } from '../QueryErrorBoundary'
 import {
   openProjectsScreen,
@@ -16,15 +17,22 @@ import {
 } from '../state'
 import { ExtensionApi as extensionApi } from '../vscode'
 
+const refetchAll = () => {
+  void queryClient.invalidateQueries()
+    .catch(error => {
+      console.error('Failed to invalidate queries', error)
+    })
+}
+
 export function ViewScreen() {
-  const { error, model } = useComputedModelData()
+  const { error, model, refetch } = useComputedModelData()
   const editor = useLikeC4EditorPort()
   const likec4Model = useMemo(() => model ? LikeC4Model.create(model) : null, [model])
   if (!likec4Model) {
     return (
       <>
         <section>
-          {error ? <ErrorMessage error={error} /> : <p>Parsing your model...</p>}
+          {error ? <ErrorMessage error={error} onReset={refetchAll} /> : <p>Parsing your model...</p>}
           <p>
             <Button color="gray" onClick={extensionApi.closeMe}>
               Close
@@ -37,7 +45,7 @@ export function ViewScreen() {
 
   return (
     <LikeC4ModelProvider key={likec4Model.projectId} likec4model={likec4Model}>
-      {error && <ErrorMessage error={error} />}
+      {error && <ErrorMessage error={error} onReset={refetch} />}
       <LikeC4EditorProvider editor={editor}>
         <LikeC4ViewMemo projectId={likec4Model.project.id} />
       </LikeC4EditorProvider>

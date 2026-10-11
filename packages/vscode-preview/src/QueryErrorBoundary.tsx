@@ -8,7 +8,15 @@ import { ExtensionApi as extensionApi } from './vscode'
 
 export const ErrorMessage = ({ error, onReset }: { error: Error | string | null; onReset?: () => void }) => {
   const { reset } = useQueryErrorResetBoundary()
-  return <Fallback error={error} resetErrorBoundary={onReset ?? reset ?? extensionApi.closeMe} />
+
+  return (
+    <Fallback
+      error={error}
+      resetErrorBoundary={() => {
+        onReset?.()
+        reset()
+      }} />
+  )
 }
 
 const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
