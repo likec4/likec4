@@ -268,7 +268,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it.todo('should suggest relationship kind after dot', async ({ expect, completion }) => {
+  it('should suggest relationship kind after dot', async ({ expect, completion }) => {
     const text = `
       specification {
         element actor
@@ -284,7 +284,7 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 0,
       expectedItems: [
-        '.uses',
+        'uses',
       ],
     })
   })
