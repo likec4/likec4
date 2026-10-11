@@ -4,11 +4,16 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve as resolveImportMeta } from 'import-meta-resolve'
 import { readFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import url from 'url'
 import { type AliasOptions, defineConfig } from 'vite'
 
+const require = createRequire(import.meta.url)
+
 const alias = {
+  // The `browser` condition resolves a DOM-based build, which fails inside the language server web worker
+  'decode-named-character-reference': require.resolve('decode-named-character-reference'),
   '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
   'react-dom/server': resolve('./src/react-dom-server-mock.ts'),
   '@likec4/styles/': resolve('./styled-system/'),
@@ -23,7 +28,7 @@ const alias = {
 export default defineConfig(({ command: _command }) => ({
   resolve: {
     alias,
-    conditions: ['sources'],
+    // conditions: ['sources'],
     dedupe: ['vscode'],
     tsconfigPaths: true,
   },
@@ -39,7 +44,7 @@ export default defineConfig(({ command: _command }) => ({
     client: {
       resolve: {
         alias,
-        conditions: ['sources'],
+        conditions: ['sources', 'browser', 'module', 'import'],
       },
       optimizeDeps: {
         include: [
@@ -128,6 +133,9 @@ export default defineConfig(({ command: _command }) => ({
     react(),
     cloudflare({
       persistState: true,
+      viteEnvironment: {
+        name: 'playground',
+      },
     }),
   ],
 }))
