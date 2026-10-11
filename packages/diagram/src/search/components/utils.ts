@@ -24,7 +24,8 @@ export function moveFocusToSearchInput(from: HTMLElement | null | undefined) {
     return
   }
   let input = root.querySelector('[data-likec4-search-input]') as HTMLInputElement | null
-  if (input) {
+  // If the input is already focused, keep the caret and selection where the user put them
+  if (input && root.activeElement !== input) {
     const length = input.value.length
     input.focus()
     input.setSelectionRange(length, length)
