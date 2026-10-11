@@ -1952,8 +1952,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
       '@types/semver':
-        specifier: ^7.7.1
-        version: 7.7.1
+        specifier: ^7.8.0
+        version: 7.8.0
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
@@ -2027,7 +2027,7 @@ importers:
         specifier: catalog:css
         version: 8.5.28
       pretty-ms:
-        specifier: ^9.3.0
+        specifier: ^9.3.1
         version: 9.3.1
       react:
         specifier: 19.3.0
@@ -2045,7 +2045,7 @@ importers:
         specifier: catalog:utils
         version: 2.45.0
       semver:
-        specifier: ^7.8.1
+        specifier: ^7.8.5
         version: 7.8.5
       strip-indent:
         specifier: catalog:utils
@@ -6225,8 +6225,8 @@ packages:
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
 
-  '@types/semver@7.7.1':
-    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+  '@types/semver@7.8.0':
+    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -14300,7 +14300,7 @@ snapshots:
     dependencies:
       '@types/node': 24.12.4
 
-  '@types/semver@7.7.1': {}
+  '@types/semver@7.8.0': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
