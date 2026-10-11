@@ -27,7 +27,7 @@ function edgeMetadata<A extends AnyAux>(model: LikeC4Model<A>, edge: ComputedEdg
       if (isNullish(value)) {
         continue
       }
-      merged ??= {}
+      merged ??= Object.create(null) as EdgeMetadata
       const values = merged[key] ??= []
       for (const v of Array.isArray(value) ? value : [value]) {
         if (!values.includes(v)) {

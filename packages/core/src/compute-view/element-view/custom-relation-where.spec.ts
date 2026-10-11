@@ -115,4 +115,32 @@ describe('custom relation with where metadata', () => {
     )
     expect(not_t03['c -> d']).not.toHaveProperty('isCustomized')
   })
+
+  it('handles metadata keys that exist on Object.prototype', () => {
+    const t = TestHelper.from(
+      Builder
+        .specification({
+          elements: {
+            app: {},
+          },
+          metadataKeys: ['constructor'],
+        })
+        .model(({ app }, m) =>
+          m(
+            app('a'),
+            app('b'),
+          )
+        )
+        .model(({ rel }, m) =>
+          m(
+            rel('a', 'b', { metadata: { constructor: 'x' } }),
+          )
+        ),
+    )
+    const view = t.computeView(
+      t.$include('* -> *'),
+      includeWhereWith('* -> *', { metadata: { key: 'constructor', value: 'x' } }, 'red'),
+    )
+    expect(view.edges[0]).toMatchObject({ color: 'red', isCustomized: true })
+  })
 })
