@@ -20,6 +20,8 @@ function stateName(state: State) {
       return 'Starting'
     case State.Running:
       return 'Running'
+    case State.StartFailed:
+      return 'StartFailed'
   }
 }
 

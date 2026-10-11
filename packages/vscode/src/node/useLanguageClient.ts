@@ -68,7 +68,7 @@ const useLanguageClient = defineService(() => {
 
   const clientOptions: LanguageClientOptions = {
     documentSelector: toValue(documentSelector) as any,
-    outputChannel: useDisposable(vscode.window.createOutputChannel('LikeC4 Language Server', 'log')),
+    outputChannel: useDisposable(vscode.window.createOutputChannel('LikeC4 Language Server', { log: true })),
     diagnosticCollectionName: 'likec4',
     markdown: {
       isTrusted: true,
