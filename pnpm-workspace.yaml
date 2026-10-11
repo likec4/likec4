@@ -101,9 +101,9 @@ catalogs:
     "@pandacss/preset-panda": ^1.12.1
     "@radix-ui/colors": ^3.0.0
     "@pandacss/types": ^1.12.1
-    "@tailwindcss/vite": ^4.3.2
+    "@tailwindcss/vite": ^4.3.3
     postcss: 8.5.28
-    tailwindcss: ^4.3.2
+    tailwindcss: ^4.3.3
   esbuild:
     esbuild: 0.28.2
     esbuild-node-externals: 1.23.1
