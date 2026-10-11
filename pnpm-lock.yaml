@@ -116,8 +116,8 @@ catalogs:
       specifier: 1.1.8
       version: 1.1.8
     '@fontsource-variable/ibm-plex-sans':
-      specifier: ^5.2.8
-      version: 5.2.8
+      specifier: ^5.3.0
+      version: 5.3.0
     '@types/node':
       specifier: ~22.19.19
       version: 22.19.19
@@ -602,7 +602,7 @@ importers:
         version: 0.44.2
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
-        version: 5.2.8
+        version: 5.3.0
       '@likec4/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -1881,7 +1881,7 @@ importers:
         version: 1.1.8
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
-        version: 5.2.8
+        version: 5.3.0
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -2119,7 +2119,7 @@ importers:
         version: 1.1.8
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
-        version: 5.2.8
+        version: 5.3.0
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
@@ -2928,7 +2928,7 @@ importers:
     devDependencies:
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
-        version: 5.2.8
+        version: 5.3.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -4359,8 +4359,8 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@fontsource-variable/ibm-plex-sans@5.2.8':
-    resolution: {integrity: sha512-n5PF2iFa0CZT0QYTPzxvZ39opC9LnU0zdoRccoADbs+Dtsd+lbXOZF7RNuIPHcQX1dKjF63sxnRImQIB5eD0Ag==}
+  '@fontsource-variable/ibm-plex-sans@5.3.0':
+    resolution: {integrity: sha512-agG8tXFEo0hD9+J7npa4vbbWult52eMLVaQ6WQRlhs/iCAojrMAoejru85W9HTVXHfyUj96KM7gp/KGAS87XaQ==}
 
   '@google/genai@1.52.0':
     resolution: {integrity: sha512-gwSvbpiN/17O9TbsqSsE/OzZcpv5Fo4RQjdngGgogtuB9RsyJ8ZHhX5KjHj1bp5N9snN2eK8LDGXSaWW2hof8Q==}
@@ -12398,7 +12398,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@fontsource-variable/ibm-plex-sans@5.2.8': {}
+  '@fontsource-variable/ibm-plex-sans@5.3.0': {}
 
   '@google/genai@1.52.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(supports-color@10.1.0)':
     dependencies:
