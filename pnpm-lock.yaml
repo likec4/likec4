@@ -206,7 +206,7 @@ catalogs:
       specifier: ^2.1.0
       version: 2.1.0
     picomatch:
-      specifier: ^4.0.5
+      specifier: ^4.0.7
       version: 4.0.7
     std-env:
       specifier: ^4.1.0
