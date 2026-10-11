@@ -24,5 +24,5 @@ export function promiseNextTick(): Promise<void> {
 }
 
 export function onNextTick(fn: () => Promise<void> | void): void {
-  void Promise.resolve().then(fn)
+  void promiseNextTick().then(fn)
 }
