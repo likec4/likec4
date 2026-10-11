@@ -110,7 +110,7 @@ catalogs:
       specifier: ^1.0.1
       version: 1.0.1
     '@changesets/cli':
-      specifier: ^3.0.2
+      specifier: ^3.0.3
       version: 3.0.3
     '@dagrejs/dagre':
       specifier: 1.1.8
