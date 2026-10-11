@@ -137,7 +137,6 @@ export const ready = machine.createStateConfig({
       })),
     },
     'open.source': {
-      guard: 'enabled: OpenSource',
       actions: emitOpenSource(),
     },
     'tag.highlight': {
