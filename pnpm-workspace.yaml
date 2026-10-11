@@ -48,7 +48,7 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  memfs: ^4.57.8
+  memfs: ^4.80.0
   nano-staged: ^1.0.2
   oxlint: 1.81.0
   oxlint-tsgolint: 0.25.0
