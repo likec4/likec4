@@ -5,8 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { useSyncedRef } from '@react-hookz/web'
-import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo } from 'react'
+import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo, useRef } from 'react'
 import { isFunction, keys, mapToObj } from 'remeda'
 import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
@@ -38,10 +37,6 @@ export type DiagramEventHandlersContext = RequiredOrNull<LikeC4DiagramEventHandl
   handlersRef: DiagramEventHandlersRef
 }
 
-const DiagramEventHandlersRefContext = createContext<DiagramEventHandlersRef>({
-  current: defaultHandlers,
-})
-
 const DiagramEventHandlersReactContext = createContext<DiagramEventHandlersContext>({
   ...mapToObj(HandlerNames, (name) => [name, null]),
   handlersRef: {
@@ -53,36 +48,31 @@ export function DiagramEventHandlers({
   handlers,
   children,
 }: PropsWithChildren<{ handlers: Required<LikeC4DiagramEventHandlers> }>) {
-  const handlersRef = useSyncedRef(
+  const handlersRef = useRef(
     handlers as Required<LikeC4DiagramEventHandlers>,
   )
+  handlersRef.current = handlers
 
-  const deps = HandlerNames.map((name) => isFunction(handlers[name]))
+  const deps = HandlerNames.map((name) => isFunction(handlers[name]) ? name : '-').join(',')
 
   const value = useMemo((): DiagramEventHandlersContext => ({
     ...mapToObj(HandlerNames, (name) => {
-      if (handlersRef.current[name]) {
+      if (isFunction(handlers[name])) {
         // @ts-expect-error TODO: fix this
         return [name, (...args: any[]) => handlersRef.current[name]?.(...args)]
       }
       return [name, null]
     }),
     handlersRef,
-  }), [handlersRef, ...deps])
+  }), [handlersRef, deps])
 
   return (
-    <DiagramEventHandlersRefContext.Provider value={handlersRef}>
-      <DiagramEventHandlersReactContext.Provider value={value}>
-        {children}
-      </DiagramEventHandlersReactContext.Provider>
-    </DiagramEventHandlersRefContext.Provider>
+    <DiagramEventHandlersReactContext.Provider value={value}>
+      {children}
+    </DiagramEventHandlersReactContext.Provider>
   )
 }
 
 export function useDiagramEventHandlers(): DiagramEventHandlersContext {
   return useContext(DiagramEventHandlersReactContext)
-}
-
-export function useDiagramEventHandlersRef(): DiagramEventHandlersRef {
-  return useContext(DiagramEventHandlersRefContext)
 }

@@ -1,9 +1,9 @@
 import type { LangiumDocument } from 'langium'
-import { AstUtils, GrammarUtils } from 'langium'
+import { AstUtils, GrammarUtils, interruptAndCheck } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
 import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, withoutBase, withoutLeadingSlash } from 'ufo'
-import type { CancellationToken, DocumentLink, DocumentLinkParams } from 'vscode-languageserver'
-import { ast, isLikeC4LangiumDocument } from '../ast'
+import { type DocumentLink, type DocumentLinkParams, CancellationToken } from 'vscode-languageserver'
+import { ast, isLikeC4UserDocument } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
@@ -15,30 +15,28 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   async getDocumentLinks(
     doc: LangiumDocument,
     _params: DocumentLinkParams,
-    _cancelToken?: CancellationToken,
+    cancelToken: CancellationToken = CancellationToken.None,
   ): Promise<DocumentLink[]> {
-    if (!isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
+    if (!isLikeC4UserDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
       return []
     }
-    return AstUtils.streamAllContents(doc.parseResult.value)
-      .filter(ast.isLinkProperty)
-      .map((n): DocumentLink | null => {
-        try {
-          const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
-          const target = range && this.resolveLink(doc, n.value)
-          if (target && hasProtocol(target)) {
-            return {
-              range,
-              target,
-            }
-          }
-        } catch (e) {
-          logWarnError(e)
+    const links: DocumentLink[] = []
+    for (const n of AstUtils.streamAllContents(doc.parseResult.value).filter(ast.isLinkProperty)) {
+      await interruptAndCheck(cancelToken)
+      try {
+        const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
+        const target = range && this.resolveLink(doc, n.value)
+        if (target && hasProtocol(target)) {
+          links.push({
+            range,
+            target,
+          })
         }
-        return null
-      })
-      .nonNullable()
-      .toArray()
+      } catch (e) {
+        logWarnError(e)
+      }
+    }
+    return links
   }
 
   resolveLink(doc: LangiumDocument, link: string): string {

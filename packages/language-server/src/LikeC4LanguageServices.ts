@@ -10,7 +10,7 @@ import {
 import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
-import { TextDocument, URI, UriUtils } from 'langium'
+import { TextDocument, URI } from 'langium'
 import { entries, filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
 import type { CancellationToken } from 'vscode-jsonrpc'
 import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
@@ -323,7 +323,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
           doc.diagnostics ?? [],
           filter(isErrorDiagnostic),
           map(({ message, range }) => ({
-            message,
+            message: typeof message === 'string' ? message : message.value,
             line: range.start.line,
             range,
             sourceFsPath: doc.uri.fsPath,

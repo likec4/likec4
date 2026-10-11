@@ -1,6 +1,6 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { LayoutedView } from '@likec4/core'
-import type { Disposable, URI } from 'langium'
+import type { Disposable, FileSystemNode, URI } from 'langium'
 import { LibIcons } from '../generated-lib/icons'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger } from '../logger'
@@ -20,6 +20,41 @@ export class NoopFileSystemProvider implements FileSystemProvider {
   }
   scanDirectory(): Promise<FileNode[]> {
     return Promise.resolve([])
+  }
+
+  stat(): Promise<FileSystemNode> {
+    throw new Error('No file system is available.')
+  }
+
+  statSync(): FileSystemNode {
+    throw new Error('No file system is available.')
+  }
+
+  exists(): Promise<boolean> {
+    return Promise.resolve(false)
+  }
+
+  existsSync(): boolean {
+    return false
+  }
+
+  readBinary(uri: URI): Promise<Uint8Array> {
+    throw new Error(`No file system is available (${uri.toString()})`)
+  }
+
+  readBinarySync(uri: URI): Uint8Array {
+    throw new Error(`No file system is available (${uri.toString()})`)
+  }
+
+  readFileSync(uri: URI): string {
+    if (isLikeC4Builtin(uri)) {
+      return LibIcons
+    }
+    throw new Error(`No file system is available (${uri.toString()})`)
+  }
+
+  readDirectorySync(): FileSystemNode[] {
+    return []
   }
 
   readFile(uri: URI): Promise<string> {

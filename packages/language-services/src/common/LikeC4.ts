@@ -276,7 +276,7 @@ Please specify a project folder`)
     return docs.flatMap(doc => {
       const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
       return errors.map(({ message, range }) => ({
-        message,
+        message: typeof message === 'string' ? message : message.value,
         line: range.start.line,
         range,
         sourceFsPath: doc.uri.fsPath,
@@ -304,7 +304,9 @@ Please specify a project folder`)
         errors,
         flatMap(validationError => {
           const line = validationError.range.start.line
-          const messages = validationError.message.split('\n')
+          const messages =
+            (typeof validationError.message === 'string' ? validationError.message : validationError.message.value)
+              .split('\n')
           if (messages.length > 5) {
             messages.length = 5
             messages.push('...')

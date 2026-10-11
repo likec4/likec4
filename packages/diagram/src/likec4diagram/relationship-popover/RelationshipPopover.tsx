@@ -8,7 +8,7 @@
 import { autoPlacement, autoUpdate, computePosition, hide, offset, size } from '@floating-ui/dom'
 import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
-import type { DiagramEdge, DiagramNode, EdgeId, scalar, ViewId } from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'
@@ -32,7 +32,6 @@ import {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -41,7 +40,6 @@ import { Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
 import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
-import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { selectDiagramContext, useDiagram, useDiagramSelector, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
@@ -239,18 +237,17 @@ const RelationshipPopoverInternal = ({
           offset(4),
           autoPlacement({
             crossAxis: true,
-            autoAlignment: true,
             // padding: POPOVER_PADDING,
-            // allowedPlacements: [
-            //   'bottom-start',
-            //   'bottom-end',
-            //   'left-start',
-            //   'top-start',
-            //   'top-end',
-            //   'right-start',
-            //   'right-end',
-            //   'left-end',
-            // ],
+            allowedPlacements: [
+              'bottom-start',
+              'bottom-end',
+              'left-start',
+              'top-start',
+              'top-end',
+              'right-start',
+              'right-end',
+              'left-end',
+            ],
           }),
           size({
             apply({ availableHeight, availableWidth, elements }) {
@@ -259,7 +256,7 @@ const RelationshipPopoverInternal = ({
               }
               Object.assign(elements.floating.style, {
                 maxWidth: `${clamp(roundDpr(availableWidth), { min: 220, max: 450 })}px`,
-                maxHeight: `${clamp(roundDpr(availableHeight), { min: 50, max: 600 })}px`,
+                maxHeight: `${clamp(roundDpr(availableHeight), { min: 80, max: 500 })}px`,
               })
             },
           }),
@@ -271,8 +268,12 @@ const RelationshipPopoverInternal = ({
         if (wasCanceled) {
           return
         }
+        if (middlewareData.hide?.referenceHidden) {
+          popper.style.visibility = 'hidden'
+          return
+        }
         popper.style.transform = `translate(${roundDpr(x)}px, ${roundDpr(y)}px)`
-        popper.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible'
+        popper.style.visibility = 'visible'
       })
     }
     const cleanup = autoUpdate(reference, popper, update, {
@@ -291,12 +292,19 @@ const RelationshipPopoverInternal = ({
     <Fragment key={relationship.id}>
       {index > 0 && <Divider />}
       <Relationship
-        viewId={viewId}
         relationship={relationship}
         sourceNode={sourceNode}
         targetNode={targetNode}
-        onNavigateTo={enableNavigateTo ? diagram.navigateTo : undefined}
-        onOpenSource={enableVscode ? diagram.openSource : undefined}
+        onNavigateTo={enableNavigateTo
+            && relationship.$relationship.navigateTo
+            && relationship.$relationship.navigateTo !== viewId
+          ? () => diagram.navigateTo(relationship.$relationship.navigateTo!)
+          : undefined}
+        onOpenSource={enableVscode
+          ? () => {
+            diagram.openSource({ relation: relationship.id })
+          } :
+          undefined}
       />
     </Fragment>
   )
@@ -313,10 +321,11 @@ const RelationshipPopoverInternal = ({
         viewport: {
           overscrollBehavior: 'contain',
           minWidth: 200,
-          minHeight: 40,
+          minHeight: 80,
         },
       }}
       className={cx(
+        'nowheel',
         css({
           layerStyle: 'likec4.dropdown',
           border: 'subtle',
@@ -387,16 +396,13 @@ const RelationshipPopoverInternal = ({
 const Relationship = forwardRef<
   HTMLDivElement,
   {
-    // current view id
-    viewId: ViewId
     relationship: LikeC4Model.AnyRelation
     sourceNode: DiagramNode
     targetNode: DiagramNode
-    onOpenSource?: ((params: { relation: scalar.RelationId }) => void) | undefined
-    onNavigateTo?: ((next: ViewId) => void) | undefined
+    onOpenSource?: (() => void) | undefined
+    onNavigateTo?: (() => void) | undefined
   }
 >(({
-  viewId,
   relationship: r,
   sourceNode,
   targetNode,
@@ -405,7 +411,6 @@ const Relationship = forwardRef<
 }, ref) => {
   const sourceId = getEndpointId(r, 'source', sourceNode)
   const targetId = getEndpointId(r, 'target', targetNode)
-  const navigateTo = onNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
   // Build metadata tooltip content
@@ -492,7 +497,7 @@ const Relationship = forwardRef<
               {targetId.short}
             </Endpoint>
           </Tooltip>
-          {navigateTo && (
+          {onNavigateTo && (
             <Tooltip label={'Open dynamic view'}>
               <ActionIcon
                 size={'sm'}
@@ -500,7 +505,7 @@ const Relationship = forwardRef<
                 variant="default"
                 onClick={event => {
                   event.stopPropagation()
-                  onNavigateTo?.(navigateTo)
+                  onNavigateTo()
                 }}
                 style={{
                   alignSelf: 'flex-end',
@@ -519,7 +524,7 @@ const Relationship = forwardRef<
                 variant="default"
                 onClick={event => {
                   event.stopPropagation()
-                  onOpenSource({ relation: r.id })
+                  onOpenSource()
                 }}
                 role="button"
               >

@@ -6,25 +6,26 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { nonexhaustive } from '@likec4/core'
-import { type AstNode, type LangiumDocument, AstUtils, DocumentState, GrammarUtils } from 'langium'
+import { loggable } from '@likec4/log'
+import { type AstNode, type LangiumDocument, AstUtils, GrammarUtils, interruptAndCheck } from 'langium'
 import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
-import type { CancellationToken, DocumentSymbolParams } from 'vscode-languageserver'
+import { type DocumentSymbolParams, CancellationToken } from 'vscode-languageserver'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
 import { ast, isLikeC4LangiumDocument } from '../ast'
-import { logger as rootLogger, logWarnError } from '../logger'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
 import type { LikeC4NameProvider } from '../references'
 import { readStrictFqn } from '../utils/elementRef'
-
-const logger = rootLogger.getChild('DocumentSymbolProvider')
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected readonly nodeKindProvider: NodeKindProvider
   protected readonly nameProvider: LikeC4NameProvider
   protected readonly parser: LikeC4ModelParser
   protected readonly locator: LikeC4ModelLocator
+
+  private readonly logger = rootLogger.getChild('DocumentSymbolProvider')
 
   constructor(private services: LikeC4Services) {
     this.nodeKindProvider = services.shared.lsp.NodeKindProvider
@@ -36,15 +37,10 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   async getSymbols(
     doc: LangiumDocument,
     _params: DocumentSymbolParams,
-    cancelToken?: CancellationToken,
+    cancelToken: CancellationToken = CancellationToken.None,
   ): Promise<DocumentSymbol[]> {
     if (!isLikeC4LangiumDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
       return []
-    }
-    if (doc.state < DocumentState.Linked) {
-      logger.debug(`Waiting for document ${doc.uri.path} to be Linked`)
-      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Linked, doc.uri, cancelToken)
-      logger.debug(`document is Linked`)
     }
     const {
       parseResult: {
@@ -52,20 +48,28 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       },
     } = doc
 
-    return [
+    const symbols: DocumentSymbol[] = []
+
+    const symbolsToProcess = [
       ...likec4lib.map(l => () => this.getLikec4LibSymbol(l)),
       ...specifications.map(s => () => this.getSpecSymbol(s)),
       ...models.map(s => () => this.getModelSymbol(s)),
       ...deployments.map(s => () => this.getDeploymentModelSymbol(s)),
       ...views.map(s => () => this.getModelViewsSymbol(s)),
-    ].flatMap(fn => {
+    ]
+
+    for (const fn of symbolsToProcess) {
+      await interruptAndCheck(cancelToken)
       try {
-        return fn() ?? []
+        const result = fn()
+        if (result) {
+          symbols.push(...result)
+        }
       } catch (e) {
-        logWarnError(e)
-        return []
+        this.logger.warn(loggable(e))
       }
-    })
+    }
+    return symbols
   }
 
   protected getLikec4LibSymbol(astLib: ast.LikeC4Lib): DocumentSymbol[] {
@@ -91,7 +95,12 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!specKeywordNode) return []
 
     const specSymbols = pipe(
-      [...astSpec.elements, ...astSpec.tags, ...astSpec.relationships],
+      [
+        ...astSpec.elements,
+        ...astSpec.deploymentNodes,
+        ...astSpec.tags,
+        ...astSpec.relationships,
+      ],
       map(nd => {
         try {
           if (
@@ -104,7 +113,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
             return this.getTagSymbol(nd)
           }
         } catch (e) {
-          logWarnError(e)
+          this.logger.warn(loggable(e))
           return null
         }
         nonexhaustive(nd)
@@ -173,7 +182,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         return this.getElementSymbol(el)
       }
     } catch (e) {
-      logWarnError(e)
+      this.logger.getChild('getElementsSymbol').warn(loggable(e))
     }
     return []
   }
@@ -234,7 +243,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   }
 
   protected getKindSymbol(
-    astKind: ast.SpecificationElementKind | ast.SpecificationRelationshipKind,
+    astKind: ast.SpecificationElementKind | ast.SpecificationRelationshipKind | ast.SpecificationDeploymentNodeKind,
   ): DocumentSymbol | null {
     if (!astKind.$cstNode || !astKind.kind.$cstNode || isEmpty(astKind.kind.name)) return null
 
@@ -296,7 +305,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         return []
       }
     } catch (e) {
-      logWarnError(e)
+      this.logger.getChild('getDeploymentElementSymbol').warn(loggable(e))
     }
     return []
   }

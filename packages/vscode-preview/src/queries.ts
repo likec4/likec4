@@ -6,11 +6,11 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 300,
-      retry: 1,
+      retry: 2,
       retryDelay: 300,
       networkMode: 'always',
       throwOnError: false,
-      refetchOnWindowFocus: false, // default: true
+      refetchOnWindowFocus: false,
     },
   },
 })
@@ -41,9 +41,14 @@ export const queries = {
       },
       placeholderData: keepPreviousData,
     }),
-  fetchDiagramView: (projectId: ProjectId, viewId: ViewId, layoutType: LayoutType = 'manual', lastHash?: string) =>
+  fetchDiagramView: (
+    projectId: ProjectId,
+    viewId: ViewId,
+    layoutType: LayoutType = 'manual',
+    lastHash?: string | null,
+  ) =>
     queryOptions({
-      queryKey: [projectId, 'diagram', viewId, layoutType, lastHash ?? ''] as const,
+      queryKey: [projectId, 'diagram', viewId, layoutType, lastHash ?? null] as const,
       queryFn: async ({ signal }) => {
         const data = await ExtensionApi.fetchDiagramView({
           projectId,
@@ -59,10 +64,11 @@ export const queries = {
         throw new Error('Fetch diagram view failed, no response received')
       },
       refetchInterval: (q) => {
-        if (q.isActive() && q.state.status == 'error') {
+        if (q.state.status == 'error') {
           return 10000
         }
         return false
       },
+      placeholderData: keepPreviousData,
     }),
 }

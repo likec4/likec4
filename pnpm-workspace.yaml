@@ -94,8 +94,8 @@ catalogs:
     starlight-links-validator: 0.25.2
     starlight-package-managers: 0.12.0
   cloudflare:
-    "@cloudflare/vite-plugin": ~1.54.8
-    wrangler: ~4.131.1
+    "@cloudflare/vite-plugin": 1.63.1
+    wrangler: 4.149.0
   css:
     "@pandacss/dev": ^1.12.1
     "@pandacss/preset-panda": ^1.12.1
@@ -130,8 +130,8 @@ catalogs:
     hono: ^4.13.13
     hono-sessions: ^0.8.1
   langium:
-    langium: 3.5.0
-    langium-cli: 3.5.2
+    langium: 4.4.0
+    langium-cli: 4.4.0
   mantine:
     "@mantine/colors-generator": 9.7.1
     "@mantine/core": 9.7.1
@@ -200,7 +200,8 @@ catalogs:
     p-limit: 7.3.2
     p-queue: 8.1.1
     p-timeout: 7.0.1
-    package-manager-detector: 1.8.0
+    pretty-ms: 9.3.1
+    package-manager-detector: 1.9.0
     package-up: ^5.0.0
     pathe: ^2.0.3
     remeda: ^2.45.0
@@ -227,15 +228,15 @@ catalogs:
   vscode:
     "@types/vscode": ^1.115.0
     vscode: npm:@types/vscode@1.115.0
-    vscode-jsonrpc: 8.2.0
-    vscode-languageclient: 9.0.1
-    vscode-languageserver: 9.0.1
-    vscode-languageserver-protocol: 3.17.5
-    vscode-languageserver-textdocument: 1.0.11
-    vscode-languageserver-types: 3.17.5
+    vscode-jsonrpc: 9.0.3
+    vscode-languageclient: 10.1.2
+    vscode-languageserver: 10.1.2
+    vscode-languageserver-protocol: 3.18.4
+    vscode-languageserver-textdocument: 1.0.15
+    vscode-languageserver-types: 3.18.4
     vscode-oniguruma: 2.0.1
-    vscode-textmate: 9.3.0
-    vscode-uri: 3.1.0
+    vscode-textmate: 9.3.2
+    vscode-uri: 3.2.0
     vscode-messenger: 0.7.0
     vscode-messenger-common: 0.7.0
     vscode-messenger-webview: 0.7.0

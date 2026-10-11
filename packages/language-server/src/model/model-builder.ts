@@ -35,7 +35,6 @@ import {
   identity,
   indexBy,
   isArray,
-  isEmptyish,
   map,
   mapValues,
   pipe,
@@ -369,15 +368,14 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         groupBy((doc) => this.projects.ownerProjectId(doc)),
         entries(),
       )
-      if (isEmptyish(groupedByProject)) {
-        return
-      }
     } else {
       groupedByProject = [
         [arg, []],
       ]
     }
-    for (const listener of [...this.listeners]) {
+    // Copy listeners to avoid modification during iteration
+    const listeners = this.listeners.slice()
+    for (const listener of listeners) {
       for (const [projectId, docs] of groupedByProject) {
         try {
           listener(projectId, docs)
@@ -438,9 +436,11 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
       builderLogger.trace`cache hit project ${project} key: ${key}`
       return existing as R
     }
-    const result = provider()
-    this.set(project, key, result)
     builderLogger.trace`cache miss project ${project} key: ${key}`
+    const result = provider()
+    if (result !== undefined) {
+      this.set(project, key, result)
+    }
     return result
   }
 
@@ -451,9 +451,11 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
       builderLogger.trace`cache hit project ${project} key: ${key}`
       return existing as R
     }
-    const result = provider()
-    this.set(project, key, result)
     builderLogger.trace`cache miss project ${project} key: ${key}`
+    const result = provider()
+    if (result !== undefined) {
+      this.set(project, key, result)
+    }
     return result
   }
 
@@ -464,9 +466,11 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
       builderLogger.trace`cache hit project ${project} key: ${key}`
       return existing as R
     }
-    const result = compute()
-    this.set(project, key, result)
     builderLogger.trace`cache miss project ${project} key: ${key}`
+    const result = compute()
+    if (result !== undefined) {
+      this.set(project, key, result)
+    }
     return result
   }
 
@@ -478,12 +482,14 @@ class ProjectModelCache extends ContextCache<ProjectId | Project, CacheKey, unkn
     const cacheKey: CacheKey = manualLayouts ? `computed-model-${manualLayouts.hash}` : 'computed-model'
     const existing = this.get(project, cacheKey)
     if (existing !== undefined) {
-      builderLogger.trace`cache hit project ${project} key: ${cacheKey}`
+      builderLogger.trace`cache hit project ${project} key ${cacheKey}`
       return existing as R
     }
+    builderLogger.trace`cache miss project ${project} key ${cacheKey}`
     const result = compute()
-    this.set(project, cacheKey, result)
-    builderLogger.trace`cache miss project ${project} key: ${cacheKey}`
+    if (result !== undefined) {
+      this.set(project, cacheKey, result)
+    }
     return result
   }
 }

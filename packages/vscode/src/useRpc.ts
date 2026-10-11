@@ -17,39 +17,61 @@ import {
   ReloadProjects,
   ValidateLayout,
 } from '@likec4/language-server/protocol'
-import { loggable } from '@likec4/log'
 import { defineService, useDisposable } from 'reactive-vscode'
 import type { Location, Uri } from 'vscode'
 import type { DocumentUri } from 'vscode-languageserver-types'
 import { useExtensionLogger } from './useExtensionLogger'
+import { whenExtensionActive } from './useIsActivated'
 import { useLanguageClient } from './useLanguageClient'
 
-const maxWait = <T>(
-  ms: number,
-  promise: Promise<T>,
-) =>
-  Promise.race([
-    new Promise<T>(resolve => setTimeout(resolve, ms)),
-    promise,
-  ])
+async function maxWait(ms: number, promise: Promise<any>) {
+  let t: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race<void>([
+      promise,
+      new Promise<void>((resolve) => {
+        t = setTimeout(() => resolve(), ms)
+      }),
+    ])
+  } catch {
+    // Ignore any errors from race condition
+    return undefined
+  } finally {
+    clearTimeout(t)
+  }
+}
 
 export const useRpc = defineService(() => {
   const { client } = useLanguageClient()
   const { logger } = useExtensionLogger('rpc')
-  let previousOperation = Promise.resolve(null as any)
+
+  let onActivation: (() => void) | undefined
+
+  let queueOp = new Promise<void>((resolve) => {
+    onActivation = () => {
+      onActivation = undefined
+      logger.debug('trigger deferred queue')
+      resolve()
+    }
+  })
+
+  // Trigger deferred queue when extension is activated
+  whenExtensionActive(() => {
+    setTimeout(() => {
+      onActivation?.()
+    }, 200)
+  })
 
   function queue<T>(op: () => Promise<T>): Promise<T> {
-    const opPromise = previousOperation.then(op)
+    const opPromise = queueOp.then(() => op())
     // ignore failures, and limit waiting time (i.e. previous operation hangs)
-    previousOperation = previousOperation.then(() =>
-      maxWait(
-        1_000,
-        opPromise.catch((err) => {
-          logger.debug(loggable(err))
-          return {} as any
-        }),
+    queueOp = queueOp
+      .then(() =>
+        maxWait(
+          1_000,
+          opPromise,
+        )
       )
-    )
     return opPromise
   }
 
@@ -65,7 +87,7 @@ export const useRpc = defineService(() => {
     },
 
     async fetchViewsFromAllProjects() {
-      const { views } = await client.sendRequest(FetchViewsFromAllProjects.req)
+      const { views } = await queue(() => client.sendRequest(FetchViewsFromAllProjects.req))
       return views ?? []
     },
 
@@ -87,15 +109,15 @@ export const useRpc = defineService(() => {
     },
 
     async validateLayout() {
-      return await client.sendRequest(ValidateLayout.req, {})
+      return await queue(() => client.sendRequest(ValidateLayout.req, {}))
     },
 
     async buildDocuments(docs: DocumentUri[]) {
-      await client.sendRequest(BuildDocuments.req, { docs })
+      await queue(() => client.sendRequest(BuildDocuments.req, { docs }))
     },
 
     async locate(params: Locate.Params): Promise<Location | null> {
-      const loc = await client.sendRequest(Locate.req, params)
+      const loc = await queue(() => client.sendRequest(Locate.req, params))
       if (!loc) {
         return null
       }
@@ -117,7 +139,7 @@ export const useRpc = defineService(() => {
     },
 
     async getDocumentTags(params: GetDocumentTags.Params) {
-      const { tags } = await client.sendRequest(GetDocumentTags.req, params)
+      const { tags } = await queue(() => client.sendRequest(GetDocumentTags.req, params))
       return tags
     },
 

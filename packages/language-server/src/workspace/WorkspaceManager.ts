@@ -15,7 +15,7 @@ import type {
 } from 'langium'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
-import { filter, hasAtLeast, isNot, pipe, sort, uniqueBy } from 'remeda'
+import { filter, hasAtLeast, isNot, map, pipe, sort, uniqueBy } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileNode, FileSystemProvider } from '../filesystem'
@@ -63,7 +63,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    */
   protected override async performStartup(folders: WorkspaceFolder[]): Promise<LangiumDocument[]> {
     if (this.#performedStartup) {
-      this.#logger.warn`workspace already initialized, invalid performStartup call`
+      this.#logger.error`workspace already initialized, invalid performStartup call`
     }
     try {
       this.#performedStartup = false
@@ -150,6 +150,23 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   /**
+   * Traverse the file system folder identified by the given URI and its subfolders. All
+   * contained files that match the file extensions are added to the `uris` array.
+   */
+  protected override async traverseFolder(folderPath: URI, uris: URI[]): Promise<void> {
+    try {
+      const entries = await this.fileSystemProvider.readDirectory(folderPath, { recursive: true })
+      uris.push(...pipe(
+        entries,
+        filter(e => e.isFile),
+        map(e => e.uri),
+      ))
+    } catch (e) {
+      console.error('Failure to read directory content of ' + folderPath.toString(true), e)
+    }
+  }
+
+  /**
    * Scans all include paths (from all projects) and returns found likec4 files
    */
   protected async scanProjectIncludePaths(): Promise<FileSystemNode[]> {
@@ -204,7 +221,13 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const documents = [] as LangiumDocument[]
     for (const file of sorted) {
       try {
-        documents.push(await this.documentFactory.fromUri(file.uri))
+        if (this.langiumDocuments.hasDocument(file.uri)) {
+          documents.push(this.langiumDocuments.getDocument(file.uri)!)
+          continue
+        }
+        documents.push(
+          await this.documentFactory.fromUri(file.uri),
+        )
       } catch (error) {
         this.#logger.warn(`Failed to load document ${file.uri}`, { error })
       }
@@ -233,6 +256,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public get workspaceUri(): URI {
+    if (!this.#performedStartup) {
+      this.#logger.warn('Workspace not initialized, returning empty URI')
+      return URI.parse('file:///')
+    }
     return memoizeProp(this, 'workspaceUri', () => {
       const workspace = this.workspace()
       invariant(workspace, 'Workspace not initialized')
@@ -244,10 +271,18 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * Returns relative path from workspace to the given URI
    */
   public relativePath(uri: URI): string {
+    if (!this.#performedStartup) {
+      this.#logger.warn('Workspace not initialized, returning empty string')
+      return ''
+    }
     return UriUtils.relative(this.workspaceUri, uri)
   }
 
   public get workspaceURL(): URL {
+    if (!this.#performedStartup) {
+      this.#logger.warn('Workspace not initialized, returning empty URL')
+      return new URL('file:///')
+    }
     return memoizeProp(this, 'workspaceURL', () => {
       const workspace = this.workspace()
       invariant(workspace, 'Workspace not initialized')
@@ -259,8 +294,14 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * Force clean all caches
    */
   public forceCleanCaches() {
-    for (const listener of [...this.#cacheEvicters]) {
-      listener()
+    // Copy the array to avoid modification during iteration
+    const cacheEvicters = [...this.#cacheEvicters]
+    for (const listener of cacheEvicters) {
+      try {
+        listener()
+      } catch (error) {
+        this.#logger.warn('Error in cache evicter', { error })
+      }
     }
     this.services.workspace.ProjectsManager.clearCaches()
     this.services.workspace.ManualLayouts.clearCaches()

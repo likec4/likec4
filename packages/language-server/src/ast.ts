@@ -251,7 +251,7 @@ export interface LikeC4DocumentProps {
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
 export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
-  likec4ProjectId: c4.ProjectId
+  likec4ProjectId?: c4.ProjectId
 }
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {
   likec4ProjectId: c4.ProjectId

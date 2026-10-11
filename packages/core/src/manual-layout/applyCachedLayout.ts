@@ -43,7 +43,7 @@ export function applyCachedLayout(current: ComputedView, cached: LayoutedView): 
     ...cached,
     ...viewProps,
     [_stage]: 'layouted' as const,
-    bounds: cached.bounds,
+    bounds: { ...cached.bounds },
     nodes,
     edges,
   } as LayoutedView

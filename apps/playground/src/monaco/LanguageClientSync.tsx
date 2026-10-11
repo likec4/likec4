@@ -2,9 +2,9 @@ import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvi
 import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
 import type { DiagramView, ViewChange, ViewId } from '@likec4/core'
 import type { LayoutView as LayoutViewProtocol } from '@likec4/language-server/protocol'
-import type { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
 import type { Location } from 'vscode-languageserver-types'
 import type { CustomWrapperConfig } from './config'
+import type { MonacoHandle } from './handle'
 
 import { usePlayground, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { DRAWIO_EXPORT_EVENT } from '$components/drawio/drawio-events'
@@ -25,7 +25,6 @@ import { useCallbackRef } from '@mantine/hooks'
 import { useRouter } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { funnel, isString } from 'remeda'
-import { loadLikeC4Worker } from './config'
 import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setActiveEditor } from './utils'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
@@ -41,10 +40,31 @@ function requestLayoutView(
 }
 
 /**
+ * The language server registers its custom request handlers once the workspace is ready,
+ * which may happen after the language client has started. Retry while the method is not available yet.
+ */
+async function requestBuildDocuments(
+  client: { sendRequest(req: typeof BuildDocuments.req, params: { docs: string[] }): Promise<void> },
+  docs: string[],
+  attempts = 20,
+): Promise<void> {
+  for (let attempt = 1;; attempt++) {
+    try {
+      return await client.sendRequest(BuildDocuments.req, { docs })
+    } catch (error) {
+      if (attempt >= attempts || !String(error).includes('Unhandled method')) {
+        throw error
+      }
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+  }
+}
+
+/**
  * Syncs playground state with the Monaco language client (active file, view, layout).
  * Sets layouted model API via setLayoutedModelApi when available; initializes and disposes LSP client.
  * @param config - Custom wrapper config for the editor.
- * @param wrapper - Monaco editor language client wrapper.
+ * @param wrapper - Handle to the started Monaco editor and language clients.
  * @param setLayoutedModelApi - Optional callback to receive the layouted model API (e.g. for Draw.io export).
  * @returns React component that provides the sync behavior.
  */
@@ -54,7 +74,7 @@ export function LanguageClientSync({
   setLayoutedModelApi,
 }: {
   config: CustomWrapperConfig
-  wrapper: MonacoEditorLanguageClientWrapper
+  wrapper: MonacoHandle
   setLayoutedModelApi?: (api: LayoutedModelApi | null) => void
 }) {
   const router = useRouter()
@@ -77,7 +97,7 @@ export function LanguageClientSync({
   const languageClient = () =>
     nonNullable(
       wrapper.getLanguageClient('likec4'),
-      'MonacoEditorLanguageClientWrapper is missing LikeC4 LanguageClient',
+      'Monaco is missing LikeC4 LanguageClient',
     )
 
   const requestComputedModel = useCallbackRef(async () => {
@@ -224,11 +244,11 @@ export function LanguageClientSync({
         const ctx = playground.getContext()
 
         const clientWrapper = wrapper.getLanguageClientWrapper('likec4')
-        invariant(clientWrapper, 'MonacoEditorLanguageClientWrapper is missing LikeC4 LanguageClientWrapper')
+        invariant(clientWrapper, 'Monaco is missing LikeC4 LanguageClientWrapper')
 
         if (clientWrapper.isStarted()) {
           logger.debug`restart language client`
-          await clientWrapper.restartLanguageClient(loadLikeC4Worker())
+          await clientWrapper.restart()
         }
 
         logger.debug`initialize memory files`
@@ -274,7 +294,7 @@ export function LanguageClientSync({
 
         try {
           // Initial request for model
-          await languageClient().sendRequest(BuildDocuments.req, { docs })
+          await requestBuildDocuments(languageClient(), docs)
           await requestComputedModel()
 
           registerLayoutedModelApi()

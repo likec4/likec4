@@ -50,7 +50,7 @@ export const checkElementKind = (services: LikeC4Services): ValidationCheck<ast.
     }
     const projectId = projectIdFrom(node)
     const sameKind = index
-      .projectElements(projectId, ast.ElementKind)
+      .projectElements(projectId, ast.ElementKind.$type)
       .filter(n => n.name === node.name && n.node !== node)
       .head()
     if (sameKind) {
@@ -85,7 +85,7 @@ export const checkDeploymentNodeKind = (services: LikeC4Services): ValidationChe
     }
     const projectId = projectIdFrom(node)
     const sameKind = index
-      .projectElements(projectId, ast.DeploymentNodeKind)
+      .projectElements(projectId, ast.DeploymentNodeKind.$type)
       .filter(n => n.name === node.name && n.node !== node)
       .head()
     if (sameKind) {
@@ -115,7 +115,7 @@ export const checkTag = (services: LikeC4Services): ValidationCheck<ast.Tag> => 
     const tagname = node.name
     const projectId = projectIdFrom(node)
     const sameTag = index
-      .projectElements(projectId, ast.Tag)
+      .projectElements(projectId, ast.Tag.$type)
       .filter(n => n.name === tagname && n.node !== node)
       .head()
     if (sameTag) {
@@ -156,7 +156,7 @@ export const checkRelationshipKind = (
     }
     const projectId = projectIdFrom(node)
     const sameKinds = index
-      .projectElements(projectId, ast.RelationshipKind)
+      .projectElements(projectId, ast.RelationshipKind.$type)
       .filter(n => n.name === node.name)
       .limit(2)
       .count()
@@ -176,8 +176,8 @@ export const checkGlobalPredicate = (
   return tryOrLog((node, accept) => {
     const projectId = projectIdFrom(node)
 
-    const predicateGroups = index.projectElements(projectId, ast.GlobalPredicateGroup)
-    const dynamicPredicateGroups = index.projectElements(projectId, ast.GlobalDynamicPredicateGroup)
+    const predicateGroups = index.projectElements(projectId, ast.GlobalPredicateGroup.$type)
+    const dynamicPredicateGroups = index.projectElements(projectId, ast.GlobalDynamicPredicateGroup.$type)
     const sameName = predicateGroups
       .concat(dynamicPredicateGroups)
       .filter(s => s.name === node.name)
@@ -199,7 +199,7 @@ export const checkGlobalStyleId = (
   return tryOrLog((node, accept) => {
     const projectId = projectIdFrom(node)
     const sameName = index
-      .projectElements(projectId, ast.GlobalStyleId)
+      .projectElements(projectId, ast.GlobalStyleId.$type)
       .filter(s => s.name === node.name)
       .limit(2)
       .count()
