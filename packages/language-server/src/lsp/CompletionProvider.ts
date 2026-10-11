@@ -35,6 +35,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
 
   override readonly completionOptions = {
     triggerCharacters: ['.', '#'],
+    allCommitCharacters: [' ', '\t', '\n'],
   } satisfies CompletionProviderOptions
 
   protected override completionFor(
@@ -120,13 +121,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         acceptSnippet({
           detail: `Insert dynamic view`,
           kind: CompletionItemKind.Class,
-          insertText: [
-            'view view_${CURRENT_MINUTE}_${CURRENT_SECOND} {',
-            `\ttitle 'Untitled'`,
-            '\t',
-            '\t$0',
-            '}',
-          ].join('\n'),
+          insertText: `view ${viewSnippet}`,
         })
         break
       case 'view' === keyword.value && AstUtils.hasContainerOfType(context.node, ast.isModelViews):
@@ -180,6 +175,32 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           detail: `Insert parallel steps`,
           kind: CompletionItemKind.Module,
           insertText: `{\n\t$0\n}`,
+        })
+        break
+      case 'try' === keyword.value && AstUtils.hasContainerOfType(context.node, ast.isDynamicViewBody):
+        acceptSnippet({
+          detail: `Insert try-catch flow`,
+          kind: CompletionItemKind.Module,
+          insertText: [
+            '\'critical-path\' {',
+            '\t$0',
+            '} catch \'handling\' {',
+            '} finally \'cleanup\' {',
+            '}',
+          ].join('\n'),
+        })
+        break
+      case 'alt' === keyword.value && AstUtils.hasContainerOfType(context.node, ast.isDynamicViewBody):
+        acceptSnippet({
+          detail: `Insert alternative flow`,
+          kind: CompletionItemKind.Module,
+          insertText: [
+            '{',
+            '\twhen \'condition\' {',
+            '\t\t$0',
+            '\t}',
+            '}',
+          ].join('\n'),
         })
         break
       case 'style' === keyword.value && context.node && AstUtils.hasContainerOfType(context.node, ast.isGlobalStyle):

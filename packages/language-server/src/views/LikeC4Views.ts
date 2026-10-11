@@ -184,13 +184,14 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
     }
     if (results.length > 0) {
       if (tasks.length > 0) {
-        logger.trace`cached ${results.length} views, need to layout ${tasks.length} views`
+        logger.trace`cached ${results.length} views, still need to layout ${tasks.length} views`
       } else {
         logger.trace`cached all ${results.length} views`
       }
     }
     if (tasks.length > 0) {
       const m0 = performanceMark()
+      logger.debug` -> layouting ${tasks.length} views`
       await this.layouter.batchLayout({
         batch: tasks,
         cancelToken,
@@ -203,13 +204,13 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
           logger.warn(`Fail layout view ${task.view.id}`, { error })
         },
       })
-      logger.debug`layouted ${tasks.length} views in ${m0.pretty}`
+      logger.debug` <- layouted ${tasks.length} views in ${m0.pretty}`
     }
-    if (cancelToken && cancelToken.isCancellationRequested) {
+    if (cancelToken) {
       await interruptAndCheck(cancelToken)
     }
     if (results.length !== views.length) {
-      logger.warn`layouted ${results.length} of ${views.length} views`
+      logger.warn`${results.length} of ${views.length} views were layouted`
     }
 
     return results
@@ -247,11 +248,18 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
       return { dot, diagram }
     }
 
+    const projectScope = this.projectStorage(projectId)
+
     if (!view) {
       logger.warn`view ${viewId} not found in model`
       const snapshot = model.findManualLayout(viewId)
+      if (snapshot && layoutType !== 'manual') {
+        logger.warn`view ${viewId} has manual layout, but requested layout type is ${layoutType}, returning null`
+        return null
+      }
       if (snapshot) {
         logger.info`found manual layout for ${viewId}`
+
         let diagram = { ...snapshot } as Writable<LayoutedView>
         diagram.drifts = [
           'not-exists',
@@ -264,7 +272,6 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
       }
       return null
     }
-    const projectScope = this.projectStorage(projectId)
     try {
       const task = {
         view,
@@ -373,18 +380,22 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
   private withLayoutType<V extends LayoutedView<any>>(
     layouted: V,
     likec4model: LikeC4Model.Computed,
-    layoutType?: LayoutType,
+    requestedLayoutType?: LayoutType,
   ): V {
-    if (!layoutType) {
+    if (!requestedLayoutType) {
       return layouted
     }
     const snapshot = likec4model.findManualLayout(layouted.id)
     if (!snapshot) {
       return layouted
     }
-    if (layoutType === 'manual') {
+
+    if (layouted[_layout] === 'manual') {
+      viewsLogger.error`layouted view ${layouted.id} has ${layouted[_layout]} layout, expected auto or none`
+    }
+
+    if (requestedLayoutType === 'manual') {
       if (layouted[_layout] === 'manual') {
-        viewsLogger.error`View ${layouted.id} already has manual layout, this should not happen`
         return layouted
       }
       return applyManualLayout(layouted, snapshot)
@@ -471,9 +482,7 @@ class ProjectStorage {
       return
     }
     this.#logger.trace`clear ${keys.length} cached entries for view ${viewId}`
-    for (const key of keys) {
-      await this.#storage.remove(key)
-    }
+    await Promise.all(keys.map(key => this.#storage.remove(key)))
   }
 
   /**

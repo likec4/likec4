@@ -99,8 +99,8 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
       // TODO: handle delete
     }
 
-    const project = this.services.workspace.ProjectsManager.getProject(projectId)
     if (!viewId) {
+      const project = this.services.workspace.ProjectsManager.getProject(projectId)
       const snapshot = await this.readSnapshot(uri, project)
       if (snapshot) {
         viewId = snapshot.id
