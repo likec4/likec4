@@ -26,16 +26,16 @@
     "@modelcontextprotocol/ext-apps": "1.7.5",
     "@playwright/test": "^1.60.0",
     "@types/node": "~22.19.17",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "likec4": "file:../packages/likec4/package.tgz",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "std-env": "^3.10.0",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
-    "wrangler": "^4.128.0",
+    "wrangler": "^4.149.0",
     "zx": "^8.8.5"
   }
 }

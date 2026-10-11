@@ -94,8 +94,8 @@ catalogs:
     starlight-links-validator: 0.25.2
     starlight-package-managers: 0.12.0
   cloudflare:
-    "@cloudflare/vite-plugin": ~1.54.8
-    wrangler: ~4.131.1
+    "@cloudflare/vite-plugin": 1.63.1
+    wrangler: 4.149.0
   css:
     "@pandacss/dev": ^1.12.1
     "@pandacss/preset-panda": ^1.12.1
