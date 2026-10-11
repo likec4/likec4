@@ -15,7 +15,16 @@ catalogs:
     '@tanstack/ai-client':
       specifier: ^0.8.0
       version: 0.8.0
+    '@tanstack/ai-gemini':
+      specifier: ^0.10.0
+      version: 0.10.0
+    '@tanstack/ai-ollama':
+      specifier: ^0.6.10
+      version: 0.6.10
     '@tanstack/ai-openai':
+      specifier: ^0.8.2
+      version: 0.8.2
+    '@tanstack/ai-openrouter':
       specifier: ^0.8.2
       version: 0.8.2
     '@tanstack/ai-react':
@@ -2018,7 +2027,7 @@ importers:
         specifier: catalog:css
         version: 8.5.28
       pretty-ms:
-        specifier: ^9.3.0
+        specifier: ^9.3.1
         version: 9.3.1
       react:
         specifier: 19.3.0
