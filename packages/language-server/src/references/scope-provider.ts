@@ -19,6 +19,7 @@ import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { elementRef, readStrictFqn } from '../utils/elementRef'
+import { importsRef } from '../utils/fqnRef'
 import type { IndexManager } from '../workspace'
 
 const { getDocument } = AstUtils
@@ -80,12 +81,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   // we need lazy resolving here
-  protected *genUniqueDescedants(element: ast.Element | ast.DeploymentNode | undefined) {
+  protected *genUniqueDescedants(projectId: ProjectId, element: ast.Element | ast.DeploymentNode | undefined) {
     if (!element) {
       return
     }
-    const projectId = projectIdFrom(element)
-
     if (ast.isElement(element)) {
       const fqn = this.fqnIndex.getFqn(element)
       yield* this.fqnIndex.uniqueDescedants(projectId, fqn)
@@ -97,7 +96,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
   }
 
-  protected *genScopeExtendElement({ element }: ast.ExtendElement): Generator<AstNodeDescription> {
+  protected *genScopeExtendElement(
+    projectId: ProjectId,
+    { element }: ast.ExtendElement,
+  ): Generator<AstNodeDescription> {
     if (element.el.$nodeDescription) {
       yield element.el.$nodeDescription
       yield {
@@ -110,24 +112,28 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
     }
     // we make extended element resolvable inside ExtendElementBody
-    yield* this.genUniqueDescedants(elementRef(element))
+    yield* this.genUniqueDescedants(projectId, elementRef(element))
   }
 
-  protected *genScopeElementView({ viewOf, extends: ext }: ast.ElementView): Generator<AstNodeDescription> {
+  protected *genScopeElementView(
+    projectId: ProjectId,
+    { viewOf, extends: ext }: ast.ElementView,
+  ): Generator<AstNodeDescription> {
     if (viewOf) {
       // If we have "view of parent.target"
       // we make "target" resolvable inside ElementView
       if (viewOf.modelElement.value.$nodeDescription) {
         yield viewOf.modelElement.value.$nodeDescription
       }
-      yield* this.genUniqueDescedants(elementRef(viewOf))
+      const imported = importsRef(viewOf.modelElement)
+      yield* this.genUniqueDescedants(imported ? projectIdFrom(imported) : projectId, elementRef(viewOf))
       return
     }
 
     if (ext) {
       const view = ext.view.ref
       if (view) {
-        yield* this.genScopeElementView(view)
+        yield* this.genScopeElementView(projectId, view)
       }
     }
   }
@@ -144,13 +150,16 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     )
   }
 
-  protected *genScopeExtendDeployment({ deploymentNode }: ast.ExtendDeployment): Generator<AstNodeDescription> {
+  protected *genScopeExtendDeployment(
+    projectId: ProjectId,
+    { deploymentNode }: ast.ExtendDeployment,
+  ): Generator<AstNodeDescription> {
     if (deploymentNode.value.$nodeDescription) {
       yield deploymentNode.value.$nodeDescription
     }
     const target = deploymentNode.value.ref
     if (target && ast.isDeploymentNode(target)) {
-      yield* this.genUniqueDescedants(target)
+      yield* this.genUniqueDescedants(projectId, target)
     }
   }
 
@@ -168,23 +177,26 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return EMPTY_STREAM
     }
     if (ast.isImported(parentRef)) {
-      return stream(this.genUniqueDescedants(parentRef.imported.ref))
+      return stream(this.genUniqueDescedants(projectIdFrom(parentRef), parentRef.imported.ref))
     }
     if (ast.isDeploymentNode(parentRef)) {
-      return stream(this.genUniqueDescedants(parentRef))
+      return stream(this.genUniqueDescedants(projectId, parentRef))
     }
     if (ast.isDeployedInstance(parentRef)) {
-      const target = parentRef.target.modelElement.value.ref
+      const targetRef = parentRef.target.modelElement
+      const target = targetRef.value.ref
       // dprint-ignore
       const resolvedTarget = ast.isImported(target)
         ? target.imported.ref
         : ast.isElement(target)
           ? target
           : undefined
-      return stream(this.genUniqueDescedants(resolvedTarget))
+      const imported = importsRef(targetRef)
+      return stream(this.genUniqueDescedants(imported ? projectIdFrom(imported) : projectId, resolvedTarget))
     }
     if (ast.isElement(parentRef)) {
-      return stream(this.genUniqueDescedants(parentRef))
+      const imported = importsRef(parent)
+      return stream(this.genUniqueDescedants(imported ? projectIdFrom(imported) : projectId, parentRef))
     }
     return nonexhaustive(parentRef)
   }
@@ -259,13 +271,13 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       yield* elements
 
       if (isDeploymentReference && ast.isExtendDeploymentBody(container)) {
-        yield* this.genScopeExtendDeployment(container.$container)
+        yield* this.genScopeExtendDeployment(projectId, container.$container)
       }
       if (isElementReference && ast.isExtendElementBody(container)) {
-        yield* this.genScopeExtendElement(container.$container)
+        yield* this.genScopeExtendElement(projectId, container.$container)
       }
       if (isElementReference && ast.isElementViewBody(container)) {
-        yield* this.genScopeElementView(container.$container)
+        yield* this.genScopeElementView(projectId, container.$container)
       }
       container = container.$container
     }

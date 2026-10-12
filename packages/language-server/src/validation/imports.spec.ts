@@ -2,6 +2,45 @@ import { describe, it } from 'vitest'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 
 describe('import checks', () => {
+  it('should resolve nested imported elements and scoped views in the source project', async ({ expect }) => {
+    await using t = await createMultiProjectTestServices({
+      owner: {
+        'model.c4': `
+          specification { element component }
+          model {
+            component app {
+              component api {
+                component handler
+              }
+            }
+          }
+        `,
+      },
+      consumer: {
+        'model.c4': `
+          import app from 'owner'
+          specification {
+            element component
+          }
+          model {
+            component client
+            client -> app.api.handler
+          }
+          views {
+            view api of app.api {
+              include handler
+            }
+          }
+        `,
+      },
+    })
+
+    const { errors } = await t.validateAll()
+    expect(errors).toEqual([])
+    const model = await t.buildLikeC4Model('consumer')
+    expect([...model.relationships()].map(relation => relation.target.id)).toEqual(['@owner.app.api.handler'])
+  })
+
   it('should report invalid import from same project (default)', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
