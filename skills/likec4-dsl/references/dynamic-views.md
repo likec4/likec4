@@ -225,7 +225,7 @@ dynamic view resilient-sync {
 
 ## Step Properties (Body)
 
-Attach a body block `{ ... }` to a step for additional metadata:
+Attach a body block `{ ... }` to a step for additional properties:
 
 ```likec4
 dynamic view with-notes {
@@ -243,13 +243,6 @@ dynamic view with-notes {
       - Available inventory
     """
   }
-
-  backend -> db "query" {
-    metadata {
-      latency "50ms"
-      cached false
-    }
-  }
 }
 ```
 
@@ -259,7 +252,9 @@ dynamic view with-notes {
 - `technology` — technology/protocol used
 - `description` — detailed description
 - `notes` — markdown-formatted notes/commentary
-- `metadata` — key-value pairs for custom data
+- `navigateTo` — drill-down link to another dynamic view (see below)
+
+A step body does **not** accept `metadata` (parse error). Put metadata on the model relationship instead.
 
 ## Navigation & Drill-down
 
@@ -279,6 +274,7 @@ dynamic view data-fetch-details {
 ```
 
 - `navigateTo <view-name>` — renders as a clickable link to drill down.
+- On a dynamic step, `navigateTo` resolves **only** to another `dynamic view`. Pointing it at an element view fails with `Could not resolve reference to DynamicView`.
 - Use for progressive disclosure: high-level flows → detailed sub-flows.
 
 ## Variant: Sequence Diagram
@@ -319,7 +315,8 @@ If the prompt asks for response arrows back out, prefer `<-` steps over inventin
 ```likec4
 dynamic view checkout-flow {
   customer -> frontend -> api
-  customer <- frontend <- api  // Prefer chained <- for responses
+  frontend <- api      // One <- step per response hop
+  customer <- frontend // <- cannot be chained (`a <- b <- c` is a parse error)
 }
 ```
 
@@ -439,7 +436,8 @@ When the prompt asks for one parallel fan-out, keep sibling actions inside one `
 dynamic view checkout-flow {
   variant sequence
   customer -> frontend -> api
-  customer <- frontend <- api
+  frontend <- api
+  customer <- frontend
 }
 ```
 
