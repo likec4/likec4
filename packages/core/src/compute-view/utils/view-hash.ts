@@ -48,6 +48,8 @@ export function calcViewLayoutHash<V extends ComputedView<any>>(view: SetOptiona
       })),
       mapToObj((e) => [e.id, { ...e }]),
     ),
+    // Only when set, to keep existing hashes stable
+    ...('ranks' in view && view.ranks && view.ranks.length > 0 && { ranks: view.ranks }),
   }
   view.hash = objectHash(tohash)
   return view as unknown as V
