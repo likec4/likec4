@@ -76,8 +76,8 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       let crawler = new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(this.excludeDirectory)
         .withFullPaths()
+        .exclude(isNodeModulesOrRepo)
         .filter(path => isLikeC4File(path) && !this.isExcluded(path))
 
       if (!recursive) {
@@ -122,9 +122,10 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     try {
       const crawled = await new fdir()
         .withSymlinks({ resolvePaths: false })
-        .exclude(this.excludeDirectory)
         .withFullPaths()
-        .filter((path, isDirectory) => !this.isExcluded(path) && filter(path, isDirectory))
+        .withMaxFiles(30000)
+        .exclude(isNodeModulesOrRepo)
+        .filter((path, isDirectory) => filter(path, isDirectory) && !this.isExcluded(path))
         .crawl(directory.fsPath)
         .withPromise()
       for (const path of crawled) {

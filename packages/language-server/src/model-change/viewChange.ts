@@ -10,6 +10,7 @@ import {
   printOperation,
   withctx,
 } from '@likec4/generators/likec4'
+import type { CstNode } from 'langium'
 import { filter, findLast, hasAtLeast, isTruthy, last, map, pipe, piped } from 'remeda'
 import { Position, TextEdit } from 'vscode-languageserver-protocol'
 import { type ParsedLikeC4LangiumDocument, ast } from '../ast'
@@ -97,21 +98,19 @@ export const changePropertyHandler = viewChangeHandler(
 
 type PropOf<V extends ast.LikeC4View> = NonNullable<V['body']>['props'][number]
 
-type WithCst<T extends { $cstNode?: any }> = T & { $cstNode: NonNullable<T['$cstNode']> }
-
 function findExistingViewProperty<
   V extends ast.LikeC4View,
-  P extends PropOf<V>['key'],
-  T extends WithCst<PropOf<V> & { key: P }> = WithCst<PropOf<V> & { key: P }>,
+  K extends PropOf<V>['key'],
+  P extends PropOf<V> & { key: K; $cstNode: CstNode } = PropOf<V> & { key: K; $cstNode: CstNode },
 >(
   viewAst: V,
-  property: P,
-): T | undefined {
+  property: K,
+): P | undefined {
   const props = viewAst.body?.props
   if (!props || !hasAtLeast(props, 1)) {
     return undefined
   }
-  return findLast(props, (p): p is T => p.key === property && p.$cstNode !== undefined)
+  return props.findLast((p) => p.key === property && p.$cstNode !== undefined) as P | undefined
 }
 
 function findInsertPosition<V extends ast.LikeC4View>(
