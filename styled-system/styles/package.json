@@ -68,7 +68,7 @@
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
-    "react": "^19.2.x"
+    "react": "^19.3.0"
   },
   "peerDependenciesMeta": {
     "react": {
