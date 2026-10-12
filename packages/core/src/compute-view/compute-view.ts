@@ -67,7 +67,8 @@ export function computeView<A extends Any>(
 export function computeParsedModelData<A extends AnyParsed, B extends aux.toComputed<A> = aux.toComputed<A>>(
   parsed: ParsedLikeC4ModelData<A>,
 ): ComputedLikeC4ModelData<B> {
-  const likec4model = LikeC4Model.create(parsed)
+  // By using constructor directly we avoid caching in WeakMap
+  const likec4model = new LikeC4Model<A>(parsed)
   let {
     views: _views,
     _stage: __omitted,
@@ -77,8 +78,8 @@ export function computeParsedModelData<A extends AnyParsed, B extends aux.toComp
   const views = mapValues(_views as unknown as Record<string, ParsedView<B>>, v => unsafeComputeView(v, likec4model))
 
   return {
-    [_stage]: 'computed',
     ...rest,
+    [_stage]: 'computed',
     views: views as unknown as Record<ViewId<B>, ComputedView<B>>,
   }
 }
@@ -86,5 +87,6 @@ export function computeParsedModelData<A extends AnyParsed, B extends aux.toComp
 export function computeLikeC4Model<A extends AnyAux, B extends aux.toComputed<A> = aux.toComputed<A>>(
   parsed: ParsedLikeC4ModelData<A>,
 ): LikeC4Model<B> {
-  return LikeC4Model.create(computeParsedModelData<A, B>(parsed))
+  // By using constructor directly we avoid caching in WeakMap
+  return new LikeC4Model(computeParsedModelData<A, B>(parsed))
 }

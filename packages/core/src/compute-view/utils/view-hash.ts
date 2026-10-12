@@ -3,7 +3,7 @@ import type { SetOptional } from 'type-fest'
 import { type ComputedView, flattenMarkdownOrString } from '../../types'
 import { objectHash } from '../../utils'
 
-export function calcViewLayoutHash<V extends ComputedView>(view: SetOptional<V, 'hash'>): V {
+export function calcViewLayoutHash<V extends ComputedView<any>>(view: SetOptional<V, 'hash'>): V {
   const tohash = {
     id: view.id,
     __: view._type ?? 'element',
