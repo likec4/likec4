@@ -920,10 +920,24 @@ DeploymentViewBody: '{'
 
 DeploymentViewRule:
   DeploymentViewRulePredicate |
+  DeploymentViewRuleGroup |
   DeploymentViewRuleStyle |
   ViewRuleAutoLayout |
   ViewRuleAncestors
 ;
+
+DeploymentViewRuleGroup:
+  'group' title=String? '{'
+    props+=(
+      ColorProperty |
+      BorderProperty |
+      OpacityProperty
+    )*
+    groupRules+=(
+      DeploymentViewRulePredicate |
+      DeploymentViewRuleGroup
+    )*
+  '}';
 
 ViewRuleAncestors:
   key='includeAncestors' ':'? value=BOOLEAN ';'?
