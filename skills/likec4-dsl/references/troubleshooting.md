@@ -46,8 +46,8 @@ Load this file when encountering validation errors, unexpected rendering, or whe
 | `"loop" can not be used as an alternative branch` | Non-branch block (`loop`/`opt`/`parallel`/`try`) placed directly inside `alt` | `alt` accepts only `when`/`if`/`else` branches; nest the block inside a branch |
 | `"when" alternative branch must be inside "alt"` | `when`/`if`/`else` used at top level or inside a non-`alt` block | Wrap the branches in an `alt { ... }` block |
 | `catch`/`finally` rejected | `catch` without a preceding `try`, or `catch` after `finally` | Keep order `try` → `catch?` → `finally?` |
-| Response arrows (`<-`) show wrong direction | Chaining mixes `->` and `<-` inconsistently | Use symmetric chains: `a -> b -> c` then `c <- b <- a` for returns |
-| `navigateTo` link doesn't work | Target view name does not exist | Ensure the target view name exists in the same project |
+| Response arrows (`<-`) show wrong direction | Chained `<-` steps are not supported | After `a -> b -> c`, write one `<-` step per hop: `b <- c`, then `a <- b`. `<-` cannot be chained (`a <- b <- c` is a parse error) |
+| `navigateTo` link doesn't work | Target view name does not exist | Ensure the target view name exists in the same project; from a dynamic step it must be another `dynamic view` |
 | `variant sequence` is ignored | Wrong keyword or spelling | Use exact: `variant sequence` (not `type`, `mode`, or `sequence` alone) |
 
 ## Validation & Import
@@ -55,9 +55,9 @@ Load this file when encountering validation errors, unexpected rendering, or whe
 | Most Common | Solution |
 |---|---|
 | `validate` reports config not found | Ensure `likec4.config.json` exists in the project root directory |
-| Imported file shows "Module not resolved" | Use correct relative path: `import { x } from './path/to/file.c4'` |
+| `Imported project not found` | `import` takes another project's `name` (from its `likec4.config`), not a file path: `import { x } from 'other-project'`. Files of the same project need no import; reference elements by full FQN |
 | Symbol from import invisible in model | Symbol must be public (defined at top level); nested elements need FQN |
-| Large error count in project but your file is clean | Use `likec4 validate --json --no-layout --file <edited-file> <project-dir>` and check `filteredErrors`/`filteredFiles`; text mode may still print upstream diagnostics |
+| Large error count in project but your file is clean | Use `likec4 validate --json --no-layout --file <edited-file> <project-dir>` and check `filteredErrors`/`filteredFiles`; text mode can also print diagnostics from other workspace files before the filtered summary |
 
 ## Performance & Large Models
 

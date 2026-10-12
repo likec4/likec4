@@ -348,7 +348,7 @@ Styling?
 
 ```text
 Multi-file project?
-├─ Import elements → import { backend } from './shared.c4'
+├─ Import from another project → import { backend } from 'shared-project' (project name, not a file path)
 ├─ Cross-file lookup → short names do not inherit lexical/container scope across files; use full FQN
 ├─ Extend element → extend cloud.backend { service newSvc "New" }
 ├─ Extend relationship → extend cloud -> amazon { metadata { ... } }

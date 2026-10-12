@@ -2,7 +2,8 @@
 
 ## Wildcard semantics
 
-LikeC4 uses three wildcard forms in view predicates: `*`, `_`, and `**`.
+LikeC4 view predicates use the wildcard `*` and the selector suffixes `parent.*`, `parent._` and `parent.**`.
+`_` and `**` exist **only** as suffixes on an element reference: bare `include **` and `exclude _` are parse errors.
 
 ### `*` — immediate children and direct contains-relationships
 
@@ -18,33 +19,33 @@ views {
 - Includes **direct relationships** defined at the same scope.
 - Does **not** include grandchildren or descendant chains.
 
-### `_` — anonymous matcher (matches any element)
+### `parent._` — expand (children that have relationships)
 
 ```likec4
 views {
-  view with-predicates {
-    include * where kind is service
-    exclude _ where tag is #deprecated
+  view connected-children {
+    include customer
+    include cloud._
   }
 }
 ```
 
-- `_` matches any element in the model.
-- Used in conjunction with `where` predicates to match by kind, tag, or metadata.
-- Example: `exclude _ where tag is #deprecated` — exclude any element tagged deprecated.
+- Includes `cloud` and only those direct children of `cloud` that have relationships with visible elements; other children are omitted.
+- Same as `include cloud` + `include -> cloud.* ->`.
+- `_` is **not** a "match anything" wildcard. To exclude every visible element with a tag, use `exclude * where tag is #deprecated`.
 
-### `**` — recursive descent (all descendants)
+### `parent.**` — recursive descent (descendants)
 
 ```likec4
 views {
   view full-tree {
-    include **
+    include cloud.**
   }
 }
 ```
 
 - Includes **all descendants** recursively (grandchildren, great-grandchildren, etc.).
-- **Not** the same as `include *` (which is immediate children only).
+- **Not** the same as `include cloud.*` (which is immediate children only).
 - Use when you want nested hierarchies visible in a single view.
 
 ## Scoped view base semantics
@@ -63,7 +64,7 @@ views {
 
 **Key facts:**
 - `include *` in a scoped view = the scoped parent + **direct children only**
-- Grandchildren inside `*` context are **not** included (you'd need `include **` or explicit FQN inclusion)
+- Grandchildren inside `*` context are **not** included (you'd need `include cloud.backend.**` or explicit FQN inclusion)
 - Relationship predicates like `->` and `<->` can further expand what neighbors appear
 
 ## Common filter patterns
@@ -84,7 +85,7 @@ views {
 ```likec4
 views {
   view system-tree of cloud {
-    include **             // All descendants of cloud (full tree)
+    include cloud.**       // All descendants of cloud (full tree)
   }
 }
 ```
@@ -95,7 +96,7 @@ views {
 views {
   view services-only {
     include * where kind is service
-    include ** where kind is service  // All services at any depth
+    include cloud.** where kind is service  // All services at any depth inside cloud
   }
 }
 ```
@@ -106,7 +107,7 @@ views {
 views {
   view critical-view {
     include * where tag is #critical
-    exclude _ where tag is #deprecated
+    exclude * where tag is #deprecated  // Removes deprecated elements at any depth
   }
 }
 ```
@@ -133,7 +134,7 @@ This **does not change the base set of elements**; it only **includes relationsh
 ```likec4
 views {
   view all-elements {
-    include **
+    include cloud.**
   }
 }
 ```
@@ -159,19 +160,20 @@ views {
 
 | Wrong | Right | Why |
 |---|---|---|
-| `include **` expecting only immediate children | `include *` | `**` is recursive; use `*` for one level |
+| Bare `include **` or `exclude _` | `include cloud.**`, `exclude * where tag is #deprecated` | `**` and `_` are suffixes on an element reference, not standalone wildcards |
+| `include cloud.**` expecting only immediate children | `include cloud.*` | `**` is recursive; use `*` for one level |
 | Forgetting to add relationship filters in scoped view | `include *` + `include -> parent` | Relationships may not auto-render without explicit inclusion |
-| Assuming `include *` includes grandchildren | Use `include **` instead | `*` is immediate children only |
+| Assuming `include *` includes grandchildren | Use `include cloud.**` instead | `*` is immediate children only |
 
 ## Summary table
 
 | Form | Matches | Scope context |
 |---|---|---|
 | `*` | Direct children + sibling relationships | One level down |
-| `_` | Any element (used with `where` filters) | Matches by kind, tag, metadata |
-| `**` | All descendants recursively | Any depth |
+| `parent._` | `parent` + direct children that have relationships with visible elements | One level down |
+| `parent.**` | All descendants recursively | Any depth |
 | `include -> element` | Inbound relationships to element | Shows external sources |
 | `include element ->` | Outbound relationships from element | Shows targets |
-| `include <-> element` | Bidirectional relationships | Shows symmetric dependencies |
+| `include a <-> b` | Relationships between `a` and `b` in either direction | Shows symmetric dependencies |
 
 **In scoped views:** `include *` establishes a base set of the scope parent + immediate children. Relationship predicates like `->` and `<->` can bring in neighboring elements needed to render those relationships.
