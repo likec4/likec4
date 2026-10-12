@@ -88,7 +88,7 @@ catalogs:
     astro: 7.3.8
     astro-og-canvas: 0.13.2
     astro-skills: 0.1.1
-    shiki: 4.1.0
+    shiki: 4.5.0
     starlight-heading-badges: 0.8.0
     starlight-image-zoom: 0.15.0
     starlight-links-validator: 0.25.2
