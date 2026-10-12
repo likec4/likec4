@@ -5,17 +5,10 @@ import { useEffect } from 'react'
 import { likec4Container } from '../App.css'
 import { queries } from '../queries'
 import { ErrorMessage } from '../QueryErrorBoundary'
-import { ExtensionApi, saveVscodeState } from '../vscode'
+import { ExtensionApi } from '../vscode'
 
 export function ProjectsScreen() {
   const { data, error, refetch } = useQuery(queries.projectsOverview)
-
-  useEffect(() => {
-    if (!data) {
-      return
-    }
-    saveVscodeState({ projectsOverview: data })
-  }, [data])
 
   useEffect(() => {
     ExtensionApi.updateTitle('Projects Overview')

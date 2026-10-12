@@ -1,16 +1,16 @@
-import { nonNullable } from '@likec4/core'
 import type {
-  ComputedLikeC4ModelData,
   DiagramNode,
   LayoutType,
   ProjectId,
   scalar,
+  UnknownComputed,
 } from '@likec4/core/types'
-import type { LikeC4EditorCallbacks } from '@likec4/diagram'
+import { nonNullable, stringHash } from '@likec4/core/utils'
+import { type LikeC4EditorCallbacks, useLikeC4Model, useUpdateEffect } from '@likec4/diagram'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { atom, batched, onSet } from 'nanostores'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { queries, queryClient } from './queries'
 import { ExtensionApi, getVscodeState, saveVscodeState } from './vscode'
 
@@ -55,29 +55,13 @@ if (vscodeState.model) {
       updatedAt: vscodeState.updatedAt,
     },
   )
-  if (vscodeState.view) {
+  if (vscodeState.view && vscodeState.viewQueryKey) {
     queryClient.setQueryData(
-      queries.fetchDiagramView(
-        vscodeState.model.projectId as ProjectId,
-        vscodeState.view.id,
-        vscodeState.view._layout ?? 'manual',
-      )
-        .queryKey,
+      vscodeState.viewQueryKey,
       vscodeState.view,
-      {
-        updatedAt: vscodeState.updatedAt,
-      },
+      { updatedAt: vscodeState.updatedAt },
     )
   }
-}
-if (vscodeState.projectsOverview) {
-  queryClient.setQueryData(
-    queries.projectsOverview.queryKey,
-    vscodeState.projectsOverview,
-    {
-      updatedAt: vscodeState.updatedAt,
-    },
-  )
 }
 
 export function changeViewId(viewId: scalar.ViewId, projectId?: scalar.ProjectId) {
@@ -134,29 +118,29 @@ ExtensionApi.onModelUpdateNotification(async () => {
       queryKey: queries.fetchComputedModel(projectId).queryKey,
       refetchType: 'active',
     }),
-    // Remove queries of other views
-    Promise.resolve().then(() =>
-      queryClient.removeQueries({
-        predicate({ isActive, queryKey }) {
-          return !isActive && queryKey.at(0) === projectId && queryKey.at(1) === 'diagram' && queryKey.at(2) !== viewId
-        },
-      })
-    ),
-    // And refetch active diagram views
-    queryClient.invalidateQueries({
-      queryKey: [projectId, 'diagram', viewId],
-      refetchType: 'active',
-    }),
     queryClient.invalidateQueries({
       queryKey: queries.projectsOverview.queryKey,
       refetchType: 'active',
+    }),
+    // // Remove queries of other views
+    // Promise.resolve().then(() =>
+    //   queryClient.removeQueries({
+    //     predicate({ isActive, queryKey }) {
+    //       return !isActive && queryKey[0] === 'project' && queryKey[1] === projectId && queryKey[2] === 'diagram' &&
+    //         queryKey[3] !== viewId
+    //     },
+    //   })
+    // ),
+    // And refetch active diagram views
+    queryClient.invalidateQueries({
+      queryKey: ['project', projectId, 'diagram'],
     }),
   ])
 })
 
 ExtensionApi.onProjectsUpdateNotification(() => {
   void queryClient.invalidateQueries({
-    queryKey: queries.projectsOverview.queryKey,
+    refetchType: 'active',
   })
 })
 
@@ -167,59 +151,76 @@ const projectAndView = batched(
 
 export function useComputedModelData() {
   const projectId = useStore($projectId)
-  const { data: model, error, refetch } = useQuery(
+  const { data: model, error, refetch, isPlaceholderData, isPending } = useQuery(
     queries.fetchComputedModel(projectId),
   )
 
   useEffect(() => {
-    if (!model) {
+    if (!model || isPlaceholderData) {
       return
     }
-    saveVscodeState({ projectId: model.project.id, model })
-  }, [model])
+    saveVscodeState({ projectId: model.projectId, model })
+  }, [model, isPlaceholderData])
 
   return {
     projectId,
     model,
     error,
     refetch,
+    isPlaceholderData,
+    isPending,
   }
 }
 
-export function useDiagramView(projectId: ProjectId) {
+export function useDiagramView() {
   const { projectId: storedProjectId, viewId, layoutType } = useStore(projectAndView)
-  const { data: hash, isPlaceholderData } = useQuery({
-    ...queries.fetchComputedModel(projectId),
-    select: useCallback((d: ComputedLikeC4ModelData) => {
-      return d.views[viewId]?.hash ?? null
-    }, [viewId]),
+
+  const likec4Model = useLikeC4Model<UnknownComputed>()
+  const modelProjectId = likec4Model.projectId
+  const viewModel = likec4Model.findView(viewId)
+  const viewHash = viewModel?.$view.hash
+
+  const hash = viewHash ? stringHash(`${viewHash}:${likec4Model.$styles.fingerprint}`) : undefined
+
+  const queryOptions = queries.fetchDiagramView(modelProjectId, viewId, layoutType, hash)
+
+  const {
+    data: view,
+    error,
+    isPlaceholderData,
+    isPending,
+  } = useQuery({
+    ...queryOptions,
+    enabled: modelProjectId === storedProjectId,
   })
 
-  const { data: view, error } = useQuery({
-    ...queries.fetchDiagramView(projectId, viewId, layoutType, hash),
-    enabled: hash !== undefined && !isPlaceholderData && projectId === storedProjectId,
-  })
-
-  useEffect(() => {
-    if (!view) {
+  useUpdateEffect(() => {
+    if (!view || isPlaceholderData) {
       return
     }
-    saveVscodeState({ viewId: view.id, view })
-  }, [view])
+    saveVscodeState({
+      viewId: view.id,
+      viewQueryKey: queryOptions.queryKey,
+      view,
+    })
+  }, [view, queryOptions.queryKey, isPlaceholderData])
 
-  // const resolved = view ?? prev.current
-  const title = view?.title ?? viewId
+  const title = viewModel?.titleOrId
 
   useEffect(() => {
-    ExtensionApi.updateTitle(title)
+    if (title) {
+      ExtensionApi.updateTitle(title)
+    }
   }, [title])
 
   return {
-    projectId,
+    projectId: modelProjectId,
     viewId: view?.id ?? viewId,
     layoutType: view?._layout ?? layoutType,
     view,
     error,
+    isPending,
+    isPlaceholderData,
   }
 }
 

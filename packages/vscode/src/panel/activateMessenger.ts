@@ -71,7 +71,7 @@ export function activateMessenger() {
         )
         return {
           view: null,
-          error: `View "${viewId}" not found`,
+          error: `View "${viewId}" not found (or layout failed) in project "${projectId}"`,
         }
       }
       let view = result.diagram
