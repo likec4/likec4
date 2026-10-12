@@ -44,7 +44,7 @@ catalog:
   "@types/node": ~22.19.19
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260707.2
-  dprint: ^0.61.1
+  dprint: ^0.63.0
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
@@ -291,3 +291,23 @@ minimumReleaseAgeExclude:
   - '@xstate/store@4.3.0'
   - fast-equals@6.1.1
   - vite@8.3.4
+  - '@dprint/android-arm64@0.63.0'
+  - '@dprint/android-x64@0.63.0'
+  - '@dprint/darwin-arm64@0.63.0'
+  - '@dprint/darwin-x64@0.63.0'
+  - '@dprint/freebsd-arm64@0.63.0'
+  - '@dprint/freebsd-x64@0.63.0'
+  - '@dprint/linux-arm64-glibc@0.63.0'
+  - '@dprint/linux-arm64-musl@0.63.0'
+  - '@dprint/linux-loong64-glibc@0.63.0'
+  - '@dprint/linux-loong64-musl@0.63.0'
+  - '@dprint/linux-ppc64-glibc@0.63.0'
+  - '@dprint/linux-ppc64-musl@0.63.0'
+  - '@dprint/linux-riscv64-glibc@0.63.0'
+  - '@dprint/linux-riscv64-musl@0.63.0'
+  - '@dprint/linux-s390x-glibc@0.63.0'
+  - '@dprint/linux-x64-glibc@0.63.0'
+  - '@dprint/linux-x64-musl@0.63.0'
+  - '@dprint/win32-arm64@0.63.0'
+  - '@dprint/win32-x64@0.63.0'
+  - dprint@0.63.0

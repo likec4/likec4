@@ -56,12 +56,12 @@
   "malva": {},
   "markup": {},
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.96.0.wasm",
-    "https://plugins.dprint.dev/json-0.21.3.wasm",
-    "https://plugins.dprint.dev/markdown-0.21.1.wasm",
-    "https://plugins.dprint.dev/toml-0.7.0.wasm",
-    "https://plugins.dprint.dev/g-plane/malva-v0.15.3.wasm",
-    "https://plugins.dprint.dev/g-plane/markup_fmt-v0.27.0.wasm",
-    "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.6.0.wasm"
+    "npm:@dprint/typescript@0.96.1",
+    "npm:@dprint/json@0.25.2",
+    "npm:@dprint/markdown@0.26.0",
+    "npm:@dprint/toml@0.9.0",
+    "npm:dprint-plugin-malva@0.16.0",
+    "npm:dprint-plugin-markup@0.27.5",
+    "npm:dprint-plugin-yaml@0.6.0"
   ]
 }
