@@ -1,3 +1,4 @@
+import type { ViewId } from '@likec4/core'
 import { deepEqual } from 'fast-equals'
 import { indexBy } from 'remeda'
 import { describe } from 'vitest'
@@ -69,5 +70,45 @@ describe('LikeC4Views', () => {
     expect(diagrams1.index).not.toStrictEqual(diagrams2.index)
     // expect that sys2 view is the same
     expect(diagrams1.sys2).toStrictEqual(diagrams2.sys2)
+  })
+
+  it('does not return cached layout when only rank constraints change', async ({ expect, t }) => {
+    await t.parse(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        component sys3
+        sys1 -> sys2
+        sys2 -> sys3
+      }
+    `)
+    const views = await t.parse(`
+      views {
+        view index {
+          include *
+        }
+      }
+    `)
+    expect((await t.validateAll()).errors).toHaveLength(0)
+
+    const before = await t.services.likec4.Views.layoutView({ viewId: 'index' as ViewId })
+    expect(before?.dot).not.toContain('likec4_rankBlocks')
+
+    await t.removeDocument(views)
+    await t.parse(`
+      views {
+        view index {
+          include *
+          rank same { sys1, sys3 }
+        }
+      }
+    `)
+    expect((await t.validateAll()).errors).toHaveLength(0)
+
+    const after = await t.services.likec4.Views.layoutView({ viewId: 'index' as ViewId })
+    expect(after?.dot).toContain('likec4_rankBlocks=1')
   })
 })
