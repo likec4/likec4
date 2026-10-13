@@ -117,6 +117,7 @@ export function useWorkspaces() {
         workspaceId: workspace.workspaceId,
         viewId: 'index',
       },
+      reloadDocument: true,
     })
   }
 
@@ -130,6 +131,7 @@ export function useWorkspaces() {
           workspaceId,
           viewId: 'index',
         },
+        reloadDocument: true,
       })
       return
     }
@@ -151,6 +153,7 @@ export function useWorkspaces() {
         workspaceId,
         viewId: 'index',
       },
+      reloadDocument: true,
     })
   }
 

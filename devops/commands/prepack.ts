@@ -1,4 +1,5 @@
 import { defineCommand } from 'citty'
+import { glob } from 'node:fs/promises'
 import Gitignore, { type State as GitignoreState } from 'parse-gitignore'
 import { entries, hasSubObject, isPlainObject, isString } from 'remeda'
 import type { PackageJson } from 'type-fest'
@@ -268,6 +269,11 @@ export default defineCommand({
     }
 
     echo('')
+
+    for await (const file of glob('*.tgz')) {
+      await fs.remove(file)
+      echo(chalk.dim(`removed: `) + file)
+    }
 
     echo(chalk.green('✅ done'))
   },

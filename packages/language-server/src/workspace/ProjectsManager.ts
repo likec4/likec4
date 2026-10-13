@@ -903,7 +903,9 @@ export class ProjectsManager extends ADisposable {
   }
 
   private notifyListeners() {
-    for (const listener of [...this.#updateListeners]) {
+    // Copy to avoid modification during iteration
+    const listeners = [...this.#updateListeners]
+    for (const listener of listeners) {
       try {
         listener()
       } catch (e) {

@@ -7,20 +7,23 @@ import type {
   ComputedNodeStyle,
   LikeC4ProjectStylesConfig,
   LikeC4ProjectStylesCustomStylesheets,
+  MarkdownOrString,
   NTuple,
 } from '../types'
-import { ensureSizes } from '../types'
+import { ensureSizes, flattenMarkdownOrString } from '../types'
 import { DefaultMap, DefaultWeakMap, memoizeProp, objectHash } from '../utils'
 import type { DefaultTagColors } from './assignTagColors'
 import { computeColorValues } from './compute-color-values'
 import { computeCompoundColorValues } from './compute-compound-colors'
 import { styleDefaults } from './defaults'
+import { type FittedNodeContent, fitNodeContent } from './fitNodeContent'
 import { defaultTheme } from './theme'
 import type {
   ColorLiteral,
   CustomColor,
   CustomColorDefinitions,
   ElementColorValues,
+  ElementShape,
   IconSize,
   LikeC4StyleDefaults,
   LikeC4StylesConfig,
@@ -237,6 +240,50 @@ export class LikeC4Styles {
         iconSize: this.iconSize(sizes.iconSize),
       } as const,
     } as const
+  }
+
+  /**
+   * Computes title font size and icon size (in pixels) for a node.
+   * With `sizing: fixed` the content shrinks to fit the node box,
+   * otherwise base values are returned.
+   *
+   * @param node.width - Node width, defaults to theme width for the node size
+   * @param node.height - Node height, defaults to theme height for the node size
+   */
+  fitNodeContent(node: {
+    title: string
+    shape: ElementShape
+    style: ComputedNodeStyle
+    icon?: string | null | undefined
+    technology?: string | null | undefined
+    description?: MarkdownOrString | null | undefined
+    width?: number | undefined
+    height?: number | undefined
+  }): FittedNodeContent {
+    const { sizes, values } = this.nodeSizes(node.style)
+    const hasIcon = !!node.icon && node.icon !== 'none'
+    if (node.style.sizing !== 'fixed') {
+      return {
+        textSize: values.textSize,
+        iconSize: values.iconSize,
+        maxLines: sizes.size === 'xs' || sizes.size === 'sm' ? 2 : 3,
+        maxchars: Math.floor(values.sizes.width / (values.textSize * 0.55)),
+      }
+    }
+    return fitNodeContent({
+      title: node.title,
+      shape: node.shape,
+      size: sizes.size,
+      width: node.width ?? values.sizes.width,
+      height: node.height ?? values.sizes.height,
+      padding: values.padding,
+      textSize: values.textSize,
+      iconSize: values.iconSize,
+      hasIcon,
+      iconPosition: node.style.iconPosition ?? this.defaults.iconPosition ?? 'left',
+      hasTechnology: !!node.technology?.trim(),
+      hasDescription: !!(node.description && flattenMarkdownOrString(node.description)?.trim()),
+    })
   }
 
   /**

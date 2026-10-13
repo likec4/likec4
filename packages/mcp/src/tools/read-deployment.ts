@@ -20,72 +20,8 @@ import {
 
 export const readDeployment = likec4Tool({
   name: 'read-deployment',
-  description: `
-Read details about a deployment node or a deployed instance in a LikeC4 project.
-
-What it does:
-- Returns metadata about a deployment entity (node or instance), including kind, tags, color/shape, children, which views include it, and its source location.
-
-Inputs:
-- id: string — Deployment id (FQN)
-- project: string (optional, defaults to "default") — Project id
-
-Output fields:
-- type: "deployment-node" | "deployed-instance"
-- id: string — Deployment id (FQN)
-- kind: string — Deployment node kind, or element kind for deployed instances
-- name: string — Name of the deployment entity
-- title: string — Title of the deployment entity
-- description: string|null — Description text
-- technology: string|null — Technology info, if any
-- tags: string[] — Tags assigned to this entity
-- project: string — Project id
-- metadata: Record<string, string>
-- links: Array<{ title: string|null, url: string, relative: string|null }> — external links associated with this deployment entity
-- shape: string — Rendered shape
-- color: string — Rendered color
-- children: string[] — Child deployment ids (empty for instances)
-- includedInViews: View[] — Views that include this entity
-- instanceof: { id: string, title: string, kind: string } | null — If type is "deployed-instance", the referenced element
-- sourceLocation: { path: string, range: { start: { line: number, character: number }, end: { line: number, character: number } } } | null
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
-
-Notes:
-- Read-only, idempotent; does not mutate the model.
-
-Example request:
-{ "id": "k8s.cluster.frontend", "project": "default" }
-
-Example response (deployed instance):
-{
-  "type": "deployed-instance",
-  "id": "k8s.cluster.frontend",
-  "kind": "k8s.pod",
-  "name": "frontend",
-  "title": "Frontend Pod",
-  "description": null,
-  "technology": "Kubernetes",
-  "tags": ["prod"],
-  "project": "default",
-  "metadata": {},
-  "links": [],
-  "shape": "rectangle",
-  "color": "#2F80ED",
-  "children": [],
-  "includedInViews": [
-    { "id": "runtime-overview", "title": "Runtime Overview", "type": "deployment" }
-  ],
-  "instanceof": { "id": "shop.frontend", "title": "Frontend", "kind": "component" },
-  "sourceLocation": {
-    "path": "/abs/path/project/model.c4",
-    "range": { "start": { "line": 10, "character": 0 }, "end": { "line": 25, "character": 0 } }
-  }
-}
-`,
+  description:
+    `Read one deployment node or deployed instance: kind, tags, metadata, links, children (empty for an instance), the views that include it, the element a deployed instance instantiates, and source location.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,

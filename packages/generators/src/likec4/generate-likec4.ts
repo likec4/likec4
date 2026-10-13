@@ -1,19 +1,19 @@
 import * as ops from './operators'
 import { type AnyOp, type ctxOf, materialize, withctx } from './operators/base'
-import { schemas } from './schemas'
+import type { schemas } from './schemas'
 
 type Params = {
-  indentation?: string | number
+  indent?: string | number
 }
 
 export { ops }
 
 export function generateLikeC4(input: schemas.likec4data.Input, params?: Params): string {
   params = {
-    indentation: 2,
+    indent: 2,
     ...params,
   }
-  return materialize(withctx(input, ops.likec4data()), params.indentation)
+  return materialize(ops.likec4data(), input, params)
 }
 
 /**
@@ -23,7 +23,7 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  *
  * @example
  * ```ts
- * printOperation(ops.expression(), {
+ * print(ops.expression(), {
  *   ref: {
  *     model: 'some.el',
  *   },
@@ -34,7 +34,7 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  *
  * @example
  * ```ts
- * printOperation(ops.model(), {
+ * print(ops.model(), {
  *   elements: [
  *     {
  *       id: 'cloud',
@@ -60,31 +60,31 @@ export function generateLikeC4(input: schemas.likec4data.Input, params?: Params)
  * // }
  * ```
  */
-export function printOperation<Operation extends AnyOp>(operation: Operation): string
-export function printOperation<Operation extends AnyOp>(
-  operation: Operation,
-  data: ctxOf<Operation>,
+export function print(operation: AnyOp): string
+export function print<O extends AnyOp>(
+  operation: O,
+  value: ctxOf<NoInfer<O>>,
   params?: Params,
 ): string
-export function printOperation<Operation extends AnyOp>(
-  operation: Operation,
-  data?: ctxOf<Operation>,
+export function print(
+  operation: AnyOp,
+  data?: unknown,
   params?: Params,
 ): string {
-  return materialize(withctx(data ?? {}, operation), params?.indentation)
+  return materialize(operation, data ?? {}, params)
 }
 
 /**
  * Same as {@link printOperation} but uses tab indentation
  */
-export function printWithTabIndent<Operation extends AnyOp>(operation: Operation): string
-export function printWithTabIndent<Operation extends AnyOp>(
-  operation: Operation,
-  data: ctxOf<Operation>,
+export function printWithTabIndent(operation: AnyOp): string
+export function printWithTabIndent<O extends AnyOp>(
+  operation: O,
+  data: ctxOf<NoInfer<O>>,
 ): string
-export function printWithTabIndent<Operation extends AnyOp>(
-  operation: Operation,
-  data?: ctxOf<Operation>,
+export function printWithTabIndent(
+  operation: AnyOp,
+  data?: unknown,
 ): string {
-  return materialize(withctx(data ?? {}, operation), '\t')
+  return materialize(operation, data ?? {}, { indent: '\t' })
 }

@@ -1,5 +1,3 @@
-import { prop } from 'remeda'
-import type { OverrideProperties } from 'type-fest'
 import { expectTypeOf, test } from 'vitest'
 import { type GuardedBy, hasProp, isAnyOf, isString } from './guards'
 
@@ -23,7 +21,6 @@ test('hasProp', () => {
   if (hasProp(obj, 'b')) {
     expectTypeOf(obj.b).toEqualTypeOf<number>()
   }
-  // Curried
   if (hasProp('b')(obj)) {
     expectTypeOf(obj.b).toEqualTypeOf<number>()
   }

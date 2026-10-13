@@ -9,6 +9,7 @@ import type {
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
+  Sizing,
   SpacingSize,
   TextSize,
 } from '../styles/types'
@@ -47,6 +48,13 @@ export interface ElementStyle {
   readonly padding?: SpacingSize
 
   readonly textSize?: TextSize
+
+  /**
+   * `fixed` - node is exactly the theme size, content shrinks to fit
+   *
+   * @default 'auto'
+   */
+  readonly sizing?: Sizing
 }
 
 type PartialSizes = Pick<ElementStyle, 'size' | 'padding' | 'textSize' | 'iconSize'>

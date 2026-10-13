@@ -113,26 +113,36 @@ export function hierarchyDistance<E extends string | { id: Fqn }>(one: E, anothe
     return Math.abs(firstDepth - secondDepth)
   }
 
-  const ancestor = commonAncestor(first as Fqn, second as Fqn)
-  const ancestorDepth = ancestor ? hierarchyLevel(ancestor) : 0
+  const ancestorDepth = commonPrefix(first, second).length
 
   return firstDepth + secondDepth - (2 * ancestorDepth + 1)
 }
 
-export function commonAncestor<E extends string>(first: E, second: E): E | null {
+/**
+ * Leading FQN segments shared by both arguments, excluding their last segments.
+ * For imported elements (`@project.a`, `@project.b`) this includes the `@project` segment.
+ */
+function commonPrefix(first: string, second: string): string[] {
+  const prefix = [] as string[]
   const a = first.split('.')
-  if (a.length < 2) {
-    return null
+  if (a.length <= 1) {
+    return prefix
   }
   const b = second.split('.')
-  if (b.length < 2) {
-    return null
+  if (b.length <= 1) {
+    return prefix
   }
-  let ancestor = [] as string[]
   for (let i = 0; i < Math.min(a.length, b.length) - 1 && a[i] === b[i]; i++) {
-    ancestor.push(a[i]!)
+    prefix.push(a[i]!)
   }
-  if (ancestor.length === 0) {
+  return prefix
+}
+
+export function commonAncestor<E extends string>(first: E, second: E): E | null {
+  const ancestor = commonPrefix(first, second)
+  // Imported elements have FQNs like `@project.element`.
+  // A lone `@project` prefix is a project namespace, not an element
+  if (ancestor.length === 0 || (ancestor.length === 1 && ancestor[0]!.startsWith('@'))) {
     return null
   }
   return ancestor.join('.') as E

@@ -27,8 +27,11 @@ views {
     style cloud.* {
       color primary
     }
-    style events, legacy.backend {
+    style events {
       shape component
+    }
+    style legacy.backend {
+      shape agent
     }
     style events {
       size sm

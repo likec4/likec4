@@ -1,0 +1,97 @@
+---
+title: Integração com Draw.io
+description: Exporte visões LikeC4 para Draw.io (.drawio), com mapeamentos, limitações e suporte a múltiplos diagramas.
+head:
+  - tag: title
+    content: Integração com Draw.io
+sidebar:
+  label: Draw.io
+  order: 3
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 4
+---
+
+O LikeC4 pode **exportar** visões para [Draw.io](https://draw.io) (`.drawio`) para editar diagramas no Draw.io ou reutilizá-los em ferramentas compatíveis.
+
+**CLI:** `likec4 export drawio` — consulte [CLI — Exportar para DrawIO](/pt-br/tooling/cli/#exportar-para-drawio).
+
+Esta página explica o mapeamento na exportação, as limitações e o comportamento com múltiplos diagramas.
+
+## Exportação (LikeC4 → Draw.io)
+
+Por padrão, é criado um arquivo `.drawio` por visão (cada visão ocupa uma aba de diagrama no arquivo). Utilize `--all-in-one` na CLI para reunir todas as visões em um único arquivo `.drawio` com várias abas.
+
+### Perfis de exportação
+
+A exportação oferece dois perfis:
+
+| Perfil   | Descrição |
+| --------- | ----------- |
+| `default` | Intercâmbio bidirecional padrão: layout, traços, pontos intermediários e atributos de estilo existentes (consulte [Mapeamento para Draw.io](#mapeamento-para-drawio)). |
+| `leanix`  | Adiciona **metadados gerenciados pela integração** a vértices, arestas e à raiz do diagrama para permitir o uso com [LeanIX bridge](https://github.com/likec4/likec4/tree/main/packages/leanix-bridge) ou ferramentas LeanIX. O LikeC4 continua sendo a fonte da verdade; Draw.io é um formato de intercâmbio. |
+
+**Ao utilizar o perfil `leanix`:**
+
+- **Vértices e célula raiz:** `bridgeManaged=true`, `likec4Id`, `likec4Kind`, `likec4ViewId`, e, quando fornecido, `likec4ProjectId`. Opcionalmente, `leanixFactSheetType` por tipo de elemento quando `leanixFactSheetTypeByKind` estiver definido (por exemplo, por um gerador personalizado).
+- **Arestas:** `likec4RelationId`, `bridgeManaged`.
+
+**CLI:** `likec4 export drawio --profile leanix -o ./diagrams`
+
+**Via API:** Informe `profile: 'leanix'` (e, opcionalmente, `projectId` e `leanixFactSheetTypeByKind`) in `GenerateDrawioOptions` ao chamar `generateDrawio` / `generateDrawioMulti`. Consulte [@likec4/leanix-bridge](https://github.com/likec4/likec4/tree/main/packages/leanix-bridge) para sincronização e mapeamento bidirecional.
+
+### Mapeamento para Draw.io
+
+| LikeC4 | Draw.io |
+|--------|---------|
+| Visão (ID da visão) | Aba do diagrama (`name` e `id`); título/descrição da visão na célula raiz como `likec4ViewTitle`, `likec4ViewDescription` |
+| ID do elemento | mxCell `id` (interno); hierarquia por `parent` |
+| Título e descrição do elemento | mxCell `value` (título; descrição em HTML ou no estilo `likec4Description`) |
+| Elemento: tecnologia, notas, tags, **navigateTo**, icon | Estilo `likec4Technology`, `likec4Notes`, `likec4Tags`, `likec4NavigateTo`, `likec4Icon` (URI-encoded). **navigateTo** também é registrado como **link** da célula Draw.io, permitindo abrir a aba da visão ao clicar (veja abaixo). |
+| Elemento: resumo e links | Estilo `likec4Summary`, `likec4Links` (array JSON) |
+| Elemento: notação | Estilo `likec4Notation` |
+| Elemento: forma | Estilo `shape` (rectangle, umlActor, cylinder3, document, etc.) |
+| Elemento: cor | Estilo `fillColor`, `strokeColor`, `fontColor` (hexadecimal); nome do tema/cor personalizada em `likec4ColorName`; traço em `likec4StrokeColor` para intercâmbio bidirecional |
+| Elemento: borda e opacidade | Estilo `strokeWidth`, `likec4Border`, `likec4StrokeWidth` (intercâmbio bidirecional); `opacity` |
+| Elemento: tamanho, padding, textSize e posição do ícone | Estilo `likec4Size`, `likec4Padding`, `likec4TextSize`, `likec4IconPosition` |
+| Notação da visão | Célula raiz `likec4ViewNotation` (intercâmbio bidirecional) |
+| Posição/tamanho do elemento | mxGeometry `x`, `y`, `width`, `height` (do layout; configurável por opções) |
+| Dados personalizados de elementos/arestas | mxUserObject `<data key="k">v</data>` (intercâmbio bidirecional) |
+| Pontos intermediários da aresta | mxGeometry `relative="0"` com `<Array>` de `<mxPoint>` (quando o modelo da visão contém `points`) |
+| Relacionamento: origem, destino e rótulo | Aresta mxCell com `source`, `target` e `value` |
+| Relacionamento: descrição, tecnologia, notas e navigateTo | Estilo `likec4Description`, `likec4Technology`, `likec4Notes`, `likec4NavigateTo` |
+| Relacionamento: tipo e notação | Estilo `likec4RelationshipKind`, `likec4Notation` |
+| Relacionamento: links e metadados | Estilo `likec4Links` (array JSON), `likec4Metadata` (objeto JSON) |
+| Relacionamento: ponta/cauda, estilo de linha e cor | Estilo `endArrow`, `startArrow`, `dashed`/`dashPattern`, `strokeColor`; o rótulo usa a configuração do tema `relationships.label` para a cor da fonte |
+
+**Navegação (elementos com visão própria):** Se o elemento tiver **navigateTo** definido (no modelo) com o ID de uma visão, a célula exportada para Draw.io receberá um **link** que abre a aba `likec4-<viewId>`. Ao exportar todas as visões com `--all-in-one`, clicar nesse elemento abrirá a aba que mostra seus detalhes internos. Defina `navigateTo <viewId>` no elemento do modelo LikeC4 para que o exportador adicione automaticamente esse link.
+
+A exportação utiliza o **tema do projeto** (ou o padrão do LikeC4) nas cores dos elementos e relacionamentos. Contêineres (*bounded contexts*) são desenhados **atrás** dos filhos como um retângulo envolvente; os **pontos de conexão** das arestas são derivados do layout para conectar as setas aos lados corretos dos nós.
+
+O gerador aceita **opções** adicionais para intercâmbio bidirecional e integração com ferramentas: `layoutOverride` (caixa delimitadora por nó: `{ x, y, width, height }`, com a mesma estrutura de `@likec4/core` BBox), `strokeColorByNodeId`, `strokeWidthByNodeId`, `compressed` e `profile` (`default` ou `leanix`; no caso de leanix, opcionalmente `projectId`, `leanixFactSheetTypeByKind`). Defina **`compressed: false`** para gravar o XML do diagrama sem compactação no arquivo `.drawio` (arquivo maior; recomendado se o Draw.io desktop ou Abrir arquivo/Importar não conseguir abrir o arquivo compactado). O **Playground** exporta sem compactação por padrão para maximizar a compatibilidade; a **CLI** utiliza compactação e oferece `--uncompressed`.
+
+### O que não é preservado na exportação
+
+- Regras das visões (include/exclude e estilos): somente os nós e arestas resultantes são exportados.
+- Desvios de layout e ajustes finos: somente a posição final dos nós é registrada (ou o `layoutOverride` informado).
+- Nomes de cores do tema: armazenados em hexadecimal no Draw.io; `likec4ColorName` preserva o nome para intercâmbio bidirecional.
+
+## Vários diagramas (múltiplas abas)
+
+Na **exportação**, cada visão LikeC4 é gravada em um arquivo `.drawio` **separado**. Com `--all-in-one`, todas as visões são colocadas em abas do mesmo arquivo. Combinado com `--roundtrip`, o layout, as cores e larguras dos traços e os pontos intermediários das arestas dos comentários de intercâmbio nos arquivos `.c4` são aplicados em cada visão.
+
+## Solução de problemas
+
+**O arquivo .drawio exportado não abre no Draw.io** (por exemplo, erro "Could not add object Array", diagrama em branco ou nenhuma resposta em Abrir arquivo/Importar):
+
+- **Playground:** as exportações são **não compactadas** por padrão, para permitir abrir o arquivo no Draw.io desktop ou em Abrir arquivo/Importar. Atualize a aplicação e exporte novamente.
+- **CLI:** utilize **`--uncompressed`** para gravar o XML do diagrama sem compactação: `likec4 export drawio --uncompressed -o ./out`. Isso produz um arquivo maior, que pode ser aberto de modo confiável no Draw.io desktop.
+- Se ainda utilizar exportações compactadas, **atualize para a versão mais recente** (versões antigas utilizavam uma estrutura XML inválida para pontos intermediários das arestas): `pnpm update @likec4/likec4` ou `npm update @likec4/likec4`, e exporte novamente.
+
+**O diagrama mostra menos elementos do que o esperado:**
+
+- Cada visão exporta **exatamente o que é exibido** nela. Uma visão de nível superior (por exemplo, `view index { include * }`) normalmente exibe apenas **elementos de nível superior** (como Customer e Our SaaS). Elementos aninhados (como Frontend e Backend dentro do sistema) aparecem na **visão do elemento** correspondente (por exemplo, `view saas of saas { include * }`). Para reunir todos os elementos em um arquivo Draw.io, utilize **Exportar todas as visões** (CLI: `--all-in-one`) e abra a aba da visão aninhada, ou selecione essa visão no Playground antes de exportar.
+
+## Reexportação usando blocos de comentários
+
+Ao exportar para Draw.io pelo **Playground**, se os arquivos do workspace contiverem blocos de comentários de intercâmbio bidirecional do Draw.io (por exemplo, `// <likec4.layout.drawio>` … `// </likec4.layout.drawio>`), o exportador poderá aplicar o layout, a cor/largura dos traços dos vértices e os pontos intermediários das arestas desses comentários. Assim, o arquivo `.drawio` gerado corresponderá a um diagrama editado anteriormente. A CLI oferece `--roundtrip` para o mesmo comportamento. A API de geradores disponibiliza `parseDrawioRoundtripComments(source)`, `generateDrawio(viewmodel, options)`, `generateDrawioMulti(viewmodels, optionsByViewId)` e `GenerateDrawioOptions` (incluindo `edgeWaypoints`, `layoutOverride` e `compressed`) para ferramentas personalizadas.

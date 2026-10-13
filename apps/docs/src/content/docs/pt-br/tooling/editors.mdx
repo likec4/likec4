@@ -1,0 +1,156 @@
+---
+title: Editores
+description: Personalize seu editor de código para melhorar a experiência de uso do LikeC4.
+sidebar:
+  order: 0
+  label: Editores (IDE)  
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## VSCode
+
+<div style={{display: 'flex', gap: '10px'}}>
+<a href="https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode" target="_blank">![VSCode Installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/likec4.likec4-vscode?label=vscode%20installs)</a>
+<a href="https://open-vsx.org/extension/likec4/likec4-vscode" target="_blank">![Open VSX Installs](https://img.shields.io/open-vsx/dt/likec4/likec4-vscode?label=open-vsx&color=%23A60EE5)</a>
+</div>
+
+O LikeC4 oferece uma [extensão oficial para VS Code](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode), de código aberto e disponível no [GitHub](https://github.com/likec4/likec4/tree/main/packages/vscode).  
+A extensão oferece:
+
+- Validação e exibição de erros
+- Realce semântico de sintaxe
+- Pré-visualização e edição em tempo real
+- Autocompletar e navegação pelo código 
+- Resolução de referências (como `find all references` e `go to definition`)
+- Renomeação segura
+- Informações ao passar o cursor
+- [Servidor MCP](/pt-br/tooling/ai-tools/#servidor-mcp)
+
+A extensão também pode ser executada no navegador.  
+
+Experimente o projeto [example-cloud-system](https://github.dev/likec4/example-cloud-system) usando:
+
+<CardGrid>
+<LinkCard
+  title="github.dev"
+  description="Abrir o projeto de exemplo no navegador usando github.dev"
+  href="https://github.dev/likec4/example-cloud-system/blob/main/model.c4"
+  target="_blank"
+/>
+
+<LinkCard
+  title="vscode.dev"
+  description="Abrir o projeto de exemplo no navegador usando vscode.dev"
+  href="https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4"
+  target="_blank"
+/>
+
+<LinkCard
+  title="Stackblitz"
+  description="Abrir o projeto de exemplo no navegador usando Stackblitz"
+  href="https://stackblitz.com/~/github/likec4/example-cloud-system/"
+  target="_blank"
+/>
+</CardGrid>
+
+## Servidor de linguagem independente
+
+Para utilizar outros editores além do VS Code, instale o pacote do servidor de linguagem independente:
+
+```sh
+npm install -g @likec4/lsp
+```
+
+Isso instala o executável `likec4-lsp`, um servidor de linguagem autossuficiente, distribuído com todas as dependências incluídas.
+O transporte é detectado automaticamente pelos argumentos de linha de comando: `--stdio`, `--node-ipc`, `--socket=<port>`, `--pipe=<name>`.
+
+## Neovim
+
+O LikeC4 possui um plugin para Neovim com realce de sintaxe e integração LSP para navegação e autocompletar código.
+
+O plugin oferece:
+- Inicialização automática do servidor de linguagem LikeC4 para arquivos com extensão `.c4`
+- Validação e exibição de erros
+- Realce semântico de sintaxe
+- Autocompletar e navegação pelo código
+- Resolução de referências (como `find all references` e `go to definition`)
+- Renomeação segura (lembre-se de salvar os buffers)
+- Informações ao passar o cursor
+- Pré-visualização e edição em tempo real
+
+O `likec4.nvim` está disponível em um [repositório separado no GitHub](https://github.com/likec4/likec4.nvim).
+Instalação:
+
+```lua
+{
+  'likec4/likec4.nvim',
+  build = 'npm install -g @likec4/lsp'
+}
+```
+
+## Emacs
+
+Ainda não existe um pacote MELPA, mas é possível configurar o servidor de linguagem independente [`@likec4/lsp`](#servidor-de-linguagem-independente) em poucas linhas.
+
+Primeiro, defina um modo principal derivado de `prog-mode` para que o cliente LSP saiba a quais buffers se conectar:
+
+```elisp
+;; Major mode for .c4 / .likec4 files
+(define-derived-mode likec4-mode prog-mode "LikeC4"
+  "Major mode for LikeC4 architecture diagram files."
+  (setq-local comment-start "// ")
+  (setq-local comment-start-skip "//+ *")
+  (setq-local comment-end ""))
+
+(add-to-list 'auto-mode-alist '("\\.c4\\'"     . likec4-mode))
+(add-to-list 'auto-mode-alist '("\\.likec4\\'" . likec4-mode))
+```
+
+Em seguida, escolha um dos dois clientes LSP:
+
+### Eglot (integrado desde o Emacs 29)
+
+```elisp
+(use-package eglot
+  :ensure t
+  :hook ((likec4-mode . eglot-ensure)))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(likec4-mode . ("likec4-lsp" "--stdio"))))
+```
+
+### lsp-mode
+
+```elisp
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :hook ((likec4-mode . lsp))
+  :init (setq lsp-keymap-prefix "C-c l")
+  :config (setq lsp-enable-snippet t))
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(likec4-mode . "likec4"))
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection '("likec4-lsp" "--stdio"))
+    :activation-fn (lsp-activate-on "likec4")
+    :server-id 'likec4-lsp)))
+```
+
+Ambas as opções oferecem validação, realce semântico de sintaxe, autocompletar, navegação até definições, documentação contextual e renomeação segura, assim como o [plugin do Neovim](#neovim).
+
+Agradecimentos a [@vincent067](https://github.com/vincent067) pela configuração original apresentada em [#2268](https://github.com/likec4/likec4/issues/2268).
+
+## Zed
+
+O LikeC4 possui uma extensão comunitária para Zed: [zed-likec4](https://github.com/Lenivvenil/zed-likec4).
+
+## JetBrains IDEs
+
+O LikeC4 possui um plugin para IDEs JetBrains com realce de sintaxe e integração LSP para navegação e autocompletar.
+
+O plugin está disponível no [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/30490-likec4) e no [GitHub](https://github.com/likec4/jetbrains-plugin).

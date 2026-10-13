@@ -52,7 +52,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           return this.getScopeForStrictFqnRef(projectId, container, context)
         }
 
-        if (referenceType !== ast.Element) {
+        if (referenceType !== ast.Element.$type) {
           return this.getProjectScope(projectId, referenceType, context)
         }
 
@@ -135,12 +135,12 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   protected getScopeForStrictFqnRef(projectId: ProjectId, container: ast.StrictFqnRef, context: ReferenceInfo) {
     const parent = container.parent
     if (!parent) {
-      return this.getProjectScope(projectId, ast.DeploymentNode, context)
+      return this.getProjectScope(projectId, ast.DeploymentNode.$type, context)
     }
     return new StreamScope(
       this.deploymentsIndex
         .directChildrenOf(projectId, readStrictFqn(parent))
-        .filter(desc => this.reflection.isSubtype(desc.type, ast.DeploymentNode)),
+        .filter(desc => this.reflection.isSubtype(desc.type, ast.DeploymentNode.$type)),
     )
   }
 
@@ -199,28 +199,30 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       isFqnRefInsideModel(container)
     ) {
       // Inside model scope we only need to resolve elements
-      yield* this.computeScope(projectId, context, ast.Element)
+      yield* this.computeScope(projectId, context, ast.Element.$type)
     } else if (isFqnRefInsideGlobals(container)) {
-      yield* this.computeScope(projectId, context, ast.Element)
-      yield* this.computeScope(projectId, context, ast.DeploymentNode)
-      yield* this.computeScope(projectId, context, ast.DeployedInstance)
+      yield* this.computeScope(projectId, context, ast.Element.$type)
+      yield* this.computeScope(projectId, context, ast.DeploymentNode.$type)
+      yield* this.computeScope(projectId, context, ast.DeployedInstance.$type)
     } else {
       // First preference for deployment nodes
-      yield* this.computeScope(projectId, context, ast.DeploymentNode)
+      yield* this.computeScope(projectId, context, ast.DeploymentNode.$type)
       // Second preference for deployed instances
-      yield* this.computeScope(projectId, context, ast.DeployedInstance)
+      yield* this.computeScope(projectId, context, ast.DeployedInstance.$type)
 
       // Third preference for elements if we are in deployment view
       if (AstUtils.hasContainerOfType(container, ast.isDeploymentViewBody)) {
-        yield* this.computeScope(projectId, context, ast.Element)
+        yield* this.computeScope(projectId, context, ast.Element.$type)
       }
     }
 
     const doc = getDocument(container)
-    const precomputed = doc.precomputedScopes
+    const precomputed = doc.localSymbols
     // Fourth preference for imported models
     if (precomputed) {
-      yield* precomputed.values().filter(nd => this.reflection.isSubtype(nd.type, ast.Imported))
+      yield* precomputed.getStream(doc.parseResult.value).filter(nd =>
+        this.reflection.isSubtype(nd.type, ast.Imported.$type)
+      )
     }
   }
   /**
@@ -239,11 +241,11 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     context: ReferenceInfo,
     referenceType = this.reflection.getReferenceType(context),
   ): Generator<AstNodeDescription> {
-    const isElementReference = this.reflection.isSubtype(referenceType, ast.Element)
-    const isDeploymentReference = this.reflection.isSubtype(referenceType, ast.DeploymentElement)
+    const isElementReference = this.reflection.isSubtype(referenceType, ast.Element.$type)
+    const isDeploymentReference = this.reflection.isSubtype(referenceType, ast.DeploymentElement.$type)
 
     const doc = getDocument(context.container)
-    const precomputed = doc.precomputedScopes
+    const precomputed = doc.localSymbols
 
     if (!precomputed) {
       yield* this.getProjectScope(projectId, referenceType, context).getAllElements()
@@ -253,10 +255,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
     let container: AstNode | undefined = context.container
     while (container) {
-      const elements = precomputed.get(container).filter(byReferenceType)
-      if (elements.length > 0) {
-        yield* elements
-      }
+      const elements = precomputed.getStream(container).filter(byReferenceType)
+      yield* elements
 
       if (isDeploymentReference && ast.isExtendDeploymentBody(container)) {
         yield* this.genScopeExtendDeployment(container.$container)
@@ -277,7 +277,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
    * Create a global scope filtered for the given reference type.
    */
   protected getProjectScope(projectId: ProjectId, referenceType: string, context: ReferenceInfo): Scope {
-    if (referenceType === ast.LibIcon) {
+    if (referenceType === ast.LibIcon.$type) {
       return super.getGlobalScope(referenceType, context)
     }
     return this.globalScopeCache.get(
@@ -290,7 +290,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
    * Create a global scope filtered for the given reference type.
    */
   protected override getGlobalScope(referenceType: string, context: ReferenceInfo): Scope {
-    if (referenceType === ast.LibIcon) {
+    if (referenceType === ast.LibIcon.$type) {
       return super.getGlobalScope(referenceType, context)
     }
     const projectId = projectIdFrom(context.container)

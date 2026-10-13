@@ -280,7 +280,7 @@ model {
     technology "Kafka"
     metadata { format "CloudEvents" }
   }
-  api .sync -> cache "reads"          // alternative syntax: .KIND ->
+  api .sync cache "reads"             // alternative syntax: .KIND (no arrow)
 
   // Inline style override
   api -> db "writes" {

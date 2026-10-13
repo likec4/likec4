@@ -10,71 +10,8 @@ import { type ElementSummary, elementSummarySchema, projectIdSchema, serializeEl
 
 export const queryByTags = likec4Tool({
   name: 'query-by-tags',
-  description: `
-Advanced tag filtering with boolean logic (AND, OR, NOT).
-
-Request:
-- allOf: string[] (optional) — element must have ALL these tags (AND logic)
-- anyOf: string[] (optional) — element must have ANY of these tags (OR logic)
-- noneOf: string[] (optional) — element must have NONE of these tags (NOT logic)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Boolean Logic:
-- All three conditions are combined with AND logic
-- At least one condition must be specified
-- Tags are case-sensitive
-
-Example Queries:
-- Public APIs: {"allOf": ["public", "api"]}
-- Deprecated or legacy: {"anyOf": ["deprecated", "legacy"]}
-- Public but not deprecated: {"allOf": ["public"], "noneOf": ["deprecated"]}
-- Critical services not in migration: {"allOf": ["critical", "service"], "noneOf": ["migration", "deprecated"]}
-
-Response (JSON object):
-- results: Array of matching elements/deployment-nodes, each with:
-  - id: string — element/node id (FQN)
-  - name: string — element/node name
-  - kind: string — element/node kind
-  - title: string — human-readable title
-  - tags: string[] — assigned tags (for reference)
-  - metadata: Record<string, string | string[]> — element metadata
-  - includedInViews: View[] — views that include this element
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
-
-Notes:
-- Read-only, idempotent, no side effects.
-- Safe to call repeatedly.
-- Returns empty array if no matches found.
-- Limited to 50 results to avoid overwhelming responses.
-- Conflicting conditions (e.g., allOf and noneOf with same tag) will return no results.
-
-Example response:
-{
-  "results": [
-    {
-      "id": "shop.api",
-      "name": "api",
-      "kind": "container",
-      "title": "API Gateway",
-      "tags": ["public", "api", "critical"],
-      "metadata": {
-        "owner": "platform-team"
-      },
-      "includedInViews": [
-        {
-          "id": "system-overview",
-          "title": "System Overview",
-          "type": "element"
-        }
-      ]
-    }
-  ]
-}
-`,
+  description:
+    `Find elements and deployment nodes by tags with boolean logic: allOf (AND), anyOf (OR) and noneOf (NOT), combined with AND. At least one condition is required, and tags are case-sensitive. At most 50 results. For partial tag names, use query-by-tag-pattern.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,

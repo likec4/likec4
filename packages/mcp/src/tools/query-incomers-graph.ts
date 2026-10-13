@@ -21,64 +21,8 @@ const neighborSchema = z.object({
 
 export const queryIncomersGraph = likec4Tool({
   name: 'query-incomers-graph',
-  description: `
-Query the complete graph of all elements that provide input to the target element (recursive incomers/producers).
-
-This tool performs a breadth-first traversal to discover all upstream dependencies - elements that directly or
-indirectly provide input to the target element. It returns the complete subgraph in a single response,
-making it much more efficient than repeated individual queries.
-
-Request:
-- elementId: string — target element id (FQN) to start from
-- includeIndirect: boolean (optional, default: true) — include relationships through nested elements
-- maxDepth: number (optional, default: 10, max: 50) — maximum traversal depth to prevent infinite recursion
-- maxNodes: number (optional, default: 200, max: 2000) — maximum number of nodes to return
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response Structure:
-{
-  "target": "element.id",
-  "totalNodes": number,
-  "maxDepth": number,
-  "truncated": boolean,
-  "nodes": {
-    "element.id": {
-      "id": "element.id",
-      "name": "name",
-      "kind": "kind",
-      "title": "title",
-      "tags": ["tag1", "tag2"],
-      "metadata": {},
-      "includedInViews": [...],
-      "incomers": [
-        {
-          "elementId": "id1",
-          "relationshipLabel": "uses",
-          "technology": "REST"
-        }
-      ],
-      "depth": number
-    }
-  }
-}
-
-Use Cases:
-- Find all producers/dependencies for an element
-- Trace data lineage upstream
-- Identify root causes and dependencies
-- Build complete dependency trees
-- Answer "what feeds into this?" questions
-
-Notes:
-- Read-only, idempotent, no side effects
-- Cycle detection prevents infinite loops
-- Result size limited to maxNodes to prevent huge responses
-- If truncated=true, increase maxNodes or reduce maxDepth to get more specific results
-
-Example:
-For a database element, this returns all services, APIs, and components that write to it,
-plus all their dependencies, recursively up to maxDepth levels.
-`,
+  description:
+    `Recursive upstream traversal: every element that feeds into the target, directly or transitively, returned as one graph with each node's depth and incomers. Answers "what feeds into this?" in one call instead of repeated query-graph calls. Stops at maxDepth or maxNodes; if truncated is true, raise maxNodes or lower maxDepth.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,

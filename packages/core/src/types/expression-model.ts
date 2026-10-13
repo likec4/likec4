@@ -6,6 +6,7 @@ import type {
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
+  Sizing,
 } from '../styles/types'
 import type * as aux from './_aux'
 import type { ExclusiveUnion } from './_common'
@@ -96,6 +97,7 @@ export namespace ModelFqnExpr {
       size?: ShapeSize
       padding?: ShapeSize
       textSize?: ShapeSize
+      sizing?: Sizing
     }
   }
 

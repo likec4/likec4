@@ -66,9 +66,8 @@ export class LikeC4ModelParser extends ADisposable {
         DocumentState.Linked,
         async doc => {
           if (this.cachedParsers.has(doc)) {
-            logger.trace('project {project}, Linked: clear cached parser {doc}', {
-              projectId: doc.likec4ProjectId,
-              doc: UriUtils.basename(doc.uri),
+            logger.trace('clear cached parser {doc} on onDocumentPhase Linked', {
+              doc: services.shared.workspace.WorkspaceManager.relativePath(doc.uri),
             })
             this.cachedParsers.delete(doc)
           }
@@ -131,7 +130,7 @@ export class LikeC4ModelParser extends ADisposable {
       doc: docpath,
     })
     if (doc.state < DocumentState.Linked) {
-      logger.debug(`Document {doc} is not linked, state is {state}`, {
+      logger.warn(`document {doc} is not linked, state is {state}`, {
         doc: docpath,
         state: doc.state,
       })

@@ -44,7 +44,12 @@ export function predicateToPatch(
     case FqnExpr.isElementKindExpr(expr):
       throw new Error('element kind and tag expressions are not supported in deployment view rules')
     case RelationExpr.isCustom(expr):
+      return undefined
     case FqnExpr.isCustom(expr):
+      if (op === 'include' && expr.custom.navigateTo != null) {
+        return predicateToPatch(op, { ...ctx, expr: expr.custom.expr, where })
+      }
+      return undefined
     case FqnExpr.isModelRef(expr):
       // Ignore model refs in deployment view
       return undefined

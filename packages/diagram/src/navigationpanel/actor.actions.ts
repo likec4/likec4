@@ -1,3 +1,4 @@
+import { isNonNullish } from 'remeda'
 import { assertEvent } from 'xstate'
 import { typedSystem } from '../likec4diagram/state/utils'
 import { actor } from './actor.setup'
@@ -39,20 +40,27 @@ export const resetSelectedFolder = () =>
   })
 
 export const updateInputs = () =>
-  actor.assign(({ context, event }) => {
+  actor.enqueueActions(({ context, event, enqueue }) => {
     assertEvent(event, 'update.inputs')
     const viewChanged = event.inputs.viewId !== context.viewId
+    const viewFolder = event.inputs.viewFolder
     let selectedFolder = context.selectedFolder
-    if (event.inputs.viewFolder && !event.inputs.viewFolder.startsWith(selectedFolder)) {
-      selectedFolder = event.inputs.viewFolder
+    if (isNonNullish(viewFolder) && !viewFolder.startsWith(selectedFolder)) {
+      selectedFolder = viewFolder
     }
-    return {
+
+    // Skip if nothing changed
+    if (!viewChanged && viewFolder === context.viewFolder && selectedFolder === context.selectedFolder) {
+      return
+    }
+
+    enqueue.assign({
       viewId: event.inputs.viewId,
-      viewFolder: event.inputs.viewFolder ?? context.viewFolder,
+      viewFolder: viewFolder ?? context.viewFolder,
       selectedFolder,
       // allow dropdown to close on mouse leave if view changed
       activatedBy: viewChanged ? 'hover' : context.activatedBy,
-    }
+    })
   })
 
 export const resetSearchQuery = () =>

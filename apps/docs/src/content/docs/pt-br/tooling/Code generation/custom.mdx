@@ -1,0 +1,105 @@
+---
+title: Geradores personalizados
+description: Como gerar arquivos personalizados a partir do modelo LikeC4.
+sidebar:
+  label: Geradores personalizados
+  order: 10
+tableOfContents:
+  # minHeadingLevel: 3
+  maxHeadingLevel: 6    
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+
+Certifique-se de incluir [`likec4`](https://www.npmjs.com/package/likec4) nas dependências do projeto:
+
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+É possível definir geradores personalizados na configuração do projeto:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  generators: {
+    'hello': async ({ likec4model, ctx }) => {
+      await ctx.write({
+        path: 'hello.txt', // relative to the project root
+        content: `Project: ${likec4model.project.id}`,
+      })
+    },
+  },
+})
+```
+
+Agora você pode executar o gerador usando a [CLI](/pt-br/tooling/cli/):
+
+```bash
+likec4 gen hello
+```
+
+Em um workspace com [múltiplos projetos](/pt-br/dsl/config/multi-projects/), utilize:
+
+```bash
+likec4 gen hello --project my-project
+# Other options
+likec4 gen hello --project my-project --use-dot
+```
+
+## Geradores reutilizáveis
+
+A função auxiliar `defineGenerators` também permite definir geradores reutilizáveis:
+
+```ts
+// shared_generators.ts
+import { defineGenerators } from 'likec4/config'
+
+export default defineGenerators({
+  'hello': async ({ likec4model, ctx }) => {
+    await ctx.write({
+      path: 'hello.txt', // relative to the project root
+      content: `Project: ${likec4model.project.id}`,
+    })
+  },
+})
+```
+Depois, você pode utilizá-los nos arquivos de configuração:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+import generators from './shared_generators'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  generators,
+})
+```
+
+:::tip
+Você também pode utilizar o pacote menor `@likec4/config`:
+
+```ts
+import { defineGenerators } from '@likec4/config'
+
+export default defineGenerators({
+  'hello': async ({ likec4model, ctx }) => {
+    await ctx.write({
+      path: 'hello.txt', // relative to the project root
+      content: `Project: ${likec4model.project.id}`,
+    })
+  },
+})
+```
+
+:::

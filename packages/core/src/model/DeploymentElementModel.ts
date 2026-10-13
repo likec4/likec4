@@ -272,7 +272,7 @@ export class DeploymentNodeModel<A extends Any = Any> extends AbstractDeployment
   }
 
   get parent(): DeploymentNodeModel<A> | null {
-    return this.$model.parent(this)
+    return memoizeProp(this, Symbol.for('parent'), () => this.$model.parent(this))
   }
 
   get kind(): aux.DeploymentKind<A> {
@@ -569,10 +569,11 @@ export type DeploymentRelationEndpoint<A extends Any = Any> =
   | DeploymentElementModel<A>
   | NestedElementOfDeployedInstanceModel<A>
 
-export class DeploymentRelationModel<A extends Any = Any> implements AnyRelationshipModel<A> {
-  public boundary: DeploymentNodeModel<A> | null
-  public source: DeploymentRelationEndpoint<A>
-  public target: DeploymentRelationEndpoint<A>
+export class DeploymentRelationModel<A extends Any = Any>
+  implements AnyRelationshipModel<A, DeploymentNodeModel<A>, DeploymentRelationEndpoint<A>> {
+  public readonly boundary: DeploymentNodeModel<A> | null
+  public readonly source: DeploymentRelationEndpoint<A>
+  public readonly target: DeploymentRelationEndpoint<A>
 
   constructor(
     public readonly $model: LikeC4DeploymentModel<A>,

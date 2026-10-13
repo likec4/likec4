@@ -1,0 +1,48 @@
+---
+title: Erode
+description: Detecção de desvios de arquitetura com inteligência artificial utilizando modelos LikeC4.
+sidebar:
+  label: 'Erode - Detecção de desvios'
+---
+
+import { LinkCard, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+:::caution[Experimental]
+O Erode é experimental e está em desenvolvimento ativo. As APIs e o comportamento podem mudar.
+:::
+
+O [Erode](https://erode.dev) utiliza inteligência artificial para analisar alterações no código em relação ao seu modelo de arquitetura LikeC4. Isso permite identificar dependências não declaradas e desvios estruturais durante a implementação e a revisão de código.
+
+<LinkButton
+  href="https://erode.dev"
+  variant="minimal"
+  icon="external"
+  iconPlacement="start"
+>
+  {'https://erode.dev'}
+</LinkButton>
+
+<CardGrid>
+  <LinkCard title="Primeiros passos" href="https://erode.dev/docs/getting-started/" />
+  <LinkCard title="GitHub" href="https://github.com/erode-app/erode" />
+</CardGrid>
+
+## Início rápido
+
+O Erode pode ser integrado de três maneiras. Consulte a [documentação do Erode](https://erode.dev/docs/getting-started/) para obter instruções detalhadas de configuração.
+
+### GitHub Actions
+
+```yaml
+- uses: erode-app/erode@0
+```
+
+### CLI
+
+```shell
+npx @erode-app/cli check
+```
+
+### Skill para Claude Code
+
+O Erode também está disponível como uma skill para Claude Code. Consulte a [documentação](https://erode.dev/docs/getting-started/) para saber mais.

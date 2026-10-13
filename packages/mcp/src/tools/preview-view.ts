@@ -56,20 +56,7 @@ export function previewViewTool(mcpServer: McpServer): McpServer {
     {
       title: 'Preview View',
       description:
-        `Renders a preview of a LikeC4 view defined by DSL text, in the context of an existing project's real elements — without saving anything to disk.
-
-Request:
-- dsl: string — a single \`view <id> ... { ... }\` definition. It must reference elements that already exist in the target project.
-- project: string (optional) — project id. Defaults to "default" if omitted.
-- fullModel: boolean (optional) — include the complete model instead of data scoped to this view. Defaults to false.
-
-Behavior:
-- The view id must be new (not already present in the project). If the view id matches an existing view, an error is returned — use a different id, or use "render-view" to render an existing view.
-- The view is rendered as a draft alongside the project's real elements.
-
-Note: preview styling may not exactly match the real project (custom theme/style extensions aren't applied to the preview). Only \`view <id> ...\` (element view) declarations are recognized for id-detection — a \`dynamic view <id> {...}\` or \`deployment view <id> {...}\` will fail with a generic "could not find a \`view <id>\`" error instead.
-
-Use "preview-view" to iterate on a new view definition before creating it for real. Use "render-view" to render a view that's already saved.`,
+        `Renders a draft view from DSL against an existing project's real elements, without saving anything. The DSL must be a single element view, \`view <id> ... { ... }\`, with a new id: an existing id is rejected (use "render-view" for saved views), and a dynamic or deployment view fails with a generic "could not find a \`view <id>\`" error. Custom theme and style extensions are not applied. Use it to iterate on a view before creating it for real.`,
       inputSchema: mcpToolSchema({
         dsl: z.string().describe('A single `view <id> ... { ... }` LikeC4 DSL definition'),
         project: projectIdSchema,

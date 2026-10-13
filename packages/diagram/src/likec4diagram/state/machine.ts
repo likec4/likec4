@@ -105,7 +105,7 @@ const _diagramMachine = machine.createMachine({
     'xyflow.viewportMoved': {
       actions: assign(({ event, context }) => ({
         viewportChangedManually: context.viewportChangedManually || event.manually,
-        viewport: event.viewport,
+        viewport: { ...event.viewport },
       })),
     },
     'destroy': {

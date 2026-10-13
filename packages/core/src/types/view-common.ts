@@ -11,6 +11,7 @@ import type {
   IconPosition,
   IconSize,
   ShapeSize,
+  Sizing,
   SpacingSize,
   TextSize,
 } from './styles'
@@ -38,6 +39,7 @@ export interface AnyViewRuleStyle<Expr> {
     size?: ShapeSize
     padding?: SpacingSize
     textSize?: TextSize
+    sizing?: Sizing
     color?: Color
     shape?: ElementShape
     icon?: scalar.Icon

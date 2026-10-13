@@ -30,7 +30,7 @@ import type {
 import { difference, isString } from '@likec4/core/utils'
 import { type Rect, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
-import { hasAtLeast, isTruthy, mapToObj } from 'remeda'
+import { hasAtLeast, isTruthy, mapToObj, omit } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
   assertEvent,
@@ -300,7 +300,7 @@ export const emitOpenSource = (params?: OpenSourceParams) =>
     assertEvent(event, 'open.source')
     return {
       type: 'openSource',
-      params: event,
+      params: omit(event, ['type']),
     }
   })
 
@@ -375,7 +375,7 @@ export const triggerChange = (viewChange?: ViewChange) =>
   })
 
 export const emitOnLayoutTypeChange = () =>
-  machine.enqueueActions(({ event, system, context, enqueue }) => {
+  machine.enqueueActions(({ event, context, enqueue }) => {
     if (!context.features.enableCompareWithLatest) {
       console.warn('Layout type cannot be changed while CompareWithLatest feature is disabled')
       return
@@ -843,14 +843,14 @@ export const ensureNavigationPanelActor = () =>
   machine.enqueueActions(({ enqueue, check, system, context }) => {
     const enabled = check('enabled: NavigationPanel')
     const running = typedSystem(system).navigationActorRef
+    const viewFolder = context.view.title && getViewFolderPath(context.view.title) || ''
     if (enabled && !running) {
-      const viewFolder = context.view.title ? getViewFolderPath(context.view.title) : ''
       enqueue.spawnChild('navigationPanel', {
         id: 'navigationPanel',
         systemId: 'navigationPanel',
         input: {
           viewId: context.view.id,
-          viewFolder: viewFolder ?? '',
+          viewFolder,
         },
         syncSnapshot: true,
       })

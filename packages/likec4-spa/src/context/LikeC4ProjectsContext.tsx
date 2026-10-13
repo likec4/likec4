@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core'
 import { LikeC4ProjectsProvider } from '@likec4/diagram'
 import { useCallbackRef } from '@mantine/hooks'
 import { useNavigate } from '@tanstack/react-router'
@@ -7,8 +8,11 @@ import type { PropsWithChildren } from 'react'
 export function LikeC4ProjectsContext({ children }: PropsWithChildren) {
   const projects = useLikeC4Projects()
   const navigate = useNavigate()
-  const onProjectChange = useCallbackRef((projectId: string) => {
-    navigate({ to: '/project/$projectId/', params: { projectId } }).catch(console.error)
+  const onProjectChange = useCallbackRef((projectId: ProjectId) => {
+    navigate({
+      to: '/project/$projectId/',
+      params: { projectId },
+    }).catch(console.error)
   })
   return (
     <LikeC4ProjectsProvider

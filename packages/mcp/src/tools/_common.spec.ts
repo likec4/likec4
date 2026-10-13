@@ -2,8 +2,8 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
+import { type LayoutedLikeC4ModelData, type LayoutedView, ProjectId } from '@likec4/core/types'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -436,7 +436,7 @@ describe('buildRenderPayload', () => {
 
     expect(Object.keys(scoped.elements)).toEqual(['root', 'root.child'])
     expect(Object.keys(scoped.imports)).toEqual(['external'])
-    expect(scoped.imports['external']?.map(element => element.id)).toEqual(['service', 'service.api'])
+    expect(scoped.imports[ProjectId('external')]?.map(element => element.id)).toEqual(['service', 'service.api'])
     expect(Object.keys(scoped.relations)).toEqual(['r1'])
     expect(Object.keys(scoped.deployments.elements)).toEqual(['prod', 'prod.node', 'prod.node.app'])
     expect(Object.keys(scoped.deployments.relations)).toEqual(['dr1'])
@@ -456,7 +456,7 @@ describe('buildRenderPayload', () => {
     const full = payload.model as unknown as typeof modelData
 
     expect(full.elements['unused']).toBeDefined()
-    expect(full.imports['external']?.some(element => element.id === 'unused')).toBe(true)
+    expect(full.imports[ProjectId('external')]?.some(element => element.id === 'unused')).toBe(true)
     expect(full.deployments.elements['unused']).toBeDefined()
     expect(Object.keys(full.views)).toEqual(['selected', 'other'])
     expect(full.manualLayouts).toEqual(modelData.manualLayouts)

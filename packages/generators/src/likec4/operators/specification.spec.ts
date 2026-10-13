@@ -336,6 +336,30 @@ describe('printSpecification', () => {
     `)
   })
 
+  it('prints element kind with sizing', () => {
+    const output = render({
+      ...emptySpec,
+      elements: {
+        service: {
+          style: {
+            size: 'md',
+            sizing: 'fixed',
+          },
+        },
+      },
+    })
+    expect(output).toMatchInlineSnapshot(`
+      "specification {
+        element service {
+          style {
+            size md
+            sizing fixed
+          }
+        }
+      }"
+    `)
+  })
+
   it('prints element kind with multiple links', () => {
     const output = render({
       ...emptySpec,

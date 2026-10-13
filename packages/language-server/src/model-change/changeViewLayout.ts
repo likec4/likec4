@@ -1,8 +1,9 @@
 import { type ViewChange, invariant } from '@likec4/core'
+import { ops, print } from '@likec4/generators/likec4'
 import { GrammarUtils } from 'langium'
 import { findLast, isNumber } from 'remeda'
 import { TextEdit } from 'vscode-languageserver-types'
-import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast, toAstViewLayoutDirection } from '../ast'
+import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
 const { findNodeForKeyword } = GrammarUtils
@@ -20,28 +21,20 @@ export function changeViewLayout(_services: LikeC4Services, {
   layout,
 }: ChangeViewLayoutArg): TextEdit {
   // Should never happen
-  invariant(viewAst.body, `View ${view.id} has no body`)
   const viewCstNode = viewAst.$cstNode
+  invariant(viewAst.body, `View ${view.id} has no body`)
   invariant(viewCstNode, 'viewCstNode')
-  const newdirection = toAstViewLayoutDirection(layout.direction)
-  const existingRule = findLast(viewAst.body.rules, ast.isViewRuleAutoLayout) as ast.ViewRuleAutoLayout | undefined
+  const existingRule = findLast(viewAst.body.rules, ast.isViewRuleAutoLayout)
 
-  let newRule = `autoLayout ${newdirection}`
-
-  if (isNumber(layout.rankSep)) {
-    newRule += ` ${layout.rankSep}`
-    if (isNumber(layout.nodeSep)) {
-      newRule += ` ${layout.nodeSep}`
-    }
-  }
+  let newRule = print(ops.views.viewRuleAutoLayout(), layout)
 
   if (existingRule && existingRule.$cstNode) {
     return TextEdit.replace(existingRule.$cstNode.range, newRule)
   }
 
-  const insertPos = findNodeForKeyword(viewAst.body.$cstNode, '}')?.range.start
+  const insertPos = findNodeForKeyword(viewAst.body.$cstNode, '}')?.range
   invariant(insertPos, 'Closing brace not found')
-  const insert = `\t${newRule}\n\t`
+  const indent = ' '.repeat(insertPos.start.character)
 
-  return TextEdit.insert(insertPos, insert)
+  return TextEdit.replace(insertPos, `  ${newRule}\n${indent}}`)
 }

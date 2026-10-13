@@ -7,6 +7,7 @@ import {
   RelationshipArrowTypes,
   RelationshipLineTypes,
   Sizes,
+  Sizings,
   ThemeColors,
 } from '@likec4/core/styles'
 import {
@@ -20,6 +21,7 @@ import {
   type OrString,
   type scalar,
   type Size,
+  type Sizing,
   type SpacingSize,
   type TextSize,
   type ThemeColor,
@@ -56,7 +58,7 @@ export const opacity = z
   .max(100, 'Opacity must be between 0 and 100')
 
 export interface ZShape extends z.ZodType<ElementShape, ElementShape | OrString> {}
-export const shape: ZShape = z.literal(ElementShapes)
+export const shape: ZShape = z.enum(ElementShapes)
 
 export interface ZIcon extends z.ZodType<scalar.Icon, string> {}
 export const icon: ZIcon = z
@@ -65,19 +67,22 @@ export const icon: ZIcon = z
   .transform(value => value as unknown as scalar.Icon)
 
 export interface ZBorder extends z.ZodType<BorderStyle, BorderStyle | OrString> {}
-export const border: ZBorder = z.literal(BorderStyles)
+export const border: ZBorder = z.enum(BorderStyles)
 
 export interface ZSize extends z.ZodType<Size, Size | OrString> {}
-export const size: ZSize = z.literal(Sizes)
+export const size: ZSize = z.enum(Sizes)
 
 export interface ZIconPosition extends z.ZodType<IconPosition, IconPosition | OrString> {}
-export const iconPosition: ZIconPosition = z.literal(IconPositions)
+export const iconPosition: ZIconPosition = z.enum(IconPositions)
+
+export interface ZSizing extends z.ZodType<Sizing, Sizing | OrString> {}
+export const sizing: ZSizing = z.enum(Sizings)
 
 export interface ZArrow extends z.ZodType<RelationshipArrowType, RelationshipArrowType | OrString> {}
-export const arrow: ZArrow = z.literal(RelationshipArrowTypes)
+export const arrow: ZArrow = z.enum(RelationshipArrowTypes)
 
 export interface ZLine extends z.ZodType<RelationshipLineType, RelationshipLineType | OrString> {}
-export const line: ZLine = z.literal(RelationshipLineTypes)
+export const line: ZLine = z.enum(RelationshipLineTypes)
 
 export interface ZLink extends z.ZodType<Link, string | { url: string; title?: string | undefined }> {}
 export const link: ZLink = z.union([
@@ -92,7 +97,7 @@ export const link: ZLink = z.union([
 
 export const links = z.array(link).readonly()
 
-export const themeColor = z.literal(ThemeColors)
+export const themeColor = z.enum(ThemeColors)
 
 export const customColor: z.ZodType<CustomColor, string> = z
   .string()
@@ -127,7 +132,7 @@ export const color: ZColor = themeColor.or(customColor)
  * @internal reduce type inference
  */
 export namespace ZStyle {
-  export type In = {
+  export interface In {
     shape?: z.input<ZShape> | undefined
     icon?: string | undefined
     iconColor?: z.input<ZColor> | undefined
@@ -139,6 +144,7 @@ export namespace ZStyle {
     size?: z.input<ZSize> | undefined
     padding?: z.input<ZSize> | undefined
     textSize?: z.input<ZSize> | undefined
+    sizing?: z.input<ZSizing> | undefined
     multiple?: boolean | undefined
   }
   export interface Out {
@@ -153,6 +159,7 @@ export namespace ZStyle {
     readonly size?: Size
     readonly padding?: SpacingSize
     readonly textSize?: TextSize
+    readonly sizing?: Sizing
     readonly multiple?: boolean
   }
 }
@@ -171,14 +178,18 @@ export const style: ZStyle = z
     size: size,
     padding: size,
     textSize: size,
+    sizing: sizing,
     multiple: z.boolean(),
   })
   .partial()
   .transform(pickBy(isNonNullish))
 
-export const metadataValue = z.union([z.string(), z.boolean(), z.number()])
+type MetadataValue = string | boolean | number
+export interface ZMetadataValue extends z.ZodType<MetadataValue> {}
+export const metadataValue: ZMetadataValue = z.union([z.string(), z.boolean(), z.number()])
 
-export const metadata = z.record(z.string(), metadataValue.or(z.array(metadataValue)))
+export interface ZMetadata extends z.ZodType<Record<string, MetadataValue | MetadataValue[]>> {}
+export const metadata: ZMetadata = z.record(z.string(), metadataValue.or(z.array(metadataValue)))
 
 export const props = z
   .object({

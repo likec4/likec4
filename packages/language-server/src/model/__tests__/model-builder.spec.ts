@@ -1602,6 +1602,49 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
+  it('builds elements with fixed sizing', async ({ expect, t }) => {
+    const { validate, buildModel } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element component {
+        style {
+          sizing fixed
+        }
+      }
+    }
+    model {
+      component c1
+      component c2 {
+        style {
+          sizing auto
+        }
+      }
+      component fixed
+    }
+    views {
+      view index {
+        include *
+        style c1 {
+          sizing auto
+        }
+        include c2 with {
+          sizing fixed
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model.elements).toMatchObject({
+      c1: { style: { sizing: 'fixed' } },
+      c2: { style: { sizing: 'auto' } },
+      fixed: { style: { sizing: 'fixed' } },
+    })
+    const nodes = model.views['index' as ViewId]!.nodes
+    expect(nodes.find(n => n.id === 'c1')?.style.sizing).toBe('auto')
+    expect(nodes.find(n => n.id === 'c2')?.style.sizing).toBe('fixed')
+  })
+
   it('includes both sides of inout relation', async ({ expect, t }) => {
     const { validate, services } = t
     const { errors, warnings } = await validate(`

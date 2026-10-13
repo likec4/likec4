@@ -26,6 +26,13 @@ export type IconSize = Size
 export const IconPositions = ['left', 'right', 'top', 'bottom'] as const
 export type IconPosition = typeof IconPositions[number]
 
+/**
+ * `auto` - size is a minimum, node grows to fit content
+ * `fixed` - node has exact size, content shrinks to fit
+ */
+export const Sizings = ['auto', 'fixed'] as const
+export type Sizing = typeof Sizings[number]
+
 export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
 export type BorderStyle = typeof BorderStyles[number]
 
@@ -40,6 +47,7 @@ export const ElementShapes = [
   'bucket',
   'document',
   'component',
+  'agent',
 ] as const
 
 export type ElementShape = typeof ElementShapes[number]

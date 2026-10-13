@@ -1,0 +1,44 @@
+
+model {
+  sizing_auto_short = rectangle 'API' {
+    style {
+      size sm
+    }
+  }
+  sizing_auto_long = rectangle 'Customer Relationship Management Platform' {
+    icon tech:github-icon
+    style {
+      size sm
+    }
+  }
+  sizing_fixed_short = rectangle 'API' {
+    style {
+      size sm
+      sizing fixed
+    }
+  }
+  sizing_fixed_long = rectangle 'Customer Relationship Management Platform' {
+    icon tech:github-icon
+    style {
+      size sm
+      sizing fixed
+    }
+  }
+}
+
+views {
+  view sizing_auto_example {
+    include sizing_auto_short, sizing_auto_long
+    style * {
+      color muted
+    }
+    autoLayout LeftRight
+  }
+  view sizing_fixed_example {
+    include sizing_fixed_short, sizing_fixed_long
+    style * {
+      color muted
+    }
+    autoLayout LeftRight
+  }
+}

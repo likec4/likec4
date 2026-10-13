@@ -239,6 +239,7 @@ export type Events =
   | { type: 'xyflow.centerViewport'; nodeId: NodeId; duration?: number }
   | { type: 'xyflow.centerViewport'; edgeId: EdgeId; duration?: number }
   | { type: 'xyflow.resetSelection' }
+  | { type: 'xyflow.select'; nodes?: NodeId[] | undefined; edges?: EdgeId[] | undefined }
   | { type: 'update.nodeData'; nodeId: NodeId; data: PartialDeep<Types.NodeData> }
   | { type: 'update.edgeData'; edgeId: EdgeId; data: PartialDeep<Types.EdgeData> }
   | {

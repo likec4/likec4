@@ -55,6 +55,9 @@ But they refer to deployment nodes and instances.
   deployment view prod {
     include *                                   // works
     include * where tag is #next                // works (see details below)
+    include server with {
+      navigateTo server_deployment              // works (see details below)
+    }
     include * with { color: red }               // does not work
 
     include * -> *                              // works
@@ -66,6 +69,26 @@ But they refer to deployment nodes and instances.
   }
   ```
 </Aside>
+
+### Navigation
+
+Use `navigateTo` inside an element `with` expression to open another view from a deployment node or instance:
+
+```likec4
+views {
+  deployment view prod {
+    include server with {
+      navigateTo server_deployment
+    }
+  }
+
+  deployment view server_deployment {
+    include server.*
+  }
+}
+```
+
+The target must be an existing view.
 
 ### Filtering
 Filtering in deployment views use the same principles as in normal views but takes into account deployment nodes, relations, tags and metadata defined in deployment model.

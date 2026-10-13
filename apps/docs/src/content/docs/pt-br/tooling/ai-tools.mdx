@@ -1,0 +1,217 @@
+---
+title: Ferramentas de IA
+description: Skills de agentes e servidor MCP para modelagem de arquitetura assistida por IA
+head:
+  - tag: title
+    content: Ferramentas de IA | LikeC4
+sidebar:
+  order: 5
+---
+
+import { Aside, CardGrid, LinkCard, TabItem as Tab, Tabs } from '@astrojs/starlight/components';
+
+O LikeC4 oferece duas ferramentas complementares de desenvolvimento assistido por IA: **Agent Skills**, para ensinar a DSL aos assistentes de IA, e um **servidor MCP**, para consultar o modelo de arquitetura.
+
+## Skills de agentes
+
+As skills de agentes são referências da DSL carregadas automaticamente por assistentes de programação com IA ao editar arquivos `.c4`/`.likec4`.
+Elas ensinam a sintaxe, os padrões e os fluxos de validação do LikeC4 para que os agentes escrevam código DSL sem inventar construções inexistentes.
+
+### Instalar em qualquer projeto
+
+```sh
+npx skills add https://likec4.dev/
+```
+
+A instalação utiliza o protocolo <a href="https://www.skillsdk.dev/" target="_blank">Agent Skills Discovery</a>. Skills disponíveis:
+
+| Skill | Descrição |
+|-------|-------------|
+| `likec4-dsl` | Referência completa da DSL: especificação, modelo, visões, implantação, predicados e exemplos |
+
+Compatível com Claude Code, Cursor, Windsurf e outros agentes que oferecem suporte ao protocolo.
+
+## Servidor MCP
+
+O <a href="https://modelcontextprotocol.io" target="_blank">servidor MCP</a> do LikeC4 disponibiliza informações do modelo para modelos de linguagem (LLMs).
+Isso permite consultar o modelo em linguagem natural:
+
+> _"Consulte o modelo LikeC4 e liste todos os relacionamentos de entrada da API de backend"_
+
+> _"Quais elementos aninhados do 'Backend' possuem relacionamentos com a API legada"_
+
+> _"List all elements tagged legacy from team1 project"_
+
+> _"Quais tecnologias são usadas na interface (considere todos os elementos com forma de navegador)"_
+
+> _"Export to CSV all relationships between Backend and Amazon SQS"_
+
+### Como usar
+
+Há três opções:
+- Utilizar o servidor MCP integrado à extensão
+- Utilizar o comando `likec4 mcp` da CLI
+- Utilizar o pacote `@likec4/mcp`
+
+#### Pela extensão
+
+Quando a [extensão do LikeC4](/pt-br/tooling/editors/) está instalada no VS Code, o servidor MCP é registrado automaticamente pelo suporte nativo ao protocolo MCP (transporte stdio).
+Não é necessária configuração adicional: o servidor aparecerá na lista de servidores MCP quando a extensão estiver ativa.
+
+:::caution
+O servidor MCP só está disponível enquanto a extensão estiver ativa.
+A extensão é ativada automaticamente quando um arquivo-fonte LikeC4 é aberto.
+
+Se ele não aparecer, atualize a lista de servidores MCP no editor.
+:::
+
+Em outros editores, inicie o servidor MCP pela CLI e configure-o manualmente:
+
+<Tabs syncKey="label">
+  <Tab label='Cursor'>
+
+    Crie `.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "likec4": {
+          "url": "http://localhost:33335/mcp"
+        }
+      }
+    }
+    ```
+
+    Depois, inicie o servidor: `likec4 mcp --http`
+
+  </Tab>
+  <Tab label='Windsurf'>
+
+    Consulte a [documentação do Windsurf](https://docs.windsurf.com/windsurf/mcp) para saber mais:
+
+    ```json
+    {
+      "mcpServers": {
+        "likec4": {
+          "serverUrl": "http://localhost:33335/mcp"
+        }
+      }
+    }
+    ```
+
+    Depois, inicie o servidor: `likec4 mcp --http`
+
+  </Tab>
+  <Tab label='Claude Code'>
+
+    Adicione o servidor MCP ao Claude Code:
+
+    ```sh
+    claude mcp add likec4 -- npx -y @likec4/mcp
+    ```
+
+    Ou adicione-o a `.mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "likec4": {
+          "command": "npx",
+          "args": ["-y", "@likec4/mcp"]
+        }
+      }
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+#### Pela CLI
+
+Se a CLI [`likec4`](/pt-br/tooling/cli/) estiver instalada, inicie o servidor MCP com transporte `stdio`:
+
+```sh
+likec4 mcp
+# or
+likec4 mcp --stdio
+```
+
+Inicie o servidor MCP com transporte `http` na porta `33335` (padrão), na pasta `./src`:
+
+```sh
+likec4 mcp --http ./src
+```
+
+Inicie o servidor MCP com transporte `http` na porta `1234`:
+
+```sh
+likec4 mcp -p 1234
+```
+
+#### Pelo pacote `@likec4/mcp`
+
+Exemplo de configuração:
+
+```json
+{
+  "mcpServers": {
+    "likec4": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@likec4/mcp"
+      ],
+      "env": {
+        "LIKEC4_WORKSPACE": "${workspaceFolder}"
+      }
+    }
+  }
+}
+```
+
+Esse pacote inicia o servidor MCP usando o transporte [`stdio`](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio).
+
+Se `LIKEC4_WORKSPACE` não estiver definida, o diretório atual será utilizado como workspace.
+
+:::tip
+Você também pode utilizar o pacote `@likec4/mcp` como CLI (ele é menor que `likec4`):
+
+```sh
+npm install -g @likec4/mcp
+
+# Start MCP server with streamable http transport
+likec4-mcp --http --port 1234 /path/to/workspace
+
+# See available options
+likec4-mcp -h
+```
+
+Se o workspace for estático, desative o monitoramento com `--no-watch` para reduzir o consumo de recursos.
+:::
+
+### Ferramentas disponíveis
+
+| Ferramenta | Descrição |
+|------|-------------|
+| `list-projects` | Lista todos os projetos LikeC4 do workspace |
+| `read-project-summary` | Especificação, configuração, elementos, nós de implantação e visões do projeto |
+| `search-element` | Pesquisa elementos e nós de implantação por ID, título, tipo, forma, tags ou metadados |
+| `read-element` | Detalhes do elemento, incluindo relacionamentos, visões, implantações e metadados |
+| `read-deployment` | Detalhes de um nó de implantação ou de uma instância implantada |
+| `read-view` | Detalhes da visão (nós/arestas) e localização no código-fonte |
+| `render-view` | Renderiza uma visão salva como diagrama interativo (mover/ampliar/ajustar) no chat, para clientes compatíveis com [MCP Apps](https://github.com/modelcontextprotocol/ext-apps) |
+| `preview-view` | Gera uma pré-visualização de uma visão a partir de texto DSL, sem salvar arquivos, para elaborar e aperfeiçoar diagramas no chat |
+| `find-relationships` | Relacionamentos diretos e indiretos entre dois elementos |
+| `query-graph` | Consulta a hierarquia (ancestrais, descendentes, irmãos, filhos e pai) e relacionamentos diretos de entrada e saída |
+| `query-incomers-graph` | Grafo BFS recursivo das dependências/produtores a montante |
+| `query-outgoers-graph` | Grafo BFS recursivo dos consumidores/dependentes a jusante |
+| `query-by-metadata` | Pesquisa elementos por chave-valor de metadados (exato/contém/existe) |
+| `query-by-tags` | Filtragem de tags com lógica booleana (allOf, anyOf, noneOf) |
+| `query-by-tag-pattern` | Pesquisa elementos por padrões de tags usando prefixo, conteúdo ou sufixo |
+| `find-relationship-paths` | Descobre cadeias de relacionamentos entre dois elementos por BFS |
+| `batch-read-elements` | Obtém resumos de vários elementos, incluindo links e localização no código-fonte |
+| `subgraph-summary` | Resume descendentes com profundidade, metadados e contagem de relacionamentos |
+| `element-diff` | Compara elementos e mostra diferenças em propriedades, tags, metadados e relacionamentos |
+| `open-view` | Abre o painel de visão do LikeC4 (somente no editor) |
+
+Consulte o [README](https://github.com/likec4/likec4/blob/main/packages/mcp/README.md) para saber mais.

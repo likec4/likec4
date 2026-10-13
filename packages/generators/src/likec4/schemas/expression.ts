@@ -1,12 +1,14 @@
 import type { scalar } from '@likec4/core'
+import { isDefined, isNonNullish, pickBy } from 'remeda'
+import type { Simplify } from 'type-fest'
 import * as z from 'zod/v4'
 import * as common from './common'
 
 export interface ZRefModel extends
   z.ZodType<{
-    model: scalar.Fqn
-    project?: string | undefined
-    deployment?: never
+    readonly model: scalar.Fqn
+    readonly project?: string | undefined
+    readonly deployment?: never
   }, {
     model: string
     project?: string | undefined
@@ -18,9 +20,9 @@ export const refModel: ZRefModel = z.strictObject({
 
 export interface ZRefDeployment extends
   z.ZodType<{
-    deployment: scalar.Fqn
-    element?: scalar.Fqn | undefined | null
-    model?: never
+    readonly deployment: scalar.Fqn
+    readonly element?: scalar.Fqn | undefined | null
+    readonly model?: never
   }, {
     deployment: string
     element?: string | undefined | null
@@ -42,14 +44,15 @@ export namespace ZFqnRef {
     }
   export type Out =
     | {
-      model: scalar.Fqn
-      project?: string | undefined
-      deployment?: never
+      readonly model: scalar.Fqn
+      readonly project?: string | undefined
+      readonly deployment?: never
+      readonly element?: never
     }
     | {
-      model?: never
-      deployment: scalar.Fqn
-      element?: scalar.Fqn | undefined | null
+      readonly model?: never
+      readonly deployment: scalar.Fqn
+      readonly element?: scalar.Fqn | undefined | null
     }
 }
 
@@ -59,49 +62,81 @@ export const fqnRef: ZFqnRef = z.union([
   refDeployment,
 ])
 
-export const selector = z.literal(['children', 'expanded', 'descendants'])
+export const selector = z.enum(['children', 'expanded', 'descendants', '*', '_', '**']).transform((v) => {
+  switch (v) {
+    case '*':
+      return 'children'
+    case '_':
+      return 'expanded'
+    case '**':
+      return 'descendants'
+    default:
+      return v
+  }
+})
 
 /**
  * Accepts a value directly (shorthand for equality), or an explicit {eq: value} / {neq: value}.
  * Replicates the EqualOperator from the core.
  */
-function equalOp<T extends z.ZodType>(schema: T) {
-  return z.union([
-    schema.transform((value) => ({ eq: value })),
+interface ZEqualOp<out Output = unknown, out Input = unknown> extends
+  z.ZodType<
+    // output
+    | { eq: Output }
+    | { neq: Output },
+    // input
+    | Input
+    | { eq: Input }
+    | { neq: Input }
+  > {}
+function equalOp<Output, Input>(schema: z.ZodType<Output, Input>): ZEqualOp<Output, Input> {
+  return z.xor([
     z.object({ eq: schema }),
     z.object({ neq: schema }),
+    schema.transform((value) => ({ eq: value })),
   ])
 }
 
-export const whereTag = z.object({ tag: equalOp(common.tag) })
+export const whereTag = z.strictObject({ tag: equalOp(common.tag) })
 
-export const whereKind = z.object({ kind: equalOp(common.kind) })
-export const whereMetadata = z.object({
-  metadata: z.object({
+export const whereKind = z.strictObject({ kind: equalOp(common.kind) })
+export const whereMetadata = z.strictObject({
+  metadata: z.strictObject({
     key: z.string(),
     value: equalOp(z.string()).optional(),
   }),
 })
 
-const whereTagKindMetadata = z.union([
+export interface ZWhereTagKindMetadata extends
+  z.ZodType<
+    | z.output<typeof whereTag>
+    | z.output<typeof whereKind>
+    | z.output<typeof whereMetadata>,
+    | z.input<typeof whereTag>
+    | z.input<typeof whereKind>
+    | z.input<typeof whereMetadata>
+  > {}
+const whereTagKindMetadata: ZWhereTagKindMetadata = z.union([
   whereTag,
   whereKind,
   whereMetadata,
 ])
-namespace ZWhereTagKindMetadata {
-  export type In = z.input<typeof whereTagKindMetadata>
-  export type Out = z.output<typeof whereTagKindMetadata>
-}
 
-export const whereParticipant = z.object({
-  participant: z.literal(['source', 'target']),
+export interface ZWhereParticipant extends
+  z.ZodType<
+    {
+      participant: 'source' | 'target'
+      operator: z.output<ZWhereTagKindMetadata>
+    },
+    {
+      participant: 'source' | 'target'
+      operator: z.input<ZWhereTagKindMetadata>
+    }
+  > {}
+export const whereParticipant: ZWhereParticipant = z.strictObject({
+  participant: z.enum(['source', 'target']),
   operator: whereTagKindMetadata,
 })
-
-namespace ZWhereParticipant {
-  export type In = z.input<typeof whereParticipant>
-  export type Out = z.output<typeof whereParticipant>
-}
 
 export const whereAnd = z.object({
   get and(): z.ZodArray<ZWhereOperator> {
@@ -125,18 +160,18 @@ export const whereOr = z.object({
  * @internal reduce type inference
  */
 export namespace ZWhereOperator {
-  export type In =
-    | ZWhereTagKindMetadata.In
-    | ZWhereParticipant.In
-    | { and: ZWhereOperator.In[] }
-    | { or: ZWhereOperator.In[] }
-    | { not: ZWhereOperator.In }
   export type Out =
-    | ZWhereTagKindMetadata.Out
-    | ZWhereParticipant.Out
+    | z.output<ZWhereTagKindMetadata>
+    | z.output<ZWhereParticipant>
     | { and: ZWhereOperator.Out[] }
     | { or: ZWhereOperator.Out[] }
     | { not: ZWhereOperator.Out }
+  export type In =
+    | z.input<ZWhereTagKindMetadata>
+    | z.input<ZWhereParticipant>
+    | { and: ZWhereOperator.In[] }
+    | { or: ZWhereOperator.In[] }
+    | { not: ZWhereOperator.In }
 }
 export interface ZWhereOperator extends z.ZodType<ZWhereOperator.Out, ZWhereOperator.In> {}
 export const whereOperator: ZWhereOperator = z.union([
@@ -150,21 +185,58 @@ export const whereOperator: ZWhereOperator = z.union([
 ])
 
 // ---- ModelFqnExpr base variants ----
-export const wildcardExpr = z.object({ wildcard: z.literal(true) })
-export const refExpr = z.object({
+export interface ZWildcardExpr extends z.ZodType<{ wildcard: true }, { wildcard: true }> {}
+export const wildcardExpr: ZWildcardExpr = z.strictObject({ wildcard: z.literal(true) })
+
+export interface ZRefExpr extends
+  z.ZodType<{
+    ref: ZFqnRef.Out
+    selector?: z.output<typeof selector>
+  }, {
+    ref: ZFqnRef.In
+    selector?: z.input<typeof selector> | null | undefined
+  }> {}
+export const refExpr: ZRefExpr = z.object({
   ref: fqnRef,
-  selector: selector.optional(),
-})
-export const elementKindExpr = z.object({
+  selector: selector.nullish(),
+}).transform(pickBy(isNonNullish))
+
+export interface ZElementKindExpr extends
+  z.ZodType<{
+    elementKind: scalar.ElementKind
+    isEqual: boolean
+  }, {
+    elementKind: string
+    isEqual: boolean
+  }> {}
+export const elementKindExpr: ZElementKindExpr = z.object({
   elementKind: common.kind,
   isEqual: z.boolean(),
 })
-export const elementTagExpr = z.object({
+
+export interface ZElementTagExpr extends
+  z.ZodType<{
+    elementTag: scalar.Tag
+    isEqual: boolean
+  }, {
+    elementTag: string
+    isEqual: boolean
+  }> {}
+export const elementTagExpr: ZElementTagExpr = z.object({
   elementTag: common.tag,
   isEqual: z.boolean(),
 })
 
-export const fqnExpr = z.union([
+export namespace ZFqnExpr {
+  export type Out = z.output<ZWildcardExpr | ZRefExpr | ZElementTagExpr | ZElementKindExpr>
+  export type In = z.input<ZWildcardExpr | ZRefExpr | ZElementTagExpr | ZElementKindExpr>
+}
+export interface ZFqnExpr extends
+  z.ZodType<
+    ZFqnExpr.Out,
+    ZFqnExpr.In
+  > {}
+export const fqnExpr: ZFqnExpr = z.union([
   wildcardExpr,
   refExpr,
   elementKindExpr,
@@ -178,7 +250,24 @@ const fqnExprWhere = z.strictObject({
   }),
 })
 
-export const fqnExprOrWhere = z.union([
+export interface ZFqnExprOrWhere extends
+  z.ZodType<
+    | ZFqnExpr.Out
+    | {
+      where: {
+        expr: ZFqnExpr.Out
+        condition: ZWhereOperator.Out
+      }
+    },
+    | ZFqnExpr.In
+    | {
+      where: {
+        expr: ZFqnExpr.In
+        condition: ZWhereOperator.In
+      }
+    }
+  > {}
+export const fqnExprOrWhere: ZFqnExprOrWhere = z.union([
   fqnExpr,
   fqnExprWhere,
 ])
@@ -209,6 +298,7 @@ const customElementProperties = z.object({
   size: common.size,
   padding: common.size,
   textSize: common.size,
+  sizing: common.sizing,
 }).partial()
 
 const customRelationProperties = z.object({
@@ -218,7 +308,13 @@ const customRelationProperties = z.object({
   tail: common.arrow,
 }).partial()
 
-export const fqnExprCustom = z.strictObject({
+export interface ZFqnExprCustom extends
+  z.ZodType<{
+    custom: Simplify<{ expr: z.output<ZFqnExprOrWhere> } & z.output<typeof customElementProperties>>
+  }, {
+    custom: Simplify<{ expr: z.input<ZFqnExprOrWhere> } & z.input<typeof customElementProperties>>
+  }> {}
+export const fqnExprCustom: ZFqnExprCustom = z.strictObject({
   custom: customElementProperties.extend({
     expr: fqnExprOrWhere,
   }),
@@ -230,7 +326,8 @@ export const fqnExprAny = z.union([
 ])
 
 // ---- ModelRelationExpr base variants ----
-export const directRelationExpr = z.object({
+
+export const directRelationExpr = z.strictObject({
   source: fqnExpr,
   target: fqnExpr,
   isBidirectional: z.boolean().optional(),
@@ -239,38 +336,96 @@ export const incomingRelationExpr = z.object({ incoming: fqnExpr })
 export const outgoingRelationExpr = z.object({ outgoing: fqnExpr })
 export const inoutRelationExpr = z.object({ inout: fqnExpr })
 
-export const relationExpr = z.union([
+export namespace ZRelationExpr {
+  export type Out = z.output<
+    | typeof directRelationExpr
+    | typeof incomingRelationExpr
+    | typeof outgoingRelationExpr
+    | typeof inoutRelationExpr
+  >
+
+  export type In = z.input<
+    | typeof directRelationExpr
+    | typeof incomingRelationExpr
+    | typeof outgoingRelationExpr
+    | typeof inoutRelationExpr
+  >
+}
+export interface ZRelationExpr extends
+  z.ZodType<
+    ZRelationExpr.Out,
+    ZRelationExpr.In
+  > {}
+export const relationExpr: ZRelationExpr = z.union([
   directRelationExpr,
   incomingRelationExpr,
   outgoingRelationExpr,
   inoutRelationExpr,
 ])
 
-export const relationExprOrWhere = z.union([
-  relationExpr,
-  z.strictObject({
-    where: z.strictObject({
-      expr: relationExpr,
-      condition: whereOperator,
-    }),
+const relationExprWhere = z.strictObject({
+  where: z.strictObject({
+    expr: relationExpr,
+    condition: whereOperator,
   }),
+})
+
+export interface ZRelationExprOrWhere extends
+  z.ZodType<
+    ZRelationExpr.Out | z.output<typeof relationExprWhere>,
+    ZRelationExpr.In | z.input<typeof relationExprWhere>
+  > {}
+export const relationExprOrWhere: ZRelationExprOrWhere = z.union([
+  relationExpr,
+  relationExprWhere,
 ])
 
-export const relationExprCustom = z.strictObject({
+export interface ZRelationExprCustom extends
+  z.ZodType<
+    {
+      customRelation:
+        & { expr: z.output<ZRelationExprOrWhere> }
+        & z.output<typeof customRelationProperties>
+    },
+    {
+      customRelation: { expr: z.input<ZRelationExprOrWhere> } & z.input<typeof customRelationProperties>
+    }
+  > {}
+export const relationExprCustom: ZRelationExprCustom = z.strictObject({
   customRelation: customRelationProperties.extend({
     expr: relationExprOrWhere,
   }),
 })
 
-export const relationExprAny = z.union([
+export interface ZRelationExprAny extends
+  z.ZodType<
+    z.output<ZRelationExprOrWhere | ZRelationExprCustom>,
+    z.input<ZRelationExprOrWhere | ZRelationExprCustom>
+  > {}
+export const relationExprAny: ZRelationExprAny = z.union([
   relationExprOrWhere,
   relationExprCustom,
 ])
 
 // Where expression - wraps either a fqn or relation base expression with a condition
-export const whereExpr = z.object({
+export interface ZWhereExpr extends
+  z.ZodType<
+    {
+      where: {
+        expr: z.output<ZFqnExpr> | z.output<ZRelationExpr>
+        condition: z.output<ZWhereOperator>
+      }
+    },
+    {
+      where: {
+        expr: z.input<ZFqnExpr> | z.input<ZRelationExpr>
+        condition: z.input<ZWhereOperator>
+      }
+    }
+  > {}
+export const whereExpr: ZWhereExpr = z.strictObject({
   where: z.object({
-    expr: z.union([
+    expr: z.xor([
       fqnExpr,
       relationExpr,
     ]),
@@ -289,3 +444,8 @@ export const expression = z.union([
   relationExprCustom,
   whereExpr,
 ])
+export type ZExpression = typeof expression
+export namespace ZExpression {
+  export type Out = z.output<ZExpression>
+  export type In = z.input<ZExpression>
+}

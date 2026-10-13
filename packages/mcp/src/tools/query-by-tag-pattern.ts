@@ -11,62 +11,8 @@ const MAX_RESULTS = 50
 
 export const queryByTagPattern = likec4Tool({
   name: 'query-by-tag-pattern',
-  description: `
-Search elements by tag patterns using prefix or substring matching.
-Useful for tag taxonomies with structured naming conventions (e.g., "schedule_*", "*_asil_*").
-
-Request:
-- pattern: string — tag pattern to match
-- matchMode: "prefix" | "contains" | "suffix" (optional, default: "prefix")
-  - prefix: matches tags starting with the pattern (e.g., "target_asil" matches "target_asil_qm", "target_asil_asil_b")
-  - contains: matches tags containing the pattern anywhere (e.g., "asil" matches "target_asil_qm", "unit_asil_b")
-  - suffix: matches tags ending with the pattern (e.g., "_tbc" matches "target_asil_qm__tbc")
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response (JSON object):
-- results: Array of matching elements, each with:
-  - id: string — element id (FQN)
-  - name: string — element name
-  - kind: string — element kind
-  - title: string — human-readable title
-  - tags: string[] — all assigned tags
-  - metadata: Record<string, string | string[]> — element metadata
-  - matchedTags: string[] — the specific tags that matched the pattern
-  - includedInViews: View[] — views that include this element
-- truncated: boolean — true if results were truncated due to exceeding the 50-result limit
-- matchedTagValues: string[] — all unique tag values that matched the pattern across all elements
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
-
-Notes:
-- Read-only, idempotent, no side effects.
-- Safe to call repeatedly.
-- Pattern matching is case-insensitive.
-- Returns empty array if no matches found.
-- Limited to 50 results.
-- matchedTagValues provides a summary of all distinct matching tag values found.
-
-Example response:
-{
-  "results": [
-    {
-      "id": "top.planner.behaviorNode",
-      "name": "behaviorNode",
-      "kind": "cgf-node",
-      "title": "behaviorNode :dwBehaviorPlannerNode",
-      "tags": ["is_in_dag", "target_asil_qm", "process_camera_master"],
-      "metadata": {},
-      "matchedTags": ["target_asil_qm"],
-      "includedInViews": []
-    }
-  ],
-  "truncated": false,
-  "matchedTagValues": ["target_asil_qm", "target_asil_asil_b", "target_asil_qm__tbc"]
-}
-`,
+  description:
+    `Find elements whose tags match a pattern, for structured tag naming such as "team_*". matchMode is "prefix" (default), "contains" or "suffix", case-insensitive. Returns the matching tags per element and every distinct matching tag. At most 50 results. For exact tags with boolean logic, use query-by-tags.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,

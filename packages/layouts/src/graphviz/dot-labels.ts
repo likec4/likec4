@@ -18,16 +18,19 @@ type WrapOptions = {
   maxchars: number
   maxLines?: number | undefined
   sanitize?: ((v: string) => string) | undefined
+  cut?: boolean | undefined
 }
 export function wrap(text: string, {
   maxchars,
   maxLines,
   sanitize: escape = identity(),
+  cut = false,
 }: WrapOptions): string[] {
   let lines = wordWrap(text, {
     width: maxchars,
     indent: '',
     escape,
+    cut,
   }).split('\n')
   if (isDefined(maxLines) && maxLines > 0 && lines.length > maxLines) {
     lines = lines.slice(0, maxLines)
@@ -42,6 +45,7 @@ function wrapWithFont({
   maxLines,
   bold,
   color,
+  cut,
 }: {
   text: string
   maxchars: number
@@ -49,8 +53,9 @@ function wrapWithFont({
   maxLines?: number
   bold?: boolean
   color?: string | undefined
+  cut?: boolean
 }): string {
-  let html = wrap(text, { maxchars, maxLines, sanitize }).join('<BR/>')
+  let html = wrap(text, { maxchars, maxLines, sanitize, cut }).join('<BR/>')
   if (bold) {
     html = `<B>${html}</B>`
   }
@@ -102,22 +107,36 @@ export function nodeLabel(
   const hasIcon = isTruthy(node.icon)
   const iconPosition = node.style.iconPosition ?? 'left'
   const hasIconOnSide = hasIcon && (iconPosition === 'left' || iconPosition === 'right')
+  const isFixed = node.style.sizing === 'fixed'
+  const fitted = isFixed ? styles.fitNodeContent(node) : null
+  const textSize = fitted?.textSize ?? values.textSize
+  const iconSize = fitted?.iconSize ?? values.iconSize
   const lines = [
     wrapWithFont({
       text: node.title,
-      fontsize: values.textSize,
-      maxchars: maxchars(size),
-      maxLines: isSmOrXs ? 1 : 3,
+      fontsize: textSize,
+      maxchars: fitted?.maxchars ?? maxchars(size),
+      maxLines: fitted?.maxLines ?? (isSmOrXs ? 1 : 3),
+      cut: isFixed,
     }),
   ]
+  const secondaryMaxchars = (scale: number) => {
+    const fontsize = Math.ceil(textSize * scale)
+    return isFixed
+      ? Math.max(1, Math.floor((fitted?.maxchars ?? 1) * textSize / fontsize))
+      : hasIconOnSide
+      ? 35
+      : 45
+  }
   if (size !== 'xs') {
     if (isTruthy(node.technology?.trim())) {
       lines.push(
         wrapWithFont({
           text: node.technology,
-          fontsize: Math.ceil(values.textSize * 0.65),
-          maxchars: hasIconOnSide ? 35 : 45,
+          fontsize: Math.ceil(textSize * 0.65),
+          maxchars: secondaryMaxchars(0.65),
           maxLines: 1,
+          cut: isFixed,
           color: colorValues.loContrast,
         }),
       )
@@ -127,9 +146,10 @@ export function nodeLabel(
       lines.push(
         wrapWithFont({
           text: description,
-          fontsize: Math.ceil(values.textSize * 0.75),
-          maxchars: hasIconOnSide ? 35 : 45,
-          maxLines: isSmOrXs ? 3 : 5,
+          fontsize: Math.ceil(textSize * 0.75),
+          maxchars: secondaryMaxchars(0.75),
+          maxLines: isFixed ? 1 : isSmOrXs ? 3 : 5,
+          cut: isFixed,
           color: colorValues.loContrast,
         }),
       )
@@ -145,7 +165,7 @@ export function nodeLabel(
       // if first row, prepend columns with ROWSPAN
       if (idx === 0) {
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
-        const iconWidth = Math.ceil(values.iconSize + 16)
+        const iconWidth = Math.ceil(iconSize + 16)
         let leftwidth = iconWidth
         const sidePad = 16
 
@@ -170,7 +190,7 @@ export function nodeLabel(
     }
   let rows = lines.map(rowMapper).join('')
   if (hasIcon && (iconPosition === 'top' || iconPosition === 'bottom')) {
-    const iconRow = `<TR><TD HEIGHT="${Math.ceil(values.iconSize + 8)}"> </TD></TR>`
+    const iconRow = `<TR><TD HEIGHT="${Math.ceil(iconSize + 8)}"> </TD></TR>`
     rows = iconPosition === 'top' ? `${iconRow}${rows}` : `${rows}${iconRow}`
   }
   return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`

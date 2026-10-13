@@ -6,6 +6,7 @@
 !dist/**
 !react/**
 !icons/**
+!skills/**
 !__app__/**
 !package.json
 !**/package.json

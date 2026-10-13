@@ -20,6 +20,7 @@ const terminalHtml =
 <span class="text-zinc-600">  Generated React components</span>
 <span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">serve</span>
 <span class="text-zinc-600">  Serving at http://localhost:5173</span>`
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 ---
 
 <section class="py-24 md:py-32 px-6 overflow-hidden">
@@ -29,13 +30,13 @@ const terminalHtml =
       <span
         class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
       >
-        How it works
+        {isPtBr ? "Como funciona" : "How it works"}
       </span>
       <h2 class="lp-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-        Write. See. Ship.
+        {isPtBr ? "Escreva. Visualize. Compartilhe." : "Write. See. Ship."}
       </h2>
       <p class="text-base md:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-3xl mt-4">
-        A streamlined workflow that takes you from architecture definition to shareable diagrams in three simple steps.
+        {isPtBr ? "Um fluxo de trabalho simples, da definição da arquitetura à criação de diagramas compartilháveis em três etapas." : "A streamlined workflow that takes you from architecture definition to shareable diagrams in three simple steps."}
       </p>
     </div>
 
@@ -46,9 +47,9 @@ const terminalHtml =
         <div class="h-full rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 shadow-sm dark:shadow-none overflow-hidden transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <div class="p-6 pb-4">
             <span class="lp-display text-xs font-bold tracking-[0.15em] text-stone-400 dark:text-zinc-700">01</span>
-            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">Write</h3>
+            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">{isPtBr ? 'Escreva' : 'Write'}</h3>
             <p class="text-[0.9375rem] font-medium leading-relaxed text-stone-500 dark:text-zinc-400">
-              Define your architecture using a simple, expressive DSL. Describe components, relationships and boundaries as code.
+              {isPtBr ? "Defina sua arquitetura com uma DSL simples e expressiva. Descreva componentes, relacionamentos e limites como código." : "Define your architecture using a simple, expressive DSL. Describe components, relationships and boundaries as code."}
             </p>
           </div>
           <!-- Code block using Starlight Code component -->
@@ -63,9 +64,9 @@ const terminalHtml =
         <div class="h-full rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 shadow-sm dark:shadow-none overflow-hidden transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <div class="p-6 pb-4">
             <span class="lp-display text-xs font-bold tracking-[0.15em] text-stone-400 dark:text-zinc-700">02</span>
-            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">See</h3>
+            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">{isPtBr ? 'Visualize' : 'See'}</h3>
             <p class="text-[0.9375rem] font-medium leading-relaxed text-stone-500 dark:text-zinc-400">
-              Get instant visual diagrams generated from your code. Explore different views of your system at any level of detail.
+              {isPtBr ? "Gere diagramas visuais diretamente do código e explore diferentes visões do sistema em qualquer nível de detalhe." : "Get instant visual diagrams generated from your code. Explore different views of your system at any level of detail."}
             </p>
           </div>
           <!-- Live dynamic diagram -->
@@ -80,9 +81,9 @@ const terminalHtml =
         <div class="h-full rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 shadow-sm dark:shadow-none overflow-hidden transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
           <div class="p-6 pb-4">
             <span class="lp-display text-xs font-bold tracking-[0.15em] text-stone-400 dark:text-zinc-700">03</span>
-            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">Ship</h3>
+            <h3 class="lp-display text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2 mb-2">{isPtBr ? 'Compartilhe' : 'Ship'}</h3>
             <p class="text-[0.9375rem] font-medium leading-relaxed text-stone-500 dark:text-zinc-400">
-              Export diagrams, embed in docs, or share interactive views with your team. Keep everyone aligned on architecture.
+              {isPtBr ? "Exporte diagramas, incorpore-os à documentação ou compartilhe visões interativas com a equipe. Mantenha todos alinhados sobre a arquitetura." : "Export diagrams, embed in docs, or share interactive views with your team. Keep everyone aligned on architecture."}
             </p>
           </div>
           <!-- Terminal block -->

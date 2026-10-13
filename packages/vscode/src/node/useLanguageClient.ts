@@ -13,12 +13,10 @@ import {
   type LanguageClientOptions,
   type ServerOptions,
   LanguageClient as NodeLanguageClient,
-  RevealOutputChannelOn,
   State,
   TransportKind,
 } from 'vscode-languageclient/node'
 import { config } from '../config'
-import { globPattern, isVirtual } from '../const'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { isLikeC4Source } from '../utils.ts'
 
@@ -64,19 +62,13 @@ const useLanguageClient = defineService(() => {
     },
   }
 
-  let fileSystemWatcher: vscode.FileSystemWatcher | undefined
-  if (!isVirtual()) {
-    fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
-    useDisposable(fileSystemWatcher)
-  }
-
   const documentSelector = useDocumentSelector()
 
   const workspaceFolder = first(vscode.workspace.workspaceFolders ?? [])
 
   const clientOptions: LanguageClientOptions = {
     documentSelector: toValue(documentSelector) as any,
-    outputChannel: useDisposable(vscode.window.createOutputChannel('LikeC4 Language Server', 'log')),
+    outputChannel: useDisposable(vscode.window.createOutputChannel('LikeC4 Language Server', { log: true })),
     diagnosticCollectionName: 'likec4',
     markdown: {
       isTrusted: true,
@@ -89,11 +81,6 @@ const useLanguageClient = defineService(() => {
         return isLikeC4Source(resource.path)
       },
     },
-    synchronize: fileSystemWatcher
-      ? {
-        fileEvents: fileSystemWatcher,
-      }
-      : {},
   }
 
   const client = new NodeLanguageClient('likec4', 'LikeC4 Language Server', serverOptions, clientOptions)

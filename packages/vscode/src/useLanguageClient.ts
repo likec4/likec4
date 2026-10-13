@@ -20,6 +20,8 @@ function stateName(state: State) {
       return 'Starting'
     case State.Running:
       return 'Running'
+    case State.StartFailed:
+      return 'StartFailed'
   }
 }
 
@@ -34,6 +36,7 @@ export const useLanguageClient = defineService(() => {
 
   function startLanguageServer() {
     if (client.isRunning()) {
+      isActivated.value = true
       logger.error('language server is already running')
       return
     }
@@ -65,6 +68,7 @@ export const useLanguageClient = defineService(() => {
     logger.info('restarting language server')
     await client.start()
     logger.info('language server restarted')
+    isActivated.value = true
   }
 
   watch(documentSelector, async (selector) => {

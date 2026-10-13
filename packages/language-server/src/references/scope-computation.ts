@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
   type AstNodeDescription,
-  type PrecomputedScopes,
+  type LocalSymbols,
   DefaultScopeComputation,
   MultiMap,
 } from 'langium'
@@ -35,7 +35,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     super(services)
   }
 
-  override async computeExports(
+  override async collectExportedSymbols(
     document: LikeC4LangiumDocument,
     _cancelToken?: CancellationToken,
   ): Promise<AstNodeDescription[]> {
@@ -178,6 +178,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       try {
         switch (true) {
           case ast.isSpecificationDeploymentNodeKind(spec):
+          case ast.isSpecificationRelationshipKind(spec):
           case ast.isSpecificationElementKind(spec): {
             if (isTruthy(spec.kind.name)) {
               docExports.push(
@@ -191,14 +192,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
               docExports.push(
                 this.descriptions.createDescription(spec.tag, spec.tag.name, document),
                 this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document),
-              )
-            }
-            continue
-          }
-          case ast.isSpecificationRelationshipKind(spec): {
-            if (isTruthy(spec.kind.name)) {
-              docExports.push(
-                this.descriptions.createDescription(spec.kind, spec.kind.name, document),
               )
             }
             continue
@@ -241,10 +234,10 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     }
   }
 
-  override computeLocalScopes(
+  override collectLocalSymbols(
     document: LikeC4LangiumDocument,
     _cancelToken?: CancellationToken,
-  ): Promise<PrecomputedScopes> {
+  ): Promise<LocalSymbols> {
     return new Promise(resolve => {
       const root = document.parseResult.value
       const descendants = [] as AstNodeDescription[]
@@ -293,7 +286,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
   protected processContainer(
     container: ElementsContainer,
-    scopes: PrecomputedScopes,
+    scopes: MultiMap<AstNode, AstNodeDescription>,
     document: LikeC4LangiumDocument,
   ): AstNodeDescription[] {
     const localScope = new MultiMap<string, AstNodeDescription>()
@@ -348,7 +341,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
   protected processDeployments(
     container: DeploymentsContainer,
-    scopes: PrecomputedScopes,
+    scopes: MultiMap<AstNode, AstNodeDescription>,
     document: LikeC4LangiumDocument,
   ): AstNodeDescription[] {
     const localScope = new MultiMap<string, AstNodeDescription>()

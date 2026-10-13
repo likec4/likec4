@@ -1,25 +1,19 @@
 {
   "name": "@likec4/react",
-  "description": "LikeC4 React bundle",
-  "private": true,
   "version": "1.59.4",
-  "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
+  "private": true,
+  "description": "LikeC4 React bundle",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "**/package.json"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/react"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
-  "types": "dist/index.d.mts",
-  "module": "dist/index.mjs",
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -31,9 +25,14 @@
     },
     "./package.json": "./package.json"
   },
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "files": [
+    "dist",
+    "**/package.json"
+  ],
   "scripts": {
-    "pretypecheck": "pandacss codegen --clean",
-    "typecheck": "tsc -b --verbose",
+    "typecheck": "pandacss codegen && tsc -b --verbose",
     "build": "vite build",
     "clean": "likec4ops clean"
   },
@@ -45,32 +44,32 @@
     "use-sync-external-store": "catalog:react"
   },
   "devDependencies": {
-    "type-fest": "catalog:externals",
     "@babel/core": "catalog:react",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@microsoft/api-extractor": "^7.58.11",
+    "@microsoft/api-extractor": "^7.59.4",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
+    "@rolldown/plugin-babel": "catalog:vite",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@xyflow/react": "catalog:xyflow",
-    "@xyflow/system": "catalog:xyflow",
+    "@vitejs/plugin-react": "catalog:vite",
     "@xstate/react": "catalog:xstate",
     "@xstate/store": "catalog:xstate",
-    "@rolldown/plugin-babel": "catalog:vite",
-    "@vitejs/plugin-react": "catalog:vite",
+    "@xyflow/react": "catalog:xyflow",
+    "@xyflow/system": "catalog:xyflow",
     "babel-plugin-react-compiler": "catalog:react",
-    "xstate": "catalog:xstate",
-    "rolldown": "catalog:tsdown",
     "oxlint": "catalog:",
-    "vite-plugin-dts": "catalog:vite",
-    "vite": "catalog:vite",
+    "rolldown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
+    "type-fest": "catalog:externals",
     "typescript": "catalog:",
+    "vite": "catalog:vite",
+    "vite-plugin-dts": "catalog:vite",
+    "xstate": "catalog:xstate",
     "zx": "catalog:"
   }
 }

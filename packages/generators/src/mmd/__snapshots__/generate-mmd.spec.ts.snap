@@ -16,6 +16,7 @@ graph LR
     Root.El8@{ shape: trap-t, label: "Element with \\n\\"bucket\\" shape" }
     Root.El9@{ shape: doc, label: "Element with \\n\\"document\\" shape" }
     Root.El10@{ shape: rectangle, label: "Element with \\n\\"component\\" shape" }
+    Root.El11@{ shape: rectangle, label: "Element with \\n\\"agent\\" shape" }
   end
   Root.El1 -. "\`With 'Label'\`" .-> Root.El2
   Root.El3 -. "\`With

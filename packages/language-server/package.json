@@ -1,34 +1,18 @@
 {
   "name": "@likec4/language-server",
-  "description": "LikeC4 Language Server",
   "version": "1.59.4",
-  "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
+  "description": "LikeC4 Language Server",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "bin",
-    "dist",
-    "src/test",
-    "**/package.json",
-    "!**/__mocks__/",
-    "!**/__tests__/",
-    "!**/*.spec.*",
-    "!**/*.map"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/language-server"
   },
-  "engines": {
-    "node": ">=22.22.3"
-  },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
-  "bin": {
-    "likec4-language-server": "./bin/likec4-language-server.mjs"
-  },
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -113,15 +97,19 @@
     "./test": "./src/test/index.ts",
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs",
-    "browser": {
-      "dist/index.mjs": "dist/browser/index.mjs"
-    }
+  "bin": {
+    "likec4-language-server": "./bin/likec4-language-server.mjs"
   },
+  "files": [
+    "bin",
+    "dist",
+    "src/test",
+    "**/package.json",
+    "!**/__mocks__/",
+    "!**/__tests__/",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
@@ -154,7 +142,7 @@
     "fast-equals": "catalog:utils",
     "fdir": "catalog:externals",
     "immer": "catalog:utils",
-    "indent-string": "^5.0.0",
+    "indent-string": "catalog:utils",
     "json5": "catalog:utils",
     "langium": "catalog:langium",
     "nano-spawn": "catalog:externals",
@@ -163,7 +151,7 @@
     "p-timeout": "catalog:utils",
     "pathe": "catalog:utils",
     "picomatch": "catalog:externals",
-    "pretty-ms": "^9.3.0",
+    "pretty-ms": "catalog:utils",
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "strip-indent": "catalog:utils",
@@ -179,18 +167,6 @@
     "which": "^5.0.0",
     "zod": "catalog:externals"
   },
-  "peerDependencies": {
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild"
-  },
-  "peerDependenciesMeta": {
-    "esbuild": {
-      "optional": true
-    },
-    "bundle-require": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/icons": "workspace:*",
@@ -204,11 +180,35 @@
     "esbuild": "catalog:esbuild",
     "langium-cli": "catalog:langium",
     "memfs": "catalog:",
-    "tsdown": "catalog:tsdown",
     "oxlint": "catalog:",
+    "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
+  },
+  "peerDependencies": {
+    "bundle-require": "catalog:externals",
+    "esbuild": "catalog:esbuild"
+  },
+  "peerDependenciesMeta": {
+    "bundle-require": {
+      "optional": true
+    },
+    "esbuild": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs",
+    "browser": {
+      "dist/index.mjs": "dist/browser/index.mjs"
+    }
   }
 }

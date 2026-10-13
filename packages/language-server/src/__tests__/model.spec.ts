@@ -1,4 +1,4 @@
-import { ElementShapes, IconPositions } from '@likec4/core/styles'
+import { ElementShapes, IconPositions, Sizings } from '@likec4/core/styles'
 import { describe } from 'vitest'
 import { test } from './asserts'
 
@@ -63,6 +63,7 @@ describe('model', () => {
     const constv of [
       ...ElementShapes,
       ...IconPositions,
+      ...Sizings,
       // Reserved keywords
       'element',
       'model',

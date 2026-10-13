@@ -33,6 +33,7 @@ import {
   parseAstOpacityProperty,
   parseAstPercent,
   parseAstSizeValue,
+  parseAstSizingValue,
   parseMarkdownAsString,
   toColor,
 } from '../../ast'
@@ -602,6 +603,12 @@ export class BaseParser {
           case ast.isTextSizeProperty(prop): {
             if (isTruthy(prop.value)) {
               result.textSize = parseAstSizeValue(prop)
+            }
+            break
+          }
+          case ast.isSizingProperty(prop): {
+            if (isTruthy(prop.value)) {
+              result.sizing = parseAstSizingValue(prop)
             }
             break
           }

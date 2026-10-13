@@ -89,7 +89,7 @@ describe('issue #2989', () => {
     expect(nestedView.viewOf).toBe(importedBackend)
 
     // This proves `viewOf` parsing registered both imported targets, not only the explicit import alias.
-    expect(parsed.$data.imports['contrat']?.map(e => e.id)).toEqual(expect.arrayContaining([
+    expect(parsed.$data.imports[ProjectId('contrat')]?.map(e => e.id)).toEqual(expect.arrayContaining([
       'entreprise',
       'entreprise.refonteExtranetEntrepriseBack',
     ]))
@@ -152,7 +152,7 @@ describe('issue #2989', () => {
     invariant(parsedView)
     invariant(isElementView(parsedView))
     expect(parsedView.title).toBe('Entreprise')
-    expect(parsed.$data.imports['contrat']?.map(e => e.id)).toEqual([
+    expect(parsed.$data.imports[ProjectId('contrat')]?.map(e => e.id)).toEqual([
       'entreprise',
       'entreprise.refonteExtranetEntrepriseBack',
     ])

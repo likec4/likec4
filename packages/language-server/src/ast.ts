@@ -65,6 +65,7 @@ export type ParsedElementStyle = {
   size?: c4.ShapeSize
   padding?: c4.SpacingSize
   textSize?: c4.TextSize
+  sizing?: c4.Sizing
 }
 
 export interface ParsedAstSpecification {
@@ -250,7 +251,7 @@ export interface LikeC4DocumentProps {
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
 export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
-  likec4ProjectId: c4.ProjectId
+  likec4ProjectId?: c4.ProjectId
 }
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {
   likec4ProjectId: c4.ProjectId
@@ -325,6 +326,16 @@ export function parseAstIconPositionValue({ value }: { value: ast.IconPositionVa
     case 'right':
     case 'top':
     case 'bottom':
+      return value
+    default:
+      nonexhaustive(value)
+  }
+}
+
+export function parseAstSizingValue({ value }: { value: ast.SizingValue }): c4.Sizing {
+  switch (value) {
+    case 'auto':
+    case 'fixed':
       return value
     default:
       nonexhaustive(value)
@@ -419,25 +430,6 @@ export function toAutoLayout(
     direction,
     ...(nodeSep && { nodeSep }),
     ...(rankSep && { rankSep }),
-  }
-}
-
-export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction']): ast.ViewLayoutDirection {
-  switch (c4) {
-    case 'TB': {
-      return 'TopBottom'
-    }
-    case 'BT': {
-      return 'BottomTop'
-    }
-    case 'LR': {
-      return 'LeftRight'
-    }
-    case 'RL': {
-      return 'RightLeft'
-    }
-    default:
-      nonexhaustive(c4)
   }
 }
 

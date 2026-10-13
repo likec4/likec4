@@ -2,7 +2,14 @@ import type * as c4 from '@likec4/core'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
 import type { Except } from 'type-fest'
-import { ast, parseAstOpacityProperty, parseAstSizeValue, parseMarkdownAsString, toColor } from '../../ast'
+import {
+  ast,
+  parseAstOpacityProperty,
+  parseAstSizeValue,
+  parseAstSizingValue,
+  parseMarkdownAsString,
+  toColor,
+} from '../../ast'
 import { projectIdFrom } from '../../utils'
 import { importsRef, instanceRef } from '../../utils/fqnRef'
 import { createBinaryOperator, parseWhereClause } from '../model-parser-where'
@@ -194,6 +201,12 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
           if (ast.isIconPositionProperty(prop)) {
             if (isTruthy(prop.value)) {
               acc.custom[prop.key] = prop.value
+            }
+            return acc
+          }
+          if (ast.isSizingProperty(prop)) {
+            if (isTruthy(prop.value)) {
+              acc.custom[prop.key] = parseAstSizingValue(prop)
             }
             return acc
           }

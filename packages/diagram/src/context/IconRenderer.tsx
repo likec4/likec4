@@ -15,6 +15,7 @@ import {
   IconFileText,
   IconRectangularPrism,
   IconReorder,
+  IconRobot,
   IconUser,
 } from '@tabler/icons-react'
 import {
@@ -123,6 +124,7 @@ const ShapeIcons = {
   bucket: IconCylinder,
   document: IconFileText,
   component: IconRectangularPrism,
+  agent: IconRobot,
 } as const satisfies {
   [key in ElementShape]: ForwardRefExoticComponent<
     IconProps & RefAttributes<SVGSVGElement>

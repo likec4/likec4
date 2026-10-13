@@ -1,0 +1,85 @@
+---
+title: Gerar Web Components
+description: Como gerar componentes React, Web Components e modelos TypeScript a partir da DSL LikeC4.
+head:
+  - tag: title
+    content: Web Components | LikeC4
+sidebar:
+  label: Web Components
+  order: 9
+tableOfContents:
+  # minHeadingLevel: 3
+  maxHeadingLevel: 6    
+---
+
+import { Card, Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers'
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
+</p>
+
+## Instalação
+
+Certifique-se de incluir [`likec4`](https://www.npmjs.com/package/likec4) nas dependências do projeto:
+
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+
+## Web Component
+
+Gere um bundle JavaScript contendo o Web Component:
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen webcomponent -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+<br />   
+
+Utilize-o assim:
+
+```html
+<script src="./src/likec4-webcomponent.js"></script>
+<likec4-view view-id="index"></likec4-view>
+```
+
+Por padrão, a CLI gera um Web Component chamado `likec4-view`.  
+Você pode alterar o prefixo `likec4` com a opção `-w, --webcomponent-prefix`.
+
+Por exemplo:
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+E no HTML:
+
+```html
+<custom-c4-view view-id="index" browser="true" dynamic-variant="sequence"></custom-c4-view>
+```
+
+| Propriedade       | Descrição                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `view-id`         | ID da visão                                                                                          |
+| `browser`         | Indica se a janela de navegação entre visões deve ser exibida (padrão: `true`)                                                  |
+| `dynamic-variant` | Define a renderização da visão dinâmica<br />Valores possíveis: `diagram` ou `sequence` (padrão: `diagram`) |
+| `color-scheme`    | Força o esquema de cores claro ou escuro<br />Valores possíveis: `light` ou `dark` (padrão: acompanha o sistema)    |
+
+:::note
+O comando [build](/pt-br/tooling/cli/#gerar-um-site-estático) da CLI sempre gera JavaScript com Web Components.  
+Confira o botão `Share` na parte superior <a href="https://template.likec4.dev/view/index" target="_blank">deste exemplo</a>.
+:::

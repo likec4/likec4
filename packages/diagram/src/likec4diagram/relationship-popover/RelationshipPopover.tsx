@@ -32,7 +32,6 @@ import {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -41,7 +40,6 @@ import { Markdown } from '../../base-primitives'
 import { Link } from '../../components/Link'
 import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
-import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { selectDiagramContext, useDiagram, useDiagramSelector, useOnDiagramEvent } from '../../hooks/useDiagram'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
@@ -92,6 +90,12 @@ export const RelationshipPopover = memo(() => {
     actorRef.send({ type: 'close' })
   })
 
+  useOnDiagramEvent('paneClick', () => {
+    if (openedEdgeId) {
+      actorRef.send({ type: 'close' })
+    }
+  })
+
   useEffect(() => {
     if (selected) {
       actorRef.send({ type: 'xyedge.select', edgeId: selected })
@@ -101,83 +105,81 @@ export const RelationshipPopover = memo(() => {
   }, [selected])
 
   const onMouseEnter = useCallback((event: MouseEvent<HTMLDivElement>) => {
-    if (!openedEdgeId) {
-      return
-    }
     actorRef.send({ type: 'dropdown.mouseEnter' })
-    const edge = diagram.findEdge(openedEdgeId)
+    const edge = openedEdgeId ? diagram.findEdge(openedEdgeId) : null
     if (edge && !edge.data.hovered) {
       diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
     }
   }, [actorRef, diagram, openedEdgeId])
 
   const onMouseLeave = useCallback((event: MouseEvent<HTMLDivElement>) => {
-    if (!openedEdgeId) {
-      return
-    }
     actorRef.send({ type: 'dropdown.mouseLeave' })
-    const edge = diagram.findEdge(openedEdgeId)
-    if (edge?.data.hovered) {
+    const edge = openedEdgeId ? diagram.findEdge(openedEdgeId) : null
+    if (edge && edge.data.hovered) {
       diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
     }
   }, [actorRef, diagram, openedEdgeId])
 
-  const { diagramEdge, sourceNode, targetNode } = useDiagramSelector(
+  const edgeData = useDiagramSelector(
     useCallback(({ context: ctx }) => {
       const diagramEdge = openedEdgeId ? findDiagramEdge(ctx, openedEdgeId) : null
       const sourceNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.source) : null
       const targetNode = diagramEdge ? findDiagramNode(ctx, diagramEdge.target) : null
+      if (!diagramEdge || !sourceNode || !targetNode || isEmpty(diagramEdge.relations)) {
+        return {
+          diagramEdge: null,
+          sourceNode: null,
+          targetNode: null,
+        }
+      }
       return ({
         diagramEdge,
         sourceNode,
         targetNode,
-      })
+      } as const)
     }, [openedEdgeId]),
     shallowEqual,
   )
 
-  if (!diagramEdge || !sourceNode || !targetNode || isEmpty(diagramEdge.relations)) {
-    return null
-  }
+  const [direct, nested] = edgeData.diagramEdge ?
+    pipe(
+      edgeData.diagramEdge.relations,
+      map(id => {
+        try {
+          return likec4model.relationship(id)
+        } catch (e) {
+          // View was cached, but likec4model based on new data
+          console.error(
+            `View is cached and likec4model missing relationship ${id} from ${edgeData.sourceNode.id} -> ${edgeData.targetNode.id}`,
+            e,
+          )
+          return null
+        }
+      }),
+      filter(isTruthy),
+      partition(r => r.source.id === edgeData.sourceNode.id && r.target.id === edgeData.targetNode.id),
+    ) :
+    [[], []]
 
-  const [direct, nested] = pipe(
-    diagramEdge.relations,
-    map(id => {
-      try {
-        return likec4model.relationship(id)
-      } catch (e) {
-        // View was cached, but likec4model based on new data
-        console.error(
-          `View is cached and likec4model missing relationship ${id} from ${sourceNode.id} -> ${targetNode.id}`,
-          e,
-        )
-        return null
-      }
-    }),
-    filter(isTruthy),
-    partition(r => r.source.id === sourceNode.id && r.target.id === targetNode.id),
-  )
+  let component: React.ReactNode = null
 
-  if (direct.length === 0 && nested.length === 0) {
-    console.warn('No relationships found  diagram edge', {
-      diagramEdge,
-      sourceNode,
-      targetNode,
-    })
-    return null
-  }
-
-  return (
-    <PortalToContainer>
+  if (edgeData.diagramEdge && (direct.length > 0 || nested.length > 0)) {
+    component = (
       <RelationshipPopoverInternal
         viewId={viewId}
         direct={direct}
         nested={nested}
-        diagramEdge={diagramEdge}
-        sourceNode={sourceNode}
-        targetNode={targetNode}
+        diagramEdge={edgeData.diagramEdge}
+        sourceNode={edgeData.sourceNode}
+        targetNode={edgeData.targetNode}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave} />
+    )
+  }
+
+  return (
+    <PortalToContainer>
+      {component}
     </PortalToContainer>
   )
 })
@@ -211,13 +213,12 @@ const RelationshipPopoverInternal = ({
 }: RelationshipPopoverInternalProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const { enableNavigateTo, enableVscode } = useEnabledFeatures()
-  const { onOpenSource } = useDiagramEventHandlers()
 
   const containerRef = useRootContainerRef()
 
   const [referenceEl, setReferenceEl] = useState<HTMLDivElement | SVGCircleElement | null>(null)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setReferenceEl(getEdgeLabelElement(diagramEdge.id, containerRef.current))
   }, [diagramEdge])
 
@@ -254,8 +255,8 @@ const RelationshipPopoverInternal = ({
                 return
               }
               Object.assign(elements.floating.style, {
-                maxWidth: `${clamp(roundDpr(availableWidth), { min: 220, max: 400 })}px`,
-                maxHeight: `${clamp(roundDpr(availableHeight), { min: 100, max: 500 })}px`,
+                maxWidth: `${clamp(roundDpr(availableWidth), { min: 220, max: 450 })}px`,
+                maxHeight: `${clamp(roundDpr(availableHeight), { min: 80, max: 500 })}px`,
               })
             },
           }),
@@ -267,8 +268,12 @@ const RelationshipPopoverInternal = ({
         if (wasCanceled) {
           return
         }
+        if (middlewareData.hide?.referenceHidden) {
+          popper.style.visibility = 'hidden'
+          return
+        }
         popper.style.transform = `translate(${roundDpr(x)}px, ${roundDpr(y)}px)`
-        popper.style.visibility = middlewareData.hide?.referenceHidden ? 'hidden' : 'visible'
+        popper.style.visibility = 'visible'
       })
     }
     const cleanup = autoUpdate(reference, popper, update, {
@@ -283,27 +288,25 @@ const RelationshipPopoverInternal = ({
 
   const diagram = useDiagram()
 
-  const renderRelationship = useCallback(
-    (relationship: LikeC4Model.AnyRelation, index: number) => (
-      <Fragment key={relationship.id}>
-        {index > 0 && <Divider />}
-        <Relationship
-          viewId={viewId}
-          relationship={relationship}
-          sourceNode={sourceNode}
-          targetNode={targetNode}
-          onNavigateTo={enableNavigateTo
-            ? (viewId: ViewId) => {
-              diagram.navigateTo(viewId)
-            }
-            : undefined}
-          {...(onOpenSource && enableVscode && {
-            onOpenSource: () => onOpenSource({ relation: relationship.id }),
-          })}
-        />
-      </Fragment>
-    ),
-    [viewId, sourceNode, targetNode, diagram, enableNavigateTo, onOpenSource, enableVscode],
+  const renderRelationship = (relationship: LikeC4Model.AnyRelation, index: number) => (
+    <Fragment key={relationship.id}>
+      {index > 0 && <Divider />}
+      <Relationship
+        relationship={relationship}
+        sourceNode={sourceNode}
+        targetNode={targetNode}
+        onNavigateTo={enableNavigateTo
+            && relationship.$relationship.navigateTo
+            && relationship.$relationship.navigateTo !== viewId
+          ? () => diagram.navigateTo(relationship.$relationship.navigateTo!)
+          : undefined}
+        onOpenSource={enableVscode
+          ? () => {
+            diagram.openSource({ relation: relationship.id })
+          } :
+          undefined}
+      />
+    </Fragment>
   )
 
   return (
@@ -318,10 +321,11 @@ const RelationshipPopoverInternal = ({
         viewport: {
           overscrollBehavior: 'contain',
           minWidth: 200,
-          minHeight: 40,
+          minHeight: 80,
         },
       }}
       className={cx(
+        'nowheel',
         css({
           layerStyle: 'likec4.dropdown',
           border: 'subtle',
@@ -344,6 +348,10 @@ const RelationshipPopoverInternal = ({
           gap: '3',
           padding: '4',
           paddingTop: '2',
+        }}
+        onClick={(e) => {
+          e.stopPropagation()
+          diagram.select({ edges: [diagramEdge.id] })
         }}
       >
         <Button
@@ -388,16 +396,13 @@ const RelationshipPopoverInternal = ({
 const Relationship = forwardRef<
   HTMLDivElement,
   {
-    // current view id
-    viewId: ViewId
     relationship: LikeC4Model.AnyRelation
     sourceNode: DiagramNode
     targetNode: DiagramNode
-    onOpenSource?: () => void
-    onNavigateTo?: ((next: ViewId) => void) | undefined
+    onOpenSource?: (() => void) | undefined
+    onNavigateTo?: (() => void) | undefined
   }
 >(({
-  viewId,
   relationship: r,
   sourceNode,
   targetNode,
@@ -406,7 +411,6 @@ const Relationship = forwardRef<
 }, ref) => {
   const sourceId = getEndpointId(r, 'source', sourceNode)
   const targetId = getEndpointId(r, 'target', targetNode)
-  const navigateTo = onNavigateTo && r.navigateTo?.id !== viewId ? r.navigateTo?.id : undefined
   const links = r.links
 
   // Build metadata tooltip content
@@ -493,7 +497,7 @@ const Relationship = forwardRef<
               {targetId.short}
             </Endpoint>
           </Tooltip>
-          {navigateTo && (
+          {onNavigateTo && (
             <Tooltip label={'Open dynamic view'}>
               <ActionIcon
                 size={'sm'}
@@ -501,7 +505,7 @@ const Relationship = forwardRef<
                 variant="default"
                 onClick={event => {
                   event.stopPropagation()
-                  onNavigateTo?.(navigateTo)
+                  onNavigateTo()
                 }}
                 style={{
                   alignSelf: 'flex-end',

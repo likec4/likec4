@@ -48,64 +48,14 @@ export const searchElement = likec4Tool({
     idempotentHint: true,
     title: 'Search elements',
   },
-  description: `
-Search LikeC4 elements and deployment nodes across all projects.
-
-Query syntax (case-insensitive):
-- kind:<value>  filters by kind
-- shape:<value> filters by shape
-- meta:<key>    filters by having metadata with the given key
-- #<value>      matches assigned tags
-- <value>       matches id (FQN) or title
-
-Request:
-- search: string — at least 2 characters
-
-Response (JSON object):
-- total: number - total number of results
-- found: Result[] - returns top 20 results
-
-Result (discriminated union by "type"):
-- type = "element": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
-- type = "deployment-node": { id: string, name: string, kind: string, title: string, technology: string|null, shape: string, project: string, includedInViews: View[], tags: string[], metadata: Record<string, string> }
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
-
-Notes:
-- Read-only, idempotent.
-- Use results as input to other tools (e.g., read-element, read-view).
-
-Example response:
-{
-  "total": 1,
-  "found": [
-    {
-      "type": "logical",
-      "project": "default",
-      "id": "shop.frontend",
-      "name": "frontend",
-      "kind": "container",
-      "title": "Frontend",
-      "technology": "React",
-      "shape": "rectangle",      
-      "includedInViews": [
-        {
-          "id": "system-overview",
-          "title": "System Overview",
-          "type": "element"
-        }
-      ],
-      "tags": ["public"],
-      "metadata": {}
-    }
-  ]
-}
-`,
+  description:
+    `Search elements and deployment nodes across all projects by id, title, kind, shape, tag or metadata key. Returns the total number of matches and the first 20. Pass the ids found to read-element or other tools.`,
   inputSchema: {
-    search: z.string().min(2, 'Search must be at least 2 characters long'),
+    search: z.string().min(2, 'Search must be at least 2 characters long').describe(
+      'Case-insensitive. "kind:<value>" or "shape:<value>" matches a kind or shape exactly, '
+        + '"meta:<key>" elements with that metadata key, "#<value>" tags containing the value; '
+        + 'anything else matches id (FQN) or title.',
+    ),
   },
   outputSchema: {
     total: z.number(),

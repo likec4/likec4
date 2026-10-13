@@ -27,8 +27,20 @@ import {
   type NotificationType,
   type RequestType,
   BROADCAST,
+  isWebviewIdMessageParticipant,
+  isWebviewTypeMessageParticipant,
 } from 'vscode-messenger-common'
 import { useExtensionLogger } from './useExtensionLogger'
+
+function stringifyMessageParticipant(participant: MessageParticipant): string {
+  if (isWebviewIdMessageParticipant(participant)) {
+    return `webviewId:${participant.webviewId}`
+  }
+  if (isWebviewTypeMessageParticipant(participant)) {
+    return `webview:${participant.webviewType}`
+  }
+  return `${participant.type}`
+}
 
 export const useMessenger = defineService(() => {
   const { logger } = useExtensionLogger('messenger')
@@ -42,7 +54,11 @@ export const useMessenger = defineService(() => {
           reqType,
           async (params: P, sender: MessageParticipant, cancelable: vscode.CancellationToken) => {
             try {
-              return await Promise.resolve().then(() => handler(params, sender, cancelable))
+              logger.debug(`onRequest {req} from {sender}`, {
+                req: reqType.method,
+                sender: stringifyMessageParticipant(sender),
+              })
+              return await handler(params, sender, cancelable)
             } catch (err) {
               logger.warn(`request {req} failed`, { req: reqType.method, err })
               throw err // propagate to client
@@ -62,7 +78,10 @@ export const useMessenger = defineService(() => {
     return useDisposable(
       messenger.onNotification(notiType, async (params: P, sender: MessageParticipant) => {
         try {
-          logger.debug(`onNotification {noti} from {sender}`, { noti: notiType.method, sender })
+          logger.debug(`onNotification {noti} from {sender}`, {
+            noti: notiType.method,
+            sender: stringifyMessageParticipant(sender),
+          })
           await Promise.resolve().then(() => handler(params, sender))
         } catch (err) {
           logger.warn(`onNotification {noti} failed`, { noti: notiType.method, err })
@@ -80,7 +99,10 @@ export const useMessenger = defineService(() => {
   const sendRequest =
     <P, R>(reqType: RequestType<P, R>): ReqOp<P, R> => async (receiver: MessageParticipant, params?: P) => {
       try {
-        logger.debug(`sendRequest {reqType} to {receiver}`, { reqType: reqType.method, receiver })
+        logger.debug(`sendRequest {reqType} to {receiver}`, {
+          reqType: reqType.method,
+          receiver: stringifyMessageParticipant(receiver),
+        })
         return await messenger.sendRequest(reqType, receiver, params)
       } catch (err) {
         logger.warn(`sendRequest {req} failed`, { req: reqType.method, err })
@@ -96,7 +118,10 @@ export const useMessenger = defineService(() => {
   const sendNotification =
     <P>(notiType: NotificationType<P>): NotifyOp<P> => (receiver: MessageParticipant, params?: P) => {
       try {
-        logger.debug(`sendNotification {notiType} to {receiver}`, { notiType: notiType.method, receiver })
+        logger.debug(`sendNotification {notiType} to {receiver}`, {
+          notiType: notiType.method,
+          receiver: stringifyMessageParticipant(receiver),
+        })
         return messenger.sendNotification(notiType, receiver, params)
       } catch (err) {
         logger.warn(`sendNotification {notiType} failed`, { notiType: notiType.method, err })

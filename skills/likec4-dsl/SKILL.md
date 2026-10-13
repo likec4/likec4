@@ -274,7 +274,7 @@ Full syntax, extend patterns, property table, and worked example → `references
 
 ## Style
 
-Style properties control visual appearance: `color`, `shape`, `border`, `opacity`, `size`, `padding`, `textSize`, `icon`, `iconColor`, `iconSize`, `iconPosition`, `multiple`. Relationship style extends this with `line`, `head`, and `tail` arrow shapes.
+Style properties control visual appearance: `color`, `shape`, `border`, `opacity`, `size`, `padding`, `textSize`, `sizing`, `icon`, `iconColor`, `iconSize`, `iconPosition`, `multiple`. `sizing fixed` draws all elements of the same `size` with identical width/height (content shrinks to fit); default `auto` treats `size` as a minimum. Relationship style extends this with `line`, `head`, and `tail` arrow shapes.
 
 Full color token table, all shape values, border/opacity/size tokens, icon pack prefixes (`aws:`, `azure:`, `gcp:`, `tech:`, `bootstrap:`), and correct usage patterns → `references/style-tokens-colors.md`
 
@@ -348,7 +348,7 @@ Styling?
 
 ```text
 Multi-file project?
-├─ Import elements → import { backend } from './shared.c4'
+├─ Import from another project → import { backend } from 'shared-project' (project name, not a file path)
 ├─ Cross-file lookup → short names do not inherit lexical/container scope across files; use full FQN
 ├─ Extend element → extend cloud.backend { service newSvc "New" }
 ├─ Extend relationship → extend cloud -> amazon { metadata { ... } }

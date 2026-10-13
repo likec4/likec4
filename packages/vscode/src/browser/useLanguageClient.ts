@@ -55,7 +55,7 @@ const useLanguageClient = defineService(() => {
   }
 
   // Create and start the language client.
-  const client = new BrowserLanguageClient('likec4', 'LikeC4 Language Server', clientOptions, worker)
+  const client = new BrowserLanguageClient('likec4', 'LikeC4 Language Server', worker, clientOptions)
   return useDisposable(client)
 })
 

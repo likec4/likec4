@@ -2,12 +2,13 @@
 import { fetchStars } from '../../lib/githubdata'
 
 const stars = await fetchStars()
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 ---
 <span
   class="inline-flex items-center gap-2 px-3.5 py-1.5 text-[0.6875rem] font-semibold tracking-[0.12em] uppercase text-cyan-700 dark:text-cyan-400 border border-cyan-600/25 dark:border-cyan-400/20 rounded-full"
 >
   <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse"></span>
-  Open Source
+  {isPtBr ? 'Código aberto' : 'Open Source'}
   {stars && (
     <>
       <span class="w-px h-3 bg-cyan-600/20 dark:bg-cyan-400/20"></span>

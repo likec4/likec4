@@ -1,3 +1,4 @@
+import { isArray } from 'remeda'
 import type { IsAny, IsUnknown, Or, SetNonNullable, SetRequired } from 'type-fest'
 import type { NonEmptyArray } from '../types'
 import { invariant } from '../utils'
@@ -12,7 +13,8 @@ export function isNonEmptyArray<A>(arr: ArrayLike<A> | undefined): arr is NonEmp
 
 function _hasProp(value: unknown, path: string): boolean {
   invariant(typeof path === 'string', 'Path must be string')
-  return value != null && typeof value === 'object' && (value as Record<string, unknown>)[path] != null
+  return value != null && typeof value === 'object' && Object.hasOwn(value, path) &&
+    (value as Record<string, unknown>)[path] != null
 }
 
 /** Curried form: returns a predicate (value) => boolean. Kept as named function so bundlers/transforms preserve it. */
@@ -28,7 +30,7 @@ export function hasProp<T extends object, P extends keyof T & string>(
 export function hasProp<const P extends string>(
   path: P,
 ): // @ts-expect-error could be instantiated with an arbitrary type
-<T>(value: T) => value is SetRequired<SetNonNullable<T, P>, P>
+<T>(value: T) => value is T & { [K in P]: NonNullable<T[K]> }
 export function hasProp(...args: any[]) {
   if (args.length === 1 && typeof args[0] === 'string') {
     return hasPropCurried(args[0])
@@ -84,6 +86,6 @@ export function isAnyOf<const Predicates extends NonEmptyArray<Guard<any>>>(
   }) as any
 }
 
-export function hasChildren<C, A extends { children: C[] }>(value: A): value is A & { children: NonEmptyArray<C> } {
-  return value.children.length > 0
+export function hasChildren<C, A extends { children?: C[] }>(value: A): value is A & { children: NonEmptyArray<C> } {
+  return isArray(value.children) && value.children.length > 0
 }

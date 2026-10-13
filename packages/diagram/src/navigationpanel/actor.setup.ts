@@ -4,7 +4,7 @@ import { setup } from 'xstate'
 
 export interface Input {
   viewId: ViewId
-  viewFolder?: string | undefined
+  viewFolder: string
 }
 
 export type Events =

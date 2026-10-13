@@ -54,6 +54,18 @@ describe('fqn utils', () => {
       expect(commonAncestor('a.b.c', 'a.b.e')).toBe('a.b')
       expect(commonAncestor('a.b.c.d.e', 'a.b.c.d')).toBe('a.b.c')
     })
+
+    it('should not return project namespace of imported elements', () => {
+      expect(commonAncestor('@owner.a', '@owner.b')).toBeNull()
+      expect(commonAncestor('@owner.a', '@owner.b.c')).toBeNull()
+      expect(commonAncestor('@owner.a', '@other.b')).toBeNull()
+      expect(commonAncestor('@owner.a', 'b')).toBeNull()
+    })
+
+    it('should return common ancestor of imported elements', () => {
+      expect(commonAncestor('@owner.a.api', '@owner.a.db')).toBe('@owner.a')
+      expect(commonAncestor('@owner.a.b.c', '@owner.a.b.d')).toBe('@owner.a.b')
+    })
   })
 
   describe('isAncestor', () => {
@@ -313,6 +325,12 @@ describe('fqn utils', () => {
       expect.soft(d('a', 'b.c.e')).toBe(3)
       expect.soft(d('a.b', 'c.e')).toBe(3)
       expect.soft(d('a.b.c', 'd.e.f.g')).toBe(6)
+    })
+
+    it('should return the same distance for imported elements as for local ones', () => {
+      expect.soft(d('@owner.a', '@owner.b')).toBe(d('a', 'b'))
+      expect.soft(d('@owner.a.c', '@owner.b.d')).toBe(d('a.c', 'b.d'))
+      expect.soft(d('@owner.a.b.c', '@owner.a.b.d')).toBe(d('a.b.c', 'a.b.d'))
     })
   })
 })

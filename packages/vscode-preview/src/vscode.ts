@@ -26,18 +26,29 @@ import {
   ViewChangeReq,
   WebviewMsgs,
 } from '../protocol'
+import type { queries } from './queries'
 
-export type VscodeState = {
-  viewId: ViewId
-  projectId: ProjectId
-  view: DiagramView | null
-  model: ComputedLikeC4ModelData | null
-  nodesDraggable: boolean
-  edgesEditable: boolean
-  updatedAt: number
-  screen: 'view' | 'projects'
-  projectsOverview: LayoutedProjectsView | null
-}
+export type VscodeState =
+  & {
+    viewId: ViewId
+    projectId: ProjectId
+    model: ComputedLikeC4ModelData | null
+    nodesDraggable: boolean
+    edgesEditable: boolean
+    updatedAt: number
+    screen: 'view' | 'projects'
+  }
+  & (
+    | {
+      view: null
+      viewQueryKey: null
+    }
+    | {
+      view: DiagramView
+      viewQueryKey: ReturnType<typeof queries.fetchDiagramView>['queryKey']
+    }
+  )
+
 const vscode = acquireVsCodeApi<VscodeState>()
 
 const messenger = new Messenger(vscode)
@@ -105,21 +116,31 @@ export const ExtensionApi = {
     error: string | null
   }> => {
     const cancellationToken = new CancellationTokenImpl()
-    signal.addEventListener('abort', () => cancellationToken.cancel())
-    return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, params, cancellationToken)
+    const triggerCancel = () => cancellationToken.cancel()
+    signal.addEventListener('abort', triggerCancel)
+    try {
+      return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, params, cancellationToken)
+    } finally {
+      signal.removeEventListener('abort', triggerCancel)
+    }
   },
 
   fetchProjectsOverview: async (signal: AbortSignal): Promise<{
     projectsView: LayoutedProjectsView | null
   }> => {
     const cancellationToken = new CancellationTokenImpl()
-    signal.addEventListener('abort', () => cancellationToken.cancel())
-    return await messenger.sendRequest(
-      FetchProjectsOverview,
-      HOST_EXTENSION,
-      undefined,
-      cancellationToken,
-    )
+    const triggerCancel = () => cancellationToken.cancel()
+    signal.addEventListener('abort', triggerCancel)
+    try {
+      return await messenger.sendRequest(
+        FetchProjectsOverview,
+        HOST_EXTENSION,
+        undefined,
+        cancellationToken,
+      )
+    } finally {
+      signal.removeEventListener('abort', triggerCancel)
+    }
   },
 
   // Read local icon file and convert to base64 data URI
@@ -154,16 +175,20 @@ export const ExtensionApi = {
 
 export function getVscodeState(): VscodeState {
   const state = vscode.getState()
+  const viewQueryKey = state?.viewQueryKey ?? null
+  const view = state?.view ?? null
   return {
     viewId: state?.viewId ?? __VIEW_ID as ViewId,
     projectId: state?.projectId ?? __PROJECT_ID as ProjectId,
-    view: state?.view ?? null,
+    ...(!!view && !!viewQueryKey ? { view, viewQueryKey } : {
+      view: null,
+      viewQueryKey: null,
+    }),
     model: state?.model ?? null,
     nodesDraggable: state?.nodesDraggable ?? __INTERNAL_STATE?.nodesDraggable ?? true,
     edgesEditable: state?.edgesEditable ?? __INTERNAL_STATE?.edgesEditable ?? true,
     updatedAt: state?.updatedAt ?? 0,
     screen: state?.screen ?? __SCREEN,
-    projectsOverview: state?.projectsOverview ?? null,
   }
 }
 
@@ -172,5 +197,5 @@ export const saveVscodeState = (state: Partial<VscodeState>) => {
     ...getVscodeState(),
     ...state,
     updatedAt: Date.now(),
-  })
+  } as VscodeState)
 }

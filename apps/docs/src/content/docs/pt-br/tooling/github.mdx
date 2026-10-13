@@ -1,0 +1,81 @@
+---
+title: GitHub Actions
+description: Integre o LikeC4 ao pipeline de CI/CD para manter os diagramas de arquitetura atualizados.
+sidebar:
+  order: 6
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+![GitHub release](https://img.shields.io/github/release/likec4/actions.svg)
+
+Esta action disponibiliza a [CLI do LikeC4](/pt-br/tooling/cli/) como uma GitHub Action.
+
+<Aside type='tip'>
+  O repositório [likec4/template](https://github.com/likec4/template) demonstra como publicar no GitHub Pages.
+
+  Consulte também o [guia de publicação no GitHub Pages](/pt-br/guides/deploy-github-pages/) para saber mais.
+</Aside>
+
+### Como usar
+
+#### Gerar o site
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+
+  - name: ⚙️ build
+    uses: likec4/actions@v1
+    with:
+      action: build
+      path: src/likec4
+      output: dist
+      base: /baseurl/
+
+  - name: upload artifacts
+    uses: actions/upload-artifact@v3
+    with:
+      name: likec4
+      path: dist
+```
+
+
+#### Exportar diagramas para PNG
+
+```yaml
+steps:
+  - name: export diagrams
+    uses: likec4/actions@v1
+    with:
+      export: png
+      path: src/likec4
+      output: out/images
+      use-dot-bin: 'true'
+```
+
+#### Geração de código
+
+```yaml
+steps:
+  - name: code generation
+    uses: likec4/actions@v1
+    with:
+      codegen: react
+      output: __generated__/likec4.jsx
+```
+
+### Parâmetros de entrada
+
+| Nome          | Descrição                                                                                           |
+| ------------- | ----------------------------------------------------------------------------------------------------- |
+| `action`      | Ação a executar (`build` / `export` / `codegen`)                                                    |
+| `export`      | Pode ser usado no lugar de `action: export`                                                               |
+| `codegen`     | Pode ser usado no lugar de `action: codegen`, com os mesmos valores da [CLI](/pt-br/tooling/cli/) |
+| `path`        | Caminho dos arquivos-fonte LikeC4 no repositório; por padrão, a raiz                                                  |
+| `output`      | Diretório ou arquivo de saída                                                                                 |
+| `base`        | URL base personalizada para o site                                                                            |
+| `use-dot-bin` | Se `'true'`, utiliza o executável `dot` do Graphviz                                                         |
+
+> Todos os parâmetros são opcionais.  
+> Por padrão, a CLI gera o site no diretório `dist`.

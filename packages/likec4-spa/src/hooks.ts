@@ -88,6 +88,7 @@ export function useCurrentProject(): Project {
   const projects = useLikeC4Projects()
   const projectId = useMatches({
     select: selectProjectIdFromContext,
+    structuralSharing: false,
   })
   return (projectId && projects.find(p => p.id === projectId)) || projects[0]
 }

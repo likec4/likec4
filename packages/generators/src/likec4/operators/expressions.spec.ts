@@ -12,9 +12,8 @@ import { expression, fqnExprAny, whereOperator } from './expressions'
  * Returns expect function to execute operations on the given context
  */
 function expectWhereOperator(operator: WhereOperator<any>): Assertion<string> {
-  const exec = withctx(operator)
   return viExpect(
-    materialize(exec(whereOperator())),
+    materialize(whereOperator(), operator),
   )
 }
 
@@ -196,9 +195,8 @@ describe('whereOperator', () => {
 })
 
 function expectModelExpr(expr: schemas.expr.Input) {
-  const exec = withctx(expr)
   return viExpect(
-    materialize(exec(expression())).trimEnd(),
+    materialize(expression(), expr).trimEnd(),
   )
 }
 
@@ -406,9 +404,8 @@ describe('modelExpression', () => {
 })
 
 function expectFqnExpr(expr: FqnExpr.Any) {
-  const exec = withctx(expr)
   return viExpect(
-    materialize(exec(fqnExprAny())).trimEnd(),
+    materialize(fqnExprAny(), expr).trimEnd(),
   )
 }
 
@@ -638,9 +635,8 @@ describe('fqnExprAny', () => {
 })
 
 function expectExpression(expr: Expression) {
-  const exec = withctx(expr)
   return viExpect(
-    materialize(exec(expression())).trimEnd(),
+    materialize(expression(), expr).trimEnd(),
   )
 }
 

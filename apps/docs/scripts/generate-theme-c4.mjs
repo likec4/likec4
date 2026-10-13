@@ -20,6 +20,7 @@ const shapes = [
   'mobile',
   'queue',
   'document',
+  'agent',
 ]
 
 const likec4 = `// DO NOT EDIT MANUALLY

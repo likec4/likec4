@@ -51,7 +51,18 @@ export function calcSequenceLayout(view: LayoutedDynamicView): LayoutedDynamicVi
 
   // Keep initial order of actors
   const actors = view.nodes.filter(n => actorNodes.has(n))
-  invariant(hasAtLeast(actors, 1), 'actors array must not be empty')
+  invariant(actors.length === actorNodes.size, 'actors array must match actorNodes size')
+
+  if (preparedSteps.length === 0 || !hasAtLeast(actors, 1)) {
+    return {
+      actors: [],
+      steps: [],
+      compounds: [],
+      parallelAreas: [],
+      subflows: [],
+      bounds: { x: 0, y: 0, width: 0, height: 0 },
+    } satisfies LayoutedDynamicView.Sequence.Layout
+  }
 
   const actorPorts = new DefaultMap<DiagramNode, Port[]>(() => [])
 

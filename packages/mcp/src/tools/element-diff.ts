@@ -58,67 +58,8 @@ const diffSchema = z.object({
 
 export const elementDiff = likec4Tool({
   name: 'element-diff',
-  description: `
-Compare two elements side-by-side, showing differences in properties, tags, metadata, and relationships.
-
-Request:
-- element1Id: string — first element id (FQN)
-- element2Id: string — second element id (FQN)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Response (JSON object):
-- element1: object — snapshot of first element (id, kind, title, description, technology, shape, color)
-- element2: object — snapshot of second element
-- propertyDiffs: Array of { property, element1Value, element2Value } — properties that differ
-- tags: object
-  - onlyInElement1: string[] — tags only in element1
-  - onlyInElement2: string[] — tags only in element2
-  - common: string[] — tags in both
-- metadata: object
-  - onlyInElement1: Record — metadata keys only in element1
-  - onlyInElement2: Record — metadata keys only in element2
-  - different: Array of { key, element1Value, element2Value } — keys present in both but with different values
-  - common: Record — metadata keys with identical values in both
-- relationships: object — relationship count comparison
-  - incomingOnlyElement1/incomingOnlyElement2/incomingShared
-  - outgoingOnlyElement1/outgoingOnlyElement2/outgoingShared
-
-Notes:
-- Read-only, idempotent, no side effects.
-- Safe to call repeatedly.
-- Both elements must exist in the same project.
-- Useful for comparing similar nodes to understand why they have different configurations.
-
-Example response:
-{
-  "element1": { "id": "planner.nodeA", "kind": "cgf-node", "title": "nodeA", ... },
-  "element2": { "id": "planner.nodeB", "kind": "cgf-node", "title": "nodeB", ... },
-  "propertyDiffs": [
-    { "property": "title", "element1Value": "nodeA :dwNodeTypeA", "element2Value": "nodeB :dwNodeTypeB" }
-  ],
-  "tags": {
-    "onlyInElement1": ["target_asil_qm"],
-    "onlyInElement2": ["target_asil_asil_b"],
-    "common": ["is_in_dag", "process_camera_master"]
-  },
-  "metadata": {
-    "onlyInElement1": {},
-    "onlyInElement2": {},
-    "different": [
-      { "key": "target_asil", "element1Value": "QM", "element2Value": "ASIL-B" }
-    ],
-    "common": { "host": "machine0" }
-  },
-  "relationships": {
-    "incomingOnlyElement1": 2,
-    "incomingOnlyElement2": 1,
-    "incomingShared": 3,
-    "outgoingOnlyElement1": 0,
-    "outgoingOnlyElement2": 1,
-    "outgoingShared": 2
-  }
-}
-`,
+  description:
+    `Compare two elements of the same project: properties that differ, tags and metadata on each side or shared, and incoming and outgoing relationship counts on each side or shared. Useful for seeing why two similar elements differ.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,

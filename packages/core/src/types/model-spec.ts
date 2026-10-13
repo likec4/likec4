@@ -10,6 +10,7 @@ import type {
   RelationshipArrowType,
   RelationshipLineType,
   ShapeSize,
+  Sizing,
   SpacingSize,
   TextSize,
   ThemeColor,
@@ -45,6 +46,7 @@ export interface ElementSpecification {
     size?: ShapeSize
     padding?: SpacingSize
     textSize?: TextSize
+    sizing?: Sizing
     /**
      * If true, the element is rendered as multiple shapes.
      * @default false

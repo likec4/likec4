@@ -23,9 +23,8 @@ import {
   pipe,
 } from 'remeda'
 import { dedent } from 'strip-indent'
-import type { IfAny, Or } from 'type-fest'
-import * as z from 'zod/v4'
-import type * as z4 from 'zod/v4/core'
+import type { IfAny, IsUnknown, Or } from 'type-fest'
+import * as z from 'zod'
 import { NL, toStringLF } from '../../newline'
 
 function hasContent(out: Generated): boolean {
@@ -62,20 +61,18 @@ export type Output = CompositeGeneratorNode
  * @typeParam A - Context value
  * @see executeOnCtx
  */
-export type Ctx<A> = {
+export type Ctx<out A> = {
   ctx: A
   out: Output
 }
 
 export type AnyCtx = Ctx<any>
 
-export interface Op<A> {
+/** @ts-ignore Cast variance */
+export interface Op<out A> {
   (value: Ctx<A>): Ctx<A>
 }
 
-export interface CtxOp<A> {
-  (value: A): A
-}
 export type AnyOp = Op<any>
 
 /**
@@ -103,12 +100,81 @@ export function fresh(ctx?: unknown) {
   return { ctx: ctx ?? undefined, out: new CompositeGeneratorNode() } as never
 }
 
+type Params = {
+  indent?: string | number
+}
+type MaterializeOp<A> =
+  // dprint-ignore
+  IsUnknown<A> extends true
+    ? (value?: unknown) => string
+    : (value: A) => string
 /**
  * Materialize context or operation into a string
+ *
+ * @example
+ * ```ts
+ * const model = builder.build()
+ * // output likec4 model as string
+ * materialize(
+ *  ops.likec4data()
+ *  model,
+ * )
+ * ```
+ *
+ * @example
+ * ```ts
+ * const printModel = materialize(ops.likec4data())
+ *
+ * // output likec4 model as string
+ * printModel(
+ *   builder.build()
+ * )
+ * ```
  */
-export function materialize(ctx: AnyCtx | Op<any>, defaultIndentation: string | number = 2): string {
-  const out = isFunction(ctx) ? executeOnFresh(undefined, [ctx]).out : ctx.out
-  return toStringLF(out, defaultIndentation)
+export function materialize<A>(op: Op<A>): MaterializeOp<NoInfer<A>>
+export function materialize<A>(
+  op: { op: Op<A> } & Params,
+): MaterializeOp<NoInfer<A>>
+export function materialize(ctx: AnyCtx): string
+export function materialize<A>(op: Op<A>, value: NoInfer<A>): string
+export function materialize<A>(op: Op<A>, value: NoInfer<A>, params: Params | undefined): string
+// export function materialize<O extends Op<any>, V extends ctxOf<O> = ctxOf<O>>(
+//   op: O,
+//   value: NoInfer<V>,
+//   defaultIndentation: string | number,
+// ): string
+export function materialize(
+  ...args: [AnyCtx] | [Op<any>] | [{ op: Op<any> } & Params] | [Op<any>, any] | [Op<any>, any, Params | undefined]
+) {
+  let ctx: AnyCtx
+  let defaultIndentation: string | number = 2
+
+  if (args.length === 1) {
+    const [first] = args
+    if (isFunction(first)) {
+      return (value: any) => {
+        return materialize(first, value)
+      }
+    }
+    if ('op' in first) {
+      const { op, ...params } = first
+      return (value: any) => {
+        return materialize(op, value, { indent: 2, ...params })
+      }
+    }
+    ctx = first
+  } else {
+    const [op, value, params] = args
+    ctx = executeOnFresh(value, [op])
+    defaultIndentation = params?.indent ?? 2
+  }
+
+  invariant(
+    isString(defaultIndentation) || isNumber(defaultIndentation),
+    'defaultIndentation must be a string or a number',
+  )
+
+  return toStringLF(ctx.out, defaultIndentation)
 }
 
 /**
@@ -243,7 +309,7 @@ export const eq = (): InferOp => print('=')
 export const space = (): InferOp => print(' ')
 
 export function noop(): <A>(input: A) => A {
-  return identity()
+  return (input: any) => input
 }
 
 /**
@@ -396,7 +462,7 @@ const ESCAPED_QUOTE = '\\' + QUOTE
  * Escapes single quotes by doubling them
  */
 export function inlineText<A extends string>(): Op<A>
-export function inlineText<A>(value: string): Op<A>
+export function inlineText(value: string): InferOp
 export function inlineText(value?: string) {
   return operation(({ ctx, out }) => {
     let v = value ?? ctx
@@ -451,7 +517,7 @@ const TRIPLE_QUOTE = QUOTE.repeat(3)
  * Wraps text in triple quotes (to be transformed to markdown)
  */
 export function markdown<A extends string>(): Op<A>
-export function markdown<A>(value: string): Op<A>
+export function markdown(value: string): InferOp
 export function markdown(value?: string) {
   return operation(function markdown(ctx) {
     let v = value ?? ctx.ctx
@@ -464,7 +530,7 @@ export function markdown(value?: string) {
 }
 
 export function markdownOrString<A extends string | MarkdownOrString>(): Op<A>
-export function markdownOrString<A>(value: MarkdownOrString): Op<A>
+export function markdownOrString(value: MarkdownOrString): InferOp
 export function markdownOrString(value?: MarkdownOrString) {
   return operation<MarkdownOrString>(function markdownOrString(ctx) {
     let v = value ?? ctx.ctx
@@ -594,20 +660,36 @@ export function lines(...args: any[]) {
 
 /**
  * Forwards the context to the operations
+ *
+ * @example
+ * ```ts
+ * withctx({ name: 'John' })(
+ *   printProperty('name'),
+ * )
+ * // Output:
+ * // John
+ * ```
  */
-export function withctx<A>(ctx: A): <B>(...ops: Ops<A>) => Op<B>
-export function withctx<A, B>(ctx: B, op: Op<B>, ...ops: Ops<B>): Op<A>
+export function withctx<A>(): (...ops: Ops<A>) => Op<A>
+export function withctx<A>(ctx: A): <B extends A = A>(...ops: Ops<A>) => Op<B>
+export function withctx<A>(ctx: A, op: Op<A>, ...ops: Ops<A>): Op<A>
 export function withctx(...args: unknown[]) {
+  if (args.length === 0) {
+    return (...ops: Ops<any>) =>
+      operation(function withctx1(ctx) {
+        return executeOnCtx(ctx, ops)
+      })
+  }
   const ctx = args[0]
   if (args.length === 1) {
     return (...ops: Ops<any>) =>
       operation(function withctx1({ out }) {
-        executeOnCtx({ ctx, out }, ops)
+        return executeOnCtx({ ctx, out }, ops)
       })
   }
   const ops = args.slice(1) as Ops<any>
   return operation(function withctx2({ out }) {
-    executeOnCtx({ ctx, out }, ops)
+    return executeOnCtx({ ctx, out }, ops)
   })
 }
 
@@ -803,15 +885,15 @@ export function guard<A, N extends A>(
   condition: (ctx: A) => ctx is N,
   ...ops: Ops<N>
 ): Op<A>
-export function guard<A, Z extends z.ZodType<any, any, any>>(
+export function guard<A, Z extends z.core.$ZodType<any, any>>(
   zodSchema: Z,
   ...ops: Or<
-    A extends z.input<NoInfer<Z>> ? true : false,
-    z.input<NoInfer<Z>> extends A ? true : false
+    NoInfer<A> extends z.input<NoInfer<Z>> ? true : false,
+    z.input<NoInfer<Z>> extends NoInfer<A> ? true : false
   > extends true ? Ops<z.output<NoInfer<Z>>> : ['zod guard mismatch']
 ): Op<A>
 export function guard(
-  condition: Function | z.ZodSchema,
+  condition: Function | z.ZodType,
   ...ops: Ops<any>
 ) {
   return operation('guard', ({ ctx, out }) => {
@@ -846,7 +928,7 @@ export function guard(
  * ```
  */
 export function when<A>(
-  condition: (ctx: A) => boolean,
+  condition: (ctx: NoInfer<A>) => boolean,
   ...ops: Ops<NoInfer<A>>
 ): Op<A> {
   return operation(function whenOp({ ctx, out }) {
@@ -867,7 +949,7 @@ export function when<A>(
  * ```
  */
 export function select<A, B>(
-  selector: (value: A) => B,
+  selector: (value: NoInfer<A>) => B,
   ...ops: Ops<B & {}> // NonNullable
 ): Op<A> {
   return operation(function selectOp({ ctx, out }) {
@@ -922,19 +1004,28 @@ type ExecToOut = {
  *     return exec(ctx, whereAnd())
  *   }
  *   if ('or' in ctx) {
- *     return exec(ctx, whereOr())
+ *     // Skip parsing since we already know it's an 'or' operation
+ *     return exec(ctx, whereOr.noparse())
  *   }
  *   nonexhaustive(ctx)
  * })
  * ```
  */
-export function zodOp<Z extends z4.$ZodType<any, any>>(schema: Z) {
-  return (operation: (input: Ctx<z.output<Z>> & ExecToOut) => any) => {
-    return <A extends z.input<Z> = z.input<Z>>(): Op<A> => {
-      return ({ ctx, out }: Ctx<A>): Ctx<A> => {
+export function zodOp<const Z extends z.core.$ZodType<any, any>>(schema: Z) {
+  return <IN extends z.input<Z> = z.input<Z>, OUT extends z.output<Z> = z.output<Z>>(
+    operation: (input: Ctx<z.output<Z>> & ExecToOut) => any,
+  ) => {
+    /**
+     * Parses the context using the provided schema and executes the operation
+     */
+    const zodParseOp = <A extends IN>(): Op<A> => {
+      return ({ ctx, out }) => {
         const result = z.safeParse(schema, ctx)
         if (result.success) {
           const opres = operation({ ctx: result.data, out, exec: execToOut(out) })
+          if (isNullish(opres)) {
+            return { ctx, out }
+          }
           if (opres instanceof CompositeGeneratorNode) {
             return {
               ctx,
@@ -948,10 +1039,40 @@ export function zodOp<Z extends z4.$ZodType<any, any>>(schema: Z) {
               ...opres({ ctx, out }),
             }
           }
+          if (hasProp(opres, 'ctx') && hasProp(opres, 'out')) {
+            return opres
+          }
           return { ctx, out }
         }
         throw result.error
       }
     }
+
+    // return zodParseOp
+
+    /**
+     * Use the parsed context as the new context for the operation
+     */
+    zodParseOp.noparse = <A extends OUT>(): Op<A> => {
+      return ({ ctx, out }) => {
+        const opres = operation({ ctx, out, exec: execToOut(out) })
+        if (opres instanceof CompositeGeneratorNode) {
+          return {
+            ctx,
+            out: opres,
+          }
+        }
+        if (typeof opres === 'function') {
+          return {
+            ctx,
+            out,
+            ...opres({ ctx, out }),
+          }
+        }
+        return { ctx, out }
+      }
+    }
+
+    return zodParseOp
   }
 }

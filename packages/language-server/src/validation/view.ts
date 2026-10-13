@@ -28,7 +28,7 @@ export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4
     }
     const projectId = projectIdFrom(el)
     const anotherViews = index
-      .projectElements(projectId, ast.LikeC4View)
+      .projectElements(projectId, ast.LikeC4View.$type)
       .filter(n => n.name === el.name)
       .limit(2)
       .count()

@@ -25,6 +25,19 @@ function writeFixtureFile(root, relativePath, content) {
   writeFileSync(file, content)
 }
 
+function addIndexOnlyFile(root, relativePath, content) {
+  const blob = execFileSync('git', ['hash-object', '-w', '--stdin'], {
+    cwd: root,
+    input: content,
+    encoding: 'utf8',
+  }).trim()
+
+  execFileSync('git', ['update-index', '--add', '--cacheinfo', `100644,${blob},${relativePath}`], {
+    cwd: root,
+    stdio: 'ignore',
+  })
+}
+
 function createFixture(files = {}) {
   const root = mkdtempSync(path.join(tmpdir(), 'likec4-agent-check-'))
   tempRoots.push(root)
@@ -89,12 +102,12 @@ describe('check-agent-instructions', () => {
   })
 
   it('rejects case variants of canonical instruction files', () => {
-    expectFail(
-      createFixture({
-        'agents.md': '# Duplicate canonical instructions\n',
-      }),
-      /Do not track AGENTS\.md case variants/,
-    )
+    // Case-insensitive filesystems (macOS, Windows) cannot hold AGENTS.md and agents.md
+    // side by side, so the variant is staged straight into the index the checker reads.
+    const root = createFixture()
+    addIndexOnlyFile(root, 'agents.md', '# Duplicate canonical instructions\n')
+
+    expectFail(root, /Do not track AGENTS\.md case variants/)
   })
 
   it('rejects singular AGENT.md files', () => {

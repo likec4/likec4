@@ -27,7 +27,13 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     this.locator = services.likec4.ModelLocator
   }
 
-  protected getAstNodeHoverContent(node: AstNode): MaybePromise<Hover | undefined> {
+  protected override async getAstNodeHoverContent(node: AstNode): Promise<string | undefined> {
+    const hover = await this.getAstNodeHover(node)
+    const contents = hover?.contents
+    return typeof contents === 'object' && 'value' in contents ? contents.value : undefined
+  }
+
+  protected getAstNodeHover(node: AstNode): MaybePromise<Hover | undefined> {
     /// First, we try nodes that have a direct mapping to model elements, then we fall back to tags and keywords.
     if (ast.isTag(node)) {
       return {

@@ -17,9 +17,9 @@ import { buildRenderPayload, projectIdSchema, toolError } from './_common'
 export const renderViewResourceUri = 'ui://likec4/render-view.html'
 
 const renderOptionsSchema = z.object({
-  size: z.enum(['compact', 'standard', 'large']).default('standard'),
-  fitView: z.boolean().default(true),
-  initialZoom: z.number().min(MinZoom).max(MaxZoom).optional(),
+  size: z.enum(['compact', 'standard', 'large']).default('standard').describe('Initial canvas size hint'),
+  fitView: z.boolean().default(true).describe('Fit the diagram into the canvas initially'),
+  initialZoom: z.number().min(MinZoom).max(MaxZoom).optional().describe('Initial zoom level; overrides fitView'),
 }).default({ size: 'standard', fitView: true })
 
 export function renderViewTool(mcpServer: McpServer): McpServer {
@@ -28,17 +28,8 @@ export function renderViewTool(mcpServer: McpServer): McpServer {
     'render-view',
     {
       title: 'Render View',
-      description: `Renders a LikeC4 view as an interactive diagram (pan/zoom/fit) inline in the chat.
-
-Request:
-- viewId: string — view id (name)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-- fullModel: boolean (optional) — include the complete model instead of data scoped to this view. Defaults to false.
-- render.size: "compact", "standard", or "large" (optional) — initial canvas size hint. Defaults to "standard".
-- render.fitView: boolean (optional) — fit the diagram into the canvas initially. Defaults to true.
-- render.initialZoom: number (optional) — initial zoom level. This overrides render.fitView.
-
-Use this when the user wants to *see* a view. Use "read-view" instead when only the view's structure (nodes/edges) is needed.`,
+      description:
+        `Renders a LikeC4 view as an interactive diagram (pan/zoom/fit) inline in the chat. Use it when the user wants to *see* a view; use "read-view" when only the view's structure (nodes/edges) is needed.`,
       inputSchema: mcpToolSchema({
         viewId: z.string().describe('View id (name)'),
         project: projectIdSchema,

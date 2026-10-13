@@ -1,0 +1,128 @@
+---
+title: LikeC4 Docker
+description: Saiba como utilizar a imagem Docker do LikeC4.
+head:
+  - tag: title
+    content: LikeC4 Docker
+sidebar:
+  label: Docker
+  order: 1
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 6  
+---
+
+import { LinkCard, Tabs, TabItem as Tab } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+A imagem Docker do LikeC4 oferece um ambiente independente para executar os comandos do LikeC4 e pode substituir diretamente a CLI `likec4`.  
+Ela está disponível no [GitHub Container Registry](https://github.com/likec4/likec4/pkgs/container/likec4) e no [Docker Hub](https://hub.docker.com/r/likec4/likec4) e inclui:
+
+- Node.js (22.x)
+- Graphviz (compilado a partir do código-fonte da [versão mais recente](https://gitlab.com/graphviz/graphviz/-/releases))
+- Playwright (versão mais recente)
+- CLI do LikeC4 (versão mais recente)
+
+Você encontra o [Dockerfile](https://github.com/likec4/likec4/blob/main/Dockerfile) no repositório.
+
+
+<Tabs>
+  <Tab label='Docker HUB'>
+  ```sh copy title="Executar qualquer comando da CLI"
+  # Example: Help for export command
+  docker run --rm -t likec4/likec4 export png -h
+  ```
+  </Tab>
+  <Tab label='GitHub Container Registry'>
+  ```sh copy title="Executar qualquer comando da CLI"
+  # Example: Help for export command
+  docker run --rm -t ghcr.io/likec4/likec4 export png -h
+  ```
+  </Tab>
+</Tabs>
+
+## Como usar
+
+Para utilizar o contêiner, monte o diretório que contém os arquivos-fonte LikeC4 em `/data`  
+(esse é o diretório de trabalho padrão, mas você pode alterá-lo).
+
+### Iniciar o servidor web local
+
+```sh copy title="Start local web server"
+# mount LikeC4 sources to /data: -v $(pwd):/data
+# publish ports: -p 5173:5173
+# (optional) for realtime updates: -p 24678:24678
+# (optional) use init process to correctly handle signals (eg Ctrl+C): --init
+# (optional) enable color output: -t
+docker run --rm \
+  -v $PWD:/data \
+  --init \
+  -t \
+  -p 5173:5173 \
+  -p 24678:24678 \
+  -e CHOKIDAR_USEPOLLING=1 \
+  -e CHOKIDAR_INTERVAL=200 \
+  likec4/likec4 \
+  start
+```
+
+A porta WebSocket de HMR é detectada automaticamente no intervalo de 24678 a 24690. Para utilizar uma porta específica, informe `--hmr-port` (ou a variável de ambiente `HMR_PORT`) e publique a mesma porta:
+
+```sh copy title="Pin the HMR port"
+docker run --rm \
+  -v $PWD:/data \
+  --init \
+  -t \
+  -p 5173:5173 \
+  -p 24700:24700 \
+  -e CHOKIDAR_USEPOLLING=1 \
+  -e CHOKIDAR_INTERVAL=200 \
+  likec4/likec4 \
+  start --hmr-port 24700
+# Or equivalently via env var:
+#   -e HMR_PORT=24700
+```
+
+:::note
+Por padrão, a imagem Docker do LikeC4 define `--use-dot` e usa os executáveis locais do Graphviz no lugar do WASM incluído (que apresenta [problemas de memória](https://github.com/likec4/likec4/issues?q=Memory%20type:Bug)).
+
+Você pode alterar esse comportamento com a opção `--no-use-dot`.
+:::
+
+:::caution[Executando o servidor web local no Windows]
+Ao usar a pré-visualização baseada em Docker no Windows, as alterações nos arquivos dos diagramas podem não ser refletidas no contêiner em execução quando esses arquivos estão no sistema de arquivos do Windows (por exemplo, na unidade `C:\`).
+
+Trata-se de um [problema conhecido](https://github.com/microsoft/WSL/issues/4739) nas notificações de alterações do sistema de arquivos para aplicações Linux executadas via WSL.
+
+**Solução alternativa**:
+
+Habilite a verificação periódica de alterações adicionando as seguintes variáveis de ambiente ao comando `docker run`:
+
+```diff lang="sh" copy title="Start local web server with WSL workaround"
+docker run --rm \
+  -v $PWD:/data \
+  --init \
+  -t \
+  -p 5173:5173 \
+  -p 24678:24678 \
++  -e CHOKIDAR_USEPOLLING=1 \   # Enable polling support
++  -e CHOKIDAR_INTERVAL=200 \   # Adjust timing to your needs
+  likec4/likec4 \
+  start
+```
+
+**Observação**: se os diagramas estiverem no sistema de arquivos do WSL (por exemplo, `/home/user/...`), as notificações de alterações deverão funcionar normalmente.
+:::
+
+### Gerar um site estático
+
+```sh copy title="Build static website"
+docker run -v $PWD:/data likec4/likec4 build -o dist
+```
+
+### Exportar para PNG
+
+```sh copy title="Export to PNG"
+docker run -v $PWD:/data likec4/likec4 export png --outdir assets --theme dark
+```

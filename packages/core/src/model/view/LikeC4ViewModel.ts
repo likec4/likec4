@@ -290,7 +290,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     return null
   }
 
-  get projectId(): aux.ProjectId<A> {
+  get projectId(): aux.StrictProjectId<A> {
     return this.$model.projectId
   }
 
@@ -419,9 +419,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
   /**
    * Below are type guards.
    */
-  public isComputed(
-    this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel.Computed<aux.toComputed<A>> {
+  public isComputed(): this is LikeC4ViewModel.Computed<aux.toComputed<A>> {
     return this.#view[_stage] === 'computed'
   }
 
@@ -436,21 +434,19 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     return this.#view[_stage] === 'layouted'
   }
 
-  public isElementView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.ElementView<A, V> {
+  public isElementView(): this is LikeC4ViewModel.ElementView<A, V> {
     return this.#view[_type] === 'element'
   }
 
-  public isScopedElementView(
-    this: LikeC4ViewModel<any, any>,
-  ): this is LikeC4ViewModel.ScopedElementView<A> {
+  public isScopedElementView(): this is LikeC4ViewModel.ScopedElementView<A> {
     return this.#view[_type] === 'element' && isTruthy(this.#view.viewOf)
   }
 
-  public isDeploymentView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.DeploymentView<A, V> {
+  public isDeploymentView(): this is LikeC4ViewModel.DeploymentView<A, V> {
     return this.#view[_type] === 'deployment'
   }
 
-  public isDynamicView(this: LikeC4ViewModel<any, any>): this is LikeC4ViewModel.DynamicView<A, V> {
+  public isDynamicView(): this is LikeC4ViewModel.DynamicView<A, V> {
     return this.#view[_type] === 'dynamic'
   }
 }
@@ -477,6 +473,7 @@ export namespace LikeC4ViewModel {
     extends LikeC4ViewModel<A, ViewWithType<V, 'deployment'>>
   {
     readonly mode: never
+    readonly viewOf: never
   }
 
   export interface DynamicView<A extends Any, V extends ProcessedView<A> = $View<A>>

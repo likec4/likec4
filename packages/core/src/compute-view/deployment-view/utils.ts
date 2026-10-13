@@ -11,7 +11,7 @@ import type {
 } from '../../model'
 import { deploymentConnection } from '../../model'
 import type { AnyAux, aux, ComputedEdge, ComputedNode, DeploymentViewRule, scalar, Unknown } from '../../types'
-import { exact, FqnExpr, isViewRuleStyle, preferSummary } from '../../types'
+import { exact, FqnExpr, isViewRuleStyle, preferSummary, whereOperatorAsPredicate } from '../../types'
 import { invariant, nonexhaustive, parentFqn } from '../../utils'
 import { stringHash } from '../../utils/string-hash'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
@@ -21,6 +21,7 @@ import { isBidirectionalRelation } from '../utils/is-bidirectional-relation'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
+import { applyElementPredicate } from './predicates/utils'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = deploymentConnection
 
@@ -444,6 +445,42 @@ export function applyDeploymentViewRuleStyles<A extends AnyAux>(
       anyPass(predicates),
       nodes,
     )
+  }
+  return nodes
+}
+
+export function applyDeploymentNavigateTo<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
+  rules: DeploymentViewRule<A>[],
+  nodes: ComputedNode<A>[],
+): ComputedNode<A>[] {
+  for (const rule of rules) {
+    for (const expression of rule.include ?? []) {
+      if (!FqnExpr.isCustom(expression) || expression.custom.navigateTo == null) {
+        continue
+      }
+      const { expr, navigateTo } = expression.custom
+      const target = FqnExpr.unwrap(expr)
+      const where = FqnExpr.isWhere(expr) ? whereOperatorAsPredicate(expr.where.condition) : null
+      let elements: DeploymentElementModel<A>[]
+      switch (true) {
+        case FqnExpr.isDeploymentRef(target):
+          elements = resolveElements(model, target)
+          break
+        case FqnExpr.isWildcard(target):
+          elements = [...model.elements()]
+          break
+        default:
+          // Logical model references are not included in deployment views.
+          continue
+      }
+      const ids = new Set(applyElementPredicate(elements, where).map(el => el.id))
+      nodes = nodes.map(node =>
+        node.deploymentRef && ids.has(node.deploymentRef)
+          ? { ...node, navigateTo, isCustomized: true }
+          : node
+      )
+    }
   }
   return nodes
 }

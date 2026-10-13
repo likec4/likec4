@@ -21,79 +21,8 @@ const MAX_RESULTS = 100
 
 export const queryGraph = likec4Tool({
   name: 'query-graph',
-  description: `
-Query element hierarchy and relationships in the architecture graph.
-
-Request:
-- elementId: string — element id (FQN) to query
-- queryType: "ancestors" | "descendants" | "siblings" | "children" | "parent" | "incomers" | "outgoers"
-- includeIndirect: boolean (optional, default: true) — for incomers/outgoers, include indirect relationships (through nested elements)
-- project: string (optional) — project id. Defaults to "default" if omitted.
-
-Query Types:
-- ancestors: Returns all parent elements up to the root (hierarchical)
-  Example: shop.frontend.auth.service returns [shop.frontend.auth, shop.frontend, shop]
-- descendants: Returns all child elements recursively (hierarchical)
-  Example: shop.frontend returns all nested elements like shop.frontend.auth, shop.frontend.auth.service
-- siblings: Returns elements at the same hierarchy level with the same parent
-  Example: shop.frontend returns [shop.backend, shop.database] if they're siblings
-- children: Returns direct child elements only (not recursive)
-  Example: shop returns [shop.frontend, shop.backend] but not shop.frontend.auth
-- parent: Returns the direct parent element
-  Example: shop.frontend.auth returns shop.frontend
-- incomers: Returns elements that have outgoing relationships to this element (single hop, not recursive).
-  For recursive upstream traversal, use query-incomers-graph instead.
-  includeIndirect=true: Includes relationships to nested children
-  Example: Elements that depend on this element
-- outgoers: Returns elements that receive incoming relationships from this element (single hop, not recursive).
-  For recursive downstream traversal, use query-outgoers-graph instead.
-  includeIndirect=true: Includes relationships from nested children
-  Example: Elements this element depends on
-
-Response (JSON object):
-- results: Array of elements (max 100), each with:
-  - id: string — element id (FQN)
-  - name: string — element name
-  - kind: string — element kind
-  - title: string — human-readable title
-  - tags: string[] — assigned tags
-  - metadata: Record<string, string> — element metadata
-  - includedInViews: View[] — views that include this element
-- truncated: boolean — true if results were truncated due to exceeding maximum limit (100)
-
-View (object) fields:
-- id: string — view identifier
-- title: string — view title
-- type: "element" | "deployment" | "dynamic"
-
-Notes:
-- Read-only, idempotent, no side effects.
-- Safe to call repeatedly.
-- For parent query on root element, returns empty array.
-- For hierarchical queries (ancestors, descendants, siblings, children), includeIndirect is ignored.
-
-Example response:
-{
-  "results": [
-    {
-      "id": "shop.frontend",
-      "name": "frontend",
-      "kind": "container",
-      "title": "Frontend",
-      "tags": ["public"],
-      "metadata": { "owner": "web-team" },
-      "includedInViews": [
-        {
-          "id": "system-overview",
-          "title": "System Overview",
-          "type": "element"
-        }
-      ]
-    }
-  ],
-  "truncated": false
-}
-`,
+  description:
+    `One-step graph query around an element. Hierarchy: ancestors (up to the root), descendants (recursive), siblings, children, parent (empty for a root element); includeIndirect is ignored for these. Relationships: incomers and outgoers, single hop; includeIndirect (default true) adds relationships of nested children. For recursive traversal, use query-incomers-graph or query-outgoers-graph. At most 100 results.`,
   annotations: {
     readOnlyHint: true,
     idempotentHint: true,
