@@ -37,6 +37,7 @@ import {
 } from 'xstate'
 import { Base } from '../../base'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import { type DetailsSubject, detailsSubject } from '../../overlays/element-details/subject'
 import { viewRouting } from '../../utils/view-routing'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
@@ -670,35 +671,38 @@ export const cancelEditing = () =>
     },
   )
 
-const hasModelFqn = <D extends Types.Node>(node: D): node is D & { data: { modelFqn: Fqn } } =>
-  'modelFqn' in node.data && isTruthy(node.data.modelFqn)
-
 export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
   machine.enqueueActions(({ context, event, enqueue }) => {
     let initiatedFrom = null as null | {
       node: NodeId
       clientRect: Rect
     }
-    let fromNodeId: NodeId | undefined, subject: Fqn
+    let fromNodeId: NodeId | undefined, subject: DetailsSubject
     switch (true) {
       // Use from params if available
       case !!params: {
-        subject = params.fqn
+        subject = { type: 'element', element: params.fqn }
         fromNodeId = params.fromNode ?? context.view.nodes.find(n => n.modelRef === params.fqn)?.id
         break
       }
       case event.type === 'xyflow.nodeClick': {
-        if (!hasModelFqn(event.node)) {
-          console.warn('No modelFqn in clicked node data')
+        const clickedSubject = detailsSubject(event.node.data)
+        if (!clickedSubject) {
+          console.warn('No model or deployment reference in clicked node data')
           return
         }
-        subject = event.node.data.modelFqn
+        subject = clickedSubject
         fromNodeId = event.node.data.id
         break
       }
       case event.type === 'open.elementDetails': {
-        subject = event.fqn
+        subject = { type: 'element', element: event.fqn }
         fromNodeId = event.fromNode
+        break
+      }
+      case event.type === 'open.deploymentDetails': {
+        subject = { type: 'deployment', deployment: event.fqn }
+        fromNodeId = event.fromNode ?? context.view.nodes.find(n => n.deploymentRef === event.fqn)?.id
         break
       }
       default: {
@@ -708,11 +712,12 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
         }
         fromNodeId = context.lastClickedNode.id
         const node = context.xynodes.find(n => n.id === fromNodeId)
-        if (!node || !hasModelFqn(node)) {
-          console.warn('No modelFqn in last clicked node')
+        const clickedSubject = node ? detailsSubject(node.data) : null
+        if (!clickedSubject) {
+          console.warn('No model or deployment reference in last clicked node')
           return
         }
-        subject = node.data.modelFqn
+        subject = clickedSubject
         break
       }
     }
@@ -746,7 +751,12 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
 
 export const openOverlay = () =>
   machine.enqueueActions(({ context, event, enqueue, check }) => {
-    assertEvent(event, ['open.relationshipsBrowser', 'open.relationshipDetails', 'open.elementDetails'])
+    assertEvent(event, [
+      'open.relationshipsBrowser',
+      'open.relationshipDetails',
+      'open.elementDetails',
+      'open.deploymentDetails',
+    ])
 
     if (!check('enabled: Overlays')) {
       console.warn('Overlays feature is disabled')
@@ -754,7 +764,8 @@ export const openOverlay = () =>
     }
 
     switch (event.type) {
-      case 'open.elementDetails': {
+      case 'open.elementDetails':
+      case 'open.deploymentDetails': {
         check('enabled: ElementDetails')
           ? enqueue(openElementDetails())
           : console.warn('ElementDetails feature is disabled')

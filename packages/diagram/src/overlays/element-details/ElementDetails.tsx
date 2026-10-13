@@ -13,7 +13,7 @@ const selector = (s: ElementDetailsSnapshot) => ({
   viewId: s.context.currentView.id,
   fromNode: s.context.initiatedFrom.node,
   rectFromNode: s.context.initiatedFrom.clientRect,
-  fqn: s.context.subject,
+  subject: s.context.subject,
 })
 
 export function ElementDetails({
