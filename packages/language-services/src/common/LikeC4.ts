@@ -247,7 +247,7 @@ Please specify a project folder`)
    */
   async toDSL(project?: string | undefined): Promise<string> {
     const parsed = await this.parsedModel(project)
-    return generateLikeC4Source(parsed.$data as Parameters<typeof generateLikeC4Source>[0])
+    return generateLikeC4Source(parsed.$data)
   }
 
   projects(): NonEmptyArray<ProjectId> {

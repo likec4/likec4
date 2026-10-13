@@ -3,7 +3,7 @@ import {
   type Ops,
   body,
   materialize,
-  withctx,
+  merge,
 } from './base'
 import { linksProperty, metadataProperty, tagsProperty } from './properties'
 
@@ -11,10 +11,9 @@ import { linksProperty, metadataProperty, tagsProperty } from './properties'
  * Returns expect function to execute operations on the given context
  */
 function expectOnCtx<A>(ctx: A) {
-  const exec = withctx(ctx)
   return (...ops: Ops<A>): Assertion<string> =>
     viExpect(
-      materialize(exec(...ops)),
+      materialize(merge(...ops), ctx),
     )
 }
 

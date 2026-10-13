@@ -68,15 +68,19 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     try {
       this.#performedStartup = false
       await this.readExcludeConfig()
-      this.folders ??= folders
+      if (!this.folders || this.folders.length === 0) {
+        this.folders = folders
+      }
       const folderUris = folders.map(folder => URI.parse(folder.uri))
       const configFiles = [] as FileSystemNode[]
       const likec4Files = [] as FileSystemNode[]
       for (const folderUri of folderUris) {
         this.#logger.debug`scanning folder ${folderUri.fsPath} for likec4`
+        let hasLikeC4Files = false
         // Scan for project config files
         try {
           const found = await this.fileSystemProvider.scanProjectFiles(folderUri)
+          hasLikeC4Files = found.length > 0
           configFiles.push(...found)
         } catch (error) {
           this.#logger.warn(`Failed to scan workspace folder {folder} for project config files`, {
@@ -86,9 +90,9 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         }
         // Scan for likec4 files
         try {
-          likec4Files.push(
-            ...await this.fileSystemProvider.readDirectory(folderUri, { recursive: true }),
-          )
+          const found = await this.fileSystemProvider.readDirectory(folderUri, { recursive: true })
+          hasLikeC4Files = hasLikeC4Files || found.length > 0
+          likec4Files.push(...found)
         } catch (error) {
           this.#logger.warn(`Failed to read workspace folder {folder} for likec4 files`, {
             folder: folderUri.fsPath,
@@ -97,7 +101,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         }
 
         // Add watch for the folder
-        this.services.workspace.FileSystemWatcher.watch(folderUri.fsPath)
+        if (hasLikeC4Files) {
+          this.services.workspace.FileSystemWatcher.watch(folderUri.fsPath)
+        } else {
+          this.#logger.trace`no likec4 files found in folder ${folderUri.fsPath}`
+        }
       }
 
       // Project config files

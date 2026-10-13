@@ -1851,6 +1851,9 @@ importers:
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
+      picomatch:
+        specifier: catalog:externals
+        version: 4.0.7
       playwright:
         specifier: 'catalog:'
         version: 1.60.0
@@ -2020,9 +2023,6 @@ importers:
       package-up:
         specifier: catalog:utils
         version: 5.0.0
-      picomatch:
-        specifier: catalog:externals
-        version: 4.0.7
       postcss:
         specifier: catalog:css
         version: 8.5.29
@@ -2781,6 +2781,9 @@ importers:
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
+      picomatch:
+        specifier: catalog:externals
+        version: 4.0.7
       std-env:
         specifier: catalog:externals
         version: 4.1.0

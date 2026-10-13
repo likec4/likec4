@@ -433,25 +433,6 @@ export function toAutoLayout(
   }
 }
 
-export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction']): ast.ViewLayoutDirection {
-  switch (c4) {
-    case 'TB': {
-      return 'TopBottom'
-    }
-    case 'BT': {
-      return 'BottomTop'
-    }
-    case 'LR': {
-      return 'LeftRight'
-    }
-    case 'RL': {
-      return 'RightLeft'
-    }
-    default:
-      nonexhaustive(c4)
-  }
-}
-
 // export function elementExpressionFromPredicate(predicate: ast.ElementPredicate): ast.ElementExpression {
 //   if (ast.isElementExpression(predicate)) {
 //     return predicate

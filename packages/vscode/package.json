@@ -1,30 +1,50 @@
 {
   "name": "likec4-vscode",
+  "displayName": "LikeC4",
   "version": "1.59.4",
   "private": true,
-  "pricing": "Free",
-  "publisher": "likec4",
-  "displayName": "LikeC4",
   "description": "Support for the LikeC4 modeling language",
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "architecture",
+    "architecture-as-a-code",
+    "diagram",
+    "c4"
+  ],
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "license": "MIT",
-  "sponsor": {
-    "url": "https://github.com/sponsors/davydkov"
+  "bugs": {
+    "url": "https://github.com/likec4/likec4/issues",
+    "email": "denis@davydkov.com"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/vscode"
   },
+  "license": "MIT",
   "qna": false,
-  "bugs": {
-    "url": "https://github.com/likec4/likec4/issues",
-    "email": "denis@davydkov.com"
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "publisher": "likec4",
+  "type": "module",
+  "imports": {
+    "#useDocumentSelector": {
+      "browser": "./src/browser/useDocumentSelector.ts",
+      "default": "./src/node/useDocumentSelector.ts"
+    },
+    "#useLanguageClient": {
+      "browser": "./src/browser/useLanguageClient.ts",
+      "default": "./src/node/useLanguageClient.ts"
+    },
+    "#useTelemetry": {
+      "browser": "./src/browser/useTelemetry.ts",
+      "default": "./src/node/useTelemetry.ts"
+    }
   },
-  "vsce": {
-    "dependencies": true
-  },
+  "main": "dist/node/extension.cjs",
+  "browser": "dist/browser/extension.cjs",
   "scripts": {
     "generate": "vscode-ext-gen --scope likec4 --output src/meta.ts",
     "open-web": "turbo run build && pnpx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
@@ -37,31 +57,6 @@
     "package": "pnpm run package-vsix",
     "vsce:pack": "pnpx vsce package",
     "vsce:publish": "pnpx vsce publish --skip-duplicate"
-  },
-  "engines": {
-    "vscode": "^1.100.0"
-  },
-  "keywords": [
-    "architecture",
-    "architecture-as-a-code",
-    "diagram",
-    "c4"
-  ],
-  "categories": [
-    "Programming Languages",
-    "Visualization"
-  ],
-  "type": "module",
-  "icon": "data/logo256.png",
-  "galleryBanner": {
-    "color": "#111111",
-    "theme": "dark"
-  },
-  "capabilities": {
-    "virtualWorkspaces": true,
-    "untrustedWorkspaces": {
-      "supported": true
-    }
   },
   "contributes": {
     "jsonValidation": [
@@ -312,33 +307,15 @@
       }
     ]
   },
-  "enabledApiProposals": [
-    "chatParticipantAdditions"
-  ],
   "activationEvents": [
     "workspaceContains:**/*.{c4,likec4,like-c4}",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "dist/node/extension.cjs",
-  "browser": "dist/browser/extension.cjs",
-  "imports": {
-    "#useDocumentSelector": {
-      "browser": "./src/browser/useDocumentSelector.ts",
-      "default": "./src/node/useDocumentSelector.ts"
-    },
-    "#useLanguageClient": {
-      "browser": "./src/browser/useLanguageClient.ts",
-      "default": "./src/node/useLanguageClient.ts"
-    },
-    "#useTelemetry": {
-      "browser": "./src/browser/useTelemetry.ts",
-      "default": "./src/node/useTelemetry.ts"
-    }
-  },
   "dependencies": {
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild-wasm",
     "fdir": "catalog:externals",
+    "picomatch": "catalog:externals",
     "std-env": "catalog:externals"
   },
   "devDependencies": {
@@ -347,26 +324,26 @@
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
-    "@likec4/mcp": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
+    "@likec4/mcp": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@reactive-vscode/vueuse": "^1.0.2",
-    "@types/node": "catalog:",
-    "@types/which": "^3.0.4",
-    "@types/vscode": "catalog:vscode",
-    "@vscode/extension-telemetry": "^1.5.2",
     "@rolldown/plugin-node-polyfills": "catalog:tsdown",
+    "@types/node": "catalog:",
+    "@types/vscode": "catalog:vscode",
+    "@types/which": "^3.0.4",
+    "@vscode/extension-telemetry": "^1.5.2",
     "esm-env": "catalog:utils",
     "execa": "^9.5.3",
-    "pathe": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
     "nanoid": "catalog:utils",
     "obuild": "catalog:obuild",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
+    "pathe": "catalog:utils",
     "playwright": "catalog:",
     "pretty-ms": "^9.3.1",
     "reactive-vscode": "^1.0.2",
@@ -388,5 +365,29 @@
     "vscode-uri": "catalog:vscode",
     "zod": "catalog:externals",
     "zx": "catalog:"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "icon": "data/logo256.png",
+  "galleryBanner": {
+    "color": "#111111",
+    "theme": "dark"
+  },
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "enabledApiProposals": [
+    "chatParticipantAdditions"
+  ],
+  "pricing": "Free",
+  "sponsor": {
+    "url": "https://github.com/sponsors/davydkov"
+  },
+  "vsce": {
+    "dependencies": true
   }
 }

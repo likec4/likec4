@@ -9,20 +9,20 @@ export const likec4data = zodOp(schemas.likec4data)(
   lines(2)(
     property(
       'specification',
-      specification(),
+      specification.noparse(),
     ),
     model(),
     property(
       'deployment',
-      deployment(),
+      deployment.noparse(),
     ),
     property(
       'deployments',
-      deployment(),
+      deployment.noparse(),
     ),
     property(
       'views',
-      views(),
+      views.noparse(),
     ),
   ),
 )

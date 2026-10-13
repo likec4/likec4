@@ -70,9 +70,20 @@ export namespace schemas {
   }
 
   export namespace views {
-    export namespace elementView {
+    export type Any = z.infer<typeof schemas.views.anyView>
+    export namespace Any {
+      export type Input = z.input<typeof schemas.views.anyView>
+    }
+
+    export type Element = z.infer<typeof schemas.views.elementView>
+    export namespace ElementView {
       export type Input = z.input<typeof schemas.views.elementView>
       export type Data = z.output<typeof schemas.views.elementView>
+    }
+
+    export namespace DynamicView {
+      export type Input = z.input<typeof schemas.views.dynamicView>
+      export type Data = z.output<typeof schemas.views.dynamicView>
     }
 
     export namespace dynamicViewStep {

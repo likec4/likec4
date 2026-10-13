@@ -1,5 +1,5 @@
-import { isPlainObject, isString, reduce } from 'remeda'
-import type { Expression, Fqn, NonEmptyArray, Step } from '../types'
+import { isArray, isPlainObject, isString, reduce } from 'remeda'
+import type { Expression, Fqn, MarkdownOrString, NonEmptyArray, Step } from '../types'
 import { invariant, isNonEmptyArray } from '../utils'
 import type { AnyTypes, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
@@ -172,7 +172,16 @@ function accumulateSteps<B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
   return steps
 }
 
-type $StepSeries<T extends string> = [T, `-> ${T}`, ...`-> ${T}`[]]
+type StepProps = {
+  title?: string
+  description?: string | MarkdownOrString
+}
+
+type $StepSeries<Types extends AnyTypes, T extends string = Types['Fqn']> = [
+  T,
+  `-> ${T}` | [`-> ${T}`, StepProps],
+  ...(`-> ${T}` | [`-> ${T}`, StepProps])[],
+]
 /**
  * Creates a series of sequential steps
  * (as targeted for testing purposes, limited support for now - no titles, no returns)
@@ -188,7 +197,7 @@ type $StepSeries<T extends string> = [T, `-> ${T}`, ...`-> ${T}`[]]
  * ```
  */
 $step.series = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
-  ...series: $StepSeries<NoInfer<B>['Types']['Fqn']>
+  ...series: $StepSeries<NoInfer<B>['Types']>
 ): (b: B) => B => {
   const afterArrow = '-> '.length
   return (b) => {
@@ -196,13 +205,18 @@ $step.series = <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
     const { steps } = reduce(
       tail,
       (acc, step) => {
-        const target = (step as string).substring(afterArrow) as Fqn
+        let [target, { description, ...props }] = isArray(step) ? step : [step, {}]
+        if (isString(description)) {
+          description = { md: description }
+        }
         acc.steps.push({
           source: acc.source,
-          target,
+          target: target.substring(afterArrow) as Fqn,
+          ...props,
+          ...(description ? { description } : {}),
           astPath: '',
         })
-        acc.source = target
+        acc.source = target.substring(afterArrow) as Fqn
         return acc
       },
       {
@@ -270,10 +284,20 @@ $step.try = <
 }
 
 function blockBuilder(type: Step.Any['_type']): <B extends LikeC4ViewBuilder<AnyTypes, any, any>>(
-  ...stepOps: $StepOps<NoInfer<B>>
-) => (b: B) => any {
-  return (...stepOps) => {
-    return (b) => {
+  ...op: $StepOps<NoInfer<B>>
+) => (b: B) => any
+function blockBuilder(type: Step.Any['_type']) {
+  return (...stepOps: any[]) => {
+    return (b: any) => {
+      if (stepOps.length === 1 && typeof stepOps[0] == 'object' && stepOps[0] !== null) {
+        const cfg = stepOps[0] as { title?: string; steps: $StepOps<NoInfer<typeof b>> }
+        const steps = accumulateSteps(cfg.steps)
+        return b.step({
+          _type: type,
+          title: cfg.title,
+          steps,
+        } as any)
+      }
       const steps = accumulateSteps(stepOps)
       return b.step({
         _type: type,

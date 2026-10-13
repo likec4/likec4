@@ -7,9 +7,11 @@ import { CompositeGeneratorNode } from 'langium/generate'
 import { hasAtLeast, values } from 'remeda'
 import { NL } from '../../newline'
 import { schemas } from '../schemas'
+import type { ZExpression } from '../schemas/expression'
 import {
   type Op,
   body,
+  executeOnCtx,
   foreach,
   foreachNewLine,
   guard,
@@ -18,6 +20,7 @@ import {
   lazy,
   lines,
   merge,
+  operation,
   print,
   printProperty,
   property,
@@ -50,38 +53,53 @@ const viewTitleProperty = <A extends { title?: string | null | undefined }>(): O
     ),
   )
 
+const viewPredicateOp = <E extends ZExpression.Out[]>(type: 'include' | 'exclude'): Op<E> => {
+  return operation<E>('viewPredicateOp', ({ ctx, out }) => {
+    const exprs = ctx
+
+    if (!hasAtLeast(exprs, 1)) {
+      return
+    }
+
+    const isMultiple = hasAtLeast(exprs, 2)
+
+    const exprOp = foreach<E>(
+      // print(v => 'custom' in v ? v.custom : v.fqn),
+      expression(),
+      separateComma(isMultiple),
+    )
+
+    executeOnCtx<E>(
+      { ctx, out },
+      merge(
+        print(type),
+        ...(isMultiple ? [indent(exprOp)] : [space(), exprOp]),
+      ),
+    )
+  })
+}
+
+export const viewRuleInclude = zodOp(schemas.views.viewRuleInclude)(
+  property('include', viewPredicateOp('include')),
+)
+export const viewRuleExclude = zodOp(schemas.views.viewRuleExclude)(
+  property('exclude', viewPredicateOp('exclude')),
+)
+
 export const viewRulePredicate = zodOp(schemas.views.viewRulePredicate)(({ ctx, exec }) => {
   let exprs
   let type
   if ('include' in ctx) {
     exprs = ctx.include
-    type = 'include'
+    type = 'include' as const
   } else if ('exclude' in ctx) {
     exprs = ctx.exclude
-    type = 'exclude'
+    type = 'exclude' as const
   }
+
   invariant(exprs && type, 'Invalid view rule predicate')
 
-  if (!hasAtLeast(exprs, 1)) {
-    return
-  }
-
-  const isMultiple = hasAtLeast(exprs, 2)
-
-  const exprOp = withctx(exprs)(
-    foreach(
-      expression(),
-      separateComma(isMultiple),
-    ),
-  )
-
-  exec(
-    ctx,
-    merge(
-      print(type),
-      ...(isMultiple ? [indent(exprOp)] : [space(), exprOp]),
-    ),
-  )
+  return exec(exprs, viewPredicateOp(type))
 })
 
 export const viewRuleStyle = zodOp(schemas.views.viewRuleStyle)(
@@ -94,9 +112,9 @@ export const viewRuleStyle = zodOp(schemas.views.viewRuleStyle)(
         separateComma(),
       ),
     ),
-    body('{', '}')(
+    body(
       notationProperty(),
-      property('style', styleProperties()),
+      property('style', styleProperties.noparse()),
     ),
   ),
 )
@@ -110,19 +128,10 @@ export const viewRuleGlobalPredicate = zodOp(schemas.views.viewRuleGlobalPredica
   throw new Error('not implemented')
 })
 
-const mapping = {
-  'TB': 'TopBottom',
-  'BT': 'BottomTop',
-  'LR': 'LeftRight',
-  'RL': 'RightLeft',
-} as const
 export const viewRuleAutoLayout = zodOp(schemas.views.viewRuleAutoLayout)(
   spaceBetween(
     print('autoLayout'),
-    property(
-      'direction',
-      print(v => mapping[v]),
-    ),
+    printProperty('direction'),
     guard(
       hasProp('rankSep'),
       spaceBetween(
@@ -146,26 +155,29 @@ export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(({ ctx: _ctx, exec
 
 export const elementViewRule = zodOp(schemas.views.elementViewRule)(
   ({ ctx, exec }) => {
-    if ('include' in ctx || 'exclude' in ctx) {
-      return exec(ctx, viewRulePredicate())
+    if ('include' in ctx) {
+      return exec(ctx.include, viewPredicateOp('include'))
+    }
+    if ('exclude' in ctx) {
+      return exec(ctx.exclude, viewPredicateOp('exclude'))
     }
     if ('groupRules' in ctx) {
-      return exec(ctx, viewRuleGroup())
+      return exec(ctx, viewRuleGroup.noparse())
     }
     if ('rank' in ctx) {
-      return exec(ctx, viewRuleRank())
+      return exec(ctx, viewRuleRank.noparse())
     }
     if ('direction' in ctx) {
-      return exec(ctx, viewRuleAutoLayout())
+      return exec(ctx, viewRuleAutoLayout.noparse())
     }
     if ('styleId' in ctx) {
-      return exec(ctx, viewRuleGlobalStyle())
+      return exec(ctx, viewRuleGlobalStyle.noparse())
     }
     if ('predicateId' in ctx) {
-      return exec(ctx, viewRuleGlobalPredicate())
+      return exec(ctx, viewRuleGlobalPredicate.noparse())
     }
     if ('targets' in ctx && 'style' in ctx) {
-      return exec(ctx, viewRuleStyle())
+      return exec(ctx, viewRuleStyle.noparse())
     }
     nonexhaustive(ctx)
   },
@@ -195,7 +207,7 @@ export const elementView = zodOp(schemas.views.elementView.partial({ _type: true
         property(
           'rules',
           foreachNewLine(
-            elementViewRule(),
+            elementViewRule.noparse(),
           ),
         ),
       ),
@@ -207,23 +219,26 @@ export const elementView = zodOp(schemas.views.elementView.partial({ _type: true
 
 export const deploymentViewRule = zodOp(schemas.views.deploymentViewRule)(
   ({ ctx, exec }) => {
-    if ('include' in ctx || 'exclude' in ctx) {
-      return exec(ctx, viewRulePredicate())
+    if ('include' in ctx) {
+      return exec(ctx.include, viewPredicateOp('include'))
+    }
+    if ('exclude' in ctx) {
+      return exec(ctx.exclude, viewPredicateOp('exclude'))
     }
     if ('includeAncestors' in ctx) {
-      return exec(ctx, deploymentViewRuleIncludeAncestors())
+      return exec(ctx, deploymentViewRuleIncludeAncestors.noparse())
     }
     if ('direction' in ctx) {
-      return exec(ctx, viewRuleAutoLayout())
+      return exec(ctx, viewRuleAutoLayout.noparse())
     }
     if ('styleId' in ctx) {
-      return exec(ctx, viewRuleGlobalStyle())
+      return exec(ctx, viewRuleGlobalStyle.noparse())
     }
     if ('predicateId' in ctx) {
-      return exec(ctx, viewRuleGlobalPredicate())
+      return exec(ctx, viewRuleGlobalPredicate.noparse())
     }
     if ('targets' in ctx && 'style' in ctx) {
-      return exec(ctx, viewRuleStyle())
+      return exec(ctx, viewRuleStyle.noparse())
     }
     nonexhaustive(ctx)
   },
@@ -246,7 +261,7 @@ export const deploymentView = zodOp(schemas.views.deploymentView.partial({ _type
         property(
           'rules',
           foreachNewLine(
-            deploymentViewRule(),
+            deploymentViewRule.noparse(),
           ),
         ),
       ),
@@ -288,7 +303,7 @@ const stepTarget = zodOp(schemas.views.dynamicStep.partial({ source: true }))(
 const stepSingle = zodOp(schemas.views.dynamicStep)(
   spaceBetween(
     printProperty('source'),
-    stepTarget(),
+    stepTarget.noparse(),
   ),
 )
 
@@ -297,7 +312,7 @@ const bodyWithSteps = <A extends { steps: Array<schemas.views.dynamicViewStep.Da
     'steps',
     body(
       foreachNewLine(
-        lazy(() => stepAny()),
+        lazy(() => stepAny.noparse()),
       ),
     ),
   )
@@ -320,7 +335,7 @@ const stepSeries = zodOp(schemas.views.dynamicStepSeries)(
       property(
         'steps',
         foreachNewLine(
-          stepTarget(),
+          stepTarget.noparse(),
         ),
       ),
     ),
@@ -372,83 +387,76 @@ const stepAlt = zodOp(schemas.views.dynamicStepAlt)(
       property(
         'branches',
         foreachNewLine(
-          stepAltBranch(),
+          stepAltBranch.noparse(),
         ),
       ),
     ),
   ),
 )
 
-const stepAny = zodOp(schemas.views.dynamicViewStep)(({ ctx, exec }) => {
-  if (ctx.source && ctx.target) {
-    return exec(ctx, stepSingle())
-  }
-  invariant(ctx._type, 'Step must have a type')
+const stepSubflow = zodOp(schemas.views.dynamicViewSubflow)(({ ctx, exec }) => {
   switch (ctx._type) {
+    case 'alt':
+      return exec(ctx, stepAlt.noparse())
+    case 'series':
+      return exec(ctx, stepSeries.noparse())
+    case 'try':
+      return exec(ctx, stepTry.noparse())
+    case 'par':
+    case 'parallel':
     case 'loop':
     case 'opt':
     case 'break':
-    case 'par':
-      return exec(ctx, stepBlock())
-    case 'alt':
-      return exec(ctx, stepAlt())
-    case 'series':
-      return exec(ctx, stepSeries())
-    case 'try':
-      return exec(ctx, stepTry())
+      return exec(ctx, stepBlock.noparse())
     default:
       nonexhaustive(ctx)
   }
 })
-
-export const step = {
-  single: stepSingle,
-  block: stepBlock,
-  alt: stepAlt,
-  series: stepSeries,
-  try: stepTry,
-  any: stepAny,
-} as const
-
-export const dynamicViewIncludeRule = zodOp(schemas.views.dynamicViewIncludeRule)(({ ctx, exec }) => {
-  if (!hasAtLeast(ctx.include, 1)) {
-    return
+export const stepAny = zodOp(schemas.views.dynamicViewStep)(({ ctx, exec }) => {
+  if ('source' in ctx && 'target' in ctx) {
+    return exec(ctx, stepSingle.noparse())
   }
-
-  const isMultiple = hasAtLeast(ctx.include, 2)
-
-  const exprOp = withctx(ctx.include)(
-    foreach(
-      expression(),
-      separateComma(isMultiple),
-    ),
-  )
-
-  exec(
-    ctx,
-    merge(
-      print('include'),
-      ...(isMultiple ? [indent(exprOp)] : [space(), exprOp]),
-    ),
-  )
+  invariant(ctx._type, 'Step must have a type')
+  return exec(ctx, stepSubflow.noparse())
 })
+
+/**
+ * Dynamic view step operator that handles all step types
+ * Includes single steps (source -> target) and compound steps (alt, series, try, par, loop, opt, break)
+ *
+ * @example
+ * ```likec4
+
+ * ```
+ */
+export const step = Object.assign(
+  stepSingle,
+  {
+    subflow: stepSubflow,
+    block: stepBlock,
+    alt: stepAlt,
+    series: stepSeries,
+    try: stepTry,
+    any: stepAny,
+  } as const,
+)
 
 export const dynamicViewRule = zodOp(schemas.views.dynamicViewRule)(
   ({ ctx, exec }) => {
     if ('include' in ctx) {
-      return exec(ctx, dynamicViewIncludeRule())
+      return exec(ctx.include, viewPredicateOp('include'))
     }
     if ('predicateId' in ctx) {
-      return exec(ctx, viewRuleGlobalPredicate())
+      return exec(ctx, viewRuleGlobalPredicate.noparse())
     }
     if ('targets' in ctx && 'style' in ctx) {
-      return exec(ctx, viewRuleStyle())
+      return exec(ctx, viewRuleStyle.noparse())
     }
     if ('styleId' in ctx) {
-      return exec(ctx, viewRuleGlobalStyle())
+      return exec(ctx, viewRuleGlobalStyle.noparse())
     }
     if ('direction' in ctx) {
-      return exec(ctx, viewRuleAutoLayout())
+      return exec(ctx, viewRuleAutoLayout.noparse())
     }
     nonexhaustive(ctx)
   },
@@ -471,13 +479,13 @@ export const dynamicView = zodOp(schemas.views.dynamicView.partial({ _type: true
         property(
           'steps',
           foreachNewLine(
-            step.any(),
+            step.any.noparse(),
           ),
         ),
         property(
           'rules',
           foreachNewLine(
-            dynamicViewRule(),
+            dynamicViewRule.noparse(),
           ),
         ),
       ),
@@ -489,13 +497,13 @@ export const dynamicView = zodOp(schemas.views.dynamicView.partial({ _type: true
 export const anyView = zodOp(schemas.views.anyView)(({ ctx, exec }) => {
   if ('_type' in ctx) {
     if (ctx._type == 'element') {
-      return exec(ctx, elementView())
+      return exec(ctx, elementView.noparse())
     }
     if (ctx._type === 'deployment') {
-      return exec(ctx, deploymentView())
+      return exec(ctx, deploymentView.noparse())
     }
     if (ctx._type === 'dynamic') {
-      return exec(ctx, dynamicView())
+      return exec(ctx, dynamicView.noparse())
     }
   }
   nonexhaustive(ctx)
@@ -506,7 +514,7 @@ export const views = zodOp(schemas.views.views)(
     select(
       ctx => values(ctx),
       foreach(
-        anyView(),
+        anyView.noparse(),
         {
           // Extra line between
           separator: new CompositeGeneratorNode().appendNewLine().appendNewLine(),

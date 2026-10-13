@@ -27,9 +27,7 @@ const builder = Builder
 function expectModel(builder: Builder<any>) {
   const data = builder.build()
   return viExpect(
-    materialize(
-      withctx(data, model()),
-    ),
+    materialize(model(), data),
   )
 }
 

@@ -4,10 +4,8 @@ import {
   type AnyOp,
   indent,
   materialize,
-  newline,
   ops,
   print,
-  printOperation,
   withctx,
 } from '@likec4/generators/likec4'
 import type { CstNode } from 'langium'
@@ -128,9 +126,9 @@ function findInsertPosition<V extends ast.LikeC4View>(
 
 const doubleIndent = (op: AnyOp): AnyOp =>
   piped(
-    newline(),
-    indent(
-      indent(op),
+    ops.newline(),
+    ops.indent(
+      ops.indent(op),
     ),
   )
 
@@ -145,7 +143,7 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
   }
   title = viewpath.join(` ${VIEW_FOLDERS_SEPARATOR} `)
 
-  const titleOut = withctx({ title })(
+  const titleOut = ops.withctx({ title })(
     ops.props.titleProperty(),
   )
 
@@ -153,7 +151,7 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
   if (existing) {
     return TextEdit.replace(
       existing.$cstNode.range,
-      printOperation(titleOut),
+      print(titleOut),
     )
   }
 
@@ -167,7 +165,7 @@ function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
           //  or after "{" (view body start)
           ?? body.$cstNode?.range.start,
     ),
-    materialize(
+    print(
       doubleIndent(titleOut),
     ).trimEnd(),
   )
@@ -180,7 +178,7 @@ function replaceTags(
 ): TextEdit | undefined {
   const tagsNode = body.tags
 
-  const printTags = print(tags.map(t => `#${t}`).join(' '))
+  const printTags = ops.print(tags.map(t => `#${t}`).join(' '))
 
   // Replace existing tags
   if (tagsNode?.$cstNode) {
@@ -196,7 +194,7 @@ function replaceTags(
     }
     return TextEdit.replace(
       tagsNode.$cstNode.range,
-      materialize(printTags),
+      print(printTags),
     )
   }
 
@@ -211,7 +209,7 @@ function replaceTags(
       viewAst,
       body => body.$cstNode?.range.start,
     ),
-    materialize(
+    print(
       doubleIndent(
         printTags,
       ),
@@ -251,9 +249,7 @@ function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.Mark
         },
         end: existing.$cstNode.range.end,
       },
-      materialize(
-        descriptionOut,
-      ).trimEnd(),
+      print(descriptionOut).trimEnd(),
     )]
   }
   // Insert new view description
@@ -279,7 +275,7 @@ function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.Mark
         line: insertPosition.line + 1,
         character: 0,
       },
-      materialize(descriptionOut),
+      print(descriptionOut),
     ),
   ]
 }

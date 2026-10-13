@@ -11,3 +11,35 @@ export * as specifications from './specification'
 export { specification } from './specification'
 export { deploymentView, dynamicView, elementView } from './views'
 export * as views from './views'
+
+export {
+  body,
+  eachOnFresh,
+  eq,
+  foreach,
+  foreachNewLine,
+  guard,
+  indent,
+  inlineText,
+  join,
+  lazy,
+  lines,
+  markdown,
+  markdownOrString,
+  materialize,
+  merge,
+  newline,
+  noop,
+  print,
+  printProperty,
+  property,
+  select,
+  separateComma,
+  separateNewLine,
+  separateWith,
+  space,
+  spaceBetween,
+  text,
+  when,
+  withctx,
+} from './base'
