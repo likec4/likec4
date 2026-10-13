@@ -1,0 +1,53 @@
+---
+title: Model diffs
+description: Describe a planned change of the model
+sidebar:
+  label: Model diffs
+  order: 7
+---
+
+A diff is a named change set of the model.
+It describes a planned change (for example, an RFC) without changing the model:
+the model stays "as is".
+
+## Syntax
+
+```likec4
+diff rfc1 'RFC-1: Payments service' {
+  description 'Replace the SOAP gateway with a Payments service'
+
+  remove {
+    // removes the element, its descendants and all their relationships
+    shop.legacyPayments
+    // removes a relationship (matched by source, target, kind, title and direction)
+    shop.orders -> bank 'checks fraud score'
+  }
+
+  add {
+    extend shop {
+      payments = container 'Payments Service'
+    }
+    shop.orders -> shop.payments 'requests payments'
+
+    // adds tags, links and metadata to an existing element
+    extend shop.orders {
+      #next
+    }
+  }
+}
+```
+
+- `remove` lists elements and relationships of the model.
+- `add` contains model elements, relationships and `extend` blocks, with the same syntax as the `model` block.
+- A diff can span several files: diffs with the same name are merged.
+
+Views can reference elements added by a diff.
+In the model "as is" these references are ignored, so the view shows only existing elements.
+A view scoped to an element added by a diff (`view of`) exists only in the "to-be" state.
+
+### Validation
+
+- A removed element or relationship must exist in the model.
+  If the model changed since the diff was written, the entry is reported as an error.
+- An added element must not exist in the model.
+- A diff cannot remove elements added by a diff, and cannot extend relationships.

@@ -173,6 +173,7 @@ type ParserLevel =
   | 'globals'
   | 'imports'
   | 'specification'
+  | 'diff'
 
 export class BaseParser {
   isValid: IsValidFn
