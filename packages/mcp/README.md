@@ -70,6 +70,8 @@ OPTIONS
 - `batch-read-elements`: Read summaries of multiple elements in a single request, including links and sourceLocation.
 - `subgraph-summary`: Summarize descendants of an element with depth, metadata, and relationship counts.
 - `element-diff`: Compare two elements and show differences in properties, tags, metadata, and relationships.
+- `removal-impact`: Report what removing an element takes with it (relationships, deployed instances, views, orphans, source references).
+- `list-diffs`: List model diffs (`diff` blocks) and the views each diff changes.
 - `open-view`: Opens the LikeC4 view (available if MCP is running in the editor)
 
 ### MCP vs LeanIX bridge / Draw.io

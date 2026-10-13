@@ -12,7 +12,7 @@ import { type LikeC4LangiumDocument, ast } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
-type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
+type ElementsContainer = ast.Model | ast.DiffAdd | ast.ElementBody | ast.ExtendElementBody
 type DeploymentsContainer =
   | ast.ModelDeployments
   | ast.DeploymentNodeBody
@@ -48,6 +48,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         globals,
         likec4lib,
         deployments,
+        diffs,
       } = document.parseResult.value
 
       // Process library
@@ -56,8 +57,8 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       // Process specification
       this.exportSpecification(specifications, docExports, document)
 
-      // Process models
-      this.exportModel(models, docExports, document)
+      // Process models and elements added by diffs
+      this.exportModel([...models, ...diffs.flatMap(d => d.adds)], docExports, document)
 
       // Process views
       this.exportViews(views, docExports, document)
@@ -123,7 +124,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   }
 
   private exportModel(
-    models: ast.Model[] | undefined,
+    models: Array<ast.Model | ast.DiffAdd> | undefined,
     docExports: AstNodeDescription[],
     document: LikeC4LangiumDocument,
   ) {
@@ -243,7 +244,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       const descendants = [] as AstNodeDescription[]
       const scopes = new MultiMap<AstNode, AstNodeDescription>()
 
-      for (const model of root.models) {
+      for (const model of [...root.models, ...root.diffs.flatMap(d => d.adds)]) {
         try {
           descendants.push(
             ...this.processContainer(model, scopes, document),

@@ -18,6 +18,8 @@ If workspace already has `likec4` as a dependency, check its version from packag
 | Export PNG        | `bunx likec4 export png -o ./images [project-dir]`                    |
 | Build static site | `bunx likec4 build -o ./dist [project-dir]`                           |
 | List icons        | `bunx likec4 list-icons` or `bunx likec4 list-icons --group tech`     |
+| Apply a diff      | `bunx likec4 diff apply <diff> [--dry-run] [project-dir]`             |
+| Safe delete       | `bunx likec4 safe-delete <fqn> --dry-run [project-dir]`               |
 
 ### ❌ Common mistakes (avoid these)
 

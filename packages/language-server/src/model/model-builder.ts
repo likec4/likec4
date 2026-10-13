@@ -13,7 +13,7 @@ import {
   _type,
   GlobalFqn,
 } from '@likec4/core'
-import { computeView } from '@likec4/core/compute-view'
+import { computeView, withoutDiffOnlyReferences } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import type * as c4 from '@likec4/core/types'
 import { loggable } from '@likec4/log'
@@ -287,7 +287,12 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       const t0 = performanceMark()
       const parsedModel = LikeC4Model.create(parsedModelData)
       const views = [] as c4.ComputedView[]
-      for (const view of values(parsedModelData.views)) {
+      for (const parsedView of values(parsedModelData.views)) {
+        // Views scoped to an element added by a diff do not exist before the diff
+        const view = withoutDiffOnlyReferences(parsedView, parsedModelData)
+        if (!view) {
+          continue
+        }
         const result = computeView(view, parsedModel)
         if (!result.isSuccess) {
           logger.warn(loggable(result.error))
