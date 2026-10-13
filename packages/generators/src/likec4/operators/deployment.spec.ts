@@ -10,7 +10,8 @@ function expectDeployment(data: schemas.deployment.Input) {
   const parsed = schemas.deployment.schema.parse(data)
   return viExpect(
     materialize(
-      withctx(parsed, deployment()),
+      deployment(),
+      parsed,
     ),
   )
 }

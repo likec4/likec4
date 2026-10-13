@@ -1,5 +1,5 @@
 import { isString } from 'remeda'
-import { type Assertion, describe, expect as viExpect, it } from 'vitest'
+import { type Assertion, describe, expect as viExpect, expectTypeOf, it } from 'vitest'
 import z from 'zod/v4'
 import {
   type Op,
@@ -36,8 +36,8 @@ import {
  * Returns expect function to execute operations on the given context
  */
 function expectOnCtx<A>(ctx: A) {
-  const exec = withctx(ctx)
-  return (...ops: Ops<A>): Assertion<string> => viExpect(materialize(exec(...ops)))
+  const exec = withctx<A>()
+  return (...ops: Ops<A>): Assertion<string> => viExpect(materialize(exec(...ops), ctx))
 }
 
 function expectOp(...op: Op<any>[]): Assertion<string> {
@@ -190,15 +190,15 @@ describe('property', () => {
   })
 
   it('should fail when property non printable', () => {
-    viExpect(() => {
+    viExpect(
       materialize(
         withctx({
           nonPrintable: {},
         })(
           property('nonPrintable'),
         ),
-      )
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: Property nonPrintable is not printable "[object Object]"]`)
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(`[Error: Property nonPrintable is not printable "[object Object]"]`)
   })
 
   it('should select property from context and print using given operator', () => {
@@ -314,12 +314,15 @@ describe('context', () => {
         z.number(),
         spaceBetween(
           print('context is'),
-          print(v => typeof v),
+          print(v => {
+            expectTypeOf(v).toBeNumber()
+            return typeof v
+          }),
         ),
       ),
     ).toEqual(`context is number`)
 
-    viExpect(() => {
+    viExpect(
       materialize(
         withctx(
           0 as Map<string, string> | number,
@@ -329,8 +332,8 @@ describe('context', () => {
             print(),
           ),
         ),
-      )
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: Guard failed: ✖ Invalid input: expected string, received number]`)
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(`[Error: Guard failed: ✖ Invalid input: expected string, received number]`)
   })
 })
 
@@ -357,19 +360,19 @@ describe('materialize', () => {
 
   it('should materialize an operation on a fresh context', () => {
     const result = materialize(print('hello'))
-    viExpect(result).toBe('hello')
+    viExpect(result()).toBe('hello')
   })
 
   it('should use custom indentation if number is provided', () => {
-    const result = materialize(
-      merge(
+    const result = materialize({
+      op: merge(
         print('root {'),
         indent(print('child')),
         print('}'),
       ),
-      4,
-    )
-    viExpect(result).toMatchInlineSnapshot(`
+      indent: 4,
+    })
+    viExpect(result()).toMatchInlineSnapshot(`
       "root {
           child
       }"
@@ -377,15 +380,15 @@ describe('materialize', () => {
   })
 
   it('should use custom indentation if string is provided', () => {
-    const result = materialize(
-      merge(
+    const result = materialize({
+      op: merge(
         print('root {'),
         indent(print('child')),
         print('}'),
       ),
-      '|___',
-    )
-    viExpect(result).toMatchInlineSnapshot(`
+      indent: '|___',
+    })
+    viExpect(result()).toMatchInlineSnapshot(`
       "root {
       |___child
       }"
@@ -461,11 +464,11 @@ describe('print', () => {
   })
 
   it('should throw on non-primitive values', () => {
-    viExpect(() =>
+    viExpect(
       materialize(
         // @ts-ignore
         withctx({ obj: true }, print()),
-      )
+      ),
     ).toThrow('Value must be a string, number or boolean')
   })
 })
@@ -647,12 +650,12 @@ describe('inlineText', () => {
   })
 
   it('should fail non-string context', () => {
-    viExpect(() =>
+    viExpect(
       materialize(
         withctx(42 as any)(
           inlineText(),
         ),
-      )
+      ),
     ).toThrowErrorMatchingInlineSnapshot(`[Error: Value must be a string - got number]`)
   })
 })
@@ -673,12 +676,12 @@ describe('text', () => {
   })
 
   it('should fail non-string context', () => {
-    viExpect(() =>
+    viExpect(
       materialize(
         withctx(42 as any)(
           text(),
         ),
-      )
+      ),
     ).toThrowErrorMatchingInlineSnapshot(`[Error: Value must be a string - got number]`)
   })
 })

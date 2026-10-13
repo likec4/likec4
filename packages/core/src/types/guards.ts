@@ -13,7 +13,8 @@ export function isNonEmptyArray<A>(arr: ArrayLike<A> | undefined): arr is NonEmp
 
 function _hasProp(value: unknown, path: string): boolean {
   invariant(typeof path === 'string', 'Path must be string')
-  return value != null && typeof value === 'object' && (value as Record<string, unknown>)[path] != null
+  return value != null && typeof value === 'object' && Object.hasOwn(value, path) &&
+    (value as Record<string, unknown>)[path] != null
 }
 
 /** Curried form: returns a predicate (value) => boolean. Kept as named function so bundlers/transforms preserve it. */

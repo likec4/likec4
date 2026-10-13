@@ -1,12 +1,25 @@
 export {
   generateLikeC4 as generate,
   ops,
-  printOperation,
+  print,
   printWithTabIndent,
 } from './generate-likec4'
 
-export * from './operators/base'
-
 export type {
-  schemas,
-} from './schemas'
+  AnyCtx,
+  AnyOp,
+  Ctx,
+  ctxOf,
+  InferOp,
+  Op,
+  Ops,
+  Output,
+} from './operators/base'
+
+export {
+  indent,
+  materialize,
+  withctx,
+} from './operators/base'
+
+export { schemas } from './schemas'
