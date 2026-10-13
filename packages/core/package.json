@@ -1,39 +1,18 @@
 {
   "name": "@likec4/core",
   "version": "1.59.4",
-  "license": "MIT",
-  "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
   "description": "A core package for LikeC4, containing types, api, utilities and guards.",
+  "homepage": "https://likec4.dev",
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/core"
   },
-  "bugs": "https://github.com/likec4/likec4/issues",
-  "scripts": {
-    "typecheck": "tsc -b --verbose",
-    "build": "tsdown",
-    "lint": "oxlint --type-aware",
-    "lint:package": "pnpx publint ./package.tgz",
-    "test": "vitest run --no-isolate",
-    "test:watch": "vitest --no-isolate",
-    "clean": "likec4ops clean",
-    "prepack": "likec4ops prepack",
-    "pack": "pnpm pack",
-    "postpack": "likec4ops postpack"
-  },
-  "files": [
-    "dist",
-    "**/package.json",
-    "!**/*.spec.ts",
-    "!**/*.test-d.ts",
-    "!**/__test__/*",
-    "!**/__snapshots__/*",
-    "!**/*.map"
-  ],
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -109,11 +88,26 @@
     },
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
+  "files": [
+    "dist",
+    "**/package.json",
+    "!**/*.spec.ts",
+    "!**/*.test-d.ts",
+    "!**/__test__/*",
+    "!**/__snapshots__/*",
+    "!**/*.map"
+  ],
+  "scripts": {
+    "typecheck": "tsc -b --verbose",
+    "build": "tsdown",
+    "lint": "oxlint --type-aware",
+    "lint:package": "pnpx publint ./package.tgz",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest --no-isolate",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "likec4ops postpack"
   },
   "dependencies": {
     "immer": "catalog:utils",
@@ -163,5 +157,11 @@
     "typescript": "catalog:",
     "unified": "11.0.5",
     "vitest": "catalog:vitest"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }

@@ -2,6 +2,13 @@
   "name": "@likec4/playground",
   "version": "1.59.4",
   "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "imports": {
+    "#worker": "./worker/index.ts",
+    "#worker/client": "./worker/client.ts",
+    "#worker/types": "./worker/types.ts"
+  },
   "scripts": {
     "generate": "tsx scripts/generate.mts",
     "dev": "vite dev",
@@ -45,16 +52,8 @@
       }
     }
   },
-  "imports": {
-    "#worker": "./worker/index.ts",
-    "#worker/client": "./worker/client.ts",
-    "#worker/types": "./worker/types.ts"
-  },
-  "sideEffects": false,
-  "type": "module",
   "dependencies": {
     "@cloudflare/vite-plugin": "catalog:cloudflare",
-    "miniflare": "4.20260730.0",
     "@codingame/monaco-vscode-api": "37.3.11",
     "@codingame/monaco-vscode-editor-api": "37.3.11",
     "@codingame/monaco-vscode-editor-service-override": "37.3.11",
@@ -102,7 +101,9 @@
     "fast-equals": "catalog:utils",
     "hono": "catalog:hono",
     "hono-sessions": "catalog:hono",
+    "import-meta-resolve": "^4.2.0",
     "langium": "catalog:langium",
+    "miniflare": "4.20260730.0",
     "monaco-languageclient": "11.0.2",
     "motion": "catalog:react",
     "nanoid": "catalog:utils",
@@ -134,7 +135,6 @@
     "wireit": "catalog:",
     "wrangler": "catalog:cloudflare",
     "xstate": "catalog:xstate",
-    "import-meta-resolve": "^4.2.0",
     "zod": "catalog:externals",
     "zx": "catalog:"
   }
