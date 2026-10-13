@@ -11,17 +11,10 @@ export {
   defineStyle,
   defineTheme,
   defineThemeColor,
-  type GeneratorFn,
-  type GeneratorFnContext,
-  type GeneratorFnParams,
   isLikeC4Config,
   isLikeC4JsonConfig,
   isLikeC4NonJsonConfig,
-  type LikeC4ProjectConfig,
-  type LikeC4ProjectConfigInput,
   LikeC4ProjectConfigOps,
-  type LikeC4ProjectJsonConfig,
-  type LikeC4StylesConfig,
-  type LikeC4StylesConfigInput,
-  type WebappExportFormat,
 } from '@likec4/config'
+
+export type * from '@likec4/config'
