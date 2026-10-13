@@ -10,6 +10,9 @@ import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { type LanguageServicesContext, createLanguageServices } from '../module'
 
+const messageText = (message: string | { value: string }): string =>
+  typeof message === 'string' ? message : message.value
+
 export function createTestServices(options?: {
   workspace?: string
   projectConfig?: Partial<LikeC4ProjectJsonConfig>
@@ -91,8 +94,8 @@ export function createTestServices(options?: {
     const document = typeof input === 'string' ? await addDocument(input, uri) : input
     await documentBuilder.build([document], { validation: true })
     const diagnostics = document.diagnostics ?? []
-    const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
-    const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
+    const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? messageText(d.message) : [])
+    const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? messageText(d.message) : [])
     return {
       document,
       diagnostics,
@@ -106,7 +109,7 @@ export function createTestServices(options?: {
           diagnostics,
           flatMap(validationError => {
             const line = validationError.range.start.line
-            const messages = validationError.message.split('\n')
+            const messages = messageText(validationError.message).split('\n')
             if (messages.length > 5) {
               messages.length = 5
               messages.push('...')
@@ -145,8 +148,8 @@ export function createTestServices(options?: {
     assert.ok(docs.length > 0, 'no documents to validate')
     await documentBuilder.build(docs, { validation: true })
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
-    const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
-    const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
+    const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? messageText(d.message) : [])
+    const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? messageText(d.message) : [])
     return {
       diagnostics,
       errors,

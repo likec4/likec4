@@ -1,7 +1,7 @@
 import { Builder } from '@likec4/core/builder'
 import { describe, it } from 'vitest'
-import { generateLikeC4, printOperation, printWithTabIndent } from './generate-likec4'
-import * as operators from './operators'
+import { generateLikeC4, print, printWithTabIndent } from './generate-likec4'
+import * as ops from './operators'
 
 const {
   builder: b,
@@ -192,19 +192,14 @@ const builder = b
 describe('generateLikeC4', () => {
   it('generates valid DSL from parsed model data', async ({ expect }) => {
     const parsed = builder.build()
-    const output = generateLikeC4({
-      relations: parsed.relations,
-      elements: parsed.elements,
-      deployments: parsed.deployments,
-      specification: parsed.specification,
-    })
+    const output = generateLikeC4(parsed)
     await expect(output).toMatchFileSnapshot('__snapshots__/likec4.generate.snap')
   })
 })
 
 describe('print', () => {
   it('prints expression', async ({ expect }) => {
-    const output = printOperation(operators.expression(), {
+    const output = print(ops.expression(), {
       ref: {
         model: 'some.el',
       },
@@ -214,7 +209,7 @@ describe('print', () => {
   })
 
   it('prints model', async ({ expect }) => {
-    const output = printOperation(operators.model(), {
+    const output = print(ops.model(), {
       elements: [
         {
           id: 'cloud',
@@ -254,7 +249,7 @@ describe('print', () => {
   })
 
   it('prints with tabs', async ({ expect }) => {
-    const output = printWithTabIndent(operators.model(), {
+    const output = printWithTabIndent(ops.model(), {
       elements: [
         {
           id: 'cloud',

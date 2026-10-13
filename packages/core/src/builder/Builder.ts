@@ -414,7 +414,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
   _deployments = new Map<string, DeploymentElement>(),
   _deploymentRelations = [] as DeploymentRelation[],
   _imports = new DefaultMap<string, Map<string, Element<Any>>>(() => new Map()),
-  _mode: BuilderMode = 'editable',
+  _mode: BuilderMode = 'strict',
 ): Builder<T> {
   const spec = validateSpec(_spec)
 
@@ -602,7 +602,7 @@ function builder<Spec extends BuilderSpecification, T extends AnyTypes>(
       throw new Error('Can be called only in nested model')
     },
     __addView: (view) => {
-      if (_views.has(view.id)) {
+      if (_views.has(view.id) && _mode === 'strict') {
         throw new Error(`View with id "${view.id}" already exists`)
       }
       if (isElementView(view) && 'viewOf' in view) {

@@ -29,7 +29,7 @@ import type { ViewManualLayoutSnapshot } from './view-manual-layout'
  */
 interface BaseLikeC4ModelData<A extends Any> {
   [_stage]: A['Stage']
-  projectId: aux.ProjectId<A>
+  projectId: aux.StrictProjectId<A>
   project: LikeC4Project
   specification: Specification<A>
   elements: Record<aux.ElementId<A>, Element<A>>
@@ -39,7 +39,7 @@ interface BaseLikeC4ModelData<A extends Any> {
   }
   relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
-  imports: Record<string, NonEmptyArray<Element<A>>>
+  imports: Record<scalar.ProjectId, NonEmptyArray<Element<A>>>
 }
 
 export type AuxFromLikeC4ModelData<D> =

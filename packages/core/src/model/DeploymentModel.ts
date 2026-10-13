@@ -106,7 +106,7 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
    * Returns the Project ID associated with the model.
    * If the project ID is not defined in the model, it returns "default".
    */
-  get projectId(): aux.ProjectId<A> {
+  get projectId(): aux.StrictProjectId<A> {
     return this.$model.projectId
   }
 
@@ -210,9 +210,8 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
    */
   public *instancesOf(element: ElementOrFqn<A>): DeployedInstancesIterator<A> {
     const id = getId(element)
-    const instances = this.#instancesOf.get(id)
-    if (instances) {
-      yield* instances
+    if (this.#instancesOf.has(id)) {
+      yield* this.#instancesOf.get(id)
     }
     return
   }

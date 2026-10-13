@@ -117,7 +117,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     }
     invariant(isLikeC4LangiumDocument(doc))
     // Ensure the document is indexed
-    this.get(doc)
+    this.documentCache.get(doc)
     // This will create the document index
     return nonNullable(ElementOps.readId(el), 'Element fqn must be set, invalid state')
   }
@@ -280,10 +280,14 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   }
 }
 
+function compareNaturalByName(a: AstNodeDescriptionWithFqn, b: AstNodeDescriptionWithFqn) {
+  return compareNatural(a.name, b.name)
+}
+
 function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
   return [...multimap.associations()]
     .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
-    .sort((a, b) => compareNatural(a.name, b.name))
+    .sort(compareNaturalByName)
 }
 
 export class DocumentFqnIndex {

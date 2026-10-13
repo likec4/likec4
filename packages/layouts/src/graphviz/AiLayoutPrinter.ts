@@ -94,8 +94,8 @@ export class AiLayoutViewPrinter<A extends AnyAux> extends DotPrinter<ComputedVi
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     const isReverse = this.aiHints.reverseRank?.includes(edge.id) ?? false
     const [sourceFqn, targetFqn] = isReverse ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [, source, ltail] = this.edgeEndpoint(sourceFqn, last())
+    const [, target, lhead] = this.edgeEndpoint(targetFqn, first())
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,

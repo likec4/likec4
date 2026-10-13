@@ -1,13 +1,16 @@
-import { isLikeC4Config } from '@likec4/config/node'
+import { ConfigFilenames, isLikeC4Config } from '@likec4/config/node'
+import { invariant } from '@likec4/core'
 import type { FSWatcher } from 'chokidar'
 import chokidar from 'chokidar'
-import { URI } from 'langium'
+import { Disposable, URI } from 'langium'
 import type { Stats } from 'node:fs'
-import { basename } from 'node:path'
+import { basename, isAbsolute, join } from 'node:path'
 import PQueue from 'p-queue'
+import { LikeC4LanguageMetaData } from '../generated/module'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import { isManualLayoutFile } from './LikeC4ManualLayouts'
+import { ADisposable } from '../utils/disposable'
+import { isManualLayoutFile, MANUAL_LAYOUTS_EXTENSION } from './LikeC4ManualLayouts'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './types'
 import { hasLikeC4Ext, insideNodeModulesOrRepo } from './utils'
 
@@ -143,7 +146,6 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private async onRemove(path: string) {
     const workspace = this.services.workspace
     const filename = basename(path)
-    const uri = URI.file(path)
     switch (true) {
       case isLikeC4Config(filename): {
         logger.debug`project file removed: ${path}`
@@ -153,12 +155,12 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       }
       case hasLikeC4Ext(filename): {
         logger.debug`file removed: ${path}`
-        await workspace.DocumentBuilder.update([], [uri])
+        await workspace.DocumentBuilder.update([], [URI.file(path)])
         break
       }
       case isManualLayoutFile(filename): {
         logger.debug`manual layout file removed: ${path}`
-        await workspace.ManualLayouts.handleFileSystemUpdate({ delete: uri })
+        await workspace.ManualLayouts.handleFileSystemUpdate({ delete: URI.file(path) })
         break
       }
       default: {
@@ -172,6 +174,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     const workspace = this.services.workspace
     const projects = workspace.ProjectsManager.findOverlaped(path)
     if (projects.length > 0) {
+      workspace.Cache.clear()
       workspace.ManualLayouts.clearCaches()
       await workspace.ProjectsManager.reloadProjects()
     }

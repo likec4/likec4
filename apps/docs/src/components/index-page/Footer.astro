@@ -2,11 +2,12 @@
 import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro'
 import Logo from '../Logo.astro'
 const currentYear = new Date().getFullYear()
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 
 const footerLinks = [
-  { label: 'Docs', href: '/tutorial/' },
+  { label: isPtBr ? 'Documentação' : 'Docs', href: isPtBr ? '/pt-br/tutorial/' : '/tutorial/' },
   { label: 'Playground', href: 'https://playground.likec4.dev/w/tutorial/' },
-  { label: 'Language Reference', href: '/dsl/intro/' },
+  { label: isPtBr ? 'Referência da linguagem' : 'Language Reference', href: isPtBr ? '/pt-br/dsl/intro/' : '/dsl/intro/' },
   { label: 'GitHub', href: 'https://github.com/likec4/likec4' },
   { label: 'Discord', href: 'https://discord.gg/86ZSpjKAdA' },
 ]
@@ -34,7 +35,7 @@ const footerLinks = [
     <!-- Bottom row -->
     <div class="mt-6 pt-4 border-t border-stone-200/40 dark:border-zinc-800/40 flex flex-col sm:flex-row items-center justify-between gap-4">
       <p class="text-sm font-medium text-stone-400 dark:text-zinc-400 text-center sm:text-left">
-        &copy; 2023-{currentYear} LikeC4. Released under the MIT License.
+        &copy; 2023-{currentYear} LikeC4. {isPtBr ? 'Distribuído sob a licença MIT.' : 'Released under the MIT License.'}
       </p>
       <div class="flex items-center gap-3">
         <SocialIcons />

@@ -124,7 +124,7 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
         .withSymlinks({ resolvePaths: false })
         .exclude(this.excludeDirectory)
         .withFullPaths()
-        .filter((path, isDirectory) => !this.isExcluded(path) && filter(path, isDirectory))
+        .filter((path, isDirectory) => filter(path, isDirectory) && !this.isExcluded(path))
         .crawl(directory.fsPath)
         .withPromise()
       for (const path of crawled) {

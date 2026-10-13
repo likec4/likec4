@@ -1,11 +1,13 @@
-import type { ProjectId, scalar } from '@likec4/core'
+import type { scalar } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
-import { Button, Overlay } from '@mantine/core'
-import { memo, useMemo } from 'react'
+import { Center } from '@likec4/styles/jsx'
+import { Button, Loader, Overlay } from '@mantine/core'
+import { useMemo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from '../App.css'
-import { ErrorMessage } from '../QueryErrorBoundary'
+import { queryClient } from '../queries'
+import { ErrorMessage, QueryErrorBoundary } from '../QueryErrorBoundary'
 import {
   openProjectsScreen,
   setLastClickedNode,
@@ -16,52 +18,77 @@ import {
 } from '../state'
 import { ExtensionApi as extensionApi } from '../vscode'
 
+const refetchAll = () => {
+  void queryClient.invalidateQueries()
+    .catch(error => {
+      console.error('Failed to invalidate queries', error)
+    })
+}
+
 export function ViewScreen() {
   const { error, model } = useComputedModelData()
   const editor = useLikeC4EditorPort()
   const likec4Model = useMemo(() => model ? LikeC4Model.create(model) : null, [model])
   if (!likec4Model) {
     return (
-      <>
-        <section>
-          {error ? <ErrorMessage error={error} /> : <p>Parsing your model...</p>}
-          <p>
-            <Button color="gray" onClick={extensionApi.closeMe}>
-              Close
-            </Button>
-          </p>
-        </section>
-      </>
+      <div className={likec4ParsingScreen}>
+        {error && <ErrorMessage error={error} onReset={refetchAll} />}
+        {!error &&
+          (
+            <section>
+              <p>Parsing your model...</p>
+              <p>
+                <Button color="gray" onClick={extensionApi.closeMe}>
+                  Close
+                </Button>
+              </p>
+            </section>
+          )}
+      </div>
     )
   }
 
   return (
     <LikeC4ModelProvider key={likec4Model.projectId} likec4model={likec4Model}>
-      {error && <ErrorMessage error={error} />}
+      {error && <ErrorMessage error={error} onReset={refetchAll} />}
       <LikeC4EditorProvider editor={editor}>
-        <LikeC4ViewMemo projectId={likec4Model.project.id} />
+        <QueryErrorBoundary>
+          <LikeC4View />
+        </QueryErrorBoundary>
       </LikeC4EditorProvider>
     </LikeC4ModelProvider>
   )
 }
-const LikeC4ViewMemo = memo<{ projectId: ProjectId }>(({ projectId }) => {
+
+function LikeC4View() {
   let {
     view,
+    projectId,
     error,
-  } = useDiagramView(projectId)
+    isPending,
+  } = useDiagramView()
 
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
         {error && <ErrorMessage error={error} />}
-        <section>
-          <p>Parsing your model...</p>
-          <p>
-            <Button color="gray" onClick={extensionApi.closeMe}>
-              Close
-            </Button>
-          </p>
-        </section>
+        {!error &&
+          (
+            <section>
+              {isPending && (
+                <Center my="md" p="md">
+                  <Loader />
+                </Center>
+              )}
+
+              <p>Parsing your model...</p>
+              <p>
+                <Button color="gray" onClick={extensionApi.closeMe}>
+                  Close
+                </Button>
+              </p>
+            </section>
+          )}
       </div>
     )
   }
@@ -139,8 +166,7 @@ const LikeC4ViewMemo = memo<{ projectId: ProjectId }>(({ projectId }) => {
             })
           }}
           onLogoClick={openProjectsScreen}
-          onLayoutTypeChange={setLayoutType}
-        />
+          onLayoutTypeChange={setLayoutType} />
         {error && (
           <>
             <Overlay blur={2} backgroundOpacity={0.2} />
@@ -150,4 +176,4 @@ const LikeC4ViewMemo = memo<{ projectId: ProjectId }>(({ projectId }) => {
       </div>
     </>
   )
-})
+}

@@ -8,10 +8,10 @@
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { type PropsWithChildren, memo, useEffect, useRef } from 'react'
+import { type PropsWithChildren, useEffect, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { MaxZoom, MinZoom } from '../../base/const'
-import { useDiagramEventHandlersRef } from '../../context/DiagramEventHandlers'
+import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import {
@@ -211,22 +211,24 @@ function ToggledFeatures({ children }: PropsWithChildren) {
   )
 }
 
-const PropagateDiagramActorEvents = memo(() => {
+function PropagateDiagramActorEvents() {
   const diagram = useDiagram()
 
-  const handlers = useDiagramEventHandlersRef()
+  const handlers = useDiagramEventHandlers()
 
-  useOnDiagramEvent('openSource', ({ params }) => handlers.current.onOpenSource?.(params))
-  useOnDiagramEvent('navigateTo', ({ viewId }) => handlers.current.onNavigateTo?.(viewId))
-  // useOnDiagramEvent('onChange', ({ change }) => handlers.current.onChange?.({ change }))
+  useOnDiagramEvent('openSource', ({ params }) => {
+    return handlers.onOpenSource?.(params)
+  })
+  useOnDiagramEvent('navigateTo', ({ viewId }) => handlers.onNavigateTo?.(viewId))
+  // useOnDiagramEvent('onChange', ({ change }) => handlers.onChange?.({ change }))
   useOnDiagramEvent('onLayoutTypeChange', ({ layoutType }) => {
-    handlers.current.onLayoutTypeChange?.(layoutType)
+    handlers.onLayoutTypeChange?.(layoutType)
   })
   useOnDiagramEvent(
     'initialized',
     ({ instance: xyflow }) => {
       try {
-        handlers.current.onInitialized?.({ diagram, xyflow })
+        handlers.onInitialized?.({ diagram, xyflow })
       } catch (error) {
         console.error(error)
       }
@@ -235,4 +237,4 @@ const PropagateDiagramActorEvents = memo(() => {
   )
 
   return null
-})
+}

@@ -90,7 +90,7 @@ export const whereNot = zodOp(schemas.whereNot)(
     'not',
     spaceBetween(
       print('not ('),
-      lazy(() => whereOperator()),
+      lazy(() => whereOperator.noparse()),
       print(')'),
     ),
   ),
@@ -117,7 +117,7 @@ export const whereParticipant = zodOp(schemas.whereParticipant)(
 
 export const whereAnd = zodOp(schemas.whereAnd)(function whereAndOp({ ctx: { and }, out }) {
   const operands = map(and, operand => {
-    let { out } = executeOnFresh(operand, whereOperator())
+    let { out } = executeOnFresh(operand, whereOperator.noparse())
     const wrapWithBraces = 'or' in operand
     if (wrapWithBraces) {
       out = fresh().out.append('(', ...out.contents, ')')
@@ -137,7 +137,7 @@ export const whereAnd = zodOp(schemas.whereAnd)(function whereAndOp({ ctx: { and
 
 export const whereOr = zodOp(schemas.whereOr)(({ ctx: { or }, out }) => {
   const operands = map(or, operand => {
-    let { out } = executeOnFresh(operand, whereOperator())
+    let { out } = executeOnFresh(operand, whereOperator.noparse())
     const wrapWithBraces = 'and' in operand
     if (wrapWithBraces) {
       out = fresh().out.append('(', ...out.contents, ')')
@@ -157,25 +157,25 @@ export const whereOr = zodOp(schemas.whereOr)(({ ctx: { or }, out }) => {
 
 export const whereOperator = zodOp(schemas.whereOperator)(({ ctx, exec }) => {
   if ('and' in ctx) {
-    return exec(ctx, whereAnd())
+    return exec(ctx, whereAnd.noparse())
   }
   if ('or' in ctx) {
-    return exec(ctx, whereOr())
+    return exec(ctx, whereOr.noparse())
   }
   if ('not' in ctx) {
-    return exec(ctx, whereNot())
+    return exec(ctx, whereNot.noparse())
   }
   if ('tag' in ctx) {
-    return exec(ctx, whereTagEqual())
+    return exec(ctx, whereTagEqual.noparse())
   }
   if ('kind' in ctx) {
-    return exec(ctx, whereKindEqual())
+    return exec(ctx, whereKindEqual.noparse())
   }
   if ('metadata' in ctx) {
-    return exec(ctx, whereMetadataEqual())
+    return exec(ctx, whereMetadataEqual.noparse())
   }
   if ('participant' in ctx) {
-    return exec(ctx, whereParticipant())
+    return exec(ctx, whereParticipant.noparse())
   }
   nonexhaustive(ctx)
 })
@@ -221,7 +221,7 @@ export const fqnExprCustom = zodOp(schemas.fqnExprCustom)(({ ctx: { custom }, ex
     custom.expr,
     fqnExprOrWhere(),
   )
-  const customOp = withctx(custom)(
+  const customOp = withctx<typeof custom>()(
     body('with')(
       titleProperty(),
       descriptionProperty(),
@@ -233,14 +233,14 @@ export const fqnExprCustom = zodOp(schemas.fqnExprCustom)(({ ctx: { custom }, ex
   )
   if ('where' in custom.expr) {
     return exec(
-      {},
+      custom,
       indent(
         customOp,
       ),
     )
   }
   return exec(
-    {},
+    custom,
     space(),
     customOp,
   )
@@ -248,26 +248,26 @@ export const fqnExprCustom = zodOp(schemas.fqnExprCustom)(({ ctx: { custom }, ex
 
 export const fqnExprOrWhere = zodOp(schemas.fqnExprOrWhere)(({ ctx, exec }) => {
   if ('where' in ctx) {
-    exec(ctx.where.expr, fqnExpr())
+    exec(ctx.where.expr, fqnExpr.noparse())
     exec(
       ctx.where.condition,
       indent(
         print('where'),
         indent(
-          whereOperator(),
+          whereOperator.noparse(),
         ),
       ),
     )
     return
   }
-  exec(ctx, fqnExpr())
+  exec(ctx, fqnExpr.noparse())
 })
 
-export const fqnExprAny = zodOp(schemas.fqnExprAny)(({ ctx, out }) => {
+export const fqnExprAny = zodOp(schemas.fqnExprAny)(({ ctx, exec }) => {
   if ('custom' in ctx) {
-    return fqnExprCustom()({ ctx, out })
+    return exec(ctx, fqnExprCustom.noparse())
   }
-  return fqnExprOrWhere()({ ctx, out })
+  return exec(ctx, fqnExprOrWhere.noparse())
 })
 
 // ──────────────────────────────────────────────
@@ -278,12 +278,12 @@ export const directRelationExpr = zodOp(schemas.directRelationExpr)(
   merge(
     property(
       'source',
-      fqnExpr(),
+      fqnExpr.noparse(),
     ),
     print(v => v.isBidirectional ? ' <-> ' : ' -> '),
     property(
       'target',
-      fqnExpr(),
+      fqnExpr.noparse(),
     ),
   ),
 )
@@ -293,7 +293,7 @@ export const incomingRelationExpr = zodOp(schemas.incomingRelationExpr)(
     print('-> '),
     property(
       'incoming',
-      fqnExpr(),
+      fqnExpr.noparse(),
     ),
   ),
 )
@@ -302,7 +302,7 @@ export const outgoingRelationExpr = zodOp(schemas.outgoingRelationExpr)(
   merge(
     property(
       'outgoing',
-      fqnExpr(),
+      fqnExpr.noparse(),
     ),
     print(' ->'),
   ),
@@ -313,7 +313,7 @@ export const inOutRelationExpr = zodOp(schemas.inoutRelationExpr)(
     print('-> '),
     property(
       'inout',
-      fqnExpr(),
+      fqnExpr.noparse(),
     ),
     print(' ->'),
   ),
@@ -321,43 +321,41 @@ export const inOutRelationExpr = zodOp(schemas.inoutRelationExpr)(
 
 export const relationExpr = zodOp(schemas.relationExpr)(({ ctx, exec }) => {
   if ('source' in ctx) {
-    return exec(ctx, directRelationExpr())
+    return exec(ctx, directRelationExpr.noparse())
   }
   if ('incoming' in ctx) {
-    return exec(ctx, incomingRelationExpr())
+    return exec(ctx, incomingRelationExpr.noparse())
   }
   if ('outgoing' in ctx) {
-    return exec(ctx, outgoingRelationExpr())
+    return exec(ctx, outgoingRelationExpr.noparse())
   }
   if ('inout' in ctx) {
-    return exec(ctx, inOutRelationExpr())
+    return exec(ctx, inOutRelationExpr.noparse())
   }
   nonexhaustive(ctx)
 })
 
-export const relationExprOrWhere = zodOp(schemas.relationExprOrWhere)(({ ctx, out }) => {
+export const relationExprOrWhere = zodOp(schemas.relationExprOrWhere)(({ ctx, exec }) => {
   if ('where' in ctx) {
-    return merge(
-      withctx(ctx.where.expr)(
-        relationExpr(),
-      ),
+    exec(ctx.where.expr, relationExpr.noparse())
+    exec(
+      ctx.where.condition,
       indent(
         print('where'),
         indent(
-          withctx(ctx.where.condition)(
-            whereOperator(),
-          ),
+          whereOperator.noparse(),
         ),
       ),
-    )({ ctx, out })
+    )
+    return
   }
-  return relationExpr()({ ctx, out })
+  return exec(ctx, relationExpr.noparse())
 })
 
 export const relationExprCustom = zodOp(schemas.relationExprCustom)(({ ctx: { customRelation }, exec }) => {
   exec(
     customRelation.expr,
-    relationExprOrWhere(),
+    relationExprOrWhere.noparse(),
   )
 
   const customOp = withctx(customRelation)(
@@ -376,17 +374,17 @@ export const relationExprCustom = zodOp(schemas.relationExprCustom)(({ ctx: { cu
   const hasWhere = 'where' in customRelation.expr
 
   if (hasWhere) {
-    exec({}, indent(customOp))
+    exec(customRelation, indent(customOp))
   } else {
-    exec({}, space(), customOp)
+    exec(customRelation, space(), customOp)
   }
 })
 
 export const relationExprAny = zodOp(schemas.relationExprAny)(({ ctx, exec }) => {
   if ('customRelation' in ctx) {
-    return exec(ctx, relationExprCustom())
+    return exec(ctx, relationExprCustom.noparse())
   }
-  return exec(ctx, relationExprOrWhere())
+  return exec(ctx, relationExprOrWhere.noparse())
 })
 
 // ──────────────────────────────────────────────
@@ -395,16 +393,16 @@ export const relationExprAny = zodOp(schemas.relationExprAny)(({ ctx, exec }) =>
 
 export const expression = zodOp(schemas.expression)(({ ctx, exec }) => {
   if ('custom' in ctx) {
-    return exec(ctx, fqnExprCustom())
+    return exec(ctx, fqnExprCustom.noparse())
   }
   if ('customRelation' in ctx) {
-    return exec(ctx, relationExprCustom())
+    return exec(ctx, relationExprCustom.noparse())
   }
   if ('wildcard' in ctx || 'ref' in ctx || 'elementKind' in ctx || 'elementTag' in ctx) {
-    return exec(ctx, fqnExpr())
+    return exec(ctx, fqnExpr.noparse())
   }
   if ('source' in ctx || 'incoming' in ctx || 'outgoing' in ctx || 'inout' in ctx) {
-    return exec(ctx, relationExpr())
+    return exec(ctx, relationExpr.noparse())
   }
   if ('where' in ctx) {
     const { expr, condition } = ctx.where
@@ -414,9 +412,9 @@ export const expression = zodOp(schemas.expression)(({ ctx, exec }) => {
           expr,
           condition,
         },
-      }, relationExprOrWhere())
+      }, relationExprOrWhere.noparse())
     }
-    return exec({ where: { expr, condition } }, fqnExprOrWhere())
+    return exec({ where: { expr, condition } }, fqnExprOrWhere.noparse())
   }
   nonexhaustive(ctx)
 })

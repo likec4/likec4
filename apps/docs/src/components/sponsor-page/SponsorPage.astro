@@ -11,6 +11,7 @@ const sponsors = await fetchSponsors()
 const stars = await fetchStars()
 const npmDownloads = await fetchNpmDownloads()
 const ideInstalls = await fetchIdeInstalls()
+const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 ---
 
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
@@ -25,11 +26,10 @@ const ideInstalls = await fetchIdeInstalls()
     <div class="relative z-10 max-w-3xl mx-auto text-center">
       <OpenSourceBadge />
       <h1 class="lp-display mt-8 text-4xl sm:text-5xl md:text-6xl font-bold text-stone-900 dark:text-white">
-        Get More From LikeC4
+        {isPtBr ? "Aproveite mais o LikeC4" : "Get More From LikeC4"}
       </h1>
       <p class="mt-6 text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-300 max-w-2xl mx-auto">
-        LikeC4 is open source and independently maintained. Your support keeps the project sustainable, the releases
-        predictable, and the roadmap driven by real needs.
+        {isPtBr ? "O LikeC4 é um projeto de código aberto mantido de forma independente. Seu apoio ajuda a manter o projeto sustentável, as versões previsíveis e a evolução orientada por necessidades reais." : "LikeC4 is open source and independently maintained. Your support keeps the project sustainable, the releases\n        predictable, and the roadmap driven by real needs."}
       </p>
       <div class="mt-10 flex flex-wrap gap-3 justify-center">
         <a
@@ -37,7 +37,7 @@ const ideInstalls = await fetchIdeInstalls()
           target="_blank"
           class="inline-flex items-center gap-2.5 px-7 py-3.5 bg-cyan-500 text-cyan-950 font-semibold text-base rounded-lg transition-all duration-200 shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px no-underline"
         >
-          Become a Sponsor
+          {isPtBr ? "Seja um patrocinador" : "Become a Sponsor"}
         </a>
         <a
           href="https://github.com/likec4/likec4"
@@ -47,7 +47,7 @@ const ideInstalls = await fetchIdeInstalls()
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
           </svg>
-          View on GitHub
+          {isPtBr ? "Ver no GitHub" : "View on GitHub"}
         </a>
       </div>
     </div>
@@ -58,15 +58,15 @@ const ideInstalls = await fetchIdeInstalls()
     <div class="max-w-3xl mx-auto grid grid-cols-3 gap-4">
       <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
         <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">{stars || '2.8k'}+</div>
-        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">GitHub Stars</div>
+        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">{isPtBr ? "Estrelas no GitHub" : "GitHub Stars"}</div>
       </div>
       <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
         <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">{npmDownloads}+</div>
-        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">Monthly Downloads</div>
+        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">{isPtBr ? "Downloads mensais" : "Monthly Downloads"}</div>
       </div>
       <div class="text-center p-6 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
         <div class="text-3xl sm:text-4xl font-bold text-cyan-600 dark:text-cyan-400 lp-display">{ideInstalls}+</div>
-        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">IDE Installs</div>
+        <div class="mt-2 text-[0.9375rem] text-stone-500 dark:text-zinc-400">{isPtBr ? "Instalações na IDE" : "IDE Installs"}</div>
       </div>
     </div>
   </section>
@@ -77,13 +77,13 @@ const ideInstalls = await fetchIdeInstalls()
       <div class="text-center mb-14">
         <span
           class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
-        >Why back</span>
+        >{isPtBr ? 'Por que apoiar' : 'Why back'}</span>
         <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-          Professional tool, professional backing
+          {isPtBr ? "Uma ferramenta profissional merece apoio profissional" : "Professional tool, professional backing"}
         </h2>
         <p class="text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mx-auto mt-4">
-          Your team depends on LikeC4 to model and communicate architecture.<br />
-          Backing the project ensures it stays reliable, evolving, and supported.
+          {isPtBr ? "Sua equipe depende do LikeC4 para modelar e comunicar a arquitetura." : "Your team depends on LikeC4 to model and communicate architecture."}<br />
+          {isPtBr ? "Apoiar o projeto ajuda a mantê-lo confiável, atualizado e com suporte." : "Backing the project ensures it stays reliable, evolving, and supported."}
         </p>
       </div>
 
@@ -98,10 +98,9 @@ const ideInstalls = await fetchIdeInstalls()
           >
             <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
           </svg>
-          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Secure your toolchain</h3>
+          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">{isPtBr ? "Fortaleça suas ferramentas" : "Secure your toolchain"}</h3>
           <p class="text-base font-medium text-stone-500 dark:text-zinc-400">
-            Your teams rely on LikeC4 for architecture decisions. Sponsorship ensures the project stays maintained,
-            stable, and moving forward.
+            {isPtBr ? "Suas equipes utilizam o LikeC4 nas decisões arquiteturais. O patrocínio contribui para manter o projeto estável, atualizado e em evolução." : "Your teams rely on LikeC4 for architecture decisions. Sponsorship ensures the project stays maintained,\n            stable, and moving forward."}
           </p>
         </div>
         <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
@@ -114,10 +113,9 @@ const ideInstalls = await fetchIdeInstalls()
           >
             <path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
           </svg>
-          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Shape the roadmap</h3>
+          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">{isPtBr ? "Influencie o roadmap" : "Shape the roadmap"}</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Sponsors get a direct voice in what ships next. Prioritize the features and integrations your organization
-            needs most.
+            {isPtBr ? "Patrocinadores podem participar diretamente das decisões sobre as próximas entregas e priorizar recursos e integrações relevantes para sua organização." : "Sponsors get a direct voice in what ships next. Prioritize the features and integrations your organization\n            needs most."}
           </p>
         </div>
         <div class="p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 transition-all duration-300 hover:border-cyan-500/30 dark:hover:border-cyan-400/20 hover:shadow-lg hover:shadow-cyan-500/5">
@@ -130,9 +128,9 @@ const ideInstalls = await fetchIdeInstalls()
           >
             <path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
           </svg>
-          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">Direct access</h3>
+          <h3 class="text-lg font-semibold text-stone-800 dark:text-zinc-100 mb-2">{isPtBr ? "Contato direto" : "Direct access"}</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400">
-            Skip the issue queue. Get priority support, architecture guidance, and a direct line to the maintainer.
+            {isPtBr ? "Tenha acesso a suporte prioritário, orientação de arquitetura e contato direto com o mantenedor, sem depender da fila habitual de issues." : "Skip the issue queue. Get priority support, architecture guidance, and a direct line to the maintainer."}
           </p>
         </div>
       </div>
@@ -147,13 +145,13 @@ const ideInstalls = await fetchIdeInstalls()
       <div class="text-center mb-14">
         <span
           class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
-        >Impact</span>
+        >{isPtBr ? 'Impacto' : 'Impact'}</span>
         <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-          What your support enables
+          {isPtBr ? "O que seu apoio torna possível" : "What your support enables"}
         </h2>
         <p class="text-base sm:text-lg font-medium leading-relaxed text-stone-500 dark:text-zinc-400 max-w-2xl mx-auto mt-4">
-          Sponsorship is a direct investment into LikeC4 development.<br />
-          Every contribution goes to the work that makes the tool better.
+          {isPtBr ? "O patrocínio é um investimento direto no desenvolvimento do LikeC4." : "Sponsorship is a direct investment into LikeC4 development."}<br />
+          {isPtBr ? "Cada contribuição é destinada a tornar a ferramenta melhor." : "Every contribution goes to the work that makes the tool better."}
         </p>
       </div>
 
@@ -165,9 +163,9 @@ const ideInstalls = await fetchIdeInstalls()
             </svg>
           </span>
           <div>
-            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Core features</div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">{isPtBr ? "Recursos essenciais" : "Core features"}</div>
             <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
-              Manual layouts, deployment views, dynamic views, sequence diagrams, better layout algorithms.
+              {isPtBr ? "Layouts manuais, visões de implantação, visões dinâmicas, diagramas de sequência e algoritmos de layout aprimorados." : "Manual layouts, deployment views, dynamic views, sequence diagrams, better layout algorithms."}
             </p>
           </div>
         </div>
@@ -178,9 +176,9 @@ const ideInstalls = await fetchIdeInstalls()
             </svg>
           </span>
           <div>
-            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Enterprise stability</div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">{isPtBr ? "Estabilidade para empresas" : "Enterprise stability"}</div>
             <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
-              Performance for large models, regression testing, predictable releases, and long-term support.
+              {isPtBr ? "Desempenho para modelos grandes, testes de regressão, lançamentos previsíveis e suporte de longo prazo." : "Performance for large models, regression testing, predictable releases, and long-term support."}
             </p>
           </div>
         </div>
@@ -191,9 +189,9 @@ const ideInstalls = await fetchIdeInstalls()
             </svg>
           </span>
           <div>
-            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Tooling ecosystem</div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">{isPtBr ? "Ecossistema de ferramentas" : "Tooling ecosystem"}</div>
             <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
-              VS Code extension, CLI, Docker images, Vite plugin, embedding in docs and internal portals.
+              {isPtBr ? "Extensão do VS Code, CLI, imagens Docker, plugin Vite e incorporação em documentação e portais internos." : "VS Code extension, CLI, Docker images, Vite plugin, embedding in docs and internal portals."}
             </p>
           </div>
         </div>
@@ -204,9 +202,9 @@ const ideInstalls = await fetchIdeInstalls()
             </svg>
           </span>
           <div>
-            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">AI & MCP integration</div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">{isPtBr ? "Integração com IA e MCP" : "AI & MCP integration"}</div>
             <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
-              Machine-readable architecture context for AI agents. MCP server, API access, LLM-friendly DSL.
+              {isPtBr ? "Contexto de arquitetura legível por agentes de IA, servidor MCP, acesso por API e DSL adequada a modelos de linguagem." : "Machine-readable architecture context for AI agents. MCP server, API access, LLM-friendly DSL."}
             </p>
           </div>
         </div>
@@ -217,9 +215,9 @@ const ideInstalls = await fetchIdeInstalls()
             </svg>
           </span>
           <div>
-            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Documentation & guides</div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">{isPtBr ? "Documentação e guias" : "Documentation & guides"}</div>
             <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
-              Comprehensive docs, tutorials, and examples that teams can adopt without hand-holding.
+              {isPtBr ? "Documentação abrangente, tutoriais e exemplos que as equipes podem adotar de forma autônoma." : "Comprehensive docs, tutorials, and examples that teams can adopt without hand-holding."}
             </p>
           </div>
         </div>
@@ -230,9 +228,9 @@ const ideInstalls = await fetchIdeInstalls()
             </svg>
           </span>
           <div>
-            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">Open source forever</div>
+            <div class="text-lg font-semibold text-stone-800 dark:text-zinc-100">{isPtBr ? "Sempre de código aberto" : "Open source forever"}</div>
             <p class="text-base font-medium text-stone-500 dark:text-zinc-400 mt-1">
-              Keeping the core MIT-licensed and accessible for individuals and teams everywhere.
+              {isPtBr ? "Manter o núcleo sob a licença MIT, acessível a pessoas e equipes de qualquer lugar." : "Keeping the core MIT-licensed and accessible for individuals and teams everywhere."}
             </p>
           </div>
         </div>
@@ -246,19 +244,19 @@ const ideInstalls = await fetchIdeInstalls()
       <div class="text-center mb-14">
         <span
           class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
-        >Support tiers</span>
+        >{isPtBr ? 'Níveis de apoio' : 'Support tiers'}</span>
         <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-          Choose your level of support
+          {isPtBr ? "Escolha como contribuir" : "Choose your level of support"}
         </h2>
       </div>
 
       <div class="grid gap-5 md:grid-cols-3">
         <!-- Backer -->
         <div class="flex flex-col p-7 rounded-xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40">
-          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">Backer</div>
-          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For individuals</h3>
+          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">{isPtBr ? 'Apoiador' : 'Backer'}</div>
+          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">{isPtBr ? "Para pessoas físicas" : "For individuals"}</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
-            You use LikeC4 and want to see it thrive. Every contribution helps keep the releases coming.
+            {isPtBr ? "Você utiliza o LikeC4 e deseja que ele continue evoluindo. Toda contribuição ajuda a manter os lançamentos." : "You use LikeC4 and want to see it thrive. Every contribution helps keep the releases coming."}
           </p>
           <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
             <li class="flex flex-1 gap-2.5">
@@ -271,7 +269,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Sponsor recognition on GitHub
+              {isPtBr ? "Reconhecimento do patrocínio no GitHub" : "Sponsor recognition on GitHub"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -283,7 +281,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Prioritized issue responses
+              {isPtBr ? "Respostas prioritárias às issues" : "Prioritized issue responses"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -295,7 +293,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Supporting open source sustainability
+              {isPtBr ? "Apoio à sustentabilidade do código aberto" : "Supporting open source sustainability"}
             </li>
           </ul>
           <a
@@ -303,16 +301,16 @@ const ideInstalls = await fetchIdeInstalls()
             target="_blank"
             class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
           >
-            Sponsor on GitHub
+            {isPtBr ? "Patrocinar no GitHub" : "Sponsor on GitHub"}
           </a>
         </div>
 
         <!-- Team (highlighted) -->
         <div class="flex flex-col p-7 rounded-xl border-2 border-cyan-500/40 dark:border-cyan-400/30 bg-white dark:bg-zinc-900/40 shadow-lg shadow-cyan-500/5 relative">
-          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-cyan-600 dark:text-cyan-400">Team</div>
-          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For engineering teams</h3>
+          <div class="text-sm font-semibold tracking-[0.1em] uppercase text-cyan-600 dark:text-cyan-400">{isPtBr ? 'Equipe' : 'Team'}</div>
+          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">{isPtBr ? "Para equipes de engenharia" : "For engineering teams"}</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
-            Your team depends on LikeC4. Get a direct line to influence what ships and when.
+            {isPtBr ? "Sua equipe depende do LikeC4. Participe das decisões sobre o que será entregue e quando." : "Your team depends on LikeC4. Get a direct line to influence what ships and when."}
           </p>
           <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
             <li class="flex flex-1 gap-2.5">
@@ -325,7 +323,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Everything in Backer
+              {isPtBr ? "Todos os benefícios de Apoiador" : "Everything in Backer"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -337,7 +335,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Direct roadmap input
+              {isPtBr ? "Participação direta no roadmap" : "Direct roadmap input"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -349,7 +347,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Priority feature requests
+              {isPtBr ? "Solicitações de recursos prioritárias" : "Priority feature requests"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -361,7 +359,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Logo on likec4.dev
+              {isPtBr ? "Logotipo no likec4.dev" : "Logo on likec4.dev"}
             </li>
           </ul>
           <a
@@ -369,7 +367,7 @@ const ideInstalls = await fetchIdeInstalls()
             target="_blank"
             class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold bg-cyan-500 text-cyan-950 rounded-lg shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px transition-all duration-200 no-underline"
           >
-            Sponsor on GitHub
+            {isPtBr ? "Patrocinar no GitHub" : "Sponsor on GitHub"}
           </a>
         </div>
 
@@ -378,9 +376,9 @@ const ideInstalls = await fetchIdeInstalls()
           <div class="text-sm font-semibold tracking-[0.1em] uppercase text-stone-400 dark:text-zinc-500">
             Enterprise
           </div>
-          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">For organizations</h3>
+          <h3 class="text-xl font-bold text-stone-800 dark:text-zinc-100 mt-2">{isPtBr ? "Para organizações" : "For organizations"}</h3>
           <p class="text-base font-medium leading-snug text-stone-500 dark:text-zinc-400 mt-3">
-            Need invoicing, integration help, or dedicated development time? Let's make it work.
+            {isPtBr ? "Precisa de faturamento, ajuda com integrações ou tempo dedicado de desenvolvimento? Entre em contato." : "Need invoicing, integration help, or dedicated development time? Let's make it work."}
           </p>
           <ul class="mt-6 pl-1 space-y-3 text-base text-stone-600 dark:text-zinc-300 flex-1">
             <li class="flex flex-1 gap-2.5">
@@ -393,7 +391,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Everything in Team
+              {isPtBr ? "Todos os benefícios de Equipe" : "Everything in Team"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -405,7 +403,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Dedicated support hours
+              {isPtBr ? "Horas de suporte dedicadas" : "Dedicated support hours"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -417,7 +415,7 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Integration & architecture guidance
+              {isPtBr ? "Orientação em integrações e arquitetura" : "Integration & architecture guidance"}
             </li>
             <li class="flex gap-2.5">
               <svg
@@ -429,14 +427,14 @@ const ideInstalls = await fetchIdeInstalls()
               >
                 <path d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              Invoice & procurement friendly
+              {isPtBr ? "Faturamento adequado aos processos de compras" : "Invoice & procurement friendly"}
             </li>
           </ul>
           <a
             href="mailto:denis@davydkov.com?subject=LikeC4%20Enterprise%20Sponsorship"
             class="mt-8 inline-flex items-center justify-center px-6 py-3 text-[0.9375rem] font-semibold text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
           >
-            Contact Us
+            {isPtBr ? "Entre em contato" : "Contact Us"}
           </a>
         </div>
       </div>
@@ -450,9 +448,9 @@ const ideInstalls = await fetchIdeInstalls()
     <div class="relative z-10 max-w-3xl mx-auto text-center">
       <span
         class="lp-display text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-cyan-600 dark:text-cyan-400"
-      >Sponsors</span>
+      >{isPtBr ? 'Patrocinadores' : 'Sponsors'}</span>
       <h2 class="lp-display text-3xl sm:text-4xl font-bold tracking-tight text-stone-900 dark:text-white mt-4">
-        Backed by these teams and individuals
+        {isPtBr ? "Apoiado por estas equipes e pessoas" : "Backed by these teams and individuals"}
       </h2>
 
       <div class="mt-10 flex items-center justify-center">
@@ -483,7 +481,7 @@ const ideInstalls = await fetchIdeInstalls()
       )}
 
       <p class="mt-8 text-[0.9375rem] text-stone-500 dark:text-zinc-500">
-        Your logo or avatar could be here.
+        {isPtBr ? "Seu logotipo ou avatar pode aparecer aqui." : "Your logo or avatar could be here."}
       </p>
     </div>
   </section>
@@ -495,9 +493,9 @@ const ideInstalls = await fetchIdeInstalls()
   <section class="px-6 pb-24 md:pb-32">
     <div class="max-w-3xl mx-auto">
       <div class="rounded-2xl border border-stone-200 dark:border-zinc-800/70 bg-white dark:bg-zinc-900/40 p-8 sm:p-12 text-center">
-        <h2 class="lp-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">Take the next step</h2>
+        <h2 class="lp-display text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">{isPtBr ? "Dê o próximo passo" : "Take the next step"}</h2>
         <p class="mt-4 text-lg font-medium text-stone-500 dark:text-zinc-400 max-w-lg mx-auto">
-          Sponsor once or monthly. Every contribution reduces maintenance debt and increases shipping speed.
+          {isPtBr ? "Apoie uma única vez ou mensalmente. Cada contribuição reduz o débito de manutenção e acelera as entregas." : "Sponsor once or monthly. Every contribution reduces maintenance debt and increases shipping speed."}
         </p>
         <div class="mt-8 flex flex-wrap gap-3 justify-center">
           <a
@@ -505,14 +503,14 @@ const ideInstalls = await fetchIdeInstalls()
             target="_blank"
             class="inline-flex items-center gap-2.5 px-7 py-3.5 bg-cyan-500 text-cyan-950 font-semibold text-base rounded-lg shadow-lg shadow-cyan-600/20 dark:shadow-cyan-500/15 hover:shadow-xl hover:-translate-y-px transition-all duration-200 no-underline"
           >
-            Become a Sponsor
+            {isPtBr ? "Seja um patrocinador" : "Become a Sponsor"}
           </a>
           <a
             href="https://discord.gg/86ZSpjKAdA"
             target="_blank"
             class="inline-flex items-center gap-2 px-7 py-3.5 text-base font-medium text-stone-700 dark:text-white border border-stone-200/60 dark:border-zinc-600 rounded-lg hover:border-stone-300 dark:hover:border-zinc-500 transition-all duration-200 no-underline"
           >
-            Talk to us on Discord
+            {isPtBr ? "Converse conosco no Discord" : "Talk to us on Discord"}
           </a>
         </div>
       </div>

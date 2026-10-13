@@ -170,3 +170,22 @@ deployment {
   
   prod.eu.db -> prod.us.db 'replicates'
 }
+
+views {
+  
+  view index {
+    include *
+  }
+  
+  view cloud of cloud {
+    include *
+    include cloud.frontend.dashboard
+  }
+  
+  deployment view prod {
+    title 'prod'
+    
+    include customer.instance
+    include prod.eu.zone1.ui
+  }
+}

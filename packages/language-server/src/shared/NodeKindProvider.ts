@@ -15,45 +15,45 @@ export class NodeKindProvider implements LspNodeKindProvider {
     const hasType = (...types: string[]) => types.some(t => this.services.AstReflection.isSubtype(nodeType, t))
     switch (true) {
       case hasType(
-        ast.Element,
-        ast.ExtendElement,
-        ast.DeploymentNode,
-        ast.DeployedInstance,
-        ast.Imported,
+        ast.Element.$type,
+        ast.ExtendElement.$type,
+        ast.DeploymentNode.$type,
+        ast.DeployedInstance.$type,
+        ast.Imported.$type,
       ):
         return SymbolKind.Constructor
 
       case hasType(
-        ast.Model,
-        ast.ModelViews,
-        ast.ModelDeployments,
-        ast.Globals,
-        ast.SpecificationRule,
+        ast.Model.$type,
+        ast.ModelViews.$type,
+        ast.ModelDeployments.$type,
+        ast.Globals.$type,
+        ast.SpecificationRule.$type,
       ):
         return SymbolKind.Namespace
 
-      case hasType(ast.LikeC4View):
+      case hasType(ast.LikeC4View.$type):
         return SymbolKind.Struct
 
       case hasType(
-        ast.Tag,
-        ast.LibIcon,
-        ast.CustomColor,
-        ast.SpecificationTag,
+        ast.Tag.$type,
+        ast.LibIcon.$type,
+        ast.CustomColor.$type,
+        ast.SpecificationTag.$type,
       ):
         return SymbolKind.EnumMember
 
       case hasType(
-        ast.RelationshipKind,
-        ast.SpecificationRelationshipKind,
+        ast.RelationshipKind.$type,
+        ast.SpecificationRelationshipKind.$type,
       ):
         return SymbolKind.Event
 
       case hasType(
-        ast.ElementKind,
-        ast.DeploymentNodeKind,
-        ast.SpecificationElementKind,
-        ast.SpecificationDeploymentNodeKind,
+        ast.ElementKind.$type,
+        ast.DeploymentNodeKind.$type,
+        ast.SpecificationElementKind.$type,
+        ast.SpecificationDeploymentNodeKind.$type,
       ):
         return SymbolKind.TypeParameter
     }
@@ -67,52 +67,52 @@ export class NodeKindProvider implements LspNodeKindProvider {
     const hasType = (...types: string[]) => types.some(t => this.services.AstReflection.isSubtype(nodeType, t))
     switch (true) {
       case hasType(
-        ast.CustomColor,
+        ast.CustomColor.$type,
       ):
         return CompletionItemKind.Color
 
       case hasType(
-        ast.Element,
-        ast.DeploymentNode,
-        ast.DeployedInstance,
-        ast.ExtendElement,
-        ast.Imported,
+        ast.Element.$type,
+        ast.DeploymentNode.$type,
+        ast.DeployedInstance.$type,
+        ast.ExtendElement.$type,
+        ast.Imported.$type,
       ):
         return CompletionItemKind.Constructor
 
       case hasType(
-        ast.Model,
-        ast.ModelViews,
-        ast.ModelDeployments,
-        ast.Globals,
-        ast.SpecificationRule,
+        ast.Model.$type,
+        ast.ModelViews.$type,
+        ast.ModelDeployments.$type,
+        ast.Globals.$type,
+        ast.SpecificationRule.$type,
       ):
         return CompletionItemKind.Module
 
       case hasType(
-        ast.LikeC4View,
+        ast.LikeC4View.$type,
       ):
         return CompletionItemKind.Class
 
       case hasType(
-        ast.Tag,
-        ast.LibIcon,
-        ast.CustomColor,
-        ast.SpecificationTag,
+        ast.Tag.$type,
+        ast.LibIcon.$type,
+        ast.CustomColor.$type,
+        ast.SpecificationTag.$type,
       ):
         return CompletionItemKind.EnumMember
 
       case hasType(
-        ast.RelationshipKind,
-        ast.SpecificationRelationshipKind,
+        ast.RelationshipKind.$type,
+        ast.SpecificationRelationshipKind.$type,
       ):
         return CompletionItemKind.Event
 
       case hasType(
-        ast.ElementKind,
-        ast.SpecificationElementKind,
-        ast.DeploymentNodeKind,
-        ast.SpecificationDeploymentNodeKind,
+        ast.ElementKind.$type,
+        ast.SpecificationElementKind.$type,
+        ast.DeploymentNodeKind.$type,
+        ast.SpecificationDeploymentNodeKind.$type,
       ):
         return CompletionItemKind.TypeParameter
 

@@ -11,6 +11,8 @@ export type {
   AnyLayouted,
   AnyParsed,
   Aux,
+  AuxComputed,
+  AuxLayouted,
   LooseLiteral,
   SpecAux,
   Unknown,

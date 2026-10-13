@@ -947,8 +947,8 @@ DeploymentViewRulePredicate:
 Globals:
   name='global' '{'
     (
-      predicates+=(GlobalPredicateGroup | GlobalDynamicPredicateGroup)*
-      styles+=(GlobalStyle | GlobalStyleGroup)*
+      predicates+=(GlobalPredicateGroup | GlobalDynamicPredicateGroup) |
+      styles+=(GlobalStyle | GlobalStyleGroup)
     )*
   '}';
 

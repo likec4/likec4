@@ -1,12 +1,14 @@
-import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import { usePlayground } from '$/hooks/usePlayground'
+import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSyncedRef, useUpdateEffect } from '@react-hookz/web'
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react'
-import { MonacoEditorLanguageClientWrapper } from 'monaco-editor-wrapper'
+import type { EditorApp } from 'monaco-languageclient/editorApp'
+import type { LanguageClientManager } from 'monaco-languageclient/lcwrapper'
 import { memo, useMemo, useState } from 'react'
-import { createWrapperConfig } from './config'
+import { createWrapperConfig, LIKEC4_LANGUAGE_ID } from './config'
+import { type MonacoHandle, createMonacoHandle } from './handle'
 import { LanguageClientSync } from './LanguageClientSync'
 
 const logger = rootLogger.getChild('monaco-editor')
@@ -28,42 +30,49 @@ const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
     playground.changeActiveFile(filename)
   })
 
-  const [wrapper, setWrapper] = useState<MonacoEditorLanguageClientWrapper | null>(null)
-  const wrapperRef = useSyncedRef(wrapper)
+  const [editorApp, setEditorApp] = useState<EditorApp | null>(null)
+  const [languageClients, setLanguageClients] = useState<LanguageClientManager | null>(null)
+  const editorAppRef = useSyncedRef(editorApp)
 
   const wrapperConfig = useMemo(() =>
     createWrapperConfig({
-      getActiveEditor: () => wrapperRef.current?.getEditor() ?? null,
+      getActiveEditor: () => editorAppRef.current?.getEditor() ?? null,
       onActiveEditorChanged,
     }), [])
 
   useUpdateEffect(() => {
-    setWrapper(null)
+    setEditorApp(null)
+    setLanguageClients(null)
   }, [wrapperConfig])
 
-  const onLoad = useCallbackRef((wrapper: MonacoEditorLanguageClientWrapper) => {
-    if (import.meta.env.DEV) {
-      console.log('MonacoEditor: wrapper loaded', wrapper)
-      console.log(`Wrapper.isInitializing: ${wrapper.isInitializing()}`)
-      console.log(`Wrapper.isStarting: ${wrapper.isStarting()}`)
-      console.log(`Wrapper.isStarted: ${wrapper.isStarted()}`)
-      console.log(`Wrapper.haveLanguageClients: ${wrapper.haveLanguageClients()}`)
+  const onEditorStartDone = useCallbackRef((app?: EditorApp) => {
+    if (app) {
+      setEditorApp(app)
     }
+  })
 
-    const likeC4ClientWrapper = wrapper.getLanguageClientWrapper('likec4')
-    if (!likeC4ClientWrapper) {
+  const onLanguageClientsStartDone = useCallbackRef((manager: LanguageClientManager) => {
+    if (!manager.getLanguageClientWrapper(LIKEC4_LANGUAGE_ID)) {
       console.warn('LikeC4 LanguageClientWrapper not found, waiting for it to be created')
       return
     }
-    setWrapper(wrapper)
+    setLanguageClients(manager)
   })
+
+  const wrapper: MonacoHandle | null = useMemo(
+    () => editorApp && languageClients ? createMonacoHandle(editorApp, languageClients) : null,
+    [editorApp, languageClients],
+  )
 
   return (
     <>
       <MonacoEditorReactComp
         style={{ width: '100%', height: '100%' }}
-        wrapperConfig={wrapperConfig}
-        onLoad={onLoad}
+        vscodeApiConfig={wrapperConfig.vscodeApiConfig}
+        editorAppConfig={wrapperConfig.editorAppConfig}
+        languageClientConfig={wrapperConfig.languageClientConfig}
+        onEditorStartDone={onEditorStartDone}
+        onLanguageClientsStartDone={onLanguageClientsStartDone}
         onError={useCallbackRef(err => {
           const message = err instanceof Error ? err.message : String(err)
           const isConnectionError = message.includes('connection to server is erroring') ||

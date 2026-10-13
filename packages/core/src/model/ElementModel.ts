@@ -15,6 +15,7 @@ import type {
 } from '../types'
 import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'
 import type * as aux from '../types/_aux'
+import type * as scalar from '../types/scalar'
 import { commonAncestor, hierarchyLevel, isAncestor, nameFromFqn, sortNaturalByFqn } from '../utils/fqn'
 import { ihead } from '../utils/iterable/head'
 import { memoizeProp } from '../utils/memoize-prop'
@@ -37,8 +38,8 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
   readonly hierarchyLevel: number
 
   readonly imported: null | {
-    readonly from: ProjectId
-    readonly fqn: aux.Fqn<AnyAux>
+    readonly from: scalar.ProjectId
+    readonly fqn: scalar.Fqn
   }
 
   constructor(
@@ -161,8 +162,8 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
       }))
   }
 
-  get projectId(): aux.ProjectId<A> {
-    return (this.imported?.from as aux.ProjectId<A> | undefined) ?? this.$model.projectId
+  get projectId(): aux.StrictProjectId<A> {
+    return (this.imported?.from as aux.StrictProjectId<A> | undefined) ?? this.$model.projectId
   }
 
   public isAncestorOf(another: ElementModel<A>): boolean {

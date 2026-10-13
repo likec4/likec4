@@ -116,7 +116,7 @@ export class MergedSpecification {
       let docProjectId = doc.likec4ProjectId
       if (isNonNullish(docProjectId)) {
         if (projectIds.length === 0 || projectIds[0] !== docProjectId) {
-          projectIds.push(doc.likec4ProjectId!)
+          projectIds.push(docProjectId)
         }
       }
 

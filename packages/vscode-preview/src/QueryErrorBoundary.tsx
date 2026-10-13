@@ -8,7 +8,16 @@ import { ExtensionApi as extensionApi } from './vscode'
 
 export const ErrorMessage = ({ error, onReset }: { error: Error | string | null; onReset?: () => void }) => {
   const { reset } = useQueryErrorResetBoundary()
-  return <Fallback error={error} resetErrorBoundary={onReset ?? reset ?? extensionApi.closeMe} />
+
+  const handleReset = onReset ?? reset
+
+  return (
+    <Fallback
+      error={error}
+      resetErrorBoundary={() => {
+        handleReset()
+      }} />
+  )
 }
 
 const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
@@ -16,9 +25,6 @@ const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
   const error = _error as any
   try {
     switch (true) {
-      case isNullish(error):
-        message = 'Unknown error'
-        break
       case isError(error):
         message = error.stack ?? error.message
         break
@@ -27,9 +33,6 @@ const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
         break
       case isObjectType(error):
         message = error['stack'] ?? error['message'] ?? `${error}`
-        break
-      default:
-        message = `${error}`
         break
     }
   } catch (e) {
@@ -56,7 +59,7 @@ const Fallback = ({ error: _error, resetErrorBoundary }: FallbackProps) => {
             <Text
               ff="monospace"
               component="div"
-              style={{ whiteSpace: message.includes('\n') ? 'pre' : 'normal' }}
+              style={{ whiteSpace: message.includes('\n') ? 'preserve-breaks' : 'normal' }}
               my="xs"
               fz={'sm'}>
               {message}

@@ -254,7 +254,7 @@ export interface LikeC4DocumentProps {
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
 export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
-  likec4ProjectId: c4.ProjectId
+  likec4ProjectId?: c4.ProjectId
 }
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {
   likec4ProjectId: c4.ProjectId
@@ -433,25 +433,6 @@ export function toAutoLayout(
     direction,
     ...(nodeSep && { nodeSep }),
     ...(rankSep && { rankSep }),
-  }
-}
-
-export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['direction']): ast.ViewLayoutDirection {
-  switch (c4) {
-    case 'TB': {
-      return 'TopBottom'
-    }
-    case 'BT': {
-      return 'BottomTop'
-    }
-    case 'LR': {
-      return 'LeftRight'
-    }
-    case 'RL': {
-      return 'RightLeft'
-    }
-    default:
-      nonexhaustive(c4)
   }
 }
 

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../builder'
+import { isElementView } from '../../types'
+import { invariant } from '../../utils'
 import { TestHelper } from '../element-view/__test__/TestHelper'
 import { calcViewLayoutHash } from './view-hash'
 
@@ -96,6 +98,24 @@ describe('calcViewLayoutHash', () => {
     const hashed1 = calcViewLayoutHash(JSON.parse(JSON.stringify(view1)))
     const hashed2 = calcViewLayoutHash(JSON.parse(JSON.stringify(view1)))
     expect(hashed1.hash).toBe(hashed2.hash)
+  })
+
+  it('changes when rank constraints change', () => {
+    const view = builder
+      .views(v => v.view('test', v.$include('*')))
+      .toLikeC4Model()
+      .view('test').$view
+    invariant(isElementView(view), 'Must be element view')
+    const nodes = view.nodes.map(n => n.id)
+
+    const withoutRanks = calcViewLayoutHash({ ...view }).hash
+    const rankSame = calcViewLayoutHash({ ...view, ranks: [{ type: 'same', nodes }] }).hash
+    const rankMin = calcViewLayoutHash({ ...view, ranks: [{ type: 'min', nodes }] }).hash
+
+    // Views without rank constraints keep existing hashes
+    expect(calcViewLayoutHash({ ...view, ranks: [] }).hash).toBe(withoutRanks)
+    expect(rankSame).not.toBe(withoutRanks)
+    expect(rankMin).not.toBe(rankSame)
   })
 
   it('ignores navigation order metadata', () => {

@@ -1,5 +1,3 @@
-import { compareNaturalHierarchically } from '@likec4/core/utils'
-import type { FileSystemNode } from 'langium'
 import { LikeC4LanguageMetaData } from '../generated/module'
 
 export function hasLikeC4Ext(path: string) {

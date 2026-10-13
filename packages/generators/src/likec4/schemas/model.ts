@@ -1,4 +1,5 @@
-import {
+import type {
+  Fqn,
   RelationId,
 } from '@likec4/core/types'
 import { produce } from 'immer'
@@ -29,7 +30,7 @@ import * as common from './common'
  * Replicates the {@link Element} from the core,
  * less strict, as the generator should be able to handle missing fields and provide defaults.
  */
-export const element = z
+const _element = z
   .object({
     ...common.props.shape,
     id: common.fqn,
@@ -63,17 +64,21 @@ export const element = z
     return pickBy(rest, isNonNullish)
   })
   .readonly()
+export interface ZElement extends z.ZodType<z.output<typeof _element>, z.input<typeof _element>> {}
+export const element: ZElement = _element
 
-const relationshipEndpoint = z.union([
+export interface ZRelationshipEndpoint extends z.ZodType<{ readonly model: Fqn }, string | { model: string }> {}
+export const relationshipEndpoint: ZRelationshipEndpoint = z.union([
   common.fqn,
   z.strictObject({
     model: common.fqn,
   }),
 ]).transform(v => (typeof v === 'string' ? { model: v } : v))
 
-const relationshipId = common.id.transform(value => value as unknown as RelationId)
+export interface ZRelationshipId extends z.ZodType<RelationId, string> {}
+export const relationshipId: ZRelationshipId = common.id.transform(value => value as unknown as RelationId)
 
-export const relationship = z.object({
+const _relationship = z.object({
   ...common.props.shape,
   id: relationshipId.optional(),
   title: z.string().nullish(),
@@ -89,28 +94,34 @@ export const relationship = z.object({
 })
   .transform(pickBy(isNonNullish))
   .readonly()
+export interface ZRelationship extends z.ZodType<z.output<typeof _relationship>, z.input<typeof _relationship>> {}
+export const relationship: ZRelationship = _relationship
 
 // ============ Top-Level Schema ============
 
-const elements = z.record(common.fqn, element)
-const relationships = z.record(relationshipId, relationship)
+export const elements = z.record(common.fqn, element)
+export const relationships = z.record(relationshipId, relationship)
 
 const genRelationshipId = (r: z.output<typeof relationship>): RelationId => r.id ?? randomString(8) as RelationId
 
+const modelElements = z.union([
+  elements,
+  z.array(element).transform(v => indexBy(v, prop('id'))),
+]) as z.ZodType<
+  Record<Fqn, z.output<typeof element>>,
+  Record<string, z.input<typeof element>> | Array<z.input<typeof element>>
+>
+
+const modelRelationships = z.union([
+  relationships,
+  z.array(relationship).transform(v => indexBy(v, genRelationshipId)),
+]) as z.ZodType<
+  Record<RelationId, z.output<ZRelationship>>,
+  Record<string, z.input<ZRelationship>> | Array<z.input<ZRelationship>>
+>
+
 export const schema = z
   .object({
-    elements: z
-      .union([
-        elements,
-        z.array(element),
-      ])
-      .transform(v => isArray(v) ? indexBy(v, prop('id')) as unknown as z.output<typeof elements> : v)
-      .optional(),
-    relations: z
-      .union([
-        relationships,
-        z.array(relationship),
-      ])
-      .transform(v => isArray(v) ? indexBy(v, genRelationshipId) as unknown as z.output<typeof relationships> : v)
-      .optional(),
+    elements: modelElements.optional(),
+    relations: modelRelationships.optional(),
   })

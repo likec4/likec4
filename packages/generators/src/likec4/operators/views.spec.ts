@@ -30,6 +30,8 @@ const builder = Builder
       component('cloud.frontend'),
       component('cloud.backend'),
       component('cloud.backend.api'),
+      system('email'),
+      system('sms'),
     )
   )
 
@@ -60,9 +62,7 @@ function expect(...builders: Array<(input: ViewsBuilder<T>) => any>) {
     )
     .build()
   return viExpect(
-    materialize(
-      withctx(data.views, viewsOp()),
-    ),
+    materialize(viewsOp(), data.views),
   )
 }
 
@@ -542,6 +542,86 @@ describe('view', () => {
               else {
                 cloud.backend -> cloud.backend
               }
+            }
+          }
+        }"
+      `)
+    })
+
+    it('should print other subflows', () => {
+      expect(
+        dynamicView(
+          'test',
+          {
+            title: 'Folder / All / subflows',
+            tags: ['tag1', 'tag2'],
+            links: [
+              'https://likec4.com',
+              {
+                url: 'https://example.com',
+                title: 'Example',
+              },
+            ],
+          },
+          $rules(
+            $step('cloud', 'cloud', {
+              with: {
+                kind: 'likes',
+              },
+            }),
+            $step.loop(
+              $step.opt(
+                $step('cloud -> customer'),
+                $step.break(
+                  'customer -> cloud',
+                ),
+              ),
+            ),
+            $step.parallel(
+              $step.series(
+                'customer',
+                ['-> cloud.frontend', { title: 'Goes to frontend' }],
+                ['-> cloud.backend.api', { title: 'Calls backend', description: { md: '**Makes** API call' } }],
+                ['-> cloud.frontend', { title: 'Returns to frontend' }],
+              ),
+              $step.series(
+                'cloud.backend.api',
+                ['-> email', { title: 'Sends email' }],
+                '-> customer',
+              ),
+            ),
+          ),
+        ),
+      ).toMatchInlineSnapshot(`
+        "views {
+          dynamic view test {
+            #tag1, #tag2
+            title 'Folder / All / subflows'
+            link https://likec4.com
+            link https://example.com 'Example'
+            
+            cloud -[likes]-> cloud
+            loop {
+              opt {
+                cloud -> customer
+                break {
+                  customer -> cloud
+                }
+              }
+            }
+            par {
+              customer
+                -> cloud.frontend 'Goes to frontend'
+                -> cloud.backend.api 'Calls backend' {
+                  description '''
+                    **Makes** API call
+                  '''
+                }
+                -> cloud.frontend 'Returns to frontend'
+              
+              cloud.backend.api
+                -> email 'Sends email'
+                -> customer
             }
           }
         }"

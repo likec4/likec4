@@ -49,6 +49,7 @@ export function nodeModulesCodeSplitting(
 ): Rolldown.CodeSplittingGroup {
   return {
     test: /node_modules/,
+    debugName: 'node_modules',
     name: (moduleId: string) => {
       const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
         ?.groups?.package
@@ -84,6 +85,7 @@ export function codeSplittingGroup(
 ): Rolldown.CodeSplittingGroup {
   return {
     test,
+    debugName: name,
     name: (moduleId: string) => {
       const isDts = /\.d\.[mc]?ts$/.test(moduleId)
       return `${name}${isDts ? '.d' : ''}`

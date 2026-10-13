@@ -206,16 +206,8 @@ describe('likec4data', () => {
   it('generates valid DSL from parsed model data', async ({ expect }) => {
     const parsed = builder.build()
     const output = materialize(
-      withctx(
-        {
-          relations: parsed.relations,
-          elements: parsed.elements,
-          deployments: parsed.deployments,
-          views: parsed.views,
-          specification: parsed.specification,
-        } satisfies schemas.likec4data.Input,
-        likec4data(),
-      ),
+      likec4data(),
+      parsed,
     )
     await expect(output).toMatchFileSnapshot('__snapshots__/likec4.generate.snap')
   })

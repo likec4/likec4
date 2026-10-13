@@ -239,7 +239,7 @@ dynamic view flow {
 }
 ```
 
-Parallel blocks can be nested and mixed with sequential steps.
+Parallel blocks can be mixed with sequential steps, but cannot be nested inside another `parallel`/`par` block (`Nested parallel blocks are not allowed`).
 
 ## Variants
 

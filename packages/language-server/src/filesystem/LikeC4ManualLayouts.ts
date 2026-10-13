@@ -11,7 +11,7 @@ import {
 } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import { ADisposable, safeCall } from '../utils'
+import { ADisposable, compareByUri, safeCall } from '../utils'
 import type { Project } from '../workspace/ProjectsManager'
 import type {
   LikeC4ManualLayouts,
@@ -24,6 +24,7 @@ import type {
 const layoutsLogger = rootLogger.getChild('manual-layouts')
 
 const extension = '.likec4.snap'
+export { extension as MANUAL_LAYOUTS_EXTENSION }
 /**
  * @todo sync with vscode extension watchers
  *       (search for ".likec4.snap" references)
@@ -99,8 +100,8 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
       // TODO: handle delete
     }
 
-    const project = this.services.workspace.ProjectsManager.getProject(projectId)
     if (!viewId) {
+      const project = this.services.workspace.ProjectsManager.getProject(projectId)
       const snapshot = await this.readSnapshot(uri, project)
       if (snapshot) {
         viewId = snapshot.id
@@ -133,7 +134,7 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
     const fs = this.services.workspace.FileSystemProvider
     const outDir = getManualLayoutsOutDir(project)
     const manualLayouts = [] as LayoutedView[]
-    let hash = `${outDir.toString()}`
+    let hash = stringHash(UriUtils.relative(project.folderUri, outDir))
     try {
       const files = await fs.scanDirectory(outDir, isManualLayoutFile)
       if (files.length === 0) {
@@ -141,24 +142,28 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
       }
 
       // Guarantee consistent order (for hash calculation)
-      files.sort((a, b) => a.uri.path.localeCompare(b.uri.path))
+      files.sort(compareByUri)
 
       for (const file of files) {
+        const relativePath = this.services.workspace.WorkspaceManager.relativePath(file.uri)
         try {
+          logger.trace`read snapshot ${relativePath}`
           const content = await fs.readFile(file.uri)
           const parsed = JSON5.parse<LayoutedView>(content)
-          hash = stringHash(hash + file.uri.toString() + content)
+          hash = stringHash(
+            hash + relativePath + content,
+          )
           const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
           manualLayouts.push({
             ...resolved,
             _layout: 'manual',
           })
         } catch (err) {
-          logger.warn(`Failed to read view snapshot ${file.uri.fsPath}`, { err })
+          logger.warn(`Failed to read view snapshot {relativePath}`, { relativePath, err })
         }
       }
       if (manualLayouts.length) {
-        logger.trace`read manual layouts for ${project.id}, found ${manualLayouts.length}`
+        logger.trace`loaded ${manualLayouts.length} manual layouts, hash: ${hash}`
       }
     } catch (err) {
       logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
@@ -207,12 +212,11 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
   }
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
-    // Clean cache first
-    this.cache.delete(project.id)
-
     const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(layouted.id))
+    const workspaceRelativePath = this.services.workspace.WorkspaceManager.relativePath(file)
+
     // Ensure the manualLayout field is omitted (may exist in migration)
     if ('manualLayout' in layouted) {
       const { manualLayout: _, ...rest } = layouted
@@ -233,28 +237,32 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
         Position.create(content.split('\n').length - 1, 1),
       ),
     }
-    logger.debug`write snapshot of ${layouted.id} in project ${project.id} to ${file.fsPath}`
+    logger.debug`write snapshot of ${layouted.id} to ${workspaceRelativePath}`
     const fs = this.services.workspace.FileSystemProvider
     try {
       await fs.writeFile(file, content + '\n')
+      // Clean cache after successful write
+      this.cache.delete(project.id)
       this.triggerUpdate({
         updated: file,
         projectId: project.id,
         viewId: layouted.id,
       })
     } catch (err) {
-      logger.warn(`Failed to write snapshot ${layouted.id} to ${file.fsPath}`, { err })
+      logger.warn(`Failed to write snapshot {viewId} to {workspaceRelativePath}`, {
+        viewId: layouted.id,
+        workspaceRelativePath,
+        err,
+      })
     }
     return location
   }
 
   async remove(project: Project, view: ViewId): Promise<Location | null> {
-    // Clean cache first
-    this.cache.delete(project.id)
-
     const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(view))
+    const workspaceRelativePath = this.services.workspace.WorkspaceManager.relativePath(file)
 
     logger.debug`delete snapshot of ${view} in project ${project.id}. File: ${file.fsPath}`
 
@@ -269,13 +277,19 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
         logger.warn`Snapshot ${view} did not exist at ${file.fsPath}`
         return null
       }
+      // Clean cache after successful deletion
+      this.cache.delete(project.id)
       this.triggerUpdate({
         removed: file,
         projectId: project.id,
         viewId: view,
       })
     } catch (err) {
-      logger.warn(`Failed to delete snapshot ${view} from ${file.fsPath}`, { err })
+      logger.warn(`Failed to delete snapshot {viewId} from {workspaceRelativePath}`, {
+        viewId: view,
+        workspaceRelativePath,
+        err,
+      })
     }
     return location
   }

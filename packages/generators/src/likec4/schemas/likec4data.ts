@@ -1,4 +1,3 @@
-import { LikeC4StylesConfigSchema } from '@likec4/config'
 import { produce } from 'immer'
 import { entries, isDeepEqual, isEmptyish, mapValues } from 'remeda'
 import * as z from 'zod/v4'
@@ -11,20 +10,18 @@ const likec4dataPreTransform = z
   .object({
     ...model.schema.shape,
     views: views,
-    project: z.object({
-      id: z.string(),
-      styles: LikeC4StylesConfigSchema.nullish(),
-    }),
     deployment: deployment.schema,
     deployments: deployment.schema,
     specification: specification.schema,
   })
   .partial()
-  .readonly()
 
-export const likec4data = likec4dataPreTransform.transform(normalizeStyles)
+export interface ZLikeC4Data extends z.ZodObject<typeof likec4dataPreTransform.shape> {
+}
 
-type LikeC4Data = z.output<typeof likec4dataPreTransform>
+export const likec4data: ZLikeC4Data = likec4dataPreTransform.transform(normalizeStyles) as any
+
+type LikeC4Data = z.output<ZLikeC4Data>
 type ElementData = z.output<typeof model.element>
 type ElementSpecificationData = z.output<typeof specification.element>
 
@@ -62,12 +59,13 @@ function normalizeElementStyles(element: ElementData, specs: Record<string, Elem
         delete draft[key]
       }
     }
-    if (!element.style) {
+    const elementStyle = element.style
+    if (!elementStyle) {
       return
     }
     // Remove style properties that are the same as the specification
     for (const [key, value] of entries(specStyle)) {
-      if (isDeepEqual(element.style?.[key], value)) {
+      if (isDeepEqual(elementStyle[key], value)) {
         delete draft.style![key]
       }
     }

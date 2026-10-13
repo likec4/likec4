@@ -25,6 +25,7 @@ export default defineConfig([
       'src/model/builder.ts',
       'src/model/index.ts',
       'src/cli/index.ts',
+      'src/generators/likec4/index.ts',
       'src/index.ts',
     ],
     platform: 'node',

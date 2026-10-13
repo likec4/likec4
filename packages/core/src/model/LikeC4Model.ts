@@ -26,6 +26,8 @@ import type {
   AnyComputed,
   AnyLayouted,
   AnyParsed,
+  AuxComputed,
+  AuxLayouted,
   Unknown,
   UnknownComputed,
   UnknownLayouted,
@@ -102,6 +104,8 @@ export class LikeC4Model<A extends Any = Any> {
     return new LikeC4Model(model)
   }
 
+  private static instances = new WeakMap<object, LikeC4Model<any>>()
+
   /**
    * Creates a new LikeC4Model instance from the provided model data.
    * Model with parsed data will not have views, as they must be computed
@@ -121,7 +125,12 @@ export class LikeC4Model<A extends Any = Any> {
   static create<M extends LikeC4ModelData<any>>(model: M): LikeC4Model<AuxFromLikeC4ModelData<M>>
   static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T>
   static create<T extends Any>(model: $ModelData<T>): LikeC4Model<T> {
-    return new LikeC4Model(model)
+    let instance = this.instances.get(model)
+    if (!instance) {
+      instance = new LikeC4Model(model)
+      this.instances.set(model, instance)
+    }
+    return instance
   }
 
   /**
@@ -356,7 +365,7 @@ export class LikeC4Model<A extends Any = Any> {
    * Returns the Project ID associated with the model.
    * If the project ID is not defined in the model, it returns "default".
    */
-  get projectId(): aux.ProjectId<A> {
+  get projectId(): aux.StrictProjectId<A> {
     return this.$data.projectId ?? 'default' as any
   }
 
@@ -422,8 +431,9 @@ export class LikeC4Model<A extends Any = Any> {
    * @example
    * model.findElement('cloud.frontend')
    */
-  public findElement(el: aux.LooseElementId<A>): ElementModel<A> | null {
-    return this._elements.get(getId(el)) ?? null
+  public findElement<Id extends aux.LooseElementId<A>>(id: Id | { id: Id }): ElementModel<A> | null {
+    const idValue = typeof id === 'string' ? id : id.id
+    return this._elements.get(idValue as unknown as aux.Fqn<A>) ?? null
   }
 
   /**
@@ -926,7 +936,7 @@ export class LikeC4Model<A extends Any = Any> {
 export type AnyLikeC4Model = LikeC4Model<any>
 
 export namespace LikeC4Model {
-  export const EMPTY: LikeC4Model<Unknown> = LikeC4Model.create<Unknown>({
+  export const EMPTY: LikeC4Model<Unknown> = new LikeC4Model<Unknown>({
     _stage: 'computed' as 'computed' | 'layouted',
     projectId: 'default' as never,
     project: { id: 'default' as never },
@@ -964,7 +974,7 @@ export namespace LikeC4Model {
     IsAny<A> extends true
       ? LikeC4Model<AnyComputed>
       : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
-        ? LikeC4Model<Aux<'computed', E, D, V, PID, Spec>>
+        ? LikeC4Model<AuxComputed<E, D, V, PID, Spec>>
         : LikeC4Model<UnknownComputed>
 
   export type Layouted<A = unknown> =
@@ -972,7 +982,7 @@ export namespace LikeC4Model {
     IsAny<A> extends true
       ? LikeC4Model<AnyLayouted>
       : A extends Aux<any, infer E, infer D, infer V, infer PID, infer Spec>
-        ? LikeC4Model<Aux<'layouted', E, D, V, PID, Spec>>
+        ? LikeC4Model<AuxLayouted<E, D, V, PID, Spec>>
         : LikeC4Model<UnknownLayouted>
 
   export type Node<A = Any> = A extends Any ? NodeModel<A> : never

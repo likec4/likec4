@@ -104,8 +104,8 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     // const viewEdges = this.view.edges
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, last())
+    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first())
 
     const edgeParentId = edge.parent
 

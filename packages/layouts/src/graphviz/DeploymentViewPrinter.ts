@@ -79,8 +79,8 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
   override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     // const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
     const [sourceFqn, targetFqn] = [edge.source, edge.target]
-    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, last())
+    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first())
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 

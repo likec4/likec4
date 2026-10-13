@@ -1,5 +1,5 @@
 import { isEmpty, isEmptyish, isShallowEqual } from 'remeda'
-import type { AnyAux, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
+import type { Any, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
 import {
   type Relationship,
   type RelationshipLineType,
@@ -17,14 +17,21 @@ import type { LikeC4Model } from './LikeC4Model'
 import type { WithMetadata, WithTags } from './types'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
-export type RelationshipsIterator<A extends AnyAux> = IteratorLike<RelationshipModel<A>>
+export type RelationshipsIterator<A extends Any> = IteratorLike<RelationshipModel<A>>
 
 /**
  * A relationship between two elements (in logical or deployment model)
  * use {@link isDeploymentRelationModel} guard to check if the relationship is a deployment relationship
  */
-export interface AnyRelationshipModel<A extends AnyAux = AnyAux> extends WithTags<A>, WithMetadata<A> {
+export interface AnyRelationshipModel<
+  A extends Any = Any,
+  Boundary extends { id: string } = { id: string },
+  Endpoint extends { id: string } = { id: string },
+> extends WithTags<A>, WithMetadata<A> {
   readonly id: scalar.RelationId
+  readonly boundary: Boundary | null
+  readonly source: Endpoint
+  readonly target: Endpoint
   readonly expression: string
   readonly title: string | null
   readonly technology: string | null
@@ -44,7 +51,8 @@ export interface AnyRelationshipModel<A extends AnyAux = AnyAux> extends WithTag
   views(): ViewsIterator<A>
 }
 
-export class RelationshipModel<A extends AnyAux = AnyAux> implements AnyRelationshipModel<A> {
+export class RelationshipModel<A extends Any = Any>
+  implements AnyRelationshipModel<A, ElementModel<A>, ElementModel<A>> {
   public readonly source: ElementModel<A>
   public readonly target: ElementModel<A>
 

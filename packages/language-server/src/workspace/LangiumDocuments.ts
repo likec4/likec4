@@ -8,7 +8,7 @@ import { compareByUri } from '../utils/compareByUri'
 import type { ProjectsManager } from './ProjectsManager'
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
-  constructor(protected services: LikeC4SharedServices) {
+  constructor(protected override services: LikeC4SharedServices) {
     super(services)
   }
 
@@ -16,34 +16,33 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
     return this.services.workspace.ProjectsManager
   }
 
-  override addDocument(document: LangiumDocument): void {
-    const uriString = document.uri.toString()
-    if (this.documentMap.has(uriString)) {
-      throw new Error(`A document with the URI '${uriString}' is already present.`)
-    }
+  /**
+   * Documents sorted by URI (natural hierarchical order), lazily computed.
+   * Langium's trie keeps tree order, but model building relies on stable URI order.
+   */
+  private sortedDocuments: LangiumDocument[] | null = null
 
+  private get sorted(): readonly LangiumDocument[] {
+    return this.sortedDocuments ??= this.documentTrie.all().sort(compareByUri)
+  }
+
+  override addDocument(document: LangiumDocument): void {
     if (isLikeC4UserDocument(document)) {
       // Set project ID
       document.likec4ProjectId = this.projectsManager.ownerProjectId(document)
     }
+    super.addDocument(document)
+    this.sortedDocuments = null
+  }
 
-    // Optimization: check if new document comes after the last one
-    const docs = [...this.documentMap.values()]
-    const lastDoc = docs.at(-1)
+  override deleteDocument(uri: URI): LangiumDocument | undefined {
+    this.sortedDocuments = null
+    return super.deleteDocument(uri)
+  }
 
-    if (!lastDoc || compareByUri(lastDoc, document) <= 0) {
-      // New document comes after the last one (or map is empty), just add it
-      this.documentMap.set(uriString, document)
-      return
-    }
-
-    // New document needs to be inserted somewhere in the middle, resort all
-    docs.push(document)
-    docs.sort(compareByUri)
-    this.documentMap.clear()
-    for (const doc of docs) {
-      this.documentMap.set(doc.uri.toString(), doc)
-    }
+  override deleteDocuments(folder: URI): LangiumDocument[] {
+    this.sortedDocuments = null
+    return super.deleteDocuments(folder)
   }
 
   override getDocument(uri: URI): LangiumDocument | undefined {
@@ -59,14 +58,14 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    * Returns all user documents
    */
   get userDocuments(): Stream<LikeC4LangiumDocument> {
-    return stream(this.documentMap.values())
+    return stream(this.sorted)
       .filter((doc): doc is LikeC4LangiumDocument => isLikeC4UserDocument(doc) && !this.projectsManager.isExcluded(doc))
   }
   /**
    * Returns all documents (ensures project IDs are set)
    */
   override get all(): Stream<LangiumDocument> {
-    return stream(this.documentMap.values()).map((doc) => {
+    return stream(this.sorted).map((doc) => {
       if (isLikeC4UserDocument(doc)) {
         doc.likec4ProjectId = this.projectsManager.ownerProjectId(doc)
       }
@@ -79,7 +78,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    */
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
     const projects = this.services.workspace.ProjectsManager
-    return stream(this.documentMap.values())
+    return stream(this.sorted)
       .filter((doc): doc is LikeC4LangiumDocument => {
         if (isLikeC4UserDocument(doc) && projects.isIncluded(projectId, doc)) {
           doc.likec4ProjectId = projectId
@@ -107,7 +106,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    */
   resetProjectIds(): URI[] {
     const uris = [] as URI[]
-    for (const doc of this.documentMap.values()) {
+    for (const doc of this.sorted) {
       delete doc.likec4ProjectId
       if (isLikeC4UserDocument(doc) && !this.projectsManager.isExcluded(doc)) {
         uris.push(doc.uri)

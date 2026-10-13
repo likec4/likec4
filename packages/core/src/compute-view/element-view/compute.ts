@@ -336,7 +336,7 @@ export function computeElementView<A extends AnyAux>(
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
       ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
     },
-    edges: applyCustomRelationProperties(rules, nodes, sorted.edges),
+    edges: applyCustomRelationProperties(rules, nodes, sorted.edges, likec4model),
     nodes: map(nodes, n => {
       if (n.icon === 'none') {
         delete n.icon

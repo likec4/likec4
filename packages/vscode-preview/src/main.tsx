@@ -1,5 +1,5 @@
 import { LikeC4MantineProvider } from '@likec4/diagram'
-import { LoadingOverlay, MantineProvider } from '@mantine/core'
+import { LoadingOverlay } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { QueryClientProvider, useIsFetching } from '@tanstack/react-query'
 import ReactDOM from 'react-dom/client'
