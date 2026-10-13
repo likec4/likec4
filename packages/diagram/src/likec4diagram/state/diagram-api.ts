@@ -150,6 +150,13 @@ export class DiagramApi<A extends Any = Unknown> {
     this.send({ type: 'open.elementDetails', fqn, fromNode })
   }
 
+  /**
+   * Open deployment node or deployed instance details.
+   */
+  openDeploymentDetails(fqn: t.aux.DeploymentFqn<A>, fromNode?: NodeId): void {
+    this.send({ type: 'open.deploymentDetails', fqn, fromNode })
+  }
+
   openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void {
     if (params.length === 1) {
       this.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })

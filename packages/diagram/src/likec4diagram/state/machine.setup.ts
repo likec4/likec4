@@ -12,6 +12,7 @@ import {
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import type {
+  DeploymentFqn,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -260,6 +261,7 @@ export type Events =
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
   | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
+  | { type: 'open.deploymentDetails'; fqn: DeploymentFqn; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn; scope?: RelationshipBrowserScope | undefined }
   | { type: 'open.search'; search?: string }
@@ -429,6 +431,11 @@ export const machine = setup({
     'click: node has modelFqn': ({ event }) => {
       assertEvent(event, 'xyflow.nodeClick')
       return 'modelFqn' in event.node.data
+    },
+    'click: node has details': ({ event }) => {
+      assertEvent(event, 'xyflow.nodeClick')
+      const data = event.node.data
+      return ('deploymentFqn' in data && !!data.deploymentFqn) || ('modelFqn' in data && !!data.modelFqn)
     },
     'click: selected node': ({ event }) => {
       assertEvent(event, 'xyflow.nodeClick')
