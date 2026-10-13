@@ -76,6 +76,24 @@ function testView(nodes: DiagramNode[], edges: DiagramEdge[]): TestView {
 }
 
 describe('diagramToXY accessibility', () => {
+  it('preserves deployment leaf descriptions without a logical reference', () => {
+    const { modelRef: _modelRef, ...deployment } = testNode('prod', {
+      deploymentRef: scalar.DeploymentFqn('prod'),
+      description: { md: '**Production** environment' },
+    })
+    const view: TestView = { ...testView([deployment], []), _type: 'deployment' }
+    const { xynodes: [node] } = diagramToXY({ view, currentViewId: undefined, where: null })
+
+    expect(node).toMatchObject({
+      type: 'deployment',
+      data: {
+        modelFqn: null,
+        deploymentFqn: 'prod',
+        description: { md: '**Production** environment' },
+      },
+    })
+  })
+
   it('adds screen-reader labels to element nodes and relationship edges', () => {
     const customer = testNode('customer', {
       title: 'Customer',
