@@ -84,7 +84,7 @@
         "build"
       ],
       "outputs": [
-        "package.tgz"
+        "*.tgz"
       ],
       "outputLogs": "new-only"
     },

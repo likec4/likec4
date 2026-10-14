@@ -38,7 +38,7 @@
   "scripts": {
     "sources": "tsdown",
     "typecheck": "tsc",
-    "prepack": "likec4ops prepack",
+    "prepack": "likec4ops rm *.tgz",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",
