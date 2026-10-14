@@ -10,6 +10,14 @@ export { DefaultIconRenderer, IconRendererProvider } from './context/IconRendere
 export { MaxZoom, MinZoom } from './base/const'
 
 export {
+  type NodeConnectionBoundaryEnd,
+  NodeConnectionBoundaryProvider,
+  type NodeConnectionBoundaryRequest,
+  type NodeConnectionBoundaryResolver,
+  useNodeConnectionBoundaryResolver,
+} from './context/NodeConnectionBoundary'
+
+export {
   LikeC4Diagram,
   type LikeC4DiagramProps,
 } from './LikeC4Diagram'
