@@ -37,5 +37,5 @@
     "wrangler": "^4.149.0",
     "zx": "^8.8.5"
   },
-  "packageManager": "pnpm@11.25.0"
+  "packageManager": "pnpm@11.28.5"
 }

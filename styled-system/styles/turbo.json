@@ -13,6 +13,9 @@
         "dist/**"
       ]
     },
+    "generate": {
+      "dependsOn": ["sources"],
+    },
     "pack": {
       "dependsOn": ["sources"],
       "inputs": [
