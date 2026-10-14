@@ -8,12 +8,36 @@
       "dependsOn": [
         "@likec4/icons#generate"
       ],
+      "inputs": [
+        "langium-config.json",
+        "src/like-c4.langium"
+      ],
       "outputs": [
         "contrib/**",
         "src/generated/**",
-        "src/generated-lib/**"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^typecheck",
+        "sources",
+        "generate"
+      ],
+      "inputs": [
+        "src/**/*.{js,jsx,mjs,ts,tsx,mts}",
+        "*.tsconfig*",
+        "!src/like-c4.langium",
+        "!src/generated/**",
+        {
+          "mode": "jit",
+          "globs": ["src/generated/**"],
+        },
+      ],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
       ],
       "outputLogs": "new-only"
-    }
+    },
   }
 }

@@ -6,19 +6,22 @@
   "tasks": {
     "sources": {
       "dependsOn": [
-        "^sources"
+        "@likec4/style-preset#sources"
       ],
+      "cache": true,
       "outputs": [
         "dist/**"
       ]
     },
-    "generate": {
+    "pack": {
       "dependsOn": ["sources"],
-      "cache": false
-    },
-    "build": {
-      "dependsOn": ["sources"],
-      "cache": false
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        {
+          "mode": "jit",
+          "globs": ["dist/**"],
+        },
+      ],
     }
   }
 }

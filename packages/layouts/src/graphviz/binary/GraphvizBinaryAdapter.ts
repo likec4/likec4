@@ -1,7 +1,6 @@
 import { memoizeProp } from '@likec4/core/utils'
 import { loggable, rootLogger as mainLogger } from '@likec4/log'
 import spawn, { SubprocessError } from 'nano-spawn'
-import os from 'node:os'
 import { isEmpty, randomString } from 'remeda'
 import which from 'which'
 import type { GraphvizPort } from '../GraphvizLayoter'
@@ -12,6 +11,8 @@ const rootLogger = mainLogger.getChild(['graphviz', 'binary'])
 export class GraphvizBinaryAdapter implements GraphvizPort {
   private _dotpath: string | undefined
   private _unflattenpath: string | undefined
+
+  public concurrency: number = 4
 
   constructor(
     /**
@@ -39,10 +40,6 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
 
   [Symbol.dispose](): void {
     // do nothing for now
-  }
-
-  get concurrency() {
-    return Math.max(1, os.availableParallelism() - 2)
   }
 
   get dotpath() {

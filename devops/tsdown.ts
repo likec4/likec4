@@ -26,11 +26,20 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
     inputOptions: {
       resolve: {
         mainFields: ['module', 'main'],
-        conditionNames: ['sources', 'import', 'default'],
+        conditionNames: ['sources', 'module', 'import', 'default'],
+      },
+      onLog(level, log, defaultHandler) {
+        if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return // Ignore module level directive warnings
+        }
+        defaultHandler(level, log) // otherwise, just print the log
       },
     },
     deps: {
       onlyBundle: false,
+    },
+    checks: {
+      bundlerTimings: false,
     },
     ...config,
   }

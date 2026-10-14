@@ -40,6 +40,7 @@ const main = defineCommand({
       },
       mode: 'development',
       css: {
+        transformer: 'postcss',
         postcss: {
           plugins: [
             postcssPanda() as any,
@@ -56,7 +57,7 @@ const main = defineCommand({
         conditions: ['sources', 'import', 'default'],
         alias: {
           // Local paths for dev
-          'likec4/react': resolve('../react/src/index.ts'),
+          'likec4/react': resolve('../react/dist/index.mjs'),
           '@likec4/diagram/adhoc-editor': resolve('../diagram/src/adhoc-editor/index.ts'),
           '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
           '@likec4/diagram': resolve('../diagram/src/index.ts'),
@@ -65,10 +66,9 @@ const main = defineCommand({
       },
       plugins: [
         TanStackRouterVite(),
-        react(),
-        babel({
-          presets: [reactCompilerPreset()],
-        }) as any,
+        react({
+          compiler: true,
+        }),
         LikeC4VitePlugin({
           workspace,
           logLevel: context.args.verbose ? 'trace' : 'debug',

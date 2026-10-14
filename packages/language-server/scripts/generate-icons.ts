@@ -65,7 +65,7 @@ export const LibIcons: string = [
 ].join('\\n')
 `
 
-mkdirSync('src/generated-lib', { recursive: true })
-writeFileSync('src/generated-lib/icons.ts', source, 'utf-8')
+mkdirSync('src/generated', { recursive: true })
+writeFileSync('src/generated/icons.ts', source, 'utf-8')
 
-console.info(`Generated src/generated-lib/icons.ts with`, added, `icons`)
+console.info(`Generated src/generated/icons.ts with`, added, `icons`)

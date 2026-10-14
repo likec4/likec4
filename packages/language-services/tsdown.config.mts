@@ -5,6 +5,11 @@ export default defineConfig({
     'src/node/index.ts',
     'src/browser/index.ts',
   ],
-  platform: 'neutral',
-  minify: false,
+  unbundle: true,
+  deps: {
+    neverBundle: [
+      /^vscode-/,
+      /^node:/,
+    ],
+  },
 })

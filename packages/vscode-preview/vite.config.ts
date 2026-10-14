@@ -1,6 +1,6 @@
 import postcssPanda from '@pandacss/dev/postcss'
-import babel from '@rolldown/plugin-babel'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
+import { execSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -9,9 +9,7 @@ export default defineConfig(({ mode }) => {
   const isDev = isWatchDev || mode === 'development'
   return {
     resolve: {
-      conditions: ['sources'],
-      // Prefer .ts/.tsx over .js so diagram src is used (avoid CJS .js in diagram/src)
-      extensions: ['.ts', '.tsx', '.mts', '.mjs', '.js', '.jsx', '.json'],
+      conditionNames: ['sources', 'module', 'import', 'default'],
       alias: {
         '@likec4/styles': resolve('styled-system'),
       },
@@ -61,10 +59,22 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      react(),
-      babel({
-        presets: [reactCompilerPreset()],
+      react({
+        compiler: true,
       }),
+      {
+        name: 'ship-panda',
+        buildApp: {
+          order: 'pre',
+          handler() {
+            this.info('shipping panda')
+            execSync('pandacss codegen --clean', {
+              stdio: 'inherit',
+              cwd: process.cwd(),
+            })
+          },
+        },
+      },
     ],
   }
 })
