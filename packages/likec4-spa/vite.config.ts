@@ -2,6 +2,7 @@ import { codeSplittingGroup, nodeModulesCodeSplitting } from '@likec4/devops/tsd
 import postcssPanda from '@pandacss/dev/postcss'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
+import { execSync } from 'child_process'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import { $, fs } from 'zx'
@@ -104,8 +105,11 @@ export default defineConfig({
       buildStart: {
         order: 'pre',
         handler() {
-          fs.emptyDirSync('styled-system')
-          $`pandacss codegen`
+          this.info('Generating Panda CSS files...')
+          execSync('pnpm pandacss codegen', {
+            stdio: 'inherit',
+            cwd: process.cwd(),
+          })
         },
       },
       writeBundle(opts) {
