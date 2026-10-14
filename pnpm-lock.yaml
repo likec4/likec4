@@ -526,7 +526,7 @@ overrides:
 
 patchedDependencies:
   chroma-js@3.2.0: d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c
-  use-sync-external-store: 034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2
+  use-sync-external-store: 3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b
 
 importers:
 
@@ -2312,7 +2312,7 @@ importers:
         version: 1.6.4
       use-sync-external-store:
         specifier: catalog:react
-        version: 1.7.0(patch_hash=034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2)(react@19.3.0)
+        version: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
       vite:
         specifier: catalog:vite
         version: 8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -2712,7 +2712,7 @@ importers:
         version: 6.0.3
       use-sync-external-store:
         specifier: catalog:react
-        version: 1.7.0(patch_hash=034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2)(react@19.3.0)
+        version: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
       vite:
         specifier: catalog:vite
         version: 8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -14228,7 +14228,7 @@ snapshots:
       '@tanstack/store': 0.7.0
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      use-sync-external-store: 1.7.0(patch_hash=034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2)(react@19.3.0)
+      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
 
   '@tanstack/router-cli@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))':
     dependencies:
@@ -14817,7 +14817,7 @@ snapshots:
     dependencies:
       react: 19.3.0
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.3.0)(react@19.3.0)
-      use-sync-external-store: 1.7.0(patch_hash=034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2)(react@19.3.0)
+      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
     optionalDependencies:
       xstate: 5.33.2
     transitivePeerDependencies:
@@ -19678,7 +19678,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  use-sync-external-store@1.7.0(patch_hash=034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2)(react@19.3.0):
+  use-sync-external-store@1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0):
     dependencies:
       react: 19.3.0
 
@@ -20241,7 +20241,7 @@ snapshots:
 
   zustand@4.5.7(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0):
     dependencies:
-      use-sync-external-store: 1.7.0(patch_hash=034cf6a06ba58de0135162a260a8502c9d066f5826ae1fc4d582d4b5f53566b2)(react@19.3.0)
+      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
     optionalDependencies:
       '@types/react': 19.3.0
       immer: 11.1.21

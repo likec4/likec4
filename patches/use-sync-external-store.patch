@@ -1,11 +1,11 @@
 diff --git a/index.js b/index.js
 deleted file mode 100644
 index 303d4b916e8f72b7c8cf8ea81995971e086c2cd5..0000000000000000000000000000000000000000
-diff --git a/index.ts b/index.ts
+diff --git a/index.mjs b/index.mjs
 new file mode 100644
 index 0000000000000000000000000000000000000000..bf1be14ab8314132d26c8202fc6d78c2b702e9eb
 --- /dev/null
-+++ b/index.ts
++++ b/index.mjs
 @@ -0,0 +1,12 @@
 +import { useSyncExternalStore } from 'react'
 +
@@ -20,7 +20,7 @@ index 0000000000000000000000000000000000000000..bf1be14ab8314132d26c8202fc6d78c2
 +
 +export { useSyncExternalStore }
 diff --git a/package.json b/package.json
-index d459420d8476ee7c49bebf94d98c3220968000bc..41cc56f25c6e66a4ed0c093a13a6a8d5aae1b077 100644
+index d459420d8476ee7c49bebf94d98c3220968000bc..914e0ae70ea6097b3111e30a72e64df874a3d7b7 100644
 --- a/package.json
 +++ b/package.json
 @@ -2,19 +2,15 @@
@@ -41,13 +41,13 @@ index d459420d8476ee7c49bebf94d98c3220968000bc..41cc56f25c6e66a4ed0c093a13a6a8d5
 -    "./shim/index.native.js": "./shim/index.native.js",
 -    "./shim/with-selector": "./shim/with-selector.js",
 -    "./shim/with-selector.js": "./shim/with-selector.js",
-+    ".": "./index.ts",
-+    "./with-selector": "./with-selector.ts",
-+    "./with-selector.js": "./with-selector.ts",
-+    "./shim": "./index.ts",
-+    "./shim/index.js": "./index.ts",
-+    "./shim/with-selector": "./with-selector.ts",
-+    "./shim/with-selector.js": "./with-selector.ts",
++    ".": "./index.mjs",
++    "./with-selector": "./with-selector.mjs",
++    "./with-selector.js": "./with-selector.mjs",
++    "./shim": "./index.mjs",
++    "./shim/index.js": "./index.mjs",
++    "./shim/with-selector": "./with-selector.mjs",
++    "./shim/with-selector.js": "./with-selector.mjs",
      "./package.json": "./package.json"
    },
    "repository": {
@@ -59,8 +59,8 @@ index d459420d8476ee7c49bebf94d98c3220968000bc..41cc56f25c6e66a4ed0c093a13a6a8d5
 -    "index.native.js",
 -    "with-selector.js",
 -    "with-selector.native.js",
-+    "index.ts",
-+    "with-selector.ts",
++    "index.mjs",
++    "with-selector.mjs",
      "shim/",
      "cjs/"
    ],
@@ -74,12 +74,12 @@ index d459420d8476ee7c49bebf94d98c3220968000bc..41cc56f25c6e66a4ed0c093a13a6a8d5
 diff --git a/with-selector.js b/with-selector.js
 deleted file mode 100644
 index c0d0da3b43d46a04d00aa0acdffa66bbdf681ee9..0000000000000000000000000000000000000000
-diff --git a/with-selector.ts b/with-selector.ts
+diff --git a/with-selector.mjs b/with-selector.mjs
 new file mode 100644
-index 0000000000000000000000000000000000000000..4a9f834f4669a13d9dab7638e8fc85c72a04c7f1
+index 0000000000000000000000000000000000000000..4479bba77f09877856e7c0ce9c03265c4225515c
 --- /dev/null
-+++ b/with-selector.ts
-@@ -0,0 +1,127 @@
++++ b/with-selector.mjs
+@@ -0,0 +1,132 @@
 +import { useDebugValue, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 +
 +/**
@@ -90,26 +90,31 @@ index 0000000000000000000000000000000000000000..4a9f834f4669a13d9dab7638e8fc85c7
 + * @link https://github.com/react/react/blob/main/packages/use-sync-external-store/src/useSyncExternalStoreWithSelector.js
 + */
 +
-+function useSyncExternalStoreWithSelector<Snapshot, Selection>(
-+  subscribe: (onStoreChange: () => void) => () => void,
-+  getSnapshot: () => Snapshot,
-+  getServerSnapshot: void | null | (() => Snapshot),
-+  selector: (snapshot: Snapshot) => Selection,
-+  isEqual?: (a: Selection, b: Selection) => boolean,
-+): Selection {
-+  type Inst =
-+    | {
-+      hasValue: true
-+      value: Selection
-+    }
-+    | {
-+      hasValue: false
-+      value: null
-+    }
++/**
++ * A hook that subscribes to an external store and selects a specific value from it.
++ * @template Snapshot
++ * @template Selection
++ * @param {function(function(): void): function(): void} subscribe - Function to subscribe to store changes
++ * @param {function(): Snapshot} getSnapshot - Function to get the current snapshot
++ * @param {void | null | function(): Snapshot} getServerSnapshot - Function to get the server snapshot (for SSR)
++ * @param {function(Snapshot): Selection} selector - Function to select a value from the snapshot
++ * @param {function(Selection, Selection): boolean} [isEqual] - Optional function to compare selections for equality
++ * @returns {Selection} The selected value from the store
++ */
++function useSyncExternalStoreWithSelector(
++  subscribe,
++  getSnapshot,
++  getServerSnapshot,
++  selector,
++  isEqual,
++) {
++  /**
++   * @typedef {{hasValue: true, value: Selection} | {hasValue: false, value: null}} Inst
++   */
 +
 +  // Use this to track the rendered snapshot.
-+  const instRef = useRef<Inst | null>(null)
-+  let inst: Inst
++  const instRef = useRef(null)
++  let inst
 +  if (instRef.current === null) {
 +    inst = {
 +      hasValue: false,
@@ -126,9 +131,9 @@ index 0000000000000000000000000000000000000000..4a9f834f4669a13d9dab7638e8fc85c7
 +    // useRef hook, because that state would be shared across all concurrent
 +    // copies of the hook/component.
 +    let hasMemo = false
-+    let memoizedSnapshot: Snapshot
-+    let memoizedSelection: Selection
-+    const memoizedSelector = (nextSnapshot: Snapshot) => {
++    let memoizedSnapshot
++    let memoizedSelection
++    const memoizedSelector = (nextSnapshot) => {
 +      if (!hasMemo) {
 +        // The first time the hook is called, there is no memoized result.
 +        hasMemo = true
@@ -151,8 +156,8 @@ index 0000000000000000000000000000000000000000..4a9f834f4669a13d9dab7638e8fc85c7
 +      }
 +
 +      // We may be able to reuse the previous invocation's result.
-+      const prevSnapshot: Snapshot = memoizedSnapshot
-+      const prevSelection: Selection = memoizedSelection
++      const prevSnapshot = memoizedSnapshot
++      const prevSelection = memoizedSelection
 +
 +      if (Object.is(prevSnapshot, nextSnapshot)) {
 +        // The snapshot is the same as last time. Reuse the previous selection.
