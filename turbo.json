@@ -32,7 +32,7 @@
       "dependsOn": [
         "sources",
         "generate",
-        "^generate"
+        "^typecheck"
       ],
       "inputs": [
         "src/**/*.{js,jsx,mjs,ts,tsx,mts}",
