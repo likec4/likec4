@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       conditionNames: ['sources', 'module', 'import', 'default'],
       alias: {
+        '@likec4/diagram': resolve('..', 'diagram', 'src'),
         '@likec4/styles': resolve('styled-system'),
       },
     },
@@ -19,6 +20,7 @@ export default defineConfig(({ mode }) => {
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
     },
     css: {
+      transformer: 'postcss',
       postcss: {
         plugins: [
           postcssPanda() as any,
@@ -31,7 +33,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
+      outDir: isDev ? resolve('..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
       cssCodeSplit: true,
       cssMinify: true,

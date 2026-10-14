@@ -45,6 +45,7 @@
     "nanostores": "catalog:react",
     "oxc-transform-react": "catalog:tsdown",
     "postcss": "catalog:css",
+    "postcss-import": "catalog:css",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
