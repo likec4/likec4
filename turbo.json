@@ -25,6 +25,9 @@
       "outputs": [],
     },
     "generate": {
+      "dependsOn": [
+        "sources"
+      ],
       "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "outputs": [],
     },
@@ -47,6 +50,7 @@
     },
     "test": {
       "dependsOn": [
+        "sources",
         "generate",
         "^generate"
       ],
