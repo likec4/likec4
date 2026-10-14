@@ -4,9 +4,12 @@ import { createTestServices } from '../test'
 
 const markdown = '# Title\n\nSome **markdown**'
 
+/** The provider reports paths with the separators of the platform; the fixtures are written with `/` */
+const asPosix = (path: string) => path.replaceAll('\\', '/')
+
 function mockFiles(t: ReturnType<typeof createTestServices>, files: Record<string, string>) {
   const fs = t.services.shared.workspace.FileSystemProvider
-  vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[uri.fsPath] ?? '')
+  vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
 }
 
 describe('descriptionFile', () => {
@@ -172,7 +175,7 @@ describe('descriptionFile', () => {
     const t = createTestServices()
     const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
     const fs = t.services.shared.workspace.FileSystemProvider
-    vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[uri.fsPath] ?? '')
+    vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
     const descriptionFiles = t.services.shared.workspace.DescriptionFiles
 
     const doc = await t.validate(`
@@ -192,7 +195,7 @@ describe('descriptionFile', () => {
     const updated: string[] = []
     const subscription = descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
 
-    files[uri.fsPath] = '# second'
+    files[asPosix(uri.fsPath)] = '# second'
     await descriptionFiles.handleFileSystemUpdate({ update: uri })
 
     expect(descriptionFiles.get(doc.document.uri, 'spec.md')).toEqual({ content: '# second' })
@@ -313,7 +316,7 @@ it('registers a referenced file with the file system watcher', async ({ expect }
 
   // A file that was not referenced when the watcher scanned the folder is not tracked by it, so
   // its later edits would produce no events.
-  expect(watch.mock.calls.flat()).toContain('/test/workspace/src/spec.md')
+  expect(watch.mock.calls.flat().map(asPosix)).toContain('/test/workspace/src/spec.md')
   watch.mockRestore()
 })
 
@@ -321,7 +324,7 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
   const t = createTestServices()
   const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
   vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
-    .mockImplementation(async (uri: URI) => files[uri.fsPath] ?? '')
+    .mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
   const descriptionFiles = t.services.shared.workspace.DescriptionFiles
 
   await t.validate(`
