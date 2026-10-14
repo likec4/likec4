@@ -20,9 +20,12 @@
       "default": "./dist/index.mjs"
     },
     "./defaults": {
-      "types": "./dist/defaults/index.d.mts",
-      "import": "./dist/defaults/index.mjs",
-      "default": "./dist/defaults/index.mjs"
+      "sources": "./src/defaults/index.ts",
+      "default": {
+        "types": "./dist/defaults/index.d.mts",
+        "import": "./dist/defaults/index.mjs",
+        "default": "./dist/defaults/index.mjs"
+      }
     },
     "./src": "./src/index.ts"
   },
