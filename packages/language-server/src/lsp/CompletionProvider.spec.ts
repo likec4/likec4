@@ -380,6 +380,7 @@ describe('LikeC4CompletionProvider', () => {
         'description',
         'order',
         'link',
+        'routing',
         'include',
         'exclude',
         'global',

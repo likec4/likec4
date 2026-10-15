@@ -5,15 +5,19 @@
   ],
   "tasks": {
     "sources": {
-      "dependsOn": [
-        "^sources"
+      "dependsOn": ["@likec4/devops#sources"],
+      "inputs": [
+        "src/**",
+        "tsdown.config.mts"
       ],
+      "cache": true,
       "outputs": [
         "dist/**"
       ]
     },
-    "build": {
+    "pack": {
       "dependsOn": ["sources"],
+      "outputs": ["*.tgz"],
       "cache": false
     }
   }

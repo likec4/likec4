@@ -6,14 +6,22 @@
   "tasks": {
     "generate": {
       "inputs": [
-        "scripts/**",
-        "src/**/*.md",
-        "package.json"
+        "scripts/generate.ts",
+        "src/**/*.md"
       ],
       "outputs": [
         "src/**/*.generated.ts"
-      ],
-      "outputLogs": "new-only"
-    }
+      ]
+    },
+    "typecheck": {
+      "inputs": [
+        "$TURBO_EXTENDS$",
+        "!src/**/*.generated.ts",
+        {
+          "mode": "jit",
+          "globs": ["src/**/*.generated.ts"],
+        },
+      ]
+    },
   }
 }

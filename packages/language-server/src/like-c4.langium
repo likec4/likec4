@@ -392,7 +392,7 @@ type AnyProperty =
 ;
 
 ViewProperty:
-  ViewStringProperty | ViewOrderProperty | LinkProperty
+  ViewStringProperty | ViewOrderProperty | LinkProperty | ViewRoutingProperty
 ;
 
 ViewStringProperty:
@@ -400,6 +400,12 @@ ViewStringProperty:
 
 ViewOrderProperty:
   key='order' value=Number ';'?;
+
+ViewRoutingProperty:
+  key='routing' ':'? value=EdgeRoutingValue ';'?;
+
+EdgeRoutingValue returns string:
+  'spline' | 'ortho';
 
 ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
@@ -477,7 +483,7 @@ ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection (
     rankSep=Number (
       nodeSep=Number)?
-    )?;
+    )? (routing=EdgeRoutingValue)?;
 
 NotationProperty:
   key='notation' ':'? value=MarkdownOrString ';'?
@@ -1241,8 +1247,9 @@ Id returns string:
   IconPositionValue |
   SizingValue |
   RankValue |
+  EdgeRoutingValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing';
 
 HashId returns string:
   Hash Id;

@@ -47,7 +47,7 @@ import {
   checkSpecificationRule,
   checkTag,
 } from './specification'
-import { viewChecks, viewOrderChecks } from './view'
+import { viewChecks, viewOrderChecks, viewRuleAutoLayoutChecks } from './view'
 import { viewRuleRankChecks } from './view-checks'
 import {
   checkFqnExprWith,
@@ -201,6 +201,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ViewOrderProperty: viewOrderChecks(services),
     ModelDiff: modelDiffChecks(services),
     DiffRemoveEntry: diffRemoveEntryChecks(services),
+    ViewRuleAutoLayout: viewRuleAutoLayoutChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

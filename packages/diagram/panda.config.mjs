@@ -4,6 +4,6 @@ export default defineConfig({
   include: [
     'src/**/*.{ts,tsx}',
   ],
-  clean: true,
-  outdir: 'styled-system',
+  clean: false,
+  outdir: '../../styled-system/styles/dist',
 })

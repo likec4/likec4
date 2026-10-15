@@ -1,38 +1,18 @@
 {
   "name": "@likec4/config",
-  "version": "1.59.4",
-  "license": "MIT",
-  "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
+  "version": "1.60.0",
   "description": "A configuration package for LikeC4.",
+  "homepage": "https://likec4.dev",
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/config"
   },
-  "bugs": "https://github.com/likec4/likec4/issues",
-  "scripts": {
-    "generate": "tsx --conditions=sources scripts/generate.mts",
-    "typecheck": "tsc -b --verbose",
-    "build": "tsdown",
-    "lint:package": "pnpx publint ./package.tgz",
-    "clean": "likec4ops clean",
-    "prepack": "likec4ops prepack",
-    "pack": "pnpm pack",
-    "postpack": "likec4ops postpack"
-  },
-  "files": [
-    "dist",
-    "src",
-    "schema.json",
-    "**/package.json",
-    "!**/*.spec.ts",
-    "!**/*.test-d.ts",
-    "!**/__*/*",
-    "!**/*.map"
-  ],
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -65,43 +45,63 @@
     "./package.json": "./package.json",
     "./schema.json": "./schema.json"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
+  "files": [
+    "dist",
+    "src",
+    "schema.json",
+    "**/package.json",
+    "!**/*.spec.ts",
+    "!**/*.test-d.ts",
+    "!**/__*/*",
+    "!**/*.map"
+  ],
+  "scripts": {
+    "generate": "tsx --conditions=sources scripts/generate.mts",
+    "typecheck": "tsc -b --verbose",
+    "build": "tsdown",
+    "lint:package": "pnpx publint ./package.tgz",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
+    "pack": "pnpm pack",
+    "postpack": "likec4ops postpack"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "json5": "catalog:utils",
-    "zod": "catalog:externals",
-    "remeda": "catalog:utils",
+    "type-fest": "catalog:externals",
+    "zod": "catalog:externals"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
     "defu": "catalog:utils",
+    "nano-spawn": "catalog:externals",
+    "remeda": "catalog:utils",
+    "tsdown": "catalog:tsdown",
+    "tsx": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
     "ufo": "catalog:utils",
-    "type-fest": "catalog:externals"
+    "vitest": "catalog:vitest"
   },
   "peerDependencies": {
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild"
   },
   "peerDependenciesMeta": {
-    "esbuild": {
+    "bundle-require": {
       "optional": true
     },
-    "bundle-require": {
+    "esbuild": {
       "optional": true
     }
   },
-  "devDependencies": {
-    "@likec4/tsconfig": "workspace:*",
-    "@likec4/devops": "workspace:*",
-    "@types/node": "catalog:",
-    "tsx": "catalog:",
-    "turbo": "catalog:",
-    "typescript": "catalog:",
-    "tsdown": "catalog:tsdown",
-    "nano-spawn": "catalog:externals",
-    "vitest": "catalog:vitest"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }

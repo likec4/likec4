@@ -149,6 +149,7 @@ const baseViewProps = z.object({
   title: z.string().nullish().default(null),
   description: common.markdownOrString.nullish().default(null),
   order: z.number().int().nonnegative().optional(),
+  routing: z.literal(['spline', 'ortho']).optional(),
   tags: common.tags.nullish(),
   links: common.links.nullish(),
 })

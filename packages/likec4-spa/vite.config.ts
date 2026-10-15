@@ -1,8 +1,8 @@
 import { codeSplittingGroup, nodeModulesCodeSplitting } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
-import babel from '@rolldown/plugin-babel'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
+import { execSync } from 'child_process'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import { $, fs } from 'zx'
@@ -20,8 +20,6 @@ const externals = Object
   .keys({
     ...packageJson.dependencies,
   })
-  .filter((dep) => dep !== 'use-sync-external-store')
-// .filter(dep => dep !== 'react' && dep !== 'react-dom')
 
 export default defineConfig({
   mode: 'production',
@@ -29,6 +27,7 @@ export default defineConfig({
     'process.env.NODE_ENV': '"production"',
   },
   css: {
+    transformer: 'postcss',
     postcss: {
       plugins: [
         postcssPanda() as any,
@@ -36,23 +35,19 @@ export default defineConfig({
     },
   },
   resolve: {
+    mainFields: ['module', 'main'],
     conditions: ['sources', 'module', 'import', 'default'],
-    dedupe: [
-      'react',
-      'react-dom',
-    ],
     alias: {
-      'use-sync-external-store/shim/with-selector.js': 'use-sync-external-store/shim/with-selector',
       '@likec4/styles': resolve('styled-system'),
     },
   },
   build: {
     outDir: 'dist',
     assetsDir: 'src',
-    minify: true,
+    minify: false,
     target: 'esnext',
     assetsInlineLimit: 10_000_000,
-    cssMinify: 'esbuild',
+    // cssMinify: 'esbuild',
     cssCodeSplit: true,
     lib: {
       entry: {
@@ -66,6 +61,10 @@ export default defineConfig({
       formats: ['es'],
     },
     rolldownOptions: {
+      platform: 'neutral',
+      checks: {
+        bundlerTimings: false,
+      },
       treeshake: {
         moduleSideEffects: 'no-external',
       },
@@ -92,24 +91,30 @@ export default defineConfig({
       },
       external: [
         ...externals.map((dep) => new RegExp(`^${dep}(\\/.*)?$`)),
-        'use-sync-external-store/shim',
-        'use-sync-external-store/shim/with-selector',
         /^likec4(:|\/).+$/,
       ],
     },
   },
   plugins: [
     TanStackRouterVite(),
-    react(),
-    babel({
-      presets: [reactCompilerPreset()],
+    react({
+      compiler: true,
     }),
     {
       name: 'likec4-spa',
-      async buildStart() {
-        this.info('buildStart')
-        await fs.emptyDir('styled-system')
-        await $`pandacss codegen`
+      buildStart: {
+        order: 'pre',
+        handler() {
+          this.info('Generating Panda CSS files...')
+          execSync('pnpm pandacss codegen', {
+            stdio: 'inherit',
+            env: {
+              ...process.env,
+              NODE_ENV: 'production',
+            },
+            cwd: process.cwd(),
+          })
+        },
       },
       writeBundle(opts) {
         const indexDist = resolve(opts.dir!, 'index.html')

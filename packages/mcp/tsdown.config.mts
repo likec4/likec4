@@ -1,5 +1,5 @@
-import { createRequire } from 'node:module'
 import { defineConfig } from '@likec4/devops/tsdown'
+import { createRequire } from 'node:module'
 
 const require = createRequire(import.meta.url)
 
@@ -35,6 +35,14 @@ export default defineConfig([
     deps: {
       onlyBundle: false,
       alwaysBundle: [/.*/],
+    },
+    inputOptions: {
+      onLog(level, log, defaultHandler) {
+        if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return // Ignore module level directive warnings
+        }
+        defaultHandler(level, log) // otherwise, just print the log
+      },
     },
     outputOptions: {
       entryFileNames: '[name].js',

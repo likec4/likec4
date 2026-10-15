@@ -8,6 +8,8 @@ export default defineConfig({
     'src/sequence/index.ts',
     'src/index.ts',
   ],
+  unbundle: true,
+  minify: false,
   platform: 'neutral',
   hooks: {
     'build:before': async () => {

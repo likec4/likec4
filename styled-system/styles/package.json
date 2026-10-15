@@ -1,37 +1,18 @@
 {
   "name": "@likec4/styles",
+  "version": "1.60.0",
   "description": "Shared PandaCSS preset and generated styles, used in LikeC4",
-  "license": "MIT",
-  "version": "1.59.4",
-  "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "dev.mjs",
-    "**/package.json"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "styled-system/styles"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
-  },
-  "scripts": {
-    "sources": "pandacss codegen --clean",
-    "emit-pkg": "pandacss emit-pkg --base dist",
-    "clean": "likec4ops clean",
-    "prepack": "likec4ops prepack",
-    "build": "",
-    "pack": "pnpm pack",
-    "postpack": "likec4ops postpack",
-    "lint:package": "pnpx publint ./package.tgz"
-  },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": "./dev.mjs",
     "./css": {
@@ -62,8 +43,38 @@
     },
     "./dev": "./dev.mjs"
   },
+  "files": [
+    "dist",
+    "dev.mjs",
+    "**/package.json"
+  ],
+  "scripts": {
+    "sources": "pandacss codegen --clean",
+    "emit-pkg": "pandacss emit-pkg --base dist",
+    "clean": "likec4ops clean",
+    "prepack": "likec4ops prepack",
+    "build": "",
+    "pack": "pnpm pack",
+    "postpack": "likec4ops postpack",
+    "lint:package": "pnpx publint ./package.tgz"
+  },
   "dependencies": {
     "@likec4/style-preset": "workspace:*"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css",
+    "@types/node": "catalog:",
+    "@types/picomatch": "catalog:externals",
+    "@types/react": "catalog:react",
+    "nano-spawn": "catalog:externals",
+    "postcss": "catalog:css",
+    "react": "catalog:react",
+    "remeda": "catalog:utils",
+    "tsdown": "catalog:tsdown",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
@@ -71,26 +82,15 @@
     "react": "^19.3.0"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "@pandacss/types": {
       "optional": true
     },
-    "@pandacss/types": {
+    "react": {
       "optional": true
     }
   },
-  "devDependencies": {
-    "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css",
-    "@types/node": "catalog:",
-    "@likec4/devops": "workspace:*",
-    "@types/picomatch": "catalog:externals",
-    "@likec4/tsconfig": "workspace:*",
-    "@types/react": "catalog:react",
-    "react": "catalog:react",
-    "postcss": "catalog:css",
-    "remeda": "catalog:utils",
-    "nano-spawn": "catalog:externals",
-    "typescript": "catalog:",
-    "tsdown": "catalog:tsdown"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   }
 }

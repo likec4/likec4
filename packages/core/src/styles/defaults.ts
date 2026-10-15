@@ -16,4 +16,7 @@ export const styleDefaults: LikeC4StyleDefaults = {
     line: 'dashed',
     arrow: 'normal',
   },
+  view: {
+    routing: 'spline',
+  },
 }

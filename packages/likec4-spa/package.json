@@ -1,20 +1,20 @@
 {
   "name": "@likec4/spa",
+  "version": "1.60.0",
   "private": true,
   "description": "Single-page application for rendering architecture diagrams",
-  "version": "1.59.4",
-  "license": "MIT",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/likec4-spa"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": [
     "*.css"
   ],
+  "type": "module",
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --build --verbose",
@@ -35,8 +35,7 @@
     "@likec4/core": "workspace:*",
     "immer": "catalog:utils",
     "react": "catalog:react",
-    "react-dom": "catalog:react",
-    "use-sync-external-store": "catalog:react"
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
     "@dagrejs/dagre": "catalog:",
@@ -85,6 +84,7 @@
     "ky": "^1.14.3",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
+    "oxc-transform-react": "catalog:tsdown",
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
     "postcss": "catalog:css",
@@ -102,6 +102,7 @@
     "type-fest": "catalog:externals",
     "typescript": "catalog:",
     "ufo": "catalog:utils",
+    "use-sync-external-store": "catalog:react",
     "vite": "catalog:vite",
     "vite-plugin-dts": "catalog:vite",
     "vitest": "catalog:vitest",

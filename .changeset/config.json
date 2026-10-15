@@ -10,6 +10,9 @@
       "!@likec4/icons"
     ]
   ],
+  "ignore": [
+    "@likec4/devops"
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

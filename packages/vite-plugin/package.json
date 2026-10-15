@@ -1,28 +1,19 @@
 {
   "name": "@likec4/vite-plugin",
-  "description": "LikeC4 Vite Plugin",
+  "version": "1.60.0",
   "private": true,
-  "version": "1.59.4",
-  "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
+  "description": "LikeC4 Vite Plugin",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "src",
-    "**/package.json",
-    "!**/__mocks__/",
-    "!**/__tests__/",
-    "!**/*.spec.*",
-    "!**/*.map"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/vite-plugin"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -44,12 +35,15 @@
     "./modules": "./src/modules.d.ts",
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
-  },
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/__mocks__/",
+    "!**/__tests__/",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
@@ -87,36 +81,6 @@
     "ws": "catalog:ai",
     "zod": "catalog:externals"
   },
-  "peerDependencies": {
-    "@tanstack/ai": "catalog:ai",
-    "@tanstack/ai-anthropic": "catalog:ai",
-    "@tanstack/ai-gemini": "catalog:ai",
-    "@tanstack/ai-ollama": "catalog:ai",
-    "@tanstack/ai-openai": "catalog:ai",
-    "@tanstack/ai-openrouter": "catalog:ai",
-    "react": "catalog:react",
-    "vite": "catalog:vite"
-  },
-  "peerDependenciesMeta": {
-    "@tanstack/ai": {
-      "optional": true
-    },
-    "@tanstack/ai-anthropic": {
-      "optional": true
-    },
-    "@tanstack/ai-gemini": {
-      "optional": true
-    },
-    "@tanstack/ai-openai": {
-      "optional": true
-    },
-    "@tanstack/ai-ollama": {
-      "optional": true
-    },
-    "@tanstack/ai-openrouter": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/react": "workspace:*",
@@ -138,5 +102,41 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
+  },
+  "peerDependencies": {
+    "@tanstack/ai": "catalog:ai",
+    "@tanstack/ai-anthropic": "catalog:ai",
+    "@tanstack/ai-gemini": "catalog:ai",
+    "@tanstack/ai-ollama": "catalog:ai",
+    "@tanstack/ai-openai": "catalog:ai",
+    "@tanstack/ai-openrouter": "catalog:ai",
+    "react": "catalog:react",
+    "vite": "catalog:vite"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/ai": {
+      "optional": true
+    },
+    "@tanstack/ai-anthropic": {
+      "optional": true
+    },
+    "@tanstack/ai-gemini": {
+      "optional": true
+    },
+    "@tanstack/ai-ollama": {
+      "optional": true
+    },
+    "@tanstack/ai-openai": {
+      "optional": true
+    },
+    "@tanstack/ai-openrouter": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }

@@ -6,7 +6,6 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "^generate",
         "sources"
       ],
       "outputs": [

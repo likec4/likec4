@@ -3,7 +3,7 @@
   "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "module": "preserve",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "target": "esnext",
     "verbatimModuleSyntax": true,
@@ -20,14 +20,10 @@
       ]
     }
   },
-  "include": [
-    "src/",
-    "styled-system/"
+  "files": [
+    "src/index.ts"
   ],
   "references": [
-    {
-      "path": "../core/"
-    },
     {
       "path": "../diagram/"
     }

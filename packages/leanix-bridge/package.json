@@ -1,27 +1,18 @@
 {
   "name": "@likec4/leanix-bridge",
-  "version": "1.59.4",
-  "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
-  "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
+  "version": "1.60.0",
   "description": "Bridge from LikeC4 semantic model to LeanIX-shaped inventory artifacts (supports optional live sync or dry-run modes)",
-  "files": [
-    "dist",
-    "src",
-    "**/package.json",
-    "!**/__*/**",
-    "!**/*.spec.*",
-    "!**/*.snap",
-    "!**/*.map"
-  ],
+  "homepage": "https://likec4.dev",
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/leanix-bridge"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -32,12 +23,15 @@
       }
     }
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
-  },
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
@@ -54,11 +48,17 @@
     "remeda": "catalog:utils"
   },
   "devDependencies": {
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "typescript": "catalog:",
     "tsdown": "catalog:tsdown",
+    "typescript": "catalog:",
     "vitest": "catalog:vitest"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }

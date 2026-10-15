@@ -8,12 +8,26 @@
       "dependsOn": [
         "@likec4/icons#generate"
       ],
+      "inputs": [
+        "langium-config.json",
+        "scripts/generate-icons.ts",
+        "src/like-c4.langium"
+      ],
       "outputs": [
         "contrib/**",
         "src/generated/**",
-        "src/generated-lib/**"
-      ],
-      "outputLogs": "new-only"
-    }
+      ]
+    },
+    "typecheck": {
+      "inputs": [
+        "$TURBO_EXTENDS$",
+        "!src/like-c4.langium",
+        "!src/generated/**",
+        {
+          "mode": "jit",
+          "globs": ["src/generated/**"],
+        },
+      ]
+    },
   }
 }

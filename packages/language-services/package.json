@@ -1,26 +1,18 @@
 {
   "name": "@likec4/language-services",
+  "version": "1.60.0",
   "description": "LikeC4 Language Services",
-  "version": "1.59.4",
-  "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "**/package.json",
-    "!**/__mocks__/",
-    "!**/__tests__/",
-    "!**/*.spec.*",
-    "!**/*.map"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/language-services"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "browser": {
@@ -56,15 +48,14 @@
     },
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/node/index.d.mts",
-    "module": "dist/node/index.mjs",
-    "browser": {
-      "dist/node/index.mjs": "dist/browser/index.mjs"
-    }
-  },
+  "files": [
+    "dist",
+    "**/package.json",
+    "!**/__mocks__/",
+    "!**/__tests__/",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
@@ -82,31 +73,38 @@
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
-    "@likec4/icons": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
     "defu": "catalog:utils",
-    "remeda": "catalog:utils",
     "langium": "catalog:langium",
-    "tinyrainbow": "catalog:utils",
     "pathe": "catalog:utils",
-    "ufo": "catalog:utils",
+    "remeda": "catalog:utils",
     "std-env": "catalog:externals",
+    "tinyrainbow": "catalog:utils",
     "type-fest": "catalog:externals",
-    "vscode-uri": "catalog:vscode",
-    "vscode-languageserver-types": "catalog:vscode"
+    "ufo": "catalog:utils",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-uri": "catalog:vscode"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "memfs": "catalog:",
-    "tsdown": "catalog:tsdown",
     "oxlint": "catalog:",
-    "tsx": "catalog:",
+    "tsdown": "catalog:tsdown",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/node/index.d.mts",
+    "module": "dist/node/index.mjs",
+    "browser": {
+      "dist/node/index.mjs": "dist/browser/index.mjs"
+    }
   }
 }

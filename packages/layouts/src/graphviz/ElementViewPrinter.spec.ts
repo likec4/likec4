@@ -3,6 +3,7 @@ import { describe, it } from 'vitest'
 import {
   computedAmazonView,
   computedCloud3levels,
+  computedCloudOrthoView,
   computedCloudView,
   computedIndexView,
   parsedModel,
@@ -18,6 +19,12 @@ describe('ElementViewPrinter', () => {
     const diagram = print(computedIndexView)
     await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-index.dot')
   })
+
+  it('computedCloudOrthoView', async ({ expect }) => {
+    const diagram = print(computedCloudOrthoView)
+    await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-cloud-ortho.dot')
+  })
+
   it('computedAmazonView', async ({ expect }) => {
     const diagram = print(computedAmazonView)
     await expect(diagram).toMatchFileSnapshot('__snapshots__/ElementViewPrinter-amazon.dot')

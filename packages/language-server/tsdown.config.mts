@@ -11,6 +11,7 @@ export default defineConfig({
     'src/likec4lib.ts',
     'src/index.ts',
   ],
+  unbundle: true,
   platform: 'neutral',
   minify: false,
 })

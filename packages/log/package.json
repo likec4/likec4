@@ -1,22 +1,18 @@
 {
   "name": "@likec4/log",
+  "version": "1.60.0",
   "description": "Shared interface for logging",
-  "license": "MIT",
-  "version": "1.59.4",
-  "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "src"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/log"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -27,12 +23,10 @@
       }
     }
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
-  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
@@ -45,13 +39,19 @@
     "@logtape/logtape": "catalog:utils"
   },
   "devDependencies": {
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "merge-error-cause": "^5.0.2",
     "safe-stringify": "catalog:utils",
-    "typescript": "catalog:",
     "tsdown": "catalog:tsdown",
+    "typescript": "catalog:",
     "wrap-error-message": "^3.0.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }

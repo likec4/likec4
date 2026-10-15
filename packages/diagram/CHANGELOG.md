@@ -1,5 +1,47 @@
 # @likec4/diagram
 
+## 1.60.0
+
+### Patch Changes
+
+- [#3310](https://github.com/likec4/likec4/pull/3310) [`1fb8e00`](https://github.com/likec4/likec4/commit/1fb8e00a8324bcd4a691025b6228e445150dcc6a) Thanks [@davydkov](https://github.com/davydkov)! - Add new `agent` element shape
+
+- [#3223](https://github.com/likec4/likec4/pull/3223) [`e8f3404`](https://github.com/likec4/likec4/commit/e8f340445f1391b183c7dbf56960258cebbc3346) Thanks [@m-arrieta-r](https://github.com/m-arrieta-r)! - Add a "Graph" display variant for element views, alongside the existing "Diagram" view. It renders elements as compact circles with straight relationship lines, making it easier to see the topology of larger views. Switch between them with the new Diagram/Graph toggle in the navigation panel. In Graph mode, nodes are draggable and animated with a physics-based simulation (repulsion, springs along relationships, and a settle-back bounce), similar to Structurizr's Explore view.
+
+- [#3278](https://github.com/likec4/likec4/pull/3278) [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75) Thanks [@alexhelkar](https://github.com/alexhelkar)! - Switch edge routing between `spline` and `ortho` from the diagram editor's layout panel. The choice is written to the view source as the `routing` property or as the `autoLayout` routing parameter, and stays available for views with a manual layout. Changing the auto-layout direction no longer drops a routing parameter set on the `autoLayout` rule.
+
+- [#3295](https://github.com/likec4/likec4/pull/3295) [`e563800`](https://github.com/likec4/likec4/commit/e5638001c7aeea12b1c9634d5456f837051b3617) Thanks [@cry999](https://github.com/cry999)! - Fix long metadata values in the element details dialog not being truncated with an ellipsis, and show the full value in a tooltip on hover without the tooltip being hidden behind the backdrop or clipped by the dialog. This also keeps long descriptions from being clipped at the edge of the dialog when the element has a long metadata value. Fixes [#3279](https://github.com/likec4/likec4/issues/3279)
+
+- [#3280](https://github.com/likec4/likec4/pull/3280) [`78dc808`](https://github.com/likec4/likec4/commit/78dc808186faf9f0b3324894df0c43d248e484e5) Thanks [@cry999](https://github.com/cry999)! - Fix tooltips in the element details dialog (title, "Open source" and "Open default view" buttons) being rendered behind the dialog backdrop. Fixes [#3256](https://github.com/likec4/likec4/issues/3256)
+
+- [#3344](https://github.com/likec4/likec4/pull/3344) [`63b9094`](https://github.com/likec4/likec4/commit/63b909428e5b5288bfb5d0d5eba64b08f45ed5c4) Thanks [@andrewwbuilds](https://github.com/andrewwbuilds)! - Fix the caret jumping to the end of the search input (Ctrl+K) on arrow keys, Backspace and clicks, which made it impossible to edit the middle of the query or delete a selection. Fixes [#3298](https://github.com/likec4/likec4/issues/3298)
+
+- [#3289](https://github.com/likec4/likec4/pull/3289) [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add `sizing` style property for elements. With `sizing fixed`, all elements of the same `size` are drawn with exactly the same width and height, regardless of title, description, icon or shape. Long titles and icons shrink to fit the element instead of making it grow. The default `sizing auto` keeps the current behavior, where `size` is the minimum size.
+  
+  ```likec4
+  specification {
+    element service {
+      style {
+        size small
+        sizing fixed
+      }
+    }
+  }
+  ```
+
+- [#3278](https://github.com/likec4/likec4/pull/3278) [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75) Thanks [@alexhelkar](https://github.com/alexhelkar)! - Add orthogonal edge routing to draw relationships with horizontal and vertical segments. Set `routing ortho` in a view, append `ortho` to `autoLayout`, or set `styles.defaults.view.routing` in the project configuration. The default remains `spline`. Changing routing preserves saved node positions and connection control points.
+  
+  Place automatic labels beside long straight segments, avoiding nodes, other labels, and relationship lines where space permits. Labels update after layout and node moves. Manually positioned labels retain their position or offset during editing.
+  
+  Separate shared segments of edited orthogonal edges into tracks with a target spacing of 12 diagram units. Track shifts also separate connection points along node borders, subject to the space available at each endpoint.
+  
+  Keep edited edge labels centered under spline routing, preventing the initial jump by half the label's size.
+  
+  Keep labels and separated tracks aligned with edited edges when connection handles are offset from node centers.
+- Updated dependencies [[`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75), [`1c22fb0`](https://github.com/likec4/likec4/commit/1c22fb0bc42d9a0c7a9411efba39546aeeb55437), [`a25fcfa`](https://github.com/likec4/likec4/commit/a25fcfae8e47f3c5c3189b3e534a9c9be4a6aead), [`feb3f4e`](https://github.com/likec4/likec4/commit/feb3f4e4cacb9f456161145f97aeed7143160599), [`1332900`](https://github.com/likec4/likec4/commit/1332900ecc79a10aaa81c5aef2334c6a018974dc), [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd), [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75)]:
+  - @likec4/core@1.60.0
+  - @likec4/styles@1.60.0
+
 ## 1.59.4
 
 ### Patch Changes

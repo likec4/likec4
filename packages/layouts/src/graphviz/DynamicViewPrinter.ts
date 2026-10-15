@@ -43,7 +43,7 @@ export class DynamicViewPrinter<A extends AnyAux> extends DotPrinter<ComputedDyn
 
     const step = this.view.edges.indexOf(edge)
     const label = stepEdgeLabel(step, labelText)
-    e.attributes.set(_.label, label)
+    e.attributes.set(this.edgeLabelAttr(false), label)
 
     // IF we already have "seen" the target node in previous steps
     // We don't want constraints to be applied

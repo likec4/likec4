@@ -1,36 +1,18 @@
 {
   "name": "@likec4/style-preset",
+  "version": "1.60.0",
   "description": "Shared PandaCSS preset used in LikeC4",
-  "license": "MIT",
-  "version": "1.59.4",
-  "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "type": "module",
-  "sideEffects": false,
-  "scripts": {
-    "sources": "tsdown",
-    "typecheck": "tsc",
-    "pack": "pnpm pack",
-    "postpack": "likec4ops postpack",
-    "lint:package": "pnpx publint ./package.tgz",
-    "clean": "likec4ops clean"
-  },
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "styled-system/preset"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "types": "dist/index.d.mts",
-  "module": "dist/index.mjs",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -38,14 +20,48 @@
       "default": "./dist/index.mjs"
     },
     "./defaults": {
-      "types": "./dist/defaults/index.d.mts",
-      "import": "./dist/defaults/index.mjs",
-      "default": "./dist/defaults/index.mjs"
+      "sources": "./src/defaults/index.ts",
+      "default": {
+        "types": "./dist/defaults/index.d.mts",
+        "import": "./dist/defaults/index.mjs",
+        "default": "./dist/defaults/index.mjs"
+      }
     },
     "./src": "./src/index.ts"
   },
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "sources": "tsdown",
+    "typecheck": "tsc",
+    "prepack": "likec4ops rm *.tgz",
+    "pack": "pnpm pack",
+    "postpack": "likec4ops postpack",
+    "lint:package": "pnpx publint ./package.tgz",
+    "clean": "likec4ops clean"
+  },
   "dependencies": {
     "@radix-ui/colors": "catalog:css"
+  },
+  "devDependencies": {
+    "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/vanilla-extract": "catalog:mantine",
+    "@pandacss/dev": "catalog:css",
+    "@pandacss/types": "catalog:css",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "json5": "catalog:utils",
+    "nano-spawn": "catalog:externals",
+    "remeda": "catalog:utils",
+    "tsdown": "catalog:tsdown",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:css",
@@ -56,20 +72,8 @@
       "optional": true
     }
   },
-  "devDependencies": {
-    "remeda": "catalog:utils",
-    "@pandacss/dev": "catalog:css",
-    "@pandacss/types": "catalog:css",
-    "@types/react": "catalog:react",
-    "@types/node": "catalog:",
-    "@types/react-dom": "catalog:react",
-    "@likec4/devops": "workspace:*",
-    "@likec4/tsconfig": "workspace:*",
-    "@mantine/core": "catalog:mantine",
-    "@mantine/vanilla-extract": "catalog:mantine",
-    "json5": "catalog:utils",
-    "nano-spawn": "catalog:externals",
-    "typescript": "catalog:",
-    "tsdown": "catalog:tsdown"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   }
 }

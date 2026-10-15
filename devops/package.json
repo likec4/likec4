@@ -1,40 +1,41 @@
 {
   "name": "@likec4/devops",
   "version": "1.59.4",
-  "type": "module",
   "private": true,
   "sideEffects": false,
-  "scripts": {
-    "typecheck": "tsc -b"
-  },
-  "bin": {
-    "likec4ops": "./likec4ops.ts"
-  },
+  "type": "module",
   "exports": {
     ".": "./likec4ops.ts",
     "./utils": "./utils.ts",
     "./vitest": "./vitest.ts",
     "./tsdown": "./tsdown.ts"
   },
+  "bin": {
+    "likec4ops": "./likec4ops.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "sources": ""
+  },
   "dependencies": {
-    "parse-gitignore": "^2.0.0",
     "citty": "catalog:utils",
+    "defu": "catalog:utils",
+    "indent-string": "catalog:utils",
+    "parse-gitignore": "^2.0.0",
+    "pathe": "catalog:utils",
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
-    "indent-string": "catalog:utils",
-    "vitest": "catalog:vitest",
-    "defu": "catalog:utils",
-    "pathe": "catalog:utils",
-    "tsx": "catalog:",
     "tsdown": "catalog:tsdown",
+    "tsx": "catalog:",
+    "vitest": "catalog:vitest",
     "zx": "catalog:"
   },
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
-    "@types/parse-gitignore": "^1.0.2",
-    "type-fest": "catalog:externals",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "catalog:",
+    "@types/parse-gitignore": "^1.0.2",
+    "type-fest": "catalog:externals",
     "typescript": "catalog:"
   }
 }

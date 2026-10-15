@@ -100,7 +100,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
     const label = edgelabel(edge)
     if (label) {
       e.attributes.set(
-        hasCompoundEndpoint ? _.xlabel : _.label,
+        this.edgeLabelAttr(hasCompoundEndpoint),
         label,
       )
     }

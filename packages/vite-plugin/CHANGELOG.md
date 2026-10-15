@@ -1,5 +1,17 @@
 # @likec4/vite-plugin
 
+## 1.60.0
+
+### Patch Changes
+
+- Updated dependencies [[`1fb8e00`](https://github.com/likec4/likec4/commit/1fb8e00a8324bcd4a691025b6228e445150dcc6a), [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75), [`1c22fb0`](https://github.com/likec4/likec4/commit/1c22fb0bc42d9a0c7a9411efba39546aeeb55437), [`a25fcfa`](https://github.com/likec4/likec4/commit/a25fcfae8e47f3c5c3189b3e534a9c9be4a6aead), [`feb3f4e`](https://github.com/likec4/likec4/commit/feb3f4e4cacb9f456161145f97aeed7143160599), [`1332900`](https://github.com/likec4/likec4/commit/1332900ecc79a10aaa81c5aef2334c6a018974dc), [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd), [`57c70ef`](https://github.com/likec4/likec4/commit/57c70ef0952cae0c31d53ef6f266495e92a7661c), [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75)]:
+  - @likec4/generators@1.60.0
+  - @likec4/core@1.60.0
+  - @likec4/layouts@1.60.0
+  - @likec4/config@1.60.0
+  - @likec4/language-services@1.60.0
+  - @likec4/log@1.60.0
+
 ## 1.59.4
 
 ### Patch Changes

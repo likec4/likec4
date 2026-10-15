@@ -1,5 +1,5 @@
 import type { URI } from 'vscode-uri'
-import { LibIcons } from './generated-lib/icons'
+import { LibIcons } from './generated/icons'
 
 export const Scheme = 'likec4builtin'
 export const Uri = `${Scheme}:///likec4/lib/icons.c4` as const

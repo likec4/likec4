@@ -1,13 +1,9 @@
 {
   "name": "root",
+  "version": "1.60.0",
   "private": true,
   "license": "MIT",
-  "version": "1.59.4",
-  "packageManager": "pnpm@11.25.0",
   "type": "module",
-  "engines": {
-    "node": ">=22.22.3"
-  },
   "scripts": {
     "prepare": "node .husky/install.mjs",
     "fmt": "dprint fmt",
@@ -21,9 +17,9 @@
     "typecheck": "turbo run typecheck  --filter=\"!./apps/*\"",
     "typecheck:all": "turbo run typecheck",
     "lint:package": "turbo run lint:package --filter=\"!./apps/*\"",
-    "generate": "turbo run generate  --filter=\"!./apps/*\"",
-    "generate:all": "turbo run generate",
-    "ci:generate": "turbo run generate  --filter=\"!./apps/*\"",
+    "generate": "turbo run sources generate --filter=\"!./apps/*\"",
+    "generate:all": "turbo run sources generate",
+    "ci:generate": "turbo run sources generate --filter=\"!./apps/*\"",
     "ci:typecheck": "turbo run typecheck  --filter=\"!./apps/*\"",
     "ci:build": "turbo run build  --filter=\"!./apps/*\"",
     "ci:test": "vitest run --no-isolate",
@@ -42,6 +38,11 @@
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "test:e2e:typecheck": "pnpm run pretest:e2e && cd e2e && pnpm install --no-lockfile && pnpm bootstrap && pnpm typecheck",
     "vitest:ui": "vitest --ui --no-isolate"
+  },
+  "nano-staged": {
+    "*.{ts,tsx,mjs,js,jsx,json,yaml,yml,md}": [
+      "dprint fmt --allow-no-files"
+    ]
   },
   "devDependencies": {
     "@changesets/changelog-github": "catalog:",
@@ -63,9 +64,8 @@
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "nano-staged": {
-    "*.{ts,tsx,mjs,js,jsx,json,yaml,yml}": [
-      "dprint fmt --allow-no-files"
-    ]
+  "packageManager": "pnpm@11.28.5",
+  "engines": {
+    "node": ">=22.22.3"
   }
 }

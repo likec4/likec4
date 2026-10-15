@@ -19,10 +19,10 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.json"
+      "path": "../core/"
     },
     {
-      "path": "../log/tsconfig.json"
+      "path": "../log/"
     }
   ]
 }

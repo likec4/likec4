@@ -1,18 +1,17 @@
 {
   "name": "@likec4/vscode-preview",
+  "version": "1.60.0",
   "private": true,
-  "version": "1.59.4",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./protocol": "./protocol.ts"
   },
-  "sideEffects": false,
   "scripts": {
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "typecheck": "tsc --build --verbose",
-    "prebuild": "pandacss codegen --clean",
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
@@ -22,8 +21,8 @@
   "devDependencies": {
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/core": "workspace:*",
-    "@likec4/diagram": "workspace:*",
     "@likec4/devops": "workspace:*",
+    "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "catalog:mantine",
@@ -40,13 +39,13 @@
     "@types/vscode": "catalog:vscode",
     "@types/vscode-webview": "^1.57.5",
     "@vitejs/plugin-react": "catalog:vite",
-    "@rolldown/plugin-babel": "catalog:vite",
-    "babel-plugin-react-compiler": "catalog:react",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "fast-equals": "catalog:utils",
     "nanostores": "catalog:react",
+    "oxc-transform-react": "catalog:tsdown",
     "postcss": "catalog:css",
+    "postcss-import": "catalog:css",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
@@ -54,8 +53,8 @@
     "tsx": "catalog:",
     "type-fest": "catalog:externals",
     "typescript": "catalog:",
-    "vitest": "catalog:vitest",
     "vite": "catalog:vite",
+    "vitest": "catalog:vitest",
     "vscode-messenger-common": "catalog:vscode",
     "vscode-messenger-webview": "catalog:vscode"
   }

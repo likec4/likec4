@@ -1,48 +1,34 @@
 {
   "name": "@likec4/mcp",
+  "version": "1.60.0",
   "description": "Model Context Protocol server for LikeC4",
-  "license": "MIT",
-  "version": "1.59.4",
-  "bugs": "https://github.com/likec4/likec4/issues",
-  "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "type": "module",
-  "bin": {
-    "likec4-mcp": "bin/likec4-mcp.mjs"
-  },
-  "engines": {
-    "node": ">=22.22.3"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "dist",
-    "bin",
-    "**/package.json",
-    "!**/__*/**",
-    "!**/*.spec.*",
-    "!**/*.map"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/likec4/likec4.git",
-    "directory": "packages/mcp"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": "./dist/index.mjs",
-      "./package.json": "./package.json"
-    }
-  },
   "keywords": [
     "likec4",
     "mcp",
     "model context protocol",
     "server"
+  ],
+  "homepage": "https://likec4.dev",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likec4/likec4.git",
+    "directory": "packages/mcp"
+  },
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "likec4-mcp": "bin/likec4-mcp.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "**/package.json"
   ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
@@ -61,44 +47,62 @@
     "@hono/mcp": "catalog:hono",
     "@hono/node-server": "catalog:hono",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
+    "@modelcontextprotocol/ext-apps": "catalog:mcp",
+    "@modelcontextprotocol/sdk": "catalog:mcp",
+    "bundle-require": "catalog:externals",
+    "chokidar": "catalog:externals",
+    "esbuild": "catalog:esbuild",
+    "fdir": "catalog:externals",
+    "hono": "catalog:hono",
+    "picomatch": "catalog:externals",
+    "std-env": "catalog:externals",
+    "tinyrainbow": "catalog:utils",
+    "vscode-jsonrpc": "catalog:vscode",
+    "vscode-languageserver": "catalog:vscode",
+    "vscode-languageserver-protocol": "catalog:vscode",
+    "vscode-languageserver-textdocument": "catalog:vscode",
+    "vscode-languageserver-types": "catalog:vscode",
+    "vscode-uri": "catalog:vscode",
+    "zod": "catalog:externals"
+  },
+  "devDependencies": {
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
+    "@likec4/devops": "workspace:*",
+    "@likec4/diagram": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/log": "workspace:*",
-    "@modelcontextprotocol/sdk": "catalog:mcp",
-    "@modelcontextprotocol/ext-apps": "catalog:mcp",
-    "bundle-require": "catalog:externals",
-    "citty": "catalog:utils",
-    "defu": "catalog:utils",
-    "esbuild": "catalog:esbuild",
-    "hono": "catalog:hono",
-    "remeda": "catalog:utils",
-    "std-env": "catalog:externals",
-    "tinyrainbow": "catalog:utils",
-    "unctx": "catalog:utils",
-    "vscode-uri": "catalog:vscode",
-    "vscode-languageserver-types": "catalog:vscode",
-    "zod": "catalog:externals"
-  },
-  "devDependencies": {
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
-    "@mantine/core": "catalog:mantine",
-    "@likec4/diagram": "workspace:*",
-    "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@mantine/core": "catalog:mantine",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitest/ui": "catalog:vitest",
+    "citty": "catalog:utils",
+    "defu": "catalog:utils",
     "langium": "catalog:langium",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "remeda": "catalog:utils",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
-    "typescript": "catalog:",
     "type-fest": "catalog:externals",
+    "typescript": "catalog:",
+    "unctx": "catalog:utils",
     "vitest": "catalog:vitest"
+  },
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    }
   }
 }

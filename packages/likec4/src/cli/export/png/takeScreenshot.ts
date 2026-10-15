@@ -206,12 +206,13 @@ async function waitAllImages(page: Page, timeout: number) {
   if (!locators.length) return
   // Set up listeners concurrently
   const promises = locators.map(locator =>
-    locator.evaluate<unknown, HTMLImageElement>(
+    locator.evaluate<unknown, undefined, HTMLImageElement>(
       image =>
         image.complete || new Promise(resolve => {
           image.onload = resolve
           image.onerror = resolve
         }),
+      undefined,
       { timeout: Math.max(15_000, timeout) }, // wait at least 15s to load image
     )
   )

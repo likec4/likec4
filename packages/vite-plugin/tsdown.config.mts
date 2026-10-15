@@ -3,6 +3,9 @@ import { defineConfig } from '@likec4/devops/tsdown'
 export default defineConfig([
   {
     entry: './src/index.ts',
+    platform: 'node',
+    unbundle: true,
+    minify: false,
   },
   {
     entry: {
@@ -16,10 +19,11 @@ export default defineConfig([
       entryFileNames: '[name].mjs',
     },
     deps: {
-      alwaysBundle: [
-        'remeda',
+      onlyBundle: [
         'nanostores',
         '@nanostores/react',
+        'birpc',
+        'fast-equals',
       ],
     },
   },

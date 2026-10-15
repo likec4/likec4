@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.59.4",
+  "version": "1.60.0",
   "description": "Toolchain for your architecture diagrams",
   "keywords": [
     "likec4",
@@ -53,11 +53,11 @@
       }
     },
     "./generators/likec4": {
-      "sources": "./src/generators/likec4/index.ts",
+      "sources": "./src/generators/likec4.ts",
       "default": {
-        "types": "./dist/generators/likec4/index.d.mts",
-        "import": "./dist/generators/likec4/index.mjs",
-        "default": "./dist/generators/likec4/index.mjs"
+        "types": "./dist/generators/likec4.d.mts",
+        "import": "./dist/generators/likec4.mjs",
+        "default": "./dist/generators/likec4.mjs"
       }
     },
     "./react": {
@@ -94,7 +94,7 @@
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",
-    "clean": "pnpm rimraf --glob lib dist app/dist dev/.export dev/dist node_modules/.vite react/* __app__",
+    "clean": "likec4ops clean && likec4ops rm dev/.export dev/dist react/ __app__",
     "start": "tsx --conditions=sources src/cli/index.ts",
     "dev": "pnpm cli:serve dev",
     "dev:docs": "pnpm cli:serve ../../apps/docs/src",
@@ -131,7 +131,6 @@
     "playwright": "catalog:",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
-    "use-sync-external-store": "catalog:react",
     "vite": "catalog:vite",
     "vite-plugin-singlefile": "^2.3.3",
     "yargs": "17.7.3",

@@ -1,3 +1,42 @@
+## [1.60.0](https://github.com/likec4/likec4/compare/v1.59.4...v1.60.0) (2026-10-15)
+
+### 🚀 Features
+
+- **Orthogonal Edge Routing**:\
+  Relationships can now be drawn with horizontal and vertical segments. Set `routing ortho` in a view, append `ortho` to `autoLayout`, or set `styles.defaults.view.routing` in the project configuration (default remains `spline`). Edge labels are placed beside long straight segments, shared segments of edited edges are separated into tracks, and routing can be switched from the diagram editor's layout panel. Changing routing preserves saved node positions and control points. Thanks [@alexhelkar](https://github.com/alexhelkar) [#3278](https://github.com/likec4/likec4/pull/3278)
+
+  ![Orthogonal Edge Routing](https://raw.githubusercontent.com/alexhelkar/likec4/5c50ed9fc0b9ef4da7c9cf513fb71f017b993fa1/backend-ortho.png)
+
+- **Fixed Element Sizing**:\
+  New `sizing` style property for elements. With `sizing fixed`, all elements of the same `size` are drawn with exactly the same width and height; long titles and icons shrink to fit. The default `sizing auto` keeps the current behavior. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3289](https://github.com/likec4/likec4/pull/3289)
+
+- **Graph Display Variant**:\
+  New "Graph" variant for element views, alongside "Diagram". Elements are rendered as compact circles with straight relationship lines, draggable and animated with a physics-based simulation. Switch with the new toggle in the navigation panel. Thanks [@m-arrieta-r](https://github.com/m-arrieta-r) [#3223](https://github.com/likec4/likec4/pull/3223)
+
+- **`navigateTo` in Deployment Views**:\
+  Support `include ... with { navigateTo ... }` in deployment views, so deployment nodes and instances can link to subsystem views. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3305](https://github.com/likec4/likec4/pull/3305)
+
+- **New `agent` Element Shape**: [#3310](https://github.com/likec4/likec4/pull/3310)
+  
+  ![Agent Element Shape](https://private-user-images.githubusercontent.com/824903/669173338-14ea8fc3-afaf-4411-b46e-06ea24931bc5.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3OTIwNTk2MDUsIm5iZiI6MTc5MjA1OTMwNSwicGF0aCI6Ii84MjQ5MDMvNjY5MTczMzM4LTE0ZWE4ZmMzLWFmYWYtNDQxMS1iNDZlLTA2ZWEyNDkzMWJjNS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYxMDE1JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MTAxNVQxMDE1MDVaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04NjBiY2FiMjk0NTlhMzU2MjE4ZmY1NjhmMmYwNmQ2YTUxMGI1MTI1ZWQ1OWQxNTEzZmIxZTZkYWRiZWQ0Y2JhJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.z7e8vIoQcxybZIbaZYVa0CtRWABeJHLSnwDtPuE1dhw)
+
+- **DSL Generator Emits Views**:\
+  The LikeC4 DSL generator now emits `views`, including dynamic views with `loop`, `opt`, `par` and `break` blocks, step titles and descriptions. `printOperation` is renamed to `print`. [#3363](https://github.com/likec4/likec4/pull/3363)
+
+- **Docs Brazilian Portuguese translation**: [#3178](https://github.com/likec4/likec4/issues/3178)\
+  Send your kudos to [@rodri-oliveira-dev](https://github.com/rodri-oliveira-dev) 
+
+
+
+### 🐞 Bug Fixes
+
+- Fixed `with` overrides not being applied to relationships matched by a `where metadata.*` condition, closes [#3301](https://github.com/likec4/likec4/issues/3301). Thanks [@andrewwbuilds](https://github.com/andrewwbuilds) [#3342](https://github.com/likec4/likec4/pull/3342)
+- Fixed `Element @project not found` error for relationships between imported top-level elements from the same project. Thanks [@luantaraschi](https://github.com/luantaraschi) [#3300](https://github.com/likec4/likec4/pull/3300)
+- Fixed `rank` constraints having no effect when changed in an existing view, closes [#3211](https://github.com/likec4/likec4/issues/3211). Thanks [@kindasorrow](https://github.com/kindasorrow) [#3356](https://github.com/likec4/likec4/pull/3356)
+- Fixed the caret jumping to the end of the search input (Ctrl+K), closes [#3298](https://github.com/likec4/likec4/issues/3298). Thanks [@andrewwbuilds](https://github.com/andrewwbuilds) [#3344](https://github.com/likec4/likec4/pull/3344)
+- Fixed long metadata values in the element details dialog not being truncated, closes [#3279](https://github.com/likec4/likec4/issues/3279). Thanks [@cry999](https://github.com/cry999) [#3295](https://github.com/likec4/likec4/pull/3295)
+- Fixed tooltips in the element details dialog rendering behind the backdrop, closes [#3256](https://github.com/likec4/likec4/issues/3256). Thanks [@cry999](https://github.com/cry999) [#3280](https://github.com/likec4/likec4/pull/3280)
+
 ## [1.59.4](https://github.com/likec4/likec4/compare/v1.59.3...v1.59.4) (2026-09-21)
 
 ### 🚀 Features

@@ -9,6 +9,7 @@ import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
+import { changeViewRouting } from './changeViewRouting'
 import { changePropertyHandler, preparePayload } from './viewChange'
 
 const logger = mainLogger.getChild('model-changes')
@@ -151,6 +152,16 @@ export class LikeC4ModelChanges {
         const edit = changeViewLayout(this.services, {
           ...lookup,
           layout: change.layout,
+        })
+        return {
+          modifiedRange: edit.range,
+          edits: [edit],
+        }
+      }
+      case 'change-routing': {
+        const edit = changeViewRouting(this.services, {
+          ...lookup,
+          routing: change.routing,
         })
         return {
           modifiedRange: edit.range,

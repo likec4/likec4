@@ -12,7 +12,7 @@ Diagram (JSON object) fields:
 - compounds: Compound[]
 - nodes: Node[]
 - edges: Edge[]
-- direction: "TB" | "LR" | "BT" | "RL"
+- direction: "TB" | "LR" | "BT" | "RL" | "Top
 
 Node (JSON object) fields:
 - id: string (starts with "n" followed by a number, e.g. "n1", "n2", etc.)

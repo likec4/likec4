@@ -128,4 +128,21 @@ describe('LikeC4StylesConfig', () => {
       expect(parsed.elements).toEqual(input.elements)
     })
   })
+
+  describe('defaults.view', () => {
+    it('accepts a default edge routing for views', ({ expect }) => {
+      const result = defineStyle({ defaults: { view: { routing: 'ortho' } } })
+      expect(result.defaults).toEqual({ view: { routing: 'ortho' } })
+    })
+
+    it('rejects an unknown routing value', ({ expect }) => {
+      // @ts-expect-error invalid value on purpose
+      expect(() => defineStyle({ defaults: { view: { routing: 'curved' } } })).toThrow(/spline|ortho/)
+    })
+
+    it('rejects unknown view default keys', ({ expect }) => {
+      // @ts-expect-error unknown key on purpose
+      expect(() => defineStyle({ defaults: { view: { spacing: 10 } } })).toThrow()
+    })
+  })
 })

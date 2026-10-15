@@ -1,27 +1,18 @@
 {
   "name": "@likec4/layouts",
+  "version": "1.60.0",
   "description": "Layout algorithms for LikeC4 views",
-  "license": "MIT",
-  "version": "1.59.4",
-  "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "src",
-    "**/package.json",
-    "!**/__*/**",
-    "!**/*.spec.*",
-    "!**/*.snap",
-    "!**/*.map"
-  ],
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/layouts"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -56,12 +47,15 @@
       }
     }
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
-  },
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "generate": "tsx scripts/generate.ts",
@@ -80,9 +74,9 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@lume/kiwi": "catalog:utils",
+    "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
     "indent-string": "catalog:utils",
-    "defu": "catalog:utils",
     "json5": "catalog:utils",
     "khroma": "catalog:utils",
     "nano-spawn": "catalog:externals",
@@ -92,7 +86,6 @@
     "strip-indent": "catalog:utils",
     "ts-graphviz": "^3.0.7",
     "type-fest": "catalog:externals",
-    "unstorage": "catalog:utils",
     "which": "^5.0.0",
     "word-wrap": "^1.2.5",
     "zod": "catalog:externals"
@@ -108,5 +101,11 @@
     "typescript": "catalog:",
     "vitest": "catalog:vitest",
     "zx": "catalog:"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }

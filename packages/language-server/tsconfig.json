@@ -22,7 +22,6 @@
   },
   "include": [
     "src",
-    "build.config.ts",
     "package.json"
   ],
   "references": [

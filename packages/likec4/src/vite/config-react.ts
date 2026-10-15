@@ -51,7 +51,6 @@ export async function viteReactConfig({
           'likec4/model',
           /^react(\/.*)?$/,
           /^react-dom(\/.*)?$/,
-          /^use-sync-external-store(\/.*)?$/,
           /@likec4\/core.*/,
         ],
       },

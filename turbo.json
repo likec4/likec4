@@ -15,34 +15,27 @@
     "pnpm-workspace.yaml",
     "pnpm-lock.yaml"
   ],
+  "agentGuidance": false,
   "ui": "tui",
   "tasks": {
-    "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
-      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
-      "outputs": [
-        "src/generated/**",
-        "src/generated-lib/**",
-        "all.js",
-        "all.d.ts",
-        "schema.json"
-      ],
-      "outputLogs": "new-only"
-    },
+    // This is transit node - https://turborepo.dev/docs/core-concepts/package-and-task-graph#transit-nodes
     "sources": {
+      "dependsOn": ["^sources"]
+    },
+    "generate": {
       "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
-      "dependsOn": [
-        "^sources"
-      ]
+      "outputs": [],
     },
     "typecheck": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "dependsOn": [
-        "^typecheck",
         "sources",
-        "generate"
+        "generate",
+        "^typecheck"
+      ],
+      "inputs": [
+        "src/**/*.{js,jsx,mjs,ts,tsx,mts}",
+        "*.{ts,js,mjs,mts}",
+        "tsconfig*",
       ],
       "outputs": [
         "lib/**",
@@ -52,20 +45,23 @@
     },
     "test": {
       "dependsOn": [
-        "generate",
-        "^generate"
+        "sources",
+        "^generate",
+        "generate"
       ],
       "inputs": [
-        "$TURBO_DEFAULT$"
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
       ],
       "cache": false,
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
-        "^build",
         "sources",
-        "generate"
+        "^generate",
+        "generate",
+        "^build"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
@@ -77,7 +73,8 @@
         "!**/__fixtures__/**"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "styled-system/**"
       ],
       "outputLogs": "new-only"
     },
@@ -86,7 +83,7 @@
         "build"
       ],
       "outputs": [
-        "package.tgz"
+        "*.tgz"
       ],
       "outputLogs": "new-only"
     },
