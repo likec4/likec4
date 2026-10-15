@@ -58,7 +58,6 @@ export {
   selectDiagramContext,
   selectDiagramSnapshot,
   useDiagram,
-  useDiagramContext,
   useDiagramSelector,
   useOnDiagramEvent,
 } from './hooks/useDiagram'
@@ -135,3 +134,8 @@ export { SearchControl } from './components/SearchControl'
 export { DefaultMantineProvider, LikeC4MantineProvider } from './LikeC4MantineProvider'
 
 export { FramerMotionConfig } from './context/FramerMotionConfig'
+
+export {
+  Logo,
+  LogoIcon,
+} from './components/Logo'

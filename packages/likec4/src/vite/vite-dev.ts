@@ -150,7 +150,6 @@ export async function viteDev({
         'react/compiler-runtime',
         'react/jsx-runtime',
         'react-dom/client',
-        'use-sync-external-store/shim/with-selector',
         'likec4/vite-plugin/internal',
         '@likec4/core/styles',
         '@likec4/core/geometry',

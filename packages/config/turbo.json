@@ -6,8 +6,7 @@
   "tasks": {
     "generate": {
       "dependsOn": [
-        "^generate",
-        "sources"
+        "^generate"
       ],
       "outputs": [
         "schema.json"

@@ -45,7 +45,7 @@ COPY --from=graphviz /install /
 
 # Overridden by .github/workflows/docker.yaml with the exact version likec4 depends on.
 # Keep this default in sync with the `playwright` catalog entry in pnpm-workspace.yaml.
-ARG PLAYWRIGHT_VER=1.60.0
+ARG PLAYWRIGHT_VER=1.64.0
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \

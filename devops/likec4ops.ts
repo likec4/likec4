@@ -1,10 +1,6 @@
-#!/usr/bin/env -S pnpm tsx
+#!/usr/bin/env node
 
 import { defineCommand, runMain } from 'citty'
-import clean from './commands/clean.ts'
-import postpack from './commands/postpack.ts'
-import prepack from './commands/prepack.ts'
-import syncVersion from './commands/sync-version.ts'
 
 const main = defineCommand({
   meta: {
@@ -21,10 +17,11 @@ const main = defineCommand({
   //   console.log('Cleanup')
   // },
   subCommands: {
-    clean,
-    postpack,
-    prepack,
-    'sync-version': syncVersion,
+    clean: () => import('./commands/clean.ts').then((m) => m.default),
+    postpack: () => import('./commands/postpack.ts').then((m) => m.default),
+    prepack: () => import('./commands/prepack.ts').then((m) => m.default),
+    'sync-version': () => import('./commands/sync-version.ts').then((m) => m.default),
+    rm: () => import('./commands/rm.ts').then((m) => m.default),
   },
 })
 

@@ -25,32 +25,34 @@ export default defineConfig([
       'src/model/builder.ts',
       'src/model/index.ts',
       'src/cli/index.ts',
-      'src/generators/likec4/index.ts',
+      'src/generators/likec4.ts',
       'src/index.ts',
     ],
     platform: 'node',
-    dts: true,
-    inputOptions: {
-      resolve: {
-        mainFields: ['module', 'main'],
-        conditionNames: ['production', 'sources', 'module', 'import', 'default'],
-      },
+    dts: {
+      build: true,
     },
     hooks: {
-      'build:done': async () => {
-        const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))
-        if (!existsSync(vitePluginModulesPath)) {
-          throw new Error(`vite-plugin modules not found: ${vitePluginModulesPath}`)
-        }
-        console.info('Copy vite-plugin-modules from %s', vitePluginModulesPath)
-        await copyFile(vitePluginModulesPath, './vite-plugin-modules.d.ts')
+      'build:done': async ({ options: { logger } }) => {
+        logger.info('\n----- Copy artifacts ------\n')
+
         await mkdir('./config', { recursive: true })
         await copyFile('../config/schema.json', './config/schema.json')
 
+        await copyVitePluginModules()
+        logger.success('Copied vite-plugin-modules.d.ts\n')
+
         await copyReact()
+        logger.success('Copied @likec4/react\n')
+
         await bundleApp()
+        logger.success('Bundled likec4-spa\n')
+
         await copyMcpAppAssets()
+        logger.success('Copied mcp-app assets\n')
+
         await copySkills()
+        logger.success('Copied skills\n')
       },
     },
   },
@@ -62,12 +64,18 @@ export default defineConfig([
     platform: 'neutral',
     target: false,
     minify: false,
-    outputOptions: {
-      entryFileNames: '[name].mjs',
-    },
     dts: true,
   },
 ])
+
+async function copyVitePluginModules() {
+  const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))
+  if (!existsSync(vitePluginModulesPath)) {
+    throw new Error(`vite-plugin modules not found: ${vitePluginModulesPath}`)
+  }
+  console.info('Copy vite-plugin-modules from %s', vitePluginModulesPath)
+  await copyFile(vitePluginModulesPath, './vite-plugin-modules.d.ts')
+}
 
 async function copyReact() {
   const from = resolve('../react/dist/')

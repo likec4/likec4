@@ -61,8 +61,6 @@ export { PortalToContainer } from '../components/PortalToContainer'
 
 export { FramerMotionConfig } from '../context/FramerMotionConfig'
 
-export { NavigationPanel } from '../components/NavigationPanel'
-
 export { ErrorBoundary, ErrorFallback } from '../components/ErrorFallback'
 
 export { LikeC4MantineProvider } from '../LikeC4MantineProvider'

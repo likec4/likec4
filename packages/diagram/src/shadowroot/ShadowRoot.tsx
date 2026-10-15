@@ -255,7 +255,10 @@ function scopeStylesToShadowRoot(styles: string): string {
  * @returns CSS string for the shadow root
  */
 const shadowScopedCSS = once(() => {
-  return scopeStylesToShadowRoot(inlinedStyles)
+  const scoped = scopeStylesToShadowRoot(inlinedStyles)
+  console.log('Shadow root scoped CSS:')
+  console.log(scoped)
+  return scoped
 })
 /**
  * Creates a CSSStyleSheet with styles scoped to the shadow root

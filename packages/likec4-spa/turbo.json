@@ -1,0 +1,36 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "typecheck": {
+      "dependsOn": [
+        "sources",
+        "@likec4/diagram#typecheck",
+      ],
+      "inputs": [
+        "src/**",
+        "codegen/**",
+        "*.ts",
+        "tsconfig.json",
+      ],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
+    },
+    "build": {
+      "dependsOn": [
+        "sources",
+        "^generate"
+      ],
+      "outputs": [
+        "dist/**",
+        "styled-system/**"
+      ],
+      "outputLogs": "new-only"
+    }
+  }
+}

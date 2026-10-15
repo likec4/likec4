@@ -13,13 +13,11 @@ const tempRoots = []
 const expectedClaudeSkillLinks = new Map([
   ['.claude/skills/add-new-element-shape', '../../.agents/skills/add-new-element-shape'],
   ['.claude/skills/changeset-generator', '../../.agents/skills/changeset-generator'],
-  ['.claude/skills/dispatching-parallel-agents', '../../.agents/skills/dispatching-parallel-agents'],
   ['.claude/skills/likec4-cli-codegen-regression', '../../.agents/skills/likec4-cli-codegen-regression'],
   ['.claude/skills/likec4-dsl', '../../skills/likec4-dsl'],
   ['.claude/skills/likec4-gh-pr-triage', '../../.agents/skills/likec4-gh-pr-triage'],
   ['.claude/skills/likec4-issue-repro', '../../.agents/skills/likec4-issue-repro'],
   ['.claude/skills/likec4-project-config-workflow', '../../.agents/skills/likec4-project-config-workflow'],
-  ['.claude/skills/refactor', '../../.agents/skills/refactor'],
   ['.claude/skills/vscode-extension-screenshot-evidence', '../../.agents/skills/vscode-extension-screenshot-evidence'],
 ])
 
@@ -61,7 +59,6 @@ function validSkill(name) {
 
   const extraMetadata = [
     name === 'add-new-element-shape' ? 'disable-model-invocation: true' : '',
-    name === 'refactor' ? 'license: MIT' : '',
   ].filter(Boolean).join('\n')
 
   return `---\nname: ${name}\n${description}\n${
@@ -159,7 +156,7 @@ describe('check-agent-skills', () => {
         createSymlink(
           root,
           '.claude/skills/likec4-project-config-workflow',
-          '../../.agents/skills/refactor',
+          '../../.agents/skills/add-new-element-shape',
         )
       }),
       /likec4-project-config-workflow must point to \.\.\/\.\.\/\.agents\/skills\/likec4-project-config-workflow/,

@@ -5,5 +5,6 @@ export default defineConfig({
     'src/index.ts',
     'src/likec4/index.ts',
   ],
-  platform: 'neutral',
+  unbundle: true,
+  minify: false,
 })

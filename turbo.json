@@ -17,32 +17,27 @@
   ],
   "ui": "tui",
   "tasks": {
-    "generate": {
-      "dependsOn": [
-        "^generate"
-      ],
-      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
-      "outputs": [
-        "src/generated/**",
-        "src/generated-lib/**",
-        "all.js",
-        "all.d.ts",
-        "schema.json"
-      ],
-      "outputLogs": "new-only"
-    },
     "sources": {
       "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "dependsOn": [
         "^sources"
-      ]
+      ],
+      "outputs": [],
+    },
+    "generate": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
+      "outputs": [],
     },
     "typecheck": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
       "dependsOn": [
-        "^typecheck",
         "sources",
-        "generate"
+        "generate",
+        "^typecheck"
+      ],
+      "inputs": [
+        "src/**/*.{js,jsx,mjs,ts,tsx,mts}",
+        "*.{ts,js,mjs,mts}",
+        "tsconfig*",
       ],
       "outputs": [
         "lib/**",
@@ -52,20 +47,23 @@
     },
     "test": {
       "dependsOn": [
+        "sources",
         "generate",
         "^generate"
       ],
       "inputs": [
-        "$TURBO_DEFAULT$"
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
       ],
       "cache": false,
       "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [
-        "^build",
         "sources",
-        "generate"
+        "^generate",
+        "generate",
+        "^build"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
@@ -86,7 +84,7 @@
         "build"
       ],
       "outputs": [
-        "package.tgz"
+        "*.tgz"
       ],
       "outputLogs": "new-only"
     },

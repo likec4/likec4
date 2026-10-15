@@ -5,6 +5,7 @@ export default defineConfig({
     'src/*.ts',
     '../diagram/src/**/*.{ts,tsx}',
   ],
+  clean: true,
   outdir: 'styled-system',
   // cssVarRoot: ':where(:host,.likec4-shadow-root)',
 })

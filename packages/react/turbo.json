@@ -4,11 +4,24 @@
     "//"
   ],
   "tasks": {
+    "typecheck": {
+      "dependsOn": [
+        "@likec4/styles#sources",
+        "@likec4/diagram#typecheck",
+      ],
+      "inputs": [
+        "src/*.ts",
+        "tsconfig.json",
+      ],
+      "outputs": [
+        "lib/**",
+        "*.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
       "dependsOn": [
-        "@likec4/diagram#typecheck",
-        "@likec4/diagram#build",
-        "sources"
+        "typecheck",
       ],
       "outputs": [
         "dist/**",
