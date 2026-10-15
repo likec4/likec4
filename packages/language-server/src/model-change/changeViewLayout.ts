@@ -27,6 +27,9 @@ export function changeViewLayout(_services: LikeC4Services, {
   const existingRule = findLast(viewAst.body.rules, ast.isViewRuleAutoLayout)
 
   let newRule = print(ops.views.viewRuleAutoLayout(), layout)
+  if (existingRule?.routing) {
+    newRule += ` ${existingRule.routing}`
+  }
 
   if (existingRule && existingRule.$cstNode) {
     return TextEdit.replace(existingRule.$cstNode.range, newRule)

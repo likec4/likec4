@@ -95,6 +95,7 @@ test('LikeC4Model in React types codegen', () => {
     | 'multiple-merged'
     | 'view-with-custom-colors'
     | 'flow-control-1'
+    | 'ortho-routing'
 
   expectTypeOf<A['ViewId']>().toEqualTypeOf<ExpectedViewId>()
   expectTypeOf(likec4model.view('backend')).toEqualTypeOf<LikeC4ViewModel<A, LayoutedView<A>>>()

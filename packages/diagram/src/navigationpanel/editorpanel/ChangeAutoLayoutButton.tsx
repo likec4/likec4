@@ -1,4 +1,5 @@
 import type { AutoLayoutDirection } from '@likec4/core'
+import type { EdgeRouting } from '@likec4/core/types'
 import {
   Box,
   Flex,
@@ -21,7 +22,8 @@ import { useDebouncedCallback } from '@react-hookz/web'
 import { IconLayoutDashboard } from '@tabler/icons-react'
 import { deepEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
+import { useCurrentViewRouting } from '../../hooks/useCurrentView'
 import { selectDiagramContext, useDiagram, useDiagramSelector } from '../../hooks/useDiagram'
 import { useMantinePortalProps } from '../../hooks/useMantinePortalProps'
 import { PanelActionIcon } from '../_common'
@@ -41,12 +43,17 @@ export const ChangeAutoLayoutButton = () => {
   const diagram = useDiagram()
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null)
   const [controlsRefs, setControlsRefs] = useState<Record<AutoLayoutDirection, HTMLButtonElement | null>>({} as any)
+  const [routingRefs, setRoutingRefs] = useState<Record<EdgeRouting, HTMLButtonElement | null>>({
+    spline: null,
+    ortho: null,
+  })
   const {
     autoLayout,
     viewId,
     isManualLayout,
   } = useDiagramSelector(selector)
   const portalProps = useMantinePortalProps()
+  const routing = useCurrentViewRouting()
 
   const { ref, hovered: isSpacingHovered } = useHover()
 
@@ -54,6 +61,14 @@ export const ChangeAutoLayoutButton = () => {
     controlsRefs[name] = node
     setControlsRefs(controlsRefs)
   }
+
+  // Stable per value, so React attaches each ref once instead of on every render
+  const routingRef = useMemo(() => {
+    const callback = (name: EdgeRouting) => (node: HTMLButtonElement | null) => {
+      setRoutingRefs(refs => refs[name] === node ? refs : { ...refs, [name]: node })
+    }
+    return { spline: callback('spline'), ortho: callback('ortho') }
+  }, [])
 
   const setAutoLayout = (direction: AutoLayoutDirection) => (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -80,9 +95,9 @@ export const ChangeAutoLayoutButton = () => {
     })
   }
 
-  // TODO: Show only for auto layout
-  if (isManualLayout) {
-    return null
+  const setRouting = (value: EdgeRouting) => (event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    diagram.triggerChange({ op: 'change-routing', routing: value })
   }
 
   return (
@@ -96,7 +111,7 @@ export const ChangeAutoLayoutButton = () => {
       }}
       {...portalProps}>
       <PopoverTarget>
-        <Tooltip label="Change Auto Layout">
+        <Tooltip label="Layout options">
           <Box>
             <PanelActionIcon>
               <IconLayoutDashboard />
@@ -106,39 +121,74 @@ export const ChangeAutoLayoutButton = () => {
       </PopoverTarget>
       <PopoverDropdown className="likec4-top-left-panel" p={8} pt={6} opacity={isSpacingHovered ? 0.6 : 1}>
         <Box pos={'relative'} ref={setRootRef}>
+          {!isManualLayout && (
+            <>
+              <FloatingIndicator
+                target={controlsRefs[autoLayout.direction]}
+                parent={rootRef}
+                className={css.autolayoutIndicator}
+              />
+              <Box mb={10}>
+                <Text inline fz={'xs'} c={'dimmed'} fw={500}>Auto layout:</Text>
+              </Box>
+              <Flex gap={2} wrap={'wrap'} justify={'stretch'} maw={160}>
+                <UnstyledButton
+                  className={css.autolayoutButton}
+                  ref={setControlRef('TB')}
+                  onClick={setAutoLayout('TB')}>
+                  Top-Bottom
+                </UnstyledButton>
+                <UnstyledButton
+                  className={css.autolayoutButton}
+                  ref={setControlRef('BT')}
+                  onClick={setAutoLayout('BT')}>
+                  Bottom-Top
+                </UnstyledButton>
+                <UnstyledButton
+                  className={css.autolayoutButton}
+                  ref={setControlRef('LR')}
+                  onClick={setAutoLayout('LR')}>
+                  Left-Right
+                </UnstyledButton>
+                <UnstyledButton
+                  className={css.autolayoutButton}
+                  ref={setControlRef('RL')}
+                  onClick={setAutoLayout('RL')}>
+                  Right-Left
+                </UnstyledButton>
+              </Flex>
+              <Box my={10}>
+                <Text inline fz={'xs'} c={'dimmed'} fw={500}>Spacing:</Text>
+              </Box>
+              <SpacingSliders
+                ref={ref}
+                isVertical={autoLayout.direction === 'TB' || autoLayout.direction === 'BT'}
+                key={viewId}
+                nodeSep={autoLayout.nodeSep}
+                rankSep={autoLayout.rankSep}
+                onChange={setSpacing}
+              />
+            </>
+          )}
           <FloatingIndicator
-            target={controlsRefs[autoLayout.direction]}
+            target={routingRefs[routing]}
             parent={rootRef}
             className={css.autolayoutIndicator}
           />
-          <Box mb={10}>
-            <Text inline fz={'xs'} c={'dimmed'} fw={500}>Auto layout:</Text>
+          <Box mt={isManualLayout ? 0 : 10} mb={10}>
+            <Text inline fz={'xs'} c={'dimmed'} fw={500}>Routing:</Text>
           </Box>
           <Flex gap={2} wrap={'wrap'} justify={'stretch'} maw={160}>
-            <UnstyledButton className={css.autolayoutButton} ref={setControlRef('TB')} onClick={setAutoLayout('TB')}>
-              Top-Bottom
+            <UnstyledButton
+              className={css.autolayoutButton}
+              ref={routingRef.spline}
+              onClick={setRouting('spline')}>
+              Spline
             </UnstyledButton>
-            <UnstyledButton className={css.autolayoutButton} ref={setControlRef('BT')} onClick={setAutoLayout('BT')}>
-              Bottom-Top
-            </UnstyledButton>
-            <UnstyledButton className={css.autolayoutButton} ref={setControlRef('LR')} onClick={setAutoLayout('LR')}>
-              Left-Right
-            </UnstyledButton>
-            <UnstyledButton className={css.autolayoutButton} ref={setControlRef('RL')} onClick={setAutoLayout('RL')}>
-              Right-Left
+            <UnstyledButton className={css.autolayoutButton} ref={routingRef.ortho} onClick={setRouting('ortho')}>
+              Ortho
             </UnstyledButton>
           </Flex>
-          <Box my={10}>
-            <Text inline fz={'xs'} c={'dimmed'} fw={500}>Spacing:</Text>
-          </Box>
-          <SpacingSliders
-            ref={ref}
-            isVertical={autoLayout.direction === 'TB' || autoLayout.direction === 'BT'}
-            key={viewId}
-            nodeSep={autoLayout.nodeSep}
-            rankSep={autoLayout.rankSep}
-            onChange={setSpacing}
-          />
         </Box>
       </PopoverDropdown>
     </Popover>
