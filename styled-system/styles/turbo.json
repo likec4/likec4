@@ -8,13 +8,15 @@
       "dependsOn": [
         "@likec4/style-preset#sources"
       ],
-      "cache": true,
       "outputs": [
         "dist/**"
       ]
     },
     "generate": {
       "dependsOn": ["sources"],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "pack": {
       "dependsOn": ["sources"],

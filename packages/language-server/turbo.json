@@ -10,6 +10,7 @@
       ],
       "inputs": [
         "langium-config.json",
+        "scripts/generate-icons.ts",
         "src/like-c4.langium"
       ],
       "outputs": [
@@ -18,26 +19,15 @@
       ]
     },
     "typecheck": {
-      "dependsOn": [
-        "^typecheck",
-        "sources",
-        "generate"
-      ],
       "inputs": [
-        "src/**/*.{js,jsx,mjs,ts,tsx,mts}",
-        "*.tsconfig*",
+        "$TURBO_EXTENDS$",
         "!src/like-c4.langium",
         "!src/generated/**",
         {
           "mode": "jit",
           "globs": ["src/generated/**"],
         },
-      ],
-      "outputs": [
-        "lib/**",
-        "*.tsbuildinfo"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
   }
 }

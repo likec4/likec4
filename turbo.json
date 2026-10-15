@@ -18,12 +18,9 @@
   "agentGuidance": false,
   "ui": "tui",
   "tasks": {
+    // This is transit node - https://turborepo.dev/docs/core-concepts/package-and-task-graph#transit-nodes
     "sources": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
-      "dependsOn": [
-        "^sources"
-      ],
-      "outputs": [],
+      "dependsOn": ["^sources"]
     },
     "generate": {
       "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
@@ -49,8 +46,8 @@
     "test": {
       "dependsOn": [
         "sources",
-        "generate",
-        "^generate"
+        "^generate",
+        "generate"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
@@ -76,7 +73,8 @@
         "!**/__fixtures__/**"
       ],
       "outputs": [
-        "dist/**"
+        "dist/**",
+        "styled-system/**"
       ],
       "outputLogs": "new-only"
     },
