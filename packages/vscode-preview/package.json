@@ -1,6 +1,6 @@
 {
   "name": "@likec4/vscode-preview",
-  "version": "1.59.4",
+  "version": "1.60.0",
   "private": true,
   "sideEffects": false,
   "type": "module",

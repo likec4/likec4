@@ -1,5 +1,11 @@
 # @likec4/mcp
 
+## 1.60.0
+
+### Patch Changes
+
+- [#3290](https://github.com/likec4/likec4/pull/3290) [`aaad3de`](https://github.com/likec4/likec4/commit/aaad3de02c5ed73d39f063809b51634a4c2a2b0c) Thanks [@parse](https://github.com/parse)! - MCP tool descriptions no longer repeat the response shapes, examples and parameter lists that the tools' input and output schemas already carry. The tool list a client loads shrinks from about 13.7k to 4.1k tokens.
+
 ## 1.59.4
 
 ### Patch Changes

@@ -15,6 +15,7 @@
     "pnpm-workspace.yaml",
     "pnpm-lock.yaml"
   ],
+  "agentGuidance": false,
   "ui": "tui",
   "tasks": {
     "sources": {

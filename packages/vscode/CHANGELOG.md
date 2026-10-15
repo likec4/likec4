@@ -1,5 +1,34 @@
 # likec4-vscode
 
+## 1.60.0
+
+### Patch Changes
+
+- [#3278](https://github.com/likec4/likec4/pull/3278) [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75) Thanks [@alexhelkar](https://github.com/alexhelkar)! - Switch edge routing between `spline` and `ortho` from the diagram editor's layout panel. The choice is written to the view source as the `routing` property or as the `autoLayout` routing parameter, and stays available for views with a manual layout. Changing the auto-layout direction no longer drops a routing parameter set on the `autoLayout` rule.
+
+- [#3289](https://github.com/likec4/likec4/pull/3289) [`2bf291e`](https://github.com/likec4/likec4/commit/2bf291e6deec01c679e62c881a394eb9a53c51cd) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add `sizing` style property for elements. With `sizing fixed`, all elements of the same `size` are drawn with exactly the same width and height, regardless of title, description, icon or shape. Long titles and icons shrink to fit the element instead of making it grow. The default `sizing auto` keeps the current behavior, where `size` is the minimum size.
+  
+  ```likec4
+  specification {
+    element service {
+      style {
+        size small
+        sizing fixed
+      }
+    }
+  }
+  ```
+
+- [#3278](https://github.com/likec4/likec4/pull/3278) [`3e1abd7`](https://github.com/likec4/likec4/commit/3e1abd7365dfc2d2fa749415fbef64580ef71c75) Thanks [@alexhelkar](https://github.com/alexhelkar)! - Add orthogonal edge routing to draw relationships with horizontal and vertical segments. Set `routing ortho` in a view, append `ortho` to `autoLayout`, or set `styles.defaults.view.routing` in the project configuration. The default remains `spline`. Changing routing preserves saved node positions and connection control points.
+  
+  Place automatic labels beside long straight segments, avoiding nodes, other labels, and relationship lines where space permits. Labels update after layout and node moves. Manually positioned labels retain their position or offset during editing.
+  
+  Separate shared segments of edited orthogonal edges into tracks with a target spacing of 12 diagram units. Track shifts also separate connection points along node borders, subject to the space available at each endpoint.
+  
+  Keep edited edge labels centered under spline routing, preventing the initial jump by half the label's size.
+  
+  Keep labels and separated tracks aligned with edited edges when connection handles are offset from node centers.
+
 ## 1.59.4
 
 ### Patch Changes

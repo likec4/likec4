@@ -1,27 +1,18 @@
 {
   "name": "@likec4/generators",
-  "version": "1.59.4",
-  "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
-  "homepage": "https://likec4.dev",
-  "author": "Denis Davydkov <denis@davydkov.com>",
+  "version": "1.60.0",
   "description": "Converts LikeC4 Model to other formats, like Mermaid, PlantUML, SVG, etc. Also generates typings for Model API and React",
-  "files": [
-    "dist",
-    "src",
-    "**/package.json",
-    "!**/__*/**",
-    "!**/*.spec.*",
-    "!**/*.snap",
-    "!**/*.map"
-  ],
+  "homepage": "https://likec4.dev",
+  "bugs": "https://github.com/likec4/likec4/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/likec4/likec4.git",
     "directory": "packages/generators"
   },
-  "type": "module",
+  "license": "MIT",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "sources": "./src/index.ts",
@@ -40,12 +31,15 @@
       }
     }
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "types": "dist/index.d.mts",
-    "module": "dist/index.mjs"
-  },
+  "files": [
+    "dist",
+    "src",
+    "**/package.json",
+    "!**/__*/**",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
@@ -58,26 +52,32 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*",
     "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
+    "immer": "catalog:utils",
+    "indent-string": "catalog:utils",
+    "json5": "catalog:utils",
     "langium": "catalog:langium",
     "pako": "catalog:",
     "remeda": "catalog:utils",
-    "immer": "catalog:utils",
-    "json5": "catalog:utils",
-    "type-fest": "catalog:externals",
-    "indent-string": "catalog:utils",
     "strip-indent": "catalog:utils",
+    "type-fest": "catalog:externals",
     "zod": "catalog:externals"
   },
   "devDependencies": {
-    "@likec4/tsconfig": "workspace:*",
     "@likec4/devops": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/pako": "catalog:",
-    "typescript": "catalog:",
     "tsdown": "catalog:tsdown",
+    "typescript": "catalog:",
     "vitest": "catalog:vitest"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "types": "dist/index.d.mts",
+    "module": "dist/index.mjs"
   }
 }
