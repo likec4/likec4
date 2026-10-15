@@ -90,6 +90,18 @@ describe('ProjectConfig schema', () => {
       })
     })
 
+    describe('styles field', () => {
+      it('should accept already validated config with customCss as string', ({ expect }) => {
+        const validated = validateConfig({ name: 'test', styles: { customCss: 'x.css' } })
+        expect(validateConfig(validated)).toEqual(validated)
+      })
+
+      it('should accept already validated config with customCss as array', ({ expect }) => {
+        const validated = validateConfig({ name: 'test', styles: { customCss: ['x.css', 'y.css'] } })
+        expect(validateConfig(validated)).toEqual(validated)
+      })
+    })
+
     describe('webapp field', () => {
       it('should accept relationship browser global default scope', ({ expect }) => {
         const result = validateConfig({
