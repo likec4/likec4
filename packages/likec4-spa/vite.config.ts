@@ -108,6 +108,10 @@ export default defineConfig({
           this.info('Generating Panda CSS files...')
           execSync('pnpm pandacss codegen', {
             stdio: 'inherit',
+            env: {
+              ...process.env,
+              NODE_ENV: 'production',
+            },
             cwd: process.cwd(),
           })
         },

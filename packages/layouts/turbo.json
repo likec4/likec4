@@ -6,34 +6,22 @@
   "tasks": {
     "generate": {
       "inputs": [
-        "scripts/generate.mts",
+        "scripts/generate.ts",
         "src/**/*.md"
       ],
       "outputs": [
         "src/**/*.generated.ts"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
     "typecheck": {
-      "dependsOn": [
-        "^typecheck",
-        "sources",
-        "generate"
-      ],
       "inputs": [
-        "src/**/*.{js,jsx,mjs,ts,tsx,mts}",
-        "*.tsconfig*",
+        "$TURBO_EXTENDS$",
         "!src/**/*.generated.ts",
         {
           "mode": "jit",
           "globs": ["src/**/*.generated.ts"],
         },
-      ],
-      "outputs": [
-        "lib/**",
-        "*.tsbuildinfo"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
   }
 }
