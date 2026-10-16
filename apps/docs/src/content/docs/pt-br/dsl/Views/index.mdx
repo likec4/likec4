@@ -44,7 +44,7 @@ O nome da visão é usado como nome do arquivo de imagem durante a exportação 
 
 ### Propriedades da visão
 
-As visões podem ter `title`, `description`, `tags` e `links`:
+As visões podem ter `title`, `description`, `tags`, `links` e [`routing`](/pt-br/dsl/views/predicates/#roteamento-das-conexões):
 
 ```likec4
 views {
@@ -61,12 +61,23 @@ views {
 
     link https://my.jira/epic/12 'Epic-12'
 
+    // Desenha relacionamentos com segmentos em ângulo reto
+    routing ortho
   }
 
 }
 ```
 
 As propriedades devem ser definidas antes de qualquer [predicado](/pt-br/dsl/views/predicates/).  
+
+## Modos de visualização Diagram e Graph
+
+A partir da versão 1.60.0, as visões de elementos podem ser exibidas em dois modos:
+
+- **Diagram**: apresenta os elementos conforme o layout do diagrama.
+- **Graph**: representa os elementos como círculos compactos conectados por linhas retas, com nós arrastáveis e uma simulação de forças que anima sua organização.
+
+Use o seletor **Diagram / Graph** no painel de navegação para alternar entre os modos. Essa escolha altera apenas a apresentação da visão, sem modificar a definição do modelo na DSL.
 
 ## Visões com escopo
 

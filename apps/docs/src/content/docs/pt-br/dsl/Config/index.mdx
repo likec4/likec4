@@ -456,6 +456,8 @@ Você pode sobrescrever os tamanhos usados no LikeC4:
 Você pode sobrescrever os valores padrão das propriedades de estilo adicionando uma seção `styles.defaults` ao arquivo de configuração.  
 Esses valores serão aplicados a todos os elementos e relacionamentos, a menos que as propriedades sejam definidas explicitamente na especificação.
 
+O roteamento padrão das visões pode ser configurado com `styles.defaults.view.routing`.
+
 ```jsonc
 {
   "$schema": "https://likec4.dev/schemas/config.json",
@@ -480,10 +482,18 @@ Esses valores serão aplicados a todos os elementos e relacionamentos, a menos q
         "color": "gray",
         "line": "dashed",
         "arrow": "normal"
+      },
+
+      // Padrões para as visões
+      "view": {
+        // "spline" (curvo, padrão) ou "ortho" (ângulos retos)
+        "routing": "ortho"
       }
     }
   }
 }
 ```
+
+A propriedade `routing` da visão ou o parâmetro de `autoLayout` tem precedência sobre `styles.defaults.view.routing`. Veja [Roteamento das conexões](/pt-br/dsl/views/predicates/#roteamento-das-conexões) para conhecer a ordem de precedência e as limitações.
 
 <AdvancedCustomizationTip />

@@ -47,7 +47,7 @@ Porém, elas fazem referência a nós e instâncias de deployment.
 <Aside type='caution' title='Em desenvolvimento'>
   Os recursos a seguir ainda não são suportados ou não funcionam como esperado:
  
-  - expressões `with`
+  - expressões `with` (exceto `navigateTo` em nós e instâncias de deployment)
   - estilos e predicados compartilhados
   - navegador de relacionamentos e popups de detalhes de elementos e relacionamentos (funcionam com o modelo lógico)
 
@@ -55,6 +55,9 @@ Porém, elas fazem referência a nós e instâncias de deployment.
   deployment view prod {
     include *                                   // funciona
     include * where tag is #next                // funciona (veja os detalhes abaixo)
+    include server with {
+      navigateTo server_deployment              // funciona (veja os detalhes abaixo)
+    }
     include * with { color: red }               // não funciona
 
     include * -> *                              // funciona
@@ -66,6 +69,26 @@ Porém, elas fazem referência a nós e instâncias de deployment.
   }
   ```
 </Aside>
+
+### Navegação
+
+Use `navigateTo` em uma expressão `with` de um elemento para abrir outra visão a partir de um nó ou de uma instância de deployment:
+
+```likec4
+views {
+  deployment view prod {
+    include server with {
+      navigateTo server_deployment
+    }
+  }
+
+  deployment view server_deployment {
+    include server.*
+  }
+}
+```
+
+O destino de `navigateTo` deve ser uma visão existente.
 
 ### Filtragem
 

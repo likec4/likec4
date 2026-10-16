@@ -137,6 +137,28 @@ specification {
 <LikeC4ThemeView viewId="sizes1_example" interactive={false}/>
 <LikeC4ThemeView viewId="sizes2_example" interactive={false}/>
 
+### Dimensionamento
+
+Por padrão, `size` define o tamanho **mínimo** de um elemento: títulos e descrições longos podem aumentar suas dimensões. Use `sizing fixed` para renderizar elementos do mesmo `size` com largura e altura iguais:
+
+```likec4 "sizing fixed" copy
+specification {
+  element element {
+    style {
+      size small
+      sizing fixed
+    }
+  }
+}
+```
+
+No dimensionamento fixo, a fonte do título e o ícone diminuem para caber no elemento, e descrições longas são truncadas. As propriedades `padding` e `textSize` deixam de alterar as dimensões do elemento.
+
+Valores disponíveis: `auto` (padrão) e `fixed`.
+
+<LikeC4ThemeView viewId="sizing_auto_example" interactive={false}/>
+<LikeC4ThemeView viewId="sizing_fixed_example" interactive={false}/>
+
 ### Opacidade
 
 Se um elemento for exibido como um grupo (como um container), você pode definir sua opacidade:
