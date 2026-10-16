@@ -1,5 +1,5 @@
 import * as ops from './operators'
-import { type AnyOp, type ctxOf, materialize, withctx } from './operators/base'
+import { type AnyOp, type ctxOf, materialize } from './operators/base'
 import type { schemas } from './schemas'
 
 type Params = {

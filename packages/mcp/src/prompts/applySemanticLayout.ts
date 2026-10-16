@@ -16,13 +16,13 @@ export function applySemanticLayoutPrompt(
       argsSchema: {
         projectId: completable(
           z.string().describe('Project id (optional, will use "default" if not specified)'),
-          (value = '') => {
+          (value) => {
             return services.projects().filter(project => project.id.startsWith(value)).map(prop('id'))
           },
         ),
         viewId: completable(
           z.string().describe('View ID'),
-          async (value = '', ctx) => {
+          async (value, ctx) => {
             const projectId = ctx?.arguments?.['projectId'] ?? services.projectsManager.default.id
             const model = await services.computedModel(projectId as ProjectId)
             if (!model) {

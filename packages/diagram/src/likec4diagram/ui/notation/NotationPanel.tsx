@@ -24,9 +24,8 @@ import { memo, useState } from 'react'
 import { ceil, isNonNullish } from 'remeda'
 import { ElementShape } from '../../../base-primitives'
 import { selectDiagramContext, useDiagramSelector, useMantinePortalProps } from '../../../hooks'
-import { useDiagram, useDiagramContext } from '../../../hooks/useDiagram'
+import { useDiagram } from '../../../hooks/useDiagram'
 import { useXYStore } from '../../../hooks/useXYFlow'
-import type { DiagramContext } from '../../state/types'
 import * as styles from './NotationPanel.css'
 
 type NodeKind = ComputedNode['kind']
@@ -34,8 +33,8 @@ type NodeKind = ComputedNode['kind']
 const ElementNotation = ({ value }: { value: ElementNotationData }) => {
   const {
     title,
-    color = 'primary',
-    shape = 'rectangle',
+    color,
+    shape,
   } = value
   const [onlyKind, setOnlyKind] = useState<NodeKind | null>(null)
   const diagram = useDiagram()

@@ -4,7 +4,6 @@ import { css, cx } from '@likec4/styles/css'
 import { elementNode } from '@likec4/styles/recipes'
 import { useNodesData } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
-import { shallowEqual } from 'fast-equals'
 import {
   type Variants,
   AnimatePresence,

@@ -36,7 +36,7 @@ function RouteComponent() {
 
   useEffect(() => {
     if (pincode.length === 4) {
-      checkPin.execute()
+      void checkPin.execute()
     }
   }, [])
 
@@ -67,7 +67,7 @@ function RouteComponent() {
       if (initialPincode.current !== pincode) {
         setTimeout(goto, 600)
       } else {
-        goto()
+        void goto()
       }
     }
   }, [pincodeValid])

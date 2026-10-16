@@ -1,4 +1,4 @@
-import { type scalar, RichText } from '@likec4/core'
+import { RichText } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { Box, HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
 import { CloseButton, Spoiler } from '@mantine/core'

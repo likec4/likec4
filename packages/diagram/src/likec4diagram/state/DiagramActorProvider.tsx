@@ -156,7 +156,7 @@ export function DiagramActorProvider({
 
   return (
     <DiagramActorContextProvider value={actor}>
-      <DiagramApiContextProvider value={DiagramApi.withActor(actorRef)}>
+      <DiagramApiContextProvider value={DiagramApi.withActor(actor)}>
         <ToggledFeatures>
           {children}
         </ToggledFeatures>
