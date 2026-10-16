@@ -1,12 +1,13 @@
 import { usePlayground } from '$/hooks/usePlayground'
 import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
+import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
 import { useSyncedRef, useUpdateEffect } from '@react-hookz/web'
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react'
 import type { EditorApp } from 'monaco-languageclient/editorApp'
 import type { LanguageClientManager } from 'monaco-languageclient/lcwrapper'
-import { memo, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { createWrapperConfig, LIKEC4_LANGUAGE_ID } from './config'
 import { type MonacoHandle, createMonacoHandle } from './handle'
 import { LanguageClientSync } from './LanguageClientSync'
@@ -25,6 +26,24 @@ export type MonacoEditorProps = {
 const LazyMonacoEditor = memo((props: MonacoEditorProps) => {
   const { setLayoutedModelApi } = props
   const playground = usePlayground()
+
+  // Ensure that late-loading fonts are remeasured to prevent layout issues (cursor drift)
+  useEffect(() => {
+    const remeasureFonts = () => monaco.editor.remeasureFonts()
+    let mounted = true
+
+    document.fonts.addEventListener('loadingdone', remeasureFonts)
+    void document.fonts.ready.then(() => {
+      if (mounted) {
+        remeasureFonts()
+      }
+    })
+
+    return () => {
+      mounted = false
+      document.fonts.removeEventListener('loadingdone', remeasureFonts)
+    }
+  }, [])
 
   const onActiveEditorChanged = useCallbackRef((filename: string) => {
     playground.changeActiveFile(filename)
