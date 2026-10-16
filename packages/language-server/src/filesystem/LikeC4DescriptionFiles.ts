@@ -30,9 +30,8 @@ type DescriptionFile = {
  * the URL normalization, so `..%2f..%2fsecret.txt` would otherwise reach a file outside the project.
  * Any `.` or `..` segment left is refused for the same reason.
  *
- * The check is lexical. The file system provider follows symbolic links on purpose (see #1213), so a
- * symlink inside the project can still point outside it; closing that needs a real-path check in the
- * provider rather than here.
+ * The check is lexical: a path that is inside the project but is a symbolic link to a file outside it
+ * passes here, which is why the caller checks the canonical paths too (`escapesProject`).
  */
 function isInsideProject(folder: string, path: string): boolean {
   const toSegments = (value: string) => value.replace(/\\/g, '/').split('/')
@@ -207,6 +206,10 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
     if (typeof resolved === 'string') {
       return { content: { error: resolved } }
     }
+    const escaped = await this.escapesProject(docUri, path, resolved)
+    if (escaped) {
+      return { content: { error: escaped } }
+    }
     try {
       const content = await this.services.workspace.FileSystemProvider.readFile(resolved)
       // The file system provider answers an empty string both for an empty file and for one it
@@ -247,6 +250,32 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
       return `File "${path}" is outside of the project`
     }
     return resolved
+  }
+
+  /**
+   * The error when the file a path resolves to leaves the project once symbolic links are followed.
+   *
+   * `isInsideProject` is lexical and the file system provider follows symbolic links on purpose
+   * (#1213), so a file written as `link.md` and living inside the project can point at a file outside
+   * it and have it read and rendered. Both paths are canonicalized — the project root as well, because
+   * the root itself can be behind a link (on macOS `/tmp` is `/private/tmp`) and comparing a canonical
+   * path with a lexical one would refuse the project's own files.
+   *
+   * `undefined` when either path cannot be canonicalized, or when the canonical file is inside: a file
+   * that does not exist is then reported by the read, which is the message the user expects.
+   */
+  protected async escapesProject(docUri: URI, path: string, resolved: URI): Promise<string | undefined> {
+    const { FileSystemProvider } = this.services.workspace
+    const projects = this.services.workspace.ProjectsManager
+    const project = projects.getProject(projects.ownerProjectId(docUri))
+    const [realFolder, realFile] = await Promise.all([
+      FileSystemProvider.realpath(project.folderUri),
+      FileSystemProvider.realpath(resolved),
+    ])
+    if (!realFolder || !realFile || isInsideProject(realFolder, realFile)) {
+      return undefined
+    }
+    return `File "${path}" is outside of the project`
   }
 
   private triggerUpdate(event: DescriptionFileUpdateEvent): void {

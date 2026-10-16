@@ -48,6 +48,15 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   ): Promise<FileNode[]>
 
   /**
+   * The canonical path of the given URI, with every symbolic link resolved.
+   *
+   * `undefined` when the path cannot be resolved, which includes a file that does not exist and a
+   * URI of a scheme this provider cannot reach: the caller has to treat "unknown" and "outside"
+   * differently.
+   */
+  realpath(uri: URI): Promise<string | undefined>
+
+  /**
    * Writes the content to the file system.
    * Used by manual layouts.
    */

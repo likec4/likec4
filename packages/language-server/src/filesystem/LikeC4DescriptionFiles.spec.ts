@@ -1,6 +1,11 @@
 import { URI } from 'langium'
+import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { platform } from 'node:process'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
+import { WithFileSystem } from './LikeC4FileSystem'
 
 const markdown = '# Title\n\nSome **markdown**'
 
@@ -256,6 +261,50 @@ describe('descriptionFile', () => {
 
     expect(errors).toEqual(['File "https://example.com/spec.md" is not part of the project'])
   })
+
+  // A link is inside the project by name and outside it by content, so the lexical check passes and the
+  // read has to follow it: symlinks need elevated privileges on Windows.
+  it.skipIf(platform === 'win32')(
+    'follows a link inside the project, and refuses a link that leaves it',
+    async ({ expect }) => {
+      const root = await mkdtemp(join(tmpdir(), 'likec4-description-link-'))
+      const outside = await mkdtemp(join(tmpdir(), 'likec4-description-outside-'))
+      try {
+        await mkdir(join(root, 'src'), { recursive: true })
+        await writeFile(join(root, 'src', 'inside.md'), '# inside')
+        await writeFile(join(outside, 'secret.md'), '# secret')
+        await symlink(join(root, 'src', 'inside.md'), join(root, 'src', 'inside-link.md'))
+        await symlink(join(outside, 'secret.md'), join(root, 'src', 'outside-link.md'))
+
+        const t = createTestServices({
+          workspace: URI.file(root).toString(),
+          context: WithFileSystem(),
+        })
+
+        const { errors } = await t.validate(`
+          specification {
+            element component
+          }
+          model {
+            component linked {
+              descriptionFile 'inside-link.md'
+            }
+            component escaped {
+              descriptionFile 'outside-link.md'
+            }
+          }
+        `)
+
+        expect(errors).toEqual(['File "outside-link.md" is outside of the project'])
+        const { elements } = await t.buildModel()
+        expect(elements['linked']).toHaveProperty('description', { md: '# inside' })
+        expect(elements['escaped']).not.toHaveProperty('description')
+      } finally {
+        await rm(root, { recursive: true, force: true })
+        await rm(outside, { recursive: true, force: true })
+      }
+    },
+  )
 
   it('reports description and descriptionFile on the same element', async ({ expect }) => {
     const t = createTestServices()
