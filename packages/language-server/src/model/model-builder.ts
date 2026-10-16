@@ -42,6 +42,7 @@ import {
   pipe,
   piped,
   prop,
+  unique,
   values,
 } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
@@ -767,8 +768,8 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
   constructor(services: LikeC4Services) {
     super()
     this.onDispose(
-      services.shared.workspace.DocumentBuilder.onDocumentResetBelow(DocumentState.Linked, async ({ doc }) => {
-        if (doc.likec4ProjectId) {
+      services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Linked, async (doc) => {
+        if (isLikeC4UserDocument(doc) && doc.likec4ProjectId) {
           this.of(doc.likec4ProjectId).buildData.reset()
         }
       }),
@@ -780,9 +781,17 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
       }),
     )
     this.onDispose(
-      services.shared.workspace.DocumentBuilder.onDocumentResetBelow(DocumentState.Linked, async ({ doc }) => {
-        if (doc.likec4ProjectId) {
-          this.of(doc.likec4ProjectId).computedData.reset()
+      services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
+        if (deleted.length > 0) { // react only on deleted documents
+          const pm = services.shared.workspace.ProjectsManager
+          const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
+          if (!hasAtLeast(projects, 1)) {
+            return
+          }
+          builderLogger.trace`clear project caches for: ${projects} (on delete ${deleted.map(d => d.fsPath)})`
+          for (const project of projects) {
+            this.of(project).reset()
+          }
         }
       }),
     )
@@ -811,53 +820,13 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
     return this.get(project, () => createProjectModelCache2(project))
   }
 
-  private defaultKey = '--'
-
-  // buildData(project: ProjectId, hash: string): Hashed<BuildModelData> | null
   buildData<R extends { hash: string }>(
     project: ProjectId,
     gethash: () => R | null,
     create: (arg: R) => BuildModelData | null,
   ): Hashed<BuildModelData | null> | null {
     return this.of(project).buildData.find(gethash, create)
-    // const ctx = this.of(project)
-    // if (ctx.buildData) {
-    //   return ctx.buildData
-    // }
-    // const result = ctx.getBuildData.find(gethash, create)
-    // if (result) {
-    //   ctx.buildData = result
-    // }
-    // return result
   }
-  // buildData<R extends { hash: string } | null>(
-  //   ...args:
-  //     | [project: ProjectId, hash: R | string | { hash: null }]
-  //     | [project: ProjectId, hash: () => R, create: (arg: NonNullable<R>) => BuildModelData | null]
-  // ): Hashed<BuildModelData | null> | null {
-  //   if (args.length === 3) {
-  //     const [project, hash, create] = args
-  //     const arg = hash()
-  //     if (arg === null) {
-  //       return null
-  //     }
-  //     return this.of(project).getBuildData(arg.hash, () => {
-  //       const data = create(arg)
-
-  //       return data
-  //     })
-  //   }
-  //   const [project, hashArg] = args
-  //   if (!hashArg) {
-  //     return null
-  //   }
-  //   const hash = typeof hashArg === 'string' ? hashArg : hashArg.hash
-  //   if (hash === null) {
-  //     return null
-  //   }
-  //   const value = this.of(project).buildData.get(hash)
-  //   return value ? { hash, value } : null
-  // }
 
   joinedData<R extends { hash: string }>(
     project: ProjectId,
@@ -865,15 +834,6 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
     create: (arg: R) => c4.ParsedLikeC4ModelData,
   ): Hashed<c4.ParsedLikeC4ModelData> | null {
     return this.of(project).joinedData.find(hash, create)
-    // const ctx = this.of(project)
-    // if (ctx.joinedData) {
-    //   return ctx.joinedData
-    // }
-    // const arg = hash()
-    // if (arg === null) {
-    //   return null
-    // }
-    // return ctx.joinedData = ctx.getJoinedData(arg.hash, create.bind(null, arg))
   }
 
   parsedModel<R extends { hash: string }>(
@@ -882,15 +842,6 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
     create: (arg: R) => LikeC4Model.Parsed,
   ): Hashed<LikeC4Model.Parsed> | null {
     return this.of(project).parsedModel.find(hash, create)
-    // const ctx = this.of(project)
-    // if (ctx.parsedModel) {
-    //   return ctx.parsedModel
-    // }
-    // const arg = hash()
-    // if (arg === null) {
-    //   return null
-    // }
-    // return ctx.parsedModel = ctx.getParsedModel(arg.hash, create.bind(null, arg))
   }
 
   computedData<R extends { hash: string }>(
@@ -899,15 +850,6 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
     create: (arg: R) => c4.ComputedLikeC4ModelData,
   ): Hashed<c4.ComputedLikeC4ModelData> | null {
     return this.of(project).computedData.find(hash, create)
-    // const ctx = this.of(project)
-    // if (ctx.computedData) {
-    //   return ctx.computedData
-    // }
-    // const arg = hash()
-    // if (arg === null) {
-    //   return null
-    // }
-    // return ctx.computedData = ctx.getComputedData(arg.hash, create.bind(null, arg))
   }
 
   computedModel<R extends { hash: string }>(
@@ -916,14 +858,5 @@ class ProjectModelCache2 extends SimpleCache<ProjectId, ReturnType<typeof create
     create: (arg: R) => LikeC4Model.Computed,
   ): Hashed<LikeC4Model.Computed> | null {
     return this.of(project).computedModel.find(hash, create)
-    // const ctx = this.of(project)
-    // if (ctx.computedModel) {
-    //   return ctx.computedModel
-    // }
-    // const arg = hash()
-    // if (arg === null) {
-    //   return null
-    // }
-    // return ctx.computedModel = ctx.getComputedModel(arg.hash, create.bind(null, arg))
   }
 }

@@ -199,11 +199,6 @@ export class BaseParser {
   /** Path of the document relative to the project root */
   docPathInProject: string
 
-  /**
-   *  Whether the parser comes from cache
-   */
-  isCached: boolean
-
   hash: string
   validationHash: string
 
@@ -214,7 +209,6 @@ export class BaseParser {
   ) {
     this.validationHash = calcValidationErrorsHash(doc)
     this.hash = ''
-    this.isCached = false
     const checks = checksFromDiagnostics(doc)
     this.isValid = checks.isValid
     this.isInvalid = checks.isInvalid
