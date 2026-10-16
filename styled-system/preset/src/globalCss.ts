@@ -145,6 +145,50 @@ export const globalCss = defineGlobalStyles({
       opacity: 0.25,
     },
 
+    // Compare views (model diffs) and removal impact views
+    '& .react-flow__node.likec4-diff': {
+      outlineWidth: '3px',
+      outlineStyle: 'solid',
+      outlineColor: 'var(--likec4-diff-color)',
+      outlineOffset: '4px',
+      borderRadius: '6px',
+    },
+    '& .react-flow__node.likec4-diff-added': {
+      '--likec4-diff-color': 'var(--colors-likec4-diff-added)',
+      boxShadow: '0 0 0 10px color-mix(in srgb, var(--likec4-diff-color) 22%, transparent)',
+    },
+    '& .react-flow__node.likec4-diff-modified': {
+      '--likec4-diff-color': 'var(--colors-likec4-diff-modified)',
+      outlineStyle: 'dashed',
+    },
+    '& .react-flow__node.likec4-diff-orphan': {
+      '--likec4-diff-color': 'var(--colors-likec4-diff-orphan)',
+      outlineStyle: 'dotted',
+    },
+    '& .react-flow__node.likec4-diff-removed': {
+      '--likec4-diff-color': 'var(--colors-likec4-diff-removed)',
+      outlineStyle: 'dashed',
+      opacity: 0.45,
+      filter: 'grayscale(70%)',
+    },
+    // Edge containers inside the edge redefine the stroke variable, so it is set on descendants too
+    '& .react-flow__edge.likec4-diff-added *': {
+      '--xy-edge-stroke': 'var(--colors-likec4-diff-added)',
+      '--xy-edge-stroke-width': 4,
+    },
+    '& .react-flow__edge.likec4-diff-modified *': {
+      '--xy-edge-stroke': 'var(--colors-likec4-diff-modified)',
+    },
+    '& .react-flow__edge.likec4-diff-removed *': {
+      '--xy-edge-stroke': 'var(--colors-likec4-diff-removed)',
+    },
+    '& .react-flow__edge.likec4-diff-removed': {
+      opacity: 0.55,
+      '& .react-flow__edge-path': {
+        strokeDasharray: '6 6',
+      },
+    },
+
     '& :where(.react-flow__edge, .likec4-edge-container, .likec4-edge-label-container)': {
       '--xy-edge-stroke-width': 3,
       '--xy-edge-stroke': __v('palette.relationStroke'),

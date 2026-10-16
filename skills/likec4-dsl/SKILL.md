@@ -10,7 +10,7 @@ Architecture-as-code tool. Describe systems in `.c4`/`.likec4` files and LikeC4 
 ## Rules
 
 1. **Projects** - it is possible to have multiple likec4 projects in a workspace, project is determined by presence of a config file (`.likec4rc`, `likec4.config.{ts,js,json}`). LikeC4 files belong to the project of the nearest config file in the directory hierarchy.
-2. **Top-level statements** — only `import`, `specification`, `model`, `deployment`, `views`, `global` are allowed. Blocks can repeat, but at least one per file must be present.
+2. **Top-level statements** — only `import`, `specification`, `model`, `deployment`, `views`, `global`, `diff` are allowed. Blocks can repeat, but at least one per file must be present.
 3. **Multi-file merge** — Top-level blocks across files are merged. For example, `model { ... }` blocks present in multiple files, parsed separately, and then merged into a single model.
 4. **Strings** — `'single'`, `"double"` — all support multi-line. Escape quotes with backslash: `\'` or `\"`. In a `title`, escape `\/` to include a literal `/` without it being read as a view-folder separator.
 5. **Markdown** — properties like `summary`/`description`/`notes` can contain Markdown. Use triple quotes `'''` or `"""`. Begin a new line after opening quotes and indent Markdown content for better formatting and syntax highlighting.
@@ -421,6 +421,7 @@ Load a reference file when the task involves the corresponding topic. Claude rea
 | `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, flow-control blocks (`parallel`/`opt`/`loop`/`alt`/`try`), `variant sequence` |
 | `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                                             |
 | `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                                             |
+| `references/diffs.md`                        | Planned model changes (`diff` blocks), applying or discarding them, safe delete of elements                                     |
 | `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells                 |
 | `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                                             |
 | `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                                                  |

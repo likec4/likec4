@@ -1,11 +1,15 @@
 import { usePlayground, usePlaygroundActorRef, usePlaygroundSnapshot } from '$/hooks/usePlayground'
 import { useDrawioContextMenu } from '$components/drawio/DrawioContextMenuProvider'
-import type { scalar, ViewId } from '@likec4/core/types'
+import { ModelDiffPanel } from '$components/model-diff/ModelDiffPanel'
+import type { PlaygroundContext } from '$state/types'
+import { type CompareViewMode, filterCompareView } from '@likec4/core/compute-view'
+import type { DiagramView, scalar, ViewId } from '@likec4/core/types'
 import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { type PropsWithChildren, useEffect, useRef } from 'react'
+import { shallowEqual } from 'fast-equals'
+import { type PropsWithChildren, Fragment, useEffect, useMemo, useRef } from 'react'
 import { only } from 'remeda'
 import * as css from '../styles.css'
 
@@ -26,6 +30,7 @@ function WorkspaceDiagramPage() {
     diagram,
     state,
     error,
+    overlay,
   } = usePlaygroundSnapshot(c => {
     const viewState = c.context.activeViewId ? c.context.viewStates[c.context.activeViewId] : null
     if (c.value !== 'ready') {
@@ -36,6 +41,7 @@ function WorkspaceDiagramPage() {
         diagram: null,
         state: 'pending' as const,
         error: null,
+        overlay: NoOverlay,
       }
     }
     return ({
@@ -45,8 +51,14 @@ function WorkspaceDiagramPage() {
       diagram: viewState?.diagram ?? null,
       state: viewState?.state ?? 'pending',
       error: viewState ? viewState.error : null,
+      overlay: selectOverlay(c.context),
     })
-  })
+  }, (a, b) => shallowEqual({ ...a, overlay: null }, { ...b, overlay: null }) && shallowEqual(a.overlay, b.overlay))
+
+  const overlayDiagram = useMemo(
+    () => overlay.diagram && overlay.mode ? filterCompareView(overlay.diagram, overlay.mode) : overlay.diagram,
+    [overlay.diagram, overlay.mode],
+  )
 
   useEffect(() => {
     if (playground.getContext().activeViewId !== viewId) {
@@ -81,16 +93,32 @@ function WorkspaceDiagramPage() {
 
   const { openMenu: onCanvasContextMenu } = useDrawioContextMenu()
 
+  const navigateToView = (nextView: ViewId) => {
+    void router.navigate({
+      viewTransition: false,
+      from: '/w/$workspaceId/$viewId',
+      to: './',
+      params: {
+        viewId: nextView,
+      },
+    })
+  }
+
+  // Compare and impact diagrams contain elements that are not in the model: no editing, no model overlays
+  const isOverlay = overlayDiagram !== null
+  const Editor = isOverlay ? Fragment : LikeC4PlaygroundEditor
+
   if (_diagram && likec4model) {
     return (
       <Box
         pos={'relative'}
         w={'100%'}
         h={'100%'}>
-        <LikeC4PlaygroundEditor>
+        <ModelDiffPanel viewId={viewId} onNavigate={navigateToView} />
+        <Editor>
           <LikeC4ModelProvider likec4model={likec4model}>
             <LikeC4Diagram
-              view={_diagram}
+              view={overlayDiagram ?? _diagram}
               controls
               fitView
               fitViewPadding={{
@@ -101,10 +129,10 @@ function WorkspaceDiagramPage() {
               }}
               nodesSelectable
               showNavigationButtons
-              enableElementDetails
-              enableDynamicViewWalkthrough
-              enableRelationshipBrowser
-              enableRelationshipDetails
+              enableElementDetails={!isOverlay}
+              enableDynamicViewWalkthrough={!isOverlay}
+              enableRelationshipBrowser={!isOverlay}
+              enableRelationshipDetails={!isOverlay}
               enableNotations
               enableElementTags
               enableFocusMode
@@ -120,14 +148,7 @@ function WorkspaceDiagramPage() {
                 playground.openSources({
                   view: nextView as scalar.ViewId,
                 })
-                void router.navigate({
-                  viewTransition: false,
-                  from: '/w/$workspaceId/$viewId',
-                  to: './',
-                  params: {
-                    viewId: nextView,
-                  },
-                })
+                navigateToView(nextView as ViewId)
               }}
               onEdgeClick={(edge, event) => {
                 event?.stopPropagation()
@@ -161,7 +182,7 @@ function WorkspaceDiagramPage() {
               </Box>
             )}
           </LikeC4ModelProvider>
-        </LikeC4PlaygroundEditor>
+        </Editor>
       </Box>
     )
   }
@@ -179,6 +200,34 @@ function WorkspaceDiagramPage() {
       </Box>
     </Box>
   )
+}
+
+type Overlay = {
+  diagram: DiagramView | null
+  /**
+   * Set for compare views
+   */
+  mode: CompareViewMode | null
+}
+
+const NoOverlay: Overlay = { diagram: null, mode: null }
+
+/**
+ * Diagram shown instead of the active view: removal impact, or compare view of the active diff.
+ */
+function selectOverlay(context: PlaygroundContext): Overlay {
+  const { removalImpact, activeDiffId, activeViewId, compareView, compareMode } = context
+  if (removalImpact) {
+    return { diagram: removalImpact.diagram, mode: null }
+  }
+  if (
+    activeDiffId && compareView?.diagram
+    && compareView.diffId === activeDiffId
+    && compareView.viewId === activeViewId
+  ) {
+    return { diagram: compareView.diagram, mode: compareMode }
+  }
+  return NoOverlay
 }
 
 function LikeC4PlaygroundEditor({ children }: PropsWithChildren) {

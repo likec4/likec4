@@ -1,7 +1,7 @@
 import { defineSemanticTokens } from '@pandacss/dev'
 import { mantine } from '../generated.ts'
 import { alpha } from '../helpers.ts'
-import { black, dark, gray, green, orange, value, white } from './value.ts'
+import { black, dark, gray, green, orange, red, value, white, yellow } from './value.ts'
 
 export const { likec4 } = defineSemanticTokens.colors({
   likec4: {
@@ -155,6 +155,26 @@ export const { likec4 } = defineSemanticTokens.colors({
       latest: value({
         description: 'LikeC4 Compare color for latest changes',
         value: green[6],
+      }),
+    },
+
+    // Model diff colors (compare views and removal impact)
+    diff: {
+      added: value({
+        description: 'Elements and relationships added by a model diff',
+        value: green[8],
+      }),
+      modified: value({
+        description: 'Elements and relationships modified by a model diff',
+        value: yellow[8],
+      }),
+      removed: value({
+        description: 'Elements and relationships removed by a model diff',
+        value: red[8],
+      }),
+      orphan: value({
+        description: 'Elements left without relationships after a removal',
+        value: orange[8],
       }),
     },
   },

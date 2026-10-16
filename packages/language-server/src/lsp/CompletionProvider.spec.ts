@@ -36,6 +36,7 @@ describe('LikeC4CompletionProvider', () => {
         'views',
         'global',
         'deployment',
+        'diff',
         'likec4lib',
       ],
     })

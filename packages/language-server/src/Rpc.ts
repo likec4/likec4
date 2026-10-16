@@ -13,23 +13,30 @@ import { LikeC4Model } from '@likec4/core/model'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import {
+  ApplyModelEdit,
   BuildDocuments,
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
   DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
+  DidRequestRemovalImpactNotification,
   FetchComputedModel,
+  FetchDiffs,
   FetchLayoutedModel,
   FetchProjects,
   FetchProjectsOverview,
+  FetchRemovalImpact,
   FetchTelemetryMetrics,
   FetchViewsFromAllProjects,
   GetDocumentTags,
+  LayoutCompareView,
   LayoutView,
   Locate,
+  PreviewModelEdit,
   RegisterProject,
   ReloadProjects,
+  RollbackModelEdit,
   ValidateLayout,
 } from './protocol'
 import { ADisposable } from './utils'
@@ -388,6 +395,42 @@ export class Rpc extends ADisposable {
           projectsView,
         }
       }),
+      // ----------
+      connection.onRequest(FetchDiffs.req, async ({ projectId }) => {
+        logger.debug`received request ${'FetchDiffs'} for project ${projectId}`
+        const diffs = await likec4Services.ModelDiffs.list(projectId)
+        return { diffs }
+      }),
+      // ----------
+      connection.onRequest(LayoutCompareView.req, async params => {
+        logger.debug`received request ${'LayoutCompareView'} for ${params.viewId} and diff ${params.diffId}`
+        return { diagram: await likec4Services.ModelDiffs.layoutCompareView(params) }
+      }),
+      // ----------
+      connection.onRequest(FetchRemovalImpact.req, async ({ fqn, projectId }) => {
+        logger.debug`received request ${'FetchRemovalImpact'} for ${fqn}`
+        const [report, diagram] = await Promise.all([
+          likec4Services.RemovalImpact.analyze([fqn], projectId),
+          likec4Services.RemovalImpact.impactView([fqn], projectId),
+        ])
+        return { report, diagram }
+      }),
+      // ----------
+      connection.onRequest(PreviewModelEdit.req, async ({ request, projectId }) => {
+        logger.debug`received request ${'PreviewModelEdit'} (${request.type})`
+        const preview = await likec4Services.ModelEdits.preview(request, projectId)
+        return 'error' in preview ? { preview: null, error: preview.error } : { preview }
+      }),
+      // ----------
+      connection.onRequest(ApplyModelEdit.req, async ({ request, token, projectId }) => {
+        logger.debug`received request ${'ApplyModelEdit'} (${request.type})`
+        return await likec4Services.ModelEdits.apply(request, { projectId, token })
+      }),
+      // ----------
+      connection.onRequest(RollbackModelEdit.req, async ({ editId }) => {
+        logger.debug`received request ${'RollbackModelEdit'} ${editId ?? 'latest'}`
+        return await likec4Services.ModelEdits.rollback(editId)
+      }),
     )
 
     function reportLayoutDrift(diagrams: DiagramView[]) {
@@ -419,5 +462,17 @@ export class Rpc extends ADisposable {
       DidRequestOpenViewNotification.type,
       params,
     )
+  }
+
+  /**
+   * Asks the client to show the removal impact of an element.
+   */
+  async requestRemovalImpact(params: DidRequestRemovalImpactNotification.Params): Promise<void> {
+    const lspConnection = this.services.shared.lsp.Connection
+    if (!lspConnection) {
+      logger.warn('No LSP connection')
+      return
+    }
+    await lspConnection.sendNotification(DidRequestRemovalImpactNotification.type, params)
   }
 }

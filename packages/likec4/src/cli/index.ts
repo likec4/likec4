@@ -18,6 +18,7 @@ import pkg from '../../package.json' with { type: 'json' }
 import buildCmd from './build'
 import checkUpdateCmd from './check-update'
 import codegenCmd from './codegen'
+import diffCmd from './diff'
 import exportCmd from './export'
 import formatCmd from './format'
 import listIconsCmd from './list-icons'
@@ -26,6 +27,7 @@ import mcpCmd from './mcp'
 import { logLevel, verbose, verboseLogLevel } from './options'
 import previewCmd from './preview'
 import publishCmd from './publish'
+import safeDeleteCmd from './safe-delete'
 import serveCmd from './serve'
 import syncCmd from './sync'
 import validateCmd from './validate'
@@ -68,6 +70,7 @@ async function main() {
     publishCmd,
     syncCmd,
     validateCmd,
+    y => safeDeleteCmd(diffCmd(y)),
     listIconsCmd,
     mcpCmd,
     lspCmd,

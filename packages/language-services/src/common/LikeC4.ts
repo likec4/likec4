@@ -7,6 +7,9 @@ import type {
   FormatOptions,
   LikeC4LanguageServices,
   LikeC4ModelBuilder,
+  LikeC4ModelDiffs,
+  LikeC4ModelEdits,
+  LikeC4RemovalImpact,
   LikeC4Services,
   LikeC4SharedServices,
   LikeC4Views,
@@ -78,6 +81,27 @@ export class LikeC4 {
 
   get modelBuilder(): LikeC4ModelBuilder {
     return this.langium.likec4.likec4.ModelBuilder
+  }
+
+  /**
+   * Model diffs: list diffs, compare views, apply or discard diffs
+   */
+  get modelDiffs(): LikeC4ModelDiffs {
+    return this.langium.likec4.likec4.ModelDiffs
+  }
+
+  /**
+   * Safe delete dry run: what removing an element takes with it
+   */
+  get removalImpact(): LikeC4RemovalImpact {
+    return this.langium.likec4.likec4.RemovalImpact
+  }
+
+  /**
+   * Edits of the model sources (apply or discard a diff, safe delete): preview, apply and roll back
+   */
+  get modelEdits(): LikeC4ModelEdits {
+    return this.langium.likec4.likec4.ModelEdits
   }
 
   private get LangiumDocuments() {

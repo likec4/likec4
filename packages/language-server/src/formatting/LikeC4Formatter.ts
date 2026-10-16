@@ -224,7 +224,7 @@ export class LikeC4Formatter extends AbstractFormatter {
   protected removeIndentFromTopLevelStatements(node: AstNode) {
     if (ast.isLikeC4Grammar(node.$container)) {
       const formatter = this.getNodeFormatter(node)
-      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'global', 'deployments', 'import')
+      formatter.keywords('specification', 'model', 'views', 'likec4lib', 'global', 'deployments', 'import', 'diff')
         .prepend(FormattingOptions.noIndent)
     }
   }
@@ -243,6 +243,9 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isGlobalDynamicPredicateGroup(node)
       || ast.isGlobalStyleGroup(node)
       || ast.isModel(node)
+      || ast.isModelDiff(node)
+      || ast.isDiffRemove(node)
+      || ast.isDiffAdd(node)
       || ast.isElementBody(node)
       || ast.isExtendElementBody(node)
       || ast.isRelationBody(node)

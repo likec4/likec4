@@ -10,11 +10,13 @@ export {
 export { invariant, nonexhaustive, nonNullable } from './invariant'
 
 export { commonHead } from './common-head'
+
 export {
   compareNatural,
   compareNaturalHierarchically,
   sortNatural,
 } from './compare-natural'
+export { collapseUnchanged, diffLines, type LineChange } from './diff-lines'
 
 export {
   ancestorsFqn,

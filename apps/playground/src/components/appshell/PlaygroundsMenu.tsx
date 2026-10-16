@@ -98,6 +98,16 @@ export function PlaygroundsMenu() {
             )}>
             Ranks
           </MenuItem>
+          <MenuItem
+            renderRoot={(props) => (
+              <Link
+                to={'/w/$workspaceId/$viewId/'}
+                reloadDocument
+                params={{ workspaceId: 'diff', viewId: 'index' }}
+                {...props} />
+            )}>
+            Model diff
+          </MenuItem>
 
           {workspaces.length > 0 && (
             <>

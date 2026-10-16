@@ -20,6 +20,7 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
+import { diffRemoveEntryChecks, modelDiffChecks } from './diff'
 import {
   dynamicViewDisplayVariant,
   stepSeries,
@@ -114,6 +115,9 @@ const isValidatableAstNode = isAnyOf(
   ast.isSpecificationRule,
   ast.isExpressions,
   ast.isColorLiteral,
+  ast.isModelDiff,
+  ast.isDiffStringProperty,
+  ast.isDiffRemoveEntry,
 )
 type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
@@ -195,6 +199,8 @@ export function registerValidationChecks(services: LikeC4Services) {
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
     ViewRuleRank: viewRuleRankChecks(services),
     ViewOrderProperty: viewOrderChecks(services),
+    ModelDiff: modelDiffChecks(services),
+    DiffRemoveEntry: diffRemoveEntryChecks(services),
     ViewRuleAutoLayout: viewRuleAutoLayoutChecks(services),
   })
   const connection = services.shared.lsp.Connection
