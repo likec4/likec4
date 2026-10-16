@@ -75,7 +75,9 @@ As propriedades devem ser definidas antes de qualquer [predicado](/pt-br/dsl/vie
 A partir da versão 1.60.0, as visões de elementos podem ser exibidas em dois modos:
 
 - **Diagram**: apresenta os elementos conforme o layout do diagrama.
-- **Graph**: representa os elementos como círculos compactos conectados por linhas retas, com nós arrastáveis e uma simulação de forças que anima sua organização.
+- **Graph**: representa os elementos folha como círculos compactos conectados por linhas retas, com nós arrastáveis e uma simulação de forças que anima sua organização.
+
+Atualmente, o modo Graph simplifica a hierarquia da visão: exibe apenas elementos folha (sem filhos). Elementos agrupadores e relacionamentos conectados diretamente a eles são omitidos. Volte para **Diagram** para visualizar a hierarquia completa e esses relacionamentos.
 
 Use o seletor **Diagram / Graph** no painel de navegação para alternar entre os modos. Essa escolha altera apenas a apresentação da visão, sem modificar a definição do modelo na DSL.
 

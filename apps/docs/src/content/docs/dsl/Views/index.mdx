@@ -75,7 +75,9 @@ Properties must be defined before any [predicates](/dsl/views/predicates/).
 Starting with v1.60.0, element views support two display modes:
 
 - **Diagram**: renders elements in the diagram layout.
-- **Graph**: renders elements as compact circles linked by straight lines, with draggable nodes arranged by an animated, physics-based simulation.
+- **Graph**: renders leaf elements as compact circles linked by straight lines, with draggable nodes arranged by an animated, physics-based simulation.
+
+Graph mode currently flattens the view hierarchy: it only shows leaf elements (those without children). Compound/group nodes and any relationships connected directly to those nodes are omitted. Switch back to **Diagram** to see the full hierarchy and those relationships.
 
 Use the **Diagram / Graph** toggle in the navigation panel to switch modes. This changes the presentation of an element view without changing its DSL model definition.
 
