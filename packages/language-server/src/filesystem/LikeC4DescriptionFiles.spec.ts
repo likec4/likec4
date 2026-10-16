@@ -263,7 +263,7 @@ describe('descriptionFile', () => {
   })
 
   // A link is inside the project by name and outside it by content, so the lexical check passes and the
-  // read has to follow it: symlinks need elevated privileges on Windows.
+  // read has to follow it. Symlinks need elevated privileges on Windows, where this whole test is skipped.
   it.skipIf(platform === 'win32')(
     'follows a link inside the project, and refuses a link that leaves it',
     async ({ expect }) => {
@@ -275,6 +275,7 @@ describe('descriptionFile', () => {
         await writeFile(join(outside, 'secret.md'), '# secret')
         await symlink(join(root, 'src', 'inside.md'), join(root, 'src', 'inside-link.md'))
         await symlink(join(outside, 'secret.md'), join(root, 'src', 'outside-link.md'))
+        await symlink(outside, join(root, 'src', 'shared-dir'), 'junction')
 
         const t = createTestServices({
           workspace: URI.file(root).toString(),
@@ -292,13 +293,20 @@ describe('descriptionFile', () => {
             component escaped {
               descriptionFile 'outside-link.md'
             }
+            component escapedThroughDir {
+              descriptionFile 'shared-dir/secret.md'
+            }
           }
         `)
 
-        expect(errors).toEqual(['File "outside-link.md" is outside of the project'])
+        expect([...errors].sort()).toEqual([
+          'File "outside-link.md" is outside of the project',
+          'File "shared-dir/secret.md" is outside of the project',
+        ])
         const { elements } = await t.buildModel()
         expect(elements['linked']).toHaveProperty('description', { md: '# inside' })
         expect(elements['escaped']).not.toHaveProperty('description')
+        expect(elements['escapedThroughDir']).not.toHaveProperty('description')
       } finally {
         await rm(root, { recursive: true, force: true })
         await rm(outside, { recursive: true, force: true })
