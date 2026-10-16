@@ -217,6 +217,16 @@ function App() {
 
 See [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts) for available props.
 
+`LikeC4View` hides notes in the compact view by default. To show note cards, set `enableNotes`:
+
+```tsx
+<LikeC4View viewId="index1" enableNotes />
+```
+
+The popup browser shows notes. In regular diagrams, each card connects to its target with a dashed line.
+The component includes the cards in its aspect ratio. See [View notes](/dsl/views/predicates/#view-notes)
+for the C4 syntax and placement limits.
+
 #### ReactLikeC4
 
 `LikeC4View` renders views from your model and allows exploration in the popup browser.

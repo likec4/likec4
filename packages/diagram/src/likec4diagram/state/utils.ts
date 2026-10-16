@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { BBox } from '@likec4/core/geometry'
 import {
   type DeploymentFqn,
@@ -78,11 +85,15 @@ export function findDiagramEdge(ctx: Context, xyedgeId: string): DiagramEdge | n
  * If {@link nextView} is provided, returns the bounds of the next view.
  */
 export function viewBounds(
-  ctx: Pick<Context, 'view' | 'dynamicViewVariant'>,
+  ctx: Pick<Context, 'view' | 'dynamicViewVariant' | 'noteBounds' | 'features'>,
   nextView?: DiagramView,
 ): BBox {
   const view = nextView ?? ctx.view
-  return pickViewBounds(view, ctx.dynamicViewVariant)
+  const base = pickViewBounds(view, ctx.dynamicViewVariant)
+  if (nextView || !ctx.features.enableNotes || ctx.dynamicViewVariant === 'sequence' || !ctx.noteBounds) {
+    return base
+  }
+  return BBox.merge(base, ctx.noteBounds)
 }
 
 export function focusedBounds(params: { context: Context }): { bounds: BBox; duration?: number } {

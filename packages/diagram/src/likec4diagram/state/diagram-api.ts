@@ -126,7 +126,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * Fit diagram to view
    */
   fitDiagram(duration = 350): void {
-    this.send({ type: 'xyflow.fitDiagram', duration })
+    this.send({ type: 'xyflow.fitDiagram', duration, explicit: true })
   }
 
   /**

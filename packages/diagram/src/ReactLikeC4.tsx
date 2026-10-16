@@ -1,11 +1,18 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
-import type { CSSProperties, ReactNode } from 'react'
+import { type CSSProperties, type ReactNode, useCallback, useState } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
-import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties, OnContentBoundsChange } from './LikeC4Diagram.props'
 import { ShadowRoot } from './shadowroot'
 import { pickViewBounds } from './utils'
 
@@ -74,9 +81,25 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
   style,
   mantineTheme,
   styleNonce,
+  onContentBoundsChange,
   ...props
 }: ReactLikeC4Props<A>): JSX.Element {
   const likec4model = useOptionalLikeC4Model()
+  const dynamicViewVariant = props.dynamicViewVariant
+  const [contentBounds, setContentBounds] = useState<
+    { viewId: string; variant: typeof dynamicViewVariant; bounds: t.BBox } | null
+  >(null)
+  const handleContentBoundsChange = useCallback<OnContentBoundsChange>(value => {
+    const { viewId, bounds } = value
+    setContentBounds(previous =>
+      previous?.viewId === viewId && previous.variant === dynamicViewVariant
+        && previous.bounds.x === bounds.x && previous.bounds.y === bounds.y
+        && previous.bounds.width === bounds.width && previous.bounds.height === bounds.height
+        ? previous
+        : { viewId, variant: dynamicViewVariant, bounds }
+    )
+    onContentBoundsChange?.(value)
+  }, [dynamicViewVariant, onContentBoundsChange])
 
   if (!likec4model) {
     return (
@@ -103,7 +126,10 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
     ? viewModel.$layouted
     : viewModel.$view
 
-  const bounds = pickViewBounds(view, props.dynamicViewVariant)
+  const bounds = props.enableNotes !== false && contentBounds?.viewId === view.id
+      && contentBounds.variant === dynamicViewVariant
+    ? contentBounds.bounds
+    : pickViewBounds(view, dynamicViewVariant)
 
   const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
 
@@ -123,6 +149,7 @@ export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
         view={view}
         enableNotations={hasNotations}
         {...props}
+        onContentBoundsChange={handleContentBoundsChange}
       />
     </ShadowRoot>
   )

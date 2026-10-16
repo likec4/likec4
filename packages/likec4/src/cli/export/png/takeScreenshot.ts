@@ -151,7 +151,7 @@ export async function takeScreenshot({
 
       logger.info(k.cyan(url) + k.dim(` -> ${relative(output, path)}`))
 
-      await page.waitForSelector('.react-flow.initialized')
+      await page.locator('[data-likec4-export-ready="true"]').waitFor({ state: 'attached', timeout })
       const exportPage = page.getByTestId('export-page')
       const exportBox = await exportPage.boundingBox()
       if (exportBox) {

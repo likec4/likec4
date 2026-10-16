@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+specification {
+  element service
+}
+
+model {
+  customer = service 'Customer'
+  cloud = service 'Cloud' {
+    style { color blue }
+  }
+  customer -> cloud 'opens'
+}
+
+views {
+  view update {
+    include *
+    include cloud with {
+      notes '''
+        This note belongs to Cloud. It must stay in the fitted viewport after a color change.
+
+        The diagram layout and note text stay the same during this update.
+      '''
+    }
+    autoLayout LeftRight
+  }
+}

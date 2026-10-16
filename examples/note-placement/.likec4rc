@@ -1,0 +1,5 @@
+{
+  name: 'note-placement',
+  title: 'Note placement examples',
+  implicitViews: false
+}

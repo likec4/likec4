@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { UriUtils } from 'langium'
 import path from 'path'
 import { map, mapToObj, pipe } from 'remeda'
@@ -325,6 +332,12 @@ describe('LikeC4', () => {
             "extend-2.c4",
           ],
           "folder": "multi-relation-extend",
+        },
+        "note-placement": {
+          "documents": [
+            "notes.c4",
+          ],
+          "folder": "note-placement",
         },
         "overflow-test": {
           "documents": [

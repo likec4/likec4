@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, SnapshotFrom, StateValueFrom } from 'xstate'
 import { assign, stopChild } from 'xstate/actions'
@@ -58,6 +65,7 @@ const _diagramMachine = machine.createMachine({
         assignDynamicViewVariant(),
         assign({
           viewportChangedManually: false,
+          noteBounds: null,
         }),
         raiseUpdateView(),
       ],
@@ -84,6 +92,28 @@ const _diagramMachine = machine.createMachine({
           },
         }
       }),
+    },
+    'notes.bounds': {
+      guard: ({ context, event }) => {
+        if (context.view.id !== event.viewId || context.dynamicViewVariant === 'sequence') return false
+        const previous = context.noteBounds
+        const next = event.bounds
+        return previous !== next && (!previous || !next || previous.x !== next.x || previous.y !== next.y ||
+          previous.width !== next.width || previous.height !== next.height)
+      },
+      actions: [
+        machine.enqueueActions(({ context, event, enqueue }) => {
+          if (
+            event.type === 'notes.bounds' && event.bounds && !context.noteBounds && context.features.enableFitView &&
+            !context.viewportChangedManually
+          )
+          {
+            enqueue(cancelFitDiagram())
+            enqueue.raise({ type: 'xyflow.fitDiagram', duration: 0 })
+          }
+        }),
+        assign(({ event }) => ({ noteBounds: event.bounds })),
+      ],
     },
     'update.features': {
       actions: updateFeatures(),

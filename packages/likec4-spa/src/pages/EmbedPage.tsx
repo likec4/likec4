@@ -4,8 +4,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { BBox, ViewId } from '@likec4/core/types'
 import { pickViewBounds, StaticLikeC4Diagram } from '@likec4/diagram'
 import { useSearch } from '@tanstack/react-router'
+import { useCallback, useState } from 'react'
 import { useCurrentProject, useCurrentView, useTransparentBackground } from '../hooks'
 import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 
@@ -19,6 +21,25 @@ export function EmbedPage() {
   const project = useCurrentProject()
   const [relationshipBrowserScope] = useRelationshipBrowserScope(project)
   const [diagram] = useCurrentView()
+  const [contentBounds, setContentBounds] = useState<
+    {
+      viewId: string
+      variant: typeof dynamic
+      bounds: BBox
+    } | null
+  >(null)
+  const onContentBoundsChange = useCallback(({ viewId, bounds }: { viewId: ViewId; bounds: BBox }) => {
+    setContentBounds(previous =>
+      previous?.viewId === viewId
+        && previous.variant === dynamic
+        && previous.bounds.x === bounds.x
+        && previous.bounds.y === bounds.y
+        && previous.bounds.width === bounds.width
+        && previous.bounds.height === bounds.height
+        ? previous
+        : { viewId, variant: dynamic, bounds }
+    )
+  }, [dynamic])
 
   useTransparentBackground(!!diagram)
 
@@ -26,7 +47,9 @@ export function EmbedPage() {
     return <div>Loading...</div>
   }
 
-  const bounds = pickViewBounds(diagram, dynamic)
+  const bounds = contentBounds?.viewId === diagram.id && contentBounds.variant === dynamic
+    ? contentBounds.bounds
+    : pickViewBounds(diagram, dynamic)
 
   return (
     <div
@@ -50,6 +73,8 @@ export function EmbedPage() {
         background={'transparent'}
         fitViewPadding={0}
         dynamicViewVariant={dynamic}
+        enableNotes
+        onContentBoundsChange={onContentBoundsChange}
         enableRelationshipDetails
         enableRelationshipBrowser
         relationshipBrowserScope={relationshipBrowserScope}
