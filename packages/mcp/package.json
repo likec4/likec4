@@ -82,6 +82,7 @@
     "@vitest/ui": "catalog:vitest",
     "citty": "catalog:utils",
     "defu": "catalog:utils",
+    "fuse.js": "catalog:utils",
     "langium": "catalog:langium",
     "react": "catalog:react",
     "react-dom": "catalog:react",
