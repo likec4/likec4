@@ -52,6 +52,25 @@ describe('loadConfig - JSON branch', () => {
       })
       expect(fs.readFile).toHaveBeenCalledWith(normalizePath(filepath.fsPath), 'utf-8')
     })
+
+    it('should load config with styles.customCss', async () => {
+      const filepath = mockVscodeURI('/project/likec4.config.json')
+      mockFsReads({
+        '/project/likec4.config.json': {
+          name: 'test-project',
+          styles: {
+            customCss: ['x.css'],
+          },
+        },
+      })
+
+      const config = await loadConfig(filepath)
+
+      expect(config.styles?.customCss).toEqual({
+        paths: ['x.css'],
+        content: '',
+      })
+    })
   })
 
   describe('implicit config from directory name', () => {
