@@ -128,6 +128,10 @@ export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(
         colorProperty(),
         property('border', spaceBetween(print('border'), print())),
         property('opacity', spaceBetween(print('opacity'), print(v => `${v}%`))),
+        property('multiple'),
+        property('size'),
+        property('padding'),
+        property('textSize'),
         property(
           'groupRules',
           foreachNewLine(lazy(() => elementViewRule.noparse<ViewRuleGroupOutput['groupRules'][number]>())),

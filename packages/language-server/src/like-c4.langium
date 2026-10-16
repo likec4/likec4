@@ -931,7 +931,11 @@ DeploymentViewRuleGroup:
     props+=(
       ColorProperty |
       BorderProperty |
-      OpacityProperty
+      OpacityProperty |
+      MultipleProperty |
+      ShapeSizeProperty |
+      PaddingSizeProperty |
+      TextSizeProperty
     )*
     groupRules+=(
       DeploymentViewRulePredicate |
