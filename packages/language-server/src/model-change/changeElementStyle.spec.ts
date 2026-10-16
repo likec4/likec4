@@ -1,4 +1,4 @@
-import { type Fqn, type ViewId } from '@likec4/core'
+import type { Fqn, ViewId } from '@likec4/core'
 import { describe, vi } from 'vitest'
 import { it } from './changeViewLayout.spec'
 

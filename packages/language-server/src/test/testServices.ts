@@ -161,6 +161,7 @@ export function createTestServices(options?: {
     if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
+    await documentBuilder.waitUntil(DocumentState.Validated)
     const likec4model = await modelBuilder.computeModel()
     if (!likec4model) throw new Error('No model found')
     return likec4model.$data

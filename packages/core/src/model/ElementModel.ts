@@ -10,7 +10,6 @@ import type {
   IconUrl,
   IteratorLike,
   Link,
-  ProjectId,
   RichTextOrEmpty,
 } from '../types'
 import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'

@@ -7,6 +7,9 @@ import {
 } from 'vitest/config'
 
 const sharedConfig = defineConfig({
+  resolve: {
+    conditions: ['sources'],
+  },
   ssr: {
     resolve: {
       conditions: ['sources'],
