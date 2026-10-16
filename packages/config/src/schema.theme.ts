@@ -23,6 +23,7 @@ import type {
   ThemeColor,
 } from '@likec4/core/types'
 import { exact } from '@likec4/core/types'
+import { isPlainObject } from 'remeda'
 import z from 'zod/v4'
 
 const opacity = z
@@ -291,7 +292,10 @@ export const LikeC4StylesConfigSchema = z
       description:
         'Override default values for style properties\nThese values will be used if such property is not defined',
     }),
-    customCss: LikeC4Config_Styles_CustomStylesheets.optional().meta({
+    customCss: z.preprocess(
+      denormalizeStylesheets,
+      LikeC4Config_Styles_CustomStylesheets,
+    ).optional().meta({
       description: 'Custom CSS (or list of CSS files) to be included in the generated diagrams',
     }),
   })
@@ -319,6 +323,19 @@ function normalizeDefaults(
     group: group && exact(group) satisfies LikeC4ProjectStyleDefaults['group'],
     view: view && exact(view) satisfies LikeC4ProjectStyleDefaults['view'],
   }) satisfies LikeC4ProjectStyleDefaults
+}
+
+/**
+ * Config can be validated more than once (e.g. `loadConfig` and then `ProjectsManager.registerProject`).
+ * Turns the output of {@link normalizeStylesheets} back into the list of paths, so that it passes validation again.
+ */
+function denormalizeStylesheets(
+  stylesheets: z.input<typeof LikeC4Config_Styles_CustomStylesheets> | LikeC4ProjectStylesCustomStylesheets,
+): unknown {
+  if (isPlainObject(stylesheets) && stylesheets.content === '' && Array.isArray(stylesheets.paths)) {
+    return stylesheets.paths
+  }
+  return stylesheets
 }
 
 function normalizeStylesheets(
