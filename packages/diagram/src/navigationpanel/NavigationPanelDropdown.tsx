@@ -42,7 +42,7 @@ import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { EmptyBox } from '../components/EmptyBox'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { viewIcon } from '../components/ViewIcon'
-import { type CurrentViewModel, useOptionalCurrentViewModel } from '../custom'
+import { type CurrentViewModel, ErrorBoundary, useOptionalCurrentViewModel } from '../custom'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import { Tooltip } from './_common'
@@ -99,35 +99,37 @@ export const NavigationPanelDropdown = memo(() => {
       onMouseLeave={() => actor.send({ type: 'dropdown.mouseLeave' })}
       onMouseEnter={() => actor.send({ type: 'dropdown.mouseEnter' })}
     >
-      <ProjectsMenu />
-      <HStack gap="xs">
-        <SearchInput
-          defaultValue={searchQuery}
-          onChange={setSearchQuery}
-        />
-      </HStack>
-      <ScrollAreaAutosize
-        scrollbars="x"
-        type="auto"
-        offsetScrollbars="present"
-        classNames={{
-          root: css({
-            maxWidth: [
-              '[calc(100vw - 50px)]',
-              '[calc(100cqw - 50px)]',
-            ],
-          }),
-        }}
-        styles={{
-          viewport: {
-            overscrollBehavior: 'none',
-          },
-        }}
-      >
-        {hasSearchQuery
-          ? <SearchResults />
-          : <FolderColumns />}
-      </ScrollAreaAutosize>
+      <ErrorBoundary variant="message" onReset={() => actor.closeDropdown()}>
+        <ProjectsMenu />
+        <HStack gap="xs">
+          <SearchInput
+            defaultValue={searchQuery}
+            onChange={setSearchQuery}
+          />
+        </HStack>
+        <ScrollAreaAutosize
+          scrollbars="x"
+          type="auto"
+          offsetScrollbars="present"
+          classNames={{
+            root: css({
+              maxWidth: [
+                '[calc(100vw - 50px)]',
+                '[calc(100cqw - 50px)]',
+              ],
+            }),
+          }}
+          styles={{
+            viewport: {
+              overscrollBehavior: 'none',
+            },
+          }}
+        >
+          {hasSearchQuery
+            ? <SearchResults />
+            : <FolderColumns />}
+        </ScrollAreaAutosize>
+      </ErrorBoundary>
     </PopoverDropdown>
   )
 })
