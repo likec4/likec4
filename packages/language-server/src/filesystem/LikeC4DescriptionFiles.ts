@@ -243,6 +243,9 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
     }
     const projects = this.services.workspace.ProjectsManager
     const project = projects.getProject(projects.ownerProjectId(docUri))
+    // The file must be of the project's own scheme: a document from another scheme is refused,
+    // while a project on a non-`file:` scheme (VS Code Remote, a virtual provider) reads through
+    // its own provider, which is the file system there.
     if (resolved.scheme !== project.folderUri.scheme) {
       return `File "${path}" is not part of the project`
     }

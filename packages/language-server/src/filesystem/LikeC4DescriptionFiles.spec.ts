@@ -37,6 +37,27 @@ describe('descriptionFile', () => {
     expect(elements['c1']).toHaveProperty('description', { md: markdown })
   })
 
+  it('reads a path written with surrounding spaces', async ({ expect }) => {
+    const t = createTestServices()
+    mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+
+    const { errors } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile ' spec.md '
+        }
+      }
+    `)
+
+    expect(errors).toEqual([])
+
+    const { elements } = await t.buildModel()
+    expect(elements['c1']).toHaveProperty('description', { md: markdown })
+  })
+
   it('uses the content of the referenced file on a view and on a relation', async ({ expect }) => {
     const t = createTestServices()
     mockFiles(t, { '/test/workspace/src/spec.md': markdown })
@@ -260,6 +281,47 @@ describe('descriptionFile', () => {
     `)
 
     expect(errors).toEqual(['File "https://example.com/spec.md" is not part of the project'])
+  })
+
+  it('reads a description file in a project on another scheme', async ({ expect }) => {
+    // A VS Code Remote workspace is `vscode-remote://` and is read through the node provider,
+    // which is the file system there, so the rule is the project's own scheme, not `file:`.
+    const t = createTestServices({ workspace: 'memfs:///test/workspace' })
+    mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+
+    const { errors } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile 'spec.md'
+        }
+      }
+    `)
+
+    expect(errors).toEqual([])
+
+    const { elements } = await t.buildModel()
+    expect(elements['c1']).toHaveProperty('description', { md: markdown })
+  })
+
+  it('refuses a path that names the file scheme', async ({ expect }) => {
+    const t = createTestServices()
+    mockFiles(t, {})
+
+    const { errors } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile 'file:///etc/passwd'
+        }
+      }
+    `)
+
+    expect(errors).toEqual(['File "file:///etc/passwd" is not part of the project'])
   })
 
   // A link is inside the project by name and outside it by content, so the lexical check passes and the

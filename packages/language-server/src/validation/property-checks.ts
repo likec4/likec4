@@ -135,7 +135,7 @@ export const descriptionFileRuleChecks = (
       return
     }
     const value = node.value
-    const path = ast.isMarkdownOrString(value) ? parseMarkdownAsString(value) : undefined
+    const path = ast.isMarkdownOrString(value) ? parseMarkdownAsString(value)?.trim() : undefined
     if (!path) {
       accept('error', `File name is empty`, { node, property: 'value' })
       return

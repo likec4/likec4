@@ -409,7 +409,7 @@ export class BaseParser {
       descriptionFile?: ast.MarkdownOrString | undefined
     },
   ): c4.MarkdownOrString | undefined {
-    const file = parseMarkdownAsString(props.descriptionFile)
+    const file = parseMarkdownAsString(props.descriptionFile)?.trim()
     if (file) {
       const description = this.services.shared.workspace.DescriptionFiles.get(this.doc.uri, file)
       // When the file cannot be read the validation reports it, and there is nothing to describe
