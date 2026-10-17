@@ -525,6 +525,29 @@ model {
 }
 ```
 
+### Description from a file
+
+With `descriptionFile` the markdown lives in its own file, and the element, relation or view
+references it. The path is relative to the `.c4` file that uses it:
+
+```likec4 filename="model.c4" copy
+model {
+  backend = component {
+    descriptionFile './backend.md'
+  }
+}
+```
+
+```markdown filename="backend.md"
+### Backend
+
+Provides the public API.
+```
+
+The file must be inside the project folder; a path that points outside of it, or to another
+scheme, is reported as an error. `description` and `descriptionFile` on the same element are an
+error too - use one of them.
+
 ## Structuring Model
 
 Any element can act as a container and include other elements.  
