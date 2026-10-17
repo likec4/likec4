@@ -1,6 +1,6 @@
 {
   "name": "@likec4/language-server",
-  "version": "1.60.0",
+  "version": "1.60.1",
   "description": "LikeC4 Language Server",
   "homepage": "https://likec4.dev",
   "bugs": "https://github.com/likec4/likec4/issues",

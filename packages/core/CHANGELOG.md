@@ -1,5 +1,13 @@
 # @likec4/core
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3354](https://github.com/likec4/likec4/pull/3354) [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Support styled and nested `group` boundaries around deployment nodes and instances in deployment views.
+
+- [#3375](https://github.com/likec4/likec4/pull/3375) [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Preserve explicit relationships to parent elements when descendant relationships point in the opposite direction, while still removing redundant same-direction relationships. Fixes [#3302](https://github.com/likec4/likec4/issues/3302)
+
 ## 1.60.0
 
 ### Patch Changes

@@ -1,5 +1,9 @@
 # @likec4/vscode-preview
 
+## 1.60.1
+
+No changes in this release.
+
 ## 1.60.0
 
 No changes in this release.
