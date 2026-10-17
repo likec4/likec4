@@ -7,6 +7,7 @@ import {
   _stage,
   _type,
   isViewRuleAutoLayout,
+  isViewRuleGroup,
   isViewRulePredicate,
   RelationExpr,
 } from '../../types'
@@ -148,25 +149,40 @@ export function processPredicates(
   model: LikeC4DeploymentModel<any>,
   rules: DeploymentViewRule<any>[],
 ) {
-  let memory = Memory.empty()
+  const memory = processGroupRules(model, Memory.empty(), rules)
   let includeAncestors = false
 
   for (const rule of rules) {
-    if (isViewRulePredicate(rule)) {
-      const op = 'include' in rule ? 'include' : 'exclude'
-      const exprs = rule.include ?? rule.exclude
-      for (const expr of exprs) {
-        let stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
-        const ctx = { expr, model, stage, memory, where: null }
-        stage = predicateToPatch(op, ctx) ?? stage
-        memory = stage.commit()
-      }
-    }
     if ('includeAncestors' in rule) {
       includeAncestors = rule.includeAncestors
     }
   }
   return StageFinal.for(memory, includeAncestors).commit()
+}
+
+function processGroupRules(
+  model: LikeC4DeploymentModel<AnyAux>,
+  memory: Memory,
+  rules: DeploymentViewRule<AnyAux>[],
+): Memory {
+  for (const rule of rules) {
+    if (isViewRuleGroup(rule)) {
+      memory = processGroupRules(model, memory.enterGroup(rule), rule.groupRules).leaveGroup()
+      continue
+    }
+    if (isViewRulePredicate(rule)) {
+      const op = 'include' in rule ? 'include' : 'exclude'
+      for (const expr of rule.include ?? rule.exclude) {
+        const stage = op === 'include' ? memory.stageInclude(expr) : memory.stageExclude(expr)
+        memory = (predicateToPatch(op, { expr, model, stage, memory, where: null }) ?? stage).commit()
+      }
+    }
+  }
+  return memory
+}
+
+function flattenDeploymentRules<A extends AnyAux>(rules: DeploymentViewRule<A>[]): DeploymentViewRule<A>[] {
+  return rules.flatMap(rule => isViewRuleGroup(rule) ? flattenDeploymentRules(rule.groupRules) : [rule])
 }
 
 export function computeDeploymentView<M extends AnyAux>(
@@ -178,10 +194,11 @@ export function computeDeploymentView<M extends AnyAux>(
   }: DeploymentView<NoInfer<M>>,
 ): ComputedDeploymentView<M> {
   const memory = processPredicates(likec4model.deployment, rules)
+  const flatRules = flattenDeploymentRules(rules)
 
   const nodesMap = buildNodes(likec4model, memory)
 
-  const expandPredicate = buildExpandPredicate(likec4model, rules)
+  const expandPredicate = buildExpandPredicate(likec4model, flatRules)
 
   const computedEdges = toComputedEdges(
     memory.connections as unknown as DeploymentConnectionModel<M>[],
@@ -197,8 +214,8 @@ export function computeDeploymentView<M extends AnyAux>(
 
   const nodes = applyDeploymentNavigateTo(
     likec4model.deployment,
-    rules,
-    applyDeploymentViewRuleStyles(rules, sorted.nodes),
+    flatRules,
+    applyDeploymentViewRuleStyles(flatRules, sorted.nodes),
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)

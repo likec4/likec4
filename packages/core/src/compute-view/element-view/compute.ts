@@ -1,4 +1,4 @@
-import { anyPass, filter, findLast, forEach, hasAtLeast, map, pipe } from 'remeda'
+import { anyPass, filter, findLast, hasAtLeast, map, pipe } from 'remeda'
 import { ConnectionModel } from '../../model/connection/model/ConnectionModel'
 import { LikeC4Model } from '../../model/LikeC4Model'
 import type { RelationshipModel } from '../../model/RelationModel'
@@ -9,7 +9,6 @@ import {
   type ComputedRankConstraint,
   type ElementViewRule,
   type ModelGlobals,
-  type NodeId,
   type ParsedElementView,
   isViewRuleAutoLayout,
   isViewRuleGroup,
@@ -20,11 +19,11 @@ import {
   ModelRelationExpr,
   whereOperatorAsPredicate,
 } from '../../types'
-import { invariant, nonexhaustive, nonNullable, sortParentsFirst } from '../../utils'
-import { DefaultMap } from '../../utils/mnemonist'
+import { invariant, nonexhaustive } from '../../utils'
 import { applyCustomElementProperties, flattenGroupRules } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
+import { assignGroupElements } from '../utils/assignGroupElements'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { elementExprToPredicate } from '../utils/elementExpressionToPredicate'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
@@ -35,7 +34,7 @@ import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { withResolvedRouting } from '../utils/view-routing'
 import type { Connection, Elem, PredicateCtx } from './_types'
-import { type NodesGroup, type Stage, Memory } from './memory'
+import { type Stage, Memory } from './memory'
 import { ActiveGroupMemory } from './memory/memory'
 import { StageFinal } from './memory/stage-final'
 import { ExpandedElementPredicate } from './predicates/element-expand'
@@ -385,60 +384,7 @@ function assignElementsToGroups(memory: Memory) {
   if (memory.groups.length === 0) {
     return memory
   }
-  const groupAssignments = new DefaultMap<NodeId, Set<Elem>>(() => new Set())
-
-  const assignedTo = new Map<Elem, NodesGroup['id']>()
-
-  const isAncestorAssigned = (el: Elem) => {
-    for (const parent of el.ancestors()) {
-      const groupId = assignedTo.get(parent)
-      if (groupId) {
-        assignedTo.set(el, groupId)
-        groupAssignments.get(groupId).add(el)
-        return true
-      }
-    }
-    return false
-  }
-
-  const isDescendantAssigned = (el: Elem) => {
-    for (const descendant of el.descendants('asc')) {
-      const groupId = assignedTo.get(descendant)
-      if (groupId) {
-        assignedTo.set(el, groupId)
-        groupAssignments.get(groupId).add(el)
-        return true
-      }
-    }
-    return false
-  }
-
-  pipe(
-    sortParentsFirst([...memory.explicitFirstSeenIn.keys()]),
-    forEach((el) => {
-      if (!isAncestorAssigned(el)) {
-        const groupId = nonNullable(memory.explicitFirstSeenIn.get(el))
-        assignedTo.set(el, groupId)
-        groupAssignments.get(groupId).add(el)
-      }
-    }),
-  )
-
-  pipe(
-    sortParentsFirst([...memory.lastSeenIn.keys()]),
-    filter(el => !assignedTo.has(el)),
-    forEach((el) => {
-      if (isAncestorAssigned(el)) {
-        return
-      }
-      if (isDescendantAssigned(el)) {
-        return
-      }
-      const groupId = nonNullable(memory.lastSeenIn.get(el))
-      assignedTo.set(el, groupId)
-      groupAssignments.get(groupId).add(el)
-    }),
-  )
+  const groupAssignments = assignGroupElements(memory.explicitFirstSeenIn, memory.lastSeenIn)
 
   if (groupAssignments.size === 0) {
     return memory
