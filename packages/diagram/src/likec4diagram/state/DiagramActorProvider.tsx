@@ -97,14 +97,6 @@ export function DiagramActorProvider({
       },
     },
   )
-  const actorRef = useRef(actor)
-  if (actorRef.current !== actor) {
-    console.warn('DiagramMachine actor instance changed', {
-      previous: actorRef.current.getSnapshot().context,
-      current: actor.getSnapshot().context,
-    })
-    actorRef.current = actor
-  }
 
   useEffect(() => {
     actor.send({ type: 'update.features', features })

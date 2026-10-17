@@ -11,7 +11,7 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { DefaultMap, invariant, nonNullable } from '@likec4/core/utils'
+import { DefaultMap, invariant, LRUMap, nonNullable } from '@likec4/core/utils'
 import type { PartialDeep } from 'type-fest'
 import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
@@ -36,12 +36,15 @@ type NodeId = t.aux.NodeId
 type EdgeId = t.aux.EdgeId
 
 export class DiagramApi<A extends Any = Unknown> {
-  private static cache = new DefaultMap((ref: DiagramActorRef) => new DiagramApi(ref))
+  private static cache = new LRUMap<string, DiagramApi<Unknown>>(50)
 
   public static withActor(actorRef: DiagramActorRef): DiagramApi<Unknown> {
-    const api = this.cache.get(actorRef)
-    if (this.cache.size > 50) {
+    let api = this.cache.get(actorRef.id)
+    if (!api) {
+      api = new DiagramApi(actorRef)
+      this.cache.set(actorRef.id, api)
     }
+
     return api
   }
 
