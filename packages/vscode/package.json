@@ -336,7 +336,7 @@
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^1.5.2",
     "esm-env": "catalog:utils",
-    "execa": "^9.5.3",
+    "execa": "^9.6.1",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
     "nanoid": "catalog:utils",
