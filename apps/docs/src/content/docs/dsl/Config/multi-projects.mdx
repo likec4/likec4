@@ -41,9 +41,27 @@ In this case, files from the nested project are not part of the parent project.
 </FileTree>
 
 
+## Source inclusion vs. element imports
+
+There are two ways to reuse architecture across projects. They have different semantics:
+
+| | `include.paths` in the project config | `import` in a LikeC4 source file |
+| --- | --- | --- |
+| What is reused | Source files, including specification and model blocks | References to elements in another project's model |
+| How elements are used | As local elements in the including project's model | As external elements belonging to the source project |
+| Reference existing children | Supported | Supported |
+| Add children with `extend` | Supported in the including project | Not currently supported |
+| Typical use | Share specifications or model sources and add project-specific details | Describe dependencies on another project's architecture as-is |
+
+Use **source inclusion** when you need to extend shared elements. Use **element imports** when you only need to
+reference another project's elements and their existing children.
+
+Neither approach changes the source project's model when you add relationships or extensions in the consuming project.
+
 ## Import elements
 
 You can import elements from other projects by using the `import` keyword.
+The name after `from` is the source project's configured `name`, not a file path.
 
 ```likec4
 import { serviceA } from 'projectA'
@@ -59,7 +77,11 @@ model {
 At the moment, the following limitations apply:
 - Referenced projects must be loaded in the same workspace
 - Only top-level **model** elements can be imported
+- Imported elements cannot currently be extended with `extend`
 </Aside>
+
+Importing a top-level element also lets you reference its existing descendants, as with `serviceA.api` above.
+It does not include the source project's specification files or make the imported element a local extension target.
 
 ## Share specification
 
@@ -114,6 +136,42 @@ Both `cloud` and `externals` projects can include the shared specification:
   }
 }
 ```
+
+### Extend included model elements
+
+Included model sources become part of the including project's model, even when another project owns those files.
+You can extend their elements and reference the added children within the including project:
+
+```likec4
+model {
+  extend appx {
+    component restAPI
+  }
+  appUser -> appx.restAPI
+}
+```
+
+This assumes the included sources define `appx` and the including project defines `appUser` and the `component` kind.
+The extension does not add `restAPI` to the source project's model.
+
+For example, `projectx` can include model sources owned by `projecty`:
+
+```json title="projectx/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "projectx",
+  "include": {
+    "paths": ["../projecty/model"]
+  }
+}
+```
+
+With this configuration, `extend appx` adds `appx.restAPI` to `projectx` only.
+Replacing the source inclusion with `import appx from 'projecty'` does **not** support that extension.
+
+Include paths select directories, not entire projects. If the included model uses kinds defined in specification
+files outside those directories, include those specification files' directories too, or define the required kinds
+in the including project.
 
 ### Include configuration
 

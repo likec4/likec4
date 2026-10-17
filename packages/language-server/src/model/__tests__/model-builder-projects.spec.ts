@@ -1,8 +1,95 @@
 import { URI } from 'langium'
-import { describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { createMultiProjectTestServices } from '../../test'
 
 describe('LikeC4ModelBuilder -- projects', () => {
+  it.each([
+    ['projectx', 'projecty'],
+    ['projecty', 'projectx'],
+  ])('should resolve included element extensions with project order %s, %s', async (first, second) => {
+    await using t = await createMultiProjectTestServices({})
+    for (const name of [first, second]) {
+      await t.projectsManager.registerProject({
+        config: {
+          name,
+          ...(name === 'projectx' ? { include: { paths: ['../projecty/model'] } } : {}),
+        },
+        folderUri: URI.parse(`file:///test/workspace/src/${name}`),
+      })
+    }
+    await t.addDocument(
+      'projecty/model/model.c4',
+      `
+      specification {
+        element app
+        element component
+      }
+      model {
+        app appx {
+          component existing
+        }
+      }
+    `,
+    )
+    await t.addDocument(
+      'projectx/model.c4',
+      `
+      specification {
+        element user
+        relationship consumes
+        deploymentNode node
+      }
+      model {
+        user appUser
+        extend appx {
+          component restAPI {
+            component handler
+          }
+          existing -> restAPI
+        }
+      }
+    `,
+    )
+    await t.addDocument(
+      'projectx/references.c4',
+      `
+      model {
+        appUser .consumes appx.restAPI
+        appUser -> appx.restAPI.handler
+        extend appx {
+          existing -> restAPI.handler
+        }
+      }
+      views {
+        view api of appx {
+          include restAPI
+        }
+      }
+      deployment {
+        node server {
+          deployedApp = instanceOf appx
+        }
+        node client
+        client -> server.deployedApp.restAPI.handler
+      }
+    `,
+    )
+
+    const { errors } = await t.validateAll()
+    expect(errors).toEqual([])
+    const model = await t.buildModel('projectx')
+    expect(model.elements['appx.restAPI']).toBeDefined()
+    expect(model.elements['appx.restAPI.handler']).toBeDefined()
+    expect(Object.values(model.relations)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ source: { model: 'appUser' }, target: { model: 'appx.restAPI' }, kind: 'consumes' }),
+      expect.objectContaining({ source: { model: 'appUser' }, target: { model: 'appx.restAPI.handler' } }),
+      expect.objectContaining({ source: { model: 'appx.existing' }, target: { model: 'appx.restAPI' } }),
+      expect.objectContaining({ source: { model: 'appx.existing' }, target: { model: 'appx.restAPI.handler' } }),
+    ]))
+    const ownerModel = await t.buildModel('projecty')
+    expect(ownerModel.elements['appx.restAPI']).toBeUndefined()
+  })
+
   it('should assign default project data', async ({ expect }) => {
     const { buildLikeC4Model } = await createMultiProjectTestServices({
       project1: {
