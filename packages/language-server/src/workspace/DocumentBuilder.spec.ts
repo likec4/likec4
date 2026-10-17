@@ -1,5 +1,4 @@
 import { describe, vi } from 'vitest'
-import { isLikeC4UserDocument } from '../ast'
 import { test as base } from '../test'
 
 const modelWith = (body: string) => `
@@ -17,8 +16,7 @@ const test = base.extend('listener', async ({ t }, { onCleanup }) => {
   const listener = vi.fn()
   const subscription = t.services.shared.workspace.DocumentBuilder.onDocumentValidationChanged({
     select: ({ validationHash, hasErrors }) => ({ validationHash, hasErrors }),
-    // builtin documents are notified as well, we track only user documents
-    listener: params => isLikeC4UserDocument(params.doc) && listener(params),
+    listener,
   })
   onCleanup(() => subscription.dispose())
   return listener
@@ -29,6 +27,7 @@ describe('LikeC4DocumentBuilder', () => {
     test('notifies on first validation', async ({ t, listener, expect }) => {
       const { document } = await t.validate(modelWith('sys1 -> unknown'))
 
+      // builtin documents are not notified
       expect(listener).toHaveBeenCalledOnce()
       expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
         firstTime: true,

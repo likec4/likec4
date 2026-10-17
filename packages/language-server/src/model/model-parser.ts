@@ -7,7 +7,7 @@
 
 import type { ProjectId } from '@likec4/core'
 import { hasProp, invariant, MultiMap, objectHash } from '@likec4/core/utils'
-import { type LangiumDocument, type Stream, DocumentState, UriUtils } from 'langium'
+import { type LangiumDocument, type Stream, Disposable, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
 import {
   type LikeC4DocumentProps,
@@ -15,6 +15,7 @@ import {
   type ParsedLikeC4LangiumDocument,
   isLikeC4LangiumDocument,
   isParsedLikeC4LangiumDocument,
+  isValidationStateChanged,
   LikeC4DocumentPropKeys,
 } from '../ast'
 import { logger as rootLogger } from '../logger'
@@ -49,8 +50,11 @@ const DocumentParserFromMixins = pipe(
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
+type ReparsedListener = (doc: LikeC4LangiumDocument) => void
+
 export class LikeC4ModelParser extends ADisposable {
   #logger = rootLogger.getChild('parser')
+  private readonly reparsedListeners: ReparsedListener[] = []
 
   constructor(private services: LikeC4Services) {
     super()
@@ -83,19 +87,47 @@ export class LikeC4ModelParser extends ADisposable {
           this.createParser(doc)
         },
       ),
-      // We need to reparse document when validation state changes
-      services.shared.workspace.DocumentBuilder.onDocumentValidationChanged({
-        select: ({ validationHash, hasErrors }) => ({
-          validationHash,
-          hasErrors,
-        }),
-        listener: ({ doc, current, previous }) => {
-          if (current.hasErrors !== previous?.hasErrors || current.hasErrors) {
-            this.createParser(doc)
+      // Parser created at Linked phase does not know about validation errors (there are no diagnostics yet).
+      // Compare with the validation state the parser was created with, not with the previous state of the document:
+      // document may be relinked with the same errors, and parser must be recreated anyway.
+      services.shared.workspace.DocumentBuilder.onDocumentPhase(
+        DocumentState.Validated,
+        doc => {
+          if (!isLikeC4LangiumDocument(doc) || !doc.likec4Parser || !isValidationStateChanged(doc, doc.likec4Parser)) {
+            return
           }
+          this.createParser(doc)
+          this.notifyReparsed(doc)
         },
+      ),
+      Disposable.create(() => {
+        this.reparsedListeners.length = 0
       }),
     )
+  }
+
+  /**
+   * Subscribe to events when document is reparsed after validation
+   * (validation state differs from the one parser was created with)
+   */
+  onReparsedAfterValidation(listener: ReparsedListener): Disposable {
+    this.reparsedListeners.push(listener)
+    return Disposable.create(() => {
+      const index = this.reparsedListeners.indexOf(listener)
+      if (index >= 0) {
+        this.reparsedListeners.splice(index, 1)
+      }
+    })
+  }
+
+  private notifyReparsed(doc: LikeC4LangiumDocument): void {
+    for (const listener of this.reparsedListeners) {
+      try {
+        listener(doc)
+      } catch (error) {
+        this.#logger.warn('Error in reparsed listener', { error })
+      }
+    }
   }
 
   documents(projectId: ProjectId): Stream<ParsedLikeC4LangiumDocument> {

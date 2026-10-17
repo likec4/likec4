@@ -617,12 +617,11 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
     )
 
     this.onDispose(
-      services.shared.workspace.DocumentBuilder.onDocumentValidationChanged({
-        listener: ({ doc, firstTime }) => {
-          if (!firstTime && doc.likec4ProjectId) {
-            this.of(doc.likec4ProjectId).buildData.reset()
-          }
-        },
+      // Model could be built between Linked and Validated phases, from parser without validation results
+      services.likec4.ModelParser.onReparsedAfterValidation(doc => {
+        if (isLikeC4UserDocument(doc) && doc.likec4ProjectId) {
+          this.of(doc.likec4ProjectId).buildData.reset()
+        }
       }),
     )
 
