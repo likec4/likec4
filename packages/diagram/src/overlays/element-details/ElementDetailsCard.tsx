@@ -5,12 +5,12 @@
 //
 // oxlint-disable no-misused-spread
 // oxlint-disable no-misused-spread
+import { nonNullable } from '@likec4/core'
 import type {
   Any,
   ComputedView,
   DiagramView,
   Element,
-  Fqn,
   NodeId,
   scalar,
   ViewId,
@@ -57,6 +57,7 @@ import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
 import { MetadataProvider, MetadataValue } from './MetadataValue'
+import type { DetailsSubject } from './subject'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
@@ -97,19 +98,20 @@ type ElementDetailsCardProps = {
   fromNode: NodeId | null
   rectFromNode: Rect | null
   onClose: () => void
-  fqn: Fqn
+  subject: DetailsSubject
 }
 
 const MIN_PADDING = 24
 
 const TABS = ['Properties', 'Relationships', 'Views', 'Structure', 'Deployments'] as const
+const DEPLOYMENT_TABS = ['Properties', 'Views', 'Structure'] as const
 type TabName = typeof TABS[number]
 
 export function ElementDetailsCard({
   viewId,
   fromNode,
   rectFromNode,
-  fqn,
+  subject,
   onClose,
 }: ElementDetailsCardProps) {
   const [opened, setOpened] = useState(false)
@@ -118,22 +120,34 @@ export function ElementDetailsCard({
     windowHeight = windowSize.height || window.innerHeight || 800
 
   const [activeTab, setActiveTab] = useSessionStorage<TabName>({
-    key: `likec4:element-details:active-tab`,
+    key: subject.deployment ? 'likec4:deployment-details:active-tab' : 'likec4:element-details:active-tab',
     defaultValue: 'Properties',
   })
   const diagram = useDiagram()
   const viewModel = useCurrentViewModel()
-  const nodeModel = fromNode ? viewModel.findNode(fromNode) : viewModel.findNodeWithElement(fqn)
+  const nodeModel = fromNode
+    ? viewModel.findNode(fromNode)
+    : subject.type === 'deployment'
+    ? [...viewModel.nodes()].find(n => n.$node.deploymentRef === subject.deployment) ?? null
+    : viewModel.findNodeWithElement(subject.element)
 
-  const elementModel = viewModel.$model.element(fqn)
+  const logicalElement = subject.type === 'element' ? viewModel.$model.element(subject.element) : null
+  const deploymentElement = subject.type === 'deployment'
+    ? viewModel.$model.deployment.element(subject.deployment)
+    : null
+  const elementModel = nonNullable(logicalElement ?? deploymentElement, 'Details subject not found')
+  const tabs = subject.deployment ? DEPLOYMENT_TABS : TABS
+  const hasSummary = logicalElement
+    ? logicalElement.hasSummary
+    : !elementModel.summary.isEmpty && elementModel.summary.text !== elementModel.description.text
 
   const [viewsOf, otherViews] = pipe(
     [...elementModel.views()],
     map(v => v.$view),
-    partition(v => v._type === 'element' && v.viewOf === fqn),
+    partition(v => v._type === 'element' && v.viewOf === subject.element),
   )
 
-  let defaultView = nodeModel?.navigateTo?.$view ?? elementModel.defaultView?.$view ?? null
+  let defaultView = nodeModel?.navigateTo?.$view ?? logicalElement?.defaultView?.$view ?? null
   // Ignore default view if it's the current view
   if (defaultView?.id === viewId) {
     defaultView = null
@@ -209,7 +223,7 @@ export function ElementDetailsCard({
 
   const elementIcon = IconRenderer({
     element: {
-      id: fqn,
+      id: elementModel.id,
       title: elementModel.title,
       icon: nodeModel?.icon ?? elementModel.icon,
     },
@@ -372,9 +386,11 @@ export function ElementDetailsCard({
                       radius="sm"
                       onClick={e => {
                         e.stopPropagation()
-                        diagram.openSource({
-                          element: elementModel.id,
-                        })
+                        diagram.openSource(
+                          subject.type === 'deployment'
+                            ? { deployment: subject.deployment }
+                            : { element: subject.element },
+                        )
                       }}>
                       <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
                     </ActionIcon>
@@ -409,7 +425,7 @@ export function ElementDetailsCard({
                 panel: styles.tabsPanel,
               }}>
               <TabsList>
-                {TABS.map(tab => (
+                {tabs.map(tab => (
                   <TabsTab key={tab} value={tab}>
                     {tab}
                   </TabsTab>
@@ -419,7 +435,7 @@ export function ElementDetailsCard({
               <TabsPanel value="Properties">
                 <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
                   <Box className={styles.propertiesGrid} pt={'xs'}>
-                    {elementModel.hasSummary && (
+                    {hasSummary && (
                       <>
                         <PropertyLabel>summary</PropertyLabel>
                         <Markdown value={elementModel.summary} />
@@ -445,24 +461,33 @@ export function ElementDetailsCard({
                         </HStack>
                       </>
                     )}
-                    {elementModel.$element.metadata && <ElementMetadata value={elementModel.$element.metadata} />}
+                    {elementModel.hasMetadata() && <ElementMetadata value={elementModel.metadata} />}
+                    {deploymentElement?.isInstance() && (
+                      <ElementProperty title="logical element">
+                        <UnstyledButton onClick={() => diagram.openElementDetails(deploymentElement.element.id)}>
+                          {deploymentElement.element.title}
+                        </UnstyledButton>
+                      </ElementProperty>
+                    )}
                   </Box>
                 </ScrollArea>
               </TabsPanel>
 
-              <TabsPanel value="Relationships">
-                <DiagramFeatures
-                  overrides={{
-                    enableRelationshipBrowser: false,
-                    enableNavigateTo: false,
-                  }}>
-                  {opened && activeTab === 'Relationships' && (
-                    <TabPanelRelationships
-                      element={elementModel}
-                      node={nodeModel ?? null} />
-                  )}
-                </DiagramFeatures>
-              </TabsPanel>
+              {logicalElement && (
+                <TabsPanel value="Relationships">
+                  <DiagramFeatures
+                    overrides={{
+                      enableRelationshipBrowser: false,
+                      enableNavigateTo: false,
+                    }}>
+                    {opened && activeTab === 'Relationships' && (
+                      <TabPanelRelationships
+                        element={logicalElement}
+                        node={nodeModel ?? null} />
+                    )}
+                  </DiagramFeatures>
+                </TabsPanel>
+              )}
 
               <TabsPanel value="Views">
                 <ScrollArea scrollbars="y" type="auto">
@@ -482,7 +507,10 @@ export function ElementDetailsCard({
                     )}
                     {otherViews.length > 0 && (
                       <Box>
-                        <Divider label="views including this element" />
+                        <Divider
+                          label={subject.deployment
+                            ? 'views including this deployment'
+                            : 'views including this element'} />
                         <Stack gap={'sm'}>
                           {otherViews.map((view) => (
                             <ViewButton
@@ -503,11 +531,13 @@ export function ElementDetailsCard({
                 </ScrollArea>
               </TabsPanel>
 
-              <TabsPanel value="Deployments">
-                <ScrollArea scrollbars="y" type="auto">
-                  <TabPanelDeployments elementFqn={elementModel.id} />
-                </ScrollArea>
-              </TabsPanel>
+              {logicalElement && (
+                <TabsPanel value="Deployments">
+                  <ScrollArea scrollbars="y" type="auto">
+                    <TabPanelDeployments elementFqn={logicalElement.id} />
+                  </ScrollArea>
+                </TabsPanel>
+              )}
             </Tabs>
           </MetadataProvider>
           <m.div

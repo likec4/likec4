@@ -123,6 +123,9 @@ export const ready = machine.createStateConfig({
     'open.elementDetails': {
       actions: openOverlay(),
     },
+    'open.deploymentDetails': {
+      actions: openOverlay(),
+    },
     'open.relationshipDetails': {
       actions: openOverlay(),
     },

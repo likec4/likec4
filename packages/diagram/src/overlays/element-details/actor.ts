@@ -1,19 +1,18 @@
-import type { DiagramView, Fqn, NodeId } from '@likec4/core/types'
+import type { DiagramView, NodeId } from '@likec4/core/types'
 import type { Rect } from '@xyflow/system'
 import {
   type ActorRef,
   type SnapshotFrom,
   type StateMachine,
   assign,
-  sendTo,
+  enqueueActions,
   setup,
-  spawnChild,
-  stopChild,
 } from 'xstate'
 import { type RelationshipsBrowserActorRef, relationshipsBrowserLogic } from '../relationships-browser/actor'
+import type { DetailsSubject } from './subject'
 
 export type ElementDetailsInput = {
-  subject: Fqn
+  subject: DetailsSubject
   currentView: DiagramView
   initiatedFrom?: {
     node?: NodeId
@@ -22,7 +21,7 @@ export type ElementDetailsInput = {
 }
 
 export type Context = {
-  subject: Fqn
+  subject: DetailsSubject
   currentView: DiagramView
   initiatedFrom: {
     node: NodeId | null
@@ -31,7 +30,7 @@ export type Context = {
 }
 
 export type Events =
-  | { type: 'change.subject'; subject: Fqn }
+  | { type: 'change.subject'; subject: DetailsSubject }
   | { type: 'close' }
 
 const _elementDetailsLogic = setup({
@@ -58,23 +57,31 @@ const _elementDetailsLogic = setup({
   initial: 'active',
   states: {
     'active': {
-      entry: spawnChild('relationshipsBrowserLogic', {
-        id: ({ self }) => `${self.id}-relationships`,
-        input: ({ context }) => ({
-          subject: context.subject,
-          viewId: context.currentView.id,
-          scope: 'view',
-          enableSelectSubject: false,
-          enableChangeScope: true,
-          closeable: false,
-        }),
+      entry: enqueueActions(({ context, self, enqueue }) => {
+        if (context.subject.type === 'element') {
+          enqueue.spawnChild('relationshipsBrowserLogic', {
+            id: `${self.id}-relationships`,
+            input: {
+              subject: context.subject.element,
+              viewId: context.currentView.id,
+              scope: 'view',
+              enableSelectSubject: false,
+              enableChangeScope: true,
+              closeable: false,
+            },
+          })
+        }
       }),
-      exit: [
-        sendTo(({ self }) => `${self.id}-relationships`, { type: 'close' }),
-        stopChild(({ self }) => `${self.id}-relationships`),
-      ],
+      exit: enqueueActions(({ context, self, enqueue }) => {
+        if (context.subject.type === 'element') {
+          enqueue.sendTo(`${self.id}-relationships`, { type: 'close' })
+          enqueue.stopChild(`${self.id}-relationships`)
+        }
+      }),
       on: {
         'change.subject': {
+          target: 'active',
+          reenter: true,
           actions: assign({
             subject: ({ event }) => event.subject,
           }),
