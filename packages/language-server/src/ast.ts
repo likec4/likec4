@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
-import { MultiMap, nonexhaustive, sortNatural } from '@likec4/core/utils'
+import { MultiMap, nonexhaustive } from '@likec4/core/utils'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
 import { clamp, filter, isNullish, isTruthy, map, pipe, reduce } from 'remeda'

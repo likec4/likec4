@@ -11,7 +11,7 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { DefaultMap, invariant, LRUMap, nonNullable } from '@likec4/core/utils'
+import { invariant, LRUMap, nonNullable } from '@likec4/core/utils'
 import type { PartialDeep } from 'type-fest'
 import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
@@ -40,7 +40,8 @@ export class DiagramApi<A extends Any = Unknown> {
 
   public static withActor(actorRef: DiagramActorRef): DiagramApi<Unknown> {
     let api = this.cache.get(actorRef.id)
-    if (!api) {
+    // Actor can be replaced with the same id (e.g. on remount or HMR)
+    if (!api || api.actor !== actorRef) {
       api = new DiagramApi(actorRef)
       this.cache.set(actorRef.id, api)
     }

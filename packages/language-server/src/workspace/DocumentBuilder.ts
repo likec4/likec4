@@ -7,7 +7,6 @@ import {
   Disposable,
   DocumentState,
   MultiMap,
-  SimpleCache,
 } from 'langium'
 import {
   type LikeC4LangiumDocument,
@@ -197,10 +196,10 @@ export class LikeC4DocumentBuilder extends DefaultDocumentBuilder {
       }
     }
 
-    // Reset to target state first
-    super.resetToState(doc, resetTo)
-
     try {
+      // Reset to target state first
+      super.resetToState(doc, resetTo)
+
       // Only notify if:
       // - resetTo is below current state (actually resetting)
       // - document is a LikeC4 document
