@@ -22,11 +22,11 @@ function hasPropCurried(path: string): (value: unknown) => boolean {
   return (value: unknown) => _hasProp(value, path)
 }
 
-export function hasProp<T extends object>(
+export function hasProp<T extends object, P extends keyof T & string>(
   value: T,
-  path: keyof T,
+  path: P,
   // @ts-expect-error could be instantiated with an arbitrary type
-): value is SetRequired<SetNonNullable<T, typeof path>, typeof path>
+): value is SetRequired<SetNonNullable<T, P>, P>
 export function hasProp<const P extends string>(
   path: P,
 ): // @ts-expect-error could be instantiated with an arbitrary type
