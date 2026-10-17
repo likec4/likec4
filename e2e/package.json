@@ -28,7 +28,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "likec4": "file:../packages/likec4/package.tgz",
-    "react": "^19.3.0",
+    "react": "^19.3.1",
     "react-dom": "^19.3.0",
     "std-env": "^3.10.0",
     "tsx": "^4.23.13",
@@ -37,5 +37,5 @@
     "wrangler": "^4.149.0",
     "zx": "^8.8.5"
   },
-  "packageManager": "pnpm@11.28.5"
+  "packageManager": "pnpm@12.14.0"
 }
