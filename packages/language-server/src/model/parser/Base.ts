@@ -30,7 +30,7 @@ import {
   type ParsedElementStyle,
   type ParsedLikeC4LangiumDocument,
   ast,
-  calcValidationErrorsHash,
+  calcValidationHash,
   parseAstIconPositionValue,
   parseAstOpacityProperty,
   parseAstPercent,
@@ -207,7 +207,7 @@ export class BaseParser {
     public doc: ParsedLikeC4LangiumDocument,
     public project: Project,
   ) {
-    this.validationHash = calcValidationErrorsHash(doc)
+    this.validationHash = calcValidationHash(doc)
     this.hash = ''
     const checks = checksFromDiagnostics(doc)
     this.isValid = checks.isValid

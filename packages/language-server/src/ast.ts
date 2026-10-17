@@ -331,7 +331,9 @@ export function isValidatedLikeC4LangiumDocument(
   return true
 }
 
-const isErrorDiagnostic = (d: LikeC4DocumentDiagnostic) => d.severity === DiagnosticSeverity.Error && !!d.node
+export function isErrorDiagnostic(d: Diagnostic): d is LikeC4DocumentDiagnostic {
+  return d.severity === DiagnosticSeverity.Error
+}
 
 export function hasValidationErrors(
   doc: LangiumDocument | undefined,
@@ -340,22 +342,27 @@ export function hasValidationErrors(
 }
 
 export const NO_ERRORS = '' as const
-export function calcValidationErrorsHash(doc: LikeC4LangiumDocument): string {
+export function calcValidationHash(doc: LangiumDocument): string {
   return pipe(
     doc.diagnostics ?? [],
     filter(isErrorDiagnostic),
     map(d => `${Diagnostic.getMessageString(d)}|${d.node?.$type ?? ''}`),
-    sortNatural(),
     reduce((acc, d, index) => stringHash(`${acc}|${d}|${index}`), NO_ERRORS as string),
   )
 }
 
+/**
+ * Check if validation state changed by comparing current validation hash with cached one
+ * @param doc - Document to check
+ * @param container - Container with cached validation hash
+ * @returns true if validation state changed, false otherwise
+ */
 export function isValidationStateChanged(
   doc: LikeC4LangiumDocument,
-  cachedContainer: { validationHash: string },
+  container: { validationHash: string },
 ): boolean {
-  const currentHash = calcValidationErrorsHash(doc)
-  return currentHash !== cachedContainer.validationHash
+  const currentHash = calcValidationHash(doc)
+  return currentHash !== container.validationHash
 }
 
 export function parseMarkdownAsString(node?: ast.MarkdownOrString): string | undefined {

@@ -13,11 +13,8 @@ import {
   type LikeC4DocumentProps,
   type LikeC4LangiumDocument,
   type ParsedLikeC4LangiumDocument,
-  hasValidationErrors,
   isLikeC4LangiumDocument,
-  isLikeC4UserDocument,
   isParsedLikeC4LangiumDocument,
-  isValidationStateChanged,
   LikeC4DocumentPropKeys,
 } from '../ast'
 import { logger as rootLogger } from '../logger'
@@ -78,7 +75,7 @@ export class LikeC4ModelParser extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.Linked,
         async doc => {
-          if (isParsedLikeC4LangiumDocument(doc) && doc.likec4Parser.isCached) {
+          if (isParsedLikeC4LangiumDocument(doc)) {
             this.#logger.warn('Document {doc} was validated, we will reparse it', {
               doc: services.shared.workspace.WorkspaceManager.relativePath(doc.uri),
             })
@@ -86,12 +83,18 @@ export class LikeC4ModelParser extends ADisposable {
           this.createParser(doc)
         },
       ),
-      services.shared.workspace.DocumentBuilder.onDocumentPhase(
-        DocumentState.Validated,
-        async doc => {
-          this.reparseIfNeeded(doc)
+      // We need to reparse document when validation state changes
+      services.shared.workspace.DocumentBuilder.onDocumentValidationChanged({
+        select: ({ validationHash, hasErrors }) => ({
+          validationHash,
+          hasErrors,
+        }),
+        listener: ({ doc, current, previous }) => {
+          if (current.hasErrors !== previous?.hasErrors || current.hasErrors) {
+            this.createParser(doc)
+          }
         },
-      ),
+      }),
     )
   }
 
@@ -116,15 +119,6 @@ export class LikeC4ModelParser extends ADisposable {
     for (const key of LikeC4DocumentPropKeys) {
       delete doc[key]
     }
-  }
-
-  private reparseIfNeeded(doc: LangiumDocument): DocumentParser {
-    invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
-    if (!doc.likec4Parser || isValidationStateChanged(doc, doc.likec4Parser)) {
-      return this.createParser(doc)
-    }
-    doc.likec4Parser.isCached = true
-    return doc.likec4Parser
   }
 
   private createParser(doc: LangiumDocument): DocumentParser {
