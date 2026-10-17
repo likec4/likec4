@@ -3,7 +3,6 @@ import { LikeC4Model } from '@likec4/core/model'
 import { LikeC4Diagram, LikeC4EditorProvider, LikeC4ModelProvider } from '@likec4/diagram'
 import { Center } from '@likec4/styles/jsx'
 import { Button, Loader, Overlay } from '@mantine/core'
-import { useMemo } from 'react'
 import { only } from 'remeda'
 import { likec4Container, likec4ParsingScreen } from '../App.css'
 import { queryClient } from '../queries'
@@ -28,7 +27,9 @@ const refetchAll = () => {
 export function ViewScreen() {
   const { error, model } = useComputedModelData()
   const editor = useLikeC4EditorPort()
-  const likec4Model = useMemo(() => model ? LikeC4Model.create(model) : null, [model])
+  // LikeC4Model.create keeps track of refs internally
+  // We don't want to recreate it on every render, so we don't use useMemo here
+  const likec4Model = model ? LikeC4Model.create(model) : null
   if (!likec4Model) {
     return (
       <div className={likec4ParsingScreen}>

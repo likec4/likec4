@@ -11,8 +11,7 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { DefaultWeakMap, invariant, nonNullable } from '@likec4/core/utils'
-import type { RefObject } from 'react'
+import { invariant, LRUMap, nonNullable } from '@likec4/core/utils'
 import type { PartialDeep } from 'type-fest'
 import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
@@ -29,7 +28,7 @@ import type {
 } from './types'
 import { findDiagramEdge, findDiagramNode, findNodeByModelFqn, typedSystem } from './utils'
 
-type Any = t.aux.Any
+type Any = t.aux.AnyLayouted
 type Unknown = t.aux.UnknownLayouted
 type ViewId<A> = t.aux.ViewId<A>
 type Fqn<A> = t.aux.Fqn<A>
@@ -37,33 +36,33 @@ type NodeId = t.aux.NodeId
 type EdgeId = t.aux.EdgeId
 
 export class DiagramApi<A extends Any = Unknown> {
-  private static cache = new DefaultWeakMap((ref: RefObject<DiagramActorRef>) => new DiagramApi(ref))
+  private static cache = new LRUMap<string, DiagramApi<Unknown>>(50)
 
-  public static withActor(actorRef: RefObject<DiagramActorRef>): DiagramApi {
-    return this.cache.get(actorRef)
-  }
+  public static withActor(actorRef: DiagramActorRef): DiagramApi<Unknown> {
+    let api = this.cache.get(actorRef.id)
+    // Actor can be replaced with the same id (e.g. on remount or HMR)
+    if (!api || api.actor !== actorRef) {
+      api = new DiagramApi(actorRef)
+      this.cache.set(actorRef.id, api)
+    }
 
-  /**
-   * React ref to the diagram actor
-   */
-  readonly ref: RefObject<DiagramActorRef>
-
-  private constructor(actorRef: RefObject<DiagramActorRef>) {
-    this.ref = actorRef
+    return api
   }
 
   /**
    * @warning Do not use in render phase
    */
-  get actor(): DiagramActorRef {
-    return this.ref.current
+  readonly actor: DiagramActorRef
+
+  private constructor(actor: DiagramActorRef) {
+    this.actor = actor
   }
 
   /**
    * @warning Do not use in render phase
    */
   get currentView(): t.DiagramView<A> {
-    return this.ref.current.getSnapshot().context.view
+    return this.actor.getSnapshot().context.view
   }
 
   /**
@@ -71,7 +70,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * @warning Do not use in render phase
    */
   editorActor(): EditorActorRef {
-    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    const editorActor = typedSystem(this.actor.system).editorActorRef
     return nonNullable(editorActor, 'Editor actor not found in actor system')
   }
 
@@ -80,7 +79,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * @warning Do not use in render phase
    */
   overlays(): OverlaysActorRef {
-    const overlaysActor = typedSystem(this.ref.current.system).overlaysActorRef
+    const overlaysActor = typedSystem(this.actor.system).overlaysActorRef
     return nonNullable(overlaysActor, 'Overlays actor not found in actor system')
   }
 
@@ -89,7 +88,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * @warning Do not use in render phase
    */
   searchActor(): SearchActorRef {
-    const searchActor = typedSystem(this.ref.current.system).searchActorRef
+    const searchActor = typedSystem(this.actor.system).searchActorRef
     return nonNullable(searchActor, 'Search actor not found in actor system')
   }
 
@@ -97,7 +96,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * Send event to diagram actor
    */
   send(event: DiagramEvents): void {
-    this.ref.current.send(event)
+    this.actor.send(event)
   }
 
   /**
@@ -206,7 +205,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * Start editing, either node or edge
    */
   startEditing(subject: 'node' | 'edge'): void {
-    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    const editorActor = typedSystem(this.actor.system).editorActorRef
     invariant(editorActor, 'No editor actor found in diagram actor system')
     editorActor.send({ type: 'edit.move.start', subject })
   }
@@ -217,7 +216,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * @default false
    */
   stopEditing(wasChanged = false): void {
-    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    const editorActor = typedSystem(this.actor.system).editorActorRef
     invariant(editorActor, 'No editor actor found in diagram actor system')
     editorActor.send({ type: wasChanged ? 'edit.move.end' : 'edit.move.cancel' })
   }
@@ -227,7 +226,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * @returns true if there was something to undo
    */
   undoEditing(): boolean {
-    const editorActor = typedSystem(this.ref.current.system).editorActorRef
+    const editorActor = typedSystem(this.actor.system).editorActorRef
     invariant(editorActor, 'No editor actor found in diagram actor system')
     const hasUndo = editorActor.getSnapshot().context.history !== null
     if (hasUndo) {
@@ -262,7 +261,7 @@ export class DiagramApi<A extends Any = Unknown> {
    * Used by search to highlight an element on the current view.
    */
   focusOnElement(elementFqn: Fqn<A>): void {
-    const context = this.ref.current.getSnapshot().context
+    const context = this.actor.getSnapshot().context
     const node = findNodeByModelFqn(context.xynodes, elementFqn)
     if (node) {
       this.send({ type: 'focus.node', nodeId: node.id as NodeId, autoUnfocus: true })
@@ -273,28 +272,28 @@ export class DiagramApi<A extends Any = Unknown> {
    * @warning Do not use in render phase
    */
   getContext(): DiagramContext {
-    return this.ref.current.getSnapshot().context
+    return this.actor.getSnapshot().context
   }
 
   /**
    * @warning Do not use in render phase
    */
   findDiagramNode(xynodeId: string): t.DiagramNode<A> | null {
-    return findDiagramNode(this.ref.current.getSnapshot().context, xynodeId)
+    return findDiagramNode(this.actor.getSnapshot().context, xynodeId)
   }
 
   /**
    * @warning Do not use in render phase
    */
   findEdge(xyedgeId: string): Types.Edge | null {
-    return this.ref.current.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
+    return this.actor.getSnapshot().context.xyedges.find(e => e.data.id === xyedgeId) ?? null
   }
 
   /**
    * @warning Do not use in render phase
    */
   findDiagramEdge(xyedgeId: string): t.DiagramEdge<A> | null {
-    return findDiagramEdge(this.ref.current.getSnapshot().context, xyedgeId)
+    return findDiagramEdge(this.actor.getSnapshot().context, xyedgeId)
   }
 
   startWalkthrough(stepId?: t.StepPath): void {

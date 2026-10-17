@@ -3,9 +3,7 @@ import {
   type DiagramNode,
   type DynamicViewFlow,
   type NonEmptyArray,
-  flowAncestors,
   flowGuards,
-  hasProp,
   StepPath,
 } from '@likec4/core/types'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core/utils'

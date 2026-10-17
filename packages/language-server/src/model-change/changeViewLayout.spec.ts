@@ -1,4 +1,4 @@
-import { type Fqn, type ViewId } from '@likec4/core'
+import type { ViewId } from '@likec4/core'
 import { UriUtils } from 'langium'
 import { vol } from 'memfs'
 import stripIndent from 'strip-indent'

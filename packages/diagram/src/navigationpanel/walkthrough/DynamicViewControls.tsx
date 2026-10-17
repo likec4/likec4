@@ -1,15 +1,14 @@
-import { invariant } from '@likec4/core'
 import type { DynamicViewDisplayVariant } from '@likec4/core/types'
 import { css } from '@likec4/styles/css'
-import { type ButtonProps, type SegmentedControlItem, Button } from '@mantine/core'
+import { type ButtonProps, Button } from '@mantine/core'
 import {
   IconPlayerPlayFilled,
 } from '@tabler/icons-react'
-import { type HTMLMotionProps, AnimatePresence } from 'motion/react'
+import { type HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
-import { selectDiagramContext, useDiagram } from '../../hooks/useDiagram'
+import { useDiagram } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
 import { useNavigationActor } from '../hooks'
 import { DynamicViewModeSwitcher } from './DynamicViewModeSwitcher'

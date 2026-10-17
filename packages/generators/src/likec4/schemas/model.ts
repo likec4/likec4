@@ -3,7 +3,7 @@ import type {
   RelationId,
 } from '@likec4/core/types'
 import { produce } from 'immer'
-import { indexBy, isArray, isNonNullish, pickBy, prop, randomString } from 'remeda'
+import { indexBy, isNonNullish, pickBy, prop, randomString } from 'remeda'
 import * as z from 'zod/v4'
 import * as common from './common'
 

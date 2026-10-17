@@ -1,5 +1,4 @@
 import { defineSemanticTokens } from '@pandacss/dev'
-import type { SemanticToken, TokenDataTypes } from '@pandacss/types'
 import { defaultMantineColors, mantine } from '../generated.ts'
 import { alpha } from '../helpers.ts'
 import { likec4 } from './semantic-colors.likec4.ts'

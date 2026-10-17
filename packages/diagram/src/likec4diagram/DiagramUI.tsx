@@ -1,6 +1,6 @@
 import { hasProp, isDynamicView } from '@likec4/core'
 import { useRerender } from '@react-hookz/web'
-import { memo, useCallback } from 'react'
+import { useCallback } from 'react'
 import { ErrorBoundary } from '../components/ErrorFallback'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { selectDiagramSnapshot, useDiagramSelector } from '../hooks'

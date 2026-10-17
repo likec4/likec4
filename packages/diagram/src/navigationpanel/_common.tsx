@@ -1,4 +1,4 @@
-import { css, cx } from '@likec4/styles/css'
+import { cx } from '@likec4/styles/css'
 import {
   type NavigationPanelActionIconVariant,
   navigationPanelActionIcon,
@@ -6,11 +6,9 @@ import {
 import {
   type ActionIconProps,
   ActionIcon,
-  Breadcrumbs as MantineBreadcrumbs,
   ThemeIcon,
   Tooltip as MantineTooltip,
 } from '@mantine/core'
-import { IconChevronRight } from '@tabler/icons-react'
 import type { HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { type ReactNode, forwardRef } from 'react'

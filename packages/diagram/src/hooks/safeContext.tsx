@@ -22,50 +22,6 @@ export function useDiagram(): DiagramApi {
 }
 
 /**
- * Tuple type for selector and compare function pair
- */
-type SelectAndCompare<A, B> = [
-  selector: (snapshot: A) => B,
-  compare: (a: B, b: B) => boolean,
-]
-
-type SafeContextForActor<A extends AnyActorRef, Snapshot, Context> = {
-  /**
-   * The React context provider for this actor
-   */
-  ContextProvider: Provider<A>
-
-  /**
-   * Hook to get the actor ref from context
-   */
-  useActorRef: () => A
-
-  /**
-   * @param select - Function to extract a value from the actor's snapshot
-   * @param compare - Optional comparison function. If not provided, shallow equality is used.
-   *                  The comparison function receives the selected value from the previous snapshot ()
-   *                  and the selected value from the current snapshot. If the comparison returns true,
-   *                  the component will not re-render.
-   */
-  selectSnapshot<T>(
-    select: (state: Snapshot) => T,
-    compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
-  ): SelectAndCompare<Snapshot, T> & { Out: T }
-  /**
-   * @param select - Function to extract a value from the actor's context
-   * @param compare - Optional comparison function. If not provided, shallow equality is used.
-   */
-  selectContext<T>(
-    select: (state: Context) => T,
-    compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
-  ): SelectAndCompare<Snapshot, T> & { Out: T }
-
-  useActorSelector<T>(select: (state: Snapshot) => T): T
-  useActorSelector<T>(selectorCompare: SelectAndCompare<Snapshot, T>): T
-  useActorSelector<T>(...selectorCompare: SelectAndCompare<Snapshot, T>): T
-}
-
-/**
  * Helper to create a safe context for an actor
  * @example
  * ```tsx
@@ -91,8 +47,52 @@ export function createSafeContextForActor<
   Context = Snapshot extends { context: infer C } ? C : never,
 >(
   name: string,
-): SafeContextForActor<A, Snapshot, Context> {
+) {
   const Ctx = createContext<A>(null as any)
+
+  /**
+   * Tuple type for selector and compare function pair
+   */
+  type SelectAndCompare<B> = [
+    selector: (snapshot: Snapshot) => B,
+    compare: (a: B, b: B) => boolean,
+  ]
+
+  type SafeContextForActor = {
+    /**
+     * The React context provider for this actor
+     */
+    ContextProvider: Provider<A>
+
+    /**
+     * Hook to get the actor ref from context
+     */
+    useActorRef: () => A
+
+    /**
+     * @param select - Function to extract a value from the actor's snapshot
+     * @param compare - Optional comparison function. If not provided, shallow equality is used.
+     *                  The comparison function receives the selected value from the previous snapshot ()
+     *                  and the selected value from the current snapshot. If the comparison returns true,
+     *                  the component will not re-render.
+     */
+    selectSnapshot<T>(
+      select: (state: Snapshot) => T,
+      compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
+    ): SelectAndCompare<T> & { Out: T }
+    /**
+     * @param select - Function to extract a value from the actor's context
+     * @param compare - Optional comparison function. If not provided, shallow equality is used.
+     */
+    selectContext<T>(
+      select: (state: Context) => T,
+      compare?: (old: NoInfer<T>, next: NoInfer<T>) => boolean,
+    ): SelectAndCompare<T> & { Out: T }
+
+    useActorSelector<T>(select: (state: Snapshot) => T): T
+    useActorSelector<T>(selectorCompare: SelectAndCompare<T>): T
+    useActorSelector<T>(...selectorCompare: SelectAndCompare<T>): T
+  }
 
   // -----------------
   // snapshot selector overloads
@@ -100,11 +100,11 @@ export function createSafeContextForActor<
   function selectSnapshot<T>(
     selector: (state: Snapshot) => T,
     compare?: (a: NoInfer<T>, b: NoInfer<T>) => boolean,
-  ): SelectAndCompare<Snapshot, T> {
+  ): SelectAndCompare<T> {
     return [
       selector,
       compare ?? shallowEqual,
-    ] as SelectAndCompare<Snapshot, T>
+    ] as SelectAndCompare<T>
   }
   // -----------------
   // context selector overloads
@@ -112,16 +112,16 @@ export function createSafeContextForActor<
   function selectContext<T>(
     selector: (state: Context) => T,
     compare?: (a: NoInfer<T>, b: NoInfer<T>) => boolean,
-  ): SelectAndCompare<Snapshot, T> {
+  ): SelectAndCompare<T> {
     return [
       (snapshot: Snapshot) => selector((snapshot as any).context),
       compare ?? shallowEqual,
-    ] as SelectAndCompare<Snapshot, T>
+    ] as SelectAndCompare<T>
   }
   // -----------------
   // useActorRef hook
   // -----------------
-  function useActorRef() {
+  function useActorRef(): A {
     const actorRef = useContext(Ctx)
     if (actorRef === null) {
       throw new Error(`${name}SafeContext is not provided `)
@@ -132,7 +132,7 @@ export function createSafeContextForActor<
   // useActorSelector overloads
   // -----------------
   function useActorSelector<T>(
-    selectorCompare: SelectAndCompare<Snapshot, T>,
+    selectorCompare: SelectAndCompare<T>,
   ): T
   function useActorSelector<T>(
     selector: (snapshot: Snapshot) => T,
@@ -163,7 +163,7 @@ export function createSafeContextForActor<
     selectContext,
     useActorSelector,
     useActorRef,
-  } as SafeContextForActor<A, Snapshot, Context>
+  } as SafeContextForActor
 }
 
 export const {
