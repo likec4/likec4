@@ -8,7 +8,7 @@ import {
   emitNodeClick,
   emitOpenSourceOfView,
   emitPaneClick,
-  openElementDetails,
+  openNodeDetails,
   openSourceOfFocusedOrLastClickedNode,
   raiseFitDiagram,
   resetLastClickedNode,
@@ -79,7 +79,7 @@ export const idle = machine.createStateConfig({
         actions: [
           assignLastClickedNode(),
           openSourceOfFocusedOrLastClickedNode(),
-          openElementDetails(),
+          openNodeDetails(),
           emitNodeClick(),
         ],
       },

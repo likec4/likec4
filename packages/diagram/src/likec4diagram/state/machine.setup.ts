@@ -12,7 +12,6 @@ import {
 } from '@likec4/core'
 import { BBox } from '@likec4/core/geometry'
 import type {
-  DeploymentFqn,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -45,6 +44,7 @@ import { editorActorLogic } from '../../editor/actor/machine'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams, RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram.props'
 import { navigationPanelActorLogic } from '../../navigationpanel/actor'
+import type { DetailsSubject } from '../../overlays/element-details/subject'
 import { overlaysActorLogic } from '../../overlays/overlaysActor'
 import { searchActorLogic } from '../../search/searchActor'
 import { defineActors } from '../../utils/defineActors'
@@ -259,8 +259,7 @@ export type Events =
   | { type: 'update.inputs'; inputs: Partial<Omit<Input, 'view' | 'xystore' | 'dynamicViewVariant' | 'features'>> }
   | { type: 'update.features'; features: EnabledFeatures }
   | ({ type: 'open.source' } & OpenSourceParams)
-  | { type: 'open.elementDetails'; fqn: Fqn; fromNode?: NodeId | undefined }
-  | { type: 'open.deploymentDetails'; fqn: DeploymentFqn; fromNode?: NodeId | undefined }
+  | { type: 'open.nodeDetails'; target: NodeId | DetailsSubject; fromNode?: NodeId | undefined }
   | { type: 'open.relationshipDetails'; params: { edgeId: EdgeId } | { source: Fqn; target: Fqn } }
   | { type: 'open.relationshipsBrowser'; fqn: Fqn; scope?: RelationshipBrowserScope | undefined }
   | { type: 'open.search'; search?: string }

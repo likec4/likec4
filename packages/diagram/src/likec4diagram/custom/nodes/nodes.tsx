@@ -5,7 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { DeploymentFqn, Fqn, NodeId } from '@likec4/core'
+import type { DeploymentFqn, Fqn } from '@likec4/core'
+import { scalar } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import {
   type ElementTagsProps,
@@ -71,9 +72,7 @@ export function ElementDetailsButtonWithHandler(
       {...props}
       onClick={e => {
         e.stopPropagation()
-        subject.type === 'deployment'
-          ? diagram.openDeploymentDetails(subject.deployment, props.id as NodeId)
-          : diagram.openElementDetails(subject.element, props.id as NodeId)
+        diagram.openNodeDetails(scalar.NodeId(props.id))
       }} />
   )
 }
@@ -91,9 +90,7 @@ export function CompoundDetailsButtonWithHandler(
       {...props}
       onClick={e => {
         e.stopPropagation()
-        subject.type === 'deployment'
-          ? diagram.openDeploymentDetails(subject.deployment, props.id as NodeId)
-          : diagram.openElementDetails(subject.element, props.id as NodeId)
+        diagram.openNodeDetails(scalar.NodeId(props.id))
       }} />
   )
 }
