@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import { type ValidationCheck, AstUtils } from 'langium'
+import { type AstNode, type ValidationCheck, AstUtils } from 'langium'
 import { isNumber, isString } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -110,6 +110,17 @@ export const colorLiteralRuleChecks = (_: LikeC4Services): ValidationCheck<ast.C
 }
 
 /**
+ * Whether the node carries a description of its own.
+ *
+ * A relation keeps its inline description in the header (`a -> b 'title' 'description'`) instead of a
+ * `description` property of its body, so the conflict with `descriptionFile` is found one level up.
+ */
+function hasInlineDescription(node: AstNode | undefined): boolean {
+  return !!node && 'description' in node && typeof node.description === 'string' &&
+    node.description.trim() !== ''
+}
+
+/**
  * `descriptionFile` refers to a file that is read when the model is built, so a file that could not
  * be read has to be reported here (the parser has nothing to describe, and stays silent).
  */
@@ -121,10 +132,10 @@ export const descriptionFileRuleChecks = (
   const descriptionFiles = services.shared.workspace.DescriptionFiles
   return tryOrLog(async (node, accept) => {
     const container = node.$container
-    if (
-      'props' in container && Array.isArray(container.props)
-      && container.props.some(p => ast.isStringProperty(p) && p.key === 'description')
-    ) {
+    const hasDescription = hasInlineDescription(container) || hasInlineDescription(container.$container) ||
+      ('props' in container && Array.isArray(container.props) &&
+        container.props.some(p => ast.isStringProperty(p) && p.key === 'description'))
+    if (hasDescription) {
       accept('error', `Only one of "description" and "descriptionFile" is allowed`, {
         node,
         property: 'key',

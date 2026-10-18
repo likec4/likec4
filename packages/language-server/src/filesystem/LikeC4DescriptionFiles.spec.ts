@@ -449,6 +449,26 @@ describe('descriptionFile', () => {
     expect(errors).toEqual(['Only one of "description" and "descriptionFile" is allowed'])
   })
 
+  it('reports a relation whose description is written in the header', async ({ expect }) => {
+    const t = createTestServices()
+    mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+
+    const { errors } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        a = component
+        b = component
+        a -> b 'title' 'inline' {
+          descriptionFile ./spec.md
+        }
+      }
+    `)
+
+    expect(errors).toEqual(['Only one of "description" and "descriptionFile" is allowed'])
+  })
+
   it('keeps the description when no file is referenced', async ({ expect }) => {
     const t = createTestServices()
     mockFiles(t, {})
