@@ -5,6 +5,7 @@ import {
   type AnyAux,
   type aux,
   type ComputedNode,
+  type ElementViewRuleGroup,
   type LikeC4StylesConfig,
   type scalar,
   type Unknown,
@@ -14,7 +15,13 @@ import {
 } from '../../types'
 import { nonNullable } from '../../utils'
 import { compareByFqnHierarchically, parentFqn } from '../../utils/fqn'
-import { NodesGroup } from '../element-view/memory'
+
+export interface ComputedNodesGroup {
+  id: scalar.NodeId
+  parent: scalar.NodeId | null
+  viewRule: Omit<ElementViewRuleGroup, 'groupRules'>
+  elements: Iterable<{ id: string }>
+}
 
 function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<string, ComputedNode>) {
   let parentNd
@@ -60,11 +67,11 @@ export function elementModelToNodeSource<A extends AnyAux>(el: ElementModel<A>):
 export function buildComputedNodes<A extends AnyAux>(
   { defaults }: LikeC4StylesConfig,
   elements: ReadonlyArray<ComputedNodeSource<A>>,
-  groups?: ReadonlyArray<NodesGroup<A>>,
+  groups?: ReadonlyArray<ComputedNodesGroup>,
 ): ReadonlyMap<scalar.NodeId, ComputedNode<A>> {
   const nodesMap = new Map<scalar.NodeId, ComputedNode<A>>()
 
-  const elementToGroup = new Map<aux.StrictFqn<A>, scalar.NodeId>()
+  const elementToGroup = new Map<string, scalar.NodeId>()
 
   groups?.forEach(({ id, parent, viewRule, elements }) => {
     if (parent) {
@@ -112,7 +119,7 @@ export function buildComputedNodes<A extends AnyAux>(
         }
         parent = parentFqn(parent)
       }
-      const fqn = el.modelRef ?? id as unknown as aux.StrictFqn<A>
+      const fqn = el.deploymentRef ?? el.modelRef ?? id
       // If parent is not found in the map, check if it is in a group
       if (!parentNd && elementToGroup.has(fqn)) {
         const parentGroupId = nonNullable(elementToGroup.get(fqn))

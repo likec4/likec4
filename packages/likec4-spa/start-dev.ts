@@ -70,6 +70,7 @@ const main = defineCommand({
         }),
         LikeC4VitePlugin({
           workspace,
+          ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',
         }),
       ],

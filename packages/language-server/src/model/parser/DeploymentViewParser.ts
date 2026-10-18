@@ -66,6 +66,9 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
       if (ast.isDeploymentViewRulePredicate(astRule)) {
         return this.parseDeploymentViewRulePredicate(astRule)
       }
+      if (ast.isDeploymentViewRuleGroup(astRule)) {
+        return this.parseDeploymentViewRuleGroup(astRule)
+      }
       if (ast.isViewRuleAutoLayout(astRule)) {
         return toAutoLayout(astRule)
       }
@@ -76,6 +79,17 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         return this.parseDeploymentViewRuleStyle(astRule)
       }
       nonexhaustive(astRule)
+    }
+
+    parseDeploymentViewRuleGroup(astNode: ast.DeploymentViewRuleGroup): c4.DeploymentViewRuleGroup {
+      return {
+        title: toSingleLine(astNode.title) ?? null,
+        groupRules: this.tryMap('deployment', astNode.groupRules, rule =>
+          ast.isDeploymentViewRuleGroup(rule)
+            ? this.parseDeploymentViewRuleGroup(rule)
+            : this.parseDeploymentViewRulePredicate(rule)),
+        ...this.parseStyleProps(astNode.props),
+      }
     }
 
     parseDeploymentViewRulePredicate(astRule: ast.DeploymentViewRulePredicate): c4.DeploymentViewPredicate {

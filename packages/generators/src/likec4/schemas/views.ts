@@ -192,6 +192,7 @@ export const deploymentViewRule = z
     viewRuleGlobalStyle,
     viewRuleGlobalPredicate,
     deploymentViewRuleIncludeAncestors,
+    viewRuleGroup,
   ])
 
 /**

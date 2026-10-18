@@ -21,6 +21,7 @@ import { isBidirectionalRelation } from '../utils/is-bidirectional-relation'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
+import { groupDeploymentNodes } from './group-nodes'
 import { applyElementPredicate } from './predicates/utils'
 
 export const { findConnection, findConnectionsBetween, findConnectionsWithin } = deploymentConnection
@@ -374,10 +375,11 @@ export function buildNodes<A extends AnyAux = Unknown>(
   model: LikeC4Model<A>,
   memory: Memory,
 ): ReadonlyMap<aux.NodeId, ComputedNode<A>> {
-  const nodesMap = buildComputedNodes(model.$styles, [...memory.final].map(toNodeSource)) as Map<
+  const nodesMap = buildComputedNodes(model.$styles, [...memory.final].map(toNodeSource), memory.groups) as Map<
     aux.NodeId,
     Writable<ComputedNode<A>>
   >
+  groupDeploymentNodes(nodesMap, memory)
   // For each node, check if
   // - it is a leaf node (no children)
   // - it has a deploymentRef and modelRef

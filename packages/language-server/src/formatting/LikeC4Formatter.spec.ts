@@ -980,6 +980,39 @@ describe('formating', () => {
         `),
     )
 
+    it('formats deployment groups', async ({ expect, format }) =>
+      expect(
+        await format`
+        views {
+        deployment view prod {
+        group   "Servers"{
+        color    amber
+        border   solid
+        opacity   20%
+        include    prod.app
+        group   "Nested"{
+        exclude    prod.api
+        }
+        }
+        }
+        }`,
+      ).toMatchInlineSnapshot(`
+          "
+          views {
+            deployment view prod {
+              group 'Servers' {
+                color amber
+                border solid
+                opacity 20%
+                include prod.app
+                group 'Nested' {
+                  exclude prod.api
+                }
+              }
+            }
+          }"
+        `))
+
     it('formats chained dynamic steps', async ({ expect, format }) =>
       await expect(format`
         views {dynamic

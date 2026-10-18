@@ -254,6 +254,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isDeploymentViewBody(node)
       || ast.isViewRuleStyle(node)
       || ast.isViewRuleGroup(node)
+      || ast.isDeploymentViewRuleGroup(node)
       || ast.isCustomElementProperties(node)
       || ast.isCustomRelationProperties(node)
       || ast.isElementStyleProperty(node)
@@ -579,6 +580,9 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.on(node, ast.isViewRuleGroup, (n, f) => {
       f.keyword('group').append(FormattingOptions.oneSpace)
     })
+    this.on(node, ast.isDeploymentViewRuleGroup, (_n, f) => {
+      f.keyword('group').append(FormattingOptions.oneSpace)
+    })
   }
 
   protected formatViewRuleStyle(node: AstNode) {
@@ -803,6 +807,8 @@ export class LikeC4Formatter extends AbstractFormatter {
     region = region ?? this.on(node, ast.isRelation)
       ?.properties('title', 'technology')
     region = region ?? this.on(node, ast.isViewRuleGroup)
+      ?.properties('title')
+    region = region ?? this.on(node, ast.isDeploymentViewRuleGroup)
       ?.properties('title')
     region = region ?? this.on(node, ast.isStepStatement)
       ?.properties('title')
