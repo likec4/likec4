@@ -112,6 +112,7 @@ export class LikeC4Formatter extends AbstractFormatter {
     this.formatViewRuleStyle(node)
     this.formatLeafProperty(node)
     this.formatLinkProperty(node)
+    this.formatDescriptionFileProperty(node)
     this.formatNavigateToProperty(node)
     this.formatTags(node)
   }
@@ -337,7 +338,6 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isNotesProperty(node)
       || ast.isSpecificationElementStringProperty(node)
       || ast.isSpecificationRelationshipStringProperty(node)
-      || ast.isDescriptionFileProperty(node)
       || ast.isColorProperty(node)
       || ast.isLineProperty(node)
       || ast.isArrowProperty(node)
@@ -353,7 +353,6 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isPaddingSizeProperty(node)
       || ast.isTextSizeProperty(node)
       || ast.isSizingProperty(node)
-      || ast.isDescriptionFileProperty(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const colon = formatter.keyword(':')
@@ -410,6 +409,25 @@ export class LikeC4Formatter extends AbstractFormatter {
 
       f.keyword(';')
         .prepend(FormattingOptions.noSpace)
+        .append(FormattingOptions.newLine)
+    })
+  }
+
+  protected formatDescriptionFileProperty(node: AstNode) {
+    this.on(node, ast.isDescriptionFileProperty, (n, f) => {
+      const colon = f.keyword(':')
+      if (colon.nodes.length === 0) {
+        f.keyword('descriptionFile').append(FormattingOptions.oneSpace)
+      } else {
+        colon
+          .prepend(FormattingOptions.noSpace)
+          .append(FormattingOptions.oneSpace)
+      }
+
+      // The value is a `Uri`, and the terminal takes a `;` written next to it as part of the path
+      // (`./spec.md;` resolves to `./spec.md;`), so the semicolon keeps one space before it.
+      f.keyword(';')
+        .prepend(FormattingOptions.oneSpace)
         .append(FormattingOptions.newLine)
     })
   }

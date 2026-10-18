@@ -534,3 +534,25 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
 
   expect(updated).toHaveLength(1)
 })
+
+describe('descriptionFile, path syntax', () => {
+  it('takes a semicolon written next to the path as part of it', async ({ expect }) => {
+    const t = createTestServices()
+    mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+
+    // The `Uri` terminal matches `./spec.md;` as one path, so the formatter keeps a space before the
+    // semicolon: this is the reason `LikeC4Formatter` does not glue it (see the formatter snapshot).
+    const { errors } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile ./spec.md;
+        }
+      }
+    `)
+
+    expect(errors).toEqual(['File "./spec.md;" does not exist or cannot be read'])
+  })
+})

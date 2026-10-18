@@ -2286,7 +2286,7 @@ describe('formating', () => {
           "
           model {
             component c1 {
-              descriptionFile: ./spec.md;
+              descriptionFile: ./spec.md ;
             }
           }"
         `),
