@@ -20,7 +20,6 @@ import { getViewFolderPath } from '@likec4/core/model'
 import type {
   DiagramNode,
   DiagramView,
-  Fqn,
   LayoutType,
   NodeId,
   StepPath,
@@ -671,7 +670,7 @@ export const cancelEditing = () =>
     },
   )
 
-export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
+export const openNodeDetails = () =>
   machine.enqueueActions(({ context, event, enqueue }) => {
     let initiatedFrom = null as null | {
       node: NodeId
@@ -679,12 +678,6 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
     }
     let fromNodeId: NodeId | undefined, subject: DetailsSubject
     switch (true) {
-      // Use from params if available
-      case !!params: {
-        subject = { type: 'element', element: params.fqn }
-        fromNodeId = params.fromNode ?? context.view.nodes.find(n => n.modelRef === params.fqn)?.id
-        break
-      }
       case event.type === 'xyflow.nodeClick': {
         const clickedSubject = detailsSubject(event.node.data)
         if (!clickedSubject) {
@@ -695,14 +688,22 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
         fromNodeId = event.node.data.id
         break
       }
-      case event.type === 'open.elementDetails': {
-        subject = { type: 'element', element: event.fqn }
-        fromNodeId = event.fromNode
-        break
-      }
-      case event.type === 'open.deploymentDetails': {
-        subject = { type: 'deployment', deployment: event.fqn }
-        fromNodeId = event.fromNode ?? context.view.nodes.find(n => n.deploymentRef === event.fqn)?.id
+      case event.type === 'open.nodeDetails': {
+        if (isString(event.target)) {
+          const node = context.xynodes.find(n => n.id === event.target)
+          const nodeSubject = node ? detailsSubject(node.data) : null
+          if (!nodeSubject) {
+            console.warn('No model or deployment reference for node', event.target)
+            return
+          }
+          subject = nodeSubject
+          fromNodeId = event.fromNode ?? event.target
+        } else {
+          subject = event.target
+          fromNodeId = event.fromNode ?? (subject.type === 'deployment'
+            ? context.view.nodes.find(n => n.deploymentRef === subject.deployment)?.id
+            : undefined)
+        }
         break
       }
       default: {
@@ -754,8 +755,7 @@ export const openOverlay = () =>
     assertEvent(event, [
       'open.relationshipsBrowser',
       'open.relationshipDetails',
-      'open.elementDetails',
-      'open.deploymentDetails',
+      'open.nodeDetails',
     ])
 
     if (!check('enabled: Overlays')) {
@@ -764,10 +764,9 @@ export const openOverlay = () =>
     }
 
     switch (event.type) {
-      case 'open.elementDetails':
-      case 'open.deploymentDetails': {
+      case 'open.nodeDetails': {
         check('enabled: ElementDetails')
-          ? enqueue(openElementDetails())
+          ? enqueue(openNodeDetails())
           : console.warn('ElementDetails feature is disabled')
         break
       }

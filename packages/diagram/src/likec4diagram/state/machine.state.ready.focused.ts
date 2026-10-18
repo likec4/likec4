@@ -11,7 +11,7 @@ import {
   emitPaneClick,
   fitFocusedBounds,
   focusOnNodesAndEdges,
-  openElementDetails,
+  openNodeDetails,
   openSourceOfFocusedOrLastClickedNode,
   resetLastClickedNode,
   returnViewportBefore,
@@ -56,7 +56,7 @@ export const focused = machine.createStateConfig({
         ]),
         actions: [
           assignLastClickedNode(),
-          openElementDetails(),
+          openNodeDetails(),
           emitNodeClick(),
         ],
       },

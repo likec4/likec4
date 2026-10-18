@@ -120,10 +120,7 @@ export const ready = machine.createStateConfig({
     'unhighlight.all': {
       actions: undimEverything(),
     },
-    'open.elementDetails': {
-      actions: openOverlay(),
-    },
-    'open.deploymentDetails': {
+    'open.nodeDetails': {
       actions: openOverlay(),
     },
     'open.relationshipDetails': {

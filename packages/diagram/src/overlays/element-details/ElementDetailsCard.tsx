@@ -463,7 +463,9 @@ export function ElementDetailsCard({
                     {elementModel.hasMetadata() && <ElementMetadata value={elementModel.metadata} />}
                     {deploymentElement?.isInstance() && (
                       <ElementProperty title="logical element">
-                        <UnstyledButton onClick={() => diagram.openElementDetails(deploymentElement.element.id)}>
+                        <UnstyledButton
+                          onClick={() =>
+                            diagram.openNodeDetails({ type: 'element', element: deploymentElement.element.id })}>
                           {deploymentElement.element.title}
                         </UnstyledButton>
                       </ElementProperty>
