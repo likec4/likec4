@@ -23,8 +23,8 @@ const {
   /**
    * @param {{
    *  imports: string[]
-   *  icons: Record<'aws' | 'azure' | 'gcp' | 'tech' | 'bootstrap', Record<string, string>>
-   *  types: Record<'aws' | 'azure' | 'gcp' | 'tech' | 'bootstrap', string[]>
+   *  icons: Record<'aws' | 'azure' | 'gcp' | 'md' | 'tech' | 'bootstrap', Record<string, string>>
+   *  types: Record<'aws' | 'azure' | 'gcp' | 'md' | 'tech' | 'bootstrap', string[]>
    * }} acc
    * @param {string} path
    * @returns
@@ -53,6 +53,7 @@ const {
       aws: {},
       azure: {},
       gcp: {},
+      md: {},
       tech: {},
       bootstrap: {},
     },
@@ -60,6 +61,7 @@ const {
       aws: [],
       azure: [],
       gcp: [],
+      md: [],
       tech: [],
       bootstrap: [],
     },
@@ -83,6 +85,9 @@ ${types.azure.map((icon) => `  | '${icon}'`).join('\n')};
 export type GcpIconName =
 ${types.gcp.map((icon) => `  | '${icon}'`).join('\n')};
 
+export type MdIconName =
+${types.md.map((icon) => `  | '${icon}'`).join('\n')};
+
 export type TechIconName =
 ${types.tech.map((icon) => `  | '${icon}'`).join('\n')};
 
@@ -93,6 +98,7 @@ export type IconName =
   | \`aws:\${AwsIconName}\`
   | \`azure:\${AzureIconName}\`
   | \`gcp:\${GcpIconName}\`
+  | \`md:\${MdIconName}\`
   | \`tech:\${TechIconName}\`
   | \`bootstrap:\${BootstrapIconName}\`;
 
@@ -105,6 +111,9 @@ export declare const Icons: {
   }
   gcp: {
     [key in GcpIconName]: SvgIcon
+  }
+  md: {
+    [key in MdIconName]: SvgIcon
   }
   tech: {
     [key in TechIconName]: SvgIcon
@@ -148,6 +157,9 @@ ${printEntries(icons.azure)}
   },
   gcp: {
 ${printEntries(icons.gcp)}
+  },
+  md: {
+${printEntries(icons.md)}
   },
   tech: {
 ${printEntries(icons.tech)}

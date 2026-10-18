@@ -96,7 +96,7 @@ describe('model', () => {
       }
     }`
 
-  test('allow elements with names "aws"/"azure"/"tech"/"bootstrap"/"gcp"').valid`
+  test('allow elements with names "aws"/"azure"/"tech"/"bootstrap"/"gcp"/"md"').valid`
     specification {
       element element
     }
@@ -106,6 +106,7 @@ describe('model', () => {
       tech = element
       bootstrap = element
       gcp = element
+      md = element
     }`
 
   test('disallow element with name "this"').invalid`

@@ -32,9 +32,10 @@ describe('deriveTechnologyFromIcon', () => {
     expect(deriveTechnologyFromIcon('tech:adobe-icon')).toBe('Adobe')
   })
 
-  it('returns undefined for bootstrap: icons', () => {
+  it('returns undefined for generic icon groups', () => {
     expect(deriveTechnologyFromIcon('bootstrap:house')).toBeUndefined()
     expect(deriveTechnologyFromIcon('bootstrap:gear-fill')).toBeUndefined()
+    expect(deriveTechnologyFromIcon('md:home')).toBeUndefined()
   })
 
   it('returns undefined for undefined/null/empty input', () => {
@@ -82,7 +83,7 @@ describe('inferTechnologyFromIcon integration', () => {
     expect(model.elements['comp4']?.technology).toBe('Compute Engine')
   })
 
-  it('does not derive from bootstrap icons', async () => {
+  it('does not derive from generic icon groups', async () => {
     const { validate, buildModel } = createTestServices()
     await validate(`
       specification {
@@ -90,7 +91,7 @@ describe('inferTechnologyFromIcon integration', () => {
       }
       model {
         comp1 = component {
-          icon bootstrap:house
+          icon md:home
         }
       }
     `)

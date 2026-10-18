@@ -30,7 +30,7 @@ const iconTechPrefixRe = /^(aws|azure|gcp|tech):(.+)$/
 
 /**
  * Derives a human-readable technology string from a built-in icon name.
- * Applies to aws:, azure:, gcp:, and tech: prefixed icons.
+ * Applies to aws:, azure:, gcp:, and tech: prefixed icons; generic bootstrap: and md: icons are excluded.
  * Strips `-icon` suffix and converts kebab-case to title case.
  *
  * @example

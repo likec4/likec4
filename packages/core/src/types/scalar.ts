@@ -60,7 +60,7 @@ export function flattenMarkdownOrString(value: MarkdownOrString | string | undef
   return isTruthy(content?.trim()) ? content : null
 }
 
-export type BuiltInIcon = 'none' | `${'aws' | 'azure' | 'gcp' | 'tech' | 'bootstrap'}:${string}`
+export type BuiltInIcon = 'none' | `${'aws' | 'azure' | 'gcp' | 'md' | 'tech' | 'bootstrap'}:${string}`
 export type Icon = Tagged<string, 'Icon'> | BuiltInIcon
 export const NoneIcon: Icon = 'none'
 export type IconUrl = Icon
