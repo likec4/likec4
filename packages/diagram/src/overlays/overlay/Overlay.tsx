@@ -109,7 +109,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   // Debounce opening to avoid flicker
   useTimeoutEffect(
     () => setOpened(true),
-    openDelay > 0 ? openDelay : undefined,
+    !opened && openDelay > 0 ? openDelay : undefined,
   )
 
   const overlayRecipe = overlay({

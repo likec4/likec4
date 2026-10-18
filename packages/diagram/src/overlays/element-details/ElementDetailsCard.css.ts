@@ -3,8 +3,7 @@
 // Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
-import { css } from '@likec4/styles/css'
-import { flex } from '@likec4/styles/patterns'
+import { css, sva } from '@likec4/styles/css'
 
 export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
@@ -152,77 +151,6 @@ export const viewButtonTitle = css({
   lineHeight: '[1.4]',
 })
 
-export const tabsRoot = flex({
-  flex: '1',
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  overflow: 'hidden',
-  gap: 'sm',
-})
-
-export const tabsList = css({
-  // flex: '0',
-  background: 'mantine.gray[1]',
-  borderRadius: 'sm',
-  flexWrap: 'nowrap',
-  gap: '1.5', // 6px
-  padding: '1',
-  _dark: {
-    background: 'mantine.dark[7]',
-  },
-})
-
-export const tabsTab = css({
-  fontSize: 'xs',
-  fontWeight: 'medium',
-  flexGrow: 1,
-  padding: '[6px 8px]',
-  transition: 'fast',
-  borderRadius: 'sm',
-  color: 'mantine.gray[7]',
-  _hover: {
-    transitionTimingFunction: 'out',
-    color: 'text',
-    background: 'mantine.gray[3]',
-  },
-  ['&[data-active]']: {
-    transition: 'none',
-    background: 'white',
-    shadow: 'xs',
-    color: 'text',
-  },
-  _dark: {
-    color: 'mantine.dark[1]',
-    _hover: {
-      color: 'white',
-      background: 'mantine.dark[6]',
-    },
-
-    [`&:is([data-active])`]: {
-      color: 'white',
-      background: 'mantine.dark[5]',
-    },
-  },
-})
-
-export const tabsPanel = css({
-  flex: '1',
-  overflow: 'hidden',
-  position: 'relative',
-  '&:not(:has(.mantine-ScrollArea-root))': {
-    paddingLeft: '1',
-    paddingRight: '1',
-  },
-  '& .mantine-ScrollArea-root': {
-    width: '100%',
-    height: '100%',
-    '& > div': {
-      paddingLeft: '1',
-      paddingRight: '1',
-    },
-  },
-})
-
 export const propertiesGrid = css({
   flex: '1',
   display: 'grid',
@@ -253,5 +181,83 @@ export const resizeHandle = css({
   _hover: {
     borderWidth: '[4px]',
     borderColor: 'mantine.dark[1]',
+  },
+})
+
+export const tabs = sva({
+  className: 'likec4-details-tabs',
+  slots: ['root', 'list', 'tab', 'panel', 'tabSection', 'tabLabel'],
+  base: {
+    root: {
+      display: 'flex',
+      flex: '1',
+      flexDirection: 'column',
+      justifyContent: 'stretch',
+      overflow: 'hidden',
+      gap: 'sm',
+    },
+    list: {
+      background: 'surface.sunken',
+      borderRadius: 'sm',
+      flexWrap: 'nowrap',
+      gap: '1.5', // 6px
+      padding: '1',
+    },
+    tab: {
+      fontSize: 'xs',
+      fontWeight: 'medium',
+      flexGrow: 1,
+      padding: '[6px 8px]',
+      transition: 'fast',
+      borderRadius: 'sm',
+      color: 'mantine.gray[7]',
+      _hover: {
+        transitionTimingFunction: 'out',
+        color: 'text',
+        background: 'mantine.gray[3]',
+      },
+      ['&[data-active]']: {
+        transition: 'none',
+        background: 'white',
+        shadow: 'xs',
+        color: 'text',
+      },
+      _dark: {
+        color: 'mantine.dark[1]',
+        _hover: {
+          color: 'white',
+          background: 'mantine.dark[6]',
+        },
+
+        [`&:is([data-active])`]: {
+          color: 'white',
+          background: 'mantine.dark[5]',
+        },
+      },
+    },
+    panel: {
+      flex: '1',
+      overflow: 'hidden',
+      position: 'relative',
+      '&:not(:has(.mantine-ScrollArea-root))': {
+        paddingLeft: '1',
+        paddingRight: '1',
+      },
+      '& .mantine-ScrollArea-root': {
+        width: '100%',
+        height: '100%',
+        '& > div': {
+          paddingLeft: '1',
+          paddingRight: '1',
+        },
+      },
+    },
+    tabLabel: {
+      fontSize: 'xxs',
+      fontFamily: 'body',
+      textTransform: 'uppercase',
+      fontWeight: 'medium',
+      letterSpacing: 'caps.sm',
+    },
   },
 })

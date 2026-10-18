@@ -17,7 +17,6 @@ allowBuilds:
   oxlint: true
   wrangler: true
 
-
 overrides:
   "react": "catalog:react"
   "react-dom": "catalog:react"
@@ -71,7 +70,6 @@ catalogs:
     "@anthropic-ai/sdk": ^0.135.0
     "@tanstack/ai": ^0.69.0
     "@tanstack/ai-anthropic": ^0.22.0
-    "@tanstack/ai-claude-code": ^0.9.0
     '@tanstack/ai-client': ^0.39.3
     "@tanstack/ai-gemini": ^0.38.0
     "@tanstack/ai-ollama": ^0.12.0
