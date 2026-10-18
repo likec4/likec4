@@ -152,6 +152,13 @@ export class DiagramApi<A extends Any = Unknown> {
     this.send({ type: 'open.nodeDetails', target, fromNode })
   }
 
+  /**
+  * @deprecated Use `openNodeDetails({ type: 'element', element: fqn }, fromNode)`.
+  */
+  openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void {
+    this.openNodeDetails({ type: 'element', element: fqn }, fromNode)
+  }
+
   openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void {
     if (params.length === 1) {
       this.send({ type: 'open.relationshipDetails', params: { edgeId: params[0] } })
