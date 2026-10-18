@@ -45,8 +45,13 @@ import {
   values,
 } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
-import { type ParsedLikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
-import type { LikeC4DescriptionFiles, LikeC4ManualLayouts, ManualLayoutsSnapshot } from '../filesystem'
+import { type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
+import type {
+  DescriptionFileReference,
+  LikeC4DescriptionFiles,
+  LikeC4ManualLayouts,
+  ManualLayoutsSnapshot,
+} from '../filesystem'
 import { isNotLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -433,6 +438,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     projectId = this.projects.ensureProjectId(projectId)
     const logger = builderLogger.getChild(projectId)
     await interruptAndCheck(cancelToken)
+    await this.readDescriptionFiles()
     const parsedModel = this.unsafeSyncParsedModel(projectId)
     if (!parsedModel) {
       logger.debug`parseModel: returning EMPTY`
@@ -454,6 +460,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     return await this.mutex.read(async () => {
       await interruptAndCheck(token)
       const project = this.projects.getProject(projectId)
+      await this.readDescriptionFiles()
       const manualLayouts = await this.manualLayouts.read(project)
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
       if (result === LikeC4Model.EMPTY && projectId !== ProjectsManager.DefaultProjectId) {
@@ -476,6 +483,35 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   public clearCache(): void {
     builderLogger.debug(`clear all caches`)
     this.cache.clear()
+  }
+
+  /**
+   * Reads the files referenced by `descriptionFile` in every parsed document, and parses the
+   * documents whose content arrived again.
+   *
+   * A parsed entity holds the reference to its file until the model is built, and the read belongs
+   * here - not to the document build phases - so a workspace that is only parsed reads nothing. The
+   * parser is synchronous, so the documents that were parsed before their files were read have to be
+   * parsed again for the descriptions to be resolved (they are parsed again anyway when their content
+   * is in the parser hash).
+   */
+  private async readDescriptionFiles(): Promise<void> {
+    const refs: DescriptionFileReference[] = []
+    for (const doc of this.services.shared.workspace.LangiumDocuments.all) {
+      if (!isLikeC4LangiumDocument(doc)) {
+        continue
+      }
+      for (const ref of doc.c4DescriptionFiles ?? []) {
+        refs.push({ docUri: doc.uri, ...ref })
+      }
+    }
+    if (refs.length === 0) {
+      return
+    }
+    const reread = await this.descriptionFiles.read(refs)
+    if (reread.length > 0) {
+      this.parser.reparse(reread)
+    }
   }
 
   private notifyListeners(docs: URI[]): void

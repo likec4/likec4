@@ -108,11 +108,16 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isDescriptionFileProperty(prop)) {
+            const parsed = this.parseDescriptionProperty(prop)
+            if (parsed) {
+              acc.custom['description'] = parsed
+            }
+            return acc
+          }
           if (ast.isElementStringProperty(prop)) {
-            if (prop.key === 'description' || prop.key === 'descriptionFile' || prop.key === 'summary') {
-              const parsed = prop.key === 'descriptionFile'
-                ? this.parseDescription({ descriptionFile: prop.value })
-                : this.parseMarkdownOrString(prop.value)
+            if (prop.key === 'description' || prop.key === 'summary') {
+              const parsed = this.parseMarkdownOrString(prop.value)
               if (parsed) {
                 acc.custom['description'] = parsed
               }
@@ -347,11 +352,16 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
+          if (ast.isDescriptionFileProperty(prop)) {
+            const parsed = this.parseDescriptionProperty(prop)
+            if (parsed) {
+              acc['description'] = parsed
+            }
+            return acc
+          }
           if (ast.isRelationStringProperty(prop) || ast.isNotationProperty(prop)) {
-            if (prop.key === 'description' || prop.key === 'descriptionFile') {
-              const parsed = prop.key === 'descriptionFile'
-                ? this.parseDescription({ descriptionFile: prop.value })
-                : this.parseMarkdownOrString(prop.value)
+            if (prop.key === 'description') {
+              const parsed = this.parseMarkdownOrString(prop.value)
               if (parsed) {
                 acc['description'] = parsed
               }

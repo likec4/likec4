@@ -152,7 +152,8 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       case 'autoLayout' === keyword.value:
         acceptPropertyAndSuggest(['TopBottom', 'BottomTop', 'LeftRight', 'RightLeft'])
         break
-      case ['title', 'description', 'descriptionFile', 'technology', 'summary', 'notes', 'notation'].includes(
+      // `descriptionFile` is not here: its value is a path, not a string, so the keyword is inserted as it is
+      case ['title', 'description', 'technology', 'summary', 'notes', 'notation'].includes(
         keyword.value,
       ):
         acceptProperty(`'$0'`)

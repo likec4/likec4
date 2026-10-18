@@ -5,7 +5,6 @@ import type {
   Disposable,
   FileSystemNode,
   FileSystemProvider as LangiumFileSystemProvider,
-  LangiumDocument,
   URI,
 } from 'langium'
 import type { Location } from 'vscode-languageserver-types'
@@ -98,21 +97,23 @@ export type DescriptionFileContent =
 
 export interface LikeC4DescriptionFiles extends Disposable {
   /**
-   * Reads the files referenced by `descriptionFile` in the given documents, so the synchronous
-   * model parser can resolve them. Called on the `Parsed` document phase, before the parser runs.
+   * Reads the given references, so the synchronous model parser can resolve them into descriptions.
+   * Called when the model is built, before the parser reads the documents.
+   *
+   * @returns the documents whose files were read or changed since the last call, to be parsed again
    */
-  read(docs: LangiumDocument[]): Promise<void>
+  read(refs: readonly DescriptionFileReference[]): Promise<URI[]>
 
   /**
-   * Resolves and reads a single file, and remembers the result for the parser.
+   * Resolves and reads a single reference, and remembers the result for the parser.
    */
-  readFile(doc: LangiumDocument, path: string): Promise<DescriptionFileContent>
+  readReference(ref: DescriptionFileReference): Promise<DescriptionFileContent>
 
   /**
-   * The file referenced by `path` from the document at `docUri`, resolved against that document.
+   * What the file referenced by `value` resolved to, for the document at `docUri`.
    * `undefined` when the document does not reference it (or it has not been read yet).
    */
-  get(docUri: URI, path: string): DescriptionFileContent | undefined
+  get(docUri: URI, value: string): DescriptionFileContent | undefined
 
   /**
    * Whether `uri` is a file referenced by some document, and so worth watching.
@@ -133,6 +134,16 @@ export interface LikeC4DescriptionFiles extends Disposable {
   onDescriptionFileUpdate(listener: DescriptionFileUpdateListener): Disposable
 
   clearCaches(): void
+}
+
+/**
+ * A file a document references with `descriptionFile`.
+ */
+export type DescriptionFileReference = {
+  /** The document the property appears in */
+  readonly docUri: URI
+  readonly value: string
+  readonly resolvedPath: string | null
 }
 
 export type DescriptionFileUpdateEvent = {

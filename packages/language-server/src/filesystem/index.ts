@@ -1,5 +1,6 @@
 export type {
   DescriptionFileContent,
+  DescriptionFileReference,
   DescriptionFileUpdateEvent,
   DescriptionFileUpdateListener,
   FileNode,

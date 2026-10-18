@@ -211,6 +211,7 @@ export class MergedSpecification {
    */
   toModelRelation = ({
     astPath: _astPath, // omit
+    descriptionFile: _descriptionFile, // the description is resolved when the model is built
     source,
     target,
     kind,
@@ -266,8 +267,11 @@ export class MergedSpecification {
    */
   toDeploymentElement = (parsed: ParsedAstDeployment): c4.DeploymentElement | null => {
     if ('element' in parsed && !('kind' in parsed)) {
+      // the reference to the file is not part of the model, and a deployed instance of an element
+      // takes the description of that element
+      const { descriptionFile: _descriptionFile, ...instance } = parsed
       return {
-        ...parsed,
+        ...instance,
         element: FqnRef.flatten(parsed.element),
       }
     }
@@ -285,6 +289,7 @@ export class MergedSpecification {
         id,
         style,
         title,
+        descriptionFile: _descriptionFile, // the description is resolved when the model is built
         ...rest
       } = parsed
       title = title === nameFromFqn(parsed.id) && __kind.title ? __kind.title : title
@@ -309,6 +314,7 @@ export class MergedSpecification {
    */
   toDeploymentRelation = ({
     astPath: _astPath, // omit
+    descriptionFile: _descriptionFile, // the description is resolved when the model is built
     source,
     target,
     kind,

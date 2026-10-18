@@ -29,11 +29,14 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         ) as c4.ViewId
       }
 
-      const deploymentViewBodyProps = pipe(
-        props,
-        filter(ast.isViewStringProperty),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const deploymentViewBodyProps = {
+        ...pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(props),
+      }
       const {
         title = null,
         description = null,

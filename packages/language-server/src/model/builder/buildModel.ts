@@ -264,8 +264,9 @@ export function buildModelData(
         id,
         title,
         description,
-        // ignore this property
+        // ignore these properties
         astPath: _ignore,
+        descriptionFile: _descriptionFile,
         // model should include discriminant __
         ...model
       } = parsedAstView

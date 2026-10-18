@@ -104,11 +104,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const viewBodyProps = pipe(
-        props,
-        filter(ast.isViewStringProperty),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const viewBodyProps = {
+        ...pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(props),
+      }
       const { title = null, description = null } = this.parseBaseProps(viewBodyProps, {
         title: parseTitleKeepingEscapedSlash(viewBodyProps.title),
       })
@@ -284,11 +287,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const dynamicViewBodyProps = pipe(
-        props,
-        filter(ast.isViewStringProperty),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const dynamicViewBodyProps = {
+        ...pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(props),
+      }
       const { title = null, description = null } = this.parseBaseProps(dynamicViewBodyProps, {
         title: parseTitleKeepingEscapedSlash(dynamicViewBodyProps.title),
       })
@@ -482,13 +488,18 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               }
               break
             }
+            case ast.isDescriptionFileProperty(prop): {
+              const value = this.parseDescriptionProperty(prop)
+              if (value) {
+                step.description = value
+              }
+              break
+            }
             case ast.isRelationStringProperty(prop):
             case ast.isNotationProperty(prop): {
               if (isDefined(prop.value)) {
-                if (prop.key === 'description' || prop.key === 'descriptionFile') {
-                  const value = this.parseDescription({
-                    [prop.key]: prop.value,
-                  })
+                if (prop.key === 'description') {
+                  const value = removeIndent(prop.value)
                   if (value) {
                     step.description = value
                   }

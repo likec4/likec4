@@ -1,7 +1,7 @@
 import { nonexhaustive } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { isNumber, isString } from 'remeda'
-import { ast, parseMarkdownAsString } from '../ast'
+import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { tryOrLog } from './_shared'
 
@@ -110,23 +110,20 @@ export const colorLiteralRuleChecks = (_: LikeC4Services): ValidationCheck<ast.C
 }
 
 /**
- * `descriptionFile` refers to a file that is read before the model is parsed, so a file that could
- * not be read has to be reported here (the parser has nothing to describe, and stays silent).
+ * `descriptionFile` refers to a file that is read when the model is built, so a file that could not
+ * be read has to be reported here (the parser has nothing to describe, and stays silent).
  */
 export const descriptionFileRuleChecks = (
   services: LikeC4Services,
-): ValidationCheck<ast.StringProperty> => {
-  // The referenced files are read on the `Parsed` document phase, and services are created lazily:
+): ValidationCheck<ast.DescriptionFileProperty> => {
+  // The referenced files are read when the model is built, and services are created lazily:
   // touching the service here makes sure it exists before the first document is parsed
   const descriptionFiles = services.shared.workspace.DescriptionFiles
   return tryOrLog(async (node, accept) => {
-    if (node.key !== 'descriptionFile') {
-      return
-    }
     const container = node.$container
     if (
       'props' in container && Array.isArray(container.props)
-      && container.props.some(p => ast.isStringProperty(p) && p !== node && p.key === 'description')
+      && container.props.some(p => ast.isStringProperty(p) && p.key === 'description')
     ) {
       accept('error', `Only one of "description" and "descriptionFile" is allowed`, {
         node,
@@ -134,14 +131,16 @@ export const descriptionFileRuleChecks = (
       })
       return
     }
-    const value = node.value
-    const path = ast.isMarkdownOrString(value) ? parseMarkdownAsString(value)?.trim() : undefined
-    if (!path) {
+    const value = node.value?.trim()
+    if (!value) {
       accept('error', `File name is empty`, { node, property: 'value' })
       return
     }
     const doc = AstUtils.getDocument(node)
-    const result = descriptionFiles.get(doc.uri, path) ?? await descriptionFiles.readFile(doc, path)
+    // The parser resolved this property for the same node, and it is re-entrant, so asking it again
+    // is how the validation gets the path the value resolved to
+    const resolvedPath = services.likec4.ModelParser.forDocument(doc).resolveDescriptionFile(value)
+    const result = await descriptionFiles.readReference({ docUri: doc.uri, value, resolvedPath })
     if ('error' in result) {
       accept('error', result.error, { node, property: 'value' })
     }

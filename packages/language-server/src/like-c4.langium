@@ -54,12 +54,13 @@ SpecificationElementKind:
     props+=(
       SpecificationElementStringProperty |
       LinkProperty |
+      DescriptionFileProperty |
       ElementStyleProperty
     )*
   '}')?;
 
 SpecificationElementStringProperty:
-  key=('title' | 'description' | 'descriptionFile' | 'technology' | 'notation' | 'summary') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'notation' | 'summary') ':'? value=MarkdownOrString ';'?;
 
 SpecificationDeploymentNodeKind:
   'deploymentNode' kind=DeploymentNodeKind ('{'
@@ -67,6 +68,7 @@ SpecificationDeploymentNodeKind:
     props+=(
       SpecificationElementStringProperty |
       LinkProperty |
+      DescriptionFileProperty |
       ElementStyleProperty
     )*
   '}')?;
@@ -84,6 +86,7 @@ SpecificationRelationshipKind:
     tags=Tags?
     props+=(
       LinkProperty |
+      DescriptionFileProperty |
       RelationshipStyleProperty |
       SpecificationRelationshipStringProperty |
       MultipleProperty
@@ -92,7 +95,7 @@ SpecificationRelationshipKind:
 ;
 
 SpecificationRelationshipStringProperty:
-  key=('title' | 'description' | 'descriptionFile' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'notation') ':'? value=MarkdownOrString ';'?;
 
 // Imports -------------------------------------
 
@@ -152,11 +155,12 @@ ElementProperty:
   ElementStringProperty |
   ElementStyleProperty |
   LinkProperty |
+  DescriptionFileProperty |
   IconProperty |
   MetadataProperty;
 
 ElementStringProperty:
-  key=('title' | 'description' | 'descriptionFile' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description' | 'technology' | 'summary') ':'? value=MarkdownOrString ';'?;
 
 ExtendElementOrRelation:
   'extend' (
@@ -273,11 +277,12 @@ RelationProperty:
   RelationNavigateToProperty |
   RelationStyleProperty |
   LinkProperty |
+  DescriptionFileProperty |
   MetadataProperty
 ;
 
 RelationStringProperty:
-  key=('title' | 'technology' | 'description' | 'descriptionFile') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'technology' | 'description') ':'? value=MarkdownOrString ';'?;
 
 RelationStyleProperty:
   key='style' '{'
@@ -391,11 +396,11 @@ type AnyProperty =
 ;
 
 ViewProperty:
-  ViewStringProperty | ViewOrderProperty | LinkProperty | ViewRoutingProperty
+  ViewStringProperty | ViewOrderProperty | LinkProperty | DescriptionFileProperty | ViewRoutingProperty
 ;
 
 ViewStringProperty:
-  key=('title' | 'description' | 'descriptionFile') ':'? value=MarkdownOrString ';'?;
+  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
 
 ViewOrderProperty:
   key='order' value=Number ';'?;
@@ -495,6 +500,7 @@ CustomElementProperties: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
+    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     StyleProperty
@@ -506,6 +512,7 @@ CustomRelationProperties: '{'
   props+=(
     RelationNavigateToProperty |
     RelationStringProperty |
+    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     RelationshipStyleProperty |
@@ -1002,6 +1009,10 @@ type FqnReferenceable = Referenceable | Element | ExtendElement | ExtendDeployme
 
 LinkProperty:
   key='link' ':'? value=Uri title=String? ';'?;
+
+// A path to a markdown file, resolved like a link and read when the model is built
+DescriptionFileProperty:
+  key='descriptionFile' ':'? value=Uri ';'?;
 
 fragment ColorRef:
   themeColor=ThemeColor | customColor=[CustomColor:CustomColorId];

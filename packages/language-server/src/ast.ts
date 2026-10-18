@@ -86,6 +86,27 @@ export interface ParsedAstSpecification {
   deployments: Record<c4.DeploymentKind, c4.ElementSpecification>
 }
 
+/**
+ * A file referenced by `descriptionFile`, as the parser resolved it.
+ *
+ * The content is read when the model is built, and not while documents are parsed, so a parsed
+ * entity holds only the reference until then.
+ */
+export interface DescriptionFileRef {
+  /** The value as written in the document */
+  readonly value: string
+  /**
+   * The file the value resolves to, or `null` when it does not name a file of the project
+   * (another scheme, a path outside of it): the validation reports why, and nothing is read for it.
+   */
+  readonly resolvedPath: string | null
+}
+
+/** The parsed deployments and relations carry the reference to their file too */
+type WithDescriptionFile = {
+  descriptionFile?: DescriptionFileRef
+}
+
 export interface ParsedAstElement {
   id: c4.Fqn
   astPath: string
@@ -93,6 +114,7 @@ export interface ParsedAstElement {
   title?: string
   summary?: c4.MarkdownOrString
   description?: c4.MarkdownOrString
+  descriptionFile?: DescriptionFileRef
   technology?: string
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<c4.Link>
@@ -127,6 +149,7 @@ export interface ParsedAstRelation {
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
   description?: c4.MarkdownOrString
+  descriptionFile?: DescriptionFileRef
   technology?: string
   color?: c4.Color
   line?: c4.RelationshipLineType
@@ -140,12 +163,12 @@ export interface ParsedAstRelation {
 // Alias for easier refactoring
 export type ParsedAstDeployment = Simplify<MergeExclusive<ParsedAstDeployment.Node, ParsedAstDeployment.Instance>>
 export namespace ParsedAstDeployment {
-  export type Node = c4.DeploymentNode
+  export type Node = c4.DeploymentNode & WithDescriptionFile
   export type Instance = Omit<c4.DeployedInstance, 'element'> & {
     readonly element: c4.FqnRef.ModelRef
-  }
+  } & WithDescriptionFile
 }
-export type ParsedAstDeploymentRelation = c4.DeploymentRelationship & {
+export type ParsedAstDeploymentRelation = c4.DeploymentRelationship & WithDescriptionFile & {
   astPath: string
 }
 
@@ -160,6 +183,7 @@ export interface ParsedAstElementView {
   astPath: string
   title: string | null
   description: c4.MarkdownOrString | null
+  descriptionFile?: DescriptionFileRef
   /**
    * Optional per-view navigation order.
    */
@@ -176,6 +200,7 @@ export interface ParsedAstDynamicView {
   astPath: string
   title: string | null
   description: c4.MarkdownOrString | null
+  descriptionFile?: DescriptionFileRef
   /**
    * Optional per-view navigation order.
    */
@@ -194,6 +219,7 @@ export interface ParsedAstDeploymentView {
   astPath: string
   title: string | null
   description: c4.MarkdownOrString | null
+  descriptionFile?: DescriptionFileRef
   /**
    * Optional per-view navigation order.
    */
@@ -250,6 +276,8 @@ export interface LikeC4DocumentProps {
   c4Deployments: ParsedAstDeployment[]
   c4DeploymentRelations: ParsedAstDeploymentRelation[]
   c4Imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
+  /** The files this document references with `descriptionFile`, as the parser resolved them */
+  c4DescriptionFiles: DescriptionFileRef[]
   likec4Parser: DocumentParser
 }
 
@@ -273,6 +301,7 @@ export const LikeC4DocumentPropKeys = [
   'c4Deployments',
   'c4DeploymentRelations',
   'c4Imports',
+  'c4DescriptionFiles',
   'likec4Parser',
 ] as const satisfies UnionToTuple<keyof LikeC4DocumentProps>
 

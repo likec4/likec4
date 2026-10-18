@@ -337,6 +337,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isNotesProperty(node)
       || ast.isSpecificationElementStringProperty(node)
       || ast.isSpecificationRelationshipStringProperty(node)
+      || ast.isDescriptionFileProperty(node)
       || ast.isColorProperty(node)
       || ast.isLineProperty(node)
       || ast.isArrowProperty(node)
@@ -352,6 +353,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isPaddingSizeProperty(node)
       || ast.isTextSizeProperty(node)
       || ast.isSizingProperty(node)
+      || ast.isDescriptionFileProperty(node)
     ) {
       const formatter = this.getNodeFormatter(node)
       const colon = formatter.keyword(':')

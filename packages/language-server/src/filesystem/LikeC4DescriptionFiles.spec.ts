@@ -28,7 +28,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -37,25 +37,79 @@ describe('descriptionFile', () => {
     expect(elements['c1']).toHaveProperty('description', { md: markdown })
   })
 
-  it('reads a path written with surrounding spaces', async ({ expect }) => {
+  it('resolves a path relative to the document that uses it', async ({ expect }) => {
     const t = createTestServices()
-    mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+    mockFiles(t, {
+      '/test/workspace/src/spec.md': markdown,
+      '/test/workspace/project.md': markdown,
+    })
 
-    const { errors } = await t.validate(`
+    const { document, errors } = await t.validate(`
       specification {
         element component
       }
       model {
-        component c1 {
-          descriptionFile ' spec.md '
+        component fromSubfolder {
+          descriptionFile ./spec.md
+        }
+        component fromProjectRoot {
+          descriptionFile ../project.md
         }
       }
     `)
 
     expect(errors).toEqual([])
+    // The parsed entities hold the reference to their file until the model is built
+    expect(document.c4Elements?.map(el => el.descriptionFile)).toEqual([
+      { value: './spec.md', resolvedPath: 'file:///test/workspace/src/spec.md' },
+      { value: '../project.md', resolvedPath: 'file:///test/workspace/project.md' },
+    ])
+  })
+
+  it('does not read a referenced file while documents are parsed', async ({ expect }) => {
+    const t = createTestServices()
+    const readFile = vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
+      .mockImplementation(async () => markdown)
+
+    await t.parse(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile ./spec.md
+        }
+      }
+    `)
+
+    // Only parsed: the file is read when the model is built, and the description is resolved then
+    expect(readFile).not.toHaveBeenCalled()
 
     const { elements } = await t.buildModel()
     expect(elements['c1']).toHaveProperty('description', { md: markdown })
+    readFile.mockRestore()
+  })
+
+  it('keeps a value that names another scheme as an unresolved reference', async ({ expect }) => {
+    const t = createTestServices()
+
+    // parsed without validation: the resolution happens while parsing, and the file is the one thing
+    // that is not part of the project
+    const document = await t.parse(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile https://example.com/spec.md
+        }
+      }
+    `)
+
+    expect(document.c4Elements?.[0]?.descriptionFile).toEqual({
+      value: 'https://example.com/spec.md',
+      resolvedPath: null,
+    })
   })
 
   it('uses the content of the referenced file on a view and on a relation', async ({ expect }) => {
@@ -70,12 +124,12 @@ describe('descriptionFile', () => {
         component a
         component b
         a -> b {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
       views {
         view v {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -96,12 +150,12 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'missing.md'
+          descriptionFile ./missing.md
         }
       }
     `)
 
-    expect(errors).toEqual(['File "missing.md" does not exist or cannot be read'])
+    expect(errors).toEqual(['File "./missing.md" does not exist or cannot be read'])
   })
 
   it('reports an empty file', async ({ expect }) => {
@@ -114,12 +168,12 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'empty.md'
+          descriptionFile ./empty.md
         }
       }
     `)
 
-    expect(errors).toEqual(['File "empty.md" does not exist or cannot be read'])
+    expect(errors).toEqual(['File "./empty.md" does not exist or cannot be read'])
   })
 
   it('uses the content of the file as it is', async ({ expect }) => {
@@ -133,7 +187,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -152,12 +206,12 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'blank.md'
+          descriptionFile ./blank.md
         }
       }
     `)
 
-    expect(errors).toEqual(['File "blank.md" does not exist or cannot be read'])
+    expect(errors).toEqual(['File "./blank.md" does not exist or cannot be read'])
   })
 
   it('treats a reserved character as part of the file name', async ({ expect }) => {
@@ -170,7 +224,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'design#v2.md'
+          descriptionFile ./design#v2.md
         }
       }
     `)
@@ -189,12 +243,12 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile '..%2f..%2fsecret.txt'
+          descriptionFile ./..%2f..%2fsecret.txt
         }
       }
     `)
 
-    expect(errors).toEqual(['File "..%2f..%2fsecret.txt" does not exist or cannot be read'])
+    expect(errors).toEqual(['File "./..%2f..%2fsecret.txt" does not exist or cannot be read'])
   })
 
   it('re-reads a referenced file when it changes on disk', async ({ expect }) => {
@@ -210,7 +264,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -224,7 +278,7 @@ describe('descriptionFile', () => {
     files[asPosix(uri.fsPath)] = '# second'
     await descriptionFiles.handleFileSystemUpdate({ update: uri })
 
-    expect(descriptionFiles.get(doc.document.uri, 'spec.md')).toEqual({ content: '# second' })
+    expect(descriptionFiles.get(doc.document.uri, './spec.md')).toEqual({ content: '# second' })
     expect(updated).toHaveLength(1)
     subscription.dispose()
   })
@@ -239,7 +293,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile '../../../../etc/passwd'
+          descriptionFile ../../../../etc/passwd
         }
       }
     `)
@@ -257,7 +311,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile '../../workspace-other/spec.md'
+          descriptionFile ../../workspace-other/spec.md
         }
       }
     `)
@@ -275,7 +329,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'https://example.com/spec.md'
+          descriptionFile https://example.com/spec.md
         }
       }
     `)
@@ -295,7 +349,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -316,7 +370,7 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
-          descriptionFile 'file:///etc/passwd'
+          descriptionFile file:///etc/passwd
         }
       }
     `)
@@ -350,20 +404,20 @@ describe('descriptionFile', () => {
           }
           model {
             component linked {
-              descriptionFile 'inside-link.md'
+              descriptionFile ./inside-link.md
             }
             component escaped {
-              descriptionFile 'outside-link.md'
+              descriptionFile ./outside-link.md
             }
             component escapedThroughDir {
-              descriptionFile 'shared-dir/secret.md'
+              descriptionFile ./shared-dir/secret.md
             }
           }
         `)
 
         expect([...errors].sort()).toEqual([
-          'File "outside-link.md" is outside of the project',
-          'File "shared-dir/secret.md" is outside of the project',
+          'File "./outside-link.md" is outside of the project',
+          'File "./shared-dir/secret.md" is outside of the project',
         ])
         const { elements } = await t.buildModel()
         expect(elements['linked']).toHaveProperty('description', { md: '# inside' })
@@ -387,7 +441,7 @@ describe('descriptionFile', () => {
       model {
         component c1 {
           description 'inline'
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -428,7 +482,7 @@ it('registers a referenced file with the file system watcher', async ({ expect }
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -452,7 +506,7 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
@@ -470,7 +524,7 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
       }
       model {
         component c1 {
-          descriptionFile 'spec.md'
+          descriptionFile ./spec.md
         }
       }
     `)
