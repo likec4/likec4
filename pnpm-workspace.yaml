@@ -91,7 +91,7 @@ catalogs:
     astro-skills: 0.1.1
     shiki: 4.5.0
     starlight-heading-badges: 0.8.0
-    starlight-image-zoom: 0.16.1
+    starlight-image-zoom: 0.16.2
     starlight-links-validator: 0.27.0
     starlight-package-managers: 0.13.0
   cloudflare:
