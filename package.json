@@ -50,7 +50,7 @@
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
     "dprint": "catalog:",
-    "execa": "^9.6.0",
+    "execa": "^9.6.1",
     "global": "^4.4.0",
     "husky": "^9.1.7",
     "nano-staged": "catalog:",
@@ -64,7 +64,7 @@
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },
-  "packageManager": "pnpm@11.28.5",
+  "packageManager": "pnpm@12.14.0",
   "engines": {
     "node": ">=22.22.3"
   }

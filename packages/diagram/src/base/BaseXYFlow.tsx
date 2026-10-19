@@ -10,7 +10,6 @@ import { useMantineColorScheme } from '@mantine/core'
 import {
   type ReactFlowProps,
   type ReactFlowState,
-  Controls,
   ReactFlow,
   useStore,
 } from '@xyflow/react'
@@ -119,10 +118,10 @@ export function BaseXYFlow<
     onEdgesChange,
     onNodesChange,
     className,
-    pannable = true,
-    zoomable = true,
-    nodesSelectable = true,
-    nodesDraggable = false,
+    pannable,
+    zoomable,
+    nodesSelectable,
+    nodesDraggable,
     background = 'dots',
     children,
     colorMode,

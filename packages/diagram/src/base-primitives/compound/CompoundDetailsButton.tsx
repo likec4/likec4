@@ -43,7 +43,7 @@ const variants = {
 }
 
 export function CompoundDetailsButton({
-  selected = false,
+  selected,
   data: {
     hovered: isHovered = false,
   },

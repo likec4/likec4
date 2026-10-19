@@ -11,44 +11,18 @@
       ]
     },
     "typecheck": {
-      "dependsOn": [
-        "^typecheck",
-        "sources",
-        "generate"
-      ],
       "inputs": [
-        "src/**/*.ts",
-        "*.ts",
-        "tsconfig.json",
+        "$TURBO_EXTENDS$",
         "!src/meta.ts",
         {
           "mode": "jit",
           "globs": ["src/meta.ts"],
         },
-      ],
-      "outputs": [
-        "lib/**",
-        "*.tsbuildinfo"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
     "build": {
-      "dependsOn": [
-        "@likec4/vscode-preview#build",
-        "sources",
-        "^generate",
-        "generate"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!**/*.md",
-        "!**/*.spec.ts",
-        "!**/*.test-d.ts",
-        "!**/__test*/**",
-        "!**/__snapshots__/**",
-        "!**/__fixtures__/**"
-      ],
       "outputs": [
+        "$TURBO_EXTENDS$",
         "data/skills/**",
         "data/config.schema.json",
         "dist/**"

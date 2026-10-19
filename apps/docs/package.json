@@ -38,6 +38,7 @@
     "astro-skills": "catalog:astro",
     "canvaskit-wasm": "0.42.0",
     "likec4": "workspace:*",
+    "mdast-util-to-hast": "catalog:",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "sharp": "catalog:utils",

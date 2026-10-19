@@ -126,6 +126,40 @@ async function mkTestServices({ expect }: TestContext) {
 }
 
 describe('Deployment views:', () => {
+  it('supports styled, unnamed and nested groups with deployment predicates', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      group 'Production' {
+        color amber
+        border solid
+        opacity 20%
+        include prod
+        group {
+          include prod.z1.*
+          exclude prod.z1.frontend
+          include prod.z1.backend -> prod.z2.backend
+        }
+      }
+    `)
+  })
+
+  it('rejects logical element includes inside deployment groups', async ctx => {
+    const { invalid } = await mkTestServices(ctx)
+    await invalid(`
+      group 'Logical' {
+        group {
+          include system.backend
+        }
+      }
+    `)
+  })
+
+  it('rejects styles and global predicate references inside deployment groups', async ctx => {
+    const { invalid } = await mkTestServices(ctx)
+    await invalid(`group { style prod { color amber } }`)
+    await invalid(`group { global predicate shared }`)
+  })
+
   it('valid views', async ctx => {
     const { view } = await mkTestServices(ctx)
     await view.valid(`

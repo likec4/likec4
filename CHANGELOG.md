@@ -18,7 +18,7 @@
 
 - **New `agent` Element Shape**: [#3310](https://github.com/likec4/likec4/pull/3310)
   
-  ![Agent Element Shape](https://private-user-images.githubusercontent.com/824903/669173338-14ea8fc3-afaf-4411-b46e-06ea24931bc5.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3OTIwNTk2MDUsIm5iZiI6MTc5MjA1OTMwNSwicGF0aCI6Ii84MjQ5MDMvNjY5MTczMzM4LTE0ZWE4ZmMzLWFmYWYtNDQxMS1iNDZlLTA2ZWEyNDkzMWJjNS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYxMDE1JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MTAxNVQxMDE1MDVaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04NjBiY2FiMjk0NTlhMzU2MjE4ZmY1NjhmMmYwNmQ2YTUxMGI1MTI1ZWQ1OWQxNTEzZmIxZTZkYWRiZWQ0Y2JhJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.z7e8vIoQcxybZIbaZYVa0CtRWABeJHLSnwDtPuE1dhw)
+  See the [agent shape illustration and implementation in PR #3310](https://github.com/likec4/likec4/pull/3310).
 
 - **DSL Generator Emits Views**:\
   The LikeC4 DSL generator now emits `views`, including dynamic views with `loop`, `opt`, `par` and `break` blocks, step titles and descriptions. `printOperation` is renamed to `print`. [#3363](https://github.com/likec4/likec4/pull/3363)

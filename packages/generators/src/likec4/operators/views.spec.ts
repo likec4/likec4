@@ -1,10 +1,7 @@
 import { type ViewsBuilder, Builder } from '@likec4/core/builder'
 import { describe, expect as viExpect, it } from 'vitest'
-import {
-  materialize,
-  withctx,
-} from './base'
-import { views as viewsOp } from './views'
+import { materialize } from './base'
+import { deploymentView as deploymentViewOp, views as viewsOp } from './views'
 
 const builder = Builder
   .specification({
@@ -67,6 +64,39 @@ function expect(...builders: Array<(input: ViewsBuilder<T>) => any>) {
 }
 
 describe('view', () => {
+  it('prints styled nested deployment groups', () => {
+    viExpect(materialize(deploymentViewOp(), {
+      id: 'prod',
+      rules: [{
+        title: 'Application',
+        color: 'amber',
+        border: 'solid',
+        opacity: 20,
+        groupRules: [
+          { include: [{ ref: { deployment: 'prod.app1' } }] },
+          {
+            title: null,
+            groupRules: [
+              { exclude: [{ ref: { deployment: 'prod.app2' } }] },
+            ],
+          },
+        ],
+      }],
+    })).toMatchInlineSnapshot(`
+      "deployment view prod {
+        group 'Application' {
+          color amber
+          border solid
+          opacity 20%
+          include prod.app1
+          group {
+            exclude prod.app2
+          }
+        }
+      }"
+    `)
+  })
+
   it('should print element view', () => {
     expect(
       view(

@@ -43,8 +43,8 @@ const variants = {
  */
 export const ElementNodeContainer = forwardRef<HTMLDivElement, ElementNodeContainerProps>(({
   nodeProps: {
-    selected = false,
-    selectable = false,
+    selected,
+    selectable,
     data: {
       hovered: isHovered = false,
       dimmed: isDimmed = false,

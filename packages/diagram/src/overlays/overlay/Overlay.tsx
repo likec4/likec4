@@ -1,7 +1,6 @@
 import { cx } from '@likec4/styles/css'
 import { overlay } from '@likec4/styles/recipes'
 import {
-  FocusTrap,
   RemoveScroll,
 } from '@mantine/core'
 import { useFocusTrap, useMergedRef } from '@mantine/hooks'
@@ -11,7 +10,6 @@ import {
   type PropsWithChildren,
   forwardRef,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -111,7 +109,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   // Debounce opening to avoid flicker
   useTimeoutEffect(
     () => setOpened(true),
-    openDelay > 0 ? openDelay : undefined,
+    !opened && openDelay > 0 ? openDelay : undefined,
   )
 
   const overlayRecipe = overlay({

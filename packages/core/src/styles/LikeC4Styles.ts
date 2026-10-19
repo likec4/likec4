@@ -11,7 +11,7 @@ import type {
   NTuple,
 } from '../types'
 import { ensureSizes, flattenMarkdownOrString } from '../types'
-import { DefaultMap, DefaultWeakMap, memoizeProp, objectHash } from '../utils'
+import { memoizeProp, objectHash } from '../utils'
 import type { DefaultTagColors } from './assignTagColors'
 import { computeColorValues } from './compute-color-values'
 import { computeCompoundColorValues } from './compute-compound-colors'
@@ -141,9 +141,6 @@ export class LikeC4Styles {
     return this.computeFrom(color ?? this.defaults.color)
   }
 
-  private compoundColorsCache = new DefaultWeakMap((baseElementColors: ElementColorValues) =>
-    new DefaultMap((depth: number) => computeCompoundColorValues(baseElementColors, depth))
-  )
   /**
    * Get colors for compound nodes
    *
@@ -153,7 +150,7 @@ export class LikeC4Styles {
     baseElementColors: ElementColorValues,
     depth?: Depth,
   ): NTuple<ElementColorValues, Depth> {
-    return this.compoundColorsCache.get(baseElementColors).get(depth ?? 6) as NTuple<ElementColorValues, Depth>
+    return computeCompoundColorValues(baseElementColors, depth ?? 6) as NTuple<ElementColorValues, Depth>
   }
 
   /**

@@ -25,6 +25,17 @@ test('hasProp', () => {
     expectTypeOf(obj.b).toEqualTypeOf<number>()
   }
   expectTypeOf(obj.b).toEqualTypeOf<number | undefined | null>()
+
+  // Only checked property is narrowed, other properties are kept as is
+  if (hasProp(obj, 'a')) {
+    expectTypeOf(obj.b).toEqualTypeOf<number | undefined | null>()
+  }
+  if (hasProp('a')(obj)) {
+    expectTypeOf(obj.b).toEqualTypeOf<number | undefined | null>()
+  }
+  if (hasProp(obj, 'b')) {
+    expectTypeOf(obj.a).toEqualTypeOf<string | undefined | null>()
+  }
 })
 
 test('guardedTo', () => {

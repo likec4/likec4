@@ -35,6 +35,7 @@ overrides:
 
 patchedDependencies:
   "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
+  starlight-heading-badges@0.8.0: patches/starlight-heading-badges@0.8.0.patch
   use-sync-external-store: patches/use-sync-external-store.patch
 
 catalog:
@@ -49,16 +50,17 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
+  mdast-util-to-hast: 13.2.1
   memfs: ^4.80.0
   nano-staged: ^1.0.2
   oxlint: 1.87.0
   oxlint-tsgolint: 0.25.0
   pako: ^2.2.0
-  playwright: 1.64.0
+  playwright: 1.64.1
   rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
   tsx: 4.23.15
-  turbo: 2.11.7
+  turbo: 2.11.8
   typescript: 6.0.3
   wireit: 0.14.13
   zx: 8.8.5
@@ -67,18 +69,18 @@ catalogMode: prefer
 
 catalogs:
   ai:
-    "@anthropic-ai/sdk": ^0.100.1
-    "@tanstack/ai": ^0.14.0
-    "@tanstack/ai-anthropic": ^0.8.3
-    '@tanstack/ai-client': ^0.8.0
-    "@tanstack/ai-gemini": ^0.10.0
-    "@tanstack/ai-ollama": ^0.6.10
-    "@tanstack/ai-openai": ^0.8.2
-    "@tanstack/ai-openrouter": ^0.8.2
-    "@tanstack/ai-react": ^0.8.0
-    "@tanstack/ai-react-ui": ^0.6.2
-    '@types/ws': ^8.18.1
-    ws: ^8.21.1
+    "@anthropic-ai/sdk": ^0.135.0
+    "@tanstack/ai": ^0.69.0
+    "@tanstack/ai-anthropic": ^0.22.0
+    '@tanstack/ai-client': ^0.39.3
+    "@tanstack/ai-gemini": ^0.38.0
+    "@tanstack/ai-ollama": ^0.12.0
+    "@tanstack/ai-openai": ^0.30.0
+    "@tanstack/ai-openrouter": ^0.22.0
+    "@tanstack/ai-react": ^0.30.4
+    "@tanstack/ai-react-ui": ^0.9.7
+    '@types/ws': ^8.18.2
+    ws: ^8.22.0
   astro:
     "@astrojs/check": 0.9.10
     "@astrojs/react": 6.0.6
@@ -91,12 +93,12 @@ catalogs:
     astro-skills: 0.1.1
     shiki: 4.5.0
     starlight-heading-badges: 0.8.0
-    starlight-image-zoom: 0.16.1
-    starlight-links-validator: 0.25.2
-    starlight-package-managers: 0.12.0
+    starlight-image-zoom: 0.16.2
+    starlight-links-validator: 0.27.0
+    starlight-package-managers: 0.13.0
   cloudflare:
-    "@cloudflare/vite-plugin": 1.63.1
-    wrangler: 4.149.0
+    "@cloudflare/vite-plugin": 1.64.0
+    wrangler: 4.151.0
   css:
     "@pandacss/dev": ^1.12.1
     "@pandacss/preset-panda": ^1.12.1
@@ -126,7 +128,7 @@ catalogs:
     zod: ^4.6.5
   hono:
     "@hono/mcp": ^0.3.2
-    "@hono/node-server": ^2.1.4
+    "@hono/node-server": ^2.1.5
     "@hono/oauth-providers": ^0.9.0
     "@hono/zod-validator": ^0.9.1
     hono: ^4.13.13
@@ -144,8 +146,6 @@ catalogs:
   mcp:
     "@modelcontextprotocol/sdk": ^1.32.1
     "@modelcontextprotocol/ext-apps": "^1.7.5"
-  obuild:
-    obuild: 0.4.31
   react:
     "@floating-ui/dom": ^1.8.0
     "@nanostores/media-query": 0.1.2
@@ -175,7 +175,7 @@ catalogs:
   tsdown:
     "@rolldown/plugin-node-polyfills": ^1.0.3
     tsdown: ^0.23.0
-    "@tsdown/css": ^0.23.0
+    "@tsdown/css": ^0.23.1
     rolldown: ^1.2.13
     oxc-transform-react: ^0.153.0
   utils:
@@ -183,7 +183,7 @@ catalogs:
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
-    caniuse-lite: ^1.0.30001815
+    caniuse-lite: ^1.0.30001816
     chroma-js: 3.2.0
     citty: ^0.2.2
     consola: ^3.4.2
@@ -216,6 +216,7 @@ catalogs:
     ufo: 1.6.4
     unctx: ^2.5.0
     unstorage: ^1.17.5
+    fast-json-patch: ^3.1.1
   vite:
     "@rolldown/plugin-babel": ^0.2.4
     "@vitejs/plugin-react": ^6.1.2

@@ -29,7 +29,7 @@ export function EdgeContainer({
   selectable = false,
   selected = false,
   data: {
-    color = 'gray',
+    color,
     hovered: isHovered = false,
     active: isActive = false,
     dimmed: isDimmed = false,

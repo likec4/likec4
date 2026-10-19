@@ -10,7 +10,6 @@ import {
 } from 'react-error-boundary'
 
 export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
-  const errorString = error instanceof Error ? error.message : 'Unknown error'
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   return (
@@ -46,40 +45,55 @@ export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
           return
         }
       }}
-      onClose={e => {
+      onClose={(e) => {
         e.stopPropagation()
         resetErrorBoundary()
       }}
     >
-      <HStack p={'xl'} gap={'lg'} alignItems={'flex-start'} flexWrap={'nowrap'}>
-        <ThemeIcon size={'md'} radius={'xl'} color="red">
-          <IconX style={{ width: 20, height: 20 }} />
-        </ThemeIcon>
-        <VStack flex={'1'}>
-          <Text fz={'md'}>
-            Oops, something went wrong
-          </Text>
-          <ScrollAreaAutosize maw={'100%'} mah={400} type="auto">
-            <Text fz={'md'} c={'red'} style={{ whiteSpace: 'pre-wrap', userSelect: 'all' }}>
-              {errorString}
-            </Text>
-          </ScrollAreaAutosize>
-          <HStack gap={'md'} mt="md">
-            <Button size="sm" variant="default" onClick={() => resetErrorBoundary()}>Reset</Button>
-            <Text fz={'sm'} c={'dimmed'}>
-              See console for more details and report the issue if it persists.
-            </Text>
-          </HStack>
-        </VStack>
-      </HStack>
+      <ErrorFallbackMessage error={error} resetErrorBoundary={resetErrorBoundary} />
     </dialog>
   )
 }
 
-export function ErrorBoundary(props: Pick<ErrorBoundaryProps, 'onReset' | 'onError' | 'children'>) {
+export function ErrorFallbackMessage({ error, resetErrorBoundary }: FallbackProps) {
+  const errorString = error instanceof Error ? error.message : 'Unknown error'
+  return (
+    <HStack p={'xl'} gap={'lg'} alignItems={'flex-start'} flexWrap={'nowrap'}>
+      <ThemeIcon size={'md'} radius={'xl'} color="red">
+        <IconX style={{ width: 20, height: 20 }} />
+      </ThemeIcon>
+      <VStack flex={'1'}>
+        <Text fz={'md'}>
+          Oops, something went wrong
+        </Text>
+        <ScrollAreaAutosize maw={'100%'} mah={400} type="auto">
+          <Text fz={'md'} c={'red'} style={{ whiteSpace: 'pre-wrap', userSelect: 'all' }}>
+            {errorString}
+          </Text>
+        </ScrollAreaAutosize>
+        <HStack gap={'md'} mt="md">
+          <Button size="sm" variant="default" onClick={() => resetErrorBoundary()}>Reset</Button>
+          <Text fz={'sm'} c={'dimmed'}>
+            See console for more details and report the issue if it persists.
+          </Text>
+        </HStack>
+      </VStack>
+    </HStack>
+  )
+}
+
+export function ErrorBoundary(
+  {
+    variant = 'dialog',
+    ...props
+  }: Pick<ErrorBoundaryProps, 'onReset' | 'onError' | 'children'> & {
+    /** @default 'dialog' */
+    variant?: 'dialog' | 'message'
+  },
+) {
   return (
     <ErrorBoundaryComponent
-      FallbackComponent={ErrorFallback}
+      FallbackComponent={variant === 'dialog' ? ErrorFallback : ErrorFallbackMessage}
       onError={(err, info) => {
         console.error(err, info)
       }}

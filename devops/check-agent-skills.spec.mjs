@@ -125,12 +125,12 @@ function expectFail(root, message) {
   assert.match(result.stderr, message)
 }
 
-describe('check-agent-skills', () => {
-  it('accepts canonical Claude skill symlink adapters', () => {
+void describe('check-agent-skills', () => {
+  void it('accepts canonical Claude skill symlink adapters', () => {
     expectPass(createFixture())
   })
 
-  it('rejects missing Claude skill adapters', () => {
+  void it('rejects missing Claude skill adapters', () => {
     expectFail(
       createFixture(root => {
         removeFixturePath(root, '.claude/skills/likec4-gh-pr-triage')
@@ -139,7 +139,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects non-symlink Claude skill adapters', () => {
+  void it('rejects non-symlink Claude skill adapters', () => {
     expectFail(
       createFixture(root => {
         removeFixturePath(root, '.claude/skills/likec4-issue-repro')
@@ -149,7 +149,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects Claude skill adapters pointing to the wrong target', () => {
+  void it('rejects Claude skill adapters pointing to the wrong target', () => {
     expectFail(
       createFixture(root => {
         removeFixturePath(root, '.claude/skills/likec4-project-config-workflow')
@@ -163,7 +163,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects repo-local skills without explicit Claude adapters', () => {
+  void it('rejects repo-local skills without explicit Claude adapters', () => {
     expectFail(
       createFixture(root => {
         writeFixtureFile(root, '.agents/skills/local-only/SKILL.md', validSkill('local-only'))
@@ -172,7 +172,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects skill files without frontmatter', () => {
+  void it('rejects skill files without frontmatter', () => {
     expectFail(
       createFixture(root => {
         writeFixtureFile(root, '.agents/skills/likec4-gh-pr-triage/SKILL.md', '# LikeC4 PR triage\n')
@@ -181,7 +181,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects skill names that drift from their directory', () => {
+  void it('rejects skill names that drift from their directory', () => {
     expectFail(
       createFixture(root => {
         writeFixtureFile(
@@ -194,7 +194,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects skills without descriptions', () => {
+  void it('rejects skills without descriptions', () => {
     expectFail(
       createFixture(root => {
         writeFixtureFile(
@@ -207,7 +207,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects unexpected skill metadata fields', () => {
+  void it('rejects unexpected skill metadata fields', () => {
     expectFail(
       createFixture(root => {
         writeFixtureFile(
@@ -220,7 +220,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects skills without body content', () => {
+  void it('rejects skills without body content', () => {
     expectFail(
       createFixture(root => {
         writeFixtureFile(
@@ -233,7 +233,7 @@ describe('check-agent-skills', () => {
     )
   })
 
-  it('rejects missing checked skill helper scripts', () => {
+  void it('rejects missing checked skill helper scripts', () => {
     expectFail(
       createFixture(root => {
         removeFixturePath(

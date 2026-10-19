@@ -200,8 +200,9 @@ describe('LikeC4ModelBuilder -- globals', () => {
     expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
   })
 
-  it('the first global style with duplicated name is applied', async ({ expect, t }) => {
-    const { diagnostics } = await t.validate(`
+  // Order of documents is not deterministic, so all duplicates are reported and excluded
+  it('global styles with duplicated name are not applied', async ({ expect, t }) => {
+    const { errors } = await t.validate(`
       specification {
         element component
         tag element_tag
@@ -228,10 +229,11 @@ describe('LikeC4ModelBuilder -- globals', () => {
         }
       }
     `)
-    expect(diagnostics.length).toBeGreaterThan(0)
+    expect(errors).toHaveLength(2)
     const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+    // default color, as duplicates are excluded
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
   })
 
   it('global style group is applied to a view', async ({ expect, t }) => {
@@ -486,7 +488,7 @@ describe('LikeC4ModelBuilder -- globals', () => {
   })
 
   it('global style group should not share a name with a global style', async ({ expect, t }) => {
-    const { diagnostics } = await t.validate(`
+    const { errors } = await t.validate(`
       specification {
         element component
       }
@@ -513,10 +515,11 @@ describe('LikeC4ModelBuilder -- globals', () => {
         }
       }
     `)
-    expect(diagnostics.length).toBeGreaterThan(0)
+    expect(errors).toHaveLength(2)
     const model = await t.buildModel()
     const indexView = model?.views['index' as ViewId]!
-    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('green')
+    // default color, as duplicates are excluded
+    expect(indexView.nodes.find(n => n.id === 'sys1')?.color).toBe('primary')
   })
 
   it('local styles can apply global styles', async ({ expect, t }) => {

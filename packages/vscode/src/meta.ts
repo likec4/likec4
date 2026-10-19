@@ -311,3 +311,4 @@ export interface NestedScopedConfigs {
   },
   "exclude": string[],
 }
+

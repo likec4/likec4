@@ -59,7 +59,7 @@ import {
 
 export { LikeC4DocumentValidator } from './DocumentValidator'
 
-const isValidatableAstNode = isAnyOf(
+export const isValidatableAstNode = isAnyOf(
   ast.isImportsFromPoject,
   ast.isImported,
   ast.isGlobals,
@@ -115,7 +115,7 @@ const isValidatableAstNode = isAnyOf(
   ast.isExpressions,
   ast.isColorLiteral,
 )
-type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
+export type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
 const findInvalidContainer = (node: LikeC4AstNode): ValidatableAstNode | undefined => {
   let nd = node as LikeC4AstNode | LikeC4AstNode['$container']
@@ -132,7 +132,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   const errors = doc.state >= DocumentState.Validated
     ? (doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? [])
     : []
-  const invalidNodes = new WeakSet()
+  const invalidNodes = new WeakSet<LikeC4AstNode>()
   for (const { node } of errors) {
     if (isNullish(node) || invalidNodes.has(node)) {
       continue
@@ -145,14 +145,15 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
       }
     }
   }
-  const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
   return {
-    isValid,
+    isValid: (n: ValidatableAstNode | undefined): n is ValidatableAstNode => !!n && !invalidNodes.has(n),
+    isInvalid: (n: ValidatableAstNode) => invalidNodes.has(n),
     invalidNodes,
   }
 }
 export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 export type IsValidFn = ChecksFromDiagnostics['isValid']
+export type IsInvalidFn = ChecksFromDiagnostics['isInvalid']
 
 export function registerValidationChecks(services: LikeC4Services) {
   logger.debug('registerValidationChecks')

@@ -16,7 +16,7 @@ import type {
   ViewId,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { HStack } from '@likec4/styles/jsx'
+import { HStack, styled } from '@likec4/styles/jsx'
 import {
   type TextProps,
   ActionIcon,
@@ -85,11 +85,15 @@ const SmallLabel = Text.withProps({
   lh: 1,
 })
 
-const PropertyLabel = Text.withProps({
-  component: 'div',
-  fz: 'xs',
-  c: 'dimmed',
-  className: styles.propertyLabel,
+const PropertyLabel = styled('div', {
+  base: {
+    fontSize: 'xs',
+    fontWeight: 'semibold',
+    color: 'text.dimmed',
+    justifySelf: 'end',
+    textAlign: 'right',
+    userSelect: 'none',
+  },
 })
 
 type ElementDetailsCardProps = {
@@ -402,12 +406,7 @@ export function ElementDetailsCard({
               value={activeTab}
               onChange={v => setActiveTab(v as any)}
               variant="none"
-              classNames={{
-                root: styles.tabsRoot,
-                list: styles.tabsList,
-                tab: styles.tabsTab,
-                panel: styles.tabsPanel,
-              }}>
+              classNames={styles.tabs()}>
               <TabsList>
                 {TABS.map(tab => (
                   <TabsTab key={tab} value={tab}>

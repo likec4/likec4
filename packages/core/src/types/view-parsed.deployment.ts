@@ -9,6 +9,7 @@ import type {
   BaseParsedViewProperties,
   ViewRuleAutoLayout,
 } from './view-common'
+import type { ElementViewRuleGroup } from './view-parsed.element'
 
 /**
  * Predicates scoped to deployment model
@@ -24,12 +25,18 @@ export type DeploymentViewPredicate<A extends AnyAux = Unknown> =
 
 export interface DeploymentViewRuleStyle<A extends AnyAux = Unknown> extends AnyViewRuleStyle<FqnExpr<A>> {}
 
+export interface DeploymentViewRuleGroup<A extends AnyAux = Unknown> extends Omit<ElementViewRuleGroup<A>, 'groupRules'>
+{
+  groupRules: Array<DeploymentViewPredicate<A> | DeploymentViewRuleGroup<A>>
+}
+
 export type DeploymentViewRule<A extends AnyAux = Unknown> = ExclusiveUnion<{
   Include: DeploymentViewIncludePredicate<A>
   Exclude: DeploymentViewExcludePredicate<A>
   Style: DeploymentViewRuleStyle<A>
   AutoLayout: ViewRuleAutoLayout
   IncludeAncestors: ParsedViewRuleAncestors
+  Group: DeploymentViewRuleGroup<A>
 }>
 
 export interface ParsedViewRuleAncestors {

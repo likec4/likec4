@@ -1,5 +1,4 @@
 import { defineTokens } from '@pandacss/dev'
-import { spacing } from './spacing.ts'
 
 export const sizes = defineTokens.sizes({
   '0': {

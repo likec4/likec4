@@ -5,18 +5,9 @@ import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { RESERVED_WORDS, tryOrLog } from './_shared'
 
-const LIKEC4_GENERATED_RE = /@likec4-generated/
-
 export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4View> => {
   const index = services.shared.workspace.IndexManager
   return tryOrLog((el, accept) => {
-    const commentNode = CstUtils.findCommentNode(el.$cstNode, ['BLOCK_COMMENT'])
-    if (commentNode && LIKEC4_GENERATED_RE.test(commentNode.text)) {
-      accept('warning', `ManualLayoutV1 is no longer supported; remove this block`, {
-        node: el,
-        range: commentNode.range,
-      })
-    }
     if (!el.name) {
       return
     }

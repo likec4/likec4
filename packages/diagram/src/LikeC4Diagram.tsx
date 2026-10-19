@@ -122,7 +122,7 @@ export function LikeC4Diagram<A extends Any = Any>({
 
   const hasLikeC4Model = !!optionalLikeC4Model
   const editor = useOptionalLikeC4Editor()
-  const hasEditor = !!editor
+  const hasEditor = !!editor && hasLikeC4Model
 
   const readonly = !hasEditor
 

@@ -81,18 +81,18 @@ function expectFail(root, message) {
   assert.match(result.stderr, message)
 }
 
-describe('check-agent-instructions', () => {
-  it('accepts the canonical root files', () => {
+void describe('check-agent-instructions', () => {
+  void it('accepts the canonical root files', () => {
     expectPass(createFixture())
   })
 
-  it('accepts CRLF in the Claude adapter', () => {
+  void it('accepts CRLF in the Claude adapter', () => {
     expectPass(createFixture({
       'CLAUDE.md': '@AGENTS.md\r\n',
     }))
   })
 
-  it('rejects nested AGENTS.md files', () => {
+  void it('rejects nested AGENTS.md files', () => {
     expectFail(
       createFixture({
         'packages/core/AGENTS.md': '# Nested instructions\n',
@@ -101,7 +101,7 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects case variants of canonical instruction files', () => {
+  void it('rejects case variants of canonical instruction files', () => {
     // Case-insensitive filesystems (macOS, Windows) cannot hold AGENTS.md and agents.md
     // side by side, so the variant is staged straight into the index the checker reads.
     const root = createFixture()
@@ -110,7 +110,7 @@ describe('check-agent-instructions', () => {
     expectFail(root, /Do not track AGENTS\.md case variants/)
   })
 
-  it('rejects singular AGENT.md files', () => {
+  void it('rejects singular AGENT.md files', () => {
     expectFail(
       createFixture({
         'AGENT.md': '# Singular instructions\n',
@@ -119,13 +119,13 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('accepts the localized sequence layouter Claude memory', () => {
+  void it('accepts the localized sequence layouter Claude memory', () => {
     expectPass(createFixture({
       'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md': sequenceLayouterClaude,
     }))
   })
 
-  it('rejects duplicated localized Claude memory content', () => {
+  void it('rejects duplicated localized Claude memory content', () => {
     expectFail(
       createFixture({
         'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md':
@@ -135,7 +135,7 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects missing AGENTS import in localized Claude memory', () => {
+  void it('rejects missing AGENTS import in localized Claude memory', () => {
     expectFail(
       createFixture({
         'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md':
@@ -145,7 +145,7 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects unexpected nested Claude adapters', () => {
+  void it('rejects unexpected nested Claude adapters', () => {
     expectFail(
       createFixture({
         'packages/core/CLAUDE.md': '@../../AGENTS.md\n',
@@ -154,7 +154,7 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects Copilot instruction files as broad duplicate sources', () => {
+  void it('rejects Copilot instruction files as broad duplicate sources', () => {
     expectFail(
       createFixture({
         '.github/copilot-instructions.md': '# Duplicate shared instructions\n',
@@ -163,7 +163,7 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects duplicated changeset policy in task wrappers', () => {
+  void it('rejects duplicated changeset policy in task wrappers', () => {
     const duplicatedPolicy = [
       '> AGENTS.md is the canonical source for shared LikeC4 repository instructions, including changeset policy. This file is a task-specific wrapper for generating changeset files.',
       '',
@@ -180,7 +180,7 @@ describe('check-agent-instructions', () => {
     )
   })
 
-  it('rejects duplicated changeset policy in repo-local skills', () => {
+  void it('rejects duplicated changeset policy in repo-local skills', () => {
     const duplicatedPolicy = [
       '> AGENTS.md is the canonical source for shared LikeC4 repository instructions, including changeset policy. This file is a task-specific wrapper for generating changeset files.',
       '',
