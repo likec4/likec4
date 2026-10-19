@@ -160,7 +160,7 @@ catalogs:
     react: 19.3.0
     react-dom: 19.3.0
     react-error-boundary: ^6.1.6
-    react-resizable-panels: ^4.14.3
+    react-resizable-panels: ^4.14.5
     use-sync-external-store: ^1.7.0
   tanstack:
     "@tanstack/pacer": ^0.17.3
