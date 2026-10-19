@@ -34,7 +34,7 @@ jobs:
           NODE_ENV: development
 
       - name: 🛠️ Setup node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24' # Required for OIDC publishing
           cache: 'pnpm'
