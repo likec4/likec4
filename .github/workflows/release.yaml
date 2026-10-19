@@ -93,7 +93,7 @@ jobs:
           echo "VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
 
       - name: Create release
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |

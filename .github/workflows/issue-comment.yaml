@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Check commenter has write access
         id: perm
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -51,7 +51,7 @@ jobs:
 
       - name: resolve pr refs
         id: refs
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: ${{ steps.perm.outputs.allowed == 'true' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +107,7 @@ jobs:
           packageManager: pnpm
 
       - name: add comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
         with:
@@ -173,7 +173,7 @@ jobs:
           packageManager: pnpm
 
       - name: add comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
         with:
