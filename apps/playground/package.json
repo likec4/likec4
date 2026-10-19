@@ -83,7 +83,7 @@
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
-    "@statelyai/inspect": "^0.4.0",
+    "@statelyai/inspect": "^0.7.2",
     "@tabler/icons-react": "catalog:react",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/router-cli": "catalog:tanstack",

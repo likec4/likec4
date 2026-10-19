@@ -943,8 +943,8 @@ importers:
         specifier: catalog:react
         version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@statelyai/inspect':
-        specifier: ^0.4.0
-        version: 0.4.0(ws@8.22.0)(xstate@5.33.2)
+        specifier: ^0.7.2
+        version: 0.7.2(xstate@5.33.2)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.49.0(react@19.3.1)
@@ -1460,8 +1460,8 @@ importers:
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
       '@statelyai/inspect':
-        specifier: ^0.4.0
-        version: 0.4.0(ws@8.22.0)(xstate@5.33.2)
+        specifier: ^0.7.2
+        version: 0.7.2(xstate@5.33.2)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.49.0(react@19.3.1)
@@ -6128,8 +6128,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@statelyai/inspect@0.4.0':
-    resolution: {integrity: sha512-VxQldRlKYcu6rzLY83RSXVwMYexkH6hNx85B89YWYyXYWtNGaWHFCwV7a/Kz8FFPeUz8EKVAnyMOg2kNpn07wQ==}
+  '@statelyai/inspect@0.7.2':
+    resolution: {integrity: sha512-axuXSEBsI8pQ89rP2DWq+kHLjABiXpe2qYDOo6+jVLJ+9NPOTjutMnmDd+XcJjn76d+RH6sfHa0XkFIYPUHDOw==}
     peerDependencies:
       xstate: ^5.5.1
 
@@ -10737,11 +10737,6 @@ packages:
   util@0.12.5:
     resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
 
-  uuid@9.0.1:
-    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
@@ -13842,17 +13837,18 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@statelyai/inspect@0.4.0(ws@8.22.0)(xstate@5.33.2)':
+  '@statelyai/inspect@0.7.2(xstate@5.33.2)':
     dependencies:
       fast-safe-stringify: 2.1.1
       isomorphic-ws: 5.0.0(ws@8.22.0)
       partysocket: 0.0.25
       safe-stable-stringify: 2.5.0
       superjson: 1.13.3
-      uuid: 9.0.1
+      ws: 8.22.0
       xstate: 5.33.2
     transitivePeerDependencies:
-      - ws
+      - bufferutil
+      - utf-8-validate
 
   '@tabler/icons-react@3.49.0(react@19.3.1)':
     dependencies:
@@ -19088,8 +19084,6 @@ snapshots:
       is-generator-function: 1.1.0
       is-typed-array: 1.1.15
       which-typed-array: 1.1.18
-
-  uuid@9.0.1: {}
 
   vary@1.1.2: {}
 

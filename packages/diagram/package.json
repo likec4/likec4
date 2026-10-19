@@ -93,7 +93,7 @@
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@pandacss/dev": "catalog:css",
-    "@statelyai/inspect": "^0.4.0",
+    "@statelyai/inspect": "^0.7.2",
     "@tabler/icons-react": "catalog:react",
     "@tsdown/css": "catalog:tsdown",
     "@types/bezier-js": "^4.1.3",
