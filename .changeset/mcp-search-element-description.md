@@ -2,4 +2,4 @@
 '@likec4/mcp': patch
 ---
 
-`search-element` returns each result's `description`. Plain-text searches are now fuzzy and ranked by relevance: they match id, title, description and link path segments (except the first), tolerate typos, treat spaces, dashes and dots as word breaks, and require every word to match. `kind:`, `shape:`, `meta:` and `#tag` searches are unchanged.
+`search-element` returns each result's `description` and is now fuzzy and ranked by relevance. Plain words match name, title, id, description and link path segments (except the first) and tolerate typos. Words and `kind:`, `shape:`, `meta:` and `#tag` conditions can be combined and must all match, for example `kind:container #public checkout`.

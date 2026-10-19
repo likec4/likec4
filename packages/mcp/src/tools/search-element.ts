@@ -7,7 +7,7 @@
 
 import type { DeploymentNodeModel, ElementModel } from '@likec4/core/model'
 import type { AnyAux } from '@likec4/core/types'
-import Fuse from 'fuse.js'
+import Fuse, { type Expression } from 'fuse.js'
 import * as z from 'zod/v4'
 import { likec4Tool, logger } from '../utils'
 import { includedInViews, includedInViewsSchema } from './_common'
@@ -18,6 +18,28 @@ const linkPathSegments = (url: string) => {
   const path = URL.canParse(url) ? new URL(url).pathname : url
   return path.split('/').filter(Boolean).slice(1).map(s => s.replace(/\.git$/, ''))
 }
+
+const TEXT_KEYS = ['name', 'title', 'id', 'description', 'links'] as const
+
+// Prefixed words become exact Fuse conditions, the rest fuzzy-match any text key.
+// Words are AND-ed, so `kind:legacy #tag1 #tag2` and `kind:system checkout` both work.
+const toQuery = (search: string): Expression => ({
+  $and: search.split(/\s+/).filter(Boolean).flatMap((word): Expression[] => {
+    switch (true) {
+      case word.startsWith('kind:'):
+        return [{ kind: `=${word.slice(5)}` }]
+      case word.startsWith('shape:'):
+        return [{ shape: `=${word.slice(6)}` }]
+      case word.startsWith('meta:'):
+        return [{ meta: `=${word.slice(5)}` }]
+      case word.startsWith('#'):
+        return [{ tags: `'${word.slice(1)}` }]
+      default:
+        // Same split as the Fuse tokenizer, so "store-front.web" is three words
+        return (word.match(/[\p{L}\p{M}\p{N}_]+/gu) ?? []).map(w => ({ $or: TEXT_KEYS.map(key => ({ [key]: w })) }))
+    }
+  }),
+})
 
 type Candidate =
   | { type: 'element'; project: string; el: ElementModel<AnyAux> }
@@ -67,10 +89,10 @@ export const searchElement = likec4Tool({
     `Search elements and deployment nodes across all projects by id, title, description, link, kind, shape, tag or metadata key. Returns the total number of matches and the first 20, ranked by relevance for plain-text searches. Pass the ids found to read-element or other tools.`,
   inputSchema: {
     search: z.string().min(2, 'Search must be at least 2 characters long').describe(
-      'Case-insensitive. "kind:<value>" or "shape:<value>" matches a kind or shape exactly, '
-        + '"meta:<key>" elements with that metadata key, "#<value>" tags containing the value; '
-        + 'anything else fuzzy-matches id (FQN), title, description and link path segments except the first, '
-        + 'with every word required to match.',
+      'Case-insensitive, space-separated words that must all match. "kind:<value>" or "shape:<value>" '
+        + 'matches a kind or shape exactly, "meta:<key>" elements with that metadata key, "#<value>" tags '
+        + 'containing the value; any other word fuzzy-matches name, title, id (FQN), description or a link '
+        + 'path segment except the first. Example: "kind:container #public checkout".',
     ),
   },
   outputSchema: {
@@ -95,50 +117,25 @@ export const searchElement = likec4Tool({
     }
   }
 
-  const search = args.search.toLowerCase()
-  let matched: Candidate[]
-  switch (true) {
-    case search.startsWith('kind:'): {
-      const kind = search.slice(5)
-      logger.debug('search by kind: {kind}', { kind })
-      matched = candidates.filter(c => c.el.kind.toLowerCase() === kind)
-      break
-    }
-    case search.startsWith('shape:'): {
-      const shape = search.slice(6)
-      logger.debug('search by shape: {shape}', { shape })
-      matched = candidates.filter(c => c.el.shape.toLowerCase() === shape)
-      break
-    }
-    case search.startsWith('meta:'): {
-      const key = search.slice(5)
-      logger.debug('search by metadata: {key}', { key })
-      matched = candidates.filter(c => !!c.el.getMetadata(key))
-      break
-    }
-    case search.startsWith('#'): {
-      const tag = search.slice(1)
-      logger.debug('search by tag: {tag}', { tag })
-      matched = candidates.filter(c => c.el.tags.some(t => t.toLowerCase().includes(tag)))
-      break
-    }
-    default: {
-      logger.debug('fuzzy search: {search}', { search })
-      const fuse = new Fuse(candidates, {
-        useTokenSearch: true,
-        // Every word must match, so adding a word narrows the results
-        tokenMatch: 'all',
-        threshold: 0.2,
-        keys: [
-          { name: 'id', weight: 3, getFn: c => c.el.id },
-          { name: 'title', weight: 3, getFn: c => c.el.title },
-          { name: 'description', weight: 1, getFn: c => c.el.description.text ?? '' },
-          { name: 'links', weight: 1, getFn: c => c.el.links.flatMap(l => linkPathSegments(l.url)) },
-        ],
-      })
-      matched = fuse.search(args.search).map(r => r.item)
-    }
-  }
+  const fuse = new Fuse(candidates, {
+    useExtendedSearch: true,
+    ignoreLocation: true,
+    threshold: 0.2,
+    keys: [
+      { name: 'name', weight: 8, getFn: c => c.el.name },
+      { name: 'title', weight: 4, getFn: c => c.el.title },
+      { name: 'id', weight: 3, getFn: c => c.el.id },
+      { name: 'description', weight: 1, getFn: c => c.el.description.text ?? '' },
+      { name: 'links', weight: 1, getFn: c => c.el.links.flatMap(l => linkPathSegments(l.url)) },
+      { name: 'kind', getFn: c => c.el.kind },
+      { name: 'shape', getFn: c => c.el.shape },
+      { name: 'tags', getFn: c => [...c.el.tags] },
+      { name: 'meta', getFn: c => Object.keys(c.el.getMetadata()) },
+    ],
+  })
+  const query = toQuery(args.search)
+  logger.debug('search: {query}', { query })
+  const matched = fuse.search(query).map(r => r.item)
 
   return {
     total: matched.length,

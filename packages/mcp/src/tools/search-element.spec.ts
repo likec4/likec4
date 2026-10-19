@@ -6,10 +6,11 @@ const DSL = `
     element system
     deploymentNode node
     tag public
+    tag internal
   }
   model {
     frontend = system 'Frontend' {
-      #public
+      #public #internal
       description 'Renders the checkout page'
     }
     backend = system 'Backend'
@@ -19,6 +20,10 @@ const DSL = `
     }
     admin = system 'Admin-UI' {
       link https://github.com/acme/Acme-Store-Admin.git
+    }
+    shop = system 'Shop' {
+      #internal
+      cart = system 'Cart'
     }
     worker = system 'Queue Consumer' {
       link https://github.com/acme/platform/tree/main/worker
@@ -101,5 +106,27 @@ describe('search-element tool', () => {
     expect((await search(pair, 'acme-store-admin')).found.map(e => e.id)).toEqual(['admin'])
     expect((await search(pair, 'platform')).found.map(e => e.id)).toEqual(['worker'])
     expect((await search(pair, 'github')).total).toBe(0)
+  })
+
+  it('combines conditions, all must match', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    expect((await search(pair, 'kind:system #public')).found.map(e => e.id)).toEqual(['frontend'])
+    expect((await search(pair, '#public #internal')).found.map(e => e.id)).toEqual(['frontend'])
+    expect((await search(pair, 'kind:node #internal')).total).toBe(0)
+  })
+
+  it('fuzzy-matches the remaining words within the filtered elements', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    const { found } = await search(pair, 'kind:system checkout')
+    expect(found.map(e => e.id)).toEqual(['checkout', 'frontend'])
+  })
+
+  it('ranks an element above children that match only by parent id', async () => {
+    await using pair = await createMCPTestPair(DSL)
+
+    const { found } = await search(pair, 'shop')
+    expect(found.map(e => e.id)).toEqual(['shop', 'shop.cart'])
   })
 })

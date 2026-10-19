@@ -53,7 +53,7 @@ OPTIONS
 
 - `list-projects`: List all LikeC4 projects in the workspace.
 - `read-project-summary`: Project specification, configuration, all elements, deployment nodes and views.
-- `search-element`: Fuzzy search of elements and deployment nodes across all projects by id/title/description/link, ranked by relevance; exact filters by kind/shape/tags/metadata.
+- `search-element`: Fuzzy search of elements and deployment nodes across all projects by id/title/description/link, ranked by relevance; combinable exact filters by kind/shape/tags/metadata.
 - `read-element`: Full element details including relationships, includedInViews, deployedInstances, metadata and sourceLocation.
 - `read-deployment`: Details of a deployment node or deployed instance.
 - `read-view`: Full view details (nodes/edges) and sourceLocation.
