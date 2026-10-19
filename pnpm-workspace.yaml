@@ -213,7 +213,7 @@ catalogs:
     tinyrainbow: ^3.2.0
     ufo: 1.6.4
     unctx: ^2.5.0
-    unstorage: ^1.17.5
+    unstorage: ^1.17.6
     fast-json-patch: ^3.1.1
   vite:
     "@rolldown/plugin-babel": ^0.2.4
