@@ -444,8 +444,8 @@ catalogs:
       specifier: 2.0.1
       version: 2.0.1
     '@react-hookz/web':
-      specifier: ^25.3.0
-      version: 25.3.0
+      specifier: ^26.1.0
+      version: 26.1.0
     '@tabler/icons-react':
       specifier: 3.49.0
       version: 3.49.0
@@ -941,7 +941,7 @@ importers:
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@statelyai/inspect':
         specifier: ^0.7.2
         version: 0.7.2(xstate@5.33.2)
@@ -1391,7 +1391,7 @@ importers:
         version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.2)
@@ -2326,7 +2326,7 @@ importers:
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rolldown/plugin-babel':
         specifier: catalog:vite
         version: 0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -2783,7 +2783,7 @@ importers:
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
         version: 0.23.1(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.29))(postcss@8.5.29)(tsdown@0.23.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -3222,7 +3222,7 @@ importers:
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.49.0(react@19.3.1)
@@ -5737,8 +5737,8 @@ packages:
   '@radix-ui/colors@3.0.0':
     resolution: {integrity: sha512-FUOsGBkHrYJwCSEtWRCIfQbZG7q1e6DgxCIOe1SUQzDe/7rXXeA47s8yCn6fuTNQAj1Zq4oTFi9Yjp3wzElcxg==}
 
-  '@react-hookz/web@25.3.0':
-    resolution: {integrity: sha512-aZXe1p7yn3AUzvP13P8mhR25hpYLJU9QhOMeUcVUx4krd0cdTI/g/ogJmVGvu93u+ST13SISC8/KaFPiodhVUw==}
+  '@react-hookz/web@26.1.0':
+    resolution: {integrity: sha512-GKErtGGoaPNWc8rp4SE/rVgJT1kJ/3s6n3q+Vs6DM4TRVsLqbsIGU9u3jTwcV3tCYgxAwz9DqJZxCaal89Lxqg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       js-cookie: ^3.0.5
@@ -13488,7 +13488,7 @@ snapshots:
 
   '@radix-ui/colors@3.0.0': {}
 
-  '@react-hookz/web@25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@react-hookz/web@26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@ver0/deep-equal': 2.0.1
       react: 19.3.1
