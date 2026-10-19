@@ -88,7 +88,7 @@
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/router-cli": "catalog:tanstack",
     "@tanstack/router-vite-plugin": "catalog:tanstack",
-    "@typefox/monaco-editor-react": "8.0.2",
+    "@typefox/monaco-editor-react": "8.0.3",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
