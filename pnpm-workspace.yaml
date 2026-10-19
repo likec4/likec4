@@ -172,7 +172,7 @@ catalogs:
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
     "@rolldown/plugin-node-polyfills": ^1.0.3
-    tsdown: ^0.23.0
+    tsdown: ^0.23.1
     "@tsdown/css": ^0.23.1
     rolldown: ^1.2.13
     oxc-transform-react: ^0.153.0
