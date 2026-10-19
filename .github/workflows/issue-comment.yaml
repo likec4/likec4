@@ -83,7 +83,7 @@ jobs:
           env: playground-preview
           ref: ${{ env.PR_HEAD_SHA }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
@@ -148,7 +148,7 @@ jobs:
           env: docs-preview
           ref: ${{ env.PR_HEAD_SHA }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0

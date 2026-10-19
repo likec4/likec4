@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: export diagrams
         uses: likec4/actions@v1
