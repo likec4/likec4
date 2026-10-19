@@ -123,7 +123,7 @@ catalogs:
     picomatch: ^4.0.7
     std-env: ^4.3.0
     type-fest: ^4.41.0
-    zod: ^4.6.5
+    zod: ^4.6.7
   hono:
     "@hono/mcp": ^0.3.2
     "@hono/node-server": ^2.1.5
