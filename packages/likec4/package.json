@@ -217,8 +217,8 @@
     "@tanstack/ai-ollama": "catalog:ai",
     "@tanstack/ai-openai": "catalog:ai",
     "@tanstack/ai-openrouter": "catalog:ai",
-    "react": "^19.3.x",
-    "react-dom": "^19.3.x"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "peerDependenciesMeta": {
     "@tanstack/ai": {

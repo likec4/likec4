@@ -666,8 +666,8 @@ catalogs:
       version: 0.0.83
 
 overrides:
-  react: 19.3.0
-  react-dom: 19.3.0
+  react: 19.3.1
+  react-dom: 19.3.1
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
   vscode-jsonrpc: 9.0.3
@@ -752,7 +752,7 @@ importers:
         version: 0.9.10(prettier@3.5.2)(typescript@6.0.3)
       '@astrojs/react':
         specifier: catalog:astro
-        version: 6.0.6(@types/node@24.12.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.1.0)(tsx@4.23.15)(yaml@2.9.1)
+        version: 6.0.6(@types/node@24.12.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.1.0)(tsx@4.23.15)(yaml@2.9.1)
       '@astrojs/starlight':
         specifier: catalog:astro
         version: 0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
@@ -814,11 +814,11 @@ importers:
         specifier: 'catalog:'
         version: 13.2.1
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       sharp:
         specifier: catalog:utils
         version: 0.35.5(@types/node@24.12.4)
@@ -923,40 +923,40 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 9.7.1(react@19.3.0)
+        version: 9.7.1(react@19.3.1)
       '@mantine/modals':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mantine/hooks@9.7.1(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.1(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/notifications':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mantine/hooks@9.7.1(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.1(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@statelyai/inspect':
         specifier: ^0.4.0
         version: 0.4.0(ws@8.22.0)(xstate@5.33.2)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.49.0(react@19.3.0)
+        version: 3.49.0(react@19.3.1)
       '@tanstack/react-router':
         specifier: catalog:tanstack
-        version: 1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/router-cli':
         specifier: catalog:tanstack
-        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       '@tanstack/router-vite-plugin':
         specifier: catalog:tanstack
-        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@typefox/monaco-editor-react':
         specifier: 8.0.2
         version: 8.0.2
@@ -974,10 +974,10 @@ importers:
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.153.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.83
@@ -1010,7 +1010,7 @@ importers:
         version: 11.0.2
       motion:
         specifier: catalog:react
-        version: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanoid:
         specifier: catalog:utils
         version: 5.1.16
@@ -1021,17 +1021,17 @@ importers:
         specifier: catalog:css
         version: 8.5.29
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
       react-resizable-panels:
         specifier: catalog:react
-        version: 4.14.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 4.14.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -1379,31 +1379,31 @@ importers:
         version: 0.4.4
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 9.7.1(react@19.3.0)
+        version: 9.7.1(react@19.3.1)
       '@nanostores/media-query':
         specifier: catalog:react
         version: 0.1.2(nanostores@1.5.5)
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.2)
       '@xstate/store':
         specifier: catalog:xstate
         version: 4.3.0(xstate@5.33.2)
       '@xstate/store-react':
         specifier: catalog:xstate
-        version: 2.1.0(react@19.3.0)(xstate@5.33.2)
+        version: 2.1.0(react@19.3.1)(xstate@5.33.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.83
@@ -1427,19 +1427,19 @@ importers:
         version: 11.1.21
       motion:
         specifier: catalog:react
-        version: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -1464,7 +1464,7 @@ importers:
         version: 0.4.0(ws@8.22.0)(xstate@5.33.2)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.49.0(react@19.3.0)
+        version: 3.49.0(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
         version: 0.23.1(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.29))(postcss@8.5.29)(tsdown@0.23.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -1602,11 +1602,11 @@ importers:
         specifier: catalog:externals
         version: 4.0.7
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -2103,7 +2103,7 @@ importers:
         version: link:../vite-plugin
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
@@ -2198,17 +2198,17 @@ importers:
         specifier: ^9.3.1
         version: 9.3.1
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
       react-resizable-panels:
         specifier: catalog:react
-        version: 4.14.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 4.14.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -2273,11 +2273,11 @@ importers:
         specifier: catalog:utils
         version: 11.1.21
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -2314,25 +2314,25 @@ importers:
         version: link:../vite-plugin
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 9.7.1(react@19.3.0)
+        version: 9.7.1(react@19.3.1)
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@rolldown/plugin-babel':
         specifier: catalog:vite
         version: 0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.49.0(react@19.3.0)
+        version: 3.49.0(react@19.3.1)
       '@tanstack/ai':
         specifier: catalog:ai
         version: 0.69.0(zod@4.6.5)
@@ -2341,19 +2341,19 @@ importers:
         version: 0.39.3(zod@4.6.5)
       '@tanstack/ai-react':
         specifier: catalog:ai
-        version: 0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)
+        version: 0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
       '@tanstack/ai-react-ui':
         specifier: catalog:ai
-        version: 0.9.7(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)
+        version: 0.9.7(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
       '@tanstack/react-router':
         specifier: catalog:tanstack
-        version: 1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/router-cli':
         specifier: catalog:tanstack
-        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       '@tanstack/router-vite-plugin':
         specifier: catalog:tanstack
-        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+        version: 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tsdown/css':
         specifier: catalog:tsdown
         version: 0.23.1(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.29))(postcss@8.5.29)(tsdown@0.23.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -2374,13 +2374,13 @@ importers:
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.153.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.2)
       '@xstate/store':
         specifier: catalog:xstate
         version: 4.3.0(xstate@5.33.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.83
@@ -2413,7 +2413,7 @@ importers:
         version: 1.14.3
       motion:
         specifier: catalog:react
-        version: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -2431,10 +2431,10 @@ importers:
         version: 8.5.29
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
       react-resizable-panels:
         specifier: catalog:react
-        version: 4.14.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 4.14.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -2473,7 +2473,7 @@ importers:
         version: 1.6.4
       use-sync-external-store:
         specifier: catalog:react
-        version: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
+        version: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
       vite:
         specifier: catalog:vite
         version: 8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -2589,7 +2589,7 @@ importers:
         version: 1.29.2
       '@modelcontextprotocol/ext-apps':
         specifier: catalog:mcp
-        version: 1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)
+        version: 1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
         version: 1.32.1(supports-color@10.1.0)(zod@4.6.5)
@@ -2668,7 +2668,7 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2691,11 +2691,11 @@ importers:
         specifier: catalog:langium
         version: 4.4.0
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -2730,11 +2730,11 @@ importers:
         specifier: catalog:utils
         version: 11.1.21
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -2765,10 +2765,10 @@ importers:
         version: 0.4.4
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 9.7.1(react@19.3.0)
+        version: 9.7.1(react@19.3.1)
       '@microsoft/api-extractor':
         specifier: ^7.59.4
         version: 7.59.4(@types/node@24.12.4)
@@ -2777,13 +2777,13 @@ importers:
         version: 0.1.2(nanostores@1.5.5)
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
         version: 0.23.1(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.29))(postcss@8.5.29)(tsdown@0.23.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -2801,16 +2801,16 @@ importers:
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.153.0)(vite@8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@xstate/react':
         specifier: catalog:xstate
-        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.2)
       '@xstate/store':
         specifier: catalog:xstate
         version: 4.3.0(xstate@5.33.2)
       '@xstate/store-react':
         specifier: catalog:xstate
-        version: 2.1.0(react@19.3.0)(xstate@5.33.2)
+        version: 2.1.0(react@19.3.1)(xstate@5.33.2)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.83
@@ -2834,7 +2834,7 @@ importers:
         version: 6.1.1
       motion:
         specifier: catalog:react
-        version: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -2852,7 +2852,7 @@ importers:
         version: 17.0.0(postcss@8.5.29)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -2873,7 +2873,7 @@ importers:
         version: 6.0.3
       use-sync-external-store:
         specifier: catalog:react
-        version: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
+        version: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
       vite:
         specifier: catalog:vite
         version: 8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -2943,8 +2943,8 @@ importers:
         specifier: catalog:utils
         version: 2.0.3
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -2984,7 +2984,7 @@ importers:
         version: link:../tsconfig
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@tanstack/ai':
         specifier: catalog:ai
         version: 0.69.0(zod@4.6.5)
@@ -3210,25 +3210,25 @@ importers:
         version: link:../tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks':
         specifier: catalog:mantine
-        version: 9.7.1(react@19.3.0)
+        version: 9.7.1(react@19.3.1)
       '@nanostores/react':
         specifier: catalog:react
-        version: 2.0.1(nanostores@1.5.5)(react@19.3.0)
+        version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
       '@react-hookz/web':
         specifier: catalog:react
-        version: 25.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tabler/icons-react':
         specifier: catalog:react
-        version: 3.49.0(react@19.3.0)
+        version: 3.49.0(react@19.3.1)
       '@tanstack/react-query':
         specifier: catalog:tanstack
-        version: 5.85.0(react@19.3.0)
+        version: 5.85.0(react@19.3.1)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -3252,7 +3252,7 @@ importers:
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.153.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
         version: 0.0.83
@@ -3272,14 +3272,14 @@ importers:
         specifier: catalog:css
         version: 17.0.0(postcss@8.5.29)
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       react-error-boundary:
         specifier: catalog:react
-        version: 6.1.6(@types/react@19.3.0)(react@19.3.0)
+        version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -3319,10 +3319,10 @@ importers:
         version: link:../../packages/tsconfig
       '@mantine/core':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/vanilla-extract':
         specifier: catalog:mantine
-        version: 9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+        version: 9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.1(typescript@6.0.3)
@@ -3388,8 +3388,8 @@ importers:
         specifier: catalog:css
         version: 8.5.29
       react:
-        specifier: 19.3.0
-        version: 19.3.0
+        specifier: 19.3.1
+        version: 19.3.1
       remeda:
         specifier: catalog:utils
         version: 2.51.0
@@ -3553,8 +3553,8 @@ packages:
     peerDependencies:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@astrojs/sitemap@3.7.3':
     resolution: {integrity: sha512-f8euLVsyeAmAkSm/1M2Kb8sL8byQmfgbvBNaHFItCheTj/IpiJYSEWVcqDHZ/yEHxiS7+w87mQkzwZaPHmk5GA==}
@@ -4605,14 +4605,14 @@ packages:
   '@floating-ui/react-dom@2.1.9':
     resolution: {integrity: sha512-JDjEFGCpImxDCA7JJKviA0M9+RtmJdj0m/NVU5IMgBK+AmZouAQQ7/+2GLH0GXXY0YMw9oXPB8hKdbPYg5QLYg==}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@floating-ui/react@0.27.20':
     resolution: {integrity: sha512-CMqMy7OaXl9W0eq1Uy7L7i2Y/anPvHmFmESd2CEw0t5YvZhcVCeo4MBevAmswRllX7Y2dEidA4ozGPunLSTQpw==}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
@@ -5136,34 +5136,34 @@ packages:
     resolution: {integrity: sha512-SU1xklOfdEDzpPhw35ti9rF4QRE9HUongCe37C+xCO2Ea8MLJkAzreCrMxb8qcCij+gnF7SQbtTCBa1r+pKxYA==}
     peerDependencies:
       '@mantine/hooks': 9.7.1
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@mantine/hooks@9.7.1':
     resolution: {integrity: sha512-C1xD4A3bfB87nUsLHr42WqOabnK4G+fCyEf8FN14EEiZAcKjdcWJbK63qxhIXFKuHCc3acLbpm2ts9UqmLASTw==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   '@mantine/modals@9.7.1':
     resolution: {integrity: sha512-pJbnRaqBmOUaiMk8ByJ/SZ9nbLwAn7JuaYYmwyToi+uQWut2gdxo1MZRE594Foaiw1lkHqzBoGBzTJlo/iut3g==}
     peerDependencies:
       '@mantine/core': 9.7.1
       '@mantine/hooks': 9.7.1
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@mantine/notifications@9.7.1':
     resolution: {integrity: sha512-gmN+rTrjwYFJqaIqDQtQfoTJ/OR0wSxqxIihOHD5/S/sYUycVi9wDqK4tub5y8x0HeQH4kNkehPMN4l1Uk0A6A==}
     peerDependencies:
       '@mantine/core': 9.7.1
       '@mantine/hooks': 9.7.1
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@mantine/store@9.7.1':
     resolution: {integrity: sha512-CYCQHWt7zFrUe2kVQmFAWnQaZbiDUoN2VeMJBI/vf1XybGj+itTEB6cnvoX4C8yOrln3sXe4BIoIf46pUhnEhA==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   '@mantine/vanilla-extract@9.7.1':
     resolution: {integrity: sha512-9MX7htxw6JTx7hJUPAIdITQh7Mse4gKfspN1EdEsl93ulu7cdi4BC9x4aotXIlv3ShC/uc5MzOlWAEz084qaIQ==}
@@ -5234,8 +5234,8 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.29.0
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
       zod: ^3.25.0 || ^4.0.0
     peerDependenciesMeta:
       react:
@@ -5264,7 +5264,7 @@ packages:
     engines: {node: ^22.0.0 || ^24.0.0 || >=26.0.0}
     peerDependencies:
       nanostores: ^1.2.0
-      react: 19.3.0
+      react: 19.3.1
 
   '@napi-rs/wasm-runtime@1.2.4':
     resolution: {integrity: sha512-AJxoUD2/15ESHbvpcyjU274nsAPLuOtPHCk0vKJM5pj//Fg/B1FXNWjPnXTT9PymCYYiHo4zPj0ZomXBKhoy7g==}
@@ -5746,8 +5746,8 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       js-cookie: ^3.0.5
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
     peerDependenciesMeta:
       js-cookie:
         optional: true
@@ -6129,7 +6129,7 @@ packages:
   '@tabler/icons-react@3.49.0':
     resolution: {integrity: sha512-Um59pm5RVNUaQjFUtG0r4oYJbZuBS3tGugAA2tgBg0WufMk34Eio3nsO30RUkLuL2giYPQUNdY9HvqltLLYyNA==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   '@tabler/icons@3.49.0':
     resolution: {integrity: sha512-l+GnSkFETx0U26icxv1VUFnxxiTqXfCcVRiRAnyMwibupM2S2L/hSaZ9gmSgz01rkrsH/93NvLsxykqdanc6lw==}
@@ -6273,8 +6273,8 @@ packages:
       '@mcp-ui/client': ^7
       '@tanstack/ai': ^0.69.0
       '@types/react': 19.3.0
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
     peerDependenciesMeta:
       '@mcp-ui/client':
         optional: true
@@ -6306,7 +6306,7 @@ packages:
     resolution: {integrity: sha512-ZSQP2ulBvlPzdpZeRheBJnaELo7e4ET/D/XrfgweHyqhhLMN5vUJJAUl7ufSRd7GlfO/vwdzjKPh0E0JwqJkDA==}
     peerDependencies:
       octane: '>=0.1.12'
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       octane:
         optional: true
@@ -6324,20 +6324,20 @@ packages:
   '@tanstack/react-query@5.85.0':
     resolution: {integrity: sha512-t1HMfToVMGfwEJRya6GG7gbK0luZJd+9IySFNePL1BforU1F3LqQ3tBC2Rpvr88bOrlU6PXyMLgJD0Yzn4ztUw==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   '@tanstack/react-router@1.114.27':
     resolution: {integrity: sha512-xfM+FMXpebZQ5//NQEgj5y5SKQqTQEr2/LvePU9IiksxUBCgfjbuOXW5vgDHJ3xXJm3pivYqRx29cHqhueClow==}
     engines: {node: '>=12'}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@tanstack/react-store@0.7.0':
     resolution: {integrity: sha512-S/Rq17HaGOk+tQHV/yrePMnG1xbsKZIl/VsNWnNXt4XW+tTY8dTlvpJH2ZQ3GRALsusG5K6Q3unAGJ2pd9W/Ng==}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   '@tanstack/router-cli@1.114.17':
     resolution: {integrity: sha512-9cUxEoeDi6bZaweLFVzPac/3KRobar3P2Gi1SaDWDcr2YiAuv384CoWQkWUoCUwWmNml7gn46Gtln8iehpQKkQ==}
@@ -6834,7 +6834,7 @@ packages:
   '@xstate/react@6.1.0':
     resolution: {integrity: sha512-ep9F0jGTI63B/jE8GHdMpUqtuz7yRebNaKv8EMUaiSi29NOglywc2X2YSOV/ygbIK+LtmgZ0q9anoEA2iBSEOw==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
       xstate: ^5.28.0
     peerDependenciesMeta:
       xstate:
@@ -6843,7 +6843,7 @@ packages:
   '@xstate/store-react@2.1.0':
     resolution: {integrity: sha512-pKuPpgSvWF7BWJ6U2/sJC5/CpmcDQ9W8sQgZr/kgZ6zpjmTCoqvfStN/Q99wWnAcx2aDUZMf08aCMyZI7GmQHQ==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   '@xstate/store@4.3.0':
     resolution: {integrity: sha512-Zoe4h8aqsSZLV8KRmwdpfYbfkmHrfZZunKLAB09xz5LwfPQRKyZhDBnQiTaXV3nKe0defaDg+L2N0XHcsa60AQ==}
@@ -6858,8 +6858,8 @@ packages:
     peerDependencies:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -8041,8 +8041,8 @@ packages:
     resolution: {integrity: sha512-1eaL3RvR/kAlbG7UYcpMptEyzPoENO0c6w7ZnB3/hh2vSAz/6uGAFn6fdoqTBguNstf3MsFhJHsD/0DHiclG+g==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
     peerDependenciesMeta:
       '@emotion/is-prop-valid':
         optional: true
@@ -9160,8 +9160,8 @@ packages:
     resolution: {integrity: sha512-BQgQbSa9Hn3/mtbib0MK53y6JSANa+YKUKlaYnWzAVDH424RYQ5LVpV3pNiWH00BA2z4ojsSdMzqT7g2FQwjuQ==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
     peerDependenciesMeta:
       '@emotion/is-prop-valid':
         optional: true
@@ -9737,16 +9737,16 @@ packages:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
 
-  react-dom@19.3.0:
-    resolution: {integrity: sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==}
+  react-dom@19.3.1:
+    resolution: {integrity: sha512-Y0bARz53lhEC1NMCASs0/j+faB/zqt3R8hpvg1e8+61ZVJ4UL0UdC4cBbXfZMcIuhrfgeILTLe+ZeBCavQPtKQ==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   react-error-boundary@6.1.6:
     resolution: {integrity: sha512-CDXPnXDGyFIbkwaaJ6u+xgsRmJhSi6YdgUDW1vnyKHfXp1a9pfAlM+ZET2CDu80/A+8iRcmXN0NSY9BCCoWP5A==}
     peerDependencies:
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -9757,8 +9757,8 @@ packages:
   react-number-format@5.4.5:
     resolution: {integrity: sha512-y8O2yHHj3w0aE9XO8d2BCcUOOdQTRSVq+WIuMlLVucAm5XNjJAy+BoOJiuQMldVYVOKTMyvVNfnbl2Oqp+YxGw==}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   react-refresh@0.18.0:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
@@ -9769,7 +9769,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -9779,7 +9779,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -9787,15 +9787,15 @@ packages:
   react-resizable-panels@4.14.3:
     resolution: {integrity: sha512-t/mJDWKBvc7sHcm/HJxJJKniqyQH6vK7oWyv8QODawYCcDwn0waBlGw0yFEwoMe6xPNKpbOFh2wN0yyina30ow==}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -9803,11 +9803,11 @@ packages:
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
     peerDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0
+      react: 19.3.1
+      react-dom: 19.3.1
 
-  react@19.3.0:
-    resolution: {integrity: sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==}
+  react@19.3.1:
+    resolution: {integrity: sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==}
     engines: {node: '>=0.10.0'}
 
   reactive-vscode@1.0.2:
@@ -10715,7 +10715,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -10724,7 +10724,7 @@ packages:
     resolution: {integrity: sha512-tpZZ+EX0gaghDAiFR37hj5MgY6ZN55kLiPkJsKxBMZ6GZdOSPJXiOzPM984oPYZ5AnehYx5WQp1+ME8I/P/pRA==}
     peerDependencies:
       '@types/react': '*'
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -10734,7 +10734,7 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -10742,7 +10742,7 @@ packages:
   use-sync-external-store@1.7.0:
     resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
     peerDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -11245,7 +11245,7 @@ packages:
     peerDependencies:
       '@types/react': 19.3.0
       immer: '>=9.0.6'
-      react: 19.3.0
+      react: 19.3.1
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -11456,15 +11456,15 @@ snapshots:
     dependencies:
       prismjs: 1.30.0
 
-  '@astrojs/react@6.0.6(@types/node@24.12.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.1.0)(tsx@4.23.15)(yaml@2.9.1)':
+  '@astrojs/react@6.0.6(@types/node@24.12.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.1.0)(tsx@4.23.15)(yaml@2.9.1)':
     dependencies:
       '@astrojs/internal-helpers': 0.11.0
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react': 5.2.0(supports-color@10.1.0)(vite@8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       devalue: 5.9.4
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
       ultrahtml: 1.7.0
       vite: 8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     transitivePeerDependencies:
@@ -12474,18 +12474,18 @@ snapshots:
       '@floating-ui/core': 1.8.0
       '@floating-ui/utils': 0.2.12
 
-  '@floating-ui/react-dom@2.1.9(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@floating-ui/react-dom@2.1.9(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@floating-ui/dom': 1.8.0
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
-  '@floating-ui/react@0.27.20(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@floating-ui/react@0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.9(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@floating-ui/utils': 0.2.12
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
       tabbable: 6.2.0
 
   '@floating-ui/utils@0.2.12': {}
@@ -12902,46 +12902,46 @@ snapshots:
     dependencies:
       chroma-js: 3.2.0(patch_hash=d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c)
 
-  '@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@floating-ui/react': 0.27.20(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@mantine/hooks': 9.7.1(react@19.3.0)
+      '@floating-ui/react': 0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks': 9.7.1(react@19.3.1)
       clsx: 2.1.1
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      react-number-format: 5.4.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react-remove-scroll: 2.7.2(@types/react@19.3.0)(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      react-number-format: 5.4.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react-remove-scroll: 2.7.2(@types/react@19.3.0)(react@19.3.1)
       type-fest: 4.41.0
     transitivePeerDependencies:
       - '@types/react'
 
-  '@mantine/hooks@9.7.1(react@19.3.0)':
+  '@mantine/hooks@9.7.1(react@19.3.1)':
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
 
-  '@mantine/modals@9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mantine/hooks@9.7.1(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@mantine/modals@9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.1(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@mantine/core': 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@mantine/hooks': 9.7.1(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      '@mantine/core': 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks': 9.7.1(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
-  '@mantine/notifications@9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mantine/hooks@9.7.1(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@mantine/notifications@9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.1(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@mantine/core': 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@mantine/hooks': 9.7.1(react@19.3.0)
-      '@mantine/store': 9.7.1(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      react-transition-group: 4.4.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@mantine/core': 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks': 9.7.1(react@19.3.1)
+      '@mantine/store': 9.7.1(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      react-transition-group: 4.4.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
-  '@mantine/store@9.7.1(react@19.3.0)':
+  '@mantine/store@9.7.1(react@19.3.1)':
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
 
-  '@mantine/vanilla-extract@9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))':
+  '@mantine/vanilla-extract@9.7.1(@mantine/core@9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
     dependencies:
-      '@mantine/core': 9.7.1(@mantine/hooks@9.7.1(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@mantine/core': 9.7.1(@mantine/hooks@9.7.1(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
   '@manypkg/find-root@3.1.0':
     dependencies:
@@ -13084,14 +13084,14 @@ snapshots:
 
   '@microsoft/tsdoc@0.17.1': {}
 
-  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)':
+  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.5)
       '@standard-schema/spec': 1.1.0
       zod: 4.6.5
     optionalDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5)':
     dependencies:
@@ -13119,10 +13119,10 @@ snapshots:
     dependencies:
       nanostores: 1.5.5
 
-  '@nanostores/react@2.0.1(nanostores@1.5.5)(react@19.3.0)':
+  '@nanostores/react@2.0.1(nanostores@1.5.5)(react@19.3.1)':
     dependencies:
       nanostores: 1.5.5
-      react: 19.3.0
+      react: 19.3.1
 
   '@napi-rs/wasm-runtime@1.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
@@ -13552,11 +13552,11 @@ snapshots:
 
   '@radix-ui/colors@3.0.0': {}
 
-  '@react-hookz/web@25.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@react-hookz/web@25.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@ver0/deep-equal': 2.0.1
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@reactive-vscode/reactivity@1.0.2': {}
 
@@ -13866,10 +13866,10 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  '@tabler/icons-react@3.49.0(react@19.3.0)':
+  '@tabler/icons-react@3.49.0(react@19.3.1)':
     dependencies:
       '@tabler/icons': 3.49.0
-      react: 19.3.0
+      react: 19.3.1
 
   '@tabler/icons@3.49.0': {}
 
@@ -14000,9 +14000,9 @@ snapshots:
       '@tanstack/ai': 0.69.0(zod@4.6.5)
       '@tanstack/ai-utils': 0.4.2
 
-  '@tanstack/ai-react-ui@0.9.7(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)':
+  '@tanstack/ai-react-ui@0.9.7(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)':
     dependencies:
-      '@tanstack/ai-react': 0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)
+      '@tanstack/ai-react': 0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
     transitivePeerDependencies:
       - '@mcp-ui/client'
       - '@opentelemetry/api'
@@ -14013,15 +14013,15 @@ snapshots:
       - react-dom
       - zod
 
-  '@tanstack/ai-react@0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(zod@4.6.5)':
+  '@tanstack/ai-react@0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)':
     dependencies:
       '@tanstack/ai': 0.69.0(zod@4.6.5)
       '@tanstack/ai-client': 0.39.3(zod@4.6.5)
-      '@tanstack/markdown': 0.0.13(react@19.3.0)
+      '@tanstack/markdown': 0.0.13(react@19.3.1)
       '@types/react': 19.3.0
-      react: 19.3.0
+      react: 19.3.1
     optionalDependencies:
-      react-dom: 19.3.0(react@19.3.0)
+      react-dom: 19.3.1(react@19.3.1)
     transitivePeerDependencies:
       - '@opentelemetry/api'
       - octane
@@ -14044,9 +14044,9 @@ snapshots:
 
   '@tanstack/history@1.114.22': {}
 
-  '@tanstack/markdown@0.0.13(react@19.3.0)':
+  '@tanstack/markdown@0.0.13(react@19.3.1)':
     optionalDependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   '@tanstack/openai-base@0.14.0(@tanstack/ai@0.69.0(zod@4.6.5))(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)':
     dependencies:
@@ -14063,32 +14063,32 @@ snapshots:
 
   '@tanstack/query-core@5.83.1': {}
 
-  '@tanstack/react-query@5.85.0(react@19.3.0)':
+  '@tanstack/react-query@5.85.0(react@19.3.1)':
     dependencies:
       '@tanstack/query-core': 5.83.1
-      react: 19.3.0
+      react: 19.3.1
 
-  '@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@tanstack/history': 1.114.22
-      '@tanstack/react-store': 0.7.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tanstack/react-store': 0.7.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/router-core': 1.114.25
       jsesc: 3.1.0
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
-  '@tanstack/react-store@0.7.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@tanstack/react-store@0.7.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@tanstack/store': 0.7.0
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
 
-  '@tanstack/router-cli@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))':
+  '@tanstack/router-cli@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
     dependencies:
-      '@tanstack/router-generator': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+      '@tanstack/router-generator': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       chokidar: 3.6.0
       yargs: 17.7.3
     transitivePeerDependencies:
@@ -14100,16 +14100,16 @@ snapshots:
       '@tanstack/store': 0.7.0
       tiny-invariant: 1.3.3
 
-  '@tanstack/router-generator@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))':
+  '@tanstack/router-generator@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
     dependencies:
       '@tanstack/virtual-file-routes': 1.114.12
       prettier: 3.5.2
       tsx: 4.23.15
       zod: 3.25.76
     optionalDependencies:
-      '@tanstack/react-router': 1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tanstack/react-router': 1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
-  '@tanstack/router-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
+  '@tanstack/router-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
       '@babel/core': 7.29.7(supports-color@10.1.0)
       '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.29.7(supports-color@10.1.0))
@@ -14118,7 +14118,7 @@ snapshots:
       '@babel/traverse': 7.29.7(supports-color@10.1.0)
       '@babel/types': 7.29.7
       '@tanstack/router-core': 1.114.25
-      '@tanstack/router-generator': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+      '@tanstack/router-generator': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       '@tanstack/router-utils': 1.114.12
       '@tanstack/virtual-file-routes': 1.114.12
       '@types/babel__core': 7.20.5
@@ -14129,7 +14129,7 @@ snapshots:
       unplugin: 2.3.11
       zod: 3.25.76
     optionalDependencies:
-      '@tanstack/react-router': 1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tanstack/react-router': 1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       vite: 8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     transitivePeerDependencies:
       - supports-color
@@ -14141,9 +14141,9 @@ snapshots:
       ansis: 3.17.0
       diff: 7.0.0
 
-  '@tanstack/router-vite-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
+  '@tanstack/router-vite-plugin@1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
-      '@tanstack/router-plugin': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      '@tanstack/router-plugin': 1.114.17(@tanstack/react-router@1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@10.1.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - '@tanstack/react-router'
@@ -14234,7 +14234,7 @@ snapshots:
       '@codingame/monaco-vscode-api': 37.3.11
       '@codingame/monaco-vscode-log-service-override': 37.3.11
       monaco-languageclient: 11.0.2
-      react: 19.3.0
+      react: 19.3.1
 
   '@types/argparse@1.0.38': {}
 
@@ -14628,20 +14628,20 @@ snapshots:
 
   '@webgpu/types@0.1.21': {}
 
-  '@xstate/react@6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)':
+  '@xstate/react@6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.2)':
     dependencies:
-      react: 19.3.0
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.3.0)(react@19.3.0)
-      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
+      react: 19.3.1
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.3.0)(react@19.3.1)
+      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
     optionalDependencies:
       xstate: 5.33.2
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xstate/store-react@2.1.0(react@19.3.0)(xstate@5.33.2)':
+  '@xstate/store-react@2.1.0(react@19.3.1)(xstate@5.33.2)':
     dependencies:
       '@xstate/store': 4.3.0(xstate@5.33.2)
-      react: 19.3.0
+      react: 19.3.1
     transitivePeerDependencies:
       - xstate
 
@@ -14649,13 +14649,13 @@ snapshots:
     optionalDependencies:
       xstate: 5.33.2
 
-  '@xyflow/react@12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@xyflow/react@12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@xyflow/system': 0.0.83
       classcat: 5.0.5
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      zustand: 4.5.7(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      zustand: 4.5.7(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)
     optionalDependencies:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0(@types/react@19.3.0)
@@ -15920,14 +15920,14 @@ snapshots:
 
   fraction.js@5.3.4: {}
 
-  framer-motion@12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  framer-motion@12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       motion-dom: 12.43.0
       motion-utils: 12.39.0
       tslib: 2.8.1
     optionalDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   fresh@2.0.0: {}
 
@@ -17291,13 +17291,13 @@ snapshots:
 
   motion-utils@12.39.0: {}
 
-  motion@12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  motion@12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
-      framer-motion: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      framer-motion: 12.43.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       tslib: 2.8.1
     optionalDependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   mrmime@2.0.1: {}
 
@@ -17868,68 +17868,68 @@ snapshots:
       iconv-lite: 0.7.3
       unpipe: 1.0.0
 
-  react-dom@19.3.0(react@19.3.0):
+  react-dom@19.3.1(react@19.3.1):
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
       scheduler: 0.28.0
 
-  react-error-boundary@6.1.6(@types/react@19.3.0)(react@19.3.0):
+  react-error-boundary@6.1.6(@types/react@19.3.0)(react@19.3.1):
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
     optionalDependencies:
       '@types/react': 19.3.0
 
   react-is@16.13.1: {}
 
-  react-number-format@5.4.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-number-format@5.4.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   react-refresh@0.18.0: {}
 
-  react-remove-scroll-bar@2.3.8(@types/react@19.3.0)(react@19.3.0):
+  react-remove-scroll-bar@2.3.8(@types/react@19.3.0)(react@19.3.1):
     dependencies:
-      react: 19.3.0
-      react-style-singleton: 2.2.3(@types/react@19.3.0)(react@19.3.0)
+      react: 19.3.1
+      react-style-singleton: 2.2.3(@types/react@19.3.0)(react@19.3.1)
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-remove-scroll@2.7.2(@types/react@19.3.0)(react@19.3.0):
+  react-remove-scroll@2.7.2(@types/react@19.3.0)(react@19.3.1):
     dependencies:
-      react: 19.3.0
-      react-remove-scroll-bar: 2.3.8(@types/react@19.3.0)(react@19.3.0)
-      react-style-singleton: 2.2.3(@types/react@19.3.0)(react@19.3.0)
+      react: 19.3.1
+      react-remove-scroll-bar: 2.3.8(@types/react@19.3.0)(react@19.3.1)
+      react-style-singleton: 2.2.3(@types/react@19.3.0)(react@19.3.1)
       tslib: 2.8.1
-      use-callback-ref: 1.3.3(@types/react@19.3.0)(react@19.3.0)
-      use-sidecar: 1.1.3(@types/react@19.3.0)(react@19.3.0)
+      use-callback-ref: 1.3.3(@types/react@19.3.0)(react@19.3.1)
+      use-sidecar: 1.1.3(@types/react@19.3.0)(react@19.3.1)
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-resizable-panels@4.14.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-resizable-panels@4.14.3(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
-  react-style-singleton@2.2.3(@types/react@19.3.0)(react@19.3.0):
+  react-style-singleton@2.2.3(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       get-nonce: 1.0.1
-      react: 19.3.0
+      react: 19.3.1
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-transition-group@4.4.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-transition-group@4.4.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       '@babel/runtime': 7.27.6
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
-  react@19.3.0: {}
+  react@19.3.1: {}
 
   reactive-vscode@1.0.2(@types/vscode@1.118.0):
     dependencies:
@@ -19068,30 +19068,30 @@ snapshots:
       punycode: 1.4.1
       qs: 6.16.0
 
-  use-callback-ref@1.3.3(@types/react@19.3.0)(react@19.3.0):
+  use-callback-ref@1.3.3(@types/react@19.3.0)(react@19.3.1):
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.3.0
 
-  use-isomorphic-layout-effect@1.2.1(@types/react@19.3.0)(react@19.3.0):
+  use-isomorphic-layout-effect@1.2.1(@types/react@19.3.0)(react@19.3.1):
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
     optionalDependencies:
       '@types/react': 19.3.0
 
-  use-sidecar@1.1.3(@types/react@19.3.0)(react@19.3.0):
+  use-sidecar@1.1.3(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       detect-node-es: 1.1.0
-      react: 19.3.0
+      react: 19.3.1
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 19.3.0
 
-  use-sync-external-store@1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0):
+  use-sync-external-store@1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1):
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
 
   util-deprecate@1.0.2: {}
 
@@ -19650,13 +19650,13 @@ snapshots:
 
   zod@4.6.5: {}
 
-  zustand@4.5.7(@types/react@19.3.0)(immer@11.1.21)(react@19.3.0):
+  zustand@4.5.7(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1):
     dependencies:
-      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.0)
+      use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
     optionalDependencies:
       '@types/react': 19.3.0
       immer: 11.1.21
-      react: 19.3.0
+      react: 19.3.1
 
   zwitch@2.0.4: {}
 
