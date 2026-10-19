@@ -274,8 +274,8 @@ catalogs:
       specifier: ^3.0.3
       version: 3.0.3
     '@dagrejs/dagre':
-      specifier: 1.1.8
-      version: 1.1.8
+      specifier: 3.1.1
+      version: 3.1.1
     '@fontsource-variable/ibm-plex-sans':
       specifier: ^5.3.0
       version: 5.3.0
@@ -1235,7 +1235,7 @@ importers:
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.8
+        version: 3.1.1
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -1364,7 +1364,7 @@ importers:
     dependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.8
+        version: 3.1.1
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
@@ -2049,7 +2049,7 @@ importers:
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.8
+        version: 3.1.1
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
         version: 5.3.0
@@ -2281,7 +2281,7 @@ importers:
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.8
+        version: 3.1.1
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
         version: 5.3.0
@@ -2744,7 +2744,7 @@ importers:
         version: 7.29.7(supports-color@10.1.0)
       '@dagrejs/dagre':
         specifier: 'catalog:'
-        version: 1.1.8
+        version: 3.1.1
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
@@ -4121,12 +4121,11 @@ packages:
     resolution: {integrity: sha512-WyOx8cJQ+FQus4Mm4uPIZA64gbk3Wxh0so5Lcii0aJifqwoVOlfFtorjLE0Hen4OYyHZMXDWqMmaQemBhgxFRQ==}
     engines: {node: '>=14'}
 
-  '@dagrejs/dagre@1.1.8':
-    resolution: {integrity: sha512-5SEDlndt4W/LaVzPYJW+bSmSEZc9EzTf8rJ20WCKvjS5EAZAN0b+x0Yww7VMT4R3Wootkg+X9bUfUxazYw6Blw==}
+  '@dagrejs/dagre@3.1.1':
+    resolution: {integrity: sha512-zroZB1dFOFiGgv4Xcrn1DckB1o4aOikPqD2NDQPV0WM//CXGcS6xiD0rNkqHmw6FEg4tabt4nxPLwgCWT+Vb2A==}
 
-  '@dagrejs/graphlib@2.2.4':
-    resolution: {integrity: sha512-mepCf/e9+SKYy1d02/UkvSy6+6MoyXhVxP8lLDfA7BPE1X1d4dR0sZznmbM8/XVJ1GPM+Svnx7Xj6ZweByWUkw==}
-    engines: {node: '>17.0.0'}
+  '@dagrejs/graphlib@4.0.5':
+    resolution: {integrity: sha512-7xrBTqIts3o+PMUZX97wSc+7TUbW+/rULzGNCTP6yooNVDXbzw4Wutg/H/xOutTB/c/k0YqOAavgPh4/Zk9PFA==}
 
   '@dprint/android-arm64@0.63.0':
     resolution: {integrity: sha512-tl6nz5KZIzVn0Gafl2t1E7iPKCsFlTg2quoT7bvjk/qAoGX6HxyIoPyxlyUwBb2EPanGN+op60wBM0t6XSIkVA==}
@@ -12141,11 +12140,11 @@ snapshots:
 
   '@ctrl/tinycolor@4.1.0': {}
 
-  '@dagrejs/dagre@1.1.8':
+  '@dagrejs/dagre@3.1.1':
     dependencies:
-      '@dagrejs/graphlib': 2.2.4
+      '@dagrejs/graphlib': 4.0.5
 
-  '@dagrejs/graphlib@2.2.4': {}
+  '@dagrejs/graphlib@4.0.5': {}
 
   '@dprint/android-arm64@0.63.0':
     optional: true
