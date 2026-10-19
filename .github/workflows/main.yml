@@ -70,7 +70,7 @@ jobs:
 
       - name: create release pull request
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2.1.2
         with:
           title: "prepare release"
           commit: "chore: prepare next release"
