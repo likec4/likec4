@@ -97,7 +97,7 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "date-fns": "catalog:utils",
-    "decode-named-character-reference": "1.0.2",
+    "decode-named-character-reference": "1.3.0",
     "fast-equals": "catalog:utils",
     "hono": "catalog:hono",
     "hono-sessions": "catalog:hono",
