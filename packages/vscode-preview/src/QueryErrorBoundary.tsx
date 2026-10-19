@@ -2,7 +2,7 @@ import { Box, Button, Group, Notification, ScrollAreaAutosize, Stack, Text } fro
 import { QueryErrorResetBoundary, useQueryErrorResetBoundary } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { type FallbackProps, ErrorBoundary } from 'react-error-boundary'
-import { isError, isNullish, isObjectType } from 'remeda'
+import { isError, isObjectType } from 'remeda'
 import { stateAlert } from './App.css'
 import { ExtensionApi as extensionApi } from './vscode'
 

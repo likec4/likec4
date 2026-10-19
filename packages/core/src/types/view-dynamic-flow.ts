@@ -1,6 +1,5 @@
 import {
   filter,
-  find,
   firstBy,
   isArray,
   isBoolean,
@@ -10,7 +9,7 @@ import {
   pipe,
   purry,
 } from 'remeda'
-import type { IsEqual, SetRequired, Simplify } from 'type-fest'
+import type { IsEqual, Simplify } from 'type-fest'
 import {
   compareNaturalHierarchically,
   DefaultWeakMap,
@@ -22,7 +21,6 @@ import type { IsAnyOrNever, IterableContainer } from './_common'
 import * as scalar from './scalar'
 import { isStepPath } from './scalar'
 import { type ProcessedDynamicView, isDynamicViewWithFlow } from './view'
-import type { ComputedDeploymentView, ComputedDynamicView } from './view-computed'
 import type { LayoutedDynamicView } from './view-layouted'
 import type { AnyStep } from './view-parsed.dynamic'
 
@@ -737,7 +735,9 @@ export function dynamicViewFlow<V extends ProcessedDynamicView<any>>(view: V): D
 type WithFlow<V> = V & { flow: DynamicViewFlowData }
 
 export class DynamicViewFlow<V extends ProcessedDynamicView<any> = LayoutedDynamicView> {
-  private static cache = new DefaultWeakMap((view: WithFlow<ProcessedDynamicView<any>>) => new DynamicViewFlow(view))
+  private static cache = new DefaultWeakMap((view: WithFlow<ProcessedDynamicView<any>>) =>
+    new DynamicViewFlow(structuredClone(view))
+  )
 
   public static from<V extends ProcessedDynamicView<any>>(view: V): DynamicViewFlow<V> {
     if (!isDynamicViewWithFlow(view)) {

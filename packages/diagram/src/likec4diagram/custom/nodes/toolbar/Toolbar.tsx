@@ -24,8 +24,8 @@ const useSelectedNodesCount = () => {
 export function Toolbar({ title, children, nodeProps, ...props }: ToolbarProps) {
   const selectedNodesCount = useSelectedNodesCount()
   const {
-    selected = false,
-    dragging = false,
+    selected,
+    dragging,
     data: {
       hovered = false,
     },

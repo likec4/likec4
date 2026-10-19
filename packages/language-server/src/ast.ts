@@ -9,13 +9,15 @@ import type * as c4 from '@likec4/core'
 import { MultiMap, nonexhaustive } from '@likec4/core/utils'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
-import { clamp, isNullish, isTruthy } from 'remeda'
-import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
-import type { Diagnostic } from 'vscode-languageserver-types'
+import { clamp, filter, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
+import type { ConditionalPick, MergeExclusive, Simplify, UnionToTuple, ValueOf, Writable } from 'type-fest'
+import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
 import { isNotLikeC4Builtin } from './likec4lib'
+import type { DocumentParser } from './model/model-parser'
+import { stringHash } from './utils'
 import type { IsValidFn } from './validation'
 
 export { ast }
@@ -237,27 +239,57 @@ export type LikeC4AstNode = ValueOf<ConditionalPick<ast.LikeC4AstType, AstNode>>
 type LikeC4DocumentDiagnostic = Diagnostic & DiagnosticInfo<LikeC4AstNode>
 
 export interface LikeC4DocumentProps {
-  diagnostics?: Array<LikeC4DocumentDiagnostic>
-  c4Specification?: ParsedAstSpecification
-  c4Elements?: ParsedAstElement[]
-  c4ExtendElements?: ParsedAstExtend[]
-  c4ExtendDeployments?: ParsedAstExtend[]
-  c4ExtendRelations?: ParsedAstExtendRelation[]
-  c4Relations?: ParsedAstRelation[]
-  c4Globals?: ParsedAstGlobals
-  c4Views?: ParsedAstView[]
-  c4Deployments?: ParsedAstDeployment[]
-  c4DeploymentRelations?: ParsedAstDeploymentRelation[]
-  c4Imports?: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
+  c4Specification: ParsedAstSpecification
+  c4Elements: ParsedAstElement[]
+  c4ExtendElements: ParsedAstExtend[]
+  c4ExtendDeployments: ParsedAstExtend[]
+  c4ExtendRelations: ParsedAstExtendRelation[]
+  c4Relations: ParsedAstRelation[]
+  c4Globals: ParsedAstGlobals
+  c4Views: ParsedAstView[]
+  c4Deployments: ParsedAstDeployment[]
+  c4DeploymentRelations: ParsedAstDeploymentRelation[]
+  c4Imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
+  likec4Parser: DocumentParser
 }
 
 type LikeC4GrammarDocument = Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>
 
-export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
+export interface LikeC4LangiumDocument extends LikeC4GrammarDocument, Partial<LikeC4DocumentProps> {
+  diagnostics?: Array<LikeC4DocumentDiagnostic>
   likec4ProjectId?: c4.ProjectId
+  likec4Parser?: DocumentParser
 }
-export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, Required<LikeC4DocumentProps> {
+
+export const LikeC4DocumentPropKeys = [
+  'c4Specification',
+  'c4Elements',
+  'c4ExtendElements',
+  'c4ExtendDeployments',
+  'c4ExtendRelations',
+  'c4Relations',
+  'c4Globals',
+  'c4Views',
+  'c4Deployments',
+  'c4DeploymentRelations',
+  'c4Imports',
+  'likec4Parser',
+] as const satisfies UnionToTuple<keyof LikeC4DocumentProps>
+
+export function isLikeC4PropKey<T>(key: T): key is T & keyof LikeC4DocumentProps {
+  return typeof key === 'string' && LikeC4DocumentPropKeys.includes(key as any)
+}
+
+export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
+  state: DocumentState.IndexedReferences | DocumentState.Linked | DocumentState.Validated
+  diagnostics?: Array<LikeC4DocumentDiagnostic>
   likec4ProjectId: c4.ProjectId
+  likec4Parser: DocumentParser
+}
+
+export interface ValidatedLikeC4LangiumDocument extends ParsedLikeC4LangiumDocument {
+  state: DocumentState.Validated
+  diagnostics: Array<LikeC4DocumentDiagnostic>
 }
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument | undefined): doc is LikeC4LangiumDocument {
@@ -269,11 +301,12 @@ export function isLikeC4UserDocument(doc: LangiumDocument | undefined): doc is L
 }
 
 export function isParsedLikeC4LangiumDocument(
-  doc: LangiumDocument,
+  doc: LangiumDocument | undefined,
 ): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc)
-    && doc.state == DocumentState.Validated
+    && doc.state >= DocumentState.Linked
+    && !!doc.likec4Parser
     && !!doc.c4Specification
     && !!doc.c4Elements
     && !!doc.c4ExtendElements
@@ -285,6 +318,51 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4DeploymentRelations
     && !!doc.c4Imports
   )
+}
+
+export function isValidatedLikeC4LangiumDocument(
+  doc: LangiumDocument | undefined,
+): doc is ValidatedLikeC4LangiumDocument {
+  if (!isParsedLikeC4LangiumDocument(doc) || doc.state !== DocumentState.Validated) {
+    return false
+  }
+  // just ensure that diagnostics defined
+  doc.diagnostics ??= []
+  return true
+}
+
+export function isErrorDiagnostic(d: Diagnostic): d is LikeC4DocumentDiagnostic {
+  return d.severity === DiagnosticSeverity.Error
+}
+
+export function hasValidationErrors(
+  doc: LangiumDocument | undefined,
+): doc is ValidatedLikeC4LangiumDocument & { diagnostics: c4.NonEmptyArray<LikeC4DocumentDiagnostic> } {
+  return isValidatedLikeC4LangiumDocument(doc) && doc.diagnostics.some(isErrorDiagnostic)
+}
+
+export const NO_ERRORS = '' as const
+export function calcValidationHash(doc: LangiumDocument): string {
+  return pipe(
+    doc.diagnostics ?? [],
+    filter(isErrorDiagnostic),
+    map(d => `${Diagnostic.getMessageString(d)}|${d.node?.$type ?? ''}`),
+    reduce((acc, d, index) => stringHash(`${acc}|${d}|${index}`), NO_ERRORS as string),
+  )
+}
+
+/**
+ * Check if validation state changed by comparing current validation hash with cached one
+ * @param doc - Document to check
+ * @param container - Container with cached validation hash
+ * @returns true if validation state changed, false otherwise
+ */
+export function isValidationStateChanged(
+  doc: LikeC4LangiumDocument,
+  container: { validationHash: string },
+): boolean {
+  const currentHash = calcValidationHash(doc)
+  return currentHash !== container.validationHash
 }
 
 export function parseMarkdownAsString(node?: ast.MarkdownOrString): string | undefined {

@@ -3,7 +3,6 @@ import type { RelationshipModel } from '../../model'
 import {
   ConnectionModel,
   differenceConnections,
-  findDeepestNestedConnection,
   findDescendantConnections,
   isAnyInOut,
   isIncoming,
@@ -52,10 +51,6 @@ export function findRedundantConnections<A extends AnyAux>(
       let accum = intersection(connection.relations, nestedRelations)
 
       if (descendants.length > 0) {
-        accum = union(accum, connection.directRelations)
-      }
-      // Check if there is any reversed connection to descendant
-      if (findDeepestNestedConnection(all, connection.reversed())) {
         accum = union(accum, connection.directRelations)
       }
 

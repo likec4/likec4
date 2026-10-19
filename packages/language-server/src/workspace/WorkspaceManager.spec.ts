@@ -18,7 +18,7 @@ const fileNode = (uri: URI): FileNode => ({
 
 describe('WorkspaceManager', () => {
   it('should compute relative path from workspace root', async ({ create, expect }) => {
-    const t = await create({ workspace: 'file:///test/workspace' })
+    const t = create({ workspace: 'file:///test/workspace' })
     await t.initialize()
 
     const check = (s: string) =>
@@ -33,7 +33,7 @@ describe('WorkspaceManager', () => {
   })
 
   it('should load project include paths during workspace startup', async ({ create, expect }) => {
-    const testServices = await create({ workspace: 'file:///test/workspace' })
+    const testServices = create({ workspace: 'file:///test/workspace' })
     try {
       const { services } = testServices
       const fs = services.shared.workspace.FileSystemProvider

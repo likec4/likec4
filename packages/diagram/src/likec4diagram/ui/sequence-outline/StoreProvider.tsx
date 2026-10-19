@@ -1,17 +1,14 @@
 import {
-  type Atom,
   type ContextFromStoreConfig,
   type SnapshotFromStore,
   type StoreFromStoreLogicCreator,
-  createAtom,
   createAtomConfig,
-  createReducerAtom,
   createStoreLogic,
   useSelector as useXstateStoreSelector,
   useStore,
 } from '@xstate/store-react'
 import { shallowEqual } from 'fast-equals'
-import { type PropsWithChildren, createContext, use, useEffect, useState } from 'react'
+import { type PropsWithChildren, createContext, use, useEffect } from 'react'
 
 import {
   type StepPath,

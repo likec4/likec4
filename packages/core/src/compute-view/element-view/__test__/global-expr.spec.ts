@@ -80,6 +80,7 @@ describe('global expr', () => {
         'cloud.frontend.dashboard:cloud.backend.graphql',
         'cloud.frontend.supportPanel:cloud.backend.graphql',
         'cloud.backend:email',
+        'email:cloud',
       ],
       'nodeIds': [
         'cloud',

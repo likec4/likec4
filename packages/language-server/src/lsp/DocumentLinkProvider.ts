@@ -18,11 +18,10 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     cancelToken: CancellationToken = CancellationToken.None,
   ): Promise<DocumentLink[]> {
     if (!isLikeC4UserDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
-      return []
+      return Promise.resolve([])
     }
     const links: DocumentLink[] = []
     for (const n of AstUtils.streamAllContents(doc.parseResult.value).filter(ast.isLinkProperty)) {
-      await interruptAndCheck(cancelToken)
       try {
         const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
         const target = range && this.resolveLink(doc, n.value)
@@ -36,6 +35,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
         logWarnError(e)
       }
     }
+    await interruptAndCheck(cancelToken)
     return links
   }
 

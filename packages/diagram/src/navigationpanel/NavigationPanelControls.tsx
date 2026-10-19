@@ -79,6 +79,8 @@ export const NavigationPanelControls = memo(() => {
     isElementView,
   } = useDiagramSelector(selectViewData)
 
+  const hasModel = !!viewModel
+
   const folder = viewModel?.folder
   const folders = !folder || folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
     folderPath: s.path,
@@ -182,7 +184,7 @@ export const NavigationPanelControls = memo(() => {
           flexWrap: 'nowrap',
           flexGrow: 0,
         })}>
-        <ViewDetailsButton key="details" onOpen={() => actor.closeDropdown()} />
+        {hasModel && <ViewDetailsButton key="details" onOpen={() => actor.closeDropdown()} />}
         {enableVscode && <OpenSource key="open-source" />}
         {editBtnVisible && <ToggleReadonly key="toggle-readonly" disabled={editBtnDisabled} isReadOnly={isReadOnly} />}
         {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}

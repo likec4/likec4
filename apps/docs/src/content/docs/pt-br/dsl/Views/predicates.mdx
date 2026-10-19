@@ -878,11 +878,50 @@ Os parâmetros são:
 - direção: os valores possíveis são `TopBottom` (padrão), `BottomTop`, `LeftRight`, `RightLeft`.
 - distância entre ranks: opcional, deve ser um número positivo
 - distância entre nós: opcional, deve ser um número positivo
+- roteamento das conexões: opcional, pode ser `spline` ou `ortho`. Veja [Roteamento das conexões](#roteamento-das-conexões).
 
 <Aside>
 Alterações manuais são aceitas na extensão do VSCode, mas a funcionalidade é limitada.  
 Seu <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> é muito bem-vindo.
 </Aside>
+
+## Roteamento das conexões
+
+Para desenhar relacionamentos usando segmentos horizontais e verticais, defina `routing ortho` na visão:
+
+```likec4
+view {
+  routing ortho
+  include *
+}
+```
+
+Use `spline` para linhas curvas (padrão) ou `ortho` para curvas em ângulo reto. O roteamento vale para visões de elementos, dinâmicas e de deployment. Diagramas de sequência têm layout próprio e ignoram essa configuração.
+
+Também é possível indicar o roteamento como último argumento de `autoLayout`:
+
+```likec4
+autoLayout LeftRight 120 110 ortho
+```
+
+Quando existem várias configurações, o LikeC4 utiliza a primeira desta ordem de precedência:
+
+1. Propriedade `routing` definida na própria visão.
+2. Parâmetro de roteamento da última regra `autoLayout`.
+3. Configuração global [`styles.defaults.view.routing`](/pt-br/dsl/config/#estilos-padrão).
+4. Valor interno padrão `spline`.
+
+Se `routing` estiver definido na visão e também em `autoLayout`, a propriedade da visão prevalece e o servidor de linguagem emite um aviso sobre o parâmetro de `autoLayout`.
+
+No editor web, é possível mudar o roteamento pelo painel de layout; a alteração é gravada no código-fonte da visão. A troca de roteamento preserva posições de nós e pontos de controle salvos e não invalida, por si só, o layout existente.
+
+### Limitações do roteamento
+
+O Graphviz pode passar uma conexão ortogonal por dentro de um grupo não relacionado ou deixar trajetórias paralelas muito próximas. Reduzir a quantidade de relacionamentos exibidos, editar conexões individuais ou aumentar o espaçamento de `autoLayout` pode melhorar a legibilidade, mas não garante a eliminação das sobreposições.
+
+Quando conexões editadas compartilham um trecho reto, o LikeC4 tenta separá-las em faixas distintas, desde que exista espaço nos pontos de conexão. Rotas não editadas calculadas pelo Graphviz mantêm suas posições.
+
+Os rótulos automáticos procuram evitar nós, outros rótulos e linhas de relacionamento quando há espaço disponível. Visões densas ainda podem apresentar sobreposição de rótulos.
 
 ## Estender visões
 

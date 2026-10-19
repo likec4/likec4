@@ -2,6 +2,63 @@ import { describe, it } from 'vitest'
 import { createTestServices } from '../../test'
 
 describe('LikeC4ModelBuilder - Deployment', () => {
+  it('builds nested deployment groups with styled boundaries and deployment references', async ({ expect }) => {
+    using t = createTestServices()
+    const { diagnostics } = await t.validate(`
+      specification {
+        element component
+        deploymentNode node
+      }
+      model {
+        component app
+        component api
+        app -> api
+      }
+      deployment {
+        node prod {
+          app1 = instanceOf app
+          app2 = instanceOf app
+          instanceOf api
+        }
+      }
+      views {
+        deployment view grouped {
+          include prod
+          group 'Application' {
+            color amber
+            opacity 20%
+            border solid
+            include prod.app1
+            group 'API' {
+              include prod.api
+            }
+          }
+          group {
+            include prod.app2 with { navigateTo grouped }
+          }
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await t.buildModel()
+    expect(model.views['grouped']?.nodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: '@gr1',
+        parent: 'prod',
+        kind: '@group',
+        title: 'Application',
+        color: 'amber',
+        style: expect.objectContaining({ opacity: 20, border: 'solid' }),
+      }),
+      expect.objectContaining({ id: '@gr2', parent: '@gr1', title: 'API' }),
+      expect.objectContaining({ id: 'prod', parent: null, children: expect.arrayContaining(['@gr1', '@gr3']) }),
+      expect.objectContaining({ id: '@gr3', parent: 'prod' }),
+      expect.objectContaining({ id: 'prod.app1', parent: '@gr1' }),
+      expect.objectContaining({ id: 'prod.api', parent: '@gr2' }),
+      expect.objectContaining({ id: 'prod.app2', parent: '@gr3', navigateTo: 'grouped' }),
+    ]))
+  })
+
   it('navigates from deployment nodes and instances to deployment views', async ({ expect }) => {
     using t = createTestServices()
     const { diagnostics } = await t.validate(`

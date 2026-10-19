@@ -37,7 +37,7 @@ import * as aux from '../types/_aux'
 import * as scalar from '../types/scalar'
 import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
-import { DefaultMap } from '../utils/mnemonist'
+import { DefaultMap, LRUMap } from '../utils/mnemonist'
 import type {
   DeployedInstanceModel,
   DeploymentNodeModel,
@@ -104,7 +104,7 @@ export class LikeC4Model<A extends Any = Any> {
     return new LikeC4Model(model)
   }
 
-  private static instances = new WeakMap<object, LikeC4Model<any>>()
+  private static instances = new LRUMap<object, LikeC4Model<any>>(100)
 
   /**
    * Creates a new LikeC4Model instance from the provided model data.

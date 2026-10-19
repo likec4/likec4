@@ -5,10 +5,6 @@
   ],
   "tasks": {
     "build": {
-      "dependsOn": [
-        "sources",
-        "@likec4/styles#sources"
-      ],
       "outputs": [
         "dist/**",
         "styled-system/**"

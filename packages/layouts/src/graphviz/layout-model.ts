@@ -27,7 +27,7 @@ export async function layoutLikeC4Model<A extends Any>(
       styles,
     })),
   })
-  return LikeC4Model.create({
+  return new LikeC4Model({
     ...model.asLayouted.$data,
     [_stage]: 'layouted',
     views: mapToObj(layoutResult, ({ diagram }) => [diagram.id, diagram]),

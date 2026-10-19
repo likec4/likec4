@@ -17,7 +17,6 @@ import {
   createScopedKeydownHandler,
   Group,
   Highlight,
-  Stack,
   ThemeIcon,
   UnstyledButton,
   VisuallyHidden,

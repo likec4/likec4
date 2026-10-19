@@ -179,6 +179,48 @@ views {
 }
 ```
 
+### Groups
+
+Use `group` to draw a boundary around deployment nodes or instances, without changing the deployment model:
+
+```likec4
+deployment view production {
+  group 'European zones' {
+    color amber
+    border solid
+    opacity 20%
+
+    include prod.eu.zone1, prod.eu.zone2
+  }
+}
+```
+
+Groups can be unnamed or nested, and can contain deployment `include` and `exclude` predicates.
+They follow the same [ordering rules as element groups](/dsl/views/predicates#groups).
+Unlike element groups, deployment groups are inserted inside their shared visible deployment parent,
+including ancestors added by `includeAncestors true`:
+
+```likec4
+deployment view production {
+  include prod
+  group 'Layer 2' {
+    include prod.app1, prod.app2
+  }
+  group 'Layer 3' {
+    include prod.api
+  }
+}
+```
+
+Here, both groups are inside `prod`, and the selected instances are inside their groups.
+Members must share the same deployment parent. Selecting nodes under different parents is reported as
+an error, even if those parents are not visible or share a common ancestor. Use separate groups within each
+deployment container instead. This applies to relationship endpoints and selections inside nested groups as well.
+If a parent and its descendants are selected in the same group, the group wraps the parent and preserves
+its deployment hierarchy; the parent counts as the member when checking the shared-parent requirement.
+
+Shared predicate groups and styles are not supported inside deployment groups.
+
 ### Include ancestors
 
 Sometimes, it's useful to visualize exactly how elements are deployed. In this case, you can use

@@ -152,7 +152,8 @@ export function useChat(options: Omit<UseChatOptions, 'connection' | 'tools' | '
   }), [])
   const chat = useTanstackChat({
     ...memoProps,
-    ...options,
+    // TODO: Remove this cast when tanstack-chat is updated to support fetcher option
+    ...((options as any) ?? {}),
     tools: useChatTools(),
   })
   useEffect(() => {

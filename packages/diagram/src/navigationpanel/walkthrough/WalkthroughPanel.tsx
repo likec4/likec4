@@ -8,7 +8,7 @@ import { AnimatePresence, m } from 'motion/react'
 import { memo } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
 import { Markdown } from '../../base-primitives'
-import { selectDiagramContext, useDiagramSelector, useDiagramSnapshot } from '../../hooks/useDiagram'
+import { selectDiagramContext, useDiagramSelector } from '../../hooks/useDiagram'
 
 const SectionHeader = styled('div', {
   base: {

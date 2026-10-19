@@ -127,7 +127,7 @@ describe('Redundant relationships', () => {
     )
   })
 
-  it('correctly find and exclude redundant (and reversed)', () => {
+  it('does not treat opposite-direction nested relationships as redundant', () => {
     const t = TestHelper.from(builder
       .model(({ el, rel }, m) =>
         m(
@@ -162,9 +162,6 @@ describe('Redundant relationships', () => {
       'amazon -> cloud': [
         'amazon -> cloud.backend',
       ],
-      'amazon -> cloud.backend': [
-        'amazon -> cloud.backend',
-      ],
       'cloud -> amazon': [
         'cloud.backend.service1 -> amazon.rds1',
         'cloud.backend.service2 -> amazon.rds2',
@@ -193,8 +190,33 @@ describe('Redundant relationships', () => {
       ],
     })
     t.expect(cleanRedundantRelationships(connections)).toEqual(
+      'amazon -> cloud.backend',
       'cloud.backend.service1 -> amazon.rds1',
       'cloud.backend.service2 -> amazon.rds2',
+    )
+  })
+
+  it('keeps an explicit relationship to a parent when its children relate back to the source', () => {
+    const t = TestHelper.from(builder
+      .model(({ el, rel }, m) =>
+        m(
+          el('x'),
+          el('x.b'),
+          el('x.c'),
+          el('a'),
+          rel('x.b', 'a'),
+          rel('x.c', 'a'),
+          rel('a', 'x'),
+        )
+      ))
+
+    expect(
+      cleanRedundantRelationships(findConnectionsWithin(t.model.elements()))
+        .map(connection => connection.expression),
+    ).toContain('a -> x')
+    t.expectComputedView(t.$include('* -> *')).toHaveEdges(
+      'x -> a',
+      'a -> x',
     )
   })
 

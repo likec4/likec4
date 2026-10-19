@@ -7,7 +7,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { type AstNode, type Reference, GrammarUtils, isAstNode, UriUtils } from 'langium'
+import { type AstNode, type Reference, GrammarUtils, isAstNode, isNamed, UriUtils } from 'langium'
 import {
   filter,
   findLast,
@@ -30,6 +30,7 @@ import {
   type ParsedElementStyle,
   type ParsedLikeC4LangiumDocument,
   ast,
+  calcValidationHash,
   parseAstIconPositionValue,
   parseAstOpacityProperty,
   parseAstPercent,
@@ -42,7 +43,7 @@ import { serverLogger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
-import { type IsValidFn, checksFromDiagnostics } from '../../validation'
+import { type IsInvalidFn, type IsValidFn, checksFromDiagnostics } from '../../validation'
 import type { Project } from '../../workspace/ProjectsManager'
 
 const logger = serverLogger.getChild('parser')
@@ -191,21 +192,42 @@ type ParserLevel =
 
 export class BaseParser {
   isValid: IsValidFn
+  isInvalid: IsInvalidFn
 
   /** Full URI of the document */
   docUri: string
   /** Path of the document relative to the project root */
   docPathInProject: string
 
+  hash: string
+  validationHash: string
+
   constructor(
-    public readonly services: LikeC4Services,
-    public readonly doc: ParsedLikeC4LangiumDocument,
-    public readonly project: Project,
+    public services: LikeC4Services,
+    public doc: ParsedLikeC4LangiumDocument,
+    public project: Project,
   ) {
-    // do nothing
-    this.isValid = checksFromDiagnostics(doc).isValid
+    this.validationHash = calcValidationHash(doc)
+    this.hash = ''
+    const checks = checksFromDiagnostics(doc)
+    this.isValid = checks.isValid
+    this.isInvalid = checks.isInvalid
     this.docUri = doc.uri.toString()
     this.docPathInProject = UriUtils.relative(project.folderUri, doc.uri)
+  }
+
+  dispose(): void {
+    try {
+      // Clear all references to allow garbage collection
+      delete (this.doc as any).likec4Parser
+      this.services = undefined as any
+      this.doc = undefined as any
+      this.project = undefined as any
+      this.isValid = undefined as any
+      this.isInvalid = undefined as any
+    } catch (e) {
+      console.error('Error disposing parser', e)
+    }
   }
 
   logError(
@@ -221,7 +243,7 @@ export class BaseParser {
         : String(error)
 
     if (isAstNode(astNode)) {
-      let name = this.services.references.NameProvider.getName(astNode)
+      let name = isNamed(astNode) ? astNode.name : undefined
       if (name) {
         name = `"${name}" (${astNode.$type})`
       } else {

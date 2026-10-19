@@ -14,6 +14,7 @@ import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import { forwardRef, memo, useRef } from 'react'
 import { isTruthy } from 'remeda'
+import { PortalToContainer } from '../custom'
 import { useDiagram } from '../hooks/useDiagram'
 import { Overlay } from '../overlays/overlay/Overlay'
 import { ElementsColumn } from './components/ElementsColumn'
@@ -51,6 +52,11 @@ export const bodyCss = css({
   background: 'transparent',
 })
 
+const classes = {
+  dialog: dialogCss,
+  body: bodyCss,
+}
+
 export const scrollAreaCss = css({
   height: [
     '100%',
@@ -83,7 +89,7 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
   }
   const open = (event: KeyboardEvent) => {
     event.stopPropagation()
-    diagram.searchActor().send({ type: 'open' })
+    diagram.openSearch()
   }
 
   useHotkeys(
@@ -98,31 +104,30 @@ export const Search = memo(({ searchActorRef }: { searchActorRef: SearchActorRef
   )
 
   return (
-    <AnimatePresence
-      onExitComplete={() => {
-        searchActorRef.send({ type: 'animation.presence.end' })
-      }}>
-      {isOpened && (
-        <Overlay
-          fullscreen
-          withBackdrop={false}
-          backdrop={{
-            opacity: 0.9,
-          }}
-          classes={{
-            dialog: dialogCss,
-            body: bodyCss,
-          }}
-          openDelay={100}
-          onClose={close}
-          data-likec4-search="true"
-        >
-          <XStateSearchAdapter searchActorRef={searchActorRef}>
-            <SearchOverlayBody searchActorRef={searchActorRef} />
-          </XStateSearchAdapter>
-        </Overlay>
-      )}
-    </AnimatePresence>
+    <PortalToContainer>
+      <AnimatePresence
+        onExitComplete={() => {
+          searchActorRef.send({ type: 'animation.presence.end' })
+        }}>
+        {isOpened && (
+          <Overlay
+            fullscreen
+            withBackdrop={false}
+            backdrop={{
+              opacity: 0.9,
+            }}
+            classes={classes}
+            openDelay={100}
+            onClose={close}
+            data-likec4-search="true"
+          >
+            <XStateSearchAdapter searchActorRef={searchActorRef}>
+              <SearchOverlayBody searchActorRef={searchActorRef} />
+            </XStateSearchAdapter>
+          </Overlay>
+        )}
+      </AnimatePresence>
+    </PortalToContainer>
   )
 })
 Search.displayName = 'Search'

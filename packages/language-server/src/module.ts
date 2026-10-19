@@ -62,6 +62,7 @@ import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
   IndexManager,
   LangiumDocuments,
+  LikeC4DocumentBuilder,
   LikeC4WorkspaceManager,
   ProjectsManager,
 } from './workspace'
@@ -84,6 +85,7 @@ interface LikeC4AddedSharedServices {
     IndexManager: IndexManager
     LangiumDocuments: LangiumDocuments
     WorkspaceManager: LikeC4WorkspaceManager
+    DocumentBuilder: LikeC4DocumentBuilder
     FileSystemProvider: FileSystemProvider
     FileSystemWatcher: FileSystemWatcher
     ManualLayouts: LikeC4ManualLayouts
@@ -111,6 +113,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       LangiumDocuments: services => new LangiumDocuments(services),
       ProjectsManager: services => new ProjectsManager(services),
       WorkspaceManager: services => new LikeC4WorkspaceManager(services),
+      DocumentBuilder: services => new LikeC4DocumentBuilder(services),
       FileSystemProvider: services => context.fileSystemProvider(services),
       FileSystemWatcher: services => context.fileSystemWatcher(services),
       ManualLayouts: services => context.manualLayouts(services),

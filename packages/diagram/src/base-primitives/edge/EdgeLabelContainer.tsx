@@ -46,7 +46,7 @@ export function EdgeLabelContainer({
       active: isActive = false,
       dimmed: isDimmed = false,
       labelBBox,
-      color = 'gray',
+      color,
     },
     animated,
   },

@@ -1,7 +1,7 @@
 import { defineTokens } from '@pandacss/dev'
 import { colors } from './colors.ts'
 import { borders, borderWidths, cursor, opacity, zIndex } from './misc.ts'
-import { animations, durations, easings } from './motion.ts'
+import { durations, easings } from './motion.ts'
 import { radii } from './radii.ts'
 import { shadows } from './shadows.ts'
 import { sizes } from './sizes.ts'
