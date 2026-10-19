@@ -103,7 +103,7 @@ catalogs:
     "@radix-ui/colors": ^3.0.0
     "@pandacss/types": ^1.12.1
     "@tailwindcss/vite": ^4.3.2
-    postcss: 8.5.29
+    postcss: 8.5.30
     tailwindcss: ^4.3.2
     postcss-import: ^17.0.0
   esbuild:
