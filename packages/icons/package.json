@@ -77,7 +77,7 @@
   },
   "scripts": {
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
-    "clean": "likec4ops clean .tmp",
+    "clean": "likec4ops clean .tmp && rm aws/*.js azure/*.js tech/*.js gcp/*.js md/* bootstrap/*.js",
     "generate": "pnpm node scripts/generate-md.mjs && pnpm node scripts/generate.mjs",
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
