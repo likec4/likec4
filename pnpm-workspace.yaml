@@ -145,7 +145,7 @@ catalogs:
     "@mantine/vanilla-extract": 9.7.1
   mcp:
     "@modelcontextprotocol/sdk": ^1.32.1
-    "@modelcontextprotocol/ext-apps": "^1.7.5"
+    "@modelcontextprotocol/ext-apps": "^2.0.3"
   react:
     "@floating-ui/dom": ^1.8.0
     "@nanostores/media-query": 0.1.2
