@@ -217,8 +217,8 @@ catalogs:
       specifier: 0.44.2
       version: 0.44.2
     astro:
-      specifier: 7.3.8
-      version: 7.3.8
+      specifier: 7.4.0
+      version: 7.4.0
     astro-og-canvas:
       specifier: 0.13.2
       version: 0.13.2
@@ -377,7 +377,7 @@ catalogs:
       version: 4.3.0
     zod:
       specifier: ^4.6.5
-      version: 4.6.5
+      version: 4.6.7
   hono:
     '@hono/mcp':
       specifier: ^0.3.2
@@ -755,10 +755,10 @@ importers:
         version: 6.0.6(@types/node@24.12.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.1.0)(tsx@4.23.15)(yaml@2.9.1)
       '@astrojs/starlight':
         specifier: catalog:astro
-        version: 0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
+        version: 0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
       '@astrojs/starlight-tailwind':
         specifier: catalog:astro
-        version: 5.0.0(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(tailwindcss@4.3.2)
+        version: 5.0.0(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(tailwindcss@4.3.2)
       '@expressive-code/plugin-collapsible-sections':
         specifier: catalog:astro
         version: 0.44.2
@@ -797,13 +797,13 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       astro:
         specifier: catalog:astro
-        version: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+        version: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       astro-og-canvas:
         specifier: catalog:astro
-        version: 0.13.2(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+        version: 0.13.2(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       astro-skills:
         specifier: catalog:astro
-        version: 0.1.1(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(typescript@6.0.3)
+        version: 0.1.1(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(typescript@6.0.3)
       canvaskit-wasm:
         specifier: 0.42.0
         version: 0.42.0
@@ -827,13 +827,13 @@ importers:
         version: 4.5.0
       starlight-heading-badges:
         specifier: catalog:astro
-        version: 0.8.0(patch_hash=a8b7588554a489266da6e408b1218f040a1553f1ee234d04df66c22cf6d50559)(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(supports-color@10.1.0)
+        version: 0.8.0(patch_hash=a8b7588554a489266da6e408b1218f040a1553f1ee234d04df66c22cf6d50559)(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(supports-color@10.1.0)
       starlight-links-validator:
         specifier: catalog:astro
-        version: 0.27.0(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)
+        version: 0.27.0(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)
       starlight-package-managers:
         specifier: catalog:astro
-        version: 0.13.0(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))
+        version: 0.13.0(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))
       tailwindcss:
         specifier: catalog:css
         version: 4.3.2
@@ -890,7 +890,7 @@ importers:
         version: 0.9.0(hono@4.13.13)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.9.1(hono@4.13.13)(zod@4.6.5)
+        version: 0.9.1(hono@4.13.13)(zod@4.6.7)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -1100,7 +1100,7 @@ importers:
         version: 5.33.2
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
       zx:
         specifier: 'catalog:'
         version: 8.8.5
@@ -1182,7 +1182,7 @@ importers:
         version: 4.41.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1231,7 +1231,7 @@ importers:
         version: 4.41.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -1557,7 +1557,7 @@ importers:
         version: 4.41.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1720,7 +1720,7 @@ importers:
         version: 5.0.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1914,7 +1914,7 @@ importers:
         version: 1.2.5
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -1988,19 +1988,19 @@ importers:
         version: link:../icons
       '@tanstack/ai-anthropic':
         specifier: catalog:ai
-        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.5))(zod@4.6.5)
+        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))(zod@4.6.7)
       '@tanstack/ai-gemini':
         specifier: catalog:ai
-        version: 0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(@tanstack/ai@0.69.0(zod@4.6.5))(supports-color@10.1.0)
+        version: 0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)
       '@tanstack/ai-ollama':
         specifier: catalog:ai
-        version: 0.12.0(@tanstack/ai@0.69.0(zod@4.6.5))
+        version: 0.12.0(@tanstack/ai@0.69.0(zod@4.6.7))
       '@tanstack/ai-openai':
         specifier: catalog:ai
-        version: 0.30.0(@tanstack/ai@0.69.0(zod@4.6.5))(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)
+        version: 0.30.0(@tanstack/ai@0.69.0(zod@4.6.7))(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)
       '@tanstack/ai-openrouter':
         specifier: catalog:ai
-        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.5))
+        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.13)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.153.0)(vite@8.3.4(@types/node@22.19.19)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -2045,7 +2045,7 @@ importers:
         version: 17.7.3
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -2109,7 +2109,7 @@ importers:
         version: 1.12.1(typescript@6.0.3)
       '@tanstack/ai':
         specifier: catalog:ai
-        version: 0.69.0(zod@4.6.5)
+        version: 0.69.0(zod@4.6.7)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -2335,16 +2335,16 @@ importers:
         version: 3.49.0(react@19.3.1)
       '@tanstack/ai':
         specifier: catalog:ai
-        version: 0.69.0(zod@4.6.5)
+        version: 0.69.0(zod@4.6.7)
       '@tanstack/ai-client':
         specifier: catalog:ai
-        version: 0.39.3(zod@4.6.5)
+        version: 0.39.3(zod@4.6.7)
       '@tanstack/ai-react':
         specifier: catalog:ai
-        version: 0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
+        version: 0.30.4(@tanstack/ai@0.69.0(zod@4.6.7))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@tanstack/ai-react-ui':
         specifier: catalog:ai
-        version: 0.9.7(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
+        version: 0.9.7(@tanstack/ai@0.69.0(zod@4.6.7))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.114.27(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2488,7 +2488,7 @@ importers:
         version: 5.33.2
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
       zx:
         specifier: 'catalog:'
         version: 8.8.5
@@ -2580,7 +2580,7 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.5)
+        version: 0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)
       '@hono/node-server':
         specifier: catalog:hono
         version: 2.1.5(hono@4.13.13)
@@ -2589,10 +2589,10 @@ importers:
         version: 1.29.2
       '@modelcontextprotocol/ext-apps':
         specifier: catalog:mcp
-        version: 1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
+        version: 1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.32.1(supports-color@10.1.0)(zod@4.6.5)
+        version: 1.32.1(supports-color@10.1.0)(zod@4.6.7)
       bundle-require:
         specifier: catalog:externals
         version: 5.1.0(esbuild@0.28.2)
@@ -2637,7 +2637,7 @@ importers:
         version: 3.2.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@likec4/config':
         specifier: workspace:*
@@ -2914,13 +2914,13 @@ importers:
         version: link:../log
       '@tanstack/ai-gemini':
         specifier: catalog:ai
-        version: 0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(@tanstack/ai@0.69.0(zod@4.6.5))(supports-color@10.1.0)
+        version: 0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)
       '@tanstack/ai-ollama':
         specifier: catalog:ai
-        version: 0.12.0(@tanstack/ai@0.69.0(zod@4.6.5))
+        version: 0.12.0(@tanstack/ai@0.69.0(zod@4.6.7))
       '@tanstack/ai-openrouter':
         specifier: catalog:ai
-        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.5))
+        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))
       defu:
         specifier: catalog:utils
         version: 6.1.7
@@ -2971,7 +2971,7 @@ importers:
         version: 8.22.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@likec4/devops':
         specifier: workspace:*
@@ -2987,13 +2987,13 @@ importers:
         version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
       '@tanstack/ai':
         specifier: catalog:ai
-        version: 0.69.0(zod@4.6.5)
+        version: 0.69.0(zod@4.6.7)
       '@tanstack/ai-anthropic':
         specifier: catalog:ai
-        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.5))(zod@4.6.5)
+        version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))(zod@4.6.7)
       '@tanstack/ai-openai':
         specifier: catalog:ai
-        version: 0.30.0(@tanstack/ai@0.69.0(zod@4.6.5))(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)
+        version: 0.30.0(@tanstack/ai@0.69.0(zod@4.6.7))(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.19
@@ -3183,7 +3183,7 @@ importers:
         version: 3.2.0
       zod:
         specifier: catalog:externals
-        version: 4.6.5
+        version: 4.6.7
       zx:
         specifier: 'catalog:'
         version: 8.8.5
@@ -3511,6 +3511,9 @@ packages:
   '@astrojs/internal-helpers@0.12.0':
     resolution: {integrity: sha512-pKPuwCDtO0L7zgmt1JGd9X4Aes1+0SX3IEBSqBNPHsScYdPMlfmed3Y7DTbXyF7E+8ylnb563o/0OzGQPOFehw==}
 
+  '@astrojs/internal-helpers@0.13.0':
+    resolution: {integrity: sha512-20jxQqnSmpskcGyad7N5l6Xf1gz0UCa6lNde44bEBdaXGpncEYfAZJ142r2ZgzBaG4dUyzGmhqZWv1INU2eiHQ==}
+
   '@astrojs/language-server@2.16.10':
     resolution: {integrity: sha512-87VQ/5GSdHlRnUA+hGuerYyIGAj+9RbZmATyuKLEUePinUXhQ5YkRnRrHhOD9sSi5JOErLjrLkHnfZFEvGrV8w==}
     hasBin: true
@@ -3529,8 +3532,8 @@ packages:
   '@astrojs/markdown-satteri@0.3.4':
     resolution: {integrity: sha512-6Lvt/bQZEBW+zzdhPblvfZEy5PGEYJaUsUqaCgwHeRPxZJL1gc9I+DRLKWJjjYTWDzVUTzXlMq4WwSK+X34CVw==}
 
-  '@astrojs/markdown-satteri@0.4.3':
-    resolution: {integrity: sha512-PFbEHPnwUlLvpXd7RXrrKM+j12akF4bG+DSuNuoN+3eiwjOwp4HaPi+QQdbkBV7QEYXmzyKca50OJsmGxhNIUA==}
+  '@astrojs/markdown-satteri@0.4.4':
+    resolution: {integrity: sha512-Byhe9CAiGFJrhMACKpgN/FPf4lcwapqwFQAB7E1sPELTEJINfBIpgnEYOBTXzr//fvSSNhfp/X3AqN4mUV9p+A==}
 
   '@astrojs/mdx@8.0.3':
     resolution: {integrity: sha512-SmwnVrGZSohDG0B9LXiAPbR6fe9TOumli9Vw/9zo815xGTeB1T3Fqt6HEClmBsVwIKFg/ccos4TgjZAedvg7zA==}
@@ -3546,6 +3549,10 @@ packages:
   '@astrojs/prism@4.0.2':
     resolution: {integrity: sha512-KTivpmnz6lDsC6o9H4+DNm2SrE/GHzw8cNAvEJwAvUT+eoaEnn/4NtbDNfRRaxaJHdp15gf+tfHAWiXR4wB3BA==}
     engines: {node: '>=22.12.0'}
+
+  '@astrojs/prism@4.1.0':
+    resolution: {integrity: sha512-zvRaL3MKTAXWfVQrHAlYtocRZWXBM6ruF3Bl7Lc7QgFHLRTfwMKo33KczlkvkXDY+qcytKhAWOT9dwUUYLUxAw==}
+    engines: {node: '>=22.22.0'}
 
   '@astrojs/react@6.0.6':
     resolution: {integrity: sha512-TQ9G2m2tIx9c105GmvjRAcTk+kV0QER5MsEPKUbK1Jm8SBYKzIzR89xh4L2vXAxI2zMfTMmsR7vln1TOLZpckw==}
@@ -3574,9 +3581,9 @@ packages:
       '@astrojs/markdown-remark':
         optional: true
 
-  '@astrojs/telemetry@3.3.3':
-    resolution: {integrity: sha512-C1TLn5sPJr0x4vk56piHWKbnqlEB8BKyte5Y45V02U+D7BGO5eMqZDH5aPjnkXQWJggvmsTXxH03QMZ9NgWLzQ==}
-    engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0}
+  '@astrojs/telemetry@3.4.0':
+    resolution: {integrity: sha512-Qt2T6RGtYacyV8OZU3IcyFbsp69s6qIcnWvQvn7/p9MKebPCpEswP5Ji4RhifG3DfeBX7e07Pjj5smkd+Tfp7Q==}
+    engines: {node: '>=22.22.0'}
 
   '@astrojs/yaml2ts@0.2.4':
     resolution: {integrity: sha512-8oddpOae35pJsXPQXhTkM0ypfKPskVsh2bCxRtbf7e+/Epw2nReakFYpLKjZMEr75CsoF203PMnCocpfz0s69A==}
@@ -7143,9 +7150,9 @@ packages:
       astro: '*'
       typescript: ^5.9.3
 
-  astro@7.3.8:
-    resolution: {integrity: sha512-LHzDHSaV+YzZiR3EFndDYTLLeNeuMtP1qX1FLcCNUUHOCqTTIWPczy2UV3zpA5VqvJe5cWZolqM9Z8JFqR2i9w==}
-    engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
+  astro@7.4.0:
+    resolution: {integrity: sha512-6ThZU2bp7asGSceVcnh3r23dE88HpYN5vxtnCWYYrjr8lpQjx4eDW6/W8WgNlcc+T/b8zHmQ/EcS4DpQG4ZoOg==}
+    engines: {node: '>=22.22.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
     peerDependencies:
       '@astrojs/markdown-remark': ^7.3.0
@@ -7688,6 +7695,10 @@ packages:
   devalue@5.9.4:
     resolution: {integrity: sha512-sPAT4pztbu6586/hrhOnMKS17IJrvg12mXiSPSS3W5qDeN2RGgvZ0diZCm31dBbnevfVmujNO3IM2wrS4Y2Rhg==}
 
+  devalue@6.0.3:
+    resolution: {integrity: sha512-3woMEITftG1wKeO/4d/QXH1DVKctTSZg3jNGPpjp9hNr5Hos8MCFF5McTML5ZtgKDObm2R591B0spRp2IVernA==}
+    engines: {node: '>=18'}
+
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
@@ -7996,10 +8007,6 @@ packages:
     resolution: {integrity: sha512-S8KoZgRZN+a5rNwqTxlZZePjT/4cnm0ROV70LedRHZ0p8u9fRID0hJUZQpkKLzro8LfmC8sx23bY6tVNxv8pQA==}
     engines: {node: '>= 18.0.0'}
 
-  find-proc@0.2.0:
-    resolution: {integrity: sha512-a6h2nTrgB3g5Wrn4au9Ux4kMk7IJtyF6oA8uGn+mk3weLZssUtc1cp6meHIzzuW2o1srrBAxzkmXLbqjRkgB6w==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-
   find-up-simple@1.0.0:
     resolution: {integrity: sha512-q7Us7kcjj2VMePAa02hDAF6d+MzsdsAWEwYyOpwUtlerRBkOEPBCRZrAV4XfcSN8fHAgaD0hP7miwoay6DCprw==}
     engines: {node: '>=18'}
@@ -8014,6 +8021,9 @@ packages:
   flattie@1.1.1:
     resolution: {integrity: sha512-9UbaD6XdAL97+k/n+N7JwX46K/M6Zc6KcFYskrYL8wbBV/Uyk0CTAMY0VT+qiK5PM7AIc9aTWYtq65U7T+aCNQ==}
     engines: {node: '>=8'}
+
+  fnv1a-64@0.1.2:
+    resolution: {integrity: sha512-mJbcILTPybAR1jdOwt/lVv8N2cffeJFFP+gVbSAwLEx1ujXH27RpPd8Rokec/KX9c76UYIB6Co+H4lQzxPnJfA==}
 
   fontace@0.4.1:
     resolution: {integrity: sha512-lDMvbAzSnHmbYMTEld5qdtvNH2/pWpICOqpean9IgC7vUbUJc3k+k5Dokp85CegamqQpFbXf0rAVkbzpyTA8aw==}
@@ -9404,8 +9414,8 @@ packages:
     resolution: {integrity: sha512-aNZ+VfjobsWryoiPnEApGGmf5WmNsCo9xu8dfaYamG5qaLP7ClhLN6NgsFe6SwJ2UbLEBK5dv9x8Mn5+RVhMWQ==}
     engines: {node: '>=18'}
 
-  p-queue@9.3.3:
-    resolution: {integrity: sha512-NXAOdnEe5FsZJfT4oK84lE1Y5cFFdWlRuOo5tww8DyNMxyRXwn39fIkUtNLKppcPC+UYU/bXujNCUGDv01y7CA==}
+  p-queue@9.3.5:
+    resolution: {integrity: sha512-Lki/zhXFVmDhesBUn/yHRLW9Bte7mE7xoFHzTR8sIomV7a2z+LxYAPkGvdfidNiu4fKSfjtawixxSHcZci5QcQ==}
     engines: {node: '>=20'}
 
   p-retry@4.6.2:
@@ -10345,6 +10355,9 @@ packages:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
 
+  tinyps@0.5.0:
+    resolution: {integrity: sha512-Llu7nEtVOGHh7jok32l6+udlu+4Np5vsYVB7zeTK614coSsro2qjwte7MFt/ouLM/h4kXqbGXktSMMvMsttSDw==}
+
   tinyrainbow@3.2.0:
     resolution: {integrity: sha512-LgO3D9yZJjApUiuUfl9iFAwrtaX4+lok3wJIqttGoKCHlWUqHqbQpnxCf82L8FjgKsh4iGo78hqJwgL8F6To2A==}
     engines: {node: '>=14.0.0'}
@@ -10533,8 +10546,8 @@ packages:
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
 
-  unifont@0.7.5:
-    resolution: {integrity: sha512-ULe/Cs+ZIsq+dcFofNkhqielCrUJnb5mr+Yc4EBM2VlL+6OZR6+cjtI2mT1bJvRBrVncqHAbLURxmPLcCXzWMg==}
+  unifont@1.0.3:
+    resolution: {integrity: sha512-XGnEwj5sWdCbiBX01mWLSBncS0yMRjnLygau3IfdOlfjMacNIQvTGW4VH7pWBq+gGWArfSef/CensMLjMmIr/A==}
 
   unist-util-filter@5.0.1:
     resolution: {integrity: sha512-pHx7D4Zt6+TsfwylH9+lYhBhzyhEnCXs/lbq/Hstxno5z4gVdyc2WEW0asfjGKPyG4pEKrnBv5hdkO6+aRnQJw==}
@@ -11240,8 +11253,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.6.5:
-    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -11268,16 +11281,16 @@ packages:
 
 snapshots:
 
-  '@ag-ui/core@1.0.0(zod@4.6.5)':
+  '@ag-ui/core@1.0.0(zod@4.6.7)':
     optionalDependencies:
-      zod: 4.6.5
+      zod: 4.6.7
 
-  '@anthropic-ai/sdk@0.97.1(zod@4.6.5)':
+  '@anthropic-ai/sdk@0.97.1(zod@4.6.7)':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.1.1
     optionalDependencies:
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@astrojs/check@0.9.10(prettier@3.5.2)(typescript@6.0.3)':
     dependencies:
@@ -11387,6 +11400,17 @@ snapshots:
       unified: 11.0.5
       yaml: 2.9.1
 
+  '@astrojs/internal-helpers@0.13.0':
+    dependencies:
+      '@types/hast': 3.0.5
+      '@types/mdast': 4.0.4
+      picomatch: 4.0.7
+      retext-smartypants: 6.2.0
+      shiki: 4.5.0
+      smol-toml: 1.9.1
+      unified: 11.0.5
+      yaml: 2.9.1
+
   '@astrojs/language-server@2.16.10(prettier@3.5.2)(typescript@6.0.3)':
     dependencies:
       '@astrojs/compiler': 2.13.1
@@ -11442,21 +11466,25 @@ snapshots:
       hast-util-from-html: 2.0.3
       satteri: 0.9.4
 
-  '@astrojs/markdown-satteri@0.4.3':
+  '@astrojs/markdown-satteri@0.4.4':
     dependencies:
-      '@astrojs/internal-helpers': 0.12.0
-      '@astrojs/prism': 4.0.2
+      '@astrojs/internal-helpers': 0.13.0
+      '@astrojs/prism': 4.1.0
       github-slugger: 2.0.0
       satteri: 0.10.5
 
-  '@astrojs/mdx@8.0.3(@astrojs/markdown-satteri@0.4.3)(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
+  '@astrojs/mdx@8.0.3(@astrojs/markdown-satteri@0.4.4)(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
       '@astrojs/internal-helpers': 0.12.0
-      '@astrojs/markdown-satteri': 0.4.3
-      astro: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      '@astrojs/markdown-satteri': 0.4.4
+      astro: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       es-module-lexer: 3.0.3
 
   '@astrojs/prism@4.0.2':
+    dependencies:
+      prismjs: 1.30.0
+
+  '@astrojs/prism@4.1.0':
     dependencies:
       prismjs: 1.30.0
 
@@ -11490,24 +11518,24 @@ snapshots:
     dependencies:
       sitemap: 9.0.1
       stream-replace-string: 2.0.0
-      zod: 4.6.5
+      zod: 4.6.7
 
-  '@astrojs/starlight-tailwind@5.0.0(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(tailwindcss@4.3.2)':
+  '@astrojs/starlight-tailwind@5.0.0(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(tailwindcss@4.3.2)':
     dependencies:
-      '@astrojs/starlight': 0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
+      '@astrojs/starlight': 0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
       tailwindcss: 4.3.2
 
-  '@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)':
+  '@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)':
     dependencies:
-      '@astrojs/markdown-satteri': 0.4.3
-      '@astrojs/mdx': 8.0.3(@astrojs/markdown-satteri@0.4.3)(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      '@astrojs/markdown-satteri': 0.4.4
+      '@astrojs/mdx': 8.0.3(@astrojs/markdown-satteri@0.4.4)(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@astrojs/sitemap': 3.7.3
       '@pagefind/default-ui': 1.3.0
       '@types/hast': 3.0.5
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-      astro-expressive-code: 0.44.0(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      astro: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      astro-expressive-code: 0.44.0(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       bcp-47: 2.1.0
       hast-util-format: 1.1.0
       hast-util-select: 6.0.4
@@ -11532,7 +11560,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@astrojs/telemetry@3.3.3':
+  '@astrojs/telemetry@3.4.0':
     dependencies:
       ci-info: 4.4.0
       dset: 3.1.4
@@ -12496,26 +12524,26 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.3.0': {}
 
-  '@google/genai@2.30.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(supports-color@10.1.0)':
+  '@google/genai@2.30.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(supports-color@10.1.0)':
     dependencies:
       google-auth-library: 10.6.2(supports-color@10.1.0)
       p-retry: 4.6.2
       protobufjs: 7.5.6
       ws: 8.22.0
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.5)
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.5)':
+  '@hono/mcp@0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.5)
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
       hono: 4.13.13
       hono-rate-limiter: 0.5.3(hono@4.13.13)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@hono/node-server@2.1.5(hono@4.13.13)':
     dependencies:
@@ -12525,10 +12553,10 @@ snapshots:
     dependencies:
       hono: 4.13.13
 
-  '@hono/zod-validator@0.9.1(hono@4.13.13)(zod@4.6.5)':
+  '@hono/zod-validator@0.9.1(hono@4.13.13)(zod@4.6.7)':
     dependencies:
       hono: 4.13.13
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@hpcc-js/wasm-graphviz@1.29.2': {}
 
@@ -13088,16 +13116,16 @@ snapshots:
 
   '@microsoft/tsdoc@0.17.1': {}
 
-  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)':
+  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.5)
+      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
       '@standard-schema/spec': 1.1.0
-      zod: 4.6.5
+      zod: 4.6.7
     optionalDependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5)':
+  '@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7)':
     dependencies:
       '@hono/node-server': 2.1.5(hono@4.13.13)
       ajv: 8.20.0
@@ -13114,8 +13142,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.6.5
-      zod-to-json-schema: 3.25.1(zod@4.6.5)
+      zod: 4.6.7
+      zod-to-json-schema: 3.25.1(zod@4.6.7)
     transitivePeerDependencies:
       - supports-color
 
@@ -13162,7 +13190,7 @@ snapshots:
 
   '@openrouter/sdk@0.13.20':
     dependencies:
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@oslojs/encoding@1.1.0': {}
 
@@ -13945,17 +13973,17 @@ snapshots:
       tailwindcss: 4.3.2
       vite: 8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
-  '@tanstack/ai-anthropic@0.22.0(@tanstack/ai@0.69.0(zod@4.6.5))(zod@4.6.5)':
+  '@tanstack/ai-anthropic@0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))(zod@4.6.7)':
     dependencies:
-      '@anthropic-ai/sdk': 0.97.1(zod@4.6.5)
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@anthropic-ai/sdk': 0.97.1(zod@4.6.7)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
     transitivePeerDependencies:
       - zod
 
-  '@tanstack/ai-client@0.39.3(zod@4.6.5)':
+  '@tanstack/ai-client@0.39.3(zod@4.6.7)':
     dependencies:
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-event-client': 0.13.1
       '@tanstack/ai-utils': 0.4.2
     transitivePeerDependencies:
@@ -13966,10 +13994,10 @@ snapshots:
     dependencies:
       '@tanstack/devtools-event-client': 0.4.3
 
-  '@tanstack/ai-gemini@0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(@tanstack/ai@0.69.0(zod@4.6.5))(supports-color@10.1.0)':
+  '@tanstack/ai-gemini@0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)':
     dependencies:
-      '@google/genai': 2.30.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.5))(supports-color@10.1.0)
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@google/genai': 2.30.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(supports-color@10.1.0)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
       partial-json: 0.1.7
     transitivePeerDependencies:
@@ -13978,18 +14006,18 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@tanstack/ai-ollama@0.12.0(@tanstack/ai@0.69.0(zod@4.6.5))':
+  '@tanstack/ai-ollama@0.12.0(@tanstack/ai@0.69.0(zod@4.6.7))':
     dependencies:
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
       ollama: 0.6.3
 
-  '@tanstack/ai-openai@0.30.0(@tanstack/ai@0.69.0(zod@4.6.5))(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)':
+  '@tanstack/ai-openai@0.30.0(@tanstack/ai@0.69.0(zod@4.6.7))(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)':
     dependencies:
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
-      '@tanstack/openai-base': 0.14.0(@tanstack/ai@0.69.0(zod@4.6.5))(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)
-      openai: 7.34.0(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)
+      '@tanstack/openai-base': 0.14.0(@tanstack/ai@0.69.0(zod@4.6.7))(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)
+      openai: 7.34.0(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@smithy/hash-node'
@@ -13998,15 +14026,15 @@ snapshots:
       - ws
       - zod
 
-  '@tanstack/ai-openrouter@0.22.0(@tanstack/ai@0.69.0(zod@4.6.5))':
+  '@tanstack/ai-openrouter@0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))':
     dependencies:
       '@openrouter/sdk': 0.13.20
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
 
-  '@tanstack/ai-react-ui@0.9.7(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)':
+  '@tanstack/ai-react-ui@0.9.7(@tanstack/ai@0.69.0(zod@4.6.7))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)':
     dependencies:
-      '@tanstack/ai-react': 0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)
+      '@tanstack/ai-react': 0.30.4(@tanstack/ai@0.69.0(zod@4.6.7))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
     transitivePeerDependencies:
       - '@mcp-ui/client'
       - '@opentelemetry/api'
@@ -14017,10 +14045,10 @@ snapshots:
       - react-dom
       - zod
 
-  '@tanstack/ai-react@0.30.4(@tanstack/ai@0.69.0(zod@4.6.5))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.5)':
+  '@tanstack/ai-react@0.30.4(@tanstack/ai@0.69.0(zod@4.6.7))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)':
     dependencies:
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
-      '@tanstack/ai-client': 0.39.3(zod@4.6.5)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
+      '@tanstack/ai-client': 0.39.3(zod@4.6.7)
       '@tanstack/markdown': 0.0.13(react@19.3.1)
       '@types/react': 19.3.0
       react: 19.3.1
@@ -14033,9 +14061,9 @@ snapshots:
 
   '@tanstack/ai-utils@0.4.2': {}
 
-  '@tanstack/ai@0.69.0(zod@4.6.5)':
+  '@tanstack/ai@0.69.0(zod@4.6.7)':
     dependencies:
-      '@ag-ui/core': 1.0.0(zod@4.6.5)
+      '@ag-ui/core': 1.0.0(zod@4.6.7)
       '@standard-schema/spec': 1.1.0
       '@tanstack/ai-event-client': 0.13.1
       '@tanstack/ai-utils': 0.4.2
@@ -14052,11 +14080,11 @@ snapshots:
     optionalDependencies:
       react: 19.3.1
 
-  '@tanstack/openai-base@0.14.0(@tanstack/ai@0.69.0(zod@4.6.5))(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)':
+  '@tanstack/openai-base@0.14.0(@tanstack/ai@0.69.0(zod@4.6.7))(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)':
     dependencies:
-      '@tanstack/ai': 0.69.0(zod@4.6.5)
+      '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
-      openai: 7.34.0(undici@8.10.2)(ws@8.22.0)(zod@4.6.5)
+      openai: 7.34.0(undici@8.10.2)(ws@8.22.0)(zod@4.6.7)
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@smithy/hash-node'
@@ -14844,22 +14872,22 @@ snapshots:
 
   astral-regex@2.0.0: {}
 
-  astro-expressive-code@0.44.0(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)):
+  astro-expressive-code@0.44.0(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
-      astro: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      astro: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       rehype-expressive-code: 0.44.0
       url-extras: 0.1.0
 
-  astro-og-canvas@0.13.2(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)):
+  astro-og-canvas@0.13.2(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
-      astro: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      astro: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       canvaskit-wasm: 0.42.0
       deterministic-object-hash: 2.0.2
       entities: 8.1.0
 
-  astro-skills@0.1.1(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(typescript@6.0.3):
+  astro-skills@0.1.1(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(typescript@6.0.3):
     dependencies:
-      astro: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      astro: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       p-limit: 6.2.0
       picomatch: 4.0.7
       tar: 7.5.22
@@ -14867,12 +14895,12 @@ snapshots:
       typescript: 6.0.3
       yaml: 2.9.1
 
-  astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1):
+  astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1):
     dependencies:
       '@astrojs/compiler-rs': 0.5.1
-      '@astrojs/internal-helpers': 0.12.0
-      '@astrojs/markdown-satteri': 0.4.3
-      '@astrojs/telemetry': 3.3.3
+      '@astrojs/internal-helpers': 0.13.0
+      '@astrojs/markdown-satteri': 0.4.4
+      '@astrojs/telemetry': 3.4.0
       '@capsizecss/unpack': 4.0.1
       '@clack/prompts': 1.8.1
       '@oslojs/encoding': 1.1.0
@@ -14883,11 +14911,10 @@ snapshots:
       clsx: 2.1.1
       common-ancestor-path: 2.0.0
       cookie: 2.0.1
-      devalue: 5.9.4
+      devalue: 6.0.3
       diff: 9.0.0
       dset: 3.1.4
       es-module-lexer: 3.0.3
-      find-proc: 0.2.0
       flattie: 1.1.1
       fontace: 0.4.1
       get-tsconfig: 5.0.0-beta.6
@@ -14901,7 +14928,7 @@ snapshots:
       neotraverse: 1.0.1
       obug: 3.0.0
       p-limit: 7.3.3
-      p-queue: 9.3.3
+      p-queue: 9.3.5
       package-manager-detector: 1.9.0
       piccolore: 0.1.3
       picomatch: 4.0.7
@@ -14912,15 +14939,16 @@ snapshots:
       tinyclip: 1.0.3
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
+      tinyps: 0.5.0
       ultrahtml: 1.7.0
-      unifont: 0.7.5
+      unifont: 1.0.3
       unstorage: 1.17.5
       verkit: 0.5.0
       vite: 8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       vitefu: 1.1.3(vite@8.3.4(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       xxhash-wasm: 1.1.0
       yargs-parser: 22.0.0
-      zod: 4.6.5
+      zod: 4.6.7
     optionalDependencies:
       sharp: 0.35.5(@types/node@24.12.4)
     transitivePeerDependencies:
@@ -15516,6 +15544,8 @@ snapshots:
 
   devalue@5.9.4: {}
 
+  devalue@6.0.3: {}
+
   devlop@1.1.0:
     dependencies:
       dequal: 2.0.3
@@ -15891,8 +15921,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  find-proc@0.2.0: {}
-
   find-up-simple@1.0.0: {}
 
   find-up@5.0.0:
@@ -15903,6 +15931,8 @@ snapshots:
   flatted@3.4.4: {}
 
   flattie@1.1.1: {}
+
+  fnv1a-64@0.1.2: {}
 
   fontace@0.4.1:
     dependencies:
@@ -17471,11 +17501,11 @@ snapshots:
       regex: 6.1.0
       regex-recursion: 6.0.2
 
-  openai@7.34.0(undici@8.10.2)(ws@8.22.0)(zod@4.6.5):
+  openai@7.34.0(undici@8.10.2)(ws@8.22.0)(zod@4.6.7):
     optionalDependencies:
       undici: 8.10.2
       ws: 8.22.0
-      zod: 4.6.5
+      zod: 4.6.7
 
   os-browserify@0.3.0: {}
 
@@ -17562,7 +17592,7 @@ snapshots:
       eventemitter3: 5.0.4
       p-timeout: 6.1.4
 
-  p-queue@9.3.3:
+  p-queue@9.3.5:
     dependencies:
       eventemitter3: 5.0.4
       p-timeout: 7.0.2
@@ -18555,11 +18585,11 @@ snapshots:
       '@stablelib/base64': 1.0.1
       fast-sha256: 1.3.0
 
-  starlight-heading-badges@0.8.0(patch_hash=a8b7588554a489266da6e408b1218f040a1553f1ee234d04df66c22cf6d50559)(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(supports-color@10.1.0):
+  starlight-heading-badges@0.8.0(patch_hash=a8b7588554a489266da6e408b1218f040a1553f1ee234d04df66c22cf6d50559)(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(supports-color@10.1.0):
     dependencies:
       '@astrojs/markdown-remark': 7.2.0(supports-color@10.1.0)
       '@astrojs/markdown-satteri': 0.3.4
-      '@astrojs/starlight': 0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
+      '@astrojs/starlight': 0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
       github-slugger: 2.0.0
       mdast-util-directive: 3.1.0(supports-color@10.1.0)
       satteri: 0.9.4
@@ -18567,11 +18597,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-links-validator@0.27.0(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0):
+  starlight-links-validator@0.27.0(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3))(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0):
     dependencies:
-      '@astrojs/markdown-satteri': 0.4.3
-      '@astrojs/starlight': 0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
-      astro: 7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      '@astrojs/markdown-satteri': 0.4.4
+      '@astrojs/starlight': 0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
+      astro: 7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
       github-slugger: 2.0.0
       hast-util-from-html: 2.0.3
       is-absolute-url: 5.0.0
@@ -18585,9 +18615,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  starlight-package-managers@0.13.0(@astrojs/starlight@0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)):
+  starlight-package-managers@0.13.0(@astrojs/starlight@0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)):
     dependencies:
-      '@astrojs/starlight': 0.42.6(astro@7.3.8(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
+      '@astrojs/starlight': 0.42.6(astro@7.4.0(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(supports-color@10.1.0)(typescript@6.0.3)
 
   statuses@2.0.2: {}
 
@@ -18735,6 +18765,8 @@ snapshots:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.7)
       picomatch: 4.0.7
+
+  tinyps@0.5.0: {}
 
   tinyrainbow@3.2.0: {}
 
@@ -18928,10 +18960,11 @@ snapshots:
       trough: 2.2.0
       vfile: 6.0.3
 
-  unifont@0.7.5:
+  unifont@1.0.3:
     dependencies:
       css-tree: 3.1.0
-      ohash: 2.0.12
+      fnv1a-64: 0.1.2
+      std-env: 4.3.0
       undici: 8.10.2
 
   unist-util-filter@5.0.1:
@@ -19659,13 +19692,13 @@ snapshots:
       '@yuku-parser/binding-win32-arm64': 0.9.3
       '@yuku-parser/binding-win32-x64': 0.9.3
 
-  zod-to-json-schema@3.25.1(zod@4.6.5):
+  zod-to-json-schema@3.25.1(zod@4.6.7):
     dependencies:
-      zod: 4.6.5
+      zod: 4.6.7
 
   zod@3.25.76: {}
 
-  zod@4.6.5: {}
+  zod@4.6.7: {}
 
   zustand@4.5.7(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1):
     dependencies:
