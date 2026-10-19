@@ -36,6 +36,9 @@ const model = Builder.specification({
             description: 'Instance description',
             metadata: { owner: 'Instance owner' },
           }),
+          d.instanceOf('apiInherited', 'api', {
+            title: 'Inherited API',
+          }),
         ),
       ),
     )
@@ -94,6 +97,13 @@ describe('deployment details card', () => {
     expect(html).toContain('Logical API')
     expect(html).not.toContain('Logical description')
     expect(html).not.toContain('Logical owner')
+  })
+
+  it('shows logical metadata when the instance has no metadata override', () => {
+    const html = render({ type: 'deployment', deployment: scalar.DeploymentFqn('prod.server.apiInherited') })
+
+    expect(html).toContain('Inherited API')
+    expect(html).toContain('Logical owner')
   })
 
   it('preserves logical element properties and tabs', () => {
