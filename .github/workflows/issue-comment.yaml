@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Check commenter has write access
         id: perm
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -51,7 +51,7 @@ jobs:
 
       - name: resolve pr refs
         id: refs
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: ${{ steps.perm.outputs.allowed == 'true' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -83,7 +83,7 @@ jobs:
           env: playground-preview
           ref: ${{ env.PR_HEAD_SHA }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
@@ -107,7 +107,7 @@ jobs:
           packageManager: pnpm
 
       - name: add comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
         with:
@@ -148,7 +148,7 @@ jobs:
           env: docs-preview
           ref: ${{ env.PR_HEAD_SHA }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.PR_HEAD_SHA }}
           fetch-depth: 0
@@ -173,7 +173,7 @@ jobs:
           packageManager: pnpm
 
       - name: add comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           DEPLOY_URL: ${{ steps.cloudflare.outputs.deployment-url }}
         with:

@@ -33,13 +33,13 @@ jobs:
           echo "::add-mask::$private_key"
           echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ steps.decode.outputs.private-key }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           token: ${{ steps.app-token.outputs.token }}
           ssh-strict: 'no'

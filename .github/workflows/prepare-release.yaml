@@ -36,7 +36,7 @@ jobs:
       #   with:
       #     app-id: ${{ secrets.BOT_APP_ID }}
       #     private-key: ${{ steps.decode.outputs.private-key }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0

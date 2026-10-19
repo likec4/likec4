@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 10
     if: ${{ github.repository_owner == 'likec4' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap
