@@ -344,8 +344,8 @@ catalogs:
       specifier: 0.28.2
       version: 0.28.2
     esbuild-node-externals:
-      specifier: 1.23.1
-      version: 1.23.1
+      specifier: 2.0.0
+      version: 2.0.0
   esbuild-wasm:
     esbuild:
       specifier: npm:esbuild-wasm@0.28.2
@@ -2148,7 +2148,7 @@ importers:
         version: 6.1.7
       esbuild-node-externals:
         specifier: catalog:esbuild
-        version: 1.23.1(esbuild@0.28.2)
+        version: 2.0.0(esbuild@0.28.2)
       esm-env:
         specifier: catalog:utils
         version: 1.2.2
@@ -7816,9 +7816,9 @@ packages:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
 
-  esbuild-node-externals@1.23.1:
-    resolution: {integrity: sha512-aU/Bxaq9KU5SUnsCVP0a2Kj74qZz0QpRH2qvcQ4tRQ7yGYcmzUPOdXXA2hd7o55OjChduOwsFYP5EPJH01gn2Q==}
-    engines: {node: '>=12'}
+  esbuild-node-externals@2.0.0:
+    resolution: {integrity: sha512-AzLWGYBC2MGvo37iAPv17yVe/r2iOfEZnCEBACR+5HkSrOOnRnVf8+33pJU5VCg7brzGtiSsBLqIp5hxYfItsw==}
+    engines: {node: '>=22'}
     peerDependencies:
       esbuild: 0.12 - 0.28
 
@@ -15582,7 +15582,7 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
 
-  esbuild-node-externals@1.23.1(esbuild@0.28.2):
+  esbuild-node-externals@2.0.0(esbuild@0.28.2):
     dependencies:
       empathic: 2.0.1
       esbuild: 0.28.2
