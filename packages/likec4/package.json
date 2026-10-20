@@ -176,7 +176,7 @@
     "get-port": "^7.2.0",
     "is-inside-container": "^1.0.0",
     "json5": "catalog:utils",
-    "ky": "^1.14.3",
+    "ky": "^2.2.0",
     "langium": "catalog:langium",
     "mkdirp": "^3.0.1",
     "nanostores": "catalog:react",
