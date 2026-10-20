@@ -583,6 +583,8 @@ export function layoutRelationshipsView(
     }
   })
 
+  const scopedEdges = scope ? [...scope.edges()] : []
+
   return {
     subjectExistsInScope: !scope || scope.includesElement(subject.id),
     bounds: {
@@ -611,6 +613,7 @@ export function layoutRelationshipsView(
         navigateTo,
       } = nonNullable(find(edges, e => e.name === ename))
       const onlyRelation = only(relations)
+      const scopedEdge = scopedEdges.find(edge => relations.every(r => edge.includesRelation(r.id)))
       // dagre sets the center of the label
       const labelX: unknown = edge['x']
       const labelY: unknown = edge['y']
@@ -631,12 +634,12 @@ export function layoutRelationshipsView(
           height: label.height,
         },
         navigateTo,
-        color: onlyRelation?.color ?? 'gray',
+        color: scopedEdge?.color ?? onlyRelation?.color ?? 'gray',
         existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
         points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
-        line: onlyRelation?.line ?? 'dashed',
-        head: onlyRelation?.head,
-        tail: onlyRelation?.tail,
+        line: scopedEdge?.line ?? onlyRelation?.line ?? 'dashed',
+        head: scopedEdge?.head ?? onlyRelation?.head,
+        tail: scopedEdge?.tail ?? onlyRelation?.tail,
         relations: relations.map(r => r.id),
         parent: null,
       }))
