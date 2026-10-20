@@ -60,7 +60,7 @@ catalog:
   rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
   tsx: 4.23.15
-  turbo: 2.11.8
+  turbo: 2.11.9
   typescript: 6.0.3
   wireit: 0.14.13
   zx: 8.8.5
