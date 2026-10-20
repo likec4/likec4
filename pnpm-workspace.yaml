@@ -195,7 +195,7 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
-    nanoid: 5.1.16
+    nanoid: 6.0.2
     natural-compare-lite: ^1.4.1
     object-hash: ^3.0.0
     ohash: ^2.0.12
