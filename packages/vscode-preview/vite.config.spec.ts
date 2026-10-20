@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import { runInNewContext } from 'node:vm'
 import { build } from 'vite'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -20,7 +21,7 @@ describe('preview build', () => {
       throw new Error('Expected a preview config factory')
     }
     const config = previewConfig({ command: 'build', mode })
-    const entry = '/preview-build-fixture.tsx'
+    const entry = resolve(import.meta.dirname, 'vite.config.fixture.tsx')
     const result = await build({
       ...config,
       configFile: false,
@@ -30,11 +31,6 @@ describe('preview build', () => {
         ...(config.plugins ?? []).filter(plugin =>
           !(plugin && typeof plugin === 'object' && 'name' in plugin && plugin.name === 'ship-panda')
         ),
-        {
-          name: 'preview-build-fixture',
-          resolveId: id => id === entry ? entry : null,
-          load: id => id === entry ? 'export const element = <div>Preview ready</div>' : null,
-        },
       ],
       build: {
         write: false,
