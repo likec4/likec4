@@ -942,7 +942,8 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest deployments', async ({ expect, completion }) => {
+  // Multiple completion requests need extra headroom when the full suite runs in parallel.
+  it('should suggest deployments', { timeout: 30_000 }, async ({ expect, completion }) => {
     const text = `
       specification {
         element component
