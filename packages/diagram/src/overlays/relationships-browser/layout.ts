@@ -551,6 +551,8 @@ export function layoutRelationshipsView(
     }
   })
 
+  const scopedEdges = scope ? [...scope.edges()] : []
+
   return {
     subjectExistsInScope: !scope || scope.includesElement(subject.id),
     bounds: {
@@ -577,6 +579,7 @@ export function layoutRelationshipsView(
         targetHandle,
       } = nonNullable(find(edges, e => e.name === ename))
       const onlyRelation = only(relations)
+      const scopedEdge = scopedEdges.find(edge => relations.every(r => edge.includesRelation(r.id)))
       const label = onlyRelation?.title ?? 'untitled'
       const isMultiple = relations.length > 1
       // const points = edge.points.map(p => [p.x, p.y] as Point)
@@ -593,12 +596,12 @@ export function layoutRelationshipsView(
         targetHandle,
         label: isMultiple ? `${relations.length} relationships` : label,
         navigateTo,
-        color: onlyRelation?.color ?? 'gray',
+        color: scopedEdge?.color ?? onlyRelation?.color ?? 'gray',
         existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
         points: edge.points.map(p => [p.x, p.y] as Point) as unknown as NonEmptyArray<Point>,
-        line: onlyRelation?.line ?? 'dashed',
-        head: onlyRelation?.head,
-        tail: onlyRelation?.tail,
+        line: scopedEdge?.line ?? onlyRelation?.line ?? 'dashed',
+        head: scopedEdge?.head ?? onlyRelation?.head,
+        tail: scopedEdge?.tail ?? onlyRelation?.tail,
         relations: relations.map(r => r.id),
         parent: null,
       }))
