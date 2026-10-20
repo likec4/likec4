@@ -168,7 +168,7 @@
     "birpc": "catalog:vite",
     "boxen": "^9.0.0",
     "clsx": "catalog:react",
-    "conf": "^15.1.0",
+    "conf": "^16.0.0",
     "defu": "catalog:utils",
     "esbuild-node-externals": "catalog:esbuild",
     "esm-env": "catalog:utils",
