@@ -7,6 +7,8 @@ import { defineConfig } from 'vite'
 export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
+  // React Compiler reads Vite's isProduction, which is derived from NODE_ENV.
+  process.env['NODE_ENV'] = isDev ? 'development' : 'production'
   return {
     resolve: {
       conditionNames: ['sources', 'module', 'import', 'default'],
@@ -25,11 +27,6 @@ export default defineConfig(({ mode }) => {
         plugins: [
           postcssPanda() as any,
         ],
-      },
-    },
-    oxc: {
-      jsx: {
-        development: false,
       },
     },
     build: {
