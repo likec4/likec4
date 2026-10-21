@@ -254,7 +254,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
       mark.property('value').string()
     })
-    when(ast.isLinkProperty, mark => {
+    when(isAnyOf(ast.isLinkProperty, ast.isDescriptionFileProperty), mark => {
       if (isTruthy(mark.node.value)) {
         mark.property('value').string()
       }

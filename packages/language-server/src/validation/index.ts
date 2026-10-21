@@ -31,6 +31,7 @@ import { checkElementRef } from './element-ref'
 import { checkImportsFromPoject } from './imports'
 import {
   colorLiteralRuleChecks,
+  descriptionFileRuleChecks,
   iconPropertyRuleChecks,
   opacityPropertyRuleChecks,
 } from './property-checks'
@@ -169,6 +170,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     RelationExpr: checkRelationExpr(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
+    DescriptionFileProperty: descriptionFileRuleChecks(services),
     SpecificationRule: checkSpecificationRule(services),
     Model: checkModel(services),
     Globals: checkGlobals(services),

@@ -7,7 +7,7 @@
 
 import type { ProjectId } from '@likec4/core'
 import { hasProp, invariant, MultiMap, objectHash } from '@likec4/core/utils'
-import { type LangiumDocument, type Stream, Disposable, DocumentState, UriUtils } from 'langium'
+import { type LangiumDocument, type Stream, type URI, Disposable, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
 import {
   type LikeC4DocumentProps,
@@ -141,6 +141,22 @@ export class LikeC4ModelParser extends ADisposable {
     return parser.doc
   }
 
+  /**
+   * Parses the given documents again.
+   *
+   * A parser is created as soon as a document is linked, while the files its `descriptionFile`
+   * properties reference are read when the model is built - so a parsed entity holds the reference to
+   * the file until then, and the documents whose content arrived are parsed again to resolve it.
+   */
+  reparse(uris: Iterable<URI>): void {
+    for (const uri of uris) {
+      const doc = this.services.shared.workspace.LangiumDocuments.getDocument(uri)
+      if (doc && isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.Linked) {
+        this.createParser(doc)
+      }
+    }
+  }
+
   forDocument(doc: LangiumDocument): DocumentParser {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
     return doc.likec4Parser ??= this.createParser(doc)
@@ -191,6 +207,7 @@ export class LikeC4ModelParser extends ADisposable {
       },
       c4Views: [],
       c4Imports: new MultiMap(Set),
+      c4DescriptionFiles: [],
     }
     const parser = new DocumentParser(
       this.services,

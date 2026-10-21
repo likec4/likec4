@@ -48,13 +48,17 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           }
           const tags = this.parseTags(relSpec)
           const links = this.parseLinks(relSpec)
-          const bodyProps = pipe(
-            props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
-            filter(p => this.isValid(p)),
-            mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-          )
+          const bodyProps = {
+            ...pipe(
+              props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
+              filter(p => this.isValid(p)),
+              mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+            ),
+            ...this.descriptionFileOf(props),
+          }
           // `summary` is not supported on relationship kinds (model relations have no summary)
-          const { summary: _summary, ...baseProps } = this.parseBaseProps(bodyProps)
+          // the reference to a file is recorded on the document, not part of the specification
+          const { summary: _summary, descriptionFile: _descriptionFile, ...baseProps } = this.parseBaseProps(bodyProps)
           const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
           const multipleProps = props.filter(ast.isMultipleProperty)
           if (multipleProps.length > 1) {
@@ -131,13 +135,17 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
       const links = this.parseLinks(specAst)
-      const bodyProps = pipe(
-        props.filter(ast.isSpecificationElementStringProperty) ?? [],
-        filter(p => this.isValid(p)),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const bodyProps = {
+        ...pipe(
+          props.filter(ast.isSpecificationElementStringProperty) ?? [],
+          filter(p => this.isValid(p)),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(props),
+      }
 
-      const baseProps = this.parseBaseProps(bodyProps)
+      // the reference to a file is recorded on the document, not part of the specification
+      const { descriptionFile: _descriptionFile, ...baseProps } = this.parseBaseProps(bodyProps)
       const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
 
       return {
