@@ -1,8 +1,4 @@
 import type { AnyTextAdapter } from '@tanstack/ai'
-import type { AnthropicTextAdapter } from '@tanstack/ai-anthropic'
-import type { GeminiTextAdapter } from '@tanstack/ai-gemini'
-import type { OllamaTextAdapter } from '@tanstack/ai-ollama'
-import type { OpenAITextAdapter } from '@tanstack/ai-openai'
 import { isTruthy, once } from 'remeda'
 import { env } from 'std-env'
 import { ensurePackage } from '../ensurePackage'
@@ -30,8 +26,7 @@ function chooseModel<T extends string>(envKey: string, defaultModel: T): T {
 
 const maxTokens = 16000
 
-const openaiDefaultModel = 'gpt-5.2' as const
-async function loadOpenAI(): Promise<AIOptions<OpenAITextAdapter<typeof openaiDefaultModel>>> {
+async function loadOpenAI(): Promise<AIOptions<any>> {
   logger.info(
     'Found ' + k.yellow('OPENAI_API_KEY') + k.dim(', loading @tanstack/ai-openai'),
   )
@@ -39,7 +34,7 @@ async function loadOpenAI(): Promise<AIOptions<OpenAITextAdapter<typeof openaiDe
   const { openaiText } = await import('@tanstack/ai-openai')
   return {
     adapter: openaiText(
-      chooseModel('OPENAI_CHAT_MODEL', openaiDefaultModel),
+      chooseModel('OPENAI_CHAT_MODEL', 'gpt-5.5'),
     ),
     modelOptions: {
       reasoning: {
@@ -50,7 +45,7 @@ async function loadOpenAI(): Promise<AIOptions<OpenAITextAdapter<typeof openaiDe
   }
 }
 
-async function loadOpenRouter(): Promise<AIOptions> {
+async function loadOpenRouter(): Promise<AIOptions<any>> {
   logger.info(
     'Found ' + k.yellow('OPENROUTER_API_KEY') + k.dim(', loading @tanstack/ai-openrouter'),
   )
@@ -58,14 +53,14 @@ async function loadOpenRouter(): Promise<AIOptions> {
   const { openRouterText } = await import('@tanstack/ai-openrouter')
   return {
     adapter: openRouterText(
-      chooseModel('OPENROUTER_CHAT_MODEL', 'openai/gpt-5.4'),
+      chooseModel('OPENROUTER_CHAT_MODEL', 'openai/gpt-5.6-sol'),
     ),
     maxTokens,
   }
 }
 
-const defaultModel = 'claude-sonnet-4-6' as const
-async function loadAnthropic(): Promise<AIOptions<AnthropicTextAdapter<typeof defaultModel>>> {
+// const defaultModel = 'claude-sonnet-5-5' satisfies typeof ANTHROPIC_MODELS[number]
+async function loadAnthropic(): Promise<AIOptions<any>> {
   logger.info(
     'Found ' + k.yellow('ANTHROPIC_API_KEY') + k.dim(', loading @tanstack/ai-anthropic'),
   )
@@ -73,14 +68,13 @@ async function loadAnthropic(): Promise<AIOptions<AnthropicTextAdapter<typeof de
   const { anthropicText } = await import('@tanstack/ai-anthropic')
   return {
     adapter: anthropicText(
-      chooseModel('ANTHROPIC_CHAT_MODEL', defaultModel),
+      chooseModel('ANTHROPIC_CHAT_MODEL', 'claude-sonnet-5-5'),
     ),
     maxTokens,
   }
 }
 
-const geminiDefaultModel = 'gemini-2.5-pro' as const
-async function loadGemini(): Promise<AIOptions<GeminiTextAdapter<typeof geminiDefaultModel>>> {
+async function loadGemini(): Promise<AIOptions<any>> {
   logger.info(
     'Found ' + k.yellow('GEMINI_API_KEY') + k.dim(', loading @tanstack/ai-gemini'),
   )
@@ -88,14 +82,14 @@ async function loadGemini(): Promise<AIOptions<GeminiTextAdapter<typeof geminiDe
   const { geminiText } = await import('@tanstack/ai-gemini')
   return {
     adapter: geminiText(
-      chooseModel('GEMINI_CHAT_MODEL', geminiDefaultModel),
+      chooseModel('GEMINI_CHAT_MODEL', 'gemini-3.5-flash'),
     ),
     maxTokens,
   }
 }
 
-const ollamaDefaultModel = 'qwen3' as const
-async function loadOllama(): Promise<AIOptions<OllamaTextAdapter<typeof ollamaDefaultModel>>> {
+async function loadOllama(): Promise<AIOptions<any>> {
+  const ollamaDefaultModel = 'qwen3' as const
   logger.info(
     'Found ' + k.yellow('OLLAMA_HOST') + k.dim(', loading @tanstack/ai-ollama'),
   )
@@ -103,7 +97,7 @@ async function loadOllama(): Promise<AIOptions<OllamaTextAdapter<typeof ollamaDe
   const { ollamaText } = await import('@tanstack/ai-ollama')
   const model = chooseModel('OLLAMA_CHAT_MODEL', ollamaDefaultModel)
   return {
-    adapter: ollamaText(model),
+    adapter: ollamaText(ollamaDefaultModel),
     modelOptions: {
       model,
       think: 'low',

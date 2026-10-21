@@ -2,7 +2,6 @@ import { Alert, Button, Code, Container, Group, Text, Title } from '@mantine/cor
 import { Link, useParams } from '@tanstack/react-router'
 
 import { css } from '@likec4/styles/css'
-import { rem } from '@mantine/core'
 
 const classes = {
   content: css({

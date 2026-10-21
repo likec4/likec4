@@ -1,6 +1,5 @@
 import type { StepPath } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
-import { Box } from '@likec4/styles/jsx'
 import { m } from 'motion/react'
 import { Activity } from 'react'
 import { activeFrame, activeFrameBorder, levelBand, nestedBand, recessionOf } from './depth-of-field'
@@ -9,7 +8,7 @@ import { SEQ_FRAME_LAYOUT_ID, SEQ_TRANSITION } from './motion'
 import { flowPresentation } from './presentation'
 import { StepRow } from './StepRow'
 import { useIsCollapsed, useSelectContext } from './StoreProvider'
-import { type CollapsedFlows, type OutlineTreeNodeFlow, type OutlineTreeNodes, isOutlineFlowNode } from './types'
+import { type OutlineTreeNodeFlow, type OutlineTreeNodes, isOutlineFlowNode } from './types'
 
 export type OutlineNodesProps = {
   nodes: OutlineTreeNodes

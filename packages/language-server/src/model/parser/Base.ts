@@ -7,7 +7,7 @@ import {
   nonexhaustive,
   nonNullable,
 } from '@likec4/core'
-import { type AstNode, type Reference, GrammarUtils, isAstNode, UriUtils } from 'langium'
+import { type AstNode, type Reference, GrammarUtils, isAstNode, isNamed, UriUtils } from 'langium'
 import {
   filter,
   findLast,
@@ -27,9 +27,11 @@ import {
 import { dedent } from 'strip-indent'
 import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, joinURL } from 'ufo'
 import {
+  type DescriptionFileRef,
   type ParsedElementStyle,
   type ParsedLikeC4LangiumDocument,
   ast,
+  calcValidationHash,
   parseAstIconPositionValue,
   parseAstOpacityProperty,
   parseAstPercent,
@@ -42,7 +44,7 @@ import { serverLogger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
 import { readStrictFqn } from '../../utils/elementRef'
-import { type IsValidFn, checksFromDiagnostics } from '../../validation'
+import { type IsInvalidFn, type IsValidFn, checksFromDiagnostics } from '../../validation'
 import type { Project } from '../../workspace/ProjectsManager'
 
 const logger = serverLogger.getChild('parser')
@@ -192,21 +194,42 @@ type ParserLevel =
 
 export class BaseParser {
   isValid: IsValidFn
+  isInvalid: IsInvalidFn
 
   /** Full URI of the document */
   docUri: string
   /** Path of the document relative to the project root */
   docPathInProject: string
 
+  hash: string
+  validationHash: string
+
   constructor(
-    public readonly services: LikeC4Services,
-    public readonly doc: ParsedLikeC4LangiumDocument,
-    public readonly project: Project,
+    public services: LikeC4Services,
+    public doc: ParsedLikeC4LangiumDocument,
+    public project: Project,
   ) {
-    // do nothing
-    this.isValid = checksFromDiagnostics(doc).isValid
+    this.validationHash = calcValidationHash(doc)
+    this.hash = ''
+    const checks = checksFromDiagnostics(doc)
+    this.isValid = checks.isValid
+    this.isInvalid = checks.isInvalid
     this.docUri = doc.uri.toString()
     this.docPathInProject = UriUtils.relative(project.folderUri, doc.uri)
+  }
+
+  dispose(): void {
+    try {
+      // Clear all references to allow garbage collection
+      delete (this.doc as any).likec4Parser
+      this.services = undefined as any
+      this.doc = undefined as any
+      this.project = undefined as any
+      this.isValid = undefined as any
+      this.isInvalid = undefined as any
+    } catch (e) {
+      console.error('Error disposing parser', e)
+    }
   }
 
   logError(
@@ -222,7 +245,7 @@ export class BaseParser {
         : String(error)
 
     if (isAstNode(astNode)) {
-      let name = this.services.references.NameProvider.getName(astNode)
+      let name = isNamed(astNode) ? astNode.name : undefined
       if (name) {
         name = `"${name}" (${astNode.$type})`
       } else {
@@ -375,6 +398,93 @@ export class BaseParser {
     }
 
     return isEmpty(data) ? undefined : data
+  }
+
+  /**
+   * The `descriptionFile` of a body, in the shape {@link parseBaseProps} expects.
+   *
+   * The property is a rule of its own - its value is a path, not markdown - so the parser picks it up
+   * beside the string properties.
+   */
+  descriptionFileOf(props: ReadonlyArray<AstNode> | undefined): { descriptionFile?: string } {
+    const prop = props?.filter(ast.isDescriptionFileProperty).at(-1)
+    return prop && this.isValid(prop) ? { descriptionFile: prop.value } : {}
+  }
+
+  /**
+   * The file a body references with `descriptionFile`, resolved.
+   *
+   * The value is a path, not a URL: its segments are encoded so `#`, `?` and `%` stay file name
+   * characters, and it is resolved the way a `link` is - `./` and `../` against the document,
+   * anything else against the project folder. `resolvedPath` is null when the value does not name a
+   * file of the project (another scheme, a path outside of it): the validation reports why, and
+   * nothing is read for it.
+   *
+   * The reference is recorded on the document, because the files are read when the model is built -
+   * not while documents are parsed - and a parsed entity holds only the reference until then.
+   */
+  parseDescriptionFile(value: string | undefined): DescriptionFileRef | undefined {
+    const resolved = value?.trim()
+    if (!resolved) {
+      return undefined
+    }
+    const ref: DescriptionFileRef = {
+      value: resolved,
+      resolvedPath: this.resolveDescriptionFile(resolved),
+    }
+    this.doc.c4DescriptionFiles.push(ref)
+    return ref
+  }
+
+  /**
+   * The description a `descriptionFile` property provides, resolved like {@link parseDescription}.
+   */
+  parseDescriptionProperty(prop: ast.DescriptionFileProperty): c4.MarkdownOrString | undefined {
+    return this.parseDescription({
+      descriptionFile: this.parseDescriptionFile(prop.value),
+    })
+  }
+
+  /**
+   * A `descriptionFile` is deliberate, so it wins over an inline `description` of the same body
+   * (an inline description on the node still wins over both, as it does today).
+   * The two in the same body are reported as an error by the validation.
+   *
+   * The content of the file is resolved when the model is built, so there is nothing to describe
+   * until it has been read.
+   */
+  parseDescription(
+    props: {
+      description?: ast.MarkdownOrString | undefined
+      descriptionFile?: DescriptionFileRef | undefined
+    },
+  ): c4.MarkdownOrString | undefined {
+    if (props.descriptionFile) {
+      const description = this.services.shared.workspace.DescriptionFiles.get(this.doc.uri, props.descriptionFile.value)
+      // When the file cannot be read the validation reports it, and there is nothing to describe
+      // The content of the file is used as it is: its indentation is content, not DSL indentation
+      return description && 'content' in description
+        ? { md: description.content }
+        : undefined
+    }
+    return this.parseMarkdownOrString(props.description)
+  }
+
+  /**
+   * Resolves the file a `descriptionFile` value names, or `null` when it does not name a file of the
+   * project.
+   */
+  resolveDescriptionFile(value: string): string | null {
+    // a value that names another scheme (`https:`, `file:`, `C:`) is not a file of this project
+    if (hasProtocol(value)) {
+      return null
+    }
+    try {
+      const path = value.split('/').map(encodeURIComponent).join('/')
+      return this.services.lsp.DocumentLinkProvider.resolveLink(this.doc, path)
+    } catch {
+      return null
+    }
   }
 
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
@@ -650,6 +760,7 @@ export class BaseParser {
       title?: ast.MarkdownOrString | undefined
       summary?: ast.MarkdownOrString | undefined
       description?: ast.MarkdownOrString | undefined
+      descriptionFile?: string | undefined
       technology?: ast.MarkdownOrString | undefined
     },
     override?: {
@@ -662,13 +773,15 @@ export class BaseParser {
     title?: string
     summary?: c4.MarkdownOrString
     description?: c4.MarkdownOrString
+    descriptionFile?: DescriptionFileRef
     technology?: string
   } {
     const title = removeIndent(override?.title ?? parseMarkdownAsString(props.title))
 
+    const descriptionFile = this.parseDescriptionFile(props.descriptionFile)
     const description = override?.description
       ? { txt: removeIndent(override.description) }
-      : this.parseMarkdownOrString(props.description)
+      : this.parseDescription({ description: props.description, descriptionFile })
 
     const summary = override?.summary
       ? { txt: removeIndent(override.summary) }
@@ -681,6 +794,7 @@ export class BaseParser {
       title,
       summary,
       description,
+      descriptionFile,
       technology,
     })
   }

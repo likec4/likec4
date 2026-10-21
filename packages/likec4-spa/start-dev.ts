@@ -2,9 +2,8 @@
 
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import postcssPanda from '@pandacss/dev/postcss'
-import babel from '@rolldown/plugin-babel'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
 import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
 import { createServer } from 'vite'
@@ -71,6 +70,7 @@ const main = defineCommand({
         }),
         LikeC4VitePlugin({
           workspace,
+          ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',
         }),
       ],

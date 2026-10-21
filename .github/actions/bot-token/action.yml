@@ -13,11 +13,11 @@ inputs:
     description: Owner for the GitHub App token
   fetch-user-id:
     required: false
-    default: "true"
+    default: 'true'
     description: Whether to fetch the bot user id via GitHub API
   configure-git:
     required: false
-    default: "true"
+    default: 'true'
     description: Whether to configure git user.name and user.email
 
 outputs:
@@ -38,7 +38,7 @@ outputs:
     value: ${{ steps.bot.outputs.email }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Decode the GitHub App Private Key
       id: decode
@@ -48,14 +48,14 @@ runs:
         echo "::add-mask::$private_key"
         echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
 
-    - uses: actions/create-github-app-token@v2
+    - uses: actions/create-github-app-token@v3
       id: app-token-default
       if: ${{ inputs.owner == '' }}
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ steps.decode.outputs.private-key }}
 
-    - uses: actions/create-github-app-token@v2
+    - uses: actions/create-github-app-token@v3
       id: app-token-owner
       if: ${{ inputs.owner != '' }}
       with:

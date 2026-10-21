@@ -52,7 +52,7 @@ jobs:
     outputs:
       url: "${{ inputs.environment == 'production' && 'https://likec4.dev' || steps.cloudflare.outputs.deployment-url }}"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap

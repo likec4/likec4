@@ -60,7 +60,7 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 4,
-      expectedItems: ['title', 'description', 'technology', 'notation', 'summary', 'link', 'style'],
+      expectedItems: ['title', 'description', 'technology', 'notation', 'summary', 'link', 'descriptionFile', 'style'],
     })
     await completion({
       text,
@@ -380,6 +380,7 @@ describe('LikeC4CompletionProvider', () => {
         'description',
         'order',
         'link',
+        'descriptionFile',
         'routing',
         'include',
         'exclude',
@@ -574,6 +575,7 @@ describe('LikeC4CompletionProvider', () => {
         'description',
         'technology',
         'summary',
+        'descriptionFile',
         'notation',
         'notes',
         'color',
@@ -646,6 +648,7 @@ describe('LikeC4CompletionProvider', () => {
         'title',
         'technology',
         'description',
+        'descriptionFile',
         'notation',
         'notes',
         'color',
@@ -943,7 +946,8 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  it('should suggest deployments', async ({ expect, completion }) => {
+  // Multiple completion requests need extra headroom when the full suite runs in parallel.
+  it('should suggest deployments', { timeout: 30_000 }, async ({ expect, completion }) => {
     const text = `
       specification {
         element component

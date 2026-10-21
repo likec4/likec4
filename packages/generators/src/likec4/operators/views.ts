@@ -8,6 +8,7 @@ import { hasAtLeast, values } from 'remeda'
 import { NL } from '../../newline'
 import { schemas } from '../schemas'
 import type { ZExpression } from '../schemas/expression'
+import type { ViewRuleGroupOutput } from '../schemas/views'
 import {
   type Op,
   body,
@@ -29,7 +30,6 @@ import {
   space,
   spaceBetween,
   text,
-  withctx,
   zodOp,
 } from './base'
 import { expression } from './expressions'
@@ -118,9 +118,27 @@ export const viewRuleStyle = zodOp(schemas.views.viewRuleStyle)(
     ),
   ),
 )
-export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(({ ctx: _ctx, exec: _exec }) => {
-  throw new Error('not implemented')
-})
+export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(
+  spaceBetween(
+    print('group'),
+    property('title', inlineText()),
+    body(
+      lines(
+        colorProperty(),
+        property('border', spaceBetween(print('border'), print())),
+        property('opacity', spaceBetween(print('opacity'), print(v => `${v}%`))),
+        property('multiple'),
+        property('size'),
+        property('padding'),
+        property('textSize'),
+        property(
+          'groupRules',
+          foreachNewLine(lazy(() => elementViewRule.noparse<ViewRuleGroupOutput['groupRules'][number]>())),
+        ),
+      ),
+    ),
+  ),
+)
 export const viewRuleGlobalStyle = zodOp(schemas.views.viewRuleGlobalStyle)(({ ctx: _ctx, exec: _exec }) => {
   throw new Error('not implemented')
 })
@@ -228,6 +246,9 @@ export const deploymentViewRule = zodOp(schemas.views.deploymentViewRule)(
     }
     if ('includeAncestors' in ctx) {
       return exec(ctx, deploymentViewRuleIncludeAncestors.noparse())
+    }
+    if ('groupRules' in ctx) {
+      return exec(ctx, viewRuleGroup.noparse())
     }
     if ('direction' in ctx) {
       return exec(ctx, viewRuleAutoLayout.noparse())

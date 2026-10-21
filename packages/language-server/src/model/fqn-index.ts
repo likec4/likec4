@@ -10,26 +10,26 @@ import { type NonEmptyArray, type ProjectId, Fqn, isAnyOf } from '@likec4/core/t
 import {
   ancestorsFqn,
   compareNatural,
-  DefaultWeakMap,
   MultiMap,
   sortNaturalByFqn,
 } from '@likec4/core/utils'
 import {
+  type LangiumDocument,
   type Stream,
   AstUtils,
+  ContextCache,
   DocumentState,
+  SimpleCache,
   stream,
   UriUtils,
-  WorkspaceCache,
 } from 'langium'
-import { filter, flatMap, hasAtLeast, isTruthy, pipe } from 'remeda'
+import { filter, flatMap, forEach, hasAtLeast, isTruthy, pipe } from 'remeda'
 import {
   type AstNodeDescriptionWithFqn,
   type LikeC4LangiumDocument,
   ast,
   ElementOps,
   isLikeC4LangiumDocument,
-  isLikeC4UserDocument,
 } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -42,8 +42,8 @@ const isIndexableElement = isAnyOf(ast.isElement, ast.isExtendElement)
 export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   protected projects: ProjectsManager
   protected langiumDocuments: LangiumDocuments
-  protected documentCache: DefaultWeakMap<LikeC4LangiumDocument, DocumentFqnIndex>
-  protected workspaceCache: WorkspaceCache<string, AstNodeDescriptionWithFqn[]>
+  protected documentCache: SimpleCache<string, DocumentFqnIndex>
+  protected workspaceCache: ContextCache<ProjectId, string, AstNodeDescriptionWithFqn[]>
 
   protected logger = logger.getChild('fqn-index')
 
@@ -53,18 +53,37 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     this.projects = services.shared.workspace.ProjectsManager
-    this.documentCache = new DefaultWeakMap(doc => this.createDocumentIndex(doc))
-    this.workspaceCache = new WorkspaceCache(services.shared, DocumentState.IndexedContent)
 
     this.onDispose(
-      services.shared.workspace.DocumentBuilder.onDocumentPhase(
+      this.documentCache = new SimpleCache(),
+      this.workspaceCache = new ContextCache(),
+      services.shared.workspace.DocumentBuilder.onDocumentResetBelow(
         DocumentState.IndexedContent,
-        (doc) => {
-          if (isLikeC4UserDocument(doc)) {
-            this.documentCache.delete(doc)
+        ({ doc }) => {
+          if (this.documentCache.delete(doc.textDocument.uri)) {
+            this.logger.trace(`document cache entry deleted for ${doc.textDocument.uri}`)
           }
         },
       ),
+      services.shared.workspace.DocumentBuilder.onDocumentPhase(
+        DocumentState.IndexedContent,
+        (doc) => {
+          if (isLikeC4LangiumDocument(doc)) {
+            this.documentCache.set(doc.textDocument.uri, this.createDocumentIndex(doc))
+
+            // Clear workspace cache for this document's project
+            if (doc.likec4ProjectId) {
+              this.workspaceCache.clear(doc.likec4ProjectId)
+            }
+          }
+        },
+      ),
+      services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
+        if (deleted.length > 0) { // react only on deleted documents
+          forEach(deleted, uri => this.documentCache.delete(uri.toString()))
+        }
+        this.workspaceCache.clear()
+      }),
     )
   }
 
@@ -85,7 +104,11 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
         },
       )
     }
-    return this.documentCache.get(document)
+    return this.documentCache.get(document.textDocument.uri, () => {
+      const index = this.createDocumentIndex(document)
+      this.workspaceCache.clear(index.projectId)
+      return index
+    })
   }
 
   public resolve(reference: ast.Referenceable): Fqn {
@@ -115,15 +138,14 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
         },
       )
     }
-    invariant(isLikeC4LangiumDocument(doc))
-    // Ensure the document is indexed
-    this.documentCache.get(doc)
+    // Side effect - parse document that also sets element fqn
+    this.updateDocumentIndex(doc)
     // This will create the document index
     return nonNullable(ElementOps.readId(el), 'Element fqn must be set, invalid state')
   }
 
   public byFqn(projectId: ProjectId, fqn: Fqn): Stream<AstNodeDescriptionWithFqn> {
-    return stream(this.workspaceCache.get(`${projectId}:fqn:${fqn}`, () => {
+    return stream(this.workspaceCache.get(projectId, `fqn:${fqn}`, () => {
       return this
         .documents(projectId)
         .flatMap(doc => this.get(doc).byFqn(fqn))
@@ -133,7 +155,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.workspaceCache.get(`${projectId}:rootElements`, () => {
+      this.workspaceCache.get(projectId, `rootElements`, () => {
         const allroots = new MultiMap<string, AstNodeDescriptionWithFqn>()
         for (const doc of this.documents(projectId)) {
           for (const desc of this.get(doc).rootElements()) {
@@ -147,7 +169,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
 
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.workspaceCache.get(`${projectId}:directChildrenOf:${parent}`, () => {
+      this.workspaceCache.get(projectId, `directChildrenOf:${parent}`, () => {
         const allchildren = new MultiMap<string, AstNodeDescriptionWithFqn>()
         for (const doc of this.documents(projectId)) {
           for (const desc of this.get(doc).children(parent)) {
@@ -164,7 +186,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
    */
   public uniqueDescedants(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
-      this.workspaceCache.get(`${projectId}:uniqueDescedants:${parent}`, () => {
+      this.workspaceCache.get(projectId, `uniqueDescedants:${parent}`, () => {
         const children = new MultiMap<string, AstNodeDescriptionWithFqn>(),
           descendants = new MultiMap<string, AstNodeDescriptionWithFqn>()
 
@@ -188,6 +210,26 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
         ]
       }),
     )
+  }
+
+  protected updateDocumentIndex(doc: LangiumDocument): asserts doc is LikeC4LangiumDocument {
+    invariant(isLikeC4LangiumDocument(doc))
+    const index = this.createDocumentIndex(doc)
+    this.documentCache.set(doc.textDocument.uri, index)
+
+    // Clear workspace cache for this document's project
+    this.workspaceCache.clear(index.projectId)
+
+    if (doc.state < DocumentState.IndexedContent) {
+      this.logger.warn(
+        `document {doc} is in state {state}, expected at least IndexedContent ({expect}). This may lead to incorrect FQN resolution.`,
+        {
+          doc: UriUtils.basename(doc.uri),
+          state: doc.state,
+          expect: DocumentState.IndexedContent,
+        },
+      )
+    }
   }
 
   protected createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {

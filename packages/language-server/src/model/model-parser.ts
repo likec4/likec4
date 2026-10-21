@@ -6,17 +6,19 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { ProjectId } from '@likec4/core'
-import { DefaultWeakMap, invariant, MultiMap } from '@likec4/core/utils'
-import { type LangiumDocument, type Stream, Disposable, DocumentState, UriUtils } from 'langium'
+import { hasProp, invariant, MultiMap, objectHash } from '@likec4/core/utils'
+import { type LangiumDocument, type Stream, type URI, Disposable, DocumentState, UriUtils } from 'langium'
 import { pipe } from 'remeda'
-import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import {
   type LikeC4DocumentProps,
+  type LikeC4LangiumDocument,
   type ParsedLikeC4LangiumDocument,
   isLikeC4LangiumDocument,
-  isLikeC4UserDocument,
+  isParsedLikeC4LangiumDocument,
+  isValidationStateChanged,
+  LikeC4DocumentPropKeys,
 } from '../ast'
-import { logger as rootLogger, logWarnError } from '../logger'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable } from '../utils'
 import { BaseParser } from './parser/Base'
@@ -50,62 +52,84 @@ const DocumentParserFromMixins = pipe(
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
-const logger = rootLogger.getChild('parser')
-
-const isError = (d: Diagnostic) => d.severity === DiagnosticSeverity.Error
+type ReparsedListener = (doc: LikeC4LangiumDocument) => void
 
 export class LikeC4ModelParser extends ADisposable {
-  protected cachedParsers = new DefaultWeakMap((doc: LangiumDocument) => this.createParser(doc))
+  #logger = rootLogger.getChild('parser')
+  private readonly reparsedListeners: ReparsedListener[] = []
 
   constructor(private services: LikeC4Services) {
     super()
 
     this.onDispose(
-      Disposable.create(() => {
-        this.cachedParsers.clear()
-      }),
+      // Clear cached parser when document is unlinked
+      services.shared.workspace.DocumentBuilder.onDocumentResetBelow(
+        DocumentState.Linked,
+        ({ doc, resetTo, previous }) => {
+          this.#logger.trace(
+            'clear cached parser {doc} on reset below Linked (resetTo: {resetTo}, was: {previous})',
+            {
+              doc: services.shared.workspace.WorkspaceManager.relativePath(doc.uri),
+              resetTo,
+              previous,
+            },
+          )
+          this.cleanParserState(doc)
+        },
+      ),
+      // Parse documents when they are linked
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.Linked,
         async doc => {
-          if (this.cachedParsers.has(doc)) {
-            logger.trace('clear cached parser {doc} on onDocumentPhase Linked', {
+          if (isParsedLikeC4LangiumDocument(doc)) {
+            this.#logger.warn('Document {doc} was validated, we will reparse it', {
               doc: services.shared.workspace.WorkspaceManager.relativePath(doc.uri),
             })
-            this.cachedParsers.delete(doc)
           }
+          this.createParser(doc)
         },
       ),
-      services.shared.workspace.DocumentBuilder.onBuildPhase(
-        DocumentState.Linked,
-        async docs => {
-          for (const doc of docs) {
-            if (!isLikeC4UserDocument(doc)) {
-              continue
-            }
-            try {
-              // Force create parser for linked document (if not yet created)
-              this.parse(doc)
-            } catch (error) {
-              logWarnError(error)
-            }
-          }
-        },
-      ),
-      // We need to clean up cached parser when document is validated and has errors
-      // Because after that parser takes into account validation results
+      // Parser created at Linked phase does not know about validation errors (there are no diagnostics yet).
+      // Compare with the validation state the parser was created with, not with the previous state of the document:
+      // document may be relinked with the same errors, and parser must be recreated anyway.
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.Validated,
-        async doc => {
-          if (doc.diagnostics?.some(isError) && this.cachedParsers.has(doc)) {
-            logger.trace('project {project}, Validated: clear cached parser {doc} because of errors', {
-              project: doc.likec4ProjectId,
-              doc: UriUtils.basename(doc.uri),
-            })
-            this.cachedParsers.delete(doc)
+        doc => {
+          if (!isLikeC4LangiumDocument(doc) || !doc.likec4Parser || !isValidationStateChanged(doc, doc.likec4Parser)) {
+            return
           }
+          this.createParser(doc)
+          this.notifyReparsed(doc)
         },
       ),
+      Disposable.create(() => {
+        this.reparsedListeners.length = 0
+      }),
     )
+  }
+
+  /**
+   * Subscribe to events when document is reparsed after validation
+   * (validation state differs from the one parser was created with)
+   */
+  onReparsedAfterValidation(listener: ReparsedListener): Disposable {
+    this.reparsedListeners.push(listener)
+    return Disposable.create(() => {
+      const index = this.reparsedListeners.indexOf(listener)
+      if (index >= 0) {
+        this.reparsedListeners.splice(index, 1)
+      }
+    })
+  }
+
+  private notifyReparsed(doc: LikeC4LangiumDocument): void {
+    for (const listener of this.reparsedListeners) {
+      try {
+        listener(doc)
+      } catch (error) {
+        this.#logger.warn('Error in reparsed listener', { error })
+      }
+    }
   }
 
   documents(projectId: ProjectId): Stream<ParsedLikeC4LangiumDocument> {
@@ -119,26 +143,51 @@ export class LikeC4ModelParser extends ADisposable {
     return parser.doc
   }
 
+  /**
+   * Parses the given documents again.
+   *
+   * A parser is created as soon as a document is linked, while the files its `descriptionFile`
+   * properties reference are read when the model is built - so a parsed entity holds the reference to
+   * the file until then, and the documents whose content arrived are parsed again to resolve it.
+   */
+  reparse(uris: Iterable<URI>): void {
+    for (const uri of uris) {
+      const doc = this.services.shared.workspace.LangiumDocuments.getDocument(uri)
+      if (doc && isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.Linked) {
+        this.createParser(doc)
+      }
+    }
+  }
+
   forDocument(doc: LangiumDocument): DocumentParser {
-    return this.cachedParsers.get(doc)
+    invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
+    return doc.likec4Parser ??= this.createParser(doc)
+  }
+
+  private cleanParserState(doc: LikeC4LangiumDocument): void {
+    doc.likec4Parser?.dispose()
+    for (const key of LikeC4DocumentPropKeys) {
+      delete doc[key]
+    }
   }
 
   private createParser(doc: LangiumDocument): DocumentParser {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
+    this.cleanParserState(doc)
     const project = this.services.shared.workspace.ProjectsManager.getProject(doc)
     const docpath = UriUtils.relative(project.folderUri, doc.uri)
-    logger.trace(`project {project}, create parser {doc}`, {
+    this.#logger.trace(`project {project}, create parser {doc}`, {
       project: project.id,
       doc: docpath,
     })
     if (doc.state < DocumentState.Linked) {
-      logger.warn(`document {doc} is not linked, state is {state}`, {
+      this.#logger.error(`document {doc} is not linked, state is {state}`, {
         doc: docpath,
         state: doc.state,
       })
     }
 
-    const props: Required<Omit<LikeC4DocumentProps, 'diagnostics'>> = {
+    const props: Omit<Required<LikeC4DocumentProps>, 'diagnostics' | 'likec4Parser'> = {
       c4Specification: {
         tags: {},
         elements: {},
@@ -161,11 +210,11 @@ export class LikeC4ModelParser extends ADisposable {
       c4Views: [],
       c4Imports: new MultiMap(Set),
       c4Diffs: [],
+      c4DescriptionFiles: [],
     }
-    doc = Object.assign(doc, props)
     const parser = new DocumentParser(
       this.services,
-      doc as ParsedLikeC4LangiumDocument,
+      Object.assign(doc, props) as ParsedLikeC4LangiumDocument,
       project,
     )
     try {
@@ -177,8 +226,34 @@ export class LikeC4ModelParser extends ADisposable {
       parser.parseGlobals()
       parser.parseViews()
     } catch (error) {
+      this.cleanParserState(doc)
+      this.#logger.warn({
+        message: 'error parsing document',
+        project: project.id,
+        doc: docpath,
+        error,
+      })
       throw new Error(`Error parsing document ${docpath}`, { cause: error })
     }
+    parser.hash = objectHash([parser.docPathInProject])
+    for (const key of LikeC4DocumentPropKeys) {
+      try {
+        if (!hasProp(doc, key) || key === 'likec4Parser') {
+          continue
+        }
+        const value = key === 'c4Imports' ? doc.c4Imports.toJSON() : doc[key]
+        parser.hash = objectHash([parser.hash, value])
+      } catch (error) {
+        this.#logger.warn({
+          message: 'error hashing document property',
+          project: project.id,
+          doc: docpath,
+          property: key,
+          error,
+        })
+      }
+    }
+    doc.likec4Parser = parser
     return parser
   }
 }

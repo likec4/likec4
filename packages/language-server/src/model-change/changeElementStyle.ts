@@ -11,7 +11,7 @@ import {
 import { type AstNode, GrammarUtils } from 'langium'
 import { entries, filter, findLast, isTruthy, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-types'
-import { type ParsedAstView, type ParsedLikeC4LangiumDocument, ast } from '../ast'
+import { type LikeC4LangiumDocument, type ParsedAstView, ast } from '../ast'
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 
@@ -30,7 +30,7 @@ const asViewStyleRule = (target: string, style: ViewChange.ChangeElementStyle['s
 
 type ChangeElementStyleArg = {
   view: ParsedAstView
-  doc: ParsedLikeC4LangiumDocument
+  doc: LikeC4LangiumDocument
   viewAst: ast.LikeC4View
   targets: NonEmptyArray<Fqn | DeploymentFqn>
   style: ViewChange.ChangeElementStyle['style']

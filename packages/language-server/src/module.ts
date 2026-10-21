@@ -15,9 +15,11 @@ import type {
   FileSystemModuleContext,
   FileSystemProvider,
   FileSystemWatcher,
+  LikeC4DescriptionFiles,
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './filesystem'
+import { DefaultLikeC4DescriptionFiles } from './filesystem/LikeC4DescriptionFiles'
 import { NoFileSystem, NoLikeC4ManualLayouts, NoopFileSystemProvider } from './filesystem/noop'
 import { LikeC4Formatter } from './formatting/LikeC4Formatter'
 import {
@@ -64,6 +66,7 @@ import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
   IndexManager,
   LangiumDocuments,
+  LikeC4DocumentBuilder,
   LikeC4WorkspaceManager,
   ProjectsManager,
 } from './workspace'
@@ -87,9 +90,11 @@ interface LikeC4AddedSharedServices {
     IndexManager: IndexManager
     LangiumDocuments: LangiumDocuments
     WorkspaceManager: LikeC4WorkspaceManager
+    DocumentBuilder: LikeC4DocumentBuilder
     FileSystemProvider: FileSystemProvider
     FileSystemWatcher: FileSystemWatcher
     ManualLayouts: LikeC4ManualLayouts
+    DescriptionFiles: LikeC4DescriptionFiles
   }
 }
 
@@ -115,9 +120,11 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       LangiumDocuments: services => new LangiumDocuments(services),
       ProjectsManager: services => new ProjectsManager(services),
       WorkspaceManager: services => new LikeC4WorkspaceManager(services),
+      DocumentBuilder: services => new LikeC4DocumentBuilder(services),
       FileSystemProvider: services => context.fileSystemProvider(services),
       FileSystemWatcher: services => context.fileSystemWatcher(services),
       ManualLayouts: services => context.manualLayouts(services),
+      DescriptionFiles: services => new DefaultLikeC4DescriptionFiles(services),
     },
   })
 }

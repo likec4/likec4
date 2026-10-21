@@ -3,13 +3,12 @@ import { splitViewFolderPath, VIEW_FOLDERS_SEPARATOR } from '@likec4/core/model'
 import {
   type AnyOp,
   indent,
-  materialize,
   ops,
   print,
   withctx,
 } from '@likec4/generators/likec4'
 import type { CstNode } from 'langium'
-import { filter, findLast, hasAtLeast, isTruthy, last, map, pipe, piped } from 'remeda'
+import { filter, hasAtLeast, isTruthy, last, map, pipe, piped } from 'remeda'
 import { Position, TextEdit } from 'vscode-languageserver-protocol'
 import { type ParsedLikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -228,7 +227,10 @@ function updateViewTags(
 }
 
 function updateViewDescription(viewAst: ast.LikeC4View, description: scalar.MarkdownOrString): TextEdit[] {
+  // A view described from a file is still the description: replace that property rather than adding
+  // a second one, which the validation rejects
   const existing = findExistingViewProperty(viewAst, 'description')
+    ?? findExistingViewProperty(viewAst, 'descriptionFile')
 
   const descriptionOut = withctx(
     { description },

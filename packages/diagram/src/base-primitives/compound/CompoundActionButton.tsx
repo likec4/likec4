@@ -47,7 +47,7 @@ const variants = {
 }
 
 export function CompoundActionButton({
-  selected = false,
+  selected,
   data: {
     hovered: isHovered = false,
   },

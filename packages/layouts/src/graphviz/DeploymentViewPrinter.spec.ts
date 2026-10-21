@@ -1,5 +1,7 @@
-import type { ComputedDeploymentView } from '@likec4/core'
+import { type ComputedDeploymentView, invariant, isDeploymentView } from '@likec4/core'
 import { Builder } from '@likec4/core/builder'
+import { unsafeComputeView } from '@likec4/core/compute-view'
+import { attribute as _ } from 'ts-graphviz'
 import { describe, it } from 'vitest'
 import { DeploymentViewPrinter } from './DeploymentViewPrinter'
 
@@ -64,5 +66,75 @@ describe('DeploymentViewPrinter', () => {
     const computedIndexView = model.view('index').$view as ComputedDeploymentView
     const dot = new DeploymentViewPrinter(computedIndexView, model.$styles).print()
     await expect(dot).toMatchFileSnapshot('__snapshots__/DeploymentViewPrinter-index.dot')
+  })
+
+  it('prints deployment groups as nested clusters with deployment nodes and edges', ({ expect }) => {
+    const view = unsafeComputeView<typeof model.Aux>({
+      _type: 'deployment',
+      _stage: 'parsed',
+      id: model.view('index').id,
+      title: null,
+      description: null,
+      rules: [{
+        title: 'Services',
+        color: 'amber',
+        border: 'solid',
+        opacity: 20,
+        groupRules: [{
+          include: [{ ref: { deployment: 'z1.s1' } }, { ref: { deployment: 'z1.s2' } }],
+        }, {
+          title: 'First server',
+          groupRules: [{ include: [{ ref: { deployment: 'z1.s1' }, selector: 'children' }] }],
+        }, {
+          title: 'Second server',
+          groupRules: [{ include: [{ ref: { deployment: 'z1.s2' }, selector: 'children' }] }],
+        }],
+      }],
+    }, model)
+    invariant(isDeploymentView(view))
+    const dot = new DeploymentViewPrinter(view, model.$styles).print()
+    expect(dot).toContain('likec4_id = "@gr1"')
+    expect(dot).toContain('likec4_id = "@gr2"')
+    expect(dot).toContain('likec4_id = "@gr3"')
+    expect(dot).toContain('<B>SERVICES</B>')
+    expect(dot).toContain('<B>FIRST SERVER</B>')
+    expect(dot).toContain('<B>SECOND SERVER</B>')
+    expect(view.edges.length).toBeGreaterThan(0)
+  })
+
+  it('prints layer groups and their nodes inside an explicitly included deployment cluster', ({ expect }) => {
+    const view = unsafeComputeView<typeof model.Aux>({
+      _type: 'deployment',
+      _stage: 'parsed',
+      id: model.view('index').id,
+      title: null,
+      description: null,
+      rules: [
+        { include: [{ ref: { deployment: 'z1' } }] },
+        {
+          title: 'Layer 2',
+          groupRules: [{ include: [{ ref: { deployment: 'z1.s1' } }, { ref: { deployment: 'z1.s2' } }] }],
+        },
+        {
+          title: 'Layer 3',
+          groupRules: [{ include: [{ ref: { deployment: 'z1.db' } }] }],
+        },
+      ],
+    }, model)
+    invariant(isDeploymentView(view))
+    const printer = new DeploymentViewPrinter(view, model.$styles)
+    const dot = printer.print()
+    const boundary = printer.G.subgraphs.find(cluster => cluster.get(_.likec4_id) === 'z1')
+    invariant(boundary)
+    expect(boundary.subgraphs.map(cluster => cluster.get(_.likec4_id))).toEqual(['@gr1', '@gr2'])
+    const layer2 = boundary.subgraphs.find(cluster => cluster.get(_.likec4_id) === '@gr1')
+    const layer3 = boundary.subgraphs.find(cluster => cluster.get(_.likec4_id) === '@gr2')
+    invariant(layer2 && layer3)
+    const leafIds = (cluster: typeof layer2) =>
+      cluster.nodes.map(node => printer.G.nodes.find(global => global.id === node.id)?.attributes.get(_.likec4_id))
+    expect(leafIds(layer2)).toEqual(['z1.s1', 'z1.s2'])
+    expect(leafIds(layer3)).toEqual(['z1.db'])
+    expect(dot).toContain('<B>LAYER 2</B>')
+    expect(dot).toContain('<B>LAYER 3</B>')
   })
 })

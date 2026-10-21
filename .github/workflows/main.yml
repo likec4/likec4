@@ -3,9 +3,9 @@ name: main
 on:
   push:
     branches:
-      - "main"
+      - 'main'
     tags-ignore:
-      - "**"
+      - '**'
 
 permissions:
   id-token: write
@@ -19,7 +19,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -44,13 +44,13 @@ jobs:
           echo "::add-mask::$private_key"
           echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ steps.decode.outputs.private-key }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
@@ -70,10 +70,10 @@ jobs:
 
       - name: create release pull request
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2.1.2
         with:
-          title: "prepare release"
-          commit: "chore: prepare next release"
+          pr-title: 'prepare release'
+          commit-message: 'chore: prepare next release'
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

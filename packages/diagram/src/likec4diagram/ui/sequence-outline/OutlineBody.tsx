@@ -1,16 +1,13 @@
-import { type StepPath, flowAncestors } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import { HStack, styled } from '@likec4/styles/jsx'
 import { Button, ScrollArea } from '@mantine/core'
 import { IconPlayerSkipBackFilled, IconPlayerSkipForwardFilled } from '@tabler/icons-react'
-import { LayoutGroup } from 'motion/react'
 import { pick } from 'remeda'
 import { useDiagram } from '../../../hooks/safeContext'
 import { ActiveTrail } from './ActiveTrail'
 import { recessionOf, shadedPanelBg } from './depth-of-field'
 import { OutlineNodes } from './OutlineNodes'
 import { useSelectContext } from './StoreProvider'
-import type { CollapsedFlows, OutlineTreeNodes } from './types'
 
 /** Prev/next controls, the "you are here" trail, and the scrollable outline itself. */
 export const OutlineBody = () => {

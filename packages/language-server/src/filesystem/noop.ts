@@ -64,6 +64,10 @@ export class NoopFileSystemProvider implements FileSystemProvider {
     throw new Error(`No file system is available (${uri.toString()})`)
   }
 
+  realpath(): Promise<string | undefined> {
+    return Promise.resolve(undefined)
+  }
+
   readDirectory(): Promise<FileNode[]> {
     return Promise.resolve([])
   }

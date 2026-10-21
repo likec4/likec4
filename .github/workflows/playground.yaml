@@ -54,7 +54,7 @@ jobs:
     env:
       CLOUDFLARE_ENV: 'production'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: 🛠️ bootstrap
         uses: ./.github/actions/bootstrap

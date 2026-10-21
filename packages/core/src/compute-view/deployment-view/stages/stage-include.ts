@@ -1,5 +1,6 @@
 import { dropWhile, forEach, pipe, take, zip } from 'remeda'
-import { isIterable } from '../../../utils'
+import type { NodeId } from '../../../types'
+import { difference, isIterable } from '../../../utils'
 import { toArray } from '../../../utils/iterable'
 import { type CtxConnection, type CtxElement, AbstractStageInclude } from '../../memory'
 import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
@@ -10,6 +11,18 @@ type Elem = CtxElement<Ctx>
 type Connection = CtxConnection<Ctx>
 
 export class StageInclude extends AbstractStageInclude<Ctx> {
+  protected override postcommit(state: Ctx['MutableState']) {
+    for (const element of difference(state.explicits, this.memory.explicits)) {
+      state.explicitFirstSeenIn.set(element, this.memory.activeGroupId ?? '@root' as NodeId)
+    }
+    if (this.memory.activeGroupId) {
+      for (const element of [...this.explicits, ...this.implicits]) {
+        state.lastSeenIn.set(element, this.memory.activeGroupId)
+      }
+    }
+    return state
+  }
+
   /**
    * Connects elements with existing ones in the memory
    */

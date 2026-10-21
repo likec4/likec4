@@ -55,6 +55,7 @@ SpecificationElementKind:
     props+=(
       SpecificationElementStringProperty |
       LinkProperty |
+      DescriptionFileProperty |
       ElementStyleProperty
     )*
   '}')?;
@@ -68,6 +69,7 @@ SpecificationDeploymentNodeKind:
     props+=(
       SpecificationElementStringProperty |
       LinkProperty |
+      DescriptionFileProperty |
       ElementStyleProperty
     )*
   '}')?;
@@ -85,6 +87,7 @@ SpecificationRelationshipKind:
     tags=Tags?
     props+=(
       LinkProperty |
+      DescriptionFileProperty |
       RelationshipStyleProperty |
       SpecificationRelationshipStringProperty |
       MultipleProperty
@@ -153,6 +156,7 @@ ElementProperty:
   ElementStringProperty |
   ElementStyleProperty |
   LinkProperty |
+  DescriptionFileProperty |
   IconProperty |
   MetadataProperty;
 
@@ -274,6 +278,7 @@ RelationProperty:
   RelationNavigateToProperty |
   RelationStyleProperty |
   LinkProperty |
+  DescriptionFileProperty |
   MetadataProperty
 ;
 
@@ -392,7 +397,7 @@ type AnyProperty =
 ;
 
 ViewProperty:
-  ViewStringProperty | ViewOrderProperty | LinkProperty | ViewRoutingProperty
+  ViewStringProperty | ViewOrderProperty | LinkProperty | DescriptionFileProperty | ViewRoutingProperty
 ;
 
 ViewStringProperty:
@@ -496,6 +501,7 @@ CustomElementProperties: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
+    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     StyleProperty
@@ -507,6 +513,7 @@ CustomRelationProperties: '{'
   props+=(
     RelationNavigateToProperty |
     RelationStringProperty |
+    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     RelationshipStyleProperty |
@@ -921,10 +928,28 @@ DeploymentViewBody: '{'
 
 DeploymentViewRule:
   DeploymentViewRulePredicate |
+  DeploymentViewRuleGroup |
   DeploymentViewRuleStyle |
   ViewRuleAutoLayout |
   ViewRuleAncestors
 ;
+
+DeploymentViewRuleGroup:
+  'group' title=String? '{'
+    props+=(
+      ColorProperty |
+      BorderProperty |
+      OpacityProperty |
+      MultipleProperty |
+      ShapeSizeProperty |
+      PaddingSizeProperty |
+      TextSizeProperty
+    )*
+    groupRules+=(
+      DeploymentViewRulePredicate |
+      DeploymentViewRuleGroup
+    )*
+  '}';
 
 ViewRuleAncestors:
   key='includeAncestors' ':'? value=BOOLEAN ';'?
@@ -1024,6 +1049,10 @@ type FqnReferenceable = Referenceable | Element | ExtendElement | ExtendDeployme
 
 LinkProperty:
   key='link' ':'? value=Uri title=String? ';'?;
+
+// A path to a markdown file, resolved like a link and read when the model is built
+DescriptionFileProperty:
+  key='descriptionFile' ':'? value=Uri ';'?;
 
 fragment ColorRef:
   themeColor=ThemeColor | customColor=[CustomColor:CustomColorId];

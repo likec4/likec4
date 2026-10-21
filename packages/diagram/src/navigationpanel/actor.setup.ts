@@ -1,4 +1,4 @@
-import type { LayoutedView, ViewId } from '@likec4/core/types'
+import type { ViewId } from '@likec4/core/types'
 import { isEmpty } from 'remeda'
 import { setup } from 'xstate'
 

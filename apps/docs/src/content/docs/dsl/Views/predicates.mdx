@@ -532,7 +532,7 @@ views {
 
 ## Groups
 
-It is possible to group elements, and this is rendered as a boundary around them:
+It is possible to group elements in element views and deployment views, and this is rendered as a boundary around them:
 
 ```likec4
 view {
@@ -570,6 +570,27 @@ view {
   }
 }
 ```
+
+In deployment views, use deployment nodes or instances in the group's predicates:
+
+```likec4
+deployment view production {
+  group 'Application servers' {
+    color amber
+    opacity 20%
+    border solid
+
+    include prod.app1, prod.app2
+  }
+}
+```
+
+Deployment groups support nested groups and `include`/`exclude` predicates, with the same ordering rules
+as element groups. Unlike element groups, they are inserted inside their shared visible deployment parent.
+Selecting members with different deployment parents is rejected with an error, even when the parents
+are not visible or share a common ancestor.
+See [deployment groups](/dsl/deployment/views#groups) for examples.
+Global predicate groups are only supported in element views.
 
 Groups may also reference [global predicate groups](#global-predicate-groups), to reuse a set of predicates
 and keep the matched elements inside the group:
@@ -649,8 +670,8 @@ group {
 </details> 
 :::
 
-<Aside type="caution" title="Elements hierarchy and Groups">
-  Element is included in the group if only there is no parent in the view.  
+<Aside type="caution" title="Element views: hierarchy and Groups">
+  In element views, an element is included in the group only if there is no parent in the view.
   This might lead to unexpected results.  
   
   Example:

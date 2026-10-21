@@ -29,7 +29,7 @@ import {
 import { useDiagram } from '../hooks/useDiagram'
 import { useEditorActorStateHasTag } from '../hooks/useEditorActor'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
-import type { LikeC4DiagramProperties, NodeRenderers, ViewPaddings } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
 import { viewBounds } from './state/utils'

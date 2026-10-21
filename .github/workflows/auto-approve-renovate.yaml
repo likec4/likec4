@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: 🤖 bot token
         id: bot-token
@@ -24,8 +24,8 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key-base64: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          configure-git: "false"
-          fetch-user-id: "false"
+          configure-git: 'false'
+          fetch-user-id: 'false'
 
       - name: approve PR
         run: gh pr review --approve "${{ github.event.pull_request.html_url }}"

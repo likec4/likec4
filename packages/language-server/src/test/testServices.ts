@@ -44,7 +44,7 @@ export function createTestServices(options?: {
       rootUri: workspaceFolder.uri,
       workspaceFolders: [workspaceFolder],
     })
-    await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+    await services.shared.workspace.WorkspaceManager.initialized([workspaceFolder])
 
     // Register project with config if provided...
     if (projectConfig) {
@@ -82,6 +82,21 @@ export function createTestServices(options?: {
   const removeDocument = async (doc: LangiumDocument | URI) => {
     const uri = doc instanceof URI ? doc : doc.uri
     await documentBuilder.update([], [uri])
+  }
+
+  /**
+   * Emulates user edit: same document, new text version
+   */
+  const edit = async (doc: LangiumDocument, input: string) => {
+    const textDocuments = services.shared.workspace.TextDocuments
+    assert.ok(textDocuments, 'TextDocuments service is not available')
+    textDocuments.set(TextDocument.create(
+      doc.uri.toString(),
+      doc.textDocument.languageId,
+      doc.textDocument.version + 1,
+      stripIndent(input),
+    ))
+    await documentBuilder.update([doc.uri], [])
   }
 
   const parse = async (input: string, uri?: string) => {
@@ -161,6 +176,7 @@ export function createTestServices(options?: {
     if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
+    await documentBuilder.waitUntil(DocumentState.Validated)
     const likec4model = await modelBuilder.computeModel()
     if (!likec4model) throw new Error('No model found')
     return likec4model.$data
@@ -188,6 +204,7 @@ export function createTestServices(options?: {
     services,
     addDocument,
     removeDocument,
+    edit,
     parse,
     validate,
     validateAll,

@@ -5,7 +5,6 @@ import JSON5 from 'json5'
 import { writeFileSync } from 'node:fs'
 import {
   mapToObj,
-  pick,
   range,
 } from 'remeda'
 const mantineVars = themeToVars({})

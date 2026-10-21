@@ -980,6 +980,39 @@ describe('formating', () => {
         `),
     )
 
+    it('formats deployment groups', async ({ expect, format }) =>
+      expect(
+        await format`
+        views {
+        deployment view prod {
+        group   "Servers"{
+        color    amber
+        border   solid
+        opacity   20%
+        include    prod.app
+        group   "Nested"{
+        exclude    prod.api
+        }
+        }
+        }
+        }`,
+      ).toMatchInlineSnapshot(`
+          "
+          views {
+            deployment view prod {
+              group 'Servers' {
+                color amber
+                border solid
+                opacity 20%
+                include prod.app
+                group 'Nested' {
+                  exclude prod.api
+                }
+              }
+            }
+          }"
+        `))
+
     it('formats chained dynamic steps', async ({ expect, format }) =>
       await expect(format`
         views {dynamic
@@ -2236,5 +2269,27 @@ describe('formating', () => {
 
       expect(stage1).toBe(stage2)
     })
+  })
+
+  describe('formats descriptionFile', () => {
+    it(
+      'formats the property of a path-valued file reference',
+      async ({ expect, format }) =>
+        expect(
+          await format`
+          model {
+            component c1 {
+              descriptionFile   :   ./spec.md   ;
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          model {
+            component c1 {
+              descriptionFile: ./spec.md ;
+            }
+          }"
+        `),
+    )
   })
 })

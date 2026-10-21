@@ -10,13 +10,13 @@ runs:
         NODE_ENV: development
 
     - name: 🛠️ Setup node
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version-file: .tool-versions
         cache: 'pnpm'
 
     - name: 🛠️ Cache for turbo
-      uses: rharkor/caching-for-turbo@v2.4.2
+      uses: rharkor/caching-for-turbo@v2.5.2
       with:
         cache-prefix: 'turbo_cache_${{ runner.os }}_${{ runner.arch }}'
 

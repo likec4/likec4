@@ -14,6 +14,7 @@ import type {
   ViewRuleGlobalStyle,
   ViewRuleRank,
 } from './view-common'
+import type { DeploymentViewRule, DeploymentViewRuleGroup } from './view-parsed.deployment'
 
 /**
  * Predicates scoped to logical model
@@ -44,7 +45,9 @@ export interface ElementViewRuleGroup<A extends AnyAux = AnyAux> {
   textSize?: TextSize
 }
 
-export function isViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A>): rule is ElementViewRuleGroup<A> {
+export function isViewRuleGroup<A extends AnyAux>(rule: DeploymentViewRule<A>): rule is DeploymentViewRuleGroup<A>
+export function isViewRuleGroup<A extends AnyAux>(rule: ElementViewRule<A>): rule is ElementViewRuleGroup<A>
+export function isViewRuleGroup(rule: object): boolean {
   return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
 }
 

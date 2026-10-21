@@ -3,10 +3,10 @@ name: prepare release
 on:
   pull_request_target:
     branches:
-      - "main"
+      - 'main'
     paths:
-      - ".github/workflows/prepare-release.yaml"
-      - "**/package.json"
+      - '.github/workflows/prepare-release.yaml'
+      - '**/package.json'
 
 permissions:
   id-token: write
@@ -16,7 +16,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   prepare-release:
@@ -36,7 +36,7 @@ jobs:
       #   with:
       #     app-id: ${{ secrets.BOT_APP_ID }}
       #     private-key: ${{ steps.decode.outputs.private-key }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
@@ -60,4 +60,4 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore: sync version"
+          commit_message: 'chore: sync version'
