@@ -530,6 +530,9 @@ catalogs:
     fast-equals:
       specifier: ^6.2.1
       version: 6.2.1
+    fuse.js:
+      specifier: ^7.5.0
+      version: 7.5.0
     immer:
       specifier: ^11.1.21
       version: 11.1.21
@@ -2684,6 +2687,9 @@ importers:
       defu:
         specifier: catalog:utils
         version: 6.1.7
+      fuse.js:
+        specifier: catalog:utils
+        version: 7.5.0
       langium:
         specifier: catalog:langium
         version: 4.4.0
@@ -8030,6 +8036,10 @@ packages:
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
+
+  fuse.js@7.5.0:
+    resolution: {integrity: sha512-sQtrEfA+ez/3G0cCZecF70oqpCRttCexYUG4mUrtWL49ULUzUyxokt5kyqwtKzj1270RaKih+hcP3qLcumccow==}
+    engines: {node: '>=10'}
 
   gaxios@7.1.4:
     resolution: {integrity: sha512-bTIgTsM2bWn3XklZISBTQX7ZSddGW+IO3bMdGaemHZ3tbqExMENHLx6kKZ/KlejgrMtj8q7wBItt51yegqalrA==}
@@ -15793,6 +15803,8 @@ snapshots:
     optional: true
 
   function-bind@1.1.2: {}
+
+  fuse.js@7.5.0: {}
 
   gaxios@7.1.4(supports-color@10.1.0):
     dependencies:
