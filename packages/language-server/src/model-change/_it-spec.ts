@@ -19,9 +19,16 @@ export const it = test.extend('testDoc', ({ task }, { onCleanup }) => {
   const cleanup = [] as (() => Promise<void>)[]
 
   onCleanup(async () => {
-    await Promise.allSettled(cleanup.map(fn => fn()))
-    // The fixture value stays on the test context, release the services
-    cleanup.length = 0
+    try {
+      const results = await Promise.allSettled(cleanup.map(fn => Promise.resolve().then(fn)))
+      const errors = results.flatMap(result => result.status === 'rejected' ? [result.reason] : [])
+      if (errors.length > 0) {
+        throw new AggregateError(errors, 'Failed to dispose test services')
+      }
+    } finally {
+      // The fixture value stays on the test context, release the services
+      cleanup.length = 0
+    }
   })
 
   return async (document: string) => {

@@ -25,22 +25,70 @@ export const test = _test.extend<{
     // `t` and the fixtures derived from it are added later and released after teardown
     const keep = new Set(Object.keys(task.context))
     const services = createTestServices()
+    let useFailed = false
+    let useError: unknown
     try {
       await use(services)
-    } finally {
+    } catch (error) {
+      useFailed = true
+      useError = error
+    }
+    let disposalFailed = false
+    let disposalError: unknown
+    try {
       await services[Symbol.asyncDispose]()
+    } catch (error) {
+      disposalFailed = true
+      disposalError = error
+    } finally {
       releaseFixtureValues(task.context, keep)
+    }
+    if (useFailed && disposalFailed) {
+      throw new AggregateError([useError, disposalError], 'Test and service cleanup failed')
+    }
+    if (useFailed) {
+      throw useError
+    }
+    if (disposalFailed) {
+      throw disposalError
     }
   },
   create: async ({ task: _task }, use) => {
     const toDispose: Array<TestServices> = []
-    await use((options) => {
-      const services = createTestServices(options)
-      toDispose.push(services)
-      return services
-    })
-    await Promise.all(toDispose.map(services => services[Symbol.asyncDispose]()))
-    toDispose.length = 0
+    let useFailed = false
+    let useError: unknown
+    try {
+      await use((options) => {
+        const services = createTestServices(options)
+        toDispose.push(services)
+        return services
+      })
+    } catch (error) {
+      useFailed = true
+      useError = error
+    }
+    const disposalErrors: unknown[] = []
+    try {
+      const results = await Promise.allSettled(
+        toDispose.map(services => Promise.resolve().then(() => services[Symbol.asyncDispose]())),
+      )
+      for (const result of results) {
+        if (result.status === 'rejected') {
+          disposalErrors.push(result.reason)
+        }
+      }
+    } finally {
+      toDispose.length = 0
+    }
+    if (useFailed && disposalErrors.length > 0) {
+      throw new AggregateError([useError, ...disposalErrors], 'Test and service cleanup failed')
+    }
+    if (useFailed) {
+      throw useError
+    }
+    if (disposalErrors.length > 0) {
+      throw new AggregateError(disposalErrors, 'Failed to dispose test services')
+    }
   },
 })
 
