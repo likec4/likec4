@@ -37,6 +37,7 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider,
 } from './lsp'
+import { LikeC4ExecuteCommandHandler } from './lsp/ExecuteCommandHandler'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -48,6 +49,7 @@ import {
   LikeC4ValueConverter,
 } from './model'
 import { LikeC4ModelChanges } from './model-change/ModelChanges'
+import { LikeC4ModelDiffs, LikeC4ModelEdits, LikeC4RemovalImpact, trackClientCapabilities } from './model-diff'
 import {
   LikeC4NameProvider,
   LikeC4ScopeComputation,
@@ -79,6 +81,7 @@ interface LikeC4AddedSharedServices {
   lsp: {
     NodeKindProvider: NodeKindProvider
     WorkspaceSymbolProvider: WorkspaceSymbolProvider
+    ExecuteCommandHandler: LikeC4ExecuteCommandHandler
   }
   workspace: {
     // WorkspaceCache on Validated state
@@ -109,6 +112,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
     lsp: {
       NodeKindProvider: services => new NodeKindProvider(services),
       WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
+      ExecuteCommandHandler: services => new LikeC4ExecuteCommandHandler(services),
     },
     workspace: {
       Cache: services => new WorkspaceCache(services, DocumentState.Validated),
@@ -147,6 +151,9 @@ export interface LikeC4AddedServices {
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
     ModelChanges: LikeC4ModelChanges
+    ModelDiffs: LikeC4ModelDiffs
+    ModelEdits: LikeC4ModelEdits
+    RemovalImpact: LikeC4RemovalImpact
     LastSeen: LastSeenArtifacts
   }
   lsp: {
@@ -211,6 +218,9 @@ export function createLikeC4Module(
       ModelParser: bind(LikeC4ModelParser),
       ModelBuilder: bind(DefaultLikeC4ModelBuilder),
       ModelLocator: bind(LikeC4ModelLocator),
+      ModelDiffs: bind(LikeC4ModelDiffs),
+      ModelEdits: bind(LikeC4ModelEdits),
+      RemovalImpact: bind(LikeC4RemovalImpact),
       LastSeen: bind(LastSeenArtifacts),
     },
     lsp: {
@@ -303,6 +313,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     // Therefore, initialize the configuration provider instantly
     void shared.workspace.ConfigurationProvider.initialized({})
   } else {
+    trackClientCapabilities(shared)
     onNextTick(() => shared.workspace.WorkspaceManager.ready.then(() => likec4.Rpc.init()))
   }
 

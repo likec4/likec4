@@ -26,7 +26,14 @@ import type { WithExpressionV2 } from './FqnRefParser'
 export type WithModel = ReturnType<typeof ModelParser>
 
 function* streamModel(doc: LikeC4LangiumDocument) {
-  const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
+  yield* streamModelElements(doc.parseResult.value.models.flatMap(m => m.elements))
+}
+
+/**
+ * Yields elements (parents first), then relations and relation extends.
+ */
+export function* streamModelElements(roots: ReadonlyArray<ast.ModelElement>) {
+  const traverseStack = LinkedList.from(roots)
   const relations = [] as (ast.Relation | ast.ExtendRelation)[]
   let el
   while ((el = traverseStack.shift())) {

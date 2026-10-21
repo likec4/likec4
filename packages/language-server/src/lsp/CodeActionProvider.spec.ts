@@ -35,9 +35,14 @@ model {
     expect(edit.newText).toBe(`'''\n      Hello world\n    '''`)
   })
 
-  it('offers nothing outside of a string', async ({ expect }) => {
-    const { actions } = await actionsAt('component c1')
+  it('offers nothing on a top-level keyword', async ({ expect }) => {
+    const { actions } = await actionsAt('specification')
     expect(actions ?? []).toHaveLength(0)
+  })
+
+  it('offers safe delete on an element', async ({ expect }) => {
+    const { actions } = await actionsAt('c1')
+    expect(actions?.map(action => action.title)).toEqual(["Safe delete 'c1'"])
   })
 
   it('offers nothing when triggered automatically', async ({ expect }) => {

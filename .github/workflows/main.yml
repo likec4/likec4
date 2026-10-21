@@ -3,9 +3,9 @@ name: main
 on:
   push:
     branches:
-      - "main"
+      - 'main'
     tags-ignore:
-      - "**"
+      - '**'
 
 permissions:
   id-token: write
@@ -19,7 +19,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -72,8 +72,8 @@ jobs:
         id: changesets
         uses: changesets/action@v2.1.2
         with:
-          pr-title: "prepare release"
-          commit-message: "chore: prepare next release"
+          pr-title: 'prepare release'
+          commit-message: 'chore: prepare next release'
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

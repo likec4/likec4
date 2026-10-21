@@ -172,6 +172,28 @@ export type ParsedAstDeploymentRelation = c4.DeploymentRelationship & WithDescri
   astPath: string
 }
 
+export interface ParsedAstDiffElementRemoval {
+  fqn: c4.Fqn
+}
+
+export interface ParsedAstDiffRelationRemoval {
+  /**
+   * Fingerprint of the removed relation, see `relationFingerprint`
+   */
+  fingerprint: c4.RelationId
+}
+
+export interface ParsedAstDiff {
+  id: c4.DiffId
+  title: string | null
+  description: c4.MarkdownOrString | null
+  removeElements: ParsedAstDiffElementRemoval[]
+  removeRelations: ParsedAstDiffRelationRemoval[]
+  elements: ParsedAstElement[]
+  relations: ParsedAstRelation[]
+  extendElements: ParsedAstExtend[]
+}
+
 // Alias for refactoring
 export type ParsedAstGlobals = Writable<c4.ModelGlobals>
 
@@ -276,6 +298,7 @@ export interface LikeC4DocumentProps {
   c4Deployments: ParsedAstDeployment[]
   c4DeploymentRelations: ParsedAstDeploymentRelation[]
   c4Imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
+  c4Diffs: ParsedAstDiff[]
   /** The files this document references with `descriptionFile`, as the parser resolved them */
   c4DescriptionFiles: DescriptionFileRef[]
   likec4Parser: DocumentParser
@@ -301,6 +324,7 @@ export const LikeC4DocumentPropKeys = [
   'c4Deployments',
   'c4DeploymentRelations',
   'c4Imports',
+  'c4Diffs',
   'c4DescriptionFiles',
   'likec4Parser',
 ] as const satisfies UnionToTuple<keyof LikeC4DocumentProps>
@@ -346,6 +370,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Deployments
     && !!doc.c4DeploymentRelations
     && !!doc.c4Imports
+    && !!doc.c4Diffs
   )
 }
 
@@ -572,6 +597,7 @@ export function getViewRulePredicateContainer<T extends AstNode>(el: T):
 
 const _isModel = (astNode: AstNode) => {
   return ast.isModel(astNode) ||
+    ast.isModelDiff(astNode) ||
     ast.isElementBody(astNode) ||
     ast.isExtendElementBody(astNode) ||
     ast.isElementViewBody(astNode) ||

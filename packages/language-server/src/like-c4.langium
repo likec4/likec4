@@ -15,6 +15,7 @@ entry LikeC4Grammar:
     views+=ModelViews |
     globals+=Globals |
     deployments+=ModelDeployments  |
+    diffs+=ModelDiff |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -967,6 +968,45 @@ DeploymentViewRulePredicate:
   (isInclude?='include' | 'exclude')
   expr=Expressions
 ;
+// Model diff -------------------------------------
+// Named change set of the model: elements and relations to remove, and model elements to add
+
+ModelDiff:
+  'diff' name=Id title=String? '{'
+    (
+      props+=DiffStringProperty |
+      removes+=DiffRemove |
+      adds+=DiffAdd
+    )*
+  '}'
+;
+
+DiffStringProperty:
+  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
+
+DiffRemove:
+  'remove' '{'
+    entries+=DiffRemoveEntry*
+  '}'
+;
+
+// Element (source only) or relation (source, connector and target)
+DiffRemoveEntry:
+  source=FqnRef
+  (
+    RelationConnector
+    target=FqnRef
+    title=String?
+  )?
+  ';'?
+;
+
+DiffAdd:
+  'add' '{'
+    elements+=ModelElement*
+  '}'
+;
+
 // Global -------------------------------------
 
 Globals:
@@ -1197,7 +1237,7 @@ RGBAColor:
 
 // Validated later
 HexColor:
-  Hash hex=(Hex | Number | IdTerminal);
+  Hash hex=(Hex | Number | IdTerminal | 'add');
 
 IconId returns string:
   LIB_ICON;
@@ -1216,7 +1256,10 @@ CustomColorId returns string:
   LineOptions |
   Participant |
   'element' |
-  'model';
+  'model' |
+  'diff' |
+  'add' |
+  'remove';
 
 // We need to add all the possible terminal values to Id,
 // so that the parser can accept them as "Id" (not a bug and not a feature of Langium)
@@ -1235,7 +1278,7 @@ Id returns string:
   RankValue |
   EdgeRoutingValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'routing';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing';
 
 HashId returns string:
   Hash Id;
