@@ -223,7 +223,7 @@ export interface LikeC4DiagramProperties<A extends Any = Unknown> {
   enableSearch?: boolean | undefined
 
   /**
-   * Enable modal with element details
+   * Enable modal with logical element, deployment node, and deployed instance details.
    * @default false
    */
   enableElementDetails?: boolean | undefined

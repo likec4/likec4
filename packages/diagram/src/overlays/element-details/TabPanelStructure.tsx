@@ -4,10 +4,12 @@ import { IconInfoCircle } from '@tabler/icons-react'
 import { type ReactNode, useEffect, useMemo } from 'react'
 import * as css from './TabPanelStructure.css'
 
+type StructureElement = LikeC4Model.Element | LikeC4Model.DeploymentNode | LikeC4Model.DeployedInstance
+
 interface ElementTreeNodeData {
   label: ReactNode
   value: string
-  element: LikeC4Model.Element
+  element: StructureElement
   type: 'ancestor' | 'current' | 'descedant'
   children: TreeNodeData[]
 }
@@ -22,12 +24,12 @@ export interface MessageNodeData {
 export type TreeNodeData = ElementTreeNodeData | MessageNodeData
 
 type TabPanelStructureProps = {
-  element: LikeC4Model.Element
+  element: StructureElement
 }
 
 export const ElementLabel = ({
   element,
-}: { element: LikeC4Model.Element; type: 'ancestor' | 'current' | 'descedant' }) => (
+}: { element: StructureElement; type: 'ancestor' | 'current' | 'descedant' }) => (
   <Box className={css.elementLabel}>
     <Text component="div" fz={'sm'} fw={'500'}>{element.title}</Text>
   </Box>
@@ -60,7 +62,7 @@ export function TabPanelStructure({
       value: element.id,
       element,
       type: 'current',
-      children: [...element.children()].map((child): TreeNodeData => ({
+      children: ('children' in element ? [...element.children()] : []).map((child): TreeNodeData => ({
         label: <ElementLabel type="descedant" element={child} />,
         value: child.id,
         element: child,
