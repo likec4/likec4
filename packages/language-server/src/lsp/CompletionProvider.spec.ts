@@ -942,8 +942,7 @@ describe('LikeC4CompletionProvider', () => {
     })
   })
 
-  // Multiple completion requests need extra headroom when the full suite runs in parallel.
-  it('should suggest deployments', { timeout: 30_000 }, async ({ expect, completion }) => {
+  it('should suggest deployments', async ({ expect, completion }) => {
     const text = `
       specification {
         element component
@@ -965,13 +964,6 @@ describe('LikeC4CompletionProvider', () => {
           i1 = instanceOf <|>
         }
         dev.<|> -> <|>
-      }
-      views {
-        deployment view test {
-          include
-            <|>,
-            -> dev.<|>
-        }
       }
     `
 
@@ -1028,10 +1020,43 @@ describe('LikeC4CompletionProvider', () => {
       ],
       disposeAfterCheck: true,
     })
+  })
+
+  // Kept separate: completion inside deployment view predicates is expensive to parse
+  it('should suggest deployments in deployment view predicates', async ({ completion }) => {
+    const text = `
+      specification {
+        element component
+        deploymentNode env
+        deploymentNode node
+      }
+      model {
+        c1 = component {
+          c2 = component
+        }
+        c2 = component {
+          c1 = component
+        }
+      }
+      deployment {
+        env dev {
+          n1 = node
+          n2 = node
+          i1 = instanceOf c1
+        }
+      }
+      views {
+        deployment view test {
+          include
+            <|>,
+            -> dev.<|>
+        }
+      }
+    `
 
     await completion({
       text,
-      index: 5,
+      index: 0,
       expectedItems: [
         'dev',
         'n1',
@@ -1049,7 +1074,7 @@ describe('LikeC4CompletionProvider', () => {
     // TODO: stopped working in tests but same exampel works in runtime
     // await completion({
     //   text,
-    //   index: 6,
+    //   index: 1,
     //   parseOptions: {
     //     validation: false
     //   },
