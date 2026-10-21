@@ -74,9 +74,7 @@ jobs:
         with:
           pr-title: "prepare release"
           commit-message: "chore: prepare next release"
-          setupGitUser: false
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          github-token: ${{ steps.app-token.outputs.token }}
 
   # release:
   #   name: 📦 release
