@@ -180,7 +180,7 @@
     "langium": "catalog:langium",
     "mkdirp": "^3.0.1",
     "nanostores": "catalog:react",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.3",
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
     "package-manager-detector": "catalog:utils",
