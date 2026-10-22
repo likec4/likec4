@@ -104,7 +104,7 @@
           "name": "string.quoted.single.likec4",
           "patterns": [
             {
-              "match": "none|(aws|azure|bootstrap|gcp|tech):([-\\w]+)",
+              "match": "none|(aws|azure|bootstrap|gcp|md|tech):([-\\w]+)",
               "name": "entity.name.type.enum.likec4"
             }
           ]

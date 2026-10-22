@@ -7,6 +7,17 @@
       "include": "#comments"
     },
     {
+      "match": "\\b(icon):?\\s+(none|(?:aws|azure|bootstrap|gcp|md|tech):[-\\w]+)\\b",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.function.likec4"
+        },
+        "2": {
+          "name": "constant.other.reference.link.likec4"
+        }
+      }
+    },
+    {
       "match": "\\b(link|icon):?\\s+([^\\s]+)",
       "captures": {
         "1": {

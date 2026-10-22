@@ -283,11 +283,12 @@ Try changing the theme to see it in action!
 
 ### Bundled icons
 
-LikeC4 includes icons (over 5,000 in total) from these packs:
+LikeC4 includes over 13,000 icons from these packs:
 - `aws:` from <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
 - `azure:` from <a href="https://learn.microsoft.com/en-us/azure/architecture/icons/" target='_blank'>microsoft.com</a>
 - `bootstrap:` from <a href="https://icons.getbootstrap.com/" target='_blank'>Bootstrap Icons</a> (2,000+ icons)
 - `gcp:` from <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
+- `md:` from <a href="https://fonts.google.com/icons?icon.set=Material+Symbols" target='_blank'>Material Symbols</a> (outlined style)
 - `tech:` from <a href="https://techicons.dev" target='_blank'>techicons.dev</a> and <a href="https://svglogos.dev/" target='_blank'>svglogos.dev</a>
 
 Example:
@@ -306,6 +307,9 @@ model {
   ui = component 'User Interface' {
     icon bootstrap:house
   }
+  home = component 'Home' {
+    icon md:home
+  }
 }
 ```
 
@@ -316,7 +320,7 @@ model {
 <br/>
 
 :::note[Auto-derived technology]
-Bundled icons (except `bootstrap:`) automatically set the element's `technology` if not already defined.
+Bundled icons (except `bootstrap:` and `md:`) automatically set the element's `technology` if not already defined.
 For example, `icon tech:docker` sets technology to **"Docker"**. See [Technology](/dsl/model#technology) for details.
 :::
 
@@ -328,14 +332,14 @@ Use VS Code's code completion to explore available icons.
 ### Icon color
 
 Use `iconColor` to override the icon color independently of the element fill.  
-Applies to bundled `bootstrap:*` icons.
+Applies to bundled `bootstrap:*` and `md:*` icons.
 
 ```likec4 copy
 model {
   api = service 'API' {
     style {
       icon tech:nodejs    // ⛔️ Not applied
-      icon bootstrap:gear // ✅ Applies to `bootstrap:*` icons.
+      icon md:home // ✅ Applies to `md:*` icons.
       iconColor indigo
     }
   }

@@ -32,7 +32,7 @@ type ModelDataWithIcons = {
   }
 }
 
-type BundledIconGroup = 'aws' | 'azure' | 'gcp' | 'tech' | 'bootstrap'
+type BundledIconGroup = 'aws' | 'azure' | 'gcp' | 'md' | 'tech' | 'bootstrap'
 
 type BundledIconRef = {
   group: BundledIconGroup
@@ -44,7 +44,7 @@ type GeneratedIconRendererParts = {
   cases: string[]
 }
 
-const bundledIconGroups: ReadonlySet<string> = new Set(['aws', 'azure', 'gcp', 'tech', 'bootstrap'])
+const bundledIconGroups: ReadonlySet<string> = new Set(['aws', 'azure', 'gcp', 'md', 'tech', 'bootstrap'])
 
 function iconRef(icon: string | null | undefined): string | undefined {
   if (!isTruthy(icon) || startsWithHttp.test(icon) || icon === 'none' || icon.startsWith('data:image')) {
