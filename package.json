@@ -53,7 +53,7 @@
     "global": "^4.4.0",
     "husky": "^9.1.7",
     "nano-staged": "catalog:",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.3",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "rimraf": "^6.1.3",
