@@ -533,7 +533,7 @@ views {
 :::note
 - If several relationships are merged into one edge, the edge is laid out backwards only if all of them have `direction back`.
   Per-view rules (`with { ... }`) take precedence.
-- Element and deployment views respect `direction`; per-view rules apply to element views only.
+- Element and deployment views respect `direction`; per-view rules apply to element views only (ignored in deployment views, with a warning).
 - Dynamic views ignore `direction`, use [backward steps](/dsl/views/dynamic/) (`a <- b`) instead.
 - Changing direction of a relationship changes the layout of views where it is visible.
   Views with manual layout report the change as a layout drift.
