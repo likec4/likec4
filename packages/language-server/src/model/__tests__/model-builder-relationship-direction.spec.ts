@@ -240,4 +240,259 @@ describe('Model Builder - relationship direction', () => {
     `)
     expect(diagnostics).toEqual([])
   })
+
+  describe('backward relation syntax', () => {
+    it('parses a <- b as relation from b to a with direction back', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element component
+          relationship subscribes
+          tag tag1
+        }
+        model {
+          component producer {
+            <- consumer2 'implicit'
+          }
+          component consumer
+          component consumer2
+          component consumer3
+          producer <- consumer
+          producer <-[subscribes]- consumer3 'events' 'description' 'kafka' #tag1 {
+            metadata {
+              key 'value'
+            }
+          }
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      const relations = values(model.$data.relations)
+      expect(relations).toHaveLength(3)
+      expect(relations).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          source: { model: 'consumer2' },
+          target: { model: 'producer' },
+          title: 'implicit',
+          direction: 'back',
+        }),
+        expect.objectContaining({
+          source: { model: 'consumer' },
+          target: { model: 'producer' },
+          direction: 'back',
+        }),
+        expect.objectContaining({
+          source: { model: 'consumer3' },
+          target: { model: 'producer' },
+          kind: 'subscribes',
+          title: 'events',
+          description: { txt: 'description' },
+          technology: 'kafka',
+          tags: ['tag1'],
+          metadata: { key: 'value' },
+          direction: 'back',
+        }),
+      ]))
+    })
+
+    it('explicit direction in style overrides backward syntax', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+          a <- b {
+            style {
+              direction forward
+            }
+          }
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      expect(values(model.$data.relations)).toEqual([
+        expect.objectContaining({
+          source: { model: 'b' },
+          target: { model: 'a' },
+          direction: 'forward',
+        }),
+      ])
+    })
+
+    it('parses without spaces and with dashed identifiers', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element component
+          relationship subscribes
+        }
+        model {
+          component my-svc
+          component other-svc
+          my-svc<-other-svc
+          my-svc<-[subscribes]-other-svc
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      expect(values(model.$data.relations).map(r => [r.source, r.target, r.kind ?? null])).toEqual([
+        [{ model: 'other-svc' }, { model: 'my-svc' }, null],
+        [{ model: 'other-svc' }, { model: 'my-svc' }, 'subscribes'],
+      ])
+    })
+
+    it('can be extended with semantic direction', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element component
+          relationship subscribes
+        }
+        model {
+          component producer
+          component consumer
+          producer <-[subscribes]- consumer 'events'
+          extend consumer -[subscribes]-> producer 'events' {
+            metadata {
+              key 'value'
+            }
+          }
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      expect(values(model.$data.relations)).toEqual([
+        expect.objectContaining({
+          source: { model: 'consumer' },
+          target: { model: 'producer' },
+          direction: 'back',
+          metadata: { key: 'value' },
+        }),
+      ])
+    })
+
+    it('reports parent-child relationship', async ({ expect }) => {
+      const { validate } = createTestServices()
+      const { errors } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a {
+            component b
+          }
+          a <- a.b
+        }
+      `)
+      expect(errors).toEqual(['Invalid parent-child relationship'])
+    })
+
+    it('parses backward deployment relation', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element component
+          deploymentNode node
+          relationship subscribes
+        }
+        model {
+          component consumer
+          component producer
+        }
+        deployment {
+          node n1 {
+            c = instanceOf consumer
+          }
+          node n2 {
+            p = instanceOf producer
+          }
+          n2.p <-[subscribes]- n1.c 'events'
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      expect(values(model.$data.deployments.relations)).toEqual([
+        expect.objectContaining({
+          source: { deployment: 'n1.c' },
+          target: { deployment: 'n2.p' },
+          kind: 'subscribes',
+          direction: 'back',
+        }),
+      ])
+    })
+
+    it('acceptance example', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element system
+          element component
+          relationship subscribes
+        }
+        model {
+          sys = system {
+            producer = component
+            consumer = component
+          }
+          external = system
+          sys.producer -> external 'sends data'
+          // consumer depends on producer, but producer should be laid out before consumer
+          sys.producer <-[subscribes]- sys.consumer 'events'
+        }
+        views {
+          view index {
+            include *, sys.*
+            autoLayout LeftRight
+          }
+          view matching {
+            include sys.consumer -> sys.producer
+          }
+          view reversed {
+            include sys.producer -> sys.consumer
+          }
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      expect(model.view('index').$view.edges.find(e => e.source === 'sys.consumer')).toMatchObject({
+        source: 'sys.consumer',
+        target: 'sys.producer',
+        label: 'events',
+        kind: 'subscribes',
+        dir: 'back',
+      })
+      expect(model.view('matching').$view.edges).toHaveLength(1)
+      expect(model.view('reversed').$view.edges).toHaveLength(0)
+    })
+
+    it('keeps backward steps in dynamic views', async ({ expect }) => {
+      const { validate, buildLikeC4Model } = createTestServices()
+      const { diagnostics } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+          a <- b
+        }
+        views {
+          dynamic view index {
+            b -> a 'request'
+            b <- a 'response'
+          }
+        }
+      `)
+      expect(diagnostics).toEqual([])
+      const model = await buildLikeC4Model()
+      const edges = model.view('index').$view.edges
+      expect(edges.map(e => [e.source, e.target, e.dir ?? null])).toEqual([
+        ['b', 'a', null],
+        ['a', 'b', 'back'],
+      ])
+    })
+  })
 })

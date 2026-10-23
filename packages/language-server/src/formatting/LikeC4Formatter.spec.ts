@@ -550,6 +550,8 @@ describe('formating', () => {
                 zone2.cluster.instance2   ->zone1.instance1
                 zone2.cluster.instance2   -[   http   ]->   zone1.instance1
                 zone2.cluster.instance2  .http   zone1.instance1   'title'  'REST'  #tag1
+                zone2.cluster.instance2   <-zone1.instance1
+                zone2.cluster.instance2   <-[   http   ]-   zone1.instance1
               }
             }
             zone1.instance1    ->zone2.cluster.instance2   {
@@ -578,6 +580,8 @@ describe('formating', () => {
                 zone2.cluster.instance2 -> zone1.instance1
                 zone2.cluster.instance2 -[http]-> zone1.instance1
                 zone2.cluster.instance2 .http zone1.instance1 'title' 'REST' #tag1
+                zone2.cluster.instance2 <- zone1.instance1
+                zone2.cluster.instance2 <-[http]- zone1.instance1
               }
             }
             zone1.instance1 -> zone2.cluster.instance2 {
@@ -620,6 +624,42 @@ describe('formating', () => {
           style {
             direction: forward
           }
+        }
+      }"
+    `)
+  })
+
+  it('formats backward relations', async ({ expect, format }) => {
+    expect(
+      await format`
+        specification {
+          element component
+          relationship subscribes
+        }
+        model {
+          component a {
+            <-   b
+            <-[  subscribes  ]-b   'title'
+          }
+          component b
+          a<-b
+          a   <-[subscribes]-   b {
+          }
+        }`,
+    ).toMatchInlineSnapshot(`
+      "
+      specification {
+        element component
+        relationship subscribes
+      }
+      model {
+        component a {
+          <- b
+          <-[subscribes]- b 'title'
+        }
+        component b
+        a <- b
+        a <-[subscribes]- b {
         }
       }"
     `)

@@ -249,7 +249,7 @@ StrictFqnRef returns StrictFqnRef:
 
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  RelationConnector
+  (RelationConnector | BackwardRelationConnector)
   target=FqnRef
   (title=String  // title
     (description=String  // description
@@ -265,6 +265,12 @@ fragment RelationConnector:
   '-[' kind=[RelationshipKind] (isBidirectional?=']<->' | ']->') |
   isBidirectional?='<->' |
   '->'
+;
+
+// Backward relation: `a <- b` is a relation from b to a, laid out backwards
+fragment BackwardRelationConnector:
+  isBackward?='<-' |
+  isBackward?='<-[' kind=[RelationshipKind] ']-'
 ;
 
 RelationBody: '{'
@@ -899,7 +905,7 @@ ExtendDeploymentBody:  '{'
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  RelationConnector
+  (RelationConnector | BackwardRelationConnector)
   target=FqnRef
   (title=String  // title
     (description=String  // description
