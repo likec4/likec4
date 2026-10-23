@@ -92,6 +92,7 @@ export const relationship = common.props
     line: common.line.nullish(),
     head: common.arrow.nullish(),
     tail: common.arrow.nullish(),
+    direction: common.direction.nullish(),
   })
   .readonly()
   .transform(pickBy(isNonNullish))
