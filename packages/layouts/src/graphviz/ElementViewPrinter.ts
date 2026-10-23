@@ -103,6 +103,7 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     // const viewEdges = this.view.edges
+    // Reversed edges are laid out from target to source, but rendered with the arrow at the source end
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
     const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, last())
     const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first())
@@ -153,7 +154,6 @@ export class ElementViewPrinter<A extends AnyAux> extends DotPrinter<ComputedEle
         e.attributes.apply({
           [_.arrowhead]: toArrowType(tail),
           [_.dir]: 'both',
-          [_.minlen]: 0,
         })
       }
       return e
