@@ -309,6 +309,10 @@ include
     title 'Customer uses cloud'
     navigateTo dynamicview1
   }, 
+  // Lay out backwards (see styling/direction)
+  cloud.* -> amazon.* with {
+    direction back
+  },
 ```
 :::tip
 Sometimes, connections may have a title `[...]`. This indicates that the connection has been merged from multiple relationships with different titles, and it was impossible to derive a definitive one.  
@@ -899,6 +903,9 @@ Parameters are:
 - rank distance: optional, must be a positive number
 - node distance. optional, must be a positive number
 - edge routing: optional, possible values are `spline` or `ortho`. See [Edge routing](#edge-routing).
+
+Auto-layout places the source of a relationship before its target.
+To reverse this for specific relationships, use [`direction back`](/dsl/styling#direction) or the [backward relationship](/dsl/relationships#backward-relationships) syntax `a <- b`.
 
 <Aside>
 Manual changes are supported in VSCode extension, but functionality is limited.  
