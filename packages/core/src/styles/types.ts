@@ -64,6 +64,17 @@ export const RelationshipArrowTypes = [
 ] as const
 export type RelationshipArrowType = TupleToUnion<typeof RelationshipArrowTypes>
 
+/**
+ * Layout direction of a relationship.
+ * - `forward` (default): source is ranked before target
+ * - `back`: target is ranked before source, arrow still points from source to target
+ */
+export const RelationshipDirections = [
+  'forward',
+  'back',
+] as const
+export type RelationshipDirection = TupleToUnion<typeof RelationshipDirections>
+
 export type ThemeColor = typeof ThemeColors[number]
 
 export function isThemeColor(color: string): color is ThemeColor {

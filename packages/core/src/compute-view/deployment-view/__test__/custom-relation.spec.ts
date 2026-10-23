@@ -60,6 +60,37 @@ describe('custom relation predicate (with) in deployment views', () => {
     })
   })
 
+  it('applies direction to the matching edge only', () => {
+    const view = computeView(
+      $include('prod.eu.zone1.*'),
+      $include('prod.eu.zone1.ui -> prod.eu.zone1.api', {
+        with: { direction: 'back' },
+      }),
+    )
+    expect(edge(view, 'prod.eu.zone1.ui:prod.eu.zone1.api')).toMatchObject({
+      source: 'prod.eu.zone1.ui',
+      target: 'prod.eu.zone1.api',
+      dir: 'back',
+    })
+    expect(view.edges.filter(e => e.dir === 'back').map(e => e.id)).toEqual([
+      'prod.eu.zone1.ui:prod.eu.zone1.api',
+    ])
+  })
+
+  it('keeps bidirectional edges when direction is back', () => {
+    const view = computeView(
+      $include('prod.eu.db'),
+      $include('prod.us.db'),
+      $include('prod.eu.db -> prod.us.db', {
+        with: { direction: 'back', title: 'replicates (back)' },
+      }),
+    )
+    expect(edge(view, 'prod.eu.db:prod.us.db')).toMatchObject({
+      label: 'replicates (back)',
+      dir: 'both',
+    })
+  })
+
   it('only customizes relations that satisfy the where condition', () => {
     const view = computeView(
       $include('prod.eu.zone1.*'),

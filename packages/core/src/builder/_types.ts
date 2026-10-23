@@ -13,6 +13,7 @@ import type {
   MarkdownOrString,
   NonEmptyArray,
   RelationshipArrowType,
+  RelationshipDirection,
   RelationshipLineType,
   RelationshipSpecification as RelationshipKindSpecification,
   ShapeSize,
@@ -155,6 +156,7 @@ export type NewRelationProps<Kind, Tag, Metadata> = {
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
   line?: RelationshipLineType
+  direction?: RelationshipDirection
   color?: Color
   links?: NonEmptyArray<string | { title?: string; url: string }>
 }
