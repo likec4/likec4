@@ -344,6 +344,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isColorProperty(node)
       || ast.isLineProperty(node)
       || ast.isArrowProperty(node)
+      || ast.isDirectionProperty(node)
       || ast.isIconProperty(node)
       || ast.isShapeProperty(node)
       || ast.isBorderProperty(node)
@@ -373,6 +374,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         'line',
         'head',
         'tail',
+        'direction',
         'icon',
         'iconColor',
         'iconSize',

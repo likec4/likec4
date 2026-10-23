@@ -587,6 +587,44 @@ describe('formating', () => {
     )
   })
 
+  it('formats direction property', async ({ expect, format }) => {
+    expect(
+      await format`
+        specification {
+          element component
+          relationship subscribes {
+            direction    back
+          }
+        }
+        model {
+          component a
+          component b
+          a -> b {
+            style {
+              direction:forward
+            }
+          }
+        }`,
+    ).toMatchInlineSnapshot(`
+      "
+      specification {
+        element component
+        relationship subscribes {
+          direction back
+        }
+      }
+      model {
+        component a
+        component b
+        a -> b {
+          style {
+            direction: forward
+          }
+        }
+      }"
+    `)
+  })
+
   describe('formats views', () => {
     it(
       'formats include/exclude expressions',
