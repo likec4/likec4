@@ -209,7 +209,8 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     const withColor = (text: string) => `<color:${color}>${text.replaceAll('"', `'`)}`
 
     const out = new CompositeGeneratorNode()
-    if (edge.dir === 'back') {
+    // Backward steps in dynamic views keep their output
+    if (edge.dir === 'back' && view._type !== 'dynamic') {
       // Laid out from target to source, like `target <- source`
       out.append(
         names.get(edge.target),

@@ -130,4 +130,9 @@ test('generate puml - back direction edge', ({ expect }) => {
   const result = generatePuml(mockViewModel(view))
   expect(result).toContain('Producer <.[#')
   expect(result).toMatch(/Producer <\.\[#\w+,thickness=2\]\. Consumer : /)
+
+  // Backward steps in dynamic views are not affected
+  const dynamicResult = generatePuml(mockViewModel({ ...view, _type: 'dynamic' } as any))
+  expect(dynamicResult).not.toContain('<.[#')
+  expect(dynamicResult).toMatch(/Consumer \.\[#\w+,thickness=2\]\.> Producer : /)
 })
