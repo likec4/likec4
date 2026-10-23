@@ -187,6 +187,34 @@ describe('model', () => {
     `)
   })
 
+  it('should print relationship direction', () => {
+    expectModel(
+      builder.model(({ component, rel }, _) =>
+        _(
+          component('consumer'),
+          component('producer'),
+          rel('consumer', 'producer', {
+            kind: 'uses',
+            title: 'subscribes',
+            direction: 'back',
+          }),
+        )
+      ),
+    ).toMatchInlineSnapshot(`
+      "model {
+        consumer = component
+        
+        producer = component
+        
+        consumer -[uses]-> producer 'subscribes' {
+          style {
+            direction back
+          }
+        }
+      }"
+    `)
+  })
+
   it('should print relationships', () => {
     expectModel(
       builder.model(({ actor, system, component, rel }, _) =>

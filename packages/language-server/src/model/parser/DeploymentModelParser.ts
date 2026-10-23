@@ -192,10 +192,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
     parseDeploymentRelation(astNode: ast.DeploymentRelation): ParsedAstDeploymentRelation {
       const isValid = this.isValid
       const astPath = this.getAstNodePath(astNode)
-      const source = this._resolveDeploymentRelationSource(astNode)
-      invariant(FqnRef.isDeploymentRef(source), 'Invalid source for deployment relation')
-      const target = this.parseFqnRef(astNode.target)
-      invariant(FqnRef.isDeploymentRef(target), 'Invalid target for deployment relation')
+      const left = this._resolveDeploymentRelationSource(astNode)
+      invariant(FqnRef.isDeploymentRef(left), 'Invalid source for deployment relation')
+      const right = this.parseFqnRef(astNode.target)
+      invariant(FqnRef.isDeploymentRef(right), 'Invalid target for deployment relation')
+      // `a <- b` is a relation from b to a, laid out backwards
+      const [source, target] = astNode.isBackward ? [right, left] : [left, right]
 
       const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body) ?? undefined
       const links = this.convertLinks(astNode.body)
@@ -242,6 +244,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         kind,
         tags,
         links,
+        ...(astNode.isBackward && { direction: 'back' as const }),
         ...toRelationshipStyle(styleProp?.props, isValid),
         navigateTo,
         astPath,

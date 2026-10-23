@@ -224,4 +224,103 @@ describe('property-checks', () => {
       expect(errors).toEqual([])
     })
   })
+
+  describe('direction', () => {
+    it('should not warn in relationships and element views', async ({ expect, validate }) => {
+      const { errors, warnings } = await validate(`
+        specification {
+          element component
+          relationship subscribes {
+            direction back
+          }
+        }
+        model {
+          component a
+          component b
+          a -> b {
+            style {
+              direction back
+            }
+          }
+        }
+        views {
+          view index {
+            include *
+            include a -> b with {
+              direction forward
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      expect(warnings).toEqual([])
+    })
+
+    it('should warn in deployment views, but not on deployment relationships', async ({ expect, validate }) => {
+      const { errors, warnings } = await validate(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component a
+          component b
+          a -> b
+        }
+        deployment {
+          node n1 {
+            ia = instanceOf a
+          }
+          node n2 {
+            ib = instanceOf b
+          }
+          n1.ia -> n2.ib {
+            style {
+              direction back
+            }
+          }
+        }
+        views {
+          deployment view index {
+            include *
+            include n1.ia -> n2.ib with {
+              direction back
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      expect(warnings).toEqual([
+        'Direction is ignored in deployment views, set it on the relationship instead',
+      ])
+    })
+
+    it('should warn in dynamic views', async ({ expect, validate }) => {
+      const { errors, warnings } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+          a -> b
+        }
+        views {
+          dynamic view index {
+            a -> b {
+              direction back
+            }
+            include a -> b with {
+              direction back
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      expect(warnings).toEqual([
+        'Direction is ignored in dynamic views, use backward steps (a <- b) instead',
+        'Direction is ignored in dynamic views, use backward steps (a <- b) instead',
+      ])
+    })
+  })
 })

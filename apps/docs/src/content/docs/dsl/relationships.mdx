@@ -38,6 +38,26 @@ Bidirectional relationships render with arrows at both ends by default. Use them
 synchronized replication or protocols where both sides initiate meaningful communication. Relationship style can still
 override the rendered tail. For request-response calls where one side initiates the interaction, prefer `->`.
 
+### Backward relationships
+
+Use **`<-`** (or **`<-[kind]-`**) to define a relationship from right to left, that is laid out backwards:
+
+```likec4
+model {
+  producer = component 'Producer'
+  consumer = component 'Consumer'
+
+  // Same as `consumer -[subscribes]-> producer`,
+  // but producer is placed before consumer in the layout
+  producer <-[subscribes]- consumer 'events'
+}
+```
+
+This is a shorthand for a relationship with [`direction back`](/dsl/styling#direction) style.
+The relationship keeps its semantic direction (from `consumer` to `producer`):
+the arrow, view predicates like `include consumer -> producer`, relationship details and navigation are not affected.
+Only the [automatic layout](/dsl/views/predicates/#auto-layout) is reversed.
+
 Relationships may be nested
 
 ```likec4

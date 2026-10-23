@@ -293,9 +293,12 @@ export function mergeDiffAdds(
         && !AstUtils.hasContainerOfType(extended, ast.isModelDiff):
         mergeIntoElement(edits, extended, item)
         break
-      case ast.isRelation(item):
-        toModel(modelBlockOf(item.source?.value.ref) ?? mainBlock, item)
+      case ast.isRelation(item): {
+        // `a <- b` is a relation from b to a
+        const source = item.isBackward ? item.target : item.source
+        toModel(modelBlockOf(source?.value.ref) ?? mainBlock, item)
         break
+      }
       default:
         toModel(mainBlock, item)
     }
