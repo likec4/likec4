@@ -296,6 +296,10 @@ include
     title 'Customer uses cloud'
     navigateTo dynamicview1
   }, 
+  // Lay out backwards (see styling/direction)
+  cloud.* -> amazon.* with {
+    direction back
+  },
 ```
 :::tip
 Às vezes, conexões podem ter o título `[...]`. Isso indica que a conexão foi combinada a partir de vários relacionamentos com títulos diferentes e não foi possível derivar um título definitivo.  
