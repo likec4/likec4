@@ -1274,7 +1274,8 @@ CustomColorId returns string:
   'model' |
   'diff' |
   'add' |
-  'remove';
+  'remove' |
+  'direction';
 
 // We need to add all the possible terminal values to Id,
 // so that the parser can accept them as "Id" (not a bug and not a feature of Langium)

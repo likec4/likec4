@@ -229,13 +229,20 @@ describe('Model Builder - relationship direction', () => {
         element back
         element forward
         element direction
+        color direction #ff0000
+        color back #00ff00
+        relationship forward
       }
       model {
-        back back
+        back back {
+          style {
+            color direction
+          }
+        }
         forward forward
         direction direction
         back -> forward
-        forward -> direction
+        forward .forward direction
       }
     `)
     expect(diagnostics).toEqual([])
