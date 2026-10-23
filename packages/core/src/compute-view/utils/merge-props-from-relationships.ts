@@ -9,6 +9,7 @@ import {
   type NonEmptyArray,
   type Relationship,
   type RelationshipArrowType,
+  type RelationshipDirection,
   type RelationshipLineType,
   type scalar,
   exact,
@@ -49,12 +50,17 @@ export type MergedRelationshipProps<A extends AnyAux> = {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
+  /**
+   * `back` only if all merged relationships have `back` direction
+   */
+  direction?: RelationshipDirection
   navigateTo?: aux.StrictViewId<A>
   tags?: NonEmptyArray<aux.Tag<A>>
 }
 
 /**
  * Merges properties from multiple relationships into a single object.
+ * Direction is `back` only if all relationships have `back` direction.
  * @param relations - The relationships to merge.
  * @param prefer - The relationship to prefer when merging.
  */
@@ -126,6 +132,7 @@ export function mergePropsFromRelationships<A extends AnyAux>(
     color: only(allprops.color),
     line: only(allprops.line),
     navigateTo: only(allprops.navigateTo),
+    ...isNonEmptyArray(relations) && relations.every(r => r.direction === 'back') && { direction: 'back' as const },
     ...isNonEmptyArray(tags) && { tags },
   })
 
@@ -146,8 +153,8 @@ export function mergePropsFromRelationships<A extends AnyAux>(
 }
 
 export type ComputedEdgeProps<A extends AnyAux> =
-  & Pick<ComputedEdge<A>, 'label' | 'relations' | 'color' | 'line' | 'head'>
-  & Omit<MergedRelationshipProps<A>, 'title' | 'color' | 'line' | 'head'>
+  & Pick<ComputedEdge<A>, 'label' | 'relations' | 'color' | 'line' | 'head' | 'dir'>
+  & Omit<MergedRelationshipProps<A>, 'title' | 'color' | 'line' | 'head' | 'direction'>
 
 /**
  * Merges properties from relationships and converts them to computed edge properties
@@ -166,6 +173,7 @@ export function computedEdgePropsFromRelationships<A extends AnyAux>(
     color = defaults.color,
     line = defaults.line,
     head = defaults.arrow,
+    direction,
     ...props
   } = mergePropsFromRelationships(relations, prefer)
   return {
@@ -175,5 +183,6 @@ export function computedEdgePropsFromRelationships<A extends AnyAux>(
     line,
     head,
     ...props,
+    ...(direction === 'back' && { dir: 'back' }),
   }
 }

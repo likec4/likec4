@@ -4,6 +4,7 @@ import type {
   ElementShape,
   IconPosition,
   RelationshipArrowType,
+  RelationshipDirection,
   RelationshipLineType,
   ShapeSize,
   Sizing,
@@ -210,6 +211,10 @@ export namespace ModelRelationExpr {
       line?: RelationshipLineType
       head?: RelationshipArrowType
       tail?: RelationshipArrowType
+      /**
+       * Layout hint, overrides direction of relationships
+       */
+      direction?: RelationshipDirection
       /**
        * If true, each matching relationship is rendered as a separate edge.
        * @default false
