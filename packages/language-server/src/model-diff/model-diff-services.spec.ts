@@ -325,6 +325,48 @@ describe('ModelDiffs', () => {
     })
   })
 
+  it('moves a dynamic view from the diff into views', async ({ expect }) => {
+    const source = `
+specification {
+  element system
+}
+model {
+  shop = system 'Shop'
+  bank = system 'Bank'
+}
+views {
+  view index {
+    include *
+  }
+}
+diff rfc1 {
+  add {
+    payments = system 'Payments'
+  }
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop -> payments 'requests payment'
+      payments -> bank 'charges'
+    }
+  }
+}
+`
+    const { services, documents, errors } = await setup(source)
+    expect(errors).toEqual([])
+    const edits = new DocumentEdits()
+    await services.likec4.ModelDiffs.addEdits(edits, 'rfc1' as DiffId, 'apply')
+    const text = applyEdit(documents[0]!, edits.toWorkspaceEdit())
+    expect(text).toContain(`dynamic view checkout`)
+    expect(text).toContain(`variant sequence`)
+    expect(text).not.toContain('diff rfc1')
+    expect(text.indexOf('dynamic view checkout')).toBeGreaterThan(text.indexOf('view index'))
+    const parsed = await setup(text)
+    expect(parsed.errors).toEqual([])
+    expect(parsed.documents[0]).toBeDefined()
+  })
+
   it('applies the diff to the model', async ({ expect }) => {
     const { services, documents } = await setup(model, diffs)
     const edits = new DocumentEdits()

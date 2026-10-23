@@ -387,6 +387,15 @@ export function buildModelData(
     toModelRelation: c4Specification.toModelRelation,
     elements,
     relations,
+    existingViewIds: new Set(parsedViews.map(view => view.id)),
+    toModelView: (view, docUri) => {
+      const doc = docs.find(candidate => candidate.uri.toString() === docUri)
+      if (!doc) {
+        return null
+      }
+      const modelView = toC4View(doc)(view)
+      return modelView[_type] === 'dynamic' ? modelView : null
+    },
   })
 
   return {

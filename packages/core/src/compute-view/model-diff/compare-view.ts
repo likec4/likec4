@@ -1,4 +1,4 @@
-import { entries, isDeepEqual, isNonNull, pick } from 'remeda'
+import { entries, isDeepEqual, isNonNull, pick, values } from 'remeda'
 import { LikeC4Model } from '../../model'
 import type {
   AnyAux,
@@ -312,9 +312,12 @@ export function computeCompareViews<A extends AnyAux>(
   data: ParsedLikeC4ModelData<A>,
   models: CompareModels<A>,
 ): CompareViewResult<A>[] {
-  return entries(data.views)
-    .map(([, source]) => computeCompareView(source, models))
-    .filter(isNonNull)
+  const modified = new Set(Object.keys(models.diff.modify.elements))
+  const existing = entries(data.views).map(([, source]) => computeCompareView(source, models))
+  const introduced = values(models.diff.views ?? {})
+    .filter(view => !(view.id in data.views))
+    .map(source => mergeComputedViews(null, computeViewInState(source, models.after), modified))
+  return [...existing, ...introduced].filter(isNonNull)
 }
 
 function filterItems<N extends ComputedNode, E extends ComputedEdge>(

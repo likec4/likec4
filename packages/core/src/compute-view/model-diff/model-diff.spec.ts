@@ -282,6 +282,39 @@ describe('computeCompareView', () => {
   })
 })
 
+describe('computeCompareViews', () => {
+  it('marks every actor and step of a view that exists only in the diff as added', () => {
+    const data = modelData()
+    const diff = data.diffs![DiffId('rfc1')]!
+    const withView = {
+      ...data,
+      diffs: {
+        [diff.id]: {
+          ...diff,
+          views: {
+            [ViewId('pays')]: {
+              [_type]: 'dynamic',
+              [_stage]: 'parsed',
+              id: ViewId('pays'),
+              title: 'Pays',
+              description: null,
+              variant: 'sequence',
+              rules: [],
+              steps: [{ source: 'customer', target: 'cloud.payments', astPath: '/s1', title: 'pays' }],
+            },
+          },
+        },
+      },
+    } as unknown as ParsedLikeC4ModelData
+    const models = createCompareModels(withView, DiffId('rfc1'))!
+    const result = computeCompareViews(withView, models).find(item => item.view.id === 'pays')
+    expect(result?.isAffected).toBe(true)
+    expect(result?.view.nodes.every(node => node.diffStatus === 'added')).toBe(true)
+    expect(result?.view.edges.every(edge => edge.diffStatus === 'added')).toBe(true)
+    expect(applyModelDiff(withView, withView.diffs![DiffId('rfc1')]!).views[ViewId('pays')]?.id).toBe('pays')
+  })
+})
+
 describe('computeRemovalImpact', () => {
   const model = builder.toLikeC4Model()
   const impact = computeRemovalImpact(model, ['cloud.legacy'])

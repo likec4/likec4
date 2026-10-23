@@ -33,6 +33,7 @@ export const Route = createRootRouteWithContext<Context>()({
         padding: 20,
         theme: undefined,
         dynamic: undefined,
+        diff: undefined,
         relationships: undefined,
         focusOnElement: undefined,
       }),

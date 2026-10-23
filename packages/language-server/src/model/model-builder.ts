@@ -389,7 +389,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           manualLayouts: { ...manualLayouts?.views },
           [_stage]: 'computed',
           views: indexBy(views, prop('id')),
-        } as c4.ComputedLikeC4ModelData
+        } as unknown as c4.ComputedLikeC4ModelData
       },
     )
   }

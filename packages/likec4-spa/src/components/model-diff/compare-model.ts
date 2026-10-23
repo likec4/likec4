@@ -6,6 +6,17 @@ function idOf(value: string | { id: string }): string {
   return typeof value === 'string' ? value : value.id
 }
 
+function rootFolder(model: LikeC4Model) {
+  const first = model.views().next().value
+  if (!first) {
+    return null
+  }
+  if (first.folder.isRoot) {
+    return first.folder
+  }
+  return first.folder.parent ?? first.folder
+}
+
 /**
  * Model the detail popups read while a compare view is on screen.
  *
@@ -108,11 +119,11 @@ export function compareLookupModel(
       return null
     }
     if (!compareViewModel) {
-      const existing = before.findView(input.view.id)
-      if (!existing) {
+      const folder = before.findView(input.view.id)?.folder ?? rootFolder(before)
+      if (!folder) {
         return null
       }
-      compareViewModel = new LikeC4ViewModel(proxy, existing.folder, input.view)
+      compareViewModel = new LikeC4ViewModel(proxy, folder, input.view)
     }
     return compareViewModel
   }
