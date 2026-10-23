@@ -209,13 +209,24 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     const withColor = (text: string) => `<color:${color}>${text.replaceAll('"', `'`)}`
 
     const out = new CompositeGeneratorNode()
-      .append(
+    if (edge.dir === 'back') {
+      // Laid out from target to source, like `target <- source`
+      out.append(
+        names.get(edge.target),
+        ' <.[',
+        color,
+        ',thickness=2]. ',
+        names.get(edge.source),
+      )
+    } else {
+      out.append(
         names.get(edge.source),
         ' .[',
         color,
         ',thickness=2].> ',
         names.get(edge.target),
       )
+    }
 
     if (label || tech) {
       out.append(

@@ -92,3 +92,42 @@ test('generate puml - with dashed identifiers', () => {
 test('generate puml - AllShapes', ({ expect }) => {
   expect(generatePuml(mockViewModel(fakeComputedViewWithAllShapes))).toMatchSnapshot()
 })
+
+test('generate puml - back direction edge', ({ expect }) => {
+  const view: ProcessedView = {
+    edges: [
+      {
+        id: 'consumer:producer',
+        label: 'subscribes',
+        source: 'consumer',
+        target: 'producer',
+        dir: 'back',
+      },
+    ],
+    nodes: [
+      {
+        children: [],
+        color: 'primary',
+        id: 'consumer',
+        parent: null,
+        shape: 'rectangle',
+        title: 'Consumer',
+      },
+      {
+        children: [],
+        color: 'primary',
+        id: 'producer',
+        parent: null,
+        shape: 'rectangle',
+        title: 'Producer',
+      },
+    ],
+    autoLayout: { direction: 'LR' },
+    id: 'backView',
+    title: 'Back direction',
+  } as any
+
+  const result = generatePuml(mockViewModel(view))
+  expect(result).toContain('Producer <.[#')
+  expect(result).toMatch(/Producer <\.\[#\w+,thickness=2\]\. Consumer : /)
+})
