@@ -116,7 +116,7 @@
     "relationship": {
       "patterns": [
         {
-          "match": "(-\\[)([^\\]]*)(\\]->)",
+          "match": "(<?-\\[)([^\\]]*)(\\]->|\\]-)",
           "captures": {
             "1": { "name": "keyword.operator.likec4" },
             "2": { "name": "entity.name.function.likec4" },
@@ -125,8 +125,8 @@
         },
         {
           "name": "storage.type.function.likec4",
-          "begin": "(-\\[)",
-          "end": "(\\]->)"
+          "begin": "(<?-\\[)",
+          "end": "(\\]->|\\]-)"
         },
         {
           "name": "storage.type.function.likec4",
