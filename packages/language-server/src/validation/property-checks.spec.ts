@@ -256,6 +256,45 @@ describe('property-checks', () => {
       expect(warnings).toEqual([])
     })
 
+    it('should warn in deployment views, but not on deployment relationships', async ({ expect, validate }) => {
+      const { errors, warnings } = await validate(`
+        specification {
+          element component
+          deploymentNode node
+        }
+        model {
+          component a
+          component b
+          a -> b
+        }
+        deployment {
+          node n1 {
+            ia = instanceOf a
+          }
+          node n2 {
+            ib = instanceOf b
+          }
+          n1.ia -> n2.ib {
+            style {
+              direction back
+            }
+          }
+        }
+        views {
+          deployment view index {
+            include *
+            include n1.ia -> n2.ib with {
+              direction back
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      expect(warnings).toEqual([
+        'Direction is ignored in deployment views, set it on the relationship instead',
+      ])
+    })
+
     it('should warn in dynamic views', async ({ expect, validate }) => {
       const { errors, warnings } = await validate(`
         specification {

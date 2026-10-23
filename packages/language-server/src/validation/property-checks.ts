@@ -166,6 +166,12 @@ export const directionPropertyRuleChecks = (
       accept('warning', `Direction is ignored in dynamic views, use backward steps (a <- b) instead`, {
         node,
       })
+      return
+    }
+    if (AstUtils.getContainerOfType(node, ast.isDeploymentView)) {
+      accept('warning', `Direction is ignored in deployment views, set it on the relationship instead`, {
+        node,
+      })
     }
   })
 }
