@@ -224,4 +224,64 @@ describe('property-checks', () => {
       expect(errors).toEqual([])
     })
   })
+
+  describe('direction', () => {
+    it('should not warn in relationships and element views', async ({ expect, validate }) => {
+      const { errors, warnings } = await validate(`
+        specification {
+          element component
+          relationship subscribes {
+            direction back
+          }
+        }
+        model {
+          component a
+          component b
+          a -> b {
+            style {
+              direction back
+            }
+          }
+        }
+        views {
+          view index {
+            include *
+            include a -> b with {
+              direction forward
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      expect(warnings).toEqual([])
+    })
+
+    it('should warn in dynamic views', async ({ expect, validate }) => {
+      const { errors, warnings } = await validate(`
+        specification {
+          element component
+        }
+        model {
+          component a
+          component b
+          a -> b
+        }
+        views {
+          dynamic view index {
+            a -> b {
+              direction back
+            }
+            include a -> b with {
+              direction back
+            }
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+      expect(warnings).toEqual([
+        'Direction is ignored in dynamic views, use backward steps (a <- b) instead',
+        'Direction is ignored in dynamic views, use backward steps (a <- b) instead',
+      ])
+    })
+  })
 })

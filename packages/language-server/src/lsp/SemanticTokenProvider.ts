@@ -291,6 +291,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         ast.isShapeProperty,
         ast.isArrowProperty,
         ast.isLineProperty,
+        ast.isDirectionProperty,
         ast.isBorderProperty,
         ast.isSizeProperty,
         ast.isIconPositionProperty,

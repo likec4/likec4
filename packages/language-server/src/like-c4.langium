@@ -1163,8 +1163,11 @@ LineProperty:
 ArrowProperty:
   key=('head' | 'tail') ':'? value=ArrowType ';'?;
 
+DirectionProperty:
+  key='direction' ':'? value=RelationshipDirectionValue ';'?;
+
 RelationshipStyleProperty:
-  ColorProperty | LineProperty | ArrowProperty;
+  ColorProperty | LineProperty | ArrowProperty | DirectionProperty;
 
 TagRef:
   tag=[Tag:HashId]
@@ -1178,6 +1181,11 @@ LineOptions returns string:
   'solid' |
   'dashed' |
   'dotted'
+;
+
+RelationshipDirectionValue returns string:
+  'forward' |
+  'back'
 ;
 
 ArrowType returns string:
@@ -1264,6 +1272,7 @@ CustomColorId returns string:
   ElementShape |
   ArrowType |
   LineOptions |
+  RelationshipDirectionValue |
   Participant |
   'element' |
   'model' |
@@ -1279,6 +1288,7 @@ Id returns string:
   ThemeColor |
   ArrowType |
   LineOptions |
+  RelationshipDirectionValue |
   Participant |
   SizeValue |
   DynamicViewDisplayVariantValue |
@@ -1288,7 +1298,7 @@ Id returns string:
   RankValue |
   EdgeRoutingValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing' | 'direction';
 
 HashId returns string:
   Hash Id;

@@ -34,6 +34,7 @@ import { markdownRefsChecks } from './markdown-refs'
 import {
   colorLiteralRuleChecks,
   descriptionFileRuleChecks,
+  directionPropertyRuleChecks,
   iconPropertyRuleChecks,
   opacityPropertyRuleChecks,
 } from './property-checks'
@@ -174,6 +175,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     FqnRefExpr: checkFqnRefExpr(services),
     RelationExpr: checkRelationExpr(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
+    DirectionProperty: directionPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
     DescriptionFileProperty: descriptionFileRuleChecks(services),
     SpecificationRule: checkSpecificationRule(services),
