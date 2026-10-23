@@ -415,14 +415,15 @@ const Relationship = forwardRef<
   const infoIconRef = useRef<HTMLDivElement>(null)
   const [metadataPortalTarget, setMetadataPortalTarget] = useState<HTMLDialogElement | null>(null)
 
-  useEffect(() => {
-    setMetadataPortalTarget(infoIconRef.current?.closest('dialog') ?? null)
-  }, [])
-
   // Build metadata tooltip content
   const metadataEntries = r.hasMetadata()
     ? entries(r.getMetadata()).sort(([a], [b]) => a.localeCompare(b))
     : null
+
+  const hasMetadata = metadataEntries !== null
+  useEffect(() => {
+    setMetadataPortalTarget(infoIconRef.current?.closest('dialog') ?? null)
+  }, [hasMetadata])
 
   const metadataTooltipLabel = metadataEntries && (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
