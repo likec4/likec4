@@ -358,6 +358,12 @@ describe('LikeC4', () => {
           ],
           "folder": "rank-for-better-layout",
         },
+        "relationship-direction": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "relationship-direction",
+        },
       }
     `)
   })
