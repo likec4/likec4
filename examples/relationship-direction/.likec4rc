@@ -1,0 +1,5 @@
+{
+  name: 'relationship-direction',
+  title: 'Relationship Direction',
+  description: 'Example demonstrating backward relationships (layout hint)'
+}
