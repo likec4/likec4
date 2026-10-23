@@ -969,15 +969,24 @@ DeploymentViewRulePredicate:
   expr=Expressions
 ;
 // Model diff -------------------------------------
-// Named change set of the model: elements and relations to remove, and model elements to add
+// Named change set of the model: elements and relations to remove, model elements to add,
+// and dynamic views that exist only until the diff is applied
 
 ModelDiff:
   'diff' name=Id title=String? '{'
     (
       props+=DiffStringProperty |
       removes+=DiffRemove |
-      adds+=DiffAdd
+      adds+=DiffAdd |
+      viewBlocks+=DiffViews
     )*
+  '}'
+;
+
+// Dynamic views introduced by the diff. They are not part of the model until the diff is applied.
+DiffViews:
+  'views' '{'
+    views+=DynamicView*
   '}'
 ;
 

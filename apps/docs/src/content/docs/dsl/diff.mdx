@@ -36,16 +36,30 @@ diff rfc1 'RFC-1: Payments service' {
       #next
     }
   }
+
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop.orders -> shop.payments 'requests payment'
+      shop.payments -> bank 'charges the card'
+    }
+  }
 }
 ```
 
 - `remove` lists elements and relationships of the model.
 - `add` contains model elements, relationships and `extend` blocks, with the same syntax as the `model` block.
+- `views` contains dynamic views, including `variant sequence`. These views are not part of the model until you apply the diff.
 - A diff can span several files: diffs with the same name are merged.
 
 Views can reference elements added by a diff.
 In the model "as is" these references are ignored, so the view shows only existing elements.
 A view scoped to an element added by a diff (`view of`) exists only in the "to-be" state.
+
+A dynamic view inside the diff is listed in the sidebar under **In this diff** while that diff is selected.
+Open it from there. The address includes `?diff=` so the link opens that diff.
+**As-is** is empty, because every actor and step is added. **Changes** is the default.
 
 ### Validation
 
@@ -53,6 +67,7 @@ A view scoped to an element added by a diff (`view of`) exists only in the "to-b
   If the model changed since the diff was written, the entry is reported as an error.
 - An added element must not exist in the model.
 - A diff cannot remove elements added by a diff, and cannot extend relationships.
+- A dynamic view in a diff must use a view id that is not already used.
 
 ### Overlapping diffs
 
@@ -87,7 +102,7 @@ Elements keep their positions when you switch, because all three modes use the s
 ## Apply or discard a diff
 
 - **Apply** removes the entries of `remove` with everything that references them (see [safe delete](#safe-delete)),
-  merges the `add` blocks into the model, and deletes the diff.
+  merges the `add` blocks into the model, moves dynamic views into a `views` block, and deletes the diff.
   Views scoped to removed elements and dynamic view steps with removed elements are removed too.
 - **Discard** deletes the diff. The model does not change.
 
@@ -136,11 +151,21 @@ diff rfc1 'RFC-1: Payments service' {
     shop.orders -> shop.payments 'charges'
     shop.payments -> bank 'calls REST API'
   }
+
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop.orders -> shop.payments 'charges'
+      shop.payments -> bank 'calls REST API'
+    }
+  }
 }
 ```
 
 The model after the apply.
 The gateway and its relationships are removed, `payments` is in the definition of `shop`,
+the sequence view moves into a `views` block,
 and only the comment inside `payments` is kept:
 
 ```likec4
@@ -156,6 +181,15 @@ model {
 
   shop.orders -> shop.payments 'charges'
   shop.payments -> bank 'calls REST API'
+}
+
+views {
+  dynamic view checkout {
+    variant sequence
+    title 'Checkout'
+    shop.orders -> shop.payments 'charges'
+    shop.payments -> bank 'calls REST API'
+  }
 }
 ```
 

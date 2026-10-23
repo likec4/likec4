@@ -77,6 +77,13 @@ const Tooltip = MantineTooltip.withProps({
   withinPortal: false,
 })
 
+const diffStatusColor = {
+  added: 'green',
+  removed: 'red',
+  modified: 'orange',
+  orphan: 'gray',
+} as const
+
 const SmallLabel = Text.withProps({
   component: 'div',
   fz: 11,
@@ -346,6 +353,20 @@ export function ElementDetailsCard({
                   {elementModel.kind}
                 </Badge>
               </div>
+              {nodeModel?.$node.diffStatus && (
+                <div>
+                  <SmallLabel>diff</SmallLabel>
+                  <Badge
+                    radius={'sm'}
+                    size="sm"
+                    fw={600}
+                    variant="light"
+                    color={diffStatusColor[nodeModel.$node.diffStatus]}
+                  >
+                    {nodeModel.$node.diffStatus}
+                  </Badge>
+                </div>
+              )}
               <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                 <SmallLabel>tags</SmallLabel>
                 <ElementTags

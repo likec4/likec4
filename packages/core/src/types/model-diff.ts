@@ -3,6 +3,7 @@ import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { Element, Relationship } from './model-logical'
 import type * as scalar from './scalar'
+import type { ParsedDynamicView } from './view-parsed.dynamic'
 
 /**
  * Identifier of a model diff (name of the `diff` block in the DSL).
@@ -90,4 +91,8 @@ export interface ModelDiff<A extends AnyAux = AnyAux> {
   readonly modify: {
     readonly elements: Readonly<Record<aux.ElementId<A>, ModelDiffElementOverlay<A>>>
   }
+  /**
+   * Dynamic views this diff introduces. Absent from the model until the diff is applied.
+   */
+  readonly views?: Readonly<Record<scalar.ViewId, ParsedDynamicView<A>>>
 }

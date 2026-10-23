@@ -21,22 +21,45 @@ import { useIsMounted, useUnmountEffect } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useEffect, useRef } from 'react'
+import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'
 import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDiffPanel'
+import { selectDiff, useModelDiffState } from '../components/model-diff/state'
 import { NotFound } from '../components/NotFound'
 import { headerOps } from '../components/view-page/state'
-import { useCurrentProject, useCurrentView } from '../hooks'
+import { useModelDiffs } from '../context/ModelDiffsContext'
+import { useCurrentProject, useCurrentView, useCurrentViewId } from '../hooks'
 import { useRelationshipBrowserScope } from '../relationship-browser/scope'
 
 export function ViewReact() {
   const navigate = useNavigate()
   const project = useCurrentProject()
+  const viewId = useCurrentViewId()
   const [view, setLayoutType] = useCurrentView()
   const [relationshipBrowserScope, setRelationshipBrowserScope] = useRelationshipBrowserScope(project)
   const model = useLikeC4Model()
-  const { dynamic } = useSearch({
+  const { dynamic, diff: diffParam } = useSearch({
     from: '__root__',
   })
-  const compareView = useCompareView(view?.id)
+  const { diffs } = useModelDiffs()
+  const { diffId } = useModelDiffState()
+  const compareView = useCompareView(viewId)
+
+  useEffect(() => {
+    if (view || diffParam || diffId) {
+      return
+    }
+    const owners = diffs.filter(diff => diff.views.some(item => item.id === viewId))
+    const owner = owners.length === 1 ? owners[0] : undefined
+    if (!owner) {
+      return
+    }
+    selectDiff(owner.id)
+    void navigate({
+      to: './',
+      replace: true,
+      search: (prev) => ({ ...prev, diff: owner.id }),
+    })
+  }, [view, diffParam, diffId, diffs, viewId, navigate])
 
   const onNavigateTo = useCallbackRef((viewId: string) => {
     void navigate({
@@ -50,59 +73,69 @@ export function ViewReact() {
     })
   })
 
-  const title = view ? (view.title ?? view.id) : `View not found`
+  const shown = compareView ?? view
+  const title = shown ? (shown.title ?? shown.id) : `View not found`
   const pageTitle = model.project.title ?? defaultPageTitle
   useDocumentTitle(`${title} - ${pageTitle}`)
 
-  if (!view) {
-    return <NotFound />
+  if (!shown) {
+    const owners = diffs.filter(diff => diff.views.some(item => item.id === viewId))
+    if (owners.length === 0) {
+      return <NotFound />
+    }
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <ModelDiffPanel viewId={viewId} />
+      </div>
+    )
   }
 
-  const notations = view.notation?.nodes ?? []
+  const notations = shown.notation?.nodes ?? []
   const hasNotations = notations.length > 0
-  // Compare views contain elements that are not in the model: no model overlays
   const isComparing = compareView !== null
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <LikeC4Diagram
-        view={compareView ?? view}
-        zoomable
-        pannable
-        controls
-        fitViewPadding={{
-          top: '70px',
-          bottom: '32px',
-          left: '32px',
-          right: '32px',
-        }}
-        showNavigationButtons
-        enableSearch
-        enableFocusMode
-        enableDynamicViewWalkthrough={!isComparing}
-        dynamicViewVariant={dynamic}
-        enableElementDetails={!isComparing}
-        enableRelationshipDetails={!isComparing}
-        enableRelationshipBrowser={!isComparing}
-        relationshipBrowserScope={relationshipBrowserScope}
-        onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
-        enableElementTags
-        enableCompareWithLatest={!isComparing}
-        enableNotations={hasNotations}
-        nodesSelectable
-        onNavigateTo={onNavigateTo}
-        onLayoutTypeChange={setLayoutType}
-        onLogoClick={() => {
-          void navigate({
-            to: '/',
-          })
-        }}
-      >
-        <ListenForDiagramStateChanges />
-        <OpenRelationshipBrowserFromUrl relationshipBrowserScope={relationshipBrowserScope} />
-        <FocusElementFromUrl />
-      </LikeC4Diagram>
-      <ModelDiffPanel viewId={view.id} />
+      <CompareModelProvider viewId={shown.id}>
+        <LikeC4Diagram
+          view={shown}
+          zoomable
+          pannable
+          controls
+          fitViewPadding={{
+            top: '70px',
+            bottom: '32px',
+            left: '32px',
+            right: '32px',
+          }}
+          showNavigationButtons
+          enableSearch
+          enableFocusMode
+          enableDynamicViewWalkthrough={!isComparing}
+          dynamicViewVariant={dynamic}
+          enableElementDetails
+          enableRelationshipDetails
+          enableRelationshipBrowser
+          relationshipBrowserScope={relationshipBrowserScope}
+          onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
+          enableElementTags
+          enableCompareWithLatest={!isComparing}
+          enableNotations={hasNotations}
+          nodesSelectable
+          onNavigateTo={onNavigateTo}
+          onLayoutTypeChange={setLayoutType}
+          onLogoClick={() => {
+            void navigate({
+              to: '/',
+            })
+          }}
+        >
+          <ListenForDiagramStateChanges />
+          <OpenRelationshipBrowserFromUrl relationshipBrowserScope={relationshipBrowserScope} />
+          <FocusElementFromUrl />
+        </LikeC4Diagram>
+      </CompareModelProvider>
+      <ModelDiffPanel viewId={shown.id} />
     </div>
   )
 }

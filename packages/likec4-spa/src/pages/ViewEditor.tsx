@@ -11,6 +11,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { isDevelopment } from 'likec4:app-config'
 import { isAIAvailable, likec4rpc } from 'likec4:rpc'
 import { LazyAIChat } from '../aichat'
+import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'
 import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDiffPanel'
 import { NotFound } from '../components/NotFound'
 import { useLikeC4ModelAtom } from '../context/safeCtx'
@@ -45,7 +46,7 @@ export function ViewEditor() {
 
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
-  // Compare views contain elements that are not in the model: no editing, no model overlays
+  // The compare view is not the saved view: keep the editor off
   const isComparing = compareView !== null
 
   const diagram = (
@@ -65,9 +66,9 @@ export function ViewEditor() {
       enableSearch
       enableDynamicViewWalkthrough={!isComparing}
       enableFocusMode
-      enableElementDetails={!isComparing}
-      enableRelationshipDetails={!isComparing}
-      enableRelationshipBrowser={!isComparing}
+      enableElementDetails
+      enableRelationshipDetails
+      enableRelationshipBrowser
       relationshipBrowserScope={relationshipBrowserScope}
       onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
       enableElementTags
@@ -90,33 +91,35 @@ export function ViewEditor() {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {isComparing ? diagram : (
-        <LikeC4EditorProvider
-          editor={{
-            fetchView: (id, layout) => {
-              const model = $likec4model.get().view(id)
-              return layout === 'auto' ? model.$view : model.$layouted
-            },
-            handleChange: (viewId, change) => {
-              const event = {
-                projectId: project.id,
-                viewId,
-                change,
-              }
-              return likec4rpc.updateView(event)
-            },
-            ...(isAIAvailable && {
-              applySemanticLayout: (viewId) => {
-                return likec4rpc.applySemanticLayout({
+      <CompareModelProvider viewId={view.id}>
+        {isComparing ? diagram : (
+          <LikeC4EditorProvider
+            editor={{
+              fetchView: (id, layout) => {
+                const model = $likec4model.get().view(id)
+                return layout === 'auto' ? model.$view : model.$layouted
+              },
+              handleChange: (viewId, change) => {
+                const event = {
                   projectId: project.id,
                   viewId,
-                })
+                  change,
+                }
+                return likec4rpc.updateView(event)
               },
-            }),
-          }}>
-          {diagram}
-        </LikeC4EditorProvider>
-      )}
+              ...(isAIAvailable && {
+                applySemanticLayout: (viewId) => {
+                  return likec4rpc.applySemanticLayout({
+                    projectId: project.id,
+                    viewId,
+                  })
+                },
+              }),
+            }}>
+            {diagram}
+          </LikeC4EditorProvider>
+        )}
+      </CompareModelProvider>
       <ModelDiffPanel viewId={view.id} />
     </div>
   )

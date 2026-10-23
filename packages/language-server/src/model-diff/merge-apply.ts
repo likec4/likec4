@@ -304,6 +304,64 @@ export function mergeDiffAdds(
 }
 
 /**
+ * Views block with the most views. A diff's dynamic views are inserted here on apply.
+ */
+function mainViewsBlock(documents: ReadonlyArray<LikeC4LangiumDocument>): ast.ModelViews | undefined {
+  const blocks = documents.flatMap(document => document.parseResult.value.views)
+  return blocks.reduce<ast.ModelViews | undefined>(
+    (best, block) => (!best || block.views.length > best.views.length ? block : best),
+    undefined,
+  )
+}
+
+function appendToViews(edits: DocumentEdits, block: ast.ModelViews, view: AstNode): void {
+  const cst = block.$cstNode
+  if (!cst) {
+    return
+  }
+  const source = sourceOf(block)
+  const insert = new Inserter(edits, source)
+  const indent = contentIndent(source.text, cst.offset, block.views)
+  const lines = linesOf(view, indent)
+  const last = block.views.at(-1)?.$cstNode
+  if (last) {
+    insert.linesAfter(last.end, ['', ...lines])
+  } else {
+    insert.linesBefore(cst.end - 1, lines)
+  }
+}
+
+/**
+ * Adds edits that move the dynamic views of the diff into a `views` block.
+ * Returns the views that are not merged (there is no views block to put them).
+ */
+export function mergeDiffViews(
+  edits: DocumentEdits,
+  diff: ast.ModelDiff,
+  documents: ReadonlyArray<LikeC4LangiumDocument>,
+): AstNode[] {
+  const views = diff.viewBlocks.flatMap(block => block.views)
+  const block = mainViewsBlock(documents)
+  const unmerged: AstNode[] = []
+  for (const view of views) {
+    if (block) {
+      appendToViews(edits, block, view)
+    } else {
+      unmerged.push(view)
+    }
+  }
+  return unmerged
+}
+
+/**
+ * Views block with the items (used when there is no views block to merge them into).
+ */
+export function viewsBlockWith(items: ReadonlyArray<AstNode>): string {
+  const lines = items.flatMap((item, index) => [...(index > 0 ? [''] : []), ...linesOf(item, Indent)])
+  return `views {\n${lines.join('\n')}\n}\n`
+}
+
+/**
  * Model block with the items (used when there is no model block to merge them into).
  */
 export function modelBlockWith(items: ReadonlyArray<AstNode>): string {
