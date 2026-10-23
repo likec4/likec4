@@ -764,6 +764,21 @@ describe('expression', () => {
       `))
     })
 
+    it('should print relation with direction', () => {
+      expectExpression({
+        customRelation: {
+          expr: {
+            outgoing: { ref: deploymentRef },
+          },
+          direction: 'back',
+        },
+      }).toBe(dedent(`
+        prod.eu -> with {
+          direction back
+        }
+      `))
+    })
+
     it('should print relation where and with', () => {
       expectExpression({
         customRelation: {

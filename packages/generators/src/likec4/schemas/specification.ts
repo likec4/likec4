@@ -32,6 +32,7 @@ export const relationship = z
     line: common.line.nullable(),
     head: common.arrow.nullable(),
     tail: common.arrow.nullable(),
+    direction: common.direction.nullable(),
   })
   .partial()
   .transform(pickBy(isNonNullish))
