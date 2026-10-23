@@ -10,7 +10,7 @@ import {
 import { invariant } from '../../utils'
 import { stringHash } from '../../utils/string-hash'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
-import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
+import { computedEdgePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
 
@@ -47,85 +47,49 @@ export function toComputedEdges<A extends AnyAux>(
 
       if (expanded.length > 0) {
         const results: ComputedEdge<A>[] = expanded.map(rel => {
-          const {
-            title,
-            color = $defaults.relationship.color,
-            line = $defaults.relationship.line,
-            head = $defaults.relationship.arrow,
-            ...props
-          } = mergePropsFromRelationships(
-            [rel.$relationship],
-            rel.$relationship,
-          )
-
-          return {
+          return exact({
             id: hashEdgeId(source as scalar.NodeId, target as scalar.NodeId, rel.id),
             parent: conn.boundary?.id as scalar.NodeId ?? null,
             source: source as scalar.NodeId,
             target: target as scalar.NodeId,
-            label: title ?? null,
-            relations: [rel.id],
-            color,
-            line,
-            head,
-            ...props,
-          } as ComputedEdge<A>
+            ...computedEdgePropsFromRelationships(
+              [rel.$relationship],
+              $defaults.relationship,
+              rel.$relationship,
+            ),
+          })
         })
 
         if (merged.length > 0) {
-          const {
-            title,
-            color = $defaults.relationship.color,
-            line = $defaults.relationship.line,
-            head = $defaults.relationship.arrow,
-            ...props
-          } = mergePropsFromRelationships(
-            merged.map(r => r.$relationship),
-            only(filter(merged, r => r.source.id === source && r.target.id === target))?.$relationship,
-          )
-
-          results.push({
+          results.push(exact({
             id: conn.id,
             parent: conn.boundary?.id as scalar.NodeId ?? null,
             source: source as scalar.NodeId,
             target: target as scalar.NodeId,
-            label: title ?? null,
-            relations: merged.map((r) => r.id),
-            color,
-            line,
-            head,
-            ...props,
-          } as ComputedEdge<A>)
+            ...computedEdgePropsFromRelationships(
+              merged.map(r => r.$relationship),
+              $defaults.relationship,
+              only(filter(merged, r => r.source.id === source && r.target.id === target))?.$relationship,
+            ),
+          }))
         }
 
         return results
       }
     }
 
-    const {
-      title,
-      color = $defaults.relationship.color,
-      line = $defaults.relationship.line,
-      head = $defaults.relationship.arrow,
-      ...props
-    } = mergePropsFromRelationships(
-      relations.map(r => r.$relationship),
-      // Prefer only single relationship
-      // https://github.com/likec4/likec4/issues/1423
-      only(directRelsList)?.$relationship,
-    )
-
     const edge: ComputedEdge<A> = exact({
       id: conn.id,
       parent: conn.boundary?.id as scalar.NodeId ?? null,
       source: source as scalar.NodeId,
       target: target as scalar.NodeId,
-      label: title ?? null,
-      relations: relations.map((r) => r.id),
-      color,
-      line,
-      head,
-      ...props,
+      ...computedEdgePropsFromRelationships(
+        relations.map(r => r.$relationship),
+        $defaults.relationship,
+        // Prefer only single relationship
+        // https://github.com/likec4/likec4/issues/1423
+        only(directRelsList)?.$relationship,
+      ),
     })
 
     return [edge]
