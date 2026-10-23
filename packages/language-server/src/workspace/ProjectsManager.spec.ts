@@ -12,7 +12,7 @@ import { configureLogger } from '@likec4/log'
 import { UriUtils } from 'langium'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
-import { createMultiProjectTestServices } from '../test'
+import { createMultiProjectTestServices, mockMethod } from '../test'
 import { ProjectFolder } from './ProjectsManager'
 
 const isWin = process.platform === 'win32'
@@ -112,7 +112,7 @@ describe('ProjectsManager', () => {
         },
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
+      mockMethod(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const project = await projectsManager.registerConfigFile(
         URI.parse('file:///test/workspace/src/test-project/.likec4rc'),
@@ -126,7 +126,9 @@ describe('ProjectsManager', () => {
     it.runIf(!isWin)('should fail to load config file from node_modules', async ({ expect }) => {
       const { projectsManager, services } = await createMultiProjectTestServices({})
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'loadProjectConfig').mockRejectedValueOnce(new Error('should not be called'))
+      const loadProjectConfig = mockMethod(fs, 'loadProjectConfig').mockRejectedValueOnce(
+        new Error('should not be called'),
+      )
 
       await expect(
         projectsManager.registerConfigFile(
@@ -136,7 +138,7 @@ describe('ProjectsManager', () => {
         `[Error: Failed to register project config, path /test/workspace/node_modules/test-project/.likec4rc is excluded by default: "**/node_modules/**"]`,
       )
 
-      expect(fs.loadProjectConfig).not.toHaveBeenCalled()
+      expect(loadProjectConfig).not.toHaveBeenCalled()
     })
   })
 
@@ -166,7 +168,7 @@ describe('ProjectsManager', () => {
         name: 'test-project',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
+      mockMethod(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await projectsManager.registerConfigFile(configFileUri)
@@ -260,7 +262,7 @@ describe('ProjectsManager', () => {
         name: '',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
+      mockMethod(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configFileUri = URI.parse('file:///test/workspace/src/test-project/.likec4rc')
       await expect(projectsManager.registerConfigFile(configFileUri)).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -280,7 +282,7 @@ describe('ProjectsManager', () => {
         name: 'default',
       }
       const fs = services.shared.workspace.FileSystemProvider
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
+      mockMethod(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
       const configUri = configAt('test-project').configUri
       await expect(projectsManager.registerConfigFile(configUri)).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -310,7 +312,7 @@ describe('ProjectsManager', () => {
           name: 'one.two',
         }
         const fs = services.shared.workspace.FileSystemProvider
-        vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(config as any)
+        mockMethod(fs, 'loadProjectConfig').mockResolvedValue(config as any)
 
         const { configUri } = configAt('test-project')
         await expect(projectsManager.registerConfigFile(configUri)).rejects.toThrowErrorMatchingInlineSnapshot(

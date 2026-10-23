@@ -6,7 +6,7 @@ import { type ExpectStatic, describe, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { WithFileSystem, WithLikeC4ManualLayouts } from '../filesystem'
 import type { ChangeView } from '../protocol'
-import { createTestServices } from '../test'
+import { createTestServices, mockMethod } from '../test'
 
 vi.mock('node:fs')
 vi.mock('node:fs/promises')
@@ -27,13 +27,13 @@ async function testDoc(expect: ExpectStatic, document: string) {
   })
 
   const fs = services.shared.workspace.FileSystemProvider
-  vi.spyOn(fs, 'readDirectory').mockResolvedValue([{
+  mockMethod(fs, 'readDirectory').mockResolvedValue([{
     isDirectory: false,
     isFile: true,
     uri: documentUri,
   }])
-  vi.spyOn(fs, 'readFile').mockImplementation((uri) => vol.promises.readFile(uri.fsPath, 'utf-8') as any)
-  vi.spyOn(fs, 'writeFile').mockImplementation(async (path, data) => {
+  mockMethod(fs, 'readFile').mockImplementation((uri) => vol.promises.readFile(uri.fsPath, 'utf-8') as any)
+  mockMethod(fs, 'writeFile').mockImplementation(async (path, data) => {
     vol.writeFileSync(path.fsPath, data, { encoding: 'utf-8' })
   })
 
@@ -121,8 +121,8 @@ describe('viewChange', () => {
           end: { line: 0, character: 0 },
         },
       }
-      const write = vi.spyOn(manualLayouts, 'write').mockResolvedValue(location)
-      const remove = vi.spyOn(manualLayouts, 'remove').mockResolvedValue(location)
+      const write = mockMethod(manualLayouts, 'write').mockResolvedValue(location)
+      const remove = mockMethod(manualLayouts, 'remove').mockResolvedValue(location)
 
       await expect(services.likec4.ModelChanges.applyChange({
         viewId: implicitViewId,
@@ -142,7 +142,7 @@ describe('viewChange', () => {
 
     it('rejects layouts for unknown views', async ({ expect }) => {
       const { services } = await implicitViewTest(expect)
-      const write = vi.spyOn(services.shared.workspace.ManualLayouts, 'write')
+      const write = mockMethod(services.shared.workspace.ManualLayouts, 'write')
 
       const result = await services.likec4.ModelChanges.applyChange({
         viewId: '__unknown' as ViewId,
