@@ -137,4 +137,54 @@ describe('DeploymentViewPrinter', () => {
     expect(dot).toContain('<B>LAYER 2</B>')
     expect(dot).toContain('<B>LAYER 3</B>')
   })
+
+  it('prints back direction edges reversed', ({ expect }) => {
+    const m = Builder
+      .specification({
+        elements: { el: {} },
+        deployments: { node: {} },
+      })
+      .model(({ el, rel }, _) =>
+        _(
+          el('consumer'),
+          el('producer'),
+          rel('consumer', 'producer', { title: 'subscribes', direction: 'back' }),
+        )
+      )
+      .deployment(({ node, instanceOf }, _) =>
+        _(
+          node('n1').with(
+            instanceOf('consumer'),
+          ),
+          node('n2').with(
+            instanceOf('producer'),
+          ),
+        )
+      )
+      .views(({ deploymentView, $include }, _) =>
+        _(
+          deploymentView('index').with(
+            $include('*'),
+          ),
+        )
+      )
+      .toLikeC4Model()
+    const view = m.view('index').$view as ComputedDeploymentView
+    const viewEdge = view.edges.find(e => e.label === 'subscribes')
+    invariant(viewEdge)
+    expect(viewEdge).toMatchObject({
+      source: 'n1',
+      target: 'n2',
+      dir: 'back',
+    })
+    const printer = new DeploymentViewPrinter(view, m.$styles)
+    printer.print()
+    const nodeId = (id: string) => printer.G.nodes.find(n => n.attributes.get(_.likec4_id) === id)?.id
+    const edge = printer.G.edges.find(e => e.attributes.get(_.likec4_id) === viewEdge.id)
+    invariant(edge)
+    expect(edge.targets.map(t => 'id' in t ? t.id : null)).toEqual([nodeId('n2'), nodeId('n1')])
+    expect(edge.attributes.get(_.dir)).toBe('back')
+    expect(edge.attributes.get(_.arrowtail)).toBe('normal')
+    expect(edge.attributes.get(_.arrowhead)).toBeUndefined()
+  })
 })
