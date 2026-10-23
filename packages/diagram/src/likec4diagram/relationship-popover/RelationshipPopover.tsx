@@ -412,6 +412,12 @@ const Relationship = forwardRef<
   const sourceId = getEndpointId(r, 'source', sourceNode)
   const targetId = getEndpointId(r, 'target', targetNode)
   const links = r.links
+  const infoIconRef = useRef<HTMLDivElement>(null)
+  const [metadataPortalTarget, setMetadataPortalTarget] = useState<HTMLDialogElement | null>(null)
+
+  useEffect(() => {
+    setMetadataPortalTarget(infoIconRef.current?.closest('dialog') ?? null)
+  }, [])
 
   // Build metadata tooltip content
   const metadataEntries = r.hasMetadata()
@@ -547,6 +553,7 @@ const Relationship = forwardRef<
             bg="white"
             c="dark"
             withinPortal
+            portalProps={metadataPortalTarget ? { target: metadataPortalTarget } : {}}
             styles={{
               tooltip: {
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -554,7 +561,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <Box display="inline-flex">
+            <Box ref={infoIconRef} display="inline-flex">
               <IconInfoCircle
                 size={14}
                 opacity={0.5}
