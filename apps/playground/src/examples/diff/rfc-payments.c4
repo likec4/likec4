@@ -1,0 +1,40 @@
+// A diff is a planned change: the model changes only when the diff is applied.
+// Pick "RFC-1: Payments service" in the panel over the diagram and switch between As-is, Changes and To-be.
+// Expand the panel to review and apply the diff, or to safe delete an element.
+//
+// Put the cursor on the diff name for "Apply diff" and "Discard diff" actions,
+// or on an element name in model.c4 for "Safe delete".
+diff rfc1 'RFC-1: Payments service' {
+  description '''
+    Replace the SOAP gateway with a Payments service.
+    Orders publish payment events, the service charges the bank asynchronously.
+  '''
+
+  remove {
+    shop.legacyPayments
+    shop.orders -> bank 'checks fraud score'
+  }
+
+  add {
+    extend shop {
+      payments = container 'Payments Service' {
+        #next
+        technology 'Go'
+        description 'Charges cards through the bank REST API'
+      }
+      paymentEvents = container 'Payment Events' {
+        #next
+        technology 'Kafka'
+      }
+    }
+
+    shop.orders -> shop.paymentEvents 'publishes payment requests'
+    shop.paymentEvents -> shop.payments 'delivers payment requests'
+    shop.payments -> bank 'calls REST API'
+    shop.payments -> bank 'checks fraud score'
+
+    extend shop.orders {
+      #next
+    }
+  }
+}

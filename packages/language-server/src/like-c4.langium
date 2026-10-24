@@ -15,6 +15,7 @@ entry LikeC4Grammar:
     views+=ModelViews |
     globals+=Globals |
     deployments+=ModelDeployments  |
+    diffs+=ModelDiff |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -54,6 +55,7 @@ SpecificationElementKind:
     props+=(
       SpecificationElementStringProperty |
       LinkProperty |
+      DescriptionFileProperty |
       ElementStyleProperty
     )*
   '}')?;
@@ -67,6 +69,7 @@ SpecificationDeploymentNodeKind:
     props+=(
       SpecificationElementStringProperty |
       LinkProperty |
+      DescriptionFileProperty |
       ElementStyleProperty
     )*
   '}')?;
@@ -84,6 +87,7 @@ SpecificationRelationshipKind:
     tags=Tags?
     props+=(
       LinkProperty |
+      DescriptionFileProperty |
       RelationshipStyleProperty |
       SpecificationRelationshipStringProperty |
       MultipleProperty
@@ -152,6 +156,7 @@ ElementProperty:
   ElementStringProperty |
   ElementStyleProperty |
   LinkProperty |
+  DescriptionFileProperty |
   IconProperty |
   MetadataProperty;
 
@@ -273,6 +278,7 @@ RelationProperty:
   RelationNavigateToProperty |
   RelationStyleProperty |
   LinkProperty |
+  DescriptionFileProperty |
   MetadataProperty
 ;
 
@@ -391,7 +397,7 @@ type AnyProperty =
 ;
 
 ViewProperty:
-  ViewStringProperty | ViewOrderProperty | LinkProperty | ViewRoutingProperty
+  ViewStringProperty | ViewOrderProperty | LinkProperty | DescriptionFileProperty | ViewRoutingProperty
 ;
 
 ViewStringProperty:
@@ -495,6 +501,7 @@ CustomElementProperties: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
+    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     StyleProperty
@@ -506,6 +513,7 @@ CustomRelationProperties: '{'
   props+=(
     RelationNavigateToProperty |
     RelationStringProperty |
+    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     RelationshipStyleProperty |
@@ -960,6 +968,45 @@ DeploymentViewRulePredicate:
   (isInclude?='include' | 'exclude')
   expr=Expressions
 ;
+// Model diff -------------------------------------
+// Named change set of the model: elements and relations to remove, and model elements to add
+
+ModelDiff:
+  'diff' name=Id title=String? '{'
+    (
+      props+=DiffStringProperty |
+      removes+=DiffRemove |
+      adds+=DiffAdd
+    )*
+  '}'
+;
+
+DiffStringProperty:
+  key=('title' | 'description') ':'? value=MarkdownOrString ';'?;
+
+DiffRemove:
+  'remove' '{'
+    entries+=DiffRemoveEntry*
+  '}'
+;
+
+// Element (source only) or relation (source, connector and target)
+DiffRemoveEntry:
+  source=FqnRef
+  (
+    RelationConnector
+    target=FqnRef
+    title=String?
+  )?
+  ';'?
+;
+
+DiffAdd:
+  'add' '{'
+    elements+=ModelElement*
+  '}'
+;
+
 // Global -------------------------------------
 
 Globals:
@@ -1002,6 +1049,10 @@ type FqnReferenceable = Referenceable | Element | ExtendElement | ExtendDeployme
 
 LinkProperty:
   key='link' ':'? value=Uri title=String? ';'?;
+
+// A path to a markdown file, resolved like a link and read when the model is built
+DescriptionFileProperty:
+  key='descriptionFile' ':'? value=Uri ';'?;
 
 fragment ColorRef:
   themeColor=ThemeColor | customColor=[CustomColor:CustomColorId];
@@ -1186,7 +1237,7 @@ RGBAColor:
 
 // Validated later
 HexColor:
-  Hash hex=(Hex | Number | IdTerminal);
+  Hash hex=(Hex | Number | IdTerminal | 'add');
 
 IconId returns string:
   LIB_ICON;
@@ -1205,7 +1256,10 @@ CustomColorId returns string:
   LineOptions |
   Participant |
   'element' |
-  'model';
+  'model' |
+  'diff' |
+  'add' |
+  'remove';
 
 // We need to add all the possible terminal values to Id,
 // so that the parser can accept them as "Id" (not a bug and not a feature of Langium)
@@ -1224,7 +1278,7 @@ Id returns string:
   RankValue |
   EdgeRoutingValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'routing';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing';
 
 HashId returns string:
   Hash Id;
@@ -1263,7 +1317,7 @@ hidden terminal NL: /[\r\n]+/;
 
 terminal BOOLEAN returns boolean: /\b(true|false)\b/;
 // LibIcons
-terminal LIB_ICON: /(aws|azure|bootstrap|gcp|tech):[-\w]*/;
+terminal LIB_ICON: /(aws|azure|bootstrap|gcp|md|tech):[-\w]*/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/{2}\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;

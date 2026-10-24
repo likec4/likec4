@@ -18,6 +18,7 @@ import {
   setup,
 } from 'xstate'
 import { elementDetailsLogic } from './element-details/actor'
+import type { DetailsSubject } from './element-details/subject'
 import { relationshipDetailsLogic } from './relationship-details/actor'
 import { relationshipsBrowserLogic } from './relationships-browser/actor'
 import type { Overlays } from './types'
@@ -32,7 +33,7 @@ export type OverlayActorEvent =
 export interface OverlaysContext {
   seq: number
   overlays: Array<
-    | { type: 'elementDetails'; id: `elementDetails-${number}`; subject: Fqn }
+    | { type: 'elementDetails'; id: `elementDetails-${number}`; subject: DetailsSubject }
     | { type: 'relationshipDetails'; id: `relationshipDetails-${number}` }
     | { type: 'relationshipsBrowser'; id: `relationshipsBrowser-${number}`; subject: Fqn }
   >
@@ -160,7 +161,13 @@ const closeAllOverlays = () =>
 const openElementDetails = () =>
   machine.enqueueActions(({ context, enqueue, event }) => {
     assertEvent(event, 'open.elementDetails')
-    if (context.overlays.some(o => o.type === 'elementDetails' && o.subject === event.subject)) {
+    if (
+      context.overlays.some(o =>
+        o.type === 'elementDetails'
+        && o.subject.element === event.subject.element
+        && o.subject.deployment === event.subject.deployment
+      )
+    ) {
       return
     }
     const id = `elementDetails-${context.seq}` as const

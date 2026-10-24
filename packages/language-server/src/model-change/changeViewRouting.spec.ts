@@ -6,7 +6,7 @@ import { type ExpectStatic, describe, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { WithFileSystem } from '../filesystem'
 import type { ChangeView } from '../protocol'
-import { createTestServices } from '../test'
+import { createTestServices, mockMethod } from '../test'
 
 vi.mock('node:fs')
 vi.mock('node:fs/promises')
@@ -29,13 +29,13 @@ async function testDoc(expect: ExpectStatic, document: string) {
   const workspace = services.shared.workspace
   const fs = workspace.FileSystemProvider
 
-  vi.spyOn(fs, 'readDirectory').mockResolvedValue([{
+  mockMethod(fs, 'readDirectory').mockResolvedValue([{
     isDirectory: false,
     isFile: true,
     uri: documentUri,
   }])
-  vi.spyOn(fs, 'readFile').mockImplementation(async uri => vol.readFileSync(uri.fsPath, 'utf-8').toString())
-  vi.spyOn(fs, 'writeFile').mockImplementation(async (uri, content) => {
+  mockMethod(fs, 'readFile').mockImplementation(async uri => vol.readFileSync(uri.fsPath, 'utf-8').toString())
+  mockMethod(fs, 'writeFile').mockImplementation(async (uri, content) => {
     vol.writeFileSync(uri.fsPath, content, { encoding: 'utf-8' })
   })
 

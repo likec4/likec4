@@ -225,8 +225,12 @@ function decodeSvgDataUrl(dataUrl: string): string | null {
 const iconUrl = (group: string, name: string) =>
   `https://icons.like-c4.dev/${encodeURIComponent(group)}/${encodeURIComponent(name)}.svg`
 
-function BootstrapIconMask({ name, ...props }: Omit<ElementIconRendererProps, 'node'> & { name: string }) {
-  const url = iconUrl('bootstrap', name)
+function MaskedIcon({
+  name,
+  group,
+  ...props
+}: Omit<ElementIconRendererProps, 'node'> & { name: string; group: 'bootstrap' | 'md' }) {
+  const url = iconUrl(group, name)
   const style = {
     display: 'inline-block',
     width: '100%',
@@ -253,8 +257,8 @@ export function DefaultIconRenderer({ node, ...props }: ElementIconRendererProps
     return null
   }
 
-  if (group === 'bootstrap') {
-    return <BootstrapIconMask {...props} name={name} />
+  if (group === 'bootstrap' || group === 'md') {
+    return <MaskedIcon {...props} name={name} group={group} />
   }
 
   return <img {...props} src={iconUrl(group, name)} />

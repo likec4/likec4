@@ -143,10 +143,20 @@ export class DiagramApi<A extends Any = Unknown> {
   }
 
   /**
-   * Open element details card
+   * Open details for a diagram node, or an explicit element/deployment subject outside the current view.
    */
+  openNodeDetails(
+    target: NodeId | { type: 'element'; element: Fqn<A> } | { type: 'deployment'; deployment: t.aux.DeploymentFqn<A> },
+    fromNode?: NodeId,
+  ): void {
+    this.send({ type: 'open.nodeDetails', target, fromNode })
+  }
+
+  /**
+  * @deprecated Use `openNodeDetails({ type: 'element', element: fqn }, fromNode)`.
+  */
   openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void {
-    this.send({ type: 'open.elementDetails', fqn, fromNode })
+    this.openNodeDetails({ type: 'element', element: fqn }, fromNode)
   }
 
   openRelationshipDetails(...params: [edgeId: EdgeId] | [source: Fqn<A>, target: Fqn<A>]): void {

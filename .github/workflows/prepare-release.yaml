@@ -3,10 +3,10 @@ name: prepare release
 on:
   pull_request_target:
     branches:
-      - "main"
+      - 'main'
     paths:
-      - ".github/workflows/prepare-release.yaml"
-      - "**/package.json"
+      - '.github/workflows/prepare-release.yaml'
+      - '**/package.json'
 
 permissions:
   id-token: write
@@ -16,7 +16,7 @@ env:
   NODE_ENV: production
   CLOUDFLARE_ENV: production
   FORCE_COLOR: true
-  DO_NOT_TRACK: "1"
+  DO_NOT_TRACK: '1'
 
 jobs:
   prepare-release:
@@ -60,4 +60,4 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore: sync version"
+          commit_message: 'chore: sync version'

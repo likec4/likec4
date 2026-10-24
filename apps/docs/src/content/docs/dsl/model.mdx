@@ -173,7 +173,7 @@ If an element has a bundled icon (`aws:`, `azure:`, `gcp:`, or `tech:`) but no e
 LikeC4 automatically derives a human-readable technology label from the icon name.
 For example, `icon tech:apache-flink` produces technology **"Apache Flink"**, and `icon aws:simple-storage-service` produces **"Simple Storage Service"**.
 
-`bootstrap:` icons are excluded because they are generic UI icons.
+`bootstrap:` and `md:` icons are excluded because they are generic UI icons.
 
 This behavior is enabled by default. To disable it, set `inferTechnologyFromIcon` to `false` in the [project config](/dsl/config).
 :::
@@ -524,6 +524,29 @@ model {
   }  
 }
 ```
+
+### Description from a file
+
+With `descriptionFile` the markdown lives in its own file, and the element, relation or view
+references it. The path is relative to the `.c4` file that uses it:
+
+```likec4 filename="model.c4" copy
+model {
+  backend = component {
+    descriptionFile ./backend.md
+  }
+}
+```
+
+```markdown filename="backend.md"
+### Backend
+
+Provides the public API.
+```
+
+The file must be inside the project folder; a path that points outside of it, or to another
+scheme, is reported as an error. `description` and `descriptionFile` on the same element are an
+error too - use one of them.
 
 ## Structuring Model
 

@@ -1,0 +1,4 @@
+{
+  name: 'model-diffs',
+  implicitViews: false,
+}

@@ -18,10 +18,12 @@ Homogeneity: Playwright specs use `test.describe` + `test()`/`test.beforeEach`; 
 - [x] Playground: Export all triggers .drawio download.
 - [x] Playground: editor (Monaco) menu shows Export to DrawIO.
 - [x] CLI: `likec4 export drawio` produces file with `<mxfile` (Vitest in `e2e/src/likec4-cli-export-drawio.spec.ts`).
+- [x] CLI: `likec4 diff list`, `diff apply --dry-run` and `safe-delete` in a workspace with several projects (Vitest in `e2e/src/likec4-cli-diff.spec.ts`).
 
 ## Pending (optional)
 
 - [x] Static site: navigation between views (`tests/static-navigation.spec.ts`; runs with main config, likec4 start 5173).
+- [x] Static site: model diff selector and compare view modes (`tests/static-build-model-diffs.spec.ts`; `src/model-diffs` project).
 - [x] Docs: smoke test for main pages (`tests/docs-smoke.spec.ts`; `pnpm test:docs` with `playwright.docs.config.ts`, port 4321).
 
 ## How to run

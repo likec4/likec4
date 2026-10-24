@@ -47,6 +47,15 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   ): Promise<FileNode[]>
 
   /**
+   * The canonical path of the given URI, with every symbolic link resolved.
+   *
+   * `undefined` when the path cannot be resolved, which includes a file that does not exist and a
+   * URI of a scheme this provider cannot reach: the caller has to treat "unknown" and "outside"
+   * differently.
+   */
+  realpath(uri: URI): Promise<string | undefined>
+
+  /**
    * Writes the content to the file system.
    * Used by manual layouts.
    */
@@ -78,6 +87,71 @@ export interface FileSystemWatcher extends AsyncDisposable {
 export interface LikeC4ManualLayoutsModuleContext {
   manualLayouts: (services: LikeC4SharedServices) => LikeC4ManualLayouts
 }
+
+/**
+ * What a file referenced by `descriptionFile` resolved to.
+ */
+export type DescriptionFileContent =
+  | { readonly content: string }
+  | { readonly error: string }
+
+export interface LikeC4DescriptionFiles extends Disposable {
+  /**
+   * Reads the given references, so the synchronous model parser can resolve them into descriptions.
+   * Called when the model is built, before the parser reads the documents.
+   *
+   * @returns the documents whose files were read or changed since the last call, to be parsed again
+   */
+  read(refs: readonly DescriptionFileReference[]): Promise<URI[]>
+
+  /**
+   * Resolves and reads a single reference, and remembers the result for the parser.
+   */
+  readReference(ref: DescriptionFileReference): Promise<DescriptionFileContent>
+
+  /**
+   * What the file referenced by `value` resolved to, for the document at `docUri`.
+   * `undefined` when the document does not reference it (or it has not been read yet).
+   */
+  get(docUri: URI, value: string): DescriptionFileContent | undefined
+
+  /**
+   * Whether `uri` is a file referenced by some document, and so worth watching.
+   */
+  isReferenced(uri: URI): boolean
+
+  /**
+   * Re-reads a referenced file after it changed on disk, and notifies the listeners so the model
+   * that used it is rebuilt.
+   */
+  handleFileSystemUpdate(
+    event: { update: URI; delete?: never } | { delete: URI; update?: never },
+  ): Promise<void>
+
+  /**
+   * Registers a listener called when a referenced file changed.
+   */
+  onDescriptionFileUpdate(listener: DescriptionFileUpdateListener): Disposable
+
+  clearCaches(): void
+}
+
+/**
+ * A file a document references with `descriptionFile`.
+ */
+export type DescriptionFileReference = {
+  /** The document the property appears in */
+  readonly docUri: URI
+  readonly value: string
+  readonly resolvedPath: string | null
+}
+
+export type DescriptionFileUpdateEvent = {
+  readonly uri: URI
+  readonly projectId: ProjectId
+}
+
+export type DescriptionFileUpdateListener = (event: DescriptionFileUpdateEvent) => void
 
 export type ManualLayoutsSnapshot = {
   hash: string

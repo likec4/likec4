@@ -1,6 +1,6 @@
 import type { Fqn, ViewId } from '@likec4/core'
 import { describe, vi } from 'vitest'
-import { it } from './changeViewLayout.spec'
+import { it } from './_it-spec'
 
 vi.mock('node:fs')
 vi.mock('node:fs/promises')
