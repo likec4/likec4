@@ -45,6 +45,13 @@
       "types": "./icon.d.ts",
       "default": "./gcp/*.js"
     },
+    "./md": {
+      "default": "./md/index.js"
+    },
+    "./md/*": {
+      "types": "./icon.d.ts",
+      "default": "./md/*.js"
+    },
     "./azure": {
       "default": "./azure/index.js"
     },
@@ -70,10 +77,10 @@
   },
   "scripts": {
     "update-icons": "pnpm node scripts/update-icons.mjs && pnpm run generate",
-    "clean": "likec4ops clean .tmp",
-    "generate": "pnpm node scripts/generate.mjs",
+    "clean": "likec4ops clean .tmp && rm -rf aws/*.js azure/*.js tech/*.js gcp/*.js md bootstrap/*.js",
+    "generate": "pnpm node scripts/generate-md.mjs && pnpm node scripts/generate.mjs",
     "prepack": "likec4ops prepack",
-    "pack": "pnpm pack",
+    "pack": "pnpm run generate && pnpm pack",
     "postpack": "likec4ops postpack"
   },
   "peerDependencies": {
@@ -81,15 +88,16 @@
     "react-dom": "^18.x || ^19.x"
   },
   "devDependencies": {
+    "@likec4/devops": "workspace:*",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "@likec4/devops": "workspace:*",
     "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
     "picomatch": "catalog:externals",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "typescript": "catalog:",
-    "zx": "catalog:"
+    "zx": "catalog:",
+    "@material-symbols/svg-400": "catalog:"
   }
 }

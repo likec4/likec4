@@ -34,14 +34,14 @@ jobs:
           NODE_ENV: development
 
       - name: 🛠️ Setup node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24' # Required for OIDC publishing
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: 🛠️ Cache for turbo
-        uses: rharkor/caching-for-turbo@v2.5.1
+        uses: rharkor/caching-for-turbo@v2.5.2
         with:
           cache-prefix: 'turbo_cache_${{ runner.arch }}'
 
@@ -70,7 +70,7 @@ jobs:
           echo "::add-mask::$private_key"
           echo "private-key=$private_key" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
@@ -93,7 +93,7 @@ jobs:
           echo "VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
 
       - name: Create release
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |

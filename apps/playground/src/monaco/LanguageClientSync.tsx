@@ -1,7 +1,11 @@
 import type { LayoutedModelApi } from '$components/drawio/DrawioContextMenuProvider'
 import type { IDisposable } from '@codingame/monaco-vscode-editor-api'
-import type { DiagramView, ViewChange, ViewId } from '@likec4/core'
-import type { LayoutView as LayoutViewProtocol } from '@likec4/language-server/protocol'
+import type { DiagramView, DiffId, Fqn, ViewChange, ViewId } from '@likec4/core'
+import type {
+  ApplyEditsResult,
+  LayoutView as LayoutViewProtocol,
+  ModelEditRequest,
+} from '@likec4/language-server/protocol'
 import type { Location } from 'vscode-languageserver-types'
 import type { CustomWrapperConfig } from './config'
 import type { MonacoHandle } from './handle'
@@ -12,13 +16,20 @@ import * as monaco from '@codingame/monaco-vscode-editor-api'
 import { invariant, nonNullable } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import {
+  ApplyModelEdit,
   BuildDocuments,
   ChangeView,
   DidChangeModelNotification,
+  DidRequestRemovalImpactNotification,
   FetchComputedModel,
+  FetchDiffs,
   FetchLayoutedModel,
+  FetchRemovalImpact,
+  LayoutCompareView,
   LayoutView,
   Locate,
+  PreviewModelEdit,
+  RollbackModelEdit,
 } from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
 import { useCallbackRef } from '@mantine/hooks'
@@ -28,6 +39,10 @@ import { funnel, isString } from 'remeda'
 import { cleanDisposables, createMemoryFileSystem, ensureFileInWorkspace, setActiveEditor } from './utils'
 
 const logger = rootLogger.getChild('monaco-language-client-sync')
+
+function failedEdit(error: unknown): ApplyEditsResult {
+  return { applied: false, remaining: [], error: loggable(error) }
+}
 
 /** Type-safe layout-view request: pass LayoutView.req so params and response are inferred. */
 function requestLayoutView(
@@ -85,12 +100,16 @@ export function LanguageClientSync({
     playgroundState,
     activeViewId,
     activeViewState,
+    activeDiffId,
+    likec4model,
   } = usePlaygroundSnapshot(s => ({
     workspaceId: s.context.workspaceId,
     activeFilename: s.context.activeFilename,
     playgroundState: s.value,
     activeViewId: s.context.activeViewId,
     activeViewState: s.context.activeViewId ? s.context.viewStates[s.context.activeViewId]?.state ?? 'pending' : null,
+    activeDiffId: s.context.activeDiffId,
+    likec4model: s.context.likec4model,
   }))
   // const requiresLspRestart = useRef(false)
 
@@ -99,6 +118,15 @@ export function LanguageClientSync({
       wrapper.getLanguageClient('likec4'),
       'Monaco is missing LikeC4 LanguageClient',
     )
+
+  const requestDiffs = useCallbackRef(async () => {
+    try {
+      const { diffs } = await languageClient().sendRequest(FetchDiffs.req, {})
+      playground.send({ type: 'likec4.lsp.onDiffs', diffs })
+    } catch (error) {
+      logger.error(loggable(error))
+    }
+  })
 
   const requestComputedModel = useCallbackRef(async () => {
     try {
@@ -109,8 +137,66 @@ export function LanguageClientSync({
           model: LikeC4Model.create(model),
         })
       }
+      await requestDiffs()
     } catch (error) {
       logger.error(loggable(error))
+    }
+  })
+
+  const requestCompareView = useCallbackRef(async (viewId: ViewId, diffId: DiffId) => {
+    try {
+      const { diagram } = await languageClient().sendRequest(LayoutCompareView.req, { viewId, diffId })
+      playground.send({
+        type: 'likec4.lsp.onCompareView',
+        viewId,
+        diffId,
+        diagram,
+        ...(!diagram && { error: 'The view does not exist in this model state' }),
+      })
+    } catch (error) {
+      playground.send({ type: 'likec4.lsp.onCompareView', viewId, diffId, diagram: null, error: loggable(error) })
+    }
+  })
+
+  const requestRemovalImpact = useCallbackRef(async (fqn: Fqn) => {
+    try {
+      const { report, diagram } = await languageClient().sendRequest(FetchRemovalImpact.req, { fqn })
+      playground.send({
+        type: 'likec4.lsp.onRemovalImpact',
+        fqn,
+        report,
+        diagram,
+        ...(!report && { error: `Element ${fqn} does not exist` }),
+      })
+    } catch (error) {
+      playground.send({ type: 'likec4.lsp.onRemovalImpact', fqn, report: null, diagram: null, error: loggable(error) })
+    }
+  })
+
+  const previewEdit = useCallbackRef(async (request: ModelEditRequest) => {
+    try {
+      const { preview, error } = await languageClient().sendRequest(PreviewModelEdit.req, { request })
+      playground.send({ type: 'likec4.lsp.onEditPreview', request, preview, ...(error && { error }) })
+    } catch (error) {
+      playground.send({ type: 'likec4.lsp.onEditPreview', request, preview: null, error: loggable(error) })
+    }
+  })
+
+  const applyEdit = useCallbackRef(async (request: ModelEditRequest, token: string) => {
+    try {
+      const result = await languageClient().sendRequest(ApplyModelEdit.req, { request, token })
+      playground.send({ type: 'likec4.lsp.onEditApplied', request, result })
+    } catch (error) {
+      playground.send({ type: 'likec4.lsp.onEditApplied', request, result: failedEdit(error) })
+    }
+  })
+
+  const rollbackEdit = useCallbackRef(async (editId: number) => {
+    try {
+      const result = await languageClient().sendRequest(RollbackModelEdit.req, { editId })
+      playground.send({ type: 'likec4.lsp.onRollbackDone', result })
+    } catch (error) {
+      playground.send({ type: 'likec4.lsp.onRollbackDone', result: failedEdit(error) })
     }
   })
 
@@ -267,6 +353,9 @@ export function LanguageClientSync({
         })
 
         disposables.push(
+          languageClient().onNotification(DidRequestRemovalImpactNotification.type, ({ fqn }) => {
+            playground.send({ type: 'impact.open', fqn })
+          }),
           languageClient().onNotification(DidChangeModelNotification.type, () => {
             try {
               const errors: string[] = []
@@ -389,10 +478,45 @@ export function LanguageClientSync({
     [activeViewState, activeViewId, playgroundState],
   )
 
+  // Compare view follows the active view, the active diff and model changes
+  useEffect(
+    () => {
+      if (playgroundState !== 'ready' || !activeViewId || !activeDiffId) return
+      void requestCompareView(activeViewId, activeDiffId)
+    },
+    [playgroundState, activeViewId, activeDiffId, likec4model],
+  )
+
+  // Refresh the removal impact report when the model changes
+  useEffect(
+    () => {
+      const impact = playground.getContext().removalImpact
+      if (impact?.state === 'ready') {
+        void requestRemovalImpact(impact.fqn)
+      }
+    },
+    [likec4model],
+  )
+
   useEffect(() => {
     const listeners = [
       playground.actor.on('workspace.openSources', async ({ target }) => {
         await showLocation(target)
+      }),
+      playground.actor.on('workspace.revealLocation', ({ location }) => {
+        revealLocation(location)
+      }),
+      playground.actor.on('workspace.request-removal-impact', async ({ fqn }) => {
+        await requestRemovalImpact(fqn)
+      }),
+      playground.actor.on('workspace.preview-edit', async ({ request }) => {
+        await previewEdit(request)
+      }),
+      playground.actor.on('workspace.apply-edit', async ({ request, token }) => {
+        await applyEdit(request, token)
+      }),
+      playground.actor.on('workspace.rollback-edit', async ({ editId }) => {
+        await rollbackEdit(editId)
       }),
       playground.actor.on('workspace.applyViewChanges', async ({ viewId, change }) => {
         await applyViewChanges(viewId, change)
@@ -404,20 +528,23 @@ export function LanguageClientSync({
     return () => listeners.forEach(l => l.unsubscribe())
   }, [playground])
 
+  // Tracks all files, not only the active one: workspace edits from the language server change other files too
   useEffect(() => {
     if (playgroundState !== 'ready') return
-    const editor = nonNullable(wrapper.getEditor(), 'editor is not ready')
-    const listener = editor.onDidChangeModelContent((_contents) => {
-      const activeModel = nonNullable(editor.getModel(), 'active model is not ready')
-      const filename = activeModel.uri.path.slice(1)
-      playground.send({
-        type: 'monaco.onTextChanged',
-        filename,
-        modified: activeModel.getValue(),
-      })
-    })
+    const disposables: IDisposable[] = []
+    const track = (model: monaco.editor.ITextModel) => {
+      disposables.push(model.onDidChangeContent(() => {
+        playground.send({
+          type: 'monaco.onTextChanged',
+          filename: model.uri.path.slice(1),
+          modified: model.getValue(),
+        })
+      }))
+    }
+    monaco.editor.getModels().forEach(track)
+    disposables.push(monaco.editor.onDidCreateModel(track))
     return () => {
-      listener.dispose()
+      cleanDisposables(disposables)
     }
   }, [wrapper, workspaceId, playgroundState, playground])
 

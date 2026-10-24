@@ -43,7 +43,8 @@ catalog:
   "@changesets/cli": ^3.0.3
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.3.0
-  "@types/node": ~22.19.19
+  '@material-symbols/svg-400': ^0.48.0
+  "@types/node": ~22.20.5
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260707.2
   dprint: ^0.63.0
@@ -54,13 +55,13 @@ catalog:
   memfs: ^4.80.0
   nano-staged: ^1.0.2
   oxlint: 1.88.0
-  oxlint-tsgolint: 0.25.0
+  oxlint-tsgolint: 7.0.2004
   pako: ^2.2.0
   playwright: 1.64.1
   rehype-prism-plus: 2.0.2
   skills-ref: 0.1.5
   tsx: 4.23.15
-  turbo: 2.11.8
+  turbo: 2.11.9
   typescript: 6.0.3
   wireit: 0.14.13
   zx: 8.8.5
@@ -83,7 +84,7 @@ catalogs:
     ws: ^8.22.0
   astro:
     "@astrojs/check": 0.9.10
-    "@astrojs/react": 6.0.6
+    "@astrojs/react": 7.1.0
     "@astrojs/starlight": 0.42.6
     "@astrojs/starlight-tailwind": 5.0.0
     "@expressive-code/plugin-collapsible-sections": 0.44.2
@@ -110,7 +111,7 @@ catalogs:
     postcss-import: ^17.0.0
   esbuild:
     esbuild: 0.28.2
-    esbuild-node-externals: 1.23.1
+    esbuild-node-externals: 2.0.0
     esbuild-plugins-node-modules-polyfill: 1.8.3
     esbuild-wasm: 0.28.2
   esbuild-wasm:
@@ -150,14 +151,14 @@ catalogs:
     "@floating-ui/dom": ^1.8.0
     "@nanostores/media-query": 0.1.2
     "@nanostores/react": 2.0.1
-    "@react-hookz/web": ^25.3.0
+    "@react-hookz/web": ^26.1.0
     "@tabler/icons-react": 3.49.0
     "@types/react": 19.3.0
     "@types/react-dom": 19.3.0
     "@babel/core": ^7.29.7
     babel-plugin-react-compiler: ^1.0.0
     clsx: ^2.1.1
-    motion: ^12.43.0
+    motion: ^14.3.0
     nanostores: 1.5.5
     react: 19.3.1
     react-dom: 19.3.1
@@ -196,7 +197,7 @@ catalogs:
     indent-string: ^5.0.0
     json5: ^2.2.3
     khroma: 2.1.0
-    nanoid: 5.1.16
+    nanoid: 6.0.2
     natural-compare-lite: ^1.4.1
     object-hash: ^3.0.0
     ohash: ^2.0.12

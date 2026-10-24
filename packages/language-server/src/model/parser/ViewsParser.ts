@@ -104,11 +104,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const viewBodyProps = pipe(
-        props,
-        filter(ast.isViewStringProperty),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const viewBodyProps = {
+        ...pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(props),
+      }
       const { title = null, description = null } = this.parseBaseProps(viewBodyProps, {
         title: parseTitleKeepingEscapedSlash(viewBodyProps.title),
       })
@@ -284,11 +287,14 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         ) as c4.ViewId
       }
 
-      const dynamicViewBodyProps = pipe(
-        props,
-        filter(ast.isViewStringProperty),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const dynamicViewBodyProps = {
+        ...pipe(
+          props,
+          filter(ast.isViewStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(props),
+      }
       const { title = null, description = null } = this.parseBaseProps(dynamicViewBodyProps, {
         title: parseTitleKeepingEscapedSlash(dynamicViewBodyProps.title),
       })
@@ -479,6 +485,13 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               const viewId = prop.value.view.ref?.name
               if (isTruthy(viewId)) {
                 step.navigateTo = viewId as c4.ViewId
+              }
+              break
+            }
+            case ast.isDescriptionFileProperty(prop): {
+              const value = this.parseDescriptionProperty(prop)
+              if (value) {
+                step.description = value
               }
               break
             }

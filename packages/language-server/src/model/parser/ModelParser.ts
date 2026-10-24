@@ -26,7 +26,14 @@ import type { WithExpressionV2 } from './FqnRefParser'
 export type WithModel = ReturnType<typeof ModelParser>
 
 function* streamModel(doc: LikeC4LangiumDocument) {
-  const traverseStack = LinkedList.from(doc.parseResult.value.models.flatMap(m => m.elements))
+  yield* streamModelElements(doc.parseResult.value.models.flatMap(m => m.elements))
+}
+
+/**
+ * Yields elements (parents first), then relations and relation extends.
+ */
+export function* streamModelElements(roots: ReadonlyArray<ast.ModelElement>) {
+  const traverseStack = LinkedList.from(roots)
   const relations = [] as (ast.Relation | ast.ExtendRelation)[]
   let el
   while ((el = traverseStack.shift())) {
@@ -96,12 +103,15 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       let [_title, _summary, _technology] = astNode.props ?? []
 
-      const bodyProps = pipe(
-        astNode.body?.props ?? [],
-        filter(isValid),
-        filter(ast.isElementStringProperty),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const bodyProps = {
+        ...pipe(
+          astNode.body?.props ?? [],
+          filter(isValid),
+          filter(ast.isElementStringProperty),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(astNode.body?.props),
+      }
 
       const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
         title: isDefined(_title)
@@ -216,12 +226,15 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      const bodyProps = pipe(
-        astNode.body?.props ?? [],
-        filter(ast.isRelationStringProperty),
-        filter(p => isTruthy(p.value)),
-        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-      )
+      const bodyProps = {
+        ...pipe(
+          astNode.body?.props ?? [],
+          filter(ast.isRelationStringProperty),
+          filter(p => isTruthy(p.value)),
+          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+        ),
+        ...this.descriptionFileOf(astNode.body?.props),
+      }
 
       const navigateTo = pipe(
         astNode.body?.props ?? [],

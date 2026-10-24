@@ -9,6 +9,7 @@ import {
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
+  type DiffStatus,
   type EdgeId,
   type Fqn,
   type NodeId,
@@ -25,6 +26,13 @@ import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import { readableText } from '../../utils'
 import type { Types } from '../types'
+
+/**
+ * Always defined: node updates keep the previous class name when the new one is undefined
+ */
+function diffClassName(diffStatus: DiffStatus | undefined): string {
+  return diffStatus ? `likec4-diff likec4-diff-${diffStatus}` : ''
+}
 
 function sentence(parts: Array<string | null | undefined>): string {
   return parts.filter((part): part is string => !!part).map(part => part.endsWith('.') ? part : `${part}.`).join(' ')
@@ -167,6 +175,7 @@ export function diagramToXY(opts: {
         height: node.height,
       },
       ariaLabel: nodeAriaLabel(node),
+      className: diffClassName(node.diffStatus),
       initialWidth: node.width,
       initialHeight: node.height,
       hidden: node.kind !== GroupElementKind && !visiblePredicate(node),
@@ -323,6 +332,7 @@ export function diagramToXY(opts: {
       source: ns + source,
       target: ns + target,
       ariaLabel: edgeAriaLabel(edge, nodeById(source), nodeById(target)),
+      className: diffClassName(edge.diffStatus),
       zIndex: ZIndexes.Edge,
       hidden: !visiblePredicate(edge),
       deletable,

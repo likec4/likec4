@@ -16,7 +16,7 @@ const grouped = files.reduce((acc, path) => {
   const parts = path.split(sep)
   const icon = (parts.pop() || 'invalid').replace('.tsx', '')
   const group = parts.pop() || 'error'
-  if (!['aws', 'azure', 'gcp', 'tech', 'bootstrap'].includes(group)) {
+  if (!['aws', 'azure', 'gcp', 'md', 'tech', 'bootstrap'].includes(group)) {
     console.error(`Unknown group ${group}`)
     return acc
   }
@@ -27,6 +27,7 @@ const grouped = files.reduce((acc, path) => {
   aws: [] as string[],
   azure: [] as string[],
   gcp: [] as string[],
+  md: [] as string[],
   tech: [] as string[],
   bootstrap: [] as string[],
 })
@@ -38,6 +39,7 @@ const groupedIcons = {
   aws: ${JSON.stringify(grouped.aws)},
   azure: ${JSON.stringify(grouped.azure)},
   gcp: ${JSON.stringify(grouped.gcp)},
+  md: ${JSON.stringify(grouped.md)},
   tech: ${JSON.stringify(grouped.tech)},
   bootstrap: ${JSON.stringify(grouped.bootstrap)},
 } as const

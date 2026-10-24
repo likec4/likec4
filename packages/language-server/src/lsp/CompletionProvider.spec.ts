@@ -36,6 +36,7 @@ describe('LikeC4CompletionProvider', () => {
         'views',
         'global',
         'deployment',
+        'diff',
         'likec4lib',
       ],
     })
@@ -59,7 +60,7 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 4,
-      expectedItems: ['title', 'description', 'technology', 'notation', 'summary', 'link', 'style'],
+      expectedItems: ['title', 'description', 'technology', 'notation', 'summary', 'link', 'descriptionFile', 'style'],
     })
     await completion({
       text,
@@ -379,6 +380,7 @@ describe('LikeC4CompletionProvider', () => {
         'description',
         'order',
         'link',
+        'descriptionFile',
         'routing',
         'include',
         'exclude',
@@ -573,6 +575,7 @@ describe('LikeC4CompletionProvider', () => {
         'description',
         'technology',
         'summary',
+        'descriptionFile',
         'notation',
         'notes',
         'color',
@@ -645,6 +648,7 @@ describe('LikeC4CompletionProvider', () => {
         'title',
         'technology',
         'description',
+        'descriptionFile',
         'notation',
         'notes',
         'color',
@@ -965,13 +969,6 @@ describe('LikeC4CompletionProvider', () => {
         }
         dev.<|> -> <|>
       }
-      views {
-        deployment view test {
-          include
-            <|>,
-            -> dev.<|>
-        }
-      }
     `
 
     await completion({
@@ -1027,10 +1024,43 @@ describe('LikeC4CompletionProvider', () => {
       ],
       disposeAfterCheck: true,
     })
+  })
+
+  // Kept separate: completion inside deployment view predicates is expensive to parse
+  it('should suggest deployments in deployment view predicates', async ({ completion }) => {
+    const text = `
+      specification {
+        element component
+        deploymentNode env
+        deploymentNode node
+      }
+      model {
+        c1 = component {
+          c2 = component
+        }
+        c2 = component {
+          c1 = component
+        }
+      }
+      deployment {
+        env dev {
+          n1 = node
+          n2 = node
+          i1 = instanceOf c1
+        }
+      }
+      views {
+        deployment view test {
+          include
+            <|>,
+            -> dev.<|>
+        }
+      }
+    `
 
     await completion({
       text,
-      index: 5,
+      index: 0,
       expectedItems: [
         'dev',
         'n1',
@@ -1048,7 +1078,7 @@ describe('LikeC4CompletionProvider', () => {
     // TODO: stopped working in tests but same exampel works in runtime
     // await completion({
     //   text,
-    //   index: 6,
+    //   index: 1,
     //   parseOptions: {
     //     validation: false
     //   },

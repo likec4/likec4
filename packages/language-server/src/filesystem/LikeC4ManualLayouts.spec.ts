@@ -5,22 +5,25 @@ import { describe, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
 import { createLanguageServices } from '../module'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
+import { NoopFileSystemProvider } from './noop'
+import type { FileSystemProvider } from './types'
 
 describe('LikeC4ManualLayouts', () => {
   // Helper to create services with mocked file system
   async function createTestServices() {
-    const services = createLanguageServices(
-      {
-        ...WithLikeC4ManualLayouts,
-      },
-    ).likec4
-
-    // Mock filesystem methods
-    const fs = services.shared.workspace.FileSystemProvider
+    // Standalone provider: spies on it do not retain the services graph (vitest keeps mocks for the whole worker)
+    const fs: FileSystemProvider = new NoopFileSystemProvider()
     vi.spyOn(fs, 'scanDirectory')
     vi.spyOn(fs, 'readFile')
     vi.spyOn(fs, 'writeFile')
     vi.spyOn(fs, 'deleteFile')
+
+    const services = createLanguageServices(
+      {
+        ...WithLikeC4ManualLayouts,
+        fileSystemProvider: () => fs,
+      },
+    ).likec4
 
     const projectData = await services.shared.workspace.ProjectsManager.registerProject({
       config: { name: 'test-project' },

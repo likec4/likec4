@@ -130,8 +130,31 @@ declare module 'likec4:drawio' {
     drawioEditUrl(this: void, viewId: string): string
   }>
 }
+declare module 'likec4:diffs' {
+  import type { DiffSummary, LayoutedView } from 'likec4/model'
+  import type { Atom } from 'likec4/vite-plugin/internal'
+
+  /**
+   * Diffs of the project, with the compare views of the views they change (by diff id, then by view id)
+   */
+  export interface ProjectDiffs {
+    diffs: DiffSummary[]
+    views: Record<string, Record<string, LayoutedView>>
+  }
+
+  export function loadDiffs(projectId: string): Promise<{
+    $diffs: Atom<ProjectDiffs>
+  }>
+}
 
 // Per project
+
+declare module 'likec4:diffs/*' {
+  import type { ProjectDiffs } from 'likec4:diffs'
+  import type { Atom } from 'likec4/vite-plugin/internal'
+
+  export const $diffs: Atom<ProjectDiffs>
+}
 
 declare module 'likec4:model/*' {
   import type { aux, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'

@@ -233,9 +233,8 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   }
 
   protected createDocumentIndex(document: LikeC4LangiumDocument): DocumentFqnIndex {
-    const rootElements = document.parseResult.value
-      .models
-      .flatMap(m => m.elements.filter(isIndexableElement))
+    const { models, diffs } = document.parseResult.value
+    const rootElements = [...models, ...diffs.flatMap(d => d.adds)].flatMap(c => c.elements.filter(isIndexableElement))
 
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
