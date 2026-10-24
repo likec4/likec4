@@ -1,5 +1,14 @@
 # @likec4/config
 
+## 1.60.1
+
+### Patch Changes
+
+- [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76) Thanks [@luantaraschi](https://github.com/luantaraschi)! - Fix project config with `styles.customCss` being rejected with `Invalid input at styles.customCss`, which made the whole config (name, theme, defaults) be ignored. Fixes [#3285](https://github.com/likec4/likec4/issues/3285)
+- Updated dependencies [[`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1)]:
+  - @likec4/core@1.60.1
+  - @likec4/log@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes

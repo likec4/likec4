@@ -1,6 +1,6 @@
 {
   "name": "@likec4/leanix-bridge",
-  "version": "1.60.0",
+  "version": "1.60.1",
   "description": "Bridge from LikeC4 semantic model to LeanIX-shaped inventory artifacts (supports optional live sync or dry-run modes)",
   "homepage": "https://likec4.dev",
   "bugs": "https://github.com/likec4/likec4/issues",
