@@ -459,8 +459,8 @@ catalogs:
       specifier: ^2.1.1
       version: 2.1.1
     motion:
-      specifier: ^14.3.0
-      version: 14.3.0
+      specifier: ^14.5.0
+      version: 14.6.0
     nanostores:
       specifier: 1.5.5
       version: 1.5.5
@@ -1010,7 +1010,7 @@ importers:
         version: 11.0.2
       motion:
         specifier: catalog:react
-        version: 14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanoid:
         specifier: catalog:utils
         version: 6.0.2
@@ -1427,7 +1427,7 @@ importers:
         version: 11.1.21
       motion:
         specifier: catalog:react
-        version: 14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -2416,7 +2416,7 @@ importers:
         version: 1.14.3
       motion:
         specifier: catalog:react
-        version: 14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -2837,7 +2837,7 @@ importers:
         version: 6.2.1
       motion:
         specifier: catalog:react
-        version: 14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -8009,8 +8009,8 @@ packages:
   fraction.js@5.3.4:
     resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
-  framer-motion@14.3.0:
-    resolution: {integrity: sha512-d8WCrU0ZQn7ukKMykCsDyIOwb/taZeDqqrDBK0du5GO0AO/ynz8fdR/LIIz9Pyy3n3tGwrneR+n0egyrrLa3fw==}
+  framer-motion@14.6.0:
+    resolution: {integrity: sha512-MzBgZxGgoHPfSLEXmo4o5XlZvb+nVRFdHtGjVhm6LMIEJKTt/8hNO023euL5mYyzc8llV/hQTfjnN68tNRHalw==}
     peerDependencies:
       react: 19.3.1
       react-dom: 19.3.1
@@ -9115,14 +9115,14 @@ packages:
     resolution: {integrity: sha512-wMwWYHSXVHtD+L9MCCkapOW1zXM+zjS8zBsRQCw6PTSTty2ah4vbrm4aL/+mCmBykuYv8KJ6q+/tJLgNtBEfrw==}
     engines: {node: '>=22', npm: '>=10'}
 
-  motion-dom@14.3.0:
-    resolution: {integrity: sha512-rcKO4aEJzAqDEsrH6qFzhLZxs7bNqZpiUEuEATz9LaRwt6dG7hZEbcFUSHNR8NECaKYM0Iuw6Iv6NpWEGXDI+w==}
+  motion-dom@14.6.0:
+    resolution: {integrity: sha512-lIojTl9aYSPIkeOOSzBliy1nNvpdO3JtVzW2WgTXQlOP4ZMuJhtWO3fP7OD4TVFwlRucdvxlDSMkL+fEQnQ52A==}
 
-  motion-utils@14.1.1:
-    resolution: {integrity: sha512-3VvN5Uvf8B6qG+OfOui6Nht5EWp+vLuU3IqcAj7ItZGKqtmTjCebl5sGZF7/08gEHRnEl1AP/fIwbcEyVrcQGQ==}
+  motion-utils@14.6.0:
+    resolution: {integrity: sha512-bZJo2AmQ2aOFkaato6VXrTbkPG0XhMzivWUWSaI59pxyllj8QMQUFZ84MYRQnPkK+7dr4KldyJwF2+RM0sdq/w==}
 
-  motion@14.3.0:
-    resolution: {integrity: sha512-yh/nHYjikl68+FTxAMywFYzzj21/oGY7RGCfkqN5zpuT1rk3rp0lKfVU8EUq0A64qQeGnxuKUJWP85MipqdLBw==}
+  motion@14.6.0:
+    resolution: {integrity: sha512-qqaZbyubgk7x3zxjPgP1l3Br/KQXol/IIV1uqb358SoN4ApcqNuV7+wyDPg/XLErmuyQL5lL8JVI/fOmDsmBKQ==}
     peerDependencies:
       react: 19.3.1
       react-dom: 19.3.1
@@ -15777,10 +15777,10 @@ snapshots:
 
   fraction.js@5.3.4: {}
 
-  framer-motion@14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+  framer-motion@14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
-      motion-dom: 14.3.0
-      motion-utils: 14.1.1
+      motion-dom: 14.6.0
+      motion-utils: 14.6.0
       tslib: 2.8.1
     optionalDependencies:
       react: 19.3.1
@@ -17150,15 +17150,15 @@ snapshots:
       vscode-languageserver-protocol: 3.18.4
       vscode-ws-jsonrpc: 4.0.2
 
-  motion-dom@14.3.0:
+  motion-dom@14.6.0:
     dependencies:
-      motion-utils: 14.1.1
+      motion-utils: 14.6.0
 
-  motion-utils@14.1.1: {}
+  motion-utils@14.6.0: {}
 
-  motion@14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+  motion@14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
-      framer-motion: 14.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      framer-motion: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       tslib: 2.8.1
     optionalDependencies:
       react: 19.3.1
