@@ -1,9 +1,9 @@
 import { fdir } from 'fdir'
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { sep } from 'path'
+import { basename, sep } from 'path'
 
 const files = new fdir()
-  .filter((name, isDir) => !isDir && name.endsWith('.tsx'))
+  .filter((name, isDir) => !isDir && name.endsWith('.js') && !['index.js', 'all.js'].includes(basename(name)))
   .withFullPaths()
   .crawl('../icons')
   .sync()
@@ -14,14 +14,19 @@ console.info(`Found ${files.length} files`)
 let added = 0
 const grouped = files.reduce((acc, path) => {
   const parts = path.split(sep)
-  const icon = (parts.pop() || 'invalid').replace('.tsx', '')
+  const icon = (parts.pop() || 'invalid').replace('.js', '')
   const group = parts.pop() || 'error'
   if (!['aws', 'azure', 'gcp', 'md', 'tech', 'bootstrap'].includes(group)) {
     console.error(`Unknown group ${group}`)
     return acc
   }
+  const groupIcons = acc[group as keyof typeof acc]
+  if (groupIcons.includes(icon)) {
+    console.error(`Duplicate icon ${icon} in group ${group}`)
+    return acc
+  }
   added++
-  acc[group as keyof typeof acc].push(icon)
+  groupIcons.push(icon)
   return acc
 }, {
   aws: [] as string[],
