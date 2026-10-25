@@ -142,10 +142,11 @@ export function ElementDetailsCard({
   const elementModel = nonNullable(logicalElement ?? deploymentElement, 'Details subject not found')
   const tabs = subject.deployment ? DEPLOYMENT_TABS : TABS
 
-  let defaultView = nodeModel?.navigateTo?.$view ?? logicalElement?.defaultView?.$view ?? null
+  // Raw IDs avoid the strict model.view() lookup that throws when a partial model omits the target.
+  let defaultViewId = nodeModel?.$node.navigateTo ?? logicalElement?.defaultView?.id ?? null
   // Ignore default view if it's the current view
-  if (defaultView?.id === viewId) {
-    defaultView = null
+  if (defaultViewId === viewId) {
+    defaultViewId = null
   }
 
   const defaultLink = only(elementModel.links)
@@ -447,7 +448,7 @@ export function ElementDetailsCard({
                       </ActionIcon>
                     </Tooltip>
                   </IfEnabled>
-                  {defaultView && (
+                  {defaultViewId && (
                     <Tooltip label="Open default view">
                       <ActionIcon
                         size="lg"
@@ -455,7 +456,7 @@ export function ElementDetailsCard({
                         radius="sm"
                         onClick={e => {
                           e.stopPropagation()
-                          diagram.navigateTo(defaultView.id, fromNode ?? undefined)
+                          diagram.navigateTo(defaultViewId as ViewId, fromNode ?? undefined)
                         }}>
                         <IconZoomScan style={{ width: '70%' }} />
                       </ActionIcon>
