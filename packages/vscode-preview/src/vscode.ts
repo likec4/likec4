@@ -54,6 +54,14 @@ const vscode = acquireVsCodeApi<VscodeState>()
 const messenger = new Messenger(vscode)
 messenger.start()
 
+function cancelTokenFromSignal(signal: AbortSignal) {
+  const cancelToken = new CancellationTokenImpl()
+  const triggerCancel = () => cancelToken.cancel()
+  signal.addEventListener('abort', triggerCancel)
+  const cleanup = () => signal.removeEventListener('abort', triggerCancel)
+  return { cancelToken, cleanup }
+}
+
 export const ExtensionApi = {
   navigateTo: (viewId: ViewId, projectId?: ProjectId) => {
     messenger.sendNotification(WebviewMsgs.NavigateTo, HOST_EXTENSION, { screen: 'view', viewId, projectId })
@@ -98,9 +106,12 @@ export const ExtensionApi = {
     model: ComputedLikeC4ModelData | null
     error: string | null
   }> => {
-    const cancellationToken = new CancellationTokenImpl()
-    signal.addEventListener('abort', () => cancellationToken.cancel())
-    return await messenger.sendRequest(FetchComputedModel, HOST_EXTENSION, { projectId }, cancellationToken)
+    const { cancelToken, cleanup } = cancelTokenFromSignal(signal)
+    try {
+      return await messenger.sendRequest(FetchComputedModel, HOST_EXTENSION, { projectId }, cancelToken)
+    } finally {
+      cleanup()
+    }
   },
 
   // Layoted vuew
@@ -115,31 +126,27 @@ export const ExtensionApi = {
     view: DiagramView | null
     error: string | null
   }> => {
-    const cancellationToken = new CancellationTokenImpl()
-    const triggerCancel = () => cancellationToken.cancel()
-    signal.addEventListener('abort', triggerCancel)
+    const { cancelToken, cleanup } = cancelTokenFromSignal(signal)
     try {
-      return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, params, cancellationToken)
+      return await messenger.sendRequest(FetchLayoutedView, HOST_EXTENSION, params, cancelToken)
     } finally {
-      signal.removeEventListener('abort', triggerCancel)
+      cleanup()
     }
   },
 
   fetchProjectsOverview: async (signal: AbortSignal): Promise<{
     projectsView: LayoutedProjectsView | null
   }> => {
-    const cancellationToken = new CancellationTokenImpl()
-    const triggerCancel = () => cancellationToken.cancel()
-    signal.addEventListener('abort', triggerCancel)
+    const { cancelToken, cleanup } = cancelTokenFromSignal(signal)
     try {
       return await messenger.sendRequest(
         FetchProjectsOverview,
         HOST_EXTENSION,
         undefined,
-        cancellationToken,
+        cancelToken,
       )
     } finally {
-      signal.removeEventListener('abort', triggerCancel)
+      cleanup()
     }
   },
 
