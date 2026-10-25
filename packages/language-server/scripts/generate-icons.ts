@@ -42,29 +42,46 @@ const groupedIcons = {
   md: ${JSON.stringify(grouped.md)},
   tech: ${JSON.stringify(grouped.tech)},
   bootstrap: ${JSON.stringify(grouped.bootstrap)},
-} as const
+}
 
+// LikeC4 library icons definition
+export const LibIcons = \`
+likec4lib {
+  icons {
+    aws:bundle // @likec4/icons/aws
+    azure:bundle // @likec4/icons/azure
+    gcp:bundle // @likec4/icons/gcp
+    md:bundle // @likec4/icons/md
+    tech:bundle // @likec4/icons/tech
+    bootstrap:bundle // @likec4/icons/bootstrap
+  }
+}
+\`
 export type IconGroup = keyof typeof groupedIcons
 
 export const iconGroups: IconGroup[] = Object.keys(groupedIcons) as IconGroup[]
 
-export type GroupedIcons = Record<IconGroup, readonly string[]>
+export function isBundledIconGroup(group: unknown): group is IconGroup {
+  return typeof group === 'string' && iconGroups.includes(group as IconGroup)
+}
+
+export function isBundledIcon(icon: unknown): icon is \`\${IconGroup}:\${string}\` {
+  if (typeof icon !== 'string' || !icon.includes(':')) {
+    return false
+  }
+  const [group, _icon, ...unused] = icon.split(':') as [IconGroup, string]
+  return unused.length === 0 && (groupedIcons[group]?.includes(_icon) ?? false)
+}
+
+export type GroupedIcons = {
+  readonly [K in IconGroup]: readonly [string, ...string[]]
+}
 
 /**
  * Grouped icon registry: maps each icon group name to its list of icon names.
  */
 export const iconRegistry: GroupedIcons = groupedIcons
 
-const icons = [...Object.entries(groupedIcons)]
-  .flatMap(([group, names]) => names.map((name) => group + ':' + name))
-
-export const LibIcons: string = [
-  'likec4lib {',
-  '  icons {',
-  ...icons.map((icon) => '    ' + icon),
-  '  }',
-  '}',
-].join('\\n')
 `
 
 mkdirSync('src/generated', { recursive: true })
