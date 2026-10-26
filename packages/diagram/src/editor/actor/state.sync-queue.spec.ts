@@ -78,4 +78,42 @@ describe('editor sync queue', () => {
     expect(actor.getSnapshot().matches({ syncQueue: 'idle' })).toBe(true)
     actor.stop()
   })
+
+  it('does not lock editing while syncing changes', async () => {
+    const executeChange = vi.fn<EditorCalls.ExecuteChange>(async ({ input }) => ({
+      requested: input.changes,
+      applied: input.changes,
+      waitForViewSync: true,
+    }))
+    const actor = createTestActor(executeChange)
+
+    actor.send({ type: 'change.view', change })
+
+    await waitFor(actor, snapshot => snapshot.hasTag('busy'), { timeout: 500 })
+    expect(actor.getSnapshot().hasTag('locked')).toBe(false)
+    actor.stop()
+  })
+
+  it('queues edits made while a sync is in progress instead of dropping them', async () => {
+    const executeChange = vi.fn<EditorCalls.ExecuteChange>(async ({ input }) => ({
+      requested: input.changes,
+      applied: input.changes,
+      waitForViewSync: true,
+    }))
+    const actor = createTestActor(executeChange)
+
+    actor.send({ type: 'change.view', change })
+    await waitFor(
+      actor,
+      snapshot =>
+        (snapshot.value as unknown as { syncQueue: { process: string } }).syncQueue.process === 'waitViewSynced',
+      { timeout: 500 },
+    )
+
+    actor.send({ type: 'change.sync-snapshot' })
+
+    expect(actor.getSnapshot().hasTag('busy')).toBe(true)
+    expect(actor.getSnapshot().context.syncQueue).toEqual(['sync-snapshot'])
+    actor.stop()
+  })
 })

@@ -91,6 +91,7 @@ export const pushHistory = () =>
           tail: context.history,
         },
         redo: null,
+        unsynced: true,
       })
       enqueue(scheduleSync())
     }
@@ -118,6 +119,7 @@ export const undo = () =>
         head: makeSnapshot(system),
         tail: redo,
       },
+      unsynced: true,
     })
     enqueue(cancelSync())
     enqueue(scheduleSync(100))
@@ -144,6 +146,7 @@ export const redo = () =>
         tail: history,
       },
       redo: redo.tail,
+      unsynced: true,
     })
     enqueue(cancelSync())
     enqueue(scheduleSync(100))
@@ -184,6 +187,7 @@ export const deleteNodesAndEdges = () =>
         tail: context.history,
       },
       redo: null,
+      unsynced: true,
     })
 
     const cleanupNode = <N extends t.DiagramNode>(node: N): N => {
@@ -275,4 +279,5 @@ export const clearQueue = () =>
   machine.assign({
     syncQueue: [],
     processing: null,
+    unsynced: false,
   })

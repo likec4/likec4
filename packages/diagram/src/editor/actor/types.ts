@@ -65,8 +65,18 @@ export interface EditorActorContext {
 
   syncQueue: Array<SyncOp>
   processing: Exclude<SyncOp, 'sync-snapshot'> | null
+
+  /**
+   * True if the layout was edited locally after the last sync snapshot was taken.
+   * External view updates received meanwhile are stale and must not override local edits.
+   */
+  unsynced: boolean
 }
 
 export type EditorActorEmitedEvent = { type: 'idle' }
 
-export type EditorActorStateTag = 'pending' | 'busy' | 'ai-semantic-layout'
+/**
+ * - `busy`: syncing changes with the backend
+ * - `locked`: whole layout is being replaced (apply latest, semantic layout), editing is not allowed
+ */
+export type EditorActorStateTag = 'pending' | 'busy' | 'locked' | 'ai-semantic-layout'

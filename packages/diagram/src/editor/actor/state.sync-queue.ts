@@ -138,7 +138,12 @@ const peekFromQueue = () =>
   machine.assign(({ system, context: { syncQueue } }) => {
     let [head, ...tail] = syncQueue
     if (head === 'sync-snapshot') {
-      head = makeSnapshot(system).change
+      return {
+        processing: makeSnapshot(system).change,
+        syncQueue: tail,
+        // Snapshot includes all local edits made so far
+        unsynced: false,
+      }
     }
     return {
       processing: head ?? null,
@@ -190,8 +195,10 @@ const process = machine.createStateConfig({
      */
     applyLatestToManual: machine.createStateConfig({
       initial: 'call',
+      tags: ['locked'],
       entry: assign(({ system }) => ({
         processing: makeSnapshot(system).change,
+        unsynced: false,
       })),
       states: {
         // Fetch latest and manual layouts
@@ -256,7 +263,7 @@ const process = machine.createStateConfig({
      * User requested semantic layout, we will call the AI
      */
     applySemanticLayout: machine.createStateConfig({
-      tags: ['ai-semantic-layout'],
+      tags: ['ai-semantic-layout', 'locked'],
       invoke: {
         src: 'applySemanticLayout',
         input: ({ context }) => ({
@@ -364,6 +371,10 @@ const process = machine.createStateConfig({
     },
   },
   on: {
+    // Edits made while processing are queued and synced once current operation completes
+    'change.sync-snapshot': {
+      actions: pushToSyncQueue(),
+    },
     // 'change.*': {
     //   actions: log(({ event }) => `ignore ${event.type} in process state`),
     // },

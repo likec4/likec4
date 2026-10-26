@@ -25,6 +25,7 @@ import {
   useCallbackRef,
   useDiagramSelector,
   useUpdateEffect,
+  useXYStoreApi,
 } from '../hooks'
 import { useDiagram } from '../hooks/useDiagram'
 import { useEditorActorStateHasTag } from '../hooks/useEditorActor'
@@ -70,6 +71,42 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
     'seq-subflow': nodeTypes.seqSubflow ?? builtinNodes['seq-subflow'],
     'graph-element': nodeTypes.graphElement ?? builtinNodes['graph-element'],
   }
+}
+
+export function resolveControlledViewport(
+  enableFitView: boolean,
+  initialZoom: number | undefined,
+  bounds: { x: number; y: number },
+): Viewport | undefined {
+  if (enableFitView || initialZoom !== undefined) {
+    return undefined
+  }
+  return {
+    x: -bounds.x,
+    y: -bounds.y,
+    zoom: 1,
+  }
+}
+
+export function resolveInteractionEnabled(
+  enabled: boolean,
+  override: boolean | undefined,
+  isEditorLocked: boolean,
+): boolean {
+  return (override ?? enabled) && !isEditorLocked
+}
+
+/**
+ * A plain click (no modifier key, no drag) on a node that is part of a multi-selection
+ * should reduce the selection to that node only.
+ */
+export function shouldCollapseSelectionOnClick(params: {
+  nodesSelectable: boolean
+  isNodeSelected: boolean
+  selectedNodesCount: number
+  hasModifierKey: boolean
+}): boolean {
+  return params.nodesSelectable && params.isNodeSelected && !params.hasModifierKey && params.selectedNodesCount > 1
 }
 
 const selectXYProps = selectDiagramSnapshot((snapshot) => {
@@ -164,9 +201,9 @@ export function LikeC4DiagramXYFlow({
     enableControls,
     ...props
   } = useDiagramSelector(selectXYProps)
-  const isEditorBusy = useEditorActorStateHasTag('busy')
-  nodesDraggable = resolveInteractionEnabled(nodesDraggable, nodesDraggableOverride, isEditorBusy)
-  nodesSelectable = resolveInteractionEnabled(nodesSelectable, nodesSelectableOverride, isEditorBusy)
+  const isEditorLocked = useEditorActorStateHasTag('locked')
+  nodesDraggable = resolveInteractionEnabled(nodesDraggable, nodesDraggableOverride, isEditorLocked)
+  nodesSelectable = resolveInteractionEnabled(nodesSelectable, nodesSelectableOverride, isEditorLocked)
 
   const {
     onNodeContextMenu,
@@ -179,6 +216,7 @@ export function LikeC4DiagramXYFlow({
   } = useDiagramEventHandlers()
 
   const { reducedGraphics, $panning } = useRootContainer()
+  const xystore = useXYStoreApi()
 
   const isReducedGraphics = reducedGraphics,
     nodeDragHandlers = useNodeDragHandlers({
@@ -256,6 +294,15 @@ export function LikeC4DiagramXYFlow({
           return
         }
         e.stopPropagation()
+        const collapseSelection = shouldCollapseSelectionOnClick({
+          nodesSelectable,
+          isNodeSelected: node.selected === true,
+          selectedNodesCount: xystore.getState().nodes.filter(n => n.selected).length,
+          hasModifierKey: e.ctrlKey || e.metaKey || e.shiftKey,
+        })
+        if (collapseSelection) {
+          xystore.getState().addSelectedNodes([node.id])
+        }
         diagram.send({ type: 'xyflow.nodeClick', node })
         onNodeClick?.(diagram.findDiagramNode(node.data.id)!, e)
       })}
