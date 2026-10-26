@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { resolveControlledViewport, resolveInteractionEnabled } from './DiagramXYFlow'
+import {
+  resolveControlledViewport,
+  resolveInteractionEnabled,
+  shouldCollapseSelectionOnClick,
+} from './DiagramXYFlow'
 
 describe('resolveControlledViewport', () => {
   const bounds = { x: 100, y: 200 }
@@ -22,31 +26,57 @@ describe('resolveInteractionEnabled', () => {
     {
       enabled: true,
       override: undefined,
-      isEditorBusy: false,
+      isEditorLocked: false,
       expected: true,
     },
     {
       enabled: false,
       override: true,
-      isEditorBusy: false,
+      isEditorLocked: false,
       expected: true,
     },
     {
       enabled: true,
       override: false,
-      isEditorBusy: false,
+      isEditorLocked: false,
       expected: false,
     },
     {
       enabled: false,
       override: true,
-      isEditorBusy: true,
+      isEditorLocked: true,
       expected: false,
     },
   ])(
-    'returns $expected for enabled=$enabled, override=$override, busy=$isEditorBusy',
-    ({ enabled, override, isEditorBusy, expected }) => {
-      expect(resolveInteractionEnabled(enabled, override, isEditorBusy)).toBe(expected)
+    'returns $expected for enabled=$enabled, override=$override, locked=$isEditorLocked',
+    ({ enabled, override, isEditorLocked, expected }) => {
+      expect(resolveInteractionEnabled(enabled, override, isEditorLocked)).toBe(expected)
     },
   )
+})
+
+describe('shouldCollapseSelectionOnClick', () => {
+  const base = {
+    nodesSelectable: true,
+    isNodeSelected: true,
+    selectedNodesCount: 3,
+    hasModifierKey: false,
+  }
+
+  it('collapses multi-selection to the clicked node on plain click', () => {
+    expect(shouldCollapseSelectionOnClick(base)).toBe(true)
+  })
+
+  it('keeps selection when a modifier key is pressed', () => {
+    expect(shouldCollapseSelectionOnClick({ ...base, hasModifierKey: true })).toBe(false)
+  })
+
+  it('keeps selection when the clicked node is not selected or is the only selected node', () => {
+    expect(shouldCollapseSelectionOnClick({ ...base, isNodeSelected: false })).toBe(false)
+    expect(shouldCollapseSelectionOnClick({ ...base, selectedNodesCount: 1 })).toBe(false)
+  })
+
+  it('keeps selection when nodes are not selectable', () => {
+    expect(shouldCollapseSelectionOnClick({ ...base, nodesSelectable: false })).toBe(false)
+  })
 })
