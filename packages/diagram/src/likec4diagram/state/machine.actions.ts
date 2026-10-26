@@ -26,7 +26,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
-import { difference, isString } from '@likec4/core/utils'
+import { isString } from '@likec4/core/utils'
 import { type NodeChange, type Rect, getNodeDimensions, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy, mapToObj, omit } from 'remeda'
@@ -432,21 +432,23 @@ export const emitOnLayoutTypeChange = () =>
   })
 
 /**
- * Returns selected nodes, excluding those that are ancestors of other selected nodes.
+ * Returns selected nodes, excluding those that are descendants of other selected nodes.
  * Selected compound nodes are moved as a whole, keeping children positions relative to them.
  */
-export function selectedNodesWithoutAncestors(xystore: XYStoreApi): string[] {
+export function selectedNodesWithoutDescendants(xystore: XYStoreApi): string[] {
   const { nodeLookup } = xystore.getState()
   const selected = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
-  const ancestorsOfSelected = new Set<string>()
-  for (const id of selected) {
+  const hasSelectedAncestor = (id: string): boolean => {
     let parentId = nodeLookup.get(id)?.parentId
-    while (parentId && !ancestorsOfSelected.has(parentId)) {
-      ancestorsOfSelected.add(parentId)
+    while (parentId) {
+      if (selected.has(parentId)) {
+        return true
+      }
       parentId = nodeLookup.get(parentId)?.parentId
     }
+    return false
   }
-  return [...difference(selected, ancestorsOfSelected)]
+  return [...selected].filter(id => !hasSelectedAncestor(id))
 }
 
 /**
@@ -498,7 +500,7 @@ export const layoutResize = (params?: { mode: ResizeMode }) =>
     }
     const xystore = nonNullable(context.xystore, 'xystore is not initialized')
     const { nodeLookup } = xystore.getState()
-    const nodesToResize = sortBySelectionOrder(selectedNodesWithoutAncestors(xystore), context.nodeSelectionOrder)
+    const nodesToResize = sortBySelectionOrder(selectedNodesWithoutDescendants(xystore), context.nodeSelectionOrder)
 
     if (!hasAtLeast(nodesToResize, 2)) {
       console.warn('At least 2 nodes must be selected to resize')
@@ -524,7 +526,7 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
     }
     const xystore = nonNullable(context.xystore, 'xystore is not initialized')
     const { nodeLookup } = xystore.getState()
-    const nodesToAlign = selectedNodesWithoutAncestors(xystore)
+    const nodesToAlign = selectedNodesWithoutDescendants(xystore)
 
     if (!hasAtLeast(nodesToAlign, 2)) {
       console.warn('At least 2 nodes must be selected to align')
@@ -559,7 +561,7 @@ export const layoutDistribute = (params?: { mode: DistributionMode }) =>
     }
     const xystore = nonNullable(context.xystore, 'xystore is not initialized')
     const { nodeLookup } = xystore.getState()
-    const nodesToDistribute = selectedNodesWithoutAncestors(xystore)
+    const nodesToDistribute = selectedNodesWithoutDescendants(xystore)
 
     if (!hasAtLeast(nodesToDistribute, 3)) {
       console.warn('At least 3 nodes must be selected to distribute')

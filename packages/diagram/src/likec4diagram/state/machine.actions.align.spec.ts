@@ -7,7 +7,7 @@ import type { XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramToXY } from '../xyflow-diagram/diagram-view'
 import {
   assignXYDataFromView,
-  selectedNodesWithoutAncestors,
+  selectedNodesWithoutDescendants,
   sortBySelectionOrder,
   updateNodeSelectionOrder,
 } from './machine.actions'
@@ -165,7 +165,7 @@ describe('assignXYDataFromView', () => {
   })
 })
 
-describe('selectedNodesWithoutAncestors', () => {
+describe('selectedNodesWithoutDescendants', () => {
   const tree = [
     { id: 'root' },
     { id: 'area1', parentId: 'root' },
@@ -176,16 +176,21 @@ describe('selectedNodesWithoutAncestors', () => {
 
   it('keeps selected compound nodes', () => {
     const store = mockStore(tree.map(n => ({ ...n, selected: n.id.startsWith('area') })))
-    expect(selectedNodesWithoutAncestors(store)).toEqual(['area1', 'area2'])
+    expect(selectedNodesWithoutDescendants(store)).toEqual(['area1', 'area2'])
   })
 
   it('keeps selected leaf nodes', () => {
     const store = mockStore(tree.map(n => ({ ...n, selected: n.id.startsWith('sys') })))
-    expect(selectedNodesWithoutAncestors(store)).toEqual(['sys1', 'sys2'])
+    expect(selectedNodesWithoutDescendants(store)).toEqual(['sys1', 'sys2'])
   })
 
-  it('excludes selected nodes that are ancestors of other selected nodes', () => {
+  it('keeps the selected parent and excludes its selected child', () => {
+    const store = mockStore(tree.map(n => ({ ...n, selected: ['area1', 'sys1', 'sys2'].includes(n.id) })))
+    expect(selectedNodesWithoutDescendants(store)).toEqual(['area1', 'sys2'])
+  })
+
+  it('excludes selected nodes nested at any depth below a selected ancestor', () => {
     const store = mockStore(tree.map(n => ({ ...n, selected: ['root', 'area1', 'sys2'].includes(n.id) })))
-    expect(selectedNodesWithoutAncestors(store)).toEqual(['area1', 'sys2'])
+    expect(selectedNodesWithoutDescendants(store)).toEqual(['root'])
   })
 })

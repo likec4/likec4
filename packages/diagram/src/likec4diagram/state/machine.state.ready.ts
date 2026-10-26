@@ -34,7 +34,7 @@ import {
   raiseFitDiagram,
   resetEdgesControlPoints,
   resetLastClickedNode,
-  selectedNodesWithoutAncestors,
+  selectedNodesWithoutDescendants,
   setViewport,
   startEditing,
   stopEditing,
@@ -79,7 +79,7 @@ export const ready = machine.createStateConfig({
     'layout.align': {
       guard: and([
         'not readonly',
-        ({ context }) => selectedNodesWithoutAncestors(context.xystore).length >= 2,
+        ({ context }) => selectedNodesWithoutDescendants(context.xystore).length >= 2,
       ]),
       actions: [
         startEditing('node'),
@@ -90,7 +90,7 @@ export const ready = machine.createStateConfig({
     'layout.distribute': {
       guard: and([
         'not readonly',
-        ({ context }) => selectedNodesWithoutAncestors(context.xystore).length >= 3,
+        ({ context }) => selectedNodesWithoutDescendants(context.xystore).length >= 3,
       ]),
       actions: [
         startEditing('node'),
@@ -101,7 +101,7 @@ export const ready = machine.createStateConfig({
     'layout.resize': {
       guard: and([
         'not readonly',
-        ({ context }) => selectedNodesWithoutAncestors(context.xystore).length >= 2,
+        ({ context }) => selectedNodesWithoutDescendants(context.xystore).length >= 2,
       ]),
       actions: [
         startEditing('node'),
