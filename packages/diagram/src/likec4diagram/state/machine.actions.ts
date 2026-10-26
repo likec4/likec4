@@ -32,6 +32,7 @@ import { produce } from 'immer'
 import { hasAtLeast, isTruthy, mapToObj, omit } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
+  type ActorSystem,
   assertEvent,
 } from 'xstate'
 import { Base } from '../../base'
@@ -1184,9 +1185,18 @@ export const handleNavigate = () =>
     }
   })
 
+/**
+ * Returns true if the editor has local layout edits (in progress or not yet synced),
+ * so external view updates are stale and would revert them.
+ */
+export function hasUnsyncedLocalEdits(system: ActorSystem<any>): boolean {
+  const editorContext = typedSystem(system).editorActorRef?.getSnapshot().context
+  return !!editorContext && (editorContext.editing !== null || editorContext.unsynced)
+}
+
 export const updateView = () =>
   machine.enqueueActions(
-    ({ enqueue, event, context }) => {
+    ({ enqueue, event, context, system }) => {
       if (event.type !== 'update.view') {
         console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
         return
@@ -1196,6 +1206,15 @@ export const updateView = () =>
 
       if (isAnotherView) {
         console.warn('updateView called for another view - ignoring', { event })
+        return
+      }
+
+      // Ignore stale external updates, editor will sync local edits and receive the up-to-date view
+      if (event.source !== 'editor' && hasUnsyncedLocalEdits(system)) {
+        if (import.meta.env.DEV) {
+          console.log('updateView: ignoring external update, local edits are not synced yet')
+        }
+        enqueue(sendSynced())
         return
       }
 
