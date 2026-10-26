@@ -30,20 +30,6 @@ export function LikeC4EditorProvider({ children, editor }: LikeC4EditorProviderP
   return <LikeC4EditorReactContext.Provider value={editor}>{children}</LikeC4EditorReactContext.Provider>
 }
 
-/**
- * Component that ensures the editor context is available.
- *
- * @param children - The children to render.
- */
-export function EnsureEditorContext({ children }: PropsWithChildren) {
-  const ctx = useContext(LikeC4EditorReactContext)
-  if (!ctx) {
-    return null
-  }
-
-  return <>{children}</>
-}
-
 export function useOptionalLikeC4Editor() {
   return useContext(LikeC4EditorReactContext)
 }

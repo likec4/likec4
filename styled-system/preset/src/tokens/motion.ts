@@ -15,5 +15,3 @@ export const easings = defineTokens.easings({
   out: { value: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
   inOut: { value: 'cubic-bezier(0.50, 0, 0.2, 1)' },
 })
-
-export const animations = defineTokens.animations({})

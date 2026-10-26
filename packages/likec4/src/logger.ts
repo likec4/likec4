@@ -85,13 +85,6 @@ export type Logger = {
   warn(msg: unknown): void
   error(err: unknown): void
 }
-const noop = () => void 0
-/** Logger that does nothing (e.g. when logging is disabled). */
-export const NoopLogger: Logger = {
-  info: noop,
-  warn: noop,
-  error: noop,
-}
 
 const NS_PER_MS = 1e6
 

@@ -5,7 +5,6 @@ import {
   nonNullable,
   Queue,
 } from '@likec4/core'
-import { useDeepCompareMemo } from '@react-hookz/web'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import type { RelationshipsBrowserTypes } from './_types'
@@ -193,13 +192,4 @@ export function viewToNodesEdge(
     xynodes,
     xyedges,
   }
-}
-
-export function useViewToNodesEdges({ edges, nodes }: LayoutRelationshipsViewResult) {
-  return useDeepCompareMemo(() => {
-    return viewToNodesEdge({
-      nodes,
-      edges,
-    })
-  }, [nodes, edges])
 }

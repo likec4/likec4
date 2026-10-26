@@ -135,7 +135,7 @@ function simplebuilder() {
 type A = Types.ToAux<ReturnType<typeof simplebuilder>['Types']>
 type ExistingNodes = A['ElementId']
 type WithoutNodesEdges<V = LayoutedElementView> = Omit<V, 'nodes' | 'edges'>
-export type NodeIds = LiteralUnion<ExistingNodes, string>
+type NodeIds = LiteralUnion<ExistingNodes, string>
 type NodeUpdater =
   | ((draft: WritableDraft<Omit<DiagramNode, 'id'>>) => void)
   | Partial<Omit<DiagramNode, 'id'>>

@@ -36,6 +36,12 @@
     ],
     "apps/playground/src/routes/**": [
       "exports"
+    ],
+    "packages/layouts/src/sequence/_types.ts": [
+      "types"
+    ],
+    "packages/diagram/src/overlays/relationships-browser/SelectElement.css.ts": [
+      "exports"
     ]
   },
   "workspaces": {

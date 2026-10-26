@@ -31,28 +31,6 @@ export type Events =
   | { type: 'dropdown.mouseLeave' }
   | { type: 'dropdown.dismiss' }
 
-export type Emitted = unknown
-
-export type BreadcrumbItem =
-  | { type: 'folder'; folderPath: string; title: string }
-  | { type: 'viewtitle'; title: string }
-
-export type DropdownColumnItem =
-  | {
-    type: 'folder'
-    folderPath: string
-    title: string
-    selected: boolean
-  }
-  | {
-    type: 'view'
-    viewType: 'element' | 'deployment' | 'dynamic' | 'index'
-    viewId: string
-    title: string
-    description: string | null
-    selected: boolean
-  }
-
 export interface Context {
   viewId: ViewId
   viewFolder: string

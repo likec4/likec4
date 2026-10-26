@@ -74,15 +74,6 @@ export const edgeGrid = css({
   alignItems: 'stretch',
 })
 
-export const edgeDataGrid = css({
-  display: 'grid',
-  gridTemplateColumns: 'min-content 1fr',
-  gridAutoRows: '[min-content max-content]',
-  gap: '[10px 12px]',
-  alignItems: 'baseline',
-  justifyItems: 'start',
-})
-
 export const scrollArea = css({
   maxHeight: [
     '[70vh]',

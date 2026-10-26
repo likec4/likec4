@@ -1,5 +1,4 @@
 import type { DynamicViewFlow, StepPath } from '@likec4/core/types'
-import { useMemo } from 'react'
 import { type OutlineTreeNodeData, type OutlineTreeNodeFlow, type OutlineTreeNodes, isOutlineFlowNode } from './types'
 
 /** Flattens the walkthrough flow into the nested step/sub-flow tree the outline renders. */
@@ -43,10 +42,6 @@ export function buildTree(flow: DynamicViewFlow): OutlineTreeNodes {
     },
   })
   return tree
-}
-
-export function useTreeData(flow: DynamicViewFlow): OutlineTreeNodes {
-  return useMemo(() => buildTree(flow), [flow])
 }
 
 /** The first step inside a fragment — where the breadcrumb jumps to. */

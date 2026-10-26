@@ -161,12 +161,6 @@ export const propertiesGrid = css({
   justifyItems: 'stretch',
 })
 
-export const propertyLabel = css({
-  justifySelf: 'end',
-  textAlign: 'right',
-  userSelect: 'none',
-})
-
 export const resizeHandle = css({
   position: 'absolute',
   boxSize: '[14px]',

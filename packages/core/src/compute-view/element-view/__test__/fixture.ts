@@ -372,7 +372,7 @@ export const globalStyles = {
   }],
 } as const
 
-export type FakeRelationIds = (typeof fakeRelations)[number]['id']
+type FakeRelationIds = (typeof fakeRelations)[number]['id']
 const fakeParsedModel = {
   _stage: 'computed' as const,
   project: { id: 'test-project', config: { name: 'test-project' } },
@@ -466,7 +466,7 @@ const emptyView = {
   rules: [],
 } satisfies ParsedElementView<$Aux>
 
-export const includeWildcard = {
+const includeWildcard = {
   include: [
     {
       wildcard: true,
@@ -506,7 +506,7 @@ export function $custom(
   }
 }
 
-export function $customRelation(
+function $customRelation(
   relation: ModelRelationExpr.OrWhere<$Aux>,
   props: Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr'>,
 ): ModelRelationExpr.Custom<$Aux> {

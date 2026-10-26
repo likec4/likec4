@@ -24,7 +24,7 @@ export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFun
   }
 }
 
-export function invalid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
+function invalid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
   return async ({ expect }) => {
     expect.hasAssertions()
     using t = createTestServices()
