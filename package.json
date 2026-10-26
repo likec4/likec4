@@ -37,7 +37,7 @@
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "test:e2e:typecheck": "pnpm run pretest:e2e && cd e2e && pnpm install --no-lockfile && pnpm bootstrap && pnpm typecheck",
     "vitest:ui": "vitest --ui --no-isolate",
-    "knip": "turbo run sources generate --filter=\"!@likec4/docs-astro\" --output-logs=errors-only && knip"
+    "knip": "turbo run build --filter=\"!./apps/*\" --output-logs=errors-only && turbo run generate --filter=@likec4/playground --output-logs=errors-only && knip"
   },
   "nano-staged": {
     "*.{ts,tsx,mjs,js,jsx,json,yaml,yml,md}": [

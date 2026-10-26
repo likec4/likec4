@@ -40,19 +40,6 @@ jobs:
       # - name: 🧹 lint
       #   run: pnpm ci:lint
 
-  check-knip:
-    name: ✂️ knip
-    timeout-minutes: 10
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: 🛠️ bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: ✂️ unused files, exports and dependencies
-        run: pnpm knip
-
   check-build:
     name: 🛠️ build
     timeout-minutes: 10
@@ -68,6 +55,10 @@ jobs:
 
       - name: ⚙️ build
         run: pnpm ci:build
+
+      # Runs after the build: knip also checks published type declarations in dist/
+      - name: ✂️ knip
+        run: pnpm knip
 
       - name: ⚙️ lint:package
         run: |
@@ -371,7 +362,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs:
       - check-types
-      - check-knip
       - check-build
       - check-on-windows
       - check-on-macos

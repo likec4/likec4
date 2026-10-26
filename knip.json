@@ -1,14 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
+  "treatConfigHintsAsErrors": true,
+  "treatTagHintsAsErrors": true,
   "ignore": [
     "packages/icons/**",
     "apps/playground/src/react-dom-server-mock.ts",
     "packages/vscode/src/meta.ts",
     "styled-system/preset/src/generated.ts",
     "e2e/**",
-    "examples/**",
-    "packages/*/dist/**",
-    "packages/likec4/react/**"
+    "examples/**"
   ],
   "ignoreBinaries": [
     "bootstrap",
@@ -75,6 +75,8 @@
         "@likec4/icons",
         "@likec4/react",
         "@likec4/spa",
+        "chevrotain",
+        "d3-zoom",
         "fdir",
         "immer",
         "react-dom"

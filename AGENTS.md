@@ -104,7 +104,7 @@ Treat round trips such as `fromWorkspace → toDSL → fromSource` as one-way ge
 - `pnpm test` runs Vitest suites. Use `pnpm test --no-typecheck` when only runtime tests are needed.
 - `pnpm lint` runs oxlint.
 - `pnpm lint:fix` applies oxlint fixes.
-- `pnpm knip` generates sources (except docs) and reports unused files, exports, and dependencies; CI runs it.
+- `pnpm knip` builds packages first (it also checks published type declarations in `dist/`) and reports unused files, exports, and dependencies; configuration hints fail it too. CI runs it after the build.
 - `pnpm fmt` formats with dprint.
 - `pnpm test:e2e` runs Playwright tests from the isolated `e2e` workspace and takes longer than unit tests.
 - `pnpm check:agent-instructions` validates that this file remains canonical and that instruction and skill adapters do not drift.
