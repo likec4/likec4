@@ -75,15 +75,12 @@
     "@likec4/log": "workspace:*",
     "@lume/kiwi": "catalog:utils",
     "defu": "catalog:utils",
-    "fast-equals": "catalog:utils",
-    "indent-string": "catalog:utils",
     "json5": "catalog:utils",
     "khroma": "catalog:utils",
     "nano-spawn": "catalog:externals",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",
     "remeda": "catalog:utils",
-    "strip-indent": "catalog:utils",
     "ts-graphviz": "^3.0.7",
     "type-fest": "catalog:externals",
     "which": "^5.0.0",
@@ -97,10 +94,8 @@
     "@types/which": "^3.0.4",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
-    "turbo": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:vitest",
-    "zx": "catalog:"
+    "vitest": "catalog:vitest"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

@@ -128,7 +128,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -138,11 +137,8 @@
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
     "fdir": "catalog:externals",
-    "immer": "catalog:utils",
-    "indent-string": "catalog:utils",
     "json5": "catalog:utils",
     "langium": "catalog:langium",
-    "nano-spawn": "catalog:externals",
     "p-limit": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
@@ -161,17 +157,14 @@
     "vscode-languageserver-textdocument": "catalog:vscode",
     "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode",
-    "which": "^5.0.0",
-    "zod": "catalog:externals"
+    "which": "^5.0.0"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/natural-compare-lite": "catalog:utils",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
-    "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
     "bundle-require": "catalog:externals",
     "esbuild": "catalog:esbuild",
@@ -180,7 +173,6 @@
     "oxlint": "catalog:",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
-    "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },

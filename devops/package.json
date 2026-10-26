@@ -20,11 +20,8 @@
   "dependencies": {
     "citty": "catalog:utils",
     "defu": "catalog:utils",
-    "indent-string": "catalog:utils",
     "parse-gitignore": "^2.0.0",
-    "pathe": "catalog:utils",
     "remeda": "catalog:utils",
-    "std-env": "catalog:externals",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "vitest": "catalog:vitest",

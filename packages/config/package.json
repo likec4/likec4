@@ -69,21 +69,20 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "json5": "catalog:utils",
-    "type-fest": "catalog:externals",
     "zod": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "bundle-require": "catalog:externals",
     "defu": "catalog:utils",
+    "esbuild": "catalog:esbuild",
     "nano-spawn": "catalog:externals",
     "remeda": "catalog:utils",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
-    "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "catalog:utils",
     "vitest": "catalog:vitest"
   },
   "peerDependencies": {

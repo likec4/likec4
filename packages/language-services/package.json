@@ -82,9 +82,7 @@
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "tinyrainbow": "catalog:utils",
-    "type-fest": "catalog:externals",
     "ufo": "catalog:utils",
-    "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode"
   },
   "devDependencies": {
@@ -94,7 +92,6 @@
     "memfs": "catalog:",
     "oxlint": "catalog:",
     "tsdown": "catalog:tsdown",
-    "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },

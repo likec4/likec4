@@ -51,7 +51,6 @@
     "@likec4/devops": "workspace:*",
     "@vitest/ui": "catalog:vitest",
     "dprint": "catalog:",
-    "global": "^4.4.0",
     "husky": "^9.1.7",
     "knip": "catalog:",
     "nano-staged": "catalog:",

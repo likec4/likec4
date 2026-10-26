@@ -67,13 +67,9 @@
     "@pandacss/dev": "catalog:css",
     "@pandacss/types": "catalog:css",
     "@types/node": "catalog:",
-    "@types/picomatch": "catalog:externals",
     "@types/react": "catalog:react",
-    "nano-spawn": "catalog:externals",
     "postcss": "catalog:css",
     "react": "catalog:react",
-    "remeda": "catalog:utils",
-    "tsdown": "catalog:tsdown",
     "typescript": "catalog:"
   },
   "peerDependencies": {

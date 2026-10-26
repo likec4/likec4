@@ -1,9 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignoreWorkspaces": [
-    "packages/icons"
-  ],
   "ignore": [
+    "packages/icons/**",
     "packages/language-server/src/generated/**",
     "packages/language-server/src/generated-lib/**",
     "packages/vscode-preview/src/generated-icons.tsx",
@@ -71,9 +69,20 @@
         "@xstate/store"
       ]
     },
+    "packages/generators": {
+      "ignoreDependencies": [
+        "@likec4/config",
+        "@likec4/log"
+      ]
+    },
     "packages/language-server": {
       "ignoreDependencies": [
         "@likec4/icons"
+      ]
+    },
+    "packages/leanix-bridge": {
+      "ignoreDependencies": [
+        "@likec4/core"
       ]
     },
     "packages/likec4": {
@@ -91,14 +100,16 @@
       "ignoreDependencies": [
         "@likec4/icons",
         "immer",
-        "oxlint"
+        "oxlint",
+        "@likec4/layouts"
       ]
     },
     "packages/lsp": {
       "ignoreDependencies": [
         "fdir",
         "picomatch",
-        "std-env"
+        "std-env",
+        "@likec4/layouts"
       ]
     },
     "packages/mcp": {
@@ -126,7 +137,8 @@
     "packages/vscode": {
       "ignoreDependencies": [
         "fdir",
-        "picomatch"
+        "picomatch",
+        "@likec4/language-services"
       ]
     },
     "styled-system/styles": {

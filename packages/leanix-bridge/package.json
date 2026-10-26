@@ -44,8 +44,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*",
-    "remeda": "catalog:utils"
+    "@likec4/core": "workspace:*"
   },
   "devDependencies": {
     "@likec4/devops": "workspace:*",
