@@ -51,7 +51,6 @@
     "typecheck": "tsc -b --verbose",
     "build:turbo": "turbo run build --log-prefix=none --log-order=grouped",
     "build": "tsdown",
-    "lint": "oxlint --type-aware",
     "clean": "pnpm rimraf lib contrib dist src/generated",
     "package-vsix": "tsx scripts/package-vsix.mts",
     "package": "pnpm run package-vsix",

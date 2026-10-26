@@ -14,7 +14,6 @@
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
-    "lint": "oxlint --type-aware",
     "clean": "likec4ops clean"
   },
   "devDependencies": {

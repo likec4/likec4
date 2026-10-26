@@ -72,7 +72,6 @@
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "oxc-transform-react": "catalog:tsdown",
-    "oxlint": "catalog:",
     "postcss": "catalog:css",
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",

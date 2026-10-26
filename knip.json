@@ -84,7 +84,6 @@
       "ignoreDependencies": [
         "@likec4/icons",
         "immer",
-        "oxlint",
         "@likec4/layouts"
       ]
     },

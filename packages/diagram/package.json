@@ -54,8 +54,6 @@
     "postpack": "likec4ops postpack",
     "test": "vitest run --no-isolate",
     "clean": "likec4ops clean",
-    "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
@@ -100,7 +98,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
-    "oxlint": "catalog:",
     "postcss": "catalog:css",
     "postcss-import": "catalog:css",
     "tsdown": "catalog:tsdown",

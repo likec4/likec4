@@ -100,7 +100,6 @@
   "scripts": {
     "typecheck": "tsc -b --verbose",
     "build": "tsdown",
-    "lint": "oxlint --type-aware",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest --no-isolate",
@@ -131,7 +130,6 @@
     "mnemonist": "0.40.6",
     "natural-compare-lite": "catalog:utils",
     "ohash": "catalog:utils",
-    "oxlint": "catalog:",
     "rehype-prism-plus": "catalog:",
     "rehype-sanitize": "^6.0.0",
     "rehype-stringify": "10.0.1",

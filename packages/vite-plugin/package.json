@@ -51,8 +51,6 @@
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
     "lint:package": "pnpx publint ./package.tgz",
-    "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix",
     "clean": "likec4ops clean",
     "test": "vitest run --no-isolate",
     "vitest:ui": "vitest --no-isolate --ui"
@@ -92,7 +90,6 @@
     "birpc": "catalog:vite",
     "fast-equals": "catalog:utils",
     "nanostores": "catalog:react",
-    "oxlint": "catalog:",
     "rolldown": "catalog:tsdown",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
