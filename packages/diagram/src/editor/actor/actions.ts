@@ -92,6 +92,7 @@ export const pushHistory = () =>
         },
         redo: null,
         unsynced: true,
+        unsyncedRevision: context.unsyncedRevision + 1,
       })
       enqueue(scheduleSync())
     }
@@ -106,7 +107,8 @@ export const reschedule = (delay = 300) =>
   }, { delay })
 
 export const undo = () =>
-  machine.enqueueActions(({ context: { history, redo }, system, enqueue }) => {
+  machine.enqueueActions(({ context, system, enqueue }) => {
+    const { history, redo } = context
     if (!history) {
       return
     }
@@ -120,6 +122,7 @@ export const undo = () =>
         tail: redo,
       },
       unsynced: true,
+      unsyncedRevision: context.unsyncedRevision + 1,
     })
     enqueue(cancelSync())
     enqueue(scheduleSync(100))
@@ -133,7 +136,8 @@ export const undo = () =>
   })
 
 export const redo = () =>
-  machine.enqueueActions(({ context: { history, redo }, system, enqueue }) => {
+  machine.enqueueActions(({ context, system, enqueue }) => {
+    const { history, redo } = context
     if (!redo) {
       return
     }
@@ -147,6 +151,7 @@ export const redo = () =>
       },
       redo: redo.tail,
       unsynced: true,
+      unsyncedRevision: context.unsyncedRevision + 1,
     })
     enqueue(cancelSync())
     enqueue(scheduleSync(100))
@@ -188,6 +193,7 @@ export const deleteNodesAndEdges = () =>
       },
       redo: null,
       unsynced: true,
+      unsyncedRevision: context.unsyncedRevision + 1,
     })
 
     const cleanupNode = <N extends t.DiagramNode>(node: N): N => {
@@ -279,5 +285,5 @@ export const clearQueue = () =>
   machine.assign({
     syncQueue: [],
     processing: null,
-    unsynced: false,
+    processingRevision: null,
   })

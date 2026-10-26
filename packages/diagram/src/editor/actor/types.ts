@@ -65,6 +65,8 @@ export interface EditorActorContext {
 
   syncQueue: Array<SyncOp>
   processing: Exclude<SyncOp, 'sync-snapshot'> | null
+  unsyncedRevision: number
+  processingRevision: number | null
 
   /**
    * True if the layout was edited locally after the last sync snapshot was taken.

@@ -8,6 +8,7 @@ import { diagramToXY } from '../xyflow-diagram/diagram-view'
 import {
   assignXYDataFromView,
   selectedNodesWithoutDescendants,
+  selectNodesAndEdges,
   sortBySelectionOrder,
   updateNodeSelectionOrder,
 } from './machine.actions'
@@ -127,6 +128,9 @@ describe('assignXYDataFromView', () => {
               }
             }),
           },
+          'xyflow.select': {
+            actions: selectNodesAndEdges(),
+          },
         },
       }),
       { input },
@@ -159,6 +163,11 @@ describe('assignXYDataFromView', () => {
       })
       expect(actor.getSnapshot().context.nodeSelectionOrder).toEqual(['a'])
       expect(actor.getSnapshot().context.xynodes.find(node => node.id === 'b')?.selected).toBe(false)
+
+      actor.send({ type: 'xyflow.select', nodes: [scalar.NodeId('b')] })
+      actor.send({ type: 'xyflow.select', nodes: [scalar.NodeId('b'), scalar.NodeId('a')] })
+      expect(actor.getSnapshot().context.nodeSelectionOrder).toEqual(['b', 'a'])
+      expect(sortBySelectionOrder(['a', 'b'], actor.getSnapshot().context.nodeSelectionOrder)).toEqual(['b', 'a'])
     } finally {
       actor.stop()
     }

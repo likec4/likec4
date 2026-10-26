@@ -489,6 +489,24 @@ export function sortBySelectionOrder(ids: ReadonlyArray<string>, order: Readonly
   return [...ids].sort((a, b) => indexOf(a) - indexOf(b))
 }
 
+export const selectNodesAndEdges = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, 'xyflow.select')
+    const selectedNodes = new Set(event.nodes ?? [])
+    const selectedEdges = new Set(event.edges ?? [])
+    return {
+      xynodes: context.xynodes.map(node => {
+        const selected = selectedNodes.has(node.data.id)
+        return selected === (node.selected ?? false) ? node : { ...node, selected }
+      }),
+      xyedges: context.xyedges.map(edge => {
+        const selected = selectedEdges.has(edge.data.id)
+        return selected === (edge.selected ?? false) ? edge : { ...edge, selected }
+      }),
+      nodeSelectionOrder: (event.nodes ?? []).filter(id => context.xynodes.some(node => node.data.id === id)),
+    }
+  })
+
 export const layoutResize = (params?: { mode: ResizeMode }) =>
   machine.createAction(({ context, event }) => {
     let mode
