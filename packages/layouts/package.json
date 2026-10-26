@@ -60,7 +60,7 @@
     "typecheck": "tsc -b --verbose",
     "generate": "tsx scripts/generate.ts",
     "build": "tsdown",
-    "lint": "run -T eslint src/ --fix",
+    "lint": "oxlint --type-aware",
     "lint:package": "pnpx publint ./package.tgz",
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
