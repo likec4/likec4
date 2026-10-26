@@ -135,19 +135,20 @@ const suspended = machine.createStateConfig({
 })
 
 const peekFromQueue = () =>
-  machine.assign(({ system, context: { syncQueue } }) => {
+  machine.assign(({ system, context }) => {
+    const { syncQueue } = context
     let [head, ...tail] = syncQueue
     if (head === 'sync-snapshot') {
       return {
         processing: makeSnapshot(system).change,
         syncQueue: tail,
-        // Snapshot includes all local edits made so far
-        unsynced: false,
+        processingRevision: context.unsyncedRevision,
       }
     }
     return {
       processing: head ?? null,
       syncQueue: tail,
+      processingRevision: null,
     }
   })
 
@@ -198,7 +199,7 @@ const process = machine.createStateConfig({
       tags: ['locked'],
       entry: assign(({ system }) => ({
         processing: makeSnapshot(system).change,
-        unsynced: false,
+        processingRevision: null,
       })),
       states: {
         // Fetch latest and manual layouts
@@ -231,6 +232,7 @@ const process = machine.createStateConfig({
                 return {
                   processing: null,
                   syncQueue: [],
+                  processingRevision: null,
                 }
               }),
               ...to.idle,
@@ -317,6 +319,7 @@ const process = machine.createStateConfig({
             const requested = event.output.requested
             enqueue.assign({
               processing: null,
+              processingRevision: null,
               syncQueue: context.syncQueue.filter(change => !isViewChange(change) || !requested.includes(change)),
             })
 
@@ -325,6 +328,9 @@ const process = machine.createStateConfig({
               c => c.op === 'save-view-snapshot',
             )
             if (lastSyncSnapshot) {
+              if (context.unsyncedRevision === context.processingRevision) {
+                enqueue.assign({ unsynced: false })
+              }
               enqueue.sendTo(
                 typedSystem.diagramActor,
                 {

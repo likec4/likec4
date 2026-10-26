@@ -148,6 +148,76 @@ describe('editor sync queue', () => {
     actor.stop()
   })
 
+  it('keeps local edits unsynced while a snapshot save is pending and after it fails', async () => {
+    let rejectExecution!: (error: Error) => void
+    const executeChange = vi.fn<EditorCalls.ExecuteChange>(() =>
+      new Promise((_, reject) => {
+        rejectExecution = reject
+      })
+    )
+    const { root, editor } = createActorWithDiagram(executeChange)
+
+    editor.send({ type: 'edit.move.start', subject: 'node' })
+    editor.send({ type: 'edit.move.end' })
+    await waitFor(editor, () => executeChange.mock.calls.length === 1, { timeout: 2_000 })
+
+    expect(editor.getSnapshot().context.unsynced).toBe(true)
+    rejectExecution(new Error('save failed'))
+    await waitFor(editor, snapshot => !snapshot.hasTag('busy'), { timeout: 500 })
+    expect(editor.getSnapshot().context.unsynced).toBe(true)
+
+    root.stop()
+  })
+
+  it('clears unsynced after a save but preserves edits made while that save was running', async () => {
+    let resolveFirst!: (value: Awaited<ReturnType<EditorCalls.ExecuteChange>>) => void
+    let resolveSecond!: (value: Awaited<ReturnType<EditorCalls.ExecuteChange>>) => void
+    let calls = 0
+    const executeChange = vi.fn<EditorCalls.ExecuteChange>(async ({ input }) => {
+      calls++
+      if (calls === 1) {
+        return await new Promise(resolve => {
+          resolveFirst = resolve
+        })
+      }
+      if (calls === 2) {
+        return await new Promise(resolve => {
+          resolveSecond = resolve
+        })
+      }
+      return {
+        requested: input.changes,
+        applied: input.changes,
+        waitForViewSync: false,
+      }
+    })
+    const { root, editor } = createActorWithDiagram(executeChange)
+
+    editor.send({ type: 'edit.move.start', subject: 'node' })
+    editor.send({ type: 'edit.move.end' })
+    await waitFor(editor, () => executeChange.mock.calls.length === 1, { timeout: 2_000 })
+
+    editor.send({ type: 'edit.move.start', subject: 'node' })
+    editor.send({ type: 'edit.move.end' })
+    await waitFor(editor, snapshot => snapshot.context.syncQueue.includes('sync-snapshot'), { timeout: 500 })
+    resolveFirst({
+      requested: executeChange.mock.calls[0]![0].input.changes,
+      applied: executeChange.mock.calls[0]![0].input.changes,
+      waitForViewSync: false,
+    })
+
+    await waitFor(editor, () => executeChange.mock.calls.length === 2, { timeout: 500 })
+    expect(editor.getSnapshot().context.unsynced).toBe(true)
+    resolveSecond({
+      requested: executeChange.mock.calls[1]![0].input.changes,
+      applied: executeChange.mock.calls[1]![0].input.changes,
+      waitForViewSync: false,
+    })
+    await waitFor(editor, snapshot => !snapshot.hasTag('busy') && !snapshot.context.unsynced, { timeout: 500 })
+
+    root.stop()
+  })
+
   it('does not lock editing while syncing changes', async () => {
     const executeChange = vi.fn<EditorCalls.ExecuteChange>(async ({ input }) => ({
       requested: input.changes,
