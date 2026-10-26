@@ -250,7 +250,7 @@ catalogs:
     "@xstate/react": 6.1.0
     "@xstate/store": 4.3.0
     "@xstate/store-react": 2.1.0
-    xstate: 5.33.2
+    xstate: 5.33.3
   xyflow:
     "@xyflow/react": 12.12.0
     "@xyflow/system": 0.0.83
