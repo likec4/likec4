@@ -40,7 +40,7 @@ const ElementDetailsButtonWithHandler = (
       {...props}
       onClick={e => {
         e.stopPropagation()
-        diagram.openElementDetails(props.data.fqn)
+        diagram.openNodeDetails({ type: 'element', element: props.data.fqn })
       }}
     />
   )
@@ -69,7 +69,7 @@ export function CompoundNode(props: RelationshipsBrowserTypes.NodeProps<'compoun
         {...props}
         onClick={e => {
           e.stopPropagation()
-          diagram.openElementDetails(props.data.fqn)
+          diagram.openNodeDetails({ type: 'element', element: props.data.fqn })
         }} />
       <CompoundPorts {...props} />
     </CompoundNodeContainer>

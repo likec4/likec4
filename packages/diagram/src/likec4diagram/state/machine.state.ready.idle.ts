@@ -8,7 +8,7 @@ import {
   emitNodeClick,
   emitOpenSourceOfView,
   emitPaneClick,
-  openElementDetails,
+  openNodeDetails,
   openSourceOfFocusedOrLastClickedNode,
   raiseFitDiagram,
   resetLastClickedNode,
@@ -70,7 +70,7 @@ export const idle = machine.createStateConfig({
         guard: and([
           'enabled: Readonly',
           'enabled: ElementDetails',
-          'click: node has modelFqn',
+          'click: node has details',
           or([
             'click: same node',
             'click: selected node',
@@ -79,7 +79,7 @@ export const idle = machine.createStateConfig({
         actions: [
           assignLastClickedNode(),
           openSourceOfFocusedOrLastClickedNode(),
-          openElementDetails(),
+          openNodeDetails(),
           emitNodeClick(),
         ],
       },

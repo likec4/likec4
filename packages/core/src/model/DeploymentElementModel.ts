@@ -451,6 +451,17 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
     return (this.$instance.metadata ?? this.element.metadata ?? {}) as aux.Metadata<A>
   }
 
+  public override hasMetadata(): boolean {
+    return !isEmpty(this.metadata)
+  }
+
+  public override getMetadata(): aux.Metadata<A>
+  public override getMetadata(field: aux.MetadataKey<A>): string | string[] | undefined
+  public override getMetadata(field?: aux.MetadataKey<A>): aux.Metadata<A> | string | string[] | undefined {
+    const metadata = this.metadata
+    return field ? metadata[field] : metadata
+  }
+
   override get summary(): RichTextOrEmpty {
     return RichText.memoize(
       this,
