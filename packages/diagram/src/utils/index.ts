@@ -6,7 +6,6 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 export { vector } from '@likec4/core/geometry'
-
 export {
   stopPropagation,
 } from './xyflow'

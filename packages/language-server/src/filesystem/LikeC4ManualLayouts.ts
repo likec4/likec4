@@ -24,7 +24,6 @@ import type {
 const layoutsLogger = rootLogger.getChild('manual-layouts')
 
 const extension = '.likec4.snap'
-
 /**
  * @todo sync with vscode extension watchers
  *       (search for ".likec4.snap" references)

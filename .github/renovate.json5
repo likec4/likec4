@@ -49,10 +49,7 @@
         'oxlint',
         'oxlint-tsgolint',
         'terser',
-        'caniuse-lite',
         'zx',
-        'autoprefixer',
-        '@typescript/native-preview',
         '@fontsource-variable/**',
         '@fontsource/**',
       ]

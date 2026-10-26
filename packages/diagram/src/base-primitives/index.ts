@@ -6,7 +6,6 @@ export { EdgeActionButton } from './edge/EdgeActionButton'
 export { EdgeContainer } from './edge/EdgeContainer'
 export { EdgeLabel } from './edge/EdgeLabel'
 export { EdgeLabelContainer } from './edge/EdgeLabelContainer'
-
 export { EdgePath } from './edge/EdgePath'
 export { ElementActionButtons } from './element/ElementActionButtons'
 export { ElementData } from './element/ElementData'

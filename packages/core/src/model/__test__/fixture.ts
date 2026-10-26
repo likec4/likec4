@@ -170,8 +170,6 @@ const local = b
     ),
   )
 
-const builder = local.clone()
-
 export const parsed = local.build()
 export type TestFqn = typeof local.Types.Fqn
 

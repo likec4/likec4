@@ -2,13 +2,9 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignore": [
     "packages/icons/**",
-    "packages/language-server/src/generated/**",
-    "packages/language-server/src/generated-lib/**",
-    "packages/vscode-preview/src/generated-icons.tsx",
     "apps/playground/src/react-dom-server-mock.ts",
     "packages/vscode/src/meta.ts",
     "styled-system/preset/src/generated.ts",
-    "{apps,packages}/*/styled-system/**",
     "e2e/**",
     "examples/**",
     "packages/*/dist/**",
@@ -18,25 +14,13 @@
     "bootstrap",
     "likec4"
   ],
-  "ignoreUnresolved": [
-    "^likec4:"
-  ],
   "ignoreExportsUsedInFile": true,
   "ignoreIssues": {
     "packages/diagram/src/LikeC4MantineProvider.tsx": [
       "duplicates"
     ],
-    "packages/diagram/src/likec4diagram/xyflow-sequence/_types.ts": [
-      "types"
-    ],
-    "packages/layouts/src/sequence/const.ts": [
-      "exports"
-    ],
     "apps/playground/src/routes/**": [
       "exports"
-    ],
-    "packages/layouts/src/sequence/_types.ts": [
-      "types"
     ],
     "packages/diagram/src/overlays/relationships-browser/SelectElement.css.ts": [
       "exports"

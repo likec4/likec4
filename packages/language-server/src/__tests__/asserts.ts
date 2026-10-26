@@ -24,16 +24,6 @@ export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFun
   }
 }
 
-function invalid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
-  return async ({ expect }) => {
-    expect.hasAssertions()
-    using t = createTestServices()
-    const { diagnostics } = await t.validate(likec4(strings, ...expr))
-    const errors = diagnostics.map(d => d.message).join('\n')
-    expect(errors).not.toEqual('')
-  }
-}
-
 export function test(name: string) {
   return {
     valid: (strings: TemplateStringsArray, ...expr: string[]) => {

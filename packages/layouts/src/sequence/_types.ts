@@ -55,10 +55,6 @@ export type Rect = {
   }
 }
 
-export type ParallelRect = Rect & {
-  parallelPrefix: string
-}
-
 export interface SequenceActorStepPort {
   id: string
   cx: number // center x
@@ -97,6 +93,7 @@ export interface SequenceParallelArea {
   height: number
 }
 
+/** @public Mirrored file: public in @likec4/layouts */
 export interface SequenceViewLayout {
   id: ViewId
   actors: Array<SequenceActor>
