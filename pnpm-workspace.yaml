@@ -49,6 +49,7 @@ catalog:
   "@typescript/native-preview": 7.0.0-dev.20260707.2
   dprint: ^0.63.0
   graphology: ^0.26.0
+  knip: 6.43.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
   mdast-util-to-hast: 13.2.1

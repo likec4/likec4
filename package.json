@@ -37,7 +37,8 @@
     "pretest:e2e": "NODE_ENV=production pnpm turbo run pack --filter=\"@likec4/core\" --filter=\"@likec4/diagram\" --filter=\"@likec4/icons\" --filter=\"@likec4/mcp\" --filter=\"@likec4/styles\" --filter=\"likec4\"",
     "test:e2e": "cd e2e && pnpm install --no-lockfile && pnpm install:chromium && pnpm bootstrap && pnpm test",
     "test:e2e:typecheck": "pnpm run pretest:e2e && cd e2e && pnpm install --no-lockfile && pnpm bootstrap && pnpm typecheck",
-    "vitest:ui": "vitest --ui --no-isolate"
+    "vitest:ui": "vitest --ui --no-isolate",
+    "knip": "knip"
   },
   "nano-staged": {
     "*.{ts,tsx,mjs,js,jsx,json,yaml,yml,md}": [
@@ -52,6 +53,7 @@
     "dprint": "catalog:",
     "global": "^4.4.0",
     "husky": "^9.1.7",
+    "knip": "catalog:",
     "nano-staged": "catalog:",
     "npm-run-all2": "^8.0.4",
     "oxlint": "catalog:",

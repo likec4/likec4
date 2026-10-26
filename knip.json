@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreWorkspaces": ["packages/icons"],
+  "ignore": [
+    "packages/language-server/src/generated/**",
+    "packages/language-server/src/generated-lib/**",
+    "packages/vscode-preview/src/generated-icons.tsx",
+    "styled-system/preset/src/generated.ts",
+    "{apps,packages}/*/styled-system/**",
+    "e2e/**",
+    "examples/**",
+    "packages/*/dist/**",
+    "packages/likec4/react/**"
+  ],
+  "ignoreBinaries": ["bootstrap", "likec4"],
+  "ignoreUnresolved": ["^likec4:"],
+  "ignoreExportsUsedInFile": true
+}
