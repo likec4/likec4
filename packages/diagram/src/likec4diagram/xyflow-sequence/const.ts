@@ -24,7 +24,7 @@ export const FIRST_STEP_OFFSET = 30
 // A -> B -> C (continuous)
 export const CONTINUOUS_OFFSET = 22
 
-/** @public Mirrored file: used by diagram sequence-layout.ts */
+/** @public Mirrored in layouts and diagram; used by diagram sequence-layout.ts */
 export const SeqZIndex = {
   compound: 1,
   subflows: 10,
@@ -32,7 +32,7 @@ export const SeqZIndex = {
   step: 100,
 }
 
-/** @public Mirrored file: used by diagram sequence-layout.ts */
+/** @public Mirrored in layouts and diagram; used by diagram sequence-layout.ts */
 export const SeqParallelAreaColor = {
   default: 'gray',
   active: 'amber',

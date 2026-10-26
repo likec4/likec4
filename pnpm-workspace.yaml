@@ -32,7 +32,7 @@ overrides:
   "vscode-uri": "catalog:vscode"
   "type-fest": "catalog:externals"
   "turbo": "catalog:"
-  "mdast-util-to-hast": "catalog:"
+  "mdast-util-to-hast": "^13.2.1"
 
 patchedDependencies:
   "chroma-js@3.2.0": "patches/chroma-js@3.2.0.patch"
@@ -52,7 +52,6 @@ catalog:
   knip: 6.43.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  mdast-util-to-hast: 13.2.1
   memfs: ^4.80.0
   nano-staged: ^1.0.2
   oxlint: 1.88.0

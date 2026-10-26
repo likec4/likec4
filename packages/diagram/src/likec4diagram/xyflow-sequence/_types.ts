@@ -93,7 +93,7 @@ export interface SequenceParallelArea {
   height: number
 }
 
-/** @public Mirrored file: public in @likec4/layouts */
+/** @public Mirrored in layouts and diagram; exported by @likec4/layouts */
 export interface SequenceViewLayout {
   id: ViewId
   actors: Array<SequenceActor>

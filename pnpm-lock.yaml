@@ -644,7 +644,7 @@ overrides:
   vscode-uri: 3.2.0
   type-fest: ^4.41.0
   turbo: 2.11.9
-  mdast-util-to-hast: 13.2.1
+  mdast-util-to-hast: ^13.2.1
 
 patchedDependencies:
   chroma-js@3.2.0: d987322bee5bda6851d8538d840c5155f1e299d91bd40b2a8eb0f3e4c0c62d1c
