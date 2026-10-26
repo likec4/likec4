@@ -264,6 +264,18 @@ const process = machine.createStateConfig({
      */
     applySemanticLayout: machine.createStateConfig({
       tags: ['ai-semantic-layout', 'locked'],
+      // Layout is replaced as a whole, local edits are not allowed meanwhile
+      on: {
+        'delete.nodes-edges': {
+          actions: log('ignore delete.nodes-edges during semantic layout'),
+        },
+        'undo': {
+          actions: log('ignore undo during semantic layout'),
+        },
+        'redo': {
+          actions: log('ignore redo during semantic layout'),
+        },
+      },
       invoke: {
         src: 'applySemanticLayout',
         input: ({ context }) => ({
@@ -374,6 +386,16 @@ const process = machine.createStateConfig({
     // Edits made while processing are queued and synced once current operation completes
     'change.sync-snapshot': {
       actions: pushToSyncQueue(),
+    },
+    // These apply locally and schedule a sync snapshot, which is queued by the handler above
+    'delete.nodes-edges': {
+      actions: deleteNodesAndEdges(),
+    },
+    'undo': {
+      actions: undo(),
+    },
+    'redo': {
+      actions: redo(),
     },
     // 'change.*': {
     //   actions: log(({ event }) => `ignore ${event.type} in process state`),
