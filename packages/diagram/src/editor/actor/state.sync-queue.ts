@@ -134,6 +134,39 @@ const suspended = machine.createStateConfig({
   },
 })
 
+const failed = machine.createStateConfig({
+  ...idOf({ target: '#queue-failed' }),
+  on: {
+    'change.sync-snapshot': {
+      actions: pushToSyncQueue(),
+      ...to.pending,
+    },
+    'change.*': {
+      actions: pushToSyncQueue(),
+      ...to.process,
+    },
+    'delete.nodes-edges': {
+      actions: deleteNodesAndEdges(),
+    },
+    'edit.move.start': {
+      ...to.suspended,
+    },
+    'undo': {
+      actions: undo(),
+    },
+    'redo': {
+      actions: redo(),
+    },
+    'cancel': {
+      actions: [
+        clearQueue(),
+        cancelSync(),
+      ],
+      ...to.idle,
+    },
+  },
+})
+
 const peekFromQueue = () =>
   machine.assign(({ system, context }) => {
     const { syncQueue } = context
@@ -346,10 +379,22 @@ const process = machine.createStateConfig({
           target: 'waitViewSynced',
         },
         onError: {
-          actions: ({ event }) => {
+          actions: assign(({ context, event }) => {
             console.error('executeChanges onError', { error: event.error })
-          },
-          target: 'failure',
+            const failedSnapshot = isViewChange(context.processing) && context.processing.op === 'save-view-snapshot'
+            let retryQueue = context.syncQueue
+            if (failedSnapshot && !retryQueue.includes('sync-snapshot')) {
+              retryQueue = ['sync-snapshot', ...retryQueue]
+            } else if (!failedSnapshot && context.processing) {
+              retryQueue = [context.processing, ...retryQueue]
+            }
+            return {
+              processing: null,
+              processingRevision: null,
+              syncQueue: retryQueue,
+            }
+          }),
+          target: '#queue-failed',
         },
       },
     }),
@@ -421,6 +466,7 @@ export const syncQueue = machine.createStateConfig({
     idle,
     pending,
     suspended,
+    failed,
     process,
   },
   on: {},

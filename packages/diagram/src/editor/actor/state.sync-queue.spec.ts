@@ -148,13 +148,19 @@ describe('editor sync queue', () => {
     actor.stop()
   })
 
-  it('keeps local edits unsynced while a snapshot save is pending and after it fails', async () => {
+  it('retains a failed snapshot for recovery and clears unsynced only after retry succeeds', async () => {
     let rejectExecution!: (error: Error) => void
-    const executeChange = vi.fn<EditorCalls.ExecuteChange>(() =>
-      new Promise((_, reject) => {
+    let resolveRetry!: (value: Awaited<ReturnType<EditorCalls.ExecuteChange>>) => void
+    const executeChange = vi.fn<EditorCalls.ExecuteChange>(({ input }) => {
+      if (executeChange.mock.calls.length > 1) {
+        return new Promise(resolve => {
+          resolveRetry = resolve
+        })
+      }
+      return new Promise((_, reject) => {
         rejectExecution = reject
       })
-    )
+    })
     const { root, editor } = createActorWithDiagram(executeChange)
 
     editor.send({ type: 'edit.move.start', subject: 'node' })
@@ -165,6 +171,22 @@ describe('editor sync queue', () => {
     rejectExecution(new Error('save failed'))
     await waitFor(editor, snapshot => !snapshot.hasTag('busy'), { timeout: 500 })
     expect(editor.getSnapshot().context.unsynced).toBe(true)
+    expect(editor.getSnapshot().context.syncQueue).toContain('sync-snapshot')
+    expect(executeChange).toHaveBeenCalledTimes(1)
+
+    editor.send({ type: 'change.view', change })
+    await waitFor(editor, () => executeChange.mock.calls.length === 2, { timeout: 500 })
+    expect(executeChange.mock.calls[1]![0].input.changes).toContainEqual(
+      expect.objectContaining({ op: 'save-view-snapshot' }),
+    )
+    expect(editor.getSnapshot().context.unsynced).toBe(true)
+
+    resolveRetry({
+      requested: executeChange.mock.calls[1]![0].input.changes,
+      applied: executeChange.mock.calls[1]![0].input.changes,
+      waitForViewSync: false,
+    })
+    await waitFor(editor, snapshot => !snapshot.hasTag('busy') && !snapshot.context.unsynced, { timeout: 500 })
 
     root.stop()
   })
