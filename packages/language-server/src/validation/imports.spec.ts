@@ -2,6 +2,41 @@ import { describe, it } from 'vitest'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 
 describe('import checks', () => {
+  it('should resolve nested imported elements through a deployed instance', async ({ expect }) => {
+    await using t = await createMultiProjectTestServices({
+      owner: {
+        'model.c4': `
+          specification { element component }
+          model {
+            component app {
+              component api {
+                component handler
+              }
+            }
+          }
+        `,
+      },
+      consumer: {
+        'model.c4': `
+          import app from 'owner'
+          specification {
+            deploymentNode node
+          }
+          deployment {
+            node server {
+              deployedApp = instanceOf app
+            }
+            node client
+            client -> server.deployedApp.api.handler
+          }
+        `,
+      },
+    })
+
+    const { errors } = await t.validateAll()
+    expect(errors).toEqual([])
+  })
+
   it('should resolve nested imported elements and scoped views in the source project', async ({ expect }) => {
     await using t = await createMultiProjectTestServices({
       owner: {

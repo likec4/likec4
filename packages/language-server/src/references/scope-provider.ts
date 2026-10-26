@@ -19,7 +19,7 @@ import type { DeploymentsIndex, FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { elementRef, readStrictFqn } from '../utils/elementRef'
-import { importsRef } from '../utils/fqnRef'
+import { importsRef, instanceRef } from '../utils/fqnRef'
 import type { IndexManager } from '../workspace'
 
 const { getDocument } = AstUtils
@@ -195,7 +195,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genUniqueDescedants(imported ? projectIdFrom(imported) : projectId, resolvedTarget))
     }
     if (ast.isElement(parentRef)) {
-      const imported = importsRef(parent)
+      const instance = instanceRef(parent)
+      const imported = importsRef(parent) ?? (instance ? importsRef(instance.target.modelElement) : null)
       return stream(this.genUniqueDescedants(imported ? projectIdFrom(imported) : projectId, parentRef))
     }
     return nonexhaustive(parentRef)
