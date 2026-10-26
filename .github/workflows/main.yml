@@ -72,11 +72,9 @@ jobs:
         id: changesets
         uses: changesets/action@v2.1.2
         with:
-          pr-title: 'prepare release'
-          commit-message: 'chore: prepare next release'
-          setupGitUser: false
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          pr-title: "prepare release"
+          commit-message: "chore: prepare next release"
+          github-token: ${{ steps.app-token.outputs.token }}
 
   # release:
   #   name: 📦 release

@@ -365,7 +365,7 @@
     "zx": "catalog:"
   },
   "engines": {
-    "vscode": "^1.142.0"
+    "vscode": "^1.100.0"
   },
   "icon": "data/logo256.png",
   "galleryBanner": {

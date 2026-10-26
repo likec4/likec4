@@ -5,7 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { Fqn, NodeId } from '@likec4/core'
+import type { DeploymentFqn, Fqn } from '@likec4/core'
+import { scalar } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import {
   type ElementTagsProps,
@@ -23,6 +24,7 @@ import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { detailsSubject } from '../../../overlays/element-details/subject'
 import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
@@ -56,20 +58,21 @@ export function ElementDetailsButtonWithHandler(
     selected?: boolean
     data: BaseNodeData & {
       modelFqn?: Fqn | null | undefined
+      deploymentFqn?: DeploymentFqn | null | undefined
     }
   },
 ) {
   const diagram = useDiagram()
-  const fqn = props.data.modelFqn
+  const subject = detailsSubject(props.data)
 
-  if (!fqn) return null
+  if (!subject) return null
 
   return (
     <ElementDetailsButton
       {...props}
       onClick={e => {
         e.stopPropagation()
-        diagram.openElementDetails(fqn, props.id as NodeId)
+        diagram.openNodeDetails(scalar.NodeId(props.id))
       }} />
   )
 }
@@ -78,16 +81,16 @@ export function CompoundDetailsButtonWithHandler(
   props: Types.NodeProps<'compound-deployment' | 'compound-element'>,
 ) {
   const diagram = useDiagram()
-  const fqn = props.data.modelFqn
+  const subject = detailsSubject(props.data)
 
-  if (!fqn) return null
+  if (!subject) return null
 
   return (
     <CompoundDetailsButton
       {...props}
       onClick={e => {
         e.stopPropagation()
-        diagram.openElementDetails(fqn, props.id as NodeId)
+        diagram.openNodeDetails(scalar.NodeId(props.id))
       }} />
   )
 }
