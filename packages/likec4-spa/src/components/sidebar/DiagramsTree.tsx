@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { DiagramView } from '@likec4/core/types'
-import { StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
+import { pickViewBounds, StaticLikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import { Box } from '@likec4/styles/jsx'
 import {
   type TreeNodeData,
@@ -180,10 +180,12 @@ function DiagramPreviewHoverCard({ diagram, children }: PropsWithChildren<{ diag
 const DiagramPreview = memo<{
   diagram: DiagramView
 }>(({ diagram }) => {
-  const ratio = Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300)
+  // Sequence views are laid out differently, use the bounds of the variant that is rendered
+  const bounds = pickViewBounds(diagram)
+  const ratio = Math.max(bounds.width / 400, bounds.height / 300)
 
-  const width = Math.round(diagram.bounds.width / ratio)
-  const height = Math.round(diagram.bounds.height / ratio)
+  const width = Math.round(bounds.width / ratio)
+  const height = Math.round(bounds.height / ratio)
 
   return (
     <StaticLikeC4Diagram
