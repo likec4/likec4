@@ -586,8 +586,8 @@ describe('ProjectsManager', () => {
 
   describe('include paths', () => {
     it('should not warn when multiple projects share the same include path', async ({ expect }) => {
-      const records = captureLogRecords()
       const { projectsManager } = await createMultiProjectTestServices({})
+      const records = captureLogRecords()
 
       await projectsManager.registerProject({
         config: {

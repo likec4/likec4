@@ -56,6 +56,9 @@ messenger.start()
 
 function cancelTokenFromSignal(signal: AbortSignal) {
   const cancelToken = new CancellationTokenImpl()
+  if (signal.aborted) {
+    cancelToken.cancel()
+  }
   const triggerCancel = () => cancelToken.cancel()
   signal.addEventListener('abort', triggerCancel)
   const cleanup = () => signal.removeEventListener('abort', triggerCancel)
