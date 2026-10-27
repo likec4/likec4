@@ -369,6 +369,7 @@ export const relationExprCustom = zodOp(schemas.relationExprCustom)(({ ctx: { cu
       property('head'),
       property('tail'),
       property('line'),
+      property('direction'),
     ),
   )
   const hasWhere = 'where' in customRelation.expr

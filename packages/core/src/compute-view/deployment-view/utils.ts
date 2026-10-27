@@ -18,7 +18,7 @@ import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
 import type { ComputedNodeSource } from '../utils/buildComputedNodes'
 import { buildComputedNodes } from '../utils/buildComputedNodes'
 import { isBidirectionalRelation } from '../utils/is-bidirectional-relation'
-import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
+import { computedEdgePropsFromRelationships } from '../utils/merge-props-from-relationships'
 import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
 import type { Memory } from './_types'
 import { groupDeploymentNodes } from './group-nodes'
@@ -292,77 +292,39 @@ export function toComputedEdges<A extends AnyAux>(
 
       if (expanded.length > 0) {
         for (const rel of expanded) {
-          const {
-            title,
-            color = defaults.relationship.color,
-            line = defaults.relationship.line,
-            head = defaults.relationship.arrow,
-            ...props
-          } = mergePropsFromRelationships([rel.$relationship], rel.$relationship)
-
-          expandedEdges.push({
+          expandedEdges.push(exact({
             id: hashEdgeId(source, target, rel.id),
             parent: conn.boundary?.id as scalar.NodeId ?? null,
             source,
             target,
-            label: title ?? null,
-            relations: [rel.id],
-            color,
-            line,
-            head,
-            ...props,
-          } as ComputedEdge<A>)
+            ...computedEdgePropsFromRelationships([rel.$relationship], defaults.relationship, rel.$relationship),
+          }))
         }
 
         if (merged.length > 0) {
           const mergedSource = only(filter(merged, r => r.source.id === source && r.target.id === target))
-          const {
-            title,
-            color = defaults.relationship.color,
-            line = defaults.relationship.line,
-            head = defaults.relationship.arrow,
-            ...props
-          } = mergePropsFromRelationships(
-            merged.map(r => r.$relationship),
-            mergedSource?.$relationship,
-          )
-
-          nonExpandedEdges.push({
+          nonExpandedEdges.push(exact({
             id: conn.id,
             parent: conn.boundary?.id as scalar.NodeId ?? null,
             source,
             target,
-            label: title ?? null,
-            relations: merged.map((r) => r.id),
-            color,
-            line,
-            head,
-            ...props,
-          } as ComputedEdge<A>)
+            ...computedEdgePropsFromRelationships(
+              merged.map(r => r.$relationship),
+              defaults.relationship,
+              mergedSource?.$relationship,
+            ),
+          }))
         }
         continue
       }
     }
-
-    const {
-      title,
-      color = defaults.relationship.color,
-      line = defaults.relationship.line,
-      head = defaults.relationship.arrow,
-      ...props
-    } = mergePropsFromRelationships(relations.map(r => r.$relationship))
 
     const edge: ComputedEdge<A> = exact({
       id: conn.id,
       parent: conn.boundary?.id as scalar.NodeId ?? null,
       source,
       target,
-      label: title ?? null,
-      relations: relations.map((r) => r.id),
-      color,
-      line,
-      head,
-      ...props,
+      ...computedEdgePropsFromRelationships(relations.map(r => r.$relationship), defaults.relationship),
     })
 
     nonExpandedEdges.push(edge)

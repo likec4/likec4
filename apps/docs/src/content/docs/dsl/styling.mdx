@@ -487,6 +487,58 @@ model {
 }
 ```
 
+### Direction
+
+Automatic layout places the source of a relationship before its target (for example, to the left in `autoLayout LeftRight`).
+Some relationships point in the dependency direction, opposite to the data flow, like subscriptions to a topic.
+Set `direction back` to lay out such relationships from target to source:
+
+```likec4
+specification {
+  relationship subscribes {
+    // topic is placed before subscribers
+    direction back
+  }
+}
+model {
+  billing -[subscribes]-> events
+  // same as above
+  events <-[subscribes]- billing
+}
+```
+
+| direction | layout                         |
+| :-------- | :----------------------------- |
+| forward   | source is placed before target |
+| back      | target is placed before source |
+
+By default, the direction is `forward`.
+
+The relationship keeps its semantic direction: the arrow still points from source to target,
+view predicates (`include billing -> events`), relationship details and navigation are not affected.
+
+Direction can be overridden per view:
+
+```likec4
+views {
+  view overview {
+    include *
+    include * -[subscribes]-> events with {
+      direction forward
+    }
+  }
+}
+```
+
+:::note
+- If several relationships are merged into one edge, the edge is laid out backwards only if all of them have `direction back`.
+  Per-view rules (`with { ... }`) take precedence.
+- Element and deployment views respect `direction`; per-view rules apply to element views only (ignored in deployment views, with a warning).
+- Dynamic views ignore `direction`, use [backward steps](/dsl/views/dynamic/) (`a <- b`) instead.
+- Changing direction of a relationship changes the layout of views where it is visible.
+  Views with manual layout report the change as a layout drift.
+:::
+
 ### Multiple
 
 By default, multiple relationships between the same two elements are merged into a single edge.

@@ -165,6 +165,7 @@ export class LikeC4ModelLocator {
       let targetNode = node.kind ? findNodeForProperty(node.$cstNode, 'kind') : undefined
       targetNode ??= node.dotKind ? findNodeForProperty(node.$cstNode, 'dotKind') : undefined
       targetNode ??= findNodeForKeyword(node.$cstNode, '->')
+      targetNode ??= findNodeForKeyword(node.$cstNode, '<-')
       targetNode ??= findNodeForProperty(node.$cstNode, 'title')
       targetNode ??= findNodeForProperty(node.$cstNode, 'target')
       targetNode ??= node.$cstNode

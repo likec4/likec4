@@ -155,6 +155,7 @@ export interface ParsedAstRelation {
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
+  direction?: c4.RelationshipDirection
   links?: c4.NonEmptyArray<c4.Link>
   navigateTo?: c4.ViewId
   metadata?: { [key: string]: string | string[] }
@@ -483,6 +484,7 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
     line?: c4.RelationshipLineType
     head?: c4.RelationshipArrowType
     tail?: c4.RelationshipArrowType
+    direction?: c4.RelationshipDirection
   }
   if (!props || props.length === 0) {
     return result
@@ -501,6 +503,10 @@ export function toRelationshipStyle(props: ast.RelationshipStyleProperty[] | und
       }
       case ast.isLineProperty(prop): {
         result.line = prop.value
+        break
+      }
+      case ast.isDirectionProperty(prop): {
+        result.direction = prop.value
         break
       }
       case ast.isArrowProperty(prop): {

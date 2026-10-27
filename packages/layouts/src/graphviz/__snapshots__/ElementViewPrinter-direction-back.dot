@@ -1,0 +1,86 @@
+digraph {
+  likec4_viewId = "index";
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "LR";
+  TBbalance = "min";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.667;
+  pad = 0.209;
+  fontname = "Arial";
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#8D8D8D";
+    fontcolor = "#C9C9C9";
+    style = "dashed";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    style = "filled";
+    penwidth = 0;
+  ];
+  "consumer" [
+    likec4_id = "sys.consumer";
+    likec4_level = 1;
+    label = <<FONT POINT-SIZE="20">consumer</FONT>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "producer" [
+    likec4_id = "sys.producer";
+    likec4_level = 1;
+    label = <<FONT POINT-SIZE="20">producer</FONT>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "external" [
+    likec4_id = "external";
+    likec4_level = 0;
+    label = <<FONT POINT-SIZE="20">external</FONT>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  subgraph "cluster_sys" {
+    likec4_id = "sys";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
+    style = "filled";
+    margin = 40;
+    label = <<FONT POINT-SIZE="11" COLOR="#bfdbfeb3"><B>SYS</B></FONT>>;
+    "consumer";
+    "producer";
+  }
+  "producer" -> "external" [
+    likec4_id = "u3llfs";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">sends data</FONT></TD></TR></TABLE>>;
+    arrowhead = "normal";
+  ];
+  "producer" -> "consumer" [
+    likec4_id = "8rbvp8";
+    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">events</FONT></TD></TR></TABLE>>;
+    weight = 2;
+    arrowtail = "normal";
+    dir = "back";
+  ];
+}

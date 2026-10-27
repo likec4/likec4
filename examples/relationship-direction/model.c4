@@ -1,0 +1,60 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component
+  element topic {
+    style {
+      shape queue
+    }
+  }
+
+  // Subscriptions point from consumer to producer (dependency direction),
+  // but are laid out producer-first
+  relationship subscribes {
+    line dotted
+    direction back
+  }
+}
+
+model {
+  customer = actor 'Customer'
+
+  shop = system 'Shop' {
+    orders = component 'Orders'
+    events = topic 'Order Events'
+    billing = component 'Billing'
+    shipping = component 'Shipping'
+
+    orders -> events 'publishes'
+    billing -[subscribes]-> events 'subscribes'
+    // Same as `shipping -[subscribes]-> events`, `<-` is laid out backwards
+    events <-[subscribes]- shipping 'subscribes'
+  }
+
+  bank = system 'Bank'
+  carrier = system 'Carrier'
+
+  customer -> shop.orders 'places order'
+  shop.billing -> bank 'charges'
+  shop.shipping -> carrier 'books delivery'
+}
+
+views {
+  view index {
+    title 'Subscriptions laid out backwards'
+    include *, shop.*
+    autoLayout LeftRight
+  }
+
+  // Same view, but subscriptions are laid out in their semantic direction
+  view forward extends index {
+    title 'Subscriptions laid out forward'
+    include shop.* -[subscribes]-> shop.events with {
+      direction forward
+    }
+  }
+}

@@ -91,6 +91,7 @@ const _relationship = z.object({
   line: common.line.nullish(),
   head: common.arrow.nullish(),
   tail: common.arrow.nullish(),
+  direction: common.direction.nullish(),
 })
   .transform(pickBy(isNonNullish))
   .readonly()

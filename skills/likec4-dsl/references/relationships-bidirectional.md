@@ -174,3 +174,21 @@ There is no prefix `<-> X` predicate. Use `-> X ->` when you need both incoming 
 | `A <-> B`           | view predicate | Relationships between A and B in either direction           |
 
 When in doubt, use `->` for request-response patterns where one side initiates. Use `<->` for one mutual interaction, and use two `->` relationships when each direction should be modeled independently.
+
+## Backward relationships (layout hint)
+
+`<-` in `model { ... }` and `deployment { ... }` is a shorthand for a relationship from right to left, laid out backwards:
+
+```likec4
+model {
+  // same as: consumer -[subscribes]-> producer { style { direction back } }
+  producer <-[subscribes]- consumer 'events'
+}
+```
+
+- The relationship is semantically `consumer -> producer`: arrows, view predicates (`include consumer -> producer`) and relationship details use that direction.
+- Only automatic layout is reversed: `producer` is ranked before `consumer`.
+- `direction back` can also be set on a relationship kind (`relationship subscribes { direction back }`) or per view (`include a -> b with { direction back }` / `direction forward`).
+- A merged edge is laid out backwards only if all of its relationships are `direction back`.
+- In dynamic views, `a <- b` is a backward step (a response), not this layout hint; `direction` is ignored there.
+- `<-` is not allowed in `extend`; extend the relationship in its semantic direction (`extend consumer -[subscribes]-> producer 'events'`).

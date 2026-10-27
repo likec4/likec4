@@ -274,7 +274,7 @@ Full syntax, extend patterns, property table, and worked example → `references
 
 ## Style
 
-Style properties control visual appearance: `color`, `shape`, `border`, `opacity`, `size`, `padding`, `textSize`, `sizing`, `icon`, `iconColor`, `iconSize`, `iconPosition`, `multiple`. `sizing fixed` draws all elements of the same `size` with identical width/height (content shrinks to fit); default `auto` treats `size` as a minimum. Relationship style extends this with `line`, `head`, and `tail` arrow shapes.
+Style properties control visual appearance: `color`, `shape`, `border`, `opacity`, `size`, `padding`, `textSize`, `sizing`, `icon`, `iconColor`, `iconSize`, `iconPosition`, `multiple`. `sizing fixed` draws all elements of the same `size` with identical width/height (content shrinks to fit); default `auto` treats `size` as a minimum. Relationship style extends this with `line`, `head`, and `tail` arrow shapes, and `direction back` to lay out a relationship from target to source without changing its semantic direction (shorthand: `a <- b` / `a <-[kind]- b` in `model`, same as `b -> a` with `direction back`).
 
 Full color token table, all shape values, border/opacity/size tokens, icon pack prefixes (`aws:`, `azure:`, `gcp:`, `tech:`, `bootstrap:`), and correct usage patterns → `references/style-tokens-colors.md`
 

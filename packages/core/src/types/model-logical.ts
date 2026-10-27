@@ -7,6 +7,7 @@ import type {
   IconPosition,
   IconSize,
   RelationshipArrowType,
+  RelationshipDirection,
   RelationshipLineType,
   ShapeSize,
   Sizing,
@@ -116,6 +117,11 @@ export interface AbstractRelationship<A extends AnyAux>
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
+  /**
+   * Layout hint, does not change semantic direction
+   * @default 'forward'
+   */
+  readonly direction?: RelationshipDirection
   // Link to dynamic view
   readonly navigateTo?: aux.StrictViewId<A>
 }

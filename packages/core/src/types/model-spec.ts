@@ -8,6 +8,7 @@ import type {
   ElementShape,
   IconPosition,
   RelationshipArrowType,
+  RelationshipDirection,
   RelationshipLineType,
   ShapeSize,
   Sizing,
@@ -80,6 +81,10 @@ export interface RelationshipSpecification {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
+  /**
+   * Layout hint, does not change semantic direction
+   */
+  direction?: RelationshipDirection
   /**
    * If true, matching relationships are rendered as separate edges instead of
    * being merged into a single connection.

@@ -145,7 +145,7 @@ function elementTree() {
 
 function hasRelationStyle(rel: schemas.model.relationship.Data): boolean {
   return !!(
-    rel.color || rel.line || rel.head || rel.tail
+    rel.color || rel.line || rel.head || rel.tail || rel.direction
   )
 }
 
@@ -186,6 +186,7 @@ export const relationship = zodOp(schemas.model.relationship)(
             property('line'),
             property('head'),
             property('tail'),
+            property('direction'),
           ),
         ),
       ),

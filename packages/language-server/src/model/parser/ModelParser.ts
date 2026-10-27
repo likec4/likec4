@@ -216,9 +216,11 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
     parseRelation(astNode: ast.Relation): ParsedAstRelation {
       const isValid = this.isValid
-      const source = this._resolveRelationSource(astNode)
-      const target = this.parseFqnRef(astNode.target)
-      invariant(FqnRef.isModelRef(target) || FqnRef.isImportRef(target), 'Target must be a model reference')
+      const left = this._resolveRelationSource(astNode)
+      const right = this.parseFqnRef(astNode.target)
+      invariant(FqnRef.isModelRef(right) || FqnRef.isImportRef(right), 'Target must be a model reference')
+      // `a <- b` is a relation from b to a, laid out backwards
+      const [source, target] = astNode.isBackward ? [right, left] : [left, right]
 
       const tags = this.parseTags(astNode) ?? this.parseTags(astNode.body) ?? undefined
       const links = this.parseLinks(astNode.body)
@@ -271,6 +273,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         navigateTo,
         description,
         technology,
+        ...(astNode.isBackward && { direction: 'back' as const }),
         ...toRelationshipStyle(styleProp?.props, isValid),
       })
     }

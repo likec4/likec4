@@ -534,7 +534,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
               }
               break
             }
-            case ast.isMultipleProperty(prop): {
+            case ast.isMultipleProperty(prop):
+            // Direction is ignored in dynamic views (reported by validation)
+            case ast.isDirectionProperty(prop): {
               break
             }
             default:

@@ -5,6 +5,7 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type ElementViewRule,
+  type RelationshipDirection,
   ModelRelationExpr,
   scalar,
 } from '../../types'
@@ -39,6 +40,25 @@ function edgeMetadata<A extends AnyAux>(model: LikeC4Model<A>, edge: ComputedEdg
   return merged
 }
 
+/**
+ * Applies direction override to the edge `dir`, keeps `both` (bidirectional edges)
+ */
+function applyDirection(
+  dir: ComputedEdge['dir'],
+  direction: RelationshipDirection | undefined,
+): Pick<ComputedEdge, 'dir'> {
+  switch (true) {
+    case direction === 'back':
+      return { dir: 'back' }
+    case direction === 'forward' && dir === 'back':
+      return {}
+    case isNullish(dir):
+      return {}
+    default:
+      return { dir }
+  }
+}
+
 export function applyCustomRelationProperties<A extends AnyAux>(
   _rules: ElementViewRule<A>[],
   nodes: ComputedNode<A>[],
@@ -59,6 +79,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         description: _description,
         notes: _notes,
         multiple: _multiple,
+        direction,
         ...customprops
       },
     } of rules
@@ -84,11 +105,13 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         return
       }
       if (satisfies({ source, target, ...pick(edge, ['kind', 'tags']), metadata: metadata[i] })) {
+        const { dir, ...rest } = edge
         edges[i] = {
-          ...edge,
+          ...rest,
           ...props,
           ...description,
           ...notes,
+          ...applyDirection(dir, direction),
           label: title ?? edge.label,
           isCustomized: true,
         }
