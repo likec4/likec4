@@ -155,10 +155,11 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
 }, (prev, next) => prev.groupBy === next.groupBy)
 
 function DiagramPreviewHoverCard({ diagram, children }: PropsWithChildren<{ diagram: DiagramView | undefined }>) {
-  const ratio = diagram ? Math.max(diagram.bounds.width / 400, diagram.bounds.height / 300) : 1
+  const bounds = diagram ? pickViewBounds(diagram) : null
+  const ratio = bounds ? Math.max(bounds.width / 400, bounds.height / 300) : 1
 
-  const width = diagram ? Math.round(diagram.bounds.width / ratio) : 0
-  const height = diagram ? Math.round(diagram.bounds.height / ratio) : 0
+  const width = bounds ? Math.round(bounds.width / ratio) : 0
+  const height = bounds ? Math.round(bounds.height / ratio) : 0
 
   return (
     <>
