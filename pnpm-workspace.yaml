@@ -47,7 +47,7 @@ catalog:
   '@material-symbols/svg-400': ^0.48.0
   "@types/node": ~22.20.5
   "@types/pako": ^2.0.4
-  dprint: ^0.63.0
+  dprint: ^0.64.3
   graphology: ^0.26.0
   knip: 6.43.0
   graphology-dag: ^0.4.1
@@ -130,10 +130,10 @@ catalogs:
     langium: 4.4.0
     langium-cli: 4.4.0
   mantine:
-    "@mantine/core": 9.7.1
-    "@mantine/hooks": 9.7.1
-    "@mantine/modals": 9.7.1
-    "@mantine/vanilla-extract": 9.7.1
+    "@mantine/core": 9.7.3
+    "@mantine/hooks": 9.7.3
+    "@mantine/modals": 9.7.3
+    "@mantine/vanilla-extract": 9.7.3
   mcp:
     "@modelcontextprotocol/sdk": ^1.32.1
     "@modelcontextprotocol/ext-apps": "^1.7.5"
@@ -145,7 +145,7 @@ catalogs:
     "@types/react": 19.3.0
     "@types/react-dom": 19.3.0
     babel-plugin-react-compiler: ^1.0.0
-    motion: ^14.3.0
+    motion: ^14.6.0
     nanostores: 1.5.5
     react: 19.3.1
     react-dom: 19.3.1
@@ -222,7 +222,7 @@ catalogs:
     "@xstate/react": 6.1.0
     "@xstate/store": 4.3.0
     "@xstate/store-react": 2.1.0
-    xstate: 5.33.2
+    xstate: 5.33.3
   xyflow:
     "@xyflow/react": 12.12.0
     "@xyflow/system": 0.0.83
