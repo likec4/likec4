@@ -5,6 +5,7 @@ import { mapValues, values } from 'remeda'
 import { describe, it, vi } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import type { WorkspaceEdit } from 'vscode-languageserver-types'
+import { isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { createTestServices } from '../test'
 import type { SafeDeleteOptions } from './RemovalImpact'
@@ -408,7 +409,12 @@ diff rfc1 {
     expect(text.slice(0, plain)).not.toContain('dynamic view checkout')
     const parsed = await setup(text)
     expect(parsed.errors).toEqual([])
-    expect(parsed.documents[0]?.c4Views.find(view => view.id === 'checkout')?.title).toBe('Checkout')
+    const document = parsed.documents[0]
+    expect(isParsedLikeC4LangiumDocument(document)).toBe(true)
+    if (!isParsedLikeC4LangiumDocument(document)) {
+      return
+    }
+    expect(document.c4Views.find(view => view.id === 'checkout')?.title).toBe('Checkout')
   })
 
   it('applies the diff to the model', async ({ expect }) => {
