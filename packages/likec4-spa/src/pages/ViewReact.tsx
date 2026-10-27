@@ -21,6 +21,7 @@ import { useIsMounted, useUnmountEffect } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useEffect, useRef } from 'react'
+import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'
 import { ModelDiffPanel, useCompareView } from '../components/model-diff/ModelDiffPanel'
 import { NotFound } from '../components/NotFound'
 import { headerOps } from '../components/view-page/state'
@@ -60,48 +61,49 @@ export function ViewReact() {
 
   const notations = view.notation?.nodes ?? []
   const hasNotations = notations.length > 0
-  // Compare views contain elements that are not in the model: no model overlays
   const isComparing = compareView !== null
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <LikeC4Diagram
-        view={compareView ?? view}
-        zoomable
-        pannable
-        controls
-        fitViewPadding={{
-          top: '70px',
-          bottom: '32px',
-          left: '32px',
-          right: '32px',
-        }}
-        showNavigationButtons
-        enableSearch
-        enableFocusMode
-        enableDynamicViewWalkthrough={!isComparing}
-        dynamicViewVariant={dynamic}
-        enableElementDetails={!isComparing}
-        enableRelationshipDetails={!isComparing}
-        enableRelationshipBrowser={!isComparing}
-        relationshipBrowserScope={relationshipBrowserScope}
-        onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
-        enableElementTags
-        enableCompareWithLatest={!isComparing}
-        enableNotations={hasNotations}
-        nodesSelectable
-        onNavigateTo={onNavigateTo}
-        onLayoutTypeChange={setLayoutType}
-        onLogoClick={() => {
-          void navigate({
-            to: '/',
-          })
-        }}
-      >
-        <ListenForDiagramStateChanges />
-        <OpenRelationshipBrowserFromUrl relationshipBrowserScope={relationshipBrowserScope} />
-        <FocusElementFromUrl />
-      </LikeC4Diagram>
+      <CompareModelProvider viewId={view.id}>
+        <LikeC4Diagram
+          view={compareView ?? view}
+          zoomable
+          pannable
+          controls
+          fitViewPadding={{
+            top: '70px',
+            bottom: '32px',
+            left: '32px',
+            right: '32px',
+          }}
+          showNavigationButtons
+          enableSearch
+          enableFocusMode
+          enableDynamicViewWalkthrough={!isComparing}
+          dynamicViewVariant={dynamic}
+          enableElementDetails
+          enableRelationshipDetails
+          enableRelationshipBrowser
+          relationshipBrowserScope={relationshipBrowserScope}
+          onRelationshipBrowserScopeChange={setRelationshipBrowserScope}
+          enableElementTags
+          enableCompareWithLatest={!isComparing}
+          enableNotations={hasNotations}
+          nodesSelectable
+          onNavigateTo={onNavigateTo}
+          onLayoutTypeChange={setLayoutType}
+          onLogoClick={() => {
+            void navigate({
+              to: '/',
+            })
+          }}
+        >
+          <ListenForDiagramStateChanges />
+          <OpenRelationshipBrowserFromUrl relationshipBrowserScope={relationshipBrowserScope} />
+          <FocusElementFromUrl />
+        </LikeC4Diagram>
+      </CompareModelProvider>
       <ModelDiffPanel viewId={view.id} />
     </div>
   )
