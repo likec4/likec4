@@ -175,20 +175,20 @@ describe('WorkspaceManager', () => {
       const sourceDoc = URI.parse('file:///test/workspace/projecty/model/model.c4')
       const extensionDoc = URI.parse('file:///test/workspace/projectx/model.c4')
 
-      vi.spyOn(fs, 'scanProjectFiles').mockResolvedValue([fileNode(configX), fileNode(configY)])
-      vi.spyOn(fs, 'loadProjectConfig').mockImplementation(async uri =>
+      mockMethod(fs, 'scanProjectFiles').mockResolvedValue([fileNode(configX), fileNode(configY)])
+      mockMethod(fs, 'loadProjectConfig').mockImplementation(async uri =>
         LikeC4ProjectConfigOps.validate(
           uri.toString() === configX.toString()
             ? { name: 'projectx', include: { paths: ['../projecty/model'] } }
             : { name: 'projecty' },
         )
       )
-      vi.spyOn(fs, 'readDirectory').mockImplementation(async uri =>
+      mockMethod(fs, 'readDirectory').mockImplementation(async uri =>
         uri.toString() === sourceDir.toString()
           ? [fileNode(sourceDoc)]
           : [fileNode(sourceDoc), fileNode(extensionDoc)]
       )
-      vi.spyOn(fs, 'readFile').mockImplementation(async uri =>
+      mockMethod(fs, 'readFile').mockImplementation(async uri =>
         uri.toString() === sourceDoc.toString()
           ? `
             specification { element app }
