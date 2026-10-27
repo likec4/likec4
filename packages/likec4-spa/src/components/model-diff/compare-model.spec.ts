@@ -1,7 +1,7 @@
 import { Builder } from '@likec4/core/builder'
 import { computeLikeC4Model } from '@likec4/core/compute-view'
 import type { LayoutedView, ModelDiff, ParsedLikeC4ModelData } from '@likec4/core/types'
-import { DiffId } from '@likec4/core/types'
+import { _stage, _type, DiffId, ViewId } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { compareLookupModel } from './compare-model'
 
@@ -86,5 +86,36 @@ describe('compareLookupModel', () => {
     const model = lookup('to-be')
     expect(model.findView('index')?.$model.element('cloud.payments').title).toBe('Payments')
     expect(model.element('cloud.api').tags).toEqual(['next'])
+  })
+
+  it('builds the after model when the diff introduces a view', () => {
+    const diff = data.diffs[DiffId('rfc1')]!
+    const withView = {
+      ...data,
+      diffs: {
+        [diff.id]: {
+          ...diff,
+          views: {
+            [ViewId('pays')]: {
+              [_type]: 'dynamic',
+              [_stage]: 'parsed',
+              id: ViewId('pays'),
+              title: 'Pays',
+              description: null,
+              rules: [],
+              steps: [],
+            },
+          },
+        },
+      },
+    }
+    const before = computeLikeC4Model(withView)
+    const model = compareLookupModel(before, {
+      diffId: 'rfc1',
+      mode: 'changes',
+      view: before.view('index').$view as unknown as LayoutedView,
+    })
+    expect(model.element('cloud.payments').title).toBe('Payments')
+    expect(model.findView('pays')).toBeNull()
   })
 })

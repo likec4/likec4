@@ -367,6 +367,50 @@ diff rfc1 {
     expect(parsed.documents[0]).toBeDefined()
   })
 
+  it('keeps an applied dynamic view out of a foldered views block', async ({ expect }) => {
+    const source = `
+specification {
+  element system
+}
+model {
+  shop = system 'Shop'
+  bank = system 'Bank'
+}
+views 'Team' {
+  view one { include * }
+  view two { include * }
+  view three { include * }
+}
+views {
+  view index { include * }
+}
+diff rfc1 {
+  add {
+    payments = system 'Payments'
+  }
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop -> payments 'requests payment'
+    }
+  }
+}
+`
+    const { services, documents, errors } = await setup(source)
+    expect(errors).toEqual([])
+    const edits = new DocumentEdits()
+    await services.likec4.ModelDiffs.addEdits(edits, 'rfc1' as DiffId, 'apply')
+    const text = applyEdit(documents[0]!, edits.toWorkspaceEdit())
+    const plain = text.indexOf('views {')
+    const checkout = text.indexOf('dynamic view checkout')
+    expect(checkout).toBeGreaterThan(plain)
+    expect(text.slice(0, plain)).not.toContain('dynamic view checkout')
+    const parsed = await setup(text)
+    expect(parsed.errors).toEqual([])
+    expect(parsed.documents[0]?.c4Views.find(view => view.id === 'checkout')?.title).toBe('Checkout')
+  })
+
   it('applies the diff to the model', async ({ expect }) => {
     const { services, documents } = await setup(model, diffs)
     const edits = new DocumentEdits()

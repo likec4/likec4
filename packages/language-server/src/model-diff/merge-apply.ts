@@ -304,10 +304,12 @@ export function mergeDiffAdds(
 }
 
 /**
- * Views block with the most views. A diff's dynamic views are inserted here on apply.
+ * Unfoldered views block with the most views. A folder prefixes the view title on parse.
  */
 function mainViewsBlock(documents: ReadonlyArray<LikeC4LangiumDocument>): ast.ModelViews | undefined {
-  const blocks = documents.flatMap(document => document.parseResult.value.views)
+  const blocks = documents
+    .flatMap(document => document.parseResult.value.views)
+    .filter(block => !block.folder?.trim())
   return blocks.reduce<ast.ModelViews | undefined>(
     (best, block) => (!best || block.views.length > best.views.length ? block : best),
     undefined,
@@ -333,7 +335,7 @@ function appendToViews(edits: DocumentEdits, block: ast.ModelViews, view: AstNod
 
 /**
  * Adds edits that move the dynamic views of the diff into a `views` block.
- * Returns the views that are not merged (there is no views block to put them).
+ * Returns the views that are not merged (there is no unfoldered views block to put them).
  */
 export function mergeDiffViews(
   edits: DocumentEdits,

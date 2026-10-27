@@ -33,9 +33,10 @@ export function compareLookupModel(
   if (!diff) {
     return before
   }
+  // A diff view is parsed and has no nodes. The open compare view is passed in separately.
   const after = input.mode === 'as-is'
     ? before
-    : LikeC4Model.create(applyModelDiff(before.$data as ParsedLikeC4ModelData, diff))
+    : LikeC4Model.create(applyModelDiff(before.$data as ParsedLikeC4ModelData, { ...diff, views: {} }))
   const useAfter = input.mode !== 'as-is'
 
   let compareViewModel: LikeC4ViewModel | undefined
