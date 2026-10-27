@@ -108,7 +108,7 @@ describe('compareLookupModel', () => {
           },
         },
       },
-    }
+    } as unknown as ParsedLikeC4ModelData
     const before = computeLikeC4Model(withView)
     const model = compareLookupModel(before, {
       diffId: 'rfc1',
