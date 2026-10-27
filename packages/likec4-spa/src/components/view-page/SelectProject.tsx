@@ -1,23 +1,36 @@
-import { useLikeC4Projects } from '@likec4/diagram'
+import { filterProjects, projectSearchHighlights, useLikeC4Projects } from '@likec4/diagram'
 import { css } from '@likec4/styles/css'
 import { Txt } from '@likec4/styles/jsx'
-import { Button, Menu, MenuDivider, MenuDropdown, MenuItem, MenuTarget, ScrollArea } from '@mantine/core'
-import { IconChevronDown } from '@tabler/icons-react'
+import {
+  Button,
+  Highlight,
+  Menu,
+  MenuDivider,
+  MenuDropdown,
+  MenuItem,
+  MenuSearch,
+  MenuTarget,
+  ScrollArea,
+} from '@mantine/core'
+import { IconChevronDown, IconSearch } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
 import { useCurrentProject } from '../../hooks'
 
 export function SelectProject() {
   const projects = useLikeC4Projects()
   const currentProject = useCurrentProject()
+  const [search, setSearch] = useState('')
 
   if (projects.length < 2) return null
+
+  const found = filterProjects(projects, search)
+  const highlight = projectSearchHighlights(search)
 
   return (
     <Menu
       width={'max-content'}
-      trigger="click-hover"
-      openDelay={300}
-      closeDelay={200}
+      trigger="click"
       position="bottom-start"
       classNames={{
         itemSection: css({
@@ -39,6 +52,14 @@ export function SelectProject() {
       </MenuTarget>
 
       <MenuDropdown>
+        <MenuSearch
+          miw={300}
+          mb={4}
+          placeholder={`Search ${projects.length} projects (* wildcard)`}
+          leftSection={<IconSearch size={14} />}
+          value={search}
+          onChange={e => setSearch(e.currentTarget.value)}
+        />
         <MenuItem
           renderRoot={(props) => (
             <Link
@@ -50,8 +71,13 @@ export function SelectProject() {
           Overview
         </MenuItem>
         <MenuDivider />
-        <ScrollArea.Autosize mah={'calc(100cqh - 170px)'}>
-          {projects.map(({ id, title, path }) => (
+        <ScrollArea.Autosize mah={'min(65vh, 560px)'} type="auto">
+          {found.length === 0 && (
+            <Txt fontSize="sm" color="text.dimmed" px="3" py="1.5">
+              No matching project
+            </Txt>
+          )}
+          {found.map(({ id, title, path }) => (
             <MenuItem
               key={id}
               renderRoot={(props) => (
@@ -64,14 +90,18 @@ export function SelectProject() {
                   }}
                 />
               )}
-              rightSection={!!path && <Txt fontSize={'xxs'} color={'text.non-essential'} truncate>{path}</Txt>}
+              rightSection={!!path && (
+                <Txt fontSize={'xxs'} color={'text.non-essential'} truncate>
+                  <Highlight component="span" highlight={highlight} inherit>{path}</Highlight>
+                </Txt>
+              )}
             >
               <Txt
                 fontSize="sm"
                 truncate
                 maxWidth={'[300px]'}
                 css={currentProject.id === id ? { color: 'text.bright', fontWeight: 'semibold' } : {}}>
-                {title ?? id}
+                <Highlight component="span" highlight={highlight} inherit>{title ?? id}</Highlight>
               </Txt>
             </MenuItem>
           ))}
