@@ -47,7 +47,7 @@ catalog:
   "@types/node": ~22.20.5
   "@types/pako": ^2.0.4
   "@typescript/native-preview": 7.0.0-dev.20260707.2
-  dprint: ^0.63.0
+  dprint: ^0.64.3
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
