@@ -451,10 +451,11 @@ function ExportNotationItem({ entry, text }: Readonly<{ entry: NodeNotation; tex
     gap: 3,
     marginBottom: 5,
   }
+  // Long kind names wrap inside the label column instead of spilling out of the panel
   const kindStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    height: 14,
+    display: 'inline-block',
+    boxSizing: 'border-box',
+    minHeight: 14,
     maxWidth: '100%',
     paddingLeft: 4,
     paddingRight: 4,
@@ -463,9 +464,10 @@ function ExportNotationItem({ entry, text }: Readonly<{ entry: NodeNotation; tex
     color: 'var(--likec4-palette-hiContrast)',
     fontSize: 9.5,
     fontWeight: 500,
-    lineHeight: 1,
+    lineHeight: '14px',
     textTransform: 'lowercase',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'normal',
+    overflowWrap: 'anywhere',
   }
   const titleStyle: CSSProperties = {
     fontSize: 13,

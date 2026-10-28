@@ -102,6 +102,19 @@ describe('ExportPage', () => {
       expect(markup).toContain(fullTitle)
     })
 
+    it('lets long kind badges wrap inside the panel', () => {
+      testState.diagram.notation = {
+        nodes: [{ title: fullTitle, shape: 'cylinder', color: 'primary', kinds: ['a'.repeat(80)] }],
+      }
+      testState.search = { format: 'png', notation: true }
+      const markup = renderToStaticMarkup(React.createElement(ExportPage))
+      const badge = markup.match(/<(\w+)[^>]*>a{80}<\/\1>/)?.[0]
+
+      expect(badge).toBeDefined()
+      expect(badge).toContain('overflow-wrap:anywhere')
+      expect(badge).not.toContain('white-space:nowrap')
+    })
+
     it('shows only kinds when requested', () => {
       testState.search = { format: 'png', notation: true, notationText: 'kind' }
       const markup = renderToStaticMarkup(React.createElement(ExportPage))
