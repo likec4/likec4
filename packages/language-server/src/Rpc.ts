@@ -315,7 +315,7 @@ export class Rpc extends ADisposable {
         const projectId = params.projectId as ProjectId | undefined
         switch (true) {
           case 'element' in params:
-            return likec4Services.ModelLocator.locateElement(params.element, projectId)
+            return likec4Services.ModelLocator.locateElement(params.element, projectId, params.property)
           case 'relation' in params:
             return likec4Services.ModelLocator.locateRelation(params.relation, projectId)
           case 'astPath' in params:
@@ -327,7 +327,7 @@ export class Rpc extends ADisposable {
           case 'view' in params:
             return likec4Services.ModelLocator.locateView(params.view, projectId)
           case 'deployment' in params:
-            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId)
+            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId, params.property)
           default:
             nonexhaustive(params)
         }
