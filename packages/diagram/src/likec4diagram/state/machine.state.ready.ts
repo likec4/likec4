@@ -22,6 +22,8 @@ import {
   handleNavigate,
   highlightNodeOrEdge,
   layoutAlign,
+  layoutDistribute,
+  layoutResize,
   notationsHighlight,
   onEdgeDoubleClick,
   onEdgeMouseEnter,
@@ -32,6 +34,8 @@ import {
   raiseFitDiagram,
   resetEdgesControlPoints,
   resetLastClickedNode,
+  selectedNodesWithoutDescendants,
+  selectNodesAndEdges,
   setViewport,
   startEditing,
   stopEditing,
@@ -74,10 +78,35 @@ export const ready = machine.createStateConfig({
   },
   on: {
     'layout.align': {
-      guard: 'not readonly',
+      guard: and([
+        'not readonly',
+        ({ context }) => selectedNodesWithoutDescendants(context.xystore).length >= 2,
+      ]),
       actions: [
         startEditing('node'),
         layoutAlign(),
+        stopEditing(true),
+      ],
+    },
+    'layout.distribute': {
+      guard: and([
+        'not readonly',
+        ({ context }) => selectedNodesWithoutDescendants(context.xystore).length >= 3,
+      ]),
+      actions: [
+        startEditing('node'),
+        layoutDistribute(),
+        stopEditing(true),
+      ],
+    },
+    'layout.resize': {
+      guard: and([
+        'not readonly',
+        ({ context }) => selectedNodesWithoutDescendants(context.xystore).length >= 2,
+      ]),
+      actions: [
+        startEditing('node'),
+        layoutResize(),
         stopEditing(true),
       ],
     },
@@ -237,34 +266,7 @@ export const ready = machine.createStateConfig({
       },
     },
     'xyflow.select': {
-      actions: assign(({ context, event }) => ({
-        xynodes: context.xynodes.map(node => {
-          let selected = false
-          if (event.nodes && event.nodes.length > 0) {
-            selected = event.nodes.includes(node.data.id)
-          }
-          if (selected !== (node.selected ?? false)) {
-            return {
-              ...node,
-              selected,
-            }
-          }
-          return node
-        }),
-        xyedges: context.xyedges.map(edge => {
-          let selected = false
-          if (event.edges && event.edges.length > 0) {
-            selected = event.edges.includes(edge.data.id)
-          }
-          if (selected !== (edge.selected ?? false)) {
-            return {
-              ...edge,
-              selected,
-            }
-          }
-          return edge
-        }),
-      })),
+      actions: selectNodesAndEdges(),
     },
     'xyflow.paneDblClick': {
       actions: [

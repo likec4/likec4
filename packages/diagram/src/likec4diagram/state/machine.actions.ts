@@ -26,15 +26,17 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
-import { difference, isString } from '@likec4/core/utils'
-import { type Rect, nodeToRect } from '@xyflow/system'
+import { isString } from '@likec4/core/utils'
+import { type NodeChange, type Rect, getNodeDimensions, nodeToRect } from '@xyflow/system'
 import { produce } from 'immer'
 import { hasAtLeast, isTruthy, mapToObj, omit } from 'remeda'
 import type { Writable } from 'type-fest'
 import {
+  type ActorSystem,
   assertEvent,
 } from 'xstate'
 import { Base } from '../../base'
+import type { XYStoreApi } from '../../hooks/useXYFlow'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
 import { type DetailsSubject, detailsSubject } from '../../overlays/element-details/subject'
 import { viewRouting } from '../../utils/view-routing'
@@ -47,7 +49,9 @@ import {
   mergeXYNodesEdges,
   resetEdgeControlPoints,
 } from './assign'
+import { type DistributionMode, getDistributer } from './distributors'
 import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
+import type { ResizeMode } from './machine.setup'
 import { machine } from './machine.setup'
 import {
   findDiagramEdge,
@@ -194,10 +198,12 @@ export const assignXYDataFromView = (view?: DiagramView) =>
     }
 
     const update = mergeXYNodesEdges(context, xydata)
+    const nodeIds = new Set(update.xynodes.map(n => n.id))
+    const selectedNodeIds = new Set(update.xynodes.filter(n => n.selected).map(n => n.id))
+    const nodeSelectionOrder = context.nodeSelectionOrder.filter(id => selectedNodeIds.has(id))
 
     let { lastClickedNode, focusedNode, activeWalkthrough } = context
     if (lastClickedNode || focusedNode || activeWalkthrough) {
-      const nodeIds = new Set(update.xynodes.map(n => n.id))
       if (lastClickedNode && !nodeIds.has(lastClickedNode.id)) {
         lastClickedNode = null
       }
@@ -211,13 +217,14 @@ export const assignXYDataFromView = (view?: DiagramView) =>
       }
       return {
         ...update,
+        nodeSelectionOrder,
         lastClickedNode,
         focusedNode,
         activeWalkthrough,
       }
     }
 
-    return update
+    return { ...update, nodeSelectionOrder }
   })
 
 export const focusOnNodesAndEdges = () =>
@@ -424,6 +431,108 @@ export const emitOnLayoutTypeChange = () =>
     })
   })
 
+/**
+ * Returns selected nodes, excluding those that are descendants of other selected nodes.
+ * Selected compound nodes are moved as a whole, keeping children positions relative to them.
+ */
+export function selectedNodesWithoutDescendants(xystore: XYStoreApi): string[] {
+  const { nodeLookup } = xystore.getState()
+  const selected = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
+  const hasSelectedAncestor = (id: string): boolean => {
+    let parentId = nodeLookup.get(id)?.parentId
+    while (parentId) {
+      if (selected.has(parentId)) {
+        return true
+      }
+      parentId = nodeLookup.get(parentId)?.parentId
+    }
+    return false
+  }
+  return [...selected].filter(id => !hasSelectedAncestor(id))
+}
+
+/**
+ * Updates the order in which nodes were selected, based on xyflow select and remove changes
+ */
+export function updateNodeSelectionOrder(
+  order: ReadonlyArray<string>,
+  changes: ReadonlyArray<NodeChange>,
+): ReadonlyArray<string> {
+  let next = order
+  for (const change of changes) {
+    if (change.type === 'remove') {
+      next = next.filter(id => id !== change.id)
+      continue
+    }
+    if (change.type !== 'select') {
+      continue
+    }
+    const isInOrder = next.includes(change.id)
+    if (change.selected && !isInOrder) {
+      next = [...next, change.id]
+    }
+    if (!change.selected && isInOrder) {
+      next = next.filter(id => id !== change.id)
+    }
+  }
+  return next
+}
+
+/**
+ * Sorts node ids by selection order, nodes with unknown order go last
+ */
+export function sortBySelectionOrder(ids: ReadonlyArray<string>, order: ReadonlyArray<string>): string[] {
+  const indexOf = (id: string) => {
+    const index = order.indexOf(id)
+    return index === -1 ? Infinity : index
+  }
+  return [...ids].sort((a, b) => indexOf(a) - indexOf(b))
+}
+
+export const selectNodesAndEdges = () =>
+  machine.assign(({ context, event }) => {
+    assertEvent(event, 'xyflow.select')
+    const selectedNodes = new Set(event.nodes ?? [])
+    const selectedEdges = new Set(event.edges ?? [])
+    return {
+      xynodes: context.xynodes.map(node => {
+        const selected = selectedNodes.has(node.data.id)
+        return selected === (node.selected ?? false) ? node : { ...node, selected }
+      }),
+      xyedges: context.xyedges.map(edge => {
+        const selected = selectedEdges.has(edge.data.id)
+        return selected === (edge.selected ?? false) ? edge : { ...edge, selected }
+      }),
+      nodeSelectionOrder: (event.nodes ?? []).filter(id => context.xynodes.some(node => node.data.id === id)),
+    }
+  })
+
+export const layoutResize = (params?: { mode: ResizeMode }) =>
+  machine.createAction(({ context, event }) => {
+    let mode
+    if (params) {
+      mode = params.mode
+    } else {
+      assertEvent(event, 'layout.resize')
+      mode = event.mode
+    }
+    const xystore = nonNullable(context.xystore, 'xystore is not initialized')
+    const { nodeLookup } = xystore.getState()
+    const nodesToResize = sortBySelectionOrder(selectedNodesWithoutDescendants(xystore), context.nodeSelectionOrder)
+
+    if (!hasAtLeast(nodesToResize, 2)) {
+      console.warn('At least 2 nodes must be selected to resize')
+      return
+    }
+    const [referenceId, ...others] = nodesToResize
+    const reference = getNodeDimensions(nonNullable(nodeLookup.get(referenceId), `Node ${referenceId} not found`))
+    const constraints = createLayoutConstraints(xystore, nodesToResize, viewRouting(context.view))
+    for (const id of others) {
+      constraints.resize(id, mode === 'Width' ? { width: reference.width } : { height: reference.height })
+    }
+    constraints.updateXYFlow()
+  })
+
 export const layoutAlign = (params?: { mode: AlignmentMode }) =>
   machine.createAction(({ context, event }) => {
     let mode
@@ -434,10 +543,8 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
       mode = event.mode
     }
     const xystore = nonNullable(context.xystore, 'xystore is not initialized')
-    const { nodeLookup, parentLookup } = xystore.getState()
-
-    const selectedNodes = new Set(nodeLookup.values().filter(n => n.selected).map(n => n.id))
-    const nodesToAlign = [...difference(selectedNodes, new Set(parentLookup.keys()))]
+    const { nodeLookup } = xystore.getState()
+    const nodesToAlign = selectedNodesWithoutDescendants(xystore)
 
     if (!hasAtLeast(nodesToAlign, 2)) {
       console.warn('At least 2 nodes must be selected to align')
@@ -456,6 +563,41 @@ export const layoutAlign = (params?: { mode: AlignmentMode }) =>
       rect.positionAbsolute = {
         ...rect.positionAbsolute,
         ...aligner.applyPosition(toNodeRect(node)),
+      }
+    }
+    constraints.updateXYFlow()
+  })
+
+export const layoutDistribute = (params?: { mode: DistributionMode }) =>
+  machine.createAction(({ context, event }) => {
+    let mode
+    if (params) {
+      mode = params.mode
+    } else {
+      assertEvent(event, 'layout.distribute')
+      mode = event.mode
+    }
+    const xystore = nonNullable(context.xystore, 'xystore is not initialized')
+    const { nodeLookup } = xystore.getState()
+    const nodesToDistribute = selectedNodesWithoutDescendants(xystore)
+
+    if (!hasAtLeast(nodesToDistribute, 3)) {
+      console.warn('At least 3 nodes must be selected to distribute')
+      return
+    }
+    const constraints = createLayoutConstraints(xystore, nodesToDistribute, viewRouting(context.view))
+    const distributor = getDistributer(mode)
+
+    const nodes = nodesToDistribute.map(id => ({
+      node: nonNullable(nodeLookup.get(id)),
+      rect: nonNullable(constraints.rects.get(id)),
+    }))
+    distributor.computeLayout(nodes.map(({ node }) => toNodeRect(node)))
+
+    for (const { rect, node } of nodes) {
+      rect.positionAbsolute = {
+        ...rect.positionAbsolute,
+        ...distributor.applyPosition(toNodeRect(node)),
       }
     }
     constraints.updateXYFlow()
@@ -1063,9 +1205,18 @@ export const handleNavigate = () =>
     }
   })
 
+/**
+ * Returns true if the editor has local layout edits (in progress or not yet synced),
+ * so external view updates are stale and would revert them.
+ */
+export function hasUnsyncedLocalEdits(system: ActorSystem<any>): boolean {
+  const editorContext = typedSystem(system).editorActorRef?.getSnapshot().context
+  return !!editorContext && (editorContext.editing !== null || editorContext.unsynced)
+}
+
 export const updateView = () =>
   machine.enqueueActions(
-    ({ enqueue, event, context }) => {
+    ({ enqueue, event, context, system }) => {
       if (event.type !== 'update.view') {
         console.warn(`Ignoring unexpected event type: ${event.type} in action 'update.view'`)
         return
@@ -1075,6 +1226,15 @@ export const updateView = () =>
 
       if (isAnotherView) {
         console.warn('updateView called for another view - ignoring', { event })
+        return
+      }
+
+      // Ignore stale external updates, editor will sync local edits and receive the up-to-date view
+      if (event.source !== 'editor' && hasUnsyncedLocalEdits(system)) {
+        if (import.meta.env.DEV) {
+          console.log('updateView: ignoring external update, local edits are not synced yet')
+        }
+        enqueue(sendSynced())
         return
       }
 

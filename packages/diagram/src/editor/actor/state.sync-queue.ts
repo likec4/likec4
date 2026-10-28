@@ -134,15 +134,54 @@ const suspended = machine.createStateConfig({
   },
 })
 
+const failed = machine.createStateConfig({
+  ...idOf({ target: '#queue-failed' }),
+  on: {
+    'change.sync-snapshot': {
+      actions: pushToSyncQueue(),
+      ...to.pending,
+    },
+    'change.*': {
+      actions: pushToSyncQueue(),
+      ...to.process,
+    },
+    'delete.nodes-edges': {
+      actions: deleteNodesAndEdges(),
+    },
+    'edit.move.start': {
+      ...to.suspended,
+    },
+    'undo': {
+      actions: undo(),
+    },
+    'redo': {
+      actions: redo(),
+    },
+    'cancel': {
+      actions: [
+        clearQueue(),
+        cancelSync(),
+      ],
+      ...to.idle,
+    },
+  },
+})
+
 const peekFromQueue = () =>
-  machine.assign(({ system, context: { syncQueue } }) => {
+  machine.assign(({ system, context }) => {
+    const { syncQueue } = context
     let [head, ...tail] = syncQueue
     if (head === 'sync-snapshot') {
-      head = makeSnapshot(system).change
+      return {
+        processing: makeSnapshot(system).change,
+        syncQueue: tail,
+        processingRevision: context.unsyncedRevision,
+      }
     }
     return {
       processing: head ?? null,
       syncQueue: tail,
+      processingRevision: null,
     }
   })
 
@@ -190,8 +229,10 @@ const process = machine.createStateConfig({
      */
     applyLatestToManual: machine.createStateConfig({
       initial: 'call',
+      tags: ['locked'],
       entry: assign(({ system }) => ({
         processing: makeSnapshot(system).change,
+        processingRevision: null,
       })),
       states: {
         // Fetch latest and manual layouts
@@ -224,6 +265,7 @@ const process = machine.createStateConfig({
                 return {
                   processing: null,
                   syncQueue: [],
+                  processingRevision: null,
                 }
               }),
               ...to.idle,
@@ -256,7 +298,19 @@ const process = machine.createStateConfig({
      * User requested semantic layout, we will call the AI
      */
     applySemanticLayout: machine.createStateConfig({
-      tags: ['ai-semantic-layout'],
+      tags: ['ai-semantic-layout', 'locked'],
+      // Layout is replaced as a whole, local edits are not allowed meanwhile
+      on: {
+        'delete.nodes-edges': {
+          actions: log('ignore delete.nodes-edges during semantic layout'),
+        },
+        'undo': {
+          actions: log('ignore undo during semantic layout'),
+        },
+        'redo': {
+          actions: log('ignore redo during semantic layout'),
+        },
+      },
       invoke: {
         src: 'applySemanticLayout',
         input: ({ context }) => ({
@@ -298,6 +352,7 @@ const process = machine.createStateConfig({
             const requested = event.output.requested
             enqueue.assign({
               processing: null,
+              processingRevision: null,
               syncQueue: context.syncQueue.filter(change => !isViewChange(change) || !requested.includes(change)),
             })
 
@@ -306,6 +361,9 @@ const process = machine.createStateConfig({
               c => c.op === 'save-view-snapshot',
             )
             if (lastSyncSnapshot) {
+              if (context.unsyncedRevision === context.processingRevision) {
+                enqueue.assign({ unsynced: false })
+              }
               enqueue.sendTo(
                 typedSystem.diagramActor,
                 {
@@ -321,10 +379,22 @@ const process = machine.createStateConfig({
           target: 'waitViewSynced',
         },
         onError: {
-          actions: ({ event }) => {
+          actions: assign(({ context, event }) => {
             console.error('executeChanges onError', { error: event.error })
-          },
-          target: 'failure',
+            const failedSnapshot = isViewChange(context.processing) && context.processing.op === 'save-view-snapshot'
+            let retryQueue = context.syncQueue
+            if (failedSnapshot && !retryQueue.includes('sync-snapshot')) {
+              retryQueue = ['sync-snapshot', ...retryQueue]
+            } else if (!failedSnapshot && context.processing) {
+              retryQueue = [context.processing, ...retryQueue]
+            }
+            return {
+              processing: null,
+              processingRevision: null,
+              syncQueue: retryQueue,
+            }
+          }),
+          target: '#queue-failed',
         },
       },
     }),
@@ -364,6 +434,20 @@ const process = machine.createStateConfig({
     },
   },
   on: {
+    // Edits made while processing are queued and synced once current operation completes
+    'change.sync-snapshot': {
+      actions: pushToSyncQueue(),
+    },
+    // These apply locally and schedule a sync snapshot, which is queued by the handler above
+    'delete.nodes-edges': {
+      actions: deleteNodesAndEdges(),
+    },
+    'undo': {
+      actions: undo(),
+    },
+    'redo': {
+      actions: redo(),
+    },
     // 'change.*': {
     //   actions: log(({ event }) => `ignore ${event.type} in process state`),
     // },
@@ -382,6 +466,7 @@ export const syncQueue = machine.createStateConfig({
     idle,
     pending,
     suspended,
+    failed,
     process,
   },
   on: {},

@@ -231,36 +231,52 @@ describe('aligners', () => {
       expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ y: 40 })
     })
 
-    it('aligns to leftmost node center', () => {
+    it('aligns to center of selection bounding box', () => {
       const nodeRects = [
-        n('a', 20, 10, 4), // 22
-        n('b', 10, 20, 8), // 14
-        n('c', 40, 30, 12), // 46
+        n('a', 20, 10, 4), // 20..24
+        n('b', 10, 20, 8), // 10..18
+        n('c', 40, 30, 12), // 40..52, bbox center is 31
       ]
 
       const aligner = getLinearAligner('Center')
 
       aligner.computeLayout(nodeRects)
 
-      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ x: 12 })
-      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ x: 10 })
-      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ x: 8 })
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ x: 29 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ x: 27 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ x: 25 })
     })
 
-    it('aligns to topmost node middle', () => {
+    it('aligns equal-width nodes to center, not to the left edge', () => {
       const nodeRects = [
-        n('a', 10, 20, 10, 4), // 22
-        n('b', 20, 10, 10, 8), // 14
-        n('c', 30, 40, 10, 12), // 46
+        n('a', 0, 0, 10),
+        n('b', 100, 20, 10),
+      ]
+
+      const center = getLinearAligner('Center')
+      center.computeLayout(nodeRects)
+      const left = getLinearAligner('Left')
+      left.computeLayout(nodeRects)
+
+      expect(center.applyPosition(nodeRects[0]!)).toEqual({ x: 50 })
+      expect(center.applyPosition(nodeRects[1]!)).toEqual({ x: 50 })
+      expect(left.applyPosition(nodeRects[0]!)).toEqual({ x: 0 })
+    })
+
+    it('aligns to middle of selection bounding box', () => {
+      const nodeRects = [
+        n('a', 10, 20, 10, 4), // 20..24
+        n('b', 20, 10, 10, 8), // 10..18
+        n('c', 30, 40, 10, 12), // 40..52, bbox middle is 31
       ]
 
       const aligner = getLinearAligner('Middle')
 
       aligner.computeLayout(nodeRects)
 
-      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ y: 12 })
-      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ y: 10 })
-      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ y: 8 })
+      expect(aligner.applyPosition(nodeRects[0]!)).toEqual({ y: 29 })
+      expect(aligner.applyPosition(nodeRects[1]!)).toEqual({ y: 27 })
+      expect(aligner.applyPosition(nodeRects[2]!)).toEqual({ y: 25 })
     })
   })
 })
