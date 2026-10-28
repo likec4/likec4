@@ -118,4 +118,27 @@ describe('compareLookupModel', () => {
     expect(model.element('cloud.payments').title).toBe('Payments')
     expect(model.findView('pays')).toBeNull()
   })
+
+  it('resolves the open compare view when the model has no views', () => {
+    const parsed = Builder
+      .specification({ elements: { system: {} } })
+      .model(({ system }, _) => _(system('shop')))
+      .build()
+    const diff = {
+      id: DiffId('rfc1'),
+      title: null,
+      remove: { elements: [], relations: [] },
+      add: { elements: {}, relations: {} },
+      modify: { elements: {} },
+    } as unknown as ModelDiff
+    const before = computeLikeC4Model({ ...parsed, diffs: { [diff.id]: diff } })
+    const view = {
+      id: ViewId('checkout'),
+      title: 'Checkout',
+      nodes: [],
+      edges: [],
+    } as unknown as LayoutedView
+    const model = compareLookupModel(before, { diffId: 'rfc1', mode: 'changes', view })
+    expect(model.findView('checkout')?.title).toBe('Checkout')
+  })
 })

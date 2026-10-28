@@ -9,7 +9,7 @@ function idOf(value: string | { id: string }): string {
 function rootFolder(model: LikeC4Model) {
   const first = model.views().next().value
   if (!first) {
-    return null
+    return model.rootViewFolder
   }
   if (first.folder.isRoot) {
     return first.folder
