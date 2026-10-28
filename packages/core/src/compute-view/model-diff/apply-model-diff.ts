@@ -38,7 +38,7 @@ export function mergeElementOverlay<A extends AnyAux>(
  * - an added element is skipped if its parent does not exist
  * - an added relationship is skipped if one of its endpoints does not exist
  * - global predicates and styles reference only existing elements
- * - views are returned unchanged (see `sanitizeParsedView`)
+ * - a dynamic view introduced by the diff is added when its id is not already in the model
  */
 export function applyModelDiff<A extends AnyAux>(
   data: ParsedLikeC4ModelData<A>,
@@ -93,10 +93,18 @@ export function applyModelDiff<A extends AnyAux>(
     relation => isValidDeploymentRef(relation.source) && isValidDeploymentRef(relation.target),
   )
 
+  const views = { ...data.views }
+  for (const view of values(diff.views ?? {})) {
+    if (!(view.id in views)) {
+      views[view.id] = view
+    }
+  }
+
   return {
     ...data,
     elements,
     relations,
+    views,
     deployments: {
       elements: deploymentElements,
       relations: deploymentRelations,
