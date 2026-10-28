@@ -28,6 +28,18 @@ const precedence = `
         owner 'team'
       }
     }
+    f = system 'F' {
+      descriptionFile ./first.md
+      descriptionFile ./second.md
+      icon tech:react
+      icon tech:vue
+      style {
+        color red
+      }
+      style {
+        color blue
+      }
+    }
   }
   deployment {
     prod = node 'Inline prod' {
@@ -181,6 +193,21 @@ describe('ModelLocator: locate property', () => {
     )
     expect(text.getText(locator.locateElement('e' as Fqn, undefined, 'link')!.range)).toBe(
       `link https://example.com/first`,
+    )
+  })
+
+  it('locates the declaration the parser applies when a block or file is repeated', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(precedence)
+    const text = document.textDocument
+    const locator = services.likec4.ModelLocator
+
+    expect(text.getText(locator.locateElement('f' as Fqn, undefined, 'description')!.range)).toBe(
+      `descriptionFile ./second.md`,
+    )
+    expect(text.getText(locator.locateElement('f' as Fqn, undefined, 'icon')!.range)).toBe(`icon tech:react`)
+    expect(text.getText(locator.locateElement('f' as Fqn, undefined, 'style')!.range)).toMatch(
+      /^style \{\s+color red\s+\}$/,
     )
   })
 })
