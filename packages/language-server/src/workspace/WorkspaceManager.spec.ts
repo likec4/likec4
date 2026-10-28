@@ -163,4 +163,60 @@ describe('WorkspaceManager', () => {
       await testServices[Symbol.asyncDispose]()
     }
   })
+
+  it('should resolve extensions of elements included from another project during startup', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    try {
+      const { services } = t
+      const fs = services.shared.workspace.FileSystemProvider
+      const configX = URI.parse('file:///test/workspace/projectx/likec4.config.json')
+      const configY = URI.parse('file:///test/workspace/projecty/likec4.config.json')
+      const sourceDir = URI.parse('file:///test/workspace/projecty/model')
+      const sourceDoc = URI.parse('file:///test/workspace/projecty/model/model.c4')
+      const extensionDoc = URI.parse('file:///test/workspace/projectx/model.c4')
+
+      mockMethod(fs, 'scanProjectFiles').mockResolvedValue([fileNode(configX), fileNode(configY)])
+      mockMethod(fs, 'loadProjectConfig').mockImplementation(async uri =>
+        LikeC4ProjectConfigOps.validate(
+          uri.toString() === configX.toString()
+            ? { name: 'projectx', include: { paths: ['../projecty/model'] } }
+            : { name: 'projecty' },
+        )
+      )
+      mockMethod(fs, 'readDirectory').mockImplementation(async uri =>
+        uri.toString() === sourceDir.toString()
+          ? [fileNode(sourceDoc)]
+          : [fileNode(sourceDoc), fileNode(extensionDoc)]
+      )
+      mockMethod(fs, 'readFile').mockImplementation(async uri =>
+        uri.toString() === sourceDoc.toString()
+          ? `
+            specification { element app }
+            model { app appx }
+          `
+          : `
+            specification { element user element component relationship consumes }
+            model {
+              user appUser
+              extend appx { component restAPI }
+              appUser .consumes appx.restAPI
+            }
+          `
+      )
+
+      await t.initialize()
+
+      const { errors } = await t.validateAll()
+      expect(errors).toEqual([])
+      const model = await services.likec4.ModelBuilder.computeModel('projectx' as ProjectId)
+      expect(model.element('appx.restAPI').id).toBe('appx.restAPI')
+      expect([...model.relationships()]).toHaveLength(1)
+      expect([...model.relationships()][0]?.target.id).toBe('appx.restAPI')
+      expect(services.shared.workspace.ProjectsManager.ownerProjectId(sourceDoc)).toBe('projecty')
+      const docs = services.shared.workspace.LangiumDocuments.all.toArray()
+      expect(docs.filter(doc => doc.uri.toString() === sourceDoc.toString())).toHaveLength(1)
+    } finally {
+      await t[Symbol.asyncDispose]()
+    }
+  })
 })
