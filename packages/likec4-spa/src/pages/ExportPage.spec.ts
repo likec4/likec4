@@ -12,11 +12,13 @@ const testState = vi.hoisted(() => ({
     id: 'index',
     bounds: { x: 0, y: 0, width: 640, height: 480 },
     description: null,
-    notation: null,
+    notation: null as null | {
+      nodes: Array<{ title: string; shape: string; color: string; kinds: string[] }>
+    },
   },
   search: {
     format: 'png',
-  },
+  } as Record<string, unknown>,
 }))
 
 vi.mock('@likec4/diagram', () => ({
@@ -63,7 +65,8 @@ vi.mock('../hooks', () => ({
 
 describe('ExportPage', () => {
   beforeEach(() => {
-    testState.search.format = 'png'
+    testState.search = { format: 'png' }
+    testState.diagram.notation = null
   })
 
   it('renders image export routes independently from webapp menu capabilities', () => {
@@ -71,5 +74,40 @@ describe('ExportPage', () => {
 
     expect(markup).toContain('data-testid="export-page"')
     expect(markup).not.toContain('data-testid="not-found"')
+  })
+
+  describe('notation labels', () => {
+    const fullTitle = 'Database: A persistent data store'
+
+    beforeEach(() => {
+      testState.diagram.notation = {
+        nodes: [{ title: fullTitle, shape: 'cylinder', color: 'primary', kinds: ['database'] }],
+      }
+    })
+
+    it('shows the short title with kinds by default', () => {
+      testState.search = { format: 'png', notation: true }
+      const markup = renderToStaticMarkup(React.createElement(ExportPage))
+
+      expect(markup).toContain('data-testid="export-notation"')
+      expect(markup).toContain('>Database<')
+      expect(markup).toContain('>database<')
+      expect(markup).not.toContain(fullTitle)
+    })
+
+    it('shows the full text when requested', () => {
+      testState.search = { format: 'png', notation: true, notationText: 'full' }
+      const markup = renderToStaticMarkup(React.createElement(ExportPage))
+
+      expect(markup).toContain(fullTitle)
+    })
+
+    it('shows only kinds when requested', () => {
+      testState.search = { format: 'png', notation: true, notationText: 'kind' }
+      const markup = renderToStaticMarkup(React.createElement(ExportPage))
+
+      expect(markup).toContain('>database<')
+      expect(markup).not.toContain('>Database<')
+    })
   })
 })

@@ -12,16 +12,19 @@ import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
-import { useRef } from 'react'
+import { forwardRef, useLayoutEffect, useRef, useState } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 import {
+  type ExportNotationText,
   computeExportPageLayout,
+  DEFAULT_EXPORT_NOTATION_POSITION,
+  DEFAULT_EXPORT_NOTATION_TEXT,
   EXPORT_DESCRIPTION_BODY_TOP_GAP,
   EXPORT_DESCRIPTION_BOTTOM_PADDING,
   EXPORT_DESCRIPTION_INSET,
   EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT,
   EXPORT_DESCRIPTION_TOP_PADDING,
-  EXPORT_NOTATION_ITEM_HEIGHT,
+  exportNotationShortTitle,
 } from './export-layout'
 import { isExportSearchFlagEnabled } from './export-page-params'
 
@@ -139,11 +142,16 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     quality,
     dynamic,
     notation = false,
+    notationPosition = DEFAULT_EXPORT_NOTATION_POSITION,
+    notationText = DEFAULT_EXPORT_NOTATION_TEXT,
   } = useSearch({
     strict: false,
   })
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
+  const notationRef = useRef<HTMLDivElement>(null)
+  // Rendered height of the notation panel, so that wrapped labels are never clipped
+  const [notationHeight, setNotationHeight] = useState<number>()
 
   // to track if download has already occurred
   const downloadedRef = useRef(false)
@@ -159,7 +167,21 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
     padding,
     description: showDescription ? { title: viewTitle, text: viewDescription.text } : null,
     notationEntries: showNotation ? notationEntries.length : 0,
+    notationHeight,
+    notationPosition,
   })
+
+  useLayoutEffect(() => {
+    const panel = notationRef.current
+    if (!panel) {
+      return
+    }
+    const measure = () => setNotationHeight(Math.ceil(panel.getBoundingClientRect().height))
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(panel)
+    return () => observer.disconnect()
+  }, [showNotation])
 
   const downloadDiagram = () => {
     const viewport = viewportRef.current
@@ -273,8 +295,10 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
       )}
       {layout.notation && (
         <ExportNotationPanel
+          ref={notationRef}
           entries={notationEntries}
           layout={layout.notation}
+          text={notationText}
         />
       )}
     </Box>
@@ -346,23 +370,27 @@ function ExportDescriptionPanel({
 
 /**
  * Renders the optional notation panel next to the exported diagram.
+ * The panel takes the height of its content; the page measures it and reserves the space.
+ * It has no fill of its own, so it shares the background of the exported image.
  */
-function ExportNotationPanel({
-  entries,
-  layout,
-}: Readonly<{
-  entries: readonly NodeNotation[]
-  layout: NonNullable<ReturnType<typeof computeExportPageLayout>['notation']>
-}>) {
+const ExportNotationPanel = forwardRef<
+  HTMLDivElement,
+  Readonly<{
+    entries: readonly NodeNotation[]
+    layout: NonNullable<ReturnType<typeof computeExportPageLayout>['notation']>
+    text: ExportNotationText
+  }>
+>(function ExportNotationPanel({ entries, layout, text }, ref) {
   const panelStyle: CSSProperties = {
-    ...layout,
     position: 'absolute',
+    left: layout.left,
+    top: layout.top,
+    width: layout.width,
     boxSizing: 'border-box',
-    overflow: 'hidden',
     border: '1px solid var(--mantine-color-default-border)',
     borderRadius: 6,
-    background: 'var(--mantine-color-body)',
-    boxShadow: '0 4px 18px rgb(0 0 0 / 14%)',
+    // Translucent page colour keeps the text readable whatever a viewer draws behind transparent pixels
+    background: 'color-mix(in srgb, var(--mantine-color-body) 60%, transparent)',
     color: 'var(--mantine-color-text)',
   }
   const headerStyle: CSSProperties = {
@@ -378,23 +406,29 @@ function ExportNotationPanel({
 
   return (
     <Box
+      ref={ref}
       data-testid="export-notation"
       style={panelStyle}>
       <Box style={headerStyle}>Notation</Box>
       <Box
         style={{
           padding: 12,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
         }}>
-        {entries.map((entry, index) => <ExportNotationItem key={`${entry.title}-${index}`} entry={entry} />)}
+        {entries.map((entry, index) => (
+          <ExportNotationItem key={`${entry.title}-${index}`} entry={entry} text={text} />
+        ))}
       </Box>
     </Box>
   )
-}
+})
 
 /**
  * Renders one notation entry with its representative element shape and labels.
  */
-function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
+function ExportNotationItem({ entry, text }: Readonly<{ entry: NodeNotation; text: ExportNotationText }>) {
   const styles = useLikeC4Styles()
   const elementColors = styles.colors(entry.color).elements
   const colorVars: PaletteCssVars = {
@@ -409,16 +443,13 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
     gridTemplateColumns: '64px 1fr',
     columnGap: 10,
     alignItems: 'center',
-    height: EXPORT_NOTATION_ITEM_HEIGHT,
-    overflow: 'hidden',
+    minHeight: 40,
   }
   const kindsStyle: CSSProperties = {
     display: 'flex',
     flexWrap: 'wrap',
     gap: 3,
     marginBottom: 5,
-    maxHeight: 31,
-    overflow: 'hidden',
   }
   const kindStyle: CSSProperties = {
     display: 'inline-flex',
@@ -437,13 +468,21 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
     whiteSpace: 'nowrap',
   }
   const titleStyle: CSSProperties = {
-    overflow: 'hidden',
-    display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: 2,
     fontSize: 13,
     fontWeight: 500,
     lineHeight: 1.2,
+    overflowWrap: 'anywhere',
+  }
+  let title: string
+  switch (text) {
+    case 'kind':
+      title = entry.kinds.join(', ')
+      break
+    case 'full':
+      title = entry.title
+      break
+    default:
+      title = exportNotationShortTitle(entry.title)
   }
 
   return (
@@ -469,18 +508,20 @@ function ExportNotationItem({ entry }: Readonly<{ entry: NodeNotation }>) {
         css={{
           minWidth: '0',
         }}>
-        <Box
-          style={kindsStyle}>
-          {entry.kinds.map(kind => (
-            <Box
-              key={kind}
-              as="span"
-              style={kindStyle}>
-              {kind}
-            </Box>
-          ))}
-        </Box>
-        <Box style={titleStyle}>{entry.title}</Box>
+        {text !== 'kind' && (
+          <Box
+            style={kindsStyle}>
+            {entry.kinds.map(kind => (
+              <Box
+                key={kind}
+                as="span"
+                style={kindStyle}>
+                {kind}
+              </Box>
+            ))}
+          </Box>
+        )}
+        <Box style={titleStyle}>{title}</Box>
       </Box>
     </Box>
   )

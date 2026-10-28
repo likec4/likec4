@@ -20,7 +20,15 @@ import { resolveServerUrl } from '../../../vite/printServerUrls'
 import { viteDev } from '../../../vite/vite-dev'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { path, project, useDotBin } from '../../options'
-import { takeScreenshot } from './takeScreenshot'
+import {
+  type NotationPosition,
+  type NotationText,
+  DEFAULT_NOTATION_POSITION,
+  DEFAULT_NOTATION_TEXT,
+  NotationPositions,
+  NotationTexts,
+  takeScreenshot,
+} from './takeScreenshot'
 
 /** CLI args for export png command (single type for handler and runExportPng). */
 export type PngExportArgs = {
@@ -50,9 +58,32 @@ export type PngExportArgs = {
   quality?: number
   /** Include view notation in exported images. */
   notation?: boolean
+  /** Corner the notation panel is aligned to. Defaults to 'bottom-right'. */
+  notationPosition?: NotationPosition | undefined
+  /** How notation entries are labelled. Defaults to 'short'. */
+  notationText?: NotationText | undefined
   /** Include view description in exported images. */
   description?: boolean
 }
+
+/**
+ * CLI options for the notation panel, shared by `export png` and `export jpg`.
+ */
+export const notationPanelOptions = {
+  'notation-position': {
+    choices: NotationPositions,
+    desc: 'corner of the image to place the notation in (with --notation)',
+    default: DEFAULT_NOTATION_POSITION,
+    nargs: 1,
+  },
+  'notation-text': {
+    choices: NotationTexts,
+    desc:
+      'notation labels (with --notation): "short" uses the text before the first ":", "full" the whole text, "kind" the element kinds',
+    default: DEFAULT_NOTATION_TEXT,
+    nargs: 1,
+  },
+} as const
 
 /** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
 export async function exportViewsToPNG(
@@ -70,6 +101,8 @@ export async function exportViewsToPNG(
     format = 'png',
     quality,
     notation = false,
+    notationPosition,
+    notationText,
     description = false,
   }: {
     logger: ViteLogger
@@ -85,6 +118,8 @@ export async function exportViewsToPNG(
     format?: 'png' | 'jpeg'
     quality?: number | undefined
     notation?: boolean
+    notationPosition?: NotationPosition | undefined
+    notationText?: NotationText | undefined
     description?: boolean
   },
 ) {
@@ -122,6 +157,8 @@ export async function exportViewsToPNG(
       format,
       quality,
       notation,
+      notationPosition,
+      notationText,
       description,
     })
   } finally {
@@ -150,6 +187,8 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     format = 'png',
     quality,
     notation = false,
+    notationPosition,
+    notationText,
     description = false,
   } = args
 
@@ -235,6 +274,8 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         format,
         quality,
         notation,
+        notationPosition,
+        notationText,
         description,
       })
       const { pretty } = inMillis(startTakeScreenshot)
@@ -356,6 +397,7 @@ export function pngCmd(yargs: Argv) {
             desc: 'include view notation in exported PNG files',
             default: false,
           },
+          ...notationPanelOptions,
           'description': {
             boolean: true,
             desc: 'include view description in exported PNG files',
@@ -397,6 +439,8 @@ export function pngCmd(yargs: Argv) {
           sequence: args.seq,
           chromiumSandbox: args['chromium-sandbox'],
           notation: args.notation,
+          notationPosition: args['notation-position'],
+          notationText: args['notation-text'],
           description: args.description,
         } satisfies PngExportArgs,
       )
