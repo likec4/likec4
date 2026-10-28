@@ -166,8 +166,12 @@ export class LikeC4ModelLocator {
         return props.find(ast.isMetadataProperty)?.$cstNode?.range
       case property === 'description' && props.some(ast.isDescriptionFileProperty):
         return props.find(ast.isDescriptionFileProperty)?.$cstNode?.range
+      // The model exposes `link` declarations as `links`; each one applies, so take the first
+      case property === 'links' || property === 'link':
+        return props.find(ast.isLinkProperty)?.$cstNode?.range
       default:
-        return props.find(p => 'key' in p && p.key === property)?.$cstNode?.range
+        // A later declaration of the same property overrides an earlier one
+        return props.findLast(p => 'key' in p && p.key === property)?.$cstNode?.range
     }
   }
 

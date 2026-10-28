@@ -20,6 +20,10 @@ const precedence = `
     }
     e = system 'E' '' {
       summary 'Body summary'
+      technology 'Old tech'
+      technology 'New tech'
+      link https://example.com/first
+      link https://example.com/second
       metadata {
         owner 'team'
       }
@@ -156,5 +160,27 @@ describe('ModelLocator: locate property', () => {
 
     const loc = services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'metadata')
     expect(document.textDocument.getText(loc!.range)).toMatch(/^metadata \{\s+owner 'team'\s+\}$/)
+  })
+
+  it('locates the last declaration when a property is repeated', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(precedence)
+
+    const loc = services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'technology')
+    expect(document.textDocument.getText(loc!.range)).toBe(`technology 'New tech'`)
+  })
+
+  it('locates links', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(precedence)
+    const text = document.textDocument
+    const locator = services.likec4.ModelLocator
+
+    expect(text.getText(locator.locateElement('e' as Fqn, undefined, 'links')!.range)).toBe(
+      `link https://example.com/first`,
+    )
+    expect(text.getText(locator.locateElement('e' as Fqn, undefined, 'link')!.range)).toBe(
+      `link https://example.com/first`,
+    )
   })
 })
