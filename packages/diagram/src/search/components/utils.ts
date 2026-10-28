@@ -94,5 +94,5 @@ export function viewTitleWithFolder(view: Pick<LikeC4Model.View, 'folder' | 'tit
  */
 export function viewMatchesSearch(view: LikeC4Model.View, search: string): boolean {
   const desc = preferSummary(view.$view)?.md || ' '
-  return `${view.id} ${viewTitleWithFolder(view)} ${desc}`.toLocaleLowerCase().includes(search)
+  return `${view.id} ${viewTitleWithFolder(view)} ${desc}`.toLowerCase().includes(search)
 }
