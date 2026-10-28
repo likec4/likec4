@@ -87,8 +87,8 @@ catalogs:
     "@astrojs/react": 7.1.0
     "@astrojs/starlight": 0.42.6
     "@astrojs/starlight-tailwind": 5.0.0
-    "@expressive-code/plugin-collapsible-sections": 0.44.2
-    "@expressive-code/plugin-line-numbers": 0.44.2
+    "@expressive-code/plugin-collapsible-sections": 0.44.3
+    "@expressive-code/plugin-line-numbers": 0.44.3
     astro: 7.4.0
     astro-og-canvas: 0.13.2
     astro-skills: 0.1.1
