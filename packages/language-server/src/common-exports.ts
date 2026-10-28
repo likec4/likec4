@@ -10,6 +10,7 @@ export type {
   ViewLocateResult,
 } from './model'
 
+export type { ast } from './ast'
 export type { FormatOptions, LikeC4LanguageServices } from './LikeC4LanguageServices'
 
 export type {
