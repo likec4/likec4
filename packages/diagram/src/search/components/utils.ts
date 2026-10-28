@@ -1,6 +1,7 @@
 import type { LikeC4Model } from '@likec4/core/model'
 import { preferSummary } from '@likec4/core/types'
 import { isFunction } from 'remeda'
+import { createFuzzySearch } from '../fuzzy'
 import { focusable } from './_shared.css'
 
 export function stopAndPrevent(e: React.KeyboardEvent | KeyboardEvent) {
@@ -89,10 +90,13 @@ export function viewTitleWithFolder(view: Pick<LikeC4Model.View, 'folder' | 'tit
 }
 
 /**
- * Whether the view matches the (normalized, lowercased) search text.
- * Matches the view id, its title with the folder path, and its summary or description.
+ * Fuzzy search over the views (see `createFuzzySearch`): matches the view id, its title with the folder path,
+ * and its summary or description.
  */
-export function viewMatchesSearch(view: LikeC4Model.View, search: string): boolean {
-  const desc = preferSummary(view.$view)?.md || ' '
-  return `${view.id} ${viewTitleWithFolder(view)} ${desc}`.toLowerCase().includes(search)
+export function createViewSearch<V extends LikeC4Model.View>(views: readonly V[]): (search: string) => V[] {
+  return createFuzzySearch(views, [
+    { name: 'id', getFn: view => view.id },
+    { name: 'title', getFn: view => viewTitleWithFolder(view) },
+    { name: 'description', getFn: view => preferSummary(view.$view)?.md ?? '' },
+  ])
 }

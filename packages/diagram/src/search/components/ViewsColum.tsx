@@ -30,7 +30,7 @@ import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable, viewMatchesSearch, viewTitleWithFolder } from './utils'
+import { centerY, createViewSearch, moveFocusToSearchInput, queryAllFocusable, viewTitleWithFolder } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -43,23 +43,22 @@ const useFoundViews = () => {
   const { currentViewId } = useSearchContext()
   const likec4model = useLikeC4Model()
   const search = useNormalizedSearch()
+  const allViews = useMemo(() => [...likec4model.views()], [likec4model])
+  const fuzzy = useMemo(() => createViewSearch(allViews), [allViews])
   return useMemo(() => {
-    let views = [...likec4model.views()]
+    let views = allViews
     if (search) {
       if (search.startsWith('kind:')) {
         views = []
+      } else if (search.startsWith('#')) {
+        const searchTag = search.slice(1)
+        views = views.filter(view => view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag)))
       } else {
-        const searchTag = search.startsWith('#') ? search.slice(1) : null
-        views = views.filter(view => {
-          if (searchTag) {
-            return view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
-          }
-          return viewMatchesSearch(view, search)
-        })
+        views = fuzzy(search)
       }
     }
     return [views, search, currentViewId] as const
-  }, [likec4model, search, currentViewId])
+  }, [allViews, fuzzy, search, currentViewId])
 }
 
 export const ViewsColumn = memo(() => {
