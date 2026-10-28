@@ -1,5 +1,7 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ComputedLikeC4ModelData, ProjectId } from '@likec4/core'
+import type { LikeC4Model } from '@likec4/core/model'
+import { configureLogger, getNoopSink } from '@likec4/log'
 import { type LangiumDocument, DocumentState, TextDocument, UriUtils } from 'langium'
 import * as assert from 'node:assert'
 import { entries, flatMap, join, once, pipe } from 'remeda'
@@ -8,6 +10,7 @@ import type { LiteralUnion } from 'type-fest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
+import { isNotLikeC4Builtin } from '../likec4lib'
 import { type LanguageServicesContext, createLanguageServices } from '../module'
 
 const messageText = (message: string | { value: string }): string =>
@@ -18,6 +21,11 @@ export function createTestServices(options?: {
   projectConfig?: Partial<LikeC4ProjectJsonConfig>
   context?: Partial<LanguageServicesContext>
 }) {
+  configureLogger({
+    sinks: {
+      console: getNoopSink(),
+    },
+  })
   const workspace = options?.workspace ?? 'file:///test/workspace'
   const projectConfig = options?.projectConfig
 
@@ -182,7 +190,7 @@ export function createTestServices(options?: {
     return likec4model.$data
   }
 
-  const buildLikeC4Model = async () => {
+  const buildLikeC4Model = async (): Promise<LikeC4Model.Computed> => {
     if (langiumDocuments.all.some(doc => doc.state < DocumentState.Validated)) {
       await validateAll()
     }
@@ -195,8 +203,10 @@ export function createTestServices(options?: {
    * This will clear all documents
    */
   const resetState = async () => {
-    const docs = langiumDocuments.resetProjectIds()
+    documentIndex = 1
+    const docs = langiumDocuments.all.filter(doc => isNotLikeC4Builtin(doc)).map(doc => doc.uri).toArray()
     await documentBuilder.update([], docs)
+    services.shared.workspace.WorkspaceManager.forceCleanCaches()
   }
 
   return {

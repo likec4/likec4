@@ -7,7 +7,6 @@
       "outputs": [
         "*/*.js",
         "*/*.ts",
-        "md/**/*.tsx",
         "all.js",
         "all.d.ts"
       ]

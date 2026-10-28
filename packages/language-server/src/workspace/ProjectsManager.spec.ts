@@ -8,7 +8,7 @@
 import type { LikeC4ProjectJsonConfig } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
 import type { LogRecord } from '@likec4/log'
-import { configureLogger } from '@likec4/log'
+import { configureLogger, getNoopSink } from '@likec4/log'
 import { UriUtils } from 'langium'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { URI } from 'vscode-uri'
@@ -29,9 +29,10 @@ let shouldResetLogger = false
 function captureLogRecords(): LogRecord[] {
   const records = [] as LogRecord[]
   shouldResetLogger = true
-  configureLogger({
+  configureLogger<'console' | 'capture'>({
     sinks: {
       capture: record => records.push(record),
+      console: getNoopSink(),
     },
     loggers: [
       {
@@ -585,8 +586,8 @@ describe('ProjectsManager', () => {
 
   describe('include paths', () => {
     it('should not warn when multiple projects share the same include path', async ({ expect }) => {
-      const records = captureLogRecords()
       const { projectsManager } = await createMultiProjectTestServices({})
+      const records = captureLogRecords()
 
       await projectsManager.registerProject({
         config: {
@@ -608,8 +609,8 @@ describe('ProjectsManager', () => {
     })
 
     it('should keep warning when include paths partially overlap', async ({ expect }) => {
-      const records = captureLogRecords()
       const { projectsManager } = await createMultiProjectTestServices({})
+      const records = captureLogRecords()
 
       await projectsManager.registerProject({
         config: {

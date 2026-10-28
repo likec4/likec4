@@ -9,6 +9,7 @@ import {
 import { entries, filter, flatMap, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { type LikeC4LangiumDocument, ast } from '../ast'
+import { iconRegistry, isBundledIconGroup } from '../generated/icons'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
@@ -152,7 +153,14 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     }
     try {
       for (const iconAst of likec4lib.flatMap(l => l.icons)) {
-        docExports.push(this.descriptions.createDescription(iconAst, iconAst.name, document))
+        const group = iconAst.name.split(':')[0]!
+        if (isBundledIconGroup(group)) {
+          docExports.push(
+            ...iconRegistry[group].map(icon =>
+              this.descriptions.createDescription(iconAst, `${group}:${icon}`, document)
+            ),
+          )
+        }
       }
     } catch (e) {
       logWarnError(e)
