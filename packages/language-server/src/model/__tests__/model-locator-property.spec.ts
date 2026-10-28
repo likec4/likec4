@@ -18,10 +18,19 @@ const precedence = `
       #one, #two
       descriptionFile ./d.md
     }
+    e = system 'E' '' {
+      summary 'Body summary'
+      metadata {
+        owner 'team'
+      }
+    }
   }
   deployment {
     prod = node 'Inline prod' {
       title 'Body prod'
+    }
+    stage = node 'Stage' '' {
+      summary 'Body stage summary'
     }
   }
 `
@@ -128,5 +137,24 @@ describe('ModelLocator: locate property', () => {
 
     const loc = services.likec4.ModelLocator.locateElement('d' as Fqn, undefined, 'tags')
     expect(document.textDocument.getText(loc!.range)).toBe(`#one, #two`)
+  })
+
+  it('locates the body summary when the inline summary is empty', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(precedence)
+    const text = document.textDocument
+    const locator = services.likec4.ModelLocator
+
+    expect(text.getText(locator.locateElement('e' as Fqn, undefined, 'summary')!.range)).toBe(`summary 'Body summary'`)
+    const stage = locator.locateDeploymentElement('stage' as DeploymentFqn, undefined, 'summary')
+    expect(text.getText(stage!.range)).toBe(`summary 'Body stage summary'`)
+  })
+
+  it('locates metadata', async ({ expect }) => {
+    const { validate, services } = createTestServices()
+    const { document } = await validate(precedence)
+
+    const loc = services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'metadata')
+    expect(document.textDocument.getText(loc!.range)).toMatch(/^metadata \{\s+owner 'team'\s+\}$/)
   })
 })

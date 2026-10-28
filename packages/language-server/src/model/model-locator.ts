@@ -146,21 +146,29 @@ export class LikeC4ModelLocator {
     if (!ast.isElement(node) && !ast.isDeploymentNode(node) && !ast.isDeployedInstance(node)) {
       return undefined
     }
-    const inline = ast.isElement(node)
-      // Inline strings after the name: title, summary, technology
-      ? findNodesForProperty(node.$cstNode, 'props')[['title', 'summary', 'technology'].indexOf(property)]
-      : ['title', 'summary'].includes(property)
-      ? findNodeForProperty(node.$cstNode, property)
+    // Inline strings after the name: title, summary and technology (elements), title and summary (deployments)
+    const index = (ast.isElement(node) ? ['title', 'summary', 'technology'] : ['title', 'summary']).indexOf(property)
+    const inlineValue = ast.isElement(node) ? node.props[index] : index === 0 ? node.title : node.summary
+    // The parser falls back to the body for an empty inline summary
+    const inline = index >= 0 && inlineValue !== undefined && (property !== 'summary' || inlineValue !== '')
+      ? ast.isElement(node)
+        ? findNodesForProperty(node.$cstNode, 'props')[index]
+        : findNodeForProperty(node.$cstNode, property)
       : undefined
     if (inline) {
       return inline.range
     }
-    if (property === 'tags') {
-      return node.body?.tags?.$cstNode?.range
-    }
     const props: ReadonlyArray<LikeC4AstNode> = node.body?.props ?? []
-    const key = property === 'description' && props.some(ast.isDescriptionFileProperty) ? 'descriptionFile' : property
-    return props.find(p => 'key' in p && p.key === key)?.$cstNode?.range
+    switch (true) {
+      case property === 'tags':
+        return node.body?.tags?.$cstNode?.range
+      case property === 'metadata':
+        return props.find(ast.isMetadataProperty)?.$cstNode?.range
+      case property === 'description' && props.some(ast.isDescriptionFileProperty):
+        return props.find(ast.isDescriptionFileProperty)?.$cstNode?.range
+      default:
+        return props.find(p => 'key' in p && p.key === property)?.$cstNode?.range
+    }
   }
 
   public locateDeploymentElement(
