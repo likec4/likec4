@@ -11,6 +11,7 @@ on:
     branches-ignore:
       - 'main'
       - 'changeset-release/*'
+      - 'changesets-ghcommit-temp/**'
       - 'releases/*'
 
 concurrency:
