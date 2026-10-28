@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { LikeC4Model } from '@likec4/core/model'
-import { type Fqn, preferSummary } from '@likec4/core/types'
+import type { Fqn } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
@@ -30,7 +30,7 @@ import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable, viewTitleWithFolder } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable, viewMatchesSearch, viewTitleWithFolder } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -54,8 +54,7 @@ const useFoundViews = () => {
           if (searchTag) {
             return view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
           }
-          const desc = preferSummary(view.$view)?.md || ' '
-          return `${view.id} ${viewTitleWithFolder(view)} ${desc}`.toLocaleLowerCase().includes(search)
+          return viewMatchesSearch(view, search)
         })
       }
     }
@@ -136,6 +135,7 @@ export function ViewButton(
   const ctx = useSearchContext()
   const nextViewId = view.id
   const isCurrentView = nextViewId === currentViewId
+  const label = viewTitleWithFolder(view)
 
   const navigate = () => {
     ctx.navigateTo(nextViewId, focusOnElement)
@@ -169,8 +169,8 @@ export function ViewButton(
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
-          <Highlight component="div" highlight={search} className={btn.title!} lineClamp={1}>
-            {viewTitleWithFolder(view)}
+          <Highlight component="div" highlight={search} className={btn.title!} lineClamp={2} title={label}>
+            {label}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
         </Group>
