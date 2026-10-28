@@ -30,7 +30,7 @@ import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
+import { centerY, moveFocusToSearchInput, queryAllFocusable, viewTitleWithFolder } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -55,7 +55,7 @@ const useFoundViews = () => {
             return view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
           }
           const desc = preferSummary(view.$view)?.md || ' '
-          return `${view.id} ${view.title} ${desc}`.toLocaleLowerCase().includes(search)
+          return `${view.id} ${viewTitleWithFolder(view)} ${desc}`.toLocaleLowerCase().includes(search)
         })
       }
     }
@@ -170,7 +170,7 @@ export function ViewButton(
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
           <Highlight component="div" highlight={search} className={btn.title!} lineClamp={1}>
-            {view.titleOrUntitled}
+            {viewTitleWithFolder(view)}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
         </Group>
