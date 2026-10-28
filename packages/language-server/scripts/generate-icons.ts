@@ -1,9 +1,9 @@
 import { fdir } from 'fdir'
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { sep } from 'path'
+import { basename, sep } from 'path'
 
 const files = new fdir()
-  .filter((name, isDir) => !isDir && name.endsWith('.tsx'))
+  .filter((name, isDir) => !isDir && name.endsWith('.js') && !['index.js', 'all.js'].includes(basename(name)))
   .withFullPaths()
   .crawl('../icons')
   .sync()
@@ -14,14 +14,19 @@ console.info(`Found ${files.length} files`)
 let added = 0
 const grouped = files.reduce((acc, path) => {
   const parts = path.split(sep)
-  const icon = (parts.pop() || 'invalid').replace('.tsx', '')
+  const icon = (parts.pop() || 'invalid').replace('.js', '')
   const group = parts.pop() || 'error'
   if (!['aws', 'azure', 'gcp', 'md', 'tech', 'bootstrap'].includes(group)) {
     console.error(`Unknown group ${group}`)
     return acc
   }
+  const groupIcons = acc[group as keyof typeof acc]
+  if (groupIcons.includes(icon)) {
+    console.error(`Duplicate icon ${icon} in group ${group}`)
+    return acc
+  }
   added++
-  acc[group as keyof typeof acc].push(icon)
+  groupIcons.push(icon)
   return acc
 }, {
   aws: [] as string[],
@@ -42,29 +47,46 @@ const groupedIcons = {
   md: ${JSON.stringify(grouped.md)},
   tech: ${JSON.stringify(grouped.tech)},
   bootstrap: ${JSON.stringify(grouped.bootstrap)},
-} as const
+}
 
+// LikeC4 library icons definition
+export const LibIcons = \`
+likec4lib {
+  icons {
+    aws:bundle // @likec4/icons/aws
+    azure:bundle // @likec4/icons/azure
+    gcp:bundle // @likec4/icons/gcp
+    md:bundle // @likec4/icons/md
+    tech:bundle // @likec4/icons/tech
+    bootstrap:bundle // @likec4/icons/bootstrap
+  }
+}
+\`
 export type IconGroup = keyof typeof groupedIcons
 
 export const iconGroups: IconGroup[] = Object.keys(groupedIcons) as IconGroup[]
 
-export type GroupedIcons = Record<IconGroup, readonly string[]>
+export function isBundledIconGroup(group: unknown): group is IconGroup {
+  return typeof group === 'string' && iconGroups.includes(group as IconGroup)
+}
+
+export function isBundledIcon(icon: unknown): icon is \`\${IconGroup}:\${string}\` {
+  if (typeof icon !== 'string' || !icon.includes(':')) {
+    return false
+  }
+  const [group, _icon, ...unused] = icon.split(':') as [IconGroup, string]
+  return unused.length === 0 && (groupedIcons[group]?.includes(_icon) ?? false)
+}
+
+export type GroupedIcons = {
+  readonly [K in IconGroup]: readonly [string, ...string[]]
+}
 
 /**
  * Grouped icon registry: maps each icon group name to its list of icon names.
  */
 export const iconRegistry: GroupedIcons = groupedIcons
 
-const icons = [...Object.entries(groupedIcons)]
-  .flatMap(([group, names]) => names.map((name) => group + ':' + name))
-
-export const LibIcons: string = [
-  'likec4lib {',
-  '  icons {',
-  ...icons.map((icon) => '    ' + icon),
-  '  }',
-  '}',
-].join('\\n')
 `
 
 mkdirSync('src/generated', { recursive: true })
