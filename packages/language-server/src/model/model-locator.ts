@@ -133,8 +133,9 @@ export class LikeC4ModelLocator {
   }
 
   /**
-   * Range of a property of the element or deployment node behind `entry`:
-   * from its body first, then from the inline strings after its name.
+   * Range of the declaration that supplies a property of the element or deployment node behind
+   * `entry`, with the parser's precedence: an inline value after the name wins over the body,
+   * and a `descriptionFile` supplies the description.
    */
   private propertyRange(entry: AstNodeDescription, property: string): Range | undefined {
     const doc = this.langiumDocuments.getDocument(entry.documentUri)
@@ -145,17 +146,21 @@ export class LikeC4ModelLocator {
     if (!ast.isElement(node) && !ast.isDeploymentNode(node) && !ast.isDeployedInstance(node)) {
       return undefined
     }
-    const props: ReadonlyArray<LikeC4AstNode> = node.body?.props ?? []
-    const inBody = props.find(p => 'key' in p && p.key === property)
-    if (inBody?.$cstNode) {
-      return inBody.$cstNode.range
-    }
-    if (ast.isElement(node)) {
+    const inline = ast.isElement(node)
       // Inline strings after the name: title, summary, technology
-      const index = ['title', 'summary', 'technology'].indexOf(property)
-      return index >= 0 ? findNodesForProperty(node.$cstNode, 'props')[index]?.range : undefined
+      ? findNodesForProperty(node.$cstNode, 'props')[['title', 'summary', 'technology'].indexOf(property)]
+      : ['title', 'summary'].includes(property)
+      ? findNodeForProperty(node.$cstNode, property)
+      : undefined
+    if (inline) {
+      return inline.range
     }
-    return findNodeForProperty(node.$cstNode, property)?.range
+    if (property === 'tags') {
+      return node.body?.tags?.$cstNode?.range
+    }
+    const props: ReadonlyArray<LikeC4AstNode> = node.body?.props ?? []
+    const key = property === 'description' && props.some(ast.isDescriptionFileProperty) ? 'descriptionFile' : property
+    return props.find(p => 'key' in p && p.key === key)?.$cstNode?.range
   }
 
   public locateDeploymentElement(
