@@ -1,14 +1,47 @@
+import type { Nodes } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toString } from 'mdast-util-to-string'
 
+const options = {
+  includeHtml: false,
+  includeImageAlt: false,
+}
+
+/**
+ * Collects the text of each block (paragraph, heading, list item, table row, ...)
+ * so that blocks can be joined with line breaks instead of being glued together.
+ */
+function collectBlocks(node: Nodes, blocks: string[]): void {
+  switch (node.type) {
+    case 'paragraph':
+    case 'heading':
+    case 'code':
+    case 'html':
+    case 'text':
+    case 'inlineCode': {
+      blocks.push(toString(node, options))
+      return
+    }
+    case 'tableRow': {
+      blocks.push(node.children.map(cell => toString(cell, options)).join(' '))
+      return
+    }
+  }
+  if ('children' in node) {
+    for (const child of node.children) {
+      collectBlocks(child, blocks)
+    }
+  }
+}
+
 /**
  * Converts markdown to plain text, removing any markdown formatting.
+ * Blocks (paragraphs, headings, list items, table rows) are separated by line breaks.
  * @param markdown - The markdown to convert.
  * @returns The plain text.
  */
 export function markdownToText(markdown: string): string {
-  return toString(fromMarkdown(markdown), {
-    includeHtml: false,
-    includeImageAlt: false,
-  })
+  const blocks: string[] = []
+  collectBlocks(fromMarkdown(markdown), blocks)
+  return blocks.filter(block => block !== '').join('\n')
 }

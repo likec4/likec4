@@ -50,8 +50,22 @@ describe('markdownToText', () => {
   - Nested item
 - Item 3
 `
-    // The function doesn't add spaces between list items
-    expect(markdownToText(markdown).trim()).toBe('Item 1Item 2Nested itemItem 3')
+    expect(markdownToText(markdown)).toBe('Item 1\nItem 2\nNested item\nItem 3')
+  })
+
+  it('should keep list items with hyphens on separate lines', () => {
+    const markdown = '- first-list-item\n- second-list-item\n- third-list-item'
+    expect(markdownToText(markdown)).toBe('first-list-item\nsecond-list-item\nthird-list-item')
+  })
+
+  it('should separate paragraphs and headings with line breaks', () => {
+    expect(markdownToText('# Title\n\nParagraph one.\n\nParagraph two.')).toBe(
+      'Title\nParagraph one.\nParagraph two.',
+    )
+  })
+
+  it('should skip blocks without text', () => {
+    expect(markdownToText('First\n\n![alt](img.png)\n\nSecond')).toBe('First\nSecond')
   })
 
   it('should convert code blocks to plain text', () => {
