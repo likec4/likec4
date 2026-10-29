@@ -3,11 +3,6 @@ import { invariant } from '@likec4/core' // changed from @tanstack/react-router 
 import { first, keys } from 'remeda'
 import type { LocalWorkspace } from './types'
 
-export function readWorkspace(key: string): any {
-  const value = localStorage.getItem(key)
-  return value ? JSON.parse(value) : null
-}
-
 function workspacePersistence(storage: Storage) {
   return {
     read(workspaceId: string) {

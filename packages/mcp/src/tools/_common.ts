@@ -134,14 +134,6 @@ export function serializeElement(element: ElementModel<AnyAux> | DeploymentEleme
 
 export type GraphDirection = 'incoming' | 'outgoing'
 
-export interface GraphTraversalArgs {
-  elementId: string
-  includeIndirect: boolean
-  maxDepth: number
-  maxNodes: number
-  project: string
-}
-
 export interface GraphNodeNeighbor {
   elementId: string
   relationshipLabel?: string

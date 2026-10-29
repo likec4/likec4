@@ -1,12 +1,5 @@
 import type { EdgeId } from '@likec4/core/types'
-import {
-  type ActorLogicFrom,
-  type ActorRefFrom,
-  type SnapshotFrom,
-  assertEvent,
-  assign,
-  setup,
-} from 'xstate'
+import { type ActorLogicFrom, assertEvent, assign, setup } from 'xstate'
 
 export type RelationshipPopoverActorEvent =
   // Events from the UI
@@ -187,6 +180,3 @@ const _actorLogic = setup({
 
 export interface RelationshipPopoverActorLogic extends ActorLogicFrom<typeof _actorLogic> {}
 export const RelationshipPopoverActorLogic: RelationshipPopoverActorLogic = _actorLogic
-
-export type RelationshipPopoverActorSnapshot = SnapshotFrom<RelationshipPopoverActorLogic>
-export interface RelationshipPopoverActorRef extends ActorRefFrom<RelationshipPopoverActorLogic> {}

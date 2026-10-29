@@ -8,11 +8,6 @@
 import { useCallback, useDeferredValue } from 'react'
 import { useSearchContext } from './SearchContext'
 
-export function useSearch(): [string, (search: string) => void] {
-  const ctx = useSearchContext()
-  return [ctx.searchValue, ctx.setSearchValue]
-}
-
 export function useNormalizedSearch(): string {
   const ctx = useSearchContext()
   return useDeferredValue(ctx.normalizedSearch)

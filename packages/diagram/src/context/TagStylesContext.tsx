@@ -1,7 +1,7 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
 import { DefaultTagColors, getContrastedColorsAPCA, isValidColor, LikeC4Styles } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
-import { type PropsWithChildren, createContext, memo, useContext } from 'react'
+import { type PropsWithChildren, createContext, memo } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
 import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 import { useLikeC4Styles } from '../hooks/useLikeC4Styles'
@@ -100,14 +100,3 @@ const TagStylesheet = memo<{ stylesheet: string; nonce: string | undefined }>(({
     />
   )
 })
-
-export function useTagSpecifications() {
-  return useContext(TagStylesContext)
-}
-
-export function useTagSpecification(tag: string): TagSpecification {
-  const specs = useContext(TagStylesContext)
-  return specs[tag] ?? {
-    color: 'tomato' as any,
-  }
-}

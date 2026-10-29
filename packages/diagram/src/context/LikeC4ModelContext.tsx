@@ -1,7 +1,7 @@
 import type { LikeC4Model, LikeC4ViewModel } from '@likec4/core/model'
 import type * as t from '@likec4/core/types'
 import type { LayoutedView } from '@likec4/core/types'
-import { type PropsWithChildren, createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
 type UnknownLayouted = t.aux.UnknownLayouted
 
@@ -12,14 +12,6 @@ export type CurrentViewModel = LikeC4ViewModel<UnknownLayouted, LayoutedView<Unk
 
 const CurrentViewModelCtx = createContext<CurrentViewModel | null>(null)
 export const CurrentViewModelContext = CurrentViewModelCtx.Provider
-
-export function EnsureCurrentViewModel({ children }: PropsWithChildren) {
-  const viewmodel = useContext(CurrentViewModelCtx)
-  if (!viewmodel) {
-    return null
-  }
-  return <>{children}</>
-}
 
 /**
  * @returns The LikeC4Model from context, or null if no LikeC4ModelProvider is found.

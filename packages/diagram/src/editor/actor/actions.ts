@@ -1,5 +1,5 @@
 import type * as t from '@likec4/core/types'
-import { filter, isNot, omit } from 'remeda'
+import { omit } from 'remeda'
 import { type ActorSystem, assertEvent } from 'xstate'
 import { createViewChange } from '../../likec4diagram/state/createViewChange'
 import type { DiagramContext } from '../../likec4diagram/state/types'
@@ -43,10 +43,6 @@ export const isLayoutChangeOp = <T extends SyncOp>(
   op: T,
 ): op is Extract<T, string | LayoutChanges> =>
   op === 'apply-latest-to-manual' || op === 'apply-semantic-layout' || op === 'sync-snapshot' || isLayoutChange(op)
-
-export const withoutSnapshotChanges = filter<t.ViewChange[], Exclude<t.ViewChange, LayoutChanges>>(
-  isNot(isLayoutChange),
-)
 
 export const scheduleSync = (delay = 50) => {
   return machine.raise({
@@ -95,14 +91,6 @@ export const pushHistory = () =>
       enqueue(scheduleSync())
     }
   })
-
-export const reschedule = (delay = 300) =>
-  machine.raise(({ event }) => {
-    if (import.meta.env.DEV) {
-      console.log('reschedule', event)
-    }
-    return { ...event }
-  }, { delay })
 
 export const undo = () =>
   machine.enqueueActions(({ context: { history, redo }, system, enqueue }) => {

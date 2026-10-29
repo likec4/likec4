@@ -4,7 +4,7 @@ import type {
   PlaygroundActorSnapshot,
   PlaygroundContext,
 } from '$state/types'
-import { type ViewChange, type ViewId, nonNullable } from '@likec4/core'
+import type { ViewChange, ViewId } from '@likec4/core'
 import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
 import { useSelector } from '@xstate/react'
 import { deepEqual, shallowEqual } from 'fast-equals'
@@ -104,22 +104,4 @@ const selectWorkspace = (snapshot: PlaygroundActorSnapshot) => ({
 export function usePlaygroundWorkspace() {
   const playgroundActor = usePlaygroundActorRef()
   return useSelector(playgroundActor, selectWorkspace, deepEqual)
-}
-
-const selectWorkspaceActiveFile = (snapshot: PlaygroundActorSnapshot) => ({
-  filename: snapshot.context.activeFilename,
-  text: snapshot.context.files[snapshot.context.activeFilename] ?? '',
-  isChanged: snapshot.context.files[snapshot.context.activeFilename] !==
-    snapshot.context.originalFiles[snapshot.context.activeFilename],
-})
-export function usePlaygroundActiveFile() {
-  const playgroundActor = usePlaygroundActorRef()
-  return useSelector(playgroundActor, selectWorkspaceActiveFile, shallowEqual)
-}
-
-const selectLikeC4Model = (snapshot: PlaygroundActorSnapshot) => snapshot.context.likec4model
-export function usePlaygroundLikeC4Model() {
-  const playgroundActor = usePlaygroundActorRef()
-  const likeC4Model = useSelector(playgroundActor, selectLikeC4Model)
-  return nonNullable(likeC4Model, 'LikeC4 model is not loaded')
 }

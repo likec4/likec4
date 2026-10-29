@@ -10,11 +10,6 @@ export function defineActors<A extends Record<string, AnyActorLogic>>(actors: A)
   return actors
 }
 
-export type inferChildrenNames<A> = A extends Record<string, AnyActorLogic> ? {
-    [K in keyof A & string]: K
-  } :
-  never
-
 export type inferChildrenRef<A> = A extends Record<string, AnyActorLogic> ? {
     [K in keyof A & string]: ActorRefFromLogic<A[K]> | undefined
   } :

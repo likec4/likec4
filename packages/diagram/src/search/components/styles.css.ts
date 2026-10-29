@@ -1,5 +1,4 @@
 import { css } from '@likec4/styles/css'
-export { focusable } from './_shared.css'
 
 export const input = css({
   border: 'transparent',
@@ -44,29 +43,5 @@ export const pickviewGroup = css({
   marginTop: '2',
   '& + &': {
     marginTop: '[32px]',
-  },
-})
-
-// globalStyle(`${whereDark} ${pickview} ${button}`, {
-//   borderColor: mantine.colors.dark[5],
-//   backgroundColor: mantine.colors.dark[6],
-// })
-// globalStyle(`${whereDark} ${pickview} ${button}:hover`, {
-//   ...buttonFocused,
-//   backgroundColor: `color-mix(in oklab, ${buttonFocused.backgroundColor}, transparent 40%)`,
-// })
-// globalStyle(`${whereDark} ${pickview} ${button}:focus`, buttonFocused)
-
-export const scrollArea = css({
-  height: [
-    '100%',
-    '100cqh',
-  ],
-  '& .mantine-ScrollArea-viewport': {
-    minHeight: '100%',
-    '& > div': {
-      minHeight: '100%',
-      height: '100%',
-    },
   },
 })

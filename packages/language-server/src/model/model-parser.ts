@@ -33,8 +33,6 @@ import { PredicatesParser } from './parser/PredicatesParser'
 import { SpecificationParser } from './parser/SpecificationParser'
 import { ViewsParser } from './parser/ViewsParser'
 
-export type ModelParsedListener = () => void
-
 const DocumentParserFromMixins = pipe(
   BaseParser,
   ExpressionV2Parser,

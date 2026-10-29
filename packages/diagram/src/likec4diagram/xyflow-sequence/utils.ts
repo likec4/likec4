@@ -1,7 +1,6 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { invariant, isAncestor, Stack } from '@likec4/core/utils'
-import { groupBy, mapValues, pipe, values } from 'remeda'
-import type { Compound, ParallelRect, Rect, Spacing, Step } from './_types'
+import type { Compound, Rect, Spacing, Step } from './_types'
 
 export type NormalizedSpacing = {
   left: number
@@ -55,23 +54,6 @@ export function rectFromSteps(steps: Array<Step>): Rect {
         row: -Infinity,
       },
     } as Rect,
-  )
-}
-
-/**
- * From steps find boxes that must be marked as parallel on the layout
- */
-export function findParallelRects(steps: Array<Step>): Array<ParallelRect> {
-  return pipe(
-    steps,
-    groupBy(s => s.parent ?? undefined),
-    mapValues((steps, parallelPrefix) => {
-      return {
-        ...rectFromSteps(steps),
-        parallelPrefix,
-      }
-    }),
-    values(),
   )
 }
 

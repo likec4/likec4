@@ -62,8 +62,6 @@
     "prepack": "likec4ops prepack",
     "pack": "pnpm pack",
     "postpack": "likec4ops postpack",
-    "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix",
     "lint:package": "pnpx publint ./package.tgz",
     "clean": "likec4ops clean",
     "test": "vitest run --no-isolate",
@@ -82,9 +80,7 @@
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "tinyrainbow": "catalog:utils",
-    "type-fest": "catalog:externals",
     "ufo": "catalog:utils",
-    "vscode-languageserver-types": "catalog:vscode",
     "vscode-uri": "catalog:vscode"
   },
   "devDependencies": {
@@ -92,9 +88,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "memfs": "catalog:",
-    "oxlint": "catalog:",
     "tsdown": "catalog:tsdown",
-    "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest"
   },

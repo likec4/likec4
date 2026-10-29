@@ -585,15 +585,6 @@ export const assignToggledFeatures = () =>
     }
   })
 
-// SendTo actions that don't depend on others
-export const closeSearch = () =>
-  machine.sendTo(
-    typedSystem.searchActor,
-    {
-      type: 'close',
-    },
-  )
-
 export const closeAllOverlays = () =>
   machine.sendTo(
     typedSystem.overlaysActor,
@@ -954,8 +945,6 @@ export const onEdgeMouseLeave = () =>
       event: event.event,
     })
   })
-
-export const reraise = () => machine.raise(({ event }) => event, { delay: 50 })
 
 export const startHotKeyActor = () =>
   machine.spawnChild('hotkey', { id: 'hotkey', systemId: 'hotkey', syncSnapshot: true })

@@ -1,7 +1,6 @@
 import type {
   Color,
   DiagramNode,
-  ExclusiveUnion,
   Fqn,
   IconUrl,
   NonEmptyArray,
@@ -95,12 +94,6 @@ export namespace RelationshipsBrowserTypes {
   export type NodeType = AnyNode['type']
   export type Node<T extends NodeType = NodeType> = Extract<AnyNode, { type: T }>
   export type NodeProps<T extends NodeType = NodeType> = BaseNodeProps<Node<T>>
-
-  export type NodeData = ExclusiveUnion<{
-    ElementNodeData: ElementNodeData
-    CompoundNodeData: CompoundNodeData
-    EmptyNodeData: EmptyNodeData
-  }>
 
   export type NodeRenderer<T extends NodeType = NodeType> = FunctionComponent<NodeProps<T>>
   export type NodeRenderers = {

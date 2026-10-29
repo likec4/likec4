@@ -5,21 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-export { Vector, vector } from '@likec4/core/geometry'
-export type { VectorValue } from '@likec4/core/geometry'
+export { vector } from '@likec4/core/geometry'
 export {
-  bezierControlPoints,
-  bezierPath,
-  distance,
-  extractMinimalInternalNode,
-  getNodeCenter,
-  getNodeIntersection,
-  getNodeIntersectionFromCenterToPoint,
-  isEqualMinimalInternalNodes,
-  isInside,
-  isSamePoint,
-  type MinimalInternalNode,
-  nodeToRect,
   stopPropagation,
 } from './xyflow'
 

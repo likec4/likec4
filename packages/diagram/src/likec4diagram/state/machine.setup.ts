@@ -504,8 +504,6 @@ export interface BaseDiagramMachineLogic<
 {
 }
 
-export type BaseDiagramActorRef = ActorRefFromLogic<BaseDiagramMachineLogic>
-
 export const targetState = {
   idle: '#idle',
   focused: '#focused',

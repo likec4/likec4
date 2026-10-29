@@ -66,19 +66,6 @@ export const elementNotation = css({
   },
 })
 
-export const shapeSvg = css({
-  fill: 'var(--likec4-palette-fill)',
-  stroke: 'var(--likec4-palette-stroke)',
-  strokeWidth: '[1px]',
-  overflow: 'visible',
-  width: '100%',
-  height: 'auto',
-  filter: `[
-    drop-shadow(0 2px 3px rgb(0 0 0 / 22%))
-    drop-shadow(0 1px 8px rgb(0 0 0 / 10%))
-  ]`,
-})
-
 export const shapeBadge = css({
   fontWeight: 'medium',
   letterSpacing: 'tight',

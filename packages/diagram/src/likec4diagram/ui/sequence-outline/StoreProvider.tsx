@@ -118,19 +118,9 @@ export function useSelectContext<T>(selector: (context: SequenceOutlineStoreCont
   return useXstateStoreSelector(store, s => selector(s.context), shallowEqual)
 }
 
-export function useTrigger() {
-  const store = use(Context)
-  return store.trigger
-}
-
 export function useIsCollapsed(step: StepPath) {
   const store = use(Context)
   return useXstateStoreSelector(store.selectors.collapsed, collapsed => collapsed[step] ?? false)
-}
-
-export function useOutlineTree() {
-  const store = use(Context)
-  return useXstateStoreSelector(store.selectors.outlineTree)
 }
 
 export function useOutlinePanelWidth() {

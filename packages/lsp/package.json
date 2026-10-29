@@ -59,7 +59,6 @@
     "@types/node": "catalog:",
     "langium": "catalog:langium",
     "tsdown": "catalog:tsdown",
-    "turbo": "catalog:",
     "typescript": "catalog:",
     "vscode-languageserver": "catalog:vscode"
   },

@@ -1,13 +1,5 @@
 import { css } from '@likec4/styles/css'
 
-export const dimmed = css({
-  color: 'text.dimmed',
-})
-
-export const header = css({
-  // background: 'var(--color-surface)',
-})
-
 export const previewBg = css({
   position: 'relative',
   overflow: 'hidden',

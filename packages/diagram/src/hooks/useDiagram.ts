@@ -16,38 +16,6 @@ export { useDiagram, useDiagramActorRef }
 export type { DiagramApi, DiagramContext }
 
 /**
- * Helper to create a selector for diagram actor snapshot
- * @deprecated use {@link selectDiagramSnapshot}
- */
-export function selectDiagramActor<T = unknown>(
-  selector: (state: DiagramActorSnapshot) => T,
-): (state: DiagramActorSnapshot) => T {
-  return selector
-}
-
-/**
- * Read diagram actor snapshot
- * @deprecated use {@link useDiagramSelector}
- */
-export function useDiagramSnapshot<T = unknown>(
-  selector: (state: DiagramActorSnapshot) => T,
-  compare: (a: NoInfer<T>, b: NoInfer<T>) => boolean = shallowEqual,
-): T {
-  const actorRef = useDiagramActorRef()
-  return useXstateSelector(actorRef, selector, compare)
-}
-
-/**
- * Helper to create a selector for diagram actor snapshot
- * @deprecated use {@link selectDiagramContext}
- */
-export function selectDiagramActorContext<T = unknown>(
-  selector: (state: DiagramContext) => T,
-): (state: DiagramActorSnapshot) => T {
-  return (state: DiagramActorSnapshot) => selector(state.context)
-}
-
-/**
  * Read diagram context
  * @deprecated use {@link useDiagramSelector}
  */

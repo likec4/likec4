@@ -1,6 +1,6 @@
 import { css, cx } from '@likec4/styles/css'
 
-export { emptyBoX, focusable } from './_shared.css'
+export { focusable } from './_shared.css'
 
 const _viewBtn = 'likec4-view-btn'
 
@@ -18,17 +18,3 @@ export const viewButton = cx(
   }),
   _viewBtn,
 )
-
-// export const viewTitle = css(title)
-// export const viewDescription = css(description)
-
-export const viewButtonDescription = css({
-  marginTop: '1',
-  // transition: transitions.fast,
-  // color: `[var(${descriptionColor}, {colors.text.dimmed})]`,
-  fontSize: 'sm',
-  lineHeight: 'md',
-  [`:where(.likec4-view-btn[data-disabled]) &`]: {
-    opacity: '0.85',
-  },
-})
