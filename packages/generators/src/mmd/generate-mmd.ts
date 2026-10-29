@@ -94,11 +94,23 @@ function printNodeColors(
   leaves: ReadonlyArray<{ color: Color; name: string }>,
 ): CompositeGeneratorNode | undefined {
   const byColor = groupBy(leaves, leaf => leaf.color)
+  // Mermaid applies `classDef default` to every node without a class, and colors such as `brand-blue` and
+  // `brand_blue` sanitize to one name: a taken name gets a numeric suffix
+  const classNames = new Set(['default'])
+  const uniqueClassName = (color: string): string => {
+    const base = safeChars(color)
+    let className = base
+    for (let suffix = 2; classNames.has(className); suffix++) {
+      className = `${base}_${suffix}`
+    }
+    classNames.add(className)
+    return className
+  }
   return joinToNode(
     Object.entries(byColor),
     ([color, colored]) => {
       const { fill, stroke, hiContrast } = styles.colors(color).elements
-      const className = safeChars(color)
+      const className = uniqueClassName(color)
       return new CompositeGeneratorNode()
         .append('classDef ', className, ' fill:', fill, ',stroke:', stroke, ',color:', hiContrast, NL)
         .append('class ', colored.map(leaf => leaf.name).join(','), ' ', className)
@@ -118,7 +130,12 @@ function printEdgeStyles(styles: LikeC4Styles, edges: ReadonlyArray<Edge>): Comp
     const stroke = styles.colors(edge.color).relationships.line
     const dashArray = mmdDashArray(edge.line)
     const style = `stroke:${stroke}` + (dashArray ? `,stroke-dasharray:${dashArray}` : '')
-    indexesByStyle.set(style, [...(indexesByStyle.get(style) ?? []), index])
+    const indexes = indexesByStyle.get(style)
+    if (indexes) {
+      indexes.push(index)
+    } else {
+      indexesByStyle.set(style, [index])
+    }
   })
   return joinToNode(
     [...indexesByStyle],

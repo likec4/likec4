@@ -1,5 +1,5 @@
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import { LikeC4Styles } from '@likec4/core/styles'
+import { computeColorValues, LikeC4Styles } from '@likec4/core/styles'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { test, vi } from 'vitest'
 import {
@@ -65,6 +65,29 @@ test('generate mermaid - element colors as classDef and class', ({ expect }) => 
   expect(mmd).toContain('class Root.El4,Root.El6,Root.El8,Root.El10 green')
   // A subgraph keeps Mermaid's own style: only leaf nodes get a class
   expect(mmd).not.toMatch(/class [^\n]*\bRoot\b(?!\.)/)
+})
+
+test('generate mermaid - custom colors get distinct class names, never Mermaid\'s default', ({ expect }) => {
+  const [root, ...children] = fakeComputedViewWithAllShapes.nodes
+  const colors = ['brand-blue', 'brand_blue', 'default']
+  const view = {
+    ...fakeComputedViewWithAllShapes,
+    nodes: [root, ...children.map((node, index) => ({ ...node, color: colors[index % colors.length] }))],
+  } as ProcessedView
+  const $styles = LikeC4Styles.from(undefined, {
+    'brand-blue': computeColorValues('#1d4ed8'),
+    'brand_blue': computeColorValues('#60a5fa'),
+    'default': computeColorValues('#f59e0b'),
+  })
+  const mmd = generateMermaid({
+    titleOrId: view.title || view.id,
+    $view: withEdgeStyles(view),
+    $model: { $styles },
+  } as unknown as LikeC4ViewModel<aux.Unknown>)
+  expect(mmd).toContain(`classDef brand_blue fill:${$styles.colors('brand-blue').elements.fill},`)
+  expect(mmd).toContain(`classDef brand_blue_2 fill:${$styles.colors('brand_blue').elements.fill},`)
+  expect(mmd).toContain(`classDef default_2 fill:${$styles.colors('default').elements.fill},`)
+  expect(mmd).not.toMatch(/classDef default /)
 })
 
 test('generate mermaid - relationship line and color as arrow and linkStyle', ({ expect }) => {
