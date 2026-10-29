@@ -40,6 +40,7 @@ import {
   parseMarkdownAsString,
   toColor,
 } from '../../ast'
+import { isBundledIcon } from '../../generated/icons'
 import { serverLogger } from '../../logger'
 import type { LikeC4Services } from '../../module'
 import { projectIdFrom } from '../../utils'
@@ -550,8 +551,8 @@ export class BaseParser {
     const { libicon, value } = prop
     switch (true) {
       case !!libicon: {
-        const name = libicon.ref?.name
-        if (!name) {
+        const name = libicon.$refText
+        if (!isBundledIcon(name)) {
           this.logError(`Library icon ${libicon.$refText} is not a valid library icon`, prop)
           return undefined
         }

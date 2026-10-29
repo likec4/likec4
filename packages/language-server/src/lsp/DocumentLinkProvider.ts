@@ -1,3 +1,4 @@
+import { isAnyOf } from '@likec4/core/utils'
 import type { LangiumDocument } from 'langium'
 import { AstUtils, GrammarUtils, interruptAndCheck } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
@@ -21,7 +22,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return Promise.resolve([])
     }
     const links: DocumentLink[] = []
-    for (const n of AstUtils.streamAllContents(doc.parseResult.value).filter(ast.isLinkProperty)) {
+    for (
+      const n of AstUtils.streamAllContents(doc.parseResult.value).filter(
+        isAnyOf(ast.isLinkProperty, ast.isDescriptionFileProperty),
+      )
+    ) {
       try {
         const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
         const target = range && this.resolveLink(doc, n.value)
