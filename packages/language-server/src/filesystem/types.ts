@@ -121,14 +121,6 @@ export interface LikeC4DescriptionFiles extends Disposable {
   isReferenced(uri: URI): boolean
 
   /**
-   * Re-reads a referenced file after it changed on disk, and notifies the listeners so the model
-   * that used it is rebuilt.
-   */
-  handleFileSystemUpdate(
-    event: { update: URI; delete?: never } | { delete: URI; update?: never },
-  ): Promise<void>
-
-  /**
    * Registers a listener called when a referenced file changed.
    */
   onDescriptionFileUpdate(listener: DescriptionFileUpdateListener): Disposable
@@ -189,11 +181,4 @@ export interface LikeC4ManualLayouts extends Disposable {
    * The listener will be called when a manual layout is created, updated, or deleted.
    */
   onManualLayoutUpdate(listener: ManualLayoutUpdateListener): Disposable
-
-  /**
-   * Handles file system updates for manual layouts.
-   * Used by the file system watcher to notify the manual layouts module of changes.
-   * @param event The file system event
-   */
-  handleFileSystemUpdate(event: { update: URI; delete?: never } | { delete: URI; update?: never }): Promise<void>
 }

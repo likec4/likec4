@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { platform } from 'node:process'
 import { describe, it, vi } from 'vitest'
+import { FileChangeType } from 'vscode-languageserver'
 import { createTestServices } from '../test'
 import { WithFileSystem } from './LikeC4FileSystem'
 
@@ -276,10 +277,14 @@ describe('descriptionFile', () => {
     const subscription = descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
 
     files[asPosix(uri.fsPath)] = '# second'
-    await descriptionFiles.handleFileSystemUpdate({ update: uri })
+    t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+      changes: [{ uri: uri.toString(), type: FileChangeType.Changed }],
+    })
 
+    await vi.waitFor(() => {
+      expect(updated).toHaveLength(1)
+    })
     expect(descriptionFiles.get(doc.document.uri, './spec.md')).toEqual({ content: '# second' })
-    expect(updated).toHaveLength(1)
     subscription.dispose()
   })
 
@@ -550,9 +555,13 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
     `)
 
   files['/test/workspace/src/spec.md'] = '# second'
-  await descriptionFiles.handleFileSystemUpdate({ update: URI.parse('/test/workspace/src/spec.md') })
+  t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+    changes: [{ uri: URI.parse('/test/workspace/src/spec.md').toString(), type: FileChangeType.Changed }],
+  })
 
-  expect(updated).toHaveLength(1)
+  await vi.waitFor(() => {
+    expect(updated).toHaveLength(1)
+  })
 })
 
 describe('descriptionFile, path syntax', () => {

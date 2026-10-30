@@ -139,8 +139,14 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
         this.#storage.clear()
       }),
       services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
-        if (this.#projectStorages.has(projectId) && viewId) {
-          this.projectStorage(projectId).clearView(viewId)
+        if (!this.#projectStorages.has(projectId)) {
+          return
+        }
+        if (viewId) {
+          void this.projectStorage(projectId).clearView(viewId)
+        } else {
+          // Unknown view (e.g. folder with snapshots was deleted)
+          this.projectStorage(projectId).clearAll()
         }
       }),
     )

@@ -8,9 +8,11 @@ import { fileURLToPath } from 'node:url'
 // entries, tsdown's shared chunkFileNames config (devops/tsdown.ts) routes it
 // into dist/chunks/*.mjs instead, two directories below the package root.
 // Try both depths, same approach as packages/leanix-bridge/src/contracts.ts.
+// When bundled into another package (e.g. VS Code extension), assets are copied
+// next to the bundle (dist/node/mcp-server.mjs -> dist/node/app/*).
 function readDistAsset(relativePath: string): string {
   const candidateUrls = [
-    new URL(`../${relativePath}`, import.meta.url),
+    new URL(`./${relativePath}`, import.meta.url),
     new URL(`../dist/${relativePath}`, import.meta.url),
     new URL(`../../dist/${relativePath}`, import.meta.url),
   ]

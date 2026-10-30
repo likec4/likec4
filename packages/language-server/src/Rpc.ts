@@ -18,7 +18,6 @@ import {
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
-  DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   DidRequestRemovalImpactNotification,
   FetchComputedModel,
@@ -144,13 +143,6 @@ export class Rpc extends ADisposable {
           return { model: likec4model.$data }
         }
         return { model: null }
-      }),
-      // ----------
-      connection.onNotification(DidChangeSnapshotNotification.type, async (params) => {
-        const uri = URI.parse(params.update ?? params.delete)
-        const event = 'update' in params ? { update: uri } : { delete: uri }
-        logger.debug`received notification ${'onDidChangeSnapshot'} with ${params}`
-        await workspace.ManualLayouts.handleFileSystemUpdate(event)
       }),
       // ----------
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {

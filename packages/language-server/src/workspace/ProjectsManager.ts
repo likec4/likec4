@@ -364,7 +364,7 @@ export class ProjectsManager extends ADisposable {
     super()
     this.onDispose(
       Disposable.create(async () => {
-        this.#reloadQueue.clear()
+        this.cancelScheduledReloads()
         if (this.#reloadQueue.pending) {
           await this.#reloadQueue.onIdle()
         }
@@ -376,8 +376,8 @@ export class ProjectsManager extends ADisposable {
     onNextTick(() =>
       this.onDispose(
         services.lsp.DocumentUpdateHandler.onWatchedFilesChangeBy(
-          // Only process like-c4 config files
-          ({ uri }) => isLikeC4Config(uri),
+          // Process like-c4 config files and deleted folders with projects (or their include paths)
+          ({ uri, type }) => isLikeC4Config(uri) || (type === FileChangeType.Deleted && this.hasProjectsInside(uri)),
           (changes) => {
             // Ignore file changes during initialization or reload
             if (this.isInitiatingOrReloading) {
@@ -385,7 +385,7 @@ export class ProjectsManager extends ADisposable {
             }
             for (const change of changes) {
               if (change.type === FileChangeType.Deleted) {
-                this.#reloadQueue.clear()
+                this.cancelScheduledReloads()
                 void this.reloadProjects()
                 return
               }
@@ -1067,7 +1067,8 @@ export class ProjectsManager extends ADisposable {
   }
 
   #pendingReloads = new Set<string>()
-  #reloadQueue = new PQueue({ concurrency: 1, timeout: 5000 })
+  // No timeout: p-queue does not cancel timed out tasks, it only frees the slot and breaks serialization
+  #reloadQueue = new PQueue({ concurrency: 1 })
   private scheduleReloadProject(projectConfigUri: string): void {
     if (this.#pendingReloads.has(projectConfigUri)) {
       return
@@ -1076,17 +1077,37 @@ export class ProjectsManager extends ADisposable {
 
     // add delay on first reload to debounce rapid changes
     const delayMs = this.#pendingReloads.size === 1 ? 250 : 50
-    this.#reloadQueue.add(() => delay(delayMs))
-    this.#reloadQueue.add(async () => {
+    void this.#reloadQueue.add(() => delay(delayMs))
+    void this.#reloadQueue.add(async () => {
       try {
         await this.services.workspace.WorkspaceLock.write(async (token) => {
+          // Remove before reading the config, so changes made during the reload schedule a new one
+          this.#pendingReloads.delete(projectConfigUri)
           await this.registerConfigFile(URI.parse(projectConfigUri), token)
         })
       } catch (error) {
         logger.warn(loggable(error))
-      } finally {
-        this.#pendingReloads.delete(projectConfigUri)
       }
     })
+  }
+
+  /**
+   * Whether the given folder contains a project folder or an include path of some project
+   * (i.e. deleting the folder removes them)
+   */
+  private hasProjectsInside(folder: string): boolean {
+    const parent = ProjectFolder(folder)
+    return this.#projects.some(p =>
+      p.folder.startsWith(parent) || (p.includePaths?.some(i => i.folder.startsWith(parent)) ?? false)
+    )
+  }
+
+  /**
+   * Drops scheduled (not started) reloads.
+   * Queued tasks are removed without running, so pending entries are cleared as well.
+   */
+  private cancelScheduledReloads(): void {
+    this.#reloadQueue.clear()
+    this.#pendingReloads.clear()
   }
 }

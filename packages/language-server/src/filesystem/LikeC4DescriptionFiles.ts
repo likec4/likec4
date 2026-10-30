@@ -79,6 +79,19 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
     onNextTick(() => {
       this.onDispose(
         services.workspace.ProjectsManager.onProjectsUpdate(() => this.clearCaches()),
+        services.lsp.DocumentUpdateHandler.onWatchedFilesChangeBy(
+          ({ uri }) => this.isReferenced(URI.parse(uri)),
+          (changes) => {
+            for (const change of changes) {
+              this.onReferencedFileChange(URI.parse(change.uri)).catch(error => {
+                descriptionFilesLogger.warn(`Error handling description file change {uri}`, {
+                  uri: change.uri,
+                  error,
+                })
+              })
+            }
+          },
+        ),
       )
     })
   }
@@ -174,13 +187,10 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
   }
 
   /**
-   * Re-reads (or forgets) the referenced files after one of them changed on disk, and notifies the
+   * Re-reads the referenced file after it changed (or was deleted) on disk, and notifies the
    * listeners so the model is rebuilt.
    */
-  async handleFileSystemUpdate(
-    event: { update: URI; delete?: never } | { delete: URI; update?: never },
-  ): Promise<void> {
-    const uri = event.update ?? event.delete
+  protected async onReferencedFileChange(uri: URI): Promise<void> {
     const projects = new Set<string>()
     for (const [docUri, files] of [...this.files]) {
       for (const [value, file] of [...files]) {

@@ -59,17 +59,6 @@ export namespace DidChangeProjectsNotification {
 }
 
 /**
- * When the snapshot of a manual layout changes
- * Send by the editor to the language server
- */
-export namespace DidChangeSnapshotNotification {
-  export type Params = { update: string; delete?: never } | { delete: string; update?: never }
-  export const Method = 'likec4/onDidChangeSnapshot' as const
-  export const type = new NotificationType<Params>(Method)
-  export type Type = typeof type
-}
-
-/**
  * When server requests to open a likec4 preview panel
  * (available only in the editor).
  * (not the best place, but seems to be working)

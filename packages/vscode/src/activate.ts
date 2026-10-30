@@ -1,10 +1,5 @@
 import useTelemetry from '#useTelemetry'
-import { ConfigFilenames } from '@likec4/config'
-import {
-  onDeactivate,
-  toRef,
-  useFileSystemWatcher,
-} from 'reactive-vscode'
+import { onDeactivate } from 'reactive-vscode'
 import { registerCommands } from './commands'
 import {
   activateMessenger,

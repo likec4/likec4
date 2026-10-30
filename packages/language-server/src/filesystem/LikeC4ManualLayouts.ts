@@ -2,11 +2,11 @@ import { type DiagramNode, type Icon, type LayoutedView, type ProjectId, type Vi
 import { objectHash, onNextTick, stringHash } from '@likec4/core/utils'
 import JSON5 from 'json5'
 import { Disposable, SimpleCache, URI, UriUtils } from 'langium'
-import pLimit, { limitFunction } from 'p-limit'
-import PQueue from 'p-queue'
+import pLimit from 'p-limit'
 import { basename } from 'pathe'
 import { funnel, indexBy, prop } from 'remeda'
-import { FileChangeType } from 'vscode-languageserver-protocol'
+import { withTrailingSlash } from 'ufo'
+import { type FileEvent, FileChangeType } from 'vscode-languageserver-protocol'
 import {
   type Location,
   Position,
@@ -64,17 +64,19 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
 
   private listeners: ManualLayoutUpdateListener[] = []
 
-  #queue = new PQueue({ concurrency: 4, timeout: 15000, throwOnTimeout: true })
+  /**
+   * Reads and writes are serialized, otherwise a read in progress may cache a stale snapshot
+   */
+  #limit = pLimit(1)
 
   constructor(private services: LikeC4SharedServices) {
     super()
 
     this.onDispose(
       this.cache = new SimpleCache(),
-      Disposable.create(async () => {
+      Disposable.create(() => {
         this.triggerUpdate.cancel()
-        this.#queue.clear()
-        await this.#queue.onIdle()
+        this.#limit.clearQueue()
         this.listeners.length = 0
       }),
     )
@@ -85,22 +87,20 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
           this.clearCaches()
         }),
         services.lsp.DocumentUpdateHandler.onWatchedFilesChangeBy(
-          // Only process like-c4 config files
-          ({ uri }) => isManualLayoutFile(basename(uri)),
+          // Process snapshot files and deleted folders with snapshots
+          // (when a folder is deleted, the client sends a single event for the folder)
+          ({ uri, type }) =>
+            isManualLayoutFile(basename(uri))
+            || (type === FileChangeType.Deleted && this.projectsWithSnapshotsIn(URI.parse(uri)).length > 0),
           (changes) => {
             layoutsLogger.trace`onWatchedFilesChangeBy\n${changes.map((c) => c.uri)}`
             for (const change of changes) {
-              const uri = URI.parse(change.uri)
-              this.handleFileSystemUpdate(
-                change.type === FileChangeType.Deleted ?
-                  {
-                    delete: uri,
-                  } :
-                  {
-                    update: uri,
-                  },
-              ).catch((error) => {
-                layoutsLogger.warn(`Error handling onWatchedFilesChangeBy {change}`, {
+              if (!isManualLayoutFile(basename(change.uri))) {
+                this.onSnapshotsFolderDelete(URI.parse(change.uri))
+                continue
+              }
+              this.onSnapshotFileChange(change).catch((error) => {
+                layoutsLogger.warn(`Error handling snapshot change {change}`, {
                   change,
                   error,
                 })
@@ -113,24 +113,49 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
     })
   }
 
-  async handleFileSystemUpdate(
-    event: { update: URI; delete?: never } | { delete: URI; update?: never },
-  ): Promise<void> {
-    if (layoutsLogger.isEnabledFor('trace')) {
-      layoutsLogger.trace`handle file system event ${event}`
+  /**
+   * Projects with snapshots inside the given folder:
+   * the folder is the snapshots folder (or its parent), or a folder inside it
+   */
+  protected projectsWithSnapshotsIn(folder: URI): ProjectId[] {
+    const projects = this.services.workspace.ProjectsManager
+    const deleted = withTrailingSlash(folder.toString())
+    return projects.all.filter(projectId => {
+      const outDir = withTrailingSlash(getManualLayoutsOutDir(projects.getProject(projectId)).toString())
+      return outDir.startsWith(deleted) || deleted.startsWith(outDir)
+    })
+  }
+
+  /**
+   * Handles deletion of a folder with snapshots.
+   * Snapshots inside are unknown (folder is already deleted), so all views of the project are affected
+   */
+  protected onSnapshotsFolderDelete(folder: URI): void {
+    for (const projectId of this.projectsWithSnapshotsIn(folder)) {
+      layoutsLogger.debug`snapshots folder deleted in project ${projectId}: ${folder.fsPath}`
+      this.cache.delete(projectId)
+      this.triggerUpdate.call({
+        removed: folder,
+        projectId,
+      })
     }
-    const uri = event.update ?? event.delete
+  }
+
+  /**
+   * Handles changes of snapshot files on disk (made outside of this service)
+   */
+  protected async onSnapshotFileChange(change: FileEvent): Promise<void> {
+    const uri = URI.parse(change.uri)
     let viewId = viewIdFromURI(uri) ?? undefined
     const projectId = this.services.workspace.ProjectsManager.ownerProjectId(uri)
     this.cache.delete(projectId)
-    if ('delete' in event) {
+    if (change.type === FileChangeType.Deleted) {
       this.triggerUpdate.call(exact({
         removed: uri,
         projectId,
         viewId,
       }))
       return
-      // TODO: handle delete
     }
 
     if (!viewId) {
@@ -235,7 +260,7 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
   }
 
   async read(project: Project): Promise<ManualLayoutsSnapshot | null> {
-    return await this.#queue.add(
+    return await this.#limit(
       async () => {
         const cached = this.cache.get(project.id)
         if (cached !== undefined) {
@@ -246,14 +271,11 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
         this.cache.set(project.id, result)
         return result
       },
-      { throwOnTimeout: true },
     )
   }
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
-    // Wait for all pending operations to complete
-    await this.#queue.onIdle()
-    return await this.#queue.add(
+    return await this.#limit(
       async () => {
         const logger = layoutsLogger.getChild(project.id)
         const outDir = getManualLayoutsOutDir(project)
@@ -300,11 +322,14 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
         }
         return location
       },
-      { throwOnTimeout: true },
     )
   }
 
   async remove(project: Project, view: ViewId): Promise<Location | null> {
+    return await this.#limit(() => this.removeSnapshot(project, view))
+  }
+
+  private async removeSnapshot(project: Project, view: ViewId): Promise<Location | null> {
     const logger = layoutsLogger.getChild(project.id)
     const outDir = getManualLayoutsOutDir(project)
     const file = UriUtils.joinPath(outDir, fileName(view))
@@ -368,7 +393,8 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
       ) {
         const uri = 'updated' in current ? current.updated.toString() : current.removed.toString()
         accumulator ??= new Map<string, ManualLayoutUpdateEvent>()
-        accumulator.set(uri, current)
+        // Same folder may contain snapshots of different projects
+        accumulator.set(`${current.projectId}|${uri}`, current)
         return accumulator
       },
     },
