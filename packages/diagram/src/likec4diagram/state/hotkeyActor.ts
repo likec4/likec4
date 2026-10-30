@@ -1,6 +1,7 @@
 import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
 import { type AnyEventObject, type CallbackActorLogic, type NonReducibleUnknown, fromCallback } from 'xstate'
+import { isEventFromSearch } from '../../utils/search-event'
 
 export type HotKeyEvent = { type: 'key.esc' | `key.arrow.${'left' | 'right' | 'up' | 'down'}` }
 
@@ -44,10 +45,21 @@ export const hotkeyActorLogic: HotkeyActorLogic = fromCallback(({ sendBack }: {
       preventDefault: true,
     }],
   ])
-  document.body.addEventListener('keydown', escHandler)
-  document.body.addEventListener('keydown', arrowshandler, { capture: true })
+  // Leave keys pressed in the search overlay to the search
+  const onEsc = (event: globalThis.KeyboardEvent) => {
+    if (!isEventFromSearch(event)) {
+      escHandler(event)
+    }
+  }
+  const onArrows = (event: globalThis.KeyboardEvent) => {
+    if (!isEventFromSearch(event)) {
+      arrowshandler(event)
+    }
+  }
+  document.body.addEventListener('keydown', onEsc)
+  document.body.addEventListener('keydown', onArrows, { capture: true })
   return () => {
-    document.body.removeEventListener('keydown', escHandler)
-    document.body.removeEventListener('keydown', arrowshandler, { capture: true })
+    document.body.removeEventListener('keydown', onEsc)
+    document.body.removeEventListener('keydown', onArrows, { capture: true })
   }
 })

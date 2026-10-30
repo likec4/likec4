@@ -22,7 +22,6 @@ import {
 } from '@tabler/icons-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { Markdown } from '../../base-primitives'
-import { EmptyBox } from '../../components/EmptyBox'
 import { Link } from '../../components/Link'
 import { ViewIcon } from '../../components/ViewIcon'
 import { IfEnabled, useEnabledFeatures } from '../../context'
@@ -33,15 +32,23 @@ import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
 import { stopPropagation } from '../../utils'
 import { PanelActionIcon } from '../_common'
 
+// Same field label as in element details
 const SectionHeader = styled('div', {
   base: {
-    fontSize: 'xs',
-    color: 'text.non-essential',
-    fontWeight: 'medium',
+    textStyle: 'fieldLabel',
     userSelect: 'none',
-    lineHeight: 'snug',
   },
 })
+
+const dataListClassNames = {
+  item: css({
+    alignItems: 'center',
+  }),
+  itemLabel: css({
+    textStyle: 'fieldLabel',
+    userSelect: 'none',
+  }),
+}
 
 export function ViewDetailsWindow() {
   const viewModel = useCurrentViewModel()
@@ -100,7 +107,7 @@ export function ViewDetailsWindow() {
             </IfEnabled>
           </HStack>
         </HStack>
-        <DataList size="xs" gap={'sm'} orientation="horizontal" labelWidth={50}>
+        <DataList size="xs" gap={'sm'} orientation="horizontal" labelWidth={56} classNames={dataListClassNames}>
           {viewModel.hasManualLayout && (
             <DataList.Item>
               <DataList.ItemLabel>Layout</DataList.ItemLabel>
@@ -109,38 +116,29 @@ export function ViewDetailsWindow() {
               </DataList.ItemValue>
             </DataList.Item>
           )}
-          {alltags.length > 0 && (
+          {/* Empty fields are hidden, unless they can be edited */}
+          {alltags.length > 0 && (tags.length > 0 || !enableReadOnly) && (
             <DataList.Item>
               <DataList.ItemLabel>Tags</DataList.ItemLabel>
               <DataList.ItemValue>
-                {(tags.length > 0 || !enableReadOnly) && (
-                  <EditableTags
-                    alltags={alltags}
-                    tags={tags}
-                    readOnly={enableReadOnly}
-                    onChange={changeTags} />
-                )}
-                {(tags.length === 0 && enableReadOnly) && (
-                  <Txt size="xs" color={'text.non-essential'}>
-                    No tags
-                  </Txt>
-                )}
+                <EditableTags
+                  alltags={alltags}
+                  tags={tags}
+                  readOnly={enableReadOnly}
+                  onChange={changeTags} />
               </DataList.ItemValue>
             </DataList.Item>
           )}
-          <DataList.Item>
-            <DataList.ItemLabel>Links</DataList.ItemLabel>
-            <DataList.ItemValue className="nodrag">
-              <HStack gap="xxs" flexWrap="wrap">
-                {links.map((link, i) => <Link key={`${i}-${link.url}`} value={link} />)}
-                {links.length === 0 && (
-                  <Txt size="xs" color={'text.non-essential'}>
-                    No links
-                  </Txt>
-                )}
-              </HStack>
-            </DataList.ItemValue>
-          </DataList.Item>
+          {links.length > 0 && (
+            <DataList.Item>
+              <DataList.ItemLabel>Links</DataList.ItemLabel>
+              <DataList.ItemValue className="nodrag">
+                <HStack gap="xxs" flexWrap="wrap">
+                  {links.map((link, i) => <Link key={`${i}-${link.url}`} value={link} />)}
+                </HStack>
+              </DataList.ItemValue>
+            </DataList.Item>
+          )}
         </DataList>
         <Divider
           label={<SectionHeader>Description</SectionHeader>}
@@ -149,9 +147,9 @@ export function ViewDetailsWindow() {
           mb={'xs'} />
       </VStack>
       {description.isEmpty && (
-        <EmptyBox flex="1" m="1">
+        <Txt px="1" size="sm" color={'text.non-essential'}>
           No description
-        </EmptyBox>
+        </Txt>
       )}
       {description.nonEmpty && (
         <ScrollArea style={{ flex: 1 }} scrollbars="y" overscrollBehavior="contain">

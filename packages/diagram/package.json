@@ -85,6 +85,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
+    "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
     "xstate": "catalog:xstate"

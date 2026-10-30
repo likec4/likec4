@@ -33,6 +33,7 @@ export const fonts = defineTokens.fonts({
 })
 
 export const fontSizes = defineTokens.fontSizes({
+  micro: { value: '9px', description: '9px — RESTRICTED: uppercase field labels only (textStyle fieldLabel)' },
   'xxs': { value: '10px', description: '10px — table th, eyebrows, micro-labels' },
   xs: { value: '12px', description: '12px — captions, metadata, dense table text' },
   sm: { value: '13px', description: '13px — secondary / labels' },
@@ -94,5 +95,6 @@ export const letterSpacings = defineTokens.letterSpacings({
   caps: {
     DEFAULT: { value: '0.12em', description: 'mono eyebrows / uppercase labels' },
     sm: { value: '0.06em', description: 'table headers' },
+    label: { value: '0.08em', description: 'tiny uppercase field labels' },
   },
 })

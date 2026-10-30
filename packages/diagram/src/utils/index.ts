@@ -25,4 +25,5 @@ export {
 
 export { readableText } from './readableText'
 export { roundDpr } from './roundDpr'
+export { isEventFromSearch } from './search-event'
 export { pickViewBounds } from './view-bounds'

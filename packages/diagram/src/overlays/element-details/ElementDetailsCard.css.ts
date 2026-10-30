@@ -151,20 +151,65 @@ export const viewButtonTitle = css({
   lineHeight: '[1.4]',
 })
 
-export const propertiesGrid = css({
-  flex: '1',
-  display: 'grid',
-  gridTemplateColumns: '[min-content 1fr]',
-  gridAutoRows: '[min-content max-content]',
-  gap: `[24px 20px]`,
-  alignItems: 'baseline',
-  justifyItems: 'stretch',
+// Properties tab: description reads as the main pane, facts sit in a sidebar (see PropertiesSplit)
+export const propertiesMain = css({
+  height: '100%',
+  // align the article with the card's left edge (icon, tabs, footer)
+  '& > .mantine-ScrollArea-viewport': {
+    paddingLeft: '0!',
+  },
 })
 
-export const propertyLabel = css({
-  justifySelf: 'end',
-  textAlign: 'right',
-  userSelect: 'none',
+export const propertiesArticle = css({
+  maxWidth: '[68ch]',
+  paddingTop: '2',
+  paddingBottom: '4',
+})
+
+export const propertiesSummary = css({
+  marginBottom: '4',
+  fontSize: 'lg',
+  lineHeight: 'lg',
+  color: 'text.dimmed',
+})
+
+export const propertiesDescription = css({
+  fontSize: '[15px]',
+  lineHeight: '[1.6]',
+})
+
+export const propertiesSidebar = css({
+  width: '100%',
+  height: '100%',
+  borderRadius: 'md',
+  backgroundColor: 'surface.sunken',
+  '& > .mantine-ScrollArea-viewport': {
+    padding: '3!',
+  },
+})
+
+export const facts = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '[18px]',
+})
+
+export const factLabel = css({
+  textStyle: 'fieldLabel',
+  margin: '0',
+  marginBottom: '1.5',
+})
+
+export const factValues = css({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '1',
+  fontSize: 'md',
+})
+
+export const technologyBadge = css({
+  minHeight: '[24px]',
+  backgroundColor: 'transparent',
 })
 
 export const resizeHandle = css({
@@ -259,5 +304,24 @@ export const tabs = sva({
       fontWeight: 'medium',
       letterSpacing: 'caps.sm',
     },
+  },
+})
+
+export const cardFooter = css({
+  flex: '[0]',
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  columnGap: 'lg',
+  rowGap: 'xs',
+  marginTop: '[-8px]',
+  paddingTop: 'xs',
+  borderTop: 'subtle',
+  // label and value on one line
+  '& > div': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'xs',
+    minWidth: '0',
   },
 })

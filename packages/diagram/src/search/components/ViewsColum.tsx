@@ -28,6 +28,7 @@ import { EmptyBox } from '../../components/EmptyBox'
 import { ViewIcon } from '../../components/ViewIcon'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
+import { METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
 import { centerY, moveFocusToSearchInput, queryAllFocusable, viewMatchesSearch, viewTitleWithFolder } from './utils'
@@ -46,7 +47,7 @@ const useFoundViews = () => {
   return useMemo(() => {
     let views = [...likec4model.views()]
     if (search) {
-      if (search.startsWith('kind:')) {
+      if (search.startsWith('kind:') || search.startsWith(METADATA_SEARCH_PREFIX)) {
         views = []
       } else {
         const searchTag = search.startsWith('#') ? search.slice(1) : null
