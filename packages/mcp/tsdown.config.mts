@@ -14,6 +14,12 @@ export default defineConfig([
       resolve: {
         conditionNames: ['production', 'sources', 'node', 'import', 'default'],
       },
+      onLog(level, log, defaultHandler) {
+        if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return // Ignore module level directive warnings
+        }
+        defaultHandler(level, log) // otherwise, just print the log
+      },
     },
     dts: false,
   },
@@ -37,6 +43,9 @@ export default defineConfig([
       alwaysBundle: [/.*/],
     },
     inputOptions: {
+      resolve: {
+        conditionNames: ['sources', 'module', 'import', 'default'],
+      },
       onLog(level, log, defaultHandler) {
         if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
           return // Ignore module level directive warnings
