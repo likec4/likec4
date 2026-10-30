@@ -147,7 +147,7 @@ function waitForRebuild(
       logger.warn`documents were not rebuilt in ${timeoutMs}ms after the edit`
       subscription.dispose()
       resolve()
-    }, timeoutMs)
+    }, timeoutMs).unref()
   })
 }
 

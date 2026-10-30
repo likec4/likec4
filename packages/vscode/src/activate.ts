@@ -36,8 +36,6 @@ export function activateExtension(extensionKind: 'node' | 'web') {
 
   registerCommands()
 
-  monitorFileSystemEvents()
-
   rpc.onRequestOpenView(({ viewId, projectId }) => {
     logger.debug`rpc request open view ${viewId} of project ${projectId}`
     preview.open({
@@ -61,39 +59,4 @@ export function activateExtension(extensionKind: 'node' | 'web') {
     preview,
     client,
   }
-}
-
-function monitorFileSystemEvents() {
-  const rpc = useRpc()
-  const { logger } = useExtensionLogger('fswatcher')
-
-  // Watch for config file changes
-  const configWatcher = useFileSystemWatcher(toRef(`**/{${ConfigFilenames.join(',')}}`))
-  configWatcher.onDidChange((uri) => {
-    logger.debug(`Config file changed: ${uri}`)
-    void rpc.registerProject({ configUri: uri.toString() })
-  })
-  configWatcher.onDidCreate((uri) => {
-    logger.debug(`Config file created: ${uri}`)
-    void rpc.registerProject({ configUri: uri.toString() })
-  })
-  configWatcher.onDidDelete((uri) => {
-    logger.debug(`Config file deleted: ${uri}`)
-    void rpc.reloadProjects()
-  })
-
-  // Watch for view snapshot changes
-  const viewSnapshotWatcher = useFileSystemWatcher(toRef(`**/*.likec4.snap`))
-  viewSnapshotWatcher.onDidChange((uri) => {
-    logger.debug`view snapshot changed: ${uri.fsPath}`
-    void rpc.notifyDidChangeSnapshot('update', uri)
-  })
-  viewSnapshotWatcher.onDidCreate((uri) => {
-    logger.debug`view snapshot created: ${uri.fsPath}`
-    void rpc.notifyDidChangeSnapshot('update', uri)
-  })
-  viewSnapshotWatcher.onDidDelete((uri) => {
-    logger.debug`view snapshot deleted: ${uri.fsPath}`
-    void rpc.notifyDidChangeSnapshot('delete', uri)
-  })
 }

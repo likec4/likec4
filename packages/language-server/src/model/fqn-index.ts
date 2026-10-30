@@ -60,8 +60,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentResetBelow(
         DocumentState.IndexedContent,
         ({ doc }) => {
-          if (this.documentCache.delete(doc.textDocument.uri)) {
-            this.logger.trace(`document cache entry deleted for ${doc.textDocument.uri}`)
+          if (this.documentCache.delete(doc.textDocument.uri) && this.logger.isEnabledFor('trace')) {
+            this.logger.trace(
+              `clear cache for ${services.shared.workspace.WorkspaceManager.relativePath(doc.textDocument.uri)}`,
+            )
           }
         },
       ),

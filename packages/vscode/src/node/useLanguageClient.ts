@@ -12,6 +12,7 @@ import * as vscode from 'vscode'
 import {
   type LanguageClientOptions,
   type ServerOptions,
+  CancellationStrategy,
   LanguageClient as NodeLanguageClient,
   State,
   TransportKind,
@@ -69,7 +70,9 @@ const useLanguageClient = defineService(() => {
   const clientOptions: LanguageClientOptions = {
     documentSelector: toValue(documentSelector) as any,
     outputChannel: useDisposable(vscode.window.createOutputChannel('LikeC4 Language Server', { log: true })),
-    diagnosticCollectionName: 'likec4',
+    connectionOptions: {
+      cancellationStrategy: CancellationStrategy.Message,
+    },
     markdown: {
       isTrusted: true,
       supportHtml: true,

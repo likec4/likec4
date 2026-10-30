@@ -1,10 +1,11 @@
 import nodeModulesPolyfillPlugin from '@rolldown/plugin-node-polyfills'
-import { existsSync, readdirSync, rmSync } from 'node:fs'
-import { cp, mkdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { cp } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { isProduction } from 'std-env'
 import { defineConfig } from 'tsdown'
+import { fs } from 'zx'
 
 const isDev = !isProduction
 
@@ -20,9 +21,6 @@ const shared = {
   dts: false,
   deps: {
     neverBundle: ['vscode'],
-    alwaysBundle: [
-      /@likec4/,
-    ],
   },
 }
 
@@ -40,15 +38,9 @@ export default defineConfig([
         conditionNames: ['sources', 'node', 'import', 'default'],
       },
     },
-    hooks: {
-      async 'build:done'() {
-        await copySchema()
-        await copySkills()
-        await copyPreview()
-      },
-    },
   },
   {
+    ...shared,
     outDir: 'dist/node',
     entry: [
       'src/node/language-server.ts',
@@ -62,10 +54,24 @@ export default defineConfig([
       resolve: {
         conditionNames: ['sources', 'node', 'import', 'default'],
       },
+      onLog(level, log, defaultHandler) {
+        if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return // Ignore module level directive warnings
+        }
+        defaultHandler(level, log) // otherwise, just print the log
+      },
     },
-    ...shared,
+    hooks: {
+      async 'build:done'() {
+        await copySchema()
+        await copySkills()
+        await copyPreview()
+        await copyMcpApp()
+      },
+    },
   },
   {
+    ...shared,
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
     platform: 'browser',
@@ -76,12 +82,12 @@ export default defineConfig([
         conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],
       },
     },
-    ...shared,
     plugins: [
       nodeModulesPolyfillPlugin(),
     ],
   },
   {
+    ...shared,
     outDir: 'dist/browser',
     entry: 'src/browser/language-server-worker.ts',
     target: false,
@@ -92,7 +98,6 @@ export default defineConfig([
         conditionNames: ['worker', 'browser', 'import'],
       },
     },
-    ...shared,
     plugins: [
       nodeModulesPolyfillPlugin(),
     ],
@@ -109,13 +114,8 @@ async function copySchema() {
 }
 
 function emptyDir(dir: string) {
-  if (!existsSync(dir)) {
-    return
-  }
   console.info('Cleaning: %s', dir)
-  for (const file of readdirSync(dir)) {
-    rmSync(resolve(dir, file), { recursive: true, force: true })
-  }
+  fs.emptyDirSync(dir)
 }
 
 async function copySkills() {
@@ -135,10 +135,24 @@ async function copyPreview(): Promise<void> {
   console.info('Copy vscode preview from %s', vscodePreview)
 
   emptyDir('dist/preview')
-  await mkdir('dist/preview', { recursive: true })
   await cp(
     vscodePreview,
     'dist/preview',
+    { recursive: true },
+  )
+}
+
+async function copyMcpApp(): Promise<void> {
+  const mcpApp = resolve('../mcp/dist/app')
+  if (!existsSync(mcpApp)) {
+    throw new Error(`mcp-app dist not found: ${mcpApp}`)
+  }
+  console.info('Copy mcp app from %s', mcpApp)
+
+  emptyDir('dist/node/app')
+  await cp(
+    mcpApp,
+    'dist/node/app',
     { recursive: true },
   )
 }

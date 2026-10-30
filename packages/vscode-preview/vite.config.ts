@@ -7,6 +7,8 @@ import { defineConfig } from 'vite'
 export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
+  const nodeEnv = isDev ? 'development' : 'production'
+  process.env['NODE_ENV'] = 'production'
   return {
     resolve: {
       conditionNames: ['sources', 'module', 'import', 'default'],
@@ -17,10 +19,9 @@ export default defineConfig(({ mode }) => {
     },
     mode: isDev ? 'development' : 'production',
     define: {
-      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
     },
     css: {
-      transformer: 'postcss',
       postcss: {
         plugins: [
           postcssPanda() as any,
@@ -32,6 +33,7 @@ export default defineConfig(({ mode }) => {
         development: false,
       },
     },
+    tsconfig: 'tsconfig.src.json',
     build: {
       outDir: isDev ? resolve('..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
@@ -43,7 +45,6 @@ export default defineConfig(({ mode }) => {
       assetsDir: '',
       modulePreload: false,
       rolldownOptions: {
-        tsconfig: 'tsconfig.src.json',
         input: [
           'index.html',
           'src/fonts.css',

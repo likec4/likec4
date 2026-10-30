@@ -1,9 +1,12 @@
 import { type DiagramNode, type Icon, type LayoutedView, type ProjectId, type ViewId, exact } from '@likec4/core'
-import { onNextTick, stringHash } from '@likec4/core/utils'
+import { objectHash, onNextTick, stringHash } from '@likec4/core/utils'
 import JSON5 from 'json5'
 import { Disposable, SimpleCache, URI, UriUtils } from 'langium'
-import pLimit from 'p-limit'
-import { indexBy, prop } from 'remeda'
+import pLimit, { limitFunction } from 'p-limit'
+import PQueue from 'p-queue'
+import { basename } from 'pathe'
+import { funnel, indexBy, prop } from 'remeda'
+import { FileChangeType } from 'vscode-languageserver-protocol'
 import {
   type Location,
   Position,
@@ -61,16 +64,18 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
 
   private listeners: ManualLayoutUpdateListener[] = []
 
-  #limit = pLimit(1)
+  #queue = new PQueue({ concurrency: 4, timeout: 15000, throwOnTimeout: true })
 
   constructor(private services: LikeC4SharedServices) {
     super()
-    this.cache = new SimpleCache()
 
     this.onDispose(
-      Disposable.create(() => {
+      this.cache = new SimpleCache(),
+      Disposable.create(async () => {
+        this.triggerUpdate.cancel()
+        this.#queue.clear()
+        await this.#queue.onIdle()
         this.listeners.length = 0
-        this.cache.clear()
       }),
     )
 
@@ -79,6 +84,31 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
         services.workspace.ProjectsManager.onProjectsUpdate(() => {
           this.clearCaches()
         }),
+        services.lsp.DocumentUpdateHandler.onWatchedFilesChangeBy(
+          // Only process like-c4 config files
+          ({ uri }) => isManualLayoutFile(basename(uri)),
+          (changes) => {
+            layoutsLogger.trace`onWatchedFilesChangeBy\n${changes.map((c) => c.uri)}`
+            for (const change of changes) {
+              const uri = URI.parse(change.uri)
+              this.handleFileSystemUpdate(
+                change.type === FileChangeType.Deleted ?
+                  {
+                    delete: uri,
+                  } :
+                  {
+                    update: uri,
+                  },
+              ).catch((error) => {
+                layoutsLogger.warn(`Error handling onWatchedFilesChangeBy {change}`, {
+                  change,
+                  error,
+                })
+              })
+            }
+            return
+          },
+        ),
       )
     })
   }
@@ -86,12 +116,15 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
   async handleFileSystemUpdate(
     event: { update: URI; delete?: never } | { delete: URI; update?: never },
   ): Promise<void> {
+    if (layoutsLogger.isEnabledFor('trace')) {
+      layoutsLogger.trace`handle file system event ${event}`
+    }
     const uri = event.update ?? event.delete
     let viewId = viewIdFromURI(uri) ?? undefined
     const projectId = this.services.workspace.ProjectsManager.ownerProjectId(uri)
     this.cache.delete(projectId)
     if ('delete' in event) {
-      this.triggerUpdate(exact({
+      this.triggerUpdate.call(exact({
         removed: uri,
         projectId,
         viewId,
@@ -106,11 +139,11 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
       if (snapshot) {
         viewId = snapshot.id
       } else {
-        layoutsLogger.error(`Snapshot ${uri.fsPath} does not exist or is invalid`)
+        layoutsLogger.warn(`Snapshot ${uri.fsPath} does not exist or is invalid`)
         viewId = 'index' as ViewId
       }
     }
-    this.triggerUpdate({
+    this.triggerUpdate.call({
       updated: uri,
       projectId,
       viewId,
@@ -134,43 +167,46 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
     const fs = this.services.workspace.FileSystemProvider
     const outDir = getManualLayoutsOutDir(project)
     const manualLayouts = [] as LayoutedView[]
-    let hash = stringHash(UriUtils.relative(project.folderUri, outDir))
+    let hash = stringHash(project.id)
     try {
       const files = await fs.scanDirectory(outDir, isManualLayoutFile)
       if (files.length === 0) {
         return null
       }
+      logger.trace`found ${files.length} manual layouts in ${
+        this.services.workspace.WorkspaceManager.relativePath(outDir)
+      }`
 
       // Guarantee consistent order (for hash calculation)
       files.sort(compareByUri)
 
       for (const file of files) {
-        const relativePath = this.services.workspace.WorkspaceManager.relativePath(file.uri)
+        const relativePath = UriUtils.relative(project.folderUri, file.uri)
         try {
           logger.trace`read snapshot ${relativePath}`
           const content = await fs.readFile(file.uri)
           const parsed = JSON5.parse<LayoutedView>(content)
-          hash = stringHash(
-            hash + relativePath + content,
-          )
+          hash = objectHash({
+            basename: basename(file.uri.path),
+            content,
+            hash,
+          })
           const resolved = this.resolveIconPathsAfterRead(parsed, project.folderUri)
           manualLayouts.push({
             ...resolved,
             _layout: 'manual',
           })
         } catch (err) {
-          logger.warn(`Failed to read view snapshot {relativePath}`, { relativePath, err })
+          logger.warn(`Failed to read snapshot {relativePath}`, { relativePath, err })
         }
       }
-      if (manualLayouts.length) {
-        logger.trace`loaded ${manualLayouts.length} manual layouts, hash: ${hash}`
-      }
     } catch (err) {
-      logger.warn(`Failed to read manual layouts for ${project.folderUri.fsPath}`, { err })
+      logger.warn(`Failed to read snapshots for ${project.folderUri.fsPath}`, { err })
     }
     if (manualLayouts.length === 0) {
       return null
     }
+    logger.trace`loaded ${manualLayouts.length} manual layouts, hash: ${hash}`
     const views = indexBy(manualLayouts, prop('id'))
     return {
       hash,
@@ -199,63 +235,73 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
   }
 
   async read(project: Project): Promise<ManualLayoutsSnapshot | null> {
-    return await this.#limit(async () => {
-      const cached = this.cache.get(project.id)
-      if (cached !== undefined) {
-        layoutsLogger.trace`cache hit project ${project.id}`
-        return cached
-      }
-      const result = await this.readManualLayouts(project)
-      this.cache.set(project.id, result)
-      return result
-    })
+    return await this.#queue.add(
+      async () => {
+        const cached = this.cache.get(project.id)
+        if (cached !== undefined) {
+          layoutsLogger.trace`cache hit project ${project.id}`
+          return cached
+        }
+        const result = await this.readManualLayouts(project)
+        this.cache.set(project.id, result)
+        return result
+      },
+      { throwOnTimeout: true },
+    )
   }
 
   async write(project: Project, layouted: LayoutedView): Promise<Location> {
-    const logger = layoutsLogger.getChild(project.id)
-    const outDir = getManualLayoutsOutDir(project)
-    const file = UriUtils.joinPath(outDir, fileName(layouted.id))
-    const workspaceRelativePath = this.services.workspace.WorkspaceManager.relativePath(file)
+    // Wait for all pending operations to complete
+    await this.#queue.onIdle()
+    return await this.#queue.add(
+      async () => {
+        const logger = layoutsLogger.getChild(project.id)
+        const outDir = getManualLayoutsOutDir(project)
+        const file = UriUtils.joinPath(outDir, fileName(layouted.id))
+        const workspaceRelativePath = this.services.workspace.WorkspaceManager.relativePath(file)
 
-    // Ensure the manualLayout field is omitted (may exist in migration)
-    if ('manualLayout' in layouted) {
-      const { manualLayout: _, ...rest } = layouted
-      layouted = rest
-    }
-    const content = JSON5.stringify(
-      // Normalize icon paths before writing
-      this.normalizeIconPathsForWrite(layouted, project.folderUri),
-      {
-        space: 2,
-        quote: '\'',
+        // Ensure the manualLayout field is omitted (may exist in migration)
+        if ('manualLayout' in layouted) {
+          const { manualLayout: _, ...rest } = layouted
+          layouted = rest
+        }
+        const content = JSON5.stringify(
+          // Normalize icon paths before writing
+          this.normalizeIconPathsForWrite(layouted, project.folderUri),
+          {
+            space: 2,
+            quote: '\'',
+          },
+        )
+        const location = {
+          uri: file.toString(),
+          range: Range.create(
+            Position.create(0, 0),
+            Position.create(content.split('\n').length - 1, 1),
+          ),
+        }
+        logger.debug`write snapshot of ${layouted.id} to ${workspaceRelativePath}`
+        const fs = this.services.workspace.FileSystemProvider
+        try {
+          await fs.writeFile(file, content + '\n')
+          // Clean cache after successful write
+          this.cache.delete(project.id)
+          this.triggerUpdate.call({
+            updated: file,
+            projectId: project.id,
+            viewId: layouted.id,
+          })
+        } catch (err) {
+          logger.warn(`Failed to write snapshot {viewId} to {workspaceRelativePath}`, {
+            viewId: layouted.id,
+            workspaceRelativePath,
+            err,
+          })
+        }
+        return location
       },
+      { throwOnTimeout: true },
     )
-    const location = {
-      uri: file.toString(),
-      range: Range.create(
-        Position.create(0, 0),
-        Position.create(content.split('\n').length - 1, 1),
-      ),
-    }
-    logger.debug`write snapshot of ${layouted.id} to ${workspaceRelativePath}`
-    const fs = this.services.workspace.FileSystemProvider
-    try {
-      await fs.writeFile(file, content + '\n')
-      // Clean cache after successful write
-      this.cache.delete(project.id)
-      this.triggerUpdate({
-        updated: file,
-        projectId: project.id,
-        viewId: layouted.id,
-      })
-    } catch (err) {
-      logger.warn(`Failed to write snapshot {viewId} to {workspaceRelativePath}`, {
-        viewId: layouted.id,
-        workspaceRelativePath,
-        err,
-      })
-    }
-    return location
   }
 
   async remove(project: Project, view: ViewId): Promise<Location | null> {
@@ -264,7 +310,7 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
     const file = UriUtils.joinPath(outDir, fileName(view))
     const workspaceRelativePath = this.services.workspace.WorkspaceManager.relativePath(file)
 
-    logger.debug`delete snapshot of ${view} in project ${project.id}. File: ${file.fsPath}`
+    logger.debug`delete snapshot of ${view} in project ${project.id}. File: ${workspaceRelativePath}`
 
     const location = {
       uri: file.toString(),
@@ -274,12 +320,12 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
     try {
       const fs = this.services.workspace.FileSystemProvider
       if (!(await fs.deleteFile(file))) {
-        logger.warn`Snapshot ${view} did not exist at ${file.fsPath}`
+        logger.warn`Snapshot ${view} did not exist at ${workspaceRelativePath}`
         return null
       }
       // Clean cache after successful deletion
       this.cache.delete(project.id)
-      this.triggerUpdate({
+      this.triggerUpdate.call({
         removed: file,
         projectId: project.id,
         viewId: view,
@@ -299,13 +345,34 @@ export class DefaultLikeC4ManualLayouts extends ADisposable implements LikeC4Man
     this.cache.clear()
   }
 
-  private triggerUpdate(event: ManualLayoutUpdateEvent): void {
-    // Copy to avoid modification during iteration
-    const listeners = [...this.listeners]
-    for (const listener of listeners) {
-      safeCall(() => listener(event))
-    }
-  }
+  /**
+   * Triggers updates to all listeners with the given events.
+   * Events are deduplicated and grouped by URI.
+   */
+  private triggerUpdate = funnel(
+    (events) => {
+      // Copy to avoid modification during iteration
+      const listeners = [...this.listeners]
+      for (const listener of listeners) {
+        for (const e of events.values()) {
+          safeCall(() => listener(e))
+        }
+      }
+    },
+    {
+      maxBurstDurationMs: 100,
+      minQuietPeriodMs: 30,
+      reducer(
+        accumulator: Map<string, ManualLayoutUpdateEvent> | undefined,
+        current: ManualLayoutUpdateEvent,
+      ) {
+        const uri = 'updated' in current ? current.updated.toString() : current.removed.toString()
+        accumulator ??= new Map<string, ManualLayoutUpdateEvent>()
+        accumulator.set(uri, current)
+        return accumulator
+      },
+    },
+  )
 
   /**
    * When we save snapshot - it may contain fullpath to icons on the machine it was created,

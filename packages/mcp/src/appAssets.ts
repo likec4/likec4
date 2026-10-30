@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 // Try both depths, same approach as packages/leanix-bridge/src/contracts.ts.
 function readDistAsset(relativePath: string): string {
   const candidateUrls = [
+    new URL(`../${relativePath}`, import.meta.url),
     new URL(`../dist/${relativePath}`, import.meta.url),
     new URL(`../../dist/${relativePath}`, import.meta.url),
   ]
