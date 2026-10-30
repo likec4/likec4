@@ -79,6 +79,7 @@
     "d3-shape": "^3.2.0",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
+    "fuse.js": "catalog:utils",
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",

@@ -1,6 +1,6 @@
 import { Builder } from '@likec4/core/builder'
 import { describe, expect, it, vi } from 'vitest'
-import { moveFocusToSearchInput, viewMatchesSearch, viewTitleWithFolder } from './utils'
+import { createViewSearch, moveFocusToSearchInput, viewTitleWithFolder } from './utils'
 
 // Diagram tests run without a DOM, so use minimal stand-ins for the input and its root node
 function setup(value: string) {
@@ -75,9 +75,9 @@ describe('viewTitleWithFolder', () => {
   })
 
   it('finds views by the name of their folder', () => {
-    const found = [...model.views()].filter(view => viewMatchesSearch(view, 'systemlandscape')).map(view => view.id)
-    expect(found).toEqual(['soll'])
-    expect(viewMatchesSearch(model.view('nested'), 'one / two')).toBe(true)
-    expect(viewMatchesSearch(model.view('index'), 'systemlandscape')).toBe(false)
+    const search = createViewSearch([...model.views()])
+    const ids = (text: string) => search(text).map(view => view.id)
+    expect(ids('systemlandscape')).toEqual(['soll'])
+    expect(ids('one / two')).toEqual(['nested'])
   })
 })
