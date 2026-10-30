@@ -1425,6 +1425,9 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 6.2.1
+      fuse.js:
+        specifier: catalog:utils
+        version: 7.5.0
       immer:
         specifier: catalog:utils
         version: 11.1.21
