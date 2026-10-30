@@ -135,7 +135,7 @@ export function LikeC4Diagram<A extends Any = Any>({
   if (initialRef.current == null) {
     const { xynodes, xyedges } = convertToXYFlow({
       view,
-      dynamicViewVariant: dynamicViewVariant ?? 'diagram',
+      dynamicViewVariant: dynamicViewVariant ?? (view._type === 'dynamic' ? view.variant : 'diagram'),
       elementViewVariant: 'diagram',
       where: where ?? null,
       currentViewId: view.id,
