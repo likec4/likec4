@@ -1,3 +1,4 @@
+import { ProjectId } from '@likec4/core'
 import { URI } from 'langium'
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -5,7 +6,7 @@ import { join } from 'node:path'
 import { platform } from 'node:process'
 import { describe, it, vi } from 'vitest'
 import { FileChangeType } from 'vscode-languageserver'
-import { createTestServices } from '../test'
+import { createMultiProjectTestServices, createTestServices } from '../test'
 import { WithFileSystem } from './LikeC4FileSystem'
 
 const markdown = '# Title\n\nSome **markdown**'
@@ -259,7 +260,7 @@ describe('descriptionFile', () => {
     vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
     const descriptionFiles = t.services.shared.workspace.DescriptionFiles
 
-    const doc = await t.validate(`
+    await t.validate(`
       specification {
         element component
       }
@@ -270,7 +271,10 @@ describe('descriptionFile', () => {
       }
     `)
 
+    // Files are read when the model is built
     const uri = URI.parse('/test/workspace/src/spec.md')
+    expect(descriptionFiles.isReferenced(uri)).toBe(false)
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# first' })
     expect(descriptionFiles.isReferenced(uri)).toBe(true)
 
     const updated: string[] = []
@@ -284,7 +288,8 @@ describe('descriptionFile', () => {
     await vi.waitFor(() => {
       expect(updated).toHaveLength(1)
     })
-    expect(descriptionFiles.get(doc.document.uri, './spec.md')).toEqual({ content: '# second' })
+    // The model is rebuilt with the new content (not taken from the cache)
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# second' })
     subscription.dispose()
   })
 
@@ -536,23 +541,16 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
       }
     `)
 
+  await t.buildModel()
+
   const updated: string[] = []
   descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
   // `onProjectsUpdate` clears the caches while the services keep running, and the model builder
   // does not register its listener a second time
   descriptionFiles.clearCaches()
 
-  // the documents are parsed again, which refills the cache the clear emptied
-  await t.validate(`
-      specification {
-        element component
-      }
-      model {
-        component c1 {
-          descriptionFile ./spec.md
-        }
-      }
-    `)
+  // the model is built again, which refills the cache the clear emptied
+  await t.buildModel()
 
   files['/test/workspace/src/spec.md'] = '# second'
   t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
@@ -561,6 +559,70 @@ it('keeps the model listeners when the caches are cleared', async ({ expect }) =
 
   await vi.waitFor(() => {
     expect(updated).toHaveLength(1)
+  })
+})
+
+describe('descriptionFile in multiple projects', () => {
+  const spec = `
+    specification {
+      element component
+    }
+  `
+
+  it('rebuilds only the projects that use the changed file', async ({ expect }) => {
+    await using t = await createMultiProjectTestServices({
+      owner: {
+        'model.c4': `
+          ${spec}
+          model {
+            component a {
+              descriptionFile ./a.md
+            }
+          }
+        `,
+      },
+      consumer: {
+        'model.c4': `
+          import { a } from 'owner'
+          model {
+            component c
+            c -> a
+          }
+        `,
+      },
+      unrelated: {
+        'model.c4': `
+          ${spec}
+          model {
+            component u
+          }
+        `,
+      },
+    })
+    const files: Record<string, string> = { '/test/workspace/src/owner/a.md': '# first' }
+    vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
+      .mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
+
+    const consumerBefore = await t.buildModel('consumer')
+    expect(consumerBefore.imports[ProjectId('owner')]?.[0]).toHaveProperty('description', { md: '# first' })
+    const unrelatedBefore = await t.buildLikeC4Model('unrelated')
+
+    const notified = new Set<string>()
+    t.services.likec4.ModelBuilder.onModelParsed(projectId => notified.add(projectId))
+
+    files['/test/workspace/src/owner/a.md'] = '# second'
+    t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+      changes: [{ uri: URI.file('/test/workspace/src/owner/a.md').toString(), type: FileChangeType.Changed }],
+    })
+    await vi.waitFor(() => {
+      expect(notified).toEqual(new Set(['owner', 'consumer']))
+    })
+
+    const consumerAfter = await t.buildModel('consumer')
+    expect(consumerAfter.imports[ProjectId('owner')]?.[0]).toHaveProperty('description', { md: '# second' })
+    expect((await t.buildModel('owner')).elements['a']).toHaveProperty('description', { md: '# second' })
+    // Not affected project is taken from the cache
+    expect(await t.buildLikeC4Model('unrelated')).toBe(unrelatedBefore)
   })
 })
 

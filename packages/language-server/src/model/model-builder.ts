@@ -45,9 +45,8 @@ import {
   values,
 } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
-import { type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
+import type { ParsedLikeC4LangiumDocument } from '../ast'
 import type {
-  DescriptionFileReference,
   LikeC4DescriptionFiles,
   LikeC4ManualLayouts,
   ManualLayoutsSnapshot,
@@ -174,17 +173,14 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       this.manualLayouts.onManualLayoutUpdate(({ projectId }) => {
         this.notifyListeners(projectId)
       }),
-      // A referenced description file changed: the parsed model carries its content, so the caches
-      // have to go with it. Not only the ones of the project that owns the file: a project that
-      // imports from it holds a cached copy of the imported elements (see
-      // `unsafeSyncJoinedModelData`) and would keep serving the old description. A precise walk of
-      // the project graph is possible, but a description file changing is rare enough that clearing
-      // the model cache is the cheaper honest answer.
-      this.descriptionFiles.onDescriptionFileUpdate(() => {
-        this.cache.clear()
-        this.notifyListeners(
-          Array.from(this.services.shared.workspace.LangiumDocuments.all, doc => doc.uri),
-        )
+      // A referenced description file changed: the project is rebuilt (the hash of its model data
+      // includes the content of the files, see `projectDocumentsCache`). Projects that import from it
+      // are reset as well (via buildData reset), and notified too
+      this.descriptionFiles.onDescriptionFileUpdate(({ projectId }) => {
+        this.cache.of(projectId).buildData.reset()
+        for (const affected of [projectId, ...this.cache.importersOf(projectId)]) {
+          this.notifyListeners(affected)
+        }
       }),
     )
 
@@ -210,7 +206,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
   private projectDocumentsCache(projectId: c4.ProjectId): ProjectDocumentsCache {
     const project = this.projects.getProject(projectId)
-    return this.parser.documents(projectId).reduce(
+    const result: ProjectDocumentsCache = this.parser.documents(projectId).reduce(
       (acc, doc) => {
         if (acc === null) {
           return {
@@ -228,6 +224,12 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       project,
       hash: null,
     }
+    // Descriptions are resolved from the referenced files when the model is built
+    const descriptionFilesHash = this.descriptionFiles.hash(projectId)
+    if (result.hash !== null && descriptionFilesHash) {
+      result.hash = stringHash(result.hash + descriptionFilesHash)
+    }
+    return result
   }
 
   /**
@@ -497,31 +499,22 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   }
 
   /**
-   * Reads the files referenced by `descriptionFile` in every parsed document, and parses the
-   * documents whose content arrived again.
+   * Reads the files referenced by `descriptionFile` (the ones not read yet), so the synchronous build
+   * can resolve them into descriptions.
    *
    * A parsed entity holds the reference to its file until the model is built, and the read belongs
-   * here - not to the document build phases - so a workspace that is only parsed reads nothing. The
-   * parser is synchronous, so the documents that were parsed before their files were read have to be
-   * parsed again for the descriptions to be resolved (they are parsed again anyway when their content
-   * is in the parser hash).
+   * here - not to the document build phases - so a workspace that is only parsed reads nothing.
+   * Files of all projects are read: the build of a project includes elements imported from other projects.
    */
   private async readDescriptionFiles(): Promise<void> {
-    const refs: DescriptionFileReference[] = []
-    for (const doc of this.services.shared.workspace.LangiumDocuments.all) {
-      if (!isLikeC4LangiumDocument(doc)) {
-        continue
+    for (const projectId of this.projects.all) {
+      const referenced = new Set<string>()
+      for (const doc of this.parser.documents(projectId)) {
+        for (const path of doc.c4DescriptionFiles) {
+          referenced.add(path)
+        }
       }
-      for (const ref of doc.c4DescriptionFiles ?? []) {
-        refs.push({ docUri: doc.uri, ...ref })
-      }
-    }
-    if (refs.length === 0) {
-      return
-    }
-    const reread = await this.descriptionFiles.read(refs)
-    if (reread.length > 0) {
-      this.parser.reparse(reread)
+      await this.descriptionFiles.read(projectId, referenced)
     }
   }
 
@@ -735,6 +728,25 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
       }
       importers.add(project)
     }
+  }
+
+  /**
+   * Projects that (transitively) import from the given project
+   */
+  public importersOf(project: ProjectId): ProjectId[] {
+    const visited = new Set<ProjectId>([project])
+    const queue = [project]
+    let next: ProjectId | undefined
+    while ((next = queue.pop())) {
+      for (const importer of this.importedBy.get(next) ?? []) {
+        if (!visited.has(importer)) {
+          visited.add(importer)
+          queue.push(importer)
+        }
+      }
+    }
+    visited.delete(project)
+    return [...visited]
   }
 
   /**

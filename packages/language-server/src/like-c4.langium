@@ -513,7 +513,6 @@ CustomElementProperties:
   props+=(
     NavigateToProperty |
     ElementStringProperty |
-    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     StyleProperty
@@ -526,7 +525,6 @@ CustomRelationProperties:
   props+=(
     RelationNavigateToProperty |
     RelationStringProperty |
-    DescriptionFileProperty |
     NotationProperty |
     NotesProperty |
     RelationshipStyleProperty |

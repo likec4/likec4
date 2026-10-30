@@ -108,13 +108,6 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             }
             return acc
           }
-          if (ast.isDescriptionFileProperty(prop)) {
-            const parsed = this.parseDescriptionProperty(prop)
-            if (parsed) {
-              acc.custom['description'] = parsed
-            }
-            return acc
-          }
           if (ast.isElementStringProperty(prop)) {
             if (prop.key === 'description' || prop.key === 'summary') {
               const parsed = this.parseMarkdownOrString(prop.value)
@@ -349,13 +342,6 @@ export function ExpressionV2Parser<TBase extends Base>(B: TBase) {
             const value = this.parseMarkdownOrString(prop.value)
             if (value) {
               acc[prop.key] = value
-            }
-            return acc
-          }
-          if (ast.isDescriptionFileProperty(prop)) {
-            const parsed = this.parseDescriptionProperty(prop)
-            if (parsed) {
-              acc['description'] = parsed
             }
             return acc
           }

@@ -1,9 +1,10 @@
-import { onNextTick } from '@likec4/core/utils'
-import { Disposable, URI, UriUtils } from 'langium'
-import { entries, groupBy, uniqueBy } from 'remeda'
+import type { ProjectId } from '@likec4/core/types'
+import { compareNatural, onNextTick, stringHash } from '@likec4/core/utils'
+import { Disposable, URI } from 'langium'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { ADisposable, safeCall } from '../utils'
+import type { Project } from '../workspace/ProjectsManager'
 import type {
   DescriptionFileContent,
   DescriptionFileReference,
@@ -13,12 +14,6 @@ import type {
 } from './types'
 
 const descriptionFilesLogger = rootLogger.getChild('description-files')
-
-type DescriptionFile = {
-  /** Missing when the path must not be read at all (outside of the project, another scheme, ...) */
-  readonly resolved?: URI
-  readonly content: DescriptionFileContent
-}
 
 /**
  * Whether `path` is inside `folder`, both being file system paths.
@@ -44,24 +39,31 @@ function isInsideProject(folder: string, path: string): boolean {
 /**
  * The content of the files referenced by `descriptionFile`.
  *
- * The parser is synchronous, so it cannot read them while it parses, and the files are read when the
- * model is built - not while documents are parsed, which keeps a workspace that is only parsed free
- * of file reads. A parsed entity holds the reference to its file until then, and is parsed again when
- * the content arrives.
+ * The parser only records the references, and the files are read when the model is built - not while
+ * documents are parsed, which keeps a workspace that is only parsed free of file reads.
+ * The model builder reads the files of the project before the (synchronous) build, and the build
+ * takes their content from here.
  *
  * A file is only read when it is inside the project folder: the path comes from the DSL, and must not
  * be able to pull in an arbitrary file of the machine (the rule the icon paths already follow).
  */
 export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4DescriptionFiles {
   /**
-   * Per document, the files it references, keyed by the path as written in the DSL.
+   * Per project, the files it references (keyed by the normalized URI).
+   * `null` when the file is referenced, but not read yet (or changed on disk since it was read).
    */
-  protected files = new Map<string, Map<string, DescriptionFile>>()
+  protected files = new Map<ProjectId, Map<string, DescriptionFileContent | null>>()
 
   /**
-   * The documents whose files were read (or changed on disk) after they were parsed last.
+   * Per project, the hash of the referenced files and their content (computed lazily)
    */
-  private stale = new Set<string>()
+  private hashes = new Map<ProjectId, string>()
+
+  /**
+   * Incremented on every change on disk: a read that started before the change does not store
+   * what it read (it may be stale), the next build reads the file again.
+   */
+  private generation = 0
 
   private listeners: DescriptionFileUpdateListener[] = []
 
@@ -71,8 +73,7 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
     // unsubscribed. A cache clear is not a disposal — `onProjectsUpdate` clears the caches while the
     // services keep running, and the model builder does not register its listener a second time.
     this.onDispose(Disposable.create(() => {
-      this.files.clear()
-      this.stale.clear()
+      this.clearCaches()
       this.listeners.length = 0
     }))
 
@@ -83,12 +84,7 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
           ({ uri }) => this.isReferenced(URI.parse(uri)),
           (changes) => {
             for (const change of changes) {
-              this.onReferencedFileChange(URI.parse(change.uri)).catch(error => {
-                descriptionFilesLogger.warn(`Error handling description file change {uri}`, {
-                  uri: change.uri,
-                  error,
-                })
-              })
+              this.onReferencedFileChange(URI.parse(change.uri))
             }
           },
         ),
@@ -97,20 +93,81 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
   }
 
   clearCaches(): void {
+    this.generation++
     this.files.clear()
-    this.stale.clear()
+    this.hashes.clear()
   }
 
-  get(docUri: URI, value: string): DescriptionFileContent | undefined {
-    return this.files.get(docUri.toString())?.get(value)?.content
+  async read(projectId: ProjectId, resolvedPaths: Iterable<string>): Promise<void> {
+    const referenced = new Set<string>()
+    for (const path of resolvedPaths) {
+      referenced.add(normalize(path))
+    }
+    let files = this.files.get(projectId)
+    if (!files) {
+      if (referenced.size === 0) {
+        return
+      }
+      files = new Map()
+      this.files.set(projectId, files)
+    }
+    // Forget the files the project does not reference anymore
+    // Deleting entries of a Map while iterating it is safe
+    for (const key of files.keys()) {
+      if (!referenced.has(key)) {
+        files.delete(key)
+        this.hashes.delete(projectId)
+      }
+    }
+    const project = this.services.workspace.ProjectsManager.getProject(projectId)
+    for (const key of referenced) {
+      if (files.get(key)) {
+        continue
+      }
+      const generation = this.generation
+      const resolved = URI.parse(key)
+      this.watchFile(resolved)
+      const content = await this.loadFile(project, resolved, this.relativePath(project, resolved))
+      // A change on disk happened while reading, what was read may be stale
+      if (generation !== this.generation) {
+        files.set(key, null)
+        continue
+      }
+      files.set(key, content)
+      this.hashes.delete(projectId)
+    }
+  }
+
+  get(projectId: ProjectId, resolvedPath: string): DescriptionFileContent | undefined {
+    return this.files.get(projectId)?.get(normalize(resolvedPath)) ?? undefined
+  }
+
+  hash(projectId: ProjectId): string {
+    const files = this.files.get(projectId)
+    if (!files || files.size === 0) {
+      return ''
+    }
+    let hash = this.hashes.get(projectId)
+    if (hash === undefined) {
+      const keys = [...files.keys()].sort(compareNatural)
+      hash = stringHash(
+        keys
+          .map(key => {
+            const file = files.get(key)
+            return key + ':' + (file ? ('content' in file ? file.content : file.error) : '')
+          })
+          .join('\n'),
+      )
+      this.hashes.set(projectId, hash)
+    }
+    return hash
   }
 
   isReferenced(uri: URI): boolean {
+    const key = uri.toString()
     for (const files of this.files.values()) {
-      for (const file of files.values()) {
-        if (file.resolved && UriUtils.equals(file.resolved, uri)) {
-          return true
-        }
+      if (files.has(key)) {
+        return true
       }
     }
     return false
@@ -127,49 +184,19 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
   }
 
   /**
-   * Reads the files the given references point to, and returns the documents whose content was read
-   * or changed since the last call, so the parser can resolve them into descriptions.
-   */
-  async read(refs: readonly DescriptionFileReference[]): Promise<URI[]> {
-    const changed: URI[] = []
-    for (const [docUri, references] of entries(groupBy(refs, ref => ref.docUri.toString()))) {
-      const unique = uniqueBy(references, ref => ref.value)
-      const cached = this.files.get(docUri)
-      // A document that references the same files as the last time keeps what was read then: the
-      // watcher re-reads a file that changes on disk, and a project update clears the caches.
-      if (!cached || cached.size !== unique.length || unique.some(ref => !cached.has(ref.value))) {
-        const files = new Map<string, DescriptionFile>()
-        for (const ref of unique) {
-          const file = await this.loadFile(ref)
-          this.watchFile(file.resolved)
-          files.set(ref.value, file)
-        }
-        this.files.set(docUri, files)
-        this.stale.add(docUri)
-      }
-      if (this.stale.delete(docUri)) {
-        changed.push(unique[0]!.docUri)
-      }
-    }
-    return changed
-  }
-
-  /**
-   * Resolves and reads a single reference, and remembers the result for the parser.
+   * Resolves and reads a single reference.
    */
   async readReference(ref: DescriptionFileReference): Promise<DescriptionFileContent> {
-    const file = await this.loadFile(ref)
-    this.watchFile(file.resolved)
-    this.store(ref, file)
-    return file.content
-  }
-
-  private store(ref: DescriptionFileReference, file: DescriptionFile): void {
-    const docUri = ref.docUri.toString()
-    const files = this.files.get(docUri) ?? new Map<string, DescriptionFile>()
-    files.set(ref.value, file)
-    this.files.set(docUri, files)
-    this.stale.add(docUri)
+    // A value that names another scheme (`https:`, `file:`, `C:`) is not a file of this project,
+    // and the parser refuses to resolve it
+    if (!ref.resolvedPath) {
+      return { error: `File "${ref.value}" is not part of the project` }
+    }
+    const projects = this.services.workspace.ProjectsManager
+    const project = projects.getProject(projects.ownerProjectId(ref.docUri))
+    const resolved = URI.parse(ref.resolvedPath)
+    this.watchFile(resolved)
+    return await this.loadFile(project, resolved, ref.value)
   }
 
   /**
@@ -179,70 +206,62 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
    * is not tracked afterwards and its edits produce no events. `watch` re-evaluates that decision for
    * the path it is given, which is how a file that is already on disk starts being followed.
    */
-  private watchFile(resolved: URI | undefined): void {
-    if (!resolved || resolved.scheme !== 'file') {
+  private watchFile(resolved: URI): void {
+    if (resolved.scheme !== 'file') {
       return
     }
     this.services.workspace.FileSystemWatcher?.watch(resolved.fsPath)
   }
 
   /**
-   * Re-reads the referenced file after it changed (or was deleted) on disk, and notifies the
-   * listeners so the model is rebuilt.
+   * A referenced file changed (or was deleted) on disk: it is read again on the next build,
+   * and the projects that reference it are notified to be rebuilt.
    */
-  protected async onReferencedFileChange(uri: URI): Promise<void> {
-    const projects = new Set<string>()
-    for (const [docUri, files] of [...this.files]) {
-      for (const [value, file] of [...files]) {
-        if (!file.resolved || !UriUtils.equals(file.resolved, uri)) {
-          continue
-        }
-        const ref: DescriptionFileReference = { docUri: URI.parse(docUri), value, resolvedPath: uri.toString() }
-        this.store(ref, await this.loadFile(ref))
-        projects.add(this.services.workspace.ProjectsManager.ownerProjectId(docUri))
+  protected onReferencedFileChange(uri: URI): void {
+    const key = uri.toString()
+    this.generation++
+    for (const [projectId, files] of this.files) {
+      if (!files.has(key)) {
+        continue
       }
-    }
-    for (const projectId of projects) {
-      this.triggerUpdate({
-        uri,
-        projectId: projectId as DescriptionFileUpdateEvent['projectId'],
-      })
+      files.set(key, null)
+      this.hashes.delete(projectId)
+      descriptionFilesLogger.debug`description file changed: ${uri.fsPath} (project ${projectId})`
+      this.triggerUpdate({ uri, projectId })
     }
   }
 
-  protected async loadFile(ref: DescriptionFileReference): Promise<DescriptionFile> {
-    // A value that names another scheme (`https:`, `file:`, `C:`) is not a file of this project,
-    // and the parser refuses to resolve it
-    if (!ref.resolvedPath) {
-      return { content: { error: `File "${ref.value}" is not part of the project` } }
-    }
-    const resolved = URI.parse(ref.resolvedPath)
-    const projects = this.services.workspace.ProjectsManager
-    const project = projects.getProject(projects.ownerProjectId(ref.docUri))
+  private relativePath(project: Project, resolved: URI): string {
+    const folder = project.folderUri.toString().replace(/\/?$/, '/')
+    const path = resolved.toString()
+    return path.startsWith(folder) ? decodeURIComponent(path.slice(folder.length)) : resolved.fsPath
+  }
+
+  protected async loadFile(project: Project, resolved: URI, value: string): Promise<DescriptionFileContent> {
     // The file must be of the project's own scheme: a document from another scheme is refused,
     // while a project on a non-`file:` scheme (VS Code Remote, a virtual provider) reads through
     // its own provider, which is the file system there.
     if (resolved.scheme !== project.folderUri.scheme) {
-      return { content: { error: `File "${ref.value}" is not part of the project` } }
+      return { error: `File "${value}" is not part of the project` }
     }
     if (!isInsideProject(project.folderUri.fsPath, resolved.fsPath)) {
-      return { content: { error: `File "${ref.value}" is outside of the project` } }
+      return { error: `File "${value}" is outside of the project` }
     }
     const escaped = await this.escapesProject(project.folderUri, resolved)
     if (escaped) {
-      return { content: { error: `File "${ref.value}" is outside of the project` } }
+      return { error: `File "${value}" is outside of the project` }
     }
     try {
       const content = await this.services.workspace.FileSystemProvider.readFile(resolved)
       // The file system provider answers an empty string both for an empty file and for one it
       // cannot read, and it does not tell them apart
       if (content.trim() === '') {
-        return { resolved, content: { error: `File "${ref.value}" does not exist or cannot be read` } }
+        return { error: `File "${value}" does not exist or cannot be read` }
       }
-      return { resolved, content: { content } }
+      return { content }
     } catch (err) {
       descriptionFilesLogger.warn(`Failed to read description file ${resolved.toString()}`, { err })
-      return { resolved, content: { error: `Failed to read file "${ref.value}"` } }
+      return { error: `Failed to read file "${value}"` }
     }
   }
 
@@ -275,4 +294,11 @@ export class DefaultLikeC4DescriptionFiles extends ADisposable implements LikeC4
       safeCall(() => listener(event))
     }
   }
+}
+
+/**
+ * Same file is referenced with the same key (resolved paths and watched changes may differ in encoding)
+ */
+function normalize(path: string): string {
+  return URI.parse(path).toString()
 }

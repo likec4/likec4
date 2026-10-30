@@ -4,7 +4,7 @@ import { fdir } from 'fdir'
 import { URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { mkdirSync, statSync } from 'node:fs'
-import { realpath as fsRealpath, unlink, writeFile as fsWriteFile } from 'node:fs/promises'
+import { readFile as fsReadFile, realpath as fsRealpath, unlink, writeFile as fsWriteFile } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
 import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
@@ -55,7 +55,8 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       return Promise.resolve(Content)
     }
     try {
-      return await super.readFile(uri)
+      // Read with own `node:fs` (not the one of langium), same as other file operations here
+      return await fsReadFile(uri.fsPath, 'utf-8')
     } catch (error) {
       this.#logger.warn(`Failed to read file ${uri.fsPath}`, { error })
       return ''

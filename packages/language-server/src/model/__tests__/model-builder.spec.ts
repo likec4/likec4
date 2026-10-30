@@ -1793,10 +1793,48 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model.specification.relationships).toMatchObject({
       async: {
-        style: {
-          multiple: true,
-        },
+        multiple: true,
       },
+    })
+  })
+
+  it('uses relationship kind style for dynamic view steps', async ({ expect, t }) => {
+    const { validate, buildLikeC4Model } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element system
+      relationship async {
+        description 'Asynchronous'
+        color red
+        line dotted
+        head diamond
+      }
+    }
+    model {
+      system s1
+      system s2
+    }
+    views {
+      dynamic view flow {
+        s1 -[async]-> s2
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildLikeC4Model()
+    // relationship kind specification is flat (as declared in core types)
+    expect(model.specification.relationships['async']).toEqual({
+      description: { txt: 'Asynchronous' },
+      color: 'red',
+      line: 'dotted',
+      head: 'diamond',
+    })
+    const view = model.view('flow')
+    const [edge] = view.edges()
+    expect(edge?.$edge).toMatchObject({
+      color: 'red',
+      line: 'dotted',
+      head: 'diamond',
     })
   })
 

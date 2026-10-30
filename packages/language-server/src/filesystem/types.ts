@@ -95,33 +95,46 @@ export type DescriptionFileContent =
   | { readonly content: string }
   | { readonly error: string }
 
+/**
+ * Files referenced with `descriptionFile`.
+ *
+ * The parser only records the references (the files are read when the model is built, not while
+ * documents are parsed). Before the build, {@link LikeC4DescriptionFiles.read} reads the files the
+ * project references, and the synchronous build takes their content with {@link LikeC4DescriptionFiles.get}.
+ * When a referenced file changes, the projects that reference it are notified to be rebuilt.
+ */
 export interface LikeC4DescriptionFiles extends Disposable {
   /**
-   * Reads the given references, so the synchronous model parser can resolve them into descriptions.
-   * Called when the model is built, before the parser reads the documents.
+   * Reads the files referenced by the project (the ones not read yet), and remembers that the project
+   * references them (previously referenced files are replaced).
    *
-   * @returns the documents whose files were read or changed since the last call, to be parsed again
+   * @param resolvedPaths the files referenced by the documents of the project, as the parser resolved them
    */
-  read(refs: readonly DescriptionFileReference[]): Promise<URI[]>
+  read(projectId: ProjectId, resolvedPaths: Iterable<string>): Promise<void>
 
   /**
-   * Resolves and reads a single reference, and remembers the result for the parser.
+   * What the file resolved to for the project, `undefined` when it has not been read.
+   */
+  get(projectId: ProjectId, resolvedPath: string): DescriptionFileContent | undefined
+
+  /**
+   * Hash of the files referenced by the project and their content.
+   * Changes when a referenced file changes, so the model built from them is not taken from cache.
+   */
+  hash(projectId: ProjectId): string
+
+  /**
+   * Resolves and reads a single reference (used by the validation to report the file that cannot be read).
    */
   readReference(ref: DescriptionFileReference): Promise<DescriptionFileContent>
 
   /**
-   * What the file referenced by `value` resolved to, for the document at `docUri`.
-   * `undefined` when the document does not reference it (or it has not been read yet).
-   */
-  get(docUri: URI, value: string): DescriptionFileContent | undefined
-
-  /**
-   * Whether `uri` is a file referenced by some document, and so worth watching.
+   * Whether `uri` is a file referenced by some project, and so worth watching.
    */
   isReferenced(uri: URI): boolean
 
   /**
-   * Registers a listener called when a referenced file changed.
+   * Registers a listener called when a referenced file changed (once for each project referencing it).
    */
   onDescriptionFileUpdate(listener: DescriptionFileUpdateListener): Disposable
 

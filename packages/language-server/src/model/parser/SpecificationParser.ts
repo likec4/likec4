@@ -2,7 +2,7 @@ import * as c4 from '@likec4/core'
 import { exact } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
 import { filter, isTruthy, mapToObj, pipe } from 'remeda'
-import { ast, parseMarkdownAsString, toColor, toRelationshipStyle } from '../../ast'
+import { type WithDescriptionFile, ast, parseMarkdownAsString, toColor, toRelationshipStyle } from '../../ast'
 import { type Base, removeIndent } from './Base'
 
 export function SpecificationParser<TBase extends Base>(B: TBase) {
@@ -48,17 +48,14 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           }
           const tags = this.parseTags(relSpec)
           const links = this.parseLinks(relSpec)
-          const bodyProps = {
-            ...pipe(
-              props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
-              filter(p => this.isValid(p)),
-              mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-            ),
-            ...this.descriptionFileOf(props),
-          }
+          const bodyProps = pipe(
+            props.filter(ast.isSpecificationRelationshipStringProperty) ?? [],
+            filter(p => this.isValid(p)),
+            mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+          )
           // `summary` is not supported on relationship kinds (model relations have no summary)
           // the reference to a file is recorded on the document, not part of the specification
-          const { summary: _summary, descriptionFile: _descriptionFile, ...baseProps } = this.parseBaseProps(bodyProps)
+          const { summary: _summary, ...baseProps } = this.parseBaseProps(bodyProps)
           const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
           const multipleProps = props.filter(ast.isMultipleProperty)
           if (multipleProps.length > 1) {
@@ -72,6 +69,7 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
           c4Specification.relationships[kindName] = exact({
             ...baseProps,
             notation,
+            ...this.parseDescriptionFile(relSpec),
             tags: tags ?? undefined,
             ...(links && c4.isNonEmptyArray(links) && { links }),
             ...toRelationshipStyle(props.filter(ast.isRelationshipStyleProperty), this.isValid),
@@ -122,10 +120,10 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
 
     parseElementSpecificationNode(
       specAst: ast.SpecificationElementKind,
-    ): { [key: c4.ElementKind]: c4.ElementSpecification }
+    ): { [key: c4.ElementKind]: c4.ElementSpecification & WithDescriptionFile }
     parseElementSpecificationNode(
       specAst: ast.SpecificationDeploymentNodeKind,
-    ): { [key: c4.DeploymentKind]: c4.ElementSpecification }
+    ): { [key: c4.DeploymentKind]: c4.ElementSpecification & WithDescriptionFile }
     parseElementSpecificationNode(specAst: ast.SpecificationDeploymentNodeKind | ast.SpecificationElementKind) {
       const { kind, props } = specAst
       const kindName = kind.name
@@ -135,27 +133,25 @@ export function SpecificationParser<TBase extends Base>(B: TBase) {
       const tags = this.parseTags(specAst)
       const style = this.parseElementStyle(props.find(ast.isElementStyleProperty))
       const links = this.parseLinks(specAst)
-      const bodyProps = {
-        ...pipe(
-          props.filter(ast.isSpecificationElementStringProperty) ?? [],
-          filter(p => this.isValid(p)),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(props),
-      }
+      const bodyProps = pipe(
+        props.filter(ast.isSpecificationElementStringProperty) ?? [],
+        filter(p => this.isValid(p)),
+        mapToObj(p => [p.key, p.value]),
+      )
 
       // the reference to a file is recorded on the document, not part of the specification
-      const { descriptionFile: _descriptionFile, ...baseProps } = this.parseBaseProps(bodyProps)
+      const baseProps = this.parseBaseProps(bodyProps)
       const notation = removeIndent(parseMarkdownAsString(bodyProps.notation))
 
       return {
         [kindName]: exact({
           ...baseProps,
           notation,
+          ...this.parseDescriptionFile(specAst),
           tags: tags ?? undefined,
           ...(links && c4.isNonEmptyArray(links) && { links }),
           style,
-        }) satisfies c4.ElementSpecification,
+        }) satisfies c4.ElementSpecification & WithDescriptionFile,
       }
     }
   }

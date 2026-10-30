@@ -3,9 +3,11 @@ import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
+import type { DidChangeWatchedFilesParams } from 'vscode-languageserver'
 import { createLanguageServices } from '../module'
 import { WithFileSystem } from './LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
+import type { ManualLayoutUpdateListener } from './types'
 
 describe('ChokidarFileSystemWatcher', () => {
   let root: string
@@ -37,9 +39,9 @@ describe('ChokidarFileSystemWatcher', () => {
     await vi.waitFor(() => {
       expect(workspace.LangiumDocuments.hasDocument(nested)).toBe(true)
     })
-    const onWatchedFilesChange = vi.fn()
+    const onWatchedFilesChange = vi.fn<(params: DidChangeWatchedFilesParams) => void>()
     lsp.DocumentUpdateHandler.onWatchedFilesChange(onWatchedFilesChange)
-    const onManualLayoutUpdate = vi.fn()
+    const onManualLayoutUpdate = vi.fn<ManualLayoutUpdateListener>()
     workspace.ManualLayouts.onManualLayoutUpdate(onManualLayoutUpdate)
 
     // New LikeC4 file

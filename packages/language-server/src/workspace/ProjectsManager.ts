@@ -1069,6 +1069,12 @@ export class ProjectsManager extends ADisposable {
   #pendingReloads = new Set<string>()
   // No timeout: p-queue does not cancel timed out tasks, it only frees the slot and breaks serialization
   #reloadQueue = new PQueue({ concurrency: 1 })
+  /**
+   * Aborted to cancel scheduled reloads.
+   * Not passed to the queue: p-queue frees the slot of an aborted running task, and the reload would run
+   * concurrently with the next one. Instead, a cancelled task completes immediately when it starts.
+   */
+  #reloadAbort = new AbortController()
   private scheduleReloadProject(projectConfigUri: string): void {
     if (this.#pendingReloads.has(projectConfigUri)) {
       return
@@ -1077,8 +1083,16 @@ export class ProjectsManager extends ADisposable {
 
     // add delay on first reload to debounce rapid changes
     const delayMs = this.#pendingReloads.size === 1 ? 250 : 50
-    void this.#reloadQueue.add(() => delay(delayMs))
+    const signal = this.#reloadAbort.signal
     void this.#reloadQueue.add(async () => {
+      if (!signal.aborted) {
+        await delay(delayMs)
+      }
+    })
+    void this.#reloadQueue.add(async () => {
+      if (signal.aborted) {
+        return
+      }
       try {
         await this.services.workspace.WorkspaceLock.write(async (token) => {
           // Remove before reading the config, so changes made during the reload schedule a new one
@@ -1103,11 +1117,12 @@ export class ProjectsManager extends ADisposable {
   }
 
   /**
-   * Drops scheduled (not started) reloads.
-   * Queued tasks are removed without running, so pending entries are cleared as well.
+   * Cancels scheduled (not started) reloads, a running reload completes.
+   * (`PQueue.clear()` is not used: it drops the tasks and their promises never settle)
    */
   private cancelScheduledReloads(): void {
-    this.#reloadQueue.clear()
+    this.#reloadAbort.abort()
+    this.#reloadAbort = new AbortController()
     this.#pendingReloads.clear()
   }
 }
