@@ -74,10 +74,10 @@ export default defineConfig([
     ...shared,
     outDir: 'dist/browser',
     entry: 'src/browser/extension.ts',
-    platform: 'browser',
     format: 'cjs',
     target: false,
     inputOptions: {
+      platform: 'browser',
       resolve: {
         conditionNames: ['production', 'sources', 'worker', 'browser', 'import'],
       },
