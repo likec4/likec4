@@ -25,6 +25,9 @@ graph LR
 
 Label\`" .-> Root.El4
   Root.El5 -.-> Root.El6
+  classDef primary fill:#3b82f6,stroke:#2563eb,color:#eff6ff
+  class Root.El1,Root.El3,Root.El4,Root.El5,Root.El6,Root.El7,Root.El8,Root.El9,Root.El10,Root.El11 primary
+  linkStyle 0,1,2 stroke:#8D8D8D,stroke-dasharray:8 4
 "
 `;
 
@@ -50,6 +53,9 @@ graph TB
   Cloud.Backend.Graphql -.-> Cloud.Backend.Storage
   Support -.-> Cloud.FrontendAdminPanel
   Customer -.-> Cloud.FrontendDashboard
+  classDef primary fill:#3b82f6,stroke:#2563eb,color:#eff6ff
+  class Amazon,Customer,Support,Cloud.Backend.Graphql,Cloud.Backend.Storage,Cloud.FrontendAdminPanel,Cloud.FrontendDashboard primary
+  linkStyle 0,1,2,3,4,5 stroke:#8D8D8D,stroke-dasharray:8 4
 "
 `;
 
@@ -69,6 +75,9 @@ graph TB
   Cloud.Backend -.-> Amazon
   Support -.-> Cloud.Frontend
   Customer -. "\`opens\`" .-> Cloud.Frontend
+  classDef primary fill:#3b82f6,stroke:#2563eb,color:#eff6ff
+  class Amazon,Customer,Support,Cloud.Backend,Cloud.Frontend primary
+  linkStyle 0,1,2,3 stroke:#8D8D8D,stroke-dasharray:8 4
 "
 `;
 
@@ -82,6 +91,9 @@ graph TB
   SystemFrontend@{ shape: rectangle, label: "frontend" }
   SystemFrontend -. "\`requests\`" .-> SystemBackend
   Client -. "\`opens\`" .-> SystemFrontend
+  classDef primary fill:#3b82f6,stroke:#2563eb,color:#eff6ff
+  class Client,SystemBackend,SystemFrontend primary
+  linkStyle 0,1 stroke:#8D8D8D,stroke-dasharray:8 4
 "
 `;
 
@@ -97,5 +109,8 @@ graph TB
   end
   App -. "\`signs in\`" .-> _gr1.Auth
   App -. "\`authz\`" .-> _gr1.Portal
+  classDef primary fill:#3b82f6,stroke:#2563eb,color:#eff6ff
+  class App,_gr1.Auth,_gr1.Portal primary
+  linkStyle 0,1 stroke:#8D8D8D,stroke-dasharray:8 4
 "
 `;

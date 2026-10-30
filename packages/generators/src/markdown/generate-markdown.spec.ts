@@ -2,6 +2,7 @@ import type { LikeC4Model, LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import { test } from 'vitest'
 import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import { mockModelStyles, withEdgeStyles } from '../__mocks__/view-model'
 import { generateMermaid } from '../mmd/generate-mmd'
 import { generateMarkdown } from './generate-markdown'
 
@@ -18,7 +19,8 @@ const mockView = ({ title, sourcePath, description, $view }: ViewSpec): LikeC4Vi
     description: description
       ? { isEmpty: false, nonEmpty: true, md: description }
       : { isEmpty: true, nonEmpty: false, md: '' },
-    $view: sourcePath !== undefined ? { ...$view, sourcePath } : { ...$view },
+    $view: sourcePath !== undefined ? { ...withEdgeStyles($view), sourcePath } : withEdgeStyles($view),
+    $model: mockModelStyles,
   }) as unknown as LikeC4ViewModel<aux.Unknown>
 
 const mockModel = (views: LikeC4ViewModel<aux.Unknown>[], project = { id: 'default', title: 'Acme Platform' }) =>
