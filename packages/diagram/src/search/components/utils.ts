@@ -1,3 +1,5 @@
+import type { LikeC4Model } from '@likec4/core/model'
+import { preferSummary } from '@likec4/core/types'
 import { isFunction } from 'remeda'
 import { focusable } from './_shared.css'
 
@@ -73,4 +75,24 @@ export function whenSearchAnimationEnds(
   callback: () => void,
 ): void {
   setTimeout(callback, 400)
+}
+
+/**
+ * Title of the view prefixed with the folders it belongs to, e.g. `Folder 1 / Folder 2 / View`.
+ * Views at the root are returned as is.
+ */
+export function viewTitleWithFolder(view: Pick<LikeC4Model.View, 'folder' | 'titleOrUntitled'>): string {
+  if (view.folder.isRoot) {
+    return view.titleOrUntitled
+  }
+  return [...view.folder.breadcrumbs.map(folder => folder.title), view.titleOrUntitled].join(' / ')
+}
+
+/**
+ * Whether the view matches the (normalized, lowercased) search text.
+ * Matches the view id, its title with the folder path, and its summary or description.
+ */
+export function viewMatchesSearch(view: LikeC4Model.View, search: string): boolean {
+  const desc = preferSummary(view.$view)?.md || ' '
+  return `${view.id} ${viewTitleWithFolder(view)} ${desc}`.toLowerCase().includes(search)
 }
