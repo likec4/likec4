@@ -1,6 +1,8 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
+import assert from 'node:assert'
 import { map, prop, take } from 'remeda'
 import { describe } from 'vitest'
+import { type CompletionList, InsertReplaceEdit } from 'vscode-languageserver-types'
 import { createMultiProjectTestServices, testFileScope as test } from '../test'
 
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
@@ -1500,6 +1502,69 @@ describe('LikeC4CompletionProvider', () => {
               end: { line: 12, character: 67 },
             },
           })
+        },
+      })
+    })
+
+    it('should replace the rest of the target in partial and closed refs', async ({ expect, completion }) => {
+      const text = `
+        specification {
+          element system
+        }
+        model {
+          system cloud {
+            system api
+          }
+          system docs {
+            description '''[[cloud.ap<|>i]] [[view:ind<|>ex]] [[clo<|>ud.api]] [[cloud.api]]<|>'''
+          }
+        }
+        views {
+          view index
+        }
+      `
+      // Typed and replaced lengths, relative to the start of both ranges (same line)
+      const edit = (label: string) => (completions: CompletionList) => {
+        const textEdit = completions.items.find(i => i.label === label)?.textEdit
+        assert(textEdit && InsertReplaceEdit.is(textEdit), `InsertReplaceEdit for ${label}`)
+        expect(textEdit.replace.start).toEqual(textEdit.insert.start)
+        return {
+          newText: textEdit.newText,
+          typed: textEdit.insert.end.character - textEdit.insert.start.character,
+          replaced: textEdit.replace.end.character - textEdit.replace.start.character,
+        }
+      }
+      // [[cloud.ap|i]]
+      await completion({
+        text,
+        index: 0,
+        assert: completions => {
+          expect(edit('cloud.api')(completions)).toEqual({ newText: 'cloud.api', typed: 8, replaced: 9 })
+        },
+      })
+      // [[view:ind|ex]]
+      await completion({
+        text,
+        index: 1,
+        assert: completions => {
+          expect(edit('index')(completions)).toEqual({ newText: 'index', typed: 3, replaced: 5 })
+        },
+      })
+      // [[clo|ud.api]], an existing closed ref
+      await completion({
+        text,
+        index: 2,
+        assert: completions => {
+          expect(edit('cloud.api')(completions)).toEqual({ newText: 'cloud.api', typed: 3, replaced: 9 })
+          expect(completions.items.map(i => i.label)).not.toContain('view:')
+        },
+      })
+      // After a closed ref, nothing to complete
+      await completion({
+        text,
+        index: 3,
+        assert: completions => {
+          expect(completions.items).toEqual([])
         },
       })
     })
