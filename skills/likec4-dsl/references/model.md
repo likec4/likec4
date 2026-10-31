@@ -154,7 +154,7 @@ model {
 - Works in every Markdown value: element, deployment, relationship and view `description`, `summary`, `title`, `technology`, `notes`, metadata values. Plain `'…'` strings and code (inline or fenced) are not scanned.
 - FQN is absolute and resolved in the current project only: `[[cloud.backend.api]]`, never `[[api]]` or `[[this]]`. Imported elements are not supported.
 - Escaping follows DSL strings: literal `[[` is `\\[[`; in a Markdown table cell write the separator as `\\|`, e.g. `[[cloud.api\\|API]]`.
-- Unknown element, unknown view, or unknown `prefix:` is a **warning**: the model still builds and `likec4 validate` stays valid. In the editor, `[[` triggers completion and Go to Definition jumps to the target.
+- Unknown element, unknown view, or unknown `prefix:` is a **warning**: the model still builds and `likec4 validate` stays valid unless `--max-warnings` is given. In the editor, `[[` triggers completion and Go to Definition jumps to the target.
 - Prefer `[[fqn]]` over repeating element names in descriptions; link only elements that exist.
 
 ## Extend Patterns

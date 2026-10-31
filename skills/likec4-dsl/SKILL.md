@@ -120,6 +120,7 @@ pnpm dlx likec4 validate --json --no-layout --file <edited-file> <project-dir>
 - `--json` — structured output (stdout), logging goes to stderr
 - `--no-layout` — skip layout drift checks (faster, only syntax+semantic)
 - `--file <path>` — use with `--json` to scope results to the edited files. Without `--json`, text output still prints all diagnostics. Repeat once per edited source file.
+- `--max-warnings <n>` — fail (`valid: false`, exit code 1) when there are more than `n` warnings; `0` fails on any warning. Without it, warnings never fail validation.
 - `<project-dir>` — path to the project directory
 - There is **no** `likec4 check` command; use `likec4 validate`.
 
@@ -140,11 +141,15 @@ Example output:
       "range": { "start": { "line": 5, "character": 2 }, "end": { "line": 5, "character": 20 } }
     }
   ],
+  "warnings": [], // same shape as errors
+  "maxWarnings": null, // value of --max-warnings, null when not given
   "stats": {
     "totalFiles": 100, // Total number of files in the project
     "totalErrors": 500, // Total number of errors in the project
+    "totalWarnings": 3, // Total number of warnings in the project
     "filteredFiles": 1, // Number of files that match the --file filter
-    "filteredErrors": 1 // Number of errors in the filtered files
+    "filteredErrors": 1, // Number of errors in the filtered files
+    "filteredWarnings": 0 // Number of warnings in the filtered files
   }
 }
 ```
@@ -156,6 +161,7 @@ Field semantics (must be explicit in answers):
 - `filteredFiles`: count of files actually included by repeated `--file` filters
 - `filteredErrors`: errors in the filtered subset only
 - `totalErrors`: errors across the full project model
+- `filteredWarnings`: warnings in the filtered subset only; `--max-warnings` limits this count
 
 Example edge case: if you pass 3 files but one is `likec4.config.json`, `filteredFiles` may be `2` because config JSON is not a `.c4`/`.likec4` source file for DSL validation.
 
@@ -274,7 +280,7 @@ Truth card:
 - Only in Markdown values (`'''…'''` / `"""…"""`): `description`, `summary`, `notes`, `title`, `technology`, metadata values. Plain `'…'` / `"…"` strings, inline code and fenced code blocks are not scanned.
 - Target is an **absolute FQN** in the **current project**: no short names, no `this`, no imported elements. `view:` is the only namespace; any other `prefix:` is reserved.
 - Escaping follows DSL strings (`\\` → `\` before Markdown sees it): literal `[[` is `\\[[`; inside tables write `\\|`, a bare `|` splits the cell.
-- Missing element/view or unknown `prefix:` → **warning**, not error. `likec4 validate` reports errors only, so it stays `valid: true`; broken links show up as editor (LSP) diagnostics.
+- Missing element/view or unknown `prefix:` → **warning**, not error. `likec4 validate` lists it under `warnings` but stays `valid: true` unless `--max-warnings` is given (`--max-warnings 0` fails on any warning); editors show it as an LSP diagnostic.
 - Exports and MCP replace links with the title (or label); the DSL generator keeps `[[…]]`.
 
 Agent guidance: in descriptions prefer `[[fqn]]` over retyping an element's name (title stays in sync, readers can click it); link only FQNs that exist in the model; use `\\|` in tables.
@@ -422,13 +428,13 @@ Return-arrow precision:
 
 ## Anti-Patterns to Avoid in Strict Prompts
 
-| Anti-pattern                                                       | Why it fails                                   | Correct behavior                                          |
-| ------------------------------------------------------------------ | ---------------------------------------------- | --------------------------------------------------------- |
-| Substituting command families (`check`/`build`) for `validate`     | Breaks exact command contract                  | Keep `likec4 validate`                                    |
-| Inventing/guessing flags                                           | Creates non-portable invalid commands          | Use canonical documented flags only                       |
-| Multiple alternative snippets for one strict ask                   | Reduces precision; fails strict-output grading | Output one final answer unless alternatives are requested |
-| Extending typed relationship without kind/title in ambiguous graph | Can target wrong relationship                  | Match with source + target + kind (+ title when needed)   |
-| Short or guessed FQN in `[[…]]`, e.g. `[[api]]`                    | Broken link is only a warning; validate passes | Use an existing full FQN: `[[cloud.backend.api]]`         |
+| Anti-pattern                                                       | Why it fails                                                                  | Correct behavior                                          |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Substituting command families (`check`/`build`) for `validate`     | Breaks exact command contract                                                 | Keep `likec4 validate`                                    |
+| Inventing/guessing flags                                           | Creates non-portable invalid commands                                         | Use canonical documented flags only                       |
+| Multiple alternative snippets for one strict ask                   | Reduces precision; fails strict-output grading                                | Output one final answer unless alternatives are requested |
+| Extending typed relationship without kind/title in ambiguous graph | Can target wrong relationship                                                 | Match with source + target + kind (+ title when needed)   |
+| Short or guessed FQN in `[[…]]`, e.g. `[[api]]`                    | Broken link is only a warning; validate passes unless `--max-warnings` is set | Use an existing full FQN: `[[cloud.backend.api]]`         |
 
 ## Common Mistakes & Debugging
 
