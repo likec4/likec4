@@ -10,10 +10,16 @@ import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { type LikeC4RefNode, remarkLikeC4Refs } from './refs'
+import { remarkResolveLikeC4Refs } from './resolve-refs'
+import type { MarkdownRefTitleResolver } from './types'
 
 /**
  * Renders a ref as `<a data-likec4-ref="<target>" data-likec4-ref-kind="<kind>">label or target</a>`.
- * Resolving the target (title, click) is up to the consumer, who has the model.
+ * If the ref has a namespace (`view:`, or an unknown one), it is in the `data-likec4-ref-namespace` attribute.
+ * If the ref has a label, the anchor also has an empty `data-likec4-ref-label` attribute,
+ * so that consumers keep the label instead of replacing it with the title.
+ * The anchor text is the label, otherwise the title from the resolver (if given), otherwise the target.
+ * Resolving the target (title, click) in the UI is up to the consumer, who has the model.
  */
 function likec4RefToHast(state: State, node: LikeC4RefNode): Element {
   const result: Element = {
@@ -22,6 +28,8 @@ function likec4RefToHast(state: State, node: LikeC4RefNode): Element {
     properties: {
       dataLikec4Ref: node.ref.target,
       dataLikec4RefKind: node.ref.kind,
+      ...(node.ref.namespace !== null && { dataLikec4RefNamespace: node.ref.namespace }),
+      ...(node.ref.label !== null && { dataLikec4RefLabel: true }),
     },
     children: [{ type: 'text', value: node.value }],
   }
@@ -35,14 +43,20 @@ function likec4RefToHast(state: State, node: LikeC4RefNode): Element {
 const likec4RefAttributes: NonNullable<SanitizeSchema['attributes']>[string] = [
   'dataLikec4Ref',
   ['dataLikec4RefKind', 'element', 'view', 'unknown'],
+  'dataLikec4RefNamespace',
+  'dataLikec4RefLabel',
 ]
 
-function parser() {
-  return unified()
+function parser(resolve?: MarkdownRefTitleResolver) {
+  const processor = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkAlert)
     .use(remarkLikeC4Refs)
+  if (resolve) {
+    processor.use(remarkResolveLikeC4Refs, resolve)
+  }
+  return processor
     .use(remarkRehype, {
       allowDangerousHtml: true,
       handlers: {
@@ -86,6 +100,12 @@ function parser() {
     })
 }
 
-export function markdownToHtml(markdown: string): string {
-  return ('' + parser().processSync(markdown)).trim()
+/**
+ * Converts markdown to sanitized HTML.
+ * Refs become anchors, see {@link likec4RefToHast}.
+ * @param markdown - The markdown to convert.
+ * @param resolve - Optional resolver of ref titles (e.g. from the model), used for the anchor text.
+ */
+export function markdownToHtml(markdown: string, resolve?: MarkdownRefTitleResolver): string {
+  return ('' + parser(resolve).processSync(markdown)).trim()
 }

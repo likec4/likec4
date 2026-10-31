@@ -4,68 +4,73 @@ Load this file when encountering validation errors, unexpected rendering, or whe
 
 ## Syntax Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| "Identifier PAYMENT.API not found" | Dots in identifier name | Use `payment-api` not `payment.api`; dots are FQN separators only |
-| "Unknown kind SERVICE" | Kind not in specification | Define `element service { ... }` in the specification block |
-| "Duplicate FQN cloud.backend" | Element ID repeated under the same parent | Rename one element; each sibling must have a unique identifier |
-| "Expected property TYPE after include *" | Malformed filter predicate | Use `include * where kind is component`, not `include * component` |
-| "Invalid relationship kind async-cache" | Kind not found in specification | Define `relationship async-cache { ... }` in specification first |
+| Error                                    | Cause                                     | Fix                                                                |
+| ---------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| "Identifier PAYMENT.API not found"       | Dots in identifier name                   | Use `payment-api` not `payment.api`; dots are FQN separators only  |
+| "Unknown kind SERVICE"                   | Kind not in specification                 | Define `element service { ... }` in the specification block        |
+| "Duplicate FQN cloud.backend"            | Element ID repeated under the same parent | Rename one element; each sibling must have a unique identifier     |
+| "Expected property TYPE after include *" | Malformed filter predicate                | Use `include * where kind is component`, not `include * component` |
+| "Invalid relationship kind async-cache"  | Kind not found in specification           | Define `relationship async-cache { ... }` in specification first   |
 
 ## Model & Hierarchy
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| Element shows but relationships don't render | Relationship references FQN incorrectly | Use exact FQN matching the model hierarchy |
-| "Can't define relationship from parent to child" | Direct parent-child relationships are forbidden | Move the relationship outside the parent element or use implicit notation |
-| Child element not visible from other files | Referencing by short name instead of FQN | Import or use full FQN: `cloud.backend.api` |
-| Extend block adds duplicate tags | Tags stack on merge | Use consistent tag names; duplicates are not deduplicated automatically |
+| Error                                            | Cause                                                              | Fix                                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Element shows but relationships don't render     | Relationship references FQN incorrectly                            | Use exact FQN matching the model hierarchy                                    |
+| "Can't define relationship from parent to child" | Direct parent-child relationships are forbidden                    | Move the relationship outside the parent element or use implicit notation     |
+| Child element not visible from other files       | Referencing by short name instead of FQN                           | Import or use full FQN: `cloud.backend.api`                                   |
+| Extend block adds duplicate tags                 | Tags stack on merge                                                | Use consistent tag names; duplicates are not deduplicated automatically       |
+| Warning `Element 'api' not found` on `[[api]]`   | Markdown link target is not an absolute FQN of the current project | Use the full FQN: `[[cloud.backend.api]]`; imported elements cannot be linked |
+| Warning `Unknown link namespace 'deployment'`    | Only `view:` is a known prefix in `[[…]]`                          | Use `[[view:id]]` or an element FQN                                           |
+| `[[cloud.api]]` shows as raw text                | Plain `'…'` string, or inside inline/fenced code                   | Use a Markdown value `'''…'''`; move the link out of code                     |
+
+Labelled link breaks a Markdown table cell: a bare pipe splits GFM table cells, so inside tables write the separator as `\\|`, e.g. `[[cloud.api\\|API]]`.
 
 ## View Predicates
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `include *` shows grandchildren | Confusing `*` with `**` | `*` = direct children only; use `**` for recursive descent |
-| Relationships disappear in scoped view | Neighbors not explicitly included | Add `include -> scope` or `include <-> scope` to pull in inbound/outbound sources |
-| "WHERE predicate not matching any elements" | Tag or kind name is case-sensitive | Use exact case: `#Critical` ≠ `#critical` |
-| Element included but styled differently | Global vs. local style conflict | Local view styles override global; audit style rules order in the view block |
+| Error                                       | Cause                              | Fix                                                                               |
+| ------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------- |
+| `include *` shows grandchildren             | Confusing `*` with `**`            | `*` = direct children only; use `**` for recursive descent                        |
+| Relationships disappear in scoped view      | Neighbors not explicitly included  | Add `include -> scope` or `include <-> scope` to pull in inbound/outbound sources |
+| "WHERE predicate not matching any elements" | Tag or kind name is case-sensitive | Use exact case: `#Critical` ≠ `#critical`                                         |
+| Element included but styled differently     | Global vs. local style conflict    | Local view styles override global; audit style rules order in the view block      |
 
 ## Deployment
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `instanceOf` doesn't resolve | Instance refers to wrong FQN | Use the exact logical model FQN, not the deployment node identifier |
-| "Undefined DEPLOYMENT_KIND" | Kind referenced but not in specification | Define `deploymentNode vm { ... }` in specification |
+| Error                                         | Cause                                           | Fix                                                                            |
+| --------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------ |
+| `instanceOf` doesn't resolve                  | Instance refers to wrong FQN                    | Use the exact logical model FQN, not the deployment node identifier            |
+| "Undefined DEPLOYMENT_KIND"                   | Kind referenced but not in specification        | Define `deploymentNode vm { ... }` in specification                            |
 | Deployment relationship inherits unexpectedly | Logical model edges are inherited automatically | Suppress inherited relationships explicitly in the deployment view if unwanted |
 
 ## Dynamic Views
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `Nested parallel blocks are not allowed` | Nested `parallel { parallel { ... } }` (or `par`) | Flatten: put all concurrent steps in a single `parallel { }` block. Other flow blocks (`opt`/`loop`/`try`/`alt`) may nest freely |
-| `"loop" can not be used as an alternative branch` | Non-branch block (`loop`/`opt`/`parallel`/`try`) placed directly inside `alt` | `alt` accepts only `when`/`if`/`else` branches; nest the block inside a branch |
-| `"when" alternative branch must be inside "alt"` | `when`/`if`/`else` used at top level or inside a non-`alt` block | Wrap the branches in an `alt { ... }` block |
-| `catch`/`finally` rejected | `catch` without a preceding `try`, or `catch` after `finally` | Keep order `try` → `catch?` → `finally?` |
-| Response arrows (`<-`) show wrong direction | Chained `<-` steps are not supported | After `a -> b -> c`, write one `<-` step per hop: `b <- c`, then `a <- b`. `<-` cannot be chained (`a <- b <- c` is a parse error) |
-| `navigateTo` link doesn't work | Target view name does not exist | Ensure the target view name exists in the same project; from a dynamic step it must be another `dynamic view` |
-| `variant sequence` is ignored | Wrong keyword or spelling | Use exact: `variant sequence` (not `type`, `mode`, or `sequence` alone) |
+| Error                                             | Cause                                                                         | Fix                                                                                                                                |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `Nested parallel blocks are not allowed`          | Nested `parallel { parallel { ... } }` (or `par`)                             | Flatten: put all concurrent steps in a single `parallel { }` block. Other flow blocks (`opt`/`loop`/`try`/`alt`) may nest freely   |
+| `"loop" can not be used as an alternative branch` | Non-branch block (`loop`/`opt`/`parallel`/`try`) placed directly inside `alt` | `alt` accepts only `when`/`if`/`else` branches; nest the block inside a branch                                                     |
+| `"when" alternative branch must be inside "alt"`  | `when`/`if`/`else` used at top level or inside a non-`alt` block              | Wrap the branches in an `alt { ... }` block                                                                                        |
+| `catch`/`finally` rejected                        | `catch` without a preceding `try`, or `catch` after `finally`                 | Keep order `try` → `catch?` → `finally?`                                                                                           |
+| Response arrows (`<-`) show wrong direction       | Chained `<-` steps are not supported                                          | After `a -> b -> c`, write one `<-` step per hop: `b <- c`, then `a <- b`. `<-` cannot be chained (`a <- b <- c` is a parse error) |
+| `navigateTo` link doesn't work                    | Target view name does not exist                                               | Ensure the target view name exists in the same project; from a dynamic step it must be another `dynamic view`                      |
+| `variant sequence` is ignored                     | Wrong keyword or spelling                                                     | Use exact: `variant sequence` (not `type`, `mode`, or `sequence` alone)                                                            |
 
 ## Validation & Import
 
-| Most Common | Solution |
-|---|---|
-| `validate` reports config not found | Ensure `likec4.config.json` exists in the project root directory |
-| `Imported project not found` | `import` takes another project's `name` (from its `likec4.config`), not a file path: `import { x } from 'other-project'`. Files of the same project need no import; reference elements by full FQN |
-| Symbol from import invisible in model | Symbol must be public (defined at top level); nested elements need FQN |
+| Most Common                                         | Solution                                                                                                                                                                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `validate` reports config not found                 | Ensure `likec4.config.json` exists in the project root directory                                                                                                                                                    |
+| `Imported project not found`                        | `import` takes another project's `name` (from its `likec4.config`), not a file path: `import { x } from 'other-project'`. Files of the same project need no import; reference elements by full FQN                  |
+| Symbol from import invisible in model               | Symbol must be public (defined at top level); nested elements need FQN                                                                                                                                              |
 | Large error count in project but your file is clean | Use `likec4 validate --json --no-layout --file <edited-file> <project-dir>` and check `filteredErrors`/`filteredFiles`; text mode can also print diagnostics from other workspace files before the filtered summary |
 
 ## Performance & Large Models
 
-| Symptom | Cause | Action |
-|---|---|---|
-| Validation takes >30s | Specification changes trigger full project re-parse | Keep specification in a separate file; avoid editing it frequently |
-| Export generates a partial PNG | Layout engine timeout on complex view | Split large views with `navigateTo` or reduce the element count |
-| IDE responsiveness slow | Too many open files or large specification in working file | Split into `spec.c4` + `model.c4` + `views.c4` |
+| Symptom                        | Cause                                                      | Action                                                             |
+| ------------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| Validation takes >30s          | Specification changes trigger full project re-parse        | Keep specification in a separate file; avoid editing it frequently |
+| Export generates a partial PNG | Layout engine timeout on complex view                      | Split large views with `navigateTo` or reduce the element count    |
+| IDE responsiveness slow        | Too many open files or large specification in working file | Split into `spec.c4` + `model.c4` + `views.c4`                     |
 
 ## Debugging Workflow
 

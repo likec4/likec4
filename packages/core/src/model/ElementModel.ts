@@ -117,7 +117,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$element))
+    return RichText.memoize(this, 'summary', preferSummary(this.$element), this.$model.resolveMarkdownRef)
   }
 
   /**
@@ -125,7 +125,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$element))
+    return RichText.memoize(this, 'description', preferDescription(this.$element), this.$model.resolveMarkdownRef)
   }
 
   get technology(): string | null {

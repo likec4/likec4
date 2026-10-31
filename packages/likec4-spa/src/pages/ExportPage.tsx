@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { type LayoutedView, type NodeNotation, type RichTextOrEmpty, RichText } from '@likec4/core'
-import { LikeC4Diagram, pickViewBounds, useLikeC4Styles } from '@likec4/diagram'
+import { LikeC4Diagram, pickViewBounds, useLikeC4Model, useLikeC4Styles } from '@likec4/diagram'
 import { ElementShape, Markdown } from '@likec4/diagram/custom'
 import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
@@ -149,7 +149,9 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   const downloadedRef = useRef(false)
 
   const bounds = pickViewBounds(diagram, dynamic)
-  const viewDescription = RichText.from(diagram.description)
+  const model = useLikeC4Model()
+  // Resolve [[…]] links to titles, the layout measures the plain text
+  const viewDescription = RichText.from(diagram.description, model.resolveMarkdownRef)
   const showDescription = isExportSearchFlagEnabled(description) && viewDescription.nonEmpty
   const viewTitle = diagram.title ?? diagram.id
   const notationEntries = diagram.notation?.nodes ?? []

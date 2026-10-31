@@ -11,6 +11,7 @@ import type {
   ThemeColorValues,
 } from '@likec4/core/types'
 import { flattenMarkdownOrString } from '@likec4/core/types'
+import { type MarkdownRefTitleResolver, resolveMarkdownRefs } from '@likec4/core/utils'
 import pako from 'pako'
 import { isEmptyish, isNullish as isNil } from 'remeda'
 import {
@@ -99,6 +100,11 @@ type ExtendedNode = Node & {
 export type DrawioViewModelLike = {
   $view: ProcessedView<aux.Unknown>
   readonly $styles?: LikeC4Styles | null
+  /**
+   * Resolves titles of refs in Markdown (`[[fqn]]`, `[[view:id]]`), e.g. `LikeC4Model`.
+   * Without it, refs are exported as their label or target.
+   */
+  readonly $model?: { readonly resolveMarkdownRef: MarkdownRefTitleResolver } | null
 }
 
 /** Optional node fields (DSL allows more than base type). Single place for type/cast — Clean Code. */
@@ -367,10 +373,18 @@ function buildNavLinkStyle(navTo: string): string {
   return navTo === '' ? '' : `link=${encodeURIComponent(`${DRAWIO_PAGE_LINK_PREFIX}${navTo}`)};`
 }
 
-/** Flatten markdown/string and trim to single export string; empty when missing or empty-ish. DRY for node/edge fields. */
-function toExportString(raw: MarkdownOrString | string | undefined | null): string {
+/**
+ * Flatten markdown/string and trim to single export string; empty when missing or empty-ish. DRY for node/edge fields.
+ * Refs in markdown (`[[fqn]]`) are replaced with titles (see {@link resolveMarkdownRefs}), the rest of markdown is kept.
+ */
+function toExportString(
+  raw: MarkdownOrString | string | undefined | null,
+  viewmodel?: DrawioViewModelLike,
+): string {
   const flat = raw != null ? flattenMarkdownOrString(raw as MarkdownOrString) : null
-  return flat != null && !isEmptyish(flat) ? flat.trim() : ''
+  if (flat == null || isEmptyish(flat)) return ''
+  const isMarkdown = raw != null && typeof raw === 'object' && raw.md != null
+  return (isMarkdown ? resolveMarkdownRefs(flat, viewmodel?.$model?.resolveMarkdownRef) : flat).trim()
 }
 
 /** Serialize links array to style-safe JSON string (empty when none). DRY for node and edge links. */
@@ -565,9 +579,9 @@ function buildEdgeStyleString(
     : ''
   const endArrow = drawioArrow(edge.head)
   const startArrow = edge.tail == null || edge.tail === 'none' ? 'none' : drawioArrow(edge.tail)
-  const edgeDesc = toExportString(edge.description)
+  const edgeDesc = toExportString(edge.description, viewmodel)
   const edgeTech = toExportString(edge.technology)
-  const edgeNotes = toExportString(edge.notes)
+  const edgeNotes = toExportString(edge.notes, viewmodel)
   const edgeNavTo = toNonEmptyString(edge.navigateTo)
   const edgeKind = edgeOptionalFields.getKind(edge)
   const edgeNotation = edgeOptionalFields.getNotation(edge)
@@ -688,9 +702,9 @@ function computeNodeStylePartsAndValue(
   const isContainer = containerNodeIds.has(node.id)
   const nodeKind = (node as Node & { kind?: string }).kind ?? ''
   const title = node.title
-  const desc = toExportString(node.description)
+  const desc = toExportString(node.description, viewmodel)
   const tech = toExportString(node.technology)
-  const notes = toExportString(nodeOptionalFields.getNotes(node))
+  const notes = toExportString(nodeOptionalFields.getNotes(node), viewmodel)
   const tags = nodeOptionalFields.getTags(node)
   const tagList = Array.isArray(tags) && tags.length > 0 ? tags.join(',') : ''
   const navTo = toNonEmptyString(nodeOptionalFields.getNavigateTo(node))
@@ -730,7 +744,7 @@ function computeNodeStylePartsAndValue(
   const fillOpacityStyle = containerOpacityNum != null && isContainer === true
     ? `fillOpacity=${Math.min(100, Math.max(0, containerOpacityNum))};`
     : ''
-  const summaryStr = toExportString(nodeOptionalFields.getSummary(node))
+  const summaryStr = toExportString(nodeOptionalFields.getSummary(node), viewmodel)
   const links = nodeOptionalFields.getLinks(node)
   const linksJson = linksToStyleJson(links)
   const colorNameForRoundtrip = node.color ? encodeURIComponent(String(node.color)) : ''
@@ -883,11 +897,13 @@ function getViewTitle(view: View): string | null {
     : null
 }
 
-/** Normalize view description from txt/md/string to plain string (single responsibility). */
-function getViewDescriptionString(view: View): string {
-  const raw = (view as { description?: unknown }).description
+/** Normalize view description from txt/md/string to plain string (single responsibility), refs in markdown are resolved. */
+function getViewDescriptionString(viewmodel: DrawioViewModelLike): string {
+  const raw = (viewmodel.$view as { description?: unknown }).description
   if (raw != null && typeof raw === 'object' && 'txt' in raw) return String((raw as { txt: string }).txt)
-  if (raw != null && typeof raw === 'object' && 'md' in raw) return String((raw as { md: string }).md)
+  if (raw != null && typeof raw === 'object' && 'md' in raw) {
+    return resolveMarkdownRefs(String((raw as { md: string }).md), viewmodel.$model?.resolveMarkdownRef)
+  }
   if (typeof raw === 'string') return raw
   return ''
 }
@@ -902,9 +918,10 @@ function getLeanixRootStyleParts(view: View, options: GenerateDrawioOptions): st
 }
 
 /** Build root cell style string from view metadata (title, description, notation) for round-trip; when profile is 'leanix' adds likec4ViewId, likec4ProjectId, bridgeManaged. */
-function buildRootCellStyle(view: View, options: GenerateDrawioOptions | undefined): string {
+function buildRootCellStyle(viewmodel: DrawioViewModelLike, options: GenerateDrawioOptions | undefined): string {
+  const view = viewmodel.$view
   const viewTitle = getViewTitle(view)
-  const viewDesc = getViewDescriptionString(view)
+  const viewDesc = getViewDescriptionString(viewmodel)
   const viewDescEnc = viewDesc.trim() !== '' ? encodeURIComponent(viewDesc.trim()) : ''
   const viewNotationRaw = (view as unknown as { notation?: unknown }).notation
   const viewNotation = typeof viewNotationRaw === 'string' && viewNotationRaw !== '' ? viewNotationRaw : undefined
@@ -1268,7 +1285,7 @@ function generateDiagramContent(
     )
   }
 
-  const rootCellStyle = buildRootCellStyle(view, options)
+  const rootCellStyle = buildRootCellStyle(viewmodel, options)
 
   const allCells = [
     `<mxCell id="${defaultParentId}" value="" style="${rootCellStyle}" vertex="1" parent="${rootId}">

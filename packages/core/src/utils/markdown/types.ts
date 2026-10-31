@@ -25,3 +25,12 @@ export type MarkdownRef = {
    */
   targetRange: { start: number; end: number }
 }
+
+/**
+ * Resolves the text a ref is displayed with: the element title, or the view title.
+ * Returns null if the target is not found (or the namespace is unknown),
+ * then the ref falls back to its target.
+ *
+ * Not called for refs with a custom label, the label always wins.
+ */
+export type MarkdownRefTitleResolver = (ref: MarkdownRef) => string | null

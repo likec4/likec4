@@ -28,6 +28,10 @@ export type OverlayActorEvent =
   | { type: 'open.elementDetails' } & Overlays.ElementDetails.Input
   | { type: 'open.relationshipDetails' } & Overlays.RelationshipDetails.Input
   | { type: 'open.relationshipsBrowser' } & Overlays.RelationshipsBrowser.Input
+  /**
+   * Replace the subject of an open element details card (no new card is opened)
+   */
+  | { type: 'change.elementDetails'; actorId: string; subject: DetailsSubject }
   | { type: 'close'; actorId?: string | undefined } // Close last overlay if actorId is not provided
   | { type: 'close.all' }
 
@@ -198,6 +202,25 @@ const openElementDetails = () =>
     enqueue(emitOpened(id))
   })
 
+const changeElementDetails = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'change.elementDetails')
+    const overlay = context.overlays.find(o => o.id === event.actorId)
+    if (overlay?.type !== 'elementDetails') {
+      return
+    }
+    if (
+      overlay.subject.element === event.subject.element
+      && overlay.subject.deployment === event.subject.deployment
+    ) {
+      return
+    }
+    enqueue.sendTo(overlay.id, { type: 'change.subject', subject: event.subject })
+    enqueue.assign({
+      overlays: context.overlays.map(o => o.id === overlay.id ? { ...overlay, subject: event.subject } : o),
+    })
+  })
+
 const openRelationshipDetails = () =>
   machine.enqueueActions(({ context, enqueue, event }) => {
     assertEvent(event, 'open.relationshipDetails')
@@ -326,6 +349,9 @@ const _overlaysActorLogic = machine.createMachine({
           on: {
             'open.*': {
               actions: openOverlay(),
+            },
+            'change.elementDetails': {
+              actions: changeElementDetails(),
             },
             'close': [
               {
