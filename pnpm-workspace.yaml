@@ -146,7 +146,7 @@ catalogs:
     "@mantine/notifications": 9.7.4
     "@mantine/vanilla-extract": 9.7.4
   mcp:
-    "@modelcontextprotocol/sdk": ^1.32.1
+    "@modelcontextprotocol/sdk": ^1.32.2
     "@modelcontextprotocol/ext-apps": "^1.7.5"
   react:
     "@floating-ui/dom": ^1.8.0
