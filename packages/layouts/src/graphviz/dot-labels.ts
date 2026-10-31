@@ -5,11 +5,11 @@ import {
   LikeC4Styles,
   RichText,
 } from '@likec4/core'
-import { EdgeLabelMetrics } from '@likec4/core/styles'
+import { EdgeLabelMetrics, ElementNodeMetrics } from '@likec4/core/styles'
 import { nonexhaustive } from '@likec4/core/utils'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
-import { edgeLabelBox } from './text-metrics'
+import { type ElementNodeBox, edgeLabelBox } from './text-metrics'
 import { IconSizePoints, pxToPoints } from './utils'
 
 export function sanitize(text: string) {
@@ -65,6 +65,24 @@ function wrapWithFont({
   return `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${html}</FONT>`
 }
 
+function fontLines(lines: string[], fontsize: number, color?: string) {
+  const Color = color ? ` COLOR="${color}"` : ``
+  return `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${lines.map(sanitize).join('<BR/>')}</FONT>`
+}
+
+function measuredNodeLines(measured: ElementNodeBox, textSize: number, secondaryColor: string): string[] {
+  const { technology, description } = ElementNodeMetrics
+  return [
+    fontLines(measured.title, textSize),
+    ...measured.technology.length > 0
+      ? [fontLines(measured.technology, textSize * technology.fontSizeRatio, secondaryColor)]
+      : [],
+    ...measured.description.length > 0
+      ? [fontLines(measured.description, textSize * description.fontSizeRatio, secondaryColor)]
+      : [],
+  ]
+}
+
 /**
  * "Faking" a node icon with a blue square
  * to preserve space for real icons.
@@ -102,6 +120,7 @@ function maxchars(size: ShapeSize) {
 export function nodeLabel(
   node: ComputedNode,
   styles: LikeC4Styles,
+  measured: ElementNodeBox | null = null,
 ) {
   const { sizes: { size }, values } = styles.nodeSizes(node.style)
   const colorValues = styles.colors(node.color).elements
@@ -113,7 +132,8 @@ export function nodeLabel(
   const fitted = isFixed ? styles.fitNodeContent(node) : null
   const textSize = fitted?.textSize ?? values.textSize
   const iconSize = fitted?.iconSize ?? values.iconSize
-  const lines = [
+  // Measured lines are wrapped as they are rendered (the node gets exact size, see DotPrinter)
+  const lines = measured ? measuredNodeLines(measured, textSize, colorValues.loContrast) : [
     wrapWithFont({
       text: node.title,
       fontsize: textSize,
@@ -130,7 +150,7 @@ export function nodeLabel(
       ? 35
       : 45
   }
-  if (size !== 'xs') {
+  if (!measured && size !== 'xs') {
     if (isTruthy(node.technology?.trim())) {
       lines.push(
         wrapWithFont({

@@ -42,6 +42,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "support" [
     likec4_id = "support";
@@ -50,6 +51,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "cloud" [
     likec4_id = "cloud";
@@ -58,6 +60,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "amazon" [
     likec4_id = "amazon";
@@ -66,6 +69,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";

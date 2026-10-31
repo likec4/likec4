@@ -42,6 +42,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "s3" [
     likec4_id = "amazon.s3";
@@ -50,6 +51,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   subgraph "cluster_cloud" {
     likec4_id = "cloud";

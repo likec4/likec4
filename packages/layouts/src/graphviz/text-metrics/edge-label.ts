@@ -1,13 +1,7 @@
-import {
-  type PreparedTextWithSegments,
-  layout,
-  layoutWithLines,
-  measureNaturalWidth,
-  prepare,
-  prepareWithSegments,
-} from '@chenglou/pretext'
+import { measureNaturalWidth, prepare } from '@chenglou/pretext'
 import { EdgeLabelMetrics } from '@likec4/core/styles'
 import { canvasFont, withFontMetrics } from './measure'
+import { wrapText } from './wrap'
 
 export type EdgeLabelLines = {
   lines: string[]
@@ -16,42 +10,6 @@ export type EdgeLabelLines = {
    */
   width: number
   height: number
-}
-
-/**
- * Finds the narrowest width that keeps the same number of lines as at `maxWidth`,
- * so lines are roughly equal (like CSS `text-wrap: balance`)
- */
-function balancedWidth(
-  paragraph: string,
-  prepared: PreparedTextWithSegments,
-  { maxWidth, lineHeight, font }: { maxWidth: number; lineHeight: number; font: string },
-): number {
-  const lineCount = layout(prepared, maxWidth, lineHeight).lineCount
-  if (lineCount <= 1) {
-    return maxWidth
-  }
-  // never go narrower than the longest word, otherwise words are broken in the middle
-  const longestWord = Math.max(
-    ...paragraph.split(/\s+/).map(word => word ? measureNaturalWidth(prepare(word, font)) : 0),
-  )
-  if (longestWord >= maxWidth) {
-    return maxWidth
-  }
-  let lo = longestWord
-  let hi = maxWidth
-  if (layout(prepared, lo, lineHeight).lineCount === lineCount) {
-    return lo
-  }
-  while (hi - lo > 1) {
-    const mid = (lo + hi) / 2
-    if (layout(prepared, mid, lineHeight).lineCount > lineCount) {
-      lo = mid
-    } else {
-      hi = mid
-    }
-  }
-  return hi
 }
 
 /**
@@ -65,26 +23,16 @@ export function wrapEdgeLabel(
     maxLines?: number
   } = {},
 ): EdgeLabelLines {
-  const { fontSize: size, lineHeight: lineHeightEm } = EdgeLabelMetrics.label
-  const font = canvasFont(size)
-  const lineHeight = size * lineHeightEm
-  return withFontMetrics(() => {
-    let lines: string[] = []
-    for (const paragraph of label.trim().split(/\r?\n/)) {
-      if (!paragraph.trim()) {
-        lines.push('')
-        continue
-      }
-      const prepared = prepareWithSegments(paragraph, font)
-      const width = balancedWidth(paragraph, prepared, { maxWidth, lineHeight, font })
-      for (const line of layoutWithLines(prepared, width, lineHeight).lines) {
-        lines.push(line.text.trim())
-      }
-    }
-    lines = lines.slice(0, maxLines)
-    const width = Math.max(0, ...lines.map(line => line ? measureNaturalWidth(prepare(line, font)) : 0))
-    return { lines, width, height: lines.length * lineHeight }
+  const { fontSize, lineHeight: lineHeightEm } = EdgeLabelMetrics.label
+  const lineHeight = fontSize * lineHeightEm
+  const { lines, width } = wrapText(label, {
+    font: canvasFont(fontSize),
+    maxWidth,
+    lineHeight,
+    maxLines,
+    balance: true,
   })
+  return { lines, width, height: lines.length * lineHeight }
 }
 
 /**

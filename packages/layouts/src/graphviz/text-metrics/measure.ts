@@ -102,7 +102,7 @@ export function measureTextWidth(text: string, size: number, weight = 400): numb
   return width
 }
 
-const CanvasFontRe = /(?:(bold|[1-9]00)\s+)?(\d+(?:\.\d+)?)px/
+const CanvasFontRe = /(?:(bold|\d{3})\s+)?(\d+(?:\.\d+)?)px/
 
 function parseCanvasFont(font: string): { size: number; weight: number } {
   const m = CanvasFontRe.exec(font)
