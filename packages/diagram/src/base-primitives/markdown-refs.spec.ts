@@ -9,13 +9,17 @@ const model = Builder.specification({
   .model((m, _) =>
     _(
       m.system('cloud', 'Cloud').with(
-        m.component('api', 'Public <API> & "Co"'),
+        m.component('api', {
+          title: 'Public <API> & "Co"',
+          technology: 'REST',
+          summary: { md: 'Public **API**' },
+        }),
       ),
     )
   )
   .views((v, _) =>
     _(
-      v.view('index', 'Landscape').with(v.$include('*')),
+      v.view('index', { title: 'Landscape', description: 'Overview' }).with(v.$include('*')),
       v.view('untitled').with(v.$include('*')),
     )
   )
@@ -28,13 +32,21 @@ function render(md: string, resolver = interactive) {
 }
 
 describe('createMarkdownRefResolver', () => {
-  it('resolves element title and kind', () => {
-    expect(interactive({ kind: 'element', target: 'cloud.api', namespace: null, hasLabel: false })).toEqual({
+  it('resolves element title, with a preview', () => {
+    const resolved = interactive({ kind: 'element', target: 'cloud.api', namespace: null, hasLabel: false })
+    expect(resolved).toMatchObject({
       state: 'link',
       kind: 'element',
       fqn: 'cloud.api',
       text: 'Public <API> & "Co"',
-      tooltip: 'Public <API> & "Co" · component',
+      preview: {
+        title: 'Public <API> & "Co"',
+        meta: 'component · REST',
+      },
+    })
+    expect(resolved.state === 'link' && resolved.preview.body.md).toBe('Public **API**')
+    expect(interactive({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })).toMatchObject({
+      preview: { title: 'Cloud', meta: 'system' },
     })
   })
 
@@ -44,7 +56,12 @@ describe('createMarkdownRefResolver', () => {
       kind: 'view',
       viewId: 'index',
       text: 'Landscape',
+      preview: { title: 'Landscape', meta: 'element view' },
     })
+    expect(interactive({ kind: 'view', target: 'index', namespace: 'view', hasLabel: false })).toHaveProperty(
+      'preview.body.text',
+      'Overview',
+    )
     expect(interactive({ kind: 'view', target: 'untitled', namespace: 'view', hasLabel: false })).toMatchObject({
       state: 'link',
       text: 'untitled',
@@ -55,17 +72,17 @@ describe('createMarkdownRefResolver', () => {
     expect(interactive({ kind: 'element', target: 'cloud.db', namespace: null, hasLabel: false })).toEqual({
       state: 'missing',
       text: null,
-      tooltip: `Element 'cloud.db' not found`,
+      message: `Element 'cloud.db' not found`,
     })
     expect(interactive({ kind: 'view', target: 'nope', namespace: 'view', hasLabel: false })).toEqual({
       state: 'missing',
       text: null,
-      tooltip: `View 'nope' not found`,
+      message: `View 'nope' not found`,
     })
     expect(interactive({ kind: 'unknown', target: 'prod', namespace: 'deployment', hasLabel: false })).toEqual({
       state: 'missing',
       text: null,
-      tooltip: `Unknown link type 'deployment:'`,
+      message: `Unknown link type 'deployment:'`,
     })
   })
 
@@ -133,7 +150,7 @@ describe('resolveMarkdownRefs', () => {
     const refs: Array<{ namespace: string | null; kind: string }> = []
     const html = resolveMarkdownRefs(markdownToHtml('[[a"b:c]] [[view:index]] [[cloud]]'), ref => {
       refs.push({ namespace: ref.namespace, kind: ref.kind })
-      return { state: 'missing', text: null, tooltip: '' }
+      return { state: 'missing', text: null, message: '' }
     })
     expect(refs).toEqual([
       { namespace: 'a"b', kind: 'unknown' },
@@ -150,7 +167,7 @@ describe('resolveMarkdownRefs', () => {
     const targets: string[] = []
     const html = resolveMarkdownRefs(markdownToHtml('[[a"b&c]]'), ref => {
       targets.push(ref.target)
-      return { state: 'missing', text: null, tooltip: '' }
+      return { state: 'missing', text: null, message: '' }
     })
     expect(targets).toEqual(['a"b&c'])
     expect(html).toBe(

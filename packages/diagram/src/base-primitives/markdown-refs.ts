@@ -1,5 +1,5 @@
 import type { LikeC4Model } from '@likec4/core/model'
-import type { Fqn, ViewId } from '@likec4/core/types'
+import type { Fqn, RichTextOrEmpty, ViewId } from '@likec4/core/types'
 
 /**
  * Ref anchor, as rendered by `markdownToHtml` from `@likec4/core`:
@@ -21,20 +21,35 @@ export type MarkdownRefAnchor = {
   hasLabel: boolean
 }
 
+/**
+ * Content of the hover card of a resolved ref
+ */
+export type MarkdownRefPreview = {
+  title: string
+  /**
+   * Secondary line: element kind and technology, or view type
+   */
+  meta: string
+  /**
+   * Element summary (or description), view description
+   */
+  body: RichTextOrEmpty
+}
+
 export type ResolvedMarkdownRef =
   /**
    * Target exists and can be opened (element details or navigation)
    */
-  | { state: 'link'; kind: 'element'; fqn: Fqn; text: string; tooltip: string }
-  | { state: 'link'; kind: 'view'; viewId: ViewId; text: string; tooltip: string }
+  | { state: 'link'; kind: 'element'; fqn: Fqn; text: string; preview: MarkdownRefPreview }
+  | { state: 'link'; kind: 'view'; viewId: ViewId; text: string; preview: MarkdownRefPreview }
   /**
    * Target exists, but opening it is not available (canvas, disabled feature, or no model)
    */
-  | { state: 'text'; text: string; tooltip: string }
+  | { state: 'text'; text: string }
   /**
    * Target does not exist, or the namespace is unknown
    */
-  | { state: 'missing'; text: null; tooltip: string }
+  | { state: 'missing'; text: null; message: string }
 
 export type MarkdownRefResolver = (ref: MarkdownRefAnchor) => ResolvedMarkdownRef
 
@@ -61,37 +76,57 @@ export function createMarkdownRefResolver(
     switch (true) {
       case ref.kind === 'element': {
         if (!model) {
-          return { state: 'text', text: ref.target, tooltip: ref.target }
+          return { state: 'text', text: ref.target }
         }
         const element = model.findElement(ref.target)
         if (!element) {
-          return { state: 'missing', text: null, tooltip: `Element '${ref.target}' not found` }
+          return { state: 'missing', text: null, message: `Element '${ref.target}' not found` }
         }
         const text = element.title
-        const tooltip = `${element.title} · ${element.kind}`
-        return options.elements
-          ? { state: 'link', kind: 'element', fqn: element.id, text, tooltip }
-          : { state: 'text', text, tooltip }
+        if (!options.elements) {
+          return { state: 'text', text }
+        }
+        return {
+          state: 'link',
+          kind: 'element',
+          fqn: element.id,
+          text,
+          preview: {
+            title: element.title,
+            meta: element.technology ? `${element.kind} · ${element.technology}` : element.kind,
+            body: element.summary,
+          },
+        }
       }
       case ref.kind === 'view': {
         if (!model) {
-          return { state: 'text', text: ref.target, tooltip: ref.target }
+          return { state: 'text', text: ref.target }
         }
         const view = model.findView(ref.target)
         if (!view) {
-          return { state: 'missing', text: null, tooltip: `View '${ref.target}' not found` }
+          return { state: 'missing', text: null, message: `View '${ref.target}' not found` }
         }
         const text = view.titleOrId
-        const tooltip = `${view.titleOrId} · view`
-        return options.views
-          ? { state: 'link', kind: 'view', viewId: view.id, text, tooltip }
-          : { state: 'text', text, tooltip }
+        if (!options.views) {
+          return { state: 'text', text }
+        }
+        return {
+          state: 'link',
+          kind: 'view',
+          viewId: view.id,
+          text,
+          preview: {
+            title: text,
+            meta: `${view._type} view`,
+            body: view.description,
+          },
+        }
       }
       default: {
         return {
           state: 'missing',
           text: null,
-          tooltip: ref.namespace !== null
+          message: ref.namespace !== null
             ? `Unknown link type '${ref.namespace}:'`
             : `Unknown link type for '${ref.target}'`,
         }

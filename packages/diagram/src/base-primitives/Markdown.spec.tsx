@@ -6,12 +6,19 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { LikeC4ModelContextProvider } from '../context/LikeC4ModelContext'
 import { type MarkdownRefActions, MarkdownRefsProvider } from '../context/MarkdownRefsContext'
-import { Markdown } from './Markdown'
+import { Markdown, MarkdownRefPreviewCard } from './Markdown'
+import { createMarkdownRefResolver } from './markdown-refs'
 
 const model = Builder.specification({
   elements: ['system'],
 })
-  .model((m, _) => _(m.system('cloud', 'Cloud')))
+  .model((m, _) =>
+    _(m.system('cloud', {
+      title: 'Cloud',
+      technology: 'AWS',
+      description: { md: 'Runs on **AWS**, see [[cloud]] and [[view:index]]' },
+    }))
+  )
   .views((v, _) => _(v.view('index', 'Landscape').with(v.$include('*'))))
   .toLikeC4Model()
 
@@ -86,5 +93,49 @@ describe('Markdown refs', () => {
     )
     expect(html).toContain('data-likec4-ref-state="text">cloud</span>')
     expect(html).toContain('data-likec4-ref-state="text">Label</span>')
+  })
+})
+
+describe('MarkdownRefPreviewCard', () => {
+  const resolver = createMarkdownRefResolver(model, { elements: true, views: true })
+
+  function renderCard(ref: Parameters<typeof resolver>[0]) {
+    const resolved = resolver(ref)
+    if (resolved.state === 'text') {
+      throw new Error('unexpected text ref')
+    }
+    return render(
+      <MarkdownRefsProvider value={allActions}>
+        <MarkdownRefPreviewCard resolved={resolved} />
+      </MarkdownRefsProvider>,
+    )
+  }
+
+  it('shows element title, kind and technology, description and hint', () => {
+    const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })
+    expect(html).toContain('>Cloud</p>')
+    expect(html).toContain('>system · AWS</p>')
+    expect(html).toContain('Runs on <strong>AWS</strong>')
+    expect(html).toContain('>Click to open details</p>')
+  })
+
+  it('renders refs inside the preview as plain text', () => {
+    const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })
+    expect(html).toContain('data-likec4-ref-state="text">Cloud</span>')
+    expect(html).toContain('data-likec4-ref-state="text">Landscape</span>')
+    expect(html).not.toContain('tabindex')
+  })
+
+  it('shows view title and type', () => {
+    const html = renderCard({ kind: 'view', target: 'index', namespace: 'view', hasLabel: false })
+    expect(html).toContain('>Landscape</p>')
+    expect(html).toContain('>element view</p>')
+    expect(html).toContain('>Click to open view</p>')
+  })
+
+  it('shows one line for missing refs', () => {
+    const html = renderCard({ kind: 'unknown', target: 'prod', namespace: 'deployment', hasLabel: false })
+    expect(html).toContain(`>Unknown link type &#x27;deployment:&#x27;</p>`)
+    expect(html).not.toContain('Click to')
   })
 })
