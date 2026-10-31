@@ -1,5 +1,6 @@
 import type { LikeC4Model, LikeC4ViewModel } from '@likec4/core/model'
 import type { aux } from '@likec4/core/types'
+import { resolveMarkdownRefs } from '@likec4/core/utils'
 import { CompositeGeneratorNode } from 'langium/generate'
 import { generateMermaid } from '../mmd/generate-mmd'
 import { NL, toStringLF } from '../newline'
@@ -13,7 +14,8 @@ type ViewModel = LikeC4ViewModel<aux.Unknown>
 function appendView(doc: CompositeGeneratorNode, view: ViewModel): void {
   doc.append('### ', view.titleOrId, NL, NL)
   if (view.description.nonEmpty) {
-    doc.append(view.description.md, NL, NL)
+    // Refs (`[[fqn]]`) become plain titles, the rest of markdown is kept
+    doc.append(resolveMarkdownRefs(view.description.md, view.$model.resolveMarkdownRef), NL, NL)
   }
   doc.append('```mermaid', NL, generateMermaid(view).trimEnd(), NL, '```', NL, NL)
 }
