@@ -196,8 +196,8 @@
       "name": "markup.inline.raw.string.likec4"
     },
     "markdown-ref": {
-      "comment": "Link to an element or a view inside markdown: [[fqn]], [[fqn|label]], [[view:id]]",
-      "match": "(?<!\\\\)(\\[\\[)(?:([A-Za-z][\\w-]*)(:))?([^\\s\\[\\]|\\\\:]+)(?:(\\\\?\\|)([^\\[\\]\\n]*?))?(\\]\\])",
+      "comment": "Link to an element or a view inside markdown: [[fqn]], [[fqn|label]], [[view:id]]. DSL strings are unescaped before Markdown: \\[[ is a ref (the DSL escape is part of the match, so the markdown grammar does not take it as an escape), \\\\[[ is a literal; the label separator may have backslashes (\\\\| in tables)",
+      "match": "(?<!\\\\)\\\\?(\\[\\[)(?:([A-Za-z][\\w-]*)(:))?([^\\s\\[\\]|\\\\:]+)(?:(\\\\*\\|)([^\\[\\]\\n]*?))?(\\]\\])",
       "name": "meta.link.ref.likec4",
       "captures": {
         "1": { "name": "punctuation.definition.link.begin.likec4" },

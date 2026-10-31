@@ -1650,6 +1650,15 @@ describe('LikeC4CompletionProvider', () => {
       })
     })
 
+    it('should suggest after [[ with a DSL escape', async ({ completion }) => {
+      // `\[[` in the DSL is `[[` in the model, a ref
+      await completion({
+        text: withModel(`'''Calls \\[[back<|>'''`),
+        index: 0,
+        expectedItems: ['cloud.backend', 'cloud.backend.api'],
+      })
+    })
+
     it('should not suggest outside of a link', async ({ completion }) => {
       const cases = [
         // plain strings are not processed
@@ -1663,8 +1672,9 @@ describe('LikeC4CompletionProvider', () => {
         `'''Calls [<|>'''`,
         `'''Calls [[cloud <|>'''`,
         `'''Calls [[cloud|<|>'''`,
-        // escaped
-        `'''Calls \\[[<|>'''`,
+        // escaped in Markdown: `\\[[` in the DSL is `\[[` in the model
+        `'''Calls \\\\[[<|>'''`,
+        `'''Calls \\\\\\[[<|>'''`,
         // unknown namespace
         `'''Calls [[deployment:<|>'''`,
         // inside code

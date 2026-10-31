@@ -51,9 +51,10 @@ const MarkdownRefTriggerCharacters = ['[', ':']
 
 /**
  * Unclosed `[[` followed by FQN-ish characters (and an optional `namespace:`) up to the end of the text.
- * Escaped `\[[` is a literal and is ignored.
+ * Works on the raw token text: DSL strings are unescaped before Markdown, so `\[[` is still a ref
+ * (the DSL drops the backslash), and the Markdown-escaped literal `[[` is written `\\[[`, which is ignored.
  */
-const UnclosedRefRegex = /(?<!\\)\[\[([\w.:-]*)$/
+const UnclosedRefRegex = /(?<!\\\\)\[\[([\w.:-]*)$/
 
 /**
  * Rest of the ref target after the cursor: up to the first whitespace, `|`, `\|`, `]]` (or `[`).

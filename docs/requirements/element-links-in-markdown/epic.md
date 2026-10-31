@@ -28,11 +28,14 @@ element's details (or on the referenced view).
 | `[[cloud.api]]`      | link to element, rendered with the element title |
 | `[[cloud.api\|API]]` | link to element with a custom label              |
 | `[[view:index]]`     | link to view, rendered with the view title       |
-| `\[[`                | literal `[[`, standard Markdown escaping         |
+| `\\[[`               | literal `[[` (Markdown sees `\[[`)               |
 
-- A ref is on one line. The target has no whitespace, `[`, `]`, `|` or `\`; labels may use `\|`
-  as the separator (`[[a.b\|Label]]`), which is required inside GFM tables, where a bare `|`
-  splits the cell before inline parsing.
+- Forms above are as written in the DSL. DSL strings are unescaped before Markdown sees them
+  (`\\` becomes `\`, `\[` becomes `[`), so a Markdown escape needs a doubled backslash, and a
+  single `\[[` is still a ref.
+- A ref is on one line. The target has no whitespace, `[`, `]`, `|` or `\`. The label separator
+  is `|` (`[[a.b|Label]]`; `\|` is the same after DSL unescaping). Inside GFM tables, where a bare
+  `|` splits the cell before inline parsing, write `\\|` (`[[a.b\\|Label]]`), so Markdown gets `\|`.
 - FQN is **absolute**, resolved within the **current project** only. No relative resolution,
   no `this`, no imported elements (yet).
 - Any `prefix:` inside the brackets is a **reserved namespace**. Known: `view:`. Unknown prefixes
