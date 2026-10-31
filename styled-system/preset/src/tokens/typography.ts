@@ -1,11 +1,10 @@
 import { defineTokens } from '@pandacss/dev'
-import { defaultTheme } from '../defaults'
+import { DefaultFontFamily, defaultTheme } from '../defaults'
 
 export const fonts = defineTokens.fonts({
   display: {
     description: 'Headings, big numerals',
-    value:
-      `'IBM Plex Sans Variable',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
+    value: DefaultFontFamily,
   },
   mono: {
     description: 'Data labels, codes, eyebrows',
@@ -13,8 +12,7 @@ export const fonts = defineTokens.fonts({
   },
   body: {
     description: 'UI / body',
-    value:
-      `'IBM Plex Sans Variable',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
+    value: DefaultFontFamily,
   },
   likec4: {
     DEFAULT: {

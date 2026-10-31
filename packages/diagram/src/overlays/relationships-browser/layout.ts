@@ -17,7 +17,7 @@ import type {
   Point,
   ViewId,
 } from '@likec4/core/types'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
 import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
@@ -35,6 +35,7 @@ import {
   find,
   forEachObj,
   groupBy,
+  isNumber,
   map,
   mapToObj,
   omit,
@@ -46,7 +47,10 @@ import {
   tap,
   unique,
 } from 'remeda'
+import { useEnabledFeatures } from '../../context/DiagramFeatures'
+import { useEdgeLabelFontLoader } from '../../hooks/useEdgeLabelFontLoader'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
+import { type MeasuredEdgeLabel, measureEdgeLabel } from '../../utils/measure-edge-label'
 import type { RelationshipsBrowserTypes } from './_types'
 
 /**
@@ -63,6 +67,7 @@ const Sizes = {
     height: 10,
     minlen: 1,
     weight: 1,
+    labelpos: 'c',
   } satisfies EdgeConfig,
 
   emptyNodeOffset: 120,
@@ -219,9 +224,17 @@ export namespace LayoutRelationshipsViewResult {
   }
 }
 
+export type LayoutRelationshipsViewOptions = {
+  /**
+   * Whether edge labels have navigate button
+   */
+  withNavigateButtons?: boolean
+}
+
 export function layoutRelationshipsView(
   data: RelationshipsViewData,
   scope: LikeC4ViewModel | null,
+  { withNavigateButtons = false }: LayoutRelationshipsViewOptions = {},
 ): Omit<LayoutRelationshipsViewResult, 'subject'> {
   const g = createGraph()
 
@@ -238,6 +251,8 @@ export function layoutRelationshipsView(
     sourceHandle: string
     targetHandle: string
     relations: RelationshipModel[]
+    label: MeasuredEdgeLabel
+    navigateTo: ViewId | null
   }>
 
   pipe(
@@ -279,8 +294,19 @@ export function layoutRelationshipsView(
       g.node(source.id).outPorts.push(target.id)
       g.node(target.id).inPorts.push(source.id)
 
+      const relations = map(grouped, prop('relation'))
+      const onlyRelation = only(relations)
+      const navigateTo = only(unique(relations.flatMap(r => r.navigateTo?.id ? r.navigateTo.id : []))) ?? null
+      // Reserve the size of the rendered label, dagre places it between the ranks
+      const label = measureEdgeLabel({
+        label: relations.length > 1 ? `${relations.length} relationships` : onlyRelation?.title ?? 'untitled',
+        withActionButton: withNavigateButtons && !!navigateTo,
+      })
+
       g.setEdge(source.portId, target.portId, {
         ...Sizes.edgeLabel,
+        width: label.width,
+        height: label.height,
       }, name)
       edges.push({
         name,
@@ -290,7 +316,9 @@ export function layoutRelationshipsView(
         sourceHandle: source.id + '_out' + (g.node(source.id).outPorts.length - 1),
         target: target.id,
         targetHandle: target.id + '_in' + (g.node(target.id).inPorts.length - 1),
-        relations: map(grouped, prop('relation')),
+        relations,
+        label,
+        navigateTo,
       })
     }),
   )
@@ -357,10 +385,14 @@ export function layoutRelationshipsView(
 
   const edgeCount = g.edgeCount()
   if (edgeCount > 10) {
+    // More space between columns for many edges
+    const minWidth = edgeCount > 25 ? 800 : 400
     for (const edge of g.edges()) {
+      const config = g.edge(edge)
+      const width: unknown = config['width']
       g.setEdge(edge, {
-        ...Sizes.edgeLabel,
-        width: edgeCount > 25 ? 800 : 400,
+        ...config,
+        width: Math.max(isNumber(width) ? width : 0, minWidth),
       })
     }
   }
@@ -575,14 +607,14 @@ export function layoutRelationshipsView(
         relations,
         sourceHandle,
         targetHandle,
+        label,
+        navigateTo,
       } = nonNullable(find(edges, e => e.name === ename))
       const onlyRelation = only(relations)
-      const label = onlyRelation?.title ?? 'untitled'
-      const isMultiple = relations.length > 1
-      // const points = edge.points.map(p => [p.x, p.y] as Point)
-      const navigateTo = only(unique(relations.flatMap(r => r.navigateTo?.id ? r.navigateTo.id : [])))
-      // edge.points
-      // const edge = g.edge(name)
+      // dagre sets the center of the label
+      const labelX: unknown = edge['x']
+      const labelY: unknown = edge['y']
+      invariant(isNumber(labelX) && isNumber(labelY), `dagre should place the label of ${name}`)
       acc.push(exact({
         id: name as EdgeId,
         sourceFqn,
@@ -591,7 +623,13 @@ export function layoutRelationshipsView(
         targetFqn,
         target: target as NodeId,
         targetHandle,
-        label: isMultiple ? `${relations.length} relationships` : label,
+        label: label.label,
+        labelBBox: {
+          x: Math.round(labelX - label.width / 2),
+          y: Math.round(labelY - label.height / 2),
+          width: label.width,
+          height: label.height,
+        },
         navigateTo,
         color: onlyRelation?.color ?? 'gray',
         existsInCurrentView: !scope || relations.every(r => scope.includesRelation(r.id)),
@@ -613,11 +651,14 @@ export function useRelationshipsView(
   scope: 'global' | 'view',
 ): LayoutRelationshipsViewResult {
   const model = useLikeC4Model()
-  return useMemo(() => {
+  const { enableNavigateTo } = useEnabledFeatures()
+  const [fontsVersion, ensureFontsLoaded] = useEdgeLabelFontLoader()
+  const result = useMemo(() => {
     const view = viewId ? model.findView(viewId) : null
     const data = layoutRelationshipsView(
       computeRelationshipsView(subject, model, viewId, scope),
       scope === 'view' ? view : null,
+      { withNavigateButtons: enableNavigateTo },
     )
 
     if (view && (scope === 'global' || !data.subjectExistsInScope)) {
@@ -628,5 +669,11 @@ export function useRelationshipsView(
     }
 
     return Object.assign(data, { subject })
-  }, [model, subject, viewId, scope, computeRelationshipsView])
+  }, [model, subject, viewId, scope, enableNavigateTo, fontsVersion])
+
+  useEffect(() => {
+    ensureFontsLoaded(result.edges.flatMap(edge => edge.label ?? []))
+  }, [result])
+
+  return result
 }

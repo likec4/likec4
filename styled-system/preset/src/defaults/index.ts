@@ -17,4 +17,5 @@ export const defaultTheme = {
 export * from './element-colors.ts'
 export * from './relationship-colors.ts'
 export * from './types.ts'
+export * from './typography.ts'
 export * from './vars.ts'

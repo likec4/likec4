@@ -59,6 +59,7 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
+    "@chenglou/pretext": "catalog:",
     "@dagrejs/dagre": "catalog:",
     "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",

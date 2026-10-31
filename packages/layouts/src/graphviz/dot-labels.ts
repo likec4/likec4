@@ -5,9 +5,11 @@ import {
   LikeC4Styles,
   RichText,
 } from '@likec4/core'
+import { EdgeLabelMetrics } from '@likec4/core/styles'
 import { nonexhaustive } from '@likec4/core/utils'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
+import { edgeLabelBox } from './text-metrics'
 import { IconSizePoints, pxToPoints } from './utils'
 
 export function sanitize(text: string) {
@@ -215,44 +217,29 @@ export const EDGE_LABEL_MAX_CHARS = 40
 export const EDGE_LABEL_MAX_LINES = 5
 const BGCOLOR = `BGCOLOR="${LikeC4Styles.DEFAULT.relationshipColors.labelBg}A0"`
 
-export function edgelabel({ label, technology }: ComputedEdge) {
-  const lines = [] as string[]
-  if (isTruthy(label?.trim())) {
-    lines.push(
-      wrapWithFont({
-        text: label,
-        maxchars: EDGE_LABEL_MAX_CHARS,
-        fontsize: 14,
-        maxLines: EDGE_LABEL_MAX_LINES,
-        bold: label === '[...]',
-      }),
-    )
-  }
-  // if (isTruthy(description)) {
-  //   lines.push(
-  //     wrapWithFont({
-  //       text: description,
-  //       maxchars: EDGE_LABEL_MAX_CHARS,
-  //       maxLines: 4,
-  //       fontsize: 14
-  //     })
-  //   )
-  // }
-  if (isTruthy(technology?.trim())) {
-    lines.push(
-      wrapWithFont({
-        text: `[ ${technology} ]`,
-        fontsize: 12,
-        maxLines: 1,
-        maxchars: EDGE_LABEL_MAX_CHARS,
-      }),
-    )
-  }
-  if (lines.length === 0) {
+/**
+ * Returns HTML-like label for the edge.
+ * The label is measured and wrapped as it is rendered in the diagram (see text-metrics),
+ * Graphviz reserves exactly this size (FIXEDSIZE), text is kept for DOT/SVG exports.
+ */
+export function edgelabel({ label, technology }: Pick<ComputedEdge, 'label' | 'technology'>) {
+  const box = edgeLabelBox({ label, technology })
+  if (!box) {
     return null
   }
-  const rows = lines.map(line => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD></TR>`).join('')
-  return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}>${rows}</TABLE>>`
+  const { label: labelStyle, technology: techStyle } = EdgeLabelMetrics
+  const rows = [] as string[]
+  if (box.label) {
+    const lines = box.label.split('\n').map(sanitize).join('<BR/>')
+    rows.push(`<FONT POINT-SIZE="${pxToPoints(labelStyle.fontSize)}">${lines}</FONT>`)
+  }
+  if (isTruthy(technology?.trim())) {
+    rows.push(`<FONT POINT-SIZE="${pxToPoints(techStyle.fontSize)}">${sanitize(`[ ${technology} ]`)}</FONT>`)
+  }
+  const cells = rows.map(row => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${row}</TD></TR>`).join('')
+  return `<<TABLE FIXEDSIZE="TRUE" WIDTH="${pxToPoints(box.width)}" HEIGHT="${
+    pxToPoints(box.height)
+  }" BORDER="0" CELLPADDING="0" CELLSPACING="0" ${BGCOLOR}>${cells}</TABLE>>`
 }
 
 export function stepEdgeLabel(step: number, text?: string | null) {

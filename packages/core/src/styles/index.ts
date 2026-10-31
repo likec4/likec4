@@ -1,6 +1,8 @@
 export { assignTagColors, DefaultTagColors } from './assignTagColors'
 export { computeColorValues, getContrastedColorsAPCA, isValidColor } from './compute-color-values'
 export { styleDefaults } from './defaults'
+// Metrics of labels, shared by CSS and layouts
+export { DefaultFontFamily, EdgeLabelMetrics } from '@likec4/style-preset/defaults'
 export { defaultTheme } from './theme'
 
 export * from './types'
