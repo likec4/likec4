@@ -92,6 +92,8 @@ export {
 
 export { useLikeC4Styles } from './hooks/useLikeC4Styles'
 
+export { filterProjects, projectSearchHighlights } from './utils/filterProjects'
+
 export { useUpdateEffect } from './hooks/useUpdateEffect'
 
 export type { Types } from './likec4diagram/types'
