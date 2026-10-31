@@ -1491,8 +1491,8 @@ describe('LikeC4CompletionProvider', () => {
         assert: completions => {
           const index = completions.items.find(i => i.label === 'index')
           expect(index?.textEdit).toEqual({
-            // Rest of the target ends at `|`, no `]]` there, so it is added
-            newText: 'index]]',
+            // Rest of the target ends at the label separator, the ref is already closed
+            newText: 'index',
             insert: {
               start: { line: 12, character: 62 },
               end: { line: 12, character: 65 },
@@ -1504,6 +1504,32 @@ describe('LikeC4CompletionProvider', () => {
           })
         },
       })
+    })
+
+    it('should not close a ref that already has a label', async ({ expect, completion }) => {
+      const text = `
+        specification {
+          element system
+        }
+        model {
+          system cloud {
+            system api
+          }
+          system docs {
+            description '''[[cloud.ap<|>i\\\\|API]] [[cloud.ap<|>|API]]'''
+          }
+        }
+      `
+      for (const index of [0, 1]) {
+        await completion({
+          text,
+          index,
+          assert: completions => {
+            const api = completions.items.find(i => i.label === 'cloud.api')
+            expect(api?.textEdit?.newText).toBe('cloud.api')
+          },
+        })
+      }
     })
 
     it('should replace the rest of the target in partial and closed refs', async ({ expect, completion }) => {

@@ -60,6 +60,7 @@ const UnclosedRefRegex = /(?<!\\)\[\[([\w.:-]*)$/
  * Same characters as a target in `extractRefs` (`@likec4/core/utils`).
  */
 const TargetRestRegex = /^[^\s[\]|\\]*/
+const ClosedRefRestRegex = /^(?:\]\]|\\*\|)/
 
 const ViewNamespace = 'view:'
 
@@ -173,8 +174,9 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
     }
     const after = token.slice(cursor, token.length - quoteLength)
     const rest = TargetRestRegex.exec(after)?.[0] ?? ''
-    // Checked after the rest of the target, so `]]` is not duplicated in the replace mode
-    const needsClosing = !after.slice(rest.length).startsWith(']]')
+    // Checked after the rest of the target, so `]]` is not duplicated in the replace mode.
+    // A label separator (`|` or `\|`) there means the ref is already closed further on
+    const needsClosing = !ClosedRefRestRegex.test(after.slice(rest.length))
     const replaceEnd = textDocument.positionAt(offset + rest.length)
 
     const refText = match[1] ?? ''
