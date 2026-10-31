@@ -149,6 +149,18 @@ const likec4Theme = createTheme({
         closeDelay: 120,
         offset: 8,
       },
+      classNames: {
+        tooltip: css({
+          shadow: {
+            base: 'sm',
+            _dark: 'lg',
+          },
+          _dark: {
+            bg: 'surface.canvas',
+            border: 'subtle',
+          },
+        }),
+      },
     }),
     SegmentedControl: SegmentedControl.extend({
       vars: (theme, props) => ({

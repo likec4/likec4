@@ -16,6 +16,7 @@ const model = Builder.specification({
     _(m.system('cloud', {
       title: 'Cloud',
       technology: 'AWS',
+      icon: 'https://example.com/cloud.svg',
       description: { md: 'Runs on **AWS**, see [[cloud]] and [[view:index]]' },
     }))
   )
@@ -99,24 +100,30 @@ describe('Markdown refs', () => {
 describe('MarkdownRefPreviewCard', () => {
   const resolver = createMarkdownRefResolver(model, { elements: true, views: true })
 
-  function renderCard(ref: Parameters<typeof resolver>[0]) {
+  function renderCard(ref: Parameters<typeof resolver>[0], withOpen = true) {
     const resolved = resolver(ref)
     if (resolved.state === 'text') {
       throw new Error('unexpected text ref')
     }
     return render(
       <MarkdownRefsProvider value={allActions}>
-        <MarkdownRefPreviewCard resolved={resolved} />
+        <MarkdownRefPreviewCard resolved={resolved} onOpen={withOpen ? () => {} : undefined} />
       </MarkdownRefsProvider>,
     )
   }
 
-  it('shows element title, kind and technology, description and hint', () => {
+  it('shows element icon, title, kind and technology, description and open button', () => {
     const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })
+    expect(html).toContain('<img src="https://example.com/cloud.svg" alt="Cloud"/>')
     expect(html).toContain('>Cloud</p>')
     expect(html).toContain('>system · AWS</p>')
     expect(html).toContain('Runs on <strong>AWS</strong>')
-    expect(html).toContain('>Click to open details</p>')
+    expect(html).toMatch(/<button [^>]*type="button"[^>]*>.*Open details<\/span>/)
+  })
+
+  it('has no open button without a handler', () => {
+    const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false }, false)
+    expect(html).not.toContain('<button')
   })
 
   it('renders refs inside the preview as plain text', () => {
@@ -126,16 +133,17 @@ describe('MarkdownRefPreviewCard', () => {
     expect(html).not.toContain('tabindex')
   })
 
-  it('shows view title and type', () => {
+  it('shows view type icon, title and type', () => {
     const html = renderCard({ kind: 'view', target: 'index', namespace: 'view', hasLabel: false })
+    expect(html).toContain('tabler-icon-zoom-scan')
     expect(html).toContain('>Landscape</p>')
     expect(html).toContain('>element view</p>')
-    expect(html).toContain('>Click to open view</p>')
+    expect(html).toContain('Open view</span>')
   })
 
   it('shows one line for missing refs', () => {
     const html = renderCard({ kind: 'unknown', target: 'prod', namespace: 'deployment', hasLabel: false })
     expect(html).toContain(`>Unknown link type &#x27;deployment:&#x27;</p>`)
-    expect(html).not.toContain('Click to')
+    expect(html).not.toContain('<button')
   })
 })
