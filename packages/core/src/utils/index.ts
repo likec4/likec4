@@ -86,6 +86,7 @@ export {
   markdownToHtml,
   markdownToText,
   resolveMarkdownRefs,
+  type ResolveMarkdownRefsOptions,
 } from './markdown'
 
 export { unsafePartial } from './unsafe'

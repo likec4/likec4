@@ -103,3 +103,40 @@ describe('markdownToHtml with resolver', () => {
     )
   })
 })
+
+describe('resolveMarkdownRefs with escape', () => {
+  const tricky: Record<string, string> = {
+    'element:a': '*Star* and _under_',
+    'element:b': 'A|B',
+    'element:c': '[not a link](x) `code` <b>',
+    'element:d': '# not a heading & ~~not struck~~ \\ back',
+  }
+  const resolveTricky: MarkdownRefTitleResolver = ref => tricky[`${ref.kind}:${ref.target}`] ?? null
+
+  it('escapes inserted text', () => {
+    expect(resolveMarkdownRefs('[[a]] [[b|x*y]]', resolveTricky, { escape: true })).toBe(
+      '\\*Star\\* and \\_under\\_ x\\*y',
+    )
+  })
+
+  it('does not escape by default', () => {
+    expect(resolveMarkdownRefs('[[a]]', resolveTricky)).toBe('*Star* and _under_')
+  })
+
+  it.each(['a', 'c', 'd'])('renders title of %s literally', target => {
+    const md = resolveMarkdownRefs(`Uses [[${target}]]`, resolveTricky, { escape: true })
+    expect(markdownToText(md)).toBe(`Uses ${tricky[`element:${target}`]}`)
+    expect(markdownToHtml(md)).not.toMatch(/<(em|strong|code|del|h1|a|b)\b/)
+  })
+
+  it('keeps a table cell intact', () => {
+    const md = resolveMarkdownRefs(
+      ['| Name | Uses |', '| --- | --- |', '| x | [[b]] and [[a]] |'].join('\n'),
+      resolveTricky,
+      { escape: true },
+    )
+    const html = markdownToHtml(md)
+    expect(html).toContain('<td>A|B and *Star* and _under_</td>')
+    expect(html.match(/<td>/g)).toHaveLength(2)
+  })
+})

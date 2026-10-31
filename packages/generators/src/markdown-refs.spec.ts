@@ -1,5 +1,6 @@
 import { Builder } from '@likec4/core/builder'
 import { LikeC4Model } from '@likec4/core/model'
+import { markdownToHtml, markdownToText } from '@likec4/core/utils'
 import { mapValues } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { generateDrawio } from './drawio/generate-drawio'
@@ -87,6 +88,36 @@ describe('Markdown refs in exports', () => {
     const md = generateMarkdown(withSources)
     expect(md).toContain('Overview of Cloud and this view')
     expect(md).not.toContain('[[')
+  })
+
+  it('Markdown export escapes titles, so they render literally', () => {
+    const title = '*Star* _under_ [x] A|B'
+    const m = Builder
+      .specification({ elements: { system: {} } })
+      .model(({ system }, _) => _(system('api', title)))
+      .views(({ view, $include }, _) =>
+        _(
+          view('index', {
+            title: 'Index',
+            description: {
+              md: ['Uses [[api]]', '', '| Element | Note |', '| --- | --- |', '| [[api]] | ok |'].join('\n'),
+            },
+          }).with($include('*')),
+        )
+      )
+      .toLikeC4Model()
+    const md = generateMarkdown(LikeC4Model.create({
+      ...m.$data,
+      views: mapValues(m.$data.views, view => ({ ...view, sourcePath: 'views.c4' })),
+    }))
+    expect(md).toContain('Uses \\*Star\\* \\_under\\_ \\[x\\] A\\|B')
+    // rendered with the core markdown pipeline
+    const description = md.slice(md.indexOf('Uses'), md.indexOf('```mermaid'))
+    expect(markdownToText(description)).toContain(`Uses ${title}`)
+    const html = markdownToHtml(description)
+    expect(html).toContain(`<td>${title}</td>`)
+    expect(html.match(/<td>/g)).toHaveLength(2)
+    expect(html).not.toMatch(/<(em|a)\b/)
   })
 
   it('LikeC4 DSL keeps refs as is', () => {
