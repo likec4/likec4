@@ -439,8 +439,8 @@ catalogs:
       specifier: ^1.7.5
       version: 1.7.5
     '@modelcontextprotocol/sdk':
-      specifier: ^1.32.1
-      version: 1.32.1
+      specifier: ^1.32.2
+      version: 1.32.2
   react:
     '@babel/core':
       specifier: ^7.29.7
@@ -2029,7 +2029,7 @@ importers:
         version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))(zod@4.6.7)
       '@tanstack/ai-gemini':
         specifier: catalog:ai
-        version: 0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)
+        version: 0.38.0(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)
       '@tanstack/ai-ollama':
         specifier: catalog:ai
         version: 0.12.0(@tanstack/ai@0.69.0(zod@4.6.7))
@@ -2612,7 +2612,7 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)
+        version: 0.3.2(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)
       '@hono/node-server':
         specifier: catalog:hono
         version: 2.1.5(hono@4.13.13)
@@ -2621,10 +2621,10 @@ importers:
         version: 1.29.2
       '@modelcontextprotocol/ext-apps':
         specifier: catalog:mcp
-        version: 1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
+        version: 1.7.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
-        version: 1.32.1(supports-color@10.1.0)(zod@4.6.7)
+        version: 1.32.2(supports-color@10.1.0)(zod@4.6.7)
       chokidar:
         specifier: catalog:externals
         version: 5.0.0
@@ -2946,7 +2946,7 @@ importers:
         version: link:../log
       '@tanstack/ai-gemini':
         specifier: catalog:ai
-        version: 0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)
+        version: 0.38.0(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)
       '@tanstack/ai-ollama':
         specifier: catalog:ai
         version: 0.12.0(@tanstack/ai@0.69.0(zod@4.6.7))
@@ -5303,8 +5303,8 @@ packages:
       react-dom:
         optional: true
 
-  '@modelcontextprotocol/sdk@1.32.1':
-    resolution: {integrity: sha512-2DdE+SJDtzLEEWzY1ZjY7Q+VcPhcV1KisD3zI4u0XZyktsjHum1mwbMI+JaulUBi2OZk+KJAi2uPXzxichPkdw==}
+  '@modelcontextprotocol/sdk@1.32.2':
+    resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -12425,22 +12425,22 @@ snapshots:
 
   '@fontsource-variable/ibm-plex-sans@5.3.0': {}
 
-  '@google/genai@2.30.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(supports-color@10.1.0)':
+  '@google/genai@2.30.0(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(supports-color@10.1.0)':
     dependencies:
       google-auth-library: 10.6.2(supports-color@10.1.0)
       p-retry: 4.6.2
       protobufjs: 7.5.6
       ws: 8.22.0
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
+      '@modelcontextprotocol/sdk': 1.32.2(supports-color@10.1.0)(zod@4.6.7)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)':
+  '@hono/mcp@0.3.2(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
+      '@modelcontextprotocol/sdk': 1.32.2(supports-color@10.1.0)(zod@4.6.7)
       hono: 4.13.13
       hono-rate-limiter: 0.5.3(hono@4.13.13)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
@@ -13019,16 +13019,16 @@ snapshots:
 
   '@microsoft/tsdoc@0.17.1': {}
 
-  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)':
+  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
+      '@modelcontextprotocol/sdk': 1.32.2(supports-color@10.1.0)(zod@4.6.7)
       '@standard-schema/spec': 1.1.0
       zod: 4.6.7
     optionalDependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7)':
+  '@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7)':
     dependencies:
       '@hono/node-server': 2.1.5(hono@4.13.13)
       ajv: 8.20.0
@@ -13907,9 +13907,9 @@ snapshots:
     dependencies:
       '@tanstack/devtools-event-client': 0.4.3
 
-  '@tanstack/ai-gemini@0.38.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)':
+  '@tanstack/ai-gemini@0.38.0(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(@tanstack/ai@0.69.0(zod@4.6.7))(supports-color@10.1.0)':
     dependencies:
-      '@google/genai': 2.30.0(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(supports-color@10.1.0)
+      '@google/genai': 2.30.0(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(supports-color@10.1.0)
       '@tanstack/ai': 0.69.0(zod@4.6.7)
       '@tanstack/ai-utils': 0.4.2
       partial-json: 0.1.7
