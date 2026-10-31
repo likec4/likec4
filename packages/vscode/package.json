@@ -126,6 +126,13 @@
         }
       }
     ],
+    "configurationDefaults": {
+      "[likec4]": {
+        "editor.quickSuggestions": {
+          "strings": "on"
+        }
+      }
+    },
     "configuration": {
       "title": "%ext.title%",
       "properties": {
