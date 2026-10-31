@@ -1342,7 +1342,11 @@ describe('LikeC4CompletionProvider', () => {
             filterText: 'cloud.backend.api',
             textEdit: {
               newText: 'cloud.backend.api]]',
-              range: {
+              insert: {
+                start: { line: 12, character: 33 },
+                end: { line: 12, character: 33 },
+              },
+              replace: {
                 start: { line: 12, character: 33 },
                 end: { line: 12, character: 33 },
               },
@@ -1373,7 +1377,11 @@ describe('LikeC4CompletionProvider', () => {
             filterText: 'api',
             textEdit: {
               newText: 'cloud.backend.api]]',
-              range: {
+              insert: {
+                start: { line: 12, character: 33 },
+                end: { line: 12, character: 36 },
+              },
+              replace: {
                 start: { line: 12, character: 33 },
                 end: { line: 12, character: 36 },
               },
@@ -1407,7 +1415,11 @@ describe('LikeC4CompletionProvider', () => {
               detail: 'Landscape (view)',
               textEdit: {
                 newText: 'index]]',
-                range: {
+                insert: {
+                  start: { line: 12, character: 36 },
+                  end: { line: 12, character: 36 },
+                },
+                replace: {
                   start: { line: 12, character: 36 },
                   end: { line: 12, character: 36 },
                 },
@@ -1447,6 +1459,72 @@ describe('LikeC4CompletionProvider', () => {
       })
     })
 
+    it('should replace the rest of the target in the replace mode', async ({ expect, completion }) => {
+      // Line 12 is `          description '''See [[cloud.backend.ap<|>i]] and [[view:ind<|>ex|Index]]'''`
+      const text = withModel(`'''See [[cloud.backend.ap<|>i]] and [[view:ind<|>ex|Index]]'''`)
+      await completion({
+        text,
+        index: 0,
+        assert: completions => {
+          const api = completions.items.find(i => i.label === 'cloud.backend.api')
+          expect(api?.textEdit).toEqual({
+            // `]]` follows the rest of the target, so it is not added
+            newText: 'cloud.backend.api',
+            insert: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 47 },
+            },
+            replace: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 48 },
+            },
+          })
+          const view = completions.items.find(i => i.label === 'view:')
+          expect(view).toBeUndefined()
+        },
+      })
+      await completion({
+        text,
+        index: 1,
+        assert: completions => {
+          const index = completions.items.find(i => i.label === 'index')
+          expect(index?.textEdit).toEqual({
+            // Rest of the target ends at `|`, no `]]` there, so it is added
+            newText: 'index]]',
+            insert: {
+              start: { line: 12, character: 62 },
+              end: { line: 12, character: 65 },
+            },
+            replace: {
+              start: { line: 12, character: 62 },
+              end: { line: 12, character: 67 },
+            },
+          })
+        },
+      })
+    })
+
+    it('should replace the rest of the target with the view namespace', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''See [[v<|>iew.x]]'''`),
+        index: 0,
+        assert: completions => {
+          const view = completions.items.find(i => i.label === 'view:')
+          expect(view?.textEdit).toEqual({
+            newText: 'view:',
+            insert: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 32 },
+            },
+            replace: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 37 },
+            },
+          })
+        },
+      })
+    })
+
     it('should suggest inside """ markdown', async ({ completion }) => {
       await completion({
         text: withModel(`"""Calls [[back<|>"""`),
@@ -1467,7 +1545,12 @@ describe('LikeC4CompletionProvider', () => {
           expect(completions.items.map(i => i.label)).toEqual(['cloud.backend', 'cloud.backend.api'])
           expect(completions.items[0]!.textEdit).toEqual({
             newText: 'cloud.backend]]',
-            range: {
+            insert: {
+              start: { line: 15, character: 20 },
+              end: { line: 15, character: 24 },
+            },
+            // The rest of the target ends at the space
+            replace: {
               start: { line: 15, character: 20 },
               end: { line: 15, character: 24 },
             },

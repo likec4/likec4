@@ -19,10 +19,12 @@ import { anyPass, isEmpty } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import { type CancellationToken, type CompletionParams, CompletionTriggerKind } from 'vscode-languageserver-protocol'
 import {
+  type Position,
   type Range,
   CompletionItem,
   CompletionItemKind,
   CompletionList,
+  InsertReplaceEdit,
   InsertTextFormat,
   TextEdit,
 } from 'vscode-languageserver-types'
@@ -53,6 +55,12 @@ const MarkdownRefTriggerCharacters = ['[', ':']
  */
 const UnclosedRefRegex = /(?<!\\)\[\[([\w.:-]*)$/
 
+/**
+ * Rest of the ref target after the cursor: up to the first whitespace, `|`, `\|`, `]]` (or `[`).
+ * Same characters as a target in `extractRefs` (`@likec4/core/utils`).
+ */
+const TargetRestRegex = /^[^\s[\]|\\]*/
+
 const ViewNamespace = 'view:'
 
 /**
@@ -75,6 +83,12 @@ type MarkdownRefContext = {
    * Range from right after `[[` to the cursor (replaced by the `view:` item)
    */
   refRange: Range
+  /**
+   * End of the rest of the target after the cursor.
+   * Both ranges above, extended to this position, are the replace ranges
+   * (e.g. completing in `[[clo|ud]]` can replace `ud`).
+   */
+  replaceEnd: Position
   /**
    * Whether the closing `]]` must be inserted
    */
@@ -158,7 +172,10 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       return null
     }
     const after = token.slice(cursor, token.length - quoteLength)
-    const needsClosing = !after.startsWith(']]')
+    const rest = TargetRestRegex.exec(after)?.[0] ?? ''
+    // Checked after the rest of the target, so `]]` is not duplicated in the replace mode
+    const needsClosing = !after.slice(rest.length).startsWith(']]')
+    const replaceEnd = textDocument.positionAt(offset + rest.length)
 
     const refText = match[1] ?? ''
     const refStart = offset - refText.length
@@ -176,6 +193,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
             end: params.position,
           },
           refRange,
+          replaceEnd,
           needsClosing,
         }
       // Unknown namespace, nothing to suggest
@@ -187,6 +205,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
           typed: refText,
           range: refRange,
           refRange,
+          replaceEnd,
           needsClosing,
         }
     }
@@ -229,7 +248,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         ...(detail && { detail }),
         filterText: key.slice(matchAt),
         sortText: `${matchRank}_${String(rank++).padStart(6, '0')}`,
-        textEdit: TextEdit.replace(ref.range, key + closing),
+        textEdit: insertReplaceEdit(key + closing, ref.range, ref.replaceEnd),
         // Do not commit on space: it is regular text inside Markdown
         commitCharacters: [],
       })
@@ -254,7 +273,7 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
         detail: 'Link to a view',
         filterText: ViewNamespace,
         sortText: '9_',
-        textEdit: TextEdit.replace(ref.refRange, ViewNamespace),
+        textEdit: insertReplaceEdit(ViewNamespace, ref.refRange, ref.replaceEnd),
         commitCharacters: [],
         command: {
           title: 'Suggest views',
@@ -539,6 +558,13 @@ function readTitle(value: ast.MarkdownOrString | string | undefined): string | u
 /**
  * Title and kind of the element
  */
+/**
+ * Inserts over `insert` (from its start to the cursor), or replaces up to `replaceEnd` in the replace mode
+ */
+function insertReplaceEdit(newText: string, insert: Range, replaceEnd: Position): InsertReplaceEdit {
+  return InsertReplaceEdit.create(newText, insert, { start: insert.start, end: replaceEnd })
+}
+
 function elementDetail(desc: AstNodeDescription): string | undefined {
   const node = desc.node
   if (!ast.isElement(node)) {
