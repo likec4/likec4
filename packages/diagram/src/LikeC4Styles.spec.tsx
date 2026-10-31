@@ -23,4 +23,20 @@ describe('LikeC4Styles', () => {
 
     expect(html).toContain('.custom { color: red; }')
   })
+
+  it('should keep the custom CSS in its own style element, so that @import stays valid', () => {
+    vi.mocked(useLikeC4Styles).mockReturnValue(
+      LikeC4StylesLib.from({
+        customCss: { paths: ['x.css'], content: '@import url(theme.css);' },
+      }),
+    )
+
+    const html = renderToStaticMarkup(
+      <MantineProvider>
+        <LikeC4Styles rootSelector="#root" />
+      </MantineProvider>,
+    )
+
+    expect(html).toMatch(/<style[^>]*data-likec4-custom-css[^>]*>@import url\(theme\.css\);<\/style>/)
+  })
 })

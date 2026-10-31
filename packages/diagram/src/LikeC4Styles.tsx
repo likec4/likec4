@@ -89,19 +89,17 @@ export function LikeC4Styles({ rootSelector }: LikeC4StylesProps): JSX.Element {
   const nonce = useMantineStyleNonce()?.()
   const $styles = useLikeC4Styles()
 
-  const colorsStyles = useMemo(
-    () => [generateBuiltInColorStyles($styles, rootSelector), $styles.customCssContent].join('\n'),
-    [
-      rootSelector,
-      $styles.fingerprint,
-    ],
-  )
+  const colorsStyles = useMemo(() => generateBuiltInColorStyles($styles, rootSelector), [
+    rootSelector,
+    $styles.fingerprint,
+  ])
 
   return (
     <MemoizedStyle
       id={$styles.fingerprint}
       nonce={nonce}
-      colorsStyles={colorsStyles} />
+      colorsStyles={colorsStyles}
+      customCss={$styles.customCssContent} />
   )
 }
 
@@ -112,14 +110,26 @@ const MemoizedStyle = memo<{
   id: string
   nonce: string | undefined
   colorsStyles: string
+  customCss: string
 }>((
-  { id, nonce, colorsStyles },
+  { id, nonce, colorsStyles, customCss },
 ) => (
-  <style
-    type="text/css"
-    data-likec4-colors={id}
-    nonce={nonce || undefined}>
-    {colorsStyles}
-  </style>
+  <>
+    <style
+      type="text/css"
+      data-likec4-colors={id}
+      nonce={nonce || undefined}>
+      {colorsStyles}
+    </style>
+    {/* A separate element, as `@import` is only valid at the start of a stylesheet */}
+    {customCss && (
+      <style
+        type="text/css"
+        data-likec4-custom-css={id}
+        nonce={nonce || undefined}>
+        {customCss}
+      </style>
+    )}
+  </>
 ))
 MemoizedStyle.displayName = 'MemoizedStyle'

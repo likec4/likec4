@@ -113,6 +113,46 @@ describe('loadConfig - JSON branch', () => {
       })
     })
 
+    it('should resolve paths from an extended config against that config', async () => {
+      mockFsReads({
+        '/project/config/likec4.config.json': {
+          name: 'test-project',
+          extends: '../shared/base.json',
+          styles: {
+            customCss: ['own.css'],
+          },
+        },
+        '/project/shared/base.json': {
+          styles: {
+            customCss: ['theme.css'],
+          },
+        },
+        '/project/config/own.css': '.own { color: red }',
+        '/project/shared/theme.css': '.theme { color: blue }',
+      })
+
+      const config = await loadConfig(mockVscodeURI('/project/config/likec4.config.json'))
+
+      expect(config.styles?.customCss?.paths).toEqual(expect.arrayContaining(['own.css', '../shared/theme.css']))
+      expect(config.styles?.customCss?.content).toContain('.own { color: red }')
+      expect(config.styles?.customCss?.content).toContain('.theme { color: blue }')
+    })
+
+    it('should keep the content of a stylesheet without paths', async () => {
+      mockFsReads({
+        '/project/likec4.config.json': {
+          name: 'test-project',
+          styles: {
+            customCss: { paths: [], content: '.a { color: red }' },
+          },
+        },
+      })
+
+      const config = await loadConfig(mockVscodeURI('/project/likec4.config.json'))
+
+      expect(config.styles?.customCss?.content).toBe('.a { color: red }')
+    })
+
     it('should skip a file that cannot be read', async () => {
       mockFsReads({
         '/project/likec4.config.json': {

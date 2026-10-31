@@ -44,21 +44,46 @@ const parseJsonConfig = async (filepath: string): Promise<JsonConfigInput> => {
   return result.data
 }
 
-const loadJsonConfigs = async (filepath: string, stack: string[]): Promise<[...JsonConfigInput[], JsonConfigInput]> => {
+/**
+ * Paths in `styles.customCss` are relative to the config file that lists them.
+ * Rebases them on the root config folder, so they stay correct when styles of extended configs are merged.
+ */
+const rebaseCustomCssPaths = (config: JsonConfigInput, folder: string, rootFolder: string): JsonConfigInput => {
+  const customCss = config.styles?.customCss
+  if (!customCss?.paths) {
+    return config
+  }
+  return {
+    ...config,
+    styles: {
+      ...config.styles,
+      customCss: {
+        ...customCss,
+        paths: customCss.paths.map(path => relative(rootFolder, resolve(folder, path))),
+      },
+    },
+  }
+}
+
+const loadJsonConfigs = async (
+  filepath: string,
+  stack: string[],
+  rootFolder: string,
+): Promise<[...JsonConfigInput[], JsonConfigInput]> => {
   if (stack.includes(filepath)) {
     const cycleStart = stack.indexOf(filepath)
     const cycle = [...stack.slice(cycleStart), filepath].join(' -> ')
     throw new Error(`Config extends cycle detected: ${cycle}`)
   }
 
-  const parsed = await parseJsonConfig(filepath)
+  const parsed = rebaseCustomCssPaths(await parseJsonConfig(filepath), dirname(filepath), rootFolder)
   const extendsPaths = normalizeExtends(parsed.extends)
   const nextStack = [...stack, filepath]
 
   const configs: JsonConfigInput[] = []
   for (const extendPath of extendsPaths) {
     const resolvedPath = resolve(dirname(filepath), extendPath)
-    configs.push(...await loadJsonConfigs(resolvedPath, nextStack))
+    configs.push(...await loadJsonConfigs(resolvedPath, nextStack, rootFolder))
   }
   return [...configs, parsed]
 }
@@ -84,10 +109,10 @@ const configModuleMock = {
  */
 const loadCustomCss = async (config: LikeC4ProjectConfig, folder: string): Promise<LikeC4ProjectConfig> => {
   const customCss = config.styles?.customCss
-  if (!customCss) {
+  if (!customCss?.paths?.length) {
     return config
   }
-  const contents = await Promise.all((customCss.paths ?? []).map(async (path) => {
+  const contents = await Promise.all(customCss.paths.map(async (path) => {
     try {
       return await fs.readFile(resolve(folder, path), 'utf-8')
     } catch (e) {
@@ -120,7 +145,7 @@ export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4Pr
   const implicitcfg = { name: basename(folder) }
 
   if (isLikeC4JsonConfig(filename)) {
-    const configs = await loadJsonConfigs(resolve(filepath), [])
+    const configs = await loadJsonConfigs(resolve(filepath), [], resolve(folder))
     invariant(hasAtLeast(configs, 1), 'Expect at least one config')
     const rootConfig = omit(last(configs), ['extends', 'styles'])
     const stylesChain = configs
