@@ -151,7 +151,8 @@ export class Rpc extends ADisposable {
         if (model === null) {
           return { model: null }
         }
-        const diagrams = await likec4Services.Views.diagrams(projectId as ProjectId, cancelToken)
+        // Views are sent with manual layouts applied (as before, protocol consumers may rely on it)
+        const diagrams = [...model.views()].map(vm => vm.$layouted)
         return {
           model: {
             ...model.$data,
