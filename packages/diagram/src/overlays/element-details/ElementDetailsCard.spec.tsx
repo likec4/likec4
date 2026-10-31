@@ -76,7 +76,9 @@ describe('deployment details card', () => {
     const html = render({ type: 'deployment', deployment: scalar.DeploymentFqn('prod') })
 
     expect(html).toContain('Production environment')
-    expect(html).toContain('Production summary')
+    // summary differs from description, so it is collapsed behind a toggle
+    expect(html).toContain('aria-expanded="false"><div>Summary</div>')
+    expect(html).not.toContain('Production summary')
     expect(html).toContain('<strong>Production</strong> description')
     expect(html).toContain('OpenTofu')
     expect(html).toContain('Production docs')

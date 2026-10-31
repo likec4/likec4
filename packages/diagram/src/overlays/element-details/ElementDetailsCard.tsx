@@ -4,48 +4,45 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // oxlint-disable no-misused-spread
-// oxlint-disable no-misused-spread
-import { nonNullable } from '@likec4/core'
+import { ancestorsFqn, isAncestor, nameFromFqn, nonNullable } from '@likec4/core'
+import type { ElementModel } from '@likec4/core/model'
 import type {
-  Any,
-  ComputedView,
-  DiagramView,
-  Element,
+  DeploymentFqn,
+  Fqn,
   NodeId,
-  scalar,
   ViewId,
 } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
-import { HStack, styled } from '@likec4/styles/jsx'
+import { HStack, styled, Txt } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 import {
-  type TextProps,
   ActionIcon,
   ActionIconGroup,
   Badge,
-  Box,
   CloseButton,
-  Divider as MantineDivider,
+  Collapse,
   Flex,
-  Group,
   RemoveScroll,
   ScrollArea,
-  Stack,
   Tabs,
   TabsList,
   TabsPanel,
   TabsTab,
-  Text,
-  ThemeIcon,
   Tooltip as MantineTooltip,
   UnstyledButton,
 } from '@mantine/core'
-import { useSessionStorage, useViewportSize } from '@mantine/hooks'
+import { useDisclosure, useLocalStorage, useSessionStorage, useViewportSize } from '@mantine/hooks'
 import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
-import { IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
+import {
+  IconCaretRightFilled,
+  IconExternalLink,
+  IconFileSymlink,
+  IconZoomScan,
+} from '@tabler/icons-react'
 import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
-import { type PropsWithChildren, type SyntheticEvent, useCallback, useRef, useState } from 'react'
-import { clamp, entries, isNullish, map, only, partition, pipe } from 'remeda'
+import { type PropsWithChildren, type SyntheticEvent, Fragment, useCallback, useRef, useState } from 'react'
+import { clamp, entries, only } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
@@ -53,20 +50,18 @@ import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useCallbackRef, useUpdateEffect } from '../../hooks'
 import { useCurrentViewModel } from '../../hooks/useCurrentViewModel'
 import { useDiagram } from '../../hooks/useDiagram'
-import type { OnNavigateTo } from '../../LikeC4Diagram.props'
+import { metadataSearchQuery } from '../../search/metadata-search'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
-import { MetadataProvider, MetadataValue } from './MetadataValue'
+import { CardFooter, CardFooterSection, ElementTitle } from './ElementDetailsCard.css'
+import { MetadataList, MetadataProvider } from './MetadataValue'
+import { PropertiesSplit } from './PropertiesSplit'
 import type { DetailsSubject } from './subject'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
+import { TabPanelViews } from './TabPanelViews'
 
-const Divider = MantineDivider.withProps({
-  mb: 8,
-  labelPosition: 'left',
-  variant: 'dashed',
-})
 const Tooltip = MantineTooltip.withProps({
   color: 'dark',
   fz: 'xs',
@@ -85,21 +80,10 @@ const diffStatusColor = {
   orphan: 'gray',
 } as const
 
-const SmallLabel = Text.withProps({
-  component: 'div',
-  fz: 11,
-  fw: 500,
-  c: 'dimmed',
-  lh: 1,
-})
-
-const PropertyLabel = styled('div', {
+const SmallLabel = styled('div', {
   base: {
-    fontSize: 'xs',
-    fontWeight: 'semibold',
-    color: 'text.dimmed',
-    justifySelf: 'end',
-    textAlign: 'right',
+    textStyle: 'fieldLabel',
+    whiteSpace: 'nowrap',
     userSelect: 'none',
   },
 })
@@ -112,7 +96,11 @@ type ElementDetailsCardProps = {
   subject: DetailsSubject
 }
 
-const MIN_PADDING = 24
+const MIN_PADDING = 16
+
+type CardSize = { width: number; height: number }
+const DEFAULT_SIZE: CardSize = { width: 700, height: 650 }
+const MIN_SIZE: CardSize = { width: 320, height: 300 }
 
 const TABS = ['Properties', 'Relationships', 'Views', 'Structure', 'Deployments'] as const
 const DEPLOYMENT_TABS = ['Properties', 'Views', 'Structure'] as const
@@ -125,7 +113,6 @@ export function ElementDetailsCard({
   subject,
   onClose,
 }: ElementDetailsCardProps) {
-  const [opened, setOpened] = useState(false)
   const windowSize = useViewportSize()
   const windowWidth = windowSize.width || window.innerWidth || 1200,
     windowHeight = windowSize.height || window.innerHeight || 800
@@ -133,7 +120,11 @@ export function ElementDetailsCard({
   const [activeTab, setActiveTab] = useSessionStorage<TabName>({
     key: subject.deployment ? 'likec4:deployment-details:active-tab' : 'likec4:element-details:active-tab',
     defaultValue: 'Properties',
+    getInitialValueInEffect: false,
   })
+
+  const [opened, setOpened] = useState(activeTab !== 'Relationships')
+
   const diagram = useDiagram()
   const viewModel = useCurrentViewModel()
   const nodeModel = fromNode
@@ -142,21 +133,12 @@ export function ElementDetailsCard({
     ? [...viewModel.nodes()].find(n => n.$node.deploymentRef === subject.deployment) ?? null
     : viewModel.findNodeWithElement(subject.element)
 
-  const logicalElement = subject.type === 'element' ? viewModel.$model.element(subject.element) : null
+  const logicalElement = subject.type === 'element' ? viewModel.$model.findElement(subject.element) : null
   const deploymentElement = subject.type === 'deployment'
-    ? viewModel.$model.deployment.element(subject.deployment)
+    ? viewModel.$model.deployment.findElement(subject.deployment)
     : null
   const elementModel = nonNullable(logicalElement ?? deploymentElement, 'Details subject not found')
   const tabs = subject.deployment ? DEPLOYMENT_TABS : TABS
-  const hasSummary = logicalElement
-    ? logicalElement.hasSummary
-    : !elementModel.summary.isEmpty && elementModel.summary.text !== elementModel.description.text
-
-  const [viewsOf, otherViews] = pipe(
-    [...elementModel.views()],
-    map(v => v.$view),
-    partition(v => v._type === 'element' && v.viewOf === subject.element),
-  )
 
   let defaultView = nodeModel?.navigateTo?.$view ?? logicalElement?.defaultView?.$view ?? null
   // Ignore default view if it's the current view
@@ -168,8 +150,18 @@ export function ElementDetailsCard({
   const controls = useDragControls()
 
   const isCompound = (nodeModel?.$node.children?.length ?? 0) > 0
-  const _width = Math.min(700, windowWidth - MIN_PADDING * 2)
-  const _height = Math.min(650, windowHeight - MIN_PADDING * 2)
+
+  // Size the user resized the card to, remembered across sessions.
+  // Read synchronously: position and the "pop out of the node" origin are computed from it on mount
+  const [savedSize, setSavedSize] = useLocalStorage<CardSize>({
+    key: 'likec4:element-details:size',
+    defaultValue: DEFAULT_SIZE,
+    getInitialValueInEffect: false,
+  })
+  const maxWidth = Math.max(MIN_SIZE.width, windowWidth - MIN_PADDING * 2)
+  const maxHeight = Math.max(MIN_SIZE.height, windowHeight - MIN_PADDING * 2)
+  const _width = Math.round(clamp(savedSize.width, { min: MIN_SIZE.width, max: maxWidth }))
+  const _height = Math.round(clamp(savedSize.height, { min: MIN_SIZE.height, max: maxHeight }))
 
   const fromPosition = rectFromNode
     ? {
@@ -197,26 +189,70 @@ export function ElementDetailsCard({
   )
 
   const originX = clamp((fromPosition.x - left) / _width, {
-    min: 0.1,
-    max: 0.9,
+    min: 0.05,
+    max: 0.95,
   })
   const originY = clamp((fromPosition.y - top) / _height, {
-    min: 0.1,
-    max: 0.9,
+    min: 0.05,
+    max: 0.95,
   })
 
   const width = useMotionValue(_width)
   const height = useMotionValue(_height)
+  // offset after dragging the card by its header
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
 
   useUpdateEffect(() => {
     width.set(_width)
     height.set(_height)
   }, [_width, _height])
 
-  const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    width.set(Math.max(width.get() + info.delta.x, 320))
-    height.set(Math.max(height.get() + info.delta.y, 300))
-  }, [width, height])
+  const handleResize = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    width.set(clamp(width.get() + info.delta.x, { min: MIN_SIZE.width, max: maxWidth }))
+    height.set(clamp(height.get() + info.delta.y, { min: MIN_SIZE.height, max: maxHeight }))
+  }, [width, height, maxWidth, maxHeight])
+
+  // After dragging or resizing, bring the card (and its resize handle) back inside the viewport
+  const keepInViewport = useCallback(() => {
+    // the card is a direct child of the dialog (RemoveScroll owns the card's ref)
+    const rect = ref.current?.querySelector(':scope > [data-likec4-color]')?.getBoundingClientRect()
+    if (!rect) {
+      return
+    }
+    const overflow = (start: number, end: number, size: number) => {
+      switch (true) {
+        case start < MIN_PADDING:
+          return MIN_PADDING - start
+        case end > size - MIN_PADDING:
+          return Math.max(size - MIN_PADDING - end, MIN_PADDING - start)
+        default:
+          return 0
+      }
+    }
+    const dx = overflow(rect.left, rect.right, windowWidth)
+    const dy = overflow(rect.top, rect.bottom, windowHeight)
+    if (dx !== 0) {
+      x.set(x.get() + dx)
+    }
+    if (dy !== 0) {
+      y.set(y.get() + dy)
+    }
+  }, [x, y, windowWidth, windowHeight])
+
+  const handleResizeEnd = useCallback(() => {
+    setSavedSize({ width: Math.round(width.get()), height: Math.round(height.get()) })
+    keepInViewport()
+  }, [width, height, setSavedSize, keepInViewport])
+
+  // Double-click on the header or the resize handle: back to the default size and position
+  const resetCard = useCallback(() => {
+    width.set(clamp(DEFAULT_SIZE.width, { min: MIN_SIZE.width, max: maxWidth }))
+    height.set(clamp(DEFAULT_SIZE.height, { min: MIN_SIZE.height, max: maxHeight }))
+    x.set(0)
+    y.set(0)
+    setSavedSize(DEFAULT_SIZE)
+  }, [width, height, x, y, maxWidth, maxHeight, setSavedSize])
 
   const ref = useRef<HTMLDialogElement>(null)
 
@@ -253,7 +289,15 @@ export function ElementDetailsCard({
    */
   useTimeoutEffect(() => {
     setOpened(true)
-  }, 220)
+  }, !opened ? 220 : undefined)
+
+  const technologies = elementModel.technology
+    ? elementModel.technology.split(',').map(t => t.trim()).filter(Boolean)
+    : []
+  const hasFacts = technologies.length > 0
+    || elementModel.links.length > 0
+    || elementModel.hasMetadata()
+    || !!deploymentElement?.isInstance()
 
   return (
     <m.dialog
@@ -294,6 +338,7 @@ export function ElementDetailsCard({
           dragElastic={0}
           dragMomentum={false}
           dragListener={false}
+          onDragEnd={keepInViewport}
           data-likec4-color={nodeModel?.color ?? elementModel.color}
           className={styles.card}
           initial={{
@@ -321,9 +366,27 @@ export function ElementDetailsCard({
           style={{
             width,
             height,
+            x,
+            y,
           }}>
-          <div className={styles.cardHeader} onPointerDown={e => controls.start(e)}>
-            <HStack alignItems="start" justify="space-between" gap={'sm'} mb={'sm'} flexWrap="nowrap">
+          <div
+            className={styles.cardHeader}
+            onPointerDown={e => {
+              // dragging the card must not select text (buttons keep their default behaviour)
+              if (!(e.target as Element).closest('button, a, input, textarea')) {
+                e.preventDefault()
+              }
+              controls.start(e)
+            }}
+            onDoubleClick={e => {
+              // ignore double-clicks on header buttons
+              if ((e.target as Element).closest('button, a')) {
+                return
+              }
+              window.getSelection()?.removeAllRanges()
+              resetCard()
+            }}>
+            <HStack alignItems="start" justify="space-between" gap={'sm'} flexWrap="nowrap">
               <HStack
                 alignItems="start"
                 gap={'sm'}
@@ -333,109 +396,72 @@ export function ElementDetailsCard({
                 {elementIcon}
                 <div style={{ minWidth: 0, overflow: 'hidden' }}>
                   <Tooltip label={elementModel.title} openDelay={600} position="bottom-start">
-                    <Text
-                      component={'div'}
-                      className={styles.title}>
+                    <ElementTitle>
                       {elementModel.title}
-                    </Text>
+                    </ElementTitle>
                   </Tooltip>
                   {notation && (
-                    <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                    <Txt dimmed size={'sm'} medium lineClamp={1} mt={'xxs'}>
                       {notation}
-                    </Text>
+                    </Txt>
                   )}
+                  <div style={{ marginTop: '0.25rem' }}>
+                    <ElementFqn fqn={elementModel.id} />
+                  </div>
                 </div>
               </HStack>
-              <CloseButton size={'lg'} onClick={triggerClose} />
-            </HStack>
-            <HStack alignItems="baseline" gap={'sm'} flexWrap="nowrap">
-              <div>
-                <SmallLabel>kind</SmallLabel>
-                <Badge
-                  radius={'sm'}
-                  size="sm"
-                  fw={600}
-                  color="gray"
+              <HStack gap={'xs'} flexWrap="nowrap" style={{ flex: 'none' }}>
+                <ActionIconGroup
                   style={{
-                    cursor: 'pointer',
-                  }}
-                  onClick={e => {
-                    e.stopPropagation()
-                    diagram.openSearch(`kind:${elementModel.kind}`)
-                  }}
-                >
-                  {elementModel.kind}
-                </Badge>
-              </div>
-              {nodeModel?.$node.diffStatus && (
-                <div>
-                  <SmallLabel>diff</SmallLabel>
-                  <Badge
-                    radius={'sm'}
-                    size="sm"
-                    fw={600}
-                    variant="light"
-                    color={diffStatusColor[nodeModel.$node.diffStatus]}
-                  >
-                    {nodeModel.$node.diffStatus}
-                  </Badge>
-                </div>
-              )}
-              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                <SmallLabel>tags</SmallLabel>
-                <ElementTags
-                  tags={elementModel.tags}
-                  onClick={tag => diagram.openSearch(`#${tag}`)} />
-              </div>
-              <ActionIconGroup
-                style={{
-                  alignSelf: 'flex-start',
-                }}>
-                {defaultLink && (
-                  <ActionIcon
-                    component="a"
-                    href={defaultLink.url}
-                    target="_blank"
-                    size="lg"
-                    variant="default"
-                    radius="sm"
-                  >
-                    <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
-                  </ActionIcon>
-                )}
-                <IfEnabled feature="Vscode">
-                  <Tooltip label="Open source">
+                    alignSelf: 'flex-start',
+                  }}>
+                  {defaultLink && (
                     <ActionIcon
+                      component="a"
+                      href={defaultLink.url}
+                      target="_blank"
                       size="lg"
                       variant="default"
                       radius="sm"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.openSource(
-                          subject.type === 'deployment'
-                            ? { deployment: subject.deployment }
-                            : { element: subject.element },
-                        )
-                      }}>
-                      <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
+                    >
+                      <IconExternalLink stroke={1.6} style={{ width: '65%' }} />
                     </ActionIcon>
-                  </Tooltip>
-                </IfEnabled>
-                {defaultView && (
-                  <Tooltip label="Open default view">
-                    <ActionIcon
-                      size="lg"
-                      variant="default"
-                      radius="sm"
-                      onClick={e => {
-                        e.stopPropagation()
-                        diagram.navigateTo(defaultView.id, fromNode ?? undefined)
-                      }}>
-                      <IconZoomScan style={{ width: '70%' }} />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </ActionIconGroup>
+                  )}
+                  <IfEnabled feature="Vscode">
+                    <Tooltip label="Open source">
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        radius="sm"
+                        onClick={e => {
+                          e.stopPropagation()
+                          diagram.openSource(
+                            subject.type === 'deployment'
+                              ? { deployment: subject.deployment }
+                              : { element: subject.element },
+                          )
+                        }}>
+                        <IconFileSymlink stroke={1.8} style={{ width: '62%' }} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </IfEnabled>
+                  {defaultView && (
+                    <Tooltip label="Open default view">
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        radius="sm"
+                        onClick={e => {
+                          e.stopPropagation()
+                          diagram.navigateTo(defaultView.id, fromNode ?? undefined)
+                        }}>
+                        <IconZoomScan style={{ width: '70%' }} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </ActionIconGroup>
+                <CloseButton size={'lg'} onClick={triggerClose} />
+              </HStack>
             </HStack>
           </div>
           <MetadataProvider>
@@ -453,46 +479,52 @@ export function ElementDetailsCard({
               </TabsList>
 
               <TabsPanel value="Properties">
-                <ScrollArea scrollbars="y" type="scroll" offsetScrollbars>
-                  <Box className={styles.propertiesGrid} pt={'xs'}>
-                    {hasSummary && (
-                      <>
-                        <PropertyLabel>summary</PropertyLabel>
-                        <Markdown value={elementModel.summary} />
-                      </>
-                    )}
-                    <>
-                      <PropertyLabel>description</PropertyLabel>
-                      <Markdown
-                        value={elementModel.description}
-                        emptyText="no description"
-                      />
-                    </>
-                    {elementModel.technology && (
-                      <ElementProperty title="technology">
-                        {elementModel.technology}
-                      </ElementProperty>
-                    )}
-                    {elementModel.links.length > 0 && (
-                      <>
-                        <PropertyLabel>links</PropertyLabel>
-                        <HStack gap={'xs'} flexWrap="wrap">
-                          {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
-                        </HStack>
-                      </>
-                    )}
-                    {elementModel.hasMetadata() && <ElementMetadata value={elementModel.metadata} />}
-                    {deploymentElement?.isInstance() && (
-                      <ElementProperty title="logical element">
-                        <UnstyledButton
-                          onClick={() =>
-                            diagram.openNodeDetails({ type: 'element', element: deploymentElement.element.id })}>
-                          {deploymentElement.element.title}
-                        </UnstyledButton>
-                      </ElementProperty>
-                    )}
-                  </Box>
-                </ScrollArea>
+                <PropertiesSplit
+                  main={<ElementDescription element={elementModel} />}
+                  sidebar={hasFacts
+                    ? (
+                      <ScrollArea className={styles.propertiesSidebar} scrollbars="y" type="auto">
+                        <div className={styles.facts}>
+                          {technologies.length > 0 && (
+                            <Fact label="technology">
+                              {technologies.map(technology => (
+                                <Badge
+                                  key={technology}
+                                  variant="default"
+                                  radius="sm"
+                                  size="sm"
+                                  tt="none"
+                                  className={styles.technologyBadge}>
+                                  {technology}
+                                </Badge>
+                              ))}
+                            </Fact>
+                          )}
+                          {elementModel.links.length > 0 && (
+                            <Fact label="links">
+                              {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
+                            </Fact>
+                          )}
+                          {deploymentElement?.isInstance() && (
+                            <Fact label="logical element">
+                              <UnstyledButton
+                                onClick={() =>
+                                  diagram.openNodeDetails({ type: 'element', element: deploymentElement.element.id })}>
+                                {deploymentElement.element.title}
+                              </UnstyledButton>
+                            </Fact>
+                          )}
+                          {elementModel.hasMetadata() && (
+                            <Fact label="metadata">
+                              <MetadataList
+                                entries={entries(elementModel.metadata).sort(([a], [b]) => a.localeCompare(b))}
+                                onSearch={(key, value) => diagram.openSearch(metadataSearchQuery(key, value))} />
+                            </Fact>
+                          )}
+                        </div>
+                      </ScrollArea>
+                    )
+                    : null} />
               </TabsPanel>
 
               {logicalElement && (
@@ -512,39 +544,10 @@ export function ElementDetailsCard({
               )}
 
               <TabsPanel value="Views">
-                <ScrollArea scrollbars="y" type="auto">
-                  <Stack gap={'lg'}>
-                    {viewsOf.length > 0 && (
-                      <Box>
-                        <Divider label="views of the element (scoped)" />
-                        <Stack gap={'sm'}>
-                          {viewsOf.map((view) => (
-                            <ViewButton
-                              key={view.id}
-                              view={view}
-                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-                    {otherViews.length > 0 && (
-                      <Box>
-                        <Divider
-                          label={subject.deployment
-                            ? 'views including this deployment'
-                            : 'views including this element'} />
-                        <Stack gap={'sm'}>
-                          {otherViews.map((view) => (
-                            <ViewButton
-                              key={view.id}
-                              view={view}
-                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-                  </Stack>
-                </ScrollArea>
+                <TabPanelViews
+                  elementModel={elementModel}
+                  onNavigateTo={viewId => diagram.navigateTo(viewId, fromNode ?? undefined)}
+                />
               </TabsPanel>
 
               <TabsPanel value="Structure">
@@ -562,12 +565,56 @@ export function ElementDetailsCard({
               )}
             </Tabs>
           </MetadataProvider>
+          <CardFooter>
+            <CardFooterSection>
+              <SmallLabel>kind</SmallLabel>
+              <Txt
+                size={'sm'}
+                layerStyle={'surface.sunken'}
+                px={'2'}
+                py="0.5"
+                medium
+                rounded={'sm'}
+                cursor={'pointer'}
+                onClick={e => {
+                  e.stopPropagation()
+                  diagram.openSearch(`kind:${elementModel.kind}`)
+                }}
+              >
+                {elementModel.kind}
+              </Txt>
+            </CardFooterSection>
+            {nodeModel?.$node.diffStatus && (
+              <CardFooterSection>
+                <SmallLabel>diff</SmallLabel>
+                <Badge
+                  radius={'sm'}
+                  size="sm"
+                  fw={600}
+                  variant="light"
+                  color={diffStatusColor[nodeModel.$node.diffStatus]}
+                >
+                  {nodeModel.$node.diffStatus}
+                </Badge>
+              </CardFooterSection>
+            )}
+            {elementModel.tags.length > 0 && (
+              <CardFooterSection full>
+                <SmallLabel>tags</SmallLabel>
+                <ElementTags
+                  tags={elementModel.tags}
+                  onClick={tag => diagram.openSearch(`#${tag}`)} />
+              </CardFooterSection>
+            )}
+          </CardFooter>
           <m.div
             className={styles.resizeHandle}
             drag
             dragElastic={0}
             dragMomentum={false}
-            onDrag={handleDrag}
+            onDrag={handleResize}
+            onDragEnd={handleResizeEnd}
+            onDoubleClick={resetCard}
             dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} />
         </m.div>
       </RemoveScroll>
@@ -575,101 +622,18 @@ export function ElementDetailsCard({
   )
 }
 
-const ViewButton = <A extends Any>({
-  view,
-  onNavigateTo,
-}: {
-  view: ComputedView<A> | DiagramView<A>
-  onNavigateTo: OnNavigateTo<A>
-}) => {
+function Fact({ label, children }: PropsWithChildren<{ label: string }>) {
   return (
-    <UnstyledButton className={styles.viewButton} onClick={e => onNavigateTo(view.id, e)}>
-      <Group gap={6} align="start" wrap="nowrap">
-        <ThemeIcon size={'sm'} variant="transparent">
-          {view._type === 'deployment'
-            ? <IconStack2 stroke={1.8} />
-            : <IconZoomScan stroke={1.8} />}
-        </ThemeIcon>
-        <Box>
-          <Text component="div" className={styles.viewButtonTitle} lineClamp={1}>
-            {view.title || 'untitled'}
-          </Text>
-          {
-            /* {view.description && (
-            <Text component="div" mt={2} fz={'xs'} c={'dimmed'} lh={1.4} lineClamp={1}>
-              {view.description}
-            </Text>
-          )} */
-          }
-        </Box>
-      </Group>
-    </UnstyledButton>
-  )
-}
-
-function ElementProperty({
-  title,
-  emptyValue = `undefined`,
-  children,
-  style,
-  ...props
-}: PropsWithChildren<
-  Omit<TextProps, 'title'> & {
-    title: string
-    emptyValue?: string
-  }
->) {
-  return (
-    <>
-      <PropertyLabel>{title}</PropertyLabel>
-      <Text
-        component="div"
-        {...(isNullish(children) && { c: 'dimmed' })}
-        fz={'md'}
-        style={{
-          whiteSpace: 'preserve-breaks',
-          userSelect: 'all',
-          ...style,
-        }}
-        {...props}
-      >
-        {children || emptyValue}
-      </Text>
-    </>
-  )
-}
-
-function ElementMetadata({
-  value: metadata,
-}: {
-  value: NonNullable<Element['metadata']>
-}) {
-  const metadataEntries = entries(metadata).sort(([a], [b]) => a.localeCompare(b))
-
-  return (
-    <MetadataProvider>
-      <>
-        <PropertyLabel style={{ justifySelf: 'end', textAlign: 'right' }}>metadata</PropertyLabel>
-        <Box
-          className={css({
-            display: 'grid',
-            gridTemplateColumns: 'min-content 1fr',
-            gridAutoRows: '[min-content]',
-            gap: `[12px 16px]`,
-            alignItems: 'baseline',
-            justifyItems: 'stretch',
-          })}
-        >
-          {metadataEntries.map(([key, value]) => <MetadataValue key={key} label={key} value={value} />)}
-        </Box>
-      </>
-    </MetadataProvider>
+    <section>
+      <h4 className={styles.factLabel}>{label}</h4>
+      <div className={styles.factValues}>{children}</div>
+    </section>
   )
 }
 
 function ElementTags({ tags, onClick }: { tags: readonly string[]; onClick: (tag: string) => void }) {
   return (
-    <Flex gap={4} flex={1} mt={6} wrap="wrap">
+    <Flex gap={4} flex={1} wrap="wrap" align="center">
       {tags.map((tag) => (
         <ElementTag
           key={tag}
@@ -681,7 +645,116 @@ function ElementTags({ tags, onClick }: { tags: readonly string[]; onClick: (tag
           }}
         />
       ))}
-      {tags.length === 0 && <Badge radius={'sm'} size="sm" fw={600} color="gray">—</Badge>}
     </Flex>
+  )
+}
+
+const FqnPart = styled('div', {
+  base: {
+    px: '1',
+    paddingTop: '0.5',
+    paddingBottom: '1.5',
+    fontSize: 'xs',
+    lineHeight: 'snug',
+    fontWeight: 'medium',
+    color: 'text.dimmed',
+    borderRadius: 'sm',
+    '& + &': {
+      ml: '-1',
+      pl: '0',
+    },
+    '&[data-hovered=true]': {
+      color: 'text.bright',
+      backgroundColor: 'surface.sunken',
+    },
+  },
+})
+
+function ElementFqn<T extends Fqn | DeploymentFqn>({ fqn }: { fqn: T }) {
+  const [hovered, setHovered] = useState<T | null>(null)
+
+  const hoverHandlers = (fqn: T) => ({
+    ['data-hovered']: !!hovered && (fqn === hovered || isAncestor(fqn, hovered)),
+    onMouseEnter: () => setHovered(fqn),
+    onMouseLeave: () => setHovered(null),
+  })
+
+  const ancestors = ancestorsFqn(fqn).toReversed()
+  return (
+    <HStack
+      css={{
+        gap: '0',
+        alignItems: 'baseline',
+      }}>
+      <SmallLabel color={'text.non-essential'}>ID</SmallLabel>
+      {ancestors.map(ancestor => (
+        <Fragment key={ancestor}>
+          <FqnPart {...hoverHandlers(ancestor)}>
+            {nameFromFqn(ancestor)}
+          </FqnPart>
+          <FqnPart {...hoverHandlers(ancestor)} data-hovered={hovered && isAncestor(ancestor, hovered)}>.</FqnPart>
+        </Fragment>
+      ))}
+      <FqnPart {...hoverHandlers(fqn)}>
+        {nameFromFqn(fqn)}
+      </FqnPart>
+    </HStack>
+  )
+}
+
+function ElementDescription<T extends Pick<ElementModel, 'hasSummary' | 'summary' | 'description'>>(
+  { element }: { element: T },
+) {
+  const [opened, { toggle }] = useDisclosure()
+  return (
+    <ScrollArea className={styles.propertiesMain} scrollbars="y" type="auto" offsetScrollbars>
+      {element.hasSummary && (
+        <>
+          <UnstyledButton
+            className={hstack({
+              gap: '1',
+              fontSize: 'xs',
+              layerStyle: opened ? 'likec4.panel.action.filled' : 'likec4.panel.action',
+            })}
+            aria-expanded={opened}
+            onClick={toggle}>
+            <div>Summary</div>
+            <IconCaretRightFilled
+              size={12}
+              className={css({
+                opacity: '0.6',
+              })}
+              style={{ transform: opened ? 'rotate(90deg)' : 'none' }} />
+          </UnstyledButton>
+          <Collapse expanded={opened}>
+            <styled.div
+              css={{
+                paddingY: '2',
+                paddingLeft: '4',
+                marginY: '2',
+                position: 'relative',
+                _before: {
+                  content: '""',
+                  position: 'absolute',
+                  left: '1',
+                  top: '0',
+                  width: '[2px]',
+                  height: '100%',
+                  backgroundColor: 'border.focus',
+                },
+              }}>
+              <Markdown value={element.summary} />
+            </styled.div>
+          </Collapse>
+        </>
+      )}
+      <styled.div
+        css={{
+          paddingX: '1',
+          paddingTop: '2',
+        }}>
+        <Markdown fontSize="lg" value={element.description} emptyText="No description" />
+      </styled.div>
+    </ScrollArea>
   )
 }

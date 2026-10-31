@@ -37,6 +37,7 @@ import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { createFuzzySearch } from '../fuzzy'
 import { useNormalizedSearch } from '../hooks'
+import { matchesMetadataSearch, METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
@@ -97,6 +98,8 @@ function useElementsColumnData() {
       elements = filter(allElements, ({ element }) => {
         return element.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
       })
+    } else if (search.startsWith(METADATA_SEARCH_PREFIX)) {
+      elements = filter(allElements, ({ element }) => matchesMetadataSearch(element.metadata, search))
     } else if (hasAtLeast(searchTerms, 2)) {
       const satisfies = (element: LikeC4Model.Element) => {
         const fqnParts = element.id.toLocaleLowerCase().split('.')

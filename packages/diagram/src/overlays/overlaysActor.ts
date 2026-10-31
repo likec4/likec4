@@ -17,6 +17,7 @@ import {
   fromCallback,
   setup,
 } from 'xstate'
+import { isEventFromSearch } from '../utils/search-event'
 import { elementDetailsLogic } from './element-details/actor'
 import type { DetailsSubject } from './element-details/subject'
 import { relationshipDetailsLogic } from './relationship-details/actor'
@@ -45,6 +46,7 @@ export type OverlayActorEmitedEvent =
   | { type: 'idle' }
 
 type HotKeyEvent = { type: 'close' }
+
 // TODO: naming convention for actors
 const hotkeyLogic = fromCallback(({ sendBack }: {
   sendBack: (event: HotKeyEvent) => void
@@ -57,9 +59,15 @@ const hotkeyLogic = fromCallback(({ sendBack }: {
       preventDefault: true,
     }],
   ])
-  document.body.addEventListener('keydown', handler, { capture: true })
+  // Escape pressed in the search (opened on top of an overlay) closes the search, not the overlay
+  const onKeyDown = (event: globalThis.KeyboardEvent) => {
+    if (!isEventFromSearch(event)) {
+      handler(event)
+    }
+  }
+  document.body.addEventListener('keydown', onKeyDown, { capture: true })
   return () => {
-    document.body.removeEventListener('keydown', handler, { capture: true })
+    document.body.removeEventListener('keydown', onKeyDown, { capture: true })
   }
 })
 
