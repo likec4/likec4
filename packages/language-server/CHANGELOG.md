@@ -1,5 +1,61 @@
 # @likec4/language-server
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3496](https://github.com/likec4/likec4/pull/3496) [`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7) Thanks [@davydkov](https://github.com/davydkov)! - TypeScript and JavaScript project configs (`likec4.config.ts`, `.mts`, `.cts`, `.mjs`, `.cjs`, `.js`) are no longer experimental. They are now loaded with [jiti](https://github.com/unjs/jiti) instead of esbuild: loading no longer writes temporary `*.bundled_*.mjs` files next to your config, the VSCode extension loads configs faster and is smaller, and `esbuild` is no longer installed with `likec4`, `@likec4/lsp` and `@likec4/mcp`. If you use `@likec4/config` or `@likec4/language-server` directly, install `jiti` instead of `bundle-require` and `esbuild` to load non-JSON configs.
+  
+  Fixed: changes to a project config (for example, title or styles) were not applied to the model until the project files were edited.
+
+- [#3354](https://github.com/likec4/likec4/pull/3354) [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Support styled and nested `group` boundaries around deployment nodes and instances in deployment views.
+
+- [#3495](https://github.com/likec4/likec4/pull/3495) [`2f29031`](https://github.com/likec4/likec4/commit/2f29031acc36016d77502734923a0ef585051943) Thanks [@davydkov](https://github.com/davydkov)! - `diagrams()` is deprecated, use `layoutedModel()` instead. Manual layouts are applied by the views of the layouted model: `model.view(id).$layouted` returns the view with manual layout applied, `$view` returns the latest auto layout.
+  
+  The `likec4/fetchLayoutedModel` LSP request now returns the same data as `layoutedModel()`: views are auto-layouted and manual layouts are in `manualLayouts`. Use `LikeC4Model.create(model).view(id).$layouted` to get a view with manual layout applied.
+
+- [#3317](https://github.com/likec4/likec4/pull/3317) [`aa82a7c`](https://github.com/likec4/likec4/commit/aa82a7c36f62ecf11c38ff567a18539eece001fa) Thanks [@paoValle](https://github.com/paoValle)! - Add `descriptionFile` to reference a markdown file as the description of an element, a relation or a view. The path is resolved relative to the `.c4` file that uses it and must stay inside the project folder; the folder and the file are both canonicalized, so a symbolic link that points outside the project is refused too. A file that cannot be read is reported as an error.
+
+- [#3479](https://github.com/likec4/likec4/pull/3479) [`5918048`](https://github.com/likec4/likec4/commit/5918048ad85879b8dfd595c5cdfe49ce07db9d17) Thanks [@parse](https://github.com/parse)! - Export the syntax tree types as `ast` (type-only) from `likec4` and `@likec4/language-server`, so tools built on the language services can type the nodes they read, for example `import type { ast } from 'likec4'` and `ast.Relation`.
+
+- [`a3558b3`](https://github.com/likec4/likec4/commit/a3558b394d62f44047c38d17c1f71308c55e5251) Thanks [@davydkov](https://github.com/davydkov)! - Relationship kinds in the model specification are no longer nested under `style`. Steps of dynamic views now take color, line and arrows from the relationship kind, and the description and title of a relationship kind are available in the exported model.
+
+- [#3389](https://github.com/likec4/likec4/pull/3389) [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add Google Material Symbols support through the `md:` icon prefix.
+
+- [#3491](https://github.com/likec4/likec4/pull/3491) [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6) Thanks [@davydkov](https://github.com/davydkov)! - Link to elements and views from Markdown values: `[[cloud.api]]`, `[[cloud.api|label]]` and `[[view:index]]`. In the editor, typing `[[` suggests elements and views of the project, links are highlighted, broken links and unknown prefixes get a warning, and go to definition (Ctrl+click, F12) jumps to the element or view. Inside tables, write the label separator as `\\|`; a literal `[[` is written as `\\[[`.
+  
+  Implements [#2804](https://github.com/likec4/likec4/issues/2804).
+
+- [#3382](https://github.com/likec4/likec4/pull/3382) [`d00fa0c`](https://github.com/likec4/likec4/commit/d00fa0ce7ed3402c087a4e6e6d58cb1451ea2b9e) Thanks [@davydkov](https://github.com/davydkov)! - Faster model updates while editing: parsed and computed models are cached and rebuilt only for affected projects.
+  
+  - Elements, views and styles with validation errors are now excluded from the model (previously they could leak into diagrams). Duplicated global styles and views are reported and excluded, as the order of documents is not deterministic.
+  - Fix project importing elements from another project not picking up changes in the imported project.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192): new `diff` block, a named change set of the model (`remove` elements and relationships, `add` model elements, `extend` existing elements). The model stays as is: diffs are validated against it, and views can reference elements that a diff adds.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs: apply, discard and safe delete, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Apply or discard a diff: the `add` blocks are merged into the element definitions of the model files. Code actions in the editor, `likec4 diff list`, and `likec4 diff apply|discard [--dry-run]`.
+  - Overlapping diffs (both change the same element or relationship, or one depends on the other) are reported on both diffs and never resolved automatically: applying an overlapping diff needs a confirmation (`--accept-overlaps`). Other diffs are never edited; the diffs an edit breaks are reported.
+  - Safe delete: remove an element and everything that references it in one edit, with a dry run that reports relationships, deployed instances, affected views and orphans. Code action in the editor, `likec4 safe-delete [--dry-run]`, and the MCP tools `removal-impact` and `list-diffs`.
+
+- [#3463](https://github.com/likec4/likec4/pull/3463) [`75e32e1`](https://github.com/likec4/likec4/commit/75e32e1e11cdcac0879357438eb22e03e5bb66e6) Thanks [@davydkov](https://github.com/davydkov)! - Reduce memory usage with library icons (don't create unnecessary AST nodes)
+
+- [`e3d12de`](https://github.com/likec4/likec4/commit/e3d12deba102c952f9611529f058af3c122fe85f) Thanks [@davydkov](https://github.com/davydkov)! - The language server now watches project configs, manual layout snapshots and description files itself, using file change notifications from the editor. Any LSP client gets these updates, not only VS Code, and the CLI and Vite plugin handle changes the same way.
+  
+  - A changed description file (`descriptionFile`) updates the model in the editor.
+  - Deleting, moving or copying a folder updates the documents inside it, removes its manual layouts, and reloads the projects it contained.
+  - Saving a project config without actual changes (whitespace, comments) no longer rebuilds the project.
+  - Applying model edits no longer fails in the browser (VS Code for the Web).
+  
+  `DidChangeSnapshotNotification` is removed from the language server protocol, the server no longer needs it.
+- Updated dependencies [[`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7), [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45), [`6756c79`](https://github.com/likec4/likec4/commit/6756c790d86400b5b5dd2db7a749fe0c3ce0ab26), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1)]:
+  - @likec4/config@1.60.1
+  - @likec4/core@1.60.1
+  - @likec4/generators@1.60.1
+  - @likec4/layouts@1.60.1
+  - @likec4/log@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes
