@@ -89,10 +89,13 @@ export function LikeC4Styles({ rootSelector }: LikeC4StylesProps): JSX.Element {
   const nonce = useMantineStyleNonce()?.()
   const $styles = useLikeC4Styles()
 
-  const colorsStyles = useMemo(() => generateBuiltInColorStyles($styles, rootSelector), [
-    rootSelector,
-    $styles.fingerprint,
-  ])
+  const colorsStyles = useMemo(
+    () => [generateBuiltInColorStyles($styles, rootSelector), $styles.customCssContent].join('\n'),
+    [
+      rootSelector,
+      $styles.fingerprint,
+    ],
+  )
 
   return (
     <MemoizedStyle
