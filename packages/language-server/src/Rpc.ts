@@ -1,10 +1,9 @@
-import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort } from 'remeda'
+import { filter, funnel, keys, map, mapValues, once, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import {
   type DiagramView,
-  type LayoutedLikeC4ModelData,
   type ProjectId,
   invariant,
   nonexhaustive,
@@ -147,19 +146,13 @@ export class Rpc extends ADisposable {
       // ----------
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
         logger.debug`received request ${'fetchLayoutedModel'} for project ${projectId}`
-        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId)
+        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId, cancelToken)
         if (model === null) {
           return { model: null }
         }
-        // Views are sent with manual layouts applied (as before, protocol consumers may rely on it)
-        const diagrams = [...model.views()].map(vm => vm.$layouted)
-        return {
-          model: {
-            ...model.$data,
-            _stage: 'layouted' as const,
-            views: indexBy(diagrams, d => d.id),
-          } satisfies LayoutedLikeC4ModelData,
-        }
+        // Views are auto-layouted, manual layouts are in `manualLayouts`
+        // (applied by `LikeC4Model.create(data).view(id).$layouted`)
+        return { model: model.$data }
       }),
       // ----------
       connection.onRequest(LayoutView.req, async ({
