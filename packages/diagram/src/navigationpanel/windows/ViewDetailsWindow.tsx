@@ -22,6 +22,7 @@ import {
 } from '@tabler/icons-react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { Markdown } from '../../base-primitives'
+import { DiagramMarkdownRefs } from '../../components/DiagramMarkdownRefs'
 import { Link } from '../../components/Link'
 import { ViewIcon } from '../../components/ViewIcon'
 import { IfEnabled, useEnabledFeatures } from '../../context'
@@ -154,7 +155,9 @@ export function ViewDetailsWindow() {
       {description.nonEmpty && (
         <ScrollArea style={{ flex: 1 }} scrollbars="y" overscrollBehavior="contain">
           <Box px="1">
-            <Markdown value={description} />
+            <DiagramMarkdownRefs>
+              <Markdown value={description} />
+            </DiagramMarkdownRefs>
           </Box>
         </ScrollArea>
       )}

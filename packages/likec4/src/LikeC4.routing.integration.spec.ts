@@ -248,10 +248,11 @@ describe('view routing', () => {
         }
         views {
           // vertical edge, gap just tall enough for the label
+          // (two lines with paddings, 42px, plus clearance around nodes, 2 × 6px)
           view tall {
             routing ortho
             include a, b
-            autoLayout TopBottom 48
+            autoLayout TopBottom 56
           }
           // horizontal edge, gap wide enough for the label but Graphviz starts it at the midpoint
           view wide {

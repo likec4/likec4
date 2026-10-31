@@ -1,6 +1,8 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
+import assert from 'node:assert'
 import { map, prop, take } from 'remeda'
 import { describe } from 'vitest'
+import { type CompletionList, InsertReplaceEdit } from 'vscode-languageserver-types'
 import { createMultiProjectTestServices, testFileScope as test } from '../test'
 
 function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
@@ -1294,5 +1296,491 @@ describe('LikeC4CompletionProvider', () => {
         },
       })
     }
+  })
+
+  describe('element links in markdown', () => {
+    const withModel = (description: string) => `
+      specification {
+        element system
+        element component
+      }
+      model {
+        system cloud 'Cloud' {
+          component backend {
+            component api 'API'
+          }
+        }
+        system external {
+          description ${description}
+        }
+      }
+      views {
+        view index {
+          title 'Landscape'
+        }
+        dynamic view flow
+      }
+    `
+
+    it('should suggest elements by full FQN and view namespace after [[', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''Calls [[<|>'''`),
+        index: 0,
+        expectedItems: [
+          'cloud',
+          'cloud.backend',
+          'cloud.backend.api',
+          'external',
+          'view:',
+        ],
+      })
+      await completion({
+        text: withModel(`'''Calls [[<|>'''`),
+        index: 0,
+        assert: completions => {
+          const api = completions.items.find(i => i.label === 'cloud.backend.api')
+          expect(api).toMatchObject({
+            detail: 'API (component)',
+            filterText: 'cloud.backend.api',
+            textEdit: {
+              newText: 'cloud.backend.api]]',
+              insert: {
+                start: { line: 12, character: 33 },
+                end: { line: 12, character: 33 },
+              },
+              replace: {
+                start: { line: 12, character: 33 },
+                end: { line: 12, character: 33 },
+              },
+            },
+          })
+          expect(completions.items.find(i => i.label === 'cloud.backend')?.detail).toBe('component')
+          const view = completions.items.find(i => i.label === 'view:')
+          expect(view).toMatchObject({
+            textEdit: {
+              newText: 'view:',
+            },
+            command: {
+              command: 'editor.action.triggerSuggest',
+            },
+          })
+        },
+      })
+    })
+
+    it('should filter elements by substring over the whole FQN', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''Calls [[api<|>'''`),
+        index: 0,
+        assert: completions => {
+          expect(completions.items.map(i => i.label)).toEqual(['cloud.backend.api'])
+          expect(completions.items[0]).toMatchObject({
+            // VSCode filters by the text from the start of the range to the cursor
+            filterText: 'api',
+            textEdit: {
+              newText: 'cloud.backend.api]]',
+              insert: {
+                start: { line: 12, character: 33 },
+                end: { line: 12, character: 36 },
+              },
+              replace: {
+                start: { line: 12, character: 33 },
+                end: { line: 12, character: 36 },
+              },
+            },
+          })
+        },
+      })
+      await completion({
+        text: withModel(`'''Calls [[KEND<|>'''`),
+        index: 0,
+        assert: completions => {
+          expect(completions.items.map(i => i.label)).toEqual(['cloud.backend', 'cloud.backend.api'])
+          expect(completions.items.map(i => i.filterText)).toEqual(['kend', 'kend.api'])
+        },
+      })
+      await completion({
+        text: withModel(`'''Calls [[vi<|>'''`),
+        index: 0,
+        expectedItems: ['view:'],
+      })
+    })
+
+    it('should suggest views after [[view:', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''See [[view:<|>'''`),
+        index: 0,
+        assert: completions => {
+          expect(completions.items).toMatchObject([
+            {
+              label: 'index',
+              detail: 'Landscape (view)',
+              textEdit: {
+                newText: 'index]]',
+                insert: {
+                  start: { line: 12, character: 36 },
+                  end: { line: 12, character: 36 },
+                },
+                replace: {
+                  start: { line: 12, character: 36 },
+                  end: { line: 12, character: 36 },
+                },
+              },
+            },
+            {
+              label: 'flow',
+              detail: 'dynamic view',
+              textEdit: {
+                newText: 'flow]]',
+              },
+            },
+          ])
+        },
+      })
+      await completion({
+        text: withModel(`'''See [[view:fl<|>'''`),
+        index: 0,
+        expectedItems: ['flow'],
+      })
+    })
+
+    it('should not duplicate closing ]]', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''See [[cl<|>]] and [[view:<|>]]'''`),
+        index: 0,
+        assert: completions => {
+          expect(completions.items.find(i => i.label === 'cloud')?.textEdit?.newText).toBe('cloud')
+        },
+      })
+      await completion({
+        text: withModel(`'''See [[cl<|>]] and [[view:<|>]]'''`),
+        index: 1,
+        assert: completions => {
+          expect(completions.items.find(i => i.label === 'index')?.textEdit?.newText).toBe('index')
+        },
+      })
+    })
+
+    it('should replace the rest of the target in the replace mode', async ({ expect, completion }) => {
+      // Line 12 is `          description '''See [[cloud.backend.ap<|>i]] and [[view:ind<|>ex|Index]]'''`
+      const text = withModel(`'''See [[cloud.backend.ap<|>i]] and [[view:ind<|>ex|Index]]'''`)
+      await completion({
+        text,
+        index: 0,
+        assert: completions => {
+          const api = completions.items.find(i => i.label === 'cloud.backend.api')
+          expect(api?.textEdit).toEqual({
+            // `]]` follows the rest of the target, so it is not added
+            newText: 'cloud.backend.api',
+            insert: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 47 },
+            },
+            replace: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 48 },
+            },
+          })
+          const view = completions.items.find(i => i.label === 'view:')
+          expect(view).toBeUndefined()
+        },
+      })
+      await completion({
+        text,
+        index: 1,
+        assert: completions => {
+          const index = completions.items.find(i => i.label === 'index')
+          expect(index?.textEdit).toEqual({
+            // Rest of the target ends at the label separator, the ref is already closed
+            newText: 'index',
+            insert: {
+              start: { line: 12, character: 62 },
+              end: { line: 12, character: 65 },
+            },
+            replace: {
+              start: { line: 12, character: 62 },
+              end: { line: 12, character: 67 },
+            },
+          })
+        },
+      })
+    })
+
+    it('should not close a ref that already has a label', async ({ expect, completion }) => {
+      const text = `
+        specification {
+          element system
+        }
+        model {
+          system cloud {
+            system api
+          }
+          system docs {
+            description '''[[cloud.ap<|>i\\\\|API]] [[cloud.ap<|>|API]]'''
+          }
+        }
+      `
+      for (const index of [0, 1]) {
+        await completion({
+          text,
+          index,
+          assert: completions => {
+            const api = completions.items.find(i => i.label === 'cloud.api')
+            expect(api?.textEdit?.newText).toBe('cloud.api')
+          },
+        })
+      }
+    })
+
+    it('should replace the rest of the target in partial and closed refs', async ({ expect, completion }) => {
+      const text = `
+        specification {
+          element system
+        }
+        model {
+          system cloud {
+            system api
+          }
+          system docs {
+            description '''[[cloud.ap<|>i]] [[view:ind<|>ex]] [[clo<|>ud.api]] [[cloud.api]]<|>'''
+          }
+        }
+        views {
+          view index
+        }
+      `
+      // Typed and replaced lengths, relative to the start of both ranges (same line)
+      const edit = (label: string) => (completions: CompletionList) => {
+        const textEdit = completions.items.find(i => i.label === label)?.textEdit
+        assert(textEdit && InsertReplaceEdit.is(textEdit), `InsertReplaceEdit for ${label}`)
+        expect(textEdit.replace.start).toEqual(textEdit.insert.start)
+        return {
+          newText: textEdit.newText,
+          typed: textEdit.insert.end.character - textEdit.insert.start.character,
+          replaced: textEdit.replace.end.character - textEdit.replace.start.character,
+        }
+      }
+      // [[cloud.ap|i]]
+      await completion({
+        text,
+        index: 0,
+        assert: completions => {
+          expect(edit('cloud.api')(completions)).toEqual({ newText: 'cloud.api', typed: 8, replaced: 9 })
+        },
+      })
+      // [[view:ind|ex]]
+      await completion({
+        text,
+        index: 1,
+        assert: completions => {
+          expect(edit('index')(completions)).toEqual({ newText: 'index', typed: 3, replaced: 5 })
+        },
+      })
+      // [[clo|ud.api]], an existing closed ref
+      await completion({
+        text,
+        index: 2,
+        assert: completions => {
+          expect(edit('cloud.api')(completions)).toEqual({ newText: 'cloud.api', typed: 3, replaced: 9 })
+          expect(completions.items.map(i => i.label)).not.toContain('view:')
+        },
+      })
+      // After a closed ref, nothing to complete
+      await completion({
+        text,
+        index: 3,
+        assert: completions => {
+          expect(completions.items).toEqual([])
+        },
+      })
+    })
+
+    it('should replace the rest of the target with the view namespace', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''See [[v<|>iew.x]]'''`),
+        index: 0,
+        assert: completions => {
+          const view = completions.items.find(i => i.label === 'view:')
+          expect(view?.textEdit).toEqual({
+            newText: 'view:',
+            insert: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 32 },
+            },
+            replace: {
+              start: { line: 12, character: 31 },
+              end: { line: 12, character: 37 },
+            },
+          })
+        },
+      })
+    })
+
+    it('should suggest inside """ markdown', async ({ completion }) => {
+      await completion({
+        text: withModel(`"""Calls [[back<|>"""`),
+        index: 0,
+        expectedItems: ['cloud.backend', 'cloud.backend.api'],
+      })
+    })
+
+    it('should suggest in multi-line markdown', async ({ expect, completion }) => {
+      await completion({
+        text: withModel(`'''
+            First line
+            Second line, not a link [[cloud]]
+            Calls [[back<|> and something
+          '''`),
+        index: 0,
+        assert: completions => {
+          expect(completions.items.map(i => i.label)).toEqual(['cloud.backend', 'cloud.backend.api'])
+          expect(completions.items[0]!.textEdit).toEqual({
+            newText: 'cloud.backend]]',
+            insert: {
+              start: { line: 15, character: 20 },
+              end: { line: 15, character: 24 },
+            },
+            // The rest of the target ends at the space
+            replace: {
+              start: { line: 15, character: 20 },
+              end: { line: 15, character: 24 },
+            },
+          })
+        },
+      })
+    })
+
+    it('should suggest after [[ with a DSL escape', async ({ completion }) => {
+      // `\[[` in the DSL is `[[` in the model, a ref
+      await completion({
+        text: withModel(`'''Calls \\[[back<|>'''`),
+        index: 0,
+        expectedItems: ['cloud.backend', 'cloud.backend.api'],
+      })
+    })
+
+    it('should not suggest outside of a link', async ({ completion }) => {
+      const cases = [
+        // plain strings are not processed
+        `'Calls [[<|>'`,
+        `"Calls [[<|>"`,
+        // after a closed link
+        `'''Calls [[cloud]]<|>'''`,
+        `'''Calls [[cloud]] <|>'''`,
+        // not a link
+        `'''Calls <|>'''`,
+        `'''Calls [<|>'''`,
+        `'''Calls [[cloud <|>'''`,
+        `'''Calls [[cloud|<|>'''`,
+        // escaped in Markdown: `\\[[` in the DSL is `\[[` in the model
+        `'''Calls \\\\[[<|>'''`,
+        `'''Calls \\\\\\[[<|>'''`,
+        // unknown namespace
+        `'''Calls [[deployment:<|>'''`,
+        // inside code
+        `'''Calls \`[[<|>'''`,
+        `'''
+            \`\`\`
+            [[<|>
+            \`\`\`
+          '''`,
+      ]
+      for (const description of cases) {
+        await completion({
+          text: withModel(description),
+          index: 0,
+          expectedItems: [],
+          disposeAfterCheck: true,
+        })
+      }
+    })
+
+    it('should not suggest on [ trigger outside markdown', async ({ expect, t }) => {
+      const document = await t.parse(`
+        specification {
+          element component
+        }
+        model {
+          component c1 {
+            metadata {
+              tags [
+            }
+          }
+        }
+      `)
+      const position = document.textDocument.positionAt(document.textDocument.getText().indexOf('[') + 1)
+      const completions = await t.services.lsp.CompletionProvider!.getCompletion(document, {
+        textDocument: { uri: document.uri.toString() },
+        position,
+        context: { triggerKind: 2, triggerCharacter: '[' },
+      })
+      expect(completions?.items).toEqual([])
+    })
+
+    it('should suggest only elements of the current project', async ({ expect }) => {
+      const { services, validateAll } = await createMultiProjectTestServices({
+        project1: {
+          'doc1': `
+            specification {
+              element component
+            }
+            model {
+              component p1el
+            }
+            views {
+              view p1view
+            }
+          `,
+        },
+        project2: {
+          'doc1': `
+            specification {
+              element component
+            }
+            model {
+              component p2el {
+                component nested
+              }
+            }
+            views {
+              view p2view
+            }
+          `,
+        },
+      })
+      const { errors } = await validateAll()
+      expect(errors).toEqual([])
+      const completion = langiumExpectCompletion(services)
+      const parseOptions = {
+        documentUri: 'file:///test/workspace/src/project2/doc2.c4',
+      }
+
+      await completion({
+        text: `
+          model {
+            component other {
+              description '''See [[<|>'''
+            }
+          }
+        `,
+        index: 0,
+        parseOptions,
+        expectedItems: ['p2el', 'p2el.nested', 'other', 'view:'],
+        disposeAfterCheck: true,
+      })
+      await completion({
+        text: `
+          model {
+            component other {
+              description '''See [[view:<|>'''
+            }
+          }
+        `,
+        index: 0,
+        parseOptions,
+        expectedItems: ['p2view'],
+        disposeAfterCheck: true,
+      })
+    })
   })
 })

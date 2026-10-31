@@ -58,8 +58,9 @@ export async function runValidate(
   if (options.layout) {
     logger.debug('running layout validation...')
     try {
-      const views = await likec4.diagrams(options.project)
-      for (const view of views) {
+      const model = await likec4.layoutedModel(options.project)
+      for (const vm of model.views()) {
+        const view = vm.$layouted
         if (view.drifts && view.drifts.length > 0) {
           layoutErrors.push({
             message: `Layout drift detected on view '${view.id}'`,

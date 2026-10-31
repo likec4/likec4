@@ -111,21 +111,51 @@ model {
 
 ## Element Properties
 
-| Property        | Values                                                                                   |
-| --------------- | ---------------------------------------------------------------------------------------- |
-| **title**       | String, single line                                                                      |
-| **description** | String, prefer Markdown. If > 150 chars, also add `summary`.                             |
-| **summary**     | String, max 150 characters                                                               |
-| **technology**  | String, no multi-line                                                                    |
-| **style**       | `style { ... }` — see `references/style-tokens-colors.md`                                |
-| **icon**        | Shortcut for `style { icon ... }`, takes precedence over the style block                 |
-| **metadata**    | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings |
-| **link**        | `link URL "Optional title"` — repeatable; URL can be relative to the document            |
-| **navigateTo**  | ID of a dynamic view to navigate to on click                                             |
+| Property        | Values                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| **title**       | String, single line                                                                        |
+| **description** | String, prefer Markdown; link other elements with `[[fqn]]`. If > 150 chars, add `summary` |
+| **summary**     | String, max 150 characters                                                                 |
+| **technology**  | String, no multi-line                                                                      |
+| **style**       | `style { ... }` — see `references/style-tokens-colors.md`                                  |
+| **icon**        | Shortcut for `style { icon ... }`, takes precedence over the style block                   |
+| **metadata**    | `metadata { KEY VALUE }` — key is identifier format; value is string or array of strings   |
+| **link**        | `link URL "Optional title"` — repeatable; URL can be relative to the document              |
+| **navigateTo**  | ID of a dynamic view to navigate to on click                                               |
 
 ## Relationship Properties
 
 `title`, `description`, `technology`, `metadata`, `style`, `link`, `navigateTo`
+
+## Element Links in Markdown
+
+Markdown values (`'''…'''` / `"""…"""`) can link to elements and views of the current project:
+
+```likec4
+model {
+  cloud = system 'Cloud' {
+    ui = container 'Web UI'
+    api = container 'API' {
+      summary '''
+        Serves [[cloud.ui]]
+      '''
+    }
+    ui -> api 'calls' {
+      description '''
+        Requests go to [[cloud.api|the API]], see [[view:index]].
+        Not a link: \\[[cloud.api]] and `[[cloud.api]]`
+      '''
+    }
+  }
+}
+```
+
+- `[[fqn]]` renders the element title, `[[fqn|Label]]` a custom label, `[[view:id]]` the view title. In the diagram, links open the element details or navigate to the view.
+- Works in every Markdown value: element, deployment, relationship and view `description`, `summary`, `title`, `technology`, `notes`, metadata values. Plain `'…'` strings and code (inline or fenced) are not scanned.
+- FQN is absolute and resolved in the current project only: `[[cloud.backend.api]]`, never `[[api]]` or `[[this]]`. Imported elements are not supported.
+- Escaping follows DSL strings: literal `[[` is `\\[[`; in a Markdown table cell write the separator as `\\|`, e.g. `[[cloud.api\\|API]]`.
+- Unknown element, unknown view, or unknown `prefix:` is a **warning**: the model still builds and `likec4 validate` stays valid unless `--max-warnings` is given. In the editor, `[[` triggers completion and Go to Definition jumps to the target.
+- Prefer `[[fqn]]` over repeating element names in descriptions; link only elements that exist.
 
 ## Extend Patterns
 

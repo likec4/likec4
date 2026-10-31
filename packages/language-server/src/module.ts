@@ -33,6 +33,7 @@ import {
   LikeC4CodeActionProvider,
   LikeC4CodeLensProvider,
   LikeC4CompletionProvider,
+  LikeC4DefinitionProvider,
   LikeC4DocumentHighlightProvider,
   LikeC4DocumentLinkProvider,
   LikeC4DocumentSymbolProvider,
@@ -164,6 +165,7 @@ export interface LikeC4AddedServices {
   lsp: {
     // RenameProvider: LikeC4RenameProvider
     CompletionProvider: LikeC4CompletionProvider
+    DefinitionProvider: LikeC4DefinitionProvider
     DocumentHighlightProvider: LikeC4DocumentHighlightProvider
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
     SemanticTokenProvider: LikeC4SemanticTokenProvider
@@ -231,6 +233,7 @@ export function createLikeC4Module(
     lsp: {
       // RenameProvider: bind(LikeC4RenameProvider),
       CompletionProvider: bind(LikeC4CompletionProvider),
+      DefinitionProvider: bind(LikeC4DefinitionProvider),
       DocumentHighlightProvider: bind(LikeC4DocumentHighlightProvider),
       DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
       SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),

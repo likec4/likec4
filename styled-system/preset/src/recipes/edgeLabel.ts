@@ -4,6 +4,9 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 import { defineParts, defineRecipe } from '@pandacss/dev'
+import { EdgeLabelMetrics as M } from '../defaults/typography.ts'
+
+const px = (value: number) => `${value}px`
 
 const parts = defineParts({
   root: { selector: '&' },
@@ -19,14 +22,15 @@ export const edgeLabel = defineRecipe({
   base: parts({
     root: {
       fontFamily: 'likec4.relation',
-      paddingBlock: '1',
-      paddingInline: '1.5',
+      // Layouts measure labels with these metrics
+      paddingBlock: px(M.paddingBlock),
+      paddingInline: px(M.paddingInline),
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       width: 'max-content',
       maxWidth: '100%',
-      gap: '0.5',
+      gap: px(M.gap),
       color: 'var(--xy-edge-label-color)',
       background: 'var(--xy-edge-label-background-color)',
       border: '0px solid transparent',
@@ -63,16 +67,16 @@ export const edgeLabel = defineRecipe({
     label: {
       whiteSpaceCollapse: 'preserve-breaks',
       overflowWrap: 'anywhere',
-      fontSize: '14px',
-      lineHeight: '1.2',
+      fontSize: px(M.label.fontSize),
+      lineHeight: String(M.label.lineHeight),
       margin: '0',
     },
     technology: {
       textAlign: 'center',
       whiteSpaceCollapse: 'preserve-breaks',
       overflowWrap: 'anywhere',
-      fontSize: '11px',
-      lineHeight: '1',
+      fontSize: px(M.technology.fontSize),
+      lineHeight: String(M.technology.lineHeight),
       opacity: 0.75,
     },
   }),

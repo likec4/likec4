@@ -210,4 +210,55 @@ describe('Fqn Index', () => {
       { name: 'c4', fqn: 'c1.c2.c3.c4' },
     ])
   })
+
+  it('elements: all elements of the project, including nested and extended', async ({ expect, t }) => {
+    const { parse, validateAll, services } = t
+    const projectId = services.shared.workspace.ProjectsManager.defaultProjectId!
+    const elementIds = () => services.likec4.FqnIndex.elements(projectId).map(({ id }) => id).toArray().sort()
+
+    await parse(`
+        specification {
+          element component
+        }
+        model {
+          component c1 {
+            component c2 {
+              component c3
+            }
+          }
+          component e1
+        }
+      `)
+    await parse(`
+        model {
+          extend c1.c2 {
+            component c4
+          }
+        }
+      `)
+    await validateAll()
+    expect(elementIds()).toEqual([
+      'c1',
+      'c1.c2',
+      'c1.c2.c3',
+      'c1.c2.c4',
+      'e1',
+    ])
+
+    // Cache is invalidated when a document is added
+    await parse(`
+        model {
+          component e2
+        }
+      `)
+    await validateAll()
+    expect(elementIds()).toEqual([
+      'c1',
+      'c1.c2',
+      'c1.c2.c3',
+      'c1.c2.c4',
+      'e1',
+      'e2',
+    ])
+  })
 })

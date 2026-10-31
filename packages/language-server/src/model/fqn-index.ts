@@ -155,6 +155,20 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     }))
   }
 
+  /**
+   * Returns all elements of the project (from all documents, including nested
+   * elements and elements added in `extend` blocks), in document order.
+   * The same FQN may appear more than once if it is defined in several documents.
+   */
+  public elements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
+    return stream(this.workspaceCache.get(projectId, `elements`, () => {
+      return this
+        .documents(projectId)
+        .flatMap(doc => this.get(doc).elements())
+        .toArray()
+    }))
+  }
+
   public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(projectId, `rootElements`, () => {
@@ -365,6 +379,13 @@ export class DocumentFqnIndex {
 
   public byFqn(fqn: Fqn): readonly AstNodeDescriptionWithFqn[] {
     return this._byfqn.get(fqn) ?? []
+  }
+
+  /**
+   * All elements of the document
+   */
+  public elements(): readonly AstNodeDescriptionWithFqn[] {
+    return [...this._byfqn.values()]
   }
 
   public children(parent: Fqn): readonly AstNodeDescriptionWithFqn[] {

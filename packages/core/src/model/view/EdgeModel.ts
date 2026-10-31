@@ -50,7 +50,7 @@ export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$edge.description)
+    return RichText.memoize(this, 'description', this.$edge.description, this.$viewModel.$model.resolveMarkdownRef)
   }
 
   get technology(): string | null {

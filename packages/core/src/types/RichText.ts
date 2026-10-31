@@ -1,4 +1,10 @@
-import { markdownToHtml, markdownToText, memoizeProp, nonexhaustive } from '../utils'
+import {
+  type MarkdownRefTitleResolver,
+  markdownToHtml,
+  markdownToText,
+  memoizeProp,
+  nonexhaustive,
+} from '../utils'
 import { LRUMap } from '../utils/mnemonist'
 import type { MarkdownOrString } from './scalar'
 
@@ -70,24 +76,46 @@ export class RichText {
   }
 
   /**
-   * Creates and memoizes a RichText instance.
+   * Creates and memoizes a RichText instance on the given object.
+   * With `resolveRef`, refs in Markdown (`[[fqn]]`, `[[view:id]]`) are resolved, see {@link RichText.from}
    * @see ElementModel.description
    * @example
    *
    *  get description(): RichTextOrEmpty {
-   *    return RichText.memoize(this, 'description', this.$element.description)
+   *    return RichText.memoize(this, 'description', this.$element.description, this.$model.resolveMarkdownRef)
    *  }
    */
-  static memoize(obj: object, tag: symbol | string, source: MarkdownOrString | null | undefined): RichTextOrEmpty {
-    return memoizeProp(obj, tag, () => RichText.from(source))
+  static memoize(
+    obj: object,
+    tag: symbol | string,
+    source: MarkdownOrString | null | undefined,
+    resolveRef?: MarkdownRefTitleResolver,
+  ): RichTextOrEmpty {
+    return memoizeProp(obj, tag, () => RichText.from(source, resolveRef))
   }
 
   /**
    * Creates a RichText instance from a source.
+   *
+   * Instances are cached by source (shared LRU cache).
+   *
+   * With `resolveRef`, refs in Markdown (`[[fqn]]`, `[[view:id]]`) get their titles from the resolver
+   * in {@link RichText.text} and {@link RichText.html}.
+   * Such instance depends on the resolver and is not cached (memoize it on the owner, see {@link RichText.memoize}).
+   * Markdown without refs returns the cached instance.
    */
-  static from(source: RichTextOrEmpty | MarkdownOrString | string | null | undefined): RichTextOrEmpty {
+  static from(
+    source: RichTextOrEmpty | MarkdownOrString | string | null | undefined,
+    resolveRef?: MarkdownRefTitleResolver,
+  ): RichTextOrEmpty {
     if (source === null || source === undefined || source === RichText.EMPTY) {
       return RichText.EMPTY
+    }
+    if (resolveRef) {
+      const md = getMarkdown(source)
+      if (md !== null && md.includes('[[')) {
+        return RichTextWithRefs.create(md, resolveRef)
+      }
     }
     if (source instanceof RichText) {
       return source as RichTextOrEmpty
@@ -137,10 +165,10 @@ export class RichText {
   public readonly isMarkdown: boolean
 
   /**
-   * Private constructor to prevent direct instantiation.
+   * Protected constructor to prevent direct instantiation.
    * Use {@link RichText.from} or {@link RichText.memoize} instead.
    */
-  private constructor(source: MarkdownOrString | string) {
+  protected constructor(source: MarkdownOrString | string) {
     this.isMarkdown = false
     if (typeof source === 'string') {
       this.$source = { txt: source }
@@ -219,5 +247,50 @@ export class RichText {
       return this.$source?.md === other.$source?.md
     }
     return this.$source?.txt === other.$source?.txt
+  }
+}
+
+/**
+ * Returns the Markdown of the source, or null if the source is not Markdown (or empty)
+ */
+function getMarkdown(source: RichTextOrEmpty | MarkdownOrString | string): string | null {
+  if (typeof source === 'string') {
+    return null
+  }
+  if (source instanceof RichText) {
+    return source.isMarkdown ? source.md : null
+  }
+  if ('isEmpty' in source) {
+    return source.nonEmpty && source.isMarkdown ? source.md : null
+  }
+  return 'md' in source ? source.md : null
+}
+
+/**
+ * RichText with refs resolved by the resolver (usually bound to the model):
+ * {@link RichText.text} and {@link RichText.html} show the titles instead of the targets.
+ *
+ * Everything else ({@link RichText.md}, {@link RichText.$source}, {@link RichText.equals}, emptiness)
+ * is source-based, as in RichText.
+ */
+class RichTextWithRefs extends RichText {
+  static create(md: string, resolveRef: MarkdownRefTitleResolver): RichTextOrEmpty {
+    md = md.trimEnd()
+    if (md === emptyTxt) {
+      return RichText.EMPTY
+    }
+    return new RichTextWithRefs(md, resolveRef) as RichTextOrEmpty
+  }
+
+  private constructor(md: string, private readonly resolveRef: MarkdownRefTitleResolver) {
+    super({ md })
+  }
+
+  override get text(): string {
+    return memoizeProp(this, symb_text, () => markdownToText(this.md, this.resolveRef))
+  }
+
+  override get html(): string {
+    return memoizeProp(this, symb_html, () => markdownToHtml(this.md, this.resolveRef))
   }
 }

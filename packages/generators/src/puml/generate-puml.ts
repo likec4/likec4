@@ -154,7 +154,8 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     const tech = escapeLabel(node.technology)
     names.set(node.id, fqn)
 
-    const description = RichText.from(node.description)
+    // Refs in markdown (`[[fqn]]`) are resolved to titles by the model
+    const description = RichText.from(node.description, viewmodel.$model.resolveMarkdownRef)
 
     return new CompositeGeneratorNode()
       .append(shape, ' ')

@@ -1,4 +1,3 @@
-import { getBezierPath } from '@xyflow/system'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -9,27 +8,27 @@ import {
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { edgePathThroughLabel } from '../../../utils/edge-path-through-label'
 import type { RelationshipDetailsTypes } from '../_types'
 
 export const RelationshipEdge = memoEdge<RelationshipDetailsTypes.EdgeProps>((props) => {
   const { enableNavigateTo } = useEnabledFeatures()
   const {
-    data: { navigateTo },
+    data: { navigateTo, labelBBox },
   } = props
-  const [svgPath, labelX, labelY] = getBezierPath(props)
+  // the label is placed by the layout, the edge goes through it
+  const [svgPath, labelPosition] = edgePathThroughLabel(props, labelBBox)
   const diagram = useDiagram()
   return (
     <EdgeContainer {...props}>
       <EdgePath edgeProps={props} svgPath={svgPath} />
       <EdgeLabelContainer
         edgeProps={props}
-        labelPosition={{
-          x: labelX,
-          y: labelY,
-          translate: 'translate(-50%, 0)',
-        }}
-        style={{
-          maxWidth: Math.abs(props.targetX - props.sourceX - 100),
+        labelPosition={labelPosition}
+        {...!labelBBox && {
+          style: {
+            maxWidth: Math.abs(props.targetX - props.sourceX - 100),
+          },
         }}>
         <EdgeLabel edgeProps={props}>
           {enableNavigateTo && navigateTo && (
