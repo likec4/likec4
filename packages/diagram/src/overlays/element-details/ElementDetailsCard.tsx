@@ -31,10 +31,12 @@ import {
   Tooltip as MantineTooltip,
   UnstyledButton,
 } from '@mantine/core'
-import { useDisclosure, useLocalStorage, useSessionStorage, useViewportSize } from '@mantine/hooks'
+import { useClipboard, useDisclosure, useLocalStorage, useSessionStorage, useViewportSize } from '@mantine/hooks'
 import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
 import {
   IconCaretRightFilled,
+  IconCheck,
+  IconCopy,
   IconExternalLink,
   IconFileSymlink,
   IconZoomScan,
@@ -659,6 +661,7 @@ const FqnPart = styled('div', {
     fontWeight: 'medium',
     color: 'text.dimmed',
     borderRadius: 'sm',
+    cursor: 'pointer',
     '& + &': {
       ml: '-1',
       pl: '0',
@@ -670,36 +673,130 @@ const FqnPart = styled('div', {
   },
 })
 
+const FqnSegment = styled('button', {
+  base: {
+    px: '1',
+    paddingTop: '0.5',
+    paddingBottom: '1.5',
+    fontFamily: '[inherit]',
+    fontSize: 'xs',
+    lineHeight: 'snug',
+    fontWeight: 'medium',
+    color: 'text.dimmed',
+    background: 'none',
+    border: 'none',
+    borderRadius: 'sm',
+    cursor: 'pointer',
+    '& + &': {
+      ml: '-1',
+      pl: '0',
+    },
+    '&[data-hovered=true]': {
+      color: 'text.bright',
+      backgroundColor: 'surface.sunken',
+    },
+    _focusVisible: {
+      outline: '[2px solid var(--mantine-primary-color-filled)]',
+      outlineOffset: '[-1px]',
+    },
+  },
+})
+
+const fqnCopyStatus = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  alignSelf: 'center',
+  gap: '1',
+  ml: '1',
+  fontSize: 'xxs',
+  color: 'text.dimmed',
+  opacity: '0',
+  transition: 'fast',
+  pointerEvents: 'none',
+  _groupHover: {
+    opacity: '1',
+  },
+  _groupFocusWithin: {
+    opacity: '1',
+  },
+  '&[data-copied=true]': {
+    opacity: '1',
+    color: 'teal.11',
+  },
+})
+
+/**
+ * Segments of an FQN, each with the path from the root to it.
+ * `cloud.backend.api` → `cloud` (cloud), `backend` (cloud.backend), `api` (cloud.backend.api)
+ */
+export function fqnPathSegments<T extends string>(fqn: T): Array<{ name: string; path: T }> {
+  return [...ancestorsFqn(fqn).toReversed(), fqn].map(path => ({ name: nameFromFqn(path), path }))
+}
+
 function ElementFqn<T extends Fqn | DeploymentFqn>({ fqn }: { fqn: T }) {
   const [hovered, setHovered] = useState<T | null>(null)
+  const clipboard = useClipboard({ timeout: 1500 })
 
-  const hoverHandlers = (fqn: T) => ({
-    ['data-hovered']: !!hovered && (fqn === hovered || isAncestor(fqn, hovered)),
-    onMouseEnter: () => setHovered(fqn),
+  const isHighlighted = (path: T) => !!hovered && (path === hovered || isAncestor(path, hovered))
+
+  // Segments are inside the card header (drag handle, double-click resets the card)
+  const segmentHandlers = (path: T) => ({
+    onMouseEnter: () => setHovered(path),
     onMouseLeave: () => setHovered(null),
+    onClick: (e: SyntheticEvent) => {
+      e.stopPropagation()
+      clipboard.copy(path)
+    },
+    onPointerDown: stopEventPropagation,
+    onDoubleClick: stopEventPropagation,
   })
 
-  const ancestors = ancestorsFqn(fqn).toReversed()
+  const segments = fqnPathSegments(fqn)
   return (
     <HStack
+      className="group"
       css={{
         gap: '0',
         alignItems: 'baseline',
       }}>
       <SmallLabel color={'text.non-essential'}>ID</SmallLabel>
-      {ancestors.map(ancestor => (
-        <Fragment key={ancestor}>
-          <FqnPart {...hoverHandlers(ancestor)}>
-            {nameFromFqn(ancestor)}
-          </FqnPart>
-          <FqnPart {...hoverHandlers(ancestor)} data-hovered={hovered && isAncestor(ancestor, hovered)}>.</FqnPart>
+      {segments.map(({ name, path }, index) => (
+        <Fragment key={path}>
+          {index > 0 && (
+            <FqnPart
+              aria-hidden
+              {...segmentHandlers(segments[index - 1]!.path)}
+              data-hovered={!!hovered && isAncestor(segments[index - 1]!.path, hovered)}>
+              .
+            </FqnPart>
+          )}
+          <FqnSegment
+            type="button"
+            aria-label={`Copy ${path}`}
+            data-hovered={isHighlighted(path)}
+            onFocus={() => setHovered(path)}
+            onBlur={() => setHovered(null)}
+            {...segmentHandlers(path)}>
+            {name}
+          </FqnSegment>
         </Fragment>
       ))}
-      <FqnPart {...hoverHandlers(fqn)}>
-        {nameFromFqn(fqn)}
-      </FqnPart>
+      <span className={fqnCopyStatus} data-copied={clipboard.copied} role="status">
+        {clipboard.copied
+          ? (
+            <>
+              <IconCheck size={12} stroke={2.5} />
+              Copied
+            </>
+          )
+          : <IconCopy size={12} stroke={2} aria-hidden />}
+      </span>
     </HStack>
   )
+}
+
+function stopEventPropagation(e: SyntheticEvent) {
+  e.stopPropagation()
 }
 
 function ElementDescription<T extends Pick<ElementModel, 'hasSummary' | 'summary' | 'description'>>(

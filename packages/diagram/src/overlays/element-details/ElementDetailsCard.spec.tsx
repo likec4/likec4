@@ -3,7 +3,7 @@ import { Builder } from '@likec4/core/builder'
 import { MantineProvider } from '@mantine/core'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
-import { ElementDetailsCard } from './ElementDetailsCard'
+import { ElementDetailsCard, fqnPathSegments } from './ElementDetailsCard'
 import type { DetailsSubject } from './subject'
 
 const model = Builder.specification({
@@ -115,5 +115,25 @@ describe('deployment details card', () => {
     expect(html).toContain('Logical owner')
     expect(html).toContain('Relationships')
     expect(html).toContain('Deployments')
+  })
+})
+
+describe('element id', () => {
+  it('splits an FQN into segments with the path from the root', () => {
+    expect(fqnPathSegments('cloud.backend.api')).toEqual([
+      { name: 'cloud', path: 'cloud' },
+      { name: 'backend', path: 'cloud.backend' },
+      { name: 'api', path: 'cloud.backend.api' },
+    ])
+    expect(fqnPathSegments('api')).toEqual([{ name: 'api', path: 'api' }])
+  })
+
+  it('renders a copy button for each segment of a deployment FQN', () => {
+    const html = render({ type: 'deployment', deployment: scalar.DeploymentFqn('prod.server.api') })
+
+    expect(html).toContain('aria-label="Copy prod"')
+    expect(html).toContain('aria-label="Copy prod.server"')
+    expect(html).toContain('aria-label="Copy prod.server.api"')
+    expect(html).toMatch(/<button type="button" aria-label="Copy prod.server"[^>]*>server<\/button>/)
   })
 })
