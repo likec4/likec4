@@ -28,6 +28,20 @@ describe('measureEdgeLabel', () => {
     expect(measured.width).toBeLessThanOrEqual(100 + 2 * paddingInline)
   })
 
+  it('wraps long label to distinct lines', () => {
+    const label = 'a very long label that has to be wrapped into several lines to fit'
+    const measured = measureEdgeLabel({ label, maxWidth: 200 })
+    const lines = measured.label!.split('\n')
+    expect(lines.length).toBeGreaterThan(1)
+    expect(lines.join(' ')).toBe(label)
+  })
+
+  it('keeps explicit line breaks and limits lines', () => {
+    expect(measureEdgeLabel({ label: 'first\nsecond' }).label).toBe('first\nsecond')
+    const many = Array.from({ length: 10 }, (_, i) => `line${i}`).join('\n')
+    expect(measureEdgeLabel({ label: many }).label!.split('\n')).toHaveLength(EdgeLabelMetrics.label.maxLines)
+  })
+
   it('technology only', () => {
     const measured = measureEdgeLabel({ label: null, technology: 'HTTPS' })
     expect(measured.label).toBeNull()

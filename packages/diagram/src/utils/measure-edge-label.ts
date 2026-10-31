@@ -88,9 +88,29 @@ function wrapLabel(label: string, maxWidth: number): { lines: string[]; width: n
  */
 function estimateLabel(label: string, maxWidth: number): { lines: string[]; width: number } {
   const charWidth = EdgeLabelMetrics.label.fontSize * 0.55
-  const width = Math.min(maxWidth, label.length * charWidth)
-  const lineCount = Math.min(EdgeLabelMetrics.label.maxLines, Math.ceil(label.length * charWidth / maxWidth))
-  return { lines: Array.from({ length: lineCount }, () => label), width }
+  const maxChars = Math.max(1, Math.floor(maxWidth / charWidth))
+  const lines: string[] = []
+  // greedy wrap by words, explicit line breaks are kept
+  for (const paragraph of label.trim().split(/\r?\n/)) {
+    let line = ''
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      if (line && line.length + 1 + word.length > maxChars) {
+        lines.push(line)
+        line = ''
+      }
+      // break words longer than the line
+      let rest = line ? `${line} ${word}` : word
+      while (rest.length > maxChars) {
+        lines.push(rest.slice(0, maxChars))
+        rest = rest.slice(maxChars)
+      }
+      line = rest
+    }
+    lines.push(line)
+  }
+  const visible = lines.slice(0, EdgeLabelMetrics.label.maxLines)
+  const width = Math.min(maxWidth, Math.max(0, ...visible.map(line => line.length * charWidth)))
+  return { lines: visible, width }
 }
 
 /**
