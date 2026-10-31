@@ -397,8 +397,8 @@ catalogs:
       specifier: ^2.1.5
       version: 2.1.5
     '@hono/oauth-providers':
-      specifier: ^0.9.0
-      version: 0.9.0
+      specifier: ^0.9.1
+      version: 0.9.1
     '@hono/zod-validator':
       specifier: ^0.9.1
       version: 0.9.1
@@ -898,7 +898,7 @@ importers:
         version: 37.3.11
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.9.0(hono@4.13.13)
+        version: 0.9.1(hono@4.13.13)
       '@hono/zod-validator':
         specifier: catalog:hono
         version: 0.9.1(hono@4.13.13)(zod@4.6.7)
@@ -4700,8 +4700,8 @@ packages:
     peerDependencies:
       hono: ^4 || ^5.0.0-0
 
-  '@hono/oauth-providers@0.9.0':
-    resolution: {integrity: sha512-OgDPB+AM6OgA5ys1y+7G24bkb8V4OINr+6JFDSuSYni80Mmd7BGpJ0e02StQDMPL9ebuWI8ABhxx1bk+9VBcBA==}
+  '@hono/oauth-providers@0.9.1':
+    resolution: {integrity: sha512-dpnw9xJbYMyHsmlv+jYHB6jk4BY2FlwiRNVMiM7h0y19eprq11+7XaSBrBoTApHgY7sB0XpilH9VEVuY52aqnw==}
     engines: {node: '>=18.4.0'}
     peerDependencies:
       hono: '>=3.0.0'
@@ -12450,7 +12450,7 @@ snapshots:
     dependencies:
       hono: 4.13.13
 
-  '@hono/oauth-providers@0.9.0(hono@4.13.13)':
+  '@hono/oauth-providers@0.9.1(hono@4.13.13)':
     dependencies:
       hono: 4.13.13
 
