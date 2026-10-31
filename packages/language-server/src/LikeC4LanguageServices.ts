@@ -353,7 +353,11 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   locate(params: Locate.Params): Locate.Res {
     switch (true) {
       case 'element' in params:
-        return this.services.likec4.ModelLocator.locateElement(params.element, params.projectId as ProjectId)
+        return this.services.likec4.ModelLocator.locateElement(
+          params.element,
+          params.projectId as ProjectId,
+          params.property,
+        )
       case 'relation' in params:
         return this.services.likec4.ModelLocator.locateRelation(params.relation, params.projectId as ProjectId)
       case 'view' in params:
@@ -362,6 +366,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
         return this.services.likec4.ModelLocator.locateDeploymentElement(
           params.deployment,
           params.projectId as ProjectId,
+          params.property,
         )
       default:
         nonexhaustive(params)
