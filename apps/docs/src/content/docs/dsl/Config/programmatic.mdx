@@ -10,18 +10,14 @@ import { Card, FileTree, Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers'
 import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
 
-:::caution
-This feature is experimental and not well tested with IDEs.
-
-If you find any issues, please report them to [GitHub](https://github.com/likec4/likec4/issues).
-:::
-
 You can configure your projects programmatically with TypeScript or JavaScript.  
 The config filename can be any of the following:
 
 - `likec4.config.js`
+- `likec4.config.cjs`
 - `likec4.config.mjs`
 - `likec4.config.ts`
+- `likec4.config.cts`
 - `likec4.config.mts`
 
 Example:
