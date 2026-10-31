@@ -1,6 +1,7 @@
 import type { Nodes } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toString } from 'mdast-util-to-string'
+import { likec4RefFromMarkdown, likec4RefSyntax } from './refs'
 
 const options = {
   includeHtml: false,
@@ -42,6 +43,11 @@ function collectBlocks(node: Nodes, blocks: string[]): void {
  */
 export function markdownToText(markdown: string): string {
   const blocks: string[] = []
-  collectBlocks(fromMarkdown(markdown), blocks)
+  // Refs (`[[fqn|label]]`) become their label, or target
+  const tree = fromMarkdown(markdown, {
+    extensions: [likec4RefSyntax],
+    mdastExtensions: [likec4RefFromMarkdown],
+  })
+  collectBlocks(tree, blocks)
   return blocks.filter(block => block !== '').join('\n')
 }

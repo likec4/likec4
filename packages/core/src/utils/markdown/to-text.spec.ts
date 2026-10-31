@@ -106,4 +106,31 @@ code block
     // The function preserves special characters as-is
     expect(markdownToText(text)).toBe(text)
   })
+
+  describe('refs', () => {
+    it.each([
+      ['Calls [[cloud.api]].', 'Calls cloud.api.'],
+      ['Calls [[cloud.api|Public API]].', 'Calls Public API.'],
+      ['Calls [[cloud.api\\|Public API]].', 'Calls Public API.'],
+      ['Calls [[cloud.api|]].', 'Calls cloud.api.'],
+      ['Open [[view:index]]', 'Open index'],
+      ['Open [[view:index|Landscape]]', 'Open Landscape'],
+      ['Unknown [[foo:bar]]', 'Unknown bar'],
+      ['**[[a.b]]** and _[[c|C]]_', 'a.b and C'],
+      ['Several [[a]], [[b|B]] and [[view:c]]', 'Several a, B and c'],
+    ])('should replace refs in "%s" with label or target', (md, expected) => {
+      expect(markdownToText(md)).toBe(expected)
+    })
+
+    it('should keep escaped, invalid and code refs as is', () => {
+      expect(markdownToText('\\[[a]]')).toBe('[[a]]')
+      expect(markdownToText('[[a b]]')).toBe('[[a b]]')
+      expect(markdownToText('[[a')).toBe('[[a')
+      expect(markdownToText('`[[a]]`')).toBe('[[a]]')
+    })
+
+    it('should replace refs in lists and headings', () => {
+      expect(markdownToText('# About [[a|A]]\n\n- [[b]]\n- [[c|C]]')).toBe('About A\nb\nC')
+    })
+  })
 })

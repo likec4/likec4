@@ -1305,6 +1305,12 @@ importers:
       mdast-util-to-string:
         specifier: ^4.0.0
         version: 4.0.0
+      micromark-util-decode-string:
+        specifier: ^2.0.1
+        version: 2.0.1
+      micromark-util-types:
+        specifier: ^2.0.2
+        version: 2.0.2
       mnemonist:
         specifier: 0.40.6
         version: 0.40.6
@@ -3148,6 +3154,9 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.52.0
+      shiki:
+        specifier: catalog:astro
+        version: 4.5.0
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
