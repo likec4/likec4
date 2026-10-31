@@ -1,5 +1,6 @@
 import { LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
+import { constants } from 'node:fs'
 import { access } from 'node:fs/promises'
 import { resolve } from 'pathe'
 import { logGenerating } from '../logger'
@@ -11,7 +12,7 @@ import { type ProjectData, type ProjectVirtualModule, generateCombinedProjects, 
  */
 const customCssFiles = async ({ config, folder }: ProjectData): Promise<string[]> => {
   const files = (config.styles?.customCss?.paths ?? []).map(path => resolve(folder.fsPath, path))
-  const readable = await Promise.all(files.map(file => access(file).then(() => true, () => false)))
+  const readable = await Promise.all(files.map(file => access(file, constants.R_OK).then(() => true, () => false)))
   return files.filter((_, i) => readable[i])
 }
 
