@@ -1,5 +1,13 @@
 import { BorderStyles, ElementShapes, Sizes, Sizings, ThemeColors } from '@likec4/core/styles'
-import { type MaybePromise, AstUtils, GrammarAST } from 'langium'
+import type { ProjectId } from '@likec4/core/types'
+import {
+  type AstNodeDescription,
+  type LangiumDocument,
+  type MaybePromise,
+  AstUtils,
+  CstUtils,
+  GrammarAST,
+} from 'langium'
 import {
   type CompletionAcceptor,
   type CompletionContext,
@@ -9,9 +17,19 @@ import {
 } from 'langium/lsp'
 import { anyPass, isEmpty } from 'remeda'
 import type { SetRequired } from 'type-fest'
-import { CompletionItem, CompletionItemKind, InsertTextFormat, TextEdit } from 'vscode-languageserver-types'
+import { type CancellationToken, type CompletionParams, CompletionTriggerKind } from 'vscode-languageserver-protocol'
+import {
+  type Range,
+  CompletionItem,
+  CompletionItemKind,
+  CompletionList,
+  InsertTextFormat,
+  TextEdit,
+} from 'vscode-languageserver-types'
 import { ast } from '../ast'
+import { toSingleLine } from '../model/parser/Base'
 import type { LikeC4Services } from '../module'
+import { projectIdFrom } from '../utils'
 
 function isCompletionForPojectName(
   context: CompletionContext,
@@ -20,6 +38,47 @@ function isCompletionForPojectName(
   return GrammarAST.isRuleCall(next.feature)
     && next.property === 'project'
     && ast.isImportsFromPoject(context.node)
+}
+
+/**
+ * Trigger characters that are only meaningful for element links in Markdown (`[[fqn]]`, `[[view:id]]`).
+ * When completion is triggered by one of them outside of a link context, nothing is offered,
+ * so typing `[` or `:` elsewhere in the DSL does not open the suggest widget.
+ */
+const MarkdownRefTriggerCharacters = ['[', ':']
+
+/**
+ * Unclosed `[[` followed by FQN-ish characters (and an optional `namespace:`) up to the end of the text.
+ * Escaped `\[[` is a literal and is ignored.
+ */
+const UnclosedRefRegex = /(?<!\\)\[\[([\w.:-]*)$/
+
+const ViewNamespace = 'view:'
+
+/**
+ * Element link being typed under the cursor inside a Markdown string
+ */
+type MarkdownRefContext = {
+  /**
+   * `element` - after `[[`, `view` - after `[[view:`
+   */
+  kind: 'element' | 'view'
+  /**
+   * Text typed between `[[` (or `[[view:`) and the cursor
+   */
+  typed: string
+  /**
+   * Range from right after `[[` (or `[[view:`) to the cursor
+   */
+  range: Range
+  /**
+   * Range from right after `[[` to the cursor (replaced by the `view:` item)
+   */
+  refRange: Range
+  /**
+   * Whether the closing `]]` must be inserted
+   */
+  needsClosing: boolean
 }
 
 const viewSnippet = `view_\${CURRENT_MINUTE}_\${CURRENT_SECOND} {
@@ -34,9 +93,178 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
   }
 
   override readonly completionOptions = {
-    triggerCharacters: ['.', '#'],
+    triggerCharacters: ['.', '#', ...MarkdownRefTriggerCharacters],
     allCommitCharacters: [' ', '\t', '\n'],
   } satisfies CompletionProviderOptions
+
+  override async getCompletion(
+    document: LangiumDocument,
+    params: CompletionParams,
+    cancelToken?: CancellationToken,
+  ): Promise<CompletionList | undefined> {
+    const markdown = this.findMarkdownRefContext(document, params)
+    if (markdown !== undefined) {
+      // Inside a Markdown string only element links are completed, no keywords or other noise
+      if (markdown === null) {
+        return CompletionList.create([], false)
+      }
+      return this.completionForMarkdownRef(projectIdFrom(document), markdown)
+    }
+    if (
+      params.context?.triggerKind === CompletionTriggerKind.TriggerCharacter
+      && MarkdownRefTriggerCharacters.includes(params.context.triggerCharacter ?? '')
+    ) {
+      return CompletionList.create([], false)
+    }
+    return super.getCompletion(document, params, cancelToken)
+  }
+
+  /**
+   * Detects an element link being typed under the cursor.
+   * Langium computes completion at the start of the token when the cursor is inside it,
+   * so for Markdown strings this works on the raw text of the token.
+   *
+   * @returns `undefined` if the cursor is not inside a Markdown string (`'''…'''` or `"""…"""`),
+   *          `null` if it is inside a Markdown string, but not in an unclosed `[[` link,
+   *          otherwise the link context.
+   */
+  protected findMarkdownRefContext(
+    document: LangiumDocument,
+    params: CompletionParams,
+  ): MarkdownRefContext | null | undefined {
+    const root = document.parseResult.value.$cstNode
+    if (!root) {
+      return undefined
+    }
+    const textDocument = document.textDocument
+    const offset = textDocument.offsetAt(params.position)
+    const leaf = CstUtils.findLeafNodeAtOffset(root, offset)
+    if (!leaf || leaf.tokenType.name !== 'MarkdownString') {
+      return undefined
+    }
+    const token = leaf.text
+    // Both ''' and """ are 3 characters
+    const quoteLength = 3
+    const cursor = offset - leaf.offset
+    // Cursor is on the quotes
+    if (cursor < quoteLength || cursor > token.length - quoteLength) {
+      return undefined
+    }
+    const before = token.slice(quoteLength, cursor)
+    const lineStart = before.lastIndexOf('\n') + 1
+    const line = before.slice(lineStart)
+    const match = UnclosedRefRegex.exec(line)
+    if (!match || isInsideCode(before.slice(0, lineStart), line.slice(0, match.index))) {
+      return null
+    }
+    const after = token.slice(cursor, token.length - quoteLength)
+    const needsClosing = !after.startsWith(']]')
+
+    const refText = match[1] ?? ''
+    const refStart = offset - refText.length
+    const refRange = {
+      start: textDocument.positionAt(refStart),
+      end: params.position,
+    }
+    switch (true) {
+      case refText.startsWith(ViewNamespace):
+        return {
+          kind: 'view',
+          typed: refText.slice(ViewNamespace.length),
+          range: {
+            start: textDocument.positionAt(refStart + ViewNamespace.length),
+            end: params.position,
+          },
+          refRange,
+          needsClosing,
+        }
+      // Unknown namespace, nothing to suggest
+      case refText.includes(':'):
+        return null
+      default:
+        return {
+          kind: 'element',
+          typed: refText,
+          range: refRange,
+          refRange,
+          needsClosing,
+        }
+    }
+  }
+
+  /**
+   * Completion for element links in Markdown strings.
+   *
+   * Filtering: the server keeps candidates that contain the typed text as a case-insensitive substring
+   * of the whole FQN (or view id).
+   * VSCode then filters on the client: it fuzzy-matches the text between `textEdit.range.start` and
+   * the cursor against `filterText` (or `label` if absent). With the default
+   * `editor.suggest.matchOnWordStartOnly: true` (`firstMatchCanBeWeak: false` in the fuzzy scorer),
+   * the first typed character must match at a word start (start of the text or after a separator like `.`),
+   * so a match in the middle of a segment (`kend` in `cloud.backend.api`) would be dropped.
+   * That is why `filterText` is the FQN starting from the substring match: it always starts with the typed text.
+   * The list is marked incomplete, so the client asks again on every keystroke and gets fresh `filterText`.
+   */
+  protected completionForMarkdownRef(projectId: ProjectId, ref: MarkdownRefContext): CompletionList {
+    const closing = ref.needsClosing ? ']]' : ''
+    const typed = ref.typed.toLowerCase()
+    const items = [] as CompletionItem[]
+    const seen = new Set<string>()
+    let rank = 0
+
+    const accept = (desc: AstNodeDescription, key: string, detail: string | undefined) => {
+      if (seen.has(key)) {
+        return
+      }
+      seen.add(key)
+      const matchAt = key.toLowerCase().indexOf(typed)
+      if (matchAt < 0) {
+        return
+      }
+      // Matches at the start first, then at the start of a segment, then the rest; keeping the index order
+      const matchRank = matchAt === 0 ? 0 : key[matchAt - 1] === '.' ? 1 : 2
+      items.push({
+        label: key,
+        kind: this.nodeKindProvider.getCompletionItemKind(desc),
+        ...(detail && { detail }),
+        filterText: key.slice(matchAt),
+        sortText: `${matchRank}_${String(rank++).padStart(6, '0')}`,
+        textEdit: TextEdit.replace(ref.range, key + closing),
+        // Do not commit on space: it is regular text inside Markdown
+        commitCharacters: [],
+      })
+    }
+
+    if (ref.kind === 'view') {
+      const views = this.services.shared.workspace.IndexManager.projectElements(projectId, ast.LikeC4View.$type)
+      for (const desc of views) {
+        accept(desc, desc.name, viewDetail(desc))
+      }
+      return CompletionList.create(items, true)
+    }
+
+    for (const desc of this.services.likec4.FqnIndex.elements(projectId)) {
+      accept(desc, desc.id, elementDetail(desc))
+    }
+
+    if (ViewNamespace.startsWith(typed)) {
+      items.push({
+        label: ViewNamespace,
+        kind: CompletionItemKind.Keyword,
+        detail: 'Link to a view',
+        filterText: ViewNamespace,
+        sortText: '9_',
+        textEdit: TextEdit.replace(ref.refRange, ViewNamespace),
+        commitCharacters: [],
+        command: {
+          title: 'Suggest views',
+          command: 'editor.action.triggerSuggest',
+        },
+      })
+    }
+
+    return CompletionList.create(items, true)
+  }
 
   protected override completionFor(
     context: CompletionContext,
@@ -279,4 +507,69 @@ export class LikeC4CompletionProvider extends DefaultCompletionProvider {
       })
     }
   }
+}
+
+/**
+ * Checks whether the link candidate is inside inline code or a fenced code block,
+ * where links are not processed.
+ *
+ * @param linesBefore - Markdown text before the current line
+ * @param lineBefore - text of the current line before `[[`
+ */
+function isInsideCode(linesBefore: string, lineBefore: string): boolean {
+  const fences = linesBefore.split('\n').filter(line => /^\s*(```|~~~)/.test(line)).length
+  if (fences % 2 === 1) {
+    return true
+  }
+  const backticks = lineBefore.match(/(?<!\\)`/g)?.length ?? 0
+  return backticks % 2 === 1
+}
+
+function readTitle(value: ast.MarkdownOrString | string | undefined): string | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+  const title = toSingleLine(value)
+  if (typeof title === 'string') {
+    return title || undefined
+  }
+  return ('md' in title ? title.md : title.txt) || undefined
+}
+
+/**
+ * Title and kind of the element
+ */
+function elementDetail(desc: AstNodeDescription): string | undefined {
+  const node = desc.node
+  if (!ast.isElement(node)) {
+    return undefined
+  }
+  const kind = node.kind.$refText
+  const titleProp = node.body?.props.find(p => ast.isElementStringProperty(p) && p.key === 'title')
+  const title = ast.isElementStringProperty(titleProp) ? readTitle(titleProp.value) : readTitle(node.props[0])
+  return title ? `${title} (${kind})` : kind
+}
+
+/**
+ * Title and type of the view
+ */
+function viewDetail(desc: AstNodeDescription): string | undefined {
+  const node = desc.node
+  if (!ast.isLikeC4View(node)) {
+    return undefined
+  }
+  const titleProp = node.body?.props.find(p => ast.isViewStringProperty(p) && p.key === 'title')
+  const title = ast.isViewStringProperty(titleProp) ? readTitle(titleProp.value) : undefined
+  let kind: string
+  switch (true) {
+    case ast.isDynamicView(node):
+      kind = 'dynamic view'
+      break
+    case ast.isDeploymentView(node):
+      kind = 'deployment view'
+      break
+    default:
+      kind = 'view'
+  }
+  return title ? `${title} (${kind})` : kind
 }
