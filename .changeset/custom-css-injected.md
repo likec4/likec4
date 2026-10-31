@@ -1,5 +1,6 @@
 ---
 '@likec4/config': patch
+'@likec4/vite-plugin': patch
 '@likec4/core': patch
 '@likec4/diagram': patch
 'likec4': patch

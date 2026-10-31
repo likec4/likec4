@@ -1,12 +1,45 @@
 import { LikeC4Model } from '@likec4/core/model'
 import JSON5 from 'json5'
+import { access } from 'node:fs/promises'
+import { resolve } from 'pathe'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectData, type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
 
-const projectModelCode = (model: LikeC4Model.Layouted) => `
+/**
+ * Absolute paths of the files in `styles.customCss`.
+ * A file that can't be read is left out, the config loader has already warned about it.
+ */
+const customCssFiles = async ({ config, folder }: ProjectData): Promise<string[]> => {
+  const files = (config.styles?.customCss?.paths ?? []).map(path => resolve(folder.fsPath, path))
+  const readable = await Promise.all(files.map(file => access(file).then(() => true, () => false)))
+  return files.filter((_, i) => readable[i])
+}
+
+/**
+ * Custom CSS goes through Vite instead of using the content read by the config loader:
+ * Vite inlines `@import`, resolves `url()` against the CSS file, and updates the model when a file changes.
+ */
+const modelDataCode = ($data: LikeC4Model.Layouted['$data'], cssFiles: string[]) => {
+  if (cssFiles.length === 0) {
+    return { imports: '', data: JSON5.stringify($data) }
+  }
+  const styles = { ...$data.project.styles, customCss: { content: '' } }
+  return {
+    imports: cssFiles.map((file, i) => `import customCss${i} from ${JSON.stringify(`${file}?inline`)}`).join('\n'),
+    data: `(data => {
+  data.project.styles.customCss.content = [${cssFiles.map((_, i) => `customCss${i}`).join(', ')}].join('\\n')
+  return data
+})(${JSON5.stringify({ ...$data, project: { ...$data.project, styles } })})`,
+  }
+}
+
+const projectModelCode = (model: LikeC4Model.Layouted, cssFiles: string[]) => {
+  const { imports, data } = modelDataCode(model.$data, cssFiles)
+  return `
 import { createHooksForModel, atom } from 'likec4/vite-plugin/internal'
+${imports}
 
-export let $likec4data = atom(${JSON5.stringify(model.$data)})
+export let $likec4data = atom(${data})
 
 export let {
   updateModel,
@@ -30,6 +63,7 @@ if (import.meta.hot) {
   })
 }
 `
+}
 
 export const projectModelModule: ProjectVirtualModule = {
   ...generateMatches('model'),
@@ -37,7 +71,7 @@ export const projectModelModule: ProjectVirtualModule = {
     logGenerating('model', project.id)
     const model = await likec4.layoutedModel(project.id)
     return {
-      code: projectModelCode(model),
+      code: projectModelCode(model, await customCssFiles(project)),
       moduleType: 'js',
     }
   },
