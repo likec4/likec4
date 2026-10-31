@@ -139,12 +139,12 @@ catalogs:
     langium: 4.4.0
     langium-cli: 4.4.0
   mantine:
-    "@mantine/colors-generator": 9.7.3
-    "@mantine/core": 9.7.3
-    "@mantine/hooks": 9.7.3
-    "@mantine/modals": 9.7.3
-    "@mantine/notifications": 9.7.3
-    "@mantine/vanilla-extract": 9.7.3
+    "@mantine/colors-generator": 9.7.4
+    "@mantine/core": 9.7.4
+    "@mantine/hooks": 9.7.4
+    "@mantine/modals": 9.7.4
+    "@mantine/notifications": 9.7.4
+    "@mantine/vanilla-extract": 9.7.4
   mcp:
     "@modelcontextprotocol/sdk": ^1.32.1
     "@modelcontextprotocol/ext-apps": "^1.7.5"
