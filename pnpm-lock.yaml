@@ -283,8 +283,8 @@ catalogs:
       specifier: ^5.3.0
       version: 5.3.0
     '@material-symbols/svg-400':
-      specifier: ^0.48.0
-      version: 0.48.0
+      specifier: ^0.48.2
+      version: 0.48.2
     '@types/fontkit':
       specifier: ^2.0.9
       version: 2.0.9
@@ -1611,7 +1611,7 @@ importers:
         version: link:../../devops
       '@material-symbols/svg-400':
         specifier: 'catalog:'
-        version: 0.48.0
+        version: 0.48.2
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -5239,8 +5239,8 @@ packages:
     resolution: {integrity: sha512-6QEf6yqFbETdwGITKq57aYoPfX/3K8XFNwsAlx0C1M7o8cb79sv1M3w+tWuWvIcSbNqrLF7OD7YpZMVVz335hQ==}
     engines: {node: '>=20.0.0'}
 
-  '@material-symbols/svg-400@0.48.0':
-    resolution: {integrity: sha512-W20MjbiDbLJQ5yi4CPz2y6lCZ9bk3pJ1d5Ra+uErvtj/guVrCNfcYyMZn3KqHpDyyKVfBGkuGHVcdi5h+5+EqA==}
+  '@material-symbols/svg-400@0.48.2':
+    resolution: {integrity: sha512-JJXRvRoHhMbrSFQIkiUwjFkCnurH0Yg+cGMCn9xS0PRtLXovIAQCz7NltNn/teQ9VRYmbzZB75Uw6Hx0umu5Bg==}
 
   '@microsoft/1ds-core-js@4.4.1':
     resolution: {integrity: sha512-utqwacfUkiGJROn4WC7aNdRBsRxwhNWXuqaJM2B0N0WHmv1+IhSuI7RQ3FHwxRP1dxZi/xn9aELMZ7HMStsW1w==}
@@ -12891,7 +12891,7 @@ snapshots:
       tinyglobby: 0.2.17
       yaml: 2.9.1
 
-  '@material-symbols/svg-400@0.48.0': {}
+  '@material-symbols/svg-400@0.48.2': {}
 
   '@microsoft/1ds-core-js@4.4.1(tslib@2.8.1)':
     dependencies:
