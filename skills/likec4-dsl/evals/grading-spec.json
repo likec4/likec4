@@ -543,6 +543,20 @@
         "The corrected snippet is minimal and syntactically valid LikeC4 DSL."
       ],
       "grading_guidance": "This is a contrastive placement-rule eval. The exact opening verdict `Invalid.` and the alt-branch rule are the primary signals. Reject answers that call the snippet valid, or that 'fix' it by removing the `loop` or by dropping the `alt` block entirely instead of nesting the loop inside a branch. `if` is an accepted alias for `when`."
+    },
+    {
+      "id": 39,
+      "expected_output": "The response starts with a `description '''…'''` snippet that uses `[[cloud.ui]]`, `[[view:index]]` and, inside the table, `[[cloud.ui\\\\|Frontend]]`, then states that a missing target is a validation warning, not an error.",
+      "files": [],
+      "expectations": [
+        "The response starts with the snippet (snippet-first), not prose.",
+        "The `description` uses a triple-quoted Markdown string (`'''` or `\"\"\"`), not a plain `'…'` string.",
+        "The sentence link is `[[cloud.ui]]` (full FQN, no label), so the element title is rendered.",
+        "The view link is `[[view:index]]`.",
+        "The table cell link escapes the label separator as `\\\\|`: `[[cloud.ui\\\\|Frontend]]`.",
+        "The response says a link to a missing element or view produces a warning (the model still builds; `likec4 validate` does not fail on it)."
+      ],
+      "grading_guidance": "Primary signals are the triple-quoted Markdown value, `[[view:index]]`, and the `\\\\|` escape inside the table. Reject a bare `|` inside the table cell, a single `\\|`, short names such as `[[ui]]`, `this`, or a Markdown `[text](url)` link instead of `[[…]]`. Do not require the `Frontend` label outside the table. Claiming that a broken link is a validation error is wrong."
     }
   ],
   "default_execution_checks": [
