@@ -33,6 +33,27 @@ const isErrorDiagnostic = (diagnostic: { severity?: number }): boolean => {
   return diagnostic.severity === 1
 }
 
+const isWarningDiagnostic = (diagnostic: { severity?: number }): boolean => {
+  return diagnostic.severity === 2
+}
+
+/**
+ * Validation diagnostic of a workspace document, as returned by
+ * {@link LikeC4.getErrors} and {@link LikeC4.getWarnings}
+ */
+export interface LikeC4Diagnostic {
+  message: string
+  /**
+   * Zero-based line of the diagnostic start, same as `range.start.line`
+   */
+  line: number
+  range: {
+    start: { line: number; character: number }
+    end: { line: number; character: number }
+  }
+  sourceFsPath: string
+}
+
 export class LikeC4 {
   protected readonly langium: LikeC4Langium
 
@@ -287,19 +308,26 @@ Please specify a project folder`)
     return await this.languageServices.layoutedModel(projectId)
   }
 
-  getErrors(): Array<{
-    message: string
-    line: number
-    range: {
-      start: { line: number; character: number }
-      end: { line: number; character: number }
-    }
-    sourceFsPath: string
-  }> {
+  /**
+   * Returns validation errors of all documents in the workspace
+   */
+  getErrors(): LikeC4Diagnostic[] {
+    return this.collectDiagnostics(isErrorDiagnostic)
+  }
+
+  /**
+   * Returns validation warnings of all documents in the workspace.
+   * Warnings do not make the model invalid, see {@link getErrors}
+   */
+  getWarnings(): LikeC4Diagnostic[] {
+    return this.collectDiagnostics(isWarningDiagnostic)
+  }
+
+  private collectDiagnostics(predicate: (diagnostic: { severity?: number }) => boolean): LikeC4Diagnostic[] {
     const docs = [...this.LangiumDocuments.userDocuments]
     return docs.flatMap(doc => {
-      const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
-      return errors.map(({ message, range }) => ({
+      const diagnostics = doc.diagnostics?.filter(predicate) ?? []
+      return diagnostics.map(({ message, range }) => ({
         message: typeof message === 'string' ? message : message.value,
         line: range.start.line,
         range,
