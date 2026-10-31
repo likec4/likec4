@@ -44,7 +44,7 @@ catalog:
   '@chenglou/pretext': 1.0.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.3.0
-  '@material-symbols/svg-400': ^0.48.0
+  '@material-symbols/svg-400': ^0.48.2
   '@types/fontkit': ^2.0.9
   "@types/node": ~22.20.5
   "@types/pako": ^2.0.4
