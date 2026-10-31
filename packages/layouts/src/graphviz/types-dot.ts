@@ -170,7 +170,9 @@ export namespace GraphvizJson {
     fontsize: string
     likec4_id?: EdgeId
     label: string
-    lp: string
+    lp?: string
+    // xlabel position
+    xlp?: string
     nojustify?: 'true' | 'false'
     pos?: string
   }
