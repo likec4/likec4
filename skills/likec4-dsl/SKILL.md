@@ -119,6 +119,7 @@ pnpm dlx likec4 validate --json --no-layout --file <edited-file> <project-dir>
 - `--json` — structured output (stdout), logging goes to stderr
 - `--no-layout` — skip layout drift checks (faster, only syntax+semantic)
 - `--file <path>` — use with `--json` to scope results to the edited files. Without `--json`, text output still prints all diagnostics. Repeat once per edited source file.
+- `--max-warnings <n>` — fail (`valid: false`, exit code 1) when there are more than `n` warnings; `0` fails on any warning. Without it, warnings never fail validation.
 - `<project-dir>` — path to the project directory
 - There is **no** `likec4 check` command; use `likec4 validate`.
 
@@ -139,11 +140,15 @@ Example output:
       "range": { "start": { "line": 5, "character": 2 }, "end": { "line": 5, "character": 20 } }
     }
   ],
+  "warnings": [], // same shape as errors
+  "maxWarnings": null, // value of --max-warnings, null when not given
   "stats": {
     "totalFiles": 100, // Total number of files in the project
     "totalErrors": 500, // Total number of errors in the project
+    "totalWarnings": 3, // Total number of warnings in the project
     "filteredFiles": 1, // Number of files that match the --file filter
-    "filteredErrors": 1 // Number of errors in the filtered files
+    "filteredErrors": 1, // Number of errors in the filtered files
+    "filteredWarnings": 0 // Number of warnings in the filtered files
   }
 }
 ```
@@ -155,6 +160,7 @@ Field semantics (must be explicit in answers):
 - `filteredFiles`: count of files actually included by repeated `--file` filters
 - `filteredErrors`: errors in the filtered subset only
 - `totalErrors`: errors across the full project model
+- `filteredWarnings`: warnings in the filtered subset only; `--max-warnings` limits this count
 
 Example edge case: if you pass 3 files but one is `likec4.config.json`, `filteredFiles` may be `2` because config JSON is not a `.c4`/`.likec4` source file for DSL validation.
 
@@ -409,21 +415,21 @@ When a model errors or an eval answer seems wrong, load `references/troubleshoot
 
 Load a reference file when the task involves the corresponding topic. Claude reads SKILL.md first; these files are loaded on demand only when needed.
 
-| File                                         | Purpose — load when...                                                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `references/specification.md`                | Writing/editing `specification { }` blocks, defining element/deploymentNode/relationship/tag/color kinds                        |
-| `references/model.md`                        | Writing/editing `model { }` blocks, element hierarchy, relationships, `extend` patterns, property names                         |
-| `references/deployment.md`                   | Writing/editing `deployment { }` blocks, `instanceOf`, named instances, multi-environment topology, deployment metadata filters |
-| `references/style-tokens-colors.md`          | Applying colors, shapes, icons, or relationship line styles; need exact token names                                             |
-| `references/views.md`                        | Writing views, include/exclude rules, style rules in views, groups, autoLayout, global predicates                               |
-| `references/predicates.md`                   | Complex `where` conditions, metadata filters, `with` overrides, global predicate groups, reusable predicates                    |
-| `references/include-predicates-wildcards.md` | Wildcard confusion suspected (`*` vs `_` vs `**`); need exact scoped-view semantics                                             |
+| File                                         | Purpose — load when...                                                                                                                    |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `references/specification.md`                | Writing/editing `specification { }` blocks, defining element/deploymentNode/relationship/tag/color kinds                                  |
+| `references/model.md`                        | Writing/editing `model { }` blocks, element hierarchy, relationships, `extend` patterns, property names                                   |
+| `references/deployment.md`                   | Writing/editing `deployment { }` blocks, `instanceOf`, named instances, multi-environment topology, deployment metadata filters           |
+| `references/style-tokens-colors.md`          | Applying colors, shapes, icons, or relationship line styles; need exact token names                                                       |
+| `references/views.md`                        | Writing views, include/exclude rules, style rules in views, groups, autoLayout, global predicates                                         |
+| `references/predicates.md`                   | Complex `where` conditions, metadata filters, `with` overrides, global predicate groups, reusable predicates                              |
+| `references/include-predicates-wildcards.md` | Wildcard confusion suspected (`*` vs `_` vs `**`); need exact scoped-view semantics                                                       |
 | `references/dynamic-views.md`                | Writing dynamic views: steps, return arrows, chained steps, flow-control blocks (`parallel`/`opt`/`loop`/`alt`/`try`), `variant sequence` |
-| `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                                             |
-| `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                                             |
-| `references/diffs.md`                        | Planned model changes (`diff` blocks), applying or discarding them, safe delete of elements                                     |
-| `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells                 |
-| `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                                             |
-| `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                                                  |
-| `references/examples.md`                     | Compact real-world examples: extend, groups, globals, dynamic views, deployment, rank                                           |
-| `references/troubleshooting.md`              | Errors, unexpected output, eval failures — 6 error tables, 5-step debug workflow, 7 best practices                              |
+| `references/identifier-validity.md`          | Identifier vs FQN confusion; "dots in names" errors; understanding FQN construction                                                       |
+| `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                                                       |
+| `references/diffs.md`                        | Planned model changes (`diff` blocks), applying or discarding them, safe delete of elements                                               |
+| `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells                           |
+| `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                                                       |
+| `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                                                            |
+| `references/examples.md`                     | Compact real-world examples: extend, groups, globals, dynamic views, deployment, rank                                                     |
+| `references/troubleshooting.md`              | Errors, unexpected output, eval failures — 6 error tables, 5-step debug workflow, 7 best practices                                        |

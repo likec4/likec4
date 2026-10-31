@@ -258,13 +258,29 @@ Together with [Export to DrawIO](#export-to-drawio), this allows teams to reuse 
 
 ```sh
 likec4 validate
+
+# Fail on any warning (e.g. in CI)
+likec4 validate --max-warnings 0
+
+# Structured output, only for the given files
+likec4 validate --json --file src/model.c4
 ```
 
 This command checks for:
-- Syntax errors
+- Syntax and semantic errors
 - Layout drift (outdated manual layout)
 
-If any errors are found, the command exits with a non-zero return code.
+Warnings are printed, but do not fail validation unless `--max-warnings` is given.
+If any errors are found, or there are more warnings than `--max-warnings` allows, the command exits with a non-zero return code.
+
+| Option              | Description                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `path`              | Path to workspace (default: current directory)                                      |
+| `--project, -p`     | Project to validate layout drifts of (in a multi-project workspace)                 |
+| `--file, -f`        | Only report errors and warnings from these files (repeatable)                       |
+| `--no-layout`       | Skip layout drift validation                                                        |
+| `--max-warnings`    | Fail when there are more warnings than this number, `0` fails on any warning (default: unlimited) |
+| `--json`            | Output as JSON: `valid`, `errors`, `warnings`, `maxWarnings` and `stats` with error and warning counts |
 
 ### Format
 
