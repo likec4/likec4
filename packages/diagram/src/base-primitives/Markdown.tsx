@@ -2,7 +2,7 @@ import type { RichTextOrEmpty as RichTextType } from '@likec4/core/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
-import type { Tokens } from '@likec4/styles/tokens'
+import { type Tokens, token } from '@likec4/styles/tokens'
 import { Popover, PopoverDropdown, Text, usePopoverContext } from '@mantine/core'
 import {
   type ComponentPropsWithoutRef,
@@ -320,6 +320,8 @@ function useMarkdownRefsInteractivity(
         position="bottom-start"
         offset={6}
         shadow="md"
+        // Above dropdowns and panels that host Markdown (e.g. relationship popover)
+        zIndex={token.var('zIndex.tooltip')}
         withRoles={false}
         trapFocus={false}
         returnFocus={false}
