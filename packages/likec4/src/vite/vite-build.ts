@@ -127,7 +127,8 @@ export async function viteBuild({
 
   if (projects.length === 1) {
     const computed = await languageServices.viewsService.computedViews()
-    const diagrams = await languageServices.diagrams()
+    const model = await languageServices.layoutedModel()
+    const diagrams = [...model.views()].map(vm => vm.$layouted)
     if (diagrams.length === 0) {
       process.exitCode = 1
       throw new Error('no views found')
@@ -175,7 +176,8 @@ export async function viteBuild({
         config.customLogger.info(`${k.dim('project:')} ${project.id} ${k.green(`${computed.length} views`)}`)
       }
 
-      const diagrams = await languageServices.diagrams(project.id)
+      const model = await languageServices.layoutedModel(project.id)
+      const diagrams = [...model.views()].map(vm => vm.$layouted)
       const landingPage = project.config.landingPage
       if (landingPage && ('include' in landingPage || 'exclude' in landingPage)) {
         const patterns = 'include' in landingPage ? landingPage.include : landingPage.exclude

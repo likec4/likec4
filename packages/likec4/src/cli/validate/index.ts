@@ -86,8 +86,9 @@ const validateCmd = (yargs: yargs.Argv) => {
         if (enableLayout) {
           logger.debug('running layout validation...')
           try {
-            const views = await languageServices.diagrams(args.project)
-            for (const view of views) {
+            const model = await languageServices.layoutedModel(args.project)
+            for (const vm of model.views()) {
+              const view = vm.$layouted
               if (view.drifts && view.drifts.length > 0) {
                 layoutErrors.push({
                   message: `Layout drift detected on view '${view.id}'`,

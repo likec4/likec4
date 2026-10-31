@@ -108,6 +108,9 @@ export namespace FetchViewsFromAllProjects {
  * Request to fetch the layouted model data
  * If LSP has multiple projects, the projectId is required.
  * otherwise throws an error.
+ *
+ * Views in `model.views` are auto-layouted, manual layouts are in `model.manualLayouts`.
+ * Use `LikeC4Model.create(model).view(id).$layouted` to get a view with manual layout applied.
  */
 export namespace FetchLayoutedModel {
   export type Params = {
