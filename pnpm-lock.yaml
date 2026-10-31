@@ -391,8 +391,8 @@ catalogs:
       version: 4.6.7
   hono:
     '@hono/mcp':
-      specifier: ^0.3.2
-      version: 0.3.2
+      specifier: ^0.3.5
+      version: 0.3.5
     '@hono/node-server':
       specifier: ^2.1.5
       version: 2.1.5
@@ -2612,7 +2612,7 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)
+        version: 0.3.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)
       '@hono/node-server':
         specifier: catalog:hono
         version: 2.1.5(hono@4.13.13)
@@ -4657,12 +4657,12 @@ packages:
       '@modelcontextprotocol/sdk':
         optional: true
 
-  '@hono/mcp@0.3.2':
-    resolution: {integrity: sha512-IJQ4RazhwFLRwcTM95Dj9YfNBYXwOQzd1IfnDy4S3hiaBbtnVY0sWiT83auOOnhaCiE0TTbud4JV9UD30zknXA==}
+  '@hono/mcp@0.3.5':
+    resolution: {integrity: sha512-CquYSjbl9BuprbMMjvgO2owK7kdEA9wh2CJqAjn1Zk2QAM24y2OBSv5gz5O8jHCp39ae4dgIxOSonEVR+2PpJQ==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.29.0
       hono: '*'
-      hono-rate-limiter: ^0.5.3
+      hono-rate-limiter: ^0.5.4
       zod: ^3.25.0 || ^4.0.0
 
   '@hono/node-server@2.1.5':
@@ -8197,8 +8197,8 @@ packages:
   hmac-drbg@1.0.1:
     resolution: {integrity: sha512-Tti3gMqLdZfhOQY1Mzf/AanLiqh1WTiJgEj26ZuYQ9fbkLomzGchCws4FyrSd4VkpBfiNhaE1On+lOz894jvXg==}
 
-  hono-rate-limiter@0.5.3:
-    resolution: {integrity: sha512-M0DxbVMpPELEzLi0AJg1XyBHLGJXz7GySjsPoK+gc5YeeBsdGDGe+2RvVuCAv8ydINiwlbxqYMNxUEyYfRji/A==}
+  hono-rate-limiter@0.5.4:
+    resolution: {integrity: sha512-P3/cscAmz1hA+MuM+Hn9gP/EyO2zWv2aXIFkVYuLZkPzrPa4oaWdVCS94vyDlsNBgeMnE/Hr2+LznIKQxrF0ng==}
     peerDependencies:
       hono: ^4.10.8
       unstorage: ^1.17.3
@@ -12385,11 +12385,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)':
+  '@hono/mcp@0.3.5(@modelcontextprotocol/sdk@1.32.1(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.13)(unstorage@1.17.5))(hono@4.13.13)(zod@4.6.7)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.1.0)(zod@4.6.7)
       hono: 4.13.13
-      hono-rate-limiter: 0.5.3(hono@4.13.13)(unstorage@1.17.5)
+      hono-rate-limiter: 0.5.4(hono@4.13.13)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
       zod: 4.6.7
 
@@ -16117,7 +16117,7 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.5.3(hono@4.13.13)(unstorage@1.17.5):
+  hono-rate-limiter@0.5.4(hono@4.13.13)(unstorage@1.17.5):
     dependencies:
       hono: 4.13.13
     optionalDependencies:
