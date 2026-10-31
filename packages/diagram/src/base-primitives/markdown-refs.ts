@@ -1,5 +1,5 @@
 import type { LikeC4Model } from '@likec4/core/model'
-import type { Fqn, RichTextOrEmpty, ViewId } from '@likec4/core/types'
+import type { Fqn, IconUrl, RichTextOrEmpty, ViewId, ViewType } from '@likec4/core/types'
 
 /**
  * Ref anchor, as rendered by `markdownToHtml` from `@likec4/core`:
@@ -40,8 +40,8 @@ export type ResolvedMarkdownRef =
   /**
    * Target exists and can be opened (element details or navigation)
    */
-  | { state: 'link'; kind: 'element'; fqn: Fqn; text: string; preview: MarkdownRefPreview }
-  | { state: 'link'; kind: 'view'; viewId: ViewId; text: string; preview: MarkdownRefPreview }
+  | { state: 'link'; kind: 'element'; fqn: Fqn; icon: IconUrl | null; text: string; preview: MarkdownRefPreview }
+  | { state: 'link'; kind: 'view'; viewId: ViewId; viewType: ViewType; text: string; preview: MarkdownRefPreview }
   /**
    * Target exists, but opening it is not available (canvas, disabled feature, or no model)
    */
@@ -90,6 +90,7 @@ export function createMarkdownRefResolver(
           state: 'link',
           kind: 'element',
           fqn: element.id,
+          icon: element.icon,
           text,
           preview: {
             title: element.title,
@@ -114,6 +115,7 @@ export function createMarkdownRefResolver(
           state: 'link',
           kind: 'view',
           viewId: view.id,
+          viewType: view._type,
           text,
           preview: {
             title: text,

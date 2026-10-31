@@ -3,7 +3,7 @@ import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
 import { type Tokens, token } from '@likec4/styles/tokens'
-import { Popover, PopoverDropdown, Text, usePopoverContext } from '@mantine/core'
+import { Button, Popover, PopoverDropdown, Text, usePopoverContext } from '@mantine/core'
 import {
   type ComponentPropsWithoutRef,
   type FocusEvent,
@@ -19,6 +19,8 @@ import {
   useRef,
   useState,
 } from 'react'
+import { ViewIcon } from '../components/ViewIcon'
+import { IconRenderer } from '../context/IconRenderer'
 import { useOptionalLikeC4Model } from '../context/LikeC4ModelContext'
 import { type MarkdownRefActions, MarkdownRefsProvider, useMarkdownRefActions } from '../context/MarkdownRefsContext'
 import { useRootContainerContext } from '../context/RootContainerContext'
@@ -159,6 +161,8 @@ type DelegatedHandlers = Pick<
   'onClick' | 'onKeyDown' | 'onMouseOver' | 'onMouseOut' | 'onFocus' | 'onBlur'
 >
 
+type LinkRef = Extract<ResolvedMarkdownRef, { state: 'link' }>
+
 type ActiveRef = {
   element: HTMLElement
   resolved: Exclude<ResolvedMarkdownRef, { state: 'text' }>
@@ -252,6 +256,18 @@ function useMarkdownRefsInteractivity(
     }
   }
 
+  const openRef = (resolved: LinkRef) => {
+    close(0)
+    switch (resolved.kind) {
+      case 'element':
+        actions.openElement?.(resolved.fqn)
+        break
+      case 'view':
+        actions.openView?.(resolved.viewId)
+        break
+    }
+  }
+
   /**
    * @returns true if the event activated a ref
    */
@@ -264,15 +280,7 @@ function useMarkdownRefsInteractivity(
     }
     e.preventDefault()
     e.stopPropagation()
-    close(0)
-    switch (resolved.kind) {
-      case 'element':
-        actions.openElement?.(resolved.fqn)
-        break
-      case 'view':
-        actions.openView?.(resolved.viewId)
-        break
-    }
+    openRef(resolved)
     return true
   }
 
@@ -344,7 +352,7 @@ function useMarkdownRefsInteractivity(
           onPointerDown={stopPropagation}
           onMouseDown={stopPropagation}
         >
-          <MarkdownRefPreviewCard resolved={active.resolved} />
+          <MarkdownRefPreviewCard resolved={active.resolved} onOpen={openRef} />
         </PopoverDropdown>
       </Popover>
     ),
@@ -368,6 +376,30 @@ const previewStyles = css({
   paddingY: '2',
 })
 
+const previewHeaderStyles = css({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: '2',
+})
+
+const previewIconStyles = css({
+  flex: '[0 0 20px]',
+  boxSize: '[20px]',
+  marginTop: '[1px]',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '& :where(svg, img)': {
+    width: '100%',
+    height: 'auto',
+    maxHeight: '100%',
+    pointerEvents: 'none',
+  },
+  '& img': {
+    objectFit: 'contain',
+  },
+})
+
 const previewBodyStyles = css({
   marginTop: '1.5',
   lineClamp: '4',
@@ -379,24 +411,49 @@ const previewBodyStyles = css({
 /**
  * Content of the preview card of a ref (exported for tests)
  */
-export function MarkdownRefPreviewCard({ resolved }: { resolved: ActiveRef['resolved'] }) {
+export function MarkdownRefPreviewCard({
+  resolved,
+  onOpen,
+}: {
+  resolved: ActiveRef['resolved']
+  onOpen?: ((resolved: LinkRef) => void) | undefined
+}) {
   if (resolved.state === 'missing') {
     return <Text fz="xs" c="dimmed">{resolved.message}</Text>
   }
   const { title, meta, body } = resolved.preview
+  const icon = resolved.kind === 'element'
+    ? <IconRenderer element={{ id: resolved.fqn, title, icon: resolved.icon }} className={previewIconStyles} />
+    : (
+      <div className={previewIconStyles}>
+        <ViewIcon type={resolved.viewType} size={16} />
+      </div>
+    )
   return (
     <>
-      <Text fz="sm" fw={600} lh={1.3}>{title}</Text>
-      <Text fz="xs" c="dimmed" mt={2}>{meta}</Text>
+      <div className={previewHeaderStyles}>
+        {icon}
+        <Box minW="0">
+          <Text fz="sm" fw={600} lh={1.3}>{title}</Text>
+          <Text fz="xs" c="dimmed" mt={2}>{meta}</Text>
+        </Box>
+      </div>
       {body.nonEmpty && (
         // Refs inside the preview are plain text: no nested previews and clicks
         <MarkdownRefsProvider value={null}>
-          <Markdown value={body} fontSize="sm" className={previewBodyStyles} />
+          <Markdown value={body} fontSize="sm" textScale={0.8} className={previewBodyStyles} />
         </MarkdownRefsProvider>
       )}
-      <Text fz="xs" c="dimmed" mt="xs">
-        {resolved.kind === 'element' ? 'Click to open details' : 'Click to open view'}
-      </Text>
+      {onOpen && (
+        <Button
+          size="compact-xs"
+          variant="light"
+          mt="xs"
+          onClick={() => onOpen(resolved)}
+        >
+          {resolved.kind === 'element' ? 'Open details' : 'Open view'}
+        </Button>
+      )}
     </>
   )
 }

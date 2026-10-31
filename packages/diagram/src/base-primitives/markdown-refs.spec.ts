@@ -38,6 +38,7 @@ describe('createMarkdownRefResolver', () => {
       state: 'link',
       kind: 'element',
       fqn: 'cloud.api',
+      icon: null,
       text: 'Public <API> & "Co"',
       preview: {
         title: 'Public <API> & "Co"',
@@ -55,6 +56,7 @@ describe('createMarkdownRefResolver', () => {
       state: 'link',
       kind: 'view',
       viewId: 'index',
+      viewType: 'element',
       text: 'Landscape',
       preview: { title: 'Landscape', meta: 'element view' },
     })
