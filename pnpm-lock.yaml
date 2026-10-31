@@ -518,8 +518,8 @@ catalogs:
       specifier: ^0.4.4
       version: 0.4.4
     '@types/chroma-js':
-      specifier: ^3.1.2
-      version: 3.1.2
+      specifier: ^3.1.3
+      version: 3.1.3
     '@types/natural-compare-lite':
       specifier: ^1.4.2
       version: 1.4.2
@@ -1261,7 +1261,7 @@ importers:
         version: 1.0.4
       '@types/chroma-js':
         specifier: catalog:utils
-        version: 3.1.2
+        version: 3.1.3
       '@types/extend':
         specifier: 3.0.4
         version: 3.0.4
@@ -6562,8 +6562,8 @@ packages:
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
-  '@types/chroma-js@3.1.2':
-    resolution: {integrity: sha512-YBTQqArPN8A0niHXCwrO1z5x++a+6l0mLBykncUpr23oIPW7L4h39s6gokdK/bDrPmSh8+TjMmrhBPnyiaWPmQ==}
+  '@types/chroma-js@3.1.3':
+    resolution: {integrity: sha512-r4kI3HTbLdayBkY1f2Xv7/1TJaHTS//8f6Etv036NQMIj2jVPngUV11NczKiLFKyy01o6hGYVDypP7tJVoFPew==}
 
   '@types/d3-color@3.1.3':
     resolution: {integrity: sha512-iO90scth9WAbmgv7ogoq57O9YpKmFBbmoEoCHDB2xMBY0+/KVrqAaCDyCE16dUspeOvIxFFRI+0sEtqDqy2b4A==}
@@ -14211,7 +14211,7 @@ snapshots:
       '@types/deep-eql': 4.0.2
       assertion-error: 2.0.1
 
-  '@types/chroma-js@3.1.2': {}
+  '@types/chroma-js@3.1.3': {}
 
   '@types/d3-color@3.1.3': {}
 
