@@ -78,6 +78,14 @@ export {
 export { objectHash } from './object-hash'
 export { stringHash } from './string-hash'
 
-export { extractRefs, type MarkdownRef, markdownToHtml, markdownToText } from './markdown'
+export {
+  extractRefs,
+  type MarkdownRef,
+  markdownRefText,
+  type MarkdownRefTitleResolver,
+  markdownToHtml,
+  markdownToText,
+  resolveMarkdownRefs,
+} from './markdown'
 
 export { unsafePartial } from './unsafe'

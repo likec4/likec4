@@ -1,4 +1,5 @@
 export { extractRefs } from './extract-refs'
+export { markdownRefText, resolveMarkdownRefs } from './resolve-refs'
 export { markdownToHtml } from './to-html'
 export { markdownToText } from './to-text'
-export type { MarkdownRef } from './types'
+export type { MarkdownRef, MarkdownRefTitleResolver } from './types'

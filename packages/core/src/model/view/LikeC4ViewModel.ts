@@ -191,7 +191,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.#view.description)
+    return RichText.memoize(this, 'description', this.#view.description, this.$model.resolveMarkdownRef)
   }
 
   get tags(): aux.Tags<A> {
