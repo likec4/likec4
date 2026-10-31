@@ -181,7 +181,7 @@ catalogs:
     rolldown: ^1.2.16
     oxc-transform-react: ^0.156.0
   utils:
-    "@logtape/logtape": ^2.4.1
+    "@logtape/logtape": ^2.4.2
     "@lume/kiwi": ^0.4.4
     "@types/chroma-js": ^3.1.2
     "@types/natural-compare-lite": ^1.4.2
