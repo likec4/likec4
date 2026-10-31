@@ -361,10 +361,6 @@ catalogs:
     esbuild-node-externals:
       specifier: 2.0.0
       version: 2.0.0
-  esbuild-wasm:
-    esbuild:
-      specifier: npm:esbuild-wasm@0.28.2
-      version: 0.28.2
   externals:
     '@hpcc-js/wasm-graphviz':
       specifier: 1.29.2
@@ -372,15 +368,15 @@ catalogs:
     '@types/picomatch':
       specifier: ^4.0.3
       version: 4.0.3
-    bundle-require:
-      specifier: ^5.1.0
-      version: 5.1.0
     chokidar:
       specifier: ^5.0.0
       version: 5.0.0
     fdir:
       specifier: 6.4.0
       version: 6.4.0
+    jiti:
+      specifier: ^2.7.0
+      version: 2.7.0
     nano-spawn:
       specifier: ^2.1.0
       version: 2.1.0
@@ -1183,12 +1179,6 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
-      bundle-require:
-        specifier: catalog:externals
-        version: 5.1.0(esbuild@0.28.2)
-      esbuild:
-        specifier: catalog:esbuild
-        version: 0.28.2
       json5:
         specifier: catalog:utils
         version: 2.2.3
@@ -1211,6 +1201,9 @@ importers:
       defu:
         specifier: catalog:utils
         version: 6.1.7
+      jiti:
+        specifier: catalog:externals
+        version: 2.7.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
@@ -1779,12 +1772,9 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
-      bundle-require:
+      jiti:
         specifier: catalog:externals
-        version: 5.1.0(esbuild@0.28.2)
-      esbuild:
-        specifier: catalog:esbuild
-        version: 0.28.2
+        version: 2.7.0
       langium-cli:
         specifier: catalog:langium
         version: 4.4.0
@@ -2052,21 +2042,18 @@ importers:
       '@vitejs/plugin-react':
         specifier: catalog:vite
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.156.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
-      bundle-require:
-        specifier: catalog:externals
-        version: 5.1.0(esbuild@0.28.2)
       chokidar:
         specifier: catalog:externals
         version: 5.0.0
-      esbuild:
-        specifier: catalog:esbuild
-        version: 0.28.2
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
       immer:
         specifier: catalog:utils
         version: 11.1.21
+      jiti:
+        specifier: catalog:externals
+        version: 2.7.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
@@ -2574,15 +2561,12 @@ importers:
 
   packages/lsp:
     dependencies:
-      bundle-require:
-        specifier: catalog:externals
-        version: 5.1.0(esbuild@0.28.2)
-      esbuild:
-        specifier: catalog:esbuild
-        version: 0.28.2
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
+      jiti:
+        specifier: catalog:externals
+        version: 2.7.0
       picomatch:
         specifier: catalog:externals
         version: 4.0.7
@@ -2641,21 +2625,18 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: catalog:mcp
         version: 1.32.1(supports-color@10.1.0)(zod@4.6.7)
-      bundle-require:
-        specifier: catalog:externals
-        version: 5.1.0(esbuild@0.28.2)
       chokidar:
         specifier: catalog:externals
         version: 5.0.0
-      esbuild:
-        specifier: catalog:esbuild
-        version: 0.28.2
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
       hono:
         specifier: catalog:hono
         version: 4.13.13
+      jiti:
+        specifier: catalog:externals
+        version: 2.7.0
       picomatch:
         specifier: catalog:externals
         version: 4.0.7
@@ -3087,15 +3068,12 @@ importers:
 
   packages/vscode:
     dependencies:
-      bundle-require:
-        specifier: catalog:externals
-        version: 5.1.0(esbuild-wasm@0.28.2)
-      esbuild:
-        specifier: catalog:esbuild-wasm
-        version: esbuild-wasm@0.28.2
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
+      jiti:
+        specifier: catalog:externals
+        version: 2.7.0
       picomatch:
         specifier: catalog:externals
         version: 4.0.7
@@ -7246,12 +7224,6 @@ packages:
   builtin-status-codes@3.0.0:
     resolution: {integrity: sha512-HpGFw18DgFWlncDfjTa2rcQ4W88O1mC8e8yZ2AvQY5KDaktSTwo+KRf6nHK6FRI5FyRyb/5T6+TSxfP7QyGsmQ==}
 
-  bundle-require@5.1.0:
-    resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    peerDependencies:
-      esbuild: '>=0.18'
-
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
@@ -7800,11 +7772,6 @@ packages:
     engines: {node: '>=22'}
     peerDependencies:
       esbuild: 0.12 - 0.28
-
-  esbuild-wasm@0.28.2:
-    resolution: {integrity: sha512-GccVwhv3mmOUVQHCQm2Ox/rby8n/EqUwvZxE6Pjfikrq/lWw9g9WX/u9EykWnpot3Ko6j426DgQdea2xWKIAQA==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   esbuild@0.25.12:
     resolution: {integrity: sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==}
@@ -8800,10 +8767,6 @@ packages:
   lilconfig@3.1.3:
     resolution: {integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==}
     engines: {node: '>=14'}
-
-  load-tsconfig@0.2.5:
-    resolution: {integrity: sha512-IXO6OCs9yg8tMKzfPZ1YmheJbZCiEsnBdcB03l0OcfK9prKnJb96siuHCr5Fl37/yo9DnKU+TLpxzTUspw9shg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   local-pkg@1.2.1:
     resolution: {integrity: sha512-++gUqRDEvcnN6Zhqrr+y/CkVEHhlrR96vZn3nZZPYzMcBUyBtTKzB9NadClFIsIVSsu+3i9tfk/erqy9kAmt7Q==}
@@ -15027,16 +14990,6 @@ snapshots:
 
   builtin-status-codes@3.0.0: {}
 
-  bundle-require@5.1.0(esbuild-wasm@0.28.2):
-    dependencies:
-      esbuild: esbuild-wasm@0.28.2
-      load-tsconfig: 0.2.5
-
-  bundle-require@5.1.0(esbuild@0.28.2):
-    dependencies:
-      esbuild: 0.28.2
-      load-tsconfig: 0.2.5
-
   bytes@3.1.2: {}
 
   cac@6.7.14: {}
@@ -15562,8 +15515,6 @@ snapshots:
     dependencies:
       empathic: 2.1.0
       esbuild: 0.28.2
-
-  esbuild-wasm@0.28.2: {}
 
   esbuild@0.25.12:
     optionalDependencies:
@@ -16595,8 +16546,6 @@ snapshots:
       lightningcss-win32-x64-msvc: 1.33.0
 
   lilconfig@3.1.3: {}
-
-  load-tsconfig@0.2.5: {}
 
   local-pkg@1.2.1:
     dependencies:
