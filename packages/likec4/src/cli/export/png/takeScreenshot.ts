@@ -15,6 +15,16 @@ import k from 'tinyrainbow'
 import { withQuery } from 'ufo'
 import type { ViteLogger } from '../../../logger'
 
+/** Corner of the exported image the notation panel is aligned to; must match the export page in `@likec4/spa`. */
+export const NotationPositions = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const
+export type NotationPosition = typeof NotationPositions[number]
+export const DEFAULT_NOTATION_POSITION: NotationPosition = 'bottom-right'
+
+/** How notation entries are labelled; must match the export page in `@likec4/spa`. */
+export const NotationTexts = ['short', 'full', 'kind'] as const
+export type NotationText = typeof NotationTexts[number]
+export const DEFAULT_NOTATION_TEXT: NotationText = 'short'
+
 type TakeScreenshotParams = {
   browserContext: BrowserContext
   views: NonEmptyArray<DiagramView>
@@ -28,6 +38,8 @@ type TakeScreenshotParams = {
   format?: 'png' | 'jpeg'
   quality?: number | undefined
   notation?: boolean
+  notationPosition?: NotationPosition | undefined
+  notationText?: NotationText | undefined
   description?: boolean
 }
 
@@ -35,7 +47,8 @@ type TakeScreenshotParams = {
  * Builds the SPA export URL for a view screenshot, encoding the view id and export query parameters.
  *
  * @param params - View id, padding, theme, and optional dynamic layout, image format, notation, and description settings.
- * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, `notation`, and `description`.
+ * @returns Relative URL containing `padding`, `theme`, optional `dynamic`, `format`, `notation`
+ *   (with non-default `notationPosition` and `notationText`), and `description`.
  */
 export function createExportViewUrl({
   viewId,
@@ -44,6 +57,8 @@ export function createExportViewUrl({
   dynamicVariant,
   format = 'png',
   notation = false,
+  notationPosition = DEFAULT_NOTATION_POSITION,
+  notationText = DEFAULT_NOTATION_TEXT,
   description = false,
 }: {
   viewId: string
@@ -52,6 +67,8 @@ export function createExportViewUrl({
   dynamicVariant?: DynamicViewDisplayVariant | undefined
   format?: 'png' | 'jpeg'
   notation?: boolean
+  notationPosition?: NotationPosition | undefined
+  notationText?: NotationText | undefined
   description?: boolean
 }): string {
   return withQuery(`export/${encodeURIComponent(viewId)}/`, {
@@ -59,6 +76,8 @@ export function createExportViewUrl({
     theme,
     dynamic: dynamicVariant,
     ...(notation ? { notation: true } : {}),
+    ...(notation && notationPosition !== DEFAULT_NOTATION_POSITION ? { notationPosition } : {}),
+    ...(notation && notationText !== DEFAULT_NOTATION_TEXT ? { notationText } : {}),
     ...(description ? { description: true } : {}),
     ...(format === 'jpeg' ? { format: 'jpeg' } : {}),
   })
@@ -82,6 +101,8 @@ export async function takeScreenshot({
   format = 'png',
   quality,
   notation = false,
+  notationPosition,
+  notationText,
   description = false,
 }: TakeScreenshotParams) {
   const padding = 20
@@ -146,6 +167,8 @@ export async function takeScreenshot({
         dynamicVariant,
         format,
         notation,
+        notationPosition,
+        notationText,
         description,
       }))
 

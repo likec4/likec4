@@ -23,6 +23,34 @@ export const EXPORT_DESCRIPTION_BOTTOM_PADDING = 16
 const EXPORT_DESCRIPTION_AVERAGE_CHARACTER_WIDTH = 7.5
 
 /**
+ * Corners of the export canvas the notation panel can be aligned to.
+ * The panel is placed in a column beside the diagram, so it never covers diagram elements.
+ */
+export const ExportNotationPositions = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const
+export type ExportNotationPosition = typeof ExportNotationPositions[number]
+export const DEFAULT_EXPORT_NOTATION_POSITION: ExportNotationPosition = 'bottom-right'
+
+/**
+ * How each notation entry is labelled in exported images:
+ * - `short`: the notation text before the first `:` (the whole text if there is none)
+ * - `full`: the complete notation text, wrapped
+ * - `kind`: only the element kinds
+ */
+export const ExportNotationTexts = ['short', 'full', 'kind'] as const
+export type ExportNotationText = typeof ExportNotationTexts[number]
+export const DEFAULT_EXPORT_NOTATION_TEXT: ExportNotationText = 'short'
+
+/**
+ * Returns the short legend title of a notation, i.e. the text before the first `:`.
+ * Falls back to the whole (trimmed) text when there is no `:` or nothing precedes it.
+ */
+export function exportNotationShortTitle(title: string): string {
+  const separator = title.indexOf(':')
+  const short = separator > 0 ? title.slice(0, separator).trim() : ''
+  return short.length > 0 ? short : title.trim()
+}
+
+/**
  * Text content shown in the optional description panel of an exported image.
  */
 export type ExportDescriptionContent = {
@@ -57,7 +85,8 @@ export type ExportPageLayout = {
 }
 
 /**
- * Calculates the reserved height for the notation panel in exported images.
+ * Estimates the reserved height for the notation panel in exported images.
+ * Used until the rendered panel has been measured.
  */
 export function exportNotationHeight(entries: number): number {
   return EXPORT_NOTATION_INSET * 2 + EXPORT_NOTATION_HEADER_HEIGHT + entries * EXPORT_NOTATION_ITEM_HEIGHT
@@ -112,22 +141,28 @@ export function computeExportPageLayout({
   padding,
   description,
   notationEntries,
+  notationHeight,
+  notationPosition = DEFAULT_EXPORT_NOTATION_POSITION,
 }: {
   bounds: BBox
   padding: number
   description: ExportDescriptionContent | null
   notationEntries: number
+  /** Measured height of the rendered notation panel; estimated from `notationEntries` when omitted. */
+  notationHeight?: number | undefined
+  notationPosition?: ExportNotationPosition | undefined
 }): ExportPageLayout {
   const diagramWidth = bounds.width + padding * 2 + EXPORT_EXTRA_PADDING
   const diagramHeight = bounds.height + padding * 2 + EXPORT_EXTRA_PADDING
   const hasNotation = notationEntries > 0
+  const notationOnLeft = notationPosition === 'top-left' || notationPosition === 'bottom-left'
   const width = hasNotation
     ? diagramWidth + EXPORT_NOTATION_GAP + EXPORT_NOTATION_WIDTH + padding
     : diagramWidth
   const descriptionHeight = description ? exportDescriptionHeight({ ...description, width }) : 0
   const contentTop = descriptionHeight > 0 ? descriptionHeight + EXPORT_DESCRIPTION_GAP : 0
   const diagram = {
-    left: 0,
+    left: hasNotation && notationOnLeft ? padding + EXPORT_NOTATION_WIDTH + EXPORT_NOTATION_GAP : 0,
     top: contentTop,
     width: diagramWidth,
     height: diagramHeight,
@@ -150,8 +185,12 @@ export function computeExportPageLayout({
     }
   }
 
-  const notationHeight = exportNotationHeight(notationEntries)
-  const contentHeight = Math.max(diagram.height, notationHeight + padding * 2)
+  const panelHeight = notationHeight ?? exportNotationHeight(notationEntries)
+  const contentHeight = Math.max(diagram.height, panelHeight + padding * 2)
+  // Bottom corners align the panel with the bottom edge of the drawn diagram (above the extra padding)
+  const notationTop = notationPosition === 'top-left' || notationPosition === 'top-right'
+    ? contentTop + padding
+    : contentTop + Math.max(bounds.height + padding, panelHeight + padding) - panelHeight
 
   return {
     width,
@@ -166,10 +205,10 @@ export function computeExportPageLayout({
       }
       : null,
     notation: {
-      left: diagram.width + EXPORT_NOTATION_GAP,
-      top: contentTop + padding,
+      left: notationOnLeft ? padding : diagram.width + EXPORT_NOTATION_GAP,
+      top: notationTop,
       width: EXPORT_NOTATION_WIDTH,
-      height: notationHeight,
+      height: panelHeight,
     },
   }
 }

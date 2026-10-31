@@ -8,6 +8,12 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 import { z } from 'zod'
 import { ErrorComponent } from '../../components/ErrorComponent'
+import {
+  DEFAULT_EXPORT_NOTATION_POSITION,
+  DEFAULT_EXPORT_NOTATION_TEXT,
+  ExportNotationPositions,
+  ExportNotationTexts,
+} from '../../pages/export-layout'
 import { ExportPage } from '../../pages/ExportPage'
 
 export const Route = createFileRoute('/_single/export/$viewId')({
@@ -16,6 +22,8 @@ export const Route = createFileRoute('/_single/export/$viewId')({
     download: z.boolean().optional().catch(false),
     format: z.enum(['png', 'jpeg']).optional().catch('png'),
     notation: z.boolean().optional().catch(false),
+    notationPosition: z.enum(ExportNotationPositions).optional().catch(DEFAULT_EXPORT_NOTATION_POSITION),
+    notationText: z.enum(ExportNotationTexts).optional().catch(DEFAULT_EXPORT_NOTATION_TEXT),
     quality: z.number().min(0).max(1).optional().catch(undefined),
   }),
   search: {
@@ -25,6 +33,8 @@ export const Route = createFileRoute('/_single/export/$viewId')({
         download: false,
         format: 'png',
         notation: false,
+        notationPosition: DEFAULT_EXPORT_NOTATION_POSITION,
+        notationText: DEFAULT_EXPORT_NOTATION_TEXT,
         quality: undefined,
       }),
     ],
