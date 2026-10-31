@@ -4,7 +4,7 @@ import { defu } from 'defu'
 import { createJiti } from 'jiti'
 import JSON5 from 'json5'
 import * as fs from 'node:fs/promises'
-import { basename, dirname, relative, resolve } from 'node:path'
+import { basename, dirname, relative, resolve, sep } from 'node:path'
 import { cwd } from 'node:process'
 import { hasAtLeast, isNonNullish, last, omit } from 'remeda'
 import z from 'zod/v4'
@@ -59,7 +59,7 @@ const rebaseCustomCssPaths = (config: JsonConfigInput, folder: string, rootFolde
       ...config.styles,
       customCss: {
         ...customCss,
-        paths: customCss.paths.map(path => relative(rootFolder, resolve(folder, path))),
+        paths: customCss.paths.map(path => relative(rootFolder, resolve(folder, path)).split(sep).join('/')),
       },
     },
   }
