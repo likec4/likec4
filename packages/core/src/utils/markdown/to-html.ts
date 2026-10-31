@@ -13,6 +13,7 @@ import { type LikeC4RefNode, remarkLikeC4Refs } from './refs'
 
 /**
  * Renders a ref as `<a data-likec4-ref="<target>" data-likec4-ref-kind="<kind>">label or target</a>`.
+ * If the ref has a namespace (`view:`, or an unknown one), it is in the `data-likec4-ref-namespace` attribute.
  * If the ref has a label, the anchor also has an empty `data-likec4-ref-label` attribute,
  * so that consumers keep the label instead of replacing it with the title.
  * Resolving the target (title, click) is up to the consumer, who has the model.
@@ -24,6 +25,7 @@ function likec4RefToHast(state: State, node: LikeC4RefNode): Element {
     properties: {
       dataLikec4Ref: node.ref.target,
       dataLikec4RefKind: node.ref.kind,
+      ...(node.ref.namespace !== null && { dataLikec4RefNamespace: node.ref.namespace }),
       ...(node.ref.label !== null && { dataLikec4RefLabel: true }),
     },
     children: [{ type: 'text', value: node.value }],
@@ -38,6 +40,7 @@ function likec4RefToHast(state: State, node: LikeC4RefNode): Element {
 const likec4RefAttributes: NonNullable<SanitizeSchema['attributes']>[string] = [
   'dataLikec4Ref',
   ['dataLikec4RefKind', 'element', 'view', 'unknown'],
+  'dataLikec4RefNamespace',
   'dataLikec4RefLabel',
 ]
 

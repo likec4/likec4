@@ -326,13 +326,13 @@ code block
 
     it('should render view ref', () => {
       expect(markdownToHtml('Open [[view:index]]')).toBe(
-        '<p>Open <a data-likec4-ref="index" data-likec4-ref-kind="view">index</a></p>',
+        '<p>Open <a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view">index</a></p>',
       )
     })
 
     it('should render ref with unknown namespace', () => {
       expect(markdownToHtml('[[foo:bar|Bar]]')).toBe(
-        '<p><a data-likec4-ref="bar" data-likec4-ref-kind="unknown" data-likec4-ref-label>Bar</a></p>',
+        '<p><a data-likec4-ref="bar" data-likec4-ref-kind="unknown" data-likec4-ref-namespace="foo" data-likec4-ref-label>Bar</a></p>',
       )
     })
 
@@ -365,6 +365,12 @@ code block
       )
     })
 
+    it('should escape namespace', () => {
+      expect(markdownToHtml('[[a"b<c>:d]]')).toBe(
+        '<p><a data-likec4-ref="d" data-likec4-ref-kind="unknown" data-likec4-ref-namespace="a&#x22;b<c>">d</a></p>',
+      )
+    })
+
     it('should not render escaped refs and refs in code', () => {
       expect(markdownToHtml('\\[[a]] `[[b]]`')).toBe('<p>[[a]] <code>[[b]]</code></p>')
       expect(markdownToHtml('```\n[[a]]\n```')).not.toContain('data-likec4-ref')
@@ -380,6 +386,7 @@ code block
       expect(markdownToHtml('<a data-likec4-ref="a" data-likec4-ref-kind="view">x</a>')).toBe('<p>x</p>')
       expect(markdownToHtml('<span data-likec4-ref="a">x</span>')).toBe('<p>x</p>')
       expect(markdownToHtml('<a data-likec4-ref-label>x</a>')).toBe('<p>x</p>')
+      expect(markdownToHtml('<a data-likec4-ref-namespace="view">x</a>')).toBe('<p>x</p>')
     })
   })
 

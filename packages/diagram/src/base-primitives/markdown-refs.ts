@@ -3,7 +3,7 @@ import type { Fqn, ViewId } from '@likec4/core/types'
 
 /**
  * Ref anchor, as rendered by `markdownToHtml` from `@likec4/core`:
- * `<a data-likec4-ref="<target>" data-likec4-ref-kind="<kind>" [data-likec4-ref-label]>label or target</a>`
+ * `<a data-likec4-ref="<target>" data-likec4-ref-kind="<kind>" [data-likec4-ref-namespace="<ns>"] [data-likec4-ref-label]>label or target</a>`
  */
 export type MarkdownRefAnchor = {
   kind: 'element' | 'view' | 'unknown'
@@ -11,6 +11,10 @@ export type MarkdownRefAnchor = {
    * Element FQN or view id (decoded)
    */
   target: string
+  /**
+   * Namespace (decoded): 'view', an unknown prefix, or null
+   */
+  namespace: string | null
   /**
    * True if the author wrote a label (`[[target|label]]`)
    */
@@ -84,7 +88,13 @@ export function createMarkdownRefResolver(
           : { state: 'text', text, tooltip }
       }
       default: {
-        return { state: 'missing', text: null, tooltip: `Unknown link type for '${ref.target}'` }
+        return {
+          state: 'missing',
+          text: null,
+          tooltip: ref.namespace !== null
+            ? `Unknown link type '${ref.namespace}:'`
+            : `Unknown link type for '${ref.target}'`,
+        }
       }
     }
   }
@@ -96,7 +106,7 @@ export function createMarkdownRefResolver(
  * The anchor has only a text child: refs never contain markup.
  */
 const refAnchorRe =
-  /<a data-likec4-ref="([^"]*)" data-likec4-ref-kind="(element|view|unknown)"( data-likec4-ref-label)?>([^<]*)<\/a>/g
+  /<a data-likec4-ref="([^"]*)" data-likec4-ref-kind="(element|view|unknown)"(?: data-likec4-ref-namespace="([^"]*)")?( data-likec4-ref-label)?>([^<]*)<\/a>/g
 
 const namedEntities: Record<string, string> = {
   amp: '&',
@@ -142,6 +152,7 @@ export function parseMarkdownRefAnchor(el: Element): MarkdownRefAnchor | null {
   return {
     target,
     kind,
+    namespace: el.getAttribute('data-likec4-ref-namespace'),
     hasLabel: el.hasAttribute('data-likec4-ref-label'),
   }
 }
@@ -161,17 +172,25 @@ export function resolveMarkdownRefs(html: string, resolve: MarkdownRefResolver):
   }
   return html.replace(
     refAnchorRe,
-    (_match, rawTarget: string, kind: MarkdownRefAnchor['kind'], label: string | undefined, rawText: string) => {
+    (
+      _match,
+      rawTarget: string,
+      kind: MarkdownRefAnchor['kind'],
+      rawNamespace: string | undefined,
+      label: string | undefined,
+      rawText: string,
+    ) => {
       const hasLabel = !!label
       const resolved = resolve({
         target: decodeEntities(rawTarget),
         kind,
+        namespace: rawNamespace !== undefined ? decodeEntities(rawNamespace) : null,
         hasLabel,
       })
       const text = hasLabel || resolved.text === null ? rawText : escapeHtml(resolved.text)
-      const attrs = `data-likec4-ref="${rawTarget}" data-likec4-ref-kind="${kind}"${
-        hasLabel ? ' data-likec4-ref-label' : ''
-      }`
+      const attrs = `data-likec4-ref="${rawTarget}" data-likec4-ref-kind="${kind}"`
+        + (rawNamespace !== undefined ? ` data-likec4-ref-namespace="${rawNamespace}"` : '')
+        + (hasLabel ? ' data-likec4-ref-label' : '')
       if (resolved.state === 'link') {
         return `<a ${attrs} data-likec4-ref-state="link" role="link" tabindex="0">${text}</a>`
       }

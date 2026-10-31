@@ -29,7 +29,7 @@ function render(md: string, resolver = interactive) {
 
 describe('createMarkdownRefResolver', () => {
   it('resolves element title and kind', () => {
-    expect(interactive({ kind: 'element', target: 'cloud.api', hasLabel: false })).toEqual({
+    expect(interactive({ kind: 'element', target: 'cloud.api', namespace: null, hasLabel: false })).toEqual({
       state: 'link',
       kind: 'element',
       fqn: 'cloud.api',
@@ -39,49 +39,50 @@ describe('createMarkdownRefResolver', () => {
   })
 
   it('resolves view title, or id if untitled', () => {
-    expect(interactive({ kind: 'view', target: 'index', hasLabel: false })).toMatchObject({
+    expect(interactive({ kind: 'view', target: 'index', namespace: 'view', hasLabel: false })).toMatchObject({
       state: 'link',
       kind: 'view',
       viewId: 'index',
       text: 'Landscape',
     })
-    expect(interactive({ kind: 'view', target: 'untitled', hasLabel: false })).toMatchObject({
+    expect(interactive({ kind: 'view', target: 'untitled', namespace: 'view', hasLabel: false })).toMatchObject({
       state: 'link',
       text: 'untitled',
     })
   })
 
   it('reports missing targets and unknown namespaces', () => {
-    expect(interactive({ kind: 'element', target: 'cloud.db', hasLabel: false })).toEqual({
+    expect(interactive({ kind: 'element', target: 'cloud.db', namespace: null, hasLabel: false })).toEqual({
       state: 'missing',
       text: null,
       tooltip: `Element 'cloud.db' not found`,
     })
-    expect(interactive({ kind: 'view', target: 'nope', hasLabel: false })).toEqual({
+    expect(interactive({ kind: 'view', target: 'nope', namespace: 'view', hasLabel: false })).toEqual({
       state: 'missing',
       text: null,
       tooltip: `View 'nope' not found`,
     })
-    expect(interactive({ kind: 'unknown', target: 'cloud', hasLabel: false })).toMatchObject({
+    expect(interactive({ kind: 'unknown', target: 'prod', namespace: 'deployment', hasLabel: false })).toEqual({
       state: 'missing',
       text: null,
+      tooltip: `Unknown link type 'deployment:'`,
     })
   })
 
   it('resolves to plain text when opening is not available', () => {
     const resolver = createMarkdownRefResolver(model, { elements: false, views: true })
-    expect(resolver({ kind: 'element', target: 'cloud', hasLabel: false })).toMatchObject({
+    expect(resolver({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })).toMatchObject({
       state: 'text',
       text: 'Cloud',
     })
-    expect(resolver({ kind: 'view', target: 'index', hasLabel: false })).toMatchObject({
+    expect(resolver({ kind: 'view', target: 'index', namespace: 'view', hasLabel: false })).toMatchObject({
       state: 'link',
     })
   })
 
   it('keeps targets without a model', () => {
     const resolver = createMarkdownRefResolver(null, { elements: true, views: true })
-    expect(resolver({ kind: 'element', target: 'cloud', hasLabel: false })).toMatchObject({
+    expect(resolver({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })).toMatchObject({
       state: 'text',
       text: 'cloud',
     })
@@ -108,15 +109,15 @@ describe('resolveMarkdownRefs', () => {
 
   it('substitutes the view title', () => {
     expect(render('See [[view:index]]')).toBe(
-      '<p>See <a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a></p>',
+      '<p>See <a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a></p>',
     )
   })
 
   it('renders missing targets and unknown namespaces as dimmed text with the fallback', () => {
     expect(render('[[cloud.db]] [[view:nope|Nope]] [[deployment:prod]]')).toBe(
       '<p><span data-likec4-ref="cloud.db" data-likec4-ref-kind="element" data-likec4-ref-state="missing">cloud.db</span>'
-        + ' <span data-likec4-ref="nope" data-likec4-ref-kind="view" data-likec4-ref-label data-likec4-ref-state="missing">Nope</span>'
-        + ' <span data-likec4-ref="prod" data-likec4-ref-kind="unknown" data-likec4-ref-state="missing">prod</span></p>',
+        + ' <span data-likec4-ref="nope" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-label data-likec4-ref-state="missing">Nope</span>'
+        + ' <span data-likec4-ref="prod" data-likec4-ref-kind="unknown" data-likec4-ref-namespace="deployment" data-likec4-ref-state="missing">prod</span></p>',
     )
   })
 
@@ -124,7 +125,24 @@ describe('resolveMarkdownRefs', () => {
     const resolver = createMarkdownRefResolver(model, { elements: false, views: false })
     expect(render('[[cloud.api]] [[view:index]]', resolver)).toBe(
       '<p><span data-likec4-ref="cloud.api" data-likec4-ref-kind="element" data-likec4-ref-state="text">Public &lt;API&gt; &amp; &quot;Co&quot;</span>'
-        + ' <span data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-state="text">Landscape</span></p>',
+        + ' <span data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-state="text">Landscape</span></p>',
+    )
+  })
+
+  it('passes the decoded namespace of unknown refs to the resolver', () => {
+    const refs: Array<{ namespace: string | null; kind: string }> = []
+    const html = resolveMarkdownRefs(markdownToHtml('[[a"b:c]] [[view:index]] [[cloud]]'), ref => {
+      refs.push({ namespace: ref.namespace, kind: ref.kind })
+      return { state: 'missing', text: null, tooltip: '' }
+    })
+    expect(refs).toEqual([
+      { namespace: 'a"b', kind: 'unknown' },
+      { namespace: 'view', kind: 'view' },
+      { namespace: null, kind: 'element' },
+    ])
+    expect(html).toContain('data-likec4-ref-namespace="a&#x22;b" data-likec4-ref-state="missing">c</span>')
+    expect(render('[[deployment:prod|Prod]]')).toContain(
+      'data-likec4-ref-namespace="deployment" data-likec4-ref-label data-likec4-ref-state="missing">Prod</span>',
     )
   })
 
