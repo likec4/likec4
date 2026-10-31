@@ -84,6 +84,13 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   }
 
   /**
+   * Returns true if the element has a summary and a description
+   */
+  get hasSummary(): boolean {
+    return this.summary.nonEmpty && !this.summary.equals(this.description)
+  }
+
+  /**
    * Short description of the element.
    * Falls back to description if summary is not provided.
    */

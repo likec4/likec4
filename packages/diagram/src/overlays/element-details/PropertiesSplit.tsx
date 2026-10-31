@@ -1,4 +1,5 @@
 import { css } from '@likec4/styles/css'
+import { Txt } from '@likec4/styles/jsx'
 import { Tooltip, UnstyledButton } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { type ReactNode, useState } from 'react'
@@ -48,17 +49,29 @@ const separator = css({
 const toggle = css({
   position: 'absolute',
   top: '1',
-  left: '[50%]',
-  transform: 'translateX(-50%)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '[16px]',
-  height: '[24px]',
   borderRadius: 'sm',
   color: 'text.dimmed',
   cursor: 'pointer',
   transition: 'fast',
+  height: 'icon.xl',
+  ':where([data-separator="active"]) &': {
+    transitionDelay: 'fast',
+    visibility: 'hidden',
+  },
+  _expanded: {
+    left: '[50%]',
+    width: 'icon.xl',
+
+    transform: 'translateX(-50%)',
+  },
+  '&:is([aria-expanded="false"])': {
+    right: '0',
+    gap: '1',
+    px: '1',
+  },
   _hover: {
     color: 'text',
     backgroundColor: 'surface.hover',
@@ -104,11 +117,13 @@ function Split({ main, sidebar }: { main: ReactNode; sidebar: ReactNode }) {
     }
     if (panel.isCollapsed()) {
       panel.expand()
+      setCollapsed(false)
     } else {
       panel.collapse()
+      setCollapsed(true)
     }
   }
-  const label = collapsed ? 'Show sidebar' : 'Hide sidebar'
+  const label = collapsed ? 'Show Properties' : 'Hide Properties'
 
   return (
     <Group
@@ -123,7 +138,7 @@ function Split({ main, sidebar }: { main: ReactNode; sidebar: ReactNode }) {
         <Tooltip
           label={label}
           position="left"
-          openDelay={400}
+          disabled={collapsed}
           // render inside the modal dialog, otherwise the tooltip is behind it
           withinPortal={false}>
           <UnstyledButton
@@ -134,7 +149,14 @@ function Split({ main, sidebar }: { main: ReactNode; sidebar: ReactNode }) {
             onPointerDown={e => e.stopPropagation()}
             onClick={toggleSidebar}
           >
-            {collapsed ? <IconChevronLeft size={14} stroke={2} /> : <IconChevronRight size={14} stroke={2} />}
+            {collapsed ?
+              (
+                <>
+                  <IconChevronLeft size={14} stroke={2} />
+                  <Txt size="xs" cursor={'inherit'}>Properties</Txt>
+                </>
+              ) :
+              <IconChevronRight size={14} stroke={2} />}
           </UnstyledButton>
         </Tooltip>
       </Separator>
@@ -143,7 +165,7 @@ function Split({ main, sidebar }: { main: ReactNode; sidebar: ReactNode }) {
         className={pane}
         panelRef={sidebarRef}
         defaultSize={260}
-        minSize={180}
+        minSize={120}
         collapsible
         collapsedSize={0}
         onResize={size => setCollapsed(size.inPixels === 0)}>

@@ -4,46 +4,45 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // oxlint-disable no-misused-spread
-// oxlint-disable no-misused-spread
-import { nonNullable } from '@likec4/core'
+import { ancestorsFqn, isAncestor, nameFromFqn, nonNullable } from '@likec4/core'
+import type { ElementModel } from '@likec4/core/model'
 import type {
-  Any,
-  ComputedView,
-  DiagramView,
+  DeploymentFqn,
+  Fqn,
   NodeId,
-  scalar,
   ViewId,
 } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
-import { HStack, styled } from '@likec4/styles/jsx'
+import { css, cx } from '@likec4/styles/css'
+import { HStack, styled, Txt } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 import {
   ActionIcon,
   ActionIconGroup,
   Badge,
-  Box,
   CloseButton,
-  Divider as MantineDivider,
+  Collapse,
   Flex,
-  Group,
   RemoveScroll,
   ScrollArea,
-  Stack,
   Tabs,
   TabsList,
   TabsPanel,
   TabsTab,
-  Text,
-  ThemeIcon,
   Tooltip as MantineTooltip,
   UnstyledButton,
 } from '@mantine/core'
-import { useLocalStorage, useSessionStorage, useViewportSize } from '@mantine/hooks'
+import { useDisclosure, useLocalStorage, useSessionStorage, useViewportSize } from '@mantine/hooks'
 import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
-import { IconExternalLink, IconFileSymlink, IconStack2, IconZoomScan } from '@tabler/icons-react'
+import {
+  IconCaretRightFilled,
+  IconExternalLink,
+  IconFileSymlink,
+  IconZoomScan,
+} from '@tabler/icons-react'
 import type { Rect } from '@xyflow/system'
 import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
-import { type PropsWithChildren, type SyntheticEvent, useCallback, useRef, useState } from 'react'
-import { clamp, entries, map, only, partition, pipe } from 'remeda'
+import { type PropsWithChildren, type SyntheticEvent, Fragment, useCallback, useRef, useState } from 'react'
+import { clamp, entries, only } from 'remeda'
 import { Markdown } from '../../base-primitives'
 import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
@@ -51,22 +50,18 @@ import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useCallbackRef, useUpdateEffect } from '../../hooks'
 import { useCurrentViewModel } from '../../hooks/useCurrentViewModel'
 import { useDiagram } from '../../hooks/useDiagram'
-import type { OnNavigateTo } from '../../LikeC4Diagram.props'
 import { metadataSearchQuery } from '../../search/metadata-search'
 import { stopPropagation } from '../../utils'
 import * as styles from './ElementDetailsCard.css'
+import { CardFooter, CardFooterSection, ElementTitle } from './ElementDetailsCard.css'
 import { MetadataList, MetadataProvider } from './MetadataValue'
 import { PropertiesSplit } from './PropertiesSplit'
 import type { DetailsSubject } from './subject'
 import { TabPanelDeployments } from './TabPanelDeployments'
 import { TabPanelRelationships } from './TabPanelRelationships'
 import { TabPanelStructure } from './TabPanelStructure'
+import { TabPanelViews } from './TabPanelViews'
 
-const Divider = MantineDivider.withProps({
-  mb: 8,
-  labelPosition: 'left',
-  variant: 'dashed',
-})
 const Tooltip = MantineTooltip.withProps({
   color: 'dark',
   fz: 'xs',
@@ -101,7 +96,7 @@ type ElementDetailsCardProps = {
   subject: DetailsSubject
 }
 
-const MIN_PADDING = 24
+const MIN_PADDING = 16
 
 type CardSize = { width: number; height: number }
 const DEFAULT_SIZE: CardSize = { width: 700, height: 650 }
@@ -118,7 +113,6 @@ export function ElementDetailsCard({
   subject,
   onClose,
 }: ElementDetailsCardProps) {
-  const [opened, setOpened] = useState(false)
   const windowSize = useViewportSize()
   const windowWidth = windowSize.width || window.innerWidth || 1200,
     windowHeight = windowSize.height || window.innerHeight || 800
@@ -126,7 +120,11 @@ export function ElementDetailsCard({
   const [activeTab, setActiveTab] = useSessionStorage<TabName>({
     key: subject.deployment ? 'likec4:deployment-details:active-tab' : 'likec4:element-details:active-tab',
     defaultValue: 'Properties',
+    getInitialValueInEffect: false,
   })
+
+  const [opened, setOpened] = useState(activeTab !== 'Relationships')
+
   const diagram = useDiagram()
   const viewModel = useCurrentViewModel()
   const nodeModel = fromNode
@@ -135,21 +133,12 @@ export function ElementDetailsCard({
     ? [...viewModel.nodes()].find(n => n.$node.deploymentRef === subject.deployment) ?? null
     : viewModel.findNodeWithElement(subject.element)
 
-  const logicalElement = subject.type === 'element' ? viewModel.$model.element(subject.element) : null
+  const logicalElement = subject.type === 'element' ? viewModel.$model.findElement(subject.element) : null
   const deploymentElement = subject.type === 'deployment'
-    ? viewModel.$model.deployment.element(subject.deployment)
+    ? viewModel.$model.deployment.findElement(subject.deployment)
     : null
   const elementModel = nonNullable(logicalElement ?? deploymentElement, 'Details subject not found')
   const tabs = subject.deployment ? DEPLOYMENT_TABS : TABS
-  const hasSummary = logicalElement
-    ? logicalElement.hasSummary
-    : !elementModel.summary.isEmpty && elementModel.summary.text !== elementModel.description.text
-
-  const [viewsOf, otherViews] = pipe(
-    [...elementModel.views()],
-    map(v => v.$view),
-    partition(v => v._type === 'element' && v.viewOf === subject.element),
-  )
 
   let defaultView = nodeModel?.navigateTo?.$view ?? logicalElement?.defaultView?.$view ?? null
   // Ignore default view if it's the current view
@@ -200,12 +189,12 @@ export function ElementDetailsCard({
   )
 
   const originX = clamp((fromPosition.x - left) / _width, {
-    min: 0.1,
-    max: 0.9,
+    min: 0.05,
+    max: 0.95,
   })
   const originY = clamp((fromPosition.y - top) / _height, {
-    min: 0.1,
-    max: 0.9,
+    min: 0.05,
+    max: 0.95,
   })
 
   const width = useMotionValue(_width)
@@ -300,7 +289,7 @@ export function ElementDetailsCard({
    */
   useTimeoutEffect(() => {
     setOpened(true)
-  }, 220)
+  }, !opened ? 220 : undefined)
 
   const technologies = elementModel.technology
     ? elementModel.technology.split(',').map(t => t.trim()).filter(Boolean)
@@ -397,7 +386,7 @@ export function ElementDetailsCard({
               window.getSelection()?.removeAllRanges()
               resetCard()
             }}>
-            <HStack alignItems="start" justify="space-between" gap={'sm'} mb={'sm'} flexWrap="nowrap">
+            <HStack alignItems="start" justify="space-between" gap={'sm'} flexWrap="nowrap">
               <HStack
                 alignItems="start"
                 gap={'sm'}
@@ -407,17 +396,18 @@ export function ElementDetailsCard({
                 {elementIcon}
                 <div style={{ minWidth: 0, overflow: 'hidden' }}>
                   <Tooltip label={elementModel.title} openDelay={600} position="bottom-start">
-                    <Text
-                      component={'div'}
-                      className={styles.title}>
+                    <ElementTitle>
                       {elementModel.title}
-                    </Text>
+                    </ElementTitle>
                   </Tooltip>
                   {notation && (
-                    <Text component="div" c={'dimmed'} fz={'sm'} fw={500} lh={1.3} lineClamp={1}>
+                    <Txt dimmed size={'sm'} medium lineClamp={1} mt={'xxs'}>
                       {notation}
-                    </Text>
+                    </Txt>
                   )}
+                  <div style={{ marginTop: '0.25rem' }}>
+                    <ElementFqn fqn={elementModel.id} />
+                  </div>
                 </div>
               </HStack>
               <HStack gap={'xs'} flexWrap="nowrap" style={{ flex: 'none' }}>
@@ -490,20 +480,7 @@ export function ElementDetailsCard({
 
               <TabsPanel value="Properties">
                 <PropertiesSplit
-                  main={
-                    <ScrollArea className={styles.propertiesMain} scrollbars="y" type="auto" offsetScrollbars>
-                      <article className={styles.propertiesArticle}>
-                        {hasSummary && (
-                          <div className={styles.propertiesSummary}>
-                            <Markdown value={elementModel.summary} />
-                          </div>
-                        )}
-                        <div className={styles.propertiesDescription}>
-                          <Markdown value={elementModel.description} emptyText="No description" />
-                        </div>
-                      </article>
-                    </ScrollArea>
-                  }
+                  main={<ElementDescription element={elementModel} />}
                   sidebar={hasFacts
                     ? (
                       <ScrollArea className={styles.propertiesSidebar} scrollbars="y" type="auto">
@@ -567,39 +544,10 @@ export function ElementDetailsCard({
               )}
 
               <TabsPanel value="Views">
-                <ScrollArea scrollbars="y" type="auto">
-                  <Stack gap={'lg'}>
-                    {viewsOf.length > 0 && (
-                      <Box>
-                        <Divider label="views of the element (scoped)" />
-                        <Stack gap={'sm'}>
-                          {viewsOf.map((view) => (
-                            <ViewButton
-                              key={view.id}
-                              view={view}
-                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-                    {otherViews.length > 0 && (
-                      <Box>
-                        <Divider
-                          label={subject.deployment
-                            ? 'views including this deployment'
-                            : 'views including this element'} />
-                        <Stack gap={'sm'}>
-                          {otherViews.map((view) => (
-                            <ViewButton
-                              key={view.id}
-                              view={view}
-                              onNavigateTo={to => diagram.navigateTo(to as scalar.ViewId, fromNode ?? undefined)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    )}
-                  </Stack>
-                </ScrollArea>
+                <TabPanelViews
+                  elementModel={elementModel}
+                  onNavigateTo={viewId => diagram.navigateTo(viewId, fromNode ?? undefined)}
+                />
               </TabsPanel>
 
               <TabsPanel value="Structure">
@@ -617,27 +565,27 @@ export function ElementDetailsCard({
               )}
             </Tabs>
           </MetadataProvider>
-          <div className={styles.cardFooter}>
-            <div>
+          <CardFooter>
+            <CardFooterSection>
               <SmallLabel>kind</SmallLabel>
-              <Badge
-                radius={'sm'}
-                size="sm"
-                fw={600}
-                color="gray"
-                style={{
-                  cursor: 'pointer',
-                }}
+              <Txt
+                size={'sm'}
+                layerStyle={'surface.sunken'}
+                px={'2'}
+                py="0.5"
+                medium
+                rounded={'sm'}
+                cursor={'pointer'}
                 onClick={e => {
                   e.stopPropagation()
                   diagram.openSearch(`kind:${elementModel.kind}`)
                 }}
               >
                 {elementModel.kind}
-              </Badge>
-            </div>
+              </Txt>
+            </CardFooterSection>
             {nodeModel?.$node.diffStatus && (
-              <div>
+              <CardFooterSection>
                 <SmallLabel>diff</SmallLabel>
                 <Badge
                   radius={'sm'}
@@ -648,17 +596,17 @@ export function ElementDetailsCard({
                 >
                   {nodeModel.$node.diffStatus}
                 </Badge>
-              </div>
+              </CardFooterSection>
             )}
             {elementModel.tags.length > 0 && (
-              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+              <CardFooterSection full>
                 <SmallLabel>tags</SmallLabel>
                 <ElementTags
                   tags={elementModel.tags}
                   onClick={tag => diagram.openSearch(`#${tag}`)} />
-              </div>
+              </CardFooterSection>
             )}
-          </div>
+          </CardFooter>
           <m.div
             className={styles.resizeHandle}
             drag
@@ -671,38 +619,6 @@ export function ElementDetailsCard({
         </m.div>
       </RemoveScroll>
     </m.dialog>
-  )
-}
-
-const ViewButton = <A extends Any>({
-  view,
-  onNavigateTo,
-}: {
-  view: ComputedView<A> | DiagramView<A>
-  onNavigateTo: OnNavigateTo<A>
-}) => {
-  return (
-    <UnstyledButton className={styles.viewButton} onClick={e => onNavigateTo(view.id, e)}>
-      <Group gap={6} align="start" wrap="nowrap">
-        <ThemeIcon size={'sm'} variant="transparent">
-          {view._type === 'deployment'
-            ? <IconStack2 stroke={1.8} />
-            : <IconZoomScan stroke={1.8} />}
-        </ThemeIcon>
-        <Box>
-          <Text component="div" className={styles.viewButtonTitle} lineClamp={1}>
-            {view.title || 'untitled'}
-          </Text>
-          {
-            /* {view.description && (
-            <Text component="div" mt={2} fz={'xs'} c={'dimmed'} lh={1.4} lineClamp={1}>
-              {view.description}
-            </Text>
-          )} */
-          }
-        </Box>
-      </Group>
-    </UnstyledButton>
   )
 }
 
@@ -730,5 +646,115 @@ function ElementTags({ tags, onClick }: { tags: readonly string[]; onClick: (tag
         />
       ))}
     </Flex>
+  )
+}
+
+const FqnPart = styled('div', {
+  base: {
+    px: '1',
+    paddingTop: '0.5',
+    paddingBottom: '1.5',
+    fontSize: 'xs',
+    lineHeight: 'snug',
+    fontWeight: 'medium',
+    color: 'text.dimmed',
+    borderRadius: 'sm',
+    '& + &': {
+      ml: '-1',
+      pl: '0',
+    },
+    '&[data-hovered=true]': {
+      color: 'text.bright',
+      backgroundColor: 'surface.sunken',
+    },
+  },
+})
+
+function ElementFqn<T extends Fqn | DeploymentFqn>({ fqn }: { fqn: T }) {
+  const [hovered, setHovered] = useState<T | null>(null)
+
+  const hoverHandlers = (fqn: T) => ({
+    ['data-hovered']: !!hovered && (fqn === hovered || isAncestor(fqn, hovered)),
+    onMouseEnter: () => setHovered(fqn),
+    onMouseLeave: () => setHovered(null),
+  })
+
+  const ancestors = ancestorsFqn(fqn).toReversed()
+  return (
+    <HStack
+      css={{
+        gap: '0',
+        alignItems: 'baseline',
+      }}>
+      <SmallLabel color={'text.non-essential'}>ID</SmallLabel>
+      {ancestors.map(ancestor => (
+        <Fragment key={ancestor}>
+          <FqnPart {...hoverHandlers(ancestor)}>
+            {nameFromFqn(ancestor)}
+          </FqnPart>
+          <FqnPart {...hoverHandlers(ancestor)} data-hovered={hovered && isAncestor(ancestor, hovered)}>.</FqnPart>
+        </Fragment>
+      ))}
+      <FqnPart {...hoverHandlers(fqn)}>
+        {nameFromFqn(fqn)}
+      </FqnPart>
+    </HStack>
+  )
+}
+
+function ElementDescription<T extends Pick<ElementModel, 'hasSummary' | 'summary' | 'description'>>(
+  { element }: { element: T },
+) {
+  const [opened, { toggle }] = useDisclosure()
+  return (
+    <ScrollArea className={styles.propertiesMain} scrollbars="y" type="auto" offsetScrollbars>
+      {element.hasSummary && (
+        <>
+          <UnstyledButton
+            className={hstack({
+              gap: '1',
+              fontSize: 'xs',
+              layerStyle: opened ? 'likec4.panel.action.filled' : 'likec4.panel.action',
+            })}
+            aria-expanded={opened}
+            onClick={toggle}>
+            <div>Summary</div>
+            <IconCaretRightFilled
+              size={12}
+              className={css({
+                opacity: '0.6',
+              })}
+              style={{ transform: opened ? 'rotate(90deg)' : 'none' }} />
+          </UnstyledButton>
+          <Collapse expanded={opened}>
+            <styled.div
+              css={{
+                paddingY: '2',
+                paddingLeft: '4',
+                marginY: '2',
+                position: 'relative',
+                _before: {
+                  content: '""',
+                  position: 'absolute',
+                  left: '1',
+                  top: '0',
+                  width: '[2px]',
+                  height: '100%',
+                  backgroundColor: 'border.focus',
+                },
+              }}>
+              <Markdown value={element.summary} />
+            </styled.div>
+          </Collapse>
+        </>
+      )}
+      <styled.div
+        css={{
+          paddingX: '1',
+          paddingTop: '2',
+        }}>
+        <Markdown fontSize="lg" value={element.description} emptyText="No description" />
+      </styled.div>
+    </ScrollArea>
   )
 }
