@@ -38,6 +38,7 @@ import {
   isArray,
   map,
   mapValues,
+  pick,
   pipe,
   piped,
   prop,
@@ -211,8 +212,11 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         if (acc === null) {
           return {
             project,
-            hash: doc.likec4Parser.hash,
-            docs: [doc],
+            hash: objectHash({
+              parser: doc.likec4Parser.hash,
+              project: pick(project, ['id', 'config']),
+            }),
+            docs: [doc] as const,
           }
         }
         acc.hash = stringHash(acc.hash + doc.likec4Parser.hash)
