@@ -1,5 +1,21 @@
 # @likec4/generators
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3354](https://github.com/likec4/likec4/pull/3354) [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Support styled and nested `group` boundaries around deployment nodes and instances in deployment views.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) show the element or view title (or your label) in PlantUML, Draw.io and Markdown exports and in MCP tool results, instead of the raw `[[…]]`. Broken links show their target. The LikeC4 DSL export keeps the links as written.
+  
+  In the model API, `description`, `summary` and `notes` resolve links to titles in `.text` and `.html` (`.md` stays as written), and `LikeC4Model.resolveMarkdownRef` and `resolveMarkdownRefs` from `@likec4/core/utils` resolve links for your own outputs.
+
+- [#3485](https://github.com/likec4/likec4/pull/3485) [`6756c79`](https://github.com/likec4/likec4/commit/6756c790d86400b5b5dd2db7a749fe0c3ce0ab26) Thanks [@bim-ba](https://github.com/bim-ba)! - Mermaid export (`likec4 gen mermaid`) keeps the diagram's colors and line styles: each element gets the fill, border and text color of its LikeC4 color through `classDef`/`class`, and each relationship gets its line color and pattern through `linkStyle` (solid lines are drawn solid, dashed ones dashed, dotted ones dotted). Previously every node used Mermaid's default style and every edge was dotted.
+- Updated dependencies [[`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7), [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1)]:
+  - @likec4/config@1.60.1
+  - @likec4/core@1.60.1
+  - @likec4/log@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes

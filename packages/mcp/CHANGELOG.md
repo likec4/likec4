@@ -1,5 +1,27 @@
 # @likec4/mcp
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3496](https://github.com/likec4/likec4/pull/3496) [`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7) Thanks [@davydkov](https://github.com/davydkov)! - TypeScript and JavaScript project configs (`likec4.config.ts`, `.mts`, `.cts`, `.mjs`, `.cjs`, `.js`) are no longer experimental. They are now loaded with [jiti](https://github.com/unjs/jiti) instead of esbuild: loading no longer writes temporary `*.bundled_*.mjs` files next to your config, the VSCode extension loads configs faster and is smaller, and `esbuild` is no longer installed with `likec4`, `@likec4/lsp` and `@likec4/mcp`. If you use `@likec4/config` or `@likec4/language-server` directly, install `jiti` instead of `bundle-require` and `esbuild` to load non-JSON configs.
+  
+  Fixed: changes to a project config (for example, title or styles) were not applied to the model until the project files were edited.
+
+- [`e3d12de`](https://github.com/likec4/likec4/commit/e3d12deba102c952f9611529f058af3c122fe85f) Thanks [@davydkov](https://github.com/davydkov)! - Fix the MCP view rendering app failing to load its assets when the MCP server runs from the VS Code extension.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) show the element or view title (or your label) in PlantUML, Draw.io and Markdown exports and in MCP tool results, instead of the raw `[[…]]`. Broken links show their target. The LikeC4 DSL export keeps the links as written.
+  
+  In the model API, `description`, `summary` and `notes` resolve links to titles in `.text` and `.html` (`.md` stays as written), and `LikeC4Model.resolveMarkdownRef` and `resolveMarkdownRefs` from `@likec4/core/utils` resolve links for your own outputs.
+
+- [#3303](https://github.com/likec4/likec4/pull/3303) [`30ed48d`](https://github.com/likec4/likec4/commit/30ed48d243114efaf38c9079944a6c53950c4627) Thanks [@parse](https://github.com/parse)! - `search-element` returns each result's `description` and is now fuzzy and ranked by relevance. Plain words match name, title, id, description and link path segments (except the first) and tolerate typos. Words and `kind:`, `shape:`, `meta:` and `#tag` conditions can be combined and must all match, for example `kind:container #public checkout`.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs: apply, discard and safe delete, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Apply or discard a diff: the `add` blocks are merged into the element definitions of the model files. Code actions in the editor, `likec4 diff list`, and `likec4 diff apply|discard [--dry-run]`.
+  - Overlapping diffs (both change the same element or relationship, or one depends on the other) are reported on both diffs and never resolved automatically: applying an overlapping diff needs a confirmation (`--accept-overlaps`). Other diffs are never edited; the diffs an edit breaks are reported.
+  - Safe delete: remove an element and everything that references it in one edit, with a dry run that reports relationships, deployed instances, affected views and orphans. Code action in the editor, `likec4 safe-delete [--dry-run]`, and the MCP tools `removal-impact` and `list-diffs`.
+
 ## 1.60.0
 
 ### Patch Changes

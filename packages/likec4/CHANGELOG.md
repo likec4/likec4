@@ -1,5 +1,67 @@
 # likec4
 
+## 1.60.1
+
+### Patch Changes
+
+- [`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080) Thanks [@davydkov](https://github.com/davydkov)! - Element details put the description first: technology, links and metadata move to a sidebar that can be resized or hidden (the layout is remembered), and element kind and tags move to the footer of the card. The card remembers its size after you resize it and stays inside the window when dragged; double-click its title or the resize handle to reset its size and position.
+  
+  The card header shows the element id; hover a part of it to highlight the path to that parent. When an element has a summary that differs from its description, the summary is collapsed above the description and expands on click.
+  
+  Metadata shows every value at once. Click a key or a value to find other elements with the same metadata. Search supports `meta:key` and `meta:key=value` queries.
+  
+  The style preset adds a `fieldLabel` text style for small all-caps field labels.
+
+- [#3458](https://github.com/likec4/likec4/pull/3458) [`6361dbc`](https://github.com/likec4/likec4/commit/6361dbc62c8f7c198d4721fce9cdfb4ca66ce0ef) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Element details, relationship details, and the relationship browser stay available on compare views, including elements a diff adds or removes. The details card shows the diff status.
+
+- [#3496](https://github.com/likec4/likec4/pull/3496) [`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7) Thanks [@davydkov](https://github.com/davydkov)! - TypeScript and JavaScript project configs (`likec4.config.ts`, `.mts`, `.cts`, `.mjs`, `.cjs`, `.js`) are no longer experimental. They are now loaded with [jiti](https://github.com/unjs/jiti) instead of esbuild: loading no longer writes temporary `*.bundled_*.mjs` files next to your config, the VSCode extension loads configs faster and is smaller, and `esbuild` is no longer installed with `likec4`, `@likec4/lsp` and `@likec4/mcp`. If you use `@likec4/config` or `@likec4/language-server` directly, install `jiti` instead of `bundle-require` and `esbuild` to load non-JSON configs.
+  
+  Fixed: changes to a project config (for example, title or styles) were not applied to the model until the project files were edited.
+
+- [#3495](https://github.com/likec4/likec4/pull/3495) [`2f29031`](https://github.com/likec4/likec4/commit/2f29031acc36016d77502734923a0ef585051943) Thanks [@davydkov](https://github.com/davydkov)! - `diagrams()` is deprecated, use `layoutedModel()` instead. Manual layouts are applied by the views of the layouted model: `model.view(id).$layouted` returns the view with manual layout applied, `$view` returns the latest auto layout.
+  
+  The `likec4/fetchLayoutedModel` LSP request now returns the same data as `layoutedModel()`: views are auto-layouted and manual layouts are in `manualLayouts`. Use `LikeC4Model.create(model).view(id).$layouted` to get a view with manual layout applied.
+
+- [#3479](https://github.com/likec4/likec4/pull/3479) [`5918048`](https://github.com/likec4/likec4/commit/5918048ad85879b8dfd595c5cdfe49ce07db9d17) Thanks [@parse](https://github.com/parse)! - Export the syntax tree types as `ast` (type-only) from `likec4` and `@likec4/language-server`, so tools built on the language services can type the nodes they read, for example `import type { ast } from 'likec4'` and `ast.Relation`.
+
+- [`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080) Thanks [@davydkov](https://github.com/davydkov)! - Escape closes the search opened on top of element details, instead of closing the details card. Arrow keys move the caret in the search input while an element is selected.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) show the element or view title (or your label) in PlantUML, Draw.io and Markdown exports and in MCP tool results, instead of the raw `[[…]]`. Broken links show their target. The LikeC4 DSL export keeps the links as written.
+  
+  In the model API, `description`, `summary` and `notes` resolve links to titles in `.text` and `.html` (`.md` stays as written), and `LikeC4Model.resolveMarkdownRef` and `resolveMarkdownRefs` from `@likec4/core/utils` resolve links for your own outputs.
+
+- [#3494](https://github.com/likec4/likec4/pull/3494) [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45) Thanks [@davydkov](https://github.com/davydkov)! - Relationship labels are measured with the diagram font (IBM Plex Sans) during layout, so the space reserved for a label matches the rendered label exactly and labels no longer overlap or leave extra gaps. Long labels wrap by width into balanced lines instead of by character count.
+  
+  In the relationships browser and relationship details, labels are laid out together with elements: they no longer overlap each other, and every relationship goes through its label.
+  
+  Elements are measured the same way: an element keeps the width of its size and grows in height only when its title, technology and description do not fit. Technology is always shown on a single line.
+  
+  The style preset exports `EdgeLabelMetrics`, `ElementNodeMetrics` and `DefaultFontFamily` from `@likec4/style-preset/defaults`, the metrics used by both the label styles and the layouts.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192): new `diff` block, a named change set of the model (`remove` elements and relationships, `add` model elements, `extend` existing elements). The model stays as is: diffs are validated against it, and views can reference elements that a diff adds.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs: apply, discard and safe delete, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Apply or discard a diff: the `add` blocks are merged into the element definitions of the model files. Code actions in the editor, `likec4 diff list`, and `likec4 diff apply|discard [--dry-run]`.
+  - Overlapping diffs (both change the same element or relationship, or one depends on the other) are reported on both diffs and never resolved automatically: applying an overlapping diff needs a confirmation (`--accept-overlaps`). Other diffs are never edited; the diffs an edit breaks are reported.
+  - Safe delete: remove an element and everything that references it in one edit, with a dry run that reports relationships, deployed instances, affected views and orphans. Code action in the editor, `likec4 safe-delete [--dry-run]`, and the MCP tools `removal-impact` and `list-diffs`.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`250bd2c`](https://github.com/likec4/likec4/commit/250bd2c4ec45c5ee24c54844cf9a0bb64d653140) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs in the UI, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Compare views: the view before and after the diff in one diagram, with added, removed and modified elements and relationships marked. Switch between as-is, changes and to-be modes in the playground, `likec4 start` and static builds (`likec4 build`). Vite plugin users get them from the `likec4:diffs` virtual module.
+  - Playground: review the changes of each file before they are applied, and roll back an applied change.
+
+- [#3467](https://github.com/likec4/likec4/pull/3467) [`65d60b8`](https://github.com/likec4/likec4/commit/65d60b82affcbd39d194c44cba55bf6a8918332e) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Navigation thumbnails of dynamic views with `variant sequence` now show the sequence layout instead of a flow layout fitted into the wrong bounds.
+
+- [#3440](https://github.com/likec4/likec4/pull/3440) [`7ad172a`](https://github.com/likec4/likec4/commit/7ad172af74d0de82577c8dc73cf7ce7550a3e3a4) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Update the container image to Debian 13. Fixes [#3426](https://github.com/likec4/likec4/issues/3426)
+
+- [#3493](https://github.com/likec4/likec4/pull/3493) [`0da542e`](https://github.com/likec4/likec4/commit/0da542e11708825061395fa25b91a1236ed9241e) Thanks [@davydkov](https://github.com/davydkov)! - `likec4 validate` prints warnings and accepts `--max-warnings <n>` to fail when there are more than `n` warnings, so CI can fail on any warning with `--max-warnings 0`. Without the flag, warnings do not change the result or the exit code. JSON output adds `warnings`, `maxWarnings`, and `totalWarnings`/`filteredWarnings` stats; `--file` limits warnings the same way as errors.
+  
+  `LikeC4` adds `getWarnings()`, which returns validation warnings in the same shape as `getErrors()`.
+- Updated dependencies [[`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1)]:
+  - @likec4/core@1.60.1
+  - @likec4/icons@1.46.5
+
 ## 1.60.0
 
 ### Patch Changes

@@ -1,5 +1,30 @@
 # @likec4/language-services
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3495](https://github.com/likec4/likec4/pull/3495) [`2f29031`](https://github.com/likec4/likec4/commit/2f29031acc36016d77502734923a0ef585051943) Thanks [@davydkov](https://github.com/davydkov)! - `diagrams()` is deprecated, use `layoutedModel()` instead. Manual layouts are applied by the views of the layouted model: `model.view(id).$layouted` returns the view with manual layout applied, `$view` returns the latest auto layout.
+  
+  The `likec4/fetchLayoutedModel` LSP request now returns the same data as `layoutedModel()`: views are auto-layouted and manual layouts are in `manualLayouts`. Use `LikeC4Model.create(model).view(id).$layouted` to get a view with manual layout applied.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs: apply, discard and safe delete, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Apply or discard a diff: the `add` blocks are merged into the element definitions of the model files. Code actions in the editor, `likec4 diff list`, and `likec4 diff apply|discard [--dry-run]`.
+  - Overlapping diffs (both change the same element or relationship, or one depends on the other) are reported on both diffs and never resolved automatically: applying an overlapping diff needs a confirmation (`--accept-overlaps`). Other diffs are never edited; the diffs an edit breaks are reported.
+  - Safe delete: remove an element and everything that references it in one edit, with a dry run that reports relationships, deployed instances, affected views and orphans. Code action in the editor, `likec4 safe-delete [--dry-run]`, and the MCP tools `removal-impact` and `list-diffs`.
+
+- [#3493](https://github.com/likec4/likec4/pull/3493) [`0da542e`](https://github.com/likec4/likec4/commit/0da542e11708825061395fa25b91a1236ed9241e) Thanks [@davydkov](https://github.com/davydkov)! - `likec4 validate` prints warnings and accepts `--max-warnings <n>` to fail when there are more than `n` warnings, so CI can fail on any warning with `--max-warnings 0`. Without the flag, warnings do not change the result or the exit code. JSON output adds `warnings`, `maxWarnings`, and `totalWarnings`/`filteredWarnings` stats; `--file` limits warnings the same way as errors.
+  
+  `LikeC4` adds `getWarnings()`, which returns validation warnings in the same shape as `getErrors()`.
+- Updated dependencies [[`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7), [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`2f29031`](https://github.com/likec4/likec4/commit/2f29031acc36016d77502734923a0ef585051943), [`aa82a7c`](https://github.com/likec4/likec4/commit/aa82a7c36f62ecf11c38ff567a18539eece001fa), [`5918048`](https://github.com/likec4/likec4/commit/5918048ad85879b8dfd595c5cdfe49ce07db9d17), [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76), [`a3558b3`](https://github.com/likec4/likec4/commit/a3558b394d62f44047c38d17c1f71308c55e5251), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45), [`6756c79`](https://github.com/likec4/likec4/commit/6756c790d86400b5b5dd2db7a749fe0c3ce0ab26), [`d00fa0c`](https://github.com/likec4/likec4/commit/d00fa0ce7ed3402c087a4e6e6d58cb1451ea2b9e), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1), [`75e32e1`](https://github.com/likec4/likec4/commit/75e32e1e11cdcac0879357438eb22e03e5bb66e6), [`e3d12de`](https://github.com/likec4/likec4/commit/e3d12deba102c952f9611529f058af3c122fe85f)]:
+  - @likec4/config@1.60.1
+  - @likec4/language-server@1.60.1
+  - @likec4/core@1.60.1
+  - @likec4/generators@1.60.1
+  - @likec4/layouts@1.60.1
+  - @likec4/log@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes
