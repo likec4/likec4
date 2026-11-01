@@ -12,24 +12,24 @@ identifier = /^[a-zA-Z_][a-zA-Z0-9_-]*$/
 
 ## Valid examples
 
-| Valid | Why |
-|---|---|
-| `payment-api` | hyphens allowed |
-| `paymentAPI` | camelCase allowed |
-| `payment_service` | underscores allowed |
-| `service1` | digits allowed (not at start) |
-| `_internal` | underscore at start allowed |
-| `PaymentService` | PascalCase allowed |
+| Valid             | Why                           |
+| ----------------- | ----------------------------- |
+| `payment-api`     | hyphens allowed               |
+| `paymentAPI`      | camelCase allowed             |
+| `payment_service` | underscores allowed           |
+| `service1`        | digits allowed (not at start) |
+| `_internal`       | underscore at start allowed   |
+| `PaymentService`  | PascalCase allowed            |
 
 ## Invalid examples
 
-| Invalid | Why | Correct form |
-|---|---|---|
+| Invalid       | Why                                               | Correct form                  |
+| ------------- | ------------------------------------------------- | ----------------------------- |
 | `payment.api` | **dots are FQN separators**, not identifier chars | `payment-api` or `paymentApi` |
-| `payment api` | spaces not allowed | `payment-api` |
-| `1payment` | cannot start with digit | `payment1` |
-| `payment-` | cannot end with hyphen | `payment` |
-| `payment@api` | special chars not allowed | `payment-api` |
+| `payment api` | spaces not allowed                                | `payment-api`                 |
+| `1payment`    | cannot start with digit                           | `payment1`                    |
+| `payment-`    | cannot end with hyphen                            | `payment`                     |
+| `payment@api` | special chars not allowed                         | `payment-api`                 |
 
 ## Critical: dots vs. hyphens
 
@@ -43,23 +43,23 @@ model {
 }
 ```
 
-**Correct identifier:** `payment-api` (with hyphen)  
+**Correct identifier:** `payment-api` (with hyphen)\
 **Incorrect identifier:** `payment.api` (dots are FQN syntax, not part of the name)
 
 ## Use in different contexts
 
-| Context | Rule | Example |
-|---|---|---|
-| **Element name** | Must be valid identifier | `service name = api "payment api"` ✓ |
-| **Tag name** | Must be valid identifier | `tag critical` ✓, `tag #critical` ✗ |
-| **Relationship kind** | Must be valid identifier | `-[async]->` ✓, `-[async-queue]->` ✓ |
-| **Kind name** | Must be valid identifier | `element service`, `deploymentNode vm` ✓ |
-| **Metadata key** | Must be valid identifier | `metadata { api_version "1.0" }` ✓ |
-| **Color name** | Must be valid identifier (or hex) | `color primary`, `color custom-blue` ✓ |
+| Context               | Rule                              | Example                                  |
+| --------------------- | --------------------------------- | ---------------------------------------- |
+| **Element name**      | Must be valid identifier          | `service name = api "payment api"` ✓     |
+| **Tag name**          | Must be valid identifier          | `tag critical` ✓, `tag #critical` ✗      |
+| **Relationship kind** | Must be valid identifier          | `-[async]->` ✓, `-[async-queue]->` ✓     |
+| **Kind name**         | Must be valid identifier          | `element service`, `deploymentNode vm` ✓ |
+| **Metadata key**      | Must be valid identifier          | `metadata { api_version "1.0" }` ✓       |
+| **Color name**        | Must be valid identifier (or hex) | `color primary`, `color custom-blue` ✓   |
 
 ## When referencing by FQN
 
-Once defined, elements are referenced using their fully qualified names (FQNs), which *do* use dots:
+Once defined, elements are referenced using their fully qualified names (FQNs), which _do_ use dots:
 
 ```likec4
 model {
@@ -81,10 +81,10 @@ deployment {
 
 ## Summary
 
-| Check | Valid | Invalid |
-|---|---|---|
-| Identifier rule | `[a-zA-Z_][a-zA-Z0-9_-]*` | Contains dots, spaces, or special chars |
-| Hyphens allowed? | **Yes** in identifiers | Not dots |
-| Dots allowed? | **Only in FQNs** (for scope separation) | Never in a single identifier name |
-| `payment-api` | ✓ identifier | — |
-| `payment.api` | ✗ identifier, but valid as FQN if `payment` and `api` are nested parents/children | — |
+| Check            | Valid                                                                             | Invalid                                 |
+| ---------------- | --------------------------------------------------------------------------------- | --------------------------------------- |
+| Identifier rule  | `[a-zA-Z_][a-zA-Z0-9_-]*`                                                         | Contains dots, spaces, or special chars |
+| Hyphens allowed? | **Yes** in identifiers                                                            | Not dots                                |
+| Dots allowed?    | **Only in FQNs** (for scope separation)                                           | Never in a single identifier name       |
+| `payment-api`    | ✓ identifier                                                                      | —                                       |
+| `payment.api`    | ✗ identifier, but valid as FQN if `payment` and `api` are nested parents/children | —                                       |

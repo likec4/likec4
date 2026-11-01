@@ -25,6 +25,6 @@ model {
   u -> webapp "Uses"
   webapp -> database "Reads from and writes to"
 }
-`
+`,
   )
 })

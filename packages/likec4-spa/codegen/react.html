@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-US">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-  <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
+    />
+    <style>
     html,
     body {
       margin: 0;
@@ -23,25 +24,23 @@
       /* min-height: 100vh; */
       box-sizing: border-box;
     }
-  </style>
-</head>
+    </style>
+  </head>
 
-<body>
-  <div id="likec4-react-root">
-  </div>
-  <script type="module">
-    import { LikeC4View } from './react.tsx';
-    import { StrictMode, createElement } from 'react'
+  <body>
+    <div id="likec4-react-root"></div>
+    <script type="module">
+    import { createElement, StrictMode } from 'react'
     import { createRoot } from 'react-dom/client'
+    import { LikeC4View } from './react.tsx'
     const viewId = (window.location.hash || '#index').slice(1)
     createRoot(document.getElementById('likec4-react-root')).render(
       createElement(
         StrictMode,
         null,
-        createElement(LikeC4View, { viewId })
-      )
+        createElement(LikeC4View, { viewId }),
+      ),
     )
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>

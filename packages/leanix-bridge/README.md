@@ -100,7 +100,7 @@ const plan = await planSyncToLeanix(dryRun, client, { idempotent: true })
 After generating the dry-run artifacts (and optionally the sync plan), you can push them to LeanIX (requires an API token):
 
 ```ts
-import { LeanixApiClient, syncToLeanix, manifestToDrawioLeanixMapping } from '@likec4/leanix-bridge'
+import { LeanixApiClient, manifestToDrawioLeanixMapping, syncToLeanix } from '@likec4/leanix-bridge'
 
 const client = new LeanixApiClient({
   apiToken: process.env.LEANIX_API_TOKEN!,

@@ -1,7 +1,7 @@
 export function toArray(): <T>(iterable: Iterable<T> | ArrayLike<T>) => T[]
 export function toArray<T>(iterable: Iterable<T> | ArrayLike<T>): T[]
 export function toArray<T>(
-  iterable?: Iterable<T> | ArrayLike<T>
+  iterable?: Iterable<T> | ArrayLike<T>,
 ): T[] | (<T>(iterable: Iterable<T> | ArrayLike<T>) => T[]) {
   if (iterable) {
     return Array.from(iterable)

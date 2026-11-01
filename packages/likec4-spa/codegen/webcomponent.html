@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-US">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-  <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
+    />
+    <style>
     html,
     body {
       margin: 0;
@@ -23,20 +24,18 @@
       /* min-height: 100vh; */
       box-sizing: border-box;
     }
-  </style>
-</head>
+    </style>
+  </head>
 
-<body>
-  <div id="likec4-react-root">
-  </div>
-  <script type="module">
-    import './webcomponent.tsx';
+  <body>
+    <div id="likec4-react-root"></div>
+    <script type="module">
+    import './webcomponent.tsx'
     const el = document.createElement('likec4-view')
     const viewId = (window.location.hash || '#index').slice(1)
     el.setAttribute('view-id', viewId)
     el.setAttribute('dynamic-variant', 'sequence')
     document.getElementById('likec4-react-root').appendChild(el)
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
