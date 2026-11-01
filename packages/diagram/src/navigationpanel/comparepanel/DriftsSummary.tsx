@@ -12,7 +12,7 @@ import { deepEqual } from 'fast-equals'
 
 import { nonNullable, sortNaturalByFqn } from '@likec4/core/utils'
 import { css } from '@likec4/styles/css'
-import { HStack, styled, Txt, VStack } from '@likec4/styles/jsx'
+import { HStack, styled, Txt } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
 import { useDebouncedCallback } from '@mantine/hooks'
 import { IconChevronRight } from '@tabler/icons-react'
@@ -215,7 +215,7 @@ function NodeDrifts(
 
       {map(
         drifts,
-        (drift, i) => <DriftKind key={key + drift} variant={driftVariant(drift)}>{drift}</DriftKind>,
+        (drift) => <DriftKind key={key + drift} variant={driftVariant(drift)}>{drift}</DriftKind>,
       )}
     </DriftsGroup>
   )
@@ -249,7 +249,7 @@ function EdgeDrifts({ edge: { id, source, target, drifts }, ...handlers }: {
       </HStack>
       {map(
         drifts,
-        (drift, i) => <DriftKind key={key + drift} variant={driftVariant(drift)}>{drift}</DriftKind>,
+        (drift) => <DriftKind key={key + drift} variant={driftVariant(drift)}>{drift}</DriftKind>,
       )}
     </DriftsGroup>
   )
