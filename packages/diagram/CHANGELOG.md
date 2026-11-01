@@ -1,5 +1,72 @@
 # @likec4/diagram
 
+## 1.60.1
+
+### Patch Changes
+
+- [`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080) Thanks [@davydkov](https://github.com/davydkov)! - Element details put the description first: technology, links and metadata move to a sidebar that can be resized or hidden (the layout is remembered), and element kind and tags move to the footer of the card. The card remembers its size after you resize it and stays inside the window when dragged; double-click its title or the resize handle to reset its size and position.
+  
+  The card header shows the element id; hover a part of it to highlight the path to that parent. When an element has a summary that differs from its description, the summary is collapsed above the description and expands on click.
+  
+  Metadata shows every value at once. Click a key or a value to find other elements with the same metadata. Search supports `meta:key` and `meta:key=value` queries.
+  
+  The style preset adds a `fieldLabel` text style for small all-caps field labels.
+
+- [#3458](https://github.com/likec4/likec4/pull/3458) [`6361dbc`](https://github.com/likec4/likec4/commit/6361dbc62c8f7c198d4721fce9cdfb4ca66ce0ef) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Element details, relationship details, and the relationship browser stay available on compare views, including elements a diff adds or removes. The details card shows the diff status.
+
+- [#3489](https://github.com/likec4/likec4/pull/3489) [`9d672fe`](https://github.com/likec4/likec4/commit/9d672fe710ecaa52619f152c2b31d53eee619f82) Thanks [@davydkov](https://github.com/davydkov)! - Copy an element id from the details card: click any part of the `ID` to copy the path up to it (the last part copies the full id). Works with the keyboard too, and for deployment nodes.
+
+- [#3362](https://github.com/likec4/likec4/pull/3362) [`53caf3d`](https://github.com/likec4/likec4/commit/53caf3d9298cb993798bf35b5d9bca28630242b4) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add details popups for deployment nodes and deployed instances, showing descriptions, links, metadata, views, and deployment structure. Instance details respect overrides and provide access to the logical element's details.
+  
+  Implements [likec4/likec4#2373](https://github.com/likec4/likec4/issues/2373).
+
+- [#3503](https://github.com/likec4/likec4/pull/3503) [`be65d6c`](https://github.com/likec4/likec4/commit/be65d6c93d61f3444a9889e3ea1b38092da151e7) Thanks [@davydkov](https://github.com/davydkov)! - Comparing the manual layout with the latest auto layout is now a dedicated diagram mode. Closing the comparison, navigating to another view or printing always returns to the manual layout. This also fixes the VS Code preview, which kept showing the next view in auto layout after you navigated away while comparing. The comparison is no longer restored after a page reload.
+  
+  `DiagramApi` gets `startCompare()` and `endCompare()`, and `toggleFeature()` now accepts only `'ReadOnly'`. Replace `toggleFeature('CompareWithLatest')` with these methods.
+
+- [`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080) Thanks [@davydkov](https://github.com/davydkov)! - Escape closes the search opened on top of element details, instead of closing the details card. Arrow keys move the caret in the search input while an element is selected.
+
+- [#3446](https://github.com/likec4/likec4/pull/3446) [`24b4f44`](https://github.com/likec4/likec4/commit/24b4f44d32f683ecef924ee8f43ad4b472964f98) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Fix Graph view element labels invisible in light mode. Labels were using `--likec4-palette-hiContrast`, which is the high-contrast color relative to an element's fill, so they appeared near-white on a light canvas. They now use the canvas-appropriate default text color.
+
+- [#3455](https://github.com/likec4/likec4/pull/3455) [`5ad0ce6`](https://github.com/likec4/likec4/commit/5ad0ce604740d6c6d018f31bc8900a55606fab22) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Fix relationship metadata tooltip rendering under dialog overlay
+  
+  The metadata info-icon tooltip in the RelationshipPopover was portaled to
+  `document.body`, which placed it behind any `showModal()` overlay (ElementDetails,
+  RelationshipDetails). The tooltip now portals into the nearest `<dialog>` ancestor
+  when one is present, keeping it in the top layer alongside the overlay.
+
+- [#3389](https://github.com/likec4/likec4/pull/3389) [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add Google Material Symbols support through the `md:` icon prefix.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) now work in diagrams. They show the element or view title (or your label), with a preview card on hover or keyboard focus (title, kind, summary). In element details, relationship popovers, notes, view details, walkthrough and the sequence outline, a click (or Enter) on an element link shows that element in the details card, and a click on a view link opens the view. Broken links are dimmed and say what is missing. Inside diagram nodes, links are plain text, and they are not clickable when element details or navigation are disabled.
+
+- [#3497](https://github.com/likec4/likec4/pull/3497) [`1ebadfd`](https://github.com/likec4/likec4/commit/1ebadfd4b9f0a90e0bee08e152f76a4b389d166e) Thanks [@davydkov](https://github.com/davydkov)! - Hover cards of element and view links in Markdown show the element icon or the view type icon, and an "Open details" / "Open view" button instead of the hint text.
+
+- [#3494](https://github.com/likec4/likec4/pull/3494) [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45) Thanks [@davydkov](https://github.com/davydkov)! - Relationship labels are measured with the diagram font (IBM Plex Sans) during layout, so the space reserved for a label matches the rendered label exactly and labels no longer overlap or leave extra gaps. Long labels wrap by width into balanced lines instead of by character count.
+  
+  In the relationships browser and relationship details, labels are laid out together with elements: they no longer overlap each other, and every relationship goes through its label.
+  
+  Elements are measured the same way: an element keeps the width of its size and grows in height only when its title, technology and description do not fit. Technology is always shown on a single line.
+  
+  The style preset exports `EdgeLabelMetrics`, `ElementNodeMetrics` and `DefaultFontFamily` from `@likec4/style-preset/defaults`, the metrics used by both the label styles and the layouts.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`250bd2c`](https://github.com/likec4/likec4/commit/250bd2c4ec45c5ee24c54844cf9a0bb64d653140) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs in the UI, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Compare views: the view before and after the diff in one diagram, with added, removed and modified elements and relationships marked. Switch between as-is, changes and to-be modes in the playground, `likec4 start` and static builds (`likec4 build`). Vite plugin users get them from the `likec4:diffs` virtual module.
+  - Playground: review the changes of each file before they are applied, and roll back an applied change.
+
+- [#3476](https://github.com/likec4/likec4/pull/3476) [`6994a02`](https://github.com/likec4/likec4/commit/6994a024dc4a789967df5d2702d7bd4d2f271e42) Thanks [@AbdelrhmanAiiob](https://github.com/AbdelrhmanAiiob)! - The Search dialog now uses fuzzy search for elements and views, the same as the `search-element` tool of the MCP server. A word can have a typo ("chekout" finds "checkout") and every word has to match the name, title, id or description. The `kind:` and `#tag` searches and the search by element path (`cloud.backend`) work as before.
+
+- [#3477](https://github.com/likec4/likec4/pull/3477) [`e24ce42`](https://github.com/likec4/likec4/commit/e24ce42a1560d74c4f76cee71c0ed06270c760d3) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Show the folder path of a view in the search dialog and the "Select view" picker, for example `Systemlandscape / Target` instead of just `Target`, and match folder names when searching views.
+
+- [#3467](https://github.com/likec4/likec4/pull/3467) [`65d60b8`](https://github.com/likec4/likec4/commit/65d60b82affcbd39d194c44cba55bf6a8918332e) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Navigation thumbnails of dynamic views with `variant sequence` now show the sequence layout instead of a flow layout fitted into the wrong bounds.
+
+- [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385) Thanks [@davydkov](https://github.com/davydkov)! - The style preset ships smaller CSS: it defines only the color tokens tags need, per default tag color: `likec4.tag.<color>.bg`, `likec4.tag.<color>.bg.hover`, `likec4.tag.<color>.border` and `likec4.tag.<color>.text`.
+  
+  `@likec4/core/styles` exports `isDefaultTagColor`.
+- Updated dependencies [[`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1), [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385)]:
+  - @likec4/core@1.60.1
+  - @likec4/styles@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes
