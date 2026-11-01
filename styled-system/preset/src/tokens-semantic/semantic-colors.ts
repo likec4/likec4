@@ -2,7 +2,6 @@ import { defineSemanticTokens } from '@pandacss/dev'
 import { defaultMantineColors, mantine } from '../generated.ts'
 import { alpha } from '../helpers.ts'
 import { likec4 } from './semantic-colors.likec4.ts'
-import { radixColors } from './semantic-colors.radix.ts'
 import { subflow } from './semantic-colors.subflow.ts'
 import { surface } from './semantic-colors.surface.ts'
 import { black, dark, gray, orange, value, white, yellow } from './value.ts'
@@ -199,5 +198,4 @@ export const colors = defineSemanticTokens.colors({
 
   likec4,
   subflow,
-  ...radixColors,
 })

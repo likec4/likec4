@@ -7,6 +7,7 @@ export {
   EdgeLabelMetrics,
   ElementNodeMetrics,
   elementNodePaddings,
+  isDefaultTagColor,
 } from '@likec4/style-preset/defaults'
 export { defaultTheme } from './theme'
 
