@@ -3,12 +3,12 @@ import { type Tag, splitGlobalFqn } from '@likec4/core'
 import { LikeC4Styles } from '@likec4/core/styles'
 import { ifilter, invariant, toArray } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
-import type { Cancellation, CstNode, LangiumDocument, LangiumDocuments } from 'langium'
+import type { AstNodeDescription, Cancellation, CstNode, LangiumDocument, LangiumDocuments } from 'langium'
 import { AstUtils, DocumentState, GrammarUtils } from 'langium'
 import { flatMap, isString, pipe } from 'remeda'
 import type { Location, Range } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
-import type { ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
+import type { LikeC4AstNode, ParsedAstElement, ParsedAstView, ParsedLikeC4LangiumDocument } from '../ast'
 import { ast } from '../ast'
 import { logger as serverLogger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -18,7 +18,7 @@ import type { DeploymentsIndex } from './deployments-index'
 import type { FqnIndex } from './fqn-index'
 import type { LikeC4ModelParser } from './model-parser'
 
-const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
+const { findNodeForKeyword, findNodeForProperty, findNodesForProperty } = GrammarUtils
 const { getDocument, streamAllContents } = AstUtils
 
 const logger = serverLogger.getChild('locator')
@@ -111,9 +111,14 @@ export class LikeC4ModelLocator {
    * Get LSP Location for an element by FQN (and optional projectId).
    * @param fqn - Fully qualified name (may include project prefix)
    * @param projectId - Optional project scope
+   * @param property - Optional property (e.g. `technology`); falls back to the element name if not declared
    * @returns Location or null
    */
-  public locateElement(fqn: c4.Fqn, projectId?: c4.ProjectId | undefined): Location | null {
+  public locateElement(
+    fqn: c4.Fqn,
+    projectId?: c4.ProjectId | undefined,
+    property?: string | undefined,
+  ): Location | null {
     let [_projectId, _fqn] = splitGlobalFqn(fqn)
     _projectId ??= this.projects.ensureProjectId(projectId)
     const entry = this.fqnIndex.byFqn(_projectId, _fqn).head()
@@ -123,13 +128,60 @@ export class LikeC4ModelLocator {
     }
     return {
       uri: entry.documentUri.toString(),
-      range: docsegment.range,
+      range: (property && this.propertyRange(entry, property)) || docsegment.range,
+    }
+  }
+
+  /**
+   * Range of the declaration that supplies a property of the element or deployment node behind
+   * `entry`, with the parser's precedence: an inline value after the name wins over the body,
+   * and a `descriptionFile` supplies the description.
+   */
+  private propertyRange(entry: AstNodeDescription, property: string): Range | undefined {
+    const doc = this.langiumDocuments.getDocument(entry.documentUri)
+    if (!doc) {
+      return undefined
+    }
+    const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, entry.path)
+    if (!ast.isElement(node) && !ast.isDeploymentNode(node) && !ast.isDeployedInstance(node)) {
+      return undefined
+    }
+    // Inline strings after the name: title, summary and technology (elements), title and summary (deployments)
+    const index = (ast.isElement(node) ? ['title', 'summary', 'technology'] : ['title', 'summary']).indexOf(property)
+    const inlineValue = ast.isElement(node) ? node.props[index] : index === 0 ? node.title : node.summary
+    // The parser falls back to the body for an empty inline summary
+    const inline = index >= 0 && inlineValue !== undefined && (property !== 'summary' || inlineValue !== '')
+      ? ast.isElement(node)
+        ? findNodesForProperty(node.$cstNode, 'props')[index]
+        : findNodeForProperty(node.$cstNode, property)
+      : undefined
+    if (inline) {
+      return inline.range
+    }
+    const props: ReadonlyArray<LikeC4AstNode> = node.body?.props ?? []
+    switch (true) {
+      case property === 'tags':
+        return node.body?.tags?.$cstNode?.range
+      case property === 'metadata':
+        return props.find(ast.isMetadataProperty)?.$cstNode?.range
+      case property === 'description' && props.some(ast.isDescriptionFileProperty):
+        return props.findLast(ast.isDescriptionFileProperty)?.$cstNode?.range
+      // The model exposes `link` declarations as `links`; each one applies, so take the first
+      case property === 'links' || property === 'link':
+        return props.find(ast.isLinkProperty)?.$cstNode?.range
+      default: {
+        const matches = props.filter(p => 'key' in p && p.key === property)
+        // As in the parser: a later string property overrides an earlier one, the first `style` or `icon` applies
+        const match = matches.every(ast.isElementStringProperty) ? matches.at(-1) : matches[0]
+        return match?.$cstNode?.range
+      }
     }
   }
 
   public locateDeploymentElement(
     deploymentFqn: c4.DeploymentFqn,
     projectId?: c4.ProjectId | undefined,
+    property?: string | undefined,
   ): Location | null {
     // let [_projectId, _fqn] = splitGlobalFqn(fqn)
     const _projectId = this.projects.ensureProjectId(projectId)
@@ -142,7 +194,7 @@ export class LikeC4ModelLocator {
     }
     return {
       uri: entry.documentUri.toString(),
-      range: docsegment.range,
+      range: (property && this.propertyRange(entry, property)) || docsegment.range,
     }
   }
 
