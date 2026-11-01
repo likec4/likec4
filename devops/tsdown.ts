@@ -82,7 +82,7 @@ export function nodeModulesCodeSplitting(
     debugName: 'node_modules',
     name: (moduleId: string) => {
       const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
-        ?.groups?.package
+        ?.groups?.['package']
       const isDts = /\.d\.[mc]?ts$/.test(moduleId)
       return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
     },
