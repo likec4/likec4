@@ -3090,6 +3090,9 @@ importers:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@likec4/devops':
+        specifier: workspace:*
+        version: link:../../devops
       '@likec4/language-server':
         specifier: workspace:*
         version: link:../language-server
