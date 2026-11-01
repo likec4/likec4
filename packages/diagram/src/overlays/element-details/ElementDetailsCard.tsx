@@ -721,7 +721,7 @@ const fqnCopyStatus = css({
   },
   '&[data-copied=true]': {
     opacity: '1',
-    color: 'teal.11',
+    color: '[var(--mantine-color-teal-text)]',
   },
 })
 
