@@ -2,7 +2,7 @@ import { nonNullable } from '@likec4/core'
 import type * as t from '@likec4/core/types'
 import { useSelector as useXstateSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
-import { deriveToggledFeatures } from '../likec4diagram/state/machine.setup'
+import { deriveToggledFeatures, isComparingLayouts } from '../likec4diagram/state/machine.setup'
 import type {
   DiagramActorSnapshot,
 } from '../likec4diagram/state/types'
@@ -10,7 +10,7 @@ import { typedSystem } from '../likec4diagram/state/utils'
 import { useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'
 
-export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
+export function selectCompareLayoutState(snapshot: DiagramActorSnapshot): {
   isEnabled: false
   hasEditor: boolean
   isEditable: false
@@ -27,6 +27,7 @@ export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
   canApplyLatest: boolean
   layout: t.LayoutType
 } {
+  const { context } = snapshot
   const hasEditor = context.features.enableEditor
   const drifts = context.view.drifts ?? null
   if (!context.features.enableCompareWithLatest || !drifts || drifts.length === 0) {
@@ -41,10 +42,7 @@ export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
     })
   }
 
-  const {
-    enableCompareWithLatest,
-    enableReadOnly,
-  } = deriveToggledFeatures(context)
+  const { enableReadOnly } = deriveToggledFeatures(snapshot)
 
   const isEditable = !enableReadOnly && hasEditor
 
@@ -52,7 +50,7 @@ export function selectCompareLayoutState({ context }: DiagramActorSnapshot): {
     hasEditor,
     isEnabled: true as const,
     isEditable,
-    state: enableCompareWithLatest === true ? 'comparing' : 'inactive',
+    state: isComparingLayouts(snapshot) ? 'comparing' : 'inactive',
     drifts,
     canApplyLatest: hasEditor && !drifts.includes('type-changed'),
     layout: context.view._layout ?? 'auto',
@@ -114,18 +112,8 @@ export function useDiagramCompareLayout(): [
       return
     }
     const nextIsActive = force ? (force === 'on') : state.state === 'inactive'
-
-    // Ensure that when disabling compare while in auto layout,
-    // we switch back to manual layout
-    if (state.state === 'comparing' && !nextIsActive && state.layout === 'auto') {
-      switchLayout('manual')
-    }
-
-    actorRef.send({
-      type: 'toggle.feature',
-      feature: 'CompareWithLatest',
-      forceValue: nextIsActive,
-    })
+    // Switching back to manual layout on exit is handled by the diagram machine
+    actorRef.send({ type: nextIsActive ? 'compare.start' : 'compare.end' })
   })
 
   const resetManualLayout = useCallbackRef(() => {
@@ -142,11 +130,7 @@ export function useDiagramCompareLayout(): [
     editor.send({ type: 'change.latest-to-manual' })
 
     if (state.state === 'comparing') {
-      actorRef.send({
-        type: 'toggle.feature',
-        feature: 'CompareWithLatest',
-        forceValue: false,
-      })
+      actorRef.send({ type: 'compare.end' })
     }
   })
 

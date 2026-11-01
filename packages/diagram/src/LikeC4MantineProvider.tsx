@@ -6,6 +6,7 @@ import {
   type DefaultMantineColor,
   type MantineColorsTuple,
   type MantineProviderProps,
+  ActionBar,
   Card,
   Code,
   createTheme,
@@ -178,6 +179,12 @@ const likec4Theme = createTheme({
       },
     }),
     Menu: Menu.extend({
+      defaultProps: {
+        radius: 'sm',
+        shadow: 'lg',
+      },
+    }),
+    ActionBar: ActionBar.extend({
       defaultProps: {
         radius: 'sm',
         shadow: 'lg',

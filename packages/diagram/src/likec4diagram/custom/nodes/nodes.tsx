@@ -99,8 +99,13 @@ export function CompoundDetailsButtonWithHandler(
  * Renders an element node.
  */
 export function ElementNode(props: Types.NodeProps<'element'>) {
-  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } =
-    useEnabledFeatures()
+  const {
+    enableCompareWithLatest,
+    enableElementTags,
+    enableElementDetails,
+    enableReadOnly,
+    enableNotes,
+  } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
@@ -117,8 +122,13 @@ export function ElementNode(props: Types.NodeProps<'element'>) {
 }
 
 export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
-  const { enableElementTags, enableElementDetails, enableReadOnly, enableCompareWithLatest, enableNotes } =
-    useEnabledFeatures()
+  const {
+    enableCompareWithLatest,
+    enableElementTags,
+    enableElementDetails,
+    enableReadOnly,
+    enableNotes,
+  } = useEnabledFeatures()
   return (
     <ElementNodeContainer nodeProps={props}>
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}
@@ -135,10 +145,12 @@ export function DeploymentNode(props: Types.NodeProps<'deployment'>) {
 }
 
 const compoundHasDrifts = css({
-  outlineColor: 'likec4.compare.outline',
-  outlineWidth: 'extra',
-  outlineStyle: 'dashed',
-  outlineOffset: '1.5',
+  '&:has(.likec4-node-drifts)': {
+    outlineColor: 'likec4.compare.outline',
+    outlineWidth: 'extra',
+    outlineStyle: 'dashed',
+    outlineOffset: '1.5',
+  },
 })
 
 const hasDrifts = (props: Types.NodeProps) => {
@@ -147,10 +159,9 @@ const hasDrifts = (props: Types.NodeProps) => {
 
 export function CompoundElementNode(props: Types.NodeProps<'compound-element'>) {
   const { enableElementDetails, enableReadOnly, enableCompareWithLatest } = useEnabledFeatures()
-  const showDrifts = enableCompareWithLatest && hasDrifts(props)
   return (
     <CompoundNodeContainer
-      className={showDrifts ? compoundHasDrifts : undefined}
+      className={enableCompareWithLatest && hasDrifts(props) ? compoundHasDrifts : undefined}
       nodeProps={props}
     >
       {enableCompareWithLatest && <NodeDrifts nodeProps={props} />}

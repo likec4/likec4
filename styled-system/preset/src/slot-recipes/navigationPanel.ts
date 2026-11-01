@@ -104,6 +104,8 @@ export const navigationPanel = defineSlotRecipe({
     },
     dropdown: {
       display: 'flex',
+      flexDirection: 'column',
+      gap: 'xs',
       height: 'auto',
       width: 'auto',
       flex: '1',

@@ -11,7 +11,7 @@ import type {
   NodeNotation as ElementNotation,
   ViewChange,
 } from '@likec4/core/types'
-import { invariant, LRUMap, nonNullable } from '@likec4/core/utils'
+import { invariant, nonNullable } from '@likec4/core/utils'
 import type { PartialDeep } from 'type-fest'
 import type { TogglableFeature } from '../../context/DiagramFeatures'
 import type { EditorActorRef } from '../../editor/actor/machine'
@@ -36,16 +36,14 @@ type NodeId = t.aux.NodeId
 type EdgeId = t.aux.EdgeId
 
 export class DiagramApi<A extends Any = Unknown> {
-  private static cache = new LRUMap<string, DiagramApi<Unknown>>(50)
+  private static cache = new WeakMap<DiagramActorRef, DiagramApi<Unknown>>()
 
   public static withActor(actorRef: DiagramActorRef): DiagramApi<Unknown> {
-    let api = this.cache.get(actorRef.id)
-    // Actor can be replaced with the same id (e.g. on remount or HMR)
-    if (!api || api.actor !== actorRef) {
+    let api = this.cache.get(actorRef)
+    if (!api) {
       api = new DiagramApi(actorRef)
-      this.cache.set(actorRef.id, api)
+      this.cache.set(actorRef, api)
     }
-
     return api
   }
 
@@ -153,8 +151,8 @@ export class DiagramApi<A extends Any = Unknown> {
   }
 
   /**
-  * @deprecated Use `openNodeDetails({ type: 'element', element: fqn }, fromNode)`.
-  */
+   * @deprecated Use `openNodeDetails({ type: 'element', element: fqn }, fromNode)`.
+   */
   openElementDetails(fqn: Fqn<A>, fromNode?: NodeId): void {
     this.openNodeDetails({ type: 'element', element: fqn }, fromNode)
   }
@@ -187,6 +185,10 @@ export class DiagramApi<A extends Any = Unknown> {
     this.send({ type: 'unhighlight.all' })
   }
 
+  /**
+   * Select nodes and edges in the diagram
+   * @param target - Optional selection target. If not provided, resets selection
+   */
   select(target?: { nodes?: NodeId[]; edges?: (EdgeId | t.StepPath)[] }): void {
     const nodes = target?.nodes ?? []
     const edges = target?.edges ?? []
@@ -320,6 +322,21 @@ export class DiagramApi<A extends Any = Unknown> {
 
   stopWalkthrough(): void {
     this.send({ type: 'walkthrough.end' })
+  }
+
+  /**
+   * Starts comparing manual layout with the latest auto layout.
+   * Ignored if the view has no layout drifts, or the feature is disabled.
+   */
+  startCompare(): void {
+    this.send({ type: 'compare.start' })
+  }
+
+  /**
+   * Stops comparing layouts, switches back to manual layout (if auto is active)
+   */
+  endCompare(): void {
+    this.send({ type: 'compare.end' })
   }
 
   toggleFeature(feature: TogglableFeature, forceValue?: boolean): void {

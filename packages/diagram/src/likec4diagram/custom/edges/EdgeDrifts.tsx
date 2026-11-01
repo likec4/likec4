@@ -1,4 +1,5 @@
 import { css, cx } from '@likec4/styles/css'
+import { useIsComparingLayouts } from '../../../context/ComparingLayoutsContext'
 import type { Types } from '../../types'
 
 export type EdgeDriftsProps = {
@@ -10,8 +11,9 @@ export function EdgeDrifts({
   edgeProps: { data },
   svgPath,
 }: EdgeDriftsProps) {
+  const isComparing = useIsComparingLayouts()
   const drifts = data.drifts
-  if (!drifts || drifts.length === 0) {
+  if (!isComparing || !drifts || drifts.length === 0) {
     return null
   }
 

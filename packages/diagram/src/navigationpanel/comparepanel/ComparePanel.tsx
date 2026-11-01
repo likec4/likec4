@@ -1,38 +1,46 @@
-import { css } from '@likec4/styles/css'
-import { HStack } from '@likec4/styles/jsx'
+import { Box, Txt } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
-import { Button, Divider } from '@mantine/core'
+import { ActionBar, Button, CloseButton } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { useIsMounted } from '@react-hookz/web'
+import { IconInfoCircle } from '@tabler/icons-react'
 import { type Variants, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useState } from 'react'
+import { PortalToContainer } from '../../custom'
 import { useCallbackRef, useMantinePortalProps } from '../../hooks'
 import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
+import { stopPropagation } from '../../utils'
 import { Tooltip } from '../_common'
-import { ComparePanelControls } from './ComparePanelControls'
 import { DriftsSummary } from './DriftsSummary'
+import { LayoutDriftFrame } from './LayoutDriftFrame'
+import { LayoutTypeSwitcher } from './LayoutTypeSwitcher'
+
+const easeOut = [0.23, 1, 0.32, 1] as const
 
 const variants = {
   initial: {
     opacity: 0,
-    translateX: -20,
+    transform: 'translateX(-8px)',
   },
   animate: {
     opacity: 1,
-    translateX: 0,
+    transform: 'translateX(0px)',
+    transition: { duration: 0.2, ease: easeOut },
   },
   exit: {
     opacity: 0,
-    translateX: -20,
+    transform: 'translateX(-4px)',
+    transition: { duration: 0.15, ease: easeOut },
   },
 } satisfies Variants
 
 export const ComparePanel = memo(() => {
+  const [driftsOpened, driftsPanel] = useDisclosure(true)
   const portalProps = useMantinePortalProps()
-  const isMounted = useIsMounted()
   const [ctx, ops] = useDiagramCompareLayout()
-
-  const [isProcessing, setIsProcessing] = useState(false)
+  const isMounted = useIsMounted()
+  const [isProcessing, setIsProcessing] = useState<'sync' | 'reset' | false>(false)
 
   const resetProcessing = () => {
     // Defer setting setIsProcessing to false to allow for animation to play out
@@ -52,59 +60,96 @@ export const ComparePanel = memo(() => {
       return
     }
     e.stopPropagation()
-    setIsProcessing(true)
+    setIsProcessing('sync')
     setTimeout(() => {
       ops.applyLatestToManual()
       resetProcessing()
-    }, 200)
+    }, 100)
   })
 
   const onResetManualLayout = useCallbackRef((e: React.MouseEvent) => {
     e.stopPropagation()
-    setIsProcessing(true)
+    setIsProcessing('reset')
     setTimeout(() => {
       ops.resetManualLayout()
       resetProcessing()
-    }, 200)
+    }, 100)
   })
 
   return (
-    <AnimatePresence>
-      {ctx.state === 'comparing' && (
-        <>
-          <m.div
-            key={'ComparePanel'}
-            layout="size"
-            layoutDependency={ctx.layout}
-            className={hstack({
-              gap: '2',
-              layerStyle: 'likec4.panel',
-              position: 'relative',
-              px: '2',
-              py: '1',
-              pl: '3',
-              pointerEvents: 'all',
-            })}
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
+    <>
+      <PortalToContainer>
+        <ActionBar
+          opened
+          withinPortal={false}
+          onClose={ops.toggleCompare}>
+          <Button
+            variant="default"
+            size="compact-xs"
+            onClick={() => {
+              driftsPanel.toggle()
+            }}>
+            {driftsOpened ? 'Hide' : 'Show'} drifts
+          </Button>
+          <ActionBar.Divider />
+          <LayoutTypeSwitcher
+            value={ctx.layout}
+            onChange={ops.switchLayout} />
+          <ActionBar.Divider />
+          <Button
+            loading={isProcessing === 'sync'}
+            disabled={!ctx.canApplyLatest || ctx.layout === 'auto' || isProcessing === 'reset'}
+            onClick={onApplyLatest}
+            size="compact-xs"
+            rightSection={
+              <Tooltip
+                onClick={stopPropagation}
+                position="right-start"
+                {...portalProps}
+                label={
+                  <>
+                    Applies changes from the latest auto-layouted<br />
+                    to saved snapshot, preserving (as possible)<br />
+                    manual adjustments.<br />
+                    <br />
+                    You can undo this action.
+                  </>
+                }
+              >
+                <IconInfoCircle size={14} stroke={1.7} opacity={0.5} />
+              </Tooltip>
+            }
           >
-            <ComparePanelControls />
-          </m.div>
+            Sync with latest
+            {!ctx.canApplyLatest && <Box textStyle={'xs'}>view type is changed</Box>}
+          </Button>
+          <Button
+            loading={isProcessing === 'reset'}
+            disabled={isProcessing === 'sync'}
+            variant="default"
+            size="compact-xs"
+            onClick={onResetManualLayout}>
+            Reset manual
+          </Button>
+          <ActionBar.CloseButton />
+        </ActionBar>
+        <LayoutDriftFrame
+          layout={ctx.layout}
+          onClose={ops.toggleCompare} />
+      </PortalToContainer>
+      <AnimatePresence mode="popLayout" anchorY="top">
+        {driftsOpened && (
           <m.div
             key={'ListOfDrifts'}
-            layout="size"
-            layoutDependency={ctx.layout}
             variants={variants}
             initial="initial"
             animate="animate"
             exit="exit"
             className={vstack({
-              gap: '4',
               layerStyle: 'likec4.panel',
               position: 'relative',
-              p: '4',
+              px: '0',
+              py: '0',
               pointerEvents: 'all',
               height: 'auto',
               overflow: 'hidden',
@@ -112,53 +157,50 @@ export const ComparePanel = memo(() => {
               '@/md': {
                 minWidth: '[200px]',
               },
+              maxWidth: {
+                base: '[200px]',
+                '@/sm': '[250px]',
+                '@/md': '[300px]',
+              },
             })}
           >
+            <div
+              className={hstack({
+                gap: '2',
+                pl: '3',
+                pr: '2',
+                mt: '2',
+              })}>
+              <Txt medium size={'sm'} flex="1">
+                Layout drifts
+              </Txt>
+              <Button
+                variant="default"
+                size="compact-xs"
+                fz="xxs"
+                style={{
+                  flex: 0,
+                  // Ensure button has minimum width to prevent layout shifts
+                  minWidth: 100,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  ops.switchLayout(ctx.layout === 'auto' ? 'manual' : 'auto')
+                }}>
+                Switch to {ctx.layout === 'auto' ? 'manual' : 'latest'}
+              </Button>
+              <CloseButton
+                size="xs"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  driftsPanel.close()
+                }} />
+            </div>
             <DriftsSummary />
-            {ctx.canApplyLatest && (
-              <>
-                <m.div layout="position" className={css({ flex: '[0]' })}>
-                  <Divider orientation="horizontal" size={'xs'} mb={'xs'} />
-                  <HStack>
-                    <Tooltip
-                      openDelay={100}
-                      disabled={ctx.layout !== 'auto'}
-                      label="Switch to manual layout to apply changes."
-                      {...portalProps}
-                    >
-                      <Button
-                        loading={isProcessing}
-                        size="xs"
-                        color="orange"
-                        variant="light"
-                        onClick={onApplyLatest}
-                        disabled={ctx.layout === 'auto'}>
-                        Apply changes
-                      </Button>
-                    </Tooltip>
-                    <Tooltip
-                      openDelay={100}
-                      disabled={ctx.layout !== 'manual'}
-                      label="Reset manual layout"
-                      {...portalProps}
-                    >
-                      <Button
-                        disabled={isProcessing}
-                        size="xs"
-                        color="orange"
-                        variant="subtle"
-                        onClick={onResetManualLayout}>
-                        Reset
-                      </Button>
-                    </Tooltip>
-                  </HStack>
-                </m.div>
-              </>
-            )}
           </m.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   )
 })
 ComparePanel.displayName = 'ComparePanel'
