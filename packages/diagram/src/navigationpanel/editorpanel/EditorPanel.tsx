@@ -3,6 +3,7 @@ import { TooltipGroup } from '@mantine/core'
 import { type Variants, AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEnabledFeatures } from '../../context'
+import { useIsComparingLayouts } from '../../context/ComparingLayoutsContext'
 import { ApplySemanticLayout } from './ApplySemanticLayout'
 import { CenterCamera } from './CenterCamera'
 import { ChangeAutoLayoutButton } from './ChangeAutoLayoutButton'
@@ -27,11 +28,11 @@ const variants: Variants = {
 export function EditorPanel() {
   const {
     enableReadOnly,
-    enableCompareWithLatest,
     enableAISemanticLayout,
   } = useEnabledFeatures()
+  const isComparing = useIsComparingLayouts()
 
-  const showAiSemanticLayoutButton = !enableCompareWithLatest && !enableReadOnly && enableAISemanticLayout
+  const showAiSemanticLayoutButton = !isComparing && !enableReadOnly && enableAISemanticLayout
 
   return (
     <AnimatePresence propagate>

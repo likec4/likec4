@@ -4,8 +4,6 @@ import { hstack } from '@likec4/styles/patterns'
 import {
   UnstyledButton,
 } from '@mantine/core'
-import { memo } from 'react'
-import { useDiagramCompareLayout } from '../../hooks/useDiagramCompareLayout'
 
 const borderColors = {
   manual: css({
@@ -25,9 +23,10 @@ const bgColors = {
   }),
 } as const
 
-export const LayoutDriftFrame = memo(() => {
-  const [{ layout, state }, { toggleCompare }] = useDiagramCompareLayout()
-
+export const LayoutDriftFrame = ({ layout, onClose }: {
+  layout: 'manual' | 'auto'
+  onClose: () => void
+}) => {
   return (
     <Box
       className={cx(
@@ -47,20 +46,19 @@ export const LayoutDriftFrame = memo(() => {
       )}
       style={{
         zIndex: '9999',
-        display: state == 'inactive' ? 'none' : undefined,
       }}
     >
       <Btn
         className={bgColors[layout]}
         onClick={(e) => {
           e.stopPropagation()
-          toggleCompare()
+          onClose()
         }}>
         Close compare
       </Btn>
     </Box>
   )
-})
+}
 
 const Btn = UnstyledButton.withProps({
   classNames: {
@@ -75,6 +73,7 @@ const Btn = UnstyledButton.withProps({
       px: '4',
       color: 'mantine.gray[9]',
       pointerEvents: 'all',
+      transition: '[transform 100ms ease-out]',
       _active: {
         transform: 'translateY(-3px)',
       },

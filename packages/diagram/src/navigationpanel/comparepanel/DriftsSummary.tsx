@@ -2,18 +2,22 @@ import type {
   DiagramEdgeDriftReason,
   DiagramNodeDriftReason,
   EdgeId,
+  LayoutedView,
   LayoutedViewDriftReason,
+  LayoutType,
   NodeId,
   NonEmptyReadonlyArray,
 } from '@likec4/core/types'
 import { deepEqual } from 'fast-equals'
 
-import { styled, Txt } from '@likec4/styles/jsx'
-import { vstack } from '@likec4/styles/patterns'
+import { nonNullable, sortNaturalByFqn } from '@likec4/core/utils'
+import { css } from '@likec4/styles/css'
+import { HStack, styled, Txt } from '@likec4/styles/jsx'
+import { hstack, vstack } from '@likec4/styles/patterns'
 import { useDebouncedCallback } from '@mantine/hooks'
-import { type Variants, AnimatePresence, m, stagger } from 'motion/react'
+import { IconChevronRight } from '@tabler/icons-react'
 import type { MouseEvent, MouseEventHandler } from 'react'
-import { filter, hasAtLeast, map, pipe } from 'remeda'
+import { difference, filter, hasAtLeast, map, pipe } from 'remeda'
 import {
   selectDiagramContext,
   useCallbackRef,
@@ -22,54 +26,63 @@ import {
 } from '../../hooks'
 
 const hasDrifts = <
-  E extends {
-    drifts: ReadonlyArray<any> | null | undefined
-  },
->(item: E): item is E & { drifts: NonEmptyReadonlyArray<any> } => {
+  T,
+  E,
+>(item: E & { drifts?: ReadonlyArray<T> | null | undefined }): item is E & { drifts: NonEmptyReadonlyArray<T> } => {
   return !!item.drifts && hasAtLeast(item.drifts, 1)
 }
 
+const edgeEndpoint = (view: LayoutedView, nodeId: NodeId) => {
+  const nd = nonNullable(view.nodes.find(n => n.id === nodeId), `Edge endpoint "${nodeId}" not found`)
+  return {
+    id: nd.id,
+    title: nd.title,
+  }
+}
+
+const filterViewDrifts = <D extends readonly LayoutedViewDriftReason[]>(drifts: D, layout: LayoutType = 'auto') => {
+  const sharedDrifts = ['edges-drift', 'nodes-drift'] as const
+  // If layout is manual, return all drifts
+  if (layout === 'manual') {
+    return difference(
+      drifts,
+      // We show what nodes/edges were removed, no need to show same as view drifts
+      [...sharedDrifts, 'edges-removed', 'nodes-removed'] satisfies LayoutedViewDriftReason[],
+    )
+  }
+  // If layout is auto, filter out
+  return difference(
+    drifts,
+    // We show what nodes/edges were added, no need to show same as view drifts
+    [...sharedDrifts, 'edges-added', 'nodes-added'] satisfies LayoutedViewDriftReason[],
+  )
+}
+
 const selectDrifts = selectDiagramContext(ctx => ({
-  view: ctx.view.drifts ?? [],
+  layout: ctx.view._layout ?? 'auto',
+  view: filterViewDrifts(ctx.view.drifts ?? [], ctx.view._layout),
   nodes: pipe(
     ctx.view.nodes,
-    map(node => ({
-      id: node.id,
-      name: node.title,
-      drifts: node.drifts,
-    })),
     filter(hasDrifts),
+    map(n => ({
+      id: n.id,
+      title: n.title,
+      drifts: n.drifts,
+    })),
+    sortNaturalByFqn(),
   ),
   edges: pipe(
     ctx.view.edges,
-    map(edge => ({
-      edgeId: edge.id,
-      drifts: edge.drifts,
-    })),
     filter(hasDrifts),
+    map(e => ({
+      id: e.id,
+      label: e.label,
+      source: edgeEndpoint(ctx.view, e.source),
+      target: edgeEndpoint(ctx.view, e.target),
+      drifts: e.drifts,
+    })),
   ),
 }), deepEqual)
-
-const variants = {
-  initial: {
-    opacity: 0,
-    translateY: -8,
-  },
-  animate: {
-    opacity: 1,
-    translateY: 0,
-    transition: {
-      delayChildren: stagger(0.1),
-    },
-  },
-  exit: {
-    opacity: 0,
-    translateY: -8,
-    transition: {
-      delayChildren: stagger(0.2, { startDelay: .5, from: 'last' }),
-    },
-  },
-} satisfies Variants
 
 type Handlers = {
   onMouseEnter: MouseEventHandler
@@ -87,7 +100,7 @@ export function DriftsSummary() {
       e.stopPropagation()
       diagram.unhighlightAll()
     },
-    150,
+    250,
   )
 
   const onMouseEnter: MouseEventHandler = useCallbackRef((e) => {
@@ -129,77 +142,58 @@ export function DriftsSummary() {
   }
 
   const { view, nodes, edges } = selected
-  const hasDrifts = view.length > 0 || nodes.length > 0 || edges.length > 0
+  const hasViewDrifts = hasAtLeast(view, 1)
+  const hasNodeDrifts = hasAtLeast(nodes, 1)
+  const hasEdgeDrifts = hasAtLeast(edges, 1)
+
+  const hasDrifts = hasViewDrifts || hasNodeDrifts || hasEdgeDrifts
+
+  if (!hasDrifts) {
+    return null
+  }
 
   return (
-    <AnimatePresence>
-      {hasDrifts && (
-        <m.div
-          key={`drifts-summary`}
-          layout="size"
-          variants={variants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          layoutDependency={selected}
-          className={vstack({
-            mx: '[calc({spacing.2} * -1)]',
-            px: '2',
-            flex: '1',
-            height: '100%',
-            overflow: 'scroll',
-            gap: '4',
-          })}
-        >
-          {hasAtLeast(view, 1) && <ViewDrifts drifts={view} />}
-          {nodes.length > 0 && (
-            <m.div key={`nodes-drifts`} layout>
-              <SectionHeader>Elements:</SectionHeader>
-              <div className={vstack({ mt: '2', gap: '2' })}>
-                {map(
-                  nodes,
-                  (node) => <NodeDrifts key={node.id} {...node} {...handlers} />,
-                )}
-              </div>
-            </m.div>
-          )}
-          {edges.length > 0 && (
-            <m.div key={`edges-drifts`} layout>
-              <SectionHeader>Relationships:</SectionHeader>
-              <div className={vstack({ mt: '2', gap: '2' })}>
-                {map(edges, (edge) => <EdgeDrifts key={edge.edgeId} {...edge} {...handlers} />)}
-              </div>
-            </m.div>
-          )}
-        </m.div>
+    <div
+      className={vstack({
+        flex: '1',
+        height: '100%',
+        gap: '0',
+        overflow: 'scroll',
+      })}
+    >
+      {hasViewDrifts && (
+        <>
+          <SectionHeader key="view-drifts-header">View:</SectionHeader>
+          <HStack key="view-drifts" flexWrap="wrap" my="3" pl="3">
+            {map(
+              view,
+              (drift) => <DriftKind key={`view-${drift}`} variant={driftVariant(drift)}>{drift}</DriftKind>,
+            )}
+          </HStack>
+        </>
       )}
-    </AnimatePresence>
-  )
-}
-
-function ViewDrifts({ drifts }: { drifts: NonEmptyReadonlyArray<LayoutedViewDriftReason> }) {
-  return (
-    <>
-      <m.div
-        key={`view-drifts-header`}
-        layout="position"
-        className={vstack({
-          gap: '2',
-        })}>
-        <SectionHeader>View drifts (summary):</SectionHeader>
-        <DriftsGroup key={`view-drifts`}>
-          {map(drifts, (drift) => <DriftLabel key={drift}>{drift}</DriftLabel>)}
-        </DriftsGroup>
-      </m.div>
-    </>
+      {hasNodeDrifts && (
+        <>
+          <SectionHeader key="nodes-section">Elements</SectionHeader>
+          {map(
+            nodes,
+            (node) => <NodeDrifts key={node.id} node={node} {...handlers} />,
+          )}
+        </>
+      )}
+      {hasEdgeDrifts && (
+        <>
+          <SectionHeader key="edges-section">Relationships</SectionHeader>
+          {map(edges, (edge) => <EdgeDrifts key={edge.id} edge={edge} {...handlers} />)}
+        </>
+      )}
+    </div>
   )
 }
 
 function NodeDrifts(
-  { id, name, drifts, ...handlers }: {
-    id: NodeId
-    name: string
-    drifts: NonEmptyReadonlyArray<DiagramNodeDriftReason>
+  { node: { id, title, drifts }, ...handlers }: {
+    node: typeof selectDrifts.Out['nodes'][number]
   } & Handlers,
 ) {
   const key = `node-drifts-${id}`
@@ -208,109 +202,156 @@ function NodeDrifts(
       key={key}
       data-drift-type="node"
       data-drift-id={id}
-      {...handlers}
-    >
+      {...handlers}>
       <Txt
         truncate
-        medium
         css={{
-          maxWidth: {
-            base: '[160px]',
-            '@/sm': '[180px]',
-            '@/md': '[250px]',
-          },
+          flex: 'auto',
         }}
-        color={'likec4.compare.outline'}
         fontSize={'xs'}
         lineHeight={'sm'}>
-        {name}
+        {title}
       </Txt>
-      {map(drifts, (drift, i) => <DriftLabel key={key + drift + i}>{drift}</DriftLabel>)}
+
+      {map(
+        drifts,
+        (drift) => <DriftKind key={key + drift} variant={driftVariant(drift)}>{drift}</DriftKind>,
+      )}
     </DriftsGroup>
   )
 }
 
-function EdgeDrifts({ edgeId, drifts, ...handlers }: {
-  edgeId: EdgeId
-  drifts: NonEmptyReadonlyArray<DiagramEdgeDriftReason>
+function EdgeDrifts({ edge: { id, source, target, drifts }, ...handlers }: {
+  edge: typeof selectDrifts.Out['edges'][number]
 } & Handlers) {
-  const key = `edge-drifts-${edgeId}`
+  const key = `edge-drifts-${id}`
   return (
     <DriftsGroup
       key={key}
       data-drift-type="edge"
-      data-drift-id={edgeId}
+      data-drift-id={id}
       {...handlers}
     >
-      {map(drifts, (drift, i) => (
-        <DriftLabel
-          key={key + drift + i}>
-          {drift}
-        </DriftLabel>
-      ))}
+      <HStack
+        css={{
+          gap: '0.5',
+          flex: 'auto',
+          justifyContent: 'stretch',
+          flexWrap: 'nowrap',
+        }}>
+        <Txt size="xs" lh="sm" truncate>
+          {source.title}
+        </Txt>
+        <IconChevronRight size={12} className={css({ color: 'text.dimmed' })} />
+        <Txt size="xs" lh="sm" truncate>
+          {target.title}
+        </Txt>
+      </HStack>
+      {map(
+        drifts,
+        (drift) => <DriftKind key={key + drift} variant={driftVariant(drift)}>{drift}</DriftKind>,
+      )}
     </DriftsGroup>
   )
 }
 
-const DriftsGroup = styled(m.div, {
-  base: vstack.raw({
-    gap: '1',
-    px: '3',
-    py: '2',
+const DriftsGroup = styled('div', {
+  base: hstack.raw({
+    width: 'full',
+    flex: '1',
+    gap: '2',
+    rowGap: '2',
+    pl: '3',
+    pr: '2',
+    pt: '2',
+    pb: '3',
     cursor: 'default',
-    rounded: 'sm',
-    backgroundColor: 'likec4.compare.manual/10',
-    borderWidth: 'default',
-    borderStyle: 'solid',
-    borderColor: 'likec4.compare.outline/20',
+    flexWrap: 'wrap',
     _hover: {
-      backgroundColor: 'likec4.compare.manual/20',
-      borderColor: 'likec4.compare.outline/25',
+      backgroundColor: 'surface.hover',
+    },
+    '& + &': {
+      borderTop: 'none',
     },
   }),
 }, {
   defaultProps: {
     className: 'group',
-    variants,
-    layout: true,
-    initial: 'initial',
-    animate: 'animate',
-    exit: 'exit',
   },
 })
 
-const SectionHeader = styled(m.div, {
+const SectionHeader = styled('div', {
   base: {
     userSelect: 'none',
     fontWeight: 'medium',
-    textStyle: 'dimmed.xs',
-    pl: '2',
-  },
-}, {
-  defaultProps: {
-    variants,
-    layout: 'position',
-    initial: 'initial',
-    animate: 'animate',
-    exit: 'exit',
+    textStyle: 'fieldLabel',
+    color: 'text.dimmed',
+    backgroundColor: 'surface.sunken',
+    pl: '3',
+    py: '1',
+    borderTop: 'subtle',
   },
 })
 
-const DriftLabel = styled(m.div, {
+function driftVariant(
+  drift: LayoutedViewDriftReason | DiagramEdgeDriftReason | DiagramNodeDriftReason,
+): 'added' | 'modified' | 'removed' {
+  switch (drift) {
+    case 'edges-removed':
+    case 'nodes-removed':
+    case 'removed':
+      return 'removed'
+    case 'added':
+    case 'nodes-added':
+    case 'edges-added':
+      return 'added'
+    default:
+      return 'modified'
+  }
+}
+
+const DriftKind = styled('div', {
   base: {
-    userSelect: 'none',
-    textStyle: 'xs',
-    color: {
-      base: 'text',
-      _groupHover: 'text.bright',
+    flexGrow: 0,
+    flexShrink: 0,
+    flex: 'auto',
+    display: 'block',
+    fontSize: '[8px]',
+    fontFamily: 'mono',
+    fontWeight: 'medium',
+    px: '1',
+    rounded: 'xs',
+    border: 'subtle',
+  },
+  variants: {
+    variant: {
+      removed: {
+        color: 'likec4.diff.removed',
+        backgroundColor: 'likec4.diff.removed/5',
+        borderColor: 'likec4.diff.removed/40',
+        _groupHover: {
+          backgroundColor: 'likec4.diff.removed/10',
+        },
+      },
+      added: {
+        color: 'likec4.diff.added',
+        backgroundColor: 'likec4.diff.added/5',
+        borderColor: 'likec4.diff.added/40',
+        _groupHover: {
+          backgroundColor: 'likec4.diff.added/15',
+        },
+      },
+      modified: {
+        color: 'likec4.diff.modified',
+        backgroundColor: 'likec4.diff.modified/5',
+        borderColor: 'likec4.diff.modified/40',
+        _groupHover: {
+          backgroundColor: 'likec4.diff.modified/15',
+        },
+      },
     },
   },
-}, {
-  defaultProps: {
-    variants,
-    layout: 'position',
-    initial: 'initial',
-    animate: 'animate',
-    exit: 'exit',
+  defaultVariants: {
+    variant: 'modified',
   },
 })

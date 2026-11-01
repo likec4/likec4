@@ -273,7 +273,7 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
 
         let diagram = { ...snapshot } as Writable<LayoutedView>
         diagram.drifts = [
-          'not-exists',
+          'removed',
         ]
         diagram._layout = 'manual'
         return {
