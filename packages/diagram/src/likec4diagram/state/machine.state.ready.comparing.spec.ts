@@ -1,8 +1,10 @@
 import type { LayoutedDynamicView, LayoutedElementView, LayoutedViewDriftReason, LayoutType } from '@likec4/core/types'
 import { scalar } from '@likec4/core/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createActor, fromCallback } from 'xstate'
+import { createActor, fromCallback, fromPromise } from 'xstate'
 import { type EnabledFeatures, DefaultFeatures } from '../../context/DiagramFeatures'
+import { editorActorLogic } from '../../editor/actor/machine'
+import type { EditorCalls } from '../../editor/actor/setup'
 import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramMachine } from './machine'
 import { deriveToggledFeatures, isComparingLayouts } from './machine.setup'
@@ -51,21 +53,31 @@ const mockDynamicView = {
 
 // XYStore and XYFlow are intentional partial stubs:
 // only the methods the machine actually calls are implemented
-const mockXYStore = {
-  getState: () => ({
-    width: 800,
-    height: 600,
-    transform: [0, 0, 1] as [number, number, number],
-    panZoom: undefined,
-    panBy: async () => false,
-    resetSelectedElements: () => {},
-    nodeOrigin: [0, 0] as [number, number],
-    nodeLookup: new Map(),
-    parentLookup: new Map(),
-  }),
-  setState: () => {},
-  subscribe: () => () => {},
-} as unknown as XYStoreApi
+const mockXYStore = (selectedNodeIds: string[], view: LayoutedElementView | LayoutedDynamicView) =>
+  ({
+    getState: () => ({
+      width: 800,
+      height: 600,
+      transform: [0, 0, 1] as [number, number, number],
+      panZoom: undefined,
+      panBy: async () => false,
+      resetSelectedElements: () => {},
+      nodeOrigin: [0, 0] as [number, number],
+      nodeLookup: new Map([...new Set([...selectedNodeIds, ...view.nodes.map(n => n.id)])].map(id => {
+        const node = view.nodes.find(n => n.id === id)
+        return [id, {
+          id,
+          selected: selectedNodeIds.includes(id),
+          data: node ?? {},
+          measured: { width: node?.width ?? 100, height: node?.height ?? 100 },
+          internals: { positionAbsolute: { x: node?.x ?? 0, y: node?.y ?? 0 } },
+        }]
+      })),
+      parentLookup: new Map(),
+    }),
+    setState: () => {},
+    subscribe: () => () => {},
+  }) as unknown as XYStoreApi
 
 const mockXYFlow = {
   getViewport: () => ({ x: 0, y: 0, zoom: 1 }),
@@ -85,18 +97,24 @@ const features: EnabledFeatures = {
  * Creates a test actor for the diagram machine, starts it and advances it to `ready`.
  * The actors touching the DOM are replaced with no-ops, so this runs in Node.js.
  */
-function createTestActor(view: LayoutedElementView | LayoutedDynamicView = mockView()) {
+function createTestActor(
+  view: LayoutedElementView | LayoutedDynamicView = mockView(),
+  selectedNodeIds: string[] = [],
+  editorLogic = editorActorLogic,
+) {
   const actor = createActor(
     diagramMachine.provide({
       actors: {
+        editor: editorLogic,
         mediaPrint: fromCallback(() => () => {}),
         hotkey: fromCallback(() => () => {}),
       },
     }),
     {
+      systemId: 'diagram',
       input: {
         view,
-        xystore: mockXYStore,
+        xystore: mockXYStore(selectedNodeIds, view),
         zoomable: true,
         pannable: true,
         nodesDraggable: false,
@@ -274,7 +292,7 @@ describe('ready.comparing', () => {
   })
 
   it('is readonly in auto layout, and editable in manual layout', () => {
-    const { actor } = createTestActor()
+    const { actor } = createTestActor(mockView(), ['first', 'second'])
     actor.send({ type: 'compare.start' })
 
     expect(deriveToggledFeatures(actor.getSnapshot()).enableReadOnly).toBe(false)
@@ -284,15 +302,105 @@ describe('ready.comparing', () => {
 
     expect(deriveToggledFeatures(actor.getSnapshot()).enableReadOnly).toBe(true)
     expect(actor.getSnapshot().can({ type: 'layout.align', mode: 'Left' })).toBe(false)
-    actor.stop()
-  })
 
-  it('auto layout outside of comparing does not force readonly', () => {
-    const { actor } = createTestActor(mockView({ layout: 'auto' }))
+    switchLayout(actor, 'manual')
 
     expect(deriveToggledFeatures(actor.getSnapshot()).enableReadOnly).toBe(false)
     expect(actor.getSnapshot().can({ type: 'layout.align', mode: 'Left' })).toBe(true)
     actor.stop()
+  })
+
+  it('auto layout outside of comparing does not force readonly', () => {
+    const { actor } = createTestActor(mockView({ layout: 'auto' }), ['first', 'second'])
+
+    expect(deriveToggledFeatures(actor.getSnapshot()).enableReadOnly).toBe(false)
+    expect(actor.getSnapshot().can({ type: 'layout.align', mode: 'Left' })).toBe(true)
+    actor.stop()
+  })
+
+  it('applies the editor latest layout while unsynced and saves the updated diagram', async () => {
+    const view = {
+      ...mockView(),
+      nodes: [{
+        id: scalar.NodeId('a'),
+        modelRef: scalar.Fqn('a'),
+        parent: null,
+        children: [],
+        inEdges: [],
+        outEdges: [],
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        labelBBox: { x: 0, y: 0, width: 100, height: 24 },
+        kind: 'component',
+        title: 'A',
+        description: null,
+        technology: null,
+        color: 'primary',
+        shape: 'rectangle',
+        style: {},
+        level: 0,
+        tags: [],
+      }],
+    } satisfies LayoutedElementView
+    const updated = { ...view, hash: 'applied-latest' }
+    const executeChange = vi.fn<EditorCalls.ExecuteChange>(async ({ input }) => ({
+      requested: input.changes,
+      applied: input.changes,
+      waitForViewSync: false,
+    }))
+    const { actor } = createTestActor(
+      view,
+      [],
+      editorActorLogic.provide({
+        actors: {
+          hotkey: fromCallback(() => () => {}),
+          applyLatest: fromPromise<EditorCalls.ApplyLatestToManual.Output, EditorCalls.ApplyLatestToManual.Input>(
+            async () => ({ updated }),
+          ),
+          executeChange: fromPromise(executeChange),
+        },
+      }),
+    )
+    try {
+      actor.send({ type: 'update.features', features: { ...features, enableEditor: true } })
+      const editor = actor.getSnapshot().children.editor
+      if (!editor) {
+        throw new Error('editor actor not found')
+      }
+      editor.send({ type: 'edit.move.start', subject: 'node' })
+      editor.send({ type: 'edit.move.end' })
+      expect(editor.getSnapshot().context.unsynced).toBe(true)
+
+      editor.send({ type: 'change.latest-to-manual' })
+      actor.send({
+        type: 'update.view',
+        source: 'external',
+        view: { ...mockView(), hash: 'stale-external' },
+        xynodes: [],
+        xyedges: [],
+      })
+      expect(actor.getSnapshot().context.view.hash).toBe(mockView().hash)
+
+      await vi.advanceTimersByTimeAsync(20)
+
+      expect(actor.getSnapshot().context.view.hash).toBe(updated.hash)
+      expect(editor.getSnapshot().context.unsynced).toBe(true)
+
+      await vi.advanceTimersByTimeAsync(2_000)
+
+      expect(executeChange).toHaveBeenCalledTimes(1)
+      expect(executeChange.mock.calls[0]![0].input.changes).toContainEqual(
+        expect.objectContaining({
+          op: 'save-view-snapshot',
+          layout: expect.objectContaining({ hash: updated.hash }),
+        }),
+      )
+      expect(editor.getSnapshot().context.unsynced).toBe(false)
+    } finally {
+      actor.stop()
+    }
   })
 
   it('leaves comparing and switches back to manual layout on navigation', () => {

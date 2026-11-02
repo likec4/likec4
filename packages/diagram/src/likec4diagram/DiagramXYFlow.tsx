@@ -13,6 +13,7 @@ import { Controls as XYFlowControls } from '@xyflow/react'
 import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
+import { useRef } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
@@ -102,9 +103,14 @@ export function shouldCollapseSelectionOnClick(params: {
   nodesSelectable: boolean
   isNodeSelected: boolean
   selectedNodesCount: number
+  selectedEdgesCount: number
   hasModifierKey: boolean
+  multiSelectionActive: boolean
+  wasDragged: boolean
 }): boolean {
-  return params.nodesSelectable && params.isNodeSelected && !params.hasModifierKey && params.selectedNodesCount > 1
+  return params.nodesSelectable && params.isNodeSelected
+    && !params.wasDragged && !params.hasModifierKey && !params.multiSelectionActive
+    && params.selectedNodesCount + params.selectedEdgesCount > 1
 }
 
 const selectXYProps = selectDiagramSnapshot((snapshot) => {
@@ -207,6 +213,7 @@ export function LikeC4DiagramXYFlow({
 
   const { reducedGraphics, $panning } = useRootContainer()
   const xystore = useXYStoreApi()
+  const wasDragged = useRef(false)
 
   const isReducedGraphics = reducedGraphics,
     layoutConstraints = useLayoutConstraints(),
@@ -258,6 +265,8 @@ export function LikeC4DiagramXYFlow({
     console.warn('renderNodes changed - this might degrade performance')
   }, [nodeTypes])
 
+  const dragHandlers = nodesDraggable ? (isGraphVariant ? graphForceHandlers : layoutConstraints) : undefined
+
   return (
     <BaseXYFlow<Types.AnyNode, Types.AnyEdge>
       nodes={nodes}
@@ -279,14 +288,18 @@ export function LikeC4DiagramXYFlow({
           return
         }
         e.stopPropagation()
+        const { nodes, edges, multiSelectionActive, addSelectedNodes } = xystore.getState()
         const collapseSelection = shouldCollapseSelectionOnClick({
           nodesSelectable,
           isNodeSelected: node.selected === true,
-          selectedNodesCount: xystore.getState().nodes.filter(n => n.selected).length,
+          selectedNodesCount: nodes.filter(n => n.selected).length,
+          selectedEdgesCount: edges.filter(e => e.selected).length,
           hasModifierKey: e.ctrlKey || e.metaKey || e.shiftKey,
+          multiSelectionActive,
+          wasDragged: wasDragged.current,
         })
         if (collapseSelection) {
-          xystore.getState().addSelectedNodes([node.id])
+          addSelectedNodes([node.id])
         }
         diagram.send({ type: 'xyflow.nodeClick', node })
         onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
@@ -371,9 +384,17 @@ export function LikeC4DiagramXYFlow({
       edgesFocusable
       elevateEdgesOnSelect={!enableReadOnly}
       zIndexMode="manual"
-      {...(nodesDraggable && (isGraphVariant ? graphForceHandlers : layoutConstraints))}
+      {...dragHandlers}
       {...props}
       {...safeReactFlowProps}
+      onPointerDownCapture={useCallbackRef(() => {
+        // Keep the drag flag through drag-stop and the subsequent click, until the next gesture.
+        wasDragged.current = false
+      })}
+      onNodeDragStart={useCallbackRef((event, node, nodes) => {
+        wasDragged.current = true
+        dragHandlers?.onNodeDragStart(event, node, nodes)
+      })}
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}>
       {enableControls && (
