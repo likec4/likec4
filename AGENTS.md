@@ -11,17 +11,17 @@ do not copy them into tool adapters. Paths below are relative to the repository 
 Before planning, editing, or reviewing, read each reference that matches the task, including cross-package work.
 Read these files explicitly; do not depend on automatic nested instruction or skill discovery.
 
-- To locate packages, apps, exports, examples, or bridge documentation: [project map](devops/agent-instructions/project-map.md).
+- To locate packages, apps, exports, examples, or bridge documentation: [project map](.agents/instructions/project-map.md).
 - For model stages, Builder types, SDK APIs, DSL generation/writeback, core declarations, view drift,
-  grammar, or language services: [model and API rules](devops/agent-instructions/model-api.md). Read for changes in
+  grammar, or language services: [model and API rules](.agents/instructions/model-api.md). Read for changes in
   `packages/core`, `packages/language-server`, `packages/language-services`, `packages/generators`, or `packages/likec4`.
 - For diagram UI, state, SPA, virtual modules, RPC, or app/language-server data flow:
-  [webapp rules](devops/agent-instructions/webapp.md). Read for changes in `packages/diagram`,
+  [webapp rules](.agents/instructions/webapp.md). Read for changes in `packages/diagram`,
   `packages/likec4-spa`, or `packages/vite-plugin`, and for `packages/likec4` static-site builds
   or `./internal` consumers.
 - For sequence layout in either `packages/diagram/src/likec4diagram/xyflow-sequence/` or
   `packages/layouts/src/sequence/`, including calls from `packages/layouts/src/graphviz/GraphvizLayoter.ts`:
-  [sequence rules](devops/agent-instructions/sequence.md). Also read webapp rules when
+  [sequence rules](.agents/instructions/sequence.md). Also read webapp rules when
   working in the diagram dev copy.
 
 Critical boundaries: DSL writeback loses comments, source positions, and formatting; it is generation, not formatting.
@@ -95,7 +95,7 @@ Always run `pnpm generate` after checkout, when generated files are missing, aft
 
 - AGENTS.md is the canonical shared repository instruction file.
 - The root `CLAUDE.md` file is the Claude Code adapter and must contain exactly `@AGENTS.md`.
-- Nested `CLAUDE.md` files are not shared adapters. Keep one only when Claude Code's lazy-loaded subtree memory should point agents at materially local guidance routed by AGENTS.md; it must import AGENTS.md and contain only a short pointer, not copied rules. Currently `packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md` is allowed for the sequence layouter workbench.
+- Nested `CLAUDE.md` files may import the relevant task references directly. Keep them scoped to their subtree and do not copy rules. Currently `packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md` imports sequence and webapp rules.
 - Tools with native `AGENTS.md` support should read `AGENTS.md` directly.
 - Tool-specific files with import support should import `AGENTS.md`.
 - Tools without import support may use generated plain-text adapters derived from `AGENTS.md`, but those adapters must be generated and checked for drift.

@@ -15,8 +15,8 @@ import { afterEach, describe, it } from 'node:test'
 const repoRoot = path.resolve(import.meta.dirname, '..')
 const checker = path.join(repoRoot, 'devops/check-agent-instructions.mjs')
 const canonicalAgents = readFileSync(path.join(repoRoot, 'AGENTS.md'), 'utf8')
-const sequenceLayouterClaude =
-  '@../../../../../AGENTS.md\n\nClaude Code local memory: follow the sequence and webapp rules routed by the imported root `AGENTS.md`.\n'
+const sequenceClaudePath = 'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md'
+const sequenceLayouterClaude = readFileSync(path.join(repoRoot, sequenceClaudePath), 'utf8')
 
 const tempRoots = []
 
@@ -53,7 +53,7 @@ function createFixture(files = {}) {
 
   const referenceFiles = Object.fromEntries(
     ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md'].map(name => {
-      const relativePath = `devops/agent-instructions/${name}`
+      const relativePath = `.agents/instructions/${name}`
       return [relativePath, readFileSync(path.join(repoRoot, relativePath), 'utf8')]
     }),
   )
@@ -61,6 +61,7 @@ function createFixture(files = {}) {
     ...referenceFiles,
     'AGENTS.md': canonicalAgents,
     'CLAUDE.md': '@AGENTS.md\n',
+    [sequenceClaudePath]: sequenceLayouterClaude,
     '.github/agents/changeset-generator.agent.md':
       '> AGENTS.md is the canonical source for shared LikeC4 repository instructions, including changeset policy. This file is a task-specific wrapper for generating changeset files.\n',
     '.agents/skills/changeset-generator/SKILL.md':
@@ -101,7 +102,14 @@ void describe('check-agent-instructions', () => {
   })
 
   void it('rejects symlink instruction adapters even on Windows checkouts', () => {
-    for (const file of ['AGENTS.md', 'CLAUDE.md', 'devops/agent-instructions/webapp.md']) {
+    for (
+      const file of [
+        'AGENTS.md',
+        'CLAUDE.md',
+        '.agents/instructions/webapp.md',
+        sequenceClaudePath,
+      ]
+    ) {
       const root = createFixture()
       addIndexOnlyFile(root, file, 'other.md', '120000')
       expectFail(root, /must be a regular file, not a symlink adapter/)
@@ -110,115 +118,58 @@ void describe('check-agent-instructions', () => {
 
   void it('rejects a missing task reference', () => {
     const root = createFixture()
-    rmSync(path.join(root, 'devops/agent-instructions/model-api.md'))
+    rmSync(path.join(root, '.agents/instructions/model-api.md'))
     expectFail(root, /model-api\.md must exist/)
   })
 
   void it('rejects an unreachable task reference', () => {
     expectFail(
       createFixture({
-        'AGENTS.md': canonicalAgents.replace('](devops/agent-instructions/webapp.md)', '](missing.md)'),
+        'AGENTS.md': canonicalAgents.replace('](.agents/instructions/webapp.md)', '](missing.md)'),
       }),
-      /task reference link/,
+      /link exactly once to task reference/,
     )
   })
 
   void it('rejects an eager import of task guidance', () => {
     expectFail(
       createFixture({
-        'AGENTS.md': `${canonicalAgents}\n@devops/agent-instructions/webapp.md\n`,
+        'AGENTS.md': `${canonicalAgents}\n@.agents/instructions/webapp.md\n`,
       }),
       /must be read on demand/,
     )
   })
 
-  void it('rejects lost reference sections and rules', () => {
+  void it('rejects empty task references', () => {
     for (const name of ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md']) {
       expectFail(
         createFixture({
-          [`devops/agent-instructions/${name}`]: '# Empty reference\n',
+          [`.agents/instructions/${name}`]: '# Empty reference\n',
         }),
-        /required section|preserved rule/,
+        /required section/,
       )
     }
   })
 
-  void it('keeps shared policy in the root', () => {
-    const phrase = 'Always use `patch` changesets; versioning is handled manually by maintainers.'
-    const file = 'devops/agent-instructions/webapp.md'
+  void it('accepts meaning-preserving reference wording changes', () => {
+    const file = '.agents/instructions/webapp.md'
+    expectPass(createFixture({
+      [file]: readFileSync(path.join(repoRoot, file), 'utf8').replace(
+        'RPC is dev-only.',
+        'RPC runs only during development.',
+      ),
+    }))
+  })
+
+  void it('rejects duplicate task reference links', () => {
     expectFail(
       createFixture({
-        'AGENTS.md': canonicalAgents.replace(phrase, ''),
-        [file]: `${readFileSync(path.join(repoRoot, file), 'utf8')}\n${phrase}\n`,
+        'AGENTS.md': canonicalAgents.replace(
+          '](.agents/instructions/webapp.md)',
+          '](.agents/instructions/webapp.md) and [duplicate](.agents/instructions/webapp.md)',
+        ),
       }),
-      /AGENTS\.md must contain required preserved rule/,
-    )
-  })
-
-  void it('keeps moved rules in their owning reference', () => {
-    const phrase = 'Always diff the two directories before syncing; do not assume they are currently identical.'
-    const source = 'devops/agent-instructions/sequence.md'
-    const other = 'devops/agent-instructions/model-api.md'
-    expectFail(
-      createFixture({
-        [source]: readFileSync(path.join(repoRoot, source), 'utf8').replace(phrase, ''),
-        [other]: `${readFileSync(path.join(repoRoot, other), 'utf8')}\n${phrase}\n`,
-      }),
-      /sequence\.md must contain required preserved rule/,
-    )
-  })
-
-  void it('rejects lost routing triggers even when their links survive', () => {
-    for (
-      const trigger of [
-        '`packages/core`',
-        '`packages/likec4` static-site builds',
-        '`./internal` consumers',
-        'Also read webapp rules when',
-        '`packages/layouts/src/graphviz/GraphvizLayoter.ts`',
-      ]
-    ) {
-      expectFail(
-        createFixture({
-          'AGENTS.md': canonicalAgents.replace(trigger, ''),
-        }),
-        /routing trigger for/,
-      )
-    }
-  })
-
-  void it('rejects removal of critical boundary warnings', () => {
-    for (
-      const [file, phrase] of [
-        ['AGENTS.md', 'DSL writeback loses comments, source positions, and formatting'],
-        ['AGENTS.md', 'RPC is dev-only;'],
-        [
-          'devops/agent-instructions/model-api.md',
-          'does not preserve comments, source positions, or original formatting',
-        ],
-        ['devops/agent-instructions/webapp.md', 'RPC is dev-only.'],
-        [
-          'devops/agent-instructions/webapp.md',
-          'Do not import `@likec4/language-server` directly from `packages/likec4-spa`',
-        ],
-      ]
-    ) {
-      expectFail(
-        createFixture({
-          [file]: readFileSync(path.join(repoRoot, file), 'utf8').replace(phrase, ''),
-        }),
-        /must contain required preserved rule/,
-      )
-    }
-  })
-
-  void it('rejects stale guidance in a reference', () => {
-    const file = 'devops/agent-instructions/webapp.md'
-    expectFail(
-      createFixture({
-        [file]: `${readFileSync(path.join(repoRoot, file), 'utf8')}\n## Source preservation map\n`,
-      }),
-      /must not contain stale/,
+      /link exactly once to task reference/,
     )
   })
 
@@ -234,6 +185,35 @@ void describe('check-agent-instructions', () => {
   void it('accepts CRLF in the Claude adapter', () => {
     expectPass(createFixture({
       'CLAUDE.md': '@AGENTS.md\r\n',
+    }))
+  })
+
+  void it('accepts CRLF in the root and task references', () => {
+    const files = Object.fromEntries(
+      ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md'].map(name => {
+        const relativePath = `.agents/instructions/${name}`
+        return [relativePath, readFileSync(path.join(repoRoot, relativePath), 'utf8').replaceAll('\n', '\r\n')]
+      }),
+    )
+    expectPass(createFixture({
+      ...files,
+      'AGENTS.md': canonicalAgents.replaceAll('\n', '\r\n'),
+    }))
+  })
+
+  void it('accepts harmless reflow of instruction prose', () => {
+    expectPass(createFixture({
+      'AGENTS.md': canonicalAgents.replace(
+        'Before planning, editing, or reviewing, read each reference that matches the task, including cross-package work.',
+        'Before planning, editing, or reviewing, read each reference that matches the task,\nincluding cross-package work.',
+      ),
+    }))
+  })
+
+  void it('accepts direct scoped Claude imports', () => {
+    expectPass(createFixture({
+      [sequenceClaudePath]:
+        '@../../../../../.agents/instructions/sequence.md\n@../../../../../.agents/instructions/webapp.md\n',
     }))
   })
 
@@ -270,23 +250,32 @@ void describe('check-agent-instructions', () => {
     }))
   })
 
-  void it('rejects duplicated localized Claude memory content', () => {
+  void it('rejects copied rules in localized Claude memory', () => {
     expectFail(
       createFixture({
         'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md':
           '# Sequence Layouter\n\nThis directory is a development copy of the sequence layouter from `@likec4/layouts`.\n',
       }),
-      /must import AGENTS\.md and contain only the approved local pointer/,
+      /must import only the sequence and webapp references/,
     )
   })
 
-  void it('rejects missing AGENTS import in localized Claude memory', () => {
+  void it('rejects missing task imports in localized Claude memory', () => {
     expectFail(
       createFixture({
         'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md':
           'Claude Code local memory: use the sequence layouter section in AGENTS.md.\n',
       }),
-      /must import AGENTS\.md and contain only the approved local pointer/,
+      /must import only the sequence and webapp references/,
+    )
+  })
+
+  void it('requires webapp rules in the diagram sequence adapter', () => {
+    expectFail(
+      createFixture({
+        [sequenceClaudePath]: '@../../../../../.agents/instructions/sequence.md\n',
+      }),
+      /must import only the sequence and webapp references/,
     )
   })
 

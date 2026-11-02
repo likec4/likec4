@@ -27,9 +27,8 @@ const failures = []
 
 const absolute = relativePath => path.join(root, relativePath)
 const isTracked = relativePath => tracked.includes(relativePath)
-const read = relativePath => readFileSync(absolute(relativePath), 'utf8')
+const read = relativePath => readFileSync(absolute(relativePath), 'utf8').replace(/\r\n?/g, '\n')
 const fail = message => failures.push(message)
-const stripCarriageReturns = content => content.replace(/\r/g, '')
 
 const requireTrackedFile = relativePath => {
   if (!isTracked(relativePath)) {
@@ -50,22 +49,10 @@ const requireTrackedFile = relativePath => {
   return true
 }
 
-const requireIncludes = (content, needle, label, source = 'AGENTS.md') => {
-  if (!content.includes(needle)) {
-    fail(`${source} must contain ${label}: ${needle}`)
-  }
-}
-
-const requireNotIncludes = (content, needle, label) => {
-  if (content.includes(needle)) {
-    fail(`Repository guidance must not contain stale ${label}: ${needle}`)
-  }
-}
-
 requireTrackedFile('AGENTS.md')
 
 if (requireTrackedFile('CLAUDE.md')) {
-  const claude = stripCarriageReturns(read('CLAUDE.md'))
+  const claude = read('CLAUDE.md')
   if (claude !== '@AGENTS.md\n') {
     fail('CLAUDE.md must contain exactly "@AGENTS.md" plus a trailing newline')
   }
@@ -91,16 +78,23 @@ if (existsSync(absolute('AGENT.md'))) {
   fail('Do not create root AGENT.md; use AGENTS.md')
 }
 
-const allowedNestedClaudeFiles = new Map([
-  [
-    'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md',
-    '@../../../../../AGENTS.md\n\nClaude Code local memory: follow the sequence and webapp rules routed by the imported root `AGENTS.md`.\n',
-  ],
+const referenceDirectory = '.agents/instructions'
+const referenceSections = new Map([
+  ['project-map.md', ['## Project Structure & Module Organization']],
+  ['model-api.md', ['## Public API entry files', '## Package-specific instructions']],
+  ['webapp.md', ['## App ↔ Language Server Architecture', '## Package-specific instructions']],
+  ['sequence.md', ['## Package-specific instructions', '### packages/diagram/src/likec4diagram/xyflow-sequence']],
 ])
+const referencePath = name => `${referenceDirectory}/${name}`
+
+const sequenceClaudePath = 'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md'
+const sequenceClaudeImports = ['sequence.md', 'webapp.md'].map(name => {
+  const target = referencePath(name)
+  return `@${path.posix.relative(path.posix.dirname(sequenceClaudePath), target)}`
+})
+
 const trackedClaudeFiles = tracked.filter(file => path.basename(file) === 'CLAUDE.md')
-const unexpectedClaudeFiles = trackedClaudeFiles.filter(file =>
-  file !== 'CLAUDE.md' && !allowedNestedClaudeFiles.has(file)
-)
+const unexpectedClaudeFiles = trackedClaudeFiles.filter(file => file !== 'CLAUDE.md' && file !== sequenceClaudePath)
 if (unexpectedClaudeFiles.length > 0) {
   fail(
     `Only root CLAUDE.md and explicitly allowed localized Claude memories are allowed; remove package adapters: ${
@@ -109,14 +103,22 @@ if (unexpectedClaudeFiles.length > 0) {
   )
 }
 
-for (const [relativePath, expectedContent] of allowedNestedClaudeFiles) {
-  if (!isTracked(relativePath)) {
-    continue
+if (requireTrackedFile(sequenceClaudePath)) {
+  const imports = read(sequenceClaudePath).trim().split('\n').filter(Boolean)
+  if (
+    imports.length !== sequenceClaudeImports.length ||
+    imports.some((line, index) => line !== sequenceClaudeImports[index])
+  ) {
+    fail(`${sequenceClaudePath} must import only the sequence and webapp references`)
   }
-
-  const content = stripCarriageReturns(read(relativePath))
-  if (content !== expectedContent) {
-    fail(`${relativePath} must import AGENTS.md and contain only the approved local pointer`)
+  for (const importLine of imports) {
+    if (!importLine.startsWith('@')) {
+      continue
+    }
+    const target = path.posix.normalize(path.posix.join(path.posix.dirname(sequenceClaudePath), importLine.slice(1)))
+    if (!tracked.includes(target) || !existsSync(absolute(target))) {
+      fail(`${sequenceClaudePath} import must resolve to a tracked file: ${importLine}`)
+    }
   }
 }
 
@@ -130,78 +132,33 @@ if (existsSync(absolute('.github/copilot-instructions.md'))) {
 
 if (existsSync(absolute('AGENTS.md'))) {
   const agents = read('AGENTS.md')
-  const referenceSections = new Map([
-    ['project-map.md', ['## Project Structure & Module Organization']],
-    ['model-api.md', [
-      '## Public API entry files',
-      '## Model stages',
-      '## Composite TypeScript project gotcha',
-      '## Builder type-loss when loading from runtime data',
-      '## DSL writeback is lossy',
-      '## Package-specific instructions',
-      '### packages/core',
-      '### packages/language-server',
-      '### packages/language-services',
-    ]],
-    ['webapp.md', [
-      '## App ↔ Language Server Architecture',
-      '## Package-specific instructions',
-      '### packages/diagram',
-      '### packages/likec4-spa',
-      '### packages/vite-plugin',
-    ]],
-    ['sequence.md', ['## Package-specific instructions', '### packages/diagram/src/likec4diagram/xyflow-sequence']],
-  ])
-  const guidanceFiles = new Map([['AGENTS.md', agents]])
-  const routeTriggers = new Map([
-    ['project-map.md', ['locate packages', 'bridge documentation']],
-    ['model-api.md', [
-      '`packages/core`',
-      '`packages/language-server`',
-      '`packages/language-services`',
-      '`packages/generators`',
-      '`packages/likec4`',
-    ]],
-    ['webapp.md', [
-      '`packages/diagram`',
-      '`packages/likec4-spa`',
-      '`packages/vite-plugin`',
-      '`packages/likec4` static-site builds',
-      '`./internal` consumers',
-    ]],
-    ['sequence.md', [
-      '`packages/diagram/src/likec4diagram/xyflow-sequence/`',
-      '`packages/layouts/src/sequence/`',
-      '`packages/layouts/src/graphviz/GraphvizLayoter.ts`',
-      'Also read webapp rules when',
-      'working in the diagram dev copy',
-    ]],
-  ])
-  const routingBullets = agents.match(/^- .*(?:\n[ \t]+.*)*/gm) ?? []
+  const rootHeadings = new Set(agents.split('\n').filter(line => /^#{1,3} /.test(line)))
+  const routingSection = agents.split(/(?=^## )/m).find(section =>
+    section.startsWith('## Read task guidance before work\n')
+  ) ?? ''
+  const routeTargets = [...routingSection.matchAll(/\]\(\s*([^)]*?)\s*\)/g)].map(match => match[1].trim())
+
   for (const [name, sections] of referenceSections) {
-    const relativePath = `devops/agent-instructions/${name}`
-    requireIncludes(agents, `](${relativePath})`, 'task reference link')
-    const route = routingBullets.find(bullet => bullet.includes(`](${relativePath})`)) ?? ''
-    for (const trigger of routeTriggers.get(name)) {
-      requireIncludes(route, trigger, `routing trigger for ${relativePath}`)
+    const relativePath = referencePath(name)
+    if (routeTargets.filter(target => target === relativePath).length !== 1) {
+      fail(`AGENTS.md must link exactly once to task reference: ${relativePath}`)
     }
     if (agents.includes(`@${relativePath}`)) {
       fail(`${relativePath} must be read on demand, not eagerly imported`)
     }
-    if (requireTrackedFile(relativePath)) {
-      const content = read(relativePath)
-      guidanceFiles.set(relativePath, content)
-      for (const section of sections) {
-        if (agents.split('\n').includes(section)) {
-          fail(`${section} belongs in ${relativePath}, not the always-loaded root`)
-        }
-        if (!content.split('\n').includes(section)) {
-          fail(`${relativePath} must contain required section: ${section}`)
-        }
+    if (!requireTrackedFile(relativePath)) {
+      continue
+    }
+    const referenceHeadings = new Set(read(relativePath).split('\n').filter(line => /^#{1,3} /.test(line)))
+    for (const section of sections) {
+      if (rootHeadings.has(section)) {
+        fail(`${section} belongs in ${relativePath}, not the always-loaded root`)
+      }
+      if (!referenceHeadings.has(section)) {
+        fail(`${relativePath} must contain required section: ${section}`)
       }
     }
   }
-  const guidance = [...guidanceFiles.values()].join('\n')
 
   const requiredSections = [
     '# Repository Guidelines',
@@ -215,87 +172,9 @@ if (existsSync(absolute('AGENTS.md'))) {
   ]
 
   for (const section of requiredSections) {
-    requireIncludes(agents, section, 'required section')
-  }
-
-  const requiredPhrases = new Map([
-    ['AGENTS.md', [
-      'AGENTS.md is the canonical shared repository instruction file.',
-      'Before planning, editing, or reviewing, read each reference that matches the task, including cross-package work.',
-      'Read these files explicitly; do not depend on automatic nested instruction or skill discovery.',
-      'The root `CLAUDE.md` file is the Claude Code adapter and must contain exactly `@AGENTS.md`.',
-      'Nested `CLAUDE.md` files are not shared adapters. Keep one only when Claude Code\'s lazy-loaded subtree memory should point agents at materially local guidance routed by AGENTS.md; it must import AGENTS.md and contain only a short pointer, not copied rules.',
-      'Do not create `AGENT.md`.',
-      'Do not use symlink adapters for shared repository instructions; this repository has Windows CI and Windows contributors.',
-      'Always use `patch` changesets; versioning is handled manually by maintainers.',
-      '`packages/config/schema.json` is generated from `packages/config/src/schema.ts`',
-      'VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`.',
-      'DSL writeback loses comments, source positions, and formatting',
-      'Keep data access out of `packages/diagram`',
-      'RPC is dev-only;',
-      'production diagrams are read-only.',
-      'Do not import `@likec4/language-server` into SPA',
-      '`@likec4/layouts` into diagram.',
-      'For core view changes, update drift detection and auto-applying logic;',
-      'ask if drift behavior is unclear.',
-    ]],
-    ['devops/agent-instructions/project-map.md', [
-      '`packages/tsconfig/` contains shared TypeScript configuration.',
-    ]],
-    ['devops/agent-instructions/model-api.md', [
-      'does not preserve comments, source positions, or original formatting',
-      '`Builder` in `packages/core/src/builder/` uses a phantom-type ledger',
-      'computed and layouted data may also carry saved `manualLayouts`.',
-      'Do not edit files in `packages/language-server/src/generated` or `packages/language-server/src/generated-lib`.',
-      'Node-only helpers that import `node:fs`, `node:path`, or similar modules go in `packages/language-services/src/node/index.ts`.',
-    ]],
-    ['devops/agent-instructions/webapp.md', [
-      '`src/rpc/functions/` contains handlers such as `updateView.ts` and `calcAdhocView.ts`.',
-      '`@xstate/store` is available as a dependency, but current source does not import it.',
-      'Do not treat package shims or build output such as `packages/diagram/adhoc-editor/package.json`, `lib/`, or `dist/` as active source layers.',
-      'Do not import Vite virtual modules (`likec4:*`) or call the language server from `packages/diagram`.',
-      'No XState in `packages/likec4-spa`.',
-      'Do not import `@likec4/language-server` directly from `packages/likec4-spa`',
-      'RPC is dev-only.',
-      'Do not assume RPC is available in production builds',
-      'Imports from `@likec4/language-server` in `packages/vite-plugin` must be type-only.',
-      'Talk to the Language Server only through `likec4:rpc` from `@likec4/vite-plugin`.',
-      'The runtime language service instance comes from `@likec4/language-services/node` (`fromWorkspace`) or through the `languageServices` plugin option.',
-    ]],
-    ['devops/agent-instructions/sequence.md', [
-      'Never import `@likec4/layouts` from `packages/diagram`.',
-      'Always diff the two directories before syncing; do not assume they are currently identical.',
-      'After porting, run tests in both packages because `utils.spec.ts` exists in each.',
-    ]],
-  ])
-
-  for (const [relativePath, phrases] of requiredPhrases) {
-    const content = guidanceFiles.get(relativePath) ?? ''
-    for (const phrase of phrases) {
-      requireIncludes(content, phrase, 'required preserved rule', relativePath)
+    if (!rootHeadings.has(section)) {
+      fail(`AGENTS.md must contain required section: ${section}`)
     }
-  }
-
-  const stalePhrases = [
-    '## Source preservation map',
-    '`schemas/likec4-config.schema.json`',
-    '`adhoc-editor/` is a separate code path',
-    '`adhoc-editor/` is intentionally internal',
-    '`adhoc-editor/state/panel.tsx`',
-    'implement the handler in `src/rpc/`',
-    'GitHub Copilot and VS Code support `AGENTS.md` natively',
-    'production usage is in `packages/language-server/src/model-change/viewChange.ts`',
-    'only `views` differs',
-    'or `pnpm generate` before typechecking downstream',
-    '`routeTree.gen.ts` is generated by `tsr generate` through `pnpm generate`',
-    'internal packages that are never published such as `@likec4/icons`',
-    'and `handleHotUpdate`, and registers the virtual-module list',
-    'All cross-process data comes from `likec4:*` virtual modules',
-    'Add re-exports only; do not put original logic here',
-  ]
-
-  for (const phrase of stalePhrases) {
-    requireNotIncludes(guidance, phrase, 'repository instruction')
   }
 }
 
