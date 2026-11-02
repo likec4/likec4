@@ -205,6 +205,31 @@ describe('ready.comparing', () => {
     actor.stop()
   })
 
+  it('remembers viewport of the auto layout, when switching to manual', () => {
+    const { actor, layoutTypeChanges } = createTestActor()
+    actor.send({ type: 'compare.start' })
+    switchLayout(actor, 'auto')
+
+    actor.send({ type: 'emit.onLayoutTypeChange', layoutType: 'manual' })
+
+    expect(actor.getSnapshot().context.viewportOnAutoLayout).toEqual(actor.getSnapshot().context.viewport)
+    expect(layoutTypeChanges).toEqual(['auto', 'manual'])
+    actor.stop()
+  })
+
+  it('does not remember layout viewports when switching outside of comparing', () => {
+    const { actor, layoutTypeChanges } = createTestActor()
+
+    switchLayout(actor, 'auto')
+    switchLayout(actor, 'manual')
+
+    expect(isComparing(actor)).toBe(false)
+    expect(actor.getSnapshot().context.viewportOnManualLayout).toBeNull()
+    expect(actor.getSnapshot().context.viewportOnAutoLayout).toBeNull()
+    expect(layoutTypeChanges).toEqual(['auto', 'manual'])
+    actor.stop()
+  })
+
   it('leaves comparing automatically when drifts are gone', () => {
     const { actor } = createTestActor()
     actor.send({ type: 'compare.start' })
