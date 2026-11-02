@@ -1,3 +1,4 @@
+import { stubBrotli } from '@likec4/devops/tsdown'
 import nodeModulesPolyfillPlugin from '@rolldown/plugin-node-polyfills'
 import { existsSync } from 'node:fs'
 import { cp } from 'node:fs/promises'
@@ -22,6 +23,9 @@ const shared = {
   deps: {
     neverBundle: ['vscode'],
   },
+  plugins: [
+    stubBrotli(),
+  ],
 }
 
 export default defineConfig([
@@ -83,6 +87,7 @@ export default defineConfig([
       },
     },
     plugins: [
+      stubBrotli(),
       nodeModulesPolyfillPlugin(),
     ],
   },
@@ -99,6 +104,7 @@ export default defineConfig([
       },
     },
     plugins: [
+      stubBrotli(),
       nodeModulesPolyfillPlugin(),
     ],
   },
