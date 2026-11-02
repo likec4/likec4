@@ -13,6 +13,7 @@ import { Controls as XYFlowControls } from '@xyflow/react'
 import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
+import { useRef } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { isEmpty } from 'remeda'
 import type { Simplify } from 'type-fest'
@@ -38,7 +39,7 @@ import { viewBounds } from './state/utils'
 import type { Types } from './types'
 import { useNodeDragHandlers } from './useNodeDragHandlers'
 import { selectGraphTopology } from './xyflow-graph/useGraphForceSimulation'
-import { resolveControlledViewport, resolveInteractionEnabled } from './xyflow-props'
+import { resolveControlledViewport, resolveInteractionEnabled, shouldCollapseSelectionOnClick } from './xyflow-props'
 
 const edgeTypes = {
   relationship: BuiltinEdges.RelationshipEdge,
@@ -71,42 +72,6 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
     'seq-subflow': nodeTypes.seqSubflow ?? builtinNodes['seq-subflow'],
     'graph-element': nodeTypes.graphElement ?? builtinNodes['graph-element'],
   }
-}
-
-export function resolveControlledViewport(
-  enableFitView: boolean,
-  initialZoom: number | undefined,
-  bounds: { x: number; y: number },
-): Viewport | undefined {
-  if (enableFitView || initialZoom !== undefined) {
-    return undefined
-  }
-  return {
-    x: -bounds.x,
-    y: -bounds.y,
-    zoom: 1,
-  }
-}
-
-export function resolveInteractionEnabled(
-  enabled: boolean,
-  override: boolean | undefined,
-  isEditorLocked: boolean,
-): boolean {
-  return (override ?? enabled) && !isEditorLocked
-}
-
-/**
- * A plain click (no modifier key, no drag) on a node that is part of a multi-selection
- * should reduce the selection to that node only.
- */
-export function shouldCollapseSelectionOnClick(params: {
-  nodesSelectable: boolean
-  isNodeSelected: boolean
-  selectedNodesCount: number
-  hasModifierKey: boolean
-}): boolean {
-  return params.nodesSelectable && params.isNodeSelected && !params.hasModifierKey && params.selectedNodesCount > 1
 }
 
 const selectXYProps = selectDiagramSnapshot((snapshot) => {
@@ -217,6 +182,7 @@ export function LikeC4DiagramXYFlow({
 
   const { reducedGraphics, $panning } = useRootContainer()
   const xystore = useXYStoreApi()
+  const wasDragged = useRef(false)
 
   const isReducedGraphics = reducedGraphics,
     nodeDragHandlers = useNodeDragHandlers({
@@ -294,14 +260,18 @@ export function LikeC4DiagramXYFlow({
           return
         }
         e.stopPropagation()
+        const { nodes, edges, multiSelectionActive, addSelectedNodes } = xystore.getState()
         const collapseSelection = shouldCollapseSelectionOnClick({
           nodesSelectable,
           isNodeSelected: node.selected === true,
-          selectedNodesCount: xystore.getState().nodes.filter(n => n.selected).length,
+          selectedNodesCount: nodes.filter(n => n.selected).length,
+          selectedEdgesCount: edges.filter(e => e.selected).length,
           hasModifierKey: e.ctrlKey || e.metaKey || e.shiftKey,
+          multiSelectionActive,
+          wasDragged: wasDragged.current,
         })
         if (collapseSelection) {
-          xystore.getState().addSelectedNodes([node.id])
+          addSelectedNodes([node.id])
         }
         diagram.send({ type: 'xyflow.nodeClick', node })
         onNodeClick?.(diagram.findDiagramNode(node.data.id)!, e)
@@ -407,6 +377,14 @@ export function LikeC4DiagramXYFlow({
       {...nodeDragHandlers}
       {...props}
       {...safeReactFlowProps}
+      onPointerDownCapture={useCallbackRef(() => {
+        // Keep the drag flag through drag-stop and the subsequent click, until the next gesture.
+        wasDragged.current = false
+      })}
+      onNodeDragStart={useCallbackRef((event, node, nodes) => {
+        wasDragged.current = true
+        nodeDragHandlers?.onNodeDragStart(event, node, nodes)
+      })}
       nodesDraggable={nodesDraggable}
       nodesSelectable={nodesSelectable}>
       {enableControls && (

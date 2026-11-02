@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveControlledViewport, resolveInteractionEnabled } from './xyflow-props'
-import {
-  shouldCollapseSelectionOnClick,
-} from './DiagramXYFlow'
+import { resolveControlledViewport, resolveInteractionEnabled, shouldCollapseSelectionOnClick } from './xyflow-props'
 
 describe('resolveControlledViewport', () => {
   const bounds = { x: 100, y: 200 }
@@ -59,7 +56,10 @@ describe('shouldCollapseSelectionOnClick', () => {
     nodesSelectable: true,
     isNodeSelected: true,
     selectedNodesCount: 3,
+    selectedEdgesCount: 0,
     hasModifierKey: false,
+    multiSelectionActive: false,
+    wasDragged: false,
   }
 
   it('collapses multi-selection to the clicked node on plain click', () => {
@@ -68,6 +68,18 @@ describe('shouldCollapseSelectionOnClick', () => {
 
   it('keeps selection when a modifier key is pressed', () => {
     expect(shouldCollapseSelectionOnClick({ ...base, hasModifierKey: true })).toBe(false)
+  })
+
+  it('keeps selection when a drag also produces a click', () => {
+    expect(shouldCollapseSelectionOnClick({ ...base, wasDragged: true })).toBe(false)
+  })
+
+  it('collapses a selection containing one node and one edge', () => {
+    expect(shouldCollapseSelectionOnClick({ ...base, selectedNodesCount: 1, selectedEdgesCount: 1 })).toBe(true)
+  })
+
+  it('keeps selection when the configured multi-selection key is active', () => {
+    expect(shouldCollapseSelectionOnClick({ ...base, multiSelectionActive: true })).toBe(false)
   })
 
   it('keeps selection when the clicked node is not selected or is the only selected node', () => {

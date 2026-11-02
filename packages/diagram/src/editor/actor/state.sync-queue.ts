@@ -1,6 +1,7 @@
 import { invariant } from '@likec4/core'
 import { findLast } from 'remeda'
 import { assign, enqueueActions, log, sendTo } from 'xstate'
+import type { DiagramEvents } from '../../likec4diagram/state/types'
 import { typedSystem } from '../../likec4diagram/state/utils'
 import {
   cancelSync,
@@ -253,8 +254,9 @@ const process = machine.createStateConfig({
                 typedSystem.diagramActor,
                 ({ event }) => ({
                   type: 'update.view',
+                  source: 'editor',
                   view: event.output.updated,
-                }),
+                } satisfies DiagramEvents),
                 { delay: 20 },
               ),
               target: 'wait',
