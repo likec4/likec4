@@ -1,9 +1,5 @@
 import type { DiagramEdge, DynamicViewFlow, scalar, StepPath } from '@likec4/core/types'
 import type { TreeNodeData } from '@mantine/core'
-import type { DiagramContext } from '../../state/types'
-
-/** Sub-flows the user has folded away, keyed by {@link StepPath}. */
-export type CollapsedFlows = DiagramContext['collapsedSequenceFlows']
 
 export interface OutlineTreeNodeStep extends TreeNodeData {
   readonly value: StepPath

@@ -335,15 +335,12 @@ export const LikeC4DocumentPropKeys = [
 /**
  * Fails to compile if some key of {@link LikeC4DocumentProps} is missing in {@link LikeC4DocumentPropKeys}
  * (`UnionToTuple` is not used, as its order depends on the order of the union members in the compiler)
+ * @public Compile-time check, not used at runtime
  */
 export type LikeC4DocumentPropKeysAreComplete = AssertNever<
   Exclude<keyof LikeC4DocumentProps, (typeof LikeC4DocumentPropKeys)[number]>
 >
 type AssertNever<T extends never> = T
-
-export function isLikeC4PropKey<T>(key: T): key is T & keyof LikeC4DocumentProps {
-  return typeof key === 'string' && LikeC4DocumentPropKeys.includes(key as any)
-}
 
 export interface ParsedLikeC4LangiumDocument extends LikeC4GrammarDocument, LikeC4DocumentProps {
   state: DocumentState.IndexedReferences | DocumentState.Linked | DocumentState.Validated
@@ -399,12 +396,6 @@ export function isValidatedLikeC4LangiumDocument(
 
 export function isErrorDiagnostic(d: Diagnostic): d is LikeC4DocumentDiagnostic {
   return d.severity === DiagnosticSeverity.Error
-}
-
-export function hasValidationErrors(
-  doc: LangiumDocument | undefined,
-): doc is ValidatedLikeC4LangiumDocument & { diagnostics: c4.NonEmptyArray<LikeC4DocumentDiagnostic> } {
-  return isValidatedLikeC4LangiumDocument(doc) && doc.diagnostics.some(isErrorDiagnostic)
 }
 
 export const NO_ERRORS = '' as const

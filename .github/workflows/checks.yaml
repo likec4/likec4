@@ -75,6 +75,21 @@ jobs:
             styled-system/styles/package.tgz
           if-no-files-found: error
 
+  check-knip:
+    name: ✂️ knip
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04-arm
+    # After the build so turbo cache has dist/: knip also checks published type declarations
+    needs: check-build
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 🛠️ bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: ✂️ unused files, exports and dependencies
+        run: pnpm knip
+
   check-mcp-app:
     name: 🧩 MCP App browser
     timeout-minutes: 10
@@ -359,6 +374,7 @@ jobs:
     needs:
       - check-types
       - check-build
+      - check-knip
       - check-on-windows
       - check-on-macos
       - check-tests

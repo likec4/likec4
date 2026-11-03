@@ -27,5 +27,3 @@ export type {
   DiagramEvents,
   DiagramMachineSnapshot as DiagramActorSnapshot,
 } from './machine'
-
-export type { ElementViewDisplayVariant } from './machine.setup'

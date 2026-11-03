@@ -551,6 +551,4 @@ export interface BaseDiagramMachineLogic<
 {
 }
 
-export type BaseDiagramActorRef = ActorRefFromLogic<BaseDiagramMachineLogic>
-
 export const to = mapValues(targetState, (id) => ({ target: id }))

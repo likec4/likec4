@@ -32,8 +32,6 @@ export const inchToPx = (inch: number) => {
 export const pxToInch = (px: number) => Math.ceil((px / 72) * 1000) / 1000
 export const pxToPoints = (px: number) => Math.ceil(px)
 
-export const IconSizePoints = pxToPoints(40).toString()
-
 export function compoundColor(color: string, depth: number): Color {
   return toHex(
     scale(color, {

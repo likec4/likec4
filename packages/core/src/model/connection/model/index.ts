@@ -1,4 +1,3 @@
-export { Connection } from '../Connection'
 export { ConnectionModel } from './ConnectionModel'
 
 export {

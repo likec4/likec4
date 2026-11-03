@@ -3,19 +3,12 @@ import { isString } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
 import { compareNatural } from './compare-natural'
 
-export type Predicate<T> = (x: T) => boolean
-
 export function parentFqn<E extends string>(fqn: E): E | null {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
     return fqn.slice(0, lastDot) as E
   }
   return null
-}
-
-export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn): Predicate<T> {
-  const prefix = parent + '.'
-  return (e: T) => !!e.parent && (e.parent === parent || e.parent.startsWith(prefix))
 }
 
 export function nameFromFqn<E extends string>(fqn: E): string {

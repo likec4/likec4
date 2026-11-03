@@ -163,7 +163,6 @@ export interface LikeC4AddedServices {
     LastSeen: LastSeenArtifacts
   }
   lsp: {
-    // RenameProvider: LikeC4RenameProvider
     CompletionProvider: LikeC4CompletionProvider
     DefinitionProvider: LikeC4DefinitionProvider
     DocumentHighlightProvider: LikeC4DocumentHighlightProvider
@@ -231,7 +230,6 @@ export function createLikeC4Module(
       LastSeen: bind(LastSeenArtifacts),
     },
     lsp: {
-      // RenameProvider: bind(LikeC4RenameProvider),
       CompletionProvider: bind(LikeC4CompletionProvider),
       DefinitionProvider: bind(LikeC4DefinitionProvider),
       DocumentHighlightProvider: bind(LikeC4DocumentHighlightProvider),

@@ -1,4 +1,3 @@
-import type { DiagramView } from '@likec4/core'
 import type { $keywords } from 'ts-graphviz'
 import type { Tagged } from 'type-fest'
 
@@ -59,8 +58,3 @@ declare module 'ts-graphviz' {
 }
 
 export type DotSource = Tagged<string, 'DotSource'>
-
-export type DotLayoutResult = {
-  dot: DotSource
-  diagram: DiagramView
-}

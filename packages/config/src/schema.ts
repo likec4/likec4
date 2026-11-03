@@ -52,8 +52,6 @@ export const ManualLayoutsConfigSchema = z
     description: 'Configuration for manual layouts',
   })
 
-export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
-
 export { WebappExportFormats }
 
 export const WebappExportFormatSchema = z.enum(WebappExportFormats)

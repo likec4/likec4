@@ -1,5 +1,4 @@
 import { css, sva } from '@likec4/styles/css'
-import { emptyBox } from '@likec4/styles/recipes'
 
 // export const titleColor = '--title-color'
 // export const descriptionColor = '---description-color'
@@ -145,8 +144,6 @@ const description = css.raw(descriptionColor, {
     opacity: '[0.85]',
   },
 })
-
-export const emptyBoX = emptyBox({ fullsize: true })
 
 export const buttonsva = sva({
   slots: ['root', 'icon', 'title', 'description', 'descriptionColor'],

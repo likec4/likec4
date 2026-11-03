@@ -126,19 +126,6 @@ export function useEnabledFeatures(): EnabledFeatures {
   return useContext(DiagramFeaturesContext)
 }
 
-export type IfEnabledProps = PropsWithChildren<{
-  feature: FeatureName
-  /**
-   * Additional AND condition
-   * @default true
-   * @example
-   * <IfEnabled feature="ReadOnly" and={isSomething}>
-   *   ...
-   * </IfEnabled>
-   */
-  and?: boolean
-}>
-
 /**
  * Renders children only if the specified feature is enabled
  * @param feature Feature name

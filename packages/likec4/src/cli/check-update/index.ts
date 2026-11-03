@@ -13,5 +13,3 @@ const checkUpdateCmd = (yargs: yargs.Argv) => {
 }
 
 export default checkUpdateCmd
-
-export { notifyAvailableUpdate } from './utils'

@@ -161,5 +161,3 @@ export const useRpc = defineService(() => {
     },
   }
 })
-
-export type Rpc = ReturnType<typeof useRpc>

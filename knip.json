@@ -1,0 +1,135 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "treatConfigHintsAsErrors": true,
+  "treatTagHintsAsErrors": true,
+  "ignore": [
+    "packages/icons/**",
+    "apps/playground/src/react-dom-server-mock.ts",
+    "packages/vscode/src/meta.ts",
+    "styled-system/preset/src/generated.ts",
+    "e2e/**",
+    "examples/**"
+  ],
+  "ignoreBinaries": [
+    "bootstrap",
+    "likec4"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "ignoreIssues": {
+    "packages/diagram/src/LikeC4MantineProvider.tsx": [
+      "duplicates"
+    ],
+    "apps/playground/src/routes/**": [
+      "exports"
+    ],
+    "packages/diagram/src/overlays/relationships-browser/SelectElement.css.ts": [
+      "exports"
+    ]
+  },
+  "workspaces": {
+    "apps/docs": {
+      "entry": [
+        "src/routeData.ts"
+      ],
+      "ignoreDependencies": [
+        "@fontsource-variable/ibm-plex-sans",
+        "@likec4/icons",
+        "shiki"
+      ]
+    },
+    "apps/playground": {
+      "ignoreDependencies": [
+        "^@codingame/",
+        "^vscode-",
+        "@hpcc-js/wasm-graphviz",
+        "@likec4/icons",
+        "@xyflow/react",
+        "langium",
+        "ufo"
+      ]
+    },
+    "packages/diagram": {
+      "ignoreDependencies": [
+        "@xstate/store"
+      ]
+    },
+    "packages/generators": {
+      "ignoreDependencies": [
+        "@likec4/config",
+        "@likec4/log"
+      ]
+    },
+    "packages/language-server": {
+      "ignoreDependencies": [
+        "@likec4/icons"
+      ]
+    },
+    "packages/leanix-bridge": {
+      "ignoreDependencies": [
+        "@likec4/core"
+      ]
+    },
+    "packages/likec4": {
+      "ignoreDependencies": [
+        "@hpcc-js/wasm-graphviz",
+        "@likec4/icons",
+        "@likec4/react",
+        "@likec4/spa",
+        "chevrotain",
+        "d3-zoom",
+        "fdir",
+        "immer",
+        "react-dom"
+      ]
+    },
+    "packages/likec4-spa": {
+      "ignoreDependencies": [
+        "@likec4/icons",
+        "immer",
+        "@likec4/layouts"
+      ]
+    },
+    "packages/lsp": {
+      "ignoreDependencies": [
+        "fdir",
+        "picomatch",
+        "std-env",
+        "@likec4/layouts"
+      ]
+    },
+    "packages/mcp": {
+      "ignoreDependencies": [
+        "^vscode-",
+        "@hpcc-js/wasm-graphviz",
+        "chokidar",
+        "fdir",
+        "picomatch"
+      ]
+    },
+    "packages/react": {
+      "ignoreDependencies": [
+        "@likec4/core",
+        "@xyflow/system"
+      ]
+    },
+    "packages/vite-plugin": {
+      "ignoreDependencies": [
+        "@likec4/icons",
+        "@likec4/react",
+        "rolldown"
+      ]
+    },
+    "packages/vscode": {
+      "ignoreDependencies": [
+        "fdir",
+        "picomatch",
+        "@likec4/language-services"
+      ]
+    },
+    "styled-system/styles": {
+      "ignoreDependencies": [
+        "react"
+      ]
+    }
+  }
+}

@@ -1,4 +1,3 @@
-import { AstUtils } from 'langium'
 import { isNullish } from 'remeda'
 import { ast } from '../ast'
 
@@ -27,29 +26,9 @@ export function instanceRef(deploymentRef: ast.FqnRef): ast.DeployedInstance | n
   return null
 }
 
-export function deploymentNodeRef(deploymentRef: ast.FqnRef): ast.DeploymentNode | null {
-  let referenceable = deploymentRef.value.ref ?? null
-  if (!referenceable || ast.isDeploymentNode(referenceable)) {
-    return referenceable
-  }
-  const artifact = instanceRef(deploymentRef)
-  // Because path in deploymentRef may be omitted,
-  // we find artifact first and then its container
-  return artifact ? AstUtils.getContainerOfType(artifact, ast.isDeploymentNode) ?? null : null
-}
-
 export function importsRef(node: ast.FqnRef): ast.Imported | null {
   const referenceable = referenceableParent(node)
   return referenceable?.$type === 'Imported' ? referenceable : null
-}
-
-export function isImportsRef(node: ast.FqnRef): boolean {
-  return !!importsRef(node)
-}
-
-export function isReferenceToLogicalModel(node: ast.FqnRef): boolean {
-  const referenceable = referenceableParent(node)
-  return referenceable?.$type === 'Element'
 }
 
 /**

@@ -1,13 +1,3 @@
-export type WithoutFileSystem = {
-  useFileSystem: false
-  watch?: never
-}
-
-export type WithFileSystem = {
-  useFileSystem: true
-  watch?: boolean
-}
-
 export interface InitOptions {
   /**
    * By default, if LikeC4 model is invalid, errors are printed to the console.

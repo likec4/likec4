@@ -314,7 +314,6 @@ export const useDiagramPanel = defineService(() => {
     },
   } as const
 })
-export type DiagramPanel = ReturnType<typeof useDiagramPanel>
 
 function createWebviewPanel() {
   const activeEditorColumn = window.activeTextEditor?.viewColumn

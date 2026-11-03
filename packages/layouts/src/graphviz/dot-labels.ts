@@ -10,7 +10,7 @@ import { nonexhaustive } from '@likec4/core/utils'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { type ElementNodeBox, edgeLabelBox } from './text-metrics'
-import { IconSizePoints, pxToPoints } from './utils'
+import { pxToPoints } from './utils'
 
 export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -81,15 +81,6 @@ function measuredNodeLines(measured: ElementNodeBox, textSize: number, secondary
       ? [fontLines(measured.description, textSize * description.fontSizeRatio, secondaryColor)]
       : [],
   ]
-}
-
-/**
- * "Faking" a node icon with a blue square
- * to preserve space for real icons.
- * #112233
- */
-export function nodeIcon() {
-  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#112233" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
 function maxchars(size: ShapeSize) {

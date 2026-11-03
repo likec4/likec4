@@ -27,11 +27,8 @@ import type {
 } from './actor.setup'
 
 export type {
-  NavigationPanelActorContext,
   NavigationPanelActorEvent,
-  NavigationPanelActorInput,
 }
-export type { BreadcrumbItem, DropdownColumnItem } from './actor.setup'
 
 const _actorLogic = actor.createMachine({
   id: 'navigationPanel',

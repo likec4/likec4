@@ -1,15 +1,11 @@
 import type { NonEmptyArray, Point } from '@likec4/core'
 import { type XYPoint, BBox, vector } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
-import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
-import { type NodeHandle, type Padding as XYFlowPadding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
+import type { Rect, XYPosition } from '@xyflow/react'
+import { type Padding as XYFlowPadding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
-
-export function distance(a: XYPosition, b: XYPosition): number {
-  return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
-}
+import { hasAtLeast, isArray } from 'remeda'
 
 /**
  * Minimal type to access only needed properties of InternalNode
@@ -26,57 +22,6 @@ export type MinimalInternalNode = {
   height?: number
   initialWidth?: number
   initialHeight?: number
-}
-/**
- * Extracts only the minimal properties from an InternalNode
- * needed for geometric calculations.
- *
- * @param nd - The InternalNode to extract from.
- * @returns An object containing only the necessary properties.
- */
-export function extractMinimalInternalNode<N extends InternalNode>(nd: N): MinimalInternalNode {
-  const minimal: MinimalInternalNode = {
-    internals: {
-      positionAbsolute: {
-        x: Math.round(nd.internals.positionAbsolute.x),
-        y: Math.round(nd.internals.positionAbsolute.y),
-      },
-    },
-  }
-  if (nd.measured) {
-    minimal.measured = nd.measured
-  }
-  if (isNumber(nd.width)) {
-    minimal.width = nd.width
-  }
-  if (isNumber(nd.height)) {
-    minimal.height = nd.height
-  }
-  if (isNumber(nd.initialWidth)) {
-    minimal.initialWidth = nd.initialWidth
-  }
-  if (isNumber(nd.initialHeight)) {
-    minimal.initialHeight = nd.initialHeight
-  }
-  return minimal
-}
-
-export function isEqualMinimalInternalNodes(a: MinimalInternalNode, b: MinimalInternalNode): boolean {
-  const posA = a.internals.positionAbsolute
-  const posB = b.internals.positionAbsolute
-  if (posA.x !== posB.x || posA.y !== posB.y) {
-    return false
-  }
-  const widthA = a.measured?.width ?? a.width ?? a.initialWidth ?? 0
-  const widthB = b.measured?.width ?? b.width ?? b.initialWidth ?? 0
-  if (widthA !== widthB) {
-    return false
-  }
-
-  const heightA = a.measured?.height ?? a.height ?? a.initialHeight ?? 0
-  const heightB = b.measured?.height ?? b.height ?? b.initialHeight ?? 0
-
-  return heightA === heightB
 }
 
 export function isEqualRects(a: Rect, b: Rect): boolean {
@@ -142,37 +87,6 @@ export function getNodeIntersectionFromCenterToPoint(
   const scale = Math.min(Math.abs(xScale), Math.abs(yScale))
 
   return vector(v).multiply(scale).add(nodeCenter).trunc().toObject()
-}
-
-/**
- * Helper function returns the intersection point
- * of the line between the center of the intersectionNode and the target
- *
- * @param intersectionNode the node that is the center of the line
- * @param targetNode the target node
- * @returns coordinates of the intersection point
- */
-export function getNodeIntersection(
-  intersectionNode: MinimalInternalNode,
-  targetNode: MinimalInternalNode,
-): XYPosition {
-  return getNodeIntersectionFromCenterToPoint(nodeToRect(intersectionNode), getNodeCenter(targetNode))
-}
-
-/**
- * Checks if a rectangle is completely inside another rectangle.
- *
- * @param test - The rectangle to test.
- * @param target - The target rectangle.
- * @returns `true` if the `test` rectangle is completely inside the `target` rectangle, otherwise `false`.
- */
-export function isInside(test: Rect, target: Rect): boolean {
-  return (
-    test.x >= target.x
-    && test.y >= target.y
-    && test.x + test.width <= target.x + target.width
-    && test.y + test.height <= target.y + target.height
-  )
 }
 
 export function bezierControlPoints(points: NonEmptyArray<Point>): NonEmptyArray<XYPoint> {
@@ -241,49 +155,6 @@ export function bezierPath(bezierSpline: NonEmptyArray<Point>): string {
   invariant(points.length === 0, 'all points should be consumed')
 
   return path
-}
-
-export function toXYFlowPosition(position: 'left' | 'right' | 'top' | 'bottom'): Position {
-  switch (position) {
-    case 'left':
-      return Position.Left
-    case 'right':
-      return Position.Right
-    case 'top':
-      return Position.Top
-    case 'bottom':
-      return Position.Bottom
-  }
-}
-
-export function createXYFlowNodeNandles(bbox: BBox): NodeHandle[] {
-  const center = BBox.center(bbox)
-  return flatMap(['source', 'target'] as const, type => [
-    {
-      type,
-      position: Position.Top,
-      x: center.x,
-      y: bbox.y,
-    },
-    {
-      type,
-      position: Position.Left,
-      x: bbox.x,
-      y: center.y,
-    },
-    {
-      type,
-      position: Position.Right,
-      x: bbox.x + bbox.width,
-      y: center.y,
-    },
-    {
-      type,
-      position: Position.Bottom,
-      x: center.x,
-      y: bbox.y + bbox.height,
-    },
-  ])
 }
 
 /**

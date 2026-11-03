@@ -488,9 +488,6 @@ export type ProjectsOverviewSnapshot = SnapshotFrom<ProjectsOverviewLogic>
 export interface ProjectsOverviewActorRef extends ActorRef<ProjectsOverviewSnapshot, Events, EmittedEvents> {
 }
 
-export type {
-  Input as ProjectsOverviewInput,
-}
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
