@@ -54,7 +54,7 @@ export class NodeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$node.description)
+    return RichText.memoize(this, 'description', this.$node.description, this.$viewModel.$model.resolveMarkdownRef)
   }
 
   get technology(): string | null {
@@ -62,7 +62,7 @@ export class NodeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
   }
 
   get notes(): RichTextOrEmpty {
-    return RichText.memoize(this, 'notes', this.$node.notes)
+    return RichText.memoize(this, 'notes', this.$node.notes, this.$viewModel.$model.resolveMarkdownRef)
   }
 
   get parent(): NodeModel<A, V> | null {

@@ -22,5 +22,5 @@ configureLanguageServerLogger({
 startLanguageServer({
   connection,
   configureLogger: false,
-  enableWatcher: false, // Extension is responsible for watching files and sending notifications
+  enableWatcher: false, // Files are watched by the LSP client (workspace/didChangeWatchedFiles)
 })

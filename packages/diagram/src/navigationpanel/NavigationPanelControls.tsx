@@ -9,10 +9,11 @@ import { LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo } from 'react'
 import { isTruthy } from 'remeda'
+import { useIsComparingLayouts } from '../context/ComparingLayoutsContext'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
-import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
-import { deriveToggledFeatures } from '../likec4diagram/state/machine.setup'
+import { selectDiagramSnapshot, useDiagramSelector } from '../hooks/useDiagram'
+import { isComparingLayouts } from '../likec4diagram/state/machine.setup'
 import {
   LayoutWarning,
   LogoButton,
@@ -27,11 +28,11 @@ import { useNavigationActor } from './hooks'
 import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
 
-const selectViewData = selectDiagramContext(s => {
-  const toggledFeatures = deriveToggledFeatures(s)
+const selectViewData = selectDiagramSnapshot(snapshot => {
+  const s = snapshot.context
 
   // Disable readonly toggle, if any of these conditions is true:
-  const comparingLatest = toggledFeatures.enableCompareWithLatest && !!s.view.drifts && s.view._layout === 'auto'
+  const comparingLatest = isComparingLayouts(snapshot) && s.view._layout === 'auto'
   // const sequenceLayoutActive = ctx.view._type === 'dynamic' && ctx.dynamicViewVariant === 'sequence'
 
   // If All condition is true, we show toggle
@@ -65,10 +66,10 @@ export const NavigationPanelControls = memo(() => {
   const {
     enableNavigationButtons,
     enableDynamicViewWalkthrough,
-    enableCompareWithLatest,
     enableSearch,
     enableVscode,
   } = useEnabledFeatures()
+  const isComparing = useIsComparingLayouts()
   const viewModel = useOptionalCurrentViewModel()
   const {
     editBtnDisabled,
@@ -189,7 +190,7 @@ export const NavigationPanelControls = memo(() => {
         {editBtnVisible && <ToggleReadonly key="toggle-readonly" disabled={editBtnDisabled} isReadOnly={isReadOnly} />}
         {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
         {isElementView && <ElementViewControls key="element-view-controls" />}
-        {enableSearch && !enableCompareWithLatest && <SearchControl key="search-control" />}
+        {enableSearch && !isComparing && <SearchControl key="search-control" />}
         <LayoutWarning key="outdated-manual-layout-warning" />
       </m.div>
     </>

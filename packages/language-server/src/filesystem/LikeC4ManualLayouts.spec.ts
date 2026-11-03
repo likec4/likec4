@@ -2,11 +2,12 @@ import type { DiagramNode, Fqn, LayoutedView, NodeId, ViewId } from '@likec4/cor
 import { defu } from 'defu'
 import type { OverrideProperties, Writable } from 'type-fest'
 import { describe, it, vi } from 'vitest'
+import { FileChangeType } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import { createTestServices as createTestServicesBase } from '../test'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
 import { NoopFileSystemProvider } from './noop'
-import type { FileSystemProvider } from './types'
+import type { FileSystemProvider, ManualLayoutUpdateListener } from './types'
 
 // Helper to create services with mocked file system
 async function createTestServices() {
@@ -366,6 +367,47 @@ describe('LikeC4ManualLayouts', () => {
 
       expect(location).toBeDefined()
       expect(location.uri).toBe('file:///test/workspace/src/test-project/.likec4/test-view.likec4.snap')
+    })
+  })
+
+  describe('watched file changes', () => {
+    it('should invalidate project when folder with snapshots is deleted', async ({ expect }) => {
+      await using t = await createTestServices()
+      mockFsReads(t.fs, createMockView({ id: 'view1' as ViewId }))
+      const listener = vi.fn<ManualLayoutUpdateListener>()
+      t.manualLayouts.onManualLayoutUpdate(listener)
+      const handler = t.services.shared.lsp.DocumentUpdateHandler
+
+      // Prime the cache
+      await t.manualLayouts.read(t.project)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
+
+      // Unrelated folder (and file) - cache is kept
+      handler.didChangeWatchedFiles({
+        changes: [
+          { uri: URI.file('/test/workspace/src/test-project/model').toString(), type: FileChangeType.Deleted },
+          { uri: URI.file('/test/workspace/src/test-project/a.c4').toString(), type: FileChangeType.Deleted },
+        ],
+      })
+      await t.manualLayouts.read(t.project)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
+
+      // Client sends single event for the deleted folder
+      const folder = URI.file('/test/workspace/src/test-project/.likec4')
+      handler.didChangeWatchedFiles({
+        changes: [{ uri: folder.toString(), type: FileChangeType.Deleted }],
+      })
+      await vi.waitFor(() => {
+        expect(listener).toHaveBeenCalledOnce()
+      })
+      const [event] = listener.mock.calls[0]!
+      expect(event).toEqual({
+        removed: expect.anything(),
+        projectId: t.project.id,
+      })
+      expect('removed' in event && event.removed.toString()).toBe(folder.toString())
+      await t.manualLayouts.read(t.project)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(2)
     })
   })
 

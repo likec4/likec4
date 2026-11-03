@@ -1,3 +1,4 @@
+import { EdgeLabelMetrics } from '@likec4/core/styles'
 import type { DiagramEdge } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
@@ -78,7 +79,7 @@ export const EdgeLabel = forwardRef<HTMLDivElement, EdgeLabelProps>((
         <Box className={'likec4-edge-label__contents'}>
           {isTruthy(label) && (
             <Box
-              lineClamp={5}
+              lineClamp={EdgeLabelMetrics.label.maxLines}
               className={'likec4-edge-label__text'}>
               {label}
             </Box>

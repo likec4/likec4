@@ -35,6 +35,13 @@ export class ProjectsViewPrinter extends DotPrinter<ComputedProjectsView> {
     return super.elementToNode(element, node)
   }
 
+  /**
+   * Projects are rendered as cards, not as elements
+   */
+  protected override measureNode(): null {
+    return null
+  }
+
   protected override addEdge(edge: ComputedProjectEdge, G: RootGraphModel): EdgeModel | null {
     const source = nonNullable(this.getGraphNode(edge.source), `Node not found for ${edge.source}`)
     const target = nonNullable(this.getGraphNode(edge.target), `Node not found for ${edge.target}`)

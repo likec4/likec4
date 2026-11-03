@@ -30,6 +30,7 @@ import {
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImportsFromPoject } from './imports'
+import { markdownRefsChecks } from './markdown-refs'
 import {
   colorLiteralRuleChecks,
   descriptionFileRuleChecks,
@@ -205,6 +206,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ModelDiff: modelDiffChecks(services),
     DiffRemoveEntry: diffRemoveEntryChecks(services),
     ViewRuleAutoLayout: viewRuleAutoLayoutChecks(services),
+    MarkdownOrString: markdownRefsChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

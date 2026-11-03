@@ -6,6 +6,7 @@ import { IconArrowRight } from '@tabler/icons-react'
 import { m } from 'motion/react'
 import { useRef } from 'react'
 import { Markdown } from '../../../base-primitives/Markdown'
+import { DiagramMarkdownRefs } from '../../../components/DiagramMarkdownRefs'
 import { useDiagram } from '../../../hooks/safeContext'
 import { recessed } from './depth-of-field'
 import { SEQ_CARD_LAYOUT_ID, SEQ_TRANSITION } from './motion'
@@ -155,22 +156,24 @@ const ActiveStepCard = ({ node }: { node: OutlineTreeNodeStep }) => {
           animate={{ visibility: 'visible', overflow: 'visible', height: 'auto' }}
           exit={{ visibility: 'hidden', overflow: 'hidden', height: 10 }}
           transition={SEQ_TRANSITION}>
-          <Markdown
-            value={RichText.from(notes)}
-            fontSize={'md'}
-            textScale={0.95}
-            className={css({
-              marginTop: '2.5',
-              paddingTop: '2.5',
-              paddingBottom: '2',
-              borderTop: 'subtle',
-              color: 'text',
-            })}
-            style={{
-              borderTopColor: 'oklch(from var(--_border-color) l c h / 25%)',
-              ['--_border-color' as string]: 'var(--colors-color-palette-border, var(--colors-border-subtle))',
-            }}
-          />
+          <DiagramMarkdownRefs>
+            <Markdown
+              value={RichText.from(notes)}
+              fontSize={'md'}
+              textScale={0.95}
+              className={css({
+                marginTop: '2.5',
+                paddingTop: '2.5',
+                paddingBottom: '2',
+                borderTop: 'subtle',
+                color: 'text',
+              })}
+              style={{
+                borderTopColor: 'oklch(from var(--_border-color) l c h / 25%)',
+                ['--_border-color' as string]: 'var(--colors-color-palette-border, var(--colors-border-subtle))',
+              }}
+            />
+          </DiagramMarkdownRefs>
         </m.div>
       )}
     </m.div>

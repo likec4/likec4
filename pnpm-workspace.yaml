@@ -42,12 +42,15 @@ patchedDependencies:
 catalog:
   "@changesets/changelog-github": ^1.0.1
   "@changesets/cli": ^3.0.3
+  '@chenglou/pretext': 1.0.0
   "@dagrejs/dagre": 1.1.8
   "@fontsource-variable/ibm-plex-sans": ^5.3.0
   '@material-symbols/svg-400': ^0.48.0
+  '@types/fontkit': ^2.0.9
   "@types/node": ~22.20.5
   "@types/pako": ^2.0.4
   dprint: ^0.64.3
+  fontkit: 2.0.4
   graphology: ^0.26.0
   knip: 6.43.0
   graphology-dag: ^0.4.1
@@ -63,6 +66,7 @@ catalog:
   tsx: 4.23.15
   turbo: 2.11.9
   typescript: 6.0.3
+  wawoff2: 2.0.1
   wireit: 0.14.13
   zx: 8.8.5
 
@@ -82,7 +86,7 @@ catalogs:
   astro:
     "@astrojs/check": 0.9.10
     "@astrojs/react": 7.1.0
-    "@astrojs/starlight": 0.42.6
+    "@astrojs/starlight": 0.42.7
     "@astrojs/starlight-tailwind": 5.0.0
     "@expressive-code/plugin-collapsible-sections": 0.44.2
     "@expressive-code/plugin-line-numbers": 0.44.2
@@ -94,8 +98,8 @@ catalogs:
     starlight-links-validator: 0.27.0
     starlight-package-managers: 0.13.0
   cloudflare:
-    "@cloudflare/vite-plugin": 1.64.0
-    wrangler: 4.151.1
+    "@cloudflare/vite-plugin": 1.65.0
+    wrangler: 4.154.0
   css:
     "@pandacss/dev": ^1.12.1
     "@radix-ui/colors": ^3.0.0
@@ -106,23 +110,21 @@ catalogs:
     postcss-import: ^17.0.0
   esbuild:
     esbuild: 0.28.2
-  esbuild-wasm:
-    esbuild: npm:esbuild-wasm@0.28.2
   externals:
     "@hpcc-js/wasm-graphviz": 1.29.2
     "@types/picomatch": ^4.0.3
-    bundle-require: ^5.1.0
     chokidar: ^5.0.0
     fdir: 6.4.0
+    jiti: ^2.7.0
     nano-spawn: ^2.1.0
     picomatch: ^4.0.7
     std-env: ^4.3.0
     type-fest: ^4.41.0
-    zod: ^4.6.5
+    zod: ^4.6.7
   hono:
     "@hono/mcp": ^0.3.2
     "@hono/node-server": ^2.1.5
-    "@hono/oauth-providers": ^0.9.0
+    "@hono/oauth-providers": ^0.9.1
     "@hono/zod-validator": ^0.9.1
     hono: ^4.13.13
     hono-sessions: ^0.8.1
@@ -130,10 +132,10 @@ catalogs:
     langium: 4.4.0
     langium-cli: 4.4.0
   mantine:
-    "@mantine/core": 9.7.3
-    "@mantine/hooks": 9.7.3
-    "@mantine/modals": 9.7.3
-    "@mantine/vanilla-extract": 9.7.3
+    "@mantine/core": 9.7.4
+    "@mantine/hooks": 9.7.4
+    "@mantine/modals": 9.7.4
+    "@mantine/vanilla-extract": 9.7.4
   mcp:
     "@modelcontextprotocol/sdk": ^1.32.1
     "@modelcontextprotocol/ext-apps": "^1.7.5"
@@ -157,11 +159,11 @@ catalogs:
     "@tanstack/router-cli": ^1.114.13
     "@tanstack/router-vite-plugin": ^1.114.13
   tsdown:
-    "@rolldown/plugin-node-polyfills": ^1.0.3
-    tsdown: ^0.23.0
-    "@tsdown/css": ^0.23.1
-    rolldown: ^1.2.13
-    oxc-transform-react: ^0.154.0
+    "@rolldown/plugin-node-polyfills": ^1.0.4
+    tsdown: ^0.23.4
+    "@tsdown/css": ^0.23.4
+    rolldown: ^1.2.16
+    oxc-transform-react: ^0.156.0
   utils:
     "@logtape/logtape": ^2.4.1
     "@lume/kiwi": ^0.4.4
@@ -197,10 +199,10 @@ catalogs:
     unctx: ^2.5.0
     unstorage: ^1.17.5
   vite:
-    "@rolldown/plugin-babel": ^0.2.4
+    "@rolldown/plugin-babel": ^0.3.0
     "@vitejs/plugin-react": ^6.1.2
     birpc: ^4.2.0
-    vite: ^8.3.4
+    vite: ^8.3.5
   vitest:
     "@vitest/ui": 4.1.12
     vitest: 4.1.12
@@ -243,8 +245,8 @@ minimumReleaseAgeExclude:
   - '@astrojs/internal-helpers@0.10.1'
   - '@astrojs/markdown-satteri@0.3.3'
   - picomatch@4.0.5
-  - '@tsdown/css@0.22.9'
-  - tsdown@0.22.9
+  - "@tsdown/css@0.22.9 || 0.23.4"
+  - tsdown@0.22.9 || 0.23.4
   - '@pandacss/config@1.12.1'
   - '@pandacss/core@1.12.1'
   - '@pandacss/dev@1.12.1'
@@ -289,3 +291,19 @@ minimumReleaseAgeExclude:
   - '@dprint/win32-arm64@0.63.0'
   - '@dprint/win32-x64@0.63.0'
   - dprint@0.63.0
+  - "@rolldown/binding-android-arm-eabi@1.2.16"
+  - "@rolldown/binding-android-arm64@1.2.16"
+  - "@rolldown/binding-darwin-arm64@1.2.16"
+  - "@rolldown/binding-darwin-x64@1.2.16"
+  - "@rolldown/binding-freebsd-x64@1.2.16"
+  - "@rolldown/binding-linux-arm-gnueabihf@1.2.16"
+  - "@rolldown/binding-linux-arm64-gnu@1.2.16"
+  - "@rolldown/binding-linux-arm64-musl@1.2.16"
+  - "@rolldown/binding-linux-ppc64-gnu@1.2.16"
+  - "@rolldown/binding-linux-s390x-gnu@1.2.16"
+  - "@rolldown/binding-linux-x64-gnu@1.2.16"
+  - "@rolldown/binding-linux-x64-musl@1.2.16"
+  - "@rolldown/binding-openharmony-arm64@1.2.16"
+  - "@rolldown/binding-win32-arm64-msvc@1.2.16"
+  - "@rolldown/binding-win32-x64-msvc@1.2.16"
+  - rolldown@1.2.16

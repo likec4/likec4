@@ -5,7 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { MaxZoom, MinZoom } from '@likec4/diagram'
 import { registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
@@ -15,6 +14,11 @@ import { mcpToolSchema } from '../utils'
 import { buildRenderPayload, projectIdSchema, toolError } from './_common'
 
 export const renderViewResourceUri = 'ui://likec4/render-view.html'
+
+// Copied from `@likec4/diagram` (src/base/const.ts), keep in sync.
+// Importing `@likec4/diagram` here loads the whole React package (and its CSS) into the Node process.
+const MinZoom = 0.05
+const MaxZoom = 3
 
 const renderOptionsSchema = z.object({
   size: z.enum(['compact', 'standard', 'large']).default('standard').describe('Initial canvas size hint'),

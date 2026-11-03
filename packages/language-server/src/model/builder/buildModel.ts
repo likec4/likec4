@@ -69,8 +69,15 @@ export function buildModelData(
   project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
+  const descriptionFiles = services.shared.workspace.DescriptionFiles
   const c4Specification = new MergedSpecification(docs, {
     inferTechFromIcon: project.config.inferTechnologyFromIcon ?? true,
+    // The files are read by the model builder before the build (see `LikeC4DescriptionFiles.read`)
+    describe: ref => {
+      const file = ref.resolvedPath ? descriptionFiles.get(project.id, ref.resolvedPath) : undefined
+      // The content of the file is used as it is: its indentation is content, not DSL indentation
+      return file && 'content' in file ? { md: file.content } : undefined
+    },
   })
 
   if (c4Specification.projectId === project.id) {
@@ -265,12 +272,16 @@ export function buildModelData(
         id,
         title,
         description,
+        descriptionFile,
         // ignore these properties
         astPath: _ignore,
-        descriptionFile: _descriptionFile,
         // model should include discriminant __
         ...model
       } = parsedAstView
+
+      if (descriptionFile) {
+        description = c4Specification.descriptionOf(descriptionFile) ?? null
+      }
 
       if (parsedAstView[_type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
         title = elements[parsedAstView.viewOf]?.title ?? null
@@ -405,11 +416,7 @@ export function buildModelData(
       specification: {
         tags: c4Specification.tags,
         elements: c4Specification.specs.elements,
-        relationships: mapValues(c4Specification.specs.relationships, ({ notation, technology, ...style }) => ({
-          ...(notation && { notation }),
-          ...(technology && { technology }),
-          style,
-        })),
+        relationships: c4Specification.specs.relationships,
         deployments: c4Specification.specs.deployments,
         ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(compareNatural) }),
         customColors,

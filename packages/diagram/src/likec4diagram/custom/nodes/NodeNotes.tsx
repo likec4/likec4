@@ -11,6 +11,7 @@ import type { MouseEvent } from 'react'
 import { clamp, isEmptyish } from 'remeda'
 import { Markdown } from '../../../base-primitives'
 import type { BaseNodePropsWithData } from '../../../base/types'
+import { DiagramMarkdownRefs } from '../../../components/DiagramMarkdownRefs'
 import { useCallbackRef, useOnDiagramEvent } from '../../../hooks'
 import type { Types } from '../../types'
 
@@ -144,7 +145,7 @@ function NodeNotesInternal({ data }: Pick<NodeNotesProps, 'data'> & {
                 // maxHeight: height,
               }}
               onMouseDownCapture={stopPropagation}
-              onClickCapture={stopPropagation}
+              // Not in the capture phase: links to elements and views inside notes handle clicks first
               onClick={stopPropagation}
             >
               <ScrollAreaAutosize
@@ -157,11 +158,13 @@ function NodeNotesInternal({ data }: Pick<NodeNotesProps, 'data'> & {
                     paddingRight: 'xxs',
                   }),
                 )}>
-                <Markdown
-                  className={css({
-                    paddingRight: 'xxs',
-                  })}
-                  value={RichText.from(markdown)} />
+                <DiagramMarkdownRefs>
+                  <Markdown
+                    className={css({
+                      paddingRight: 'xxs',
+                    })}
+                    value={RichText.from(markdown)} />
+                </DiagramMarkdownRefs>
               </ScrollAreaAutosize>
             </m.div>
           </ViewportPortal>

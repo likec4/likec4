@@ -9,6 +9,7 @@ import {
   type IncludeConfig,
   type LikeC4ProjectConfig,
   type LikeC4ProjectConfigInput,
+  isLikeC4Config,
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
@@ -16,9 +17,11 @@ import type { ProjectId } from '@likec4/core/types'
 import {
   compareNaturalHierarchically,
   DefaultMap,
+  delay,
   invariant,
   isString,
   nonNullable,
+  onNextTick,
 } from '@likec4/core/utils'
 import { loggable, wrapError } from '@likec4/log'
 import {
@@ -29,9 +32,23 @@ import {
   URI,
   UriUtils,
 } from 'langium'
+import PQueue from 'p-queue'
 import { isAbsolute } from 'pathe'
 import picomatch from 'picomatch'
-import { filter, find, hasAtLeast, isEmptyish, isNullish, isTruthy, map, pipe, prop, purry, sort } from 'remeda'
+import {
+  filter,
+  find,
+  hasAtLeast,
+  hasSubObject,
+  isEmptyish,
+  isNullish,
+  isTruthy,
+  map,
+  pipe,
+  prop,
+  purry,
+  sort,
+} from 'remeda'
 import type { Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
@@ -42,6 +59,7 @@ import {
   withoutTrailingSlash,
   withTrailingSlash,
 } from 'ufo'
+import { FileChangeType } from 'vscode-languageserver-protocol'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -345,9 +363,38 @@ export class ProjectsManager extends ADisposable {
   constructor(protected services: LikeC4SharedServices) {
     super()
     this.onDispose(
-      Disposable.create(() => {
+      Disposable.create(async () => {
+        this.cancelScheduledReloads()
+        if (this.#reloadQueue.pending) {
+          await this.#reloadQueue.onIdle()
+        }
+        this.clearCaches()
+        ;(this.#projects as any[]).length = 0
         this.#updateListeners.length = 0
       }),
+    )
+    onNextTick(() =>
+      this.onDispose(
+        services.lsp.DocumentUpdateHandler.onWatchedFilesChangeBy(
+          // Process like-c4 config files and deleted folders with projects (or their include paths)
+          ({ uri, type }) => isLikeC4Config(uri) || (type === FileChangeType.Deleted && this.hasProjectsInside(uri)),
+          (changes) => {
+            // Ignore file changes during initialization or reload
+            if (this.isInitiatingOrReloading) {
+              return
+            }
+            for (const change of changes) {
+              if (change.type === FileChangeType.Deleted) {
+                this.cancelScheduledReloads()
+                void this.reloadProjects()
+                return
+              }
+              this.scheduleReloadProject(change.uri)
+            }
+            return
+          },
+        ),
+      )
     )
     logger.trace`created`
   }
@@ -537,6 +584,9 @@ export class ProjectsManager extends ADisposable {
    * - if the document is included by the project
    */
   isIncluded(projectId: ProjectId, document: LangiumDocument | URI | string): boolean {
+    if (isLangiumDocument(document) && isLikeC4Builtin(document)) {
+      return false
+    }
     const uri = normalizeUri(document)
     // Workspace-level excludes (from VS Code settings) take precedence
     if (this.isExcludedByWorkspace(uri)) {
@@ -623,6 +673,17 @@ export class ProjectsManager extends ADisposable {
         logger.info`remove ${project.id}`
         project.id = this.uniqueProjectId(config.name)
         logger.info`add ${project.id}`
+      } else {
+        // File might be changed (space, comment, etc.), check if any field is actually changed
+        const hasNotChanged = hasSubObject(project, {
+          config,
+          folder,
+          includeConfig,
+        }) && `${project.configUri}|${project.folderUri}` === `${configUri}|${folderUri}`
+        if (hasNotChanged) {
+          logger.trace`project ${project.id} has no structural changes, skipping reload`
+          return project
+        }
       }
 
       this.warnIfConfigOverride(project, configUri)
@@ -839,7 +900,7 @@ export class ProjectsManager extends ADisposable {
       return
     }
 
-    log.info`rebuild project documents: ${docs.length}`
+    log.info`rebuild project (documents: ${docs.length})`
     this.clearCaches()
     await this.services.workspace.DocumentBuilder
       .update(docs, [], cancelToken)
@@ -1003,5 +1064,65 @@ export class ProjectsManager extends ADisposable {
     } catch {
       // ignore
     }
+  }
+
+  #pendingReloads = new Set<string>()
+  // No timeout: p-queue does not cancel timed out tasks, it only frees the slot and breaks serialization
+  #reloadQueue = new PQueue({ concurrency: 1 })
+  /**
+   * Aborted to cancel scheduled reloads.
+   * Not passed to the queue: p-queue frees the slot of an aborted running task, and the reload would run
+   * concurrently with the next one. Instead, a cancelled task completes immediately when it starts.
+   */
+  #reloadAbort = new AbortController()
+  private scheduleReloadProject(projectConfigUri: string): void {
+    if (this.#pendingReloads.has(projectConfigUri)) {
+      return
+    }
+    this.#pendingReloads.add(projectConfigUri)
+
+    // add delay on first reload to debounce rapid changes
+    const delayMs = this.#pendingReloads.size === 1 ? 250 : 50
+    const signal = this.#reloadAbort.signal
+    void this.#reloadQueue.add(async () => {
+      if (!signal.aborted) {
+        await delay(delayMs)
+      }
+    })
+    void this.#reloadQueue.add(async () => {
+      if (signal.aborted) {
+        return
+      }
+      try {
+        await this.services.workspace.WorkspaceLock.write(async (token) => {
+          // Remove before reading the config, so changes made during the reload schedule a new one
+          this.#pendingReloads.delete(projectConfigUri)
+          await this.registerConfigFile(URI.parse(projectConfigUri), token)
+        })
+      } catch (error) {
+        logger.warn(loggable(error))
+      }
+    })
+  }
+
+  /**
+   * Whether the given folder contains a project folder or an include path of some project
+   * (i.e. deleting the folder removes them)
+   */
+  private hasProjectsInside(folder: string): boolean {
+    const parent = ProjectFolder(folder)
+    return this.#projects.some(p =>
+      p.folder.startsWith(parent) || (p.includePaths?.some(i => i.folder.startsWith(parent)) ?? false)
+    )
+  }
+
+  /**
+   * Cancels scheduled (not started) reloads, a running reload completes.
+   * (`PQueue.clear()` is not used: it drops the tasks and their promises never settle)
+   */
+  private cancelScheduledReloads(): void {
+    this.#reloadAbort.abort()
+    this.#reloadAbort = new AbortController()
+    this.#pendingReloads.clear()
   }
 }

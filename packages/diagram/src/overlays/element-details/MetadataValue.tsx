@@ -1,284 +1,149 @@
 import { css } from '@likec4/styles/css'
-import { Box, Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core'
-import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
-import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { Badge, UnstyledButton } from '@mantine/core'
+import type { ReactNode } from 'react'
 
 export function MetadataProvider({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-interface MetadataValueProps {
-  label: string
-  value: string | string[]
-}
+export type MetadataEntries = ReadonlyArray<readonly [key: string, value: string | readonly string[]]>
 
-function TruncatedValue({ value, isExpanded }: { value: string; isExpanded: boolean }) {
-  const [isTruncated, setIsTruncated] = useState(false)
-  const [portalTarget, setPortalTarget] = useState<HTMLDialogElement | null>(null)
-  const textRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const textElement = textRef.current
-    if (!textElement) return
-    // Portal the tooltip into the dialog: it stays in the top layer (above the backdrop)
-    // and is not clipped by the card / scroll area.
-    setPortalTarget(textElement.closest('dialog'))
-    // Measure on resize, not just on mount: the dialog is opened (showModal) after mount,
-    // the panel may be hidden by Tabs, and the dialog can be resized.
-    const observer = new ResizeObserver(() => {
-      setIsTruncated(textElement.scrollWidth > textElement.clientWidth)
-    })
-    observer.observe(textElement)
-    return () => observer.disconnect()
-  }, [value])
-
-  return (
-    <Tooltip
-      label={isTruncated && !isExpanded ? value : null}
-      multiline
-      w={300}
-      portalProps={portalTarget ? { target: portalTarget } : {}}
-    >
-      <Text
-        ref={textRef}
-        component="div"
-        className={css({
-          fontSize: 'sm',
-          padding: 'xs',
-          userSelect: 'all',
-          color: 'text',
-          lineHeight: 'md',
-          whiteSpace: isExpanded ? 'pre-wrap' : 'nowrap',
-          overflow: isExpanded ? 'visible' : 'hidden',
-          textOverflow: isExpanded ? 'unset' : 'ellipsis',
-          wordBreak: isExpanded ? 'break-word' : 'normal',
-          minWidth: '0',
-          width: '100%',
-        })}
-      >
-        {value}
-      </Text>
-    </Tooltip>
-  )
-}
-
-function MultiValueDisplay({
-  values,
-  isExpanded,
-}: {
-  values: string[]
-  isExpanded: boolean
-}) {
-  if (isExpanded) {
-    return (
-      <Stack gap="xs">
-        {values.map((value, index) => (
-          <Flex key={index} align="center" gap="xs">
-            <Text
-              className={css({
-                fontSize: 'xs',
-                color: 'mantine.gray[5]',
-                fontWeight: 'medium',
-                flexShrink: '0',
-                _dark: {
-                  color: 'mantine.dark[3]',
-                },
-              })}
-            >
-              •
-            </Text>
-            <Box
-              className={css({
-                minHeight: '[32px]',
-                display: 'flex',
-                alignItems: 'center',
-                flex: '1',
-              })}
-            >
-              <TruncatedValue value={value} isExpanded={true} />
-            </Box>
-          </Flex>
-        ))}
-      </Stack>
-    )
+/**
+ * Splits a metadata value into separate values:
+ * arrays as is, multiline strings by line.
+ */
+export function metadataValues(value: string | readonly string[]): string[] {
+  if (typeof value !== 'string') {
+    return [...value]
   }
-
-  return (
-    <Box
-      className={css({
-        minHeight: '[32px]',
-        display: 'flex',
-        alignItems: 'center',
-        padding: 'xs',
-        gap: 'xs',
-        flexWrap: 'wrap',
-        minWidth: '0', // Allow shrinking
-        overflow: 'hidden', // Prevent overflow
-      })}
-    >
-      {values.map((value, index) => (
-        <Flex key={index} align="center" gap="xs" style={{ minWidth: 0 }}>
-          <Text
-            className={css({
-              fontSize: 'sm',
-              padding: '[4px 8px]',
-              backgroundColor: 'white',
-              color: 'text',
-              borderRadius: 'sm',
-              borderWidth: 'default',
-              borderStyle: 'solid',
-              borderColor: 'mantine.gray[3]',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '[min(200px, 100%)]',
-              minWidth: '[60px]',
-              flex: '[0 1 auto]',
-              userSelect: 'all',
-              _dark: {
-                backgroundColor: 'mantine.dark[9]',
-                borderColor: 'mantine.dark[4]',
-              },
-            })}
-            title={value}
-          >
-            {value}
-          </Text>
-          {index < values.length - 1 && (
-            <Text
-              className={css({
-                fontSize: 'xs',
-                color: 'mantine.gray[5]',
-                fontWeight: 'medium',
-                flexShrink: '0',
-                _dark: {
-                  color: 'mantine.dark[3]',
-                },
-              })}
-            >
-              •
-            </Text>
-          )}
-        </Flex>
-      ))}
-    </Box>
-  )
+  return value.includes('\n') ? value.split('\n').map(s => s.trim()).filter(Boolean) : [value]
 }
 
-export function MetadataValue({ label, value }: MetadataValueProps) {
-  const elements = Array.isArray(value)
-    ? value
-    : typeof value === 'string' && value.includes('\n')
-    ? value.split('\n').map(s => s.trim()).filter(Boolean)
-    : [value]
+const list = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2.5',
+  width: '100%',
+})
 
-  const hasMultipleElements = elements.length > 1
-  const [isExpanded, setIsExpanded] = useState(false)
+// key and its values on one line, wrapping when values are long
+const row = css({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'baseline',
+  columnGap: '2',
+  rowGap: '1',
+})
 
-  const handleToggle = () => {
-    setIsExpanded(!isExpanded)
-  }
+const keyButton = css({
+  maxWidth: '[160px]',
+  borderRadius: 'sm',
+  fontSize: 'xs',
+  fontWeight: 'medium',
+  // neutral, same scale as field labels (text.dimmed is a cool gray and clashes with the badges)
+  color: 'text/55',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  transition: 'fast',
+  _hover: {
+    color: 'text.link',
+    backgroundColor: 'surface.hover',
+  },
+})
 
+const values = css({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '1',
+  minWidth: '0',
+})
+
+const chip = css({
+  minHeight: '[24px]',
+  maxWidth: '100%',
+  backgroundColor: {
+    base: 'transparent',
+    _hover: {
+      base: 'mantine.gray[1]',
+      _dark: 'mantine.dark[5]',
+    },
+  },
+})
+
+const chipLabel = css({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+})
+
+const chipButton = css({
+  // inherit badge typography (UnstyledButton sets its own font-size)
+  fontSize: '[inherit]',
+  fontWeight: '[inherit]',
+  lineHeight: '[inherit]',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  color: '[var(--badge-color)]',
+  // values lead: brighter than the keys
+  opacity: {
+    base: '0.9',
+    _hover: '1',
+  },
+  transition: 'fast',
+})
+
+type MetadataListProps = {
+  entries: MetadataEntries
+  /**
+   * Called when a key (`value` is undefined) or a key-value pair is clicked
+   */
+  onSearch: (key: string, value?: string) => void
+}
+
+/**
+ * Metadata as compact rows: key followed by its values.
+ * Keys and values are clickable, to find other elements with the same metadata.
+ */
+export function MetadataList({ entries, onSearch }: MetadataListProps) {
   return (
-    <>
-      {hasMultipleElements
-        ? (
+    <div className={list}>
+      {entries.map(([key, value]) => (
+        <div key={key} className={row}>
           <UnstyledButton
-            onClick={handleToggle}
-            className={css({
-              fontSize: 'xs',
-              color: 'text.dimmed',
-              justifySelf: 'end',
-              textAlign: 'right',
-              userSelect: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              gap: 'xs',
-              padding: '[4px 8px]',
-              borderRadius: 'sm',
-              whiteSpace: 'nowrap',
-              transitionProperty: 'common',
-              transition: 'medium',
-              _hover: {
-                backgroundColor: 'mantine.gray[1]',
-                color: 'primary.body',
-                _dark: {
-                  backgroundColor: 'mantine.dark[7]',
-                  color: 'primary.body.hover',
-                },
-              },
-            })}
-          >
-            <Flex align="center" gap="xs">
-              <Text component="span" size="xs" fw={700}>
-                {label}:
-              </Text>
-              <Text
-                component="span"
-                className={css({
-                  fontSize: 'xs',
-                  fontWeight: 'medium',
-                  color: 'mantine.gray[6]',
-                  backgroundColor: 'mantine.gray[1]',
-                  padding: '[1px 4px]',
-                  borderRadius: 'xs',
-                  _dark: {
-                    color: 'mantine.dark[2]',
-                    backgroundColor: 'mantine.dark[6]',
-                  },
-                })}
-              >
-                {elements.length}
-              </Text>
-              {isExpanded ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
-            </Flex>
+            className={keyButton}
+            title={`Find elements with "${key}"`}
+            onClick={e => {
+              e.stopPropagation()
+              onSearch(key)
+            }}>
+            {key}
           </UnstyledButton>
-        )
-        : (
-          <Text
-            component="div"
-            className={css({
-              fontSize: 'xs',
-              color: 'text.dimmed',
-              justifySelf: 'end',
-              textAlign: 'right',
-              userSelect: 'none',
-              whiteSpace: 'nowrap',
-              padding: '[4px 8px]',
-              fontWeight: '[700]',
-            })}
-          >
-            {label}:
-          </Text>
-        )}
-
-      <Box
-        className={css({
-          justifySelf: 'stretch',
-          alignSelf: 'start',
-          minWidth: '0',
-        })}
-      >
-        {hasMultipleElements
-          ? (
-            <MultiValueDisplay
-              values={elements}
-              isExpanded={isExpanded}
-            />
-          )
-          : (
-            <Box
-              className={css({
-                minHeight: '[32px]',
-                display: 'flex',
-                alignItems: 'center',
-              })}
-            >
-              <TruncatedValue value={elements[0] || ''} isExpanded={isExpanded} />
-            </Box>
-          )}
-      </Box>
-    </>
+          <div className={values}>
+            {metadataValues(value).map((v, i) => (
+              <Badge
+                key={i}
+                variant="default"
+                radius="sm"
+                size="sm"
+                tt="none"
+                classNames={{ root: chip, label: chipLabel }}
+              >
+                <UnstyledButton
+                  className={chipButton}
+                  title={`Find elements with ${key}: ${v}`}
+                  onClick={e => {
+                    e.stopPropagation()
+                    onSearch(key, v)
+                  }}>
+                  {v}
+                </UnstyledButton>
+              </Badge>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }

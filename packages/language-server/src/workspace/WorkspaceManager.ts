@@ -278,7 +278,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   /**
    * Returns relative path from workspace to the given URI
    */
-  public relativePath(uri: URI): string {
+  public relativePath(uri: URI | string): string {
     if (!this.#performedStartup) {
       this.#logger.warn('Workspace not initialized, returning empty string')
       return ''

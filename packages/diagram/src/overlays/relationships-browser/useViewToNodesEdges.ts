@@ -180,6 +180,7 @@ export function viewToNodesEdge(
         relations: edge.relations,
         color: edge.color ?? 'gray',
         label: edge.label,
+        labelBBox: edge.labelBBox ?? null,
         navigateTo: edge.navigateTo ?? null,
         line: edge.line ?? 'dashed',
         existsInCurrentView: edge.existsInCurrentView,

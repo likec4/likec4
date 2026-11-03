@@ -107,10 +107,6 @@ export class NoopLikeC4ManualLayouts implements LikeC4ManualLayouts {
     logger.debug`NoopLikeC4ManualLayouts created`
   }
 
-  handleFileSystemUpdate(): Promise<void> {
-    return Promise.resolve()
-  }
-
   readSnapshot(): Promise<LayoutedView | null> {
     return Promise.resolve(null)
   }

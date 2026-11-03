@@ -69,11 +69,13 @@
     "postpack": "likec4ops postpack"
   },
   "dependencies": {
+    "@chenglou/pretext": "catalog:",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@lume/kiwi": "catalog:utils",
     "defu": "catalog:utils",
+    "fontkit": "catalog:",
     "json5": "catalog:utils",
     "khroma": "catalog:utils",
     "nano-spawn": "catalog:externals",
@@ -87,14 +89,17 @@
     "zod": "catalog:externals"
   },
   "devDependencies": {
+    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@types/fontkit": "catalog:",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:vitest"
+    "vitest": "catalog:vitest",
+    "wawoff2": "catalog:"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

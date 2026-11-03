@@ -3,7 +3,6 @@ import {
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
-  DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   FetchComputedModel,
   FetchProjects,
@@ -18,7 +17,7 @@ import {
   ValidateLayout,
 } from '@likec4/language-server/protocol'
 import { defineService, useDisposable } from 'reactive-vscode'
-import type { Location, Uri } from 'vscode'
+import type { Location } from 'vscode'
 import type { DocumentUri } from 'vscode-languageserver-types'
 import { useExtensionLogger } from './useExtensionLogger'
 import { whenExtensionActive } from './useIsActivated'
@@ -159,15 +158,6 @@ export const useRpc = defineService(() => {
 
     async fetchProjectsOverview() {
       return await queue(() => client.sendRequest(FetchProjectsOverview.req))
-    },
-
-    async notifyDidChangeSnapshot(event: 'update' | 'delete', snapshot: Uri) {
-      await client.sendNotification(
-        DidChangeSnapshotNotification.type,
-        {
-          [`${event}` as const]: client.code2ProtocolConverter.asUri(snapshot),
-        } as DidChangeSnapshotNotification.Params,
-      )
     },
   }
 })

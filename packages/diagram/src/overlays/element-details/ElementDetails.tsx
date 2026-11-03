@@ -1,5 +1,10 @@
+import type { Fqn } from '@likec4/core/types'
 import { useSelector } from '@xstate/react'
 import { shallowEqual } from 'fast-equals'
+import { useCallback } from 'react'
+import { MarkdownRefsProvider } from '../../context/MarkdownRefsContext'
+import { useDiagram } from '../../hooks/useDiagram'
+import { useDiagramMarkdownRefActions } from '../../hooks/useDiagramMarkdownRefActions'
 import type { ElementDetailsActorRef, ElementDetailsSnapshot } from './actor'
 import { ElementDetailsActorContext } from './actorContext'
 import { ElementDetailsCard } from './ElementDetailsCard'
@@ -25,11 +30,23 @@ export function ElementDetails({
     selector,
     shallowEqual,
   )
+  const diagram = useDiagram()
+  // Element refs in Markdown replace the content of this card, instead of opening another one
+  const replaceSubject = useCallback((fqn: Fqn) => {
+    diagram.overlays().send({
+      type: 'change.elementDetails',
+      actorId: actorRef.id,
+      subject: { type: 'element', element: fqn },
+    })
+  }, [diagram, actorRef])
+  const refActions = useDiagramMarkdownRefActions({ openElement: replaceSubject })
   return (
     <ElementDetailsActorContext.Provider value={actorRef}>
-      <ElementDetailsCard
-        onClose={onClose}
-        {...props} />
+      <MarkdownRefsProvider value={refActions}>
+        <ElementDetailsCard
+          onClose={onClose}
+          {...props} />
+      </MarkdownRefsProvider>
     </ElementDetailsActorContext.Provider>
   )
 }

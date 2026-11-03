@@ -1,11 +1,10 @@
 import { fromWorkspace } from '@likec4/language-services/node'
-import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { path, project } from '../options'
-import type { DiagnosticItem } from './result'
-import { buildValidateResult } from './result'
+import { runValidate } from './handler'
+import { parseMaxWarnings } from './result'
 
 const validateCmd = (yargs: yargs.Argv) => {
   return yargs
@@ -35,6 +34,13 @@ const validateCmd = (yargs: yargs.Argv) => {
               nargs: 0,
               description: 'output as JSON (structured)',
             },
+            'max-warnings': {
+              number: true,
+              nargs: 1,
+              defaultDescription: 'unlimited',
+              description: 'fail validation when there are more warnings than this number (0 fails on any warning)',
+              coerce: parseMaxWarnings,
+            },
           })
           .showHidden()
           .epilog(`${k.bold('Examples:')}          
@@ -53,6 +59,9 @@ const validateCmd = (yargs: yargs.Argv) => {
             )
           }
 
+  ${k.green('$0 validate --max-warnings 0')}
+    ${k.gray('Validate all, fail on any warning')}
+
   ${k.green('$0 validate --project my-project /some/where')}
     ${k.gray('Validate my-project in /some/where')}
 `),
@@ -60,8 +69,6 @@ const validateCmd = (yargs: yargs.Argv) => {
         const logger = createLikeC4Logger('c4:validate')
         const timer = startTimer(logger)
         const isJson = args.json === true
-        const enableLayout = args.layout === true
-        const fileFilter = args.file?.map(f => resolve(f)) ?? null
 
         // Initialize language services
         await using languageServices = await fromWorkspace(args.path, {
@@ -73,73 +80,20 @@ const validateCmd = (yargs: yargs.Argv) => {
           configureLogger: isJson ? 'stderr' : false,
         })
 
-        // Collect all model errors
-        const allModelErrors: DiagnosticItem[] = languageServices.getErrors().map(e => ({
-          message: e.message,
-          file: e.sourceFsPath,
-          line: e.line,
-          range: e.range,
-        }))
+        const result = await runValidate(languageServices, {
+          path: args.path,
+          project: args.project,
+          file: args.file,
+          layout: args.layout === true,
+          json: isJson,
+          maxWarnings: args.maxWarnings,
+        }, logger)
 
-        // Collect layout drift errors
-        const layoutErrors: DiagnosticItem[] = []
-        if (enableLayout) {
-          logger.debug('running layout validation...')
-          try {
-            const views = await languageServices.diagrams(args.project)
-            for (const view of views) {
-              if (view.drifts && view.drifts.length > 0) {
-                layoutErrors.push({
-                  message: `Layout drift detected on view '${view.id}'`,
-                  file: view.sourcePath ? resolve(args.path, view.sourcePath) : '',
-                  line: 0,
-                  range: null,
-                })
-              }
-            }
-          } catch (e) {
-            layoutErrors.push({
-              message: `Layout validation failed: ${e instanceof Error ? e.message : String(e)}`,
-              file: '',
-              line: 0,
-              range: null,
-            })
-          }
+        process.exitCode = result.valid ? 0 : 1
+
+        if (!isJson) {
+          timer.stopAndLog('validate ')
         }
-
-        const allErrors = [...allModelErrors, ...layoutErrors]
-
-        const result = buildValidateResult({
-          documents: languageServices.documentPaths(),
-          errors: allErrors,
-          fileFilter,
-        })
-        const { valid, errors: filteredErrors } = result
-        const { totalFiles, totalErrors } = result.stats
-
-        process.exitCode = valid ? 0 : 1
-
-        // Output
-        if (isJson) {
-          console.log(JSON.stringify(result, null, 2))
-          return
-        }
-
-        // Layout drift errors (model errors already printed by handleInitOptions)
-        for (const drift of layoutErrors) {
-          logger.error(k.red(drift.message) + (drift.file ? ' at ' + drift.file : ''))
-        }
-
-        if (valid) {
-          logger.info(k.green(`✓ Valid`) + k.dim(` (${totalFiles} files)`))
-        } else {
-          const filtered = fileFilter ? `, ${filteredErrors.length} in filtered files` : ''
-          logger.error(
-            k.red(`✗ Invalid`)
-              + k.dim(` (${totalFiles} files, ${totalErrors} errors${filtered})`),
-          )
-        }
-        timer.stopAndLog('validate ')
       },
     })
 }

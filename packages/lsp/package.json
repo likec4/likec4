@@ -44,9 +44,8 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
+    "jiti": "catalog:externals",
     "picomatch": "catalog:externals",
     "std-env": "catalog:externals"
   },

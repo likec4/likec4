@@ -45,7 +45,8 @@ export async function webcomponentHandler({
   }
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 
-  const diagrams = await languageServices.diagrams(projectId)
+  const model = await languageServices.layoutedModel(projectId)
+  const diagrams = [...model.views()].map(vm => vm.$layouted)
   if (!hasAtLeast(diagrams, 1)) {
     logger.warn('no views found')
     process.exitCode = 1

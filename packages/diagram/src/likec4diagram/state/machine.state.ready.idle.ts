@@ -19,6 +19,10 @@ import { machine, targetState, to } from './machine.setup'
 export const idle = machine.createStateConfig({
   id: targetState.idle.slice(1),
   on: {
+    'compare.start': {
+      guard: 'can compare layouts',
+      ...to.comparing,
+    },
     'xyflow.nodeClick': [
       {
         description: 'Handle sequence subflow click in sequence variant',

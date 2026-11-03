@@ -32,6 +32,7 @@ import {
 import {
   filter,
   find,
+  isNumber,
   map,
   mapToObj,
   omit,
@@ -42,6 +43,7 @@ import {
   tap,
 } from 'remeda'
 import type { Except } from 'type-fest'
+import { type MeasuredEdgeLabel, measureEdgeLabel } from '../../utils/measure-edge-label'
 import type { RelationshipDetailsTypes } from './_types'
 import type { RelationshipDetailsViewData } from './compute'
 
@@ -57,6 +59,7 @@ const Sizes = {
   edgeLabel: {
     width: 220,
     height: 55,
+    labelpos: 'c',
     // minlen: 1,
   } satisfies EdgeConfig,
 
@@ -212,9 +215,17 @@ export namespace LayoutResult {
   }
 }
 
+export type LayoutRelationshipDetailsOptions = {
+  /**
+   * Whether edge labels have navigate button
+   */
+  withNavigateButtons?: boolean
+}
+
 export function layoutRelationshipDetails(
   data: RelationshipDetailsViewData,
   scope: LikeC4ViewModel<AnyAux> | null,
+  { withNavigateButtons = false }: LayoutRelationshipDetailsOptions = {},
 ): LayoutResult {
   const g = createGraph()
 
@@ -228,6 +239,7 @@ export function layoutRelationshipDetails(
     sourceHandle: string
     targetHandle: string
     relationship: RelationshipModel
+    label: MeasuredEdgeLabel
   }> = Array.from(data.relationships).map(r => {
     const source = sources.byId(r.source.id).graph
     const target = targets.byId(r.target.id).graph
@@ -236,11 +248,20 @@ export function layoutRelationshipDetails(
     g.node(source.id).outPorts.push(target.id)
     g.node(target.id).inPorts.push(source.id)
 
+    // Reserve the size of the rendered label, dagre places it between the ranks
+    const label = measureEdgeLabel({
+      label: r.title ?? 'untitled',
+      technology: r.technology,
+      withActionButton: withNavigateButtons && !!r.navigateTo,
+    })
     g.setEdge(source.portId, target.portId, {
       ...Sizes.edgeLabel,
+      width: label.width,
+      height: label.height,
     }, name)
     return {
       name,
+      label,
       source: source.id,
       sourceHandle: source.id + '_out' + (g.node(source.id).outPorts.length - 1),
       target: target.id,
@@ -267,10 +288,14 @@ export function layoutRelationshipDetails(
 
   const edgeCount = g.edgeCount()
   if (edgeCount > 5) {
+    // More space between columns for many edges
+    const minWidth = edgeCount > 10 ? 800 : 400
     for (const edge of g.edges()) {
+      const config = g.edge(edge)
+      const width: unknown = config['width']
       g.setEdge(edge, {
-        ...Sizes.edgeLabel,
-        width: edgeCount > 10 ? 800 : 400,
+        ...config,
+        width: Math.max(isNumber(width) ? width : 0, minWidth),
       })
     }
   }
@@ -425,8 +450,14 @@ export function layoutRelationshipDetails(
       if (!ename) {
         return acc
       }
-      const { name, source, target, relationship, sourceHandle, targetHandle } = find(edges, e => e.name === ename)!
-      const label = relationship.title ?? 'untitled'
+      const { name, source, target, relationship, sourceHandle, targetHandle, label } = find(
+        edges,
+        e => e.name === ename,
+      )!
+      // dagre sets the center of the label
+      const labelX: unknown = edge['x']
+      const labelY: unknown = edge['y']
+      invariant(isNumber(labelX) && isNumber(labelY), `dagre should place the label of ${name}`)
       const navigateTo = relationship.navigateTo?.id ?? null
       const description = preferSummary(relationship.$relationship) ?? null
       const technology = relationship.technology ?? null
@@ -436,7 +467,13 @@ export function layoutRelationshipDetails(
         sourceHandle,
         target: target as NodeId,
         targetHandle,
-        label,
+        label: label.label,
+        labelBBox: {
+          x: Math.round(labelX - label.width / 2),
+          y: Math.round(labelY - label.height / 2),
+          width: label.width,
+          height: label.height,
+        },
         color: relationship.color,
         description,
         ...(navigateTo && { navigateTo }),

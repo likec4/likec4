@@ -1,6 +1,5 @@
 import { css } from '@likec4/styles/css'
 import { Tooltip } from '@mantine/core'
-import { getBezierPath } from '@xyflow/system'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -11,6 +10,7 @@ import {
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { edgePathThroughLabel } from '../../../utils/edge-path-through-label'
 import type { RelationshipsBrowserTypes } from '../_types'
 import { useRelationshipsBrowser } from '../hooks'
 
@@ -22,9 +22,11 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
       navigateTo,
       relations,
       existsInCurrentView,
+      labelBBox,
     },
   } = props
-  const [svgPath, labelX, labelY] = getBezierPath(props)
+  // the label is placed by the layout, the edge goes through it
+  const [svgPath, labelPosition] = edgePathThroughLabel(props, labelBBox)
   const diagram = useDiagram()
 
   const markOrange = relations.length > 1 || !existsInCurrentView
@@ -85,13 +87,11 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
       />
       <EdgeLabelContainer
         edgeProps={edgeProps}
-        labelPosition={{
-          x: labelX,
-          y: labelY,
-          translate: 'translate(-50%, 0)',
-        }}
-        style={{
-          maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
+        labelPosition={labelPosition}
+        {...!labelBBox && {
+          style: {
+            maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
+          },
         }}
       >
         {label}

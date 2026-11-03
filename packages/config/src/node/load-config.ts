@@ -1,8 +1,7 @@
 import { invariant } from '@likec4/core'
 import { logger, wrapError } from '@likec4/log'
-import { bundleRequire } from 'bundle-require'
 import { defu } from 'defu'
-import { formatMessagesSync } from 'esbuild'
+import { createJiti } from 'jiti'
 import JSON5 from 'json5'
 import * as fs from 'node:fs/promises'
 import { basename, dirname, relative, resolve } from 'node:path'
@@ -64,9 +63,24 @@ const loadJsonConfigs = async (filepath: string, stack: string[]): Promise<[...J
   return [...configs, parsed]
 }
 
+const identity = <T>(value: T): T => value
+
+/**
+ * Mock implementation of `@likec4/config` (and `likec4/config`) for non-JSON configs.
+ * Config is validated after loading, so `define*` helpers are identity functions here.
+ * This also allows loading configs when these packages are not installed in the user's project.
+ */
+const configModuleMock = {
+  defineConfig: identity,
+  defineGenerators: identity,
+  defineStyle: identity,
+  defineTheme: identity,
+  defineThemeColor: identity,
+}
+
 /**
  * Load LikeC4 Project config file.
- * If filepath is a non-JSON file, it will be bundled and required
+ * If filepath is a non-JSON file (JS/TS), it is transpiled and evaluated with jiti
  */
 export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4ProjectConfig> {
   filepath = typeof filepath === 'string' ? filepath : filepath.fsPath
@@ -96,48 +110,22 @@ export async function loadConfig(filepath: VscodeURI | string): Promise<LikeC4Pr
   }
 
   invariant(isLikeC4NonJsonConfig(filename), `Invalid name for config file: ${filepath}`)
-  const { mod } = await bundleRequire({
-    filepath,
-    cwd: folder,
-    esbuildOptions: {
-      resolveExtensions: ['.ts', '.mts', '.cts', '.mjs', '.js', '.cjs'],
-      plugins: [{
-        name: 'likec4-config',
-        setup(build) {
-          /**
-           * Intercept @likec4/config and likec4/config imports
-           */
-          build.onResolve({ filter: /^@?likec4\/config$/ }, (args) => ({
-            path: args.path,
-            namespace: 'likec4-config',
-          }))
-          build.onEnd((result) => {
-            const messages = formatMessagesSync(result.errors, { kind: 'error' })
-            for (const message of messages) {
-              logger.error(message)
-            }
-          })
-          /**
-           * Mock implementation, this allows to skip redundant bundling @likec4/config
-           */
-          build.onLoad({ filter: /.*/, namespace: 'likec4-config' }, (_args) => {
-            return {
-              contents: `
-// Mock implementation to allow loading config files without bundling @likec4/config
-function mock(x) { return x }
-export {
-  mock as defineConfig,
-  mock as defineGenerators,
-  mock as defineStyle,
-  mock as defineTheme,
-  mock as defineThemeColor,
-}`,
-              loader: 'js',
-            }
-          })
-        },
-      }],
+  const jiti = createJiti(filepath, {
+    // Always re-evaluate the config and its imports, as the language server reloads it on change
+    moduleCache: false,
+    // Do not write transpiled sources to node_modules/.cache or tmp dir
+    fsCache: false,
+    virtualModules: {
+      '@likec4/config': configModuleMock,
+      'likec4/config': configModuleMock,
     },
   })
-  return validateProjectConfig(Object.assign(implicitcfg, mod?.default ?? mod))
+  let mod: unknown
+  try {
+    mod = await jiti.import(filepath, { default: true })
+  } catch (e) {
+    // Syntax errors from jiti already include the file location
+    throw e instanceof Error && e.message.includes(filepath) ? e : wrapError(e, `${filepath}:`)
+  }
+  return validateProjectConfig(Object.assign(implicitcfg, mod))
 }

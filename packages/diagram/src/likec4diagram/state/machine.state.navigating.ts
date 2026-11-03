@@ -11,7 +11,6 @@ import { convertToXYFlow } from '../convert-to-xyflow'
 import { mergeXYNodesEdges } from './assign'
 import {
   cancelFitDiagram,
-  disableCompareWithLatest,
   raiseSetViewport,
 } from './machine.actions'
 import { machine, targetState, to } from './machine.setup'
@@ -84,7 +83,6 @@ export const navigating = machine.createStateConfig({
     actions: [
       cancelFitDiagram(),
       handleBrowserForwardBackward(),
-      disableCompareWithLatest(),
       enqueueActions(({ enqueue, context, event }) => {
         assertEvent(event, 'update.view')
         const {

@@ -164,8 +164,7 @@
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
     "@types/which": "^3.0.4",
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild",
+    "jiti": "catalog:externals",
     "langium-cli": "catalog:langium",
     "memfs": "catalog:",
     "tsdown": "catalog:tsdown",
@@ -174,14 +173,10 @@
     "vitest": "catalog:vitest"
   },
   "peerDependencies": {
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild"
+    "jiti": "catalog:externals"
   },
   "peerDependenciesMeta": {
-    "bundle-require": {
-      "optional": true
-    },
-    "esbuild": {
+    "jiti": {
       "optional": true
     }
   },

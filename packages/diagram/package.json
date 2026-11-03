@@ -57,6 +57,7 @@
     "lint:package": "pnpx publint ./package.tgz"
   },
   "dependencies": {
+    "@chenglou/pretext": "catalog:",
     "@dagrejs/dagre": "catalog:",
     "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
@@ -76,12 +77,14 @@
     "d3-shape": "^3.2.0",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
+    "fuse.js": "catalog:utils",
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
+    "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
     "type-fest": "catalog:externals",
     "xstate": "catalog:xstate"
