@@ -1,5 +1,20 @@
 # @likec4/config
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3496](https://github.com/likec4/likec4/pull/3496) [`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7) Thanks [@davydkov](https://github.com/davydkov)! - TypeScript and JavaScript project configs (`likec4.config.ts`, `.mts`, `.cts`, `.mjs`, `.cjs`, `.js`) are no longer experimental. They are now loaded with [jiti](https://github.com/unjs/jiti) instead of esbuild: loading no longer writes temporary `*.bundled_*.mjs` files next to your config, the VSCode extension loads configs faster and is smaller, and `esbuild` is no longer installed with `likec4`, `@likec4/lsp` and `@likec4/mcp`. If you use `@likec4/config` or `@likec4/language-server` directly, install `jiti` instead of `bundle-require` and `esbuild` to load non-JSON configs.
+  
+  Fixed: changes to a project config (for example, title or styles) were not applied to the model until the project files were edited.
+
+- [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76) Thanks [@luantaraschi](https://github.com/luantaraschi)! - Fix project config with `styles.customCss` being rejected with `Invalid input at styles.customCss`, which made the whole config (name, theme, defaults) be ignored. Fixes [#3285](https://github.com/likec4/likec4/issues/3285)
+
+- [#3389](https://github.com/likec4/likec4/pull/3389) [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add Google Material Symbols support through the `md:` icon prefix.
+- Updated dependencies [[`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1), [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385)]:
+  - @likec4/core@1.60.1
+  - @likec4/log@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes

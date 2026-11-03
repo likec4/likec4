@@ -1,5 +1,15 @@
 # @likec4/styles
 
+## 1.60.1
+
+### Patch Changes
+
+- [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385) Thanks [@davydkov](https://github.com/davydkov)! - The style preset ships smaller CSS: it defines only the color tokens tags need, per default tag color: `likec4.tag.<color>.bg`, `likec4.tag.<color>.bg.hover`, `likec4.tag.<color>.border` and `likec4.tag.<color>.text`.
+  
+  `@likec4/core/styles` exports `isDefaultTagColor`.
+- Updated dependencies [[`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080), [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45), [`250bd2c`](https://github.com/likec4/likec4/commit/250bd2c4ec45c5ee24c54844cf9a0bb64d653140), [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385)]:
+  - @likec4/style-preset@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes
