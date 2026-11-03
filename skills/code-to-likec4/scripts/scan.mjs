@@ -1,0 +1,640 @@
+#!/usr/bin/env node
+// scan.mjs — node stdlib only. Walks TS/JS, extracts imports + titles, spawns scan.py once, merges to IR JSON.
+// Usage: node scan.mjs --root <dir> --out <file|-> [--max-files N] [--include-tests] [--include G ...] [--exclude G ...]
+import { spawnSync } from 'node:child_process'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { extname, join, relative } from 'node:path'
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const DEFAULT_IGNORE_DIRS = new Set([
+  'node_modules',
+  'dist',
+  'build',
+  '.venv',
+  '__pycache__',
+  '.git',
+  'coverage',
+  '.next',
+  'out',
+])
+const DEFAULT_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'])
+const TEST_RE =
+  /(\.test\.|\.spec\.|__tests__|(^|\/)tests?\/|(^|\/)test_[^/]*\.(py|js|ts|mjs|cjs)$|_test\.(py|js|ts)$|_tests\.(py|js|ts)$)/
+
+function help() {
+  console.log(`scan.mjs — scan TS/JS (+ Python via scan.py) to IR JSON
+Usage: node scan.mjs --root <dir> --out <file|-> [options]
+Options:
+  --root <dir>        repo root to scan (default .)
+  --out <file|->      output file or - for stdout (default -)
+  --max-files <n>     max source files (default 2000)
+  --include <glob>    repeatable; if given, replaces default extensions
+  --exclude <glob>    repeatable; merged with default ignores (glob match)
+  --include-tests     include test files (default false)
+  --no-symbols        file-level only: skip class/function symbols (routes kept
+                      only with --symbol-kinds route; use for large repos where
+                      per-function nodes flood the diagram)
+  --symbol-kinds <csv> keep only these symbol kinds (subset of
+                      class,function,variable,route; default all)
+  -h, --help          show this help`)
+}
+
+function parseArgs(argv) {
+  const o = {
+    root: '.',
+    out: '-',
+    maxFiles: 2000,
+    include: [],
+    exclude: [],
+    includeTests: false,
+    noSymbols: false,
+    symbolKinds: null,
+    help: false,
+  }
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i]
+    if (a === '--root') o.root = argv[++i]
+    else if (a === '--out') o.out = argv[++i]
+    else if (a === '--max-files') o.maxFiles = Number(argv[++i])
+    else if (a === '--include') o.include.push(argv[++i])
+    else if (a === '--exclude') o.exclude.push(argv[++i])
+    else if (a === '--include-tests') o.includeTests = true
+    else if (a === '--no-symbols') o.noSymbols = true
+    else if (a === '--symbol-kinds') o.symbolKinds = String(argv[++i]).split(',').map((s) => s.trim()).filter(Boolean)
+    else if (a === '-h' || a === '--help') o.help = true
+  }
+  return o
+}
+
+function loadGitignore(root) {
+  const p = join(root, '.gitignore')
+  if (!existsSync(p)) return []
+  return readFileSync(p, 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#')).map((l) =>
+    l.replace(/\/$/, '')
+  )
+}
+
+function globToRegExp(pat) {
+  return new RegExp(`^${pat.split('*').map((s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('[^/]*')}$`)
+}
+
+function excluded(rel, ignoreDirs, gitignore, extra, isDir = false) {
+  // rel uses forward slashes (normalized by callers). Segment semantics
+  // (gitignore-like): `data/` matches only a directory segment, never
+  // `database.py`; `--exclude` entries are globs, merged with defaults.
+  const parts = rel.split('/').filter((p) => p && p !== '.')
+  if (parts.some((p) => ignoreDirs.has(p))) return true
+  if (parts.some((p) => p.startsWith('.')) && parts[0] !== '.') return true
+  for (const raw of [...gitignore, ...extra]) {
+    if (!raw) continue
+    const dirOnly = raw.endsWith('/')
+    const pat = dirOnly ? raw.slice(0, -1) : raw
+    if (!pat.includes('/')) {
+      const rx = globToRegExp(pat)
+      const scope = dirOnly && !isDir ? parts.slice(0, -1) : parts
+      if (scope.some((s) => rx.test(s))) return true
+    } else {
+      const rx = globToRegExp(pat)
+      if (rx.test(rel) || (isDir && rx.test(`${rel}/`))) return true
+      if (dirOnly && (rel === pat || rel.startsWith(`${pat}/`))) return true
+    }
+  }
+  return false
+}
+
+function walk(root, o, gitignore) {
+  const files = []
+  const stack = [root]
+  while (stack.length) {
+    const dir = stack.pop()
+    let entries
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      continue
+    }
+    for (const e of entries) {
+      const full = join(dir, e)
+      const rel = relative(root, full).replace(/\\/g, '/')
+      let st
+      try {
+        st = statSync(full)
+      } catch {
+        continue
+      }
+      if (st.isSymbolicLink()) continue
+      if (st.isDirectory()) {
+        if (!excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude, true)) stack.push(full)
+      } else if (st.isFile()) {
+        if (excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude)) continue
+        if (!o.includeTests && TEST_RE.test(rel)) continue
+        const ext = extname(e)
+        const useExts = o.include.length ? null : DEFAULT_EXTS
+        if (useExts && (ext === '.py' || !useExts.has(ext))) {
+          if (ext === '.py') continue // handled by scan.py
+          else continue
+        }
+        if (o.include.length && !o.include.some((g) => rel.includes(g.replaceAll('*', '')))) continue
+        if (DEFAULT_EXTS.has(ext)) files.push(full)
+      }
+    }
+  }
+  return files.slice(0, o.maxFiles + 1)
+}
+
+function toModuleName(root, full) {
+  return relative(root, full).replace(/\\/g, '/').replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
+}
+
+function lineOffsets(src) {
+  const offs = [0]
+  for (let i = src.indexOf('\n'); i !== -1; i = src.indexOf('\n', i + 1)) offs.push(i + 1)
+  return offs
+}
+function lineOf(offs, index) {
+  let lo = 0
+  let hi = offs.length
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1
+    if (offs[mid] <= index) {
+      lo = mid + 1
+    } else {
+      hi = mid
+    }
+  }
+  return Math.max(0, lo - 1)
+}
+
+function fileRoute(file) {
+  const p = String(file || '').replace(/\.(tsx?|jsx?|mjs|cjs)$/, '').replace(/(^|\/)index$/, '')
+  return `/${p.replace(/^\/+/, '')}` || '/'
+}
+
+function extractTs(src, file = '') {
+  const offs = lineOffsets(src)
+  const at = (index) => lineOf(offs, index)
+  const imports = []
+  const re =
+    /(?:import\s+(?:[^'"]*?\sfrom\s+)?['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\))/g
+  let m
+  while ((m = re.exec(src))) imports.push(m[1] ?? m[2] ?? m[3])
+  const symbols = []
+  const patterns = [
+    [/export\s+(?:default\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)/g, 'class'],
+    [/export\s+(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/g, 'function'],
+    [/export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)/g, 'variable'],
+    [/(?:^|[;}\n])\s*(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g, 'function'],
+  ]
+  for (const [rx, kind] of patterns) {
+    let x
+    while ((x = rx.exec(src))) symbols.push({ name: x[1], kind, line: at(x.index) })
+  }
+  // Vercel/Next.js file-convention handlers: `export async function POST(...)`
+  // in api/chat.js serves POST /api/chat. Symbol keeps the code identifier;
+  // the route path goes in `route` (rendered as description).
+  const verbRe = /export\s+(?:async\s+)?function\s+(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s*\(/g
+  while ((m = verbRe.exec(src))) {
+    const route = `${m[1]} ${fileRoute(file)}`
+    // Upgrade the matching exported-function symbol instead of duplicating it
+    // (merge dedupes by name, so a second entry would be dropped anyway).
+    const existing = symbols.find((s) => s.name === m[1] && s.kind === 'function')
+    if (existing) {
+      existing.kind = 'route'
+      existing.route = route
+    }
+    else symbols.push({ name: m[1], kind: 'route', line: at(m.index), route })
+  }
+  // Express/Fastify-style route registrations: app.get('/path', ...) / router.post("...").
+  // Path must start with '/' — this excludes lookalikes like headers.get('origin').
+  // Root path '/' alone is valid (second char class is *-quantified).
+  const routeRe =
+    /([A-Za-z_$][\w$]*)\s*\.\s*(get|post|put|delete|patch|head|options|use|all)\s*\(\s*['"`](\/[^'"` ]*)['"`]/g
+  while ((m = routeRe.exec(src))) {
+    symbols.push({
+      name: `${m[2].toUpperCase()} ${m[3]}`,
+      kind: 'route',
+      line: at(m.index),
+      route: `${m[2].toUpperCase()} ${m[3]}`,
+    })
+  }
+  // Chained style: router.route('/path').get(h).post(h) — path lives on .route().
+  // Tail runs to `;` so handler args with parens (e.g. auth('x')) don't cut it off.
+  const chainRe = /\.route\(\s*['"`](\/[^'"` ]*)['"`]\s*\)([^;]*);/g
+  while ((m = chainRe.exec(src))) {
+    for (const h of m[2].matchAll(/\.\s*(get|post|put|delete|patch|head|options)\s*\(/g)) {
+      const route = `${h[1].toUpperCase()} ${m[1]}`
+      symbols.push({ name: route, kind: 'route', line: at(m.index), route })
+    }
+  }
+  // Arrow/wrapped handlers: const createUser = catchAsync(async (req, res) => ...).
+  // Only when the initializer contains `=>` (skips plain values like `const x = (1+2)`).
+  const arrowRe = /(?:^|[;}\n])\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=(?=[^;]{0,300}=>)/g
+  while ((m = arrowRe.exec(src))) {
+    if (!symbols.some((s) => s.name === m[1])) symbols.push({ name: m[1], kind: 'function', line: at(m.index) })
+  }
+  // NestJS-style decorators: @Controller('prefix') class + @Get('path') handler.
+  const ctrl = /@Controller\(\s*['"`]([^'"`]*?)['"`]\s*\)/.exec(src)
+  const prefix = (ctrl?.[1] || '').replace(/^\/|\/$/g, '')
+  // Additional stacked decorators between route and method (e.g. @HttpCode)
+  // are skipped; the gap must not cross `;`/`{` (stays within the decorator run).
+  const nestRe =
+    /@(Get|Post|Put|Delete|Patch|Head|Options)\(\s*(?:['"`]([^'"`]*?)['"`]\s*)?\)((?:[^\n;{}]*\n)*?)\s*(?:async\s+)?([A-Za-z_$][\w$]*)\s*\(/g
+  while ((m = nestRe.exec(src))) {
+    const path = [prefix, (m[2] || '').replace(/^\/|\/$/g, '')].filter(Boolean).join('/')
+    const route = `${m[1].toUpperCase()} /${path}`
+    symbols.push({ name: m[4], kind: 'route', line: at(m.index), route })
+  }
+  return { imports, symbols }
+}
+
+// tsconfig paths: map alias imports (e.g. @app/*) to module paths so they are not
+// silently dropped. First match wins; JSON with comments falls back to none.
+function loadTsconfig(root) {
+  const p = join(root, 'tsconfig.json')
+  if (!existsSync(p)) return { baseUrl: '', paths: [] }
+  try {
+    const raw = readFileSync(p, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').split('\n')
+      .filter((l) => !/^\s*\/\//.test(l)).join('\n')
+    const cfg = JSON.parse(raw).compilerOptions || {}
+    const paths = Object.entries(cfg.paths || {}).map(([k, v]) => ({
+      prefix: k.replace(/\/\*$/, '/').replace(/\*$/, ''),
+      target: String((Array.isArray(v) ? v[0] : v) || '').replace(/\/\*$/, '/').replace(/\*$/, ''),
+    })).filter((e) => e.prefix)
+    paths.sort((a, b) => b.prefix.length - a.prefix.length)
+    return { baseUrl: (cfg.baseUrl || '').replace(/\/$/, ''), paths }
+  } catch {
+    return { baseUrl: '', paths: [] }
+  }
+}
+
+function resolveAlias(spec, tsconfig) {
+  for (const { prefix, target } of tsconfig.paths) {
+    if (spec.startsWith(prefix)) {
+      const rest = spec.slice(prefix.length).replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
+      return `${target}${rest}`.replace(/\/index$/, '')
+    }
+  }
+  return null
+}
+
+// baseUrl bare imports (e.g. `from 'auth/auth.module'` with baseUrl ./src):
+// resolved only when the target file exists on disk, so npm packages never match.
+function resolveBaseUrl(spec, root, baseUrl) {
+  if (!baseUrl || spec.startsWith('.') || spec.startsWith('/')) return null
+  const mod = spec.replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
+  for (const cand of [`${baseUrl}/${mod}`, `${baseUrl}/${mod}/index`]) {
+    for (const ext of ['', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']) {
+      const rel = `${cand}${ext}`.replace(/^\.\//, '')
+      if (existsSync(join(root, rel))) {
+        return rel.replace(/\/index\.(tsx?|jsx?|mjs|cjs)$/, '').replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
+      }
+    }
+  }
+  return null
+}
+
+function baseName(p) {
+  const b = p.split('/').pop()
+  return b.replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
+}
+
+const args = parseArgs(process.argv.slice(2))
+if (args.help) {
+  help()
+  process.exit(0)
+}
+if (!existsSync(args.root)) {
+  console.error(`root not found: ${args.root}`)
+  process.exit(2)
+}
+
+const gitignore = loadGitignore(args.root)
+const tsconfig = loadTsconfig(args.root)
+if (tsconfig.paths.length) console.error(`scan.mjs: tsconfig paths: ${tsconfig.paths.map((p) => p.prefix).join(', ')}`)
+const files = walk(args.root, args, gitignore)
+if (files.length > args.maxFiles) {
+  console.error(`over budget: ${files.length} files > --max-files ${args.maxFiles}; narrow --include/--exclude`)
+  process.exit(3)
+}
+
+const elements = []
+for (const full of files) {
+  const rel = relative(args.root, full).replace(/\\/g, '/')
+  let symbols = [], imports = [], srcText = ''
+  try {
+    srcText = readFileSync(full, 'utf8')
+    ;({ imports, symbols } = extractTs(srcText, rel))
+  } catch { /* unreadable -> bare record */ }
+  const mod = toModuleName(args.root, full)
+  const aliasImports = []
+  for (const spec of imports) {
+    if (spec.startsWith('.')) continue
+    const resolved = resolveAlias(spec, tsconfig) || resolveBaseUrl(spec, args.root, tsconfig.baseUrl)
+    if (resolved) aliasImports.push({ from: spec, to: resolved })
+  }
+  // Barrel files (only `export * from ...`) re-export a real module; flag them so
+  // labeling can drop the shim and wire imports straight to the implementation.
+  const codeLines = srcText.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('//'))
+  const barrelTargets = codeLines.length > 0 && codeLines.every((l) =>
+      /^export\s+\*\s+from\s+['"][^'"]+['"];?$/.test(l)
+    )
+    ? codeLines.map((l) => /from\s+['"]([^'"]+)['"]/.exec(l)[1]) :
+    null
+  elements.push({
+    file: rel,
+    lang: 'ts',
+    module: mod,
+    title: baseName(rel),
+    symbol: null,
+    line: 1,
+    parent: null,
+    rawImports: imports.filter((s) => s.startsWith('.')),
+    rawDepCount: imports.length,
+    rawAllImports: imports,
+    aliasImports,
+    barrelTargets: barrelTargets || undefined,
+  })
+  const seen = new Set()
+  const keepKind = (kind) => !args.noSymbols && (!args.symbolKinds || args.symbolKinds.includes(kind))
+  for (const s of symbols) {
+    if (seen.has(s.name)) continue
+    seen.add(s.name)
+    if (!keepKind(s.kind)) continue
+    elements.push({
+      file: rel,
+      lang: 'ts',
+      module: `${mod}.${s.name}`,
+      title: s.name,
+      symbol: s.name,
+      symbolKind: s.kind,
+      line: s.line,
+      parent: rel,
+      rawImports: [],
+      rawDepCount: 0,
+      rawAllImports: [],
+      route: s.route ?? null,
+      extends: [],
+      calls: [],
+    })
+  }
+}
+
+// Fast pre-check: skip the scan.py spawn entirely when the repo has no Python files.
+function hasPyFiles(root, o, gitignore) {
+  const stack = [root]
+  while (stack.length) {
+    const dir = stack.pop()
+    let entries
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      continue
+    }
+    for (const e of entries) {
+      const full = join(dir, e)
+      const rel = relative(root, full).replace(/\\/g, '/')
+      let st
+      try {
+        st = statSync(full)
+      } catch {
+        continue
+      }
+      if (st.isSymbolicLink()) continue
+      if (st.isDirectory()) {
+        if (!excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude, true)) stack.push(full)
+      } else if (e.endsWith('.py') && !excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude)) {
+        if (o.includeTests || !TEST_RE.test(rel)) return true
+      }
+    }
+  }
+  return false
+}
+
+// Single spawn of scan.py for Python (skipped for TS/JS-only repos).
+const pyElements = []
+const scanPy = join(HERE, 'scan.py')
+if (!hasPyFiles(args.root, args, gitignore)) {
+  console.error('scan.mjs: no Python files, skipping scan.py')
+} else {try {
+    const r = spawnSync('python3', [
+      scanPy,
+      '--root',
+      args.root,
+      ...(args.includeTests ? ['--include-tests'] : []),
+      ...(args.noSymbols ? ['--no-symbols'] : []),
+      ...(args.symbolKinds ? ['--symbol-kinds', args.symbolKinds.join(',')] : []),
+      ...args.exclude.flatMap((e) => ['--exclude', e]),
+    ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+    if (r.status !== 0) {
+      console.error(`scan.py failed (continuing with TS/JS only): ${(r.stderr || '').slice(0, 500)}`)
+    } else if (r.stdout.trim()) {
+      const parsed = JSON.parse(r.stdout)
+      const list = Array.isArray(parsed) ? parsed : parsed.elements ?? []
+      for (const e of list) {
+        if (!args.includeTests && TEST_RE.test(e.file || '')) continue
+        pyElements.push(e)
+      }
+    }
+  } catch (e) {
+    console.error(`scan.py spawn failed (continuing with TS/JS only): ${String(e).slice(0, 200)}`)
+  }}
+
+// P2b: infra + actor proposals (stdlib only, YAML via line-regex — no pyyaml dep).
+// Never auto-added to the model; the labeling step promotes/drops each.
+const LIB_SIGNALS = [
+  ['aiokafka', 'container', 'Kafka Message Broker', 'Apache Kafka'],
+  ['mlflow', 'container', 'MLflow Tracking Server', 'MLflow'],
+  ['prometheus_client', 'container', 'Prometheus', 'Prometheus TSDB'],
+  ['boto3', 'database', 'S3 Artifact Store', 'S3'],
+  ['psycopg2', 'database', 'Postgres Database', 'PostgreSQL'],
+  ['sqlalchemy', 'database', 'Relational Database', 'SQL'],
+  ['redis', 'database', 'Redis Cache', 'Redis'],
+  ['celery', 'container', 'Task Queue Workers', 'Celery'],
+  ['mongoose', 'database', 'MongoDB', 'MongoDB'],
+  ['typeorm', 'database', 'SQL Database', 'TypeORM'],
+  ['prisma', 'database', 'SQL Database', 'Prisma'],
+]
+function scanInfra(root, o, gitignore, allImports, routes) {
+  const proposals = []
+  const seenTitles = new Set()
+  const push = (p) => {
+    if (!seenTitles.has(p.title)) {
+      seenTitles.add(p.title)
+      proposals.push(p)
+    }
+  }
+  // 1. k8s manifests + compose + prometheus configs via line-regex.
+  const yamlRoots = ['manifests', 'k8s', 'deploy', 'infra', 'monitoring/prometheus', 'docker']
+  const stack = [root, ...yamlRoots.map((d) => join(root, d))]
+  const yamlFiles = []
+  while (stack.length) {
+    const dir = stack.pop()
+    let entries
+    try {
+      entries = readdirSync(dir)
+    } catch {
+      continue
+    }
+    for (const e of entries) {
+      const full = join(dir, e)
+      const rel = relative(root, full).replace(/\\/g, '/')
+      let st
+      try {
+        st = statSync(full)
+      } catch {
+        continue
+      }
+      if (st.isSymbolicLink()) continue
+      if (st.isDirectory()) { if (!excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude, true)) stack.push(full) }
+      else if (/\.(ya?ml)$/.test(e) && !excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude)) {
+        yamlFiles.push({ full, rel })
+      }
+    }
+  }
+  for (const { full, rel } of yamlFiles.slice(0, 200)) {
+    let src
+    try {
+      src = readFileSync(full, 'utf8')
+    } catch {
+      continue
+    }
+    const kind = (/^kind:\s*(\S+)/m.exec(src) || [])[1]
+    const name = (/^metadata:\s*\n(?:.*\n)*?^\s*name:\s*(\S+)/m.exec(src) || [])[1]
+    const image = (/image:\s*(\S+)/m.exec(src) || [])[1]
+    if (/prometheus\.ya?ml$/.test(rel)) {
+      const jobs = [...src.matchAll(/job_name:\s*['"]?([\w-]+)['"]?/g)].map((m) => m[1])
+      for (const j of jobs) {
+        push({
+          kind: 'container',
+          title: `Prometheus job ${j}`,
+          technology: 'Prometheus',
+          source: rel,
+          reason: `prometheus scrape job ${j}`,
+        })
+      }
+      push({
+        kind: 'container',
+        title: 'Prometheus',
+        technology: 'Prometheus TSDB',
+        source: rel,
+        reason: 'prometheus scrape config',
+      })
+    } else if (kind && name && /Deployment|StatefulSet|DaemonSet|Service/.test(kind)) {
+      push({
+        kind: kind === 'Service' ? 'container' : 'container',
+        title: name,
+        technology: image || kind,
+        source: rel,
+        reason: `k8s ${kind} ${name}`,
+      })
+    } else if (/docker-compose|compose\.ya?ml/.test(rel) && /(^|\n)services:/.test(src)) {
+      // Only the top-level `services:` block: volumes/networks sections list
+      // similarly-indented names that are not runnable services.
+      const names = []
+      const lines = src.split('\n')
+      let inServices = false
+      for (const line of lines) {
+        if (/^services:\s*$/.test(line)) {
+          inServices = true
+          continue
+        }
+        if (inServices && /^[^ \t#]/.test(line)) break // next top-level key
+        const s = inServices && /^ {2}([\w][\w-]*):\s*(#.*)?$/.exec(line)
+        if (s) names.push(s[1])
+      }
+      for (const name of names) {
+        if (/[-_]data$/.test(name)) continue // named volumes, not services
+        push({
+          kind: 'container',
+          title: name,
+          technology: 'Docker Compose service',
+          source: rel,
+          reason: `compose service ${name}`,
+        })
+      }
+    }
+  }
+  // 2. Client-library signals from collected imports.
+  const libs = new Set(allImports.map((s) => s.split('.')[0].split('/').pop()))
+  for (const [lib, kind, title, tech] of LIB_SIGNALS) {
+    if (libs.has(lib)) {
+      push({ kind, title, technology: tech, source: `client-lib:${lib}`, reason: `code imports ${lib}` })
+    }
+  }
+  // 3. HTTP routes imply an external client actor (promote/drop at labeling).
+  if (routes.length) {
+    push({
+      kind: 'person',
+      title: 'Client',
+      technology: '',
+      source: routes[0].file,
+      reason: `HTTP routes detected (${routes.length}, e.g. ${routes[0].route})`,
+    })
+  }
+  return { proposals, yamlFiles: yamlFiles.length }
+}
+
+// Merge: file parents + symbol children; emit.mjs assigns final FQNs.
+const tsAllImports = elements.flatMap((e) => e.rawAllImports ?? [])
+const routes = [
+  ...elements.filter((e) => e.route).map((e) => ({ route: e.route, file: e.file })),
+  ...pyElements.filter((e) => e.route).map((e) => ({ route: e.route, file: e.file })),
+]
+const { proposals, yamlFiles } = scanInfra(args.root, args, gitignore, [
+  ...tsAllImports,
+  ...pyElements.flatMap((e) => e.rawImports ?? []),
+], routes)
+const out = {
+  elements: [
+    ...elements.map((e) => ({
+      fqn: '',
+      kind: 'component',
+      title: e.title,
+      file: e.file,
+      lang: 'ts',
+      symbol: e.symbol ?? null,
+      symbolKind: e.symbolKind ?? null,
+      line: e.line ?? 1,
+      parent: e.parent ?? null,
+      route: e.route ?? null,
+      imports: [],
+      calls: e.calls ?? [],
+      extends: e.extends ?? [],
+      technology: '',
+      tags: ['autogenerated'],
+      _module: e.module,
+      _rawImports: e.rawImports,
+      aliasImports: e.aliasImports ?? [],
+      ...(e.barrelTargets ? { barrelTargets: e.barrelTargets } : {}),
+    })),
+    ...pyElements.map((e) => ({
+      fqn: '',
+      kind: 'component',
+      title: e.title,
+      file: e.file,
+      lang: 'py',
+      symbol: e.symbol ?? null,
+      symbolKind: e.symbolKind ?? null,
+      line: e.line ?? 1,
+      parent: e.parent ?? null,
+      route: e.route ?? null,
+      imports: [],
+      calls: e.calls ?? [],
+      extends: e.extends ?? [],
+      technology: '',
+      tags: ['autogenerated'],
+      _module: e.module ?? e.file,
+      _rawImports: e.rawImports ?? [],
+    })),
+  ],
+  proposals,
+}
+
+const json = JSON.stringify(out, null, 2)
+if (args.out === '-' || !args.out) process.stdout.write(json + '\n')
+else (await import('node:fs')).writeFileSync(args.out, json)
+console.error(
+  `scan.mjs: ${files.length} ts/js files + ${yamlFiles} yaml -> ${args.out}; proposals: ${proposals.length}`,
+)

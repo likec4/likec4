@@ -1,0 +1,8 @@
+views {
+  view index {
+    include *
+  }
+  view of_cloud of cloud {
+    include *
+  }
+}
