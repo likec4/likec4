@@ -78,6 +78,8 @@ export function DiffParser<TBase extends WithModel>(B: TBase) {
         elements,
         relations,
         extendElements,
+        docUri: this.doc.uri.toString(),
+        views: [],
       }
     }
 

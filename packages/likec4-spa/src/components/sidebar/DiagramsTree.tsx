@@ -28,8 +28,10 @@ import {
   IconStarFilled,
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
-import { type PropsWithChildren, memo, useEffect } from 'react'
+import { type PropsWithChildren, memo, useEffect, useMemo } from 'react'
+import { useModelDiffs } from '../../context/ModelDiffsContext'
 import { useCurrentView, useLikeC4Views } from '../../hooks'
+import { useModelDiffState } from '../model-diff/state'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 import { SidebarDrawerOps } from './state'
 
@@ -55,6 +57,31 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
 }) => {
   const views = useLikeC4Views()
   const data = useDiagramsTreeData(groupBy)
+  const { diffs } = useModelDiffs()
+  const { diffId } = useModelDiffState()
+  const introduced = useMemo(() => {
+    const summary = diffs.find(diff => diff.id === diffId)
+    const ids = new Set(views.map(view => view.id))
+    return (summary?.views ?? []).filter(view => !ids.has(view.id))
+  }, [diffs, diffId, views])
+  const treeData = useMemo(() => {
+    if (introduced.length === 0) {
+      return data
+    }
+    return [
+      ...data,
+      {
+        value: '@diff-views',
+        label: 'In this diff',
+        type: 'folder' as const,
+        children: introduced.map(view => ({
+          value: view.id,
+          label: view.title ?? view.id,
+          type: 'view' as const,
+        })),
+      },
+    ]
+  }, [data, introduced])
   const navigate = useNavigate()
   const navigateTo = (viewId: string) => {
     SidebarDrawerOps.close()
@@ -62,6 +89,10 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       to: '/view/$viewId/',
       viewTransition: false,
       params: { viewId },
+      search: (prev) => ({
+        ...prev,
+        ...(diffId ? { diff: diffId } : {}),
+      }),
     })
   }
   const [diagram] = useCurrentView()
@@ -101,7 +132,7 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
       <Tree
         allowRangeSelection={false}
         tree={tree}
-        data={data}
+        data={treeData}
         styles={{
           node: {
             marginTop: 2,

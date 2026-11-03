@@ -192,6 +192,11 @@ export interface ParsedAstDiff {
   elements: ParsedAstElement[]
   relations: ParsedAstRelation[]
   extendElements: ParsedAstExtend[]
+  docUri: string
+  /**
+   * Dynamic views introduced by this diff. They are not part of the model until the diff is applied.
+   */
+  views: ParsedAstDynamicView[]
 }
 
 // Alias for refactoring

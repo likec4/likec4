@@ -1,6 +1,7 @@
 import type { CompareViewMode } from '@likec4/core/compute-view'
 import type { DiffId } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
+import { useSearch } from '@tanstack/react-router'
 import { atom } from 'nanostores'
 import { useModelDiffs } from '../../context/ModelDiffsContext'
 
@@ -17,8 +18,11 @@ const $modelDiff = atom<{ diffId: DiffId | null; mode: CompareViewMode }>({
  */
 export function useModelDiffState() {
   const { diffs } = useModelDiffs()
+  const { diff } = useSearch({ from: '__root__' })
   const state = useStore($modelDiff)
-  return diffs.some(d => d.id === state.diffId) ? state : { ...state, diffId: null }
+  const fromUrl = typeof diff === 'string' && diffs.some(d => d.id === diff) ? diff as DiffId : null
+  const stored = diffs.some(d => d.id === state.diffId) ? state.diffId : null
+  return { diffId: fromUrl ?? stored, mode: state.mode }
 }
 
 export function selectDiff(diffId: DiffId | null) {

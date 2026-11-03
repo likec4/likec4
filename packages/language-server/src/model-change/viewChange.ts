@@ -134,7 +134,8 @@ const doubleIndent = (op: AnyOp): AnyOp =>
 function updateViewTitle(viewAst: ast.LikeC4View, title: string): TextEdit {
   const existing = findExistingViewProperty(viewAst, 'title')
 
-  const parents = splitViewFolderPath(viewAst.$container.folder ?? '')
+  const folder = ast.isModelViews(viewAst.$container) ? viewAst.$container.folder ?? '' : ''
+  const parents = splitViewFolderPath(folder)
   const viewpath = splitViewFolderPath(title)
   while (viewpath[0] && parents[0] === viewpath[0]) {
     viewpath.shift()

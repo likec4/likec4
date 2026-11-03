@@ -13,16 +13,30 @@ export const modelDiffChecks = (services: LikeC4Services): ValidationCheck<ast.M
     cache.get(projectId, () => findDiffOverlaps(services.likec4.ModelParser.documents(projectId).toArray()))
 
   return tryOrLog((diff, accept) => {
-    if (diff.removes.length === 0 && diff.adds.length === 0) {
+    if (diff.removes.length === 0 && diff.adds.length === 0 && diff.viewBlocks.length === 0) {
       accept('warning', 'Diff has no changes', {
         node: diff,
         property: 'name',
       })
     }
+    const projectId = projectIdFrom(AstUtils.getDocument(diff))
+    const index = services.shared.workspace.IndexManager
+    for (const view of diff.viewBlocks.flatMap(block => block.views)) {
+      if (!view.name) {
+        continue
+      }
+      const sameName = [ast.ElementView, ast.DynamicView, ast.DeploymentView]
+        .flatMap(type => index.projectElements(projectId, type.$type).filter(node => node.name === view.name).toArray())
+      if (sameName.length > 1) {
+        accept('error', `Duplicate view '${view.name}'`, {
+          node: view,
+          property: 'name',
+        })
+      }
+    }
     for (const node of diff.adds.flatMap(add => add.elements).filter(ast.isExtendRelation)) {
       accept('error', 'Diff cannot extend relations. Remove the relation and add a new one instead', { node })
     }
-    const projectId = projectIdFrom(AstUtils.getDocument(diff))
     for (const overlap of overlapsOf(overlapsIn(projectId), DiffId(diff.name))) {
       accept('warning', `Overlaps with diff ${overlap}. Agree on it with the owners of both diffs`, {
         node: diff,

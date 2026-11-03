@@ -5,6 +5,7 @@ import { mapValues, values } from 'remeda'
 import { describe, it, vi } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import type { WorkspaceEdit } from 'vscode-languageserver-types'
+import { isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { createTestServices } from '../test'
 import type { SafeDeleteOptions } from './RemovalImpact'
@@ -323,6 +324,97 @@ describe('ModelDiffs', () => {
       'cloud.payments': 'added',
       'cloud.api': null,
     })
+  })
+
+  it('moves a dynamic view from the diff into views', async ({ expect }) => {
+    const source = `
+specification {
+  element system
+}
+model {
+  shop = system 'Shop'
+  bank = system 'Bank'
+}
+views {
+  view index {
+    include *
+  }
+}
+diff rfc1 {
+  add {
+    payments = system 'Payments'
+  }
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop -> payments 'requests payment'
+      payments -> bank 'charges'
+    }
+  }
+}
+`
+    const { services, documents, errors } = await setup(source)
+    expect(errors).toEqual([])
+    const edits = new DocumentEdits()
+    await services.likec4.ModelDiffs.addEdits(edits, 'rfc1' as DiffId, 'apply')
+    const text = applyEdit(documents[0]!, edits.toWorkspaceEdit())
+    expect(text).toContain(`dynamic view checkout`)
+    expect(text).toContain(`variant sequence`)
+    expect(text).not.toContain('diff rfc1')
+    expect(text.indexOf('dynamic view checkout')).toBeGreaterThan(text.indexOf('view index'))
+    const parsed = await setup(text)
+    expect(parsed.errors).toEqual([])
+    expect(parsed.documents[0]).toBeDefined()
+  })
+
+  it('keeps an applied dynamic view out of a foldered views block', async ({ expect }) => {
+    const source = `
+specification {
+  element system
+}
+model {
+  shop = system 'Shop'
+  bank = system 'Bank'
+}
+views 'Team' {
+  view one { include * }
+  view two { include * }
+  view three { include * }
+}
+views {
+  view index { include * }
+}
+diff rfc1 {
+  add {
+    payments = system 'Payments'
+  }
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop -> payments 'requests payment'
+    }
+  }
+}
+`
+    const { services, documents, errors } = await setup(source)
+    expect(errors).toEqual([])
+    const edits = new DocumentEdits()
+    await services.likec4.ModelDiffs.addEdits(edits, 'rfc1' as DiffId, 'apply')
+    const text = applyEdit(documents[0]!, edits.toWorkspaceEdit())
+    const plain = text.indexOf('views {')
+    const checkout = text.indexOf('dynamic view checkout')
+    expect(checkout).toBeGreaterThan(plain)
+    expect(text.slice(0, plain)).not.toContain('dynamic view checkout')
+    const parsed = await setup(text)
+    expect(parsed.errors).toEqual([])
+    const document = parsed.documents[0]
+    expect(isParsedLikeC4LangiumDocument(document)).toBe(true)
+    if (!isParsedLikeC4LangiumDocument(document)) {
+      return
+    }
+    expect(document.c4Views.find(view => view.id === 'checkout')?.title).toBe('Checkout')
   })
 
   it('applies the diff to the model', async ({ expect }) => {

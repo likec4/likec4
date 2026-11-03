@@ -1,12 +1,25 @@
 import { type CompareViewMode, filterCompareView } from '@likec4/core/compute-view'
-import type { LayoutedView, ViewId } from '@likec4/core/types'
+import { type LayoutedView, type ViewId, DiffId } from '@likec4/core/types'
+import { useLikeC4Model } from '@likec4/diagram'
 import { token } from '@likec4/styles/tokens'
 import { Box, Group, Paper, SegmentedControl, Select, Stack, Text } from '@mantine/core'
+import { useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { useModelDiffs } from '../../context/ModelDiffsContext'
 import { selectCompareMode, selectDiff, useModelDiffState } from './state'
 
 const NoDiff = '__as-is__'
+
+function viewStatus(existsOnlyInDiff: boolean, changed: boolean): string {
+  switch (true) {
+    case existsOnlyInDiff:
+      return 'This view exists only in this diff'
+    case changed:
+      return 'This view is changed by the diff'
+    default:
+      return 'This view is not changed by the diff'
+  }
+}
 
 const compareModes: Array<{ value: CompareViewMode; label: string }> = [
   { value: 'as-is', label: 'As-is' },
@@ -38,6 +51,18 @@ export function useCompareView(viewId: ViewId | undefined): LayoutedView | null 
 export function ModelDiffPanel({ viewId }: { viewId: ViewId }) {
   const { diffs, views } = useModelDiffs()
   const { diffId, mode } = useModelDiffState()
+  const navigate = useNavigate()
+  const model = useLikeC4Model()
+  const existsOnlyInDiff = diffId !== null && views[diffId]?.[viewId] !== undefined && model.findView(viewId) === null
+
+  const chooseDiff = (next: string | null) => {
+    selectDiff(next ? DiffId(next) : null)
+    void navigate({
+      to: './',
+      replace: true,
+      search: (prev) => ({ ...prev, diff: next ?? undefined }),
+    })
+  }
 
   if (diffs.length === 0) {
     return null
@@ -55,7 +80,7 @@ export function ModelDiffPanel({ viewId }: { viewId: ViewId }) {
           ]}
           value={diffId ?? NoDiff}
           allowDeselect={false}
-          onChange={value => selectDiff(value && value !== NoDiff ? value : null)}
+          onChange={value => chooseDiff(value && value !== NoDiff ? value : null)}
         />
         {diffId && (
           <>
@@ -77,7 +102,7 @@ export function ModelDiffPanel({ viewId }: { viewId: ViewId }) {
               </Group>
             )}
             <Text size="xs" c="dimmed">
-              {views[diffId]?.[viewId] ? 'This view is changed by the diff' : 'This view is not changed by the diff'}
+              {viewStatus(existsOnlyInDiff, views[diffId]?.[viewId] !== undefined)}
             </Text>
           </>
         )}
