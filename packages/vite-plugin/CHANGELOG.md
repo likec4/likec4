@@ -1,5 +1,18 @@
 # @likec4/vite-plugin
 
+## 1.60.1
+
+### Patch Changes
+
+- Updated dependencies [[`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7), [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`2f29031`](https://github.com/likec4/likec4/commit/2f29031acc36016d77502734923a0ef585051943), [`773bd9c`](https://github.com/likec4/likec4/commit/773bd9ce38ec781849cd2d941b59b5ea1468af76), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45), [`6756c79`](https://github.com/likec4/likec4/commit/6756c790d86400b5b5dd2db7a749fe0c3ce0ab26), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1), [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385), [`0da542e`](https://github.com/likec4/likec4/commit/0da542e11708825061395fa25b91a1236ed9241e)]:
+  - @likec4/config@1.60.1
+  - @likec4/core@1.60.1
+  - @likec4/generators@1.60.1
+  - @likec4/language-services@1.60.1
+  - @likec4/icons@1.46.5
+  - @likec4/layouts@1.60.1
+  - @likec4/log@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes

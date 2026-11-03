@@ -1,5 +1,41 @@
 # @likec4/core
 
+## 1.60.1
+
+### Patch Changes
+
+- [#3354](https://github.com/likec4/likec4/pull/3354) [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Support styled and nested `group` boundaries around deployment nodes and instances in deployment views.
+
+- [#3389](https://github.com/likec4/likec4/pull/3389) [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Add Google Material Symbols support through the `md:` icon prefix.
+
+- [#3362](https://github.com/likec4/likec4/pull/3362) [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Show inherited logical metadata in deployed instance details when the instance has no metadata override.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) show the element or view title (or your label) in PlantUML, Draw.io and Markdown exports and in MCP tool results, instead of the raw `[[…]]`. Broken links show their target. The LikeC4 DSL export keeps the links as written.
+  
+  In the model API, `description`, `summary` and `notes` resolve links to titles in `.text` and `.html` (`.md` stays as written), and `LikeC4Model.resolveMarkdownRef` and `resolveMarkdownRefs` from `@likec4/core/utils` resolve links for your own outputs.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) now work in diagrams. They show the element or view title (or your label), with a preview card on hover or keyboard focus (title, kind, summary). In element details, relationship popovers, notes, view details, walkthrough and the sequence outline, a click (or Enter) on an element link shows that element in the details card, and a click on a view link opens the view. Broken links are dimmed and say what is missing. Inside diagram nodes, links are plain text, and they are not clickable when element details or navigation are disabled.
+
+- [#3491](https://github.com/likec4/likec4/pull/3491) [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6) Thanks [@davydkov](https://github.com/davydkov)! - Link to elements and views from Markdown values: `[[cloud.api]]`, `[[cloud.api|label]]` and `[[view:index]]`. In the editor, typing `[[` suggests elements and views of the project, links are highlighted, broken links and unknown prefixes get a warning, and go to definition (Ctrl+click, F12) jumps to the element or view. Inside tables, write the label separator as `\\|`; a literal `[[` is written as `\\[[`.
+  
+  Implements [#2804](https://github.com/likec4/likec4/issues/2804).
+
+- [#3473](https://github.com/likec4/likec4/pull/3473) [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Elements whose markdown description has a list (or several paragraphs) no longer get extra width. List items and paragraphs used to be glued together into one long line when sizing the element, so items without spaces, like `first-item`, could not wrap.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192): new `diff` block, a named change set of the model (`remove` elements and relationships, `add` model elements, `extend` existing elements). The model stays as is: diffs are validated against it, and views can reference elements that a diff adds.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs: apply, discard and safe delete, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Apply or discard a diff: the `add` blocks are merged into the element definitions of the model files. Code actions in the editor, `likec4 diff list`, and `likec4 diff apply|discard [--dry-run]`.
+  - Overlapping diffs (both change the same element or relationship, or one depends on the other) are reported on both diffs and never resolved automatically: applying an overlapping diff needs a confirmation (`--accept-overlaps`). Other diffs are never edited; the diffs an edit breaks are reported.
+  - Safe delete: remove an element and everything that references it in one edit, with a dry run that reports relationships, deployed instances, affected views and orphans. Code action in the editor, `likec4 safe-delete [--dry-run]`, and the MCP tools `removal-impact` and `list-diffs`.
+
+- [#3375](https://github.com/likec4/likec4/pull/3375) [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Preserve explicit relationships to parent elements when descendant relationships point in the opposite direction, while still removing redundant same-direction relationships. Fixes [#3302](https://github.com/likec4/likec4/issues/3302)
+
+- [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385) Thanks [@davydkov](https://github.com/davydkov)! - The style preset ships smaller CSS: it defines only the color tokens tags need, per default tag color: `likec4.tag.<color>.bg`, `likec4.tag.<color>.bg.hover`, `likec4.tag.<color>.border` and `likec4.tag.<color>.text`.
+  
+  `@likec4/core/styles` exports `isDefaultTagColor`.
+
 ## 1.60.0
 
 ### Patch Changes

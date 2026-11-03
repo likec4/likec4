@@ -1,5 +1,20 @@
 # @likec4/playground
 
+## 1.60.1
+
+### Patch Changes
+
+- Updated dependencies [[`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080), [`6361dbc`](https://github.com/likec4/likec4/commit/6361dbc62c8f7c198d4721fce9cdfb4ca66ce0ef), [`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7), [`9d672fe`](https://github.com/likec4/likec4/commit/9d672fe710ecaa52619f152c2b31d53eee619f82), [`53caf3d`](https://github.com/likec4/likec4/commit/53caf3d9298cb993798bf35b5d9bca28630242b4), [`aaa53f4`](https://github.com/likec4/likec4/commit/aaa53f42e7e3d20aa0cc85b7c63b4d2b1753738c), [`2f29031`](https://github.com/likec4/likec4/commit/2f29031acc36016d77502734923a0ef585051943), [`aa82a7c`](https://github.com/likec4/likec4/commit/aa82a7c36f62ecf11c38ff567a18539eece001fa), [`be65d6c`](https://github.com/likec4/likec4/commit/be65d6c93d61f3444a9889e3ea1b38092da151e7), [`5918048`](https://github.com/likec4/likec4/commit/5918048ad85879b8dfd595c5cdfe49ce07db9d17), [`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080), [`24b4f44`](https://github.com/likec4/likec4/commit/24b4f44d32f683ecef924ee8f43ad4b472964f98), [`a3558b3`](https://github.com/likec4/likec4/commit/a3558b394d62f44047c38d17c1f71308c55e5251), [`5ad0ce6`](https://github.com/likec4/likec4/commit/5ad0ce604740d6c6d018f31bc8900a55606fab22), [`3928222`](https://github.com/likec4/likec4/commit/3928222677937716bec5fe3f0999362cbba0dd27), [`c5eaa85`](https://github.com/likec4/likec4/commit/c5eaa85423a74f43f3e233e3c2db5aade1b9ed12), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f), [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6), [`b7ebce3`](https://github.com/likec4/likec4/commit/b7ebce3c1cdd0f9d92ff284a82e09e07b76f935d), [`1ebadfd`](https://github.com/likec4/likec4/commit/1ebadfd4b9f0a90e0bee08e152f76a4b389d166e), [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45), [`6756c79`](https://github.com/likec4/likec4/commit/6756c790d86400b5b5dd2db7a749fe0c3ce0ab26), [`d00fa0c`](https://github.com/likec4/likec4/commit/d00fa0ce7ed3402c087a4e6e6d58cb1451ea2b9e), [`ca1ba7b`](https://github.com/likec4/likec4/commit/ca1ba7b20116671ac1d2c3a71408d5e504e21989), [`c313fb0`](https://github.com/likec4/likec4/commit/c313fb0ad5428e6cec5f752dcdf0d290a686b0dc), [`250bd2c`](https://github.com/likec4/likec4/commit/250bd2c4ec45c5ee24c54844cf9a0bb64d653140), [`9e106b8`](https://github.com/likec4/likec4/commit/9e106b8d205b589d49e9c72d2a80dcdfb74a4aa1), [`75e32e1`](https://github.com/likec4/likec4/commit/75e32e1e11cdcac0879357438eb22e03e5bb66e6), [`6994a02`](https://github.com/likec4/likec4/commit/6994a024dc4a789967df5d2702d7bd4d2f271e42), [`e24ce42`](https://github.com/likec4/likec4/commit/e24ce42a1560d74c4f76cee71c0ed06270c760d3), [`65d60b8`](https://github.com/likec4/likec4/commit/65d60b82affcbd39d194c44cba55bf6a8918332e), [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385), [`e3d12de`](https://github.com/likec4/likec4/commit/e3d12deba102c952f9611529f058af3c122fe85f)]:
+  - @likec4/diagram@1.60.1
+  - @likec4/style-preset@1.60.1
+  - @likec4/language-server@1.60.1
+  - @likec4/core@1.60.1
+  - @likec4/generators@1.60.1
+  - @likec4/icons@1.46.5
+  - @likec4/styles@1.60.1
+  - @likec4/log@1.60.1
+  - @likec4/tsconfig@1.60.1
+
 ## 1.60.0
 
 ### Patch Changes
