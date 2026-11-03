@@ -455,15 +455,16 @@ export function getLinearAligner(mode: LinearAlignmentMode): Aligner {
         (alignTo, node) => Math.floor(alignTo - node.height!),
         'y',
       )
+    // Center and Middle align to the center of the selection bounding box
     case 'Center':
       return new LinearAligner(
-        nodes => Math.min(...nodes.map(n => n.x + n.width / 2)),
+        nodes => (Math.min(...nodes.map(n => n.x)) + Math.max(...nodes.map(n => n.x + n.width))) / 2,
         (alignTo, node) => Math.floor(alignTo - node.width / 2),
         'x',
       )
     case 'Middle':
       return new LinearAligner(
-        nodes => Math.min(...nodes.map(n => n.y + n.height / 2)),
+        nodes => (Math.min(...nodes.map(n => n.y)) + Math.max(...nodes.map(n => n.y + n.height))) / 2,
         (alignTo, node) => Math.floor(alignTo - node.height / 2),
         'y',
       )
