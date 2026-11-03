@@ -40,6 +40,13 @@ const precedence = `
         color blue
       }
     }
+    g = system 'G' {
+      icon tech:react
+      icon tech:vue
+      style {
+        icon tech:go
+      }
+    }
   }
   deployment {
     prod = node 'Inline prod' {
@@ -193,6 +200,7 @@ describe('ModelLocator: locate property', () => {
       `descriptionFile ./second.md`,
     )
     expect(text.getText(locator.locateElement('f' as Fqn, undefined, 'icon')!.range)).toBe(`icon tech:react`)
+    expect(text.getText(locator.locateElement('g' as Fqn, undefined, 'icon')!.range)).toBe(`icon tech:go`)
     expect(text.getText(locator.locateElement('f' as Fqn, undefined, 'style')!.range)).toMatch(
       /^style \{\s+color red\s+\}$/,
     )

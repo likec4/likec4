@@ -135,7 +135,7 @@ export class LikeC4ModelLocator {
   /**
    * Range of the declaration that supplies a property of the element or deployment node behind
    * `entry`, with the parser's precedence: an inline value after the name wins over the body,
-   * and a `descriptionFile` supplies the description.
+   * a `descriptionFile` supplies the description, and the icon falls back to the first style block.
    */
   private propertyRange(entry: AstNodeDescription, property: string): Range | undefined {
     const doc = this.langiumDocuments.getDocument(entry.documentUri)
@@ -169,9 +169,17 @@ export class LikeC4ModelLocator {
       // The model exposes `link` declarations as `links`; each one applies, so take the first
       case property === 'links' || property === 'link':
         return props.find(ast.isLinkProperty)?.$cstNode?.range
+      case property === 'icon': {
+        // As in the parser: a valid icon on the node wins, then the first style block supplies it.
+        // A repeated icon is invalid, so the style can supply it even when the node declares one.
+        const { isValid } = this.parser.forDocument(doc)
+        const icon = props.find(ast.isIconProperty)
+        const styleIcon = props.find(ast.isElementStyleProperty)?.props.filter(ast.isIconProperty).findLast(isValid)
+        return (icon && isValid(icon) ? icon : styleIcon ?? icon)?.$cstNode?.range
+      }
       default: {
         const matches = props.filter(p => 'key' in p && p.key === property)
-        // As in the parser: a later string property overrides an earlier one, the first `style` or `icon` applies
+        // As in the parser: a later string property overrides an earlier one, the first `style` applies
         const match = matches.every(ast.isElementStringProperty) ? matches.at(-1) : matches[0]
         return match?.$cstNode?.range
       }
