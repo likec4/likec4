@@ -1,0 +1,111 @@
+---
+title: Links to elements and views
+description: How to link elements and views from Markdown descriptions, summaries and notes
+sidebar:
+  label: Links in Markdown
+  order: 5
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+[Markdown](/dsl/model#using-markdown) descriptions often mention other parts of the model.
+Wrap the element FQN in double brackets to turn the mention into a link:
+
+```likec4 copy
+model {
+  cloud = system 'Cloud System' {
+    api = service 'Public API'
+    db = database 'Database'
+
+    backend = service 'Backend' {
+      description '''
+        Serves [[cloud.api]] and stores data in [[cloud.db|the main database]].
+        See [[view:index]] for the big picture.
+      '''
+    }
+  }
+}
+
+views {
+  view index {
+    title 'Landscape'
+    include *
+  }
+}
+```
+
+In the diagram, the description reads _"Serves Public API and stores data in the main database. See Landscape for the big picture."_, and each link is clickable.
+
+## Syntax
+
+| Form                       | Links to                           |
+| :------------------------- | :--------------------------------- |
+| `[[cloud.api]]`            | element, shown with its title      |
+| `[[cloud.api\|API]]`       | element, shown with a custom label |
+| `[[view:index]]`           | view, shown with its title         |
+| `[[view:index\|overview]]` | view, shown with a custom label    |
+
+- Use the **full name** of the element (`cloud.api`, not `api`), from the current project.
+- A link must be on one line.
+- `view:` is a prefix. Other prefixes are reserved for future use and get a warning.
+
+Links work in Markdown values only, i.e. with triple quotes (`'''…'''` or `"""…"""`), in any property that accepts Markdown:
+`description`, `summary`, `notes`, `title`, `technology`, metadata, and so on.
+In plain strings (`'…'`) `[[cloud.api]]` stays as text.
+
+Markdown from a [`descriptionFile`](/dsl/model#description-from-a-file) is rendered with links too, but the editor does not check or complete them.
+
+## Escaping
+
+LikeC4 strings are unescaped before Markdown sees them, so a backslash that should reach Markdown is written twice:
+
+```likec4 copy
+model {
+  wiki = system {
+    description '''
+      Write \\[[cloud.api]] to link an element.
+
+      `[[cloud.api]]` in inline code is not a link.
+
+      | Component                  | Role          |
+      | :------------------------- | :------------ |
+      | [[cloud.api\\|API]]        | entry point   |
+      | [[cloud.db]]               | storage       |
+    '''
+  }
+}
+```
+
+- A literal `[[` is written as `\\[[`.
+- Links inside inline code and code blocks are not processed.
+- In tables, a bare `|` splits the cell, so write the label separator as `\\|`.
+
+## Editor support
+
+In VS Code and other editors with the [LikeC4 language server](/tooling/editors):
+
+- Typing `[[` suggests elements of the project. Any part of the name filters the list: `[[api` finds `cloud.backend.api`.
+  Pick `view:` to get the list of views.
+- Links are highlighted inside Markdown.
+- A link to a missing element or view, or with an unknown prefix, gets a warning.
+  A broken link never breaks the model.
+- Go to definition (<kbd>Ctrl</kbd>+click, <kbd>F12</kbd>, Peek Definition) jumps to the element or view.
+
+<Aside type="tip">
+Suggestions inside strings need `editor.quickSuggestions` for strings, which the LikeC4 extension enables for LikeC4 files.
+In other editors, invoke completion manually (<kbd>Ctrl</kbd>+<kbd>Space</kbd>) if the list does not appear.
+</Aside>
+
+## In the diagram
+
+Links are clickable in the element details card, relationship popovers, notes, view details, walkthrough and the sequence outline:
+
+- A click (or <kbd>Enter</kbd>) on an element link shows that element in the details card, replacing the open one.
+- A click (or <kbd>Enter</kbd>) on a view link opens the view.
+- Hovering or focusing a link shows a preview with the title, kind and summary.
+- A broken link is dimmed, and its preview says what is not found.
+
+Inside elements on the canvas, links are plain text, so they do not get in the way of selecting and dragging.
+They are plain text as well when element details or navigation are disabled, for example in an [embedded diagram](/tooling/react).
+
+Exports and the [MCP server](/tooling/ai-tools#mcp-server) show the title (or your label) instead of `[[…]]`.

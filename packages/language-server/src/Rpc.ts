@@ -1,10 +1,9 @@
-import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort } from 'remeda'
+import { filter, funnel, keys, map, mapValues, once, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import {
   type DiagramView,
-  type LayoutedLikeC4ModelData,
   type ProjectId,
   invariant,
   nonexhaustive,
@@ -18,7 +17,6 @@ import {
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
-  DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   DidRequestRemovalImpactNotification,
   FetchComputedModel,
@@ -146,27 +144,15 @@ export class Rpc extends ADisposable {
         return { model: null }
       }),
       // ----------
-      connection.onNotification(DidChangeSnapshotNotification.type, async (params) => {
-        const uri = URI.parse(params.update ?? params.delete)
-        const event = 'update' in params ? { update: uri } : { delete: uri }
-        logger.debug`received notification ${'onDidChangeSnapshot'} with ${params}`
-        await workspace.ManualLayouts.handleFileSystemUpdate(event)
-      }),
-      // ----------
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
         logger.debug`received request ${'fetchLayoutedModel'} for project ${projectId}`
-        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId)
+        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId, cancelToken)
         if (model === null) {
           return { model: null }
         }
-        const diagrams = await likec4Services.Views.diagrams(projectId as ProjectId, cancelToken)
-        return {
-          model: {
-            ...model.$data,
-            _stage: 'layouted' as const,
-            views: indexBy(diagrams, d => d.id),
-          } satisfies LayoutedLikeC4ModelData,
-        }
+        // Views are auto-layouted, manual layouts are in `manualLayouts`
+        // (applied by `LikeC4Model.create(data).view(id).$layouted`)
+        return { model: model.$data }
       }),
       // ----------
       connection.onRequest(LayoutView.req, async ({

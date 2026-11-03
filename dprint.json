@@ -40,6 +40,8 @@
     ".next",
     ".fleet",
     "dist",
+    "*.astro",
+    "*.svg",
     "packages/icons/**",
     "packages/*/contrib",
     "packages/*/lib",

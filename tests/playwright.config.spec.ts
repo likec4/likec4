@@ -1,7 +1,7 @@
-import { expect, test } from 'vitest'
 import { isCI } from 'std-env'
-import playgroundConfig from '../e2e/playwright.playground.config'
+import { expect, test } from 'vitest'
 import config from '../e2e/playwright.config'
+import playgroundConfig from '../e2e/playwright.playground.config'
 
 function requireSingleWebServer(
   webServer: typeof config.webServer | typeof playgroundConfig.webServer,

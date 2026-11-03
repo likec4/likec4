@@ -84,6 +84,11 @@ const _elementDetailsLogic = setup({
           reenter: true,
           actions: assign({
             subject: ({ event }) => event.subject,
+            // The card stays where it is, but it is no longer related to the node it was opened from
+            initiatedFrom: ({ context }) => ({
+              node: null,
+              clientRect: context.initiatedFrom.clientRect,
+            }),
           }),
         },
         'close': 'closed',

@@ -60,8 +60,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentResetBelow(
         DocumentState.IndexedContent,
         ({ doc }) => {
-          if (this.documentCache.delete(doc.textDocument.uri)) {
-            this.logger.trace(`document cache entry deleted for ${doc.textDocument.uri}`)
+          if (this.documentCache.delete(doc.textDocument.uri) && this.logger.isEnabledFor('trace')) {
+            this.logger.trace(
+              `clear cache for ${services.shared.workspace.WorkspaceManager.relativePath(doc.textDocument.uri)}`,
+            )
           }
         },
       ),
@@ -149,6 +151,20 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       return this
         .documents(projectId)
         .flatMap(doc => this.get(doc).byFqn(fqn))
+        .toArray()
+    }))
+  }
+
+  /**
+   * Returns all elements of the project (from all documents, including nested
+   * elements and elements added in `extend` blocks), in document order.
+   * The same FQN may appear more than once if it is defined in several documents.
+   */
+  public elements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
+    return stream(this.workspaceCache.get(projectId, `elements`, () => {
+      return this
+        .documents(projectId)
+        .flatMap(doc => this.get(doc).elements())
         .toArray()
     }))
   }
@@ -363,6 +379,13 @@ export class DocumentFqnIndex {
 
   public byFqn(fqn: Fqn): readonly AstNodeDescriptionWithFqn[] {
     return this._byfqn.get(fqn) ?? []
+  }
+
+  /**
+   * All elements of the document
+   */
+  public elements(): readonly AstNodeDescriptionWithFqn[] {
+    return [...this._byfqn.values()]
   }
 
   public children(parent: Fqn): readonly AstNodeDescriptionWithFqn[] {

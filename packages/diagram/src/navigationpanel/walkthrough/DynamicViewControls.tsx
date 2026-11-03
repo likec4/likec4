@@ -7,6 +7,7 @@ import {
 import { type HTMLMotionProps } from 'motion/react'
 import * as m from 'motion/react-m'
 import { forwardRef } from 'react'
+import { useIsComparingLayouts } from '../../context/ComparingLayoutsContext'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useDiagram } from '../../hooks/useDiagram'
 import { Tooltip } from '../_common'
@@ -36,7 +37,7 @@ export const TriggerWalkthroughButton = forwardRef<HTMLButtonElement, ButtonProp
 ))
 
 export function StartWalkthroughButton() {
-  const { enableCompareWithLatest } = useEnabledFeatures()
+  const isComparing = useIsComparingLayouts()
   const diagram = useDiagram()
   const actor = useNavigationActor()
 
@@ -45,7 +46,7 @@ export function StartWalkthroughButton() {
     // case !enableReadOnly:
     //   tooltipLabel = 'Walkthrough not available in Edit mode'
     //   break
-    case enableCompareWithLatest:
+    case isComparing:
       tooltipLabel = 'Walkthrough not available when Compare is active'
       break
   }
@@ -63,7 +64,7 @@ export function StartWalkthroughButton() {
         exit={{ opacity: 0, translateX: -20 }}
         size="compact-xs"
         h={26}
-        disabled={enableCompareWithLatest}
+        disabled={isComparing}
         classNames={{
           label: css({
             display: {

@@ -37,18 +37,12 @@ describe('generateColorVars', () => {
     expect(Math.max(r, g, b)).toBeLessThan(0x66)
   })
 
-  it('still emits radix-based vars (including text) for a named tag color', () => {
+  it('references tag color tokens for a default tag color', () => {
     const css = generateColorVars({ color: 'tomato' as TagSpecification['color'] })
-    expect(css).toContain('--colors-likec4-tag-bg: var(--colors-tomato-9);')
-    expect(css).toContain('--colors-likec4-tag-bg-hover: var(--colors-tomato-10);')
-    expect(css).toContain('--colors-likec4-tag-text: var(--colors-tomato-12);')
-  })
-
-  it('uses dark-2 text for radix backgrounds that are light at scale 9 (grass, lime, yellow, amber)', () => {
-    for (const name of ['grass', 'lime', 'yellow', 'amber'] as const) {
-      const css = generateColorVars({ color: name as TagSpecification['color'] })
-      expect(css, `color ${name}`).toContain(`--colors-likec4-tag-text: rgba(0 0 0 / 0.85);`)
-    }
+    expect(css).toContain('--colors-likec4-tag-border: var(--colors-likec4-tag-tomato-border);')
+    expect(css).toContain('--colors-likec4-tag-bg: var(--colors-likec4-tag-tomato-bg);')
+    expect(css).toContain('--colors-likec4-tag-bg-hover: var(--colors-likec4-tag-tomato-bg-hover);')
+    expect(css).toContain('--colors-likec4-tag-text: var(--colors-likec4-tag-tomato-text);')
   })
 
   it('returns an empty string when the color is neither custom (hex/rgb) nor a known radix color', () => {

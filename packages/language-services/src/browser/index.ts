@@ -4,12 +4,13 @@ import {
 } from '@likec4/language-server/browser'
 import { configureLogger, getConsoleSink, getTextFormatter, rootLogger } from '@likec4/log'
 import { createFromSources } from '../common/createFromSources'
-import { type LikeC4Langium, LikeC4 } from '../common/LikeC4'
+import { type LikeC4Diagnostic, type LikeC4Langium, LikeC4 } from '../common/LikeC4'
 import type { FromWorkspaceOptions, InitOptions } from '../common/options'
 
 export type {
   FromWorkspaceOptions,
   InitOptions,
+  LikeC4Diagnostic,
   LikeC4Langium,
   LikeC4LanguageServices,
 }

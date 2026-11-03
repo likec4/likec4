@@ -195,7 +195,8 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         logger.info(`${k.dim('project:')} ${prj.id}`)
         logger.info(`${k.dim('folder:')} ${prj.folder.fsPath}`)
       }
-      let views = await likec4.diagrams(prj.id)
+      const model = await likec4.layoutedModel(prj.id)
+      let views: DiagramView[] = [...model.views()].map(vm => vm.$layouted)
 
       if (filter && hasAtLeast(filter, 1) && hasAtLeast(views, 1)) {
         const matcher = picomatch(filter)

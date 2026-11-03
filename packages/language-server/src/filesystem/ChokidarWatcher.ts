@@ -4,7 +4,8 @@ import chokidar from 'chokidar'
 import { URI } from 'langium'
 import type { Stats } from 'node:fs'
 import { basename } from 'node:path'
-import PQueue from 'p-queue'
+import { funnel } from 'remeda'
+import { type FileEvent, FileChangeType } from 'vscode-languageserver-protocol'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { isManualLayoutFile } from './LikeC4ManualLayouts'
@@ -23,12 +24,33 @@ const isAnyLikeC4File = (path: string) => {
 }
 
 /**
- * A no-op file system watcher.
+ * File system watcher based on chokidar (used when there is no LSP client to watch files)
  */
 export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   private watcher?: FSWatcher | undefined
 
-  private queue = new PQueue({ concurrency: 1, timeout: 5000 })
+  /**
+   * Batches file changes (like LSP clients do) and passes them to the DocumentUpdateHandler,
+   * the single entry point for file changes (same as in LSP mode)
+   */
+  private notifyChanges = funnel(
+    (changes: Map<string, FileEvent>) => {
+      this.services.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+        changes: [...changes.values()],
+      })
+    },
+    {
+      minQuietPeriodMs: 50,
+      maxBurstDurationMs: 250,
+      reducer(accumulator: Map<string, FileEvent> | undefined, change: FileEvent) {
+        accumulator ??= new Map()
+        // Last change wins
+        accumulator.delete(change.uri)
+        accumulator.set(change.uri, change)
+        return accumulator
+      },
+    },
+  )
 
   constructor(protected services: LikeC4SharedServices) {
     logger.trace`ChokidarFileSystemWatcher created`
@@ -52,6 +74,7 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   }
 
   async dispose(): Promise<void> {
+    this.notifyChanges.cancel()
     if (this.watcher) {
       const watcher = this.watcher
       this.watcher = undefined
@@ -79,119 +102,20 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
       ignoreInitial: true,
     })
 
-    const onAddOrChange = (path: string, stats?: Stats) => {
+    const notify = (type: FileChangeType) => (path: string, stats?: Stats) => {
       if (stats?.isDirectory()) {
         return
       }
-      this.enqueueFileOp('addOrChange: ' + path, async () => {
-        await this.onAddOrChange(path)
-      })
+      this.notifyChanges.call({ uri: URI.file(path).toString(), type })
     }
 
-    const onRemove = (path: string, stats?: Stats) => {
-      if (stats?.isDirectory()) {
-        return
-      }
-      this.enqueueFileOp('remove: ' + path, async () => {
-        await this.onRemove(path)
-      })
-    }
-
-    watcher.on('add', onAddOrChange)
-      .on('change', onAddOrChange)
-      .on('unlink', onRemove)
-      .on('unlinkDir', (path) => {
-        this.enqueueFileOp('removeDir: ' + path, async () => {
-          await this.onRemoveDir(path)
-        })
+    watcher.on('add', notify(FileChangeType.Created))
+      .on('change', notify(FileChangeType.Changed))
+      .on('unlink', notify(FileChangeType.Deleted))
+      .on('unlinkDir', path => {
+        this.notifyChanges.call({ uri: URI.file(path).toString(), type: FileChangeType.Deleted })
       })
 
     return watcher
-  }
-
-  private enqueueFileOp<T>(fileop: string, fn: () => Promise<T>): void {
-    this.queue.add(async () => {
-      try {
-        await fn()
-      } catch (error) {
-        logger.warn(`Failed on {fileop}`, { fileop, error })
-      }
-    }).catch(error => {
-      logger.error(`Error on {fileop}`, { fileop, error })
-    })
-  }
-
-  private async onAddOrChange(path: string) {
-    const workspace = this.services.workspace
-    const filename = basename(path)
-    const uri = URI.file(path)
-    switch (true) {
-      case isLikeC4Config(filename): {
-        logger.debug`project config changed: ${path}`
-        workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.registerConfigFile(uri)
-        break
-      }
-      case isManualLayoutFile(filename): {
-        logger.debug`manual layout file changed: ${path}`
-        await workspace.ManualLayouts.handleFileSystemUpdate({ update: uri })
-        break
-      }
-      case workspace.DescriptionFiles.isReferenced(uri): {
-        logger.debug`description file changed: ${path}`
-        await workspace.DescriptionFiles.handleFileSystemUpdate({ update: uri })
-        break
-      }
-      case hasLikeC4Ext(filename): {
-        logger.debug`file changed: ${path}`
-        await workspace.DocumentBuilder.update([uri], [])
-        break
-      }
-      default: {
-        logger.warn`Unknown file change: ${path}`
-      }
-    }
-  }
-
-  private async onRemove(path: string) {
-    const workspace = this.services.workspace
-    const filename = basename(path)
-    switch (true) {
-      case isLikeC4Config(filename): {
-        logger.debug`project file removed: ${path}`
-        workspace.ManualLayouts.clearCaches()
-        await workspace.ProjectsManager.reloadProjects()
-        break
-      }
-      case hasLikeC4Ext(filename): {
-        logger.debug`file removed: ${path}`
-        await workspace.DocumentBuilder.update([], [URI.file(path)])
-        break
-      }
-      case isManualLayoutFile(filename): {
-        logger.debug`manual layout file removed: ${path}`
-        await workspace.ManualLayouts.handleFileSystemUpdate({ delete: URI.file(path) })
-        break
-      }
-      case workspace.DescriptionFiles.isReferenced(URI.file(path)): {
-        logger.debug`description file removed: ${path}`
-        await workspace.DescriptionFiles.handleFileSystemUpdate({ delete: URI.file(path) })
-        break
-      }
-      default: {
-        logger.warn`Unknown file removal: ${path}`
-      }
-    }
-  }
-
-  private async onRemoveDir(path: string) {
-    logger.debug`directory removed: ${path}`
-    const workspace = this.services.workspace
-    const projects = workspace.ProjectsManager.findOverlaped(path)
-    if (projects.length > 0) {
-      workspace.Cache.clear()
-      workspace.ManualLayouts.clearCaches()
-      await workspace.ProjectsManager.reloadProjects()
-    }
   }
 }

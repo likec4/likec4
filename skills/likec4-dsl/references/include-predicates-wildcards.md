@@ -63,6 +63,7 @@ views {
 ```
 
 **Key facts:**
+
 - `include *` in a scoped view = the scoped parent + **direct children only**
 - Grandchildren inside `*` context are **not** included (you'd need `include cloud.backend.**` or explicit FQN inclusion)
 - Relationship predicates like `->` and `<->` can further expand what neighbors appear
@@ -125,7 +126,7 @@ views {
 }
 ```
 
-This **does not change the base set of elements**; it only **includes relationships** that end in the visible elements. Neighbors of the scope that have incoming edges *do* appear because they are needed to render those edges visually.
+This **does not change the base set of elements**; it only **includes relationships** that end in the visible elements. Neighbors of the scope that have incoming edges _do_ appear because they are needed to render those edges visually.
 
 ## Wildcard `**` vs. explicit include
 
@@ -158,22 +159,22 @@ views {
 
 ## Common mistakes
 
-| Wrong | Right | Why |
-|---|---|---|
-| Bare `include **` or `exclude _` | `include cloud.**`, `exclude * where tag is #deprecated` | `**` and `_` are suffixes on an element reference, not standalone wildcards |
-| `include cloud.**` expecting only immediate children | `include cloud.*` | `**` is recursive; use `*` for one level |
-| Forgetting to add relationship filters in scoped view | `include *` + `include -> parent` | Relationships may not auto-render without explicit inclusion |
-| Assuming `include *` includes grandchildren | Use `include cloud.**` instead | `*` is immediate children only |
+| Wrong                                                 | Right                                                    | Why                                                                         |
+| ----------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Bare `include **` or `exclude _`                      | `include cloud.**`, `exclude * where tag is #deprecated` | `**` and `_` are suffixes on an element reference, not standalone wildcards |
+| `include cloud.**` expecting only immediate children  | `include cloud.*`                                        | `**` is recursive; use `*` for one level                                    |
+| Forgetting to add relationship filters in scoped view | `include *` + `include -> parent`                        | Relationships may not auto-render without explicit inclusion                |
+| Assuming `include *` includes grandchildren           | Use `include cloud.**` instead                           | `*` is immediate children only                                              |
 
 ## Summary table
 
-| Form | Matches | Scope context |
-|---|---|---|
-| `*` | Direct children + sibling relationships | One level down |
-| `parent._` | `parent` + direct children that have relationships with visible elements | One level down |
-| `parent.**` | All descendants recursively | Any depth |
-| `include -> element` | Inbound relationships to element | Shows external sources |
-| `include element ->` | Outbound relationships from element | Shows targets |
-| `include a <-> b` | Relationships between `a` and `b` in either direction | Shows symmetric dependencies |
+| Form                 | Matches                                                                  | Scope context                |
+| -------------------- | ------------------------------------------------------------------------ | ---------------------------- |
+| `*`                  | Direct children + sibling relationships                                  | One level down               |
+| `parent._`           | `parent` + direct children that have relationships with visible elements | One level down               |
+| `parent.**`          | All descendants recursively                                              | Any depth                    |
+| `include -> element` | Inbound relationships to element                                         | Shows external sources       |
+| `include element ->` | Outbound relationships from element                                      | Shows targets                |
+| `include a <-> b`    | Relationships between `a` and `b` in either direction                    | Shows symmetric dependencies |
 
 **In scoped views:** `include *` establishes a base set of the scope parent + immediate children. Relationship predicates like `->` and `<->` can bring in neighboring elements needed to render those relationships.

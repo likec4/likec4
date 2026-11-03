@@ -84,11 +84,18 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
   }
 
   /**
+   * Returns true if the element has a summary and a description
+   */
+  get hasSummary(): boolean {
+    return this.summary.nonEmpty && !this.summary.equals(this.description)
+  }
+
+  /**
    * Short description of the element.
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$node))
+    return RichText.memoize(this, 'summary', preferSummary(this.$node), this.$model.$model.resolveMarkdownRef)
   }
 
   /**
@@ -96,7 +103,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$node))
+    return RichText.memoize(this, 'description', preferDescription(this.$node), this.$model.$model.resolveMarkdownRef)
   }
 
   get technology(): string | null {
@@ -467,6 +474,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
       this,
       'summary',
       preferSummary(this.$instance) ?? preferSummary(this.element.$element),
+      this.$model.$model.resolveMarkdownRef,
     )
   }
 
@@ -475,6 +483,7 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
       this,
       'description',
       preferDescription(this.$instance) ?? preferDescription(this.element.$element),
+      this.$model.$model.resolveMarkdownRef,
     )
   }
 
@@ -632,7 +641,7 @@ export class DeploymentRelationModel<A extends Any = Any>
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$relationship))
+    return RichText.memoize(this, 'summary', preferSummary(this.$relationship), this.$model.$model.resolveMarkdownRef)
   }
 
   /**
@@ -640,7 +649,12 @@ export class DeploymentRelationModel<A extends Any = Any>
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$relationship))
+    return RichText.memoize(
+      this,
+      'description',
+      preferDescription(this.$relationship),
+      this.$model.$model.resolveMarkdownRef,
+    )
   }
 
   get tags(): aux.Tags<A> {

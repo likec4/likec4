@@ -77,6 +77,7 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "defu": "catalog:utils",
+    "jiti": "catalog:externals",
     "nano-spawn": "catalog:externals",
     "remeda": "catalog:utils",
     "tsdown": "catalog:tsdown",
@@ -87,14 +88,10 @@
     "vitest": "catalog:vitest"
   },
   "peerDependencies": {
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild"
+    "jiti": "catalog:externals"
   },
   "peerDependenciesMeta": {
-    "bundle-require": {
-      "optional": true
-    },
-    "esbuild": {
+    "jiti": {
       "optional": true
     }
   },

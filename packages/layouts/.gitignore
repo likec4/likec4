@@ -7,3 +7,4 @@ graphviz/binary/package.json
 src/graphviz/ai/prompt-system.generated.ts
 *.png
 *.dot
+src/graphviz/text-metrics/fonts.generated.ts

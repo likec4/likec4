@@ -38,6 +38,7 @@ import {
   assertEvent,
   setup,
 } from 'xstate'
+import { and, not, or, stateIn } from 'xstate/guards'
 import { MaxZoom, MinZoom } from '../../base'
 import { type EnabledFeatures, type TogglableFeature, DefaultFeatures } from '../../context/DiagramFeatures'
 import { editorActorLogic } from '../../editor/actor/machine'
@@ -186,7 +187,6 @@ export function Context({ input }: { input: Input }): Context {
     },
     toggledFeatures: DiagramToggledFeaturesPersistence.read() ?? {
       enableReadOnly: true,
-      enableCompareWithLatest: false,
     },
     initialized: {
       xydata: false,
@@ -278,6 +278,8 @@ export type Events =
   | { type: 'walkthrough.step'; direction: 'next' | 'prev'; stepId?: never }
   | { type: 'walkthrough.step'; stepId: StepPath; direction?: never }
   | { type: 'walkthrough.end' }
+  | { type: 'compare.start' }
+  | { type: 'compare.end' }
   | { type: 'sequence.flow.collapse'; flowId: StepPath }
   | { type: 'sequence.flow.expand'; flowId: StepPath }
   | { type: 'sequence.flow.toggle'; flowId: StepPath }
@@ -310,41 +312,59 @@ export type EmittedEvents =
 
 export type ActionArg = { context: Context; event: Events }
 
-export const deriveToggledFeatures = (context: Context): Required<ToggledFeatures> => {
-  let toggledFeatures = context.toggledFeatures
+/**
+ * Tag of the `ready.comparing` state (comparing manual layout with the latest auto layout)
+ */
+export const ComparingTag = 'comparing'
 
-  const hasActiveWalkthrough = isTruthy(context.activeWalkthrough)
-
-  const enableCompareWithLatest = context.features.enableCompareWithLatest
-    && (toggledFeatures.enableCompareWithLatest ?? false)
-    && isTruthy(context.view._layout)
-    // Compare with latest is disabled during active walkthrough
-    && !hasActiveWalkthrough
-
-  /**
-   * Readonly mode is enabled when:
-   * - Global `features.enableReadOnly` is true (even if toggled off at runtime)
-   * OR
-   * - Runtime feature `ReadOnly` is toggled on (default is off)
-   * OR
-   * - This is a dynamic view in 'sequence' variant
-   * OR
-   * - There is an active walkthrough
-   */
-  const enableReadOnly = context.features.enableReadOnly
-    || (toggledFeatures.enableReadOnly ?? false)
-    // Active walkthrough forces readonly
-    || hasActiveWalkthrough
-    // Compare with latest enforces readonly
-    || (enableCompareWithLatest && context.view._layout === 'auto')
-
-  return {
-    enableCompareWithLatest,
-    enableReadOnly,
-  }
+/**
+ * Minimal snapshot shape required to derive runtime features
+ */
+export type DiagramSnapshotLike = {
+  context: Context
+  hasTag(tag: string): boolean
 }
 
-const isReadOnly = (context: Context) => deriveToggledFeatures(context).enableReadOnly
+/**
+ * Returns true if the diagram is in `ready.comparing` state
+ */
+export const isComparingLayouts = (snapshot: Pick<DiagramSnapshotLike, 'hasTag'>): boolean =>
+  snapshot.hasTag(ComparingTag)
+
+/**
+ * Readonly mode is enabled when:
+ * - Global `features.enableReadOnly` is true (even if toggled off at runtime)
+ * OR
+ * - Runtime feature `ReadOnly` is toggled on
+ * OR
+ * - There is an active walkthrough
+ * OR
+ * - Comparing layouts, and auto layout is active
+ */
+const isReadOnlyContext = (context: Context, isComparing: boolean): boolean =>
+  context.features.enableReadOnly
+  || (context.toggledFeatures.enableReadOnly ?? false)
+  // Active walkthrough forces readonly
+  || isTruthy(context.activeWalkthrough)
+  // Comparing with auto layout enforces readonly
+  || (isComparing && context.view._layout === 'auto')
+
+/**
+ * Derives runtime features (toggled features combined with the state of the diagram)
+ */
+export const deriveToggledFeatures = (snapshot: DiagramSnapshotLike): Required<ToggledFeatures> => ({
+  enableReadOnly: isReadOnlyContext(snapshot.context, isComparingLayouts(snapshot)),
+})
+
+/**
+ * Returns true if comparing layouts is possible:
+ * feature is enabled, view is layouted and has drifts
+ */
+export const canCompareLayouts = (context: Context): boolean =>
+  context.features.enableCompareWithLatest
+  && isTruthy(context.view._layout)
+  && !!context.view.drifts
+  && context.view.drifts.length > 0
 
 export function isActiveSequenceWalkthrough(
   context: Context,
@@ -356,6 +376,29 @@ export function isActiveSequenceWalkthrough(
   return isDynamicView(context.view) && context.dynamicViewVariant === 'sequence' && !!context.activeWalkthrough &&
     hasProp(context.view, 'flow')
 }
+
+export const targetState = {
+  idle: '#idle',
+  focused: '#focused',
+  walkthrough: '#walkthrough',
+  printing: '#printing',
+  comparing: '#comparing',
+  navigating: '#navigating',
+}
+
+type GuardArgs = { context: Context; event: Events }
+
+/**
+ * Guard: diagram is readonly (see {@link isReadOnlyContext}).
+ * Uses `stateIn` to check if comparing layouts, as guards don't have access to the state value.
+ */
+const isReadOnly = or([
+  ({ context }: GuardArgs) => isReadOnlyContext(context, false),
+  and([
+    stateIn(targetState.comparing),
+    ({ context }: GuardArgs) => context.view._layout === 'auto',
+  ]),
+])
 
 const actors = defineActors({
   hotkey: hotkeyActorLogic,
@@ -386,8 +429,11 @@ export const machine = setup({
     'isReady': ({ context }) => context.initialized.xydata && context.initialized.xyflow,
     'enabled: Editor': ({ context }) => context.features.enableEditor,
     'enabled: FitView': ({ context }) => context.features.enableFitView,
-    'enabled: FocusMode': ({ context }) => context.features.enableFocusMode && isReadOnly(context),
-    'enabled: Readonly': ({ context }) => isReadOnly(context),
+    'enabled: FocusMode': and([
+      ({ context }) => context.features.enableFocusMode,
+      isReadOnly,
+    ]),
+    'enabled: Readonly': isReadOnly,
     'enabled: RelationshipDetails': ({ context }) => context.features.enableRelationshipDetails,
     'enabled: Search': ({ context }) => context.features.enableSearch,
     'enabled: ElementDetails': ({ context }) => context.features.enableElementDetails,
@@ -402,7 +448,8 @@ export const machine = setup({
       context.features.enableElementDetails ||
       context.features.enableRelationshipBrowser ||
       context.features.enableRelationshipDetails,
-    'not readonly': ({ context }) => !isReadOnly(context),
+    'not readonly': not(isReadOnly),
+    'can compare layouts': ({ context }) => canCompareLayouts(context),
     'is dynamic view': ({ context }) => context.view._type === 'dynamic',
     'is dynamic view in sequence variant': ({ context }) =>
       context.view._type === 'dynamic' && context.dynamicViewVariant === 'sequence',
@@ -505,13 +552,5 @@ export interface BaseDiagramMachineLogic<
 }
 
 export type BaseDiagramActorRef = ActorRefFromLogic<BaseDiagramMachineLogic>
-
-export const targetState = {
-  idle: '#idle',
-  focused: '#focused',
-  walkthrough: '#walkthrough',
-  printing: '#printing',
-  navigating: '#navigating',
-}
 
 export const to = mapValues(targetState, (id) => ({ target: id }))

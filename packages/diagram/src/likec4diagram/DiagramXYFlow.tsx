@@ -93,8 +93,9 @@ export function resolveInteractionEnabled(
   return (override ?? enabled) && !isEditorBusy
 }
 
-const selectXYProps = selectDiagramSnapshot(({ context: ctx, children }) => {
-  const { enableReadOnly } = deriveToggledFeatures(ctx)
+const selectXYProps = selectDiagramSnapshot((snapshot) => {
+  const { context: ctx, children } = snapshot
+  const { enableReadOnly } = deriveToggledFeatures(snapshot)
   const controlledViewport = resolveControlledViewport(
     ctx.features.enableFitView,
     ctx.initialZoom,

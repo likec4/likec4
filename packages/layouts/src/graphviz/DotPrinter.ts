@@ -53,6 +53,7 @@ import {
   toDot as modelToDot,
 } from 'ts-graphviz'
 import { compoundLabel, nodeLabel } from './dot-labels'
+import { type ElementNodeBox, elementNodeBox } from './text-metrics'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } from './utils'
 
@@ -416,20 +417,22 @@ export abstract class DotPrinter<V extends ViewToPrint> {
     invariant(!isCompound(element), 'node should not be compound')
     const hasIcon = isTruthy(element.icon)
     const { values: { padding, sizes: { width, height } } } = this.styles.nodeSizes(element.style)
+    // Content is measured as it is rendered, the node gets exact size
+    const measured = this.measureNode(element)
 
     let paddingX = hasIcon ? 8 : padding
 
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
-      [_.label]: nodeLabel(element, this.styles),
+      [_.label]: nodeLabel(element, this.styles, measured),
       [_.margin]: `${pxToInch(paddingX)},${pxToInch(padding)}`,
     })
 
-    node.attributes.set(_.width, pxToInch(width))
-    node.attributes.set(_.height, pxToInch(height))
+    node.attributes.set(_.width, pxToInch(measured?.width ?? width))
+    node.attributes.set(_.height, pxToInch(measured?.height ?? height))
 
-    const isFixed = element.style.sizing === 'fixed'
+    const isFixed = element.style.sizing === 'fixed' || !!measured
     if (isFixed) {
       node.attributes.set(_.fixedsize, true)
     }
@@ -486,6 +489,14 @@ export abstract class DotPrinter<V extends ViewToPrint> {
         break
     }
     return node
+  }
+
+  /**
+   * Measures the content of the node as it is rendered by the diagram.
+   * Returns null to let Graphviz size the node by its label.
+   */
+  protected measureNode(element: NodeOf<V>): ElementNodeBox | null {
+    return elementNodeBox(element, this.styles)
   }
 
   /**
