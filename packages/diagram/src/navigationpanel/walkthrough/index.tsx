@@ -1,2 +1,3 @@
 export { ActiveWalkthroughControls } from './ActiveWalkthroughControls'
-export { DynamicViewControls } from './DynamicViewControls'
+export { DynamicViewControls, StartWalkthroughButton } from './DynamicViewControls'
+export { DynamicViewModeSwitcher } from './DynamicViewModeSwitcher'
