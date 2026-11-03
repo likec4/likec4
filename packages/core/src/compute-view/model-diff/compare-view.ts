@@ -8,6 +8,7 @@ import type {
   DiffId,
   DiffStatus,
   DiffStatusCounts,
+  LayoutedDynamicView,
   LayoutedView,
   ModelDiff,
   ParsedLikeC4ModelData,
@@ -351,14 +352,77 @@ function filterItems<N extends ComputedNode, E extends ComputedEdge>(
   }
 }
 
+function isNestedFlow(step: object): step is { flow: readonly unknown[] } {
+  return 'flow' in step && Array.isArray(step.flow)
+}
+
+/**
+ * Drops sequence steps whose edges are hidden in this mode.
+ * Keeps each subflow, including one left with no steps.
+ */
+function flowWithoutHiddenSteps<T>(flow: readonly T[], edgeIds: ReadonlySet<string>): T[] {
+  const kept: T[] = []
+  for (const step of flow) {
+    if (typeof step === 'string') {
+      if (edgeIds.has(step)) {
+        kept.push(step)
+      }
+      continue
+    }
+    if (typeof step === 'object' && step !== null && isNestedFlow(step)) {
+      kept.push({ ...step, flow: flowWithoutHiddenSteps(step.flow, edgeIds) })
+      continue
+    }
+    kept.push(step)
+  }
+  return kept
+}
+
+/**
+ * Drops actors, compounds, steps and ports that refer to hidden nodes or edges.
+ * A port id is the step id followed by `_source` or `_target`.
+ */
+function sequenceLayoutWithout(
+  layout: LayoutedDynamicView.Sequence.Layout,
+  nodeIds: ReadonlySet<string>,
+  edgeIds: ReadonlySet<string>,
+): LayoutedDynamicView.Sequence.Layout {
+  const isVisiblePort = (portId: string) => edgeIds.has(portId.replace(/_(source|target)$/, ''))
+  return {
+    ...layout,
+    actors: layout.actors
+      .filter(actor => nodeIds.has(actor.id))
+      .map(actor => ({ ...actor, ports: actor.ports.filter(port => isVisiblePort(port.id)) })),
+    compounds: layout.compounds.filter(compound => nodeIds.has(compound.origin)),
+    steps: layout.steps.filter(step => edgeIds.has(step.id)),
+  }
+}
+
 /**
  * Returns the compare view as it looks in the given mode.
  * Nodes keep their positions, so switching between modes does not move them.
  *
- * - `as-is`: hides added nodes and edges, clears diff statuses
- * - `to-be`: hides removed nodes and edges, clears diff statuses
+ * - `as-is`: hides added nodes and edges, and sequence steps that use them. Clears diff statuses.
+ * - `to-be`: hides removed nodes and edges, and sequence steps that use them. Clears diff statuses.
  * - `changes`: returns the view unchanged
  */
 export function filterCompareView<V extends ComputedView | LayoutedView>(view: V, mode: CompareViewMode): V {
-  return mode === 'changes' ? view : { ...view, ...filterItems(view.nodes, view.edges, mode) }
+  if (mode === 'changes') {
+    return view
+  }
+  const filtered = filterItems(view.nodes, view.edges, mode)
+  const nodeIds = new Set<string>(filtered.nodes.map(node => node.id))
+  const edgeIds = new Set<string>(filtered.edges.map(edge => edge.id))
+  const flow = 'flow' in view && view.flow
+    ? flowWithoutHiddenSteps(view.flow, edgeIds)
+    : undefined
+  const sequenceLayout = 'sequenceLayout' in view
+    ? sequenceLayoutWithout(view.sequenceLayout, nodeIds, edgeIds)
+    : undefined
+  return {
+    ...view,
+    ...filtered,
+    ...(flow ? { flow } : {}),
+    ...(sequenceLayout ? { sequenceLayout } : {}),
+  }
 }
