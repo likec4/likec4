@@ -57,6 +57,17 @@ describe('LikeC4Styles', () => {
       expect(result).not.toBe(LikeC4Styles.DEFAULT)
     })
 
+    it('should expose the content of custom stylesheets', ({ expect }) => {
+      const result = LikeC4Styles.from({
+        customCss: {
+          paths: ['x.css'],
+          content: '.custom { color: red; }',
+        },
+      })
+      expect(result.customCssContent).toBe('.custom { color: red; }')
+      expect(LikeC4Styles.DEFAULT.customCssContent).toBe('')
+    })
+
     it('should merge custom colors from both parameters', ({ expect }) => {
       const customColors: CustomColorDefinitions = {
         customColor1: computeColorValues('#111111'),

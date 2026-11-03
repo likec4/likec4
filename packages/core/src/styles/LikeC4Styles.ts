@@ -88,6 +88,13 @@ export class LikeC4Styles {
     this.defaults = config.defaults
   }
 
+  /**
+   * Content of the project's custom stylesheets
+   */
+  get customCssContent(): string {
+    return this.customCss?.content ?? ''
+  }
+
   get fingerprint(): string {
     return memoizeProp(this, 'fingerprint', () =>
       objectHash({
