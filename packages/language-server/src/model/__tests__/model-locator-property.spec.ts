@@ -1,6 +1,6 @@
 import type { DeploymentFqn, Fqn } from '@likec4/core'
-import { describe, it } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe } from 'vitest'
+import { testFileScope as it } from '../../test'
 
 const precedence = `
   specification {
@@ -71,35 +71,32 @@ const model = `
 `
 
 describe('ModelLocator: locate property', () => {
-  it('locates a property declared in the element body', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document, errors } = await validate(model)
+  it('locates a property declared in the element body', async ({ expect, t }) => {
+    const { document, errors } = await t.validate(model)
     expect(errors).toEqual([])
     const text = document.textDocument
 
-    const loc = services.likec4.ModelLocator.locateElement('b' as Fqn, undefined, 'technology')
+    const loc = t.services.likec4.ModelLocator.locateElement('b' as Fqn, undefined, 'technology')
     expect(loc).not.toBeNull()
     expect(text.getText(loc!.range)).toBe(`technology 'Body Tech'`)
 
-    const desc = services.likec4.ModelLocator.locateElement('b' as Fqn, undefined, 'description')
+    const desc = t.services.likec4.ModelLocator.locateElement('b' as Fqn, undefined, 'description')
     expect(text.getText(desc!.range)).toBe(`description 'Body description'`)
   })
 
-  it('locates an inline title, summary and technology', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(model)
+  it('locates an inline title, summary and technology', async ({ expect, t }) => {
+    const { document } = await t.validate(model)
     const text = document.textDocument
-    const locator = services.likec4.ModelLocator
+    const locator = t.services.likec4.ModelLocator
 
     expect(text.getText(locator.locateElement('a' as Fqn, undefined, 'title')!.range)).toBe(`'A'`)
     expect(text.getText(locator.locateElement('a' as Fqn, undefined, 'summary')!.range)).toBe(`'Summary'`)
     expect(text.getText(locator.locateElement('a' as Fqn, undefined, 'technology')!.range)).toBe(`'Inline Tech'`)
   })
 
-  it('falls back to the element name when the property is not declared', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(model)
-    const locator = services.likec4.ModelLocator
+  it('falls back to the element name when the property is not declared', async ({ expect, t }) => {
+    const { document } = await t.validate(model)
+    const locator = t.services.likec4.ModelLocator
 
     const withProperty = locator.locateElement('a' as Fqn, undefined, 'description')
     const withoutProperty = locator.locateElement('a' as Fqn)
@@ -107,11 +104,10 @@ describe('ModelLocator: locate property', () => {
     expect(document.textDocument.getText(withoutProperty!.range)).toBe('a')
   })
 
-  it('locates a property of a deployment node', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(model)
+  it('locates a property of a deployment node', async ({ expect, t }) => {
+    const { document } = await t.validate(model)
     const text = document.textDocument
-    const locator = services.likec4.ModelLocator
+    const locator = t.services.likec4.ModelLocator
 
     const title = locator.locateDeploymentElement('prod' as DeploymentFqn, undefined, 'title')
     expect(text.getText(title!.range)).toBe(`'Production'`)
@@ -119,19 +115,17 @@ describe('ModelLocator: locate property', () => {
     expect(text.getText(desc!.range)).toBe(`description 'Prod description'`)
   })
 
-  it('passes the property through LanguageServices.locate', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(model)
+  it('passes the property through LanguageServices.locate', async ({ expect, t }) => {
+    const { document } = await t.validate(model)
 
-    const loc = services.likec4.LanguageServices.locate({ element: 'b' as Fqn, property: 'technology' })
+    const loc = t.services.likec4.LanguageServices.locate({ element: 'b' as Fqn, property: 'technology' })
     expect(document.textDocument.getText(loc!.range)).toBe(`technology 'Body Tech'`)
   })
 
-  it('locates the inline value when the body declares the same property', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates the inline value when the body declares the same property', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
     const text = document.textDocument
-    const locator = services.likec4.ModelLocator
+    const locator = t.services.likec4.ModelLocator
 
     expect(text.getText(locator.locateElement('c' as Fqn, undefined, 'title')!.range)).toBe(`'Inline title'`)
     expect(text.getText(locator.locateElement('c' as Fqn, undefined, 'technology')!.range)).toBe(`'Inline tech'`)
@@ -139,54 +133,48 @@ describe('ModelLocator: locate property', () => {
     expect(text.getText(prod!.range)).toBe(`'Inline prod'`)
   })
 
-  it('locates descriptionFile for description', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates descriptionFile for description', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
 
-    const loc = services.likec4.ModelLocator.locateElement('d' as Fqn, undefined, 'description')
+    const loc = t.services.likec4.ModelLocator.locateElement('d' as Fqn, undefined, 'description')
     expect(document.textDocument.getText(loc!.range)).toBe(`descriptionFile ./d.md`)
   })
 
-  it('locates tags', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates tags', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
 
-    const loc = services.likec4.ModelLocator.locateElement('d' as Fqn, undefined, 'tags')
+    const loc = t.services.likec4.ModelLocator.locateElement('d' as Fqn, undefined, 'tags')
     expect(document.textDocument.getText(loc!.range)).toBe(`#one, #two`)
   })
 
-  it('locates the body summary when the inline summary is empty', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates the body summary when the inline summary is empty', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
     const text = document.textDocument
-    const locator = services.likec4.ModelLocator
+    const locator = t.services.likec4.ModelLocator
 
     expect(text.getText(locator.locateElement('e' as Fqn, undefined, 'summary')!.range)).toBe(`summary 'Body summary'`)
     const stage = locator.locateDeploymentElement('stage' as DeploymentFqn, undefined, 'summary')
     expect(text.getText(stage!.range)).toBe(`summary 'Body stage summary'`)
   })
 
-  it('locates metadata', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates metadata', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
 
-    const loc = services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'metadata')
+    const loc = t.services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'metadata')
     expect(document.textDocument.getText(loc!.range)).toMatch(/^metadata \{\s+owner 'team'\s+\}$/)
   })
 
-  it('locates the last declaration when a property is repeated', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates the last declaration when a property is repeated', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
 
-    const loc = services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'technology')
+    const loc = t.services.likec4.ModelLocator.locateElement('e' as Fqn, undefined, 'technology')
     expect(document.textDocument.getText(loc!.range)).toBe(`technology 'New tech'`)
   })
 
-  it('locates links', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates links', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
     const text = document.textDocument
-    const locator = services.likec4.ModelLocator
+    const locator = t.services.likec4.ModelLocator
 
     expect(text.getText(locator.locateElement('e' as Fqn, undefined, 'links')!.range)).toBe(
       `link https://example.com/first`,
@@ -196,11 +184,10 @@ describe('ModelLocator: locate property', () => {
     )
   })
 
-  it('locates the declaration the parser applies when a block or file is repeated', async ({ expect }) => {
-    const { validate, services } = createTestServices()
-    const { document } = await validate(precedence)
+  it('locates the declaration the parser applies when a block or file is repeated', async ({ expect, t }) => {
+    const { document } = await t.validate(precedence)
     const text = document.textDocument
-    const locator = services.likec4.ModelLocator
+    const locator = t.services.likec4.ModelLocator
 
     expect(text.getText(locator.locateElement('f' as Fqn, undefined, 'description')!.range)).toBe(
       `descriptionFile ./second.md`,
