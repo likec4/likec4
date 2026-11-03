@@ -1,9 +1,6 @@
 import type { ViewId } from '@likec4/core'
-import { describe, vi } from 'vitest'
+import { describe } from 'vitest'
 import { it } from './_it-spec'
-
-vi.mock('node:fs')
-vi.mock('node:fs/promises')
 
 describe('changeViewLayout', () => {
   it('replaces autoLayout with new value', async ({ expect, testDoc }) => {

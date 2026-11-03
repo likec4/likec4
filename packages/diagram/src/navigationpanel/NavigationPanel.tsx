@@ -10,6 +10,7 @@ import { useSelector } from '@xstate/react'
 import { AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo, useEffect } from 'react'
+import { NavigationPanel as StyledNavigationPanel } from '../components/NavigationPanel'
 import { selectDiagramContext, useDiagramSelector } from '../hooks/useDiagram'
 import { useMantinePortalProps } from '../hooks/useMantinePortalProps'
 import type { NavigationPanelActorRef, NavigationPanelActorSnapshot } from './actor'
@@ -47,7 +48,10 @@ type NavigationPanelMode =
   | 'walkthrough'
 
 const stateHasActiveTag = (state: NavigationPanelActorSnapshot) => state.hasTag('active')
-export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ actorRef }) => {
+export const NavigationPanel = memo<{
+  actorRef: NavigationPanelActorRef
+  isComparing: boolean
+}>(({ actorRef, isComparing }) => {
   const opened = useSelector(actorRef, stateHasActiveTag)
   const portalProps = useMantinePortalProps()
 
@@ -58,34 +62,7 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
   }, [actorRef, viewId, viewFolder])
 
   return (
-    <VStack
-      css={{
-        zIndex: 'panel',
-        alignItems: 'flex-start',
-        pointerEvents: 'none',
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        margin: '0',
-        width: '100%',
-        gap: 'xxs',
-        maxWidth: [
-          '100vw',
-          '100cqw',
-        ],
-        '@/sm': {
-          margin: 'xs',
-          gap: 'xs',
-          width: 'max-content',
-          maxWidth: [
-            '[calc(100vw - 2 * {spacing.md})]',
-            '[calc(100cqw - 2 * {spacing.md})]',
-          ],
-        },
-        _print: {
-          display: 'none',
-        },
-      }}>
+    <StyledNavigationPanel.Root>
       <NavigationPanelActorContextProvider value={actorRef}>
         {mode !== 'walkthrough-flow' && (
           <>
@@ -104,36 +81,28 @@ export const NavigationPanel = memo<{ actorRef: NavigationPanelActorRef }>(({ ac
                   onDismiss={() => actorRef.send({ type: 'dropdown.dismiss' })}
                 >
                   <PopoverTarget>
-                    <m.div
+                    <StyledNavigationPanel.Body
                       layout="size"
                       layoutDependency={`mode-${mode}-viewId-${viewId}`}
-                      className={hstack({
-                        layerStyle: 'likec4.panel',
-                        position: 'relative',
-                        gap: 'xs',
-                        cursor: 'pointer',
-                        pointerEvents: 'all',
-                        width: '100%',
-                      })}
                       data-panel="navigation"
                       onMouseLeave={() => actorRef.send({ type: 'breadcrumbs.mouseLeave' })}
                     >
                       {mode === 'walkthrough'
                         ? <ActiveWalkthroughControls />
                         : <NavigationPanelControls />}
-                    </m.div>
+                    </StyledNavigationPanel.Body>
                   </PopoverTarget>
                   <NavigationPanelDropdown />
                 </Popover>
               </AnimatePresence>
             </LayoutGroup>
-            <ComparePanel />
             {mode === 'walkthrough' && <WalkthroughPanel />}
+            {isComparing && <ComparePanel />}
             <EditorPanel />
           </>
         )}
       </NavigationPanelActorContextProvider>
-    </VStack>
+    </StyledNavigationPanel.Root>
   )
 })
 NavigationPanel.displayName = 'NavigationPanel'

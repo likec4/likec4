@@ -22,6 +22,7 @@ const testState = vi.hoisted(() => ({
 vi.mock('@likec4/diagram', () => ({
   LikeC4Diagram: () => React.createElement('div', { 'data-testid': 'diagram' }),
   pickViewBounds: () => testState.diagram.bounds,
+  useLikeC4Model: () => ({ resolveMarkdownRef: () => null }),
   useLikeC4Styles: () => ({
     colors: () => ({
       elements: {

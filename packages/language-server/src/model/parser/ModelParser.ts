@@ -103,15 +103,12 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
 
       let [_title, _summary, _technology] = astNode.props ?? []
 
-      const bodyProps = {
-        ...pipe(
-          astNode.body?.props ?? [],
-          filter(isValid),
-          filter(ast.isElementStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(astNode.body?.props),
-      }
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(isValid),
+        filter(ast.isElementStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
 
       const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
         title: isDefined(_title)
@@ -130,6 +127,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         tags: tags ?? undefined,
         links: this.parseLinks(astNode.body),
         ...descAndTech,
+        ...this.parseDescriptionFile(astNode.body),
         style,
       })
     }
@@ -226,15 +224,12 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
       const astPath = this.getAstNodePath(astNode)
 
-      const bodyProps = {
-        ...pipe(
-          astNode.body?.props ?? [],
-          filter(ast.isRelationStringProperty),
-          filter(p => isTruthy(p.value)),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(astNode.body?.props),
-      }
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(ast.isRelationStringProperty),
+        filter(p => isTruthy(p.value)),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
 
       const navigateTo = pipe(
         astNode.body?.props ?? [],
@@ -272,6 +267,7 @@ export function ModelParser<TBase extends WithExpressionV2>(B: TBase) {
         description,
         technology,
         ...toRelationshipStyle(styleProp?.props, isValid),
+        ...this.parseDescriptionFile(astNode.body),
       })
     }
   }

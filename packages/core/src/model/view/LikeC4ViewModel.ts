@@ -191,7 +191,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.#view.description)
+    return RichText.memoize(this, 'description', this.#view.description, this.$model.resolveMarkdownRef)
   }
 
   get tags(): aux.Tags<A> {
@@ -278,8 +278,9 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     }
     const snapshot = this.#manualLayoutSnapshot
     if (snapshot) {
-      // If the view already has manual layout applied (can happen when the
-      // Vite client receives pre-processed data), return it as-is (#2882).
+      // Defensive guard (#2882): model data is expected to keep auto-layouted views
+      // and manual layouts separately (see `LikeC4LanguageServices.layoutedModel`).
+      // If the view already has manual layout applied, return it as-is instead of failing.
       if (this.#view._layout === 'manual') {
         return this.#view
       }

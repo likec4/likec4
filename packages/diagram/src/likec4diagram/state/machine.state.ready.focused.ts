@@ -44,6 +44,10 @@ export const focused = machine.createStateConfig({
     }),
   ],
   on: {
+    'compare.start': {
+      guard: 'can compare layouts',
+      ...to.comparing,
+    },
     'focus.autoUnfocus': {
       ...to.idle,
     },

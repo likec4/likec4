@@ -8,6 +8,7 @@ import { AnimatePresence, m } from 'motion/react'
 import { memo } from 'react'
 import { isNonNull, isTruthy } from 'remeda'
 import { Markdown } from '../../base-primitives'
+import { DiagramMarkdownRefs } from '../../components/DiagramMarkdownRefs'
 import { selectDiagramContext, useDiagramSelector } from '../../hooks/useDiagram'
 
 const SectionHeader = styled('div', {
@@ -78,11 +79,13 @@ export const WalkthroughPanel = memo(() => {
         >
           <ScrollAreaAutosize type="scroll" overscrollBehavior="contain">
             <SectionHeader>Notes</SectionHeader>
-            <Markdown
-              value={notes}
-              fontSize="sm"
-              emptyText="No description"
-            />
+            <DiagramMarkdownRefs>
+              <Markdown
+                value={notes}
+                fontSize="sm"
+                emptyText="No description"
+              />
+            </DiagramMarkdownRefs>
           </ScrollAreaAutosize>
         </m.div>
       )}

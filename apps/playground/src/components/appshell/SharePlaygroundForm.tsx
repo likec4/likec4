@@ -248,7 +248,7 @@ export function SharePlaygroundForm() {
                       cursor: 'pointer',
                       // borderColor: 'transparent',
                       // backgroundColor: 'transparent',
-                      color: 'grass.9',
+                      color: '[var(--mantine-color-green-text)]',
                       fontSize: 'xs',
                       userSelect: 'all',
                     }),

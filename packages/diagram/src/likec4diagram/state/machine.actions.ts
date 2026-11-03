@@ -48,7 +48,7 @@ import {
   resetEdgeControlPoints,
 } from './assign'
 import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
-import { machine } from './machine.setup'
+import { type Context, type Events, machine } from './machine.setup'
 import {
   findDiagramEdge,
   findDiagramNode,
@@ -63,16 +63,57 @@ export const resetSelection = () =>
     type: 'xyflow.resetSelection',
   })
 
-export const disableCompareWithLatest = () =>
-  machine.assign(({ context }) => {
-    return {
-      toggledFeatures: {
-        ...context.toggledFeatures,
-        enableCompareWithLatest: false,
-      },
+/**
+ * Resolves the layout type requested by `emit.onLayoutTypeChange`,
+ * or toggles the current one, if the action is triggered by another event.
+ */
+const resolveNextLayoutType = (context: Context, event: Events): LayoutType => {
+  if (event.type === 'emit.onLayoutTypeChange') {
+    return event.layoutType
+  }
+  return context.view._layout === 'auto' ? 'manual' : 'auto'
+}
+
+/**
+ * Comparing layouts: before switching the layout type,
+ * remembers the viewport of the current layout (to restore it when switching back)
+ * and cancels pending editor changes when switching from manual to auto.
+ */
+export const beforeLayoutTypeChangeWhileComparing = () =>
+  machine.enqueueActions(({ context, event, enqueue }) => {
+    const currentLayoutType = context.view._layout
+    const nextLayoutType = resolveNextLayoutType(context, event)
+    if (!currentLayoutType || currentLayoutType === nextLayoutType) {
+      return
+    }
+    if (currentLayoutType === 'manual') {
+      enqueue.sendTo(typedSystem.editorActor, { type: 'cancel' })
+      enqueue.assign({
+        viewportOnManualLayout: context.viewport,
+      })
+      return
+    }
+    enqueue.assign({
+      viewportOnAutoLayout: context.viewport,
+    })
+  })
+
+/**
+ * Comparing layouts: on exit, switches back to manual layout (if auto is active)
+ * and forgets the remembered viewports.
+ */
+export const exitComparingLayouts = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    if (context.view._layout === 'auto') {
+      enqueue.emit({
+        type: 'onLayoutTypeChange',
+        layoutType: 'manual',
+      })
+    }
+    enqueue.assign({
       viewportOnAutoLayout: null,
       viewportOnManualLayout: null,
-    }
+    })
   })
 
 export const onEdgeDoubleClick = () =>
@@ -382,40 +423,11 @@ export const emitOnLayoutTypeChange = () =>
       return
     }
     const currentLayoutType = context.view._layout
-    // toggle
-    let nextLayoutType: LayoutType = currentLayoutType === 'auto' ? 'manual' : 'auto'
-
-    if (event.type === 'emit.onLayoutTypeChange') {
-      nextLayoutType = event.layoutType
-    }
+    const nextLayoutType = resolveNextLayoutType(context, event)
 
     if (currentLayoutType === nextLayoutType) {
       console.warn('Ignoring layout type change event, layout type is already', currentLayoutType)
       return
-    }
-
-    if (context.toggledFeatures.enableCompareWithLatest === true) {
-      // Check if we are switching from manual to auto layout while a sync is pending
-      if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
-        enqueue.sendTo(
-          typedSystem.editorActor,
-          {
-            type: 'cancel',
-          },
-        )
-      }
-
-      const currentViewport = context.viewport
-      if (currentLayoutType === 'auto') {
-        enqueue.assign({
-          viewportOnAutoLayout: currentViewport,
-        })
-      }
-      if (currentLayoutType === 'manual') {
-        enqueue.assign({
-          viewportOnManualLayout: currentViewport,
-        })
-      }
     }
 
     enqueue.emit({
@@ -1063,7 +1075,13 @@ export const handleNavigate = () =>
     }
   })
 
-export const updateView = () =>
+/**
+ * Updates the current view in place.
+ *
+ * @param params.restoreLayoutViewport - when layout type changes (comparing layouts),
+ * restore the viewport remembered for the next layout type, or recenter
+ */
+export const updateView = (params?: { restoreLayoutViewport?: boolean }) =>
   machine.enqueueActions(
     ({ enqueue, event, context }) => {
       if (event.type !== 'update.view') {
@@ -1086,7 +1104,8 @@ export const updateView = () =>
 
       enqueue(sendSynced())
 
-      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
+      const restoreLayoutViewport = params?.restoreLayoutViewport === true
+      if (restoreLayoutViewport && context.view._layout !== nextView._layout) {
         if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
           enqueue(
             setViewport({
@@ -1112,7 +1131,7 @@ export const updateView = () =>
 
       // Check if comparing layouts is enabled and layout changed
       recenter = recenter || (
-        context.toggledFeatures.enableCompareWithLatest === true &&
+        restoreLayoutViewport &&
         !!nextView._layout &&
         context.view._layout !== nextView._layout
       )

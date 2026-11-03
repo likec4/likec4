@@ -8,16 +8,17 @@
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { type PropsWithChildren, useEffect, useRef } from 'react'
-import { isNullish } from 'remeda'
+import { deepEqual } from 'fast-equals'
+import { type PropsWithChildren, useEffect } from 'react'
 import { MaxZoom, MinZoom } from '../../base/const'
+import { ComparingLayoutsProvider } from '../../context/ComparingLayoutsContext'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
 import { DiagramFeatures, useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEditorActorLogic } from '../../editor/useEditorActorLogic'
 import {
   DiagramActorContextProvider,
   DiagramApiContextProvider,
-  selectDiagramContext,
+  selectDiagramSnapshot,
   useDiagramSelector,
 } from '../../hooks/safeContext'
 import {
@@ -29,6 +30,7 @@ import type { RelationshipBrowserScope, ViewPaddings } from '../../LikeC4Diagram
 import type { Types } from '../types'
 import { DiagramApi } from './diagram-api'
 import { diagramMachine } from './machine'
+import { deriveToggledFeatures, isComparingLayouts } from './machine.setup'
 import { DiagramToggledFeaturesPersistence } from './persistence'
 
 export function DiagramActorProvider({
@@ -158,47 +160,21 @@ export function DiagramActorProvider({
   )
 }
 
-const selectToggledFeatures = selectDiagramContext(context => {
-  let toggledFeatures = context.toggledFeatures
-
-  const hasDrifts = context.view.drifts != null && context.view.drifts.length > 0
-
-  const enableCompareWithLatest = hasDrifts
-    && context.features.enableCompareWithLatest
-    && (toggledFeatures.enableCompareWithLatest ?? false)
-    // Compare with latest is disabled during active walkthrough
-    && isNullish(context.activeWalkthrough)
-
-  const enableReadOnly = context.features.enableReadOnly
-    || toggledFeatures.enableReadOnly
-    // Active walkthrough forces readonly
-    || !!context.activeWalkthrough
-    // Compare with latest enforces readonly
-    || (enableCompareWithLatest && context.view._layout === 'auto')
-
-  // Update toggled features if changed
-  if (
-    toggledFeatures.enableReadOnly !== enableReadOnly ||
-    toggledFeatures.enableCompareWithLatest !== enableCompareWithLatest
-  ) {
-    toggledFeatures = {
-      ...toggledFeatures,
-      enableCompareWithLatest,
-      enableReadOnly,
-    }
-  }
-
-  return toggledFeatures
-})
+const selectToggledFeatures = selectDiagramSnapshot((snapshot) => ({
+  toggledFeatures: deriveToggledFeatures(snapshot),
+  isComparing: isComparingLayouts(snapshot),
+}), deepEqual)
 
 function ToggledFeatures({ children }: PropsWithChildren) {
-  const toggledFeatures = useDiagramSelector(selectToggledFeatures)
+  const { toggledFeatures, isComparing } = useDiagramSelector(selectToggledFeatures)
   useUpdateEffect(() => {
     DiagramToggledFeaturesPersistence.write(toggledFeatures)
   }, [toggledFeatures])
   return (
     <DiagramFeatures overrides={toggledFeatures}>
-      {children}
+      <ComparingLayoutsProvider value={isComparing}>
+        {children}
+      </ComparingLayoutsProvider>
     </DiagramFeatures>
   )
 }

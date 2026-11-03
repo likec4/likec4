@@ -4,7 +4,6 @@ labels:
   - bug
 type: Bug
 body:
-
   - type: dropdown
     id: relatesTo
     attributes:
@@ -13,11 +12,11 @@ body:
         Select the component that the issue is related to.
         If the issue is related to multiple components, select "Other".
       options:
-        - "LikeC4 Language"
-        - "CLI"
-        - "VSCode extension"
-        - "Diagrams (React)"
-        - "Other, I will specify in the description"
+        - 'LikeC4 Language'
+        - 'CLI'
+        - 'VSCode extension'
+        - 'Diagrams (React)'
+        - 'Other, I will specify in the description'
     validations:
       required: true
 

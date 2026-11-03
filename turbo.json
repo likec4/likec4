@@ -23,8 +23,7 @@
       "dependsOn": ["^sources"]
     },
     "generate": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/*.md"],
-      "outputs": [],
+      "dependsOn": ["^generate"]
     },
     "typecheck": {
       "dependsOn": [
@@ -46,7 +45,6 @@
     "test": {
       "dependsOn": [
         "sources",
-        "^generate",
         "generate"
       ],
       "inputs": [
@@ -59,7 +57,6 @@
     "build": {
       "dependsOn": [
         "sources",
-        "^generate",
         "generate",
         "^build"
       ],

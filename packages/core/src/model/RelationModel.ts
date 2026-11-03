@@ -109,7 +109,7 @@ export class RelationshipModel<A extends Any = Any>
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$relationship))
+    return RichText.memoize(this, 'summary', preferSummary(this.$relationship), this.model.resolveMarkdownRef)
   }
 
   /**
@@ -117,7 +117,7 @@ export class RelationshipModel<A extends Any = Any>
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$relationship))
+    return RichText.memoize(this, 'description', preferDescription(this.$relationship), this.model.resolveMarkdownRef)
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {

@@ -35,7 +35,15 @@ import type {
 } from '../types/_aux'
 import * as aux from '../types/_aux'
 import * as scalar from '../types/scalar'
-import { compareNatural, compareNaturalHierarchically, ifilter, invariant, memoizeProp, nonNullable } from '../utils'
+import {
+  type MarkdownRefTitleResolver,
+  compareNatural,
+  compareNaturalHierarchically,
+  ifilter,
+  invariant,
+  memoizeProp,
+  nonNullable,
+} from '../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { DefaultMap, LRUMap } from '../utils/mnemonist'
 import type {
@@ -99,6 +107,31 @@ export class LikeC4Model<A extends Any = Any> {
     aux.Tag<A>,
     Set<ElementModel<A> | RelationshipModel<A> | LikeC4ViewModel<A>>
   >(() => new Set())
+
+  /**
+   * Resolves the text of a ref in Markdown (`[[fqn]]`, `[[view:id]]`) against this model:
+   * the element title, or the view title (or id).
+   * Returns null if the target is not found, or the namespace is unknown.
+   *
+   * Bound to the model, so it can be passed as a callback.
+   * Descriptions, summaries and notes of model, view, node and edge models resolve refs with it.
+   *
+   * @example
+   * resolveMarkdownRefs(md, model.resolveMarkdownRef)
+   */
+  public readonly resolveMarkdownRef: MarkdownRefTitleResolver = ref => {
+    switch (ref.kind) {
+      case 'element': {
+        return this._elements.get(ref.target as aux.Fqn<A>)?.title ?? null
+      }
+      case 'view': {
+        return this._views.get(ref.target as aux.ViewId<A>)?.titleOrId ?? null
+      }
+      default: {
+        return null
+      }
+    }
+  }
 
   static fromParsed<T extends AnyParsed>(model: ParsedLikeC4ModelData<T>): LikeC4Model<T> {
     return new LikeC4Model(model)

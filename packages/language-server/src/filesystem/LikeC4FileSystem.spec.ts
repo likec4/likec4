@@ -24,15 +24,16 @@ describe('workspace filesystem exclusions', () => {
     await rm(root, { recursive: true, force: true })
   })
 
-  function setup(patterns: string[]) {
+  async function setup(patterns: string[]) {
     const { shared } = createLanguageServices(WithFileSystem())
+    await shared.workspace.WorkspaceManager.initializeWorkspace([{ name: 'test', uri: URI.file(root).toString() }])
     shared.workspace.ProjectsManager.setWorkspaceExcludePatterns(patterns)
     return shared.workspace
   }
 
   for (const operation of ['readDirectory', 'scanProjectFiles', 'scanDirectory'] as const) {
     it(`${operation} prunes excluded directories before reading them`, async ({ expect }) => {
-      const { FileSystemProvider: provider } = setup(['**/excluded/**'])
+      const { FileSystemProvider: provider } = await setup(['**/excluded/**'])
       const readdir = vi.spyOn(fs, 'readdir')
       const files = operation === 'scanDirectory'
         ? await provider.scanDirectory(URI.file(root), () => true)
@@ -54,7 +55,7 @@ describe('workspace filesystem exclusions', () => {
   }
 
   it('does not traverse an explicitly excluded scan root', async ({ expect }) => {
-    const { FileSystemProvider: provider } = setup(['**/excluded/**'])
+    const { FileSystemProvider: provider } = await setup(['**/excluded/**'])
     const readdir = vi.spyOn(fs, 'readdir')
     const excluded = URI.file(join(root, 'excluded'))
     expect(await provider.readDirectory(excluded)).toEqual([])
@@ -64,7 +65,7 @@ describe('workspace filesystem exclusions', () => {
   })
 
   it('filters individual files and uses updated exclusions on the next scan', async ({ expect }) => {
-    const { FileSystemProvider: provider, ProjectsManager: projects } = setup(['**/excluded/**', '**/model.c4'])
+    const { FileSystemProvider: provider, ProjectsManager: projects } = await setup(['**/excluded/**', '**/model.c4'])
     expect(await provider.readDirectory(URI.file(root))).toEqual([])
     projects.setWorkspaceExcludePatterns(['**/excluded/**', '**/likec4.config.json'])
     expect(await provider.scanProjectFiles(URI.file(root))).toEqual([])
@@ -79,7 +80,7 @@ describe('workspace filesystem exclusions', () => {
       await writeFile(join(target, 'linked.c4'), 'model {}')
       await symlink(target, join(root, 'ignored-link'), 'junction')
       await symlink(target, join(root, 'allowed-link'), 'junction')
-      const { FileSystemProvider: provider } = setup(['**/excluded/**', '**/ignored-link/**'])
+      const { FileSystemProvider: provider } = await setup(['**/excluded/**', '**/ignored-link/**'])
       const files = await provider.readDirectory(URI.file(root))
       expect(files.some(file => file.uri.fsPath.includes('ignored-link'))).toBe(false)
       expect(files.some(file => file.uri.fsPath.includes('allowed-link'))).toBe(true)

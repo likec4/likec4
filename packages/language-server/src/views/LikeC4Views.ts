@@ -64,7 +64,8 @@ export interface LikeC4Views extends Disposable {
    */
   computedViews(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<ComputedView[]>
   /**
-   * Layouts all views (ignoring any manual snapshots)
+   * Layouts all views (ignoring any manual snapshots).
+   * Results are cached, this is the source of `$data.views` in `LikeC4LanguageServices.layoutedModel`.
    *
    * @param projectId - project id, if not specified - uses the default project
    */
@@ -84,9 +85,13 @@ export interface LikeC4Views extends Disposable {
    */
   layoutView(params: LayoutViewParams): Promise<GraphvizOut | null>
   /**
-   * Returns diagrams.
-   * If diagram has manual layout, it will be used.
+   * Returns diagrams - layouted views with manual layouts applied (if any).
+   *
+   * Equivalent to `$layouted` of each view in `LikeC4LanguageServices.layoutedModel`
+   * (both use `applyManualLayout` from `@likec4/core`).
+   *
    * @param projectId - project id, if not specified - uses the default project
+   * @deprecated Use `LikeC4LanguageServices.layoutedModel` and `$layouted` of its views instead
    */
   diagrams(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<DiagramView>>
   /**
@@ -139,8 +144,14 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
         this.#storage.clear()
       }),
       services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
-        if (this.#projectStorages.has(projectId) && viewId) {
-          this.projectStorage(projectId).clearView(viewId)
+        if (!this.#projectStorages.has(projectId)) {
+          return
+        }
+        if (viewId) {
+          void this.projectStorage(projectId).clearView(viewId)
+        } else {
+          // Unknown view (e.g. folder with snapshots was deleted)
+          this.projectStorage(projectId).clearAll()
         }
       }),
     )
@@ -262,7 +273,7 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
 
         let diagram = { ...snapshot } as Writable<LayoutedView>
         diagram.drifts = [
-          'not-exists',
+          'removed',
         ]
         diagram._layout = 'manual'
         return {

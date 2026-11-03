@@ -8,12 +8,14 @@ import { NavigationPanel } from '../navigationpanel'
 import { Overlays } from '../overlays/Overlays'
 import { Search } from '../search/Search'
 import { RelationshipPopover } from './relationship-popover/RelationshipPopover'
-import { FloatingSequenceActors, LayoutDriftFrame, NotationPanel, SequenceOutlinePanel } from './ui'
+import { isComparingLayouts } from './state/machine.setup'
+import { FloatingSequenceActors, NotationPanel, SequenceOutlinePanel } from './ui'
 
 const selectChildren = selectDiagramSnapshot(s => ({
   overlays: s.children.overlays ?? null,
   search: s.children.search ?? null,
   navigation: s.children.navigationPanel ?? null,
+  isComparing: isComparingLayouts(s),
   ...(isDynamicView(s.context.view) ?
     {
       isSequenceView: s.context.dynamicViewVariant === 'sequence',
@@ -35,10 +37,9 @@ export function LikeC4DiagramUI() {
     enableSearch,
     enableRelationshipDetails,
     enableReadOnly,
-    enableCompareWithLatest,
   } = useEnabledFeatures()
   const rerender = useRerender()
-  const { isSequenceView, isActiveWalkthrough, ...actors } = useDiagramSelector(selectChildren)
+  const { isSequenceView, isActiveWalkthrough, isComparing, ...actors } = useDiagramSelector(selectChildren)
 
   const handleReset = useCallback(() => {
     if (import.meta.env.DEV) {
@@ -51,12 +52,15 @@ export function LikeC4DiagramUI() {
     <ErrorBoundary onReset={handleReset}>
       {isSequenceView && <FloatingSequenceActors isActiveWalkthrough={isActiveWalkthrough} />}
       {isActiveWalkthrough && <SequenceOutlinePanel />}
-      {enableControls && actors.navigation && !isActiveWalkthrough && <NavigationPanel actorRef={actors.navigation} />}
+      {(
+        enableControls &&
+        actors.navigation &&
+        !isActiveWalkthrough
+      ) && <NavigationPanel actorRef={actors.navigation} isComparing={isComparing} />}
       {actors.overlays && <Overlays overlaysActorRef={actors.overlays} />}
       {enableNotations && <NotationPanel />}
       {enableSearch && actors.search && <Search searchActorRef={actors.search} />}
       {enableRelationshipDetails && enableReadOnly && <RelationshipPopover />}
-      {enableCompareWithLatest && <LayoutDriftFrame />}
     </ErrorBoundary>
   )
 }
