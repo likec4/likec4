@@ -537,6 +537,7 @@ if (!hasPyFiles(args.root, args, gitignore)) {
       args.root,
       '--max-files',
       String(remainingBudget),
+      ...args.include.flatMap((g) => ['--include', g]),
       ...(args.includeTests ? ['--include-tests'] : []),
       ...(args.noSymbols ? ['--no-symbols'] : []),
       ...(args.symbolKinds ? ['--symbol-kinds', args.symbolKinds.join(',')] : []),

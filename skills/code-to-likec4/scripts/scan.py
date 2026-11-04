@@ -74,7 +74,23 @@ def ignore_match(rel: str, is_dir: bool, patterns) -> bool:
     return False
 
 
-def iter_py(root: str, gitignore, include_tests: bool, max_files: int):
+def include_match(rel: str, patterns) -> bool:
+    """Check whether a relative path or basename matches any include glob pattern."""
+    def seg(value: str) -> str:
+        return "[^/]*".join(re.escape(part) for part in value.split("*"))
+
+    for pattern in patterns:
+        body = "(?:.*/)?".join(
+            ".*".join(seg(part) for part in chunk.split("**"))
+            for chunk in pattern.split("**/")
+        )
+        rx = re.compile(f"^{body}$")
+        if rx.fullmatch(rel) or rx.fullmatch(os.path.basename(rel)):
+            return True
+    return False
+
+
+def iter_py(root: str, gitignore, include_tests: bool, max_files: int, include=None):
     """Walk root for .py files respecting gitignore, test exclusions, and file budget."""
     files = []
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
@@ -94,6 +110,8 @@ def iter_py(root: str, gitignore, include_tests: bool, max_files: int):
             if ignore_match(rel, False, gitignore):
                 continue
             if not include_tests and is_test(rel):
+                continue
+            if include and not include_match(rel_fwd, include):
                 continue
             files.append(full)
             if len(files) > max_files:
@@ -247,6 +265,8 @@ def main() -> int:
     ap.add_argument("--out", default="-")
     ap.add_argument("--max-files", type=int, default=2000)
     ap.add_argument("--include-tests", action="store_true")
+    ap.add_argument("--include", action="append", default=[],
+                    help="repeatable glob patterns for inclusion")
     ap.add_argument("--exclude", action="append", default=[],
                     help="repeatable glob patterns merged with default ignores")
     ap.add_argument("--no-symbols", action="store_true",
@@ -261,7 +281,7 @@ def main() -> int:
         kinds = set()
     gitignore = load_gitignore(args.root)
     gitignore = gitignore + list(args.exclude)  # glob-capable, merged with defaults
-    files = iter_py(args.root, gitignore, args.include_tests, args.max_files)
+    files = iter_py(args.root, gitignore, args.include_tests, args.max_files, args.include)
     if len(files) > args.max_files:
         print(f"over budget: {len(files)} files > --max-files {args.max_files}", file=sys.stderr)
         return 3
