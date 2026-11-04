@@ -41,7 +41,7 @@ case "$cmd" in
       exit 0
     fi
     "${LIKEC4[@]}" validate --no-layout --json "$OUT" | tee "$OUT/.validate.json" | \
-      node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s);if(!r.valid||r.stats.filteredErrors!==0){console.error('VALIDATION FAILED');process.exit(1)}console.log('validate: OK (filteredErrors=0)')})"
+      node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const i=s.indexOf('{');if(i===-1){console.error('VALIDATION FAILED: no JSON');process.exit(1)}const r=JSON.parse(s.slice(i));if(!r.valid||r.stats.filteredErrors!==0){console.error('VALIDATION FAILED');process.exit(1)}console.log('validate: OK (filteredErrors=0)')})"
     ;;
   -h|--help|help|"")
     sed -n '2,14p' "$0"
