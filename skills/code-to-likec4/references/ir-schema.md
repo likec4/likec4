@@ -59,4 +59,4 @@ Labeled example (child):
 }
 ```
 
-Rules: identifier, FQN, and nesting rules follow the `likec4-dsl` skill (`references/identifier-validity.md`, `references/model.md`). FQNs must be unique project-wide; use full FQNs for cross-file references. The emitter enforces uniqueness and caps output at ~200 elements (symbols included).
+Rules: identifier, FQN, and nesting rules follow the `likec4-dsl` skill (`references/identifier-validity.md`, `references/model.md`). FQNs must be unique project-wide; use full FQNs for cross-file references. The emitter fails on duplicate explicit FQNs, dedupes generated ones, and warns when output exceeds ~200 elements (symbols included).

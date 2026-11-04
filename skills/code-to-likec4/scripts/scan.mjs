@@ -2,7 +2,7 @@
 // scan.mjs — node stdlib only. Walks TS/JS, extracts imports + titles, spawns scan.py once, merges to IR JSON.
 // Usage: node scan.mjs --root <dir> --out <file|-> [--max-files N] [--include-tests] [--include G ...] [--exclude G ...]
 import { spawnSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, lstatSync, readdirSync, readFileSync } from 'node:fs'
 import { extname, join, relative } from 'node:path'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -71,9 +71,11 @@ function parseArgs(argv) {
 function loadGitignore(root) {
   const p = join(root, '.gitignore')
   if (!existsSync(p)) return []
-  return readFileSync(p, 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#')).map((l) =>
-    l.replace(/\/$/, '')
-  )
+  // Root-anchored entries lose their leading `/`; keep the trailing `/` so
+  // excluded() can still treat directory-only patterns correctly.
+  return readFileSync(p, 'utf8').split('\n').map((l) => l.trim()).filter((l) =>
+    l && !l.startsWith('#') && !l.startsWith('!')
+  ).map((l) => l.replace(/^\//, ''))
 }
 
 function globToRegExp(pat) {
@@ -120,7 +122,7 @@ function walk(root, o, gitignore) {
       const rel = relative(root, full).replace(/\\/g, '/')
       let st
       try {
-        st = statSync(full)
+        st = lstatSync(full)
       } catch {
         continue
       }
@@ -397,7 +399,7 @@ function hasPyFiles(root, o, gitignore) {
       const rel = relative(root, full).replace(/\\/g, '/')
       let st
       try {
-        st = statSync(full)
+        st = lstatSync(full)
       } catch {
         continue
       }
@@ -482,7 +484,7 @@ function scanInfra(root, o, gitignore, allImports, routes) {
       const rel = relative(root, full).replace(/\\/g, '/')
       let st
       try {
-        st = statSync(full)
+        st = lstatSync(full)
       } catch {
         continue
       }

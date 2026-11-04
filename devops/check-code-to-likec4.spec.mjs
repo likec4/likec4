@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -14,6 +14,12 @@ const run = (script, args) =>
     cwd: repoRoot,
     encoding: 'utf8',
     stdio: 'pipe',
+  })
+
+const runFail = (script, args) =>
+  spawnSync(process.execPath, [path.join(skillDir, 'scripts', script), ...args], {
+    cwd: repoRoot,
+    encoding: 'utf8',
   })
 
 afterEach(() => {
@@ -56,5 +62,102 @@ void describe('code-to-likec4 skill', () => {
     assert.match(model, /component 'app'/)
     assert.match(model, /demo\.src\.app -> demo\.src\.store/)
     assert.match(views, /view of_demo of demo/)
+  })
+
+  void it('dedupes colliding file FQNs before wiring imports', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    const ir = path.join(root, 'ir.json')
+    const labeled = path.join(root, 'ir.labeled.json')
+    const out = path.join(root, 'generated')
+
+    writeFileSync(
+      ir,
+      JSON.stringify({
+        elements: [
+          { file: 'src/users/service.ts', lang: 'ts', title: 'service', symbol: null, imports: [], calls: [] },
+          { file: 'src/orders/service.ts', lang: 'ts', title: 'service', symbol: null, imports: [], calls: [] },
+          {
+            file: 'src/app.ts',
+            lang: 'ts',
+            title: 'app',
+            symbol: null,
+            imports: [],
+            calls: [],
+            _rawImports: ['./orders/service'],
+          },
+        ],
+      }),
+    )
+
+    run('auto-label.mjs', ['--in', ir, '--out', labeled, '--system', 'demo'])
+    run('emit.mjs', ['--in', labeled, '--out', out, '--system', 'demo'])
+
+    const model = readFileSync(path.join(out, 'model.c4'), 'utf8')
+    assert.match(model, /service_2 = component 'service'/)
+    assert.match(model, /demo\.src\.app -> demo\.src\.service_2/)
+    assert.doesNotMatch(model, /demo\.src\.app -> demo\.src\.service\n/)
+  })
+
+  void it('wires Python dotted imports to their module files', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    const ir = path.join(root, 'ir.json')
+    const labeled = path.join(root, 'ir.labeled.json')
+    const out = path.join(root, 'generated')
+
+    writeFileSync(
+      ir,
+      JSON.stringify({
+        elements: [
+          {
+            file: 'pkg/db.py',
+            lang: 'py',
+            title: 'db',
+            symbol: null,
+            imports: [],
+            calls: [],
+            _module: 'pkg.db',
+          },
+          {
+            file: 'pkg/app.py',
+            lang: 'py',
+            title: 'app',
+            symbol: null,
+            imports: [],
+            calls: [],
+            _module: 'pkg.app',
+            _rawImports: ['pkg.db'],
+          },
+        ],
+      }),
+    )
+
+    run('auto-label.mjs', ['--in', ir, '--out', labeled, '--system', 'demo'])
+    run('emit.mjs', ['--in', labeled, '--out', out, '--system', 'demo'])
+
+    const model = readFileSync(path.join(out, 'model.c4'), 'utf8')
+    assert.match(model, /demo\.pkg\.app -> demo\.pkg\.db/)
+  })
+
+  void it('fails closed on duplicate explicit FQNs', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    const ir = path.join(root, 'ir.json')
+    const out = path.join(root, 'generated')
+
+    writeFileSync(
+      ir,
+      JSON.stringify({
+        elements: [
+          { fqn: 'demo.a.one', kind: 'component', title: 'one', file: '', imports: [], calls: [] },
+          { fqn: 'demo.a.one', kind: 'component', title: 'two', file: '', imports: [], calls: [] },
+        ],
+      }),
+    )
+
+    const result = runFail('emit.mjs', ['--in', ir, '--out', out, '--system', 'demo'])
+    assert.equal(result.status, 4)
+    assert.match(result.stderr, /duplicate FQN: demo\.a\.one/)
   })
 })

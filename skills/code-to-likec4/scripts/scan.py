@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """scan.py — python3 stdlib only. Walks .py files, uses ast, resolves relative imports, prints JSON."""
+from __future__ import annotations
+
 import argparse
 import ast
 import fnmatch

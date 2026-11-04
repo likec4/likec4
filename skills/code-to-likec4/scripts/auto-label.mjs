@@ -45,25 +45,27 @@ const fileLeaf = (f) => sanitize(String(f || '').split('/').pop().split('.')[0])
 const autoFqn = (sys, f, symbol) =>
   `${sanitize(sys)}.${areaOf(f)}.${fileLeaf(f)}${symbol ? `.${sanitize(symbol)}` : ''}`
 
+const MODULE_EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py']
+
+// Extensionless imports, explicit ESM extensions, and NodeNext-style `.js`
+// specifiers that point at `.ts` sources all need the same candidate search.
+function resolveModule(base, exists) {
+  const stem = base.replace(/\.(m|c)?jsx?$/, '')
+  const candidates = [
+    base,
+    ...MODULE_EXTS.map((ext) => `${stem}${ext}`),
+    ...MODULE_EXTS.map((ext) => `${base}/index${ext}`),
+  ]
+  for (const cand of candidates) if (exists(cand)) return cand
+  return null
+}
+
 // NOTE: mirrors emit.mjs default FQN assignment (structural leaves) so wired
 // targets resolve to what emit declares. If emit defaults change, update here.
 function resolveRel(fromFile, spec, exists) {
   if (!spec.startsWith('.')) return null
   const base = normalize(join(dirname(fromFile), spec)).replace(/\\/g, '/')
-  for (
-    const cand of [
-      base,
-      `${base}.py`,
-      `${base}.js`,
-      `${base}.ts`,
-      `${base}/index.py`,
-      `${base}/index.js`,
-      `${base}/index.ts`,
-    ]
-  ) {
-    if (exists(cand)) return cand
-  }
-  return null
+  return resolveModule(base, exists)
 }
 
 const args = parseArgs(process.argv.slice(2))
@@ -101,9 +103,28 @@ function realTargets(file, seen = new Set()) {
 }
 
 const fq = new Map()
-for (const e of elements) fq.set(e, e.fqn || autoFqn(args.system, e.file, e.symbol))
+const used = new Set()
+for (const e of elements) {
+  if (e.symbol) continue
+  const base = e.fqn || autoFqn(args.system, e.file, null)
+  let uniq = base, n = 2
+  while (used.has(uniq)) uniq = `${base}_${n++}`
+  used.add(uniq)
+  e.fqn = uniq
+  fq.set(e, uniq)
+}
 const fileFqn = new Map()
 for (const e of elements) if (!e.symbol && !fileFqn.has(e.file)) fileFqn.set(e.file, fq.get(e))
+// Symbol FQNs mirror emit.mjs nesting under the (possibly deduped) file parent.
+for (const e of elements) {
+  if (!e.symbol) continue
+  const parentFqn = fileFqn.get(e.parent || e.file)
+  fq.set(e, e.fqn || (parentFqn ? `${parentFqn}.${sanitize(e.symbol)}` : autoFqn(args.system, e.file, e.symbol)))
+}
+
+// Python scan records absolute dotted module names; map them back to files.
+const pyModules = new Map()
+for (const e of elements) if (!e.symbol && e.lang === 'py' && e._module) pyModules.set(e._module, e.file)
 
 for (const e of elements) {
   if (!e.title) e.title = pretty(e.symbol || fileLeaf(e.file))
@@ -118,19 +139,14 @@ for (const e of elements) {
     }
   }
   for (const spec of e._rawImports || []) {
-    const hit = resolveRel(e.file, spec, (c) => fileFqn.has(c))
+    const hit = e.lang === 'py'
+      ? pyModules.get(spec) ?? null
+      : resolveRel(e.file, spec, (c) => fileFqn.has(c))
     if (hit) wire(hit)
   }
   for (const a of e.aliasImports || []) {
-    const mod = a.to
-    for (
-      const cand of [`${mod}.py`, `${mod}.js`, `${mod}.ts`, `${mod}/index.py`, `${mod}/index.js`, `${mod}/index.ts`]
-    ) {
-      if (fileFqn.has(cand)) {
-        wire(cand)
-        break
-      }
-    }
+    const hit = resolveModule(a.to, (c) => fileFqn.has(c))
+    if (hit) wire(hit)
   }
   delete e._module
   delete e._rawImports

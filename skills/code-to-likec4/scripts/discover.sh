@@ -31,7 +31,7 @@ case "$cmd" in
         *) REST+=("$1"); shift;;
       esac
     done
-    node "$SKILL/scripts/emit.mjs" --in "$IN" --out "$OUT" --system "$SYSTEM" --check "${REST[@]}"
+    node "$SKILL/scripts/emit.mjs" --in "$IN" --out "$OUT" --system "$SYSTEM" --check ${REST[@]+"${REST[@]}"}
     if command -v likec4 >/dev/null 2>&1; then
       LIKEC4=(likec4)
     elif command -v npx >/dev/null 2>&1; then
@@ -66,9 +66,9 @@ case "$cmd" in
     TMP_IR="$(mktemp /tmp/discover-ir.XXXXXX.json)"
     TMP_LABELED="$(mktemp /tmp/discover-labeled.XXXXXX.json)"
     trap 'rm -f "$TMP_IR" "$TMP_LABELED"' EXIT
-    node "$SKILL/scripts/scan.mjs" --root "$ROOT" --out "$TMP_IR" "${SCAN_GRAN[@]}" "${REST[@]}"
-    node "$SKILL/scripts/auto-label.mjs" --in "$TMP_IR" --out "$TMP_LABELED" --system "$SYSTEM" "${LABEL_GRAN[@]}"
-    "$0" emit --in "$TMP_LABELED" --out "$OUT" --system "$SYSTEM" "${EMIT_GRAN[@]}"
+    node "$SKILL/scripts/scan.mjs" --root "$ROOT" --out "$TMP_IR" ${SCAN_GRAN[@]+"${SCAN_GRAN[@]}"} ${REST[@]+"${REST[@]}"}
+    node "$SKILL/scripts/auto-label.mjs" --in "$TMP_IR" --out "$TMP_LABELED" --system "$SYSTEM" ${LABEL_GRAN[@]+"${LABEL_GRAN[@]}"}
+    "$0" emit --in "$TMP_LABELED" --out "$OUT" --system "$SYSTEM" ${EMIT_GRAN[@]+"${EMIT_GRAN[@]}"}
     ;;
   *)
     echo "unknown command: $cmd (try: scan, emit, quick)" >&2; exit 2;;
