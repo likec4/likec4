@@ -106,7 +106,7 @@ async function loadOllama(): Promise<AIOptions<any>> {
   }
 }
 
-const minimaxDefaultModel = 'MiniMax-M3' as const
+const minimaxDefaultModel = 'MiniMax-M3.1-Flash' as const
 const minimaxBaseURLs = {
   global_en: 'https://api.minimax.io/v1',
   cn_zh: 'https://api.minimaxi.com/v1',
@@ -129,11 +129,11 @@ async function loadMiniMax(): Promise<AIOptions> {
       k.green(baseURL),
   )
   await ensurePackage('@tanstack/ai-openai')
-  const { createOpenaiChat } = await import('@tanstack/ai-openai')
+  const { createOpenaiChatCompletions } = await import('@tanstack/ai-openai')
   const apiKey = env['MINIMAX_API_KEY'] as string
   const model = chooseModel('MINIMAX_CHAT_MODEL', minimaxDefaultModel)
   return {
-    adapter: createOpenaiChat(
+    adapter: createOpenaiChatCompletions(
       model as never,
       apiKey,
       { baseURL },
