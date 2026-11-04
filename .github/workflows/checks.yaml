@@ -28,6 +28,9 @@ jobs:
       - name: 🤖 agent instructions
         run: pnpm check:agent-instructions
 
+      - name: 🧩 skills
+        run: pnpm check:skills
+
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 

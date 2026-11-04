@@ -14,8 +14,8 @@ LikeC4 provides two complementary tools for AI-powered development: **Agent Skil
 
 ## Agent Skills
 
-Agent skills are DSL references that AI coding assistants load automatically when editing `.c4`/`.likec4` files.
-They teach agents correct LikeC4 syntax, patterns, and validation workflows — so they can write DSL code without hallucinating.
+Agent skills teach AI coding assistants LikeC4 syntax, patterns, and validation workflows — so they can work with LikeC4 without hallucinating.
+They load automatically when relevant, such as when editing `.c4`/`.likec4` files or generating a model from an existing codebase.
 
 ### Install into any project
 
@@ -28,6 +28,7 @@ This uses the <a href="https://www.skillsdk.dev/" target="_blank">Agent Skills D
 | Skill | Description |
 |-------|-------------|
 | `likec4-dsl` | Complete DSL reference — specification, model, views, deployment, predicates, examples |
+| `code-to-likec4` | Scan a TypeScript/JavaScript or Python codebase and generate a validated LikeC4 model |
 
 Works with Claude Code, Cursor, Windsurf, and other agents that support the protocol.
 
