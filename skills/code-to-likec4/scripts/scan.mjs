@@ -80,13 +80,49 @@ function loadGitignore(root) {
   ).map((l) => l.replace(/^\//, ''))
 }
 
-/** Convert a glob pattern (supporting `*` and `**`) into a RegExp. */
+/** Convert a glob pattern (supporting `*`, `**`, `?`, and `[...]`) into a RegExp. */
 function globToRegExp(pat) {
-  const esc = (s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
-  const seg = (s) => s.split('*').map(esc).join('[^/]*')
-  // `**/` means zero or more directories; a bare `**` may cross separators.
-  const body = pat.split('**/').map((part) => part.split('**').map(seg).join('.*')).join('(?:.*/)?')
-  return new RegExp(`^${body}$`)
+  let out = ''
+  for (let i = 0; i < pat.length; i++) {
+    const c = pat[i]
+    if (c === '*') {
+      if (pat[i + 1] === '*') {
+        if (pat[i + 2] === '/') {
+          out += '(?:.*/)?'
+          i += 2
+        } else {
+          out += '.*'
+          i++
+        }
+      } else {
+        out += '[^/]*'
+      }
+    } else if (c === '?') {
+      out += '[^/]'
+    } else if (c === '[') {
+      let j = i + 1
+      if (pat[j] === '!' || pat[j] === '^') j++
+      if (pat[j] === ']') j++
+      while (j < pat.length && pat[j] !== ']') j++
+      if (j < pat.length) {
+        let cls = pat.slice(i + 1, j)
+        let neg = ''
+        if (cls[0] === '!' || cls[0] === '^') {
+          neg = '^'
+          cls = cls.slice(1)
+        }
+        out += `[${neg}${cls.replace(/\\/g, '\\\\')}]`
+        i = j
+      } else {
+        out += '\\['
+      }
+    } else if (/[.+^${}()|\\]/.test(c)) {
+      out += `\\${c}`
+    } else {
+      out += c
+    }
+  }
+  return new RegExp(`^${out}$`)
 }
 
 /** Check whether a relative path is ignored by directory defaults, gitignore, or extra excludes. */

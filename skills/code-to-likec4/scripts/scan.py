@@ -36,7 +36,7 @@ def load_gitignore(root: str):
         for line in f:
             line = line.strip()
             if line and not line.startswith("#") and not line.startswith("!"):
-                line = line[1:] if line.startswith("/") else line
+                line = line.removeprefix("/")
                 if line:
                     out.append(line)
     return out
@@ -74,17 +74,62 @@ def ignore_match(rel: str, is_dir: bool, patterns) -> bool:
     return False
 
 
+def glob_to_regex(pat: str) -> re.Pattern:
+    """Convert a glob pattern supporting *, **, ?, and [...] into a regex pattern."""
+    out = []
+    i = 0
+    n = len(pat)
+    while i < n:
+        c = pat[i]
+        if c == "*":
+            if i + 1 < n and pat[i + 1] == "*":
+                if i + 2 < n and pat[i + 2] == "/":
+                    out.append("(?:.*/)?")
+                    i += 3
+                    continue
+                else:
+                    out.append(".*")
+                    i += 2
+                    continue
+            else:
+                out.append("[^/]*")
+                i += 1
+                continue
+        elif c == "?":
+            out.append("[^/]")
+            i += 1
+            continue
+        elif c == "[":
+            j = i + 1
+            if j < n and pat[j] in ("!", "^"):
+                j += 1
+            if j < n and pat[j] == "]":
+                j += 1
+            while j < n and pat[j] != "]":
+                j += 1
+            if j < n:
+                cls = pat[i + 1:j]
+                neg = ""
+                if cls and cls[0] in ("!", "^"):
+                    neg = "^"
+                    cls = cls[1:]
+                out.append(f"[{neg}{cls}]")
+                i = j + 1
+                continue
+            else:
+                out.append(r"\[")
+                i += 1
+                continue
+        else:
+            out.append(re.escape(c))
+            i += 1
+    return re.compile(f"^{''.join(out)}$")
+
+
 def include_match(rel: str, patterns) -> bool:
     """Check whether a relative path or basename matches any include glob pattern."""
-    def seg(value: str) -> str:
-        return "[^/]*".join(re.escape(part) for part in value.split("*"))
-
     for pattern in patterns:
-        body = "(?:.*/)?".join(
-            ".*".join(seg(part) for part in chunk.split("**"))
-            for chunk in pattern.split("**/")
-        )
-        rx = re.compile(f"^{body}$")
+        rx = glob_to_regex(pattern)
         if rx.fullmatch(rel) or rx.fullmatch(os.path.basename(rel)):
             return True
     return False
@@ -150,11 +195,15 @@ ROUTE_METHODS = {"get", "post", "put", "delete", "patch", "head", "options"}
 def route_of(node) -> str | None:
     """Return the route path if a function is a FastAPI/Flask-style route handler."""
     for dec in getattr(node, "decorator_list", []):
-        if isinstance(dec, ast.Call) and isinstance(dec.func, ast.Attribute):
-            if dec.func.attr in ROUTE_METHODS and dec.args:
-                first = dec.args[0]
-                if isinstance(first, ast.Constant) and isinstance(first.value, str):
-                    return f"{dec.func.attr.upper()} {first.value}"
+        if (
+            isinstance(dec, ast.Call)
+            and isinstance(dec.func, ast.Attribute)
+            and dec.func.attr in ROUTE_METHODS
+            and dec.args
+            and isinstance(dec.args[0], ast.Constant)
+            and isinstance(dec.args[0].value, str)
+        ):
+            return f"{dec.func.attr.upper()} {dec.args[0].value}"
     return None
 
 
@@ -243,7 +292,7 @@ def scan_file(root: str, full: str, no_symbols: bool = False, symbol_kinds=None)
     records = [{
         "file": rel, "lang": "py", "module": mod,
         "title": base, "symbol": None, "line": 1, "parent": None,
-        "rawImports": sorted(set(r for r in raw_imports if r)),
+        "rawImports": sorted({r for r in raw_imports if r}),
         "extends": [], "calls": [], "route": None,
     }]
     for name, kind, lineno, ext, calls, route in symbols:
