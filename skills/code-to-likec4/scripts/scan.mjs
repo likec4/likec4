@@ -197,7 +197,7 @@ function extractTs(src, file = '') {
   const at = (index) => lineOf(offs, index)
   const imports = []
   const re =
-    /(?:import\s+(?:[^'"]*?\sfrom\s+)?['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\)|export\s+(?!type\b)(?:\*(?:\s+as\s+[\w$]+)?|\{([\s\S]*?)\})\s*from\s+['"]([^'"]+)['"])/g
+    /(?:import\s+(?:[^'"]*?\sfrom\s+)?['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\)|export\s+(?!type\b)(?:\*(?:\s+as\s+[\w$]+)?|\{([^}]*)\})\s*from\s+['"]([^'"]+)['"])/g
   let m
   while ((m = re.exec(src))) {
     if (m[1]) imports.push(m[1])
@@ -434,7 +434,7 @@ for (const full of files) {
   // Barrel files re-export other modules (e.g. `export * from`, `export { ... } from`, `export * as ... from`).
   // Flag them so labeling can drop the shim and wire imports straight to the implementation.
   const strippedCode = srcText.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '').trim()
-  const barrelRe = /export\s+(?:type\s+)?(?:\*(?:\s+as\s+[\w$]+)?|\{([\s\S]*?)\})\s*from\s+['"]([^'"]+)['"];?/g
+  const barrelRe = /export\s+(?:type\s+)?(?:\*(?:\s+as\s+[\w$]+)?|\{([^}]*)\})\s*from\s+['"]([^'"]+)['"];?/g
   const targets = []
   const remaining = strippedCode.replace(barrelRe, (match, braceContent, spec) => {
     if (match.startsWith('export type')) return ''
@@ -549,6 +549,7 @@ if (!hasPyFiles(args.root, args, gitignore)) {
       const parsed = JSON.parse(r.stdout)
       const list = Array.isArray(parsed) ? parsed : parsed.elements ?? []
       for (const e of list) {
+        if (excluded(e.file || '', DEFAULT_IGNORE_DIRS, gitignore, args.exclude)) continue
         if (args.include.length) {
           const rel = e.file || ''
           const base = rel.split('/').pop()

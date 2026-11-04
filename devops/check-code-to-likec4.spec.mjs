@@ -327,4 +327,45 @@ void describe('code-to-likec4 skill', () => {
     const budgetFail = runFail('scan.mjs', ['--root', root, '--out', ir, '--max-files', '1'])
     assert.equal(budgetFail.status, 3)
   })
+  void it('does not swallow imports following local export lists', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, 'src'), { recursive: true })
+    writeFileSync(path.join(root, 'src/x.ts'), 'export const x = 1\n')
+    writeFileSync(path.join(root, 'src/y.ts'), 'export const y = 2\n')
+    writeFileSync(
+      path.join(root, 'src/app.ts'),
+      'export { foo }\nconst foo = 123\nimport { x } from \'./x\'\nimport { y } from \'./y\'\n',
+    )
+
+    const ir = path.join(root, 'ir.json')
+    run('scan.mjs', ['--root', root, '--out', ir])
+
+    const scanned = JSON.parse(readFileSync(ir, 'utf8'))
+    const appEl = scanned.elements.find((e) => e.file === 'src/app.ts' && !e.symbol)
+    assert.ok(appEl)
+    assert.ok(appEl._rawImports.includes('./x'))
+    assert.ok(appEl._rawImports.includes('./y'))
+  })
+
+  void it('excludes Python files located in dot-directories and excluded paths', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, '.github/scripts'), { recursive: true })
+    mkdirSync(path.join(root, 'out'), { recursive: true })
+    mkdirSync(path.join(root, 'src'), { recursive: true })
+
+    writeFileSync(path.join(root, '.github/scripts/ci.py'), 'def ci(): pass\n')
+    writeFileSync(path.join(root, 'out/bundle.py'), 'def bundle(): pass\n')
+    writeFileSync(path.join(root, 'src/app.py'), 'class App: pass\n')
+
+    const ir = path.join(root, 'ir.json')
+    run('scan.mjs', ['--root', root, '--out', ir])
+
+    const scanned = JSON.parse(readFileSync(ir, 'utf8'))
+    const files = scanned.elements.map((e) => e.file)
+    assert.ok(files.includes('src/app.py'))
+    assert.ok(!files.includes('.github/scripts/ci.py'))
+    assert.ok(!files.includes('out/bundle.py'))
+  })
 })
