@@ -8,6 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, normalize } from 'node:path'
 import { sanitize } from './emit.mjs'
 
+/** Parse CLI arguments for the labeler. */
 function parseArgs(argv) {
   const o = { in: '', out: '', system: 'cloud', keepSymbols: null }
   for (let i = 0; i < argv.length; i++) {
@@ -34,21 +35,27 @@ function parseArgs(argv) {
   return o
 }
 
+/** Turn an identifier or route into a human-readable title. */
 const pretty = (s) =>
   String(s || '').replace(/^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS) /, '')
     .replace(/[-_]/g, ' ').split(' ').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ') || 'Unnamed'
+/** Derive the area segment from the first path segment. */
 const areaOf = (f) => {
   const p = String(f || '').split('/')
   return p.length > 1 ? sanitize(p[0]) : 'app'
 }
+/** Extract the sanitized filename stem. */
 const fileLeaf = (f) => sanitize(String(f || '').split('/').pop().split('.')[0])
+/** Build the default FQN for a file or symbol. */
 const autoFqn = (sys, f, symbol) =>
   `${sanitize(sys)}.${areaOf(f)}.${fileLeaf(f)}${symbol ? `.${sanitize(symbol)}` : ''}`
 
 const MODULE_EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py']
 
-// Extensionless imports, explicit ESM extensions, and NodeNext-style `.js`
-// specifiers that point at `.ts` sources all need the same candidate search.
+/**
+ * Resolve extensionless imports, explicit ESM extensions, and NodeNext-style
+ * `.js` specifiers that point at `.ts` sources through one candidate search.
+ */
 function resolveModule(base, exists) {
   const stem = base.replace(/\.(m|c)?jsx?$/, '')
   const candidates = [
@@ -60,8 +67,10 @@ function resolveModule(base, exists) {
   return null
 }
 
-// NOTE: mirrors emit.mjs default FQN assignment (structural leaves) so wired
-// targets resolve to what emit declares. If emit defaults change, update here.
+/**
+ * Resolve a relative import to a root-relative module path. Mirrors emit.mjs
+ * default FQN assignment (structural leaves) so wired targets match.
+ */
 function resolveRel(fromFile, spec, exists) {
   if (!spec.startsWith('.')) return null
   const base = normalize(join(dirname(fromFile), spec)).replace(/\\/g, '/')
@@ -86,6 +95,7 @@ const byFile = new Map()
 for (const e of elements) if (!e.symbol && !byFile.has(e.file)) byFile.set(e.file, e)
 
 const realCache = new Map()
+/** Follow barrel re-exports until reaching real implementation files. */
 function realTargets(file, seen = new Set()) {
   if (realCache.has(file)) return realCache.get(file)
   const rec = byFile.get(file)
@@ -129,6 +139,7 @@ for (const e of elements) if (!e.symbol && e.lang === 'py' && e._module) pyModul
 for (const e of elements) {
   if (!e.title) e.title = pretty(e.symbol || fileLeaf(e.file))
   const seen = new Set((e.imports || []).map((r) => (typeof r === 'string' ? r : r.to)))
+  /** Add an import edge to every real target of `file`, avoiding duplicates. */
   const wire = (file) => {
     for (const real of realTargets(file)) {
       const to = fileFqn.get(real)
@@ -140,7 +151,8 @@ for (const e of elements) {
   }
   for (const spec of e._rawImports || []) {
     const hit = e.lang === 'py'
-      ? pyModules.get(spec) ?? null
+      // Symbol candidates (pkg.mod.Symbol) fall back to their module file.
+      ? pyModules.get(spec) ?? pyModules.get(spec.split('.').slice(0, -1).join('.')) ?? null
       : resolveRel(e.file, spec, (c) => fileFqn.has(c))
     if (hit) wire(hit)
   }

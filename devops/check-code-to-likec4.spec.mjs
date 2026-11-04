@@ -160,4 +160,125 @@ void describe('code-to-likec4 skill', () => {
     assert.equal(result.status, 4)
     assert.match(result.stderr, /duplicate FQN: demo\.a\.one/)
   })
+
+  void it('fails closed when explicit child FQN is not a direct child of its parent', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    const ir = path.join(root, 'ir.json')
+    const out = path.join(root, 'generated')
+
+    writeFileSync(
+      ir,
+      JSON.stringify({
+        elements: [
+          { fqn: 'demo.app.parent', kind: 'container', title: 'parent', file: 'src/parent.ts', imports: [], calls: [] },
+          {
+            fqn: 'demo.other.deep.child',
+            kind: 'component',
+            title: 'child',
+            file: 'src/parent.ts',
+            parent: 'demo.app.parent',
+            imports: [],
+            calls: [],
+          },
+        ],
+      }),
+    )
+
+    const result = runFail('emit.mjs', ['--in', ir, '--out', out, '--system', 'demo'])
+    assert.equal(result.status, 4)
+    assert.match(result.stderr, /must be a direct child/)
+  })
+
+  void it('resolves tsconfig aliases with baseUrl and JSONC comments and trailing commas', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, 'src'), { recursive: true })
+    writeFileSync(
+      path.join(root, 'tsconfig.json'),
+      `// compiler options with comments and trailing commas
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    /* path mapping alias */
+    "paths": {
+      "@/*": ["*"],
+    },
+  },
+  "include": [
+    "**/*.ts",
+  ],
+}
+`,
+    )
+    writeFileSync(
+      path.join(root, 'src/store.ts'),
+      `export class Store {\n  get(key: string) { return key }\n}\n`,
+    )
+    writeFileSync(
+      path.join(root, 'src/app.ts'),
+      `import { Store } from '@/store'\n\nexport class App {\n  constructor(private store: Store) {}\n}\n`,
+    )
+
+    const ir = path.join(root, 'ir.json')
+    const labeled = path.join(root, 'ir.labeled.json')
+    const out = path.join(root, 'generated')
+
+    run('scan.mjs', ['--root', root, '--out', ir])
+    run('auto-label.mjs', ['--in', ir, '--out', labeled, '--system', 'demo'])
+    run('emit.mjs', ['--in', labeled, '--out', out, '--system', 'demo'])
+
+    const model = readFileSync(path.join(out, 'model.c4'), 'utf8')
+    assert.match(model, /demo\.src\.app -> demo\.src\.store/)
+  })
+
+  void it('honors --include globs, non-default extensions, and ** excludes', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, 'src/nested'), { recursive: true })
+    mkdirSync(path.join(root, 'src/gen'), { recursive: true })
+
+    writeFileSync(path.join(root, 'src/a.ts'), 'export const a = 1\n')
+    writeFileSync(path.join(root, 'src/nested/b.ts'), 'export const b = 2\n')
+    writeFileSync(path.join(root, 'src/widget.vue'), '<template><div>widget</div></template>\n')
+    writeFileSync(path.join(root, 'src/gen/skip.ts'), 'export const skip = true\n')
+
+    const ir = path.join(root, 'ir.json')
+    run('scan.mjs', ['--root', root, '--out', ir, '--include', 'src/**/*', '--exclude', '**/gen/**'])
+
+    const scanned = JSON.parse(readFileSync(ir, 'utf8'))
+    const files = scanned.elements.map((e) => e.file)
+
+    assert.ok(files.includes('src/a.ts'))
+    assert.ok(files.includes('src/nested/b.ts'))
+    assert.ok(files.includes('src/widget.vue'))
+    assert.ok(!files.includes('src/gen/skip.ts'))
+  })
+
+  void it('resolves Python submodule imports and honors root-anchored .gitignore', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, 'pkg'), { recursive: true })
+    mkdirSync(path.join(root, 'generated'), { recursive: true })
+
+    writeFileSync(path.join(root, '.gitignore'), '/generated/\n')
+    writeFileSync(path.join(root, 'generated/x.py'), 'def generated_func(): pass\n')
+    writeFileSync(path.join(root, 'pkg/db.py'), 'class DB:\n    pass\n')
+    writeFileSync(
+      path.join(root, 'pkg/app.py'),
+      'from pkg import db\n\nclass App:\n    def __init__(self):\n        self.db = db.DB()\n',
+    )
+
+    const ir = path.join(root, 'ir.json')
+    const labeled = path.join(root, 'ir.labeled.json')
+    const out = path.join(root, 'generated_out')
+
+    run('scan.mjs', ['--root', root, '--out', ir])
+    run('auto-label.mjs', ['--in', ir, '--out', labeled, '--system', 'demo'])
+    run('emit.mjs', ['--in', labeled, '--out', out, '--system', 'demo'])
+
+    const model = readFileSync(path.join(out, 'model.c4'), 'utf8')
+    assert.match(model, /demo\.pkg\.app -> demo\.pkg\.db/)
+    assert.doesNotMatch(model, /generated/)
+  })
 })

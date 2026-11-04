@@ -35,7 +35,7 @@ case "$cmd" in
     if command -v likec4 >/dev/null 2>&1; then
       LIKEC4=(likec4)
     elif command -v npx >/dev/null 2>&1; then
-      LIKEC4=(npx -y likec4)
+      LIKEC4=(npx -y likec4@1)
     else
       echo "discover.sh: likec4 CLI not found, skipping validate (emit self-check only)" >&2
       exit 0

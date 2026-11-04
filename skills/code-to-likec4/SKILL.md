@@ -78,7 +78,7 @@ Run from the repo root:
 ### 4. Validate
 
 ```bash
-npx -y likec4 validate --no-layout --json ./generated
+npx -y likec4@1 validate --no-layout --json ./generated
 # gate: .valid == true, .stats.filteredErrors == 0
 ```
 
@@ -90,7 +90,7 @@ npx -y likec4 validate --no-layout --json ./generated
 ### 5. Preview / serve
 
 ```bash
-npx -y likec4 start ./generated
+npx -y likec4@1 start ./generated
 # or: likec4 preview-view via MCP for file-less iteration
 ```
 

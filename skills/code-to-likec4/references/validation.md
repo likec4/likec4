@@ -3,7 +3,7 @@
 Generated models must pass the LikeC4 validator:
 
 ```bash
-npx -y likec4 validate --no-layout --json ./generated
+npx -y likec4@1 validate --no-layout --json ./generated
 # gate: .valid == true and .stats.filteredErrors == 0
 ```
 

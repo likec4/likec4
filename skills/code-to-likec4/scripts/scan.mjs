@@ -3,8 +3,7 @@
 // Usage: node scan.mjs --root <dir> --out <file|-> [--max-files N] [--include-tests] [--include G ...] [--exclude G ...]
 import { spawnSync } from 'node:child_process'
 import { existsSync, lstatSync, readdirSync, readFileSync } from 'node:fs'
-import { extname, join, relative } from 'node:path'
-import { dirname } from 'node:path'
+import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -23,6 +22,7 @@ const DEFAULT_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'])
 const TEST_RE =
   /(\.test\.|\.spec\.|__tests__|(^|\/)tests?\/|(^|\/)test_[^/]*\.(py|js|ts|mjs|cjs)$|_test\.(py|js|ts)$|_tests\.(py|js|ts)$)/
 
+/** Print CLI usage information for the scanner. */
 function help() {
   console.log(`scan.mjs — scan TS/JS (+ Python via scan.py) to IR JSON
 Usage: node scan.mjs --root <dir> --out <file|-> [options]
@@ -41,6 +41,7 @@ Options:
   -h, --help          show this help`)
 }
 
+/** Parse CLI arguments for the scanner. */
 function parseArgs(argv) {
   const o = {
     root: '.',
@@ -68,6 +69,7 @@ function parseArgs(argv) {
   return o
 }
 
+/** Read root-level .gitignore patterns as relative ignore rules. */
 function loadGitignore(root) {
   const p = join(root, '.gitignore')
   if (!existsSync(p)) return []
@@ -78,10 +80,16 @@ function loadGitignore(root) {
   ).map((l) => l.replace(/^\//, ''))
 }
 
+/** Convert a glob pattern (supporting `*` and `**`) into a RegExp. */
 function globToRegExp(pat) {
-  return new RegExp(`^${pat.split('*').map((s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('[^/]*')}$`)
+  const esc = (s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+  const seg = (s) => s.split('*').map(esc).join('[^/]*')
+  // `**/` means zero or more directories; a bare `**` may cross separators.
+  const body = pat.split('**/').map((part) => part.split('**').map(seg).join('.*')).join('(?:.*/)?')
+  return new RegExp(`^${body}$`)
 }
 
+/** Check whether a relative path is ignored by directory defaults, gitignore, or extra excludes. */
 function excluded(rel, ignoreDirs, gitignore, extra, isDir = false) {
   // rel uses forward slashes (normalized by callers). Segment semantics
   // (gitignore-like): `data/` matches only a directory segment, never
@@ -106,6 +114,7 @@ function excluded(rel, ignoreDirs, gitignore, extra, isDir = false) {
   return false
 }
 
+/** Recursively collect matching source files up to the file budget limit. */
 function walk(root, o, gitignore) {
   const files = []
   const stack = [root]
@@ -133,28 +142,35 @@ function walk(root, o, gitignore) {
         if (excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude)) continue
         if (!o.includeTests && TEST_RE.test(rel)) continue
         const ext = extname(e)
-        const useExts = o.include.length ? null : DEFAULT_EXTS
-        if (useExts && (ext === '.py' || !useExts.has(ext))) {
-          if (ext === '.py') continue // handled by scan.py
-          else continue
-        }
-        if (o.include.length && !o.include.some((g) => rel.includes(g.replaceAll('*', '')))) continue
-        if (DEFAULT_EXTS.has(ext)) files.push(full)
+        if (ext === '.py') continue // handled by scan.py
+        if (o.include.length) {
+          // Explicit includes replace the default extension list; match both the
+          // relative path and the basename so `*.vue` and `src/**/*.vue` work.
+          const matched = o.include.some((g) => {
+            const rx = globToRegExp(g)
+            return rx.test(rel) || rx.test(e)
+          })
+          if (!matched) continue
+        } else if (!DEFAULT_EXTS.has(ext)) continue
+        files.push(full)
       }
     }
   }
   return files.slice(0, o.maxFiles + 1)
 }
 
+/** Convert a full file path to a root-relative extensionless module identifier. */
 function toModuleName(root, full) {
   return relative(root, full).replace(/\\/g, '/').replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
 }
 
+/** Compute character offsets for the start of each line in a source string. */
 function lineOffsets(src) {
   const offs = [0]
   for (let i = src.indexOf('\n'); i !== -1; i = src.indexOf('\n', i + 1)) offs.push(i + 1)
   return offs
 }
+/** Map a character offset index to a 0-indexed line number via binary search. */
 function lineOf(offs, index) {
   let lo = 0
   let hi = offs.length
@@ -169,11 +185,13 @@ function lineOf(offs, index) {
   return Math.max(0, lo - 1)
 }
 
+/** Derive an HTTP route path from a file path convention (e.g. Next.js/Vercel). */
 function fileRoute(file) {
   const p = String(file || '').replace(/\.(tsx?|jsx?|mjs|cjs)$/, '').replace(/(^|\/)index$/, '')
   return `/${p.replace(/^\/+/, '')}` || '/'
 }
 
+/** Extract imports and symbol declarations (classes, functions, routes) from TS/JS source. */
 function extractTs(src, file = '') {
   const offs = lineOffsets(src)
   const at = (index) => lineOf(offs, index)
@@ -251,14 +269,72 @@ function extractTs(src, file = '') {
   return { imports, symbols }
 }
 
-// tsconfig paths: map alias imports (e.g. @app/*) to module paths so they are not
-// silently dropped. First match wins; JSON with comments falls back to none.
+/**
+ * Strip single-line and multi-line comments from JSONC text without treating
+ * block comment delimiters (`/*` and `*\/`) inside string literals as comment markers.
+ */
+function stripJsonComments(text) {
+  let out = ''
+  let inStr = false
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i]
+    const n = text[i + 1]
+    if (inStr) {
+      out += c
+      if (c === '\\') out += text[++i] ?? ''
+      else if (c === '"') inStr = false
+    } else if (c === '"') {
+      inStr = true
+      out += c
+    } else if (c === '/' && n === '/') {
+      while (i < text.length && text[i] !== '\n') i++
+      out += '\n'
+    } else if (c === '/' && n === '*') {
+      i += 2
+      while (i < text.length && !(text[i] === '*' && text[i + 1] === '/')) i++
+      i++
+    } else out += c
+  }
+  return out
+}
+
+/** Strip trailing commas from object and array literals in JSONC text. */
+function stripTrailingCommas(text) {
+  let out = ''
+  let inStr = false
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i]
+    if (inStr) {
+      out += c
+      if (c === '\\') out += text[++i] ?? ''
+      else if (c === '"') inStr = false
+      continue
+    }
+    if (c === '"') {
+      inStr = true
+      out += c
+      continue
+    }
+    if (c === ',') {
+      let j = i + 1
+      while (j < text.length && /\s/.test(text[j])) j++
+      if (text[j] === '}' || text[j] === ']') continue
+    }
+    out += c
+  }
+  return out
+}
+
+/**
+ * Load baseUrl and path alias mappings from tsconfig.json.
+ * Supports JSONC comments and trailing commas. Returns empty config on parse error.
+ */
 function loadTsconfig(root) {
   const p = join(root, 'tsconfig.json')
   if (!existsSync(p)) return { baseUrl: '', paths: [] }
   try {
-    const raw = readFileSync(p, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').split('\n')
-      .filter((l) => !/^\s*\/\//.test(l)).join('\n')
+    const source = readFileSync(p, 'utf8').replace(/^\uFEFF/, '')
+    const raw = stripTrailingCommas(stripJsonComments(source))
     const cfg = JSON.parse(raw).compilerOptions || {}
     const paths = Object.entries(cfg.paths || {}).map(([k, v]) => ({
       prefix: k.replace(/\/\*$/, '/').replace(/\*$/, ''),
@@ -271,18 +347,24 @@ function loadTsconfig(root) {
   }
 }
 
-function resolveAlias(spec, tsconfig) {
+/**
+ * Map a tsconfig `paths` alias to a root-relative, extensionless module path.
+ * `paths` targets are relative to `baseUrl` (or the tsconfig location when unset).
+ */
+function resolveAlias(spec, tsconfig, root) {
   for (const { prefix, target } of tsconfig.paths) {
     if (spec.startsWith(prefix)) {
       const rest = spec.slice(prefix.length).replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
-      return `${target}${rest}`.replace(/\/index$/, '')
+      const prefixed = `${tsconfig.baseUrl ? `${tsconfig.baseUrl}/` : ''}${target}${rest}`
+      return relative(root, resolve(root, prefixed)).replace(/\\/g, '/').replace(/\/index$/, '')
     }
   }
   return null
 }
 
-// baseUrl bare imports (e.g. `from 'auth/auth.module'` with baseUrl ./src):
-// resolved only when the target file exists on disk, so npm packages never match.
+/**
+ * Resolve a bare import specifier against tsconfig baseUrl when the target exists on disk.
+ */
 function resolveBaseUrl(spec, root, baseUrl) {
   if (!baseUrl || spec.startsWith('.') || spec.startsWith('/')) return null
   const mod = spec.replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
@@ -297,6 +379,7 @@ function resolveBaseUrl(spec, root, baseUrl) {
   return null
 }
 
+/** Extract the extensionless file base name. */
 function baseName(p) {
   const b = p.split('/').pop()
   return b.replace(/\.(tsx?|jsx?|mjs|cjs)$/, '')
@@ -333,7 +416,7 @@ for (const full of files) {
   const aliasImports = []
   for (const spec of imports) {
     if (spec.startsWith('.')) continue
-    const resolved = resolveAlias(spec, tsconfig) || resolveBaseUrl(spec, args.root, tsconfig.baseUrl)
+    const resolved = resolveAlias(spec, tsconfig, args.root) || resolveBaseUrl(spec, args.root, tsconfig.baseUrl)
     if (resolved) aliasImports.push({ from: spec, to: resolved })
   }
   // Barrel files (only `export * from ...`) re-export a real module; flag them so
@@ -383,7 +466,7 @@ for (const full of files) {
   }
 }
 
-// Fast pre-check: skip the scan.py spawn entirely when the repo has no Python files.
+/** Quickly check whether the repository contains any non-ignored Python files. */
 function hasPyFiles(root, o, gitignore) {
   const stack = [root]
   while (stack.length) {
@@ -458,6 +541,7 @@ const LIB_SIGNALS = [
   ['typeorm', 'database', 'SQL Database', 'TypeORM'],
   ['prisma', 'database', 'SQL Database', 'Prisma'],
 ]
+/** Detect infrastructure containers, external actors, and client-lib proposals from repo manifests. */
 function scanInfra(root, o, gitignore, allImports, routes) {
   const proposals = []
   const seenTitles = new Set()
@@ -468,8 +552,9 @@ function scanInfra(root, o, gitignore, allImports, routes) {
     }
   }
   // 1. k8s manifests + compose + prometheus configs via line-regex.
-  const yamlRoots = ['manifests', 'k8s', 'deploy', 'infra', 'monitoring/prometheus', 'docker']
-  const stack = [root, ...yamlRoots.map((d) => join(root, d))]
+  // Start at the repo root only: seeded subdirectories bypass --exclude and
+  // .gitignore and would count each file twice.
+  const stack = [root]
   const yamlFiles = []
   while (stack.length) {
     const dir = stack.pop()

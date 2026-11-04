@@ -16,6 +16,7 @@ TEST_PATH_RES = (r"(^|/)tests?/",)
 
 
 def is_test(path: str) -> bool:
+    """Return True if the file path matches test naming conventions."""
     p = path.replace(os.sep, "/")
     if any(t in p for t in TEST_PATH_PARTS):
         return True
@@ -26,6 +27,7 @@ def is_test(path: str) -> bool:
 
 
 def load_gitignore(root: str):
+    """Read root-anchored patterns as relative ones (same as scan.mjs)."""
     p = os.path.join(root, ".gitignore")
     if not os.path.exists(p):
         return []
@@ -34,7 +36,9 @@ def load_gitignore(root: str):
         for line in f:
             line = line.strip()
             if line and not line.startswith("#") and not line.startswith("!"):
-                out.append(line)
+                line = line[1:] if line.startswith("/") else line
+                if line:
+                    out.append(line)
     return out
 
 
@@ -71,6 +75,7 @@ def ignore_match(rel: str, is_dir: bool, patterns) -> bool:
 
 
 def iter_py(root: str, gitignore, include_tests: bool, max_files: int):
+    """Walk root for .py files respecting gitignore, test exclusions, and file budget."""
     files = []
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and not ignore_match(
@@ -91,6 +96,7 @@ def iter_py(root: str, gitignore, include_tests: bool, max_files: int):
 
 
 def module_of(root: str, full: str) -> str:
+    """Derive dotted Python module name from file path relative to root."""
     rel = os.path.relpath(full, root).replace(os.sep, "/")
     if rel.endswith("__init__.py"):
         rel = os.path.dirname(rel)
@@ -172,8 +178,8 @@ def scan_file(root: str, full: str, no_symbols: bool = False, symbol_kinds=None)
         with open(full, encoding="utf-8", errors="replace") as f:
             src = f.read()
         tree = ast.parse(src, filename=rel)
-    except SyntaxError as e:
-        print(f"scan.py: syntax error in {rel}: {e}", file=sys.stderr)
+    except (SyntaxError, ValueError, RecursionError) as e:
+        print(f"scan.py: cannot parse {rel}: {e}", file=sys.stderr)
         return None
     mod = module_of(root, full)
     is_pkg = os.path.basename(full) == "__init__.py"
@@ -199,9 +205,17 @@ def scan_file(root: str, full: str, no_symbols: bool = False, symbol_kinds=None)
                 raw_imports.append(a.name)
         elif isinstance(node, ast.ImportFrom):
             if node.level and node.level > 0:
-                raw_imports.append(resolve_relative(mod, is_pkg, node.level, node.module))
+                base_mod = resolve_relative(mod, is_pkg, node.level, node.module)
             elif node.module:
-                raw_imports.append(node.module)
+                base_mod = node.module
+            else:
+                continue
+            raw_imports.append(base_mod)
+            # `from pkg import sub` targets pkg/sub.py, not pkg/__init__.py;
+            # record each name so auto-label can map it to a module file.
+            for a in node.names:
+                if a.name != "*":
+                    raw_imports.append(f"{base_mod}.{a.name}" if base_mod else a.name)
     records = [{
         "file": rel, "lang": "py", "module": mod,
         "title": base, "symbol": None, "line": 1, "parent": None,
@@ -221,6 +235,7 @@ def scan_file(root: str, full: str, no_symbols: bool = False, symbol_kinds=None)
 
 
 def main() -> int:
+    """CLI entrypoint for scan.py."""
     ap = argparse.ArgumentParser(description="scan.py — Python AST scanner to JSON")
     ap.add_argument("--root", default=".")
     ap.add_argument("--out", default="-")
