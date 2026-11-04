@@ -10,7 +10,7 @@ import os
 import re
 import sys
 
-IGNORE_DIRS = {"node_modules", "dist", "build", ".venv", "__pycache__", ".git", "coverage"}
+IGNORE_DIRS = {"node_modules", "dist", "build", ".venv", "__pycache__", ".git", "coverage", ".next", "out"}
 TEST_PATH_PARTS = (".test.", ".spec.", "__tests__")
 TEST_PATH_RES = (r"(^|/)tests?/",)
 
@@ -78,13 +78,19 @@ def iter_py(root: str, gitignore, include_tests: bool, max_files: int):
     """Walk root for .py files respecting gitignore, test exclusions, and file budget."""
     files = []
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
-        dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and not ignore_match(
-            os.path.relpath(os.path.join(dirpath, d), root), True, gitignore)]
+        dirnames[:] = [
+            d for d in dirnames
+            if d not in IGNORE_DIRS and not d.startswith(".")
+            and not ignore_match(os.path.relpath(os.path.join(dirpath, d), root), True, gitignore)
+        ]
         for fn in filenames:
             if not fn.endswith(".py"):
                 continue
             full = os.path.join(dirpath, fn)
             rel = os.path.relpath(full, root)
+            rel_fwd = rel.replace(os.sep, "/")
+            if any(part.startswith(".") for part in rel_fwd.split("/") if part != "."):
+                continue
             if ignore_match(rel, False, gitignore):
                 continue
             if not include_tests and is_test(rel):
