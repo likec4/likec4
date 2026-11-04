@@ -63,8 +63,8 @@ case "$cmd" in
       file) SCAN_GRAN=(--symbol-kinds route); LABEL_GRAN=(--keep-symbols route); EMIT_GRAN=(--drop-symbols);;
       *) echo "quick: --granularity must be file|full (got $GRANULARITY)" >&2; exit 2;;
     esac
-    TMP_IR="$(mktemp /tmp/discover-ir.XXXXXX.json)"
-    TMP_LABELED="$(mktemp /tmp/discover-labeled.XXXXXX.json)"
+    TMP_IR="$(mktemp "${TMPDIR:-/tmp}/discover-ir.XXXXXX")"
+    TMP_LABELED="$(mktemp "${TMPDIR:-/tmp}/discover-labeled.XXXXXX")"
     trap 'rm -f "$TMP_IR" "$TMP_LABELED"' EXIT
     node "$SKILL/scripts/scan.mjs" --root "$ROOT" --out "$TMP_IR" ${SCAN_GRAN[@]+"${SCAN_GRAN[@]}"} ${REST[@]+"${REST[@]}"}
     node "$SKILL/scripts/auto-label.mjs" --in "$TMP_IR" --out "$TMP_LABELED" --system "$SYSTEM" ${LABEL_GRAN[@]+"${LABEL_GRAN[@]}"}

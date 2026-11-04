@@ -197,9 +197,21 @@ function extractTs(src, file = '') {
   const at = (index) => lineOf(offs, index)
   const imports = []
   const re =
-    /(?:import\s+(?:[^'"]*?\sfrom\s+)?['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\))/g
+    /(?:import\s+(?:[^'"]*?\sfrom\s+)?['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\)|export\s+(?!type\b)(?:\*(?:\s+as\s+[\w$]+)?|\{([\s\S]*?)\})\s*from\s+['"]([^'"]+)['"])/g
   let m
-  while ((m = re.exec(src))) imports.push(m[1] ?? m[2] ?? m[3])
+  while ((m = re.exec(src))) {
+    if (m[1]) imports.push(m[1])
+    else if (m[2]) imports.push(m[2])
+    else if (m[3]) imports.push(m[3])
+    else if (m[5]) {
+      const braceContent = m[4]
+      if (braceContent) {
+        const items = braceContent.split(',').map((s) => s.trim()).filter(Boolean)
+        if (items.length > 0 && items.every((s) => s.startsWith('type ') || s.startsWith('type\t'))) continue
+      }
+      imports.push(m[5])
+    }
+  }
   const symbols = []
   const patterns = [
     [/export\s+(?:default\s+)?(?:abstract\s+)?class\s+([A-Za-z_$][\w$]*)/g, 'class'],
@@ -419,14 +431,21 @@ for (const full of files) {
     const resolved = resolveAlias(spec, tsconfig, args.root) || resolveBaseUrl(spec, args.root, tsconfig.baseUrl)
     if (resolved) aliasImports.push({ from: spec, to: resolved })
   }
-  // Barrel files (only `export * from ...`) re-export a real module; flag them so
-  // labeling can drop the shim and wire imports straight to the implementation.
-  const codeLines = srcText.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('//'))
-  const barrelTargets = codeLines.length > 0 && codeLines.every((l) =>
-      /^export\s+\*\s+from\s+['"][^'"]+['"];?$/.test(l)
-    )
-    ? codeLines.map((l) => /from\s+['"]([^'"]+)['"]/.exec(l)[1]) :
-    null
+  // Barrel files re-export other modules (e.g. `export * from`, `export { ... } from`, `export * as ... from`).
+  // Flag them so labeling can drop the shim and wire imports straight to the implementation.
+  const strippedCode = srcText.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '').trim()
+  const barrelRe = /export\s+(?:type\s+)?(?:\*(?:\s+as\s+[\w$]+)?|\{([\s\S]*?)\})\s*from\s+['"]([^'"]+)['"];?/g
+  const targets = []
+  const remaining = strippedCode.replace(barrelRe, (match, braceContent, spec) => {
+    if (match.startsWith('export type')) return ''
+    if (braceContent) {
+      const items = braceContent.split(',').map((s) => s.trim()).filter(Boolean)
+      if (items.length > 0 && items.every((s) => s.startsWith('type ') || s.startsWith('type\t'))) return ''
+    }
+    targets.push(spec)
+    return ''
+  }).trim()
+  const barrelTargets = targets.length > 0 && remaining === '' ? targets : null
   elements.push({
     file: rel,
     lang: 'ts',
@@ -490,6 +509,13 @@ function hasPyFiles(root, o, gitignore) {
       if (st.isDirectory()) {
         if (!excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude, true)) stack.push(full)
       } else if (e.endsWith('.py') && !excluded(rel, DEFAULT_IGNORE_DIRS, gitignore, o.exclude)) {
+        if (o.include.length) {
+          const matched = o.include.some((g) => {
+            const rx = globToRegExp(g)
+            return rx.test(rel) || rx.test(e)
+          })
+          if (!matched) continue
+        }
         if (o.includeTests || !TEST_RE.test(rel)) return true
       }
     }
@@ -500,24 +526,38 @@ function hasPyFiles(root, o, gitignore) {
 // Single spawn of scan.py for Python (skipped for TS/JS-only repos).
 const pyElements = []
 const scanPy = join(HERE, 'scan.py')
+let pyBudgetExceeded = false
 if (!hasPyFiles(args.root, args, gitignore)) {
   console.error('scan.mjs: no Python files, skipping scan.py')
 } else {try {
+    const remainingBudget = Math.max(0, args.maxFiles - files.length)
     const r = spawnSync('python3', [
       scanPy,
       '--root',
       args.root,
+      '--max-files',
+      String(remainingBudget),
       ...(args.includeTests ? ['--include-tests'] : []),
       ...(args.noSymbols ? ['--no-symbols'] : []),
       ...(args.symbolKinds ? ['--symbol-kinds', args.symbolKinds.join(',')] : []),
       ...args.exclude.flatMap((e) => ['--exclude', e]),
     ], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
     if (r.status !== 0) {
+      if (r.status === 3) pyBudgetExceeded = true
       console.error(`scan.py failed (continuing with TS/JS only): ${(r.stderr || '').slice(0, 500)}`)
     } else if (r.stdout.trim()) {
       const parsed = JSON.parse(r.stdout)
       const list = Array.isArray(parsed) ? parsed : parsed.elements ?? []
       for (const e of list) {
+        if (args.include.length) {
+          const rel = e.file || ''
+          const base = rel.split('/').pop()
+          const matched = args.include.some((g) => {
+            const rx = globToRegExp(g)
+            return rx.test(rel) || rx.test(base)
+          })
+          if (!matched) continue
+        }
         if (!args.includeTests && TEST_RE.test(e.file || '')) continue
         pyElements.push(e)
       }
@@ -722,6 +762,7 @@ const out = {
 const json = JSON.stringify(out, null, 2)
 if (args.out === '-' || !args.out) process.stdout.write(json + '\n')
 else (await import('node:fs')).writeFileSync(args.out, json)
+if (pyBudgetExceeded) process.exitCode = 3
 console.error(
   `scan.mjs: ${files.length} ts/js files + ${yamlFiles} yaml -> ${args.out}; proposals: ${proposals.length}`,
 )

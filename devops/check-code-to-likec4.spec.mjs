@@ -281,4 +281,50 @@ void describe('code-to-likec4 skill', () => {
     assert.match(model, /demo\.pkg\.app -> demo\.pkg\.db/)
     assert.doesNotMatch(model, /generated/)
   })
+
+  void it('resolves named re-exports and passes through barrel files', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, 'src'), { recursive: true })
+    writeFileSync(path.join(root, 'src/store.ts'), 'export class Store {}\n')
+    writeFileSync(path.join(root, 'src/barrel.ts'), 'export {\n  Store,\n} from \'./store\'\n')
+    writeFileSync(
+      path.join(root, 'src/app.ts'),
+      'import { Store } from \'./barrel\'\nexport class App { constructor(s: Store) {} }\n',
+    )
+
+    const ir = path.join(root, 'ir.json')
+    const labeled = path.join(root, 'ir.labeled.json')
+    const out = path.join(root, 'generated')
+
+    run('scan.mjs', ['--root', root, '--out', ir])
+    run('auto-label.mjs', ['--in', ir, '--out', labeled, '--system', 'demo'])
+    run('emit.mjs', ['--in', labeled, '--out', out, '--system', 'demo'])
+
+    const model = readFileSync(path.join(out, 'model.c4'), 'utf8')
+    assert.match(model, /demo\.src\.app -> demo\.src\.store/)
+  })
+
+  void it('filters Python files by --include and enforces combined file budget', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'code-to-likec4-'))
+    tempRoots.push(root)
+    mkdirSync(path.join(root, 'src'), { recursive: true })
+    mkdirSync(path.join(root, 'scripts'), { recursive: true })
+
+    writeFileSync(path.join(root, 'src/app.ts'), 'export const app = 1\n')
+    writeFileSync(path.join(root, 'src/service.py'), 'class Service:\n    pass\n')
+    writeFileSync(path.join(root, 'scripts/deploy.py'), 'def deploy(): pass\n')
+
+    const ir = path.join(root, 'ir.json')
+    run('scan.mjs', ['--root', root, '--out', ir, '--include', 'src/**/*'])
+
+    const scanned = JSON.parse(readFileSync(ir, 'utf8'))
+    const files = scanned.elements.map((e) => e.file)
+    assert.ok(files.includes('src/app.ts'))
+    assert.ok(files.includes('src/service.py'))
+    assert.ok(!files.includes('scripts/deploy.py'))
+
+    const budgetFail = runFail('scan.mjs', ['--root', root, '--out', ir, '--max-files', '1'])
+    assert.equal(budgetFail.status, 3)
+  })
 })
