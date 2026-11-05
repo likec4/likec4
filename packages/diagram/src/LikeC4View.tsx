@@ -9,6 +9,7 @@ import type { JSX } from 'react/jsx-runtime'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
 import { ErrorMessage } from './components/ViewNotFound'
+import { customizable } from './custom/customizable'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type {
@@ -22,7 +23,8 @@ import { Overlay } from './overlays/overlay/Overlay'
 import { ShadowRoot } from './shadowroot'
 import { stopPropagation } from './utils'
 import { pickViewBounds } from './utils/view-bounds'
-export interface LikeC4ViewProps<A extends t.aux.Any = t.aux.UnknownLayouted> {
+
+export interface LikeC4ViewProps<A extends t.Any = t.Any> {
   /**
    * View to display.
    */
@@ -360,35 +362,36 @@ const cssInteractive = css({
  *
  * Component is wrapped in ShadowRoot to isolate styles.
  */
-export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
-  viewId,
-  className,
-  pannable = false,
-  zoomable = false,
-  keepAspectRatio = true,
-  colorScheme,
-  injectFontCss = true,
-  controls = false,
-  layoutType: initialLayoutType = 'manual',
-  background = 'transparent',
-  browser = true,
-  showNavigationButtons = false,
-  enableNotations,
-  enableFocusMode = false,
-  enableDynamicViewWalkthrough = false,
-  enableElementDetails = false,
-  enableRelationshipDetails = false,
-  enableRelationshipBrowser = enableRelationshipDetails,
-  enableNotes = false,
-  reduceGraphics = 'auto',
-  mantineTheme,
-  styleNonce,
-  style,
-  reactFlowProps,
-  renderNodes,
-  children,
-  ...props
-}: LikeC4ViewProps<A>): JSX.Element {
+export const LikeC4View = customizable('LikeC4View')(<A extends t.Any = t.Any>(properties: LikeC4ViewProps<A>) => {
+  let {
+    viewId,
+    className,
+    pannable = false,
+    zoomable = false,
+    keepAspectRatio = true,
+    colorScheme,
+    injectFontCss = true,
+    controls = false,
+    layoutType: initialLayoutType = 'manual',
+    background = 'transparent',
+    browser = true,
+    showNavigationButtons = false,
+    enableNotations,
+    enableFocusMode = false,
+    enableDynamicViewWalkthrough = false,
+    enableElementDetails = false,
+    enableRelationshipDetails = false,
+    enableRelationshipBrowser = enableRelationshipDetails,
+    enableNotes = false,
+    reduceGraphics = 'auto',
+    mantineTheme,
+    styleNonce,
+    style,
+    reactFlowProps,
+    renderNodes,
+    children,
+    ...props
+  } = properties
   const likec4model = useOptionalLikeC4Model()
   const [layoutType, setLayoutType] = useState(initialLayoutType)
   const [browserViewId, _onNavigateTo] = useState(null as t.aux.ViewId<t.aux.UnknownLayouted> | null)
@@ -466,7 +469,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
         className,
       )}
       style={style}>
-      <LikeC4Diagram
+      <LikeC4Diagram<A>
         view={view}
         pannable={pannable}
         zoomable={zoomable}
@@ -505,7 +508,7 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
       </LikeC4Diagram>
       {browserView && (
         <Overlay onClose={closeBrowser}>
-          <LikeC4Diagram
+          <LikeC4Diagram<A>
             view={browserView}
             pannable
             zoomable
@@ -547,4 +550,9 @@ export function LikeC4View<A extends t.aux.Any = t.aux.UnknownLayouted>({
       )}
     </ShadowRoot>
   )
+})
+declare module './custom/customizable' {
+  interface RegisterCustomizable {
+    LikeC4View: typeof LikeC4View
+  }
 }

@@ -5,12 +5,11 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { Any } from '@likec4/core/types'
+import type * as t from '@likec4/core/types'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, Profiler, useRef } from 'react'
-import type { JSX } from 'react/jsx-runtime'
 import { isEmptyish, isPlainObject, mapValues } from 'remeda'
 import { FitViewPaddings, MaxZoom, MinZoom } from './base'
 import { RootContainer } from './components/RootContainer'
@@ -23,6 +22,7 @@ import {
 } from './context'
 import { CurrentViewModelProvider } from './context/CurrentViewModelProvider'
 import { TagStylesProvider } from './context/TagStylesContext'
+import { customizable } from './custom/customizable'
 import { useOptionalLikeC4Editor } from './editor'
 import { useId } from './hooks/useId'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
@@ -41,7 +41,7 @@ import type { Types } from './likec4diagram/types'
 import { LikeC4Styles } from './LikeC4Styles'
 import { pickViewBounds } from './utils/view-bounds'
 
-export type LikeC4DiagramProps<A extends Any = Any> = PropsWithChildren<
+export type LikeC4DiagramProps<A extends t.Any = t.Any> = PropsWithChildren<
   & LikeC4DiagramProperties<A>
   & LikeC4DiagramEventHandlers<A>
 >
@@ -54,54 +54,55 @@ const noop = () => {}
  *
  * Use {@link ReactLikeC4} or {@link LikeC4View} for ready-to-use component
  */
-export function LikeC4Diagram<A extends Any = Any>({
-  onCanvasClick,
-  onCanvasContextMenu,
-  onCanvasDblClick,
-  onEdgeClick,
-  onEdgeContextMenu,
-  onNavigateTo,
-  onNodeClick,
-  onNodeContextMenu,
-  onOpenSource,
-  onLogoClick,
-  onLayoutTypeChange,
-  onRelationshipBrowserScopeChange,
-  onInitialized,
-  view,
-  className,
-  controls = true,
-  fitView = true,
-  initialZoom,
-  fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
-  pannable = true,
-  zoomable = true,
-  background = 'dots',
-  enableElementTags = false,
-  enableFocusMode = false,
-  enableElementDetails = false,
-  enableRelationshipDetails = false,
-  enableRelationshipBrowser = false,
-  relationshipBrowserScope = 'view',
-  enableCompareWithLatest = !!onLayoutTypeChange,
-  nodesSelectable,
-  enableNotations = false,
-  showNavigationButtons = !!onNavigateTo,
-  enableDynamicViewWalkthrough = false,
-  dynamicViewVariant,
-  enableSearch = false,
-  enableNotes = true,
-  initialWidth,
-  initialHeight,
-  reduceGraphics = 'auto',
-  renderIcon,
-  where,
-  reactFlowProps,
-  renderNodes,
-  minZoom = MinZoom,
-  maxZoom = MaxZoom,
-  children,
-}: LikeC4DiagramProps<A>): JSX.Element {
+export const LikeC4Diagram = customizable('LikeC4Diagram')(<A extends t.Any = t.Any>(props: LikeC4DiagramProps<A>) => {
+  let {
+    onCanvasClick,
+    onCanvasContextMenu,
+    onCanvasDblClick,
+    onEdgeClick,
+    onEdgeContextMenu,
+    onNavigateTo,
+    onNodeClick,
+    onNodeContextMenu,
+    onOpenSource,
+    onLogoClick,
+    onLayoutTypeChange,
+    onRelationshipBrowserScopeChange,
+    onInitialized,
+    view,
+    className,
+    controls = true,
+    fitView = true,
+    initialZoom,
+    fitViewPadding: _fitViewPadding = controls ? FitViewPaddings.withControls : FitViewPaddings.default,
+    pannable = true,
+    zoomable = true,
+    background = 'dots',
+    enableElementTags = false,
+    enableFocusMode = false,
+    enableElementDetails = false,
+    enableRelationshipDetails = false,
+    enableRelationshipBrowser = false,
+    relationshipBrowserScope = 'view',
+    enableCompareWithLatest = !!onLayoutTypeChange,
+    nodesSelectable,
+    enableNotations = false,
+    showNavigationButtons = !!onNavigateTo,
+    enableDynamicViewWalkthrough = false,
+    dynamicViewVariant,
+    enableSearch = false,
+    enableNotes = true,
+    initialWidth,
+    initialHeight,
+    reduceGraphics = 'auto',
+    renderIcon,
+    where,
+    reactFlowProps,
+    renderNodes,
+    minZoom = MinZoom,
+    maxZoom = MaxZoom,
+    children,
+  } = props
   const id = useId()
   const initialRef = useRef<{
     initialNodes: Types.Node[]
@@ -249,6 +250,12 @@ export function LikeC4Diagram<A extends Any = Any>({
       </EnsureMantine>
     </Profiler>
   )
+})
+
+declare module './custom/customizable' {
+  interface RegisterCustomizable {
+    LikeC4Diagram: typeof LikeC4Diagram
+  }
 }
 
 const toLiteralPaddingWithUnit = (value: PaddingWithUnit): PaddingWithUnit & string => {

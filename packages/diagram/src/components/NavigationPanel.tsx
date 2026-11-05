@@ -3,7 +3,7 @@ import { createStyleContext, isCssProperty } from '@likec4/styles/jsx'
 import { navigationPanel } from '@likec4/styles/recipes'
 import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
 import { m } from 'motion/react'
-import { type HTMLAttributes, forwardRef } from 'react'
+import { type ComponentPropsWithRef } from 'react'
 import { Logo as LogoWithText, LogoIcon } from './Logo'
 
 const { withProvider, withContext } = createStyleContext(navigationPanel)
@@ -11,11 +11,10 @@ const { withProvider, withContext } = createStyleContext(navigationPanel)
 const shouldForwardProp = (prop: string, variantKeys: string[]): boolean =>
   !variantKeys.includes(prop) && (isValidMotionProp(prop) || !isCssProperty(prop))
 
-const LogoButton = forwardRef<HTMLButtonElement, HTMLAttributes<HTMLButtonElement>>(({ className, ...props }, ref) => {
+const LogoButton = ({ className, ...props }: ComponentPropsWithRef<'button'>) => {
   return (
     <button
       {...props}
-      ref={ref}
       className={cx(
         'mantine-active',
         className,
@@ -26,7 +25,7 @@ const LogoButton = forwardRef<HTMLButtonElement, HTMLAttributes<HTMLButtonElemen
       <LogoWithText data-logo-full />
     </button>
   )
-})
+}
 
 const Root = withProvider(m.div as ForwardRefComponent<'div', HTMLMotionProps<'div'>>, 'root', {
   shouldForwardProp,

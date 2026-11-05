@@ -32,10 +32,15 @@
     "vitest:ui": "vitest --no-isolate --ui"
   },
   "dependencies": {
+    "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/hooks": "catalog:mantine",
     "immer": "catalog:utils",
+    "motion": "catalog:react",
     "react": "catalog:react",
-    "react-dom": "catalog:react"
+    "react-dom": "catalog:react",
+    "type-fest": "catalog:externals"
   },
   "devDependencies": {
     "@dagrejs/dagre": "catalog:",

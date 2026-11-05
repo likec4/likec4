@@ -10,8 +10,8 @@ export {
   ElementNodeContainer,
   ElementShape,
   ElementTag,
+  type ElementTagProps,
   ElementTags,
+  type ElementTagsProps,
   Markdown,
-  memoEdge,
-  memoNode,
 } from '../base-primitives'

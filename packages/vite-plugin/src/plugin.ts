@@ -9,7 +9,6 @@ import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
-import type { AnyTextAdapter } from '@tanstack/ai'
 import pDebounce from 'p-debounce'
 import { funnel, hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
@@ -21,8 +20,11 @@ import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
+import type { AIOptions, LikeC4VitePluginOptions } from './types'
+
+export type { AIOptions, LikeC4VitePluginOptions }
 import { type ProjectsData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
-import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
+import { createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { diffsModule, projectDiffsModule } from './virtuals/diffs'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -38,125 +40,6 @@ import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { rpcModule } from './virtuals/rpc'
 import { singleProjectModule } from './virtuals/single-project'
 import { projectWebcomponentsModule } from './virtuals/webcomponents'
-
-export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
-  /**
-   * The AI adapter to use
-   *
-   * @see https://tanstack.com/ai/latest/docs/getting-started/overview#adapters
-   * @example
-   * ```ts
-   * import { openRouterText } from '@tanstack/ai-openrouter'
-   *
-   * export default defineConfig({
-   *   plugins: [
-   *     likec4VitePlugin({
-   *       ai: {
-   *         adapter: openRouterText("openai/gpt-5")
-   *       },
-   *     }),
-   *   ],
-   * })
-   * ```
-   */
-  adapter: TAdapter
-  /** Model-specific provider options (type comes from adapter) */
-  modelOptions?: TAdapter['~types']['providerOptions']
-  maxTokens?: number
-}
-
-type SharedOptions = {
-  /**
-   * AI configuration, by default enabled with automatic detection based on environment variables.
-   * You can also provide explicit configuration.
-   * Or set to `disabled` to disable AI.
-   *
-   * @default 'auto' (automatic detection based on environment variables)
-   *
-   * @see https://tanstack.com/ai/latest/docs/getting-started/overview#adapters
-   * @example
-   * ```ts
-   * import { openRouterText } from '@tanstack/ai-openrouter'
-   *
-   * export default defineConfig({
-   *   plugins: [
-   *     likec4VitePlugin({
-   *       ai: {
-   *         adapter: openRouterText("openai/gpt-5")
-   *       },
-   *     }),
-   *   ],
-   * })
-   * ```
-   */
-  ai?: 'disabled' | 'auto' | AIOptions | undefined
-
-  /**
-   * Define vite environments where this plugin should be active
-   * By default, the plugin is active in all environments
-   */
-  environments?: string | string[]
-
-  /**
-   * Configuration for the static application
-   */
-  appConfig?: AppConfig
-}
-
-export type LikeC4VitePluginOptions =
-  & SharedOptions
-  & ({
-    /**
-     * Initializes a LikeC4 instance from the specified workspace path.
-     * By default it is vite project root.
-     */
-    workspace?: string
-    /**
-     * By default, if LikeC4 model is invalid, errors are printed to the console.
-     * Disable this behavior by setting this option to false.
-     *
-     * @default true
-     */
-    printErrors?: boolean
-    /**
-     * If true, initialization will return rejected promise with the LikeC4 instance.
-     * Use `likec4.getErrors()` to get the errors.
-     * @default false
-     */
-    throwIfInvalid?: boolean
-    /**
-     * Whether to use the `dot` binary for layouting or the WebAssembly version.
-     * @default 'wasm'
-     */
-    graphviz?: 'wasm' | 'binary'
-
-    /**
-     * Whether to watch for changes in the workspace.
-     * @default true if vite mode is 'development', false otherwise
-     */
-    watch?: boolean
-
-    /**
-     * The log level to use.
-     * @default 'warning'
-     */
-    logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
-
-    // This option is not allowed when using `workspace`
-    languageServices?: never
-  } | {
-    /**
-     * If you have instance of {@link LikeC4LanguageServices}
-     * you can pass `languageServices` from it.
-     */
-    languageServices: LikeC4LanguageServices
-    workspace?: never
-    printErrors?: never
-    throwIfInvalid?: never
-    graphviz?: never
-    watch?: never
-    logLevel?: never
-  })
 
 /**
  * Virtual modules per LikeC4 project that should trigger HMR when model changes

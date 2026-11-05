@@ -58,6 +58,7 @@ export {
   selectDiagramContext,
   selectDiagramSnapshot,
   useDiagram,
+  useDiagramActorRef,
   useDiagramSelector,
   useOnDiagramEvent,
 } from './hooks/useDiagram'

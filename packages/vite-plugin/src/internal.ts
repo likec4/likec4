@@ -18,6 +18,7 @@ export { useStore } from '@nanostores/react'
 
 export type { Atom, ReadableAtom, WritableAtom } from 'nanostores'
 export type { LikeC4VitePluginRpc } from './rpc/protocol'
+export type { LikeC4AppConfig } from './types'
 
 export interface LikeC4VitePluginRpcOptions {
   /**

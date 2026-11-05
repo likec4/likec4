@@ -1,30 +1,8 @@
 import { logGenerating } from '../logger'
+import type { LikeC4AppConfig } from '../types'
 import type { VirtualModule } from './_shared'
 
-export interface AppConfig {
-  /**
-   * Webcomponent prefix for likec4 webcomponents
-   * @default 'likec4'
-   */
-  webcomponentPrefix?: string
-  /**
-   * Page title for the application
-   * @default 'LikeC4'
-   */
-  pageTitle?: string
-  /**
-   * Whether to use hash history for the application
-   * @default false
-   */
-  useHashHistory?: boolean | undefined
-  /**
-   * Default color scheme for the application
-   * @default 'auto'
-   */
-  theme?: 'light' | 'dark' | undefined
-}
-
-export function createAppConfigModule(config: AppConfig | undefined): VirtualModule {
+export function createAppConfigModule(config: LikeC4AppConfig | undefined): VirtualModule {
   const {
     webcomponentPrefix = 'likec4',
     pageTitle = 'LikeC4',
