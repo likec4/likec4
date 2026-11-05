@@ -439,6 +439,53 @@ function App() {
 
 ## Customization
 
+### UI slots (experimental)
+
+:::caution[Experimental]
+Override shell UI pieces (`LikeC4Diagram`, logos, …) via `CustomizationProvider`.
+This API may change; slot names can grow, but treat helpers as experimental for now.
+:::
+
+There are two customization layers:
+
+1. **UI slots** — replace or wrap registered shell components
+2. **Node renderers** — customize how nodes are drawn (see below)
+
+```tsx
+import {
+  CustomizationProvider,
+  defineCustomComponents,
+  LikeC4ModelProvider,
+  LikeC4View,
+} from 'likec4/react'
+
+const components = defineCustomComponents(({ wrap }) => ({
+  LogoSvg: (props) => <svg {...props}><text>Brand</text></svg>,
+  LikeC4View: wrap(({ Original, ...props }) => (
+    <Original {...props} pannable={false} />
+  )),
+}))
+
+function App() {
+  return (
+    <CustomizationProvider components={components}>
+      <LikeC4ModelProvider model={likec4model}>
+        <LikeC4View viewId="index" />
+      </LikeC4ModelProvider>
+    </CustomizationProvider>
+  )
+}
+```
+
+- **replace** — pass a component that receives the slot’s original props
+- **wrap** — use `wrap`; your component receives `{ Original, ...props }`
+
+Place `CustomizationProvider` above the diagram tree. Ordering relative to `LikeC4ModelProvider` does not matter. Prefer a module-scoped `components` constant so overrides stay HMR-friendly.
+
+With `@likec4/diagram`, import the same helpers from `@likec4/diagram/custom`.
+
+### Children and portals
+
 You can render any component inside `LikeC4Diagram`\
 (or `LikeC4View`/`ReactLikeC4` if you are using bundle):
 

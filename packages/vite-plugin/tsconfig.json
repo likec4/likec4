@@ -28,6 +28,9 @@
       ],
       "likec4/react": [
         "../react/src/index.ts"
+      ],
+      "likec4/config": [
+        "../config/src/index.ts"
       ]
     }
   },

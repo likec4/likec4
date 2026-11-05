@@ -2301,18 +2301,33 @@ importers:
 
   packages/likec4-spa:
     dependencies:
+      '@floating-ui/dom':
+        specifier: catalog:react
+        version: 1.8.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@mantine/core':
+        specifier: catalog:mantine
+        version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks':
+        specifier: catalog:mantine
+        version: 9.7.4(react@19.3.1)
       immer:
         specifier: catalog:utils
         version: 11.1.21
+      motion:
+        specifier: catalog:react
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
         specifier: 19.3.1
         version: 19.3.1
       react-dom:
         specifier: 19.3.1
         version: 19.3.1(react@19.3.1)
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -2347,12 +2362,6 @@ importers:
       '@likec4/vite-plugin':
         specifier: workspace:*
         version: link:../vite-plugin
-      '@mantine/core':
-        specifier: catalog:mantine
-        version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@mantine/hooks':
-        specifier: catalog:mantine
-        version: 9.7.4(react@19.3.1)
       '@nanostores/react':
         specifier: catalog:react
         version: 2.0.1(nanostores@1.5.5)(react@19.3.1)
@@ -2446,9 +2455,6 @@ importers:
       ky:
         specifier: ^1.14.3
         version: 1.14.3
-      motion:
-        specifier: catalog:react
-        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -2497,9 +2503,6 @@ importers:
       turbo:
         specifier: 2.11.9
         version: 2.11.9
-      type-fest:
-        specifier: ^4.41.0
-        version: 4.41.0
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -2755,12 +2758,24 @@ importers:
 
   packages/react:
     dependencies:
+      '@floating-ui/dom':
+        specifier: catalog:react
+        version: 1.8.0
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
+      '@mantine/core':
+        specifier: catalog:mantine
+        version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks':
+        specifier: catalog:mantine
+        version: 9.7.4(react@19.3.1)
       immer:
         specifier: catalog:utils
         version: 11.1.21
+      motion:
+        specifier: catalog:react
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -2777,9 +2792,6 @@ importers:
       '@dagrejs/dagre':
         specifier: 'catalog:'
         version: 1.1.8
-      '@floating-ui/dom':
-        specifier: catalog:react
-        version: 1.8.0
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2795,12 +2807,6 @@ importers:
       '@lume/kiwi':
         specifier: catalog:utils
         version: 0.4.4
-      '@mantine/core':
-        specifier: catalog:mantine
-        version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@mantine/hooks':
-        specifier: catalog:mantine
-        version: 9.7.4(react@19.3.1)
       '@microsoft/api-extractor':
         specifier: ^7.59.4
         version: 7.59.4(@types/node@24.12.4)
@@ -2864,9 +2870,6 @@ importers:
       fast-equals:
         specifier: catalog:utils
         version: 6.2.1
-      motion:
-        specifier: catalog:react
-        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nanostores:
         specifier: catalog:react
         version: 1.5.5

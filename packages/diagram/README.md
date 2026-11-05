@@ -25,6 +25,7 @@ Contents:
   - [With PandaCSS](#with-pandacss)
   - [Usage](#usage)
 - [Customization](#customization)
+  - [UI slots (experimental)](#ui-slots-experimental)
   - [Node renderer](#custom-node-renderer)
   - [Styles](#custom-styles)
 
@@ -326,6 +327,56 @@ requires comparison to be enabled for the diagram and an editor provider for
 actions that modify a saved manual layout.
 
 ## Customization
+
+There are two customization layers:
+
+1. **UI slots** — replace or wrap shell components (`LikeC4Diagram`, logos, …) via `CustomizationProvider`
+2. **Node renderers** — customize how individual diagram nodes are drawn via `renderNodes`
+
+### UI slots (experimental)
+
+> [!WARNING]
+> Experimental API — slot names and helper signatures may change.
+
+Wrap your diagram tree with `CustomizationProvider` and pass overrides from `defineCustomComponents`.
+
+- **replace** — provide a component with the same props as the slot
+- **wrap** — use `wrap` from `defineCustomComponents`; your component receives `{ Original, ...props }`
+
+```tsx
+import { LikeC4ModelProvider, LikeC4View } from '@likec4/diagram'
+import {
+  CustomizationProvider,
+  defineCustomComponents,
+} from '@likec4/diagram/custom'
+
+const components = defineCustomComponents(({ wrap }) => ({
+  // Replace the logo SVG entirely
+  LogoSvg: (props) => (
+    <svg {...props}>
+      <text>Brand</text>
+    </svg>
+  ),
+  // Wrap the diagram to inject default props
+  LikeC4View: wrap(({ Original, ...props }) => <Original {...props} pannable={false} />),
+}))
+
+function App() {
+  return (
+    <CustomizationProvider components={components}>
+      <LikeC4ModelProvider model={likec4model}>
+        <LikeC4View viewId="index" />
+      </LikeC4ModelProvider>
+    </CustomizationProvider>
+  )
+}
+```
+
+Registered slots today: `LikeC4Diagram`, `LikeC4View`, `ReactLikeC4`, `LogoSvg`, `LogoIconSvg`, `NavigationPanelLogo`.
+
+Keep the `components` object referentially stable (module scope) so HMR keeps override identities stable.
+
+When using the bundled React package, import the same helpers from `likec4/react`.
 
 ### Custom node renderer
 

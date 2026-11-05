@@ -439,6 +439,53 @@ function App() {
 
 ## Personalização
 
+### Slots de UI (experimental)
+
+:::caution[Experimental]
+Substitua ou envolva partes da UI (`LikeC4Diagram`, logos, …) com `CustomizationProvider`.
+Esta API pode mudar; os nomes dos slots podem crescer, mas trate os helpers como experimentais por enquanto.
+:::
+
+Há duas camadas de personalização:
+
+1. **Slots de UI** — substituir ou envolver componentes registrados da shell
+2. **Renderizadores de nós** — personalizar como os nós são desenhados (veja abaixo)
+
+```tsx
+import {
+  CustomizationProvider,
+  defineCustomComponents,
+  LikeC4ModelProvider,
+  LikeC4View,
+} from 'likec4/react'
+
+const components = defineCustomComponents(({ wrap }) => ({
+  LogoSvg: (props) => <svg {...props}><text>Brand</text></svg>,
+  LikeC4View: wrap(({ Original, ...props }) => (
+    <Original {...props} pannable={false} />
+  )),
+}))
+
+function App() {
+  return (
+    <CustomizationProvider components={components}>
+      <LikeC4ModelProvider model={likec4model}>
+        <LikeC4View viewId="index" />
+      </LikeC4ModelProvider>
+    </CustomizationProvider>
+  )
+}
+```
+
+- **replace** — passe um componente com as mesmas props do slot
+- **wrap** — use `wrap`; o componente recebe `{ Original, ...props }`
+
+Coloque `CustomizationProvider` acima da árvore do diagrama. A ordem em relação a `LikeC4ModelProvider` não importa. Prefira uma constante `components` no escopo do módulo para manter os overrides amigáveis ao HMR.
+
+Com `@likec4/diagram`, importe os mesmos helpers de `@likec4/diagram/custom`.
+
+### Filhos e portais
+
 É possível renderizar qualquer componente dentro de `LikeC4Diagram`\
 (ou de `LikeC4View`/`ReactLikeC4`, caso utilize o pacote completo):
 

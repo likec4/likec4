@@ -3,13 +3,14 @@ import { cx } from '@likec4/styles/css'
 import type { CSSProperties, ReactNode } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
+import { customizable } from './custom/customizable'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramEventHandlers, LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { ShadowRoot } from './shadowroot'
 import { pickViewBounds } from './utils'
 
-export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
+export type ReactLikeC4Props<A extends t.Any = t.Any> =
   & {
     viewId: t.aux.ViewId<A>
 
@@ -63,67 +64,75 @@ export type ReactLikeC4Props<A extends t.aux.Any = t.aux.UnknownLayouted> =
  *
  * Component is wrapped in ShadowRoot to isolate styles.
  */
-export function ReactLikeC4<A extends t.aux.Any = t.aux.UnknownLayouted>({
-  viewId,
-  layoutType: initialLayoutType = 'manual',
-  className,
-  colorScheme,
-  injectFontCss = true,
-  enableNotations,
-  keepAspectRatio,
-  style,
-  mantineTheme,
-  styleNonce,
-  ...props
-}: ReactLikeC4Props<A>): JSX.Element {
-  const likec4model = useOptionalLikeC4Model()
+export const ReactLikeC4 = customizable('ReactLikeC4')(
+  <A extends t.Any = t.Any>(properties: ReactLikeC4Props<A>) => {
+    let {
+      viewId,
+      layoutType: initialLayoutType = 'manual',
+      className,
+      colorScheme,
+      injectFontCss = true,
+      enableNotations,
+      keepAspectRatio,
+      style,
+      mantineTheme,
+      styleNonce,
+      ...props
+    } = properties
+    const likec4model = useOptionalLikeC4Model()
 
-  if (!likec4model) {
+    if (!likec4model) {
+      return (
+        <ErrorMessage>
+          LikeC4Model not found. Make sure you provided LikeC4ModelProvider.
+        </ErrorMessage>
+      )
+    }
+    const viewModel = likec4model.findView(viewId)
+
+    if (!viewModel) {
+      return <ViewNotFound viewId={viewId} />
+    }
+
+    if (!viewModel.isLayouted()) {
+      return (
+        <ErrorMessage>
+          LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
+        </ErrorMessage>
+      )
+    }
+
+    const view = initialLayoutType === 'manual'
+      ? viewModel.$layouted
+      : viewModel.$view
+
+    const bounds = pickViewBounds(view, props.dynamicViewVariant)
+
+    const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
+
     return (
-      <ErrorMessage>
-        LikeC4Model not found. Make sure you provided LikeC4ModelProvider.
-      </ErrorMessage>
+      <ShadowRoot
+        injectFontCss={injectFontCss}
+        theme={mantineTheme}
+        colorScheme={colorScheme}
+        styleNonce={styleNonce}
+        keepAspectRatio={keepAspectRatio ? bounds : false}
+        className={cx(
+          'likec4-view',
+          className,
+        )}
+        style={style}>
+        <LikeC4Diagram
+          view={view}
+          enableNotations={hasNotations}
+          {...props}
+        />
+      </ShadowRoot>
     )
+  },
+)
+declare module './custom/customizable' {
+  interface RegisterCustomizable {
+    ReactLikeC4: typeof ReactLikeC4
   }
-  const viewModel = likec4model.findView(viewId)
-
-  if (!viewModel) {
-    return <ViewNotFound viewId={viewId} />
-  }
-
-  if (!viewModel.isLayouted()) {
-    return (
-      <ErrorMessage>
-        LikeC4 View "${viewId}" is not layouted. Make sure you have LikeC4ModelProvider with layouted model.
-      </ErrorMessage>
-    )
-  }
-
-  const view = initialLayoutType === 'manual'
-    ? viewModel.$layouted
-    : viewModel.$view
-
-  const bounds = pickViewBounds(view, props.dynamicViewVariant)
-
-  const hasNotations = !!enableNotations && (view.notation?.nodes?.length ?? 0) > 0
-
-  return (
-    <ShadowRoot
-      injectFontCss={injectFontCss}
-      theme={mantineTheme}
-      colorScheme={colorScheme}
-      styleNonce={styleNonce}
-      keepAspectRatio={keepAspectRatio ? bounds : false}
-      className={cx(
-        'likec4-view',
-        className,
-      )}
-      style={style}>
-      <LikeC4Diagram
-        view={view}
-        enableNotations={hasNotations}
-        {...props}
-      />
-    </ShadowRoot>
-  )
 }

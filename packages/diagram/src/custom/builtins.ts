@@ -12,8 +12,11 @@ export {
   ElementDetailsButtonWithHandler,
   ElementNode,
   ElementToolbar,
+  GraphElementNode,
+  NodeDrifts,
   SequenceActorNode,
   SequenceParallelArea,
+  SequenceSubflowArea,
   Toolbar,
   ViewGroupNode,
 } from '../likec4diagram/custom/nodes'

@@ -39,6 +39,8 @@ export default defineConfig({
     conditions: ['sources', 'module', 'import', 'default'],
     alias: {
       '@likec4/styles': resolve('styled-system'),
+      '@likec4/diagram/custom': 'likec4/react',
+      '@likec4/diagram': 'likec4/react',
     },
   },
   build: {
@@ -68,6 +70,7 @@ export default defineConfig({
       treeshake: {
         moduleSideEffects: 'no-external',
       },
+      // input: ,
       output: {
         keepNames: true,
         entryFileNames: '[name].mjs',
@@ -75,13 +78,13 @@ export default defineConfig({
         assetFileNames: '[name].[ext]',
         codeSplitting: {
           groups: [
-            codeSplittingGroup(/styled-system/, 'styled-system', { priority: 12, minShareCount: 1 }),
-            codeSplittingGroup(/node_modules\/d3/, 'libs/d3', { priority: 11 }),
-            codeSplittingGroup(/node_modules\/@floating-ui/, 'libs/@floating-ui', { priority: 10 }),
-            codeSplittingGroup(/node_modules\/@mantine/, 'libs/@mantine', { priority: 9 }),
-            codeSplittingGroup(/node_modules\/@tanstack\/ai/, 'libs/@tanstack-ai', { priority: 8 }),
-            codeSplittingGroup(/node_modules\/@tanstack/, 'libs/@tanstack', { priority: 7 }),
-            codeSplittingGroup(/node_modules\/(framer-motion|motion(-dom|-utils)?)\//, 'libs/framer', { priority: 6 }),
+            // codeSplittingGroup(/styled-system/, 'styled-system', { priority: 12, minShareCount: 1 }),
+            // codeSplittingGroup(/node_modules\/d3/, 'libs/d3', { priority: 11 }),
+            // codeSplittingGroup(/node_modules\/@floating-ui/, 'libs/@floating-ui', { priority: 10 }),
+            // codeSplittingGroup(/node_modules\/@mantine/, 'libs/@mantine', { priority: 9 }),
+            // codeSplittingGroup(/node_modules\/@tanstack\/ai/, 'libs/@tanstack-ai', { priority: 8 }),
+            // codeSplittingGroup(/node_modules\/@tanstack/, 'libs/@tanstack', { priority: 7 }),
+            // codeSplittingGroup(/node_modules\/(framer-motion|motion(-dom|-utils)?)\//, 'libs/framer', { priority: 6 }),
             nodeModulesCodeSplitting({
               minShareCount: 2,
               minSize: 10 * 1024,
@@ -91,6 +94,7 @@ export default defineConfig({
       },
       external: [
         ...externals.map((dep) => new RegExp(`^${dep}(\\/.*)?$`)),
+        'likec4/react',
         /^likec4(:|\/).+$/,
       ],
     },
