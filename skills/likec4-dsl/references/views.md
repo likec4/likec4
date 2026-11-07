@@ -219,7 +219,7 @@ customer
 backend <- database "responds"   // Read as "database responds to backend"
 ```
 
-Each arrow in the chain creates a separate step. The target of the previous step becomes the source of the next. A chain can only continue with `->`, so write a response as its own step with `<-`.
+Each arrow in the chain creates a separate step. The target of the previous step becomes the source of the next. A chain can continue with `->` or a relationship-kind arrow such as `-[kind]->`. A chain cannot continue with `<-`, so write a response as its own step.
 
 ## Parallel Steps
 
