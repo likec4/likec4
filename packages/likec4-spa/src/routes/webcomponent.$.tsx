@@ -3,7 +3,7 @@ import { useMantineColorScheme } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { ComponentName } from 'likec4:app-config'
 
-export const Route = createFileRoute('/_single/webcomponent/$')({
+export const Route = createFileRoute('/webcomponent/$')({
   component: WebcomponentPage,
 })
 

@@ -6,6 +6,7 @@ import type { Fqn, ViewId } from '@likec4/core/types'
 import { type SearchContextValue, normalizeSearch, SearchContext } from '@likec4/diagram'
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, useCallback, useMemo, useState } from 'react'
+import { useCurrentProject } from '../../hooks'
 
 export function OverviewSearchAdapter({
   onClose,
@@ -14,18 +15,19 @@ export function OverviewSearchAdapter({
   const [searchValue, setSearchValue] = useState('')
   const [pickViewFor, setPickViewFor] = useState<Fqn | null>(null)
   const navigate = useNavigate()
+  const { id: projectId } = useCurrentProject()
 
   const navigateTo = useCallback((viewId: ViewId, focusOnElement?: Fqn) => {
     onClose()
     void navigate({
-      to: '/view/$viewId/',
-      params: { viewId },
+      to: '/project/$projectId/view/$viewId/',
+      params: { projectId, viewId },
       search: (prev) => ({
         ...prev,
         ...(focusOnElement && { focusOnElement }),
       }),
     })
-  }, [navigate, onClose])
+  }, [navigate, onClose, projectId])
 
   const openPickView = useCallback((elementFqn: Fqn) => {
     setPickViewFor(elementFqn)
