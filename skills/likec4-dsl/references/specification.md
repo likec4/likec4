@@ -35,7 +35,10 @@ specification {
   relationship IDENTIFIER {
     technology "default tech for this relationship kind"
     description "default description for this relationship kind"
-    style { ... }          // default style for this relationship kind
+    // default style properties go directly in the body, not in a style block
+    color amber
+    line dashed
+    head diamond
   }
 
   // Define a custom named color token
