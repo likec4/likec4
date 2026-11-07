@@ -5,9 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { createFileRoute } from '@tanstack/react-router'
-
-import { Link } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 
 import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { useEffect, useState } from 'react'
@@ -19,21 +17,58 @@ import { css } from '@likec4/styles/css'
 import { Box, Burger, Card, Container, Group, SimpleGrid, Text } from '@mantine/core'
 import { useDocumentTitle, useInViewport } from '@mantine/hooks'
 import { pageTitle } from 'likec4:app-config'
+import { loadDiffs } from 'likec4:diffs'
+import { loadModel } from 'likec4:model'
 import { randomInteger } from 'remeda'
-import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
-import { NavigationPanel } from '../../components/NavigationPanel'
-import { OverviewSearch } from '../../components/search/OverviewSearch'
-import { SidebarDrawer } from '../../components/sidebar/Drawer'
-import { SidebarDrawerOps } from '../../components/sidebar/state'
-import { filterLandingPageViews } from '../../filterLandingPageViews'
-import { useCurrentProject, useLikeC4Views } from '../../hooks'
+import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
+import { ErrorComponent } from '../components/ErrorComponent'
+import { NavigationPanel } from '../components/NavigationPanel'
+import { OverviewSearch } from '../components/search/OverviewSearch'
+import { SidebarDrawer } from '../components/sidebar/Drawer'
+import { SidebarDrawerOps } from '../components/sidebar/state'
+import { ViewOutlet } from '../components/ViewOutlet'
+import { LikeC4IconRendererContext } from '../context/LikeC4IconRendererContext'
+import { LikeC4ModelContext } from '../context/LikeC4ModelContext'
+import { ModelDiffsContext } from '../context/ModelDiffsContext'
+import { filterLandingPageViews } from '../filterLandingPageViews'
+import { useCurrentProject, useLikeC4Views } from '../hooks'
 import * as styles from './index.css'
 
-export const Route = createFileRoute('/_single/single-index')({
+export const Route = createFileRoute('/single-index')({
+  staleTime: Infinity,
+  loader: async ({ context }) => {
+    const projectId = context.projectId
+    const [data, { $diffs }] = await Promise.all([loadModel(projectId), loadDiffs(projectId)])
+    const modelData = data.$likec4data.value
+    if (!modelData) {
+      throw notFound()
+    }
+    return {
+      $likec4model: data.$likec4model,
+      $diffs,
+      projectId,
+    }
+  },
   component: RouteComponent,
+  errorComponent: ErrorComponent,
 })
 
 function RouteComponent() {
+  const { $likec4model, $diffs, projectId } = Route.useLoaderData()
+  return (
+    <ViewOutlet>
+      <LikeC4IconRendererContext projectId={projectId}>
+        <LikeC4ModelContext likec4model={$likec4model}>
+          <ModelDiffsContext diffs={$diffs}>
+            <SingleIndexPage />
+          </ModelDiffsContext>
+        </LikeC4ModelContext>
+      </LikeC4IconRendererContext>
+    </ViewOutlet>
+  )
+}
+
+function SingleIndexPage() {
   const allViews = useLikeC4Views()
   const { landingPage, title: projectTitle } = useCurrentProject()
   useDocumentTitle(projectTitle ?? pageTitle)
@@ -92,6 +127,7 @@ function RouteComponent() {
 function ViewCard({ view }: { view: DiagramView }) {
   const [visible, setVisible] = useState(false)
   const { ref, inViewport } = useInViewport()
+  const { projectId } = Route.useLoaderData()
 
   // Deferred rendering to avoid initial freeze
   useEffect(() => {
@@ -140,7 +176,12 @@ function ViewCard({ view }: { view: DiagramView }) {
           },
         })}
       />
-      <Link to={'/view/$viewId/'} params={{ viewId: view.id }} search className={styles.cardLink}></Link>
+      <Link
+        to={'/project/$projectId/view/$viewId/'}
+        params={{ projectId, viewId: view.id }}
+        search
+        className={styles.cardLink}
+      />
     </Card>
   )
 }

@@ -8,182 +8,204 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as SingleIndexRouteImport } from './routes/single-index'
+import { Route as ProjectProjectIdRouteRouteImport } from './routes/project.$projectId/route'
+import { Route as WebcomponentSplatRouteImport } from './routes/webcomponent.$'
+import { Route as ProjectProjectIdIndexRouteImport } from './routes/project.$projectId/index'
+import { Route as ProjectProjectIdEmbedViewIdRouteImport } from './routes/project.$projectId/embed.$viewId'
+import { Route as ProjectProjectIdExportViewIdRouteImport } from './routes/project.$projectId/export.$viewId'
+import { Route as ProjectProjectIdViewViewIdRouteImport } from './routes/project.$projectId/view.$viewId'
+import { Route as ProjectProjectIdViewViewIdIndexRouteImport } from './routes/project.$projectId/view.$viewId.index'
+import { Route as ProjectProjectIdViewViewIdD2RouteImport } from './routes/project.$projectId/view.$viewId.d2'
+import { Route as ProjectProjectIdViewViewIdDotRouteImport } from './routes/project.$projectId/view.$viewId.dot'
+import { Route as ProjectProjectIdViewViewIdMmdRouteImport } from './routes/project.$projectId/view.$viewId.mmd'
+import { Route as ProjectProjectIdViewViewIdPumlRouteImport } from './routes/project.$projectId/view.$viewId.puml'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as ProjectsImport } from './routes/projects'
-import { Route as SingleRouteImport } from './routes/_single/route'
-import { Route as IndexImport } from './routes/index'
-import { Route as SingleSingleIndexImport } from './routes/_single/single-index'
-import { Route as ProjectProjectIdRouteImport } from './routes/project.$projectId/route'
-import { Route as ProjectProjectIdIndexImport } from './routes/project.$projectId/index'
-import { Route as SingleWebcomponentSplatImport } from './routes/_single/webcomponent.$'
-import { Route as SingleViewViewIdImport } from './routes/_single/view.$viewId'
-import { Route as SingleExportViewIdImport } from './routes/_single/export.$viewId'
-import { Route as SingleEmbedViewIdImport } from './routes/_single/embed.$viewId'
-import { Route as SingleViewViewIdIndexImport } from './routes/_single/view.$viewId.index'
-import { Route as ProjectProjectIdViewViewIdImport } from './routes/project.$projectId/view.$viewId'
-import { Route as ProjectProjectIdExportViewIdImport } from './routes/project.$projectId/export.$viewId'
-import { Route as ProjectProjectIdEmbedViewIdImport } from './routes/project.$projectId/embed.$viewId'
-import { Route as SingleViewViewIdPumlImport } from './routes/_single/view.$viewId.puml'
-import { Route as SingleViewViewIdMmdImport } from './routes/_single/view.$viewId.mmd'
-import { Route as SingleViewViewIdDotImport } from './routes/_single/view.$viewId.dot'
-import { Route as SingleViewViewIdD2Import } from './routes/_single/view.$viewId.d2'
-import { Route as ProjectProjectIdViewViewIdIndexImport } from './routes/project.$projectId/view.$viewId.index'
-import { Route as ProjectProjectIdViewViewIdPumlImport } from './routes/project.$projectId/view.$viewId.puml'
-import { Route as ProjectProjectIdViewViewIdMmdImport } from './routes/project.$projectId/view.$viewId.mmd'
-import { Route as ProjectProjectIdViewViewIdDotImport } from './routes/project.$projectId/view.$viewId.dot'
-import { Route as ProjectProjectIdViewViewIdD2Import } from './routes/project.$projectId/view.$viewId.d2'
-
-// Create/Update Routes
-
-const ProjectsRoute = ProjectsImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SingleRouteRoute = SingleRouteImport.update({
-  id: '/_single',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SingleSingleIndexRoute = SingleSingleIndexImport.update({
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SingleIndexRoute = SingleIndexRouteImport.update({
   id: '/single-index',
   path: '/single-index',
-  getParentRoute: () => SingleRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ProjectProjectIdRouteRoute = ProjectProjectIdRouteImport.update({
+const ProjectProjectIdRouteRoute = ProjectProjectIdRouteRouteImport.update({
   id: '/project/$projectId',
   path: '/project/$projectId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ProjectProjectIdIndexRoute = ProjectProjectIdIndexImport.update({
+const WebcomponentSplatRoute = WebcomponentSplatRouteImport.update({
+  id: '/webcomponent/$',
+  path: '/webcomponent/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectProjectIdIndexRoute = ProjectProjectIdIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ProjectProjectIdRouteRoute,
 } as any)
-
-const SingleWebcomponentSplatRoute = SingleWebcomponentSplatImport.update({
-  id: '/webcomponent/$',
-  path: '/webcomponent/$',
-  getParentRoute: () => SingleRouteRoute,
-} as any)
-
-const SingleViewViewIdRoute = SingleViewViewIdImport.update({
-  id: '/view/$viewId',
-  path: '/view/$viewId',
-  getParentRoute: () => SingleRouteRoute,
-} as any)
-
-const SingleExportViewIdRoute = SingleExportViewIdImport.update({
-  id: '/export/$viewId',
-  path: '/export/$viewId',
-  getParentRoute: () => SingleRouteRoute,
-} as any)
-
-const SingleEmbedViewIdRoute = SingleEmbedViewIdImport.update({
-  id: '/embed/$viewId',
-  path: '/embed/$viewId',
-  getParentRoute: () => SingleRouteRoute,
-} as any)
-
-const SingleViewViewIdIndexRoute = SingleViewViewIdIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SingleViewViewIdRoute,
-} as any)
-
-const ProjectProjectIdViewViewIdRoute = ProjectProjectIdViewViewIdImport.update(
-  {
-    id: '/view/$viewId',
-    path: '/view/$viewId',
-    getParentRoute: () => ProjectProjectIdRouteRoute,
-  } as any,
-)
-
-const ProjectProjectIdExportViewIdRoute =
-  ProjectProjectIdExportViewIdImport.update({
-    id: '/export/$viewId',
-    path: '/export/$viewId',
-    getParentRoute: () => ProjectProjectIdRouteRoute,
-  } as any)
-
 const ProjectProjectIdEmbedViewIdRoute =
-  ProjectProjectIdEmbedViewIdImport.update({
+  ProjectProjectIdEmbedViewIdRouteImport.update({
     id: '/embed/$viewId',
     path: '/embed/$viewId',
     getParentRoute: () => ProjectProjectIdRouteRoute,
   } as any)
-
-const SingleViewViewIdPumlRoute = SingleViewViewIdPumlImport.update({
-  id: '/puml',
-  path: '/puml',
-  getParentRoute: () => SingleViewViewIdRoute,
-} as any)
-
-const SingleViewViewIdMmdRoute = SingleViewViewIdMmdImport.update({
-  id: '/mmd',
-  path: '/mmd',
-  getParentRoute: () => SingleViewViewIdRoute,
-} as any)
-
-const SingleViewViewIdDotRoute = SingleViewViewIdDotImport.update({
-  id: '/dot',
-  path: '/dot',
-  getParentRoute: () => SingleViewViewIdRoute,
-} as any)
-
-const SingleViewViewIdD2Route = SingleViewViewIdD2Import.update({
-  id: '/d2',
-  path: '/d2',
-  getParentRoute: () => SingleViewViewIdRoute,
-} as any)
-
+const ProjectProjectIdExportViewIdRoute =
+  ProjectProjectIdExportViewIdRouteImport.update({
+    id: '/export/$viewId',
+    path: '/export/$viewId',
+    getParentRoute: () => ProjectProjectIdRouteRoute,
+  } as any)
+const ProjectProjectIdViewViewIdRoute =
+  ProjectProjectIdViewViewIdRouteImport.update({
+    id: '/view/$viewId',
+    path: '/view/$viewId',
+    getParentRoute: () => ProjectProjectIdRouteRoute,
+  } as any)
 const ProjectProjectIdViewViewIdIndexRoute =
-  ProjectProjectIdViewViewIdIndexImport.update({
+  ProjectProjectIdViewViewIdIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => ProjectProjectIdViewViewIdRoute,
   } as any)
-
+const ProjectProjectIdViewViewIdD2Route =
+  ProjectProjectIdViewViewIdD2RouteImport.update({
+    id: '/d2',
+    path: '/d2',
+    getParentRoute: () => ProjectProjectIdViewViewIdRoute,
+  } as any)
+const ProjectProjectIdViewViewIdDotRoute =
+  ProjectProjectIdViewViewIdDotRouteImport.update({
+    id: '/dot',
+    path: '/dot',
+    getParentRoute: () => ProjectProjectIdViewViewIdRoute,
+  } as any)
+const ProjectProjectIdViewViewIdMmdRoute =
+  ProjectProjectIdViewViewIdMmdRouteImport.update({
+    id: '/mmd',
+    path: '/mmd',
+    getParentRoute: () => ProjectProjectIdViewViewIdRoute,
+  } as any)
 const ProjectProjectIdViewViewIdPumlRoute =
-  ProjectProjectIdViewViewIdPumlImport.update({
+  ProjectProjectIdViewViewIdPumlRouteImport.update({
     id: '/puml',
     path: '/puml',
     getParentRoute: () => ProjectProjectIdViewViewIdRoute,
   } as any)
 
-const ProjectProjectIdViewViewIdMmdRoute =
-  ProjectProjectIdViewViewIdMmdImport.update({
-    id: '/mmd',
-    path: '/mmd',
-    getParentRoute: () => ProjectProjectIdViewViewIdRoute,
-  } as any)
-
-const ProjectProjectIdViewViewIdDotRoute =
-  ProjectProjectIdViewViewIdDotImport.update({
-    id: '/dot',
-    path: '/dot',
-    getParentRoute: () => ProjectProjectIdViewViewIdRoute,
-  } as any)
-
-const ProjectProjectIdViewViewIdD2Route =
-  ProjectProjectIdViewViewIdD2Import.update({
-    id: '/d2',
-    path: '/d2',
-    getParentRoute: () => ProjectProjectIdViewViewIdRoute,
-  } as any)
-
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/projects': typeof ProjectsRoute
+  '/single-index': typeof SingleIndexRoute
+  '/project/$projectId': typeof ProjectProjectIdRouteRouteWithChildren
+  '/webcomponent/$': typeof WebcomponentSplatRoute
+  '/project/$projectId/': typeof ProjectProjectIdIndexRoute
+  '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
+  '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
+  '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdRouteWithChildren
+  '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
+  '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
+  '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
+  '/project/$projectId/view/$viewId/puml': typeof ProjectProjectIdViewViewIdPumlRoute
+  '/project/$projectId/view/$viewId/': typeof ProjectProjectIdViewViewIdIndexRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/projects': typeof ProjectsRoute
+  '/single-index': typeof SingleIndexRoute
+  '/webcomponent/$': typeof WebcomponentSplatRoute
+  '/project/$projectId': typeof ProjectProjectIdIndexRoute
+  '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
+  '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
+  '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
+  '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
+  '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
+  '/project/$projectId/view/$viewId/puml': typeof ProjectProjectIdViewViewIdPumlRoute
+  '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/projects': typeof ProjectsRoute
+  '/single-index': typeof SingleIndexRoute
+  '/project/$projectId': typeof ProjectProjectIdRouteRouteWithChildren
+  '/webcomponent/$': typeof WebcomponentSplatRoute
+  '/project/$projectId/': typeof ProjectProjectIdIndexRoute
+  '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
+  '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
+  '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdRouteWithChildren
+  '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
+  '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
+  '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
+  '/project/$projectId/view/$viewId/puml': typeof ProjectProjectIdViewViewIdPumlRoute
+  '/project/$projectId/view/$viewId/': typeof ProjectProjectIdViewViewIdIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/projects'
+    | '/single-index'
+    | '/project/$projectId'
+    | '/webcomponent/$'
+    | '/project/$projectId/'
+    | '/project/$projectId/embed/$viewId'
+    | '/project/$projectId/export/$viewId'
+    | '/project/$projectId/view/$viewId'
+    | '/project/$projectId/view/$viewId/d2'
+    | '/project/$projectId/view/$viewId/dot'
+    | '/project/$projectId/view/$viewId/mmd'
+    | '/project/$projectId/view/$viewId/puml'
+    | '/project/$projectId/view/$viewId/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/projects'
+    | '/single-index'
+    | '/webcomponent/$'
+    | '/project/$projectId'
+    | '/project/$projectId/embed/$viewId'
+    | '/project/$projectId/export/$viewId'
+    | '/project/$projectId/view/$viewId/d2'
+    | '/project/$projectId/view/$viewId/dot'
+    | '/project/$projectId/view/$viewId/mmd'
+    | '/project/$projectId/view/$viewId/puml'
+    | '/project/$projectId/view/$viewId'
+  id:
+    | '__root__'
+    | '/'
+    | '/projects'
+    | '/single-index'
+    | '/project/$projectId'
+    | '/webcomponent/$'
+    | '/project/$projectId/'
+    | '/project/$projectId/embed/$viewId'
+    | '/project/$projectId/export/$viewId'
+    | '/project/$projectId/view/$viewId'
+    | '/project/$projectId/view/$viewId/d2'
+    | '/project/$projectId/view/$viewId/dot'
+    | '/project/$projectId/view/$viewId/mmd'
+    | '/project/$projectId/view/$viewId/puml'
+    | '/project/$projectId/view/$viewId/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  ProjectsRoute: typeof ProjectsRoute
+  SingleIndexRoute: typeof SingleIndexRoute
+  ProjectProjectIdRouteRoute: typeof ProjectProjectIdRouteRouteWithChildren
+  WebcomponentSplatRoute: typeof WebcomponentSplatRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -191,206 +213,102 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_single': {
-      id: '/_single'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof SingleRouteImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projects': {
       id: '/projects'
       path: '/projects'
       fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/single-index': {
+      id: '/single-index'
+      path: '/single-index'
+      fullPath: '/single-index'
+      preLoaderRoute: typeof SingleIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/project/$projectId': {
       id: '/project/$projectId'
       path: '/project/$projectId'
       fullPath: '/project/$projectId'
-      preLoaderRoute: typeof ProjectProjectIdRouteImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof ProjectProjectIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_single/single-index': {
-      id: '/_single/single-index'
-      path: '/single-index'
-      fullPath: '/single-index'
-      preLoaderRoute: typeof SingleSingleIndexImport
-      parentRoute: typeof SingleRouteImport
-    }
-    '/_single/embed/$viewId': {
-      id: '/_single/embed/$viewId'
-      path: '/embed/$viewId'
-      fullPath: '/embed/$viewId'
-      preLoaderRoute: typeof SingleEmbedViewIdImport
-      parentRoute: typeof SingleRouteImport
-    }
-    '/_single/export/$viewId': {
-      id: '/_single/export/$viewId'
-      path: '/export/$viewId'
-      fullPath: '/export/$viewId'
-      preLoaderRoute: typeof SingleExportViewIdImport
-      parentRoute: typeof SingleRouteImport
-    }
-    '/_single/view/$viewId': {
-      id: '/_single/view/$viewId'
-      path: '/view/$viewId'
-      fullPath: '/view/$viewId'
-      preLoaderRoute: typeof SingleViewViewIdImport
-      parentRoute: typeof SingleRouteImport
-    }
-    '/_single/webcomponent/$': {
-      id: '/_single/webcomponent/$'
+    '/webcomponent/$': {
+      id: '/webcomponent/$'
       path: '/webcomponent/$'
       fullPath: '/webcomponent/$'
-      preLoaderRoute: typeof SingleWebcomponentSplatImport
-      parentRoute: typeof SingleRouteImport
+      preLoaderRoute: typeof WebcomponentSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/project/$projectId/': {
       id: '/project/$projectId/'
       path: '/'
       fullPath: '/project/$projectId/'
-      preLoaderRoute: typeof ProjectProjectIdIndexImport
-      parentRoute: typeof ProjectProjectIdRouteImport
-    }
-    '/_single/view/$viewId/d2': {
-      id: '/_single/view/$viewId/d2'
-      path: '/d2'
-      fullPath: '/view/$viewId/d2'
-      preLoaderRoute: typeof SingleViewViewIdD2Import
-      parentRoute: typeof SingleViewViewIdImport
-    }
-    '/_single/view/$viewId/dot': {
-      id: '/_single/view/$viewId/dot'
-      path: '/dot'
-      fullPath: '/view/$viewId/dot'
-      preLoaderRoute: typeof SingleViewViewIdDotImport
-      parentRoute: typeof SingleViewViewIdImport
-    }
-    '/_single/view/$viewId/mmd': {
-      id: '/_single/view/$viewId/mmd'
-      path: '/mmd'
-      fullPath: '/view/$viewId/mmd'
-      preLoaderRoute: typeof SingleViewViewIdMmdImport
-      parentRoute: typeof SingleViewViewIdImport
-    }
-    '/_single/view/$viewId/puml': {
-      id: '/_single/view/$viewId/puml'
-      path: '/puml'
-      fullPath: '/view/$viewId/puml'
-      preLoaderRoute: typeof SingleViewViewIdPumlImport
-      parentRoute: typeof SingleViewViewIdImport
+      preLoaderRoute: typeof ProjectProjectIdIndexRouteImport
+      parentRoute: typeof ProjectProjectIdRouteRoute
     }
     '/project/$projectId/embed/$viewId': {
       id: '/project/$projectId/embed/$viewId'
       path: '/embed/$viewId'
       fullPath: '/project/$projectId/embed/$viewId'
-      preLoaderRoute: typeof ProjectProjectIdEmbedViewIdImport
-      parentRoute: typeof ProjectProjectIdRouteImport
+      preLoaderRoute: typeof ProjectProjectIdEmbedViewIdRouteImport
+      parentRoute: typeof ProjectProjectIdRouteRoute
     }
     '/project/$projectId/export/$viewId': {
       id: '/project/$projectId/export/$viewId'
       path: '/export/$viewId'
       fullPath: '/project/$projectId/export/$viewId'
-      preLoaderRoute: typeof ProjectProjectIdExportViewIdImport
-      parentRoute: typeof ProjectProjectIdRouteImport
+      preLoaderRoute: typeof ProjectProjectIdExportViewIdRouteImport
+      parentRoute: typeof ProjectProjectIdRouteRoute
     }
     '/project/$projectId/view/$viewId': {
       id: '/project/$projectId/view/$viewId'
       path: '/view/$viewId'
       fullPath: '/project/$projectId/view/$viewId'
-      preLoaderRoute: typeof ProjectProjectIdViewViewIdImport
-      parentRoute: typeof ProjectProjectIdRouteImport
-    }
-    '/_single/view/$viewId/': {
-      id: '/_single/view/$viewId/'
-      path: '/'
-      fullPath: '/view/$viewId/'
-      preLoaderRoute: typeof SingleViewViewIdIndexImport
-      parentRoute: typeof SingleViewViewIdImport
-    }
-    '/project/$projectId/view/$viewId/d2': {
-      id: '/project/$projectId/view/$viewId/d2'
-      path: '/d2'
-      fullPath: '/project/$projectId/view/$viewId/d2'
-      preLoaderRoute: typeof ProjectProjectIdViewViewIdD2Import
-      parentRoute: typeof ProjectProjectIdViewViewIdImport
-    }
-    '/project/$projectId/view/$viewId/dot': {
-      id: '/project/$projectId/view/$viewId/dot'
-      path: '/dot'
-      fullPath: '/project/$projectId/view/$viewId/dot'
-      preLoaderRoute: typeof ProjectProjectIdViewViewIdDotImport
-      parentRoute: typeof ProjectProjectIdViewViewIdImport
-    }
-    '/project/$projectId/view/$viewId/mmd': {
-      id: '/project/$projectId/view/$viewId/mmd'
-      path: '/mmd'
-      fullPath: '/project/$projectId/view/$viewId/mmd'
-      preLoaderRoute: typeof ProjectProjectIdViewViewIdMmdImport
-      parentRoute: typeof ProjectProjectIdViewViewIdImport
-    }
-    '/project/$projectId/view/$viewId/puml': {
-      id: '/project/$projectId/view/$viewId/puml'
-      path: '/puml'
-      fullPath: '/project/$projectId/view/$viewId/puml'
-      preLoaderRoute: typeof ProjectProjectIdViewViewIdPumlImport
-      parentRoute: typeof ProjectProjectIdViewViewIdImport
+      preLoaderRoute: typeof ProjectProjectIdViewViewIdRouteImport
+      parentRoute: typeof ProjectProjectIdRouteRoute
     }
     '/project/$projectId/view/$viewId/': {
       id: '/project/$projectId/view/$viewId/'
       path: '/'
       fullPath: '/project/$projectId/view/$viewId/'
-      preLoaderRoute: typeof ProjectProjectIdViewViewIdIndexImport
-      parentRoute: typeof ProjectProjectIdViewViewIdImport
+      preLoaderRoute: typeof ProjectProjectIdViewViewIdIndexRouteImport
+      parentRoute: typeof ProjectProjectIdViewViewIdRoute
+    }
+    '/project/$projectId/view/$viewId/d2': {
+      id: '/project/$projectId/view/$viewId/d2'
+      path: '/d2'
+      fullPath: '/project/$projectId/view/$viewId/d2'
+      preLoaderRoute: typeof ProjectProjectIdViewViewIdD2RouteImport
+      parentRoute: typeof ProjectProjectIdViewViewIdRoute
+    }
+    '/project/$projectId/view/$viewId/dot': {
+      id: '/project/$projectId/view/$viewId/dot'
+      path: '/dot'
+      fullPath: '/project/$projectId/view/$viewId/dot'
+      preLoaderRoute: typeof ProjectProjectIdViewViewIdDotRouteImport
+      parentRoute: typeof ProjectProjectIdViewViewIdRoute
+    }
+    '/project/$projectId/view/$viewId/mmd': {
+      id: '/project/$projectId/view/$viewId/mmd'
+      path: '/mmd'
+      fullPath: '/project/$projectId/view/$viewId/mmd'
+      preLoaderRoute: typeof ProjectProjectIdViewViewIdMmdRouteImport
+      parentRoute: typeof ProjectProjectIdViewViewIdRoute
+    }
+    '/project/$projectId/view/$viewId/puml': {
+      id: '/project/$projectId/view/$viewId/puml'
+      path: '/puml'
+      fullPath: '/project/$projectId/view/$viewId/puml'
+      preLoaderRoute: typeof ProjectProjectIdViewViewIdPumlRouteImport
+      parentRoute: typeof ProjectProjectIdViewViewIdRoute
     }
   }
 }
-
-// Create and export the route tree
-
-interface SingleViewViewIdRouteChildren {
-  SingleViewViewIdD2Route: typeof SingleViewViewIdD2Route
-  SingleViewViewIdDotRoute: typeof SingleViewViewIdDotRoute
-  SingleViewViewIdMmdRoute: typeof SingleViewViewIdMmdRoute
-  SingleViewViewIdPumlRoute: typeof SingleViewViewIdPumlRoute
-  SingleViewViewIdIndexRoute: typeof SingleViewViewIdIndexRoute
-}
-
-const SingleViewViewIdRouteChildren: SingleViewViewIdRouteChildren = {
-  SingleViewViewIdD2Route: SingleViewViewIdD2Route,
-  SingleViewViewIdDotRoute: SingleViewViewIdDotRoute,
-  SingleViewViewIdMmdRoute: SingleViewViewIdMmdRoute,
-  SingleViewViewIdPumlRoute: SingleViewViewIdPumlRoute,
-  SingleViewViewIdIndexRoute: SingleViewViewIdIndexRoute,
-}
-
-const SingleViewViewIdRouteWithChildren =
-  SingleViewViewIdRoute._addFileChildren(SingleViewViewIdRouteChildren)
-
-interface SingleRouteRouteChildren {
-  SingleSingleIndexRoute: typeof SingleSingleIndexRoute
-  SingleEmbedViewIdRoute: typeof SingleEmbedViewIdRoute
-  SingleExportViewIdRoute: typeof SingleExportViewIdRoute
-  SingleViewViewIdRoute: typeof SingleViewViewIdRouteWithChildren
-  SingleWebcomponentSplatRoute: typeof SingleWebcomponentSplatRoute
-}
-
-const SingleRouteRouteChildren: SingleRouteRouteChildren = {
-  SingleSingleIndexRoute: SingleSingleIndexRoute,
-  SingleEmbedViewIdRoute: SingleEmbedViewIdRoute,
-  SingleExportViewIdRoute: SingleExportViewIdRoute,
-  SingleViewViewIdRoute: SingleViewViewIdRouteWithChildren,
-  SingleWebcomponentSplatRoute: SingleWebcomponentSplatRoute,
-}
-
-const SingleRouteRouteWithChildren = SingleRouteRoute._addFileChildren(
-  SingleRouteRouteChildren,
-)
 
 interface ProjectProjectIdViewViewIdRouteChildren {
   ProjectProjectIdViewViewIdD2Route: typeof ProjectProjectIdViewViewIdD2Route
@@ -433,303 +351,13 @@ const ProjectProjectIdRouteRouteWithChildren =
     ProjectProjectIdRouteRouteChildren,
   )
 
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof SingleRouteRouteWithChildren
-  '/projects': typeof ProjectsRoute
-  '/project/$projectId': typeof ProjectProjectIdRouteRouteWithChildren
-  '/single-index': typeof SingleSingleIndexRoute
-  '/embed/$viewId': typeof SingleEmbedViewIdRoute
-  '/export/$viewId': typeof SingleExportViewIdRoute
-  '/view/$viewId': typeof SingleViewViewIdRouteWithChildren
-  '/webcomponent/$': typeof SingleWebcomponentSplatRoute
-  '/project/$projectId/': typeof ProjectProjectIdIndexRoute
-  '/view/$viewId/d2': typeof SingleViewViewIdD2Route
-  '/view/$viewId/dot': typeof SingleViewViewIdDotRoute
-  '/view/$viewId/mmd': typeof SingleViewViewIdMmdRoute
-  '/view/$viewId/puml': typeof SingleViewViewIdPumlRoute
-  '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
-  '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
-  '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdRouteWithChildren
-  '/view/$viewId/': typeof SingleViewViewIdIndexRoute
-  '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
-  '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
-  '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
-  '/project/$projectId/view/$viewId/puml': typeof ProjectProjectIdViewViewIdPumlRoute
-  '/project/$projectId/view/$viewId/': typeof ProjectProjectIdViewViewIdIndexRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof SingleRouteRouteWithChildren
-  '/projects': typeof ProjectsRoute
-  '/single-index': typeof SingleSingleIndexRoute
-  '/embed/$viewId': typeof SingleEmbedViewIdRoute
-  '/export/$viewId': typeof SingleExportViewIdRoute
-  '/webcomponent/$': typeof SingleWebcomponentSplatRoute
-  '/project/$projectId': typeof ProjectProjectIdIndexRoute
-  '/view/$viewId/d2': typeof SingleViewViewIdD2Route
-  '/view/$viewId/dot': typeof SingleViewViewIdDotRoute
-  '/view/$viewId/mmd': typeof SingleViewViewIdMmdRoute
-  '/view/$viewId/puml': typeof SingleViewViewIdPumlRoute
-  '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
-  '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
-  '/view/$viewId': typeof SingleViewViewIdIndexRoute
-  '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
-  '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
-  '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
-  '/project/$projectId/view/$viewId/puml': typeof ProjectProjectIdViewViewIdPumlRoute
-  '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdIndexRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/_single': typeof SingleRouteRouteWithChildren
-  '/projects': typeof ProjectsRoute
-  '/project/$projectId': typeof ProjectProjectIdRouteRouteWithChildren
-  '/_single/single-index': typeof SingleSingleIndexRoute
-  '/_single/embed/$viewId': typeof SingleEmbedViewIdRoute
-  '/_single/export/$viewId': typeof SingleExportViewIdRoute
-  '/_single/view/$viewId': typeof SingleViewViewIdRouteWithChildren
-  '/_single/webcomponent/$': typeof SingleWebcomponentSplatRoute
-  '/project/$projectId/': typeof ProjectProjectIdIndexRoute
-  '/_single/view/$viewId/d2': typeof SingleViewViewIdD2Route
-  '/_single/view/$viewId/dot': typeof SingleViewViewIdDotRoute
-  '/_single/view/$viewId/mmd': typeof SingleViewViewIdMmdRoute
-  '/_single/view/$viewId/puml': typeof SingleViewViewIdPumlRoute
-  '/project/$projectId/embed/$viewId': typeof ProjectProjectIdEmbedViewIdRoute
-  '/project/$projectId/export/$viewId': typeof ProjectProjectIdExportViewIdRoute
-  '/project/$projectId/view/$viewId': typeof ProjectProjectIdViewViewIdRouteWithChildren
-  '/_single/view/$viewId/': typeof SingleViewViewIdIndexRoute
-  '/project/$projectId/view/$viewId/d2': typeof ProjectProjectIdViewViewIdD2Route
-  '/project/$projectId/view/$viewId/dot': typeof ProjectProjectIdViewViewIdDotRoute
-  '/project/$projectId/view/$viewId/mmd': typeof ProjectProjectIdViewViewIdMmdRoute
-  '/project/$projectId/view/$viewId/puml': typeof ProjectProjectIdViewViewIdPumlRoute
-  '/project/$projectId/view/$viewId/': typeof ProjectProjectIdViewViewIdIndexRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/projects'
-    | '/project/$projectId'
-    | '/single-index'
-    | '/embed/$viewId'
-    | '/export/$viewId'
-    | '/view/$viewId'
-    | '/webcomponent/$'
-    | '/project/$projectId/'
-    | '/view/$viewId/d2'
-    | '/view/$viewId/dot'
-    | '/view/$viewId/mmd'
-    | '/view/$viewId/puml'
-    | '/project/$projectId/embed/$viewId'
-    | '/project/$projectId/export/$viewId'
-    | '/project/$projectId/view/$viewId'
-    | '/view/$viewId/'
-    | '/project/$projectId/view/$viewId/d2'
-    | '/project/$projectId/view/$viewId/dot'
-    | '/project/$projectId/view/$viewId/mmd'
-    | '/project/$projectId/view/$viewId/puml'
-    | '/project/$projectId/view/$viewId/'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/projects'
-    | '/single-index'
-    | '/embed/$viewId'
-    | '/export/$viewId'
-    | '/webcomponent/$'
-    | '/project/$projectId'
-    | '/view/$viewId/d2'
-    | '/view/$viewId/dot'
-    | '/view/$viewId/mmd'
-    | '/view/$viewId/puml'
-    | '/project/$projectId/embed/$viewId'
-    | '/project/$projectId/export/$viewId'
-    | '/view/$viewId'
-    | '/project/$projectId/view/$viewId/d2'
-    | '/project/$projectId/view/$viewId/dot'
-    | '/project/$projectId/view/$viewId/mmd'
-    | '/project/$projectId/view/$viewId/puml'
-    | '/project/$projectId/view/$viewId'
-  id:
-    | '__root__'
-    | '/'
-    | '/_single'
-    | '/projects'
-    | '/project/$projectId'
-    | '/_single/single-index'
-    | '/_single/embed/$viewId'
-    | '/_single/export/$viewId'
-    | '/_single/view/$viewId'
-    | '/_single/webcomponent/$'
-    | '/project/$projectId/'
-    | '/_single/view/$viewId/d2'
-    | '/_single/view/$viewId/dot'
-    | '/_single/view/$viewId/mmd'
-    | '/_single/view/$viewId/puml'
-    | '/project/$projectId/embed/$viewId'
-    | '/project/$projectId/export/$viewId'
-    | '/project/$projectId/view/$viewId'
-    | '/_single/view/$viewId/'
-    | '/project/$projectId/view/$viewId/d2'
-    | '/project/$projectId/view/$viewId/dot'
-    | '/project/$projectId/view/$viewId/mmd'
-    | '/project/$projectId/view/$viewId/puml'
-    | '/project/$projectId/view/$viewId/'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  SingleRouteRoute: typeof SingleRouteRouteWithChildren
-  ProjectsRoute: typeof ProjectsRoute
-  ProjectProjectIdRouteRoute: typeof ProjectProjectIdRouteRouteWithChildren
-}
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SingleRouteRoute: SingleRouteRouteWithChildren,
   ProjectsRoute: ProjectsRoute,
+  SingleIndexRoute: SingleIndexRoute,
   ProjectProjectIdRouteRoute: ProjectProjectIdRouteRouteWithChildren,
+  WebcomponentSplatRoute: WebcomponentSplatRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/_single",
-        "/projects",
-        "/project/$projectId"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/_single": {
-      "filePath": "_single/route.tsx",
-      "children": [
-        "/_single/single-index",
-        "/_single/embed/$viewId",
-        "/_single/export/$viewId",
-        "/_single/view/$viewId",
-        "/_single/webcomponent/$"
-      ]
-    },
-    "/projects": {
-      "filePath": "projects.tsx"
-    },
-    "/project/$projectId": {
-      "filePath": "project.$projectId/route.tsx",
-      "children": [
-        "/project/$projectId/",
-        "/project/$projectId/embed/$viewId",
-        "/project/$projectId/export/$viewId",
-        "/project/$projectId/view/$viewId"
-      ]
-    },
-    "/_single/single-index": {
-      "filePath": "_single/single-index.tsx",
-      "parent": "/_single"
-    },
-    "/_single/embed/$viewId": {
-      "filePath": "_single/embed.$viewId.tsx",
-      "parent": "/_single"
-    },
-    "/_single/export/$viewId": {
-      "filePath": "_single/export.$viewId.tsx",
-      "parent": "/_single"
-    },
-    "/_single/view/$viewId": {
-      "filePath": "_single/view.$viewId.tsx",
-      "parent": "/_single",
-      "children": [
-        "/_single/view/$viewId/d2",
-        "/_single/view/$viewId/dot",
-        "/_single/view/$viewId/mmd",
-        "/_single/view/$viewId/puml",
-        "/_single/view/$viewId/"
-      ]
-    },
-    "/_single/webcomponent/$": {
-      "filePath": "_single/webcomponent.$.tsx",
-      "parent": "/_single"
-    },
-    "/project/$projectId/": {
-      "filePath": "project.$projectId/index.tsx",
-      "parent": "/project/$projectId"
-    },
-    "/_single/view/$viewId/d2": {
-      "filePath": "_single/view.$viewId.d2.tsx",
-      "parent": "/_single/view/$viewId"
-    },
-    "/_single/view/$viewId/dot": {
-      "filePath": "_single/view.$viewId.dot.tsx",
-      "parent": "/_single/view/$viewId"
-    },
-    "/_single/view/$viewId/mmd": {
-      "filePath": "_single/view.$viewId.mmd.tsx",
-      "parent": "/_single/view/$viewId"
-    },
-    "/_single/view/$viewId/puml": {
-      "filePath": "_single/view.$viewId.puml.tsx",
-      "parent": "/_single/view/$viewId"
-    },
-    "/project/$projectId/embed/$viewId": {
-      "filePath": "project.$projectId/embed.$viewId.tsx",
-      "parent": "/project/$projectId"
-    },
-    "/project/$projectId/export/$viewId": {
-      "filePath": "project.$projectId/export.$viewId.tsx",
-      "parent": "/project/$projectId"
-    },
-    "/project/$projectId/view/$viewId": {
-      "filePath": "project.$projectId/view.$viewId.tsx",
-      "parent": "/project/$projectId",
-      "children": [
-        "/project/$projectId/view/$viewId/d2",
-        "/project/$projectId/view/$viewId/dot",
-        "/project/$projectId/view/$viewId/mmd",
-        "/project/$projectId/view/$viewId/puml",
-        "/project/$projectId/view/$viewId/"
-      ]
-    },
-    "/_single/view/$viewId/": {
-      "filePath": "_single/view.$viewId.index.tsx",
-      "parent": "/_single/view/$viewId"
-    },
-    "/project/$projectId/view/$viewId/d2": {
-      "filePath": "project.$projectId/view.$viewId.d2.tsx",
-      "parent": "/project/$projectId/view/$viewId"
-    },
-    "/project/$projectId/view/$viewId/dot": {
-      "filePath": "project.$projectId/view.$viewId.dot.tsx",
-      "parent": "/project/$projectId/view/$viewId"
-    },
-    "/project/$projectId/view/$viewId/mmd": {
-      "filePath": "project.$projectId/view.$viewId.mmd.tsx",
-      "parent": "/project/$projectId/view/$viewId"
-    },
-    "/project/$projectId/view/$viewId/puml": {
-      "filePath": "project.$projectId/view.$viewId.puml.tsx",
-      "parent": "/project/$projectId/view/$viewId"
-    },
-    "/project/$projectId/view/$viewId/": {
-      "filePath": "project.$projectId/view.$viewId.index.tsx",
-      "parent": "/project/$projectId/view/$viewId"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
