@@ -2,9 +2,9 @@
  * Runs `runValidate` against real language services and a real workspace on disk.
  */
 import type { LikeC4 } from '@likec4/language-services/node'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { stripVTControlCharacters } from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ValidateLogger, ValidateOptions } from './handler'
@@ -91,6 +91,7 @@ describe('runValidate', () => {
 
   async function validate(sources: Record<string, string>, options: Partial<ValidateOptions> = {}) {
     for (const [name, content] of Object.entries(sources)) {
+      await mkdir(dirname(join(workspace, name)), { recursive: true })
       await writeFile(join(workspace, name), content)
     }
     likec4 = await fromWorkspace(workspace, { printErrors: false })
@@ -155,6 +156,36 @@ describe('runValidate', () => {
     expect(result.warnings).toEqual([])
     expect(result.stats.totalWarnings).toBe(2)
     expect(logs.warn).toEqual([])
+  })
+
+  it('checks the layout of every project in a multi-project workspace', async () => {
+    const project = `
+${spec}
+model {
+  component a
+  component b
+  a -> b
+}
+views {
+  view index {
+    include *
+  }
+}
+`
+    const result = await validate(
+      {
+        'alpha/likec4.config.json': JSON.stringify({ name: 'alpha' }),
+        'alpha/model.c4': project,
+        'beta/likec4.config.json': JSON.stringify({ name: 'beta' }),
+        'beta/model.c4': project,
+      },
+      { layout: true },
+    )
+
+    expect(likec4!.projects()).toEqual(['alpha', 'beta'])
+    expect(result.errors).toEqual([])
+    expect(result.valid).toBe(true)
+    expect(plain(logs.error)).toEqual([])
   })
 
   it('prints JSON with warnings and their counts', async () => {
