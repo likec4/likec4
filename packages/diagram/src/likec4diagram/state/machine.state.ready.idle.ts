@@ -8,7 +8,7 @@ import {
   emitNodeClick,
   emitOpenSourceOfView,
   emitPaneClick,
-  openElementDetails,
+  openNodeDetails,
   openSourceOfFocusedOrLastClickedNode,
   raiseFitDiagram,
   resetLastClickedNode,
@@ -19,6 +19,10 @@ import { machine, targetState, to } from './machine.setup'
 export const idle = machine.createStateConfig({
   id: targetState.idle.slice(1),
   on: {
+    'compare.start': {
+      guard: 'can compare layouts',
+      ...to.comparing,
+    },
     'xyflow.nodeClick': [
       {
         description: 'Handle sequence subflow click in sequence variant',
@@ -70,7 +74,7 @@ export const idle = machine.createStateConfig({
         guard: and([
           'enabled: Readonly',
           'enabled: ElementDetails',
-          'click: node has modelFqn',
+          'click: node has details',
           or([
             'click: same node',
             'click: selected node',
@@ -79,7 +83,7 @@ export const idle = machine.createStateConfig({
         actions: [
           assignLastClickedNode(),
           openSourceOfFocusedOrLastClickedNode(),
-          openElementDetails(),
+          openNodeDetails(),
           emitNodeClick(),
         ],
       },

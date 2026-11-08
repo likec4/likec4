@@ -27,7 +27,11 @@ Tudo adaptado às suas necessidades.
 Código-fonte em LikeC4:
 
 <div align="center">
-  <img src="https://github.com/likec4/.github/assets/824903/c0f22106-dba6-469e-ab47-85e7b8565513" width="675px" alt="Exemplo de código-fonte em LikeC4">
+  <img
+    src="https://github.com/likec4/.github/assets/824903/c0f22106-dba6-469e-ab47-85e7b8565513"
+    width="675px"
+    alt="Exemplo de código-fonte em LikeC4"
+  >
 </div>
 
 Execute a [CLI](./packages/likec4/README.md) para visualizar:
@@ -39,7 +43,11 @@ npx likec4 start
 Resultado:
 
 <div align="center">
-  <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px" alt="Diagrama de arquitetura gerado pelo LikeC4">
+  <img
+    src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5"
+    width="984px"
+    alt="Diagrama de arquitetura gerado pelo LikeC4"
+  >
 </div>
 
 Repositório de template — [likec4/template](https://github.com/likec4/template)\

@@ -53,7 +53,7 @@ OPTIONS
 
 - `list-projects`: List all LikeC4 projects in the workspace.
 - `read-project-summary`: Project specification, configuration, all elements, deployment nodes and views.
-- `search-element`: Search elements and deployment nodes across all projects by id/title/kind/shape/tags/metadata.
+- `search-element`: Fuzzy search of elements and deployment nodes across all projects by id/title/description/link, ranked by relevance; combinable exact filters by kind/shape/tags/metadata.
 - `read-element`: Full element details including relationships, includedInViews, deployedInstances, metadata and sourceLocation.
 - `read-deployment`: Details of a deployment node or deployed instance.
 - `read-view`: Full view details (nodes/edges) and sourceLocation.
@@ -70,6 +70,8 @@ OPTIONS
 - `batch-read-elements`: Read summaries of multiple elements in a single request, including links and sourceLocation.
 - `subgraph-summary`: Summarize descendants of an element with depth, metadata, and relationship counts.
 - `element-diff`: Compare two elements and show differences in properties, tags, metadata, and relationships.
+- `removal-impact`: Report what removing an element takes with it (relationships, deployed instances, views, orphans, source references).
+- `list-diffs`: List model diffs (`diff` blocks) and the views each diff changes.
 - `open-view`: Opens the LikeC4 view (available if MCP is running in the editor)
 
 ### MCP vs LeanIX bridge / Draw.io

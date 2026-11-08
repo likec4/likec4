@@ -48,41 +48,41 @@ describe('DrawIO export/import with cloud-system demo', () => {
     'exported DrawIO has same number of elements and edges per view (no extra, none missing)',
     { timeout: 20000 },
     async () => {
-    expect(likec4.hasErrors()).toBe(false)
+      expect(likec4.hasErrors()).toBe(false)
 
-    expectDrawioXmlLoadableInDrawio(drawioXml)
+      expectDrawioXmlLoadableInDrawio(drawioXml)
 
-    const diagrams = getAllDiagrams(drawioXml)
-    expect(diagrams.length).toBe(viewmodels.length)
+      const diagrams = getAllDiagrams(drawioXml)
+      expect(diagrams.length).toBe(viewmodels.length)
 
-    for (let i = 0; i < viewmodels.length; i++) {
-      const vm = viewmodels[i]!
-      const d = diagrams[i]!
-      const view = vm.$view
-      const nodeCount = view.nodes.length
-      const expectedEdges = view.edges.length
-      // Export adds one extra vertex per container (title cell); match generate-drawio logic
-      const containerCount = view.nodes.filter(
-        n =>
-          Array.isArray(n.children) &&
-          n.children.length > 0 &&
-          view.nodes.some(m => n.children!.includes(m.id)),
-      ).length
-      const expectedNodes = nodeCount + containerCount
+      for (let i = 0; i < viewmodels.length; i++) {
+        const vm = viewmodels[i]!
+        const d = diagrams[i]!
+        const view = vm.$view
+        const nodeCount = view.nodes.length
+        const expectedEdges = view.edges.length
+        // Export adds one extra vertex per container (title cell); match generate-drawio logic
+        const containerCount = view.nodes.filter(
+          n =>
+            Array.isArray(n.children) &&
+            n.children.length > 0 &&
+            view.nodes.some(m => n.children!.includes(m.id)),
+        ).length
+        const expectedNodes = nodeCount + containerCount
 
-      const { vertices, edges } = countDrawioCells(d.content)
-      // DrawIO: 1 vertex = root/defaultParent, rest = nodes + container title cells
-      const actualNodes = Math.max(0, vertices - 1)
-      expect(
-        actualNodes,
-        `View "${view.id}": expected ${expectedNodes} nodes in diagram, got ${actualNodes} vertices (vertices-1)`,
-      ).toBe(expectedNodes)
-      expect(
-        edges,
-        `View "${view.id}": expected ${expectedEdges} edges in diagram, got ${edges}`,
-      ).toBe(expectedEdges)
-    }
-  }
+        const { vertices, edges } = countDrawioCells(d.content)
+        // DrawIO: 1 vertex = root/defaultParent, rest = nodes + container title cells
+        const actualNodes = Math.max(0, vertices - 1)
+        expect(
+          actualNodes,
+          `View "${view.id}": expected ${expectedNodes} nodes in diagram, got ${actualNodes} vertices (vertices-1)`,
+        ).toBe(expectedNodes)
+        expect(
+          edges,
+          `View "${view.id}": expected ${expectedEdges} edges in diagram, got ${edges}`,
+        ).toBe(expectedEdges)
+      }
+    },
   )
 
   it('exported DrawIO contains expected element titles and no stray Array tags', () => {

@@ -279,11 +279,12 @@ Experimente mudar o tema para ver o comportamento em ação.
 
 ### Ícones incluídos
 
-O LikeC4 inclui mais de 5.000 ícones destes pacotes:
+O LikeC4 inclui mais de 13.000 ícones destes pacotes:
 - `aws:` de <a href="https://aws-icons.com" target='_blank'>aws-icons.com</a>
 - `azure:` de <a href="https://learn.microsoft.com/en-us/azure/architecture/icons/" target='_blank'>microsoft.com</a>
 - `bootstrap:` de <a href="https://icons.getbootstrap.com/" target='_blank'>Bootstrap Icons</a> (mais de 2.000 ícones)
 - `gcp:` de <a href="https://gcpicons.com" target='_blank'>gcpicons.com</a>
+- `md:` do <a href="https://fonts.google.com/icons?icon.set=Material+Symbols" target='_blank'>Material Symbols</a> (estilo outlined)
 - `tech:` de <a href="https://techicons.dev" target='_blank'>techicons.dev</a> e <a href="https://svglogos.dev/" target='_blank'>svglogos.dev</a>
 
 Exemplo:
@@ -302,6 +303,9 @@ model {
   ui = component 'User Interface' {
     icon bootstrap:house
   }
+  home = component 'Home' {
+    icon md:home
+  }
 }
 ```
 
@@ -312,7 +316,7 @@ model {
 <br/>
 
 :::note[Tecnologia derivada automaticamente]
-Ícones incluídos (exceto `bootstrap:`) definem automaticamente a `technology` do elemento quando ela ainda não foi informada.
+Ícones incluídos (exceto `bootstrap:` e `md:`) definem automaticamente a `technology` do elemento quando ela ainda não foi informada.
 Por exemplo, `icon tech:docker` define a tecnologia como **"Docker"**. Veja [Tecnologia](/pt-br/dsl/model#tecnologia) para mais detalhes.
 :::
 
@@ -323,14 +327,14 @@ Use o preenchimento automático de código do VS Code para explorar os ícones d
 ### Cor do ícone
 
 Use `iconColor` para sobrescrever a cor do ícone independentemente do preenchimento do elemento.  
-Aplica-se aos ícones `bootstrap:*` incluídos.
+Aplica-se aos ícones `bootstrap:*` e `md:*` incluídos.
 
 ```likec4 copy
 model {
   api = service 'API' {
     style {
       icon tech:nodejs    // ⛔️ Not applied
-      icon bootstrap:gear // ✅ Applies to `bootstrap:*` icons.
+      icon md:home // ✅ Applies to `md:*` icons.
       iconColor indigo
     }
   }

@@ -41,3 +41,11 @@ licensed under the MIT License as stated above.
 
 For the complete original project license, see the LICENSE file in the root
 directory of this source tree.
+
+================================================================================
+
+Material Symbols
+https://fonts.google.com/icons?icon.set=Material+Symbols
+
+The Material Symbols SVG assets in packages/icons are licensed under the
+Apache License, Version 2.0. See packages/icons/MATERIAL-SYMBOLS-LICENSE.

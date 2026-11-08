@@ -139,7 +139,6 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
         if (chunks.length > 1) {
           logger.trace`processing chunk ${chunkIndex} of ${chunks.length} (chunk size: ${achunk.length})`
         }
-        const signal = AbortSignal.timeout(30_000)
         await this.queue.addAll(
           achunk.map(task => async ({ signal }) => {
             // In WASM, we can't run tasks in parallel, and we don't want start task immediately
@@ -163,9 +162,13 @@ export class QueueGraphvizLayoter extends GraphvizLayouter {
               throw error
             }
           }),
-          { signal, throwOnTimeout: false },
+          { throwOnTimeout: true },
         )
-        signal.throwIfAborted()
+        // this batch may have been cancelled
+        if (params.cancelToken?.isCancellationRequested) {
+          logger.trace`cancellation requested`
+          return results
+        }
       }
       logger.trace`batch layout done`
       return results

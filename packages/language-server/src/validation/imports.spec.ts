@@ -3,8 +3,8 @@ import { createMultiProjectTestServices, createTestServices } from '../test'
 
 describe('import checks', () => {
   it('should report invalid import from same project (default)', async ({ expect }) => {
-    const { validate } = createTestServices()
-    const { diagnostics } = await validate(`
+    await using t = createTestServices()
+    const { diagnostics } = await t.validate(`
       import c1 from 'default'
       specification {
         element component
@@ -20,7 +20,7 @@ describe('import checks', () => {
   })
 
   it('should report invalid import from same project (non-default)', async ({ expect }) => {
-    const { validateAll } = await createMultiProjectTestServices({
+    await using t = await createMultiProjectTestServices({
       project1: {
         'doc1': `
           specification {
@@ -36,7 +36,7 @@ describe('import checks', () => {
       },
     })
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect.soft(diagnostics).toHaveLength(1)
     expect(diagnostics).toMatchObject([
       { severity: 1, message: 'Imported project cannot be the same as the current project' },
@@ -44,8 +44,8 @@ describe('import checks', () => {
   })
 
   it('should report invalid import', async ({ expect }) => {
-    const { validate } = createTestServices()
-    const { diagnostics } = await validate(`
+    await using t = createTestServices()
+    const { diagnostics } = await t.validate(`
       import c1 from 'project1'
     `)
     expect.soft(diagnostics).toHaveLength(2)
@@ -56,7 +56,7 @@ describe('import checks', () => {
   })
 
   it('should not report valid imports', async ({ expect }) => {
-    const { validateAll } = await createMultiProjectTestServices({
+    await using t = await createMultiProjectTestServices({
       project1: {
         'doc1': `
           specification {
@@ -81,11 +81,11 @@ describe('import checks', () => {
       },
     })
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect.soft(diagnostics).toHaveLength(0)
   })
   it('should report invalid imports from another project', async ({ expect }) => {
-    const { validateAll } = await createMultiProjectTestServices({
+    await using t = await createMultiProjectTestServices({
       project1: {
         'doc1': `
           specification {
@@ -103,7 +103,7 @@ describe('import checks', () => {
       },
     })
 
-    const { diagnostics } = await validateAll()
+    const { diagnostics } = await t.validateAll()
     expect.soft(diagnostics).toHaveLength(1)
     expect(diagnostics).toMatchObject([
       { severity: 1, message: `Could not resolve reference to Element named 'c2'.` },

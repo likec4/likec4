@@ -13,11 +13,11 @@ inputs:
     description: Owner for the GitHub App token
   fetch-user-id:
     required: false
-    default: "true"
+    default: 'true'
     description: Whether to fetch the bot user id via GitHub API
   configure-git:
     required: false
-    default: "true"
+    default: 'true'
     description: Whether to configure git user.name and user.email
 
 outputs:
@@ -38,7 +38,7 @@ outputs:
     value: ${{ steps.bot.outputs.email }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Decode the GitHub App Private Key
       id: decode

@@ -10,5 +10,6 @@ export default defineVitest('language-server', {
       'build/**',
       'lib/**',
     ],
+    detectAsyncLeaks: true,
   },
 })

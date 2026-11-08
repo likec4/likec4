@@ -20,6 +20,7 @@ import {
   deploymentRelationChecks,
   extendDeploymentChecks,
 } from './deployment-checks'
+import { diffRemoveEntryChecks, modelDiffChecks } from './diff'
 import {
   dynamicViewDisplayVariant,
   stepSeries,
@@ -29,8 +30,10 @@ import {
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImportsFromPoject } from './imports'
+import { markdownRefsChecks } from './markdown-refs'
 import {
   colorLiteralRuleChecks,
+  descriptionFileRuleChecks,
   iconPropertyRuleChecks,
   opacityPropertyRuleChecks,
 } from './property-checks'
@@ -114,6 +117,9 @@ export const isValidatableAstNode = isAnyOf(
   ast.isSpecificationRule,
   ast.isExpressions,
   ast.isColorLiteral,
+  ast.isModelDiff,
+  ast.isDiffStringProperty,
+  ast.isDiffRemoveEntry,
 )
 export type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
@@ -169,6 +175,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     RelationExpr: checkRelationExpr(services),
     OpacityProperty: opacityPropertyRuleChecks(services),
     IconProperty: iconPropertyRuleChecks(services),
+    DescriptionFileProperty: descriptionFileRuleChecks(services),
     SpecificationRule: checkSpecificationRule(services),
     Model: checkModel(services),
     Globals: checkGlobals(services),
@@ -196,7 +203,10 @@ export function registerValidationChecks(services: LikeC4Services) {
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
     ViewRuleRank: viewRuleRankChecks(services),
     ViewOrderProperty: viewOrderChecks(services),
+    ModelDiff: modelDiffChecks(services),
+    DiffRemoveEntry: diffRemoveEntryChecks(services),
     ViewRuleAutoLayout: viewRuleAutoLayoutChecks(services),
+    MarkdownOrString: markdownRefsChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

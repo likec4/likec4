@@ -1,6 +1,5 @@
 import { css } from '@likec4/styles/css'
 import { Tooltip } from '@mantine/core'
-import { getBezierPath } from '@xyflow/system'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -11,25 +10,31 @@ import {
 } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
+import { edgePathThroughLabel } from '../../../utils/edge-path-through-label'
 import type { RelationshipsBrowserTypes } from '../_types'
-import { useRelationshipsBrowser } from '../hooks'
+import { useRelationshipsBrowser, useRelationshipsBrowserState } from '../hooks'
 
 export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((props) => {
   const browser = useRelationshipsBrowser()
+  const isGlobalScope = useRelationshipsBrowserState(state => state.context.scope === 'global')
   const { enableNavigateTo } = useEnabledFeatures()
   const {
     data: {
       navigateTo,
       relations,
       existsInCurrentView,
+      labelBBox,
     },
   } = props
-  const [svgPath, labelX, labelY] = getBezierPath(props)
+  // the label is placed by the layout, the edge goes through it
+  const [svgPath, labelPosition] = edgePathThroughLabel(props, labelBBox)
   const diagram = useDiagram()
 
-  const markOrange = relations.length > 1 || !existsInCurrentView
+  const isGrouped = relations.length > 1
+  const isThick = isGrouped || !existsInCurrentView
+  const overrideColor = (isGlobalScope && isGrouped) || !existsInCurrentView
 
-  const edgeProps = markOrange
+  const edgeProps = overrideColor
     ? {
       ...props,
       data: {
@@ -79,19 +84,17 @@ export const RelationshipEdge = memoEdge<RelationshipsBrowserTypes.EdgeProps>((p
       <EdgePath
         edgeProps={edgeProps}
         svgPath={svgPath}
-        {...markOrange && {
+        {...isThick && {
           strokeWidth: 5,
         }}
       />
       <EdgeLabelContainer
         edgeProps={edgeProps}
-        labelPosition={{
-          x: labelX,
-          y: labelY,
-          translate: 'translate(-50%, 0)',
-        }}
-        style={{
-          maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
+        labelPosition={labelPosition}
+        {...!labelBBox && {
+          style: {
+            maxWidth: Math.min(Math.abs(props.targetX - props.sourceX - 70), 250),
+          },
         }}
       >
         {label}

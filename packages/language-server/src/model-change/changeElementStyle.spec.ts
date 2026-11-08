@@ -1,9 +1,6 @@
 import type { Fqn, ViewId } from '@likec4/core'
-import { describe, vi } from 'vitest'
-import { it } from './changeViewLayout.spec'
-
-vi.mock('node:fs')
-vi.mock('node:fs/promises')
+import { describe } from 'vitest'
+import { it } from './_it-spec'
 
 describe('changeElementStyle', () => {
   it('inserts a style inside a view with only non-style rules', async ({ expect, testDoc }) => {

@@ -112,10 +112,9 @@ ExtensionApi.onGetLastClickedNodeRequest(() => {
 
 ExtensionApi.onModelUpdateNotification(async () => {
   const projectId = $projectId.get()
-  const viewId = $viewId.get()
   await Promise.allSettled([
     queryClient.invalidateQueries({
-      queryKey: queries.fetchComputedModel(projectId).queryKey,
+      queryKey: ['project', projectId, 'model'],
       refetchType: 'active',
     }),
     queryClient.invalidateQueries({

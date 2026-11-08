@@ -1,4 +1,5 @@
 import type {
+  BBox,
   Color,
   DiagramNode,
   ExclusiveUnion,
@@ -105,6 +106,10 @@ export namespace RelationshipDetailsTypes {
       relationId: RelationId
       color: Color
       label: string | null
+      /**
+       * Label box placed by the layout, the edge goes through it
+       */
+      labelBBox: BBox | null
       technology?: string | undefined
       navigateTo: ViewId | null
       line: RelationshipLineType

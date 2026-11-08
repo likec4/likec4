@@ -11,11 +11,13 @@ export {
 export { invariant, nonexhaustive, nonNullable } from './invariant'
 
 export { commonHead } from './common-head'
+
 export {
   compareNatural,
   compareNaturalHierarchically,
   sortNatural,
 } from './compare-natural'
+export { collapseUnchanged, diffLines, type LineChange } from './diff-lines'
 
 export {
   ancestorsFqn,
@@ -76,6 +78,15 @@ export {
 export { objectHash } from './object-hash'
 export { stringHash } from './string-hash'
 
-export { markdownToHtml, markdownToText } from './markdown'
+export {
+  extractRefs,
+  type MarkdownRef,
+  markdownRefText,
+  type MarkdownRefTitleResolver,
+  markdownToHtml,
+  markdownToText,
+  resolveMarkdownRefs,
+  type ResolveMarkdownRefsOptions,
+} from './markdown'
 
 export { unsafePartial } from './unsafe'

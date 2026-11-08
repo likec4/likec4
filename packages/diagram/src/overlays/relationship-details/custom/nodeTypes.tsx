@@ -39,7 +39,7 @@ const ElementDetailsButtonWithHandler = (props: BaseNodePropsWithData<Relationsh
       {...props}
       onClick={e => {
         e.stopPropagation()
-        diagram.openElementDetails(props.data.fqn)
+        diagram.openNodeDetails({ type: 'element', element: props.data.fqn })
       }}
     />
   )

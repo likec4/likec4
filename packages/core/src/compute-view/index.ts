@@ -22,3 +22,5 @@ export {
   computeFlow,
   type ComputeFlowResult,
 } from './dynamic-view/computeFlow'
+
+export * from './model-diff'

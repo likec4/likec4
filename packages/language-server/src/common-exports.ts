@@ -10,7 +10,26 @@ export type {
   ViewLocateResult,
 } from './model'
 
+export type { ast } from './ast'
 export type { FormatOptions, LikeC4LanguageServices } from './LikeC4LanguageServices'
+
+export type {
+  ApplyEditsResult,
+  DiffAction,
+  DocumentChange,
+  LikeC4ModelDiffs,
+  LikeC4ModelEdits,
+  LikeC4RemovalImpact,
+  ModelEditPreview,
+  ModelEditRecord,
+  ModelEditRequest,
+  ModelEditResult,
+  ReferenceKind,
+  RemainingError,
+  RemovalImpactReference,
+  RemovalImpactReport,
+  SafeDeleteOptions,
+} from './model-diff'
 
 export type {
   LanguageServicesContext,

@@ -19,6 +19,7 @@ import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from './ast'
 import { logger as mainLogger } from './logger'
 import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4ModelChanges } from './model-change/ModelChanges'
+import type { LikeC4ModelDiffs, LikeC4RemovalImpact } from './model-diff'
 import type { LikeC4Services } from './module'
 import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/LikeC4Views'
@@ -51,6 +52,14 @@ export interface LikeC4LanguageServices {
   readonly workspacePath: string
   readonly projectsManager: ProjectsManager
   readonly editor: LikeC4ModelChanges
+  /**
+   * Model diffs: list diffs and compare views
+   */
+  readonly modelDiffs: LikeC4ModelDiffs
+  /**
+   * Safe delete dry run: what removing an element takes with it
+   */
+  readonly removalImpact: LikeC4RemovalImpact
 
   /**
    * Returns all projects with relevant documents
@@ -87,18 +96,47 @@ export interface LikeC4LanguageServices {
   computedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model<UnknownComputed>>
 
   /**
-   * Returns {@link LikeC4Model} of the specified project, with layouted views {@link LayoutedView}
-   * Ready for rendering. Applies manual layouts if available.
+   * Returns {@link LikeC4Model} of the specified project, with layouted views {@link LayoutedView}.
+   * This is the primary way to get a model ready for rendering.
+   *
+   * Manual layouts are **not applied** to the model data:
+   * - `$data.views` always contains the latest auto-layouted views (Graphviz)
+   * - `$data.manualLayouts` contains manual layout snapshots (from `.likec4/*.likec4.snap`) as is
+   *
+   * Manual layouts are applied by the view model, on access:
+   * - `model.view(id).$layouted` - view with manual layout applied (if any), use it for rendering
+   * - `model.view(id).$view` - latest auto-layouted view, with drifts from manual layout (if any)
+   * - `model.view(id).$manual` - view with manual layout applied, or `null` if there is no manual layout
+   *
+   * Keeping them separate allows consumers to switch between auto and manual layouts and to detect layout drifts.
+   * It also means that serialized `$data` (e.g. inlined into a bundle) is enough:
+   * manual layouts are applied again after `LikeC4Model.create($data)`.
+   * Do not read positions from `$data.views` directly, these are auto-layouted.
    *
    * If no {@link project} is specified, returns for default project
+   *
+   * @example
+   * ```ts
+   * const model = await languageServices.layoutedModel()
+   * const view = model.view('index').$layouted // ready for rendering, with manual layout applied
+   * ```
    */
   layoutedModel(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LikeC4Model<UnknownLayouted>>
 
   /**
-   * Returns diagrams (i.e. layouted views {@link LayoutedView}) for the specified project
-   * Applies manual layouts if available.
+   * Returns diagrams (i.e. layouted views {@link LayoutedView}) for the specified project,
+   * with manual layouts applied (if any).
+   *
+   * Equivalent to `[...layoutedModel.views()].map(v => v.$layouted)`,
+   * but loses the auto-layouted version of views and the model itself.
    *
    * If no {@link project} is specified, returns diagrams for default project
+   *
+   * @deprecated Use {@link layoutedModel} and `$layouted` of its views instead:
+   * ```ts
+   * const model = await languageServices.layoutedModel(project)
+   * const diagrams = [...model.views()].map(v => v.$layouted)
+   * ```
    */
   diagrams(project?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<LayoutedView[]>
 
@@ -179,6 +217,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
 
   get views(): LikeC4Views {
     return this.services.likec4.Views
+  }
+
+  get modelDiffs(): LikeC4ModelDiffs {
+    return this.services.likec4.ModelDiffs
+  }
+
+  get removalImpact(): LikeC4RemovalImpact {
+    return this.services.likec4.RemovalImpact
   }
 
   get workspaceUri(): URI {

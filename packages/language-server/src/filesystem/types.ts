@@ -47,6 +47,15 @@ export interface FileSystemProvider extends LangiumFileSystemProvider {
   ): Promise<FileNode[]>
 
   /**
+   * The canonical path of the given URI, with every symbolic link resolved.
+   *
+   * `undefined` when the path cannot be resolved, which includes a file that does not exist and a
+   * URI of a scheme this provider cannot reach: the caller has to treat "unknown" and "outside"
+   * differently.
+   */
+  realpath(uri: URI): Promise<string | undefined>
+
+  /**
    * Writes the content to the file system.
    * Used by manual layouts.
    */
@@ -78,6 +87,76 @@ export interface FileSystemWatcher extends AsyncDisposable {
 export interface LikeC4ManualLayoutsModuleContext {
   manualLayouts: (services: LikeC4SharedServices) => LikeC4ManualLayouts
 }
+
+/**
+ * What a file referenced by `descriptionFile` resolved to.
+ */
+export type DescriptionFileContent =
+  | { readonly content: string }
+  | { readonly error: string }
+
+/**
+ * Files referenced with `descriptionFile`.
+ *
+ * The parser only records the references (the files are read when the model is built, not while
+ * documents are parsed). Before the build, {@link LikeC4DescriptionFiles.read} reads the files the
+ * project references, and the synchronous build takes their content with {@link LikeC4DescriptionFiles.get}.
+ * When a referenced file changes, the projects that reference it are notified to be rebuilt.
+ */
+export interface LikeC4DescriptionFiles extends Disposable {
+  /**
+   * Reads the files referenced by the project (the ones not read yet), and remembers that the project
+   * references them (previously referenced files are replaced).
+   *
+   * @param resolvedPaths the files referenced by the documents of the project, as the parser resolved them
+   */
+  read(projectId: ProjectId, resolvedPaths: Iterable<string>): Promise<void>
+
+  /**
+   * What the file resolved to for the project, `undefined` when it has not been read.
+   */
+  get(projectId: ProjectId, resolvedPath: string): DescriptionFileContent | undefined
+
+  /**
+   * Hash of the files referenced by the project and their content.
+   * Changes when a referenced file changes, so the model built from them is not taken from cache.
+   */
+  hash(projectId: ProjectId): string
+
+  /**
+   * Resolves and reads a single reference (used by the validation to report the file that cannot be read).
+   */
+  readReference(ref: DescriptionFileReference): Promise<DescriptionFileContent>
+
+  /**
+   * Whether `uri` is a file referenced by some project, and so worth watching.
+   */
+  isReferenced(uri: URI): boolean
+
+  /**
+   * Registers a listener called when a referenced file changed (once for each project referencing it).
+   */
+  onDescriptionFileUpdate(listener: DescriptionFileUpdateListener): Disposable
+
+  clearCaches(): void
+}
+
+/**
+ * A file a document references with `descriptionFile`.
+ */
+export type DescriptionFileReference = {
+  /** The document the property appears in */
+  readonly docUri: URI
+  readonly value: string
+  readonly resolvedPath: string | null
+}
+
+export type DescriptionFileUpdateEvent = {
+  readonly uri: URI
+  readonly projectId: ProjectId
+}
+
+export type DescriptionFileUpdateListener = (event: DescriptionFileUpdateEvent) => void
 
 export type ManualLayoutsSnapshot = {
   hash: string
@@ -115,11 +194,4 @@ export interface LikeC4ManualLayouts extends Disposable {
    * The listener will be called when a manual layout is created, updated, or deleted.
    */
   onManualLayoutUpdate(listener: ManualLayoutUpdateListener): Disposable
-
-  /**
-   * Handles file system updates for manual layouts.
-   * Used by the file system watcher to notify the manual layouts module of changes.
-   * @param event The file system event
-   */
-  handleFileSystemUpdate(event: { update: URI; delete?: never } | { delete: URI; update?: never }): Promise<void>
 }

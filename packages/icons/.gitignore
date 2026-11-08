@@ -1,5 +1,6 @@
 dist/
 .tmp/
 all.*
+md/
 */*.d.ts
 */*.js

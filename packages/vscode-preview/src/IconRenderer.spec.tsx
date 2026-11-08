@@ -105,6 +105,22 @@ describe('IconRenderer', () => {
     expect(html).toContain('src="https://icons.like-c4.dev/tech/react.svg"')
   })
 
+  it('renders Material Symbols as colorable CDN masks', () => {
+    const html = renderToStaticMarkup(
+      <IconRenderer
+        node={{
+          id: 'test',
+          title: 'Home',
+          icon: 'md:home',
+        }} />,
+    )
+
+    expect(html).toContain('background-color:currentColor')
+    expect(html).toContain('mask-image:url(')
+    expect(html).toContain('https://icons.like-c4.dev/md/home.svg')
+    expect(html).not.toContain('<img')
+  })
+
   it('renders local SVG data URLs as colorable masks', () => {
     const dataUrl = `data:image/svg+xml,${
       encodeURIComponent(

@@ -108,6 +108,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         kind,
         title: title ?? nameFromFqn(id),
         ...descAndTech,
+        ...this.parseDescriptionFile(astNode.body),
         tags,
         links,
         style,
@@ -148,6 +149,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...baseProps,
         style,
         metadata,
+        ...this.parseDescriptionFile(astNode.body),
       })
     }
 
@@ -230,6 +232,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         isBidirectional: astNode.isBidirectional || undefined,
         ...titleDescAndTech,
         metadata,
+        ...this.parseDescriptionFile(astNode.body),
         kind,
         tags,
         links,

@@ -20,7 +20,6 @@ import { getViewFolderPath } from '@likec4/core/model'
 import type {
   DiagramNode,
   DiagramView,
-  Fqn,
   LayoutType,
   NodeId,
   StepPath,
@@ -37,6 +36,7 @@ import {
 } from 'xstate'
 import { Base } from '../../base'
 import type { OpenSourceParams } from '../../LikeC4Diagram.props'
+import { type DetailsSubject, detailsSubject } from '../../overlays/element-details/subject'
 import { viewRouting } from '../../utils/view-routing'
 import { convertToXYFlow } from '../convert-to-xyflow'
 import type { Types } from '../types'
@@ -48,7 +48,7 @@ import {
   resetEdgeControlPoints,
 } from './assign'
 import { cancelFitDiagram, raiseFitDiagram, setViewport, setViewportCenter } from './machine.actions.layout'
-import { machine } from './machine.setup'
+import { type Context, type Events, machine } from './machine.setup'
 import {
   findDiagramEdge,
   findDiagramNode,
@@ -63,16 +63,57 @@ export const resetSelection = () =>
     type: 'xyflow.resetSelection',
   })
 
-export const disableCompareWithLatest = () =>
-  machine.assign(({ context }) => {
-    return {
-      toggledFeatures: {
-        ...context.toggledFeatures,
-        enableCompareWithLatest: false,
-      },
+/**
+ * Resolves the layout type requested by `emit.onLayoutTypeChange`,
+ * or toggles the current one, if the action is triggered by another event.
+ */
+const resolveNextLayoutType = (context: Context, event: Events): LayoutType => {
+  if (event.type === 'emit.onLayoutTypeChange') {
+    return event.layoutType
+  }
+  return context.view._layout === 'auto' ? 'manual' : 'auto'
+}
+
+/**
+ * Comparing layouts: before switching the layout type,
+ * remembers the viewport of the current layout (to restore it when switching back)
+ * and cancels pending editor changes when switching from manual to auto.
+ */
+export const beforeLayoutTypeChangeWhileComparing = () =>
+  machine.enqueueActions(({ context, event, enqueue }) => {
+    const currentLayoutType = context.view._layout
+    const nextLayoutType = resolveNextLayoutType(context, event)
+    if (!currentLayoutType || currentLayoutType === nextLayoutType) {
+      return
+    }
+    if (currentLayoutType === 'manual') {
+      enqueue.sendTo(typedSystem.editorActor, { type: 'cancel' })
+      enqueue.assign({
+        viewportOnManualLayout: context.viewport,
+      })
+      return
+    }
+    enqueue.assign({
+      viewportOnAutoLayout: context.viewport,
+    })
+  })
+
+/**
+ * Comparing layouts: on exit, switches back to manual layout (if auto is active)
+ * and forgets the remembered viewports.
+ */
+export const exitComparingLayouts = () =>
+  machine.enqueueActions(({ context, enqueue }) => {
+    if (context.view._layout === 'auto') {
+      enqueue.emit({
+        type: 'onLayoutTypeChange',
+        layoutType: 'manual',
+      })
+    }
+    enqueue.assign({
       viewportOnAutoLayout: null,
       viewportOnManualLayout: null,
-    }
+    })
   })
 
 export const onEdgeDoubleClick = () =>
@@ -382,40 +423,11 @@ export const emitOnLayoutTypeChange = () =>
       return
     }
     const currentLayoutType = context.view._layout
-    // toggle
-    let nextLayoutType: LayoutType = currentLayoutType === 'auto' ? 'manual' : 'auto'
-
-    if (event.type === 'emit.onLayoutTypeChange') {
-      nextLayoutType = event.layoutType
-    }
+    const nextLayoutType = resolveNextLayoutType(context, event)
 
     if (currentLayoutType === nextLayoutType) {
       console.warn('Ignoring layout type change event, layout type is already', currentLayoutType)
       return
-    }
-
-    if (context.toggledFeatures.enableCompareWithLatest === true) {
-      // Check if we are switching from manual to auto layout while a sync is pending
-      if (currentLayoutType === 'manual' && nextLayoutType === 'auto') {
-        enqueue.sendTo(
-          typedSystem.editorActor,
-          {
-            type: 'cancel',
-          },
-        )
-      }
-
-      const currentViewport = context.viewport
-      if (currentLayoutType === 'auto') {
-        enqueue.assign({
-          viewportOnAutoLayout: currentViewport,
-        })
-      }
-      if (currentLayoutType === 'manual') {
-        enqueue.assign({
-          viewportOnManualLayout: currentViewport,
-        })
-      }
     }
 
     enqueue.emit({
@@ -670,35 +682,40 @@ export const cancelEditing = () =>
     },
   )
 
-const hasModelFqn = <D extends Types.Node>(node: D): node is D & { data: { modelFqn: Fqn } } =>
-  'modelFqn' in node.data && isTruthy(node.data.modelFqn)
-
-export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | undefined }) =>
+export const openNodeDetails = () =>
   machine.enqueueActions(({ context, event, enqueue }) => {
     let initiatedFrom = null as null | {
       node: NodeId
       clientRect: Rect
     }
-    let fromNodeId: NodeId | undefined, subject: Fqn
+    let fromNodeId: NodeId | undefined, subject: DetailsSubject
     switch (true) {
-      // Use from params if available
-      case !!params: {
-        subject = params.fqn
-        fromNodeId = params.fromNode ?? context.view.nodes.find(n => n.modelRef === params.fqn)?.id
-        break
-      }
       case event.type === 'xyflow.nodeClick': {
-        if (!hasModelFqn(event.node)) {
-          console.warn('No modelFqn in clicked node data')
+        const clickedSubject = detailsSubject(event.node.data)
+        if (!clickedSubject) {
+          console.warn('No model or deployment reference in clicked node data')
           return
         }
-        subject = event.node.data.modelFqn
+        subject = clickedSubject
         fromNodeId = event.node.data.id
         break
       }
-      case event.type === 'open.elementDetails': {
-        subject = event.fqn
-        fromNodeId = event.fromNode
+      case event.type === 'open.nodeDetails': {
+        if (isString(event.target)) {
+          const node = context.xynodes.find(n => n.id === event.target)
+          const nodeSubject = node ? detailsSubject(node.data) : null
+          if (!nodeSubject) {
+            console.warn('No model or deployment reference for node', event.target)
+            return
+          }
+          subject = nodeSubject
+          fromNodeId = event.fromNode ?? event.target
+        } else {
+          subject = event.target
+          fromNodeId = event.fromNode ?? (subject.type === 'deployment'
+            ? context.view.nodes.find(n => n.deploymentRef === subject.deployment)?.id
+            : undefined)
+        }
         break
       }
       default: {
@@ -708,11 +725,12 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
         }
         fromNodeId = context.lastClickedNode.id
         const node = context.xynodes.find(n => n.id === fromNodeId)
-        if (!node || !hasModelFqn(node)) {
-          console.warn('No modelFqn in last clicked node')
+        const clickedSubject = node ? detailsSubject(node.data) : null
+        if (!clickedSubject) {
+          console.warn('No model or deployment reference in last clicked node')
           return
         }
-        subject = node.data.modelFqn
+        subject = clickedSubject
         break
       }
     }
@@ -746,7 +764,11 @@ export const openElementDetails = (params?: { fqn: Fqn; fromNode?: NodeId | unde
 
 export const openOverlay = () =>
   machine.enqueueActions(({ context, event, enqueue, check }) => {
-    assertEvent(event, ['open.relationshipsBrowser', 'open.relationshipDetails', 'open.elementDetails'])
+    assertEvent(event, [
+      'open.relationshipsBrowser',
+      'open.relationshipDetails',
+      'open.nodeDetails',
+    ])
 
     if (!check('enabled: Overlays')) {
       console.warn('Overlays feature is disabled')
@@ -754,9 +776,9 @@ export const openOverlay = () =>
     }
 
     switch (event.type) {
-      case 'open.elementDetails': {
+      case 'open.nodeDetails': {
         check('enabled: ElementDetails')
-          ? enqueue(openElementDetails())
+          ? enqueue(openNodeDetails())
           : console.warn('ElementDetails feature is disabled')
         break
       }
@@ -1053,7 +1075,13 @@ export const handleNavigate = () =>
     }
   })
 
-export const updateView = () =>
+/**
+ * Updates the current view in place.
+ *
+ * @param params.restoreLayoutViewport - when layout type changes (comparing layouts),
+ * restore the viewport remembered for the next layout type, or recenter
+ */
+export const updateView = (params?: { restoreLayoutViewport?: boolean }) =>
   machine.enqueueActions(
     ({ enqueue, event, context }) => {
       if (event.type !== 'update.view') {
@@ -1076,7 +1104,8 @@ export const updateView = () =>
 
       enqueue(sendSynced())
 
-      if (context.toggledFeatures.enableCompareWithLatest === true && context.view._layout !== nextView._layout) {
+      const restoreLayoutViewport = params?.restoreLayoutViewport === true
+      if (restoreLayoutViewport && context.view._layout !== nextView._layout) {
         if (nextView._layout === 'auto' && context.viewportOnAutoLayout) {
           enqueue(
             setViewport({
@@ -1102,7 +1131,7 @@ export const updateView = () =>
 
       // Check if comparing layouts is enabled and layout changed
       recenter = recenter || (
-        context.toggledFeatures.enableCompareWithLatest === true &&
+        restoreLayoutViewport &&
         !!nextView._layout &&
         context.view._layout !== nextView._layout
       )

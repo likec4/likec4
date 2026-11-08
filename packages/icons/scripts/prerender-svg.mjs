@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 const ROOT = new URL('..', import.meta.url).pathname
 const SVG_DIR = join(ROOT, 'svg')
-const GROUPS = ['aws', 'azure', 'bootstrap', 'gcp', 'tech']
+const GROUPS = ['aws', 'azure', 'bootstrap', 'gcp', 'md', 'tech']
 
 const files = new fdir()
   .withRelativePaths()

@@ -164,9 +164,9 @@ O padrão de exclusão é o mesmo usado pelo [picomatch](https://github.com/micr
 
 ## Inferir tecnologia a partir do ícone
 
-Por padrão, o LikeC4 deriva automaticamente um rótulo `technology` legível a partir dos nomes dos ícones incluídos (`aws:`, `azure:`, `gcp:`, `tech:`) quando a tecnologia não é definida explicitamente no elemento ou em seu tipo.
+Por padrão, o LikeC4 deriva automaticamente um rótulo `technology` legível a partir dos nomes dos ícones incluídos (`aws:`, `azure:`, `gcp:`, `tech:`) quando a tecnologia não é definida explicitamente no elemento ou em seu tipo. Os ícones genéricos `bootstrap:` e `md:` são excluídos.
 
-Por exemplo, um elemento com `icon tech:apache-flink` recebe a tecnologia **"Apache Flink"**, e `icon aws:simple-storage-service` recebe **"Simple Storage Service"**. Ícones `bootstrap:` são excluídos.
+Por exemplo, um elemento com `icon tech:apache-flink` recebe a tecnologia **"Apache Flink"**, e `icon aws:simple-storage-service` recebe **"Simple Storage Service"**. Os ícones genéricos `bootstrap:` e `md:` são excluídos.
 
 Para desabilitar esse comportamento:
 

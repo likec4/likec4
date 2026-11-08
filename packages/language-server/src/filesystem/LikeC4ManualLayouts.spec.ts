@@ -2,114 +2,127 @@ import type { DiagramNode, Fqn, LayoutedView, NodeId, ViewId } from '@likec4/cor
 import { defu } from 'defu'
 import type { OverrideProperties, Writable } from 'type-fest'
 import { describe, it, vi } from 'vitest'
+import { FileChangeType } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
-import { createLanguageServices } from '../module'
+import { createTestServices as createTestServicesBase } from '../test'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
+import { NoopFileSystemProvider } from './noop'
+import type { FileSystemProvider, ManualLayoutUpdateListener } from './types'
+
+// Helper to create services with mocked file system
+async function createTestServices() {
+  // Standalone provider: spies on it do not retain the services graph (vitest keeps mocks for the whole worker)
+  const fs: FileSystemProvider = new NoopFileSystemProvider()
+  vi.spyOn(fs, 'scanDirectory')
+  vi.spyOn(fs, 'readFile')
+  vi.spyOn(fs, 'writeFile')
+  vi.spyOn(fs, 'deleteFile')
+
+  const t = createTestServicesBase({
+    context: {
+      ...WithLikeC4ManualLayouts,
+      fileSystemProvider: () => fs,
+    },
+  })
+  await t.initialize()
+
+  const projectData = await t.services.shared.workspace.ProjectsManager.registerProject({
+    config: { name: 'test-project' },
+    folderUri: URI.file('/test/workspace/src/test-project'),
+  })
+
+  const project = t.services.shared.workspace.ProjectsManager.getProject(projectData.id)
+
+  const manualLayouts = t.services.shared.workspace.ManualLayouts
+  return {
+    services: t.services,
+    fs,
+    project,
+    manualLayouts,
+    [Symbol.asyncDispose]: async () => {
+      await t[Symbol.asyncDispose]()
+    },
+  }
+}
+
+type PartialNode = Partial<
+  OverrideProperties<Writable<DiagramNode>, {
+    id?: string
+    icon?: string
+  }>
+>
+
+type PartialView = Partial<
+  OverrideProperties<Writable<LayoutedView>, {
+    id?: string
+    nodes?: PartialNode[]
+  }>
+>
+
+// Helper to create mock LayoutedView with base defaults
+function createMockView(overrides?: PartialView): LayoutedView {
+  const base: LayoutedView = {
+    id: 'test-view' as ViewId,
+    _type: 'element' as const,
+    _stage: 'layouted' as const,
+    _layout: 'manual' as const,
+    title: 'Test View',
+    description: {
+      md: 'This is a **test** view',
+    },
+    hash: 'hash1',
+    autoLayout: { direction: 'TB' as const, nodeSep: 60, rankSep: 50 },
+    nodes: [{
+      id: 'node1' as NodeId,
+      parent: null,
+      title: 'Node 1',
+      color: 'primary',
+      shape: 'rectangle' as const,
+      technology: null,
+      description: null,
+      links: null,
+      tags: [],
+      notation: null,
+      level: 0,
+      modelRef: 'element1' as Fqn,
+      x: 100,
+      y: 200,
+      width: 150,
+      height: 100,
+      labelBBox: { x: 100, y: 200, width: 150, height: 20 },
+      kind: 'element' as const,
+      children: [],
+      inEdges: [],
+      outEdges: [],
+      style: {},
+    }],
+    edges: [],
+    bounds: { x: 0, y: 0, width: 100, height: 100 },
+  }
+  return defu(overrides || {}, base) as LayoutedView
+}
+
+function mockFsReads(fs: Awaited<ReturnType<typeof createTestServices>>['fs'], ...views: LayoutedView[]) {
+  vi.mocked(fs.scanDirectory).mockResolvedValue(
+    views.map(view => ({
+      uri: URI.file(`/test/workspace/src/test-project/.likec4/${view.id}.likec4.snap`),
+      isFile: true,
+      isDirectory: false,
+    })),
+  )
+  vi.mocked(fs.readFile).mockImplementation(async (uri) => {
+    const view = views.find(v => uri.fsPath.endsWith(`${v.id}.likec4.snap`))
+    if (!view) {
+      throw new Error(`File not found: ${uri.fsPath}`)
+    }
+    return JSON.stringify(view)
+  })
+}
 
 describe('LikeC4ManualLayouts', () => {
-  // Helper to create services with mocked file system
-  async function createTestServices() {
-    const services = createLanguageServices(
-      {
-        ...WithLikeC4ManualLayouts,
-      },
-    ).likec4
-
-    // Mock filesystem methods
-    const fs = services.shared.workspace.FileSystemProvider
-    vi.spyOn(fs, 'scanDirectory')
-    vi.spyOn(fs, 'readFile')
-    vi.spyOn(fs, 'writeFile')
-    vi.spyOn(fs, 'deleteFile')
-
-    const projectData = await services.shared.workspace.ProjectsManager.registerProject({
-      config: { name: 'test-project' },
-      folderUri: URI.file('/test/workspace/src/test-project'),
-    })
-
-    const project = services.shared.workspace.ProjectsManager.getProject(projectData.id)
-
-    const manualLayouts = services.shared.workspace.ManualLayouts
-    return { services, fs, project, manualLayouts }
-  }
-
-  type PartialNode = Partial<
-    OverrideProperties<Writable<DiagramNode>, {
-      id?: string
-      icon?: string
-    }>
-  >
-
-  type PartialView = Partial<
-    OverrideProperties<Writable<LayoutedView>, {
-      id?: string
-      nodes?: PartialNode[]
-    }>
-  >
-
-  // Helper to create mock LayoutedView with base defaults
-  function createMockView(overrides?: PartialView): LayoutedView {
-    const base: LayoutedView = {
-      id: 'test-view' as ViewId,
-      _type: 'element' as const,
-      _stage: 'layouted' as const,
-      _layout: 'manual' as const,
-      title: 'Test View',
-      description: {
-        md: 'This is a **test** view',
-      },
-      hash: 'hash1',
-      autoLayout: { direction: 'TB' as const, nodeSep: 60, rankSep: 50 },
-      nodes: [{
-        id: 'node1' as NodeId,
-        parent: null,
-        title: 'Node 1',
-        color: 'primary',
-        shape: 'rectangle' as const,
-        technology: null,
-        description: null,
-        links: null,
-        tags: [],
-        notation: null,
-        level: 0,
-        modelRef: 'element1' as Fqn,
-        x: 100,
-        y: 200,
-        width: 150,
-        height: 100,
-        labelBBox: { x: 100, y: 200, width: 150, height: 20 },
-        kind: 'element' as const,
-        children: [],
-        inEdges: [],
-        outEdges: [],
-        style: {},
-      }],
-      edges: [],
-      bounds: { x: 0, y: 0, width: 100, height: 100 },
-    }
-    return defu(overrides || {}, base) as LayoutedView
-  }
-
-  function mockFsReads(fs: Awaited<ReturnType<typeof createTestServices>>['fs'], ...views: LayoutedView[]) {
-    vi.mocked(fs.scanDirectory).mockResolvedValue(
-      views.map(view => ({
-        uri: URI.file(`/test/workspace/src/test-project/.likec4/${view.id}.likec4.snap`),
-        isFile: true,
-        isDirectory: false,
-      })),
-    )
-    vi.mocked(fs.readFile).mockImplementation(async (uri) => {
-      const view = views.find(v => uri.fsPath.endsWith(`${v.id}.likec4.snap`))
-      if (!view) {
-        throw new Error(`File not found: ${uri.fsPath}`)
-      }
-      return JSON.stringify(view)
-    })
-  }
-
   describe('read', () => {
     it('should read manual layouts from snapshot files', async ({ expect }) => {
-      const { fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
       const mockView1 = createMockView({
         id: 'view1',
@@ -121,9 +134,9 @@ describe('LikeC4ManualLayouts', () => {
         title: 'View 2',
       })
 
-      mockFsReads(fs, mockView1, mockView2)
+      mockFsReads(t.fs, mockView1, mockView2)
 
-      const result = await manualLayouts.read(project)
+      const result = await t.manualLayouts.read(t.project)
 
       expect(result).not.toBeNull()
       expect(result).toMatchObject({
@@ -143,28 +156,28 @@ describe('LikeC4ManualLayouts', () => {
       })
 
       // Verify that the views were read only once due to caching
-      await expect(manualLayouts.read(project)).resolves.toBe(result)
-      expect(fs.scanDirectory).toHaveBeenCalledTimes(1)
+      await expect(t.manualLayouts.read(t.project)).resolves.toBe(result)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
     })
 
     it('should return null when no snapshot files exist', async ({ expect }) => {
-      const { fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
-      vi.mocked(fs.scanDirectory).mockResolvedValue([])
+      vi.mocked(t.fs.scanDirectory).mockResolvedValue([])
 
-      const result = await manualLayouts.read(project)
+      const result = await t.manualLayouts.read(t.project)
 
       expect(result).toBeNull()
 
       // second read to verify caching
-      await expect(manualLayouts.read(project)).resolves.toBeNull()
-      expect(fs.scanDirectory).toHaveBeenCalledTimes(1)
+      await expect(t.manualLayouts.read(t.project)).resolves.toBeNull()
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
     })
 
     it('should handle errors when reading snapshot files', async ({ expect }) => {
-      const { services, fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
-      vi.mocked(fs.scanDirectory).mockResolvedValue([
+      vi.mocked(t.fs.scanDirectory).mockResolvedValue([
         {
           uri: URI.file('/test/workspace/src/test-project/.likec4/view1.likec4.snap'),
           isFile: true,
@@ -172,16 +185,16 @@ describe('LikeC4ManualLayouts', () => {
         },
       ])
 
-      vi.mocked(fs.readFile).mockRejectedValue(new Error('Failed to read file'))
+      vi.mocked(t.fs.readFile).mockRejectedValue(new Error('Failed to read file'))
 
-      const result = await manualLayouts.read(project)
+      const result = await t.manualLayouts.read(t.project)
 
       expect(result).toBeNull()
     })
 
     it('should respect custom manualLayouts outDir config', async ({ expect }) => {
-      const { services, fs, manualLayouts } = await createTestServices()
-      const projectsManager = services.shared.workspace.ProjectsManager
+      await using t = await createTestServices()
+      const projectsManager = t.services.shared.workspace.ProjectsManager
 
       const projectData = await projectsManager.registerProject({
         config: {
@@ -195,11 +208,11 @@ describe('LikeC4ManualLayouts', () => {
 
       const project = projectsManager.getProject(projectData.id)
 
-      vi.mocked(fs.scanDirectory).mockResolvedValue([])
+      vi.mocked(t.fs.scanDirectory).mockResolvedValue([])
 
-      await manualLayouts.read(project)
+      await t.manualLayouts.read(project)
 
-      expect(fs.scanDirectory).toHaveBeenCalledWith(
+      expect(t.fs.scanDirectory).toHaveBeenCalledWith(
         expect.objectContaining({
           path: '/test/workspace/src/test-project-2/custom-layouts',
         }),
@@ -208,40 +221,40 @@ describe('LikeC4ManualLayouts', () => {
     })
 
     it('should cache results across multiple reads', async ({ expect }) => {
-      const { fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
       const mockView = createMockView({
         id: 'view1' as ViewId,
         title: 'View 1',
       })
 
-      mockFsReads(fs, mockView)
+      mockFsReads(t.fs, mockView)
 
       // First read
-      const result1 = await manualLayouts.read(project)
+      const result1 = await t.manualLayouts.read(t.project)
       // Second read
-      const result2 = await manualLayouts.read(project)
+      const result2 = await t.manualLayouts.read(t.project)
 
       // Should only scan once due to caching
-      expect(fs.scanDirectory).toHaveBeenCalledTimes(1)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
       expect(result1).toBe(result2)
     })
   })
 
   describe('write', () => {
     it('should write manual layout snapshot to file', async ({ expect }) => {
-      const { fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
       const layoutedView = createMockView({
         id: 'write-test',
       })
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      const location = await manualLayouts.write(project, layoutedView)
+      const location = await t.manualLayouts.write(t.project, layoutedView)
 
-      expect(fs.writeFile).toHaveBeenCalledTimes(1)
-      expect(fs.writeFile).toHaveBeenCalledWith(
+      expect(t.fs.writeFile).toHaveBeenCalledTimes(1)
+      expect(t.fs.writeFile).toHaveBeenCalledWith(
         expect.objectContaining({
           path: '/test/workspace/src/test-project/.likec4/write-test.likec4.snap',
         }),
@@ -253,24 +266,24 @@ describe('LikeC4ManualLayouts', () => {
     })
 
     it('should omit manualLayout field when writing', async ({ expect }) => {
-      const { fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
       const layoutedView = {
         ...createMockView(),
         manualLayout: { some: 'data' }, // This should be omitted
       }
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(t.project, layoutedView)
 
-      const writtenContent = vi.mocked(fs.writeFile).mock.calls[0]?.[1]
+      const writtenContent = vi.mocked(t.fs.writeFile).mock.calls[0]?.[1]
       expect(writtenContent).not.toContain('manualLayout')
     })
 
     it('should respect custom manualLayouts outDir config when writing', async ({ expect }) => {
-      const { services, fs, manualLayouts } = await createTestServices()
-      const projectsManager = services.shared.workspace.ProjectsManager
+      await using t = await createTestServices()
+      const projectsManager = t.services.shared.workspace.ProjectsManager
 
       const projectData = await projectsManager.registerProject({
         config: {
@@ -286,11 +299,11 @@ describe('LikeC4ManualLayouts', () => {
 
       const layoutedView = createMockView()
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(project, layoutedView)
 
-      expect(fs.writeFile).toHaveBeenCalledWith(
+      expect(t.fs.writeFile).toHaveBeenCalledWith(
         expect.objectContaining({
           path: '/test/workspace/src/test-project-2/custom-layouts/test-view.likec4.snap',
         }),
@@ -299,7 +312,7 @@ describe('LikeC4ManualLayouts', () => {
     })
 
     it('should update cache after writing', async ({ expect }) => {
-      const { fs, project, manualLayouts } = await createTestServices()
+      await using t = await createTestServices()
 
       // Prime the cache with initial view
       const existingView = createMockView({
@@ -308,31 +321,31 @@ describe('LikeC4ManualLayouts', () => {
         hash: 'hash0',
       })
 
-      mockFsReads(fs, existingView)
+      mockFsReads(t.fs, existingView)
 
-      const result1 = await manualLayouts.read(project)
+      const result1 = await t.manualLayouts.read(t.project)
 
-      expect(fs.scanDirectory).toHaveBeenCalledTimes(1)
-      expect(fs.readFile).toHaveBeenCalledTimes(1)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
+      expect(t.fs.readFile).toHaveBeenCalledTimes(1)
 
       const layoutedView = createMockView({
         id: 'new-view',
         title: 'New View',
       })
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(t.project, layoutedView)
 
-      mockFsReads(fs, existingView, layoutedView)
+      mockFsReads(t.fs, existingView, layoutedView)
 
       // Read again to verify cache was updated
-      const result2 = await manualLayouts.read(project)
+      const result2 = await t.manualLayouts.read(t.project)
 
       expect(result2).not.toEqual(result1)
 
-      expect(fs.scanDirectory).toHaveBeenCalledTimes(2)
-      expect(fs.readFile).toHaveBeenCalledTimes(3)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(2)
+      expect(t.fs.readFile).toHaveBeenCalledTimes(3)
 
       // expect(result).toHaveProperty('existing-view')
       // expect(result).toHaveProperty('new-view')
@@ -343,48 +356,89 @@ describe('LikeC4ManualLayouts', () => {
     })
 
     it('should handle write errors gracefully', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
 
       const layoutedView = createMockView()
 
-      vi.mocked(fs.writeFile).mockRejectedValue(new Error('Failed to write file'))
+      vi.mocked(t.fs.writeFile).mockRejectedValue(new Error('Failed to write file'))
 
       // Should not throw, but return a location
-      const location = await manualLayouts.write(project, layoutedView)
+      const location = await t.manualLayouts.write(t.project, layoutedView)
 
       expect(location).toBeDefined()
       expect(location.uri).toBe('file:///test/workspace/src/test-project/.likec4/test-view.likec4.snap')
     })
   })
 
+  describe('watched file changes', () => {
+    it('should invalidate project when folder with snapshots is deleted', async ({ expect }) => {
+      await using t = await createTestServices()
+      mockFsReads(t.fs, createMockView({ id: 'view1' as ViewId }))
+      const listener = vi.fn<ManualLayoutUpdateListener>()
+      t.manualLayouts.onManualLayoutUpdate(listener)
+      const handler = t.services.shared.lsp.DocumentUpdateHandler
+
+      // Prime the cache
+      await t.manualLayouts.read(t.project)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
+
+      // Unrelated folder (and file) - cache is kept
+      handler.didChangeWatchedFiles({
+        changes: [
+          { uri: URI.file('/test/workspace/src/test-project/model').toString(), type: FileChangeType.Deleted },
+          { uri: URI.file('/test/workspace/src/test-project/a.c4').toString(), type: FileChangeType.Deleted },
+        ],
+      })
+      await t.manualLayouts.read(t.project)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(1)
+
+      // Client sends single event for the deleted folder
+      const folder = URI.file('/test/workspace/src/test-project/.likec4')
+      handler.didChangeWatchedFiles({
+        changes: [{ uri: folder.toString(), type: FileChangeType.Deleted }],
+      })
+      await vi.waitFor(() => {
+        expect(listener).toHaveBeenCalledOnce()
+      })
+      const [event] = listener.mock.calls[0]!
+      expect(event).toEqual({
+        removed: expect.anything(),
+        projectId: t.project.id,
+      })
+      expect('removed' in event && event.removed.toString()).toBe(folder.toString())
+      await t.manualLayouts.read(t.project)
+      expect(t.fs.scanDirectory).toHaveBeenCalledTimes(2)
+    })
+  })
+
   describe('clearCaches', () => {
     it('should clear all cached data', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
 
       const mockView = createMockView({
         id: 'view1' as ViewId,
         title: 'View 1',
       })
-      mockFsReads(fs, mockView)
+      mockFsReads(t.fs, mockView)
 
       // Prime the cache
-      await manualLayouts.read(project)
-      const callCount1 = vi.mocked(fs.scanDirectory).mock.calls.length
+      await t.manualLayouts.read(t.project)
+      const callCount1 = vi.mocked(t.fs.scanDirectory).mock.calls.length
       expect(callCount1).toBeGreaterThan(0)
 
       // Clear caches
-      manualLayouts.clearCaches()
+      t.manualLayouts.clearCaches()
 
       // Read again - should call scanDirectory again
-      await manualLayouts.read(project)
-      const callCount2 = vi.mocked(fs.scanDirectory).mock.calls.length
+      await t.manualLayouts.read(t.project)
+      const callCount2 = vi.mocked(t.fs.scanDirectory).mock.calls.length
       expect(callCount2).toBe(callCount1 * 2)
     })
   })
 
   describe('icon path handling', () => {
     it('should convert absolute icon paths to relative when writing', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
 
       const layoutedView = createMockView({
         nodes: [
@@ -397,11 +451,11 @@ describe('LikeC4ManualLayouts', () => {
         ],
       })
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(t.project, layoutedView)
 
-      const writtenContent = vi.mocked(fs.writeFile).mock.calls[0]?.[1]
+      const writtenContent = vi.mocked(t.fs.writeFile).mock.calls[0]?.[1]
       expect(writtenContent).not.toContain('file:///test/workspace/src/test-project/assets/icon.svg')
       expect(writtenContent).toContain('file://./assets/icon.svg')
       // Path outside project folder should remain absolute
@@ -409,7 +463,7 @@ describe('LikeC4ManualLayouts', () => {
     })
 
     it('should convert relative icon paths back to absolute when reading', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
 
       const mockView = createMockView({
         nodes: [{
@@ -419,9 +473,9 @@ describe('LikeC4ManualLayouts', () => {
         }],
       })
 
-      mockFsReads(fs, mockView)
+      mockFsReads(t.fs, mockView)
 
-      const result = await manualLayouts.read(project)
+      const result = await t.manualLayouts.read(t.project)
 
       expect(result).not.toBeNull()
       const view = result!.views[mockView.id]!
@@ -431,7 +485,7 @@ describe('LikeC4ManualLayouts', () => {
     })
 
     it('should preserve non-file icon paths when writing', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
 
       const layoutedView = createMockView({
         nodes: [{
@@ -440,19 +494,19 @@ describe('LikeC4ManualLayouts', () => {
         }],
       })
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(t.project, layoutedView)
 
-      expect(fs.writeFile).toHaveBeenCalledTimes(1)
-      const writtenContent = vi.mocked(fs.writeFile).mock.calls[0]?.[1]
+      expect(t.fs.writeFile).toHaveBeenCalledTimes(1)
+      const writtenContent = vi.mocked(t.fs.writeFile).mock.calls[0]?.[1]
       expect(writtenContent).toBeDefined()
       expect(writtenContent).toContain('aws:s3')
     })
 
     // TODO: fix test on Windows
     it.runIf(process.platform !== 'win32')('should not convert paths outside project folder', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
       const layoutedView = createMockView({
         nodes: [{
           id: 'node1',
@@ -460,17 +514,17 @@ describe('LikeC4ManualLayouts', () => {
         }],
       })
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(t.project, layoutedView)
 
-      const writtenContent = vi.mocked(fs.writeFile).mock.calls[0]?.[1]
+      const writtenContent = vi.mocked(t.fs.writeFile).mock.calls[0]?.[1]
       // Should keep absolute path since it's outside project folder
       expect(writtenContent).toContain('file:///external/path/icon.svg')
     })
 
     it('should handle multiple nodes with mixed icon types', async ({ expect }) => {
-      const { fs, manualLayouts, project } = await createTestServices()
+      await using t = await createTestServices()
 
       const layoutedView = createMockView({
         nodes: [
@@ -488,11 +542,11 @@ describe('LikeC4ManualLayouts', () => {
         ],
       })
 
-      vi.mocked(fs.writeFile).mockResolvedValue()
+      vi.mocked(t.fs.writeFile).mockResolvedValue()
 
-      await manualLayouts.write(project, layoutedView)
+      await t.manualLayouts.write(t.project, layoutedView)
 
-      const writtenContent = vi.mocked(fs.writeFile).mock.calls[0]?.[1]
+      const writtenContent = vi.mocked(t.fs.writeFile).mock.calls[0]?.[1]
       expect(writtenContent).toContain('file://./assets/icon1.svg')
       expect(writtenContent).toContain('aws:lambda')
       expect(writtenContent).not.toContain('file:///test/workspace/src/test-project/assets/icon1.svg')

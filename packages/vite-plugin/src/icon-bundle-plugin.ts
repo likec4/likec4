@@ -82,7 +82,7 @@ export function iconBundlePlugin(options: {
 
   const iconsCache = new DefaultMap(async (key: `${string}:${string}`) => {
     try {
-      let [group, icon] = key.split(':') as ['aws' | 'azure' | 'gcp' | 'tech', string]
+      let [group, icon] = key.split(':') as ['aws' | 'azure' | 'gcp' | 'md' | 'tech' | 'bootstrap', string]
       if (icon.endsWith('.jsx') || icon.endsWith('.js')) {
         icon = icon.slice(0, icon.lastIndexOf('.'))
       }

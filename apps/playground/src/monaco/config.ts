@@ -115,6 +115,15 @@ export const createWrapperConfig = (params: {
               'meta.embedded.block.markdown': 'markdown',
             },
           }],
+          // Same as in packages/vscode/package.json:
+          // suggestions while typing element links ([[fqn]]) inside Markdown strings
+          configurationDefaults: {
+            '[likec4]': {
+              'editor.quickSuggestions': {
+                strings: 'on',
+              },
+            },
+          },
         },
       },
       filesOrContents: extensionFilesOrContents,
@@ -167,6 +176,9 @@ export const createWrapperConfig = (params: {
         uri: monaco.Uri.parse('file:///'),
       },
       documentSelector: [{ language: LIKEC4_LANGUAGE_ID }],
+      initializationOptions: {
+        removalImpactPreview: true,
+      },
       markdown: {
         isTrusted: true,
         supportHtml: true,

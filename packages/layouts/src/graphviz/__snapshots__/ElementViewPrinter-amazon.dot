@@ -42,6 +42,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "s3" [
     likec4_id = "amazon.s3";
@@ -50,6 +51,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   subgraph "cluster_cloud" {
     likec4_id = "cloud";
@@ -75,7 +77,7 @@ digraph {
   }
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
+    label = <<TABLE FIXEDSIZE="TRUE" WIDTH="117" HEIGHT="25" BORDER="0" CELLPADDING="0" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     weight = 3;
     arrowhead = "normal";
     arrowtail = "odiamond";

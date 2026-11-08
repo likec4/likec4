@@ -45,9 +45,30 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
   }
 
   if (Array.isArray(config)) {
-    return tsdownDefineConfig(config.map(c => ({ ...base, ...c })))
+    return tsdownDefineConfig(config.map(c => ({ ...base, ...c, plugins: [stubBrotli(), c.plugins] })))
   }
-  return tsdownDefineConfig({ ...base, ...config })
+  return tsdownDefineConfig({ ...base, ...config, plugins: [stubBrotli(), config.plugins] })
+}
+
+const stubBrotliId = '\0likec4:stub-brotli'
+
+/**
+ * fontkit statically imports `brotli/decompress.js` (~490KB), but uses it only to decode WOFF2 fonts.
+ * We embed TTF faces (see packages/layouts/scripts/generate-fonts.ts), so it is replaced with a stub.
+ */
+export function stubBrotli(): Rolldown.Plugin {
+  return {
+    name: 'likec4:stub-brotli',
+    resolveId: {
+      filter: { id: /^brotli\/decompress(\.js)?$/ },
+      handler: () => stubBrotliId,
+    },
+    load: {
+      filter: { id: new RegExp(`^${stubBrotliId}$`) },
+      handler: () =>
+        `export default function decompress() { throw new Error('WOFF2 fonts are not supported, brotli is stubbed') }`,
+    },
+  }
 }
 
 /**
@@ -61,7 +82,7 @@ export function nodeModulesCodeSplitting(
     debugName: 'node_modules',
     name: (moduleId: string) => {
       const pkgName = moduleId.match(/.*\/node_modules\/(?<package>@[^/]+\/[^/]+|[^/]+)/)
-        ?.groups?.package
+        ?.groups?.['package']
       const isDts = /\.d\.[mc]?ts$/.test(moduleId)
       return `libs/${pkgName || 'common'}${isDts ? '.d' : ''}`
     },

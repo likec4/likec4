@@ -69,4 +69,3 @@ export function compute(
     edgeIds: view.edges.map((edge) => edge.id) as string[],
   })
 }
-

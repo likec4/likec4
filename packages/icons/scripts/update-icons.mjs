@@ -271,7 +271,7 @@ console.info('Cleaning up temp files - DONE')
 for (const fname of new fdir().glob('**/*.tsx').withFullPaths().crawl().sync()) {
   const input = readFileSync(fname, 'utf-8')
 
-  const output = `// @ts-nocheck \n\n` + input
+  const output = `// @ts-nocheck\n\n` + input
   await writeFile(fname, output)
 }
 

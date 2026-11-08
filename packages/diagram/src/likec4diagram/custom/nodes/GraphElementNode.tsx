@@ -27,7 +27,7 @@ const label = css({
   pointerEvents: 'none',
   fontSize: 'xs',
   lineHeight: '[1.2]',
-  color: '[var(--likec4-palette-hiContrast)]',
+  color: 'text',
 })
 
 /**

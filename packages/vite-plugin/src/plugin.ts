@@ -24,6 +24,7 @@ import { splitErrorMessage } from './rpc/sendError'
 import { type ProjectsData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
+import { diffsModule, projectDiffsModule } from './virtuals/diffs'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { drawioModule, projectDrawioModule } from './virtuals/drawio'
 import { effectiveWebappExportFormats } from './virtuals/export-formats'
@@ -162,6 +163,7 @@ export type LikeC4VitePluginOptions =
  */
 const hmrProjectVirtuals = [
   projectModelModule,
+  projectDiffsModule,
   projectIconsModule,
   projectD2Module,
   projectDotSourcesModule,
@@ -174,6 +176,7 @@ const hmrProjectVirtuals = [
  * Root virtual modules that cache project-level export capability maps.
  */
 const hmrProjectListVirtuals = [
+  diffsModule,
   d2Module,
   dotModule,
   mmdModule,

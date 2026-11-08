@@ -23,6 +23,21 @@ function renderElementData(icon: string | null | undefined, style: ComputedNodeS
 }
 
 describe('ElementData icon blending', () => {
+  it('renders a deployment leaf description without a logical reference', () => {
+    const html = renderToStaticMarkup(
+      <ElementData
+        data={{
+          id: 'prod.server' as NodeId,
+          title: 'Production server',
+          color: 'blue',
+          style: {},
+          description: { md: '**Production** workload' },
+        }} />,
+    )
+
+    expect(html).toContain('<strong>Production</strong> workload')
+  })
+
   it('does not add the blending recipe variant for brand, provider, and image icons', () => {
     const icons = [
       'tech:postgresql',

@@ -1,0 +1,84 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element container
+  element database {
+    style {
+      shape storage
+    }
+  }
+  tag legacy
+  tag next
+}
+
+model {
+  customer = actor 'Customer' {
+    description 'Buys products online'
+  }
+
+  shop = system 'Online Shop' {
+    web = container 'Web Store' {
+      technology 'React'
+    }
+    orders = container 'Order Service' {
+      technology 'Java'
+    }
+    ordersDb = database 'Orders DB'
+    legacyPayments = container 'Legacy Payment Gateway' {
+      #legacy
+      technology 'SOAP'
+      description 'Charges cards through the old bank API'
+    }
+    paymentsLog = database 'Payments Log' {
+      description 'Audit log of the legacy gateway'
+    }
+  }
+
+  bank = system 'Bank' {
+    description 'Card processor'
+  }
+
+  customer -> shop.web 'orders products'
+  shop.web -> shop.orders 'places orders'
+  shop.orders -> shop.ordersDb 'reads and writes'
+  shop.orders -> shop.legacyPayments 'charges'
+  shop.orders -> bank 'checks fraud score'
+  shop.legacyPayments -> shop.paymentsLog 'logs'
+  shop.legacyPayments -> bank 'calls SOAP API'
+}
+
+views {
+  view index {
+    title 'Landscape'
+    include *
+  }
+
+  view shop of shop {
+    title 'Online Shop'
+    include *
+  }
+
+  // Also shows elements added by the diff (they appear in the "to-be" state)
+  view payments {
+    title 'Payments'
+    include
+      shop.orders,
+      shop.legacyPayments,
+      shop.paymentsLog,
+      shop.payments,
+      shop.paymentEvents,
+      bank
+  }
+
+  dynamic view checkout {
+    title 'Checkout'
+    customer -> shop.web 'checks out'
+    shop.web -> shop.orders 'places order'
+    shop.orders -> shop.legacyPayments 'charges card'
+    shop.legacyPayments -> bank 'authorizes payment'
+  }
+}

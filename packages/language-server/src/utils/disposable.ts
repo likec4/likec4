@@ -12,8 +12,9 @@ export abstract class ADisposable implements Disposable {
   dispose(): void {
     this.throwIfDisposed()
     this.isDisposed = true
-    let item: Disposable | undefined
-    while ((item = this.toDispose.pop())) {
+    const toDispose = [...this.toDispose]
+    this.toDispose.length = 0
+    for (const item of toDispose) {
       try {
         item.dispose()
       } catch (e) {

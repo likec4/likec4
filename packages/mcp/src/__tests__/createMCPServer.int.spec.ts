@@ -38,6 +38,8 @@ const EXPECTED_TOOLS = [
   'batch-read-elements',
   'element-diff',
   'subgraph-summary',
+  'removal-impact',
+  'list-diffs',
   'apply-semantic-layout',
   'render-view',
   'preview-view',

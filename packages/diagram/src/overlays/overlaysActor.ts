@@ -17,7 +17,9 @@ import {
   fromCallback,
   setup,
 } from 'xstate'
+import { isEventFromSearch } from '../utils/search-event'
 import { elementDetailsLogic } from './element-details/actor'
+import type { DetailsSubject } from './element-details/subject'
 import { relationshipDetailsLogic } from './relationship-details/actor'
 import { relationshipsBrowserLogic } from './relationships-browser/actor'
 import type { Overlays } from './types'
@@ -26,13 +28,17 @@ export type OverlayActorEvent =
   | { type: 'open.elementDetails' } & Overlays.ElementDetails.Input
   | { type: 'open.relationshipDetails' } & Overlays.RelationshipDetails.Input
   | { type: 'open.relationshipsBrowser' } & Overlays.RelationshipsBrowser.Input
+  /**
+   * Replace the subject of an open element details card (no new card is opened)
+   */
+  | { type: 'change.elementDetails'; actorId: string; subject: DetailsSubject }
   | { type: 'close'; actorId?: string | undefined } // Close last overlay if actorId is not provided
   | { type: 'close.all' }
 
 export interface OverlaysContext {
   seq: number
   overlays: Array<
-    | { type: 'elementDetails'; id: `elementDetails-${number}`; subject: Fqn }
+    | { type: 'elementDetails'; id: `elementDetails-${number}`; subject: DetailsSubject }
     | { type: 'relationshipDetails'; id: `relationshipDetails-${number}` }
     | { type: 'relationshipsBrowser'; id: `relationshipsBrowser-${number}`; subject: Fqn }
   >
@@ -44,6 +50,7 @@ export type OverlayActorEmitedEvent =
   | { type: 'idle' }
 
 type HotKeyEvent = { type: 'close' }
+
 // TODO: naming convention for actors
 const hotkeyLogic = fromCallback(({ sendBack }: {
   sendBack: (event: HotKeyEvent) => void
@@ -56,9 +63,15 @@ const hotkeyLogic = fromCallback(({ sendBack }: {
       preventDefault: true,
     }],
   ])
-  document.body.addEventListener('keydown', handler, { capture: true })
+  // Escape pressed in the search (opened on top of an overlay) closes the search, not the overlay
+  const onKeyDown = (event: globalThis.KeyboardEvent) => {
+    if (!isEventFromSearch(event)) {
+      handler(event)
+    }
+  }
+  document.body.addEventListener('keydown', onKeyDown, { capture: true })
   return () => {
-    document.body.removeEventListener('keydown', handler, { capture: true })
+    document.body.removeEventListener('keydown', onKeyDown, { capture: true })
   }
 })
 
@@ -160,7 +173,13 @@ const closeAllOverlays = () =>
 const openElementDetails = () =>
   machine.enqueueActions(({ context, enqueue, event }) => {
     assertEvent(event, 'open.elementDetails')
-    if (context.overlays.some(o => o.type === 'elementDetails' && o.subject === event.subject)) {
+    if (
+      context.overlays.some(o =>
+        o.type === 'elementDetails'
+        && o.subject.element === event.subject.element
+        && o.subject.deployment === event.subject.deployment
+      )
+    ) {
       return
     }
     const id = `elementDetails-${context.seq}` as const
@@ -181,6 +200,25 @@ const openElementDetails = () =>
       ],
     })
     enqueue(emitOpened(id))
+  })
+
+const changeElementDetails = () =>
+  machine.enqueueActions(({ context, enqueue, event }) => {
+    assertEvent(event, 'change.elementDetails')
+    const overlay = context.overlays.find(o => o.id === event.actorId)
+    if (overlay?.type !== 'elementDetails') {
+      return
+    }
+    if (
+      overlay.subject.element === event.subject.element
+      && overlay.subject.deployment === event.subject.deployment
+    ) {
+      return
+    }
+    enqueue.sendTo(overlay.id, { type: 'change.subject', subject: event.subject })
+    enqueue.assign({
+      overlays: context.overlays.map(o => o.id === overlay.id ? { ...overlay, subject: event.subject } : o),
+    })
   })
 
 const openRelationshipDetails = () =>
@@ -311,6 +349,9 @@ const _overlaysActorLogic = machine.createMachine({
           on: {
             'open.*': {
               actions: openOverlay(),
+            },
+            'change.elementDetails': {
+              actions: changeElementDetails(),
             },
             'close': [
               {

@@ -1,0 +1,5 @@
+export { applyModelDiff, mergeElementOverlay } from './apply-model-diff'
+export { computeCompareViews, createCompareModels, filterCompareView, withoutDiffOnlyReferences } from './compare-view'
+export type { CompareModels, CompareViewMode, CompareViewResult } from './compare-view'
+export { computeRemovalImpact, markRemovalImpact, removalImpactViewPredicates } from './removal-impact'
+export type { RemovalImpact } from './removal-impact'

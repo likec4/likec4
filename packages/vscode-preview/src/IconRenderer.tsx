@@ -85,6 +85,10 @@ const DefaultIconRenderer: ElementIconRenderer = ({ node, ...props }) => {
     return <BootstrapIcon {...props} node={node} name={name} />
   }
 
+  if (group === 'md') {
+    return <SvgMask {...props} src={iconUrl(group, name)} />
+  }
+
   return <img {...props} src={iconUrl(group, name)} />
 }
 

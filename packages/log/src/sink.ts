@@ -6,6 +6,12 @@ import {
 } from '@logtape/logtape'
 import { getConsoleFormatter } from './formatters'
 
+export function getNoopSink(): Sink {
+  return (_record: LogRecord) => {
+    // No-op
+  }
+}
+
 /**
  * Create a sink that writes formatted log records to stdout (default formatter).
  * @param options - Optional console sink options (e.g. custom formatter)

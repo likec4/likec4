@@ -11,6 +11,9 @@ specification {
 model {
   customer = actor 'Customer' {
     description 'The regular customer of the system'
+    style {
+      icon md:sentiment-satisfied
+    }
   }
 
   saas = system 'Our SaaS' {

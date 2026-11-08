@@ -27,6 +27,7 @@ describe('LikeC4DeploymentModel', () => {
         tag2: {},
         tag3: {},
       },
+      metadataKeys: ['owner'],
     })
     .model(({ el, elWithTags, rel }, _) =>
       _(
@@ -34,6 +35,7 @@ describe('LikeC4DeploymentModel', () => {
         el('cloud'),
         el('cloud.ui', {
           title: 'UI',
+          metadata: { owner: 'Logical owner' },
         }),
         elWithTags('cloud.backend', {
           tags: ['tag2'],
@@ -57,6 +59,7 @@ describe('LikeC4DeploymentModel', () => {
           vm('vm1').with(
             instanceOf('ui', 'cloud.ui', {
               title: 'Prod/Zone 1/UI',
+              metadata: { owner: 'Instance owner' },
             }),
           ),
           vm('vm2', {
@@ -114,6 +117,19 @@ describe('LikeC4DeploymentModel', () => {
     expect(el2.element).toBe(model.element('cloud.ui'))
     // Instance title is inherited from the element
     expect(el2.title).toBe('UI')
+  })
+
+  it('uses effective metadata for deployed instances', ({ expect }) => {
+    const overridden = d.instance('prod.z1.vm1.ui')
+    expect(overridden.hasMetadata()).toBe(true)
+    expect(overridden.getMetadata('owner')).toBe('Instance owner')
+
+    const inherited = d.instance('prod.z2.vm1.ui')
+    expect(inherited.metadata).toEqual({ owner: 'Logical owner' })
+    expect(inherited.hasMetadata()).toBe(true)
+    expect(inherited.getMetadata('owner')).toBe('Logical owner')
+
+    expect(d.instance('customer.customer').hasMetadata()).toBe(false)
   })
 
   it('parent and children', ({ expect }) => {

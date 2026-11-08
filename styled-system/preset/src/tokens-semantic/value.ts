@@ -1,7 +1,7 @@
 import type { SemanticToken, TokenDataTypes } from '@pandacss/types'
 import { defaultMantineColors } from '../generated'
 
-export const { gray, dark, orange, green, yellow } = defaultMantineColors
+export const { gray, dark, orange, green, yellow, red } = defaultMantineColors
 
 export const white = '#ffffff'
 export const black = '#000000'

@@ -3,17 +3,31 @@ import {
   type aux,
   type ComputedView,
   type DiagramView,
+  type DiffId,
+  type DiffSummary,
   type ExclusiveUnion,
+  type Fqn,
   type LayoutedLikeC4ModelData,
   type ViewChange,
   type ViewId,
   nonNullable,
 } from '@likec4/core'
+import type { CompareViewMode } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
-import type { Locate as LocateRequest } from '@likec4/language-server/protocol'
+import type {
+  ApplyEditsResult,
+  Locate as LocateRequest,
+  ModelEditPreview,
+  ModelEditRecord,
+  ModelEditRequest,
+  ModelEditResult,
+  RemainingError,
+  RemovalImpactReport,
+} from '@likec4/language-server/protocol'
 import { loggable, rootLogger } from '@likec4/log'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import { keys, prop } from 'remeda'
+import type { Location } from 'vscode-languageserver-types'
 import {
   assign,
   cancel,
@@ -51,6 +65,47 @@ export type DiagramState = {
   view: ComputedView
   diagram: DiagramView | null
   dot: string | null
+  error: string | null
+}
+
+/**
+ * Compare view of the active view and the active diff
+ */
+export type CompareViewState = {
+  viewId: ViewId
+  diffId: DiffId
+  diagram: DiagramView | null
+  error: string | null
+}
+
+/**
+ * Safe delete dry run: report and impact diagram
+ */
+export type RemovalImpactState = {
+  fqn: Fqn
+  state: 'pending' | 'ready' | 'error'
+  report: RemovalImpactReport | null
+  diagram: DiagramView | null
+  error: string | null
+}
+
+/**
+ * Model edit under review: the changes of each file, applied after approval
+ */
+export type EditReviewState = {
+  request: ModelEditRequest
+  state: 'loading' | 'review' | 'applying' | 'error'
+  preview: ModelEditPreview | null
+  error: string | null
+}
+
+/**
+ * The latest applied edit, can be rolled back
+ */
+export type LastEditState = {
+  edit: ModelEditRecord
+  remaining: RemainingError[]
+  state: 'applied' | 'rolling-back' | 'rolled-back'
   error: string | null
 }
 
@@ -93,6 +148,22 @@ export interface PlaygroundContext {
 
   diagnosticErrors: string[]
 
+  /**
+   * Model diffs of the workspace
+   */
+  diffs: DiffSummary[]
+  /**
+   * Selected diff, `null` shows the model as is
+   */
+  activeDiffId: DiffId | null
+  compareMode: CompareViewMode
+  compareView: CompareViewState | null
+
+  removalImpact: RemovalImpactState | null
+
+  editReview: EditReviewState | null
+  lastEdit: LastEditState | null
+
   shareRequest: null | {
     layoutedLikeC4Data: LayoutedLikeC4ModelData | null
     options: ShareOptions
@@ -111,7 +182,42 @@ export type PlaygroundEvents =
   | { type: 'likec4.lsp.onLayoutDone'; dot: string; diagram: DiagramView }
   | { type: 'likec4.lsp.onLayoutError'; viewId: ViewId; error: string }
   | { type: 'likec4.lsp.onDiagnostic'; errors: string[] }
+  | { type: 'likec4.lsp.onDiffs'; diffs: DiffSummary[] }
+  | { type: 'likec4.lsp.onCompareView'; viewId: ViewId; diffId: DiffId; diagram: DiagramView | null; error?: string }
+  | {
+    type: 'likec4.lsp.onRemovalImpact'
+    fqn: Fqn
+    report: RemovalImpactReport | null
+    diagram: DiagramView | null
+    error?: string
+  }
+  | {
+    type: 'likec4.lsp.onEditPreview'
+    request: ModelEditRequest
+    preview: ModelEditPreview | null
+    error?: string
+  }
+  | { type: 'likec4.lsp.onEditApplied'; request: ModelEditRequest; result: ModelEditResult }
+  | { type: 'likec4.lsp.onRollbackDone'; result: ApplyEditsResult }
+  // Model diff events
+  | { type: 'diff.select'; diffId: DiffId | null }
+  | { type: 'diff.changeMode'; mode: CompareViewMode }
+  | { type: 'impact.open'; fqn: Fqn }
+  | { type: 'impact.close' }
+  // Model edit events: review, approve (apply), roll back
+  | { type: 'edit.review'; request: ModelEditRequest }
+  | {
+    type: 'edit.approve'
+    /**
+     * The approver confirms that the owners of the overlapping diffs agreed
+     */
+    acceptOverlaps: boolean
+  }
+  | { type: 'edit.cancel' }
+  | { type: 'edit.rollback' }
+  | { type: 'edit.dismiss' }
   // Workspace events
+  | { type: 'workspace.revealLocation'; location: Location }
   | { type: 'workspace.applyViewChanges'; change: ViewChange }
   | { type: 'workspace.openSources'; target: LocateRequest.Params }
   | { type: 'workspace.changeActiveView'; viewId: ViewId }
@@ -125,7 +231,12 @@ export type PlaygroundEvents =
 export type PlaygroundEmitted =
   | { type: 'workspace.request-layouted-data' }
   | { type: 'workspace.openSources'; target: LocateRequest.Params }
+  | { type: 'workspace.revealLocation'; location: Location }
   | { type: 'workspace.applyViewChanges'; viewId: ViewId; change: ViewChange }
+  | { type: 'workspace.request-removal-impact'; fqn: Fqn }
+  | { type: 'workspace.preview-edit'; request: ModelEditRequest }
+  | { type: 'workspace.apply-edit'; request: ModelEditRequest; token: string }
+  | { type: 'workspace.rollback-edit'; editId: number }
 
 const logger = rootLogger.getChild('playground-actor')
 
@@ -164,8 +275,24 @@ export const playgroundMachine = setup({
           ...params.workspace.shareHistory ?? [],
         ],
         viewStates: {},
+        diffs: [],
+        activeDiffId: null,
+        compareView: null,
+        removalImpact: null,
+        editReview: null,
+        lastEdit: null,
       }
     }),
+
+    'update diffs': assign(({ context }, params: { diffs: DiffSummary[] }): Partial<PlaygroundContext> => {
+      const activeDiffId = params.diffs.some(d => d.id === context.activeDiffId) ? context.activeDiffId : null
+      return {
+        diffs: deepEqual(context.diffs, params.diffs) ? context.diffs : params.diffs,
+        activeDiffId,
+        compareView: activeDiffId ? context.compareView : null,
+      }
+    }),
+
     'update LikeC4Model and view states': assign(({ context }, params: { model: LikeC4Model.Computed }) => {
       if (!params.model) {
         return {}
@@ -311,7 +438,7 @@ export const playgroundMachine = setup({
       }
     }),
 
-    'persist to storage': (({ context }) => {
+    'persist to storage': ({ context }) => {
       selectWorkspacePersistence(context.workspaceId).write({
         workspaceId: context.workspaceId,
         activeFilename: context.activeFilename,
@@ -319,7 +446,7 @@ export const playgroundMachine = setup({
         files: context.files,
         shareHistory: context.shareHistory,
       })
-    }),
+    },
   },
 }).createMachine({
   id: 'playground',
@@ -336,6 +463,13 @@ export const playgroundMachine = setup({
     viewStates: {},
     activeViewId: null,
     diagnosticErrors: [],
+    diffs: [],
+    activeDiffId: null,
+    compareMode: 'changes',
+    compareView: null,
+    removalImpact: null,
+    editReview: null,
+    lastEdit: null,
   }),
   states: {
     'initializing': {
@@ -372,11 +506,13 @@ export const playgroundMachine = setup({
           target: 'initializing',
         },
         'monaco.onTextChanged': {
+          // Edits from the language server (safe delete, apply diff) change files that are not active
+          guard: ({ event, context }) => event.filename in context.files,
           actions: [
             assign({
               files: ({ event, context }) => ({
                 ...context.files,
-                [context.activeFilename]: event.modified,
+                [event.filename]: event.modified,
               }),
             }),
             cancel('persist'),
@@ -456,6 +592,168 @@ export const playgroundMachine = setup({
         },
         'workspace.persist': {
           actions: 'persist to storage',
+        },
+        'workspace.revealLocation': {
+          actions: emit(prop('event')),
+        },
+        'likec4.lsp.onDiffs': {
+          actions: {
+            type: 'update diffs',
+            params: prop('event'),
+          },
+        },
+        'likec4.lsp.onCompareView': {
+          actions: assign({
+            compareView: ({ event }) => ({
+              viewId: event.viewId,
+              diffId: event.diffId,
+              diagram: event.diagram,
+              error: event.error ?? null,
+            }),
+          }),
+        },
+        'diff.select': {
+          actions: assign(({ event }) => ({
+            activeDiffId: event.diffId,
+            removalImpact: null,
+            ...(event.diffId === null && { compareView: null }),
+          })),
+        },
+        'diff.changeMode': {
+          actions: assign({
+            compareMode: ({ event }) => event.mode,
+          }),
+        },
+        'impact.open': {
+          actions: [
+            assign({
+              removalImpact: ({ event }) => ({
+                fqn: event.fqn,
+                state: 'pending' as const,
+                report: null,
+                diagram: null,
+                error: null,
+              }),
+            }),
+            emit(({ event }) => ({
+              type: 'workspace.request-removal-impact' as const,
+              fqn: event.fqn,
+            })),
+          ],
+        },
+        'likec4.lsp.onRemovalImpact': {
+          // Ignore reports of elements that are no longer under review
+          guard: ({ context, event }) => context.removalImpact?.fqn === event.fqn,
+          actions: assign({
+            removalImpact: ({ context, event }) => ({
+              ...nonNullable(context.removalImpact),
+              state: event.error ? 'error' as const : 'ready' as const,
+              report: event.report,
+              diagram: event.diagram,
+              error: event.error ?? null,
+            }),
+          }),
+        },
+        'impact.close': {
+          actions: assign({
+            removalImpact: null,
+          }),
+        },
+        'edit.review': {
+          actions: [
+            assign({
+              editReview: ({ event }) => ({
+                request: event.request,
+                state: 'loading' as const,
+                preview: null,
+                error: null,
+              }),
+            }),
+            emit(({ event }) => ({
+              type: 'workspace.preview-edit' as const,
+              request: event.request,
+            })),
+          ],
+        },
+        'likec4.lsp.onEditPreview': {
+          // Ignore previews of requests that are no longer under review
+          guard: ({ context, event }) => deepEqual(context.editReview?.request, event.request),
+          actions: assign({
+            editReview: ({ context, event }) => ({
+              ...nonNullable(context.editReview),
+              state: event.preview ? 'review' as const : 'error' as const,
+              preview: event.preview,
+              error: event.error ?? null,
+            }),
+          }),
+        },
+        'edit.approve': {
+          guard: ({ context }) => context.editReview?.state === 'review' && !!context.editReview.preview,
+          actions: [
+            emit(({ context, event }) => {
+              const { request, preview } = nonNullable(context.editReview)
+              return {
+                type: 'workspace.apply-edit' as const,
+                request: request.type === 'apply-diff' ? { ...request, acceptOverlaps: event.acceptOverlaps } : request,
+                token: nonNullable(preview).token,
+              }
+            }),
+            assign({
+              editReview: ({ context }) => ({ ...nonNullable(context.editReview), state: 'applying' as const }),
+            }),
+          ],
+        },
+        'edit.cancel': {
+          actions: assign({
+            editReview: null,
+          }),
+        },
+        'likec4.lsp.onEditApplied': {
+          actions: assign(({ context, event }): Partial<PlaygroundContext> => {
+            const { result, request } = event
+            if (!result.applied || !result.edit) {
+              return {
+                editReview: context.editReview && {
+                  ...context.editReview,
+                  state: 'error',
+                  error: result.error ?? 'The edit was not applied',
+                },
+              }
+            }
+            return {
+              editReview: null,
+              // The removed element no longer exists
+              ...(request.type === 'safe-delete' && { removalImpact: null }),
+              lastEdit: { edit: result.edit, remaining: result.remaining, state: 'applied', error: null },
+            }
+          }),
+        },
+        'edit.rollback': {
+          guard: ({ context }) => context.lastEdit?.state === 'applied',
+          actions: [
+            emit(({ context }) => ({
+              type: 'workspace.rollback-edit' as const,
+              editId: nonNullable(context.lastEdit).edit.id,
+            })),
+            assign({
+              lastEdit: ({ context }) => ({ ...nonNullable(context.lastEdit), state: 'rolling-back' as const }),
+            }),
+          ],
+        },
+        'likec4.lsp.onRollbackDone': {
+          actions: assign({
+            lastEdit: ({ context, event }) =>
+              context.lastEdit && {
+                ...context.lastEdit,
+                state: event.result.applied ? 'rolled-back' : 'applied',
+                error: event.result.applied ? null : event.result.error ?? 'Roll back failed',
+              },
+          }),
+        },
+        'edit.dismiss': {
+          actions: assign({
+            lastEdit: null,
+          }),
         },
         'workspace.share': {
           actions: assign({

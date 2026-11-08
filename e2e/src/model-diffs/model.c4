@@ -1,0 +1,28 @@
+specification {
+  element system
+}
+
+model {
+  app = system 'Application' {
+    -> legacy 'uses'
+  }
+
+  legacy = system 'Legacy API'
+}
+
+views {
+  view index {
+    include *
+  }
+}
+
+diff rfc1 'RFC 1: New API' {
+  remove {
+    legacy
+  }
+
+  add {
+    api = system 'New API'
+    app -> api 'uses'
+  }
+}

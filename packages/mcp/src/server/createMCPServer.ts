@@ -19,6 +19,7 @@ import { batchReadElements } from '../tools/batch-read-elements'
 import { elementDiff } from '../tools/element-diff'
 import { findRelationshipPaths } from '../tools/find-relationship-paths'
 import { findRelationships } from '../tools/find-relationships'
+import { listDiffs } from '../tools/list-diffs'
 import { listProjects } from '../tools/list-projects'
 import { previewViewTool } from '../tools/preview-view'
 import { queryByMetadata } from '../tools/query-by-metadata'
@@ -31,6 +32,7 @@ import { readDeployment } from '../tools/read-deployment'
 import { readElement } from '../tools/read-element'
 import { readProjectSummary } from '../tools/read-project-summary'
 import { readView } from '../tools/read-view'
+import { removalImpact } from '../tools/removal-impact'
 import { renderViewTool } from '../tools/render-view'
 import { searchElement } from '../tools/search-element'
 import { subgraphSummary } from '../tools/subgraph-summary'
@@ -61,6 +63,8 @@ Available tools:
 - query-by-tag-pattern — Search elements by tag prefix/contains/suffix patterns. Input: { pattern, matchMode?, project? }.
 - element-diff — Compare two elements side-by-side showing differences in properties, tags, metadata, and relationships. Input: { element1Id, element2Id, project? }.
 - subgraph-summary — Compact summary of all descendants of a parent element with metadata, tags, and relationship counts. Input: { elementId, maxDepth?, metadataKeys?, project? }.
+- removal-impact — What removing an element takes with it (safe delete dry run): relationships, deployed instances, affected views, orphans and source references. Input: { id, project? }.
+- list-diffs — Model diffs (planned changes) with their added/removed/modified counts and the views they change. Input: { project? }.
 
 Instructions:
 - Identify the project first  
@@ -120,6 +124,8 @@ export function createMCPServer(_services: LikeC4LanguageServices): McpServer {
       batchReadElements,
       elementDiff,
       subgraphSummary,
+      removalImpact,
+      listDiffs,
     ),
     piped(
       applySemanticLayoutPrompt,

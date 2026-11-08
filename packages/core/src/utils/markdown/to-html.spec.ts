@@ -129,7 +129,8 @@ describe('markdownToHtml', () => {
   })
 
   it('should highlight diff blocks using their source language', () => {
-    expect(markdownToHtml('```diff-ts\n- const value: string = 1\n+ const value: string = 2\n```')).toMatchInlineSnapshot(`
+    expect(markdownToHtml('```diff-ts\n- const value: string = 1\n+ const value: string = 2\n```'))
+      .toMatchInlineSnapshot(`
       "<pre class="language-ts"><code class="language-diff-ts"><span class="code-line deleted"><span class="token operator">-</span> <span class="token keyword">const</span> value<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token number">1</span>
       </span><span class="code-line inserted"><span class="token operator">+</span> <span class="token keyword">const</span> value<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token number">2</span>
       </span></code></pre>"
@@ -302,6 +303,91 @@ code block
       </div>"
     `,
     )
+  })
+
+  describe('refs', () => {
+    it('should render element ref', () => {
+      expect(markdownToHtml('Calls [[cloud.api]].')).toBe(
+        '<p>Calls <a data-likec4-ref="cloud.api" data-likec4-ref-kind="element">cloud.api</a>.</p>',
+      )
+    })
+
+    it('should render element ref with label', () => {
+      expect(markdownToHtml('Calls [[cloud.api|Public API]].')).toBe(
+        '<p>Calls <a data-likec4-ref="cloud.api" data-likec4-ref-kind="element" data-likec4-ref-label>Public API</a>.</p>',
+      )
+    })
+
+    it('should not mark an empty label', () => {
+      expect(markdownToHtml('[[cloud.api\\|]]')).toBe(
+        '<p><a data-likec4-ref="cloud.api" data-likec4-ref-kind="element">cloud.api</a></p>',
+      )
+    })
+
+    it('should render view ref', () => {
+      expect(markdownToHtml('Open [[view:index]]')).toBe(
+        '<p>Open <a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view">index</a></p>',
+      )
+    })
+
+    it('should render ref with unknown namespace', () => {
+      expect(markdownToHtml('[[foo:bar|Bar]]')).toBe(
+        '<p><a data-likec4-ref="bar" data-likec4-ref-kind="unknown" data-likec4-ref-namespace="foo" data-likec4-ref-label>Bar</a></p>',
+      )
+    })
+
+    it('should render refs inside formatting, lists and tables', () => {
+      expect(markdownToHtml('**[[a.b]]**\n\n- [[c|C]]')).toMatchInlineSnapshot(`
+        "<p><strong><a data-likec4-ref="a.b" data-likec4-ref-kind="element">a.b</a></strong></p>
+        <ul>
+        <li><a data-likec4-ref="c" data-likec4-ref-kind="element" data-likec4-ref-label>C</a></li>
+        </ul>"
+      `)
+      expect(markdownToHtml('| A |\n| - |\n| [[a.b\\|Label]] |')).toMatchInlineSnapshot(`
+        "<table>
+        <thead>
+        <tr>
+        <th>A</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td><a data-likec4-ref="a.b" data-likec4-ref-kind="element" data-likec4-ref-label>Label</a></td>
+        </tr>
+        </tbody>
+        </table>"
+      `)
+    })
+
+    it('should escape label and target', () => {
+      expect(markdownToHtml('[[a"b<c>|<script>alert(1)</script>]]')).toBe(
+        '<p><a data-likec4-ref="a&#x22;b<c>" data-likec4-ref-kind="element" data-likec4-ref-label>&#x3C;script>alert(1)&#x3C;/script></a></p>',
+      )
+    })
+
+    it('should escape namespace', () => {
+      expect(markdownToHtml('[[a"b<c>:d]]')).toBe(
+        '<p><a data-likec4-ref="d" data-likec4-ref-kind="unknown" data-likec4-ref-namespace="a&#x22;b<c>">d</a></p>',
+      )
+    })
+
+    it('should not render escaped refs and refs in code', () => {
+      expect(markdownToHtml('\\[[a]] `[[b]]`')).toBe('<p>[[a]] <code>[[b]]</code></p>')
+      expect(markdownToHtml('```\n[[a]]\n```')).not.toContain('data-likec4-ref')
+    })
+
+    it('should render ref inside link as text', () => {
+      expect(markdownToHtml('[see [[a|A]]](https://example.com)')).toBe(
+        '<p><a href="https://example.com">see A</a></p>',
+      )
+    })
+
+    it('should not render ref anchors from raw html', () => {
+      expect(markdownToHtml('<a data-likec4-ref="a" data-likec4-ref-kind="view">x</a>')).toBe('<p>x</p>')
+      expect(markdownToHtml('<span data-likec4-ref="a">x</span>')).toBe('<p>x</p>')
+      expect(markdownToHtml('<a data-likec4-ref-label>x</a>')).toBe('<p>x</p>')
+      expect(markdownToHtml('<a data-likec4-ref-namespace="view">x</a>')).toBe('<p>x</p>')
+    })
   })
 
   it('should handle multiline alert', () => {

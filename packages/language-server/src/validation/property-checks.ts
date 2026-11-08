@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import type { ValidationCheck } from 'langium'
+import { type AstNode, type ValidationCheck, AstUtils } from 'langium'
 import { isNumber, isString } from 'remeda'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -107,4 +107,53 @@ export const colorLiteralRuleChecks = (_: LikeC4Services): ValidationCheck<ast.C
     }
     nonexhaustive(node)
   }
+}
+
+/**
+ * Whether the node carries a description of its own.
+ *
+ * A relation keeps its inline description in the header (`a -> b 'title' 'description'`) instead of a
+ * `description` property of its body, so the conflict with `descriptionFile` is found one level up.
+ */
+function hasInlineDescription(node: AstNode | undefined): boolean {
+  return !!node && 'description' in node && typeof node.description === 'string' &&
+    node.description.trim() !== ''
+}
+
+/**
+ * `descriptionFile` refers to a file that is read when the model is built, so a file that could not
+ * be read has to be reported here (the parser has nothing to describe, and stays silent).
+ */
+export const descriptionFileRuleChecks = (
+  services: LikeC4Services,
+): ValidationCheck<ast.DescriptionFileProperty> => {
+  // The referenced files are read when the model is built, and services are created lazily:
+  // touching the service here makes sure it exists before the first document is parsed
+  const descriptionFiles = services.shared.workspace.DescriptionFiles
+  return tryOrLog(async (node, accept) => {
+    const container = node.$container
+    const hasDescription = hasInlineDescription(container) || hasInlineDescription(container.$container) ||
+      ('props' in container && Array.isArray(container.props) &&
+        container.props.some(p => ast.isStringProperty(p) && p.key === 'description'))
+    if (hasDescription) {
+      accept('error', `Only one of "description" and "descriptionFile" is allowed`, {
+        node,
+        property: 'key',
+      })
+      return
+    }
+    const value = node.value?.trim()
+    if (!value) {
+      accept('error', `File name is empty`, { node, property: 'value' })
+      return
+    }
+    const doc = AstUtils.getDocument(node)
+    // The parser resolved this property for the same node, and it is re-entrant, so asking it again
+    // is how the validation gets the path the value resolved to
+    const resolvedPath = services.likec4.ModelParser.forDocument(doc).resolveDescriptionFile(value)
+    const result = await descriptionFiles.readReference({ docUri: doc.uri, value, resolvedPath })
+    if ('error' in result) {
+      accept('error', result.error, { node, property: 'value' })
+    }
+  })
 }

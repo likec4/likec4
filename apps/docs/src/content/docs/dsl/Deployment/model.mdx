@@ -63,6 +63,14 @@ Node names must be unique within its container (parent node); same rules as for 
 
 Nodes may have properties just like [logical elements](/dsl/model/#element-properties).
 
+Deployment nodes and deployed instances have a details popup with their properties, including descriptions,
+links, and metadata, as well as their views and position in the deployment hierarchy.
+Deployed instance details show instance overrides and provide access to the logical element's details.
+
+Leaf nodes display their `summary`, or `description` when no summary is provided, directly in the view.
+Container nodes remain title-only; their description is available in the details popup.
+In React integrations, enable these popups with `enableElementDetails`.
+
 ```likec4
 deployment {
   environment prod 'Production' {

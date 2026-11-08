@@ -31,7 +31,7 @@ function pkgFromUserAgent(userAgent: string | undefined) {
   const pkgSpecArr = pkgSpec.split('/')
   return {
     name: pkgSpecArr[0],
-    version: pkgSpecArr[1]
+    version: pkgSpecArr[1],
   }
 }
 
@@ -45,7 +45,7 @@ async function init() {
     type: 'text',
     name: 'targetDir',
     initial: 'likec4',
-    message: 'Directory to create project in:'
+    message: 'Directory to create project in:',
   })
   const root = resolve(cwd, results.targetDir)
 
@@ -74,7 +74,7 @@ async function init() {
   const $$ = $({
     cwd: root,
     stderr: 'inherit',
-    stdout: 'inherit'
+    stdout: 'inherit',
   })
   await $$`${pkgManager} install`
   console.log(`\nDone\nRunning dev server...\n`)

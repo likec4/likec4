@@ -156,7 +156,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     .meta({
       description: [
         'Automatically derive element technology from icon name when technology is not set explicitly.',
-        'Applies to aws:, azure:, gcp:, and tech: icons. Bootstrap icons are excluded.',
+        'Applies to aws:, azure:, gcp:, and tech: icons. Generic bootstrap: and md: icons are excluded.',
         'Defaults to true.',
       ].join('\n'),
     }),

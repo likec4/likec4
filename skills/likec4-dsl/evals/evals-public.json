@@ -197,6 +197,11 @@
       "id": 38,
       "prompt": "Start your answer with exactly `Invalid.` or `Valid.` on the first line. Is this dynamic view valid?\n```likec4\ndynamic view flow {\n  alt {\n    loop {\n      a -> b\n    }\n  }\n}\n```\nExplain in one sentence why, then give the corrected minimal snippet that keeps the `loop` but satisfies the `alt`-branch rule.",
       "files": []
+    },
+    {
+      "id": 39,
+      "prompt": "The model has `cloud.ui` (title \"Web UI\") and `cloud.api`, and a view `index`. Give me a minimal paste-ready `description` property for `cloud.api` that (1) links to `cloud.ui` in a sentence so the element title is shown, (2) links to the view `index`, and (3) has a Markdown table with one row whose first cell links to `cloud.ui` with the label `Frontend`. Snippet first, then one sentence on what happens if a linked FQN does not exist.",
+      "files": []
     }
   ]
 }

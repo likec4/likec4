@@ -11,7 +11,7 @@ import {
   emitPaneClick,
   fitFocusedBounds,
   focusOnNodesAndEdges,
-  openElementDetails,
+  openNodeDetails,
   openSourceOfFocusedOrLastClickedNode,
   resetLastClickedNode,
   returnViewportBefore,
@@ -44,6 +44,10 @@ export const focused = machine.createStateConfig({
     }),
   ],
   on: {
+    'compare.start': {
+      guard: 'can compare layouts',
+      ...to.comparing,
+    },
     'focus.autoUnfocus': {
       ...to.idle,
     },
@@ -52,11 +56,11 @@ export const focused = machine.createStateConfig({
         guard: and([
           'enabled: ElementDetails',
           'click: focused node',
-          'click: node has modelFqn',
+          'click: node has details',
         ]),
         actions: [
           assignLastClickedNode(),
-          openElementDetails(),
+          openNodeDetails(),
           emitNodeClick(),
         ],
       },

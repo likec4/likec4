@@ -4,6 +4,7 @@ export * from './compareByUri'
 export * from './disposable'
 export * from './elementRef'
 export * from './fqnRef'
+export * from './markdown-refs'
 export * from './projectId'
 export * from './stringHash'
 

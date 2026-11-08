@@ -28,6 +28,7 @@ export {
 export {
   getConsoleSink,
   getConsoleStderrSink,
+  getNoopSink,
 } from './sink'
 
 export { withFilter } from '@logtape/logtape'
@@ -58,7 +59,7 @@ export function createLogger(subcategory: string | readonly [string] | readonly 
  * Configure the global logger: sinks, loggers, and lowest level per category.
  * @param config - Optional partial config (sinks, loggers). Merged with defaults.
  */
-export function configureLogger<TSinkId extends string, TFilterId extends string>(
+export function configureLogger<TSinkId extends string, TFilterId extends string = never>(
   config?: Partial<Config<TSinkId, TFilterId>>,
 ) {
   try {

@@ -1,10 +1,10 @@
 import { URI } from 'langium'
 import { describe, it } from 'vitest'
-import { createMultiProjectTestServices } from '../../test'
+import { createMultiProjectTestServices, mockMethod } from '../../test'
 
 describe('LikeC4ModelBuilder -- projects', () => {
   it('should assign default project data', async ({ expect }) => {
-    const { buildLikeC4Model } = await createMultiProjectTestServices({
+    await using t = await createMultiProjectTestServices({
       project1: {
         'doc.c4': `
           specification {
@@ -16,7 +16,7 @@ describe('LikeC4ModelBuilder -- projects', () => {
         `,
       },
     })
-    const model = await buildLikeC4Model('project1')
+    const model = await t.buildLikeC4Model('project1')
     expect(model.$data.elements).toMatchObject({
       c1: {
         id: 'c1',
@@ -31,9 +31,9 @@ describe('LikeC4ModelBuilder -- projects', () => {
   })
 
   it('should assign project data from config', async ({ expect }) => {
-    const { projectsManager, addDocument, buildLikeC4Model } = await createMultiProjectTestServices({})
+    await using t = await createMultiProjectTestServices({})
 
-    await projectsManager.registerProject({
+    await t.projectsManager.registerProject({
       config: {
         name: 'test-project',
         title: 'Test Project',
@@ -44,7 +44,7 @@ describe('LikeC4ModelBuilder -- projects', () => {
       folderUri: URI.parse('file:///test/workspace/src/test-project-1'),
     })
 
-    await addDocument(
+    await t.addDocument(
       'test-project-1/doc.c4',
       `
         specification {
@@ -56,7 +56,7 @@ describe('LikeC4ModelBuilder -- projects', () => {
       `,
     )
 
-    const model = await buildLikeC4Model('test-project')
+    const model = await t.buildLikeC4Model('test-project')
     expect(model.$data.elements).toMatchObject({
       c1: {
         id: 'c1',
@@ -73,7 +73,7 @@ describe('LikeC4ModelBuilder -- projects', () => {
     })
 
     // test-project is the only project, so it should be the default
-    const defaultModel = await buildLikeC4Model('default')
+    const defaultModel = await t.buildLikeC4Model('default')
     expect(defaultModel.$data.elements).toMatchObject({
       c1: {
         id: 'c1',
@@ -87,6 +87,59 @@ describe('LikeC4ModelBuilder -- projects', () => {
       manualLayouts: {
         outDir: '.likec4-layouts',
       },
+    })
+  })
+
+  it('should rebuild model when project config changes', async ({ expect }) => {
+    await using t = await createMultiProjectTestServices({})
+    const folderUri = URI.parse('file:///test/workspace/src/test-project-1')
+    // Config change rebuilds project documents, they are re-read from the file system
+    const langiumDocuments = t.services.shared.workspace.LangiumDocuments
+    mockMethod(t.services.shared.workspace.FileSystemProvider, 'readFile').mockImplementation(async uri =>
+      langiumDocuments.getDocument(uri)?.textDocument.getText() ?? ''
+    )
+
+    await t.projectsManager.registerProject({
+      config: {
+        name: 'test-project',
+        title: 'Before',
+      },
+      folderUri,
+    })
+    await t.addDocument(
+      'test-project-1/doc.c4',
+      `
+        specification {
+          element component
+        }
+        model {
+          component c1
+        }
+      `,
+    )
+    const before = await t.buildLikeC4Model('test-project')
+    expect(before.project.title).toBe('Before')
+
+    // Same documents, only config is changed
+    await t.projectsManager.registerProject({
+      config: {
+        name: 'test-project',
+        title: 'After',
+        styles: {
+          theme: {
+            colors: {
+              primary: '#ff0000',
+            },
+          },
+        },
+      },
+      folderUri,
+    })
+
+    const after = await t.buildLikeC4Model('test-project')
+    expect(after.project.title).toBe('After')
+    expect(after.$data.project.styles?.theme?.colors?.['primary']).toMatchObject({
+      elements: { fill: '#ff0000' },
     })
   })
 })

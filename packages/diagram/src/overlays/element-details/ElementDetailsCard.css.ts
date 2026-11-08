@@ -4,6 +4,8 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 import { css, sva } from '@likec4/styles/css'
+import { styled } from '@likec4/styles/jsx'
+import { hstack } from '@likec4/styles/patterns'
 
 export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
@@ -59,18 +61,19 @@ export const cardHeader = css({
   cursor: 'move',
 })
 
-export const title = css({
-  display: 'block',
-  fontFamily: 'likec4.element',
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
-  fontWeight: 'bold',
-  fontSize: '[24px]',
-  lineHeight: 'xs',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  wordBreak: 'break-word',
-  lineClamp: 2,
+export const ElementTitle = styled('div', {
+  base: {
+    fontFamily: 'likec4.element',
+    fontOpticalSizing: 'auto',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    fontSize: 'h2',
+    lineHeight: 'xs',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    wordBreak: 'break-word',
+    lineClamp: 2,
+  },
 })
 
 const iconSize = '40px'
@@ -103,14 +106,13 @@ export const elementIcon = css({
 
 const viewTitleColor = '--view-title-color'
 const iconColor = '--icon-color'
-export const viewButton = css({
-  // display: 'flex',
+export const viewButton = hstack({
+  flexWrap: 'nowrap',
   width: '100%',
   background: 'surface.default',
   borderRadius: 'sm',
   padding: `[10px 8px]`,
-  // gap: 6,
-  // alignItems: 'flex-start',
+  gap: '2',
   transition: 'fast',
   border: `default`,
   borderStyle: 'dashed',
@@ -143,28 +145,58 @@ export const viewButton = css({
   },
 })
 
-export const viewButtonTitle = css({
-  transition: 'fast',
-  color: `[var(${viewTitleColor}, {colors.mantine.gray[7]})]`,
-  fontSize: '[15px]',
-  fontWeight: 'medium',
-  lineHeight: '[1.4]',
+export const ViewButtonTitle = styled('div', {
+  base: {
+    transition: 'fast',
+    color: `[var(${viewTitleColor}, {colors.mantine.gray[7]})]`,
+    fontSize: '[15px]',
+    fontWeight: 'medium',
+    lineHeight: '[1.4]',
+    lineClamp: 1,
+  },
 })
 
-export const propertiesGrid = css({
-  flex: '1',
-  display: 'grid',
-  gridTemplateColumns: '[min-content 1fr]',
-  gridAutoRows: '[min-content max-content]',
-  gap: `[24px 20px]`,
-  alignItems: 'baseline',
-  justifyItems: 'stretch',
+// Properties tab: description reads as the main pane, facts sit in a sidebar (see PropertiesSplit)
+export const propertiesMain = css({
+  height: '100%',
+  // align the article with the card's left edge (icon, tabs, footer)
+  '& > .mantine-ScrollArea-viewport': {
+    paddingLeft: '0!',
+  },
 })
 
-export const propertyLabel = css({
-  justifySelf: 'end',
-  textAlign: 'right',
-  userSelect: 'none',
+export const propertiesSidebar = css({
+  width: '100%',
+  height: '100%',
+  borderRadius: 'md',
+  backgroundColor: 'surface.sunken',
+  '& > .mantine-ScrollArea-viewport': {
+    padding: '3!',
+  },
+})
+
+export const facts = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6',
+})
+
+export const factLabel = css({
+  textStyle: 'fieldLabel',
+  margin: '0',
+  marginBottom: '2',
+})
+
+export const factValues = css({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '1',
+  fontSize: 'md',
+})
+
+export const technologyBadge = css({
+  minHeight: '[24px]',
+  backgroundColor: 'transparent',
 })
 
 export const resizeHandle = css({
@@ -258,6 +290,37 @@ export const tabs = sva({
       textTransform: 'uppercase',
       fontWeight: 'medium',
       letterSpacing: 'caps.sm',
+    },
+  },
+})
+
+export const CardFooter = styled('div', {
+  base: {
+    flex: '[0]',
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    columnGap: 'lg',
+    rowGap: 'xs',
+    marginTop: '[-8px]',
+    paddingTop: 'xs',
+    borderTop: 'subtle',
+  },
+})
+
+export const CardFooterSection = styled('div', {
+  base: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '1',
+    minWidth: '0',
+  },
+  variants: {
+    full: {
+      true: {
+        flex: '1',
+        overflow: 'hidden',
+      },
     },
   },
 })

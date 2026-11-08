@@ -1,0 +1,20 @@
+// A second proposal that overlaps with RFC-1: both remove the fraud check of the bank.
+// Overlaps are never resolved automatically: applying either diff asks you to confirm
+// that the owners of both diffs agreed. After the apply, the other diff is reported as broken.
+diff rfc2 'RFC-2: Fraud service' {
+  description 'Move the fraud check from the bank to a dedicated fraud service'
+
+  remove {
+    shop.orders -> bank 'checks fraud score'
+  }
+
+  add {
+    extend shop {
+      fraud = container 'Fraud Service' {
+        #next
+        technology 'Python'
+      }
+    }
+    shop.orders -> shop.fraud 'checks fraud score'
+  }
+}

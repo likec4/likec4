@@ -15,6 +15,7 @@ describe('parseIconProperty', () => {
         comp4 = component { icon tech:react }
         comp5 = component { icon bootstrap:house }
         comp6 = component { icon bootstrap:gear-fill }
+        comp7 = component { icon md:account-circle }
       }
     `)
 
@@ -27,6 +28,7 @@ describe('parseIconProperty', () => {
     expect(model.element('comp4').icon).toBe('tech:react')
     expect(model.element('comp5').icon).toBe('bootstrap:house')
     expect(model.element('comp6').icon).toBe('bootstrap:gear-fill')
+    expect(model.element('comp7').icon).toBe('md:account-circle')
   })
 
   it('should handle "none" value as literal string', async ({ expect }) => {

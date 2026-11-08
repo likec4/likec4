@@ -7,6 +7,23 @@ import { describe, expect, it } from 'vitest'
 import { IconRenderer } from './IconRenderer'
 
 describe('IconRenderer', () => {
+  it('renders Material Symbols as currentColor masks', () => {
+    const html = renderToStaticMarkup(
+      <IconRenderer
+        element={{
+          id: 'test',
+          title: 'Home',
+          icon: 'md:home',
+        }}
+        style={{ color: 'red' }} />,
+    )
+
+    expect(html).toContain('style="color:red"')
+    expect(html).toContain('background-color:currentColor')
+    expect(html).toContain('https://icons.like-c4.dev/md/home.svg')
+    expect(html).not.toContain('<img')
+  })
+
   it('renders SVG data URLs as colorable masks so iconColor can style currentColor', () => {
     const svgDataUrl =
       'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="currentColor"/%3E%3C/svg%3E'

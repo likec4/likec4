@@ -8,6 +8,7 @@ import type {
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { _stage, _type } from './const'
+import type { DiffStatus } from './model-diff'
 import type { ElementStyle } from './model-logical'
 import type * as scalar from './scalar'
 import type {
@@ -78,6 +79,15 @@ export interface ComputedNode<A extends AnyAux = AnyAux>
   isCustomized?: boolean
   notation?: string | null
   notes?: scalar.MarkdownOrString | undefined
+  /**
+   * Change status of the node.
+   * Set only in compare views (model diff) and removal impact views.
+   */
+  diffStatus?: DiffStatus
+  /**
+   * Properties of a modified node before the diff (compare views only)
+   */
+  diffBefore?: Pick<ComputedNode<A>, 'title' | 'description' | 'technology' | 'tags' | 'color' | 'shape' | 'icon'>
 }
 
 export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptionalTags<A> {
@@ -114,6 +124,15 @@ export interface ComputedEdge<A extends AnyAux = AnyAux> extends aux.WithOptiona
    * @default 'forward'
    */
   dir?: 'forward' | 'back' | 'both'
+  /**
+   * Change status of the edge.
+   * Set only in compare views (model diff) and removal impact views.
+   */
+  diffStatus?: DiffStatus
+  /**
+   * Properties of a modified edge before the diff (compare views only)
+   */
+  diffBefore?: Pick<ComputedEdge<A>, 'label' | 'description' | 'technology' | 'relations' | 'color' | 'line'>
 }
 
 export interface ComputedRankConstraint {

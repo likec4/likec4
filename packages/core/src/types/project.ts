@@ -72,7 +72,7 @@ export interface LikeC4Project {
   /**
    * Automatically derive element technology from icon name
    * when technology is not explicitly set.
-   * Applies to aws:, azure:, gcp:, and tech: icons.
+   * Applies to aws:, azure:, gcp:, and tech: icons; generic bootstrap: and md: icons are excluded.
    * Defaults to true.
    */
   inferTechnologyFromIcon?: boolean | undefined

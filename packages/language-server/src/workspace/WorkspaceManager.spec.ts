@@ -4,11 +4,11 @@
 
 import { LikeC4ProjectConfigOps } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
-import { describe, vi } from 'vitest'
+import { describe } from 'vitest'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import type { FileNode } from '../filesystem'
-import { test as it } from '../test'
+import { mockMethod, test as it } from '../test'
 
 const fileNode = (uri: URI): FileNode => ({
   isFile: true,
@@ -47,14 +47,14 @@ describe('WorkspaceManager', () => {
         uri: workspaceUri.toString(),
       }
 
-      vi.spyOn(fs, 'scanProjectFiles').mockResolvedValue([fileNode(projectConfigUri)])
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(
+      mockMethod(fs, 'scanProjectFiles').mockResolvedValue([fileNode(projectConfigUri)])
+      mockMethod(fs, 'loadProjectConfig').mockResolvedValue(
         LikeC4ProjectConfigOps.validate({
           name: 'projectA',
           include: { paths: ['../../shared'] },
         }),
       )
-      const readDirectory = vi.spyOn(fs, 'readDirectory').mockImplementation(async uri => {
+      const readDirectory = mockMethod(fs, 'readDirectory').mockImplementation(async uri => {
         switch (uri.toString()) {
           case workspaceUri.toString():
             return [fileNode(projectDocUri)]
@@ -64,7 +64,7 @@ describe('WorkspaceManager', () => {
             return []
         }
       })
-      vi.spyOn(fs, 'readFile').mockImplementation(async uri => {
+      mockMethod(fs, 'readFile').mockImplementation(async uri => {
         switch (uri.toString()) {
           case projectDocUri.toString():
             return 'specification { element component }'
@@ -114,14 +114,14 @@ describe('WorkspaceManager', () => {
         uri: workspaceUri.toString(),
       }
 
-      vi.spyOn(fs, 'scanProjectFiles').mockResolvedValue([fileNode(projectConfigUri)])
-      vi.spyOn(fs, 'loadProjectConfig').mockResolvedValue(
+      mockMethod(fs, 'scanProjectFiles').mockResolvedValue([fileNode(projectConfigUri)])
+      mockMethod(fs, 'loadProjectConfig').mockResolvedValue(
         LikeC4ProjectConfigOps.validate({
           name: 'projectA',
           include: { paths: ['../shared'] },
         }),
       )
-      const readDirectory = vi.spyOn(fs, 'readDirectory').mockImplementation(async uri => {
+      const readDirectory = mockMethod(fs, 'readDirectory').mockImplementation(async uri => {
         switch (uri.toString()) {
           case workspaceUri.toString():
             return [fileNode(projectDocUri), fileNode(sharedDocUri)]
@@ -131,7 +131,7 @@ describe('WorkspaceManager', () => {
             return []
         }
       })
-      vi.spyOn(fs, 'readFile').mockImplementation(async uri => {
+      mockMethod(fs, 'readFile').mockImplementation(async uri => {
         switch (uri.toString()) {
           case projectDocUri.toString():
             return 'specification { element component }'

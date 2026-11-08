@@ -7,7 +7,7 @@
 
 import type { ProjectId } from '@likec4/core'
 import { hasProp, invariant, MultiMap, objectHash } from '@likec4/core/utils'
-import { type LangiumDocument, type Stream, Disposable, DocumentState, UriUtils } from 'langium'
+import { type LangiumDocument, type Stream, Disposable, DocumentState } from 'langium'
 import { pipe } from 'remeda'
 import {
   type LikeC4DocumentProps,
@@ -20,10 +20,11 @@ import {
 } from '../ast'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { ADisposable } from '../utils'
+import { ADisposable, stringHash } from '../utils'
 import { BaseParser } from './parser/Base'
 import { DeploymentModelParser } from './parser/DeploymentModelParser'
 import { DeploymentViewParser } from './parser/DeploymentViewParser'
+import { DiffParser } from './parser/DiffParser'
 import { ExpressionV2Parser } from './parser/FqnRefParser'
 import { GlobalsParser } from './parser/GlobalsParser'
 import { ImportsParser } from './parser/ImportsParser'
@@ -39,6 +40,7 @@ const DocumentParserFromMixins = pipe(
   ExpressionV2Parser,
   ImportsParser,
   ModelParser,
+  DiffParser,
   DeploymentModelParser,
   DeploymentViewParser,
   PredicatesParser,
@@ -157,11 +159,13 @@ export class LikeC4ModelParser extends ADisposable {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
     this.cleanParserState(doc)
     const project = this.services.shared.workspace.ProjectsManager.getProject(doc)
-    const docpath = UriUtils.relative(project.folderUri, doc.uri)
-    this.#logger.trace(`project {project}, create parser {doc}`, {
-      project: project.id,
-      doc: docpath,
-    })
+    const docpath = this.services.shared.workspace.WorkspaceManager.relativePath(doc.uri)
+    if (this.#logger.isEnabledFor('trace')) {
+      this.#logger.trace(`project {project}, create parser {doc}`, {
+        project: project.id,
+        doc: docpath,
+      })
+    }
     if (doc.state < DocumentState.Linked) {
       this.#logger.error(`document {doc} is not linked, state is {state}`, {
         doc: docpath,
@@ -191,6 +195,8 @@ export class LikeC4ModelParser extends ADisposable {
       },
       c4Views: [],
       c4Imports: new MultiMap(Set),
+      c4Diffs: [],
+      c4DescriptionFiles: new Set(),
     }
     const parser = new DocumentParser(
       this.services,
@@ -201,6 +207,7 @@ export class LikeC4ModelParser extends ADisposable {
       parser.parseSpecification()
       parser.parseImports()
       parser.parseModel()
+      parser.parseDiffs()
       parser.parseDeployment()
       parser.parseGlobals()
       parser.parseViews()
@@ -214,7 +221,7 @@ export class LikeC4ModelParser extends ADisposable {
       })
       throw new Error(`Error parsing document ${docpath}`, { cause: error })
     }
-    parser.hash = objectHash([parser.docPathInProject])
+    parser.hash = stringHash(parser.docPathInProject)
     for (const key of LikeC4DocumentPropKeys) {
       try {
         if (!hasProp(doc, key) || key === 'likec4Parser') {

@@ -12,6 +12,7 @@ import type { IsAnyOrNever, NonEmptyArray } from './_common'
 import type { _stage } from './const'
 import type { ModelGlobals } from './global'
 import type { DeploymentElement, DeploymentRelationship } from './model-deployment'
+import type { DiffId, ModelDiff } from './model-diff'
 import type { Element, Relationship } from './model-logical'
 import type { Specification } from './model-spec'
 import type { LikeC4Project } from './project'
@@ -40,6 +41,11 @@ interface BaseLikeC4ModelData<A extends Any> {
   relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
   imports: Record<scalar.ProjectId, NonEmptyArray<Element<A>>>
+  /**
+   * Named change sets of the model (`diff` blocks).
+   * Elements and relations above are the model before any diff is applied.
+   */
+  diffs?: Record<DiffId, ModelDiff<A>>
 }
 
 export type AuxFromLikeC4ModelData<D> =

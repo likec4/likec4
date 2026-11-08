@@ -2270,4 +2270,26 @@ describe('formating', () => {
       expect(stage1).toBe(stage2)
     })
   })
+
+  describe('formats descriptionFile', () => {
+    it(
+      'formats the property of a path-valued file reference',
+      async ({ expect, format }) =>
+        expect(
+          await format`
+          model {
+            component c1 {
+              descriptionFile   :   ./spec.md   ;
+            }
+          }`,
+        ).toMatchInlineSnapshot(`
+          "
+          model {
+            component c1 {
+              descriptionFile: ./spec.md ;
+            }
+          }"
+        `),
+    )
+  })
 })

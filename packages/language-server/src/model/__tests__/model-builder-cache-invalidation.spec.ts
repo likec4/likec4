@@ -1,11 +1,10 @@
 import type { LayoutedView, ProjectId, ViewId } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import { DocumentState } from 'langium'
-import { describe } from 'vitest'
+import { describe, it } from 'vitest'
 import { NoopLikeC4ManualLayouts } from '../../filesystem/noop'
 import type { ManualLayoutsSnapshot } from '../../filesystem/types'
-import { test as it } from '../../test'
-import { createMultiProjectTestServices, createTestServices, test } from '../../test'
+import { createMultiProjectTestServices, createTestServices } from '../../test'
 
 const spec = `
   specification {
@@ -396,7 +395,8 @@ describe('LikeC4ModelBuilder -- cache invalidation', () => {
       }
     `
 
-    test('keeps same instance if user edits text and error remains', async ({ t, expect }) => {
+    it('keeps same instance if user edits text and error remains', async ({ expect }) => {
+      await using t = createTestServices()
       const { document } = await t.validate(`
         ${spec}
         model {
@@ -424,7 +424,8 @@ describe('LikeC4ModelBuilder -- cache invalidation', () => {
       expect(after).toBe(before)
     })
 
-    test('reparses document when its validation changes, but text does not', async ({ t, expect }) => {
+    it('reparses document when its validation changes, but text does not', async ({ expect }) => {
+      await using t = createTestServices()
       // relations.c4 is never edited, it changes validation state only because of elements.c4
       const elementsDoc = await t.addDocument(elements('sys1', 'sys2'), 'elements.c4')
       await t.addDocument(relations, 'relations.c4')
@@ -450,7 +451,8 @@ describe('LikeC4ModelBuilder -- cache invalidation', () => {
       await step('fixed', ['sys1', 'sys2'], 1)
     })
 
-    test('model requested between Linked and Validated is consistent after validation', async ({ t, expect }) => {
+    it('model requested between Linked and Validated is consistent after validation', async ({ expect }) => {
+      await using t = createTestServices()
       const mb = t.services.likec4.ModelBuilder
       const builder = t.services.shared.workspace.DocumentBuilder
       // At Linked phase there are no diagnostics yet, parser considers everything valid

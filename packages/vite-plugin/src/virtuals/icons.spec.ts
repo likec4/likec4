@@ -73,6 +73,8 @@ describe('generateIconRendererCode', () => {
         index: {
           nodes: [{
             icon: 'bootstrap:file-earmark-code',
+          }, {
+            icon: 'md:home',
           }],
         },
       },
@@ -91,9 +93,11 @@ describe('generateIconRendererCode', () => {
     expect(code).toContain(
       `import Icon00 from ${jsStringLiteral('likec4:icon-bundle/bootstrap/file-earmark-code.jsx')}`,
     )
-    expect(code).toContain(`import Icon01 from ${jsStringLiteral('likec4:icon-bundle/tech/react.jsx')}`)
+    expect(code).toContain(`import Icon01 from ${jsStringLiteral('likec4:icon-bundle/md/home.jsx')}`)
+    expect(code).toContain(`import Icon02 from ${jsStringLiteral('likec4:icon-bundle/tech/react.jsx')}`)
     expect(code).toContain(`${jsStringLiteral('bootstrap:file-earmark-code')}: Icon00`)
-    expect(code).toContain(`${jsStringLiteral('tech:react')}: Icon01`)
+    expect(code).toContain(`${jsStringLiteral('md:home')}: Icon01`)
+    expect(code).toContain(`${jsStringLiteral('tech:react')}: Icon02`)
   })
 
   it('ignores unsupported non-local icon references instead of emitting invalid bundle imports', () => {
