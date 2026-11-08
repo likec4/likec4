@@ -283,6 +283,15 @@ const LikeC4Config_Styles_CustomStylesheets = z
     id: 'CustomStylesheets',
   })
 
+/**
+ * Output of {@link normalizeStylesheets}, with the content filled in by `loadConfig`.
+ * Config can be validated more than once (e.g. `loadConfig` and then `ProjectsManager.registerProject`).
+ */
+const LikeC4Config_Styles_LoadedStylesheets = z.strictObject({
+  paths: z.array(z.string()).readonly(),
+  content: z.string(),
+})
+
 export const LikeC4StylesConfigSchema = z
   .strictObject({
     theme: LikeC4Config_Styles_Theme.optional().meta({
@@ -292,10 +301,10 @@ export const LikeC4StylesConfigSchema = z
       description:
         'Override default values for style properties\nThese values will be used if such property is not defined',
     }),
-    customCss: z.preprocess(
-      denormalizeStylesheets,
+    customCss: z.union([
       LikeC4Config_Styles_CustomStylesheets,
-    ).optional().meta({
+      LikeC4Config_Styles_LoadedStylesheets,
+    ]).optional().meta({
       description: 'Custom CSS (or list of CSS files) to be included in the generated diagrams',
     }),
   })
@@ -325,24 +334,16 @@ function normalizeDefaults(
   }) satisfies LikeC4ProjectStyleDefaults
 }
 
-/**
- * Config can be validated more than once (e.g. `loadConfig` and then `ProjectsManager.registerProject`).
- * Turns the output of {@link normalizeStylesheets} back into the list of paths, so that it passes validation again.
- */
-function denormalizeStylesheets(
-  stylesheets: z.input<typeof LikeC4Config_Styles_CustomStylesheets> | LikeC4ProjectStylesCustomStylesheets,
-): unknown {
-  if (isPlainObject(stylesheets) && stylesheets.content === '' && Array.isArray(stylesheets.paths)) {
-    return stylesheets.paths
-  }
-  return stylesheets
-}
-
 function normalizeStylesheets(
-  stylesheets?: z.infer<typeof LikeC4Config_Styles_CustomStylesheets>,
+  stylesheets?:
+    | z.infer<typeof LikeC4Config_Styles_CustomStylesheets>
+    | z.infer<typeof LikeC4Config_Styles_LoadedStylesheets>,
 ): LikeC4ProjectStylesCustomStylesheets | undefined {
   if (!stylesheets) {
     return undefined
+  }
+  if (isPlainObject(stylesheets)) {
+    return stylesheets as LikeC4ProjectStylesCustomStylesheets
   }
   const paths = (Array.isArray(stylesheets) ? stylesheets : [stylesheets]).filter(Boolean)
   if (paths.length === 0) {
