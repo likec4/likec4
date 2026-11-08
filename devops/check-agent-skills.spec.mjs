@@ -14,6 +14,7 @@ const expectedClaudeSkillLinks = new Map([
   ['.claude/skills/add-new-element-shape', '../../.agents/skills/add-new-element-shape'],
   ['.claude/skills/changeset-generator', '../../.agents/skills/changeset-generator'],
   ['.claude/skills/likec4-cli-codegen-regression', '../../.agents/skills/likec4-cli-codegen-regression'],
+  ['.claude/skills/code-to-likec4', '../../skills/code-to-likec4'],
   ['.claude/skills/likec4-dsl', '../../skills/likec4-dsl'],
   ['.claude/skills/likec4-gh-pr-triage', '../../.agents/skills/likec4-gh-pr-triage'],
   ['.claude/skills/likec4-issue-repro', '../../.agents/skills/likec4-issue-repro'],
