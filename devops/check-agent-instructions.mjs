@@ -1,28 +1,45 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+// Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, lstatSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
   encoding: 'utf8',
 }).trim()
 
-const tracked = execFileSync('git', ['ls-files'], {
+const entries = execFileSync('git', ['ls-files', '-s'], {
   cwd: root,
   encoding: 'utf8',
-}).split('\n').filter(Boolean)
+}).split('\n').filter(Boolean).map(line => {
+  const [metadata, file] = line.split('\t')
+  return { mode: metadata.split(' ')[0], file }
+})
+const tracked = entries.map(entry => entry.file)
 
 const failures = []
 
 const absolute = relativePath => path.join(root, relativePath)
 const isTracked = relativePath => tracked.includes(relativePath)
-const read = relativePath => readFileSync(absolute(relativePath), 'utf8')
+const read = relativePath => readFileSync(absolute(relativePath), 'utf8').replace(/\r\n?/g, '\n')
 const fail = message => failures.push(message)
-const stripCarriageReturns = content => content.replace(/\r/g, '')
 
 const requireTrackedFile = relativePath => {
   if (!isTracked(relativePath)) {
     fail(`${relativePath} must be tracked`)
+    return false
+  }
+  if (
+    entries.some(entry => entry.file === relativePath && entry.mode === '120000')
+    || (existsSync(absolute(relativePath)) && lstatSync(absolute(relativePath)).isSymbolicLink())
+  ) {
+    fail(`${relativePath} must be a regular file, not a symlink adapter`)
     return false
   }
   if (!existsSync(absolute(relativePath))) {
@@ -32,22 +49,10 @@ const requireTrackedFile = relativePath => {
   return true
 }
 
-const requireIncludes = (content, needle, label) => {
-  if (!content.includes(needle)) {
-    fail(`AGENTS.md must contain ${label}: ${needle}`)
-  }
-}
-
-const requireNotIncludes = (content, needle, label) => {
-  if (content.includes(needle)) {
-    fail(`AGENTS.md must not contain stale ${label}: ${needle}`)
-  }
-}
-
 requireTrackedFile('AGENTS.md')
 
 if (requireTrackedFile('CLAUDE.md')) {
-  const claude = stripCarriageReturns(read('CLAUDE.md'))
+  const claude = read('CLAUDE.md')
   if (claude !== '@AGENTS.md\n') {
     fail('CLAUDE.md must contain exactly "@AGENTS.md" plus a trailing newline')
   }
@@ -73,16 +78,23 @@ if (existsSync(absolute('AGENT.md'))) {
   fail('Do not create root AGENT.md; use AGENTS.md')
 }
 
-const allowedNestedClaudeFiles = new Map([
-  [
-    'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md',
-    '@../../../../../AGENTS.md\n\nClaude Code local memory: use the `### packages/diagram/src/likec4diagram/xyflow-sequence` section in the imported root `AGENTS.md`; do not duplicate the sequence-layouter rules here.\n',
-  ],
+const referenceDirectory = '.agents/instructions'
+const referenceSections = new Map([
+  ['project-map.md', ['## Project Structure & Module Organization']],
+  ['model-api.md', ['## Public API entry files', '## Package-specific instructions']],
+  ['webapp.md', ['## App ↔ Language Server Architecture', '## Package-specific instructions']],
+  ['sequence.md', ['## Package-specific instructions', '### packages/diagram/src/likec4diagram/xyflow-sequence']],
 ])
+const referencePath = name => `${referenceDirectory}/${name}`
+
+const sequenceClaudePath = 'packages/diagram/src/likec4diagram/xyflow-sequence/CLAUDE.md'
+const sequenceClaudeImports = ['sequence.md', 'webapp.md'].map(name => {
+  const target = referencePath(name)
+  return `@${path.posix.relative(path.posix.dirname(sequenceClaudePath), target)}`
+})
+
 const trackedClaudeFiles = tracked.filter(file => path.basename(file) === 'CLAUDE.md')
-const unexpectedClaudeFiles = trackedClaudeFiles.filter(file =>
-  file !== 'CLAUDE.md' && !allowedNestedClaudeFiles.has(file)
-)
+const unexpectedClaudeFiles = trackedClaudeFiles.filter(file => file !== 'CLAUDE.md' && file !== sequenceClaudePath)
 if (unexpectedClaudeFiles.length > 0) {
   fail(
     `Only root CLAUDE.md and explicitly allowed localized Claude memories are allowed; remove package adapters: ${
@@ -91,14 +103,22 @@ if (unexpectedClaudeFiles.length > 0) {
   )
 }
 
-for (const [relativePath, expectedContent] of allowedNestedClaudeFiles) {
-  if (!isTracked(relativePath)) {
-    continue
+if (requireTrackedFile(sequenceClaudePath)) {
+  const imports = read(sequenceClaudePath).trim().split('\n').filter(Boolean)
+  if (
+    imports.length !== sequenceClaudeImports.length ||
+    imports.some((line, index) => line !== sequenceClaudeImports[index])
+  ) {
+    fail(`${sequenceClaudePath} must import only the sequence and webapp references`)
   }
-
-  const content = stripCarriageReturns(read(relativePath))
-  if (content !== expectedContent) {
-    fail(`${relativePath} must import AGENTS.md and contain only the approved local pointer`)
+  for (const importLine of imports) {
+    if (!importLine.startsWith('@')) {
+      continue
+    }
+    const target = path.posix.normalize(path.posix.join(path.posix.dirname(sequenceClaudePath), importLine.slice(1)))
+    if (!tracked.includes(target) || !existsSync(absolute(target))) {
+      fail(`${sequenceClaudePath} import must resolve to a tracked file: ${importLine}`)
+    }
   }
 }
 
@@ -112,80 +132,49 @@ if (existsSync(absolute('.github/copilot-instructions.md'))) {
 
 if (existsSync(absolute('AGENTS.md'))) {
   const agents = read('AGENTS.md')
+  const rootHeadings = new Set(agents.split('\n').filter(line => /^#{1,3} /.test(line)))
+  const routingSection = agents.split(/(?=^## )/m).find(section =>
+    section.startsWith('## Read task guidance before work\n')
+  ) ?? ''
+  const routeTargets = [...routingSection.matchAll(/\]\(\s*([^)]*?)\s*\)/g)].map(match => match[1].trim())
+
+  for (const [name, sections] of referenceSections) {
+    const relativePath = referencePath(name)
+    if (routeTargets.filter(target => target === relativePath).length !== 1) {
+      fail(`AGENTS.md must link exactly once to task reference: ${relativePath}`)
+    }
+    if (agents.includes(`@${relativePath}`)) {
+      fail(`${relativePath} must be read on demand, not eagerly imported`)
+    }
+    if (!requireTrackedFile(relativePath)) {
+      continue
+    }
+    const referenceHeadings = new Set(read(relativePath).split('\n').filter(line => /^#{1,3} /.test(line)))
+    for (const section of sections) {
+      if (rootHeadings.has(section)) {
+        fail(`${section} belongs in ${relativePath}, not the always-loaded root`)
+      }
+      if (!referenceHeadings.has(section)) {
+        fail(`${relativePath} must contain required section: ${section}`)
+      }
+    }
+  }
 
   const requiredSections = [
     '# Repository Guidelines',
-    '## Project Structure & Module Organization',
-    '## App ↔ Language Server Architecture',
-    '## Public API entry files',
-    '## Model stages',
+    '## Read task guidance before work',
     '## Build, Test, and Development Commands',
     '## Generated Files',
     '## Coding Style & Naming Conventions',
     '## Testing Guidelines',
     '## Commit, Pull Request, and Changeset Guidelines',
     '## Tooling and Adapter Policy',
-    '## Package-specific instructions',
-    '### packages/core',
-    '### packages/diagram',
-    '### packages/language-server',
-    '### packages/language-services',
-    '### packages/likec4-spa',
-    '### packages/vite-plugin',
-    '### packages/diagram/src/likec4diagram/xyflow-sequence',
   ]
 
   for (const section of requiredSections) {
-    requireIncludes(agents, section, 'required section')
-  }
-
-  const requiredPhrases = [
-    'AGENTS.md is the canonical shared repository instruction file.',
-    'The root `CLAUDE.md` file is the Claude Code adapter and must contain exactly `@AGENTS.md`.',
-    'Nested `CLAUDE.md` files are not shared adapters. Keep one only when Claude Code\'s lazy-loaded subtree memory should point agents at a materially local section of AGENTS.md; it must import AGENTS.md and contain only a short pointer, not copied rules.',
-    'Do not create `AGENT.md`.',
-    'Do not use symlink adapters for shared repository instructions; this repository has Windows CI and Windows contributors.',
-    'Always use `patch` changesets; versioning is handled manually by maintainers.',
-    '`packages/tsconfig/` contains shared TypeScript configuration.',
-    '`packages/config/schema.json` is generated from `packages/config/src/schema.ts`',
-    '`src/rpc/functions/` contains handlers such as `updateView.ts` and `calcAdhocView.ts`.',
-    'VS Code and GitHub Copilot coding-agent/code-review surfaces can consume `AGENTS.md`.',
-    '`Builder` in `packages/core/src/builder/` uses a phantom-type ledger',
-    'computed and layouted data may also carry saved `manualLayouts`.',
-    '`@xstate/store` is available as a dependency, but current source does not import it.',
-    'Do not treat package shims or build output such as `packages/diagram/adhoc-editor/package.json`, `lib/`, or `dist/` as active source layers.',
-    'Do not import Vite virtual modules (`likec4:*`) or call the language server from `packages/diagram`.',
-    'Do not edit files in `packages/language-server/src/generated` or `packages/language-server/src/generated-lib`.',
-    'Node-only helpers that import `node:fs`, `node:path`, or similar modules go in `packages/language-services/src/node/index.ts`.',
-    'No XState in `packages/likec4-spa`.',
-    'Imports from `@likec4/language-server` in `packages/vite-plugin` must be type-only.',
-    'Never import `@likec4/layouts` from `packages/diagram`.',
-  ]
-
-  for (const phrase of requiredPhrases) {
-    requireIncludes(agents, phrase, 'required preserved rule')
-  }
-
-  const stalePhrases = [
-    '`schemas/likec4-config.schema.json`',
-    '`adhoc-editor/` is a separate code path',
-    '`adhoc-editor/` is intentionally internal',
-    '`adhoc-editor/state/panel.tsx`',
-    'implement the handler in `src/rpc/`',
-    'GitHub Copilot and VS Code support `AGENTS.md` natively',
-    'production usage is in `packages/language-server/src/model-change/viewChange.ts`',
-    'only `views` differs',
-    'or `pnpm generate` before typechecking downstream',
-    '`routeTree.gen.ts` is generated by `tsr generate` through `pnpm generate`',
-    'internal packages that are never published such as `@likec4/icons`',
-    'and `handleHotUpdate`, and registers the virtual-module list',
-    'All cross-process data comes from `likec4:*` virtual modules',
-    'Add re-exports only; do not put original logic here',
-    '## Source preservation map',
-  ]
-
-  for (const phrase of stalePhrases) {
-    requireNotIncludes(agents, phrase, 'repository instruction')
+    if (!rootHeadings.has(section)) {
+      fail(`AGENTS.md must contain required section: ${section}`)
+    }
   }
 }
 
