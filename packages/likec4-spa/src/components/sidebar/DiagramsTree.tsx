@@ -29,7 +29,7 @@ import {
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { type PropsWithChildren, memo, useEffect } from 'react'
-import { useCurrentView, useLikeC4Views } from '../../hooks'
+import { useCurrentProject, useCurrentView, useLikeC4Views } from '../../hooks'
 import { type GroupBy, isTreeNodeData, useDiagramsTreeData } from './data'
 import { SidebarDrawerOps } from './state'
 
@@ -56,12 +56,13 @@ export const DiagramsTree = /* @__PURE__ */ memo(({ groupBy }: {
   const views = useLikeC4Views()
   const data = useDiagramsTreeData(groupBy)
   const navigate = useNavigate()
+  const { id: projectId } = useCurrentProject()
   const navigateTo = (viewId: string) => {
     SidebarDrawerOps.close()
     void navigate({
-      to: '/view/$viewId/',
+      to: '/project/$projectId/view/$viewId/',
       viewTransition: false,
-      params: { viewId },
+      params: { projectId, viewId },
     })
   }
   const [diagram] = useCurrentView()

@@ -102,6 +102,14 @@ describe('ProjectConfig schema', () => {
       })
     })
 
+    describe('styles field with loaded customCss', () => {
+      it('should keep the content of an already loaded stylesheet', ({ expect }) => {
+        const customCss = { paths: ['x.css'], content: '.x { color: red }' }
+        const result = validateConfig({ name: 'test', styles: { customCss } })
+        expect(result.styles?.customCss).toEqual(customCss)
+      })
+    })
+
     describe('webapp field', () => {
       it('should accept relationship browser global default scope', ({ expect }) => {
         const result = validateConfig({

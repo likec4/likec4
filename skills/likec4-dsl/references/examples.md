@@ -143,7 +143,7 @@ dynamic view checkout {
     api -> notifications "send confirmation"
   }
 
-  payments <- api "payment result" {
+  api <- payments "payment result" {
     navigateTo payment-detail        // link to another view
   }
 
@@ -262,7 +262,7 @@ views {
     exclude * -> * where target.metadata.zone is "restricted"
 
     // Wildcard with expansion
-    include cloud._                  // direct children only
+    include cloud._                  // direct children that have relationships with the accumulated result
     include cloud.**                 // all descendants
   }
 }
