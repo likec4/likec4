@@ -2495,6 +2495,9 @@ importers:
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0
+      pathe:
+        specifier: catalog:utils
+        version: 2.0.3
       react:
         specifier: 19.3.1
         version: 19.3.1

@@ -68,6 +68,7 @@
     "nano-spawn": "catalog:externals",
     "p-debounce": "catalog:utils",
     "package-manager-detector": "catalog:utils",
+    "pathe": "catalog:utils",
     "remeda": "catalog:utils",
     "std-env": "catalog:externals",
     "tinyrainbow": "catalog:utils",
