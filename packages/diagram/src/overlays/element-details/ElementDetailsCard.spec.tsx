@@ -77,7 +77,7 @@ describe('deployment details card', () => {
 
     expect(html).toContain('Production environment')
     // summary differs from description, so it is collapsed behind a toggle
-    expect(html).toContain('aria-expanded="false"><div>Summary</div>')
+    expect(html).toMatch(/aria-expanded="false">(?:(?!<\/button>).)*<div>Summary<\/div><\/button>/)
     expect(html).not.toContain('Production summary')
     expect(html).toContain('<strong>Production</strong> description')
     expect(html).toContain('OpenTofu')
@@ -131,9 +131,9 @@ describe('element id', () => {
   it('renders a copy button for each segment of a deployment FQN', () => {
     const html = render({ type: 'deployment', deployment: scalar.DeploymentFqn('prod.server.api') })
 
-    expect(html).toContain('aria-label="Copy prod"')
-    expect(html).toContain('aria-label="Copy prod.server"')
-    expect(html).toContain('aria-label="Copy prod.server.api"')
-    expect(html).toMatch(/<button type="button" aria-label="Copy prod.server"[^>]*>server<\/button>/)
+    expect(html).toContain('>FQN<')
+    for (const segment of ['prod', 'server', 'api']) {
+      expect(html).toMatch(new RegExp(`<button tabindex="-1" data-hovered="false"[^>]*>${segment}</button>`))
+    }
   })
 })

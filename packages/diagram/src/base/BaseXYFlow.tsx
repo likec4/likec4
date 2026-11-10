@@ -13,7 +13,9 @@ import {
   ReactFlow,
   useStore,
 } from '@xyflow/react'
+import { defaultAriaLabelConfig } from '@xyflow/system'
 import { type KeyboardEvent, useMemo } from 'react'
+import { isEmptyish } from 'remeda'
 import type { SetRequired, Simplify } from 'type-fest'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
@@ -33,6 +35,7 @@ import type { BaseEdge, BaseNode } from './types'
 // reveals its contextual actions; per-element `aria-label`s describe what those
 // actions do (e.g. "Opens view ...").
 const likec4AriaLabelConfig = {
+  ...defaultAriaLabelConfig,
   'node.a11yDescription.default': 'Press Enter or Space to select this node and reveal its actions.',
   'node.a11yDescription.keyboardDisabled': 'Keyboard activation is disabled.',
   'edge.a11yDescription.default': 'Press Enter or Space to select this relationship and reveal its actions.',
@@ -209,7 +212,7 @@ export function BaseXYFlow<
       minZoom={zoomable ? minZoom : 1}
       fitViewOptions={fitViewOptions}
       preventScrolling={zoomable || pannable}
-      defaultMarkerColor="var(--xy-edge-stroke)"
+      defaultMarkerColor={null}
       noDragClassName="nodrag"
       noPanClassName="nopan"
       noWheelClassName="nowheel"
@@ -223,13 +226,13 @@ export function BaseXYFlow<
       nodesFocusable={nodesFocusable}
       edgesFocusable={edgesFocusable}
       nodesDraggable={nodesDraggable}
-      ariaLabelConfig={{
+      ariaLabelConfig={isEmptyish(ariaLabelConfig) ? likec4AriaLabelConfig : {
         ...likec4AriaLabelConfig,
         ...ariaLabelConfig,
       }}
       nodeDragThreshold={4}
-      nodeClickDistance={3}
-      paneClickDistance={3}
+      nodeClickDistance={2}
+      paneClickDistance={2}
       elevateNodesOnSelect={false} // or edges are not visible after select\
       selectNodesOnDrag={false}
       onNodesChange={onNodesChange}

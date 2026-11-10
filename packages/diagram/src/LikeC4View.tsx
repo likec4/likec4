@@ -5,7 +5,6 @@ import { ActionIcon } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import type { CSSProperties, ReactNode } from 'react'
 import { useState } from 'react'
-import type { JSX } from 'react/jsx-runtime'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
 import { ErrorMessage } from './components/ViewNotFound'
@@ -437,13 +436,15 @@ export const LikeC4View = customizable('LikeC4View')(<A extends t.Any = t.Any>(p
     )
   }
 
-  const view = initialLayoutType === 'manual'
+  // Use initialLayoutType to determine which view to use
+
+  const view = initialLayoutType !== 'auto'
     ? viewModel.$layouted
     : viewModel.$view
 
   const browserViewModel = browserViewId ? likec4model.findView(browserViewId) : null
 
-  const browserView = layoutType === 'manual'
+  const browserView = layoutType !== 'auto'
     ? browserViewModel?.$layouted
     : browserViewModel?.$view
 

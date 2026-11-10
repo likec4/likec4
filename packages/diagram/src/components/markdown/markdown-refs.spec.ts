@@ -42,12 +42,12 @@ describe('createMarkdownRefResolver', () => {
       text: 'Public <API> & "Co"',
       preview: {
         title: 'Public <API> & "Co"',
-        meta: 'component · REST',
+        meta: 'cloud.api · REST',
       },
     })
     expect(resolved.state === 'link' && resolved.preview.body.md).toBe('Public **API**')
     expect(interactive({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })).toMatchObject({
-      preview: { title: 'Cloud', meta: 'system' },
+      preview: { title: 'Cloud', meta: 'cloud' },
     })
   })
 

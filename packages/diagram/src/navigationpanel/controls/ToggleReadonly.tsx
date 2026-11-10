@@ -2,8 +2,32 @@ import { css, cx } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import { UnstyledButton } from '@mantine/core'
 import { IconLock, IconLockOpen2 } from '@tabler/icons-react'
-import { m } from 'motion/react'
+import { type HTMLMotionProps, m } from 'motion/react'
 import { useDiagram } from '../../hooks/useDiagram'
+
+const easeOut = [0.23, 1, 0.32, 1] as const
+
+const motionProps = {
+  initial: {
+    opacity: 0,
+    scale: 0.9,
+    translateX: -10,
+  },
+  animate: {
+    opacity: [0.8, 0.9, 1],
+    scale: 1,
+    translateX: 0,
+  },
+  whileTap: {
+    translateY: 1,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    translateX: -10,
+    transition: { duration: 0.2, ease: easeOut },
+  },
+} satisfies HTMLMotionProps<'button'>
 
 export function ToggleReadonly({ disabled, isReadOnly }: { disabled: boolean; isReadOnly: boolean }) {
   const diagram = useDiagram()
@@ -18,12 +42,7 @@ export function ToggleReadonly({ disabled, isReadOnly }: { disabled: boolean; is
         e.stopPropagation()
         !disabled && diagram.toggleFeature('ReadOnly')
       }}
-      initial={{ opacity: 0, scale: 0.9, translateX: -10 }}
-      animate={{ opacity: 1, scale: disabled ? 0.95 : 1, translateX: 0 }}
-      exit={{ opacity: 0, scale: 0.9, translateX: -10 }}
-      whileTap={{
-        translateY: 1,
-      }}
+      {...motionProps}
       className={cx(
         'group',
         hstack({
@@ -40,7 +59,7 @@ export function ToggleReadonly({ disabled, isReadOnly }: { disabled: boolean; is
       <IconLock size={14} stroke={2} style={{ display: !isReadOnly ? 'none' : undefined }} />
       {isReadOnly && (
         <m.div
-          layout
+          layout="position"
           className={css({
             fontSize: 'xxs',
             fontWeight: 'bold',

@@ -2,8 +2,8 @@ import { cx } from '@likec4/styles/css'
 import { createStyleContext, isCssProperty } from '@likec4/styles/jsx'
 import { navigationPanel } from '@likec4/styles/recipes'
 import { type ForwardRefComponent, type HTMLMotionProps, isValidMotionProp } from 'motion/react'
-import { m } from 'motion/react'
-import { type ComponentPropsWithRef } from 'react'
+import * as m from 'motion/react-m'
+import type { ComponentPropsWithRef } from 'react'
 import { Logo as LogoWithText, LogoIcon } from './Logo'
 
 const { withProvider, withContext } = createStyleContext(navigationPanel)
@@ -40,6 +40,11 @@ const Logo = withContext(LogoButton, 'logo', {
 const Label = withContext(m.div as ForwardRefComponent<'div', HTMLMotionProps<'div'>>, 'label', {
   shouldForwardProp,
 })
+
+const Breadcrumb = withContext(m.button as ForwardRefComponent<'button', HTMLMotionProps<'button'>>, 'breadcrumb', {
+  shouldForwardProp,
+})
+
 const Dropdown = withContext(m.div as ForwardRefComponent<'div', HTMLMotionProps<'div'>>, 'dropdown', {
   shouldForwardProp,
 })
@@ -49,5 +54,6 @@ export const NavigationPanel = {
   Body,
   Logo,
   Label,
+  Breadcrumb,
   Dropdown,
 }

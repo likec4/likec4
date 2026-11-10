@@ -1,13 +1,21 @@
 import { Builder } from '@likec4/core/builder'
 import { RichText } from '@likec4/core/types'
 import { MantineProvider } from '@mantine/core'
+import { atom } from 'nanostores'
 import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
-import { LikeC4ModelContextProvider } from '../context/LikeC4ModelContext'
-import { type MarkdownRefActions, MarkdownRefsProvider } from '../context/MarkdownRefsContext'
-import { Markdown, MarkdownRefPreviewCard } from './Markdown'
+import { describe, expect, it, vi } from 'vitest'
+import { type EnabledFeatures, DiagramFeatures } from '../../context/DiagramFeatures'
+import { LikeC4ModelContextProvider } from '../../context/LikeC4ModelContext'
+import { type RootContainerContextType, RootContainerContextProvider } from '../../context/RootContainerContext'
 import { createMarkdownRefResolver } from './markdown-refs'
+import { MarkdownRefPreviewCard, MarkdownWithRefs } from './MarkdownWithRefs'
+import { useMarkdownRefsInteractivity } from './useMarkdownRefsInteractivity'
+
+vi.mock('../../hooks/useDiagram', async importOriginal => ({
+  ...await importOriginal<typeof import('../../hooks/useDiagram')>(),
+  useDiagram: () => ({}),
+}))
 
 const model = Builder.specification({
   elements: ['system'],
@@ -25,27 +33,43 @@ const model = Builder.specification({
 
 const value = RichText.from({ md: 'Uses [[cloud]], see [[view:index]] and [[missing]]' })
 
-const allActions: MarkdownRefActions = {
-  openElement: () => {},
-  openView: () => {},
+const allFeatures: Partial<EnabledFeatures> = {
+  enableElementDetails: true,
+  enableNavigateTo: true,
 }
 
-function render(children: ReactNode) {
+const rootContainer: RootContainerContextType = {
+  id: 'root',
+  selector: '#root',
+  ref: { current: null },
+  $panning: atom(false),
+  reducedGraphics: false,
+}
+
+function renderWithoutModel(children: ReactNode) {
   return renderToStaticMarkup(
     <MantineProvider>
-      <LikeC4ModelContextProvider value={model}>
+      <RootContainerContextProvider value={rootContainer}>
         {children}
-      </LikeC4ModelContextProvider>
+      </RootContainerContextProvider>
     </MantineProvider>,
   )
 }
 
+function render(children: ReactNode) {
+  return renderWithoutModel(
+    <LikeC4ModelContextProvider value={model}>
+      {children}
+    </LikeC4ModelContextProvider>,
+  )
+}
+
 describe('Markdown refs', () => {
-  it('renders focusable links with titles inside MarkdownRefsProvider', () => {
+  it('renders focusable links with titles when element details and navigation are enabled', () => {
     const html = render(
-      <MarkdownRefsProvider value={allActions}>
-        <Markdown value={value} />
-      </MarkdownRefsProvider>,
+      <DiagramFeatures overrides={allFeatures}>
+        <MarkdownWithRefs value={value} />
+      </DiagramFeatures>,
     )
     expect(html).toContain(
       '<a data-likec4-ref="cloud" data-likec4-ref-kind="element" data-likec4-ref-state="link" role="link" tabindex="0">Cloud</a>',
@@ -58,8 +82,8 @@ describe('Markdown refs', () => {
     )
   })
 
-  it('renders resolved text without links on the canvas (no provider)', () => {
-    const html = render(<Markdown value={value} uselikec4palette />)
+  it('renders resolved text without links when the features are disabled', () => {
+    const html = render(<MarkdownWithRefs value={value} uselikec4palette />)
     expect(html).toContain(
       '<span data-likec4-ref="cloud" data-likec4-ref-kind="element" data-likec4-ref-state="text">Cloud</span>',
     )
@@ -72,9 +96,9 @@ describe('Markdown refs', () => {
 
   it('renders refs of disabled features as plain text', () => {
     const html = render(
-      <MarkdownRefsProvider value={{ openElement: null, openView: allActions.openView }}>
-        <Markdown value={value} />
-      </MarkdownRefsProvider>,
+      <DiagramFeatures overrides={{ enableElementDetails: false, enableNavigateTo: true }}>
+        <MarkdownWithRefs value={value} />
+      </DiagramFeatures>,
     )
     expect(html).toContain(
       '<span data-likec4-ref="cloud" data-likec4-ref-kind="element" data-likec4-ref-state="text">Cloud</span>',
@@ -85,12 +109,10 @@ describe('Markdown refs', () => {
   })
 
   it('renders fallback text without a model', () => {
-    const html = renderToStaticMarkup(
-      <MantineProvider>
-        <MarkdownRefsProvider value={allActions}>
-          <Markdown value={RichText.from({ md: '[[cloud]] [[cloud|Label]]' })} />
-        </MarkdownRefsProvider>
-      </MantineProvider>,
+    const html = renderWithoutModel(
+      <DiagramFeatures overrides={allFeatures}>
+        <MarkdownWithRefs value={RichText.from({ md: '[[cloud]] [[cloud|Label]]' })} />
+      </DiagramFeatures>,
     )
     expect(html).toContain('data-likec4-ref-state="text">cloud</span>')
     expect(html).toContain('data-likec4-ref-state="text">Label</span>')
@@ -100,36 +122,45 @@ describe('Markdown refs', () => {
 describe('MarkdownRefPreviewCard', () => {
   const resolver = createMarkdownRefResolver(model, { elements: true, views: true })
 
-  function renderCard(ref: Parameters<typeof resolver>[0], withOpen = true) {
+  // The card reads the active ref only, the anchor element is not used (no DOM in this environment)
+  const anchor = {} as HTMLElement
+
+  function ActivePreviewCard({ resolved }: { resolved: Exclude<ReturnType<typeof resolver>, { state: 'text' }> }) {
+    const interactivity = useMarkdownRefsInteractivity(null, resolver)
+    interactivity.$active.set({ element: anchor, resolved, opened: true })
+    return <MarkdownRefPreviewCard interactivity={interactivity} />
+  }
+
+  function renderCard(ref: Parameters<typeof resolver>[0]) {
     const resolved = resolver(ref)
     if (resolved.state === 'text') {
       throw new Error('unexpected text ref')
     }
-    return render(
-      <MarkdownRefsProvider value={allActions}>
-        <MarkdownRefPreviewCard resolved={resolved} onOpen={withOpen ? () => {} : undefined} />
-      </MarkdownRefsProvider>,
-    )
+    return render(<ActivePreviewCard resolved={resolved} />)
   }
 
-  it('shows element icon, title, kind and technology, description and open button', () => {
+  it('renders nothing without an active ref', () => {
+    function InactivePreviewCard() {
+      const interactivity = useMarkdownRefsInteractivity(null, resolver)
+      return <MarkdownRefPreviewCard interactivity={interactivity} />
+    }
+    expect(render(<InactivePreviewCard />)).not.toContain('Open')
+  })
+
+  it('shows element icon, title, id and technology, description and open button', () => {
     const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })
     expect(html).toContain('<img src="https://example.com/cloud.svg" alt="Cloud"/>')
     expect(html).toContain('>Cloud</p>')
-    expect(html).toContain('>system · AWS</p>')
+    expect(html).toContain('>cloud · AWS</')
     expect(html).toContain('Runs on <strong>AWS</strong>')
     expect(html).toMatch(/<button [^>]*type="button"[^>]*>.*Open details<\/span>/)
   })
 
-  it('has no open button without a handler', () => {
-    const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false }, false)
-    expect(html).not.toContain('<button')
-  })
-
-  it('renders refs inside the preview as plain text', () => {
+  it('renders refs inside the preview as non-interactive text', () => {
     const html = renderCard({ kind: 'element', target: 'cloud', namespace: null, hasLabel: false })
-    expect(html).toContain('data-likec4-ref-state="text">Cloud</span>')
-    expect(html).toContain('data-likec4-ref-state="text">Landscape</span>')
+    expect(html).toContain('data-likec4-ref-kind="element">Cloud</a>')
+    expect(html).toContain('data-likec4-ref-kind="view" data-likec4-ref-namespace="view">Landscape</a>')
+    expect(html).not.toContain('data-likec4-ref-state="link"')
     expect(html).not.toContain('tabindex')
   })
 
@@ -137,7 +168,7 @@ describe('MarkdownRefPreviewCard', () => {
     const html = renderCard({ kind: 'view', target: 'index', namespace: 'view', hasLabel: false })
     expect(html).toContain('tabler-icon-zoom-scan')
     expect(html).toContain('>Landscape</p>')
-    expect(html).toContain('>element view</p>')
+    expect(html).toContain('>element view</')
     expect(html).toContain('Open view</span>')
   })
 

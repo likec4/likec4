@@ -154,23 +154,20 @@ export function IfEnabled({
   and = true,
 }: PropsWithChildren<{ feature: FeatureName; and?: boolean }>): JSX.Element | null {
   const enabled = useEnabledFeatures()[`enable${feature}`] === true
-  return enabled && and ? <>{children}</> : null
+  return <>{enabled && and ? children : null}</>
 }
 
 export function IfNotEnabled({ feature, children }: PropsWithChildren<{ feature: FeatureName }>): JSX.Element | null {
   const notEnabled = useEnabledFeatures()[`enable${feature}`] !== true
-  return notEnabled ? <>{children}</> : null
+  return <>{notEnabled ? children : null}</>
 }
 
 export function IfReadOnly({ children }: PropsWithChildren): JSX.Element | null {
   const isReadOnly = useEnabledFeatures().enableReadOnly === true
-  return isReadOnly ? <>{children}</> : null
+  return <>{isReadOnly ? children : null}</>
 }
 
 export function IfNotReadOnly({ children }: PropsWithChildren): JSX.Element | null {
   const isReadOnly = useEnabledFeatures().enableReadOnly === true
-  if (isReadOnly) {
-    return null
-  }
-  return <>{children}</>
+  return <>{isReadOnly ? null : children}</>
 }

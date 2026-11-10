@@ -1,7 +1,6 @@
 import type * as t from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import type { CSSProperties, ReactNode } from 'react'
-import type { JSX } from 'react/jsx-runtime'
 import { ErrorMessage, ViewNotFound } from './components/ViewNotFound'
 import { customizable } from './custom/customizable'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
@@ -68,7 +67,7 @@ export const ReactLikeC4 = customizable('ReactLikeC4')(
   <A extends t.Any = t.Any>(properties: ReactLikeC4Props<A>) => {
     let {
       viewId,
-      layoutType: initialLayoutType = 'manual',
+      layoutType = 'manual',
       className,
       colorScheme,
       injectFontCss = true,
@@ -102,7 +101,7 @@ export const ReactLikeC4 = customizable('ReactLikeC4')(
       )
     }
 
-    const view = initialLayoutType === 'manual'
+    const view = layoutType !== 'auto'
       ? viewModel.$layouted
       : viewModel.$view
 

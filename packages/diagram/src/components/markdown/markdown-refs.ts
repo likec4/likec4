@@ -94,7 +94,7 @@ export function createMarkdownRefResolver(
           text,
           preview: {
             title: element.title,
-            meta: element.technology ? `${element.kind} · ${element.technology}` : element.kind,
+            meta: element.technology ? `${element.id} · ${element.technology}` : element.id,
             body: element.summary,
           },
         }
