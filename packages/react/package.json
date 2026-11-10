@@ -42,7 +42,8 @@
     "motion": "catalog:react",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "type-fest": "catalog:externals"
+    "type-fest": "catalog:externals",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@babel/core": "catalog:react",

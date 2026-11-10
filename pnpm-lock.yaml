@@ -460,9 +460,6 @@ catalogs:
     '@tabler/icons-react':
       specifier: 3.49.0
       version: 3.49.0
-    babel-plugin-react-compiler:
-      specifier: ^1.0.0
-      version: 1.0.0
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -617,9 +614,6 @@ catalogs:
       specifier: ^1.17.5
       version: 1.17.5
   vite:
-    '@rolldown/plugin-babel':
-      specifier: ^0.3.0
-      version: 0.3.0
     '@vitejs/plugin-react':
       specifier: ^6.1.2
       version: 6.1.2
@@ -2015,6 +2009,9 @@ importers:
 
   packages/likec4:
     dependencies:
+      '@floating-ui/dom':
+        specifier: catalog:react
+        version: 1.8.0
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -2024,6 +2021,12 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@mantine/core':
+        specifier: catalog:mantine
+        version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks':
+        specifier: catalog:mantine
+        version: 9.7.4(react@19.3.1)
       '@tanstack/ai-anthropic':
         specifier: catalog:ai
         version: 0.22.0(@tanstack/ai@0.69.0(zod@4.6.7))(zod@4.6.7)
@@ -2054,6 +2057,9 @@ importers:
       jiti:
         specifier: catalog:externals
         version: 2.7.0
+      motion:
+        specifier: catalog:react
+        version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
@@ -2063,6 +2069,12 @@ importers:
       playwright:
         specifier: 'catalog:'
         version: 1.64.1
+      react:
+        specifier: 19.3.1
+        version: 19.3.1
+      react-dom:
+        specifier: 19.3.1
+        version: 19.3.1(react@19.3.1)
       std-env:
         specifier: catalog:externals
         version: 4.3.0
@@ -2232,12 +2244,6 @@ importers:
       pretty-ms:
         specifier: ^9.3.1
         version: 9.3.1
-      react:
-        specifier: 19.3.1
-        version: 19.3.1
-      react-dom:
-        specifier: 19.3.1
-        version: 19.3.1(react@19.3.1)
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
@@ -2328,6 +2334,9 @@ importers:
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      zod:
+        specifier: catalog:externals
+        version: 4.6.7
     devDependencies:
       '@dagrejs/dagre':
         specifier: 'catalog:'
@@ -2371,9 +2380,6 @@ importers:
       '@react-hookz/web':
         specifier: catalog:react
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@rolldown/plugin-babel':
-        specifier: catalog:vite
-        version: 0.3.0(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tabler/icons-react':
         specifier: catalog:react
         version: 3.49.0(react@19.3.1)
@@ -2415,7 +2421,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: catalog:vite
-        version: 6.1.2(@rolldown/plugin-babel@0.3.0(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.156.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+        version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.156.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.3)
@@ -2431,9 +2437,6 @@ importers:
       autoprefixer:
         specifier: ^10.6.1
         version: 10.6.1(postcss@8.5.30)
-      babel-plugin-react-compiler:
-        specifier: catalog:react
-        version: 1.0.0
       citty:
         specifier: catalog:utils
         version: 0.2.2
@@ -2524,9 +2527,6 @@ importers:
       xstate:
         specifier: catalog:xstate
         version: 5.33.3
-      zod:
-        specifier: catalog:externals
-        version: 4.6.7
       zx:
         specifier: 'catalog:'
         version: 8.8.5
@@ -2785,6 +2785,9 @@ importers:
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      zod:
+        specifier: catalog:externals
+        version: 4.6.7
     devDependencies:
       '@babel/core':
         specifier: catalog:react
@@ -5931,23 +5934,6 @@ packages:
       vite:
         optional: true
 
-  '@rolldown/plugin-babel@0.3.0':
-    resolution: {integrity: sha512-cB9Z6aqn7i8Zflv1D4tyIy/wvnWt+QVUPX2e3Jxq/4fvdX+Xk2gQyNN2sfYscfLIZN1LCQbCl4olpf9Ki+U1zw==}
-    engines: {node: '>=22.12.0 || ^24.0.0'}
-    peerDependencies:
-      '@babel/core': ^7.29.0 || ^8.0.0-rc.1
-      '@babel/plugin-transform-runtime': ^7.29.0 || ^8.0.0-rc.1
-      '@babel/runtime': ^7.27.0 || ^8.0.0-rc.1
-      rolldown: ^1.0.0-rc.5
-      vite: ^8.0.0
-    peerDependenciesMeta:
-      '@babel/plugin-transform-runtime':
-        optional: true
-      '@babel/runtime':
-        optional: true
-      vite:
-        optional: true
-
   '@rolldown/plugin-node-polyfills@1.0.4':
     resolution: {integrity: sha512-76GZFSq4Ds0ij47KtaCZTpEiTGw2hE3o3DNNOIVIQWm03mcp9i4VArVPtLnvx+1RRfnrqD8AQDMTA1H8iUkC/g==}
 
@@ -7051,10 +7037,6 @@ packages:
 
   array-iterate@2.0.1:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
-
-  artichokie@0.4.5:
-    resolution: {integrity: sha512-ma9643oYgSgA6CeDvKIU0zxL1eKOkbgH8/v83xFpFYB2VOPFoEmmg1iC+ooHFjLIJ3qdtfwPbEKpIW3/YxPovg==}
-    engines: {node: ^18.0.0 || >=20.0.0}
 
   asn1.js@4.10.1:
     resolution: {integrity: sha512-p32cOF5q0Zqs9uBiONKYLm6BClCoBCM5O9JfeUSlnQLBTxYdTK+pW+nXflm8UkKd2UYlEbYz5qEi0JuZR9ckSw==}
@@ -13588,16 +13570,6 @@ snapshots:
       vite: 8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
     optional: true
 
-  '@rolldown/plugin-babel@0.3.0(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
-    dependencies:
-      '@babel/core': 7.29.7(supports-color@10.1.0)
-      artichokie: 0.4.5
-      picomatch: 4.0.7
-      rolldown: 1.2.16
-    optionalDependencies:
-      '@babel/runtime': 7.27.6
-      vite: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-
   '@rolldown/plugin-node-polyfills@1.0.4': {}
 
   '@rolldown/pluginutils@1.0.1': {}
@@ -14404,15 +14376,6 @@ snapshots:
       babel-plugin-react-compiler: 1.0.0
       oxc-transform-react: 0.156.0
 
-  '@vitejs/plugin-react@6.1.2(@rolldown/plugin-babel@0.3.0(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.156.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))':
-    dependencies:
-      '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-    optionalDependencies:
-      '@rolldown/plugin-babel': 0.3.0(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
-      babel-plugin-react-compiler: 1.0.0
-      oxc-transform-react: 0.156.0
-
   '@vitest/expect@4.1.12':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -14733,8 +14696,6 @@ snapshots:
 
   array-iterate@2.0.1: {}
 
-  artichokie@0.4.5: {}
-
   asn1.js@4.10.1:
     dependencies:
       bn.js: 4.12.3
@@ -14897,6 +14858,7 @@ snapshots:
   babel-plugin-react-compiler@1.0.0:
     dependencies:
       '@babel/types': 7.29.11
+    optional: true
 
   bail@2.0.2: {}
 

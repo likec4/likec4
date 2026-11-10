@@ -28,6 +28,9 @@ jobs:
       - name: 🤖 agent instructions
         run: pnpm check:agent-instructions
 
+      - name: 📦 react bundle dependencies
+        run: pnpm check:react-bundle-deps
+
       - name: ʦ typecheck
         run: pnpm ci:typecheck
 
