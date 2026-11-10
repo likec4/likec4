@@ -11,7 +11,7 @@ import {
   isDeploymentNode,
 } from '../types'
 import * as aux from '../types/_aux'
-import { invariant, nonNullable } from '../utils'
+import { type MarkdownRefTitleResolver, invariant, nonNullable } from '../utils'
 import { ancestorsFqn, parentFqn, sortParentsFirst } from '../utils/fqn'
 import { getOrCreate } from '../utils/getOrCreate'
 import { DefaultMap } from '../utils/mnemonist'
@@ -363,6 +363,21 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
       }
     }
     return
+  }
+
+  /**
+   * Resolves the text of a ref in Markdown (`[[fqn]]`, `[[view:id]]`) against this model:
+   * the element title, or the view title (or id).
+   * Returns null if the target is not found, or the namespace is unknown.
+   *
+   * Bound to the model, so it can be passed as a callback.
+   * Descriptions, summaries and notes of model, view, node and edge models resolve refs with it.
+   *
+   * @example
+   * resolveMarkdownRefs(md, model.resolveMarkdownRef)
+   */
+  public readonly resolveMarkdownRef: MarkdownRefTitleResolver = ref => {
+    return this.$model.resolveMarkdownRef(ref)
   }
 
   private addElement(element: DeploymentElement<A>) {

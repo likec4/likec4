@@ -1,4 +1,4 @@
-import { isEmpty, isEmptyish, isShallowEqual } from 'remeda'
+import { isEmpty, isEmptyish } from 'remeda'
 import type { Any, Color, IteratorLike, Link, RelationshipArrowType, scalar } from '../types'
 import {
   type Relationship,
@@ -7,7 +7,6 @@ import {
   FqnRef,
   preferDescription,
   preferSummary,
-  RichText,
 } from '../types'
 import type * as aux from '../types/_aux'
 import { commonAncestor } from '../utils/fqn'
@@ -15,6 +14,7 @@ import type { DeploymentRelationModel } from './DeploymentElementModel'
 import type { ElementModel } from './ElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { WithMetadata, WithTags } from './types'
+import { memoizeDescription, memoizeSummary } from './utils/richtext'
 import type { LikeC4ViewModel, ViewsIterator } from './view/LikeC4ViewModel'
 
 export type RelationshipsIterator<A extends Any> = IteratorLike<RelationshipModel<A>>
@@ -62,14 +62,27 @@ export class RelationshipModel<A extends Any = Any>
    */
   public readonly boundary: ElementModel<A> | null
 
+  public readonly $model: LikeC4Model<A>
+
+  public readonly $relationship: Relationship<A>
+
   constructor(
-    public readonly model: LikeC4Model<A>,
-    public readonly $relationship: Relationship<A>,
+    model: LikeC4Model<A>,
+    relationship: Relationship<A>,
   ) {
-    this.source = model.element(FqnRef.flatten($relationship.source))
-    this.target = model.element(FqnRef.flatten($relationship.target))
+    this.$model = model
+    this.$relationship = relationship
+    this.source = model.element(FqnRef.flatten(relationship.source))
+    this.target = model.element(FqnRef.flatten(relationship.target))
     const parent = commonAncestor(this.source.id, this.target.id)
-    this.boundary = parent ? this.model.element(parent) : null
+    this.boundary = parent ? this.$model.element(parent) : null
+  }
+
+  /**
+   * @deprecated Use {@link $model} instead
+   */
+  public get model(): LikeC4Model<A> {
+    return this.$model
   }
 
   get id(): scalar.RelationId {
@@ -89,19 +102,16 @@ export class RelationshipModel<A extends Any = Any>
 
   get technology(): string | null {
     if (isEmptyish(this.$relationship.technology)) {
-      const spec = this.kind && this.model.specification.relationships[this.kind]
+      const spec = this.kind && this.$model.specification.relationships[this.kind]
       return spec?.technology ?? null
     }
     return this.$relationship.technology
   }
-
   /**
    * Returns true if the relationship has a summary and a description
-   * (if one is missing - it falls back to another)
    */
   get hasSummary(): boolean {
-    return !!this.$relationship.summary && !!this.$relationship.description &&
-      !isShallowEqual(this.$relationship.summary, this.$relationship.description)
+    return this.summary.nonEmpty && !this.summary.equals(this.description)
   }
 
   /**
@@ -109,7 +119,7 @@ export class RelationshipModel<A extends Any = Any>
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$relationship), this.model.resolveMarkdownRef)
+    return memoizeSummary(this, preferSummary(this.$relationship))
   }
 
   /**
@@ -117,11 +127,11 @@ export class RelationshipModel<A extends Any = Any>
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$relationship), this.model.resolveMarkdownRef)
+    return memoizeDescription(this, preferDescription(this.$relationship))
   }
 
   get navigateTo(): LikeC4ViewModel<A> | null {
-    return this.$relationship.navigateTo ? this.model.view(this.$relationship.navigateTo) : null
+    return this.$relationship.navigateTo ? this.$model.view(this.$relationship.navigateTo) : null
   }
 
   get tags(): aux.Tags<A> {
@@ -141,15 +151,15 @@ export class RelationshipModel<A extends Any = Any>
   }
 
   get color(): Color {
-    return this.$relationship.color ?? this.model.$styles.defaults.relationship.color
+    return this.$relationship.color ?? this.$model.$styles.defaults.relationship.color
   }
 
   get line(): RelationshipLineType {
-    return this.$relationship.line ?? this.model.$styles.defaults.relationship.line
+    return this.$relationship.line ?? this.$model.$styles.defaults.relationship.line
   }
 
   get head(): RelationshipArrowType {
-    return this.$relationship.head ?? this.model.$styles.defaults.relationship.arrow
+    return this.$relationship.head ?? this.$model.$styles.defaults.relationship.arrow
   }
 
   get tail(): RelationshipArrowType | undefined {
@@ -164,7 +174,7 @@ export class RelationshipModel<A extends Any = Any>
    * Iterate over all views that include this relationship.
    */
   public *views(): ViewsIterator<A> {
-    for (const view of this.model.views()) {
+    for (const view of this.$model.views()) {
       if (view.includesRelation(this.id)) {
         yield view
       }
