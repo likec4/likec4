@@ -1,11 +1,12 @@
 import { codeSplittingGroup, nodeModulesCodeSplitting } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { tanstackRouter } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'child_process'
 import { resolve } from 'path'
+import { mapToObj } from 'remeda'
 import { defineConfig } from 'vite'
-import { $, fs } from 'zx'
+import { $, fs, glob } from 'zx'
 import packageJson from './package.json' with { type: 'json' }
 
 $.quiet = false
@@ -15,7 +16,6 @@ $.env = {
   ...$.env,
   NODE_ENV: 'production',
 }
-
 const externals = Object
   .keys({
     ...packageJson.dependencies,
@@ -54,11 +54,25 @@ export default defineConfig({
     lib: {
       entry: {
         'src/main': 'src/main.tsx',
+        'src/hooks': 'src/hooks.ts',
+        'src/router': 'src/router.tsx',
+        'src/routeTree.gen': 'src/routeTree.gen.ts',
         'src/aichat/index': 'src/aichat/index.tsx',
         'codegen/react': 'codegen/react.tsx',
         'codegen/webcomponent': 'codegen/webcomponent.tsx',
         'src/style': 'src/style.css',
         'src/fonts': 'src/fonts.css',
+        ...mapToObj(
+          glob.sync([
+            'src/routes/**/*.{ts,tsx}',
+            'src/pages/*.{ts,tsx}',
+            'src/components/**/*.{ts,tsx}',
+            'src/components/**/*.{ts,tsx}',
+            'src/context/**/*.{ts,tsx}',
+            '!**/*.spec.{ts,tsx}',
+          ]),
+          (file) => [file.replace(/\.tsx?$/, ''), file],
+        ),
       },
       formats: ['es'],
     },
@@ -70,7 +84,6 @@ export default defineConfig({
       treeshake: {
         moduleSideEffects: 'no-external',
       },
-      // input: ,
       output: {
         keepNames: true,
         entryFileNames: '[name].mjs',
@@ -78,17 +91,11 @@ export default defineConfig({
         assetFileNames: '[name].[ext]',
         codeSplitting: {
           groups: [
-            // codeSplittingGroup(/styled-system/, 'styled-system', { priority: 12, minShareCount: 1 }),
-            // codeSplittingGroup(/node_modules\/d3/, 'libs/d3', { priority: 11 }),
-            // codeSplittingGroup(/node_modules\/@floating-ui/, 'libs/@floating-ui', { priority: 10 }),
-            // codeSplittingGroup(/node_modules\/@mantine/, 'libs/@mantine', { priority: 9 }),
-            // codeSplittingGroup(/node_modules\/@tanstack\/ai/, 'libs/@tanstack-ai', { priority: 8 }),
-            // codeSplittingGroup(/node_modules\/@tanstack/, 'libs/@tanstack', { priority: 7 }),
-            // codeSplittingGroup(/node_modules\/(framer-motion|motion(-dom|-utils)?)\//, 'libs/framer', { priority: 6 }),
-            nodeModulesCodeSplitting({
-              minShareCount: 2,
-              minSize: 10 * 1024,
-            }),
+            codeSplittingGroup(/styled-system/, 'styled-system', { priority: 12, minShareCount: 1 }),
+            codeSplittingGroup(/html-to-image/, 'libs/html-to-image', { priority: 11, minShareCount: 1 }),
+            codeSplittingGroup(/node_modules\/@tanstack\/ai/, 'libs/@tanstack-ai', { priority: 10 }),
+            codeSplittingGroup(/node_modules\/@tanstack/, 'libs/@tanstack', { priority: 9 }),
+            nodeModulesCodeSplitting(),
           ],
         },
       },
@@ -100,9 +107,10 @@ export default defineConfig({
     },
   },
   plugins: [
-    TanStackRouterVite(),
+    tanstackRouter(),
     react({
       compiler: true,
+      exclude: [/\.d\.[cm]?ts$/],
     }),
     {
       name: 'likec4-spa',

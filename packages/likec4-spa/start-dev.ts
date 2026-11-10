@@ -2,7 +2,7 @@
 
 import { LikeC4VitePlugin } from '@likec4/vite-plugin'
 import postcssPanda from '@pandacss/dev/postcss'
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { tanstackRouter } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
@@ -57,21 +57,22 @@ const main = defineCommand({
         alias: {
           // Local paths for dev
           'likec4/react': resolve('../react/dist/index.mjs'),
-          '@likec4/diagram/adhoc-editor': resolve('../diagram/src/adhoc-editor/index.ts'),
+          'likec4/model': resolve('../core/src/model/index.ts'),
           '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
           '@likec4/diagram': resolve('../diagram/src/index.ts'),
           'likec4/vite-plugin/internal': resolve('../vite-plugin/src/internal.ts'),
         },
       },
       plugins: [
-        TanStackRouterVite(),
-        react({
-          compiler: true,
-        }),
         LikeC4VitePlugin({
           workspace,
           ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',
+        }),
+        tanstackRouter(),
+        react({
+          compiler: true,
+          exclude: [/\.d\.[cm]?ts$/],
         }),
       ],
     }).then((server) => server.listen())

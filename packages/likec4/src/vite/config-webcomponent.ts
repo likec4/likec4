@@ -53,6 +53,14 @@ export function viteWebcomponentConfig({
         formats: ['iife'],
         name: 'LikeC4Views',
       },
+      rolldownOptions: {
+        onLog(level, log, defaultHandler) {
+          if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
+            return // Ignore module level directive warnings
+          }
+          defaultHandler(level, log) // otherwise, just print the log
+        },
+      },
     },
     customLogger,
     plugins: [

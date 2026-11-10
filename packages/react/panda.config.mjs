@@ -7,5 +7,4 @@ export default defineConfig({
   ],
   clean: true,
   outdir: 'styled-system',
-  // cssVarRoot: ':where(:host,.likec4-shadow-root)',
 })
