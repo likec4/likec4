@@ -115,7 +115,7 @@ export function sequenceLayoutToXY(
       console.error(`Step Edge "${step.id}" not found`)
       continue
     }
-    xyedges.push(toSeqStepEdge(step, edge, currentViewId ?? view.id, stepnum++, ctx))
+    xyedges.push(toSeqStepEdge(step, edge, view.id, stepnum++, ctx))
   }
 
   return {
