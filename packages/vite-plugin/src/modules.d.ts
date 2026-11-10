@@ -48,10 +48,10 @@ declare module 'likec4:icons' {
 }
 
 declare module 'likec4:model' {
-  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
+  import type { DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId } from 'likec4/model'
   import type { Atom } from 'likec4/vite-plugin/internal'
 
-  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId }
 
   export function loadModel(projectId: string): Promise<{
     $likec4data: Atom<LayoutedLikeC4ModelData>
@@ -59,6 +59,7 @@ declare module 'likec4:model' {
     useLikeC4Model: () => LikeC4Model<UnknownLayouted>
     useLikeC4Views: () => ReadonlyArray<DiagramView<UnknownLayouted>>
     useLikeC4View: (viewId: string) => DiagramView<UnknownLayouted> | null
+    isLikeC4ViewId: (value: unknown) => value is ViewId
   }>
 }
 
@@ -69,15 +70,19 @@ declare module 'likec4:single-project' {
     LikeC4Model,
     types,
     UnknownLayouted,
+    ViewId,
   } from 'likec4/model'
   import type { Atom } from 'likec4/vite-plugin/internal'
   import type { ElementIconRenderer } from 'likec4:icons'
+
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted, ViewId }
 
   export const $likec4data: Atom<LayoutedLikeC4ModelData>
   export const $likec4model: Atom<LikeC4Model<UnknownLayouted>>
   export function useLikeC4Model(): LikeC4Model<UnknownLayouted>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<UnknownLayouted>>
   export function useLikeC4View(viewId: string): DiagramView<UnknownLayouted> | null
+  export function isLikeC4ViewId(value: unknown): value is ViewId
 
   export const IconRenderer: ElementIconRenderer
 
@@ -98,6 +103,7 @@ declare module 'likec4:react' {
   export function useLikeC4Model(): LikeC4Model<Types>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
   export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
   export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
@@ -158,7 +164,9 @@ declare module 'likec4:diffs/*' {
 
 declare module 'likec4:model/*' {
   import type { aux, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { Atom } from 'likec4:model'
+  import type { Atom } from 'likec4/vite-plugin/internal'
+
+  export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
 
   // This will be used later for augmenting the types
   interface Types extends UnknownLayouted {
@@ -171,6 +179,7 @@ declare module 'likec4:model/*' {
   export function useLikeC4Model(): LikeC4Model<Types>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
   export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 }
 
 declare module 'likec4:icons/*' {
@@ -190,6 +199,8 @@ declare module 'likec4:react/*' {
   import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
 
+  export type { DiagramView, LikeC4Model, UnknownLayouted }
+
   // This will be used later for augmenting the types
   interface Types extends UnknownLayouted {
   }
@@ -199,6 +210,7 @@ declare module 'likec4:react/*' {
   export function useLikeC4Model(): LikeC4Model<Types>
   export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
   export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
   export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
@@ -230,6 +242,9 @@ declare module 'likec4:rpc' {
 declare module 'likec4:app-config' {
   export let ComponentName: {
     View: string
+    /**
+     * @deprecated
+     */
     Browser: string
   }
   export let pageTitle: string

@@ -6,8 +6,12 @@ const projectCode = (id: string) => `
 import { jsx as _jsx } from "react/jsx-runtime";
 import { LikeC4ModelProvider as Provider, LikeC4View as GenericView, ReactLikeC4 as GenericReactLikeC4 } from 'likec4/react';
 import { IconRenderer } from 'likec4:icons/${id}'
-
-import { useLikeC4Model, useLikeC4Views, useLikeC4View } from 'likec4:model/${id}'
+import { 
+  useLikeC4Model, 
+  useLikeC4Views, 
+  useLikeC4View, 
+  isLikeC4ViewId
+} from 'likec4:model/${id}'
 
 export function LikeC4ModelProvider({ children }) {
   const likeC4Model = useLikeC4Model()
@@ -23,7 +27,8 @@ export function ReactLikeC4(props) {
 export {
   useLikeC4Model,
   useLikeC4View,
-  useLikeC4Views
+  useLikeC4Views,
+  isLikeC4ViewId,
 }
 `
 
@@ -48,9 +53,10 @@ export const singleProjectReactModule: VirtualModule = {
   useLikeC4Model,
   useLikeC4View,
   useLikeC4Views,
+  isLikeC4ViewId,
   LikeC4ModelProvider,
   LikeC4View,
-  ReactLikeC4
+  ReactLikeC4,
 } from 'likec4:react/${project.id}'`
     return {
       code,

@@ -24,7 +24,7 @@
         "./src/internal.ts"
       ],
       "likec4/model": [
-        "../core/src/index.ts"
+        "./src/typings/likec4-model.ts"
       ],
       "likec4/react": [
         "../react/src/index.ts"
