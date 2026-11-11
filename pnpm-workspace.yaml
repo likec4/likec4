@@ -4,6 +4,7 @@ packages:
   - styled-system/*
   - packages/*
   - "!packages/create-likec4"
+  - examples/customization-roughjs
 
 allowBuilds:
   '@google/genai': false
