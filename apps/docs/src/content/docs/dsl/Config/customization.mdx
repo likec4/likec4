@@ -6,7 +6,7 @@ head:
     content: UI customization | LikeC4
 sidebar:
   label: UI customization
-  order: 5
+  order: 17
   badge:
     text: Experimental
     variant: caution
@@ -46,7 +46,7 @@ There are three ways to point LikeC4 to it:
 
 | Where                                        | How                                         | The path is relative to     |
 | -------------------------------------------- | ------------------------------------------- | --------------------------- |
-| [App config](/tooling/app-config/)           | `customization: './likec4.customization.tsx'` | the config file             |
+| [App config](/dsl/config/app-config/)           | `customization: './likec4.customization.tsx'` | the config file             |
 | [CLI](/tooling/cli/)                         | `--customization ./likec4.customization.tsx` | the current directory       |
 | [Vite plugin](/tooling/vite-plugin/#options) | `customization` option                      | the root of the Vite project |
 
@@ -55,7 +55,7 @@ It is an error if the file does not exist.
 With the CLI, the overrides are applied by:
 
 - `likec4 start` and `likec4 build`: to the application
-- `likec4 export png` and `likec4 export jpg`: to the exported images (not with `--server-url`, see [App config](/tooling/app-config/#commands))
+- `likec4 export png` and `likec4 export jpg`: to the exported images (not with `--server-url`, see [App config](/dsl/config/app-config/#commands))
 - `likec4 gen react` and `likec4 gen webcomponent`: to the generated components
 
 With the Vite plugin, the overrides are applied to the components from `likec4:react`.
@@ -235,7 +235,7 @@ The complete project, with all the shapes, is in [examples/customization-roughjs
     })
     ```
 
-4. Point LikeC4 to the file in the [app config](/tooling/app-config/):
+4. Point LikeC4 to the file in the [app config](/dsl/config/app-config/):
 
     ```ts
     // likec4.app.config.ts

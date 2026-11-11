@@ -6,7 +6,7 @@ head:
     content: App config | LikeC4
 sidebar:
   label: App config
-  order: 5
+  order: 16
   badge:
     text: Experimental
     variant: caution
@@ -81,7 +81,7 @@ likec4 build --no-app-config
 | `theme`              | follows the system preference                    | Default color scheme of the application: `'light'` or `'dark'`                                          |
 | `useHashHistory`     | `false`                                          | Hash-based navigation, e.g. `/#/view` instead of `/view`                                                |
 | `webcomponentPrefix` | `'likec4'`                                       | Prefix for web components, e.g. `'c4'` generates `<c4-view/>`                                           |
-| `customization`      | none                                             | Path to the file with [UI customization](/tooling/customization/)                                       |
+| `customization`      | none                                             | Path to the file with [UI customization](/dsl/config/customization/)                                       |
 | `workspace`          | current directory                                | Directory with LikeC4 sources                                                                           |
 | `graphviz`           | `'binary'` inside a container, `'wasm'` otherwise | Layout engine: bundled WebAssembly (`'wasm'`) or the `dot` binary from `PATH` (`'binary'`)              |
 | `base`               | `/`                                              | Base URL the application is served from, e.g. `/pages/`                                                  |
@@ -180,4 +180,4 @@ The config is read when the command starts.
 likec4.app.config.ts changed, restart to apply
 ```
 
-Restart the command to apply the changes. The [customization file](/tooling/customization/) is different: its changes are applied on the fly.
+Restart the command to apply the changes. The [customization file](/dsl/config/customization/) is different: its changes are applied on the fly.

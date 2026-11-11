@@ -88,7 +88,7 @@ likec4 gen react -h
 
 :::tip[App config]
 `likec4 start`, `likec4 build`, `likec4 export png/jpg`, `likec4 gen react` and `likec4 gen webcomponent`
-can take their options from a `likec4.app.config.ts` file instead of flags, see [App config](/tooling/app-config/) (experimental).
+can take their options from a `likec4.app.config.ts` file instead of flags, see [App config](/dsl/config/app-config/) (experimental).
 :::
 
 
@@ -117,8 +117,8 @@ Any change in the source files triggers a hot update in the browser immediately.
 | `--allowed-host`             | Hostname allowed to access the dev server (Vite [`server.allowedHosts`](https://vite.dev/config/server-options#server-allowedhosts)); repeatable. Defaults to allowing all hosts. |
 | `--title`                    | Base title of the app pages (default is "LikeC4")                                                               |
 | `--theme`                    | Default color scheme of the app, `light` or `dark` (default: follows system preference)                         |
-| `--customization`            | File with [UI customization](/tooling/customization/) (experimental)                                            |
-| `--app-config`               | Path to the [app config](/tooling/app-config/); `--no-app-config` to ignore it (experimental)                   |
+| `--customization`            | File with [UI customization](/dsl/config/customization/) (experimental)                                            |
+| `--app-config`               | Path to the [app config](/dsl/config/app-config/); `--no-app-config` to ignore it (experimental)                   |
 
 :::tip
 You can start the process in a separate terminal window and keep it running while you're editing the model in your editor, or even serve multiple projects at once.
@@ -151,8 +151,8 @@ likec4 build -o ./dist
 | `--output-single-file`       | Generates a single self-contained HTML file                                                                      |
 | `--public, --public-dir`     | Directory whose files are copied into the output as-is (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)); preserved with `--output-single-file` |
 | `--theme`                    | Default color scheme of the app, `light` or `dark` (default: follows system preference)                          |
-| `--customization`            | File with [UI customization](/tooling/customization/) (experimental)                                             |
-| `--app-config`               | Path to the [app config](/tooling/app-config/); `--no-app-config` to ignore it (experimental)                    |
+| `--customization`            | File with [UI customization](/dsl/config/customization/) (experimental)                                             |
+| `--app-config`               | Path to the [app config](/dsl/config/app-config/); `--no-app-config` to ignore it (experimental)                    |
 
 :::note
 Internally, CLI uses Vite to build the website, and `likec4 build` calls `vite build`.  
@@ -168,7 +168,7 @@ There is also a supplementary command to preview the build:
 likec4 preview -o ./dist
 ```
 
-`likec4 preview` takes the output directory and the base URL from the [app config](/tooling/app-config/), the same way `likec4 build` does, so the two commands agree without repeating `-o` and `--base`.
+`likec4 preview` takes the output directory and the base URL from the [app config](/dsl/config/app-config/), the same way `likec4 build` does, so the two commands agree without repeating `-o` and `--base`.
 
 For example, this command can be used in CI to compare diagrams with ones from the previous or main build.
 
@@ -209,8 +209,8 @@ You will be prompted with a command to install if it's not found.
 | `--chromium-sandbox`         | enable chromium sandbox (see Playwright docs)                                                                    |
 | `--notation`                 | include view notation in exported PNG/JPEG files                                                                 |
 | `--description`              | include the view title and Markdown description in exported PNG/JPEG files                                       |
-| `--customization`            | File with [UI customization](/tooling/customization/), not used with `--server-url` (experimental)               |
-| `--app-config`               | Path to the [app config](/tooling/app-config/); `--no-app-config` to ignore it (experimental)                    |
+| `--customization`            | File with [UI customization](/dsl/config/customization/), not used with `--server-url` (experimental)               |
+| `--app-config`               | Path to the [app config](/dsl/config/app-config/); `--no-app-config` to ignore it (experimental)                    |
 
 ### Export to JSON
 

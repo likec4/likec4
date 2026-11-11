@@ -220,7 +220,7 @@ Application options, at the top level of the plugin options:
 | `theme`              | default color scheme, `'light'` or `'dark'` (follows the system preference if not set)               |
 | `useHashHistory`     | hash-based navigation, e.g. `/#/view` instead of `/view` (default `false`)                           |
 | `webcomponentPrefix` | prefix for web components, e.g. `'c4'` generates `<c4-view/>` (default `'likec4'`)                   |
-| `customization`      | path to the file with [UI customization](/tooling/customization/), relative to the Vite root (experimental) |
+| `customization`      | path to the file with [UI customization](/dsl/config/customization/), relative to the Vite root (experimental) |
 
 ```ts
 // vite.config.ts
@@ -248,7 +248,7 @@ These options used to be nested in `appConfig` (with `pageTitle` instead of `tit
 :::
 
 :::note
-The plugin does not read the [app config](/tooling/app-config/) (`likec4.app.config.ts`).
+The plugin does not read the [app config](/dsl/config/app-config/) (`likec4.app.config.ts`).
 That file is for the LikeC4 CLI; with the plugin, pass the options as shown above.
 :::
 
