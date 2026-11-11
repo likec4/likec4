@@ -9,7 +9,7 @@ import {
   scalar,
 } from '../../types'
 import { flattenGroupRules } from './applyCustomElementProperties'
-import { relationExpressionToPredicates } from './relationExpressionToPredicates'
+import { type FilterableEdge, relationExpressionToPredicates } from './relationExpressionToPredicates'
 
 type EdgeMetadata = Record<string, string[]>
 
@@ -19,7 +19,7 @@ type EdgeMetadata = Record<string, string[]>
 function edgeMetadata<A extends AnyAux>(model: LikeC4Model<A>, edge: ComputedEdge<A>): EdgeMetadata | null {
   let merged: EdgeMetadata | null = null
   for (const id of edge.relations) {
-    const metadata = model.findRelationship(id, 'model')?.$relationship.metadata
+    const metadata = model.findRelationship(id)?.$relationship.metadata
     if (!metadata) {
       continue
     }
@@ -44,6 +44,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
   nodes: ComputedNode<A>[],
   _edges: Iterable<ComputedEdge<A>>,
   model?: LikeC4Model<A>,
+  toPredicate: (expr: any) => (edge: FilterableEdge<A>) => boolean = relationExpressionToPredicates,
 ): ComputedEdge<A>[] {
   const rules = _rules.flatMap(flattenGroupRules(ModelRelationExpr.isCustom))
   const edges = Array.from(_edges)
@@ -66,7 +67,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
     const description = _description ? { description: scalar.MarkdownOrString(_description) } : {}
     const notes = _notes ? { notes: scalar.MarkdownOrString(_notes) } : {}
     const props = omitBy(customprops, isNullish)
-    const satisfies = relationExpressionToPredicates(expr)
+    const satisfies = toPredicate(expr)
     edges.forEach((edge, i) => {
       let source, target
       for (const node of nodes) {

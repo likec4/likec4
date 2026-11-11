@@ -11,6 +11,7 @@ import {
   isViewRulePredicate,
   RelationExpr,
 } from '../../types'
+import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { createRelationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
@@ -231,7 +232,13 @@ export function computeDeploymentView<M extends AnyAux>(
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
       ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
     },
-    edges: sorted.edges,
+    edges: applyCustomRelationProperties(
+      flatRules as any,
+      nodes,
+      sorted.edges,
+      likec4model,
+      deploymentRelationExprToPredicate,
+    ),
     nodes: map(nodes, n => {
       if (n.icon === 'none') {
         delete n.icon
