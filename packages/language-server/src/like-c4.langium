@@ -1317,7 +1317,7 @@ fragment IsEqual:
 // Comments
 hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
-hidden terminal WS: /[\t ]+/;
+hidden terminal WS: /[\t \uFEFF]+/;
 hidden terminal NL: /[\r\n]+/;
 
 // -----------------------------------
