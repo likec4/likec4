@@ -9,6 +9,7 @@ export {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
+  type ElementShapeProps,
   ElementTag,
   type ElementTagProps,
   ElementTags,

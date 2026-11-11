@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import type { JSX } from 'react/jsx-runtime'
+import type { ElementShape } from '../base-primitives/element/ElementShape'
 import type { Logo, LogoIcon } from '../components/Logo'
 import type { LikeC4Diagram } from '../LikeC4Diagram'
 import type { LikeC4View } from '../LikeC4View'
@@ -11,6 +12,7 @@ type RegisteredCustomizables =
   | typeof ReactLikeC4
   | typeof Logo
   | typeof LogoIcon
+  | typeof ElementShape
 
 export type Customizable<TComponent extends FC<any>, Name extends string> = TComponent & {
   readonly displayName: Name
