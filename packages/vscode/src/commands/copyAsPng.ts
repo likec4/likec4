@@ -82,7 +82,16 @@ async function saveDirtyLikeC4Documents(): Promise<void> {
   const dirty = vscode.workspace.textDocuments.filter(
     (doc) => doc.isDirty && !doc.isUntitled && isLikeC4Source(doc.fileName),
   )
-  await Promise.all(dirty.map((doc) => doc.save()))
+  const results = await Promise.all(dirty.map(async (doc) => ({
+    uri: doc.uri.toString(),
+    saved: await doc.save(),
+  })))
+  const failed = results.filter((result) => !result.saved)
+  if (failed.length > 0) {
+    throw new Error(
+      `Failed to save dirty LikeC4 document(s) before export: ${failed.map((f) => f.uri).join(', ')}`,
+    )
+  }
 }
 
 function resolveWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
