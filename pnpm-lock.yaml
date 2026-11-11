@@ -667,11 +667,11 @@ catalogs:
       version: 5.33.3
   xyflow:
     '@xyflow/react':
-      specifier: 12.12.0
-      version: 12.12.0
+      specifier: 12.12.1
+      version: 12.12.1
     '@xyflow/system':
-      specifier: 0.0.83
-      version: 0.0.83
+      specifier: 0.0.84
+      version: 0.0.84
 
 overrides:
   react: 19.3.1
@@ -982,10 +982,10 @@ importers:
         version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.83
+        version: 0.0.84
       date-fns:
         specifier: catalog:utils
         version: 4.4.0
@@ -1430,10 +1430,10 @@ importers:
         version: 2.1.0(react@19.3.1)(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.83
+        version: 0.0.84
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -2446,10 +2446,10 @@ importers:
         version: 4.3.0(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.83
+        version: 0.0.84
       autoprefixer:
         specifier: ^10.6.1
         version: 10.6.1(postcss@8.5.30)
@@ -2867,10 +2867,10 @@ importers:
         version: 2.1.0(react@19.3.1)(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.83
+        version: 0.0.84
       bezier-js:
         specifier: ^6.1.4
         version: 6.1.4
@@ -3306,10 +3306,10 @@ importers:
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.1.0))(@babel/runtime@7.27.6)(rolldown@1.2.16)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(oxc-transform-react@0.156.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@xyflow/react':
         specifier: catalog:xyflow
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/system':
         specifier: catalog:xyflow
-        version: 0.0.83
+        version: 0.0.84
       fast-equals:
         specifier: catalog:utils
         version: 6.2.1
@@ -6867,8 +6867,8 @@ packages:
       xstate:
         optional: true
 
-  '@xyflow/react@12.12.0':
-    resolution: {integrity: sha512-74oXI0Rgm1Eu33cHQAd74J6oVgCH9mbFyTVQbsGgp2kmWwh0HdtBr2VP04z8mbPD+M/xO69nqG5dDEt7/EN2rQ==}
+  '@xyflow/react@12.12.1':
+    resolution: {integrity: sha512-g41OHmP+GL5wDBQKpgYt8AF6RlB4CrABtiStXhCMqdItK6gPdSpsuDk8V0YtdyvIvMPTjDJvkuLkz0JbSYu5Cw==}
     peerDependencies:
       '@types/react': 19.3.0
       '@types/react-dom': 19.3.0
@@ -6880,8 +6880,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@xyflow/system@0.0.83':
-    resolution: {integrity: sha512-a//eDjez3WZF47aaPTfVUDD0OINOq+WVwBZCRTqG+m0a5euX8EwlJ4jMY1Wxz0Ocj4xOeekJ70V22Pq0ll8RJw==}
+  '@xyflow/system@0.0.84':
+    resolution: {integrity: sha512-96zfGFjH3oZ3T0MRdH4gJ0SlXuCIxbBuHVevZ4xry5UTxqjzjt010+LRdholgepq7jhrcaz1JNtzrETscwnkEA==}
 
   '@yuku-core/binding-android-arm64@0.19.0':
     resolution: {integrity: sha512-wdL2XmTiZixAOaHk9Z0JJZ8u9Qm8d333Zjpc6gaxXFX+UR5BlsfxZ7a2+2Rm71pamppsPYGUGFq2oVLbh6DISw==}
@@ -14555,9 +14555,9 @@ snapshots:
     optionalDependencies:
       xstate: 5.33.3
 
-  '@xyflow/react@12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@xyflow/react@12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@xyflow/system': 0.0.83
+      '@xyflow/system': 0.0.84
       classcat: 5.0.5
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -14568,7 +14568,7 @@ snapshots:
     transitivePeerDependencies:
       - immer
 
-  '@xyflow/system@0.0.83':
+  '@xyflow/system@0.0.84':
     dependencies:
       '@types/d3-drag': 3.0.7
       '@types/d3-interpolate': 3.0.4
