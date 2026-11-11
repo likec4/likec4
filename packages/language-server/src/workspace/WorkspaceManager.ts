@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { invariant, memoizeProp } from '@likec4/core'
+import { onNextTick } from '@likec4/core/utils'
 import type {
   BuildOptions,
   Cancellation,
@@ -13,16 +14,22 @@ import type {
   LangiumDocument,
   LangiumDocumentFactory,
 } from 'langium'
-import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
+import { DefaultWorkspaceManager, Disposable, isOperationCancelled, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
 import { filter, hasAtLeast, isNot, map, pipe, sort, uniqueBy } from 'remeda'
 import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
+import { isLikeC4UserDocument } from '../ast'
 import type { FileNode, FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { serverLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { compareByUri } from '../utils'
+import type { ExternalDependencyTarget, ExternalProject, ExternalProjectId } from './ExternalProjects'
+
+function sameKeys(a: ReadonlyMap<string, unknown>, b: ReadonlyMap<string, unknown>): boolean {
+  return a.size === b.size && [...a.keys()].every(k => b.has(k))
+}
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected override readonly fileSystemProvider: FileSystemProvider
@@ -45,6 +52,14 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   constructor(private services: LikeC4SharedServices) {
     super(services)
     this.fileSystemProvider = services.workspace.FileSystemProvider
+    // Projects configuration changed outside of a full reload (e.g. single config file changed):
+    // add or remove external projects if dependencies changed
+    // (a full reload syncs external projects in rebuildAll)
+    onNextTick(() => {
+      services.workspace.ProjectsManager.onProjectsUpdate(() => {
+        this.scheduleExternalProjectsSync()
+      })
+    })
   }
 
   protected get documentFactory(): LangiumDocumentFactory {
@@ -133,6 +148,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       }
 
       const documents = await this.loadDocuments(likec4Files)
+
+      // Dependencies outside the workspace
+      if (projectsCount > 0) {
+        documents.push(...await this.startupExternalProjects())
+      }
 
       if (hasAtLeast(documents, 1)) {
         this.#logger.debug`found ${documents.length} likec4 documents`
@@ -257,6 +277,22 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
+    // Re-read external projects (dependencies outside the workspace):
+    // changes in them are picked up on reload of projects
+    const sync = this.syncExternalProjects(cancelToken)
+    this.#activeSync = sync
+    try {
+      await sync
+    } catch (error) {
+      if (isOperationCancelled(error)) {
+        throw error
+      }
+      this.#logger.warn('Failed to sync external projects', { error })
+    } finally {
+      if (this.#activeSync === sync) {
+        this.#activeSync = null
+      }
+    }
     const uris = this.services.workspace.LangiumDocuments.resetProjectIds()
     this.#logger.info('invalidate and rebuild all {docs} documents', { docs: uris.length })
     this.forceCleanCaches()
@@ -327,6 +363,189 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         this.#cacheEvicters.splice(index, 1)
       }
     })
+  }
+
+  /**
+   * Loads external projects (dependencies outside the workspace) on startup,
+   * registers them and returns their documents (to be added to the workspace).
+   */
+  protected async startupExternalProjects(): Promise<LangiumDocument[]> {
+    const externalProjects = this.services.workspace.ExternalProjects
+    const documents = [] as LangiumDocument[]
+    try {
+      const loaded = await externalProjects.loadAll()
+      for (const project of loaded) {
+        externalProjects.register(project)
+        for (const [uri, text] of project.files) {
+          documents.push(this.documentFactory.fromString(text, URI.parse(uri)))
+        }
+      }
+      if (loaded.length > 0) {
+        this.#logger.info`loaded ${loaded.length} external projects`
+      }
+    } catch (error) {
+      this.#logger.warn('Failed to load external projects', { error })
+    }
+    return documents
+  }
+
+  /**
+   * Re-reads external projects (dependencies outside the workspace) and applies changes.
+   * Files are read before any change is made.
+   *
+   * @returns URIs of documents of workspace projects that depend on changed instances
+   */
+  protected async syncExternalProjects(cancelToken?: Cancellation.CancellationToken): Promise<URI[]> {
+    const externalProjects = this.services.workspace.ExternalProjects
+    const targets = externalProjects.dependencyTargets()
+    if (targets.size === 0 && externalProjects.all().length === 0) {
+      return []
+    }
+    const loaded = await externalProjects.loadAll(targets)
+    return await this.applyExternalProjects(targets, loaded, cancelToken)
+  }
+
+  /**
+   * Applies loaded external projects:
+   * - removes instances that are not referenced anymore, with their documents
+   * - adds new instances and their documents
+   * - replaces documents with changed content
+   *
+   * Added documents are not built here: they are built by the next document builder update.
+   *
+   * @returns URIs of documents of workspace projects that depend on changed instances
+   */
+  protected async applyExternalProjects(
+    targets: ReadonlyMap<ExternalProjectId, ExternalDependencyTarget>,
+    loaded: ReadonlyArray<ExternalProject>,
+    cancelToken?: Cancellation.CancellationToken,
+  ): Promise<URI[]> {
+    const externalProjects = this.services.workspace.ExternalProjects
+    const next = new Map(loaded.map(p => [p.id, p]))
+
+    const changedProjects = new Set<ExternalProjectId>()
+    const deleted = [] as URI[]
+    for (const previous of externalProjects.all()) {
+      const project = next.get(previous.id)
+      if (!project) {
+        changedProjects.add(previous.id)
+      }
+      for (const [uri, text] of previous.files) {
+        if (project?.files.get(uri) !== text) {
+          changedProjects.add(previous.id)
+          deleted.push(URI.parse(uri))
+        }
+      }
+    }
+    const added = [] as Array<[uri: string, text: string]>
+    for (const project of loaded) {
+      const previous = externalProjects.get(project.id)
+      if (!previous) {
+        changedProjects.add(project.id)
+      }
+      for (const [uri, text] of project.files) {
+        if (previous?.files.get(uri) !== text) {
+          changedProjects.add(project.id)
+          added.push([uri, text])
+        }
+      }
+    }
+
+    // Remove documents while they are still owned by the instances
+    if (deleted.length > 0) {
+      await this.documentBuilder.update([], deleted, cancelToken)
+    }
+    for (const previous of externalProjects.all()) {
+      if (!next.has(previous.id)) {
+        this.#logger.info`remove external project ${previous.id}`
+        externalProjects.unregister(previous.id)
+      }
+    }
+    for (const project of loaded) {
+      externalProjects.register(project)
+    }
+    for (const [uri, text] of added) {
+      const docUri = URI.parse(uri)
+      if (!this.langiumDocuments.hasDocument(docUri)) {
+        this.langiumDocuments.addDocument(this.documentFactory.fromString(text, docUri))
+      }
+    }
+
+    if (changedProjects.size === 0) {
+      return []
+    }
+    this.#logger.debug`external projects changed: ${[...changedProjects].join(', ')}`
+    // Consumers of changed instances
+    // (consumers of removed instances have changed config, they are rebuilt by the projects manager)
+    const consumers = new Set<string>()
+    for (const id of changedProjects) {
+      targets.get(id)?.consumers.forEach(c => consumers.add(c))
+    }
+    if (consumers.size === 0) {
+      return []
+    }
+    const lookup = this.services.workspace.ProjectsLookup
+    return this.langiumDocuments.all
+      .filter(doc =>
+        isLikeC4UserDocument(doc)
+        && !lookup.isExcluded(doc)
+        && consumers.has(lookup.ownerProjectId(doc))
+      )
+      .map(doc => doc.uri)
+      .toArray()
+  }
+
+  #scheduledSync: Promise<void> | null = null
+  /**
+   * Sync of external projects running as part of {@link rebuildAll}
+   */
+  #activeSync: Promise<unknown> | null = null
+
+  /**
+   * Schedules sync of external projects, if dependencies of workspace projects changed
+   * (instances have to be added or removed).
+   * Files are read outside of the workspace lock, the lock is taken to register documents
+   * and rebuild the documents of consumers.
+   */
+  protected scheduleExternalProjectsSync(): void {
+    if (!this.#performedStartup || this.#scheduledSync) {
+      return
+    }
+    const externalProjects = this.services.workspace.ExternalProjects
+    // Deferred: if the update is part of a reload of projects, the reload syncs external projects itself
+    // (in rebuildAll, called right after the update), so wait for it first
+    this.#scheduledSync = Promise.resolve()
+      .then(async () => {
+        while (this.#activeSync) {
+          await this.#activeSync.catch(() => {})
+        }
+        this.#scheduledSync = null
+        let targets = externalProjects.dependencyTargets()
+        if (!externalProjects.hasStructuralChanges(targets)) {
+          return
+        }
+        // Read files outside of the lock
+        let loaded = await externalProjects.loadAll(targets)
+        await this.services.workspace.WorkspaceLock.write(async token => {
+          const current = externalProjects.dependencyTargets()
+          if (!externalProjects.hasStructuralChanges(current)) {
+            // Already synced (e.g. by a reload of projects)
+            return
+          }
+          if (!sameKeys(current, targets)) {
+            // Dependencies changed while loading
+            targets = current
+            loaded = await externalProjects.loadAll(targets)
+          }
+          const consumerDocs = await this.applyExternalProjects(targets, loaded, token)
+          // Builds added documents and relinks consumers
+          await this.documentBuilder.update(consumerDocs, [], token)
+        })
+      })
+      .catch(error => {
+        this.#scheduledSync = null
+        this.#logger.warn('Failed to sync external projects', { error })
+      })
   }
 
   /**
