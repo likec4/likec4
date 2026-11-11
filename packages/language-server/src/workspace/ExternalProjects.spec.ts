@@ -705,6 +705,95 @@ describe('ExternalProjects', () => {
     }
   })
 
+  it('applies a sync requested by a reload after the rebuild of the reload', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a' }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { DocumentBuilder, ExternalProjects, ProjectsManager, WorkspaceManager } = t.services.shared.workspace
+
+    const events = [] as string[]
+    const update = DocumentBuilder.update.bind(DocumentBuilder)
+    mockMethod(DocumentBuilder, 'update').mockImplementation(async (changed, deleted, token) => {
+      events.push('update:start')
+      try {
+        return await update(changed, deleted, token)
+      } finally {
+        events.push('update:end')
+      }
+    })
+    const register = ExternalProjects.register.bind(ExternalProjects)
+    mockMethod(ExternalProjects, 'register').mockImplementation(project => {
+      events.push('register')
+      register(project)
+    })
+
+    fs.write({
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+    })
+    // Without the workspace lock (as the ReloadProjects request does)
+    await ProjectsManager.reloadProjects()
+    await WorkspaceManager.whenExternalProjectsSynced()
+
+    expect(ExternalProjects.has('#file:///test/shared')).toBe(true)
+    // rebuild of the reload completes before the sync is applied
+    expect(events.slice(0, 3)).toEqual(['update:start', 'update:end', 'register'])
+  })
+
+  it('attributes deleted documents of a removed instance to it, not to the default project', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/workspace/b/likec4.config.json': config({ name: 'b' }),
+      'file:///test/workspace/b/model.c4': 'model { }',
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { ProjectsManager, WorkspaceManager, ExternalProjects } = t.services.shared.workspace
+    // multiple projects: no default project
+    expect(ProjectsManager.defaultProjectId).toBeUndefined()
+
+    const modelBuilder = t.services.likec4.ModelBuilder
+    const notified = [] as string[]
+    modelBuilder.onModelParsed(projectId => {
+      notified.push(projectId)
+    })
+
+    fs.write({ 'file:///test/workspace/a/likec4.config.json': config({ name: 'a' }) })
+    await ProjectsManager.reloadProjects()
+    await WorkspaceManager.whenExternalProjectsSynced()
+
+    expect(ExternalProjects.all()).toEqual([])
+    expect(notified).not.toContain('default')
+    expect(notified.filter(id => id.startsWith('#'))).toEqual([])
+    expect(ExternalProjects.retiredOwnerProjectId('file:///test/shared/model.c4')).toBeUndefined()
+    expect(modelBuilder).toBeInstanceOf(DefaultLikeC4ModelBuilder)
+    if (modelBuilder instanceof DefaultLikeC4ModelBuilder) {
+      expect(modelBuilder['cache'].has('default' as ProjectId)).toBe(false)
+    }
+  })
+
+  it('does not take the workspace lock when a reload finds no changes', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { ProjectsManager, WorkspaceManager, WorkspaceLock, ExternalProjects } = t.services.shared.workspace
+
+    const writes = mockMethod(WorkspaceLock, 'write', WorkspaceLock.write.bind(WorkspaceLock))
+    await ProjectsManager.reloadProjects()
+    await WorkspaceManager.whenExternalProjectsSynced()
+    expect(writes).not.toHaveBeenCalled()
+    expect(ExternalProjects.has('#file:///test/shared')).toBe(true)
+  })
+
   it('keeps a workspace without dependencies unchanged', async ({ create, expect }) => {
     const t = create({ workspace: 'file:///test/workspace' })
     mockFileSystem(t, {
