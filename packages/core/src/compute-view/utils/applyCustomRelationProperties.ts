@@ -39,6 +39,11 @@ function edgeMetadata<A extends AnyAux>(model: LikeC4Model<A>, edge: ComputedEdg
   return merged
 }
 
+/**
+ * Applies `with { ... }` properties of custom relation predicates to the edges they match.
+ * Element views use the default predicate builder; deployment views pass their own,
+ * because their rules reference deployment elements.
+ */
 export function applyCustomRelationProperties<A extends AnyAux>(
   _rules: ElementViewRule<A>[],
   nodes: ComputedNode<A>[],
