@@ -1,0 +1,182 @@
+---
+title: App config
+description: Keep the options of the LikeC4 CLI in a likec4.app.config.ts file instead of command-line flags.
+head:
+  - tag: title
+    content: App config | LikeC4
+sidebar:
+  label: App config
+  order: 5
+  badge:
+    text: Experimental
+    variant: caution
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution" title="Experimental">
+The app config is experimental: the file name, the options and their behavior may change.
+</Aside>
+
+The app config is a file with the options of the LikeC4 application, its build and the dev server.  
+The [CLI](/tooling/cli/) reads it, so you do not have to repeat the same flags in every command:
+
+```ts
+// likec4.app.config.ts
+import { defineAppConfig } from 'likec4/config'
+
+export default defineAppConfig({
+  title: 'My Architecture',
+  theme: 'dark',
+  customization: './likec4.customization.tsx',
+  build: {
+    outDir: './dist',
+  },
+  server: {
+    port: 3000,
+  },
+})
+```
+
+```sh
+# Both commands use the title, the theme and the customization file
+likec4 start
+likec4 build
+```
+
+<Aside type="note">
+The app config is not the [project configuration](/dsl/config/).
+`likec4.config.json` describes a LikeC4 project (its name, styles, includes).
+`likec4.app.config.ts` describes how the CLI builds and serves the application.
+</Aside>
+
+## Config file
+
+The file is JavaScript or TypeScript, with one of these names:
+
+- `likec4.app.config.ts`, `likec4.app.config.mts`, `likec4.app.config.cts`
+- `likec4.app.config.js`, `likec4.app.config.mjs`, `likec4.app.config.cjs`
+
+It must default-export an object. `defineAppConfig` only adds types, a plain object works too.  
+The CLI provides `likec4/config` when it loads the file, so the import works even if `likec4` is not installed next to it (for example, with `npx likec4`).
+
+The CLI takes the first file it finds:
+
+1. The file given by `--app-config <file>`. It is an error if this file does not exist.
+2. The workspace, if you give it to the command (as the `[path]` argument or the `LIKEC4_WORKSPACE` environment variable).
+3. The current directory.
+
+`--no-app-config` skips the file. When a file is loaded, the command prints its path.
+
+```sh
+likec4 build --app-config ./configs/likec4.app.config.ts
+likec4 build --no-app-config
+```
+
+## Options
+
+| Option               | Default                                          | Description                                                                                             |
+| -------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `title`              | `'LikeC4'`                                       | Base title of the application pages                                                                     |
+| `theme`              | follows the system preference                    | Default color scheme of the application: `'light'` or `'dark'`                                          |
+| `useHashHistory`     | `false`                                          | Hash-based navigation, e.g. `/#/view` instead of `/view`                                                |
+| `webcomponentPrefix` | `'likec4'`                                       | Prefix for web components, e.g. `'c4'` generates `<c4-view/>`                                           |
+| `customization`      | none                                             | Path to the file with [UI customization](/tooling/customization/)                                       |
+| `workspace`          | current directory                                | Directory with LikeC4 sources                                                                           |
+| `graphviz`           | `'binary'` inside a container, `'wasm'` otherwise | Layout engine: bundled WebAssembly (`'wasm'`) or the `dot` binary from `PATH` (`'binary'`)              |
+| `base`               | `/`                                              | Base URL the application is served from, e.g. `/pages/`                                                  |
+| `publicDir`          | none                                             | Directory whose files are copied to the output as-is                                                    |
+| `build`              |                                                  | Options of the production build, see [below](#build)                                                    |
+| `server`             |                                                  | Options of the dev server, see [below](#server)                                                         |
+
+### `build`
+
+Options of `likec4 build`.
+
+| Option         | Default                 | Description                                                                             |
+| -------------- | ----------------------- | --------------------------------------------------------------------------------------- |
+| `outDir`       | `dist` in the workspace | Output directory                                                                        |
+| `singleFile`   | `false`                 | Output a single self-contained HTML file. Such a build always uses hash-based navigation |
+| `webcomponent` | `true`                  | Build web components. `likec4 start` uses this option too                               |
+
+### `server`
+
+Options of `likec4 start`.
+
+| Option         | Default                                           | Description                                                 |
+| -------------- | ------------------------------------------------- | ----------------------------------------------------------- |
+| `host`         | `localhost`, or `0.0.0.0` inside a container      | Address of the network interface to listen on               |
+| `port`         | `5173`, or another free port if it is taken       | Port of the dev server                                      |
+| `hmrPort`      | auto-discovered from 24678–24690                  | Port of the HMR WebSocket server                            |
+| `allowedHosts` | all hosts                                         | Hostnames allowed to access the dev server                  |
+
+### Validation
+
+Unknown options are errors, at the top level and inside `build` and `server`.  
+The command stops and reports the file and the invalid options.
+
+## Paths
+
+- Paths in the config file (`workspace`, `customization`, `publicDir`, `build.outDir`) are relative to the directory of the file.
+- Paths in command-line flags are relative to the current directory.
+
+## Flags and environment variables
+
+Every option has a command-line flag, and some have an environment variable.  
+The first value that is set wins:
+
+1. Command-line flag
+2. Environment variable
+3. App config
+4. Default
+
+| Option                | Flag                                              | Environment variable |
+| --------------------- | ------------------------------------------------- | -------------------- |
+| `workspace`           | `[path]` argument                                 | `LIKEC4_WORKSPACE`   |
+| `graphviz`            | `--use-dot`, `--no-use-dot`                       |                      |
+| `title`               | `--title`, `-t`                                   |                      |
+| `theme`               | `--theme`                                         |                      |
+| `useHashHistory`      | `--use-hash-history`                              |                      |
+| `webcomponentPrefix`  | `--webcomponent-prefix`, `-w`                     |                      |
+| `customization`       | `--customization`                                 |                      |
+| `base`                | `--base`, `--base-url`                            |                      |
+| `publicDir`           | `--public`, `--public-dir`                        |                      |
+| `build.outDir`        | `--output`, `-o`                                  |                      |
+| `build.singleFile`    | `--output-single-file`                            |                      |
+| `build.webcomponent`  | `--build-webcomponent`, `--no-build-webcomponent` |                      |
+| `server.host`         | `--listen`, `-l`                                  |                      |
+| `server.port`         | `--port`                                          | `PORT`               |
+| `server.hmrPort`      | `--hmr-port`                                      | `HMR_PORT`           |
+| `server.allowedHosts` | `--allowed-host`                                  |                      |
+
+`--allowed-host` replaces the list from the config, it does not add to it.
+
+## Commands
+
+These commands read the app config:
+
+| Command                                | What it takes from the config                                         |
+| -------------------------------------- | --------------------------------------------------------------------- |
+| `likec4 start`                         | All top-level options, `build.webcomponent` and `server`              |
+| `likec4 build`                         | All top-level options and `build`                                     |
+| `likec4 export png`, `likec4 export jpg` | `workspace`, `graphviz`, `customization`                            |
+| `likec4 gen react`                     | `workspace`, `graphviz`, `customization`                              |
+| `likec4 gen webcomponent`              | `workspace`, `graphviz`, `customization`, `webcomponentPrefix`        |
+
+Other commands ignore the file.
+
+Two things to know about the export to PNG and JPEG:
+
+- `--theme` of the export is the color scheme of the images (`light` by default). The `theme` option of the config is not used.
+- With `--server-url` the export does not start a server and takes screenshots from the one you point it to. `customization` has no effect then.
+
+## Changes in the config
+
+The config is read when the command starts.  
+`likec4 start` watches the file and prints a warning when it changes:
+
+```
+likec4.app.config.ts changed, restart to apply
+```
+
+Restart the command to apply the changes. The [customization file](/tooling/customization/) is different: its changes are applied on the fly.
