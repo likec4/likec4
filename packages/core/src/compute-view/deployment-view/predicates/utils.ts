@@ -44,7 +44,8 @@ export function predicateToPatch(
     case FqnExpr.isElementKindExpr(expr):
       throw new Error('element kind and tag expressions are not supported in deployment view rules')
     case RelationExpr.isCustom(expr):
-      return undefined
+      // Custom properties are applied to the computed edges, see computeDeploymentView
+      return predicateToPatch(op, { ...ctx, expr: expr.customRelation.expr, where })
     case FqnExpr.isCustom(expr):
       if (op === 'include' && expr.custom.navigateTo != null) {
         return predicateToPatch(op, { ...ctx, expr: expr.custom.expr, where })
