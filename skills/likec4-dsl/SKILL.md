@@ -418,7 +418,7 @@ Flow / sequence diagram?
 └─ Full reference → references/dynamic-views.md
 ```
 
-Flow-control blocks (experimental) — all take an optional title and nest to any depth, except `parallel`/`par` which cannot nest. `when`/`if`/`else` are valid **only** directly inside `alt`; `loop`/`opt`/`parallel`/`try` cannot be a direct child of `alt` (nest them inside a branch). See `references/dynamic-views.md`.
+Flow-control blocks — all take an optional title and nest to any depth, except that `parallel`/`par` cannot be a direct child of another `parallel`/`par`. `when`/`if`/`else` are valid **only** directly inside `alt`; `loop`/`opt`/`parallel`/`try` cannot be a direct child of `alt` (nest them inside a branch). See `references/dynamic-views.md`.
 
 Return-arrow precision:
 
