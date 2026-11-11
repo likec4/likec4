@@ -8,6 +8,7 @@ import type {
   AuxFromLikeC4ModelData,
   ComputedLikeC4ModelData,
   Element,
+  ImportedProjectMeta,
   IteratorLike,
   LayoutedLikeC4ModelData,
   LikeC4ModelData,
@@ -181,6 +182,7 @@ export class LikeC4Model<A extends Any = Any> {
       project,
       globals,
       imports,
+      importedProjects,
       deployments,
       views,
       relations,
@@ -197,6 +199,7 @@ export class LikeC4Model<A extends Any = Any> {
         styles: globals?.styles ?? {},
       },
       imports: imports ?? {},
+      ...(importedProjects && { importedProjects }),
       deployments: {
         elements: deployments?.elements ?? {},
         relations: deployments?.relations ?? {},
@@ -412,6 +415,27 @@ export class LikeC4Model<A extends Any = Any> {
       styles: {},
       manualLayouts: {},
     }))
+  }
+
+  /**
+   * Returns metadata of the project imported under the given name
+   * (the name used by this model in `import ... from 'name'`, i.e. the key of `imports`).
+   *
+   * The import name may differ from the id of the imported project:
+   * a workspace project can be imported under another name, or the import may point
+   * to an external project (a dependency declared in the project config).
+   *
+   * Returns `null` if the model has no metadata for this name
+   * (e.g. the model was produced without import metadata, or nothing is imported under this name).
+   *
+   * @param importName - name of the import, as written by this model (without `@`)
+   */
+  public findImportedProject(importName: string): ImportedProjectMeta | null {
+    const importedProjects = this.$data.importedProjects
+    if (!importedProjects || !Object.hasOwn(importedProjects, importName)) {
+      return null
+    }
+    return importedProjects[importName as scalar.ProjectId] ?? null
   }
 
   get specification(): Specification<A> {
