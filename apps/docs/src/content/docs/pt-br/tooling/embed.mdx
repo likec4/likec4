@@ -1,0 +1,51 @@
+---
+title: Escolha como incorporar diagramas
+description: Compare as formas de colocar diagramas LikeC4 em um site ou aplicação e escolha a que combina com o seu stack.
+sidebar:
+  label: Escolha uma abordagem
+  order: 0
+---
+
+Resposta curta: gere um [site estático](/pt-br/tooling/cli/#gerar-um-site-estático) se você só precisa dos diagramas online,
+use [web components](/pt-br/tooling/web-components/) para adicionar visões a qualquer página HTML
+e use o [plugin para Vite](/pt-br/tooling/vite-plugin/) em uma aplicação React construída com Vite.
+
+## Compare as abordagens
+
+| Abordagem | Serve quando | O que você recebe | Requisitos | Página |
+| --- | --- | --- | --- | --- |
+| Site estático<br/>`likec4 build` | Você quer um site para navegar por todas as visões, ou não tem uma aplicação onde incorporar | A aplicação LikeC4 completa como arquivos estáticos. O diálogo Share dá um trecho com `<iframe>` ou web component para cada visão | Sem bundler, sem React. Etapa de build: `likec4 build`, depois hospede os arquivos | [CLI](/pt-br/tooling/cli/#gerar-um-site-estático), [guia](/pt-br/guides/publish/) |
+| Web components<br/>`likec4 gen webcomponent` | Qualquer página HTML, com qualquer framework ou nenhum | Um arquivo JavaScript que define `<likec4-view view-id="...">`. O React vem embutido nele | Sem bundler, sem React na sua aplicação. Etapa de build: rode o comando de novo quando o modelo mudar | [Web components](/pt-br/tooling/web-components/) |
+| Plugin para Vite<br/>`likec4:react` | Uma aplicação React construída com Vite, incluindo Astro | `LikeC4View` e `ReactLikeC4`, tipados com os ids das suas visões. O plugin lê seus arquivos `.c4`, com hot reload | Vite e React. Nenhuma etapa de build extra | [Plugin para Vite](/pt-br/tooling/vite-plugin/) |
+| Componentes React gerados<br/>`likec4 gen react` | Uma aplicação React sem Vite, por exemplo webpack ou Next.js | Um módulo JavaScript e um `.d.ts` com `LikeC4View` e `ReactLikeC4`, tipados com os ids das suas visões | Qualquer bundler, React e `likec4` como dependência. Etapa de build: rode o comando de novo quando o modelo mudar | [React](/pt-br/tooling/react/) |
+| Componentes React<br/>`likec4/react` | Você monta o modelo em código, ou o carrega por conta própria | `LikeC4ModelProvider`, `LikeC4View`, `ReactLikeC4` e hooks. Você passa a eles um modelo com layout | Qualquer bundler e React. A etapa de build depende de como você obtém o modelo, por exemplo `likec4 gen model` | [React](/pt-br/tooling/react/) |
+| Plugin para MkDocs<br/>(comunidade) | Sua documentação é gerada com MkDocs | Visões em páginas Markdown, a partir de um bloco de código `likec4-view` | Python e pip, além de `likec4` e Graphviz na máquina de build. Sem React | [Plugin para MkDocs](/pt-br/tooling/community/mkdocs-plugin/) |
+
+O plugin para Vite também pode gerar web components.
+Chame `defineWebcomponent` do módulo `likec4:webcomponents/<project>`, e nenhum código React entra na sua aplicação.
+Veja [Web Components](/pt-br/tooling/vite-plugin/#web-components) na página do plugin para Vite.
+
+## Como decidir
+
+- **Sem framework JavaScript, ou um gerador de sites que não é React:** use [web components](/pt-br/tooling/web-components/).
+  Se você ainda não tem um site, o [site estático](/pt-br/tooling/cli/#gerar-um-site-estático) é o começo mais rápido.
+- **Você já publica o site estático:** incorpore visões em outras páginas com os trechos do diálogo Share.
+- **React com Vite, ou Astro:** use o [plugin para Vite](/pt-br/tooling/vite-plugin/).
+  Os diagramas se atualizam enquanto você edita o modelo.
+- **React sem Vite, ou Next.js:** use os [componentes React gerados](/pt-br/tooling/react/).
+  Renderize-os no cliente.
+  Outra opção para Next.js é o [plugin para Vite em modo biblioteca](/pt-br/tooling/vite-plugin/#com-nextjs).
+- **Você monta ou altera o modelo em código:** use os componentes de [`likec4/react`](/pt-br/tooling/react/) e passe o seu próprio modelo.
+- **Você quer cuidar dos estilos por conta própria:** use `@likec4/diagram` em vez de `likec4`. Veja [React](/pt-br/tooling/react/).
+- **MkDocs:** use o [plugin para MkDocs](/pt-br/tooling/community/mkdocs-plugin/).
+
+## Configurações compartilhadas
+
+As duas são experimentais.
+
+- A [configuração da aplicação](/tooling/app-config/) guarda as opções da CLI em um único arquivo.
+  `likec4 build`, `likec4 gen react` e `likec4 gen webcomponent` a leem.
+  O plugin para Vite não a lê: passe as opções para o plugin.
+- A [personalização da UI](/tooling/customization/) substitui ou envolve partes da UI do diagrama com seus componentes React.
+  `likec4 build`, `likec4 gen react` e `likec4 gen webcomponent` a recebem por `--customization` ou pela configuração da aplicação, o plugin para Vite pela opção `customization`.
+  Com `likec4/react`, use `CustomizationProvider`.

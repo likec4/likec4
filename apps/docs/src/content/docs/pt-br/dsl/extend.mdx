@@ -3,7 +3,7 @@ title: Estendendo o modelo
 description: Como estender o modelo com elementos, relacionamentos e propriedades adicionais definidos em outros arquivos
 sidebar: 
   label: Estendendo o modelo
-  order: 6
+  order: 7
 ---
 
 import { Aside, FileTree, TabItem, Tabs } from '@astrojs/starlight/components';
@@ -128,7 +128,7 @@ Você pode estender um elemento adicionando tags, links e metadados:
 model {
   extend cloud {
     // Add tags
-    #additional-tag, #another-tag
+    #additional-tag #another-tag
 
     // Add metadata
     metadata {
@@ -143,7 +143,8 @@ model {
 
 #### Combinação de metadados
 
-Ao estender elementos com metadados, chaves duplicadas do elemento original e da extensão são combinadas em arrays:
+Ao estender elementos com metadados, chaves duplicadas do elemento original e da extensão são combinadas em arrays.
+Isso vale para `extend` no bloco `model`. Um `extend` dentro de um [diff](/dsl/diff/) sobrescreve as chaves de metadados.
 
 ```likec4
 model {
@@ -251,7 +252,7 @@ model {
 
 ## Estender relacionamento
 
-De forma semelhante à extensão de elementos, você pode estender relacionamentos para adicionar metadados, tags e links a partir de arquivos separados.
+De forma semelhante à extensão de elementos, você pode estender relacionamentos para adicionar tags, links e metadados a partir de arquivos separados.
 
 <Aside type='caution'>
 **Limitação do modelo de deployment**: atualmente, a extensão de relacionamentos é suportada apenas no modelo lógico.  
@@ -261,6 +262,7 @@ Relacionamentos do modelo de deployment não podem ser estendidos neste momento.
 Os relacionamentos são identificados de forma única por:
 - elemento de origem;
 - elemento de destino;
+- direção (`->` ou `<->`);
 - tipo do relacionamento (se especificado);
 - título (se especificado).
 
@@ -269,6 +271,7 @@ Os relacionamentos são identificados de forma única por:
 specification {
   element component
   relationship sync
+  tag critical
 }
 
 model {
@@ -286,6 +289,11 @@ model {
 model {
   // Extend the untyped relation
   extend frontend -> api "Makes requests" {
+    // Add tags
+    #critical
+    // Add links
+    link https://grafana.example.com/d/api-latency 'Latency dashboard'
+    // Add metadata
     metadata {
       latency_p95 '150ms'
       rate_limit '1000req/s'

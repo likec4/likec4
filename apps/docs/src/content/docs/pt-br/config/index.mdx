@@ -3,14 +3,14 @@ title: Configuração do projeto
 description: Saiba como configurar e personalizar seu projeto
 sidebar: 
   label: Configuração do projeto
-  order: 13
+  order: 2
 ---
 
-import { Card, FileTree, Aside, LinkCard, LinkButton } from '@astrojs/starlight/components';
-import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
+import { FileTree } from '@astrojs/starlight/components';
 
-Para definir um projeto, crie um arquivo `likec4.config.json` na pasta.  
-Todos os arquivos dessa pasta (e de suas subpastas) farão parte do projeto:
+Um projeto é um conjunto de arquivos-fonte do LikeC4 (`.c4`, `.likec4`, `.like-c4`) com seu próprio modelo e suas próprias visões.  
+Para definir um projeto, crie um arquivo de configuração em uma pasta.  
+Todos os arquivos-fonte dessa pasta e de suas subpastas fazem parte do projeto:
 
 <FileTree>
 - externals
@@ -24,51 +24,90 @@ Todos os arquivos dessa pasta (e de suas subpastas) farão parte do projeto:
 - **likec4.config.json**
 </FileTree>
 
-## Configuração
+O arquivo de configuração é opcional.  
+Sem ele, todos os arquivos-fonte do workspace pertencem a um único projeto chamado `default`, com as configurações padrão.  
+Adicione um arquivo de configuração para dar um nome ao projeto, alterar as opções abaixo ou dividir o modelo em [vários projetos](/pt-br/config/multi-projects/).
 
-O arquivo `likec4.config.json` deve conter o **nome** do projeto.
+## Arquivo de configuração
 
-```jsonc
+O LikeC4 procura estes nomes de arquivo:
+
+- `likec4.config.json`, `.likec4.config.json` ou `.likec4rc`: configuração JSON.
+  O LikeC4 interpreta esses arquivos como JSON5, então comentários e vírgulas finais são permitidos.
+- `likec4.config.ts`, `.mts`, `.cts`, `.js`, `.mjs` ou `.cjs`: veja [Configuração TypeScript](#configuração-typescript).
+
+Use um único arquivo de configuração por pasta.  
+Para escolher entre JSON e TypeScript, veja [Arquivos de configuração](/pt-br/config/files/#configuração-do-projeto-em-json-ou-typescript).
+
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "project-name",  // required
-  "title": "Project Title", // optional
-  "metadata": {             // optional
+  "name": "project-name",
+  "title": "Project Title",         // optional
+  "contactPerson": "Jane Doe",      // optional
+  "metadata": {                     // optional
     "owner": "platform-team",
     "domain": "payments"
   }
 }
 ```
 
-O nome deve ser único se você usar [vários projetos](/pt-br/dsl/config/multi-projects).
-
 Use `metadata` para armazenar dados arbitrários de chave-valor no nível do projeto que possam ser consumidos por ferramentas.
 
-:::note
-Você pode usar estes nomes para o arquivo de configuração:
-- `.likec4rc`
-- `.likec4.config.json`
-- `likec4.config.json`
+### Nome do projeto
 
-O LikeC4 interpreta qualquer um desses arquivos como JSON5.
+`name` identifica o projeto. Outros projetos o usam para [importar elementos](/pt-br/config/multi-projects/#importar-elementos).
 
-Você também pode usar estes nomes:
-- `likec4.config.js`
-- `likec4.config.mjs`
-- `likec4.config.ts`
-- `likec4.config.mts`
+- Ele deve ser único no workspace.
+- Ele não pode ser `default`: esse nome é reservado para arquivos fora de qualquer projeto.
+- Ele não pode conter `.`, `@` ou `#`. Use letras, dígitos, `_` e `-`.
 
-Veja [Configuração programática](/pt-br/dsl/config/programmatic) para mais informações.
-:::
+Se você omitir `name`, o LikeC4 usa o nome da pasta.  
+O JSON schema ainda marca `name` como obrigatório, então defina-o explicitamente.
+
+## Configuração TypeScript
+
+Você pode escrever a configuração em TypeScript ou JavaScript.  
+Importe `defineConfig` de `likec4/config` e exporte o resultado como padrão:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  exclude: ['**/node_modules/**', '**/.cache/**'],
+  include: {
+    paths: ['../shared'],
+  },
+  imageAliases: {
+    '@': './images',
+  },
+})
+```
+
+O arquivo pode se chamar `likec4.config.ts`, `likec4.config.mts`, `likec4.config.cts`, `likec4.config.js`, `likec4.config.mjs` ou `likec4.config.cjs`.  
+O LikeC4 carrega o arquivo diretamente, sem etapa de build.  
+Ele fornece `likec4/config` por conta própria, então você não precisa instalar `likec4` para carregar o arquivo. Instale-o para ter verificação de tipos no editor.  
+O pacote menor `@likec4/config` exporta as mesmas funções auxiliares.
+
+Uma configuração TypeScript aceita todas as opções desta página, incluindo [`styles`](#personalização-de-estilos).  
+Escolha-a quando precisar de código:
+
+- [geradores personalizados](/pt-br/tooling/code-generation/custom/), que são funções e não podem ser escritos em JSON;
+- estilos compartilhados como módulo ou pacote (`defineStyle`, `defineTheme`, `defineThemeColor`), ou valores calculados no código.
+
+`extends` funciona apenas em configurações JSON, veja [abaixo](#estender-estilos).
 
 ## Estender estilos
 
-Se quiser compartilhar estilos entre vários projetos, você pode usar `extends` em **configurações JSON**.
+Para compartilhar estilos entre vários projetos, use `extends` em uma **configuração JSON**.
 `extends` pode ser uma string ou um array de strings.
 Cada caminho é resolvido em relação ao arquivo de configuração que o declara, e `extends` pode ser recursivo.
 O LikeC4 combina apenas a seção `styles` (na ordem); todos os demais campos vêm da configuração raiz.
 
-```jsonc
+```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -85,6 +124,35 @@ O LikeC4 combina apenas a seção `styles` (na ordem); todos os demais campos v�
   }
 }
 ```
+
+Uma configuração TypeScript ignora `extends`.
+Importe os estilos compartilhados.
+Defina-os com `defineStyle` em um arquivo ou pacote separado:
+
+```ts title="@your-org/likec4-theme"
+import { defineStyle } from 'likec4/config'
+
+export default defineStyle({
+  theme: {
+    colors: {
+      primary: '#FF6B6B',
+    },
+  },
+})
+```
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+import styles from '@your-org/likec4-theme'
+
+export default defineConfig({
+  name: 'my-project',
+  styles,
+})
+```
+
+`defineTheme` e `defineThemeColor` ajudam a definir partes dos estilos da mesma forma.
 
 ## Incluir diretórios adicionais
 
@@ -118,7 +186,7 @@ Isso é útil para compartilhar especificações, estilos comuns ou outros arqui
 </FileTree>
 
 Os caminhos são relativos à pasta do projeto (a pasta que contém o arquivo de configuração).  
-O LikeC4 percorre recursivamente os diretórios incluídos em busca de arquivos `.c4`.
+O LikeC4 percorre recursivamente os diretórios incluídos em busca de arquivos-fonte.
 
 Você também pode configurar o comportamento da varredura:
 
@@ -135,14 +203,17 @@ Você também pode configurar o comportamento da varredura:
 ```
 
 - **`paths`** - Array de caminhos relativos de diretórios (obrigatório)
-- **`maxDepth`** - Profundidade máxima de diretórios a percorrer (padrão: 3, intervalo: 1-20)
-- **`fileThreshold`** - Emite um aviso quando mais arquivos do que esse limite forem carregados (padrão: 30)
+- **`maxDepth`** - Profundidade máxima de diretórios a percorrer (padrão: 3, intervalo: 1-20).
+  Use para limitar a navegação em diretórios muito profundos.
+- **`fileThreshold`** - Emite um aviso quando mais arquivos do que esse limite forem carregados (padrão: 30, intervalo: 1-10000).
+  Use para detectar diretórios grandes incluídos por engano.
 
 :::note
 Os caminhos de inclusão devem ser relativos. Caminhos absolutos (como `/usr/share`), letras de unidade (como `C:\`) e URLs não são permitidos.
 :::
 
-Para mais detalhes sobre o compartilhamento de arquivos entre projetos, consulte [Vários projetos](/pt-br/dsl/config/multi-projects/#compartilhar-especificação).
+Os padrões de `exclude` do projeto também se aplicam aos diretórios incluídos.  
+Para compartilhar arquivos entre projetos dessa forma, consulte [Vários projetos](/pt-br/config/multi-projects/#compartilhar-especificação).
 
 ## Excluir arquivos
 
@@ -164,7 +235,7 @@ O padrão de exclusão é o mesmo usado pelo [picomatch](https://github.com/micr
 
 ## Inferir tecnologia a partir do ícone
 
-Por padrão, o LikeC4 deriva automaticamente um rótulo `technology` legível a partir dos nomes dos ícones incluídos (`aws:`, `azure:`, `gcp:`, `tech:`) quando a tecnologia não é definida explicitamente no elemento ou em seu tipo. Os ícones genéricos `bootstrap:` e `md:` são excluídos.
+Por padrão, o LikeC4 deriva automaticamente um rótulo `technology` legível a partir dos nomes dos ícones incluídos (`aws:`, `azure:`, `gcp:`, `tech:`) quando a tecnologia não é definida explicitamente no elemento ou em seu tipo.
 
 Por exemplo, um elemento com `icon tech:apache-flink` recebe a tecnologia **"Apache Flink"**, e `icon aws:simple-storage-service` recebe **"Simple Storage Service"**. Os ícones genéricos `bootstrap:` e `md:` são excluídos.
 
@@ -195,6 +266,7 @@ Para habilitar esse comportamento:
 ## Página inicial
 
 Configure o que é exibido ao acessar a URL raiz de um site estático gerado.
+Use apenas uma das opções `redirect`, `include` ou `exclude`.
 
 ### Redirecionar para a visão index
 
@@ -244,7 +316,7 @@ Configure quais formatos de exportação ficam disponíveis na aplicação web g
 Quando `webapp.exportFormats` é omitido, todas as exportações do webapp permanecem habilitadas.
 Use um array vazio para remover o botão de exportação.
 
-```jsonc
+```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -264,8 +336,9 @@ Em webapps com vários projetos, cada projeto usa sua própria lista de formatos
 Configure o escopo inicial do navegador de relacionamentos.
 Os valores permitidos são `global` e `view`. O padrão é `view`.
 
-```jsonc
+```json
 {
+  "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
   "webapp": {
     "relationshipsBrowser": {
@@ -278,11 +351,27 @@ Os valores permitidos são `global` e `view`. O padrão é `view`.
 Uma preferência salva pelo usuário tem precedência sobre `defaultScope`.
 O parâmetro de URL `relationshipsScope` tem precedência tanto sobre a preferência salva quanto sobre `defaultScope`.
 
+## Layouts manuais
+
+Quando você salva um layout manual de uma visão, o LikeC4 o armazena em um arquivo `<view-id>.likec4.snap`.  
+Por padrão, esses arquivos ficam na pasta `.likec4` do projeto.  
+Use `manualLayouts.outDir` para alterar a pasta, relativa à pasta do projeto:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "manualLayouts": {
+    "outDir": "layouts"
+  }
+}
+```
+
 ## Aliases de imagens
 
 Ao usar imagens locais no seu modelo LikeC4, você pode criar aliases para as pastas onde suas imagens estão armazenadas, tornando as referências mais legíveis e os arquivos mais portáveis.
 
-Use `likec4.config.json` para adicionar um campo `imageAliases`:
+Adicione um campo `imageAliases` à configuração:
 
 ```json
 {
@@ -335,44 +424,31 @@ model {
 </FileTree>
 
 :::note
-No exemplo acima, `externals.c4` é um arquivo aninhado, mas os aliases funcionam com base na raiz do projeto.
+Os caminhos dos aliases são relativos à pasta do projeto, não ao arquivo-fonte. No exemplo acima, `externals/externals.c4` usa a mesma pasta `@` que `amazon.c4`.
 :::
 
 ### Regras de nomenclatura
 
-Ao usar aliases de imagens, considere estas regras:
+- Um alias começa com `@`, seguido de letras, dígitos, `_` ou `-`.
+- O caminho deve ser relativo à pasta do projeto. Caminhos absolutos e URLs não são permitidos.
 
-- Aliases devem começar com `@` e podem conter letras, números e underscores.
-- O alias deve ser único dentro do projeto.
-- O alias pode apontar para um caminho relativo ou absoluto.
+### Alias padrão
 
-### Padrões
-
-Quando nenhum arquivo de configuração do LikeC4 é encontrado, ou quando nenhum campo `imageAliases` é encontrado, o LikeC4 usa os seguintes valores padrão:
-
-```json
-{
-  "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "project-name",
-  "imageAliases": {
-    "@": "./images",
-  }
-}
-```
-
-Basta sobrescrever `@` para alterar o local padrão.
+`@` aponta para `./images`, a menos que você o sobrescreva.  
+Para alterar o local padrão, defina `@`:
 
 ```json
 {
   "imageAliases": {
-    "@": "./my-images",
+    "@": "./my-images"
   }
 }
 ```
 
 ## Personalização de estilos
 
-O LikeC4 oferece recursos avançados de personalização de estilos.  
+Sobrescreva o tema e os estilos padrão do projeto.  
+As mesmas opções de `styles` funcionam em uma [configuração TypeScript](#configuração-typescript).
 
 ### Sobrescritas do tema
 
@@ -381,7 +457,7 @@ Cada definição pode ser um valor CSS ou um objeto detalhado que especifica a c
 
 Exemplo de definição simples de cor:
 
-```jsonc
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -398,7 +474,7 @@ Exemplo de definição simples de cor:
 
 Exemplo de definição detalhada de cor:
 
-```jsonc
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -430,7 +506,7 @@ Exemplo de definição detalhada de cor:
 
 Você pode sobrescrever os tamanhos usados no LikeC4:
 
-```jsonc
+```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -458,7 +534,7 @@ Esses valores serão aplicados a todos os elementos e relacionamentos, a menos q
 
 O roteamento padrão das visões pode ser configurado com `styles.defaults.view.routing`.
 
-```jsonc
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -494,6 +570,6 @@ O roteamento padrão das visões pode ser configurado com `styles.defaults.view.
 }
 ```
 
-A propriedade `routing` da visão ou o parâmetro de `autoLayout` tem precedência sobre `styles.defaults.view.routing`. Veja [Roteamento das conexões](/pt-br/dsl/views/predicates/#roteamento-das-conexões) para conhecer a ordem de precedência e as limitações.
+A propriedade `routing` da visão ou o parâmetro de `autoLayout` tem precedência sobre `styles.defaults.view.routing`. Veja [Roteamento das conexões](/pt-br/dsl/views/layout/#roteamento-das-conexões) para conhecer a ordem de precedência e as limitações.
 
-<AdvancedCustomizationTip />
+Para alterar componentes da interface, e não apenas cores e tamanhos, veja [Customização da interface](/tooling/customization/).

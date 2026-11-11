@@ -15,6 +15,28 @@ export default defineConfig({
   output: 'static',
   site: 'https://likec4.dev',
 
+  // Moved pages: keep old URLs working
+  redirects: {
+    '/dsl/notations/': '/dsl/views/notations/',
+    '/pt-br/dsl/notations/': '/pt-br/dsl/views/notations/',
+    '/dsl/config/': '/config/',
+    '/pt-br/dsl/config/': '/pt-br/config/',
+    '/dsl/config/multi-projects/': '/config/multi-projects/',
+    '/pt-br/dsl/config/multi-projects/': '/pt-br/config/multi-projects/',
+    '/dsl/config/programmatic/': '/config/',
+    '/pt-br/dsl/config/programmatic/': '/pt-br/config/',
+    '/dsl/config/app-config/': '/tooling/app-config/',
+    '/dsl/config/customization/': '/tooling/customization/',
+    '/tooling/code-generation/webcomponent/': '/tooling/web-components/',
+    '/pt-br/tooling/code-generation/webcomponent/': '/pt-br/tooling/web-components/',
+    '/tooling/code-generation/react/': '/tooling/react/',
+    '/pt-br/tooling/code-generation/react/': '/pt-br/tooling/react/',
+    '/guides/static-website/': '/guides/publish/',
+    '/pt-br/guides/static-website/': '/pt-br/guides/publish/',
+    '/guides/deploy-github-pages/': '/guides/publish/',
+    '/pt-br/guides/deploy-github-pages/': '/pt-br/guides/publish/',
+  },
+
   integrations: [
     react(),
     starlight({
@@ -67,6 +89,7 @@ export default defineConfig({
               label: 'Tutorial',
               slug: 'tutorial',
             },
+            { slug: 'tooling/editors' },
           ],
         },
         {
@@ -74,19 +97,68 @@ export default defineConfig({
           items: [{ autogenerate: { directory: 'dsl' } }],
         },
         {
-          label: 'Showcases',
-          translations: { 'pt-BR': 'Exemplos' },
-          items: [{ autogenerate: { directory: 'showcases' } }],
+          label: 'Project setup',
+          translations: { 'pt-BR': 'Configuração do projeto' },
+          items: [{ autogenerate: { directory: 'config' } }],
         },
         {
           label: 'Tooling',
           translations: { 'pt-BR': 'Ferramentas' },
-          items: [{ autogenerate: { directory: 'tooling' } }],
+          // Grouped by what the reader wants to do, URLs stay under /tooling/
+          items: [
+            {
+              label: 'Command line and CI',
+              translations: { 'pt-BR': 'Linha de comando e CI' },
+              items: [
+                { slug: 'tooling/cli' },
+                { slug: 'tooling/docker' },
+                { slug: 'tooling/github' },
+                { slug: 'tooling/drawio' },
+              ],
+            },
+            {
+              label: 'Embed in your app',
+              translations: { 'pt-BR': 'Incorporar na sua aplicação' },
+              items: [
+                { slug: 'tooling/embed' },
+                { slug: 'tooling/vite-plugin' },
+                { slug: 'tooling/react' },
+                { slug: 'tooling/web-components' },
+                { slug: 'tooling/app-config' },
+                { slug: 'tooling/customization' },
+              ],
+            },
+            {
+              label: 'Work with the model in code',
+              translations: { 'pt-BR': 'Trabalhar com o modelo no código' },
+              items: [
+                { slug: 'tooling/model-api' },
+                { slug: 'tooling/model-api/reference' },
+                { slug: 'tooling/model-api/builder' },
+                { slug: 'tooling/model-api/edit' },
+                { slug: 'tooling/code-generation/model' },
+                { slug: 'tooling/code-generation/dsl' },
+                { slug: 'tooling/code-generation/custom' },
+              ],
+            },
+            { slug: 'tooling/ai-tools' },
+            {
+              label: 'Community',
+              translations: { 'pt-BR': 'Comunidade' },
+              collapsed: true,
+              items: [{ autogenerate: { directory: 'tooling/Community' } }],
+            },
+          ],
         },
         {
           label: 'Guides',
           translations: { 'pt-BR': 'Guias' },
-          items: [{ autogenerate: { directory: 'guides', collapsed: true } }],
+          items: [{ autogenerate: { directory: 'guides' } }],
+        },
+        {
+          label: 'Showcases',
+          translations: { 'pt-BR': 'Exemplos' },
+          items: [{ autogenerate: { directory: 'showcases' } }],
         },
         {
           label: 'Changelog',

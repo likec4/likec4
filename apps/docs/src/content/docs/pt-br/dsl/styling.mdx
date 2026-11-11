@@ -3,7 +3,7 @@ title: Estilização
 description: Como personalizar os estilos dos seus diagramas para combinar com sua marca e diretrizes.
 sidebar: 
   label: Estilização
-  order: 7
+  order: 6
 ---
 
 import { Aside, LinkCard } from '@astrojs/starlight/components';
@@ -16,7 +16,7 @@ O LikeC4 oferece recursos avançados de personalização. Você pode alterar cor
 Há várias formas de estilizar elementos:
 - Estilizar todos os elementos de um tipo em `specification`
 - Estilizar um elemento específico em `model` ou `deployment`
-- Sobrescrever estilos em uma `view` (veja mais na [próxima seção](/pt-br/dsl/views/predicates/#predicados-de-estilo))
+- Sobrescrever estilos em uma `view` (veja mais em [Estilos nas visões](/pt-br/dsl/views/styles/))
 
 ### Elementos de um tipo
 
@@ -68,7 +68,7 @@ model {
 
 ### Por visão
 
-A [próxima seção](/pt-br/dsl/views/predicates/#predicados-de-estilo) explica como personalizar elementos em cada visão.
+[Estilos nas visões](/pt-br/dsl/views/styles/) explica como personalizar elementos em cada visão.
 
 ## Propriedades de estilo
 
@@ -381,7 +381,7 @@ Valores aceitos: `left` (padrão), `right`, `top`, `bottom`.
 
 ### Ícones com aliases
 
-Com o prefixo `@`, você pode usar pastas com aliases (saiba mais em [configuração](/pt-br/dsl/config/#aliases-de-imagens)):
+Com o prefixo `@`, você pode usar pastas com aliases (saiba mais em [configuração](/pt-br/config/#aliases-de-imagens)):
 
 ```likec4 copy
 model {
@@ -526,5 +526,5 @@ A configuração do projeto explica como sobrescrever os estilos padrão.
 <LinkCard
   title="Configuração do projeto"
   description="Saiba como personalizar estilos no seu projeto"
-  href="/pt-br/dsl/config/#personalização-de-estilos"
+  href="/pt-br/config/#personalização-de-estilos"
 />

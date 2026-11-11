@@ -113,7 +113,7 @@ The input has five optional parts:
 
 `elements` and `relations` are arrays or records. Parts that are missing or empty are not printed, and `generate({})` returns an empty string.
 
-The shape is the one of a parsed LikeC4 model, so the data of the [Model Builder](/tooling/model-api/#model-builder) and of a loaded workspace fit as they are:
+The shape is the one of a parsed LikeC4 model, so the data of the [Model Builder](/tooling/model-api/builder/) and of a loaded workspace fit as they are:
 
 ```ts
 import { Builder } from 'likec4/model/builder'
@@ -154,7 +154,7 @@ model {
 }
 ```
 
-For a loaded workspace there is a shortcut, [`likec4.toDSL()`](/tooling/model-api/#likec4todsl-and-writedsl--render-dsl-back): it calls `generate` with the parsed model.
+For a loaded workspace there is a shortcut, [`likec4.toDSL()`](/tooling/model-api/edit/#likec4todsl-and-writedsl--render-dsl-back): it calls `generate` with the parsed model.
 
 ### Indentation
 
@@ -544,4 +544,4 @@ The generator prints what is in the data, and model data is not the source files
 - **Empty lines between blocks are indented.** They contain the indentation of their block; trim trailing whitespace if it matters to you.
 
 So do not use the generator to reformat or to edit existing files: read a file, print it, and you get the same model in a different text.
-To reformat sources in place, use [`likec4 format`](/tooling/cli/#format); to apply changes to them, use the [model edits](/tooling/model-api/#model-diffs-and-safe-delete) of the API.
+To reformat sources in place, use [`likec4 format`](/tooling/cli/#format); to apply changes to them, use the [model edits](/tooling/model-api/edit/#model-diffs-and-safe-delete) of the API.

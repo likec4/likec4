@@ -1,0 +1,132 @@
+---
+title: Web Components
+description: Renderize visões LikeC4 como elementos HTML personalizados em qualquer página ou framework, com um script gerado pela CLI ou com o plugin Vite.
+head:
+  - tag: title
+    content: Web Components | LikeC4
+sidebar:
+  label: Web Components
+  order: 9
+tableOfContents:
+  # minHeadingLevel: 3
+  maxHeadingLevel: 6    
+---
+
+import { PackageManagers } from 'starlight-package-managers'
+
+<p style={{display: 'flex', gap: '10px'}}>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
+</p>
+
+Um Web Component renderiza uma visão LikeC4 como um elemento HTML personalizado, como `<likec4-view view-id="index">`.
+Ele funciona em qualquer página HTML ou framework, sem código React.
+Você pode obtê-lo pela CLI, que gera um script independente, ou pelo [plugin Vite](/pt-br/tooling/vite-plugin/), se o seu site for construído com Vite.
+
+## Com a CLI
+
+### Instalação
+
+Adicione [`likec4`](https://www.npmjs.com/package/likec4) às dependências de desenvolvimento:
+
+<PackageManagers
+    pkg="likec4"
+    dev
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
+
+O comando precisa de `react` e `react-dom` para gerar o script e oferece instalá-los se estiverem ausentes.
+O script gerado inclui tudo, então a página não precisa de mais nada em tempo de execução.
+
+### Gerar o script
+
+Gere um bundle JavaScript contendo o Web Component:
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="gen webcomponent -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+<br />   
+
+Utilize-o assim:
+
+```html
+<script src="./src/likec4-webcomponent.js"></script>
+<likec4-view view-id="index"></likec4-view>
+```
+
+Por padrão, a CLI gera um Web Component chamado `likec4-view`.  
+Você pode alterar o prefixo `likec4` com a opção `-w, --webcomponent-prefix`.
+
+Por exemplo:
+
+<PackageManagers
+   type="dlx"
+   pkg="likec4"
+   args="gen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js"
+   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+   frame="none"
+   />
+
+E no HTML:
+
+```html
+<custom-c4-view view-id="index" browser="true" dynamic-variant="sequence"></custom-c4-view>
+```
+
+Com `--customization <arquivo>`, a [personalização da interface](/tooling/customization/) é incluída nos Web Components gerados (experimental).
+O comando também lê a [configuração da aplicação](/tooling/app-config/) (`webcomponentPrefix`, `customization`); use `--app-config <arquivo>` para indicá-la, ou `--no-app-config` para ignorá-la.
+
+:::note
+O comando [build](/pt-br/tooling/cli/#gerar-um-site-estático) da CLI sempre gera JavaScript com Web Components.  
+Confira o botão `Share` na parte superior <a href="https://template.likec4.dev/view/index" target="_blank">deste exemplo</a>.
+:::
+
+## Com o plugin Vite
+
+Se o seu site for construído com Vite, o [plugin LikeC4 para Vite](/pt-br/tooling/vite-plugin/) fornece Web Components
+pelo módulo virtual `likec4:webcomponents/<projeto>`, sem etapa de geração e com HMR.
+Importe `defineWebcomponent` desse módulo e registre o elemento personalizado com o nome que preferir:
+
+```ts
+// src/main.ts
+import { defineWebcomponent } from 'likec4:webcomponents/project-a'
+
+defineWebcomponent('likec4-view-project-a')
+```
+
+Depois, utilize-o no HTML:
+
+```html
+<likec4-view-project-a
+  view-id="index"
+  browser="true"
+  dynamic-variant="sequence"
+  color-scheme="dark">
+</likec4-view-project-a>
+```
+
+- O módulo é sempre específico de um projeto: `project-a` deve corresponder a um projeto do workspace LikeC4.
+  Um workspace sem [configuração de projeto](/pt-br/config/) tem um único projeto, com o ID `default`.
+- O nome do elemento é o que você passa, então a opção `webcomponentPrefix` do plugin não se aplica aqui.
+  Ele deve seguir as [regras de nomenclatura de elementos personalizados](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names),
+  incluindo pelo menos um hífen.
+- O elemento renderiza o `LikeC4View` de `likec4:react/<projeto>`, então a opção `customization` do plugin se aplica a ele.
+- Com TypeScript, adicione as [referências de tipos](/pt-br/tooling/vite-plugin/#adicionar-referências-de-tipos) do plugin.
+
+## Atributos
+
+Os dois tipos de Web Components oferecem os mesmos atributos:
+
+| Atributo          | Descrição                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `view-id`         | ID da visão (padrão: `index`)                                                                        |
+| `browser`         | Indica se a janela de navegação entre visões deve ser exibida (padrão: `true`)                                                  |
+| `dynamic-variant` | Define a renderização da visão dinâmica<br />Valores possíveis: `diagram` ou `sequence` (padrão: `diagram`) |
+| `color-scheme`    | Força o esquema de cores claro ou escuro<br />Valores possíveis: `light` ou `dark` (padrão: acompanha o sistema)    |

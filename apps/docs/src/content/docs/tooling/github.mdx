@@ -14,16 +14,16 @@ This action wraps [LikeC4 CLI](/tooling/cli) as a GitHub Action.
 <Aside type='tip'>
   GitHub repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
 
-  Also check [Deploying to GitHub Pages guide](/guides/deploy-github-pages/) for more details.
+  Also check the [Publish your diagrams guide](/guides/publish/#deploy-to-github-pages) for a complete workflow.
 </Aside>
 
-### Usage
+## Usage
 
-#### Build website
+### Build website
 
 ```yaml
 steps:
-  - uses: actions/checkout@v5
+  - uses: actions/checkout@v7
 
   - name: ⚙️ build
     uses: likec4/actions@v1
@@ -34,14 +34,15 @@ steps:
       base: /baseurl/
 
   - name: upload artifacts
-    uses: actions/upload-artifact@v4
+    uses: actions/upload-artifact@v7
     with:
       name: likec4
       path: dist
 ```
 
+The action also copies `index.html` to `404.html` in the output directory, for single-page app routing on GitHub Pages.
 
-#### Export diagrams to PNG
+### Export diagrams to PNG
 
 ```yaml
 steps:
@@ -54,7 +55,7 @@ steps:
       use-dot-bin: 'true'
 ```
 
-#### Code generation
+### Code generation
 
 ```yaml
 steps:
@@ -65,17 +66,20 @@ steps:
       output: __generated__/likec4.jsx
 ```
 
-### Inputs
+## Inputs
 
-| Name          | Description                                                                                           |
-| ------------- | ----------------------------------------------------------------------------------------------------- |
-| `action`      | Action to perform (`build` / `export` / `codegen`)                                                    |
-| `export`      | Can be used instead of `action: export`                                                               |
-| `codegen`     | Can be used instead of `action: codegen`, same values as in [CLI](/tooling/cli/) |
-| `path`        | Path in repository to likec4 sources, root otherwise                                                  |
-| `output`      | Output directory/file                                                                                 |
-| `base`        | Custom baseUrl for website                                                                            |
-| `use-dot-bin` | if `'true'` will use `dot` binary of graphviz                                                         |
+| Name                  | Description                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `action`              | Action to perform: `build`, `export` or `codegen`                                                            |
+| `export`              | Can be used instead of `action: export`; `png` (default) or `json`                                           |
+| `codegen`             | Can be used instead of `action: codegen`; `react` (default), `webcomponent`, `ts`, `dot`, `d2`, `mermaid` or `mmd` (see [`likec4 gen`](/tooling/cli/#generate-likec4-gen)) |
+| `path`                | Path in repository to likec4 sources, root otherwise                                                         |
+| `output`              | Output directory/file                                                                                        |
+| `base`                | Custom base URL for the website                                                                              |
+| `use-dot-bin`         | If `'true'`, uses the `dot` binary of Graphviz                                                               |
+| `use-hash-history`    | If `'true'`, the website uses hash-based navigation, e.g. `/#/view` instead of `/view`                        |
+| `webcomponent-prefix` | Prefix for the generated web components (`build` and `codegen: webcomponent`)                                |
+| `likec4-version`      | Version of `likec4` to run, e.g. `latest` (default is the version bundled with the action)                   |
 
 > All inputs are optional.  
-> By default CLI builds a website to `dist` directory.
+> By default the action builds a website to the `dist` directory.

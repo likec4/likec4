@@ -6,7 +6,7 @@ head:
     content: UI customization | LikeC4
 sidebar:
   label: UI customization
-  order: 17
+  order: 5.5
   badge:
     text: Experimental
     variant: caution
@@ -39,14 +39,18 @@ export default defineCustomComponents(({ wrap }) => ({
 }))
 ```
 
+This page is about UI customization with React components.
+To change colors, sizes and other styles without code, use [style customization](/config/#styles-customization) (`styles` in the project config) instead.
+To see how the customization file relates to the other config files, read [Configuration files](/config/files/).
+
 ## Customization file
 
 The file must default-export the result of `defineCustomComponents` from `likec4/react`.  
-There are three ways to point LikeC4 to it:
+The file can have any name, because LikeC4 does not look for it. There are three ways to point LikeC4 to it:
 
 | Where                                        | How                                         | The path is relative to     |
 | -------------------------------------------- | ------------------------------------------- | --------------------------- |
-| [App config](/dsl/config/app-config/)           | `customization: './likec4.customization.tsx'` | the config file             |
+| [App config](/tooling/app-config/)           | `customization: './likec4.customization.tsx'` | the config file             |
 | [CLI](/tooling/cli/)                         | `--customization ./likec4.customization.tsx` | the current directory       |
 | [Vite plugin](/tooling/vite-plugin/#options) | `customization` option                      | the root of the Vite project |
 
@@ -55,7 +59,7 @@ It is an error if the file does not exist.
 With the CLI, the overrides are applied by:
 
 - `likec4 start` and `likec4 build`: to the application
-- `likec4 export png` and `likec4 export jpg`: to the exported images (not with `--server-url`, see [App config](/dsl/config/app-config/#commands))
+- `likec4 export png` and `likec4 export jpg`: to the exported images (not with `--server-url`, see [App config](/tooling/app-config/#commands))
 - `likec4 gen react` and `likec4 gen webcomponent`: to the generated components
 
 With the Vite plugin, the overrides are applied to the components from `likec4:react`.
@@ -235,7 +239,7 @@ The complete project, with all the shapes, is in [examples/customization-roughjs
     })
     ```
 
-4. Point LikeC4 to the file in the [app config](/dsl/config/app-config/):
+4. Point LikeC4 to the file in the [app config](/tooling/app-config/):
 
     ```ts
     // likec4.app.config.ts

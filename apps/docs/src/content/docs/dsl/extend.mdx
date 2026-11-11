@@ -3,7 +3,7 @@ title: Extending model
 description: How to extend the model with additional elements, relations and properties from other files
 sidebar: 
   label: Extending model
-  order: 6
+  order: 7
 ---
 
 import { Aside, FileTree, TabItem, Tabs } from '@astrojs/starlight/components';
@@ -131,7 +131,7 @@ You can extend element with additional tags, links and metadata:
 model {
   extend cloud {
     // Add tags
-    #additional-tag, #another-tag
+    #additional-tag #another-tag
 
     // Add metadata
     metadata {
@@ -144,9 +144,10 @@ model {
 }
 ```
 
-#### Metadata Merging
+#### Metadata merging
 
-When extending elements with metadata, duplicate keys from both the original element and the extension are merged into arrays:
+When extending elements with metadata, duplicate keys from both the original element and the extension are merged into arrays.
+This applies to `extend` in the `model` block. An `extend` inside a [diff](/dsl/diff/) overrides metadata keys instead.
 
 ```likec4
 model {
@@ -174,8 +175,8 @@ model {
 {
   version: '1.0.0',
   tags: ['backend', 'microservice'],     // Merged and kept as array
-   regions: ['us-east-1', 'eu-west-1'],   // Merged and kept as array
-   owner: 'platform-team'
+  regions: ['us-east-1', 'eu-west-1'],   // Merged and kept as array
+  owner: 'platform-team'
 }
 ```
 
@@ -252,9 +253,9 @@ model {
 }
 ```
 
-## Extend Relationship
+## Extend relationship
 
-Similar to extending elements, you can extend relationships to add metadata, tags, and links from separate files.
+Similar to extending elements, you can extend relationships to add tags, links and metadata from separate files.
 
 <Aside type='caution'>
 **Deployment model limitation**: Extending relationships is currently only supported for the logical model.  
@@ -264,6 +265,7 @@ Deployment model relationships cannot be extended at this time.
 Relations are uniquely identified by:
 - Source element
 - Target element
+- Direction (`->` or `<->`)
 - Relationship kind (if specified)
 - Title (if specified)
 
@@ -272,6 +274,7 @@ Relations are uniquely identified by:
 specification {
   element component
   relationship sync
+  tag critical
 }
 
 model {
@@ -289,6 +292,11 @@ model {
 model {
   // Extend the untyped relation
   extend frontend -> api "Makes requests" {
+    // Add tags
+    #critical
+    // Add links
+    link https://grafana.example.com/d/api-latency 'Latency dashboard'
+    // Add metadata
     metadata {
       latency_p95 '150ms'
       rate_limit '1000req/s'
@@ -309,7 +317,7 @@ model {
 **Title normalization**: Relations without a title and relations with an empty string title (`""`) are treated identically. Both are normalized to an empty string internally. This means `extend a -> b` will match both `a -> b` and `a -> b ""`.
 </Aside>
 
-### Metadata Merging
+### Metadata merging
 
 Relationship extends follow the same metadata merging rules as element extends:
 - New keys are added

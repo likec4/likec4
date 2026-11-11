@@ -34,14 +34,22 @@ model {
 }
 ```
 
-Bidirectional relationships render with arrows at both ends by default. Use them for mutual interactions, such as
-synchronized replication or protocols where both sides initiate meaningful communication. Relationship style can still
-override the rendered tail. For request-response calls where one side initiates the interaction, prefer `->`.
+In the model, `<->` defines one relationship marked as bidirectional.
+It renders with arrows at both ends by default (relationship style can still override the tail).
+Use it for mutual interactions, such as synchronized replication or protocols where both sides initiate meaningful
+communication. For request-response calls where one side initiates the interaction, prefer `->`.
+
+<Aside type='note'>
+  In views, `<->` means something else: `include frontend <-> backend` includes the relationships between the two
+  elements in either direction, defined with `->` or `<->`. See [any relationship](/dsl/views/predicates/#any-relationship).
+</Aside>
 
 Relationships may be nested:
 
 ```likec4
 model {
+  customer = actor 'Customer'
+
   service cloud {
     component backend
     component frontend
@@ -127,7 +135,8 @@ or from a business perspective (delegation, informing, accountability, etc.).
 
 You can define whichever relationship types best fit your context.
 
-A relationship kind can also define [tags](#tags) and default properties — `title`, `description`, `technology`, `notation` and [links](#links) — inherited by every relationship of that kind (a relationship may override any of the properties; tags are merged):
+A relationship kind can also define [tags](#tags) and default properties — `title`, `description`, `technology` and [links](#links) — inherited by every relationship of that kind (a relationship may override any of the properties; tags are merged).
+A relationship kind also accepts `notation`, but relationship notations are not shown on diagrams yet (see [notations](/dsl/views/notations/)):
 
 ```likec4
 specification {
@@ -151,7 +160,7 @@ model {
   With kinds you can customize the styling of the relationships, see [styling](/dsl/styling#relationship)
 </Aside>
 
-## Relationship Properties
+## Relationship properties
 
 ### Title
 
@@ -256,7 +265,7 @@ model {
 ```
 
 
-### Navigate To
+### Navigate to
 
 A relationship may have a `navigateTo` property, which links to a [dynamic view](/dsl/views/dynamic).  
 This allows to _"zoom-in"_ and see more details about this relationship.
@@ -271,7 +280,7 @@ model {
 }
 ```
 
-## Relationships Metadata
+## Relationship metadata
 
 Same as [element metadata](/dsl/model/#metadata):
 

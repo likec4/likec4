@@ -1,0 +1,54 @@
+---
+title: Configuration files
+description: Which LikeC4 config file to use for what, and how they differ.
+sidebar:
+  label: Config files
+  order: 1
+---
+
+Use the project config for the model, the app config for the CLI, the customization file for the UI, and the Vite config when you embed LikeC4 in your own Vite app.
+
+| File | What it configures | Read by | When you need it |
+| ---- | ------------------ | ------- | ---------------- |
+| `likec4.config.json`, `.likec4.config.json`, `.likec4rc`, or `likec4.config.{ts,mts,cts,js,mjs,cjs}` | The project: name, title, included and excluded files, image aliases, styles, implicit views, landing page, settings of the web app for this project, and more | Everything that loads the model: the editor extension, the CLI, the Vite plugin | To split the model into several projects, or to set any project option. Without it, all files belong to one project named `default` |
+| `likec4.app.config.{ts,mts,cts,js,mjs,cjs}` (experimental) | The LikeC4 application built by the CLI: title, theme, base URL, output directory, dev server, and so on | The CLI: `start`, `build`, `preview`, `export png`, `export jpg`, `gen react`, `gen webcomponent` | To avoid repeating the same flags in every command |
+| Customization file, any name (the examples use `likec4.customization.tsx`) (experimental) | React components that replace or wrap parts of the UI, like the logo or the shapes of the elements | The CLI, if the app config or `--customization` points to it; the Vite plugin, if its `customization` option does | To change how the UI looks beyond what styles can do |
+| `vite.config.*` with `LikeC4VitePlugin(...)` | Where the sources are, the layout engine, and the application options: title, theme, hash history, web component prefix, customization file | Vite | When you use LikeC4 in your own Vite app |
+
+The Vite plugin does not read the app config. With the plugin, pass the options to `LikeC4VitePlugin`.
+
+There is no default name for the customization file. LikeC4 does not look for it: point to it from the app config, the CLI flag or the Vite plugin.
+
+## JSON or TypeScript project config
+
+Both formats describe the same project options.
+
+Use JSON (`likec4.config.json`, `.likec4.config.json` or `.likec4rc`) when the config is plain data.
+LikeC4 parses these files as JSON5, so comments and trailing commas are allowed.
+`extends` works only in JSON configs. It merges only `styles` from other config files.
+
+Use JavaScript or TypeScript (`likec4.config.ts` and others) when you need code:
+
+- custom generators, which are functions (`generators`, run with `likec4 gen <name>`)
+- values computed in code, or imported from other files
+
+Import `defineConfig` from `likec4/config` for types. LikeC4 provides this module when it loads the file, so you do not need to install `likec4` next to it.
+
+## Project title and app title
+
+Both configs have a `title`. They set different things:
+
+- `title` in the project config is the title of the project.
+  The app shows it in the project selector and in the browser tab on the pages of this project.
+- `title` in the app config is the title of the application (`'LikeC4'` by default).
+  It is used where there is no project, like the list of projects, and on the pages of a project that has no title.
+
+With the Vite plugin, the application title is the `title` option of the plugin.
+
+## More details
+
+- [Project config](/config/)
+- [Multiple projects](/config/multi-projects/)
+- [App config](/tooling/app-config/)
+- [UI customization](/tooling/customization/)
+- [Vite plugin](/tooling/vite-plugin/)
