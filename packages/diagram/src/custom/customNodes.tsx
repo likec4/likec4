@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import type { NodeModel } from '@likec4/core/model'
 import type { aux, NodeId, ViewId } from '@likec4/core/types'
 import type { FC, FunctionComponent } from 'react'
-import { toCamelCase } from 'remeda'
+import { capitalize, toCamelCase } from 'remeda'
 import type { BaseNodePropsWithData } from '../base/types'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import type { NodeRenderers } from '../LikeC4Diagram.props'
@@ -644,7 +644,7 @@ export function wrapNode<T extends Types.NodeType>(
     }
     return <Wrapper props={props} Node={defaultNodeRenderer(props.type)} />
   }) as Types.NodeRenderer<T>
-  wrapped.displayName = `Wrapped${toCamelCase(nodeType)})`
+  wrapped.displayName = `Wrapped${capitalize(toCamelCase(nodeType))}`
   return wrapped
 }
 
