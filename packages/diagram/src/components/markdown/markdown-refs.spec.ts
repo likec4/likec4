@@ -1,4 +1,5 @@
 import { Builder } from '@likec4/core/builder'
+import { type ViewId, RichText } from '@likec4/core/types'
 import { markdownToHtml } from '@likec4/core/utils'
 import { describe, expect, it } from 'vitest'
 import { createMarkdownRefResolver, resolveMarkdownRefs } from './markdown-refs'
@@ -128,8 +129,21 @@ describe('resolveMarkdownRefs', () => {
 
   it('substitutes the view title', () => {
     expect(render('See [[view:index]]')).toBe(
-      '<p>See <a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a></p>',
+      '<p>See <a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-view-type="element" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a></p>',
     )
+  })
+
+  it('marks view links with the view type', () => {
+    const html = render('[[view:steps]]', ref => ({
+      state: 'link',
+      kind: 'view',
+      viewId: ref.target as ViewId,
+      viewType: 'dynamic',
+      text: 'Steps',
+      preview: { title: 'Steps', meta: 'dynamic view', body: RichText.EMPTY },
+    }))
+    expect(html).toContain('data-likec4-ref-view-type="dynamic" data-likec4-ref-state="link"')
+    expect(markdownToHtml('[[view:steps]]')).not.toContain('data-likec4-ref-view-type')
   })
 
   it('renders missing targets and unknown namespaces as dimmed text with the fallback', () => {

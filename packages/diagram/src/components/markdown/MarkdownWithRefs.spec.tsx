@@ -75,7 +75,7 @@ describe('Markdown refs', () => {
       '<a data-likec4-ref="cloud" data-likec4-ref-kind="element" data-likec4-ref-state="link" role="link" tabindex="0">Cloud</a>',
     )
     expect(html).toContain(
-      '<a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a>',
+      '<a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-view-type="element" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a>',
     )
     expect(html).toContain(
       '<span data-likec4-ref="missing" data-likec4-ref-kind="element" data-likec4-ref-state="missing">missing</span>',
@@ -104,7 +104,7 @@ describe('Markdown refs', () => {
       '<span data-likec4-ref="cloud" data-likec4-ref-kind="element" data-likec4-ref-state="text">Cloud</span>',
     )
     expect(html).toContain(
-      '<a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a>',
+      '<a data-likec4-ref="index" data-likec4-ref-kind="view" data-likec4-ref-namespace="view" data-likec4-ref-view-type="element" data-likec4-ref-state="link" role="link" tabindex="0">Landscape</a>',
     )
   })
 

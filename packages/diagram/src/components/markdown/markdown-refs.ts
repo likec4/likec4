@@ -196,7 +196,8 @@ export function parseMarkdownRefAnchor(el: Element): MarkdownRefAnchor | null {
 
 /**
  * Replaces ref anchors in the HTML rendered by `markdownToHtml` with resolved refs:
- * - link: `<a role="link" tabindex="0" data-likec4-ref-state="link">title or label</a>`
+ * - link: `<a role="link" tabindex="0" data-likec4-ref-state="link">title or label</a>`,
+ *   view links also have `data-likec4-ref-view-type="<view type>"` (styles pick the icon by it)
  * - text: `<span data-likec4-ref-state="text">title or label</span>`
  * - missing: `<span data-likec4-ref-state="missing">label or target</span>`
  *
@@ -229,7 +230,8 @@ export function resolveMarkdownRefs(html: string, resolve: MarkdownRefResolver):
         + (rawNamespace !== undefined ? ` data-likec4-ref-namespace="${rawNamespace}"` : '')
         + (hasLabel ? ' data-likec4-ref-label' : '')
       if (resolved.state === 'link') {
-        return `<a ${attrs} data-likec4-ref-state="link" role="link" tabindex="0">${text}</a>`
+        const viewType = resolved.kind === 'view' ? ` data-likec4-ref-view-type="${resolved.viewType}"` : ''
+        return `<a ${attrs}${viewType} data-likec4-ref-state="link" role="link" tabindex="0">${text}</a>`
       }
       return `<span ${attrs} data-likec4-ref-state="${resolved.state}">${text}</span>`
     },
