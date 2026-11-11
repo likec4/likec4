@@ -1,16 +1,19 @@
 ---
-title: View Notations
+title: View notations
 description: How to define the key/legend for views
 sidebar: 
   label: Notations
-  order: 10
+  order: 15
 tableOfContents:
-  minHeadingLevel: 3
-  maxHeadingLevel: 5
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
 ---
 
 import { Card, Aside } from '@astrojs/starlight/components';
 import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
+
+View notations (or key/legend) provide information about the meanings of shapes and styles.
+It's important to provide a key explaining the difference in colors and shapes.
 
 <Aside type='caution' title="Experimental" >
   The implementation is experimental and may change in the future.  
@@ -21,13 +24,9 @@ import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
   Relationship notations are in progress.
 </Aside>
 
-View notations (or key/legend) provide information about the meanings of shapes and styles.
-It's important to provide a key explaining the difference in colors and shapes.
-
-
 It is possible to define global notations (per element kind) and local (per view).
 
-#### Global notations
+## Global notations
 
 As comes from the name, global notations apply to all views, and defined in the `specification` block:
 
@@ -54,7 +53,7 @@ specification {
 Notations will be applied to all views with these elements and displayed as:
 
 <div style="max-width:400px;margin: 1rem auto">
-![notations](../../../assets/notations.png)
+![notations](../../../../assets/notations.png)
 </div>
 
 Live example.  
@@ -62,13 +61,13 @@ Expand the following view and click on help icon in bottom right:
 
 <LikeC4ThemeView viewId="notations_example"/>
 
-#### Local notations
+## Local notations
 
 Local notations override global ones and apply to a specific view.
 
-##### With style predicate
+### With style predicate
 
-When you change the style, you can add a notation to explain the meaning:
+When you change the style with a [style predicate](/dsl/views/styles/#style-predicates), you can add a notation to explain the meaning:
 
 ```likec4
 view {
@@ -109,9 +108,9 @@ view {
 :::
 
 
-##### With overrides
+### With overrides
 
-Define notation when include elements:
+Define a notation when you include elements [with overrides](/dsl/views/predicates/#with-overrides):
 
 ```likec4
 view {

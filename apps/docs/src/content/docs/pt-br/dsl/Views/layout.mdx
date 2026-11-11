@@ -1,0 +1,121 @@
+---
+title: Layout
+description: Controle o layout automático de uma visão - direção, espaçamento, roteamento das conexões e restrições de rank
+sidebar:
+  label: Layout
+  order: 14
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+O LikeC4 organiza as visões automaticamente com o [Graphviz](https://graphviz.org).
+As regras desta página ajustam esse layout: a direção e o espaçamento, como os relacionamentos são desenhados e quais elementos ficam no mesmo nível.
+
+## Layout automático
+
+```likec4
+view {
+  include *
+  autoLayout LeftRight 120 110
+}
+```
+
+Os parâmetros são:
+- direção: os valores possíveis são `TopBottom` (padrão), `BottomTop`, `LeftRight`, `RightLeft`.
+- distância entre ranks: opcional, deve ser um número positivo
+- distância entre nós: opcional, deve ser um número positivo
+- roteamento das conexões: opcional, pode ser `spline` ou `ortho`. Veja [Roteamento das conexões](#roteamento-das-conexões).
+
+<Aside>
+Alterações manuais são aceitas na extensão do VSCode, mas a funcionalidade é limitada.  
+Seu <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> é muito bem-vindo.
+</Aside>
+
+## Roteamento das conexões
+
+Para desenhar relacionamentos usando segmentos horizontais e verticais, defina `routing ortho` na visão:
+
+```likec4
+view {
+  routing ortho
+  include *
+}
+```
+
+Use `spline` para linhas curvas (padrão) ou `ortho` para curvas em ângulo reto. O roteamento vale para visões de elementos, dinâmicas e de deployment. Diagramas de sequência têm layout próprio e ignoram essa configuração.
+
+Também é possível indicar o roteamento como último argumento de `autoLayout`:
+
+```likec4
+autoLayout LeftRight 120 110 ortho
+```
+
+Quando existem várias configurações, o LikeC4 utiliza a primeira desta ordem de precedência:
+
+1. Propriedade `routing` definida na própria visão.
+2. Parâmetro de roteamento da última regra `autoLayout`.
+3. Configuração global [`styles.defaults.view.routing`](/pt-br/dsl/config/#estilos-padrão).
+4. Valor interno padrão `spline`.
+
+Se `routing` estiver definido na visão e também em `autoLayout`, a propriedade da visão prevalece e o servidor de linguagem emite um aviso sobre o parâmetro de `autoLayout`.
+
+No editor web, é possível mudar o roteamento pelo painel de layout; a alteração é gravada no código-fonte da visão. A troca de roteamento preserva posições de nós e pontos de controle salvos e não invalida, por si só, o layout existente.
+
+### Limitações do roteamento
+
+O Graphviz pode passar uma conexão ortogonal por dentro de um grupo não relacionado ou deixar trajetórias paralelas muito próximas. Reduzir a quantidade de relacionamentos exibidos, editar conexões individuais ou aumentar o espaçamento de `autoLayout` pode melhorar a legibilidade, mas não garante a eliminação das sobreposições.
+
+Quando conexões editadas compartilham um trecho reto, o LikeC4 tenta separá-las em faixas distintas, desde que exista espaço nos pontos de conexão. Rotas não editadas calculadas pelo Graphviz mantêm suas posições.
+
+Os rótulos automáticos procuram evitar nós, outros rótulos e linhas de relacionamento quando há espaço disponível. Visões densas ainda podem apresentar sobreposição de rótulos.
+
+## Restrições de rank
+
+Você pode manter elementos específicos no mesmo nível horizontal/vertical (ou empurrá-los para o início/fim do layout)
+adicionando um bloco `rank` explícito à visão.
+Essas restrições de rank são encaminhadas ao mecanismo de layout Graphviz para produzir os efeitos de layout desejados.
+
+```likec4
+view checkoutFlow {
+  include *
+
+  // keep the API nodes aligned
+  rank same {
+    cloud.backend.api,
+    cloud.backend.billingApi,
+  }
+
+  // make customers appear at the beginning of the diagram, exclusive of the elements
+  rank source {
+    customer
+  }
+
+  // render reporting systems at the end, exclusive of the elements
+  rank sink {
+    analytics,
+    dataWarehouse
+  }
+}
+```
+
+- Valores de rank permitidos: `same`, `min`, `max`, `source`, `sink`. Se omitido, `same` é assumido.
+- Os alvos são `FqnRef`s comuns, portanto você pode referenciar elementos aninhados como em outras regras. Alvos inexistentes ou duplicados são ignorados.
+- A restrição afeta apenas os elementos que realmente permanecem na visão calculada. Se um predicado remover posteriormente um elemento, ele também deixa de participar do bloco `rank`.
+- Regras de rank também participam do tiling manual de nós compostos, permitindo que restrições definidas pelo autor sejam combinadas com o layout automático em vez de entrar em conflito com ele.
+
+Use restrições de rank com moderação — elas são mais úteis para ancorar colunas/linhas críticas
+(por exemplo, nós de entrada versus saída ou agrupamentos semânticos no lugar de containers) e obter um layout melhor.
+
+## Modos de visualização Diagram e Graph
+
+A partir da versão 1.60.0, as visões de elementos podem ser exibidas em dois modos:
+
+- **Diagram**: apresenta os elementos conforme o layout do diagrama.
+- **Graph**: representa os elementos folha como círculos compactos conectados por linhas retas, com nós arrastáveis e uma simulação de forças que anima sua organização.
+
+Atualmente, o modo Graph simplifica a hierarquia da visão: exibe apenas elementos folha (sem filhos). Elementos agrupadores e relacionamentos conectados diretamente a eles são omitidos. Volte para **Diagram** para visualizar a hierarquia completa e esses relacionamentos.
+
+Use o seletor **Diagram / Graph** no painel de navegação para alternar entre os modos. Essa escolha altera apenas a apresentação da visão, sem modificar a definição do modelo na DSL.

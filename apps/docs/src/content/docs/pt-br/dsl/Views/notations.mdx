@@ -3,10 +3,10 @@ title: Notações de visões
 description: Como definir a chave/legenda das visões
 sidebar:
   label: Notações
-  order: 10
+  order: 15
 tableOfContents:
-  minHeadingLevel: 3
-  maxHeadingLevel: 5
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
 ---
 
 import { Card, Aside } from '@astrojs/starlight/components';
@@ -26,7 +26,7 @@ Notações de visões (ou chave/legenda) fornecem informações sobre os signifi
 
 É possível definir notações globais (por tipo de elemento) e locais (por visão).
 
-#### Notações globais
+## Notações globais
 
 Como o nome indica, notações globais se aplicam a todas as visões e são definidas no bloco `specification`:
 
@@ -53,7 +53,7 @@ specification {
 As notações serão aplicadas a todas as visões com esses elementos e exibidas assim:
 
 <div style="max-width:400px;margin: 1rem auto">
-![notations](../../../../assets/notations.png)
+![notations](../../../../../assets/notations.png)
 </div>
 
 Exemplo ao vivo.
@@ -61,11 +61,11 @@ Expanda a visão a seguir e clique no ícone de ajuda no canto inferior direito:
 
 <LikeC4ThemeView viewId="notations_example"/>
 
-#### Notações locais
+## Notações locais
 
 Notações locais sobrescrevem as globais e se aplicam a uma visão específica.
 
-##### Com predicado de estilo
+### Com predicado de estilo
 
 Quando você altera o estilo, pode adicionar uma notação para explicar o significado:
 
@@ -107,7 +107,7 @@ view {
 ```
 :::
 
-##### Com sobrescritas
+### Com sobrescritas
 
 Defina a notação ao incluir elementos:
 

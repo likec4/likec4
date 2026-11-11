@@ -15,6 +15,12 @@ export default defineConfig({
   output: 'static',
   site: 'https://likec4.dev',
 
+  // Moved pages: keep old URLs working
+  redirects: {
+    '/dsl/notations/': '/dsl/views/notations/',
+    '/pt-br/dsl/notations/': '/pt-br/dsl/views/notations/',
+  },
+
   integrations: [
     react(),
     starlight({

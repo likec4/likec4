@@ -1,27 +1,41 @@
 ---
 title: Visões
-description: Como visualizar a arquitetura de software em diagramas usando o LikeC4
+description: O que são visões no LikeC4, os três tipos de visões e como defini-las, delimitá-las por escopo e estendê-las
 sidebar:
-  label: Visões
-  order: 8
+  label: Visão geral
+  order: 10
 tableOfContents:
   minHeadingLevel: 2
-  maxHeadingLevel: 6
+  maxHeadingLevel: 3
 ---
 
 import { Aside, TabItem, Tabs } from '@astrojs/starlight/components';
 
-O LikeC4 é baseado em modelos. As visões são projeções do modelo a partir de diferentes perspectivas, escopos e níveis de detalhe, como:
+O LikeC4 é baseado em modelos. Uma visão é uma projeção do modelo: ela escolhe elementos e relacionamentos do modelo e os renderiza como um diagrama.
+Quando o modelo muda, todas as visões que mostram a parte alterada são atualizadas.
 
--	Visões gerais de sistemas/serviços
--	Interações entre componentes em casos de uso específicos
--	Fluxos de dados e diagramas de sequência
+O LikeC4 não impõe regras específicas, como um número rígido de níveis ou o que deve ser incluído — isso depende totalmente de você e do seu contexto.
 
-O LikeC4 não impõe regras específicas, como um número rígido de níveis ou o que deve ser incluído — isso depende totalmente de você e do seu contexto.  
+## Tipos de visões
+
+| Tipo                | Palavra-chave     | Mostra                                                                                  |
+| :------------------ | :---------------- | :-------------------------------------------------------------------------------------- |
+| Visão de elementos  | `view`            | Elementos e relacionamentos do modelo, escolhidos com [predicados](/pt-br/dsl/views/predicates/) |
+| Visão dinâmica      | `dynamic view`    | Um cenário como passos ordenados entre elementos, como diagrama ou diagrama de sequência ([visões dinâmicas](/pt-br/dsl/views/dynamic/)) |
+| Visão de deployment | `deployment view` | Nós de deployment e as instâncias implantadas neles ([visões de deployment](/pt-br/dsl/deployment/views/)) |
+
+Esta página cobre o que todas as visões têm em comum. As próximas páginas explicam:
+
+- [Predicados](/pt-br/dsl/views/predicates/) - o que uma visão de elementos mostra
+- [Estilos](/pt-br/dsl/views/styles/) - a aparência dos elementos em uma visão e como compartilhar estilos entre visões
+- [Visões dinâmicas](/pt-br/dsl/views/dynamic/) - cenários como passos, em diagrama ou sequência
+- [Layout](/pt-br/dsl/views/layout/) - direção, espaçamento, roteamento das conexões, restrições de rank e os modos Diagram/Graph
+- [Notações](/pt-br/dsl/views/notations/) - a legenda de uma visão
+- [Organizar](/pt-br/dsl/views/organize/) - pastas e ordem das visões
 
 ## Definição de visão
 
-As visões são definidas na seção `views`.  
+As visões são definidas na seção `views`.
 Elas podem ter nome (que deve ser único) ou não ter nome (não podem ser referenciadas, mas ainda podem ser exportadas):
 
 ```likec4
@@ -38,13 +52,13 @@ views {
 O nome da visão é usado como nome do arquivo de imagem durante a exportação e como parte da URL ao compartilhar, portanto é recomendável definir um.
 
 <Aside title="Visão padrão">
-  `index` é uma visão especial e é renderizada por padrão quando nenhum nome de visão é especificado.  
+  `index` é uma visão especial e é renderizada por padrão quando nenhum nome de visão é especificado.
   Se ela não estiver definida, será gerada e incluirá os elementos de nível superior.
 </Aside>
 
 ### Propriedades da visão
 
-As visões podem ter `title`, `description`, `tags`, `links` e [`routing`](/pt-br/dsl/views/predicates/#roteamento-das-conexões):
+As visões podem ter `title`, `description`, `tags`, `links`, [`routing`](/pt-br/dsl/views/layout/#roteamento-das-conexões) e [`order`](/pt-br/dsl/views/organize/#ordenar-visões):
 
 ```likec4
 views {
@@ -68,22 +82,11 @@ views {
 }
 ```
 
-As propriedades devem ser definidas antes de qualquer [predicado](/pt-br/dsl/views/predicates/).  
-
-## Modos de visualização Diagram e Graph
-
-A partir da versão 1.60.0, as visões de elementos podem ser exibidas em dois modos:
-
-- **Diagram**: apresenta os elementos conforme o layout do diagrama.
-- **Graph**: representa os elementos folha como círculos compactos conectados por linhas retas, com nós arrastáveis e uma simulação de forças que anima sua organização.
-
-Atualmente, o modo Graph simplifica a hierarquia da visão: exibe apenas elementos folha (sem filhos). Elementos agrupadores e relacionamentos conectados diretamente a eles são omitidos. Volte para **Diagram** para visualizar a hierarquia completa e esses relacionamentos.
-
-Use o seletor **Diagram / Graph** no painel de navegação para alternar entre os modos. Essa escolha altera apenas a apresentação da visão, sem modificar a definição do modelo na DSL.
+As propriedades devem ser definidas antes de qualquer [predicado](/pt-br/dsl/views/predicates/).
 
 ## Visões com escopo
 
-Uma visão pode ser definida para um elemento específico (`view of ...`).  
+Uma visão pode ser definida para um elemento específico (`view of ...`).
 Nesse caso, a visão herdará o [escopo](/pt-br/dsl/references#escopo) desse elemento:
 
 :::note
