@@ -536,8 +536,8 @@ catalogs:
       specifier: ^1.2.2
       version: 1.2.2
     fast-equals:
-      specifier: ^6.2.1
-      version: 6.2.1
+      specifier: ^6.2.2
+      version: 6.2.2
     fuse.js:
       specifier: ^7.5.0
       version: 7.5.0
@@ -994,7 +994,7 @@ importers:
         version: 1.3.0
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       hono:
         specifier: catalog:hono
         version: 4.13.13
@@ -1448,7 +1448,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       fuse.js:
         specifier: catalog:utils
         version: 7.5.0
@@ -1678,7 +1678,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       fdir:
         specifier: catalog:externals
         version: 6.4.0(picomatch@4.0.7)
@@ -1911,7 +1911,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       fontkit:
         specifier: 'catalog:'
         version: 2.0.4
@@ -2217,7 +2217,7 @@ importers:
         version: 1.2.2
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       get-port:
         specifier: ^7.2.0
         version: 7.2.0
@@ -2464,7 +2464,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       html-to-image:
         specifier: 1.11.11
         version: 1.11.11
@@ -2888,7 +2888,7 @@ importers:
         version: 6.1.7
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -3062,7 +3062,7 @@ importers:
         version: 4.2.0
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -3159,7 +3159,7 @@ importers:
         version: 1.2.2
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       langium:
         specifier: catalog:langium
         version: 4.4.0
@@ -3312,7 +3312,7 @@ importers:
         version: 0.0.84
       fast-equals:
         specifier: catalog:utils
-        version: 6.2.1
+        version: 6.2.2
       nanostores:
         specifier: catalog:react
         version: 1.5.5
@@ -7843,8 +7843,8 @@ packages:
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
-  fast-equals@6.2.1:
-    resolution: {integrity: sha512-s7KFkLPAAbIDGTh+nVYhjTiwKGvgMXAUG5vwzg8vQKj7NSRZ4eEGExBQ4rq9V90fTYVWd1cb/Wr4ffCNBmLQMQ==}
+  fast-equals@6.2.2:
+    resolution: {integrity: sha512-n+XqoarWCgcar0O3om3DeNYx6xTuLWGTUF1bRZ9iuO00tsPepzP1L4V7rqtxxZ4PEya34UCESReimFvxmEVwIA==}
     engines: {node: '>=6.0.0'}
 
   fast-glob@3.3.3:
@@ -15664,7 +15664,7 @@ snapshots:
 
   fast-deep-equal@3.1.3: {}
 
-  fast-equals@6.2.1: {}
+  fast-equals@6.2.2: {}
 
   fast-glob@3.3.3:
     dependencies:
