@@ -7,6 +7,12 @@ import { ProjectsManager } from '../workspace'
 /**
  * Resolve ProjectId from an AST node, document, or import node.
  * For Imported nodes walks up to ImportsFromPoject; for documents uses likec4ProjectId or default.
+ *
+ * For import nodes returns the import name as written in `from '…'`:
+ * this is the project id used in the consumer model (key of `imports`, `@name.` prefix),
+ * not the id of the imported project. To get the imported project, resolve the name
+ * with `DependencyResolver` in the context of the consumer project (`projectIdFrom(document)`).
+ *
  * @param value - AST node, Langium document, or import-related node
  * @returns Resolved project ID (or DefaultProjectId when document has none)
  */
