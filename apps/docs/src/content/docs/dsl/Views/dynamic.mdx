@@ -78,7 +78,7 @@ views {
     api -> auth // title is derived from the model
     api -> api 'process request' // allow self-call
 
-    // reverse direction, as a response to line 59
+    // reverse direction, as a response to line 60
     web <- api 'returns JSON'
 
     // Include elements, that are not participating

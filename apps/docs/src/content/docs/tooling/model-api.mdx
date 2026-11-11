@@ -18,7 +18,8 @@ import { PackageManagers } from 'starlight-package-managers';
 You can access and traverse your architecture model programmatically using the LikeC4 Model API.
 
 <Aside type='note'>
-API allows to query and traverse the model from DSL, but not modify or create a new one.
+The model is read-only: you query and traverse it.  
+To change the sources, see [Model diffs and safe delete](#model-diffs-and-safe-delete); to create elements in code, see [Model Builder](#model-builder) and [Enriching a loaded workspace](#enriching-a-loaded-workspace).
 </Aside>
 
 Ensure you have `likec4` in your dependencies:

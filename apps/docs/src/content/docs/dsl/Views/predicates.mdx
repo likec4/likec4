@@ -277,7 +277,7 @@ Relationship predicates are useful for refining your diagrams, allowing you to n
 
 ### Outgoing
 
-Include elements if only they have outgoing relationships to already visible elements:
+Include elements only if they have outgoing relationships to already visible elements:
 
 ```likec4
 include customer ->
@@ -391,7 +391,7 @@ include
 It is also possible to filter relations by tag or kind of its endpoints.
 ```likec4
 include
-  // only relationships outgoing from elements with with tag #next
+  // only relationships outgoing from elements with tag #next
   cloud.* -> amazon.*
     where source.tag is #next,
 

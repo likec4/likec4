@@ -12,7 +12,7 @@ import { Aside } from '@astrojs/starlight/components';
 This action wraps [LikeC4 CLI](/tooling/cli) as a GitHub Action.
 
 <Aside type='tip'>
-  Github repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
+  GitHub repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
 
   Also check [Deploying to GitHub Pages guide](/guides/deploy-github-pages/) for more details.
 </Aside>
@@ -23,7 +23,7 @@ This action wraps [LikeC4 CLI](/tooling/cli) as a GitHub Action.
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v5
 
   - name: ⚙️ build
     uses: likec4/actions@v1
@@ -34,7 +34,7 @@ steps:
       base: /baseurl/
 
   - name: upload artifacts
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
       name: likec4
       path: dist
@@ -71,7 +71,7 @@ steps:
 | ------------- | ----------------------------------------------------------------------------------------------------- |
 | `action`      | Action to perform (`build` / `export` / `codegen`)                                                    |
 | `export`      | Can be used instead of `action: export`                                                               |
-| `codegen`     | Can be used instead of `action: codegen`, same values as in [cli](https://likec4.dev/docs/tools/cli/) |
+| `codegen`     | Can be used instead of `action: codegen`, same values as in [CLI](/tooling/cli/) |
 | `path`        | Path in repository to likec4 sources, root otherwise                                                  |
 | `output`      | Output directory/file                                                                                 |
 | `base`        | Custom baseUrl for website                                                                            |

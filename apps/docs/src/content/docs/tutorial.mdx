@@ -124,9 +124,10 @@ and follow the steps:
         // UI fetches data from the Backend
         ui -> backend
 
-        // Customer uses the UI
-        customer -> ui 'opens in browser'
       }
+
+      // Customer uses the UI
+      customer -> ui 'opens in browser'
     }
 
     views {
@@ -166,12 +167,13 @@ and follow the steps:
         component ui
         component backend
 
-        // UI requests data from the Backend
+        // UI fetches data from the Backend
         ui -> backend
 
-        // Customer uses the UI
-        customer -> ui 'opens in browser'
       }
+
+      // Customer uses the UI
+      customer -> ui 'opens in browser'
     }
 
     views {
@@ -285,7 +287,7 @@ and follow the steps:
           '
         }
 
-        // UI requests data from the Backend
+        // UI fetches data from the Backend
         ui -> backend 'fetches via HTTPS'
       }
 
