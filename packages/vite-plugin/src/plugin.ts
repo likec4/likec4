@@ -9,7 +9,9 @@ import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
+import { existsSync } from 'node:fs'
 import pDebounce from 'p-debounce'
+import { resolve } from 'pathe'
 import { funnel, hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
@@ -25,6 +27,7 @@ import type { AIOptions, LikeC4VitePluginOptions } from './types'
 export type { AIOptions, LikeC4VitePluginOptions }
 import { type ProjectData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { createAppConfigModule } from './virtuals/app-config'
+import { customizationModule } from './virtuals/customization'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { diffsModule, projectDiffsModule } from './virtuals/diffs'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -85,6 +88,7 @@ const _virtuals = [
   ...hmrProjectListVirtuals,
   iconsModule,
   rpcModule,
+  customizationModule,
 ]
 
 const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
@@ -92,11 +96,13 @@ const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
 export function LikeC4VitePlugin({
   environments,
   appConfig,
+  customization,
   ai: _ai = 'auto',
   ...pluginOpts
 }: LikeC4VitePluginOptions): PluginOption {
   let likec4: LikeC4LanguageServices
   let assetsDir: string
+  let customizationFile: string | undefined
   let rpcEnabled = false
   let ai: AIOptions | undefined = undefined
   let shouldDisposeOnStop = pluginOpts.watch ?? false
@@ -133,6 +139,7 @@ export function LikeC4VitePlugin({
       isAIAvailable,
       ai,
       assetsDir,
+      customizationFile,
       likec4,
       logger,
       ...value,
@@ -176,6 +183,13 @@ export function LikeC4VitePlugin({
 
     async configResolved(config) {
       const isDev = rpcEnabled = config.command === 'serve'
+
+      if (customization) {
+        customizationFile = resolve(config.root, customization)
+        if (!existsSync(customizationFile)) {
+          throw new Error(`LikeC4 customization file not found: ${customizationFile}`)
+        }
+      }
 
       if (pluginOpts.languageServices) {
         likec4 = pluginOpts.languageServices

@@ -20,6 +20,12 @@ const main = defineCommand({
       description: 'likec4 source directory',
       required: false,
     },
+    customization: {
+      type: 'string',
+      valueHint: 'file',
+      description: 'file with UI customizations (default export of defineCustomComponents)',
+      required: false,
+    },
     verbose: {
       alias: 'v',
       type: 'boolean',
@@ -66,6 +72,7 @@ const main = defineCommand({
       plugins: [
         LikeC4VitePlugin({
           workspace,
+          customization: context.args.customization ? resolve(context.args.customization) : undefined,
           ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',
         }),

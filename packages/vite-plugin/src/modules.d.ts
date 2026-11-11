@@ -279,3 +279,16 @@ declare module 'likec4:app-config' {
   export let krokiD2SvgUrl: string
   export let krokiPumlSvgUrl: string
 }
+
+declare module 'likec4:customization' {
+  import type { CustomComponents } from 'likec4/react'
+  import type { Atom } from 'likec4/vite-plugin/internal'
+
+  export type { CustomComponents }
+
+  /**
+   * UI overrides from the file set in the `customization` option of the LikeC4 Vite plugin
+   */
+  export const $customComponents: Atom<CustomComponents | undefined>
+  export function useCustomComponents(): CustomComponents | undefined
+}

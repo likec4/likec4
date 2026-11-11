@@ -161,4 +161,25 @@ export type LikeC4VitePluginOptions =
      * Configuration for the LikeC4 application, that is built with Vite or CLI
      */
     appConfig?: LikeC4AppConfig | undefined
+
+    /**
+     * Path to the file that customizes LikeC4 UI, relative to the vite project root.
+     * The file must default-export the result of `defineCustomComponents` from `likec4/react`.
+     *
+     * The overrides are applied to the LikeC4 application and to the components from `likec4:react`.
+     *
+     * @experimental
+     * @example
+     * ```tsx
+     * // likec4.customization.tsx
+     * import { defineCustomComponents } from 'likec4/react'
+     *
+     * export default defineCustomComponents(({ wrap }) => ({
+     *   LikeC4Diagram: wrap(({ Original, ...props }) => (
+     *     <Original {...props} pannable={false} />
+     *   )),
+     * }))
+     * ```
+     */
+    customization?: string | undefined
   }
