@@ -6,6 +6,7 @@ import * as vscode from 'vscode'
 import { isVirtual, isWebUi } from '../const'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
+import { isLikeC4Source } from '../utils'
 import type { PreviewPanel } from './types'
 
 export interface CopyAsPngCommandDeps {
@@ -47,6 +48,9 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
     const nodePath = vscode.workspace.getConfiguration('likec4').get<string>('node.path')
 
     try {
+      // CLI reads on-disk sources; save dirty LikeC4 docs so the PNG matches the preview.
+      await saveDirtyLikeC4Documents()
+
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
@@ -72,6 +76,13 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
       await vscode.window.showErrorMessage(`Copy as PNG failed: ${message}`)
     }
   })
+}
+
+async function saveDirtyLikeC4Documents(): Promise<void> {
+  const dirty = vscode.workspace.textDocuments.filter(
+    (doc) => doc.isDirty && !doc.isUntitled && isLikeC4Source(doc.fileName),
+  )
+  await Promise.all(dirty.map((doc) => doc.save()))
 }
 
 function resolveWorkspaceFolder(): vscode.WorkspaceFolder | undefined {

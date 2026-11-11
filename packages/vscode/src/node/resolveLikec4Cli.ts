@@ -15,13 +15,16 @@ export type ResolvedLikec4Cli =
   }
   | {
     kind: 'bin'
-    /** Absolute path to a `node_modules/.bin/likec4` shim (or PATH binary). */
+    /** Absolute path to a POSIX `node_modules/.bin/likec4` shim (or PATH binary). */
     bin: string
   }
 
 /**
  * Resolve the workspace `likec4` CLI by walking up from the workspace root.
  * Reuses the same Playwright-based `export png` packaging users already install for the CLI.
+ *
+ * Prefer the package `.mjs` entry (works with `execFile` + Node on every platform).
+ * Never return a Windows `.cmd`/`.bat` shim as `kind: 'bin'` — `execFile` cannot launch those.
  */
 export async function resolveLikec4Cli(workspacePath: string): Promise<ResolvedLikec4Cli | null> {
   let dir = workspacePath
@@ -31,15 +34,10 @@ export async function resolveLikec4Cli(workspacePath: string): Promise<ResolvedL
       return { kind: 'mjs', entry: mjsEntry }
     }
 
+    // POSIX shim only — skip `.cmd`/`.bat` (not execFile-safe without a shell).
     const binShim = join(dir, 'node_modules', '.bin', 'likec4')
-    if (await isReadableFile(binShim)) {
+    if (await isReadableFile(binShim) && !isWindowsBatchShim(binShim)) {
       return { kind: 'bin', bin: binShim }
-    }
-
-    // Windows npm/pnpm shims
-    const binCmd = join(dir, 'node_modules', '.bin', 'likec4.cmd')
-    if (await isReadableFile(binCmd)) {
-      return { kind: 'bin', bin: binCmd }
     }
 
     const parent = dirname(dir)
@@ -50,7 +48,7 @@ export async function resolveLikec4Cli(workspacePath: string): Promise<ResolvedL
   }
 
   const fromPath = await resolveFromPath()
-  if (fromPath) {
+  if (fromPath && !isWindowsBatchShim(fromPath)) {
     return { kind: 'bin', bin: fromPath }
   }
   return null
@@ -67,12 +65,19 @@ export function resolveNodeBinary(configuredPath: string | undefined): string {
   return 'node'
 }
 
+/** True for Windows cmd/bat shims that must not be passed to `execFile` directly. */
+export function isWindowsBatchShim(path: string): boolean {
+  const lower = path.toLowerCase()
+  return lower.endsWith('.cmd') || lower.endsWith('.bat')
+}
+
 async function resolveFromPath(): Promise<string | null> {
   try {
     const command = process.platform === 'win32' ? 'where' : 'which'
     const { stdout } = await execFileAsync(command, ['likec4'])
-    const first = stdout.split(/\r?\n/).map(line => line.trim()).find(Boolean)
-    return first || null
+    const candidates = stdout.split(/\r?\n/).map(line => line.trim()).filter(Boolean)
+    // Prefer a non-batch binary if `where` lists both.
+    return candidates.find(path => !isWindowsBatchShim(path)) ?? null
   } catch {
     return null
   }

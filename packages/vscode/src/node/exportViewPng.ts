@@ -100,10 +100,14 @@ export async function findExportedPng(outdir: string, viewId: string): Promise<s
   return null
 }
 
+/** Overall budget for Vite + Playwright export of a single view (ms). */
+const EXPORT_PROCESS_TIMEOUT_MS = 180_000
+
 function execOptions(cwd: string) {
   return {
     cwd,
     maxBuffer: 16 * 1024 * 1024,
+    timeout: EXPORT_PROCESS_TIMEOUT_MS,
     env: {
       ...process.env,
       // Avoid interactive prompts from ensure-libs when deps are missing.
@@ -120,6 +124,12 @@ function formatExecError(error: unknown, prefix: string): string {
     message?: string
     stderr?: string | Buffer
     stdout?: string | Buffer
+    killed?: boolean
+    signal?: string | null
+    code?: string | number | null
+  }
+  if (err.killed || err.signal === 'SIGTERM' || err.code === 'ETIMEDOUT') {
+    return `${prefix}: timed out after ${EXPORT_PROCESS_TIMEOUT_MS / 1000}s`
   }
   const stderr = bufferToTrimmedString(err.stderr)
   const stdout = bufferToTrimmedString(err.stdout)

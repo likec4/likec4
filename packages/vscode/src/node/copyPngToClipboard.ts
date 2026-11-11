@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 
 import { execFile, spawn } from 'node:child_process'
-import { unlink, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
+
 const execFileAsync = promisify(execFile)
 
 /**
@@ -14,9 +15,10 @@ const execFileAsync = promisify(execFile)
  * tools already available on the host (no extra npm dependencies).
  */
 export async function copyPngToClipboard(png: Buffer): Promise<void> {
-  const file = join(tmpdir(), `likec4-clipboard-${Date.now()}-${process.pid}.png`)
-  await writeFile(file, png)
+  const dir = await mkdtemp(join(tmpdir(), 'likec4-clipboard-'))
+  const file = join(dir, 'diagram.png')
   try {
+    await writeFile(file, png)
     switch (true) {
       case process.platform === 'darwin': {
         await execFileAsync('osascript', [
@@ -41,23 +43,20 @@ export async function copyPngToClipboard(png: Buffer): Promise<void> {
         return
       }
       default: {
-        // Linux: prefer wl-copy (Wayland), then xclip, then xsel.
+        // Linux: image-capable tools only (wl-copy / xclip). xsel is text-only.
         if (await trySpawnWithStdin('wl-copy', ['--type', 'image/png'], png)) {
           return
         }
         if (await tryExecFile('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', file])) {
           return
         }
-        if (await trySpawnWithStdin('xsel', ['--clipboard', '--input'], png)) {
-          return
-        }
         throw new Error(
-          'Could not copy image to the clipboard. Install wl-copy, xclip, or xsel.',
+          'Could not copy image to the clipboard. Install wl-copy or xclip.',
         )
       }
     }
   } finally {
-    await unlink(file).catch(() => {})
+    await rm(dir, { recursive: true, force: true }).catch(() => {})
   }
 }
 

@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { resolveLikec4Cli, resolveNodeBinary } from './resolveLikec4Cli'
+import { isWindowsBatchShim, resolveLikec4Cli, resolveNodeBinary } from './resolveLikec4Cli'
 
 describe('resolveLikec4Cli', () => {
   it('finds likec4/bin/likec4.mjs by walking up from the workspace', async () => {
@@ -54,5 +54,13 @@ describe('resolveNodeBinary', () => {
     expect(resolveNodeBinary(undefined)).toBe('node')
     expect(resolveNodeBinary('')).toBe('node')
     expect(resolveNodeBinary('   ')).toBe('node')
+  })
+})
+
+describe('isWindowsBatchShim', () => {
+  it('detects cmd and bat shims', () => {
+    expect(isWindowsBatchShim(String.raw`C:\proj\node_modules\.bin\likec4.cmd`)).toBe(true)
+    expect(isWindowsBatchShim('likec4.BAT')).toBe(true)
+    expect(isWindowsBatchShim('/proj/node_modules/.bin/likec4')).toBe(false)
   })
 })
