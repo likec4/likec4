@@ -175,50 +175,52 @@ function WithElementTags({
           />
         ))}
       </div>
-      <NodeToolbar isVisible={isVisible} align="start" position={Position.Bottom}>
-        <HStack
-          ref={tagsToolbarRef}
-          css={{
-            gap: '0.5',
-            alignItems: 'baseline',
-            flexWrap: 'wrap',
-            pb: 'sm',
-            translate: 'auto',
-            x: '[-8px]',
-          }}
-          style={{
-            maxWidth,
-          }}
-        >
-          {tags.map((tag) => (
-            <ElementTag
-              key={tag}
-              tag={tag}
-              cursor="pointer"
-              className={css({
-                userSelect: 'none',
-                ...(zoomIsLargeEnough && {
-                  fontSize: 'lg',
-                  borderRadius: 'sm',
-                  px: '1.5', // 6px
-                }),
-              })}
-              onClick={onTagClick
-                ? ((e) => {
-                  e.stopPropagation()
-                  onTagClick(`#${tag}`)
-                })
-                : undefined}
-              onMouseEnter={onTagMouseEnter
-                ? () => onTagMouseEnter(`#${tag}`)
-                : undefined}
-              onMouseLeave={onTagMouseLeave
-                ? () => onTagMouseLeave(`#${tag}`)
-                : undefined}
-            />
-          ))}
-        </HStack>
-      </NodeToolbar>
+      {isVisible && (
+        <NodeToolbar align="start" position={Position.Bottom}>
+          <HStack
+            ref={tagsToolbarRef}
+            css={{
+              gap: '0.5',
+              alignItems: 'baseline',
+              flexWrap: 'wrap',
+              pb: 'sm',
+              translate: 'auto',
+              x: '[-8px]',
+            }}
+            style={{
+              maxWidth,
+            }}
+          >
+            {tags.map((tag) => (
+              <ElementTag
+                key={tag}
+                tag={tag}
+                cursor="pointer"
+                className={css({
+                  userSelect: 'none',
+                  ...(zoomIsLargeEnough && {
+                    fontSize: 'lg',
+                    borderRadius: 'sm',
+                    px: '1.5', // 6px
+                  }),
+                })}
+                onClick={onTagClick
+                  ? ((e) => {
+                    e.stopPropagation()
+                    onTagClick(`#${tag}`)
+                  })
+                  : undefined}
+                onMouseEnter={onTagMouseEnter
+                  ? () => onTagMouseEnter(`#${tag}`)
+                  : undefined}
+                onMouseLeave={onTagMouseLeave
+                  ? () => onTagMouseLeave(`#${tag}`)
+                  : undefined}
+              />
+            ))}
+          </HStack>
+        </NodeToolbar>
+      )}
     </>
   )
 }
