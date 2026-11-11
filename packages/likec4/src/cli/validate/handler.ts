@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4, LikeC4Diagnostic } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
@@ -57,26 +58,34 @@ export async function runValidate(
   const layoutErrors: DiagnosticItem[] = []
   if (options.layout) {
     logger.debug('running layout validation...')
-    try {
-      const model = await likec4.layoutedModel(options.project)
-      for (const vm of model.views()) {
-        const view = vm.$layouted
-        if (view.drifts && view.drifts.length > 0) {
-          layoutErrors.push({
-            message: `Layout drift detected on view '${view.id}'`,
-            file: view.sourcePath ? resolve(options.path, view.sourcePath) : '',
-            line: 0,
-            range: null,
-          })
+    // Without --project, check every project: `layoutedModel()` alone only
+    // works when the workspace has a single (default) project
+    const projects = options.project ? [options.project] : likec4.projects()
+    for (const project of projects) {
+      try {
+        const model = await likec4.layoutedModel(project)
+        // `sourcePath` of a view is relative to the folder of its project
+        const projectFolder = likec4.projectsManager.getProject(model.projectId as ProjectId)?.folderUri.fsPath
+          ?? options.path
+        for (const vm of model.views()) {
+          const view = vm.$layouted
+          if (view.drifts && view.drifts.length > 0) {
+            layoutErrors.push({
+              message: `Layout drift detected on view '${view.id}'`,
+              file: view.sourcePath ? resolve(projectFolder, view.sourcePath) : '',
+              line: 0,
+              range: null,
+            })
+          }
         }
+      } catch (e) {
+        layoutErrors.push({
+          message: `Layout validation failed: ${e instanceof Error ? e.message : String(e)}`,
+          file: '',
+          line: 0,
+          range: null,
+        })
       }
-    } catch (e) {
-      layoutErrors.push({
-        message: `Layout validation failed: ${e instanceof Error ? e.message : String(e)}`,
-        file: '',
-        line: 0,
-        range: null,
-      })
     }
   }
 
