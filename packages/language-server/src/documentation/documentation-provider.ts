@@ -4,7 +4,7 @@ import { ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
 import type { LikeC4Services } from '../module'
-import type { ProjectsManager } from '../workspace'
+import type { DependencyResolver, ProjectsLookup } from '../workspace'
 
 /**
  * Provides documentation for LikeC4 AST nodes, extending JSDoc parsing
@@ -13,7 +13,8 @@ import type { ProjectsManager } from '../workspace'
 export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
   private parser: LikeC4ModelParser
   private locator: LikeC4ModelLocator
-  private projects: ProjectsManager
+  private projectsLookup: ProjectsLookup
+  private resolver: DependencyResolver
 
   /**
    * Creates a new documentation provider.
@@ -23,7 +24,8 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
     super(services)
     this.parser = services.likec4.ModelParser
     this.locator = services.likec4.ModelLocator
-    this.projects = services.shared.workspace.ProjectsManager
+    this.projectsLookup = services.shared.workspace.ProjectsLookup
+    this.resolver = services.shared.workspace.DependencyResolver
   }
 
   /**
@@ -50,9 +52,15 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
         }
         case ast.isDeployedInstance(node): {
           const instance = parser.parseDeployedInstance(node)
+          const consumer = doc.likec4ProjectId ?? this.projectsLookup.ownerProjectId(doc)
+          // Import name is resolved to the imported project (falls back to the name if unresolved)
           const [projectId, fqn] = FqnRef.isImportRef(instance.element)
-            ? [instance.element.project as ProjectId, instance.element.model as Fqn]
-            : [doc.likec4ProjectId ?? this.projects.ownerProjectId(doc), instance.element.model as Fqn]
+            ? [
+              this.resolver.resolve(consumer, instance.element.project)?.projectId
+                ?? instance.element.project as ProjectId,
+              instance.element.model as Fqn,
+            ]
+            : [consumer, instance.element.model as Fqn]
           const found = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
           const lines = [
             `_instance of_ \`${fqn}\``,
