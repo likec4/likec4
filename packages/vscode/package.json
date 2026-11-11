@@ -41,6 +41,10 @@
     "#useTelemetry": {
       "browser": "./src/browser/useTelemetry.ts",
       "default": "./src/node/useTelemetry.ts"
+    },
+    "#copyAsPng": {
+      "browser": "./src/browser/copyAsPng.ts",
+      "default": "./src/node/copyAsPng.ts"
     }
   },
   "main": "dist/node/extension.cjs",
@@ -205,11 +209,19 @@
         {
           "command": "likec4.preview-context-open-source",
           "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.preview-context-copy-as-png",
+          "when": "activeWebviewPanelId == 'likec4-preview'"
         }
       ],
       "commandPalette": [
         {
           "command": "likec4.preview-context-open-source",
+          "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.preview-context-copy-as-png",
           "when": "activeWebviewPanelId == 'likec4-preview'"
         },
         {
@@ -257,6 +269,11 @@
       {
         "command": "likec4.preview-context-open-source",
         "title": "%ext.cmd.preview-context-open-source%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.preview-context-copy-as-png",
+        "title": "%ext.cmd.preview-context-copy-as-png%",
         "category": "%ext.title%"
       },
       {

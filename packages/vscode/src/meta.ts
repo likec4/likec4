@@ -17,6 +17,7 @@ export type CommandKey =
   | "likec4.restart"
   | "likec4.reload-projects"
   | "likec4.preview-context-open-source"
+  | "likec4.preview-context-copy-as-png"
   | "likec4.locate"
   | "likec4.print-dot-of-currentview"
   | "likec4.validate-layout"
@@ -47,6 +48,11 @@ export const commands = {
    * @value `likec4.preview-context-open-source`
    */
   previewContextOpenSource: "likec4.preview-context-open-source",
+  /**
+   * %ext.cmd.preview-context-copy-as-png%
+   * @value `likec4.preview-context-copy-as-png`
+   */
+  previewContextCopyAsPng: "likec4.preview-context-copy-as-png",
   /**
    * %ext.cmd.locate%
    * @value `likec4.locate`
