@@ -216,8 +216,15 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     const doc = AstUtils.getDocument(node)
     const parser = this.parser.forDocument(doc)
     const instance = parser.parseDeployedInstance(node)
+    // Import name is resolved to the imported project (falls back to the name if unresolved)
     const [projectId, fqn] = FqnRef.isImportRef(instance.element)
-      ? [instance.element.project as ProjectId, instance.element.model as Fqn]
+      ? [
+        this.services.shared.workspace.DependencyResolver.resolve(
+          doc.likec4ProjectId ?? this.services.shared.workspace.ProjectsLookup.ownerProjectId(doc),
+          instance.element.project,
+        )?.projectId ?? instance.element.project as ProjectId,
+        instance.element.model as Fqn,
+      ]
       : [doc.likec4ProjectId, instance.element.model as Fqn]
     const found = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
     const lines = [instance.id + '  ', `instance of \`${FqnRef.flatten(instance.element)}\``]
