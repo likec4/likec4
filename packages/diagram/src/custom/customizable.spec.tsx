@@ -5,14 +5,16 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
+import { customizable, defineCustomComponents } from './customizable'
 import {
-  customizable,
-  defineCustomComponents,
+  type CustomComponent,
+  type CustomComponents,
+  type Wrapper,
   WrappedMarker,
-} from './customizable'
+} from './customization-types'
 import { CustomizationProvider } from './CustomizationContext'
 import { applyStableCustomComponents } from './stableComponents'
 
@@ -24,19 +26,38 @@ const SpecHmrSlot = customizable('SpecHmrSlot')(
   ({ label }: { label: string }) => <span data-testid="hmr-original">{label}</span>,
 )
 
+type SpecSlotProps = { label: string }
+
+// Same shapes as `Partial<Customizables>` and `CustomComponents`, for the spec slot
+type SpecSlots = {
+  SpecSlot?: FC<SpecSlotProps>
+}
+type SpecComponents = CustomComponents & {
+  SpecSlot?: CustomComponent<FC<SpecSlotProps>>
+}
+
+type SpecWrap = (wrapper: Wrapper<SpecSlotProps>) => FC<SpecSlotProps>
+
+/**
+ * {@link defineCustomComponents} for spec slots: they are not registered in `Customizables`
+ */
+function defineSpecComponents(value: SpecSlots | ((ctx: { wrap: SpecWrap }) => SpecSlots)): SpecComponents {
+  return defineCustomComponents(value as never) as SpecComponents
+}
+
 function render(ui: ReactNode) {
   return renderToStaticMarkup(ui)
 }
 
 describe('defineCustomComponents', () => {
   it('returns the map as-is', () => {
-    const replace = ({ label }: { label: string }) => <span>{label}</span>
-    const components = defineCustomComponents({ SpecSlot: replace })
+    const replace = ({ label }: SpecSlotProps) => <span>{label}</span>
+    const components = defineSpecComponents({ SpecSlot: replace })
     expect(components.SpecSlot).toBe(replace)
   })
 
   it('marks wrap overrides with WrappedMarker', () => {
-    const components = defineCustomComponents(({ wrap }) => ({
+    const components = defineSpecComponents(({ wrap }) => ({
       SpecSlot: wrap(({ Original, label }) => <Original label={label} />),
     }))
     expect(components.SpecSlot?.[WrappedMarker]).toBe(true)
@@ -61,7 +82,7 @@ describe('customizable / CustomizationProvider', () => {
   })
 
   it('replaces the registered component', () => {
-    const components = defineCustomComponents({
+    const components = defineSpecComponents({
       SpecSlot: ({ label }) => <span data-testid="replaced">{label.toUpperCase()}</span>,
     })
 
@@ -76,7 +97,7 @@ describe('customizable / CustomizationProvider', () => {
   })
 
   it('wraps the original via defineCustomComponents({ wrap })', () => {
-    const components = defineCustomComponents(({ wrap }) => ({
+    const components = defineSpecComponents(({ wrap }) => ({
       SpecSlot: wrap(({ Original, label }) => (
         <div data-testid="wrapped">
           <Original label={`*${label}*`} />
@@ -110,10 +131,10 @@ describe('customizable / CustomizationProvider', () => {
 describe('applyStableCustomComponents', () => {
   it('keeps the same instance identity when the override body is replaced', () => {
     const instances = {}
-    const v1 = defineCustomComponents({
+    const v1 = defineSpecComponents({
       SpecSlot: ({ label }) => <span data-v="1">{label}</span>,
     })
-    const v2 = defineCustomComponents({
+    const v2 = defineSpecComponents({
       SpecSlot: ({ label }) => <span data-v="2">{label}</span>,
     })
 
@@ -128,10 +149,10 @@ describe('applyStableCustomComponents', () => {
 
   it('propagates and clears the wrap marker on the stable instance', () => {
     const instances = {}
-    const wrapped = defineCustomComponents(({ wrap }) => ({
+    const wrapped = defineSpecComponents(({ wrap }) => ({
       SpecSlot: wrap(({ Original, label }) => <Original label={label} />),
     }))
-    const replaced = defineCustomComponents({
+    const replaced = defineSpecComponents({
       SpecSlot: ({ label }) => <span>{label}</span>,
     })
 
