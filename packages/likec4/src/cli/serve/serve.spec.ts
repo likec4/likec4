@@ -8,7 +8,9 @@ vi.mock('@likec4/language-services/node', () => ({
   }),
 }))
 
-vi.mock('node:fs/promises', () => ({
+// Partial mock: tests run with `--no-isolate`, modules loaded here may be reused by other spec files
+vi.mock('node:fs/promises', async importOriginal => ({
+  ...(await importOriginal<typeof import('node:fs/promises')>()),
   mkdtemp: vi.fn().mockResolvedValue('/tmp/.likec4-assets-abc'),
 }))
 
