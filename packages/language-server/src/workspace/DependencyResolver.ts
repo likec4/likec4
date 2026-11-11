@@ -117,6 +117,11 @@ export class DependencyResolver {
     return undefined
   }
 
+  /**
+   * Returns the consumer project, or undefined if it is not registered.
+   * `getProject` throws for unknown ids (e.g. a stale id of a removed project, or an id of an external
+   * project that is not registered yet): the import is then resolved without `dependencies`.
+   */
   protected consumerProject(consumer: ProjectId): ProjectData | undefined {
     try {
       return this.services.workspace.ProjectsLookup.getProject(consumer)

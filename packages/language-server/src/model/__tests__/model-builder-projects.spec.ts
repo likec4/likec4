@@ -402,5 +402,103 @@ describe('LikeC4ModelBuilder -- projects', () => {
       expect(model2.findElement('@payments.other')).not.toBeNull()
       expect(model2.findElement('@billing.svc')).toBeNull()
     })
+
+    it('does not import dependencies entry named as the project itself', async ({ expect }) => {
+      await using t = await workspace({
+        'shared-folder': { name: 'shared', model: sharedModel },
+        'consumer': {
+          name: 'consumer',
+          dependencies: { consumer: '../shared-folder' },
+          model: `
+            import { svc } from 'consumer'
+            ${spec}
+            model {
+              component c
+            }
+          `,
+        },
+      })
+      const model = await t.buildLikeC4Model('consumer')
+      expect(model.$data.imports).toEqual({})
+      expect(model.$data).not.toHaveProperty('importedProjects')
+      expect(model.findElement('@consumer.svc')).toBeNull()
+    })
+
+    it('keeps previous behaviour of self-import by own name without dependencies', async ({ expect }) => {
+      await using t = await workspace({
+        'consumer': {
+          name: 'consumer',
+          model: `
+            import { c } from 'consumer'
+            ${spec}
+            model {
+              component c
+            }
+          `,
+        },
+      })
+      const model = await t.buildLikeC4Model('consumer')
+      // as before dependencies: own elements are imported under own name
+      expect(model.$data.imports['consumer' as ProjectId]?.map(e => e.id)).toEqual(['c'])
+    })
+
+    it('omits importedProjects when nothing is imported', async ({ expect }) => {
+      await using t = await workspace({
+        'shared-folder': { name: 'shared', model: sharedModel },
+        'consumer': {
+          name: 'consumer',
+          dependencies: { billing: '../shared-folder' },
+          model: `
+            import { unknown } from 'billing'
+            ${spec}
+            model {
+              component c
+            }
+          `,
+        },
+      })
+      const model = await t.buildLikeC4Model('consumer')
+      expect(model.$data.imports).toEqual({})
+      expect(model.$data).not.toHaveProperty('importedProjects')
+    })
+
+    it('rebuilds the consumer model when only metadata of the import changes', async ({ expect }) => {
+      await using t = await workspace({
+        'shared-folder': { name: 'shared', model: sharedModel },
+        'consumer': {
+          name: 'consumer',
+          dependencies: { billing: '../shared-folder' },
+          model: `
+            import { svc } from 'billing'
+            ${spec}
+            model {
+              component c
+              c -> svc
+            }
+          `,
+        },
+      })
+      const before = await t.buildLikeC4Model('consumer')
+      expect(before.$data.importedProjects?.['billing' as ProjectId]?.name).toBe('shared')
+
+      // Same target project, different metadata
+      const resolver = t.services.shared.workspace.DependencyResolver
+      const resolveWithMeta = resolver.resolveWithMeta.bind(resolver)
+      mockMethod(resolver, 'resolveWithMeta', (consumer, name) => {
+        const resolved = resolveWithMeta(consumer, name)
+        return resolved && { ...resolved, meta: { ...resolved.meta, name: 'renamed' } }
+      })
+      // Rebuild consumer documents without changes, the hash of parsed documents stays the same
+      const langiumDocuments = t.services.shared.workspace.LangiumDocuments
+      mockMethod(t.services.shared.workspace.FileSystemProvider, 'readFile').mockImplementation(async uri =>
+        langiumDocuments.getDocument(uri)?.textDocument.getText() ?? ''
+      )
+      const consumerDoc = langiumDocuments.all.find(d => d.uri.path.endsWith('/consumer/model.c4'))!
+      await t.services.shared.workspace.DocumentBuilder.update([consumerDoc.uri], [])
+      await t.validateAll()
+
+      const after = await t.buildLikeC4Model('consumer')
+      expect(after.$data.importedProjects?.['billing' as ProjectId]?.name).toBe('renamed')
+    })
   })
 })

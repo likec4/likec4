@@ -119,8 +119,24 @@ export class LikeC4ModelLocator {
     projectId?: c4.ProjectId | undefined,
     property?: string | undefined,
   ): Location | null {
-    let [_projectId, _fqn] = splitGlobalFqn(fqn)
-    _projectId ??= this.projects.ensureProjectId(projectId)
+    const [importName, _fqn] = splitGlobalFqn(fqn)
+    let _projectId: c4.ProjectId
+    if (importName) {
+      // `@name.fqn` - the import name is resolved in the context of the consumer project (via its `dependencies`).
+      // Without a known consumer (multiple projects, no default), the name is the id of a workspace project
+      const consumer = projectId ? this.projects.ensureProjectId(projectId) : this.projects.defaultProjectId
+      if (consumer) {
+        const resolved = this.services.shared.workspace.DependencyResolver.resolve(consumer, importName)
+        if (!resolved) {
+          return null
+        }
+        _projectId = resolved.projectId
+      } else {
+        _projectId = importName
+      }
+    } else {
+      _projectId = this.projects.ensureProjectId(projectId)
+    }
     const entry = this.fqnIndex.byFqn(_projectId, _fqn).head()
     const docsegment = entry?.nameSegment ?? entry?.selectionSegment
     if (!entry || !docsegment) {
