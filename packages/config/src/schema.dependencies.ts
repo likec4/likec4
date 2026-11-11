@@ -10,7 +10,7 @@ import { RELATIVE_PATH_REGEX } from './schema.include'
  *
  * @param subject - Subject used in error messages, e.g. "Project name"
  */
-export function projectNameSchema(subject: string) {
+export function projectNameSchema(subject: string): z.ZodString {
   return z.string()
     .nonempty(`${subject} cannot be empty`)
     .refine((value) => value !== 'default', {
@@ -39,14 +39,19 @@ function collapseSlashes(path: string): string {
   return path.replace(/\/{2,}/g, '/').replace(/(.)\/+$/, '$1')
 }
 
+// Rejects any drive letter prefix, including drive-relative Windows paths ("C:foo", "C:"),
+// which RELATIVE_PATH_REGEX accepts
+const NO_DRIVE_LETTER_REGEX = /^(?![A-Za-z]:)/
+
+const RELATIVE_PATH_ERROR =
+  'Dependency path must be a relative path string (no leading slash, drive letter, or protocol)'
+
 const DependencyPathSchema = z
   .string({ error: 'Dependency path must be a relative path string' })
   .overwrite(normalizeSeparators)
   .min(1, 'Dependency path cannot be empty')
-  .regex(
-    RELATIVE_PATH_REGEX,
-    'Dependency path must be a relative path string (no leading slash, drive letter, or protocol)',
-  )
+  .regex(RELATIVE_PATH_REGEX, RELATIVE_PATH_ERROR)
+  .regex(NO_DRIVE_LETTER_REGEX, RELATIVE_PATH_ERROR)
   .overwrite(collapseSlashes)
   .meta({
     description: [
