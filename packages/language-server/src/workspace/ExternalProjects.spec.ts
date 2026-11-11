@@ -1,13 +1,16 @@
 import { isLikeC4Config, LikeC4ProjectConfigOps } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
 import JSON5 from 'json5'
-import { type LangiumDocument, DocumentState, URI, UriUtils } from 'langium'
-import { describe, vi } from 'vitest'
-import type { WorkspaceFolder } from 'vscode-languageserver'
+import { type LangiumDocument, Cancellation, DocumentState, URI, UriUtils } from 'langium'
+import { addDiagnosticsHandler } from 'langium/lsp'
+import { describe } from 'vitest'
+import type { Connection, WorkspaceFolder } from 'vscode-languageserver'
 import type { FileNode } from '../filesystem'
+import { DefaultLikeC4ModelBuilder } from '../model/model-builder'
 import { mockMethod, test as it } from '../test'
 import type { createTestServices } from '../test/testServices'
-import { externalProjectIdOfFolder } from './ExternalProjects'
+import { type ExternalProject, externalProjectId, externalProjectIdOfFolder } from './ExternalProjects'
+import { type NormalizedUri, ProjectFolder } from './ProjectsManager'
 
 type TestServices = ReturnType<typeof createTestServices>
 
@@ -45,7 +48,7 @@ function mockFileSystem(t: TestServices, initial: Record<string, string>) {
   mockMethod(fs, 'readDirectory').mockImplementation(async folder =>
     under(folder).filter(uri => /\.(c4|likec4)$/.test(uri.path)).map(fileNode)
   )
-  mockMethod(fs, 'readFile').mockImplementation(async uri => files.get(norm(uri)) ?? '')
+  const readFile = mockMethod(fs, 'readFile').mockImplementation(async uri => files.get(norm(uri)) ?? '')
   const loadProjectConfig = mockMethod(fs, 'loadProjectConfig').mockImplementation(async uri => {
     const content = files.get(norm(uri))
     if (content === undefined) {
@@ -59,7 +62,7 @@ function mockFileSystem(t: TestServices, initial: Record<string, string>) {
       ...JSON5.parse(content),
     })
   })
-  return { write, remove, loadProjectConfig }
+  return { write, remove, loadProjectConfig, readFile }
 }
 
 async function startWorkspace(t: TestServices, workspace: string) {
@@ -76,6 +79,11 @@ async function startWorkspace(t: TestServices, workspace: string) {
   })
   await WorkspaceManager.initializeWorkspace([workspaceFolder])
   await buildAll(t)
+}
+
+async function ProjectsManager_reload(t: TestServices) {
+  await t.services.shared.workspace.ProjectsManager.reloadProjects()
+  await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
 }
 
 async function buildAll(t: TestServices) {
@@ -199,7 +207,22 @@ describe('ExternalProjects', () => {
       'file:///test/workspace/a/broken.c4': broken,
       'file:///test/shared/broken.c4': broken,
     })
+    // Same handler as the language server uses to publish diagnostics
+    const published = [] as Array<{ uri: string; diagnostics: unknown[] }>
+    const connection = {
+      sendDiagnostics: async (params: { uri: string; diagnostics: unknown[] }) => {
+        published.push(params)
+      },
+    }
+    addDiagnosticsHandler(connection as unknown as Connection, t.services.shared)
     await startWorkspace(t, 'file:///test/workspace')
+
+    // Only an empty list is published for external documents (it clears diagnostics in the editor)
+    const publishedExternal = published.filter(p => p.uri.startsWith('file:///test/shared/'))
+    expect(publishedExternal.length).toBeGreaterThan(0)
+    expect(publishedExternal.flatMap(p => p.diagnostics)).toEqual([])
+    expect(published.find(p => p.uri === 'file:///test/workspace/a/broken.c4')?.diagnostics.length)
+      .toBeGreaterThan(0)
 
     const { LangiumDocuments } = t.services.shared.workspace
     const doc = (uri: string) => LangiumDocuments.getDocument(URI.parse(uri)) as LangiumDocument
@@ -302,6 +325,7 @@ describe('ExternalProjects', () => {
       'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { other: '../../other' } }),
     })
     await ProjectsManager.reloadProjects()
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
 
     expect(ExternalProjects.has('#file:///test/shared')).toBe(false)
     expect(ExternalProjects.ownerProjectId(sharedDocUri)).toBeUndefined()
@@ -317,6 +341,7 @@ describe('ExternalProjects', () => {
       'file:///test/workspace/a/likec4.config.json': config({ name: 'a' }),
     })
     await ProjectsManager.reloadProjects()
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
     expect(ExternalProjects.all()).toEqual([])
     expect(LangiumDocuments.hasDocument(URI.parse('file:///test/other/model.c4'))).toBe(false)
     expect(LangiumDocuments.all.map(d => d.uri.toString()).filter(u => u.startsWith('file:')).toArray()).toEqual([
@@ -340,6 +365,7 @@ describe('ExternalProjects', () => {
     })
     fs.remove('file:///test/shared/removed.c4')
     await t.services.shared.workspace.ProjectsManager.reloadProjects()
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
 
     const { ExternalProjects, LangiumDocuments } = t.services.shared.workspace
     expect(ExternalProjects.all()).toHaveLength(1)
@@ -367,11 +393,10 @@ describe('ExternalProjects', () => {
     })
     await ProjectsManager.registerConfigFile(URI.parse('file:///test/workspace/a/likec4.config.json'))
 
-    await vi.waitFor(() => {
-      expect(ExternalProjects.has('#file:///test/shared')).toBe(true)
-      const doc = LangiumDocuments.getDocument(URI.parse('file:///test/shared/model.c4'))
-      expect(doc?.state).toBe(DocumentState.Validated)
-    })
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+    expect(ExternalProjects.has('#file:///test/shared')).toBe(true)
+    const doc = LangiumDocuments.getDocument(URI.parse('file:///test/shared/model.c4'))
+    expect(doc?.state).toBe(DocumentState.Validated)
     expect(t.services.likec4.FqnIndex.elements('#file:///test/shared' as ProjectId).map(e => e.id).toArray().sort())
       .toEqual(['api', 'db'])
   })
@@ -431,6 +456,255 @@ describe('ExternalProjects', () => {
     expect(ExternalProjects.findByFolder('c:\\work\\shared')?.id).toBe('#file:///c%3A/work/shared')
   })
 
+  it('skips a dependency folder that contains the workspace', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///repo/docs/arch' })
+    mockFileSystem(t, {
+      'file:///repo/docs/arch/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { docs: '../..', repo: '../../..' },
+      }),
+      'file:///repo/docs/arch/a/model.c4': 'model { component a }',
+      'file:///repo/docs/readme.c4': 'model { component readme }',
+    })
+    await startWorkspace(t, 'file:///repo/docs/arch')
+
+    const { ExternalProjects, ProjectsLookup, LangiumDocuments } = t.services.shared.workspace
+    expect(ExternalProjects.all()).toEqual([])
+    expect(ExternalProjects.dependencyTargets().size).toBe(0)
+    expect(ProjectsLookup.ownerProjectId('file:///repo/docs/arch/a/model.c4')).toBe('a')
+    expect(LangiumDocuments.hasDocument(URI.parse('file:///repo/docs/readme.c4'))).toBe(false)
+    expect(t.services.likec4.FqnIndex.elements('a' as ProjectId).map(e => e.id).toArray()).toEqual(['a'])
+  })
+
+  it('skips a dependency folder that contains a workspace project', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const { ProjectsManager, ExternalProjects } = t.services.shared.workspace
+    await t.initialize()
+    // project registered outside of workspace folders (e.g. by the CLI)
+    await ProjectsManager.registerProject({
+      config: { name: 'outside' },
+      folderUri: URI.parse('file:///other/root/project'),
+    })
+    await ProjectsManager.registerProject({
+      config: { name: 'a', dependencies: { root: '../../../other/root' } },
+      folderUri: URI.parse('file:///test/workspace/a'),
+    })
+    expect(ExternalProjects.dependencyTargets().size).toBe(0)
+  })
+
+  it('creates one document per URI for nested dependency folders', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { outer: '../../deps', inner: '../../deps/inner' },
+      }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/deps/outer.c4': 'specification { element component }',
+      'file:///test/deps/inner/model.c4': 'model { component inner }',
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+
+    const { ExternalProjects, LangiumDocuments, ProjectsLookup } = t.services.shared.workspace
+    const outer = '#file:///test/deps' as ProjectId
+    const inner = '#file:///test/deps/inner' as ProjectId
+    expect(ExternalProjects.all().map(p => p.id)).toEqual([outer, inner])
+    const uris = LangiumDocuments.all.map(d => d.uri.toString()).toArray()
+    expect(uris.filter(u => u === 'file:///test/deps/inner/model.c4')).toHaveLength(1)
+    expect(new Set(uris).size).toBe(uris.length)
+    // last registered wins
+    expect(ProjectsLookup.ownerProjectId('file:///test/deps/inner/model.c4')).toBe(inner)
+
+    // remove the inner dependency: ownership moves to the outer instance, the document stays
+    fs.write({
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { outer: '../../deps' } }),
+    })
+    await ProjectsManager_reload(t)
+    expect(ExternalProjects.all().map(p => p.id)).toEqual([outer])
+    expect(ProjectsLookup.ownerProjectId('file:///test/deps/inner/model.c4')).toBe(outer)
+    const doc = LangiumDocuments.getDocument(URI.parse('file:///test/deps/inner/model.c4'))!
+    expect(doc.likec4ProjectId).toBe(outer)
+    expect(doc.state).toBe(DocumentState.Validated)
+    expect(t.services.likec4.FqnIndex.elements(outer).map(e => e.id).toArray()).toEqual(['inner'])
+  })
+
+  it('moves ownership to another instance listing the same file on unregister', async ({ create, expect }) => {
+    const t = create()
+    await t.initialize()
+    const external = t.services.shared.workspace.ExternalProjects
+    const doc = 'file:///deps/inner/model.c4'
+    const instance = (folder: string, files: string[]): ExternalProject => ({
+      id: externalProjectIdOfFolder(folder),
+      folder: ProjectFolder(folder),
+      folderUri: URI.parse(ProjectFolder(folder)),
+      configUri: URI.parse(`${ProjectFolder(folder)}likec4.config.json`),
+      config: { name: 'x' },
+      includeConfig: { paths: [], maxDepth: 3, fileThreshold: 30 },
+      files: new Map(files.map(uri => [uri as NormalizedUri, 'model {}'])),
+    })
+    external.register(instance('file:///deps', [doc, 'file:///deps/a.c4']))
+    external.register(instance('file:///deps/inner', [doc]))
+    expect(external.ownerProjectId(doc)).toBe('#file:///deps/inner')
+    external.unregister('#file:///deps/inner')
+    expect(external.ownerProjectId(doc)).toBe('#file:///deps')
+    // re-register: last registered wins again
+    external.register(instance('file:///deps/inner', [doc]))
+    external.register(instance('file:///deps', [doc]))
+    expect(external.ownerProjectId(doc)).toBe('#file:///deps')
+    external.unregister('#file:///deps')
+    expect(external.ownerProjectId(doc)).toBe('#file:///deps/inner')
+    expect(external.ownerProjectId('file:///deps/a.c4')).toBeUndefined()
+    expect(externalProjectId('x')).toBe('#x')
+  })
+
+  it('keeps registry and documents consistent when applying is cancelled', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/shared/model.c4': sharedModel,
+      'file:///test/shared/removed.c4': 'model { component removed }',
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { ExternalProjects, LangiumDocuments, WorkspaceManager, DocumentBuilder } = t.services.shared.workspace
+
+    fs.write({
+      'file:///test/shared/model.c4': 'model { component changed }',
+      'file:///test/shared/added.c4': 'model { component added }',
+    })
+    fs.remove('file:///test/shared/removed.c4')
+    const targets = ExternalProjects.dependencyTargets()
+    const loaded = await ExternalProjects.loadAll(targets)
+    const cancelled = new Cancellation.CancellationTokenSource()
+    cancelled.cancel()
+    await WorkspaceManager['applyExternalProjects'](targets, loaded, cancelled.token).catch(() => {})
+
+    // registry and documents match, although the build was cancelled
+    const registered = ExternalProjects.get('#file:///test/shared')!
+    expect([...registered.files.keys()].sort()).toEqual([
+      'file:///test/shared/added.c4',
+      'file:///test/shared/model.c4',
+    ])
+    for (const [uri, text] of registered.files) {
+      expect(LangiumDocuments.getDocument(URI.parse(uri))?.textDocument.getText()).toBe(text)
+    }
+    expect(LangiumDocuments.hasDocument(URI.parse('file:///test/shared/removed.c4'))).toBe(false)
+
+    // the next update completes the build
+    await DocumentBuilder.update([], [])
+    expect(t.services.likec4.FqnIndex.elements('#file:///test/shared' as ProjectId).map(e => e.id).toArray().sort())
+      .toEqual(['added', 'changed'])
+  })
+
+  it('reads files outside of the workspace lock and serializes syncs', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a' }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { ExternalProjects, LangiumDocuments, ProjectsManager, WorkspaceManager, WorkspaceLock } = t.services
+      .shared.workspace
+
+    let inLock = false
+    const write = WorkspaceLock.write.bind(WorkspaceLock)
+    mockMethod(WorkspaceLock, 'write').mockImplementation(action =>
+      write(async token => {
+        inLock = true
+        try {
+          return await action(token)
+        } finally {
+          inLock = false
+        }
+      })
+    )
+    let reading = 0
+    let maxConcurrentReads = 0
+    const readsInLock = [] as string[]
+    fs.readFile.mockImplementation(async uri => {
+      if (!uri.toString().startsWith('file:///test/shared/')) {
+        return 'model { }'
+      }
+      if (inLock) {
+        readsInLock.push(uri.toString())
+      }
+      reading++
+      maxConcurrentReads = Math.max(maxConcurrentReads, reading)
+      await new Promise(resolve => setTimeout(resolve, 5))
+      reading--
+      return uri.toString().endsWith('model.c4') && uri.toString().includes('shared')
+        ? sharedModel
+        : 'model { }'
+    })
+
+    fs.write({
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+    })
+    // concurrent: single config change, two reloads
+    await Promise.all([
+      ProjectsManager.registerConfigFile(URI.parse('file:///test/workspace/a/likec4.config.json')),
+      ProjectsManager.reloadProjects(),
+      WorkspaceManager.rebuildAll(),
+    ])
+    await WorkspaceManager.whenExternalProjectsSynced()
+
+    expect(readsInLock.filter(u => u.includes('/test/shared/'))).toEqual([])
+    expect(maxConcurrentReads).toBe(1)
+    expect(ExternalProjects.all().map(p => p.id)).toEqual(['#file:///test/shared'])
+    expect(LangiumDocuments.all.filter(d => d.uri.toString() === 'file:///test/shared/model.c4').count()).toBe(1)
+  })
+
+  it('does not resync a missing dependency folder on every projects update', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../missing' } }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/workspace/b/likec4.config.json': config({ name: 'b' }),
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { ExternalProjects, ProjectsManager, WorkspaceManager, WorkspaceLock } = t.services.shared.workspace
+    expect(ExternalProjects.all()).toEqual([])
+    expect(ExternalProjects.hasStructuralChanges()).toBe(false)
+
+    const writes = mockMethod(WorkspaceLock, 'write', WorkspaceLock.write.bind(WorkspaceLock))
+    await ProjectsManager.registerProject({
+      config: { name: 'b', title: 'changed' },
+      configUri: URI.parse('file:///test/workspace/b/likec4.config.json'),
+    })
+    await WorkspaceManager.whenExternalProjectsSynced()
+    expect(writes).not.toHaveBeenCalled()
+  })
+
+  it('does not notify model listeners and keeps no model cache for external ids', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/workspace/a/model.c4': 'model { }',
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const modelBuilder = t.services.likec4.ModelBuilder
+    const notified = [] as string[]
+    modelBuilder.onModelParsed(projectId => {
+      notified.push(projectId)
+    })
+
+    // change content (document is deleted and added again)
+    fs.write({ 'file:///test/shared/model.c4': 'model { component changed }' })
+    await t.services.shared.workspace.ProjectsManager.reloadProjects()
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+    // remove the dependency
+    fs.write({ 'file:///test/workspace/a/likec4.config.json': config({ name: 'a' }) })
+    await t.services.shared.workspace.ProjectsManager.reloadProjects()
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+
+    expect(notified.filter(id => id.startsWith('#'))).toEqual([])
+    expect(modelBuilder).toBeInstanceOf(DefaultLikeC4ModelBuilder)
+    if (modelBuilder instanceof DefaultLikeC4ModelBuilder) {
+      expect(modelBuilder['cache'].has('#file:///test/shared' as ProjectId)).toBe(false)
+    }
+  })
+
   it('keeps a workspace without dependencies unchanged', async ({ create, expect }) => {
     const t = create({ workspace: 'file:///test/workspace' })
     mockFileSystem(t, {
@@ -446,6 +720,7 @@ describe('ExternalProjects', () => {
     expect(ProjectsLookup.isExcluded(doc)).toBe(ProjectsManager.isExcluded(doc))
     expect(ProjectsLookup.isIncluded('a' as ProjectId, doc)).toBe(true)
     await ProjectsManager.reloadProjects()
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
     expect(ExternalProjects.all()).toEqual([])
   })
 })
