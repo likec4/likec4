@@ -7,6 +7,9 @@
 
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import type { AnyTextAdapter } from '@tanstack/ai'
+import type { LikeC4AppConfig, LikeC4AppOptions } from './app-options'
+
+export type { LikeC4AppConfig, LikeC4AppOptions }
 
 export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
   /**
@@ -92,39 +95,14 @@ export type LikeC4WorkspaceOptions = {
 }
 
 /**
- * Configuration for the LikeC4 application, that is built with Vite or CLI
- */
-export interface LikeC4AppConfig {
-  /**
-   * Webcomponent prefix for likec4 webcomponents
-   * @default 'likec4'
-   */
-  webcomponentPrefix?: string
-  /**
-   * Page title for the application
-   * @default 'LikeC4'
-   */
-  pageTitle?: string
-  /**
-   * Whether to use hash history for the application
-   * @default false
-   */
-  useHashHistory?: boolean | undefined
-  /**
-   * Default color scheme for the application
-   * @default 'auto'
-   */
-  theme?: 'light' | 'dark' | undefined
-}
-
-/**
  * Configuration for the LikeC4 Vite plugin
  *
  * @see {@link LikeC4WorkspaceOptions} for workspace options (language services)
- * @see {@link LikeC4AppConfig} for application-specific options
+ * @see {@link LikeC4AppOptions} for application-specific options
  */
 export type LikeC4VitePluginOptions =
   & LikeC4WorkspaceOptions
+  & LikeC4AppOptions
   & {
     /**
      * AI configuration, by default enabled with automatic detection based on environment variables.
@@ -158,28 +136,7 @@ export type LikeC4VitePluginOptions =
     environments?: string | string[]
 
     /**
-     * Configuration for the LikeC4 application, that is built with Vite or CLI
+     * @deprecated Use the options at the top level: `title`, `theme`, `useHashHistory`, `webcomponentPrefix`
      */
     appConfig?: LikeC4AppConfig | undefined
-
-    /**
-     * Path to the file that customizes LikeC4 UI, relative to the vite project root.
-     * The file must default-export the result of `defineCustomComponents` from `likec4/react`.
-     *
-     * The overrides are applied to the LikeC4 application and to the components from `likec4:react`.
-     *
-     * @experimental
-     * @example
-     * ```tsx
-     * // likec4.customization.tsx
-     * import { defineCustomComponents } from 'likec4/react'
-     *
-     * export default defineCustomComponents(({ wrap }) => ({
-     *   LikeC4Diagram: wrap(({ Original, ...props }) => (
-     *     <Original {...props} pannable={false} />
-     *   )),
-     * }))
-     * ```
-     */
-    customization?: string | undefined
   }

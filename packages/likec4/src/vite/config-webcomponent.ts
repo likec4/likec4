@@ -67,9 +67,7 @@ export function viteWebcomponentConfig({
       LikeC4VitePlugin({
         ai: 'disabled',
         languageServices: languageServices.languageServices,
-        appConfig: {
-          webcomponentPrefix,
-        },
+        webcomponentPrefix,
       }),
     ],
   } satisfies InlineConfig

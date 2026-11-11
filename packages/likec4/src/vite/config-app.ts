@@ -108,12 +108,10 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
     plugins: [
       LikeC4VitePlugin({
         languageServices: languageServices.languageServices,
-        appConfig: {
-          webcomponentPrefix,
-          pageTitle: title,
-          useHashHistory: cfg.useHashHistory,
-          theme: cfg.theme,
-        },
+        webcomponentPrefix,
+        title,
+        useHashHistory: cfg.useHashHistory,
+        theme: cfg.theme,
       }),
       react(),
       // Enable single file output

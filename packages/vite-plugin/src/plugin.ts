@@ -18,6 +18,7 @@ import type {
   PluginOption,
 } from 'vite'
 import { detectAI } from './ai/detect-ai'
+import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
@@ -96,10 +97,16 @@ const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
 export function LikeC4VitePlugin({
   environments,
   appConfig,
+  title,
+  theme,
+  useHashHistory,
+  webcomponentPrefix,
   customization,
   ai: _ai = 'auto',
   ...pluginOpts
 }: LikeC4VitePluginOptions): PluginOption {
+  const appOptions = resolveAppOptions({ title, theme, useHashHistory, webcomponentPrefix, customization }, appConfig)
+
   let likec4: LikeC4LanguageServices
   let assetsDir: string
   let customizationFile: string | undefined
@@ -109,7 +116,7 @@ export function LikeC4VitePlugin({
 
   const virtuals = [
     ..._virtuals,
-    createAppConfigModule(appConfig),
+    createAppConfigModule(appOptions),
   ]
 
   const initAI = async () => {
@@ -184,8 +191,8 @@ export function LikeC4VitePlugin({
     async configResolved(config) {
       const isDev = rpcEnabled = config.command === 'serve'
 
-      if (customization) {
-        customizationFile = resolve(config.root, customization)
+      if (appOptions.customization) {
+        customizationFile = resolve(config.root, appOptions.customization)
         if (!existsSync(customizationFile)) {
           throw new Error(`LikeC4 customization file not found: ${customizationFile}`)
         }
