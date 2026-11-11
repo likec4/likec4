@@ -168,11 +168,11 @@ But it is possible to use a generic from the library:
 
 ```tsx
 import { ReactLikeC4, LikeC4ModelProvider } from 'likec4/react'
-import { RenderIcon, likeC4Model } from './likec4.generated'
+import { RenderIcon, likec4model } from './likec4.generated'
 
 const App = () => {
   return (
-    <LikeC4ModelProvider likec4model={likeC4Model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <ReactLikeC4
         viewId={"index"}
         renderIcon={RenderIcon} // Optional, used for bundled icons
@@ -183,10 +183,4 @@ const App = () => {
 }
 ```
 
-</Aside>
-
-## Styling
-
-<Aside type='caution' title="In progress" >
-  TODO: Document styling and theming with PandaCSS
 </Aside>

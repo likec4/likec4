@@ -258,16 +258,13 @@ import {
   useEnabledFeatures,
   useCurrentViewId,
 
-  // XYFlow hooks
-  useXYFlow,
-  useXYStore,
-  useXYStoreApi,
-
   // Diagram API
   useDiagram,
+  useOnDiagramEvent,
 
-  // Select from state
-  useDiagramContext
+  // Select from the diagram state
+  useDiagramSelector,
+  selectDiagramSnapshot,
 } from 'likec4/react'
 ```
 
@@ -587,5 +584,3 @@ You can also use [hooks](/tooling/react/#hooks) to access the model and diagram 
 ### Custom styles
 
 LikeC4Diagram uses [PandaCSS](https://panda-css.com) for styling. You can use it to customize the styles.
-
-TODO: add example

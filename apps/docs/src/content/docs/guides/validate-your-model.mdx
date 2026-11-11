@@ -36,7 +36,7 @@ Suppose we want to enforce that every element of kind `app` has a `technology` s
 
 ```ts
 // test/metadata.spec.ts
-import { LikeC4 } from './LikeC4'
+import { LikeC4 } from 'likec4'
 import { test } from 'vitest'
 
 // Initialize and compute LikeC4 Model
@@ -118,7 +118,7 @@ interface LikeC4TestFixtures {
   likec4: typeof likec4model
 }
 
-// This wil be our test function with the model in the context
+// This will be our test function with the model in the context
 export const likec4test = test.extend<LikeC4TestFixtures>({
   likec4: async ({}, use) => {
     await use(likec4model)
