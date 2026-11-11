@@ -32,21 +32,33 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
         return []
       }
       const projectId = projectIdFrom(ast)
-
-      return {
-        range: {
-          start: range.start,
-          end: {
-            line: range.start.line,
-            character: range.start.character + 4,
-          },
-        },
-        command: {
-          command: 'likec4.open-preview',
-          arguments: [viewId, projectId],
-          title: 'open preview',
+      const lensRange = {
+        start: range.start,
+        end: {
+          line: range.start.line,
+          character: range.start.character + 4,
         },
       }
+
+      // Client commands — executed by the VS Code extension, not the language server.
+      return [
+        {
+          range: lensRange,
+          command: {
+            command: 'likec4.open-preview',
+            arguments: [viewId, projectId],
+            title: 'open preview',
+          },
+        },
+        {
+          range: lensRange,
+          command: {
+            command: 'likec4.save-as-png',
+            arguments: [viewId, projectId],
+            title: 'save png',
+          },
+        },
+      ]
     })
   }
 }

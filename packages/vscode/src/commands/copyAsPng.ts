@@ -6,7 +6,11 @@ import * as vscode from 'vscode'
 import { isVirtual, isWebUi } from '../const'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
-import { isLikeC4Source } from '../utils'
+import {
+  resolveExportTheme,
+  resolveWorkspaceFolder,
+  saveDirtyLikeC4Documents,
+} from './exportPngShared'
 import type { PreviewPanel } from './types'
 
 export interface CopyAsPngCommandDeps {
@@ -76,43 +80,4 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
       await vscode.window.showErrorMessage(`Copy as PNG failed: ${message}`)
     }
   })
-}
-
-async function saveDirtyLikeC4Documents(): Promise<void> {
-  const dirty = vscode.workspace.textDocuments.filter(
-    (doc) => doc.isDirty && !doc.isUntitled && isLikeC4Source(doc.fileName),
-  )
-  const results = await Promise.all(dirty.map(async (doc) => ({
-    uri: doc.uri.toString(),
-    saved: await doc.save(),
-  })))
-  const failed = results.filter((result) => !result.saved)
-  if (failed.length > 0) {
-    throw new Error(
-      `Failed to save dirty LikeC4 document(s) before export: ${failed.map((f) => f.uri).join(', ')}`,
-    )
-  }
-}
-
-function resolveWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
-  const folders = vscode.workspace.workspaceFolders
-  if (!folders || folders.length === 0) {
-    return undefined
-  }
-  const active = vscode.window.activeTextEditor?.document.uri
-  if (active) {
-    return vscode.workspace.getWorkspaceFolder(active) ?? folders[0]
-  }
-  return folders[0]
-}
-
-function resolveExportTheme(): 'light' | 'dark' {
-  const kind = vscode.window.activeColorTheme.kind
-  switch (kind) {
-    case vscode.ColorThemeKind.Dark:
-    case vscode.ColorThemeKind.HighContrast:
-      return 'dark'
-    default:
-      return 'light'
-  }
 }

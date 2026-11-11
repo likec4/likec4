@@ -225,6 +225,10 @@
           "when": "activeWebviewPanelId == 'likec4-preview'"
         },
         {
+          "command": "likec4.save-as-png",
+          "when": "resourceLangId == likec4 || activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
           "command": "likec4.locate",
           "when": "activeWebviewPanelId == 'likec4-preview'"
         },
@@ -274,6 +278,11 @@
       {
         "command": "likec4.preview-context-copy-as-png",
         "title": "%ext.cmd.preview-context-copy-as-png%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.save-as-png",
+        "title": "%ext.cmd.save-as-png%",
         "category": "%ext.title%"
       },
       {
