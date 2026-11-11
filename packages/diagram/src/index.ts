@@ -142,3 +142,5 @@ export {
   Logo,
   LogoIcon,
 } from './components/Logo'
+
+export { defineLikeC4Webcomponent } from './webcomponent/defineWebcomponent'

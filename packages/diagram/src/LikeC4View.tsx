@@ -552,8 +552,3 @@ export const LikeC4View = customizable('LikeC4View')(<A extends t.Any = t.Any>(p
     </ShadowRoot>
   )
 })
-declare module './custom/customizable' {
-  interface RegisterCustomizable {
-    LikeC4View: typeof LikeC4View
-  }
-}

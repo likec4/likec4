@@ -4,35 +4,24 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
+import { isEmptyish, isNullish, omitBy } from 'remeda'
 
-import { type PropsWithChildren, createContext, useMemo, useRef } from 'react'
-import type { CustomComponents, CustomizationContextValue } from './customizable'
-import { type StableComponentInstances, applyStableCustomComponents } from './stableComponents'
+import { type FC, type PropsWithChildren, createContext, useMemo, useRef } from 'react'
+import { type CustomComponent, type CustomComponents, WrappedMarker } from './customization-types'
+
+type CustomizationContextValue = {
+  components: CustomComponents
+}
 
 export const CustomizationContext = createContext<CustomizationContextValue | null>(null)
 CustomizationContext.displayName = 'CustomizationContext'
-
-/**
- * Keeps a stable function identity per slot while swapping the underlying
- * implementation. That makes override maps HMR-friendly: dependents keep the
- * same component reference while the latest replace/wrap body is used.
- */
-function useStableComponents(
-  input: CustomizationContextValue['components'],
-): CustomComponents | undefined {
-  const instancesRef = useRef<StableComponentInstances>({})
-  return useMemo(
-    () => applyStableCustomComponents(instancesRef.current, input),
-    [input],
-  )
-}
 
 type CustomizationProviderProps = {
   /**
    * Slot overrides from {@link defineCustomComponents}.
    * Prefer a module-scoped constant so the map identity stays stable across HMR.
    */
-  components?: CustomizationContextValue['components'] | undefined
+  components?: CustomComponents | undefined
 }
 
 /**
@@ -78,13 +67,80 @@ export function CustomizationProvider({
   children,
 }: PropsWithChildren<CustomizationProviderProps>) {
   const stable = useStableComponents(components)
-  const value = useMemo(
-    (): CustomizationContextValue => ({ components: stable }),
-    [stable],
-  )
   return (
-    <CustomizationContext.Provider value={value}>
+    <CustomizationContext.Provider
+      value={useMemo(
+        () => stable ? { components: stable } : null,
+        [stable],
+      )}>
       {children}
     </CustomizationContext.Provider>
   )
+}
+
+/**
+ * Keeps a stable function identity per slot while swapping the underlying
+ * implementation. That makes override maps HMR-friendly: dependents keep the
+ * same component reference while the latest replace/wrap body is used.
+ */
+function useStableComponents(
+  input: CustomComponents | undefined,
+): CustomComponents | undefined {
+  const instancesRef = useRef<StableComponentInstances>({})
+  return useMemo(
+    () => applyStableCustomComponents(instancesRef.current, input),
+    [input],
+  )
+}
+
+type StableComponentEntry = {
+  component: CustomComponent<FC<any>>
+  instance: CustomComponent<FC<any>>
+}
+
+type StableComponentInstances = Record<string, StableComponentEntry | undefined>
+
+/**
+ * Builds a components map with stable function identities per slot.
+ * Mutates `instances` so later calls with new override bodies reuse the same shells.
+ *
+ * @internal
+ */
+function applyStableCustomComponents(
+  instances: StableComponentInstances,
+  input: CustomComponents | undefined,
+): CustomComponents | undefined {
+  const normalized = input === undefined
+    ? undefined
+    : omitBy(input, isNullish) as Record<string, CustomComponent<FC<any>>>
+  if (normalized === undefined || isEmptyish(normalized)) {
+    return undefined
+  }
+
+  const next: CustomComponents = {}
+
+  for (const [key, value] of Object.entries(normalized)) {
+    if (value == null) {
+      continue
+    }
+    let ref = instances[key]
+    if (!ref) {
+      const entry: StableComponentEntry = {
+        component: value,
+        instance: (props => entry.component(props)) as FC<any>,
+      }
+      ref = entry
+      instances[key] = entry
+    }
+    ref.component = value
+    if (value[WrappedMarker]) {
+      ref.instance[WrappedMarker] = true
+    } else {
+      delete ref.instance[WrappedMarker]
+    } // Dynamic slot key — assign through a mutable record view.
+
+    ;(next as Record<string, CustomComponent<any>>)[key] = ref.instance
+  }
+
+  return next
 }

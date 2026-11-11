@@ -72,9 +72,6 @@ export { CustomizationProvider } from './CustomizationContext'
 
 export { defineCustomComponents } from './customizable'
 export type {
-  CustomComponent,
   CustomComponents,
-  Original,
-  PropsOf,
-  RegisterCustomizable,
-} from './customizable'
+  Customizables,
+} from './customization-types'

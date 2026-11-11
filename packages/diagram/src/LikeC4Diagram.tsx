@@ -252,12 +252,6 @@ export const LikeC4Diagram = customizable('LikeC4Diagram')(<A extends t.Any = t.
   )
 })
 
-declare module './custom/customizable' {
-  interface RegisterCustomizable {
-    LikeC4Diagram: typeof LikeC4Diagram
-  }
-}
-
 const toLiteralPaddingWithUnit = (value: PaddingWithUnit): PaddingWithUnit & string => {
   if (typeof value === 'number') {
     return `${value}px`

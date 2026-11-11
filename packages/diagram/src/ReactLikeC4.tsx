@@ -130,8 +130,3 @@ export const ReactLikeC4 = customizable('ReactLikeC4')(
     )
   },
 )
-declare module './custom/customizable' {
-  interface RegisterCustomizable {
-    ReactLikeC4: typeof ReactLikeC4
-  }
-}

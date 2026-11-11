@@ -5,81 +5,89 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type ComponentProps, type ReactNode, use } from 'react'
+// import type { Customizable, Customizables, FC, ValidName } from '@likec4/diagram-customization'
+// import type { CustomComponentName } from '@likec4/diagram-customization'
+import { type ComponentProps, type FC, type JSX, type ReactNode, use } from 'react'
+import type { Simplify } from 'type-fest'
+import {
+  type CustomComponent,
+  type CustomComponents,
+  type Customizable,
+  type CustomizableName,
+  type Customizables,
+  type Wrapper,
+  WrappedMarker,
+} from './customization-types'
 import { CustomizationContext } from './CustomizationContext'
 
-type FC<P = {}> = {
-  (props: P): ReactNode
-  displayName?: string | undefined
-}
+// type FC<P = {}> = {
+//   (props: P): ReactNode
+//   displayName?: string | undefined
+// }
 
-/**
- * Marker copied onto wrap overrides so the registered shell can inject `Original`.
- * @internal
- */
-export const WrappedMarker = Symbol.for('likec4.customizable.wrapped')
+// /**
+//  * Marker copied onto wrap overrides so the registered shell can inject `Original`.
+//  * @internal
+//  */
+// export const WrappedMarker = Symbol.for('likec4.customizable.wrapped')
 
-export type Customizable<
-  TComponent extends FC<any>,
-  Name extends string,
-> = TComponent & {
-  readonly displayName: Name
-}
+// export type { Customizable } from '@likec4/diagram-customization'
+// // export type Customizable<
+// //   TComponent extends FC<any>,
+// //   Name extends string,
+// // > = TComponent & {
+// //   readonly displayName: Name
+// // }
 
-/**
- * Augmentation interface for customizable component slots.
- *
- * Slots are registered by LikeC4 internals via {@link customizable}.
- * Consumers override them through {@link defineCustomComponents}.
- *
- * @experimental
- */
-export interface RegisterCustomizable {
-}
+// /**
+//  * Augmentation interface for customizable component slots.
+//  *
+//  * Slots are registered by LikeC4 internals via {@link customizable}.
+//  * Consumers override them through {@link defineCustomComponents}.
+//  *
+//  * @experimental
+//  */
+// export interface RegisterCustomizable {
+// }
 
-export type PropsOf<N extends keyof RegisterCustomizable> = ComponentProps<RegisterCustomizable[N]>
+// export type PropsOf<N> = N extends (props: infer P) => any ? P : never
 
-/**
- * The original implementation of a registered slot, passed to wrap overrides.
- *
- * @experimental
- */
-export interface Original<N extends keyof RegisterCustomizable> {
-  (props: PropsOf<N>): ReactNode
-}
+// /**
+//  * The original implementation of a registered slot, passed to wrap overrides.
+//  *
+//  * @experimental
+//  */
+// export interface Original<N extends keyof RegisterCustomizable> {
+//   (props: PropsOf<N>): ReactNode
+// }
 
-type Wrapper<N extends keyof RegisterCustomizable> = FC<
-  {
-    Original: Original<N>
-  } & PropsOf<N>
->
+// type Wrapper<P> = (props: P & { Original: FC<P> }) => JSX.Element
 
-/**
- * A replacement or wrap override for a registered slot.
- *
- * @experimental
- */
-export interface CustomComponent<N extends keyof RegisterCustomizable> {
-  (props: PropsOf<N>): ReactNode
-  [WrappedMarker]?: true | undefined
-}
+// /**
+//  * A replacement or wrap override for a registered slot.
+//  */
+// export type CustomComponent<N extends CustomComponentName> =
+//   | Customizables[N] & {
+//     [WrappedMarker]?: never
+//   }
+//   | Wrapper<PropsOf<Customizables[N]>> & {
+//     [WrappedMarker]: true
+//   }
 
-/**
- * Partial map of slot overrides for {@link CustomizationProvider}.
- *
- * @experimental
- */
-export type CustomComponents = {
-  [K in keyof RegisterCustomizable]?: CustomComponent<K> | undefined
-}
+// /**
+//  * Partial map of slot overrides for {@link CustomizationProvider}.
+//  *
+//  * @experimental
+//  */
+// export type CustomComponents = {
+//   [K in Registered]?: CustomComponent<K>
+// }
 
-export type CustomizationContextValue = {
-  components?: CustomComponents | undefined
-}
+// export type CustomizationContextValue = {
+//   components?: CustomComponents | undefined
+// }
 
-type ValidRegistration<N extends string> = N extends keyof RegisterCustomizable ? N : never
-
-type Registered = keyof RegisterCustomizable
+// type Registered = CustomComponentName
 
 /**
  * Marks a component as a wrap override. The registered shell injects `Original`
@@ -87,10 +95,10 @@ type Registered = keyof RegisterCustomizable
  *
  * @experimental
  */
-export function wrapCustomComponent<N extends Registered>(
-  wrapper: Wrapper<N>,
-): CustomComponent<N> {
-  return Object.assign(wrapper as CustomComponent<N>, { [WrappedMarker]: true as const })
+function wrapOriginal<P>(
+  wrapper: Wrapper<P>,
+): (props: P) => any {
+  return Object.assign(wrapper, { [WrappedMarker]: true as const }) as any
 }
 
 /**
@@ -111,22 +119,22 @@ export function wrapCustomComponent<N extends Registered>(
  *
  * @experimental
  */
-export function defineCustomComponents<T extends CustomComponents>(
-  value: T | ((ctx: { wrap: typeof wrapCustomComponent }) => T),
-): T {
+export function defineCustomComponents(
+  value: Partial<Customizables> | ((ctx: { wrap: typeof wrapOriginal }) => Partial<Customizables>),
+): CustomComponents {
   if (typeof value === 'function') {
-    return value({ wrap: wrapCustomComponent })
+    return value({ wrap: wrapOriginal })
   }
   return value
 }
 
-function useCustomization<T extends Registered>(name: T): CustomComponent<T> | undefined {
-  return use(CustomizationContext)?.components?.[name] as CustomComponent<T> | undefined
+function useCustomization(name: CustomizableName): CustomComponent<FC<any>> | undefined {
+  return use(CustomizationContext)?.components?.[name]
 }
 
-const registry = new Map<Registered, {
+const registry = new Map<CustomizableName, {
   Original: FC<any>
-  Registered: FC<any>
+  HMRBoundary: FC<any>
 }>()
 
 function register<
@@ -136,12 +144,12 @@ function register<
   displayName: Name,
   original: TComponent,
 ): Customizable<TComponent, Name> {
-  const name = displayName as Registered
+  const name = displayName as CustomizableName
   const existing = registry.get(name)
   if (existing) {
     // HMR: keep the same Registered shell, swap the Original implementation.
     existing.Original = original
-    return existing.Registered as Customizable<TComponent, Name>
+    return existing.HMRBoundary as Customizable<TComponent, Name>
   }
 
   type OriginalProps = ComponentProps<typeof original>
@@ -149,21 +157,21 @@ function register<
 
   const ref = {
     Original: original as OriginalFC,
-    Registered: ((props: OriginalProps) => {
+    HMRBoundary: ((props: OriginalProps) => {
       const Cmp = useCustomization(name)
-      if (Cmp) {
-        if (Cmp[WrappedMarker]) {
-          return <>{Cmp({ Original: ref.Original, ...props })}</>
-        }
-        return <>{Cmp(props)}</>
+      if (!Cmp) {
+        return <ref.Original {...props} />
       }
-      return <ref.Original {...props} />
+      if (Cmp[WrappedMarker]) {
+        return <Cmp Original={ref.Original} {...props} />
+      }
+      return <Cmp {...props} />
     }) as OriginalFC,
   }
-  ref.Registered.displayName = displayName
+  ref.HMRBoundary.displayName = displayName
 
   registry.set(name, ref)
-  return ref.Registered as Customizable<TComponent, Name>
+  return ref.HMRBoundary as Customizable<TComponent, Name>
 }
 
 /**
@@ -172,7 +180,7 @@ function register<
  * @internal Prefer not to call from user code — slot names are owned by LikeC4.
  */
 export function customizable<Name extends string>(
-  displayName: Name & ValidRegistration<Name>,
+  displayName: Name,
 ): <TComponent extends FC<any>>(
   Component: TComponent,
 ) => Customizable<TComponent, Name> {

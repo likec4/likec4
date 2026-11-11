@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { isDevelopment } from 'std-env'
 import k from 'tinyrainbow'
@@ -114,6 +115,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
           theme: cfg.theme,
         },
       }),
+      react(),
       // Enable single file output
       isSingleFile ? viteSingleFile() : undefined,
     ],

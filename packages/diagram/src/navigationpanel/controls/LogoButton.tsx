@@ -12,21 +12,21 @@ type LogoButtonProps = {
   onMouseLeave: React.MouseEventHandler<HTMLButtonElement>
 } & Omit<ComponentPropsWithRef<'button'>, CssProperty>
 
-const NavigationPanelLogo = customizable('NavigationPanelLogo')(
-  (props: LogoButtonProps) => <NavigationPanel.Logo {...props} />,
-)
-declare module '../../custom/customizable' {
-  interface RegisterCustomizable {
-    NavigationPanelLogo: typeof NavigationPanelLogo
-  }
-}
+// const NavigationPanelLogo = customizable('NavigationPanelLogo')(
+//   (props: LogoButtonProps) => <NavigationPanel.Logo {...props} />,
+// )
+// declare module '@likec4/diagram-customization' {
+//   interface RegisterCustomizable {
+//     NavigationPanelLogo: register<typeof NavigationPanelLogo>
+//   }
+// }
 
 export const LogoButton = () => {
   const actor = useNavigationActor()
   const { onLogoClick } = useDiagramEventHandlers()
   return (
     <m.div layout="position">
-      <NavigationPanelLogo
+      <NavigationPanel.Logo
         onMouseEnter={() => {
           actor.send({ type: 'breadcrumbs.mouseEnter.root' })
         }}

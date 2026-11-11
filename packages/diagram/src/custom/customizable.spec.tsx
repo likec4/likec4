@@ -16,13 +16,6 @@ import {
 import { CustomizationProvider } from './CustomizationContext'
 import { applyStableCustomComponents } from './stableComponents'
 
-declare module './customizable' {
-  interface RegisterCustomizable {
-    SpecSlot: typeof SpecSlot
-    SpecHmrSlot: typeof SpecHmrSlot
-  }
-}
-
 const SpecSlot = customizable('SpecSlot')(
   ({ label }: { label: string }) => <span data-testid="original">{label}</span>,
 )

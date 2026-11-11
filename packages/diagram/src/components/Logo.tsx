@@ -1,5 +1,5 @@
 import { css } from '@likec4/styles/css'
-import { type SVGProps } from 'react'
+import type { SVGProps } from 'react'
 import { customizable } from '../custom/customizable'
 
 export const Logo = customizable('LogoSvg')(
@@ -32,10 +32,3 @@ export const LogoIcon = customizable('LogoIconSvg')(
     </svg>
   ),
 )
-
-declare module '../custom/customizable' {
-  interface RegisterCustomizable {
-    LogoSvg: typeof Logo
-    LogoIconSvg: typeof LogoIcon
-  }
-}
