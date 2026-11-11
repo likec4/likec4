@@ -35,7 +35,10 @@ export class ProjectsLookup {
    * If the document does not belong to any project, returns the default project ID.
    */
   ownerProjectId(document: DocOrUri): ProjectId {
-    return this.externalProjects.ownerProjectId(document) ?? this.projectsManager.ownerProjectId(document)
+    return this.externalProjects.ownerProjectId(document)
+      // documents of a just unregistered instance, while their deletion is reported
+      ?? this.externalProjects.retiredOwnerProjectId(document)
+      ?? this.projectsManager.ownerProjectId(document)
   }
 
   /**

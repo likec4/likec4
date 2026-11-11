@@ -279,17 +279,19 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public async rebuildAll(cancelToken?: Cancellation.CancellationToken): Promise<void> {
-    // Re-read external projects (dependencies outside the workspace):
-    // changes in them are picked up on reload of projects.
-    // Not awaited: the sync takes the workspace write-lock, and rebuildAll may run under it
-    // (use whenExternalProjectsSynced to wait for it)
-    if (this.#performedStartup) {
-      void this.requestExternalProjectsSync('reread')
-    }
     const uris = this.services.workspace.LangiumDocuments.resetProjectIds()
     this.#logger.info('invalidate and rebuild all {docs} documents', { docs: uris.length })
     this.forceCleanCaches()
-    await this.documentBuilder.update(uris, [], cancelToken)
+    const build = this.documentBuilder.update(uris, [], cancelToken)
+    // Re-read external projects (dependencies outside the workspace):
+    // changes in them are picked up on reload of projects.
+    // The sync is applied after this build completes.
+    // Not awaited: the sync takes the workspace write-lock, and rebuildAll may run under it
+    // (callers outside of the lock use whenExternalProjectsSynced to wait for it)
+    if (this.#performedStartup) {
+      void this.requestExternalProjectsSync('reread', build)
+    }
+    await build
   }
 
   public get workspaceUri(): URI {
@@ -400,10 +402,17 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   /**
    * Sync that is queued, but not started yet (new requests join it)
    */
-  #queuedSync: { mode: 'structural' | 'reread'; promise: Promise<void> } | null = null
+  #queuedSync: {
+    mode: 'structural' | 'reread'
+    promise: Promise<void>
+    after: Array<Promise<unknown>>
+  } | null = null
 
   /**
    * Resolves when all requested syncs of external projects are completed.
+   *
+   * Must not be awaited inside `WorkspaceLock.write`: syncs take the write-lock themselves,
+   * waiting for them from within a write deadlocks.
    */
   public whenExternalProjectsSynced(): Promise<void> {
     return this.#syncQueue
@@ -417,21 +426,27 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    *  - `structural`: only if instances have to be added or removed (dependencies changed)
    *  - `reread`: re-read all instances (reload of projects)
    */
-  protected requestExternalProjectsSync(mode: 'structural' | 'reread'): Promise<void> {
+  protected requestExternalProjectsSync(
+    mode: 'structural' | 'reread',
+    after?: Promise<unknown>,
+  ): Promise<void> {
     const queued = this.#queuedSync
     if (queued) {
       if (mode === 'reread') {
         queued.mode = 'reread'
       }
+      if (after) {
+        queued.after.push(after)
+      }
       return queued.promise
     }
-    const entry = { mode, promise: Promise.resolve() }
+    const entry = { mode, promise: Promise.resolve(), after: after ? [after] : [] }
     entry.promise = this.#syncQueue
       .then(() => {
         if (this.#queuedSync === entry) {
           this.#queuedSync = null
         }
-        return this.runExternalProjectsSync(entry.mode)
+        return this.runExternalProjectsSync(entry.mode, entry.after)
       })
       .catch(error => {
         this.#logger.warn('Failed to sync external projects', { error })
@@ -445,8 +460,13 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * Reads external projects outside of the workspace lock,
    * then takes the write-lock to apply them.
    * If dependencies changed while reading, releases the lock, reads again and retries.
+   *
+   * @param after builds the sync was requested by (e.g. rebuild of all documents), applied after them
    */
-  protected async runExternalProjectsSync(mode: 'structural' | 'reread'): Promise<void> {
+  protected async runExternalProjectsSync(
+    mode: 'structural' | 'reread',
+    after: ReadonlyArray<Promise<unknown>> = [],
+  ): Promise<void> {
     const externalProjects = this.services.workspace.ExternalProjects
     const lock = this.services.workspace.WorkspaceLock
     const maxAttempts = 3
@@ -461,16 +481,25 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       }
       // File system I/O, outside of the lock
       const loaded = await externalProjects.loadAll(targets)
+      // Wait for the builds that requested this sync (they may run without the lock)
+      await Promise.allSettled(after)
+      if (!externalProjects.differsFromRegistered(loaded) && sameKeys(externalProjects.dependencyTargets(), targets)) {
+        // Nothing to apply: do not take the write-lock (it would cancel a running write)
+        externalProjects.markSynced(targets.keys())
+        return
+      }
       // Let running writes (e.g. the reload that requested this sync) complete, instead of cancelling them
       await lock.read(() => undefined)
       let retry = false
       await lock.write(async token => {
-        if (!sameKeys(externalProjects.dependencyTargets(), targets)) {
+        // Current targets: consumers might have changed while reading
+        const current = externalProjects.dependencyTargets()
+        if (!sameKeys(current, targets)) {
           // Dependencies changed while reading
           retry = true
           return
         }
-        await this.applyExternalProjects(targets, loaded, token)
+        await this.applyExternalProjects(current, loaded, token)
       })
       if (!retry) {
         return
@@ -564,6 +593,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       .toArray()
 
     if (changedProjects.size === 0 && deleted.length === 0) {
+      externalProjects.clearRetiredOwners()
       return
     }
     this.#logger.debug`external projects changed: ${[...changedProjects].join(', ')}`
@@ -577,8 +607,13 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         this.langiumDocuments.addDocument(this.documentFactory.fromString(text, docUri))
       }
     }
-    // Builds added documents and relinks consumers
-    await update
+    try {
+      // Builds added documents and relinks consumers
+      await update
+    } finally {
+      // Deleted documents have been reported (before the build)
+      externalProjects.clearRetiredOwners()
+    }
   }
 
   /**

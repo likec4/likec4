@@ -7,6 +7,7 @@ import {
 import type { ProjectId } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
+import { deepEqual } from 'fast-equals'
 import { type LangiumDocument, Disposable, URI, UriUtils } from 'langium'
 import picomatch from 'picomatch'
 import { hasAtLeast, isNullish } from 'remeda'
@@ -165,6 +166,7 @@ export class ExternalProjects extends ADisposable {
       this.#projects.clear()
       this.#ownerOf.clear()
       this.#syncedTargets.clear()
+      this.#retiredOwners.clear()
     }))
   }
 
@@ -253,6 +255,7 @@ export class ExternalProjects extends ADisposable {
     this.#projects.set(project.id, project)
     for (const uri of project.files.keys()) {
       this.#ownerOf.set(uri, project.id)
+      this.#retiredOwners.delete(uri)
     }
     this.notifyListeners()
   }
@@ -544,6 +547,57 @@ export class ExternalProjects extends ADisposable {
   }
 
   /**
+   * Whether the loaded instances differ from the registered ones
+   * (instances added or removed, documents or config changed).
+   */
+  differsFromRegistered(loaded: ReadonlyArray<ExternalProject>): boolean {
+    if (loaded.length !== this.#projects.size) {
+      return true
+    }
+    for (const project of loaded) {
+      const registered = this.#projects.get(project.id)
+      if (
+        !registered
+        || registered.folder !== project.folder
+        || !deepEqual(registered.config, project.config)
+        || registered.files.size !== project.files.size
+      ) {
+        return true
+      }
+      for (const [uri, text] of project.files) {
+        if (registered.files.get(uri) !== text) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  /**
+   * Former owners of documents of unregistered instances (document URI -> id),
+   * kept until {@link clearRetiredOwners}, so deleted documents are attributed to the instance they belonged to.
+   */
+  #retiredOwners = new Map<NormalizedUri, ExternalProjectId>()
+
+  /**
+   * Returns the id of the unregistered instance that owned the document (until {@link clearRetiredOwners}).
+   */
+  retiredOwnerProjectId(document: DocOrUri): ExternalProjectId | undefined {
+    if (this.#retiredOwners.size === 0) {
+      return undefined
+    }
+    return this.#retiredOwners.get(toNormalizedUri(document))
+  }
+
+  /**
+   * Forgets former owners of documents of unregistered instances
+   * (called when deletion of their documents has been reported).
+   */
+  clearRetiredOwners(): void {
+    this.#retiredOwners.clear()
+  }
+
+  /**
    * Removes ownership of the documents of the project.
    * If another registered project lists the same document (nested folders),
    * the ownership moves to it (the last registered one).
@@ -563,6 +617,7 @@ export class ExternalProjects extends ADisposable {
         this.#ownerOf.set(uri, next.id)
       } else {
         this.#ownerOf.delete(uri)
+        this.#retiredOwners.set(uri, id)
       }
     }
   }
