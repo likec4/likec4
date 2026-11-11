@@ -84,6 +84,7 @@ const referenceSections = new Map([
   ['model-api.md', ['## Public API entry files', '## Package-specific instructions']],
   ['webapp.md', ['## App ↔ Language Server Architecture', '## Package-specific instructions']],
   ['sequence.md', ['## Package-specific instructions', '### packages/diagram/src/likec4diagram/xyflow-sequence']],
+  ['docs.md', ['## Documentation structure', '## Verify against the code']],
 ])
 const referencePath = name => `${referenceDirectory}/${name}`
 

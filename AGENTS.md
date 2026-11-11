@@ -23,6 +23,8 @@ Read these files explicitly; do not depend on automatic nested instruction or sk
   `packages/layouts/src/sequence/`, including calls from `packages/layouts/src/graphviz/GraphvizLayoter.ts`:
   [sequence rules](.agents/instructions/sequence.md). Also read webapp rules when
   working in the diagram dev copy.
+- For the documentation site in `apps/docs` (pages, translations, sidebar, redirects) or the public
+  `skills/likec4-dsl` skill: [docs rules](.agents/instructions/docs.md).
 
 Critical boundaries: DSL writeback loses comments, source positions, and formatting; it is generation, not formatting.
 Keep data access out of `packages/diagram`; wire it through SPA and vite-plugin. RPC is dev-only;
