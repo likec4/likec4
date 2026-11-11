@@ -83,6 +83,30 @@ Reference external directories containing `.c4` files.
 | `maxDepth`      | `number`   | `3`        | Directory scan depth (1–20)            |
 | `fileThreshold` | `number`   | `30`       | Warn if loaded file count exceeds this |
 
+### `dependencies` (experimental)
+
+Projects to import from, under a name you choose. Maps the import name (used in `import { x } from 'name'`) to the folder of the dependency project, relative to the config file. The format may change before it becomes stable.
+
+```json
+{
+  "name": "checkout",
+  "dependencies": {
+    "billing": "../billing-service",
+    "platform": "../../platform-model"
+  }
+}
+```
+
+- Import names follow the `name` rules: not `"default"`, no `.`, `@`, `#`. Paths must be relative (no absolute paths, drive letters or URLs).
+- An entry wins over a workspace project with the same name. Without an entry, `from 'name'` looks up a workspace project by `name`.
+- A folder of a workspace project resolves to that project (its `name` may differ from the import name).
+- A folder outside the workspace is loaded only as a source of elements: its `.c4`/`.likec4` files, only a JSON config (TS/JS config is not executed; without JSON config the name is the folder name), its `include` is ignored, its errors are not reported, its views are not built. Files outside the workspace are not watched: run "LikeC4: Reload projects" in VS Code or restart the CLI after changes.
+- A folder inside the workspace that is not a project folder (for example, an `include` path) fails with `Imported project not found`.
+- Not transitive: `dependencies` of a dependency are ignored; only its own elements can be imported.
+- A project cannot import itself: an entry pointing to its own folder, or an import name equal to its own `name`, is an error.
+
+Docs: https://likec4.dev/config/multi-projects/#dependencies
+
 ### `exclude`
 
 Glob patterns (picomatch) to exclude files. Default: `["**/node_modules/**"]`.
@@ -237,6 +261,7 @@ workspace/
 ```
 
 Use `include.paths` to share `.c4` files across projects.
+Use `dependencies` (experimental) to import a project under another name, or a project outside the workspace.
 
 ## Minimal Starter Config
 

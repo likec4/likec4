@@ -56,7 +56,7 @@ Use `metadata` para armazenar dados arbitrários de chave-valor no nível do pro
 
 ### Nome do projeto
 
-`name` identifica o projeto. Outros projetos o usam para [importar elementos](/pt-br/config/multi-projects/#importar-elementos).
+`name` identifica o projeto. Outros projetos o usam para [importar elementos](/pt-br/config/multi-projects/#importar-elementos), a menos que declarem o projeto em [`dependencies`](#dependências).
 
 - Ele deve ser único no workspace.
 - Ele não pode ser `default`: esse nome é reservado para arquivos fora de qualquer projeto.
@@ -214,6 +214,27 @@ Os caminhos de inclusão devem ser relativos. Caminhos absolutos (como `/usr/sha
 
 Os padrões de `exclude` do projeto também se aplicam aos diretórios incluídos.  
 Para compartilhar arquivos entre projetos dessa forma, consulte [Vários projetos](/pt-br/config/multi-projects/#compartilhar-especificação).
+
+## Dependências
+
+:::caution[Experimental]
+A seção `dependencies` é experimental. O formato dela pode mudar antes de se tornar estável.
+:::
+
+`dependencies` associa os nomes usados na importação às pastas dos projetos de dependência, relativas à pasta do projeto.
+Uma dependência pode ser um projeto do workspace ou uma pasta fora do workspace.
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing": "../billing-service"
+  }
+}
+```
+
+Para saber como as importações são resolvidas e quais são as limitações, veja [Vários projetos](/pt-br/config/multi-projects/#dependências).
 
 ## Excluir arquivos
 
