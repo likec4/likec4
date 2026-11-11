@@ -19,6 +19,7 @@ import type {
 } from '@likec4/core/types'
 import JSON5 from 'json5'
 import z from 'zod/v4'
+import { DependenciesSchema, normalizeDependencies, projectNameSchema } from './schema.dependencies'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
@@ -114,16 +115,7 @@ export const LandingPageSchema = z
   })
 
 export const LikeC4ProjectJsonConfigSchema = z.object({
-  name: z.string()
-    .nonempty('Project name cannot be empty')
-    .refine((value) => value !== 'default', {
-      abort: true,
-      error: 'Project name cannot be "default"',
-    })
-    .refine((value) => !value.includes('.') && !value.includes('@') && !value.includes('#'), {
-      abort: true,
-      error: 'Project name cannot contain ".", "@" or "#", try to use A-z, 0-9, _ and -',
-    })
+  name: projectNameSchema('Project name')
     .meta({ description: 'Project name, must be unique in the workspace' }),
   extends: z.union([
     z.string().min(1, 'Extend path cannot be empty'),
@@ -147,6 +139,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
   }),
   imageAliases: ImageAliasesSchema.optional(),
   include: IncludeSchema.optional(),
+  dependencies: DependenciesSchema.optional(),
   exclude: z.array(z.string())
     .optional()
     .meta({ description: 'List of file patterns to exclude from the project, default is ["**/node_modules/**"]' }),
@@ -392,4 +385,5 @@ export const LikeC4ProjectConfigOps = {
       fileThreshold: 30,
     }
   },
+  normalizeDependencies,
 }
