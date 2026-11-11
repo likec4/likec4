@@ -27,6 +27,10 @@ export default defineConfig({
     '/pt-br/dsl/config/programmatic/': '/pt-br/config/',
     '/dsl/config/app-config/': '/tooling/app-config/',
     '/dsl/config/customization/': '/tooling/customization/',
+    '/tooling/code-generation/webcomponent/': '/tooling/web-components/',
+    '/pt-br/tooling/code-generation/webcomponent/': '/pt-br/tooling/web-components/',
+    '/tooling/code-generation/react/': '/tooling/react/',
+    '/pt-br/tooling/code-generation/react/': '/pt-br/tooling/react/',
   },
 
   integrations: [
@@ -81,6 +85,7 @@ export default defineConfig({
               label: 'Tutorial',
               slug: 'tutorial',
             },
+            { slug: 'tooling/editors' },
           ],
         },
         {
@@ -100,7 +105,48 @@ export default defineConfig({
         {
           label: 'Tooling',
           translations: { 'pt-BR': 'Ferramentas' },
-          items: [{ autogenerate: { directory: 'tooling' } }],
+          // Grouped by what the reader wants to do, URLs stay under /tooling/
+          items: [
+            {
+              label: 'Command line and CI',
+              translations: { 'pt-BR': 'Linha de comando e CI' },
+              items: [
+                { slug: 'tooling/cli' },
+                { slug: 'tooling/docker' },
+                { slug: 'tooling/github' },
+                { slug: 'tooling/drawio' },
+              ],
+            },
+            {
+              label: 'Embed in your app',
+              translations: { 'pt-BR': 'Incorporar na sua aplicação' },
+              items: [
+                { slug: 'tooling/embed' },
+                { slug: 'tooling/vite-plugin' },
+                { slug: 'tooling/react' },
+                { slug: 'tooling/web-components' },
+                { slug: 'tooling/app-config' },
+                { slug: 'tooling/customization' },
+              ],
+            },
+            {
+              label: 'Work with the model in code',
+              translations: { 'pt-BR': 'Trabalhar com o modelo no código' },
+              items: [
+                { slug: 'tooling/model-api' },
+                { slug: 'tooling/code-generation/model' },
+                { slug: 'tooling/code-generation/dsl' },
+                { slug: 'tooling/code-generation/custom' },
+              ],
+            },
+            { slug: 'tooling/ai-tools' },
+            {
+              label: 'Community',
+              translations: { 'pt-BR': 'Comunidade' },
+              collapsed: true,
+              items: [{ autogenerate: { directory: 'tooling/Community' } }],
+            },
+          ],
         },
         {
           label: 'Guides',

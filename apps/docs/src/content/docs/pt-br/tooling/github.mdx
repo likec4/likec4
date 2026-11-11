@@ -17,13 +17,13 @@ Esta action disponibiliza a [CLI do LikeC4](/pt-br/tooling/cli/) como uma GitHub
   Consulte também o [guia de publicação no GitHub Pages](/pt-br/guides/deploy-github-pages/) para saber mais.
 </Aside>
 
-### Como usar
+## Como usar
 
-#### Gerar o site
+### Gerar o site
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v5
 
   - name: ⚙️ build
     uses: likec4/actions@v1
@@ -34,14 +34,15 @@ steps:
       base: /baseurl/
 
   - name: upload artifacts
-    uses: actions/upload-artifact@v3
+    uses: actions/upload-artifact@v4
     with:
       name: likec4
       path: dist
 ```
 
+A action também copia `index.html` para `404.html` no diretório de saída, para o roteamento de aplicações de página única no GitHub Pages.
 
-#### Exportar diagramas para PNG
+### Exportar diagramas para PNG
 
 ```yaml
 steps:
@@ -54,7 +55,7 @@ steps:
       use-dot-bin: 'true'
 ```
 
-#### Geração de código
+### Geração de código
 
 ```yaml
 steps:
@@ -65,17 +66,20 @@ steps:
       output: __generated__/likec4.jsx
 ```
 
-### Parâmetros de entrada
+## Parâmetros de entrada
 
-| Nome          | Descrição                                                                                           |
-| ------------- | ----------------------------------------------------------------------------------------------------- |
-| `action`      | Ação a executar (`build` / `export` / `codegen`)                                                    |
-| `export`      | Pode ser usado no lugar de `action: export`                                                               |
-| `codegen`     | Pode ser usado no lugar de `action: codegen`, com os mesmos valores da [CLI](/pt-br/tooling/cli/) |
-| `path`        | Caminho dos arquivos-fonte LikeC4 no repositório; por padrão, a raiz                                                  |
-| `output`      | Diretório ou arquivo de saída                                                                                 |
-| `base`        | URL base personalizada para o site                                                                            |
-| `use-dot-bin` | Se `'true'`, utiliza o executável `dot` do Graphviz                                                         |
+| Nome                  | Descrição                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `action`              | Ação a executar: `build`, `export` ou `codegen`                                                              |
+| `export`              | Pode ser usado no lugar de `action: export`; `png` (padrão) ou `json`                                        |
+| `codegen`             | Pode ser usado no lugar de `action: codegen`; `react` (padrão), `webcomponent`, `ts`, `dot`, `d2`, `mermaid` ou `mmd` (consulte [`likec4 gen`](/pt-br/tooling/cli/#gerar-likec4-gen)) |
+| `path`                | Caminho dos arquivos-fonte LikeC4 no repositório; por padrão, a raiz                                          |
+| `output`              | Diretório ou arquivo de saída                                                                                |
+| `base`                | URL base personalizada para o site                                                                           |
+| `use-dot-bin`         | Se `'true'`, utiliza o executável `dot` do Graphviz                                                          |
+| `use-hash-history`    | Se `'true'`, o site usa navegação baseada em hash, por exemplo, `/#/view` em vez de `/view`                   |
+| `webcomponent-prefix` | Prefixo dos web components gerados (`build` e `codegen: webcomponent`)                                       |
+| `likec4-version`      | Versão do `likec4` a executar, por exemplo, `latest` (padrão: a versão incluída na action)                   |
 
 > Todos os parâmetros são opcionais.  
-> Por padrão, a CLI gera o site no diretório `dist`.
+> Por padrão, a action gera o site no diretório `dist`.

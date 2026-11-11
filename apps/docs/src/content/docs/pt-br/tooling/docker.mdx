@@ -12,9 +12,7 @@ tableOfContents:
   maxHeadingLevel: 6  
 ---
 
-import { LinkCard, Tabs, TabItem as Tab } from '@astrojs/starlight/components';
-import { Aside } from '@astrojs/starlight/components';
-import { PackageManagers } from 'starlight-package-managers';
+import { Tabs, TabItem as Tab } from '@astrojs/starlight/components';
 
 A imagem Docker do LikeC4 oferece um ambiente independente para executar os comandos do LikeC4 e pode substituir diretamente a CLI `likec4`.  
 Ela está disponível no [GitHub Container Registry](https://github.com/likec4/likec4/pkgs/container/likec4) e no [Docker Hub](https://hub.docker.com/r/likec4/likec4) e inclui:
@@ -55,6 +53,7 @@ Para utilizar o contêiner, monte o diretório que contém os arquivos-fonte Lik
 # (optional) for realtime updates: -p 24678:24678
 # (optional) use init process to correctly handle signals (eg Ctrl+C): --init
 # (optional) enable color output: -t
+# (optional) poll for file changes, see "Executando o servidor web local no Windows" below
 docker run --rm \
   -v $PWD:/data \
   --init \
@@ -91,28 +90,14 @@ Você pode alterar esse comportamento com a opção `--no-use-dot`.
 :::
 
 :::caution[Executando o servidor web local no Windows]
-Ao usar a pré-visualização baseada em Docker no Windows, as alterações nos arquivos dos diagramas podem não ser refletidas no contêiner em execução quando esses arquivos estão no sistema de arquivos do Windows (por exemplo, na unidade `C:\`).
+Os comandos acima definem `CHOKIDAR_USEPOLLING=1` e `CHOKIDAR_INTERVAL=200`, de modo que o servidor verifica periodicamente as alterações nos arquivos em vez de aguardar as notificações do sistema de arquivos.
 
+Mantenha essas variáveis no Windows quando os arquivos-fonte estiverem no sistema de arquivos do Windows (por exemplo, na unidade `C:\`):
+nesse caso, as alterações não chegam ao contêiner em execução por meio de notificações.
 Trata-se de um [problema conhecido](https://github.com/microsoft/WSL/issues/4739) nas notificações de alterações do sistema de arquivos para aplicações Linux executadas via WSL.
+Aumente `CHOKIDAR_INTERVAL` (em milissegundos) para verificar com menos frequência.
 
-**Solução alternativa**:
-
-Habilite a verificação periódica de alterações adicionando as seguintes variáveis de ambiente ao comando `docker run`:
-
-```diff lang="sh" copy title="Start local web server with WSL workaround"
-docker run --rm \
-  -v $PWD:/data \
-  --init \
-  -t \
-  -p 5173:5173 \
-  -p 24678:24678 \
-+  -e CHOKIDAR_USEPOLLING=1 \   # Enable polling support
-+  -e CHOKIDAR_INTERVAL=200 \   # Adjust timing to your needs
-  likec4/likec4 \
-  start
-```
-
-**Observação**: se os diagramas estiverem no sistema de arquivos do WSL (por exemplo, `/home/user/...`), as notificações de alterações deverão funcionar normalmente.
+Se os arquivos-fonte estiverem no sistema de arquivos do WSL (por exemplo, `/home/user/...`), no Linux ou no macOS, as notificações normalmente funcionam e você pode remover as duas variáveis.
 :::
 
 ### Gerar um site estático

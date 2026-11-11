@@ -1,0 +1,51 @@
+---
+title: Choose how to embed diagrams
+description: Compare the ways to put LikeC4 diagrams on a website or in an app, and pick the one that fits your stack.
+sidebar:
+  label: Choose an approach
+  order: 0
+---
+
+Short answer: build a [static website](/tooling/cli/#build-static-website) if you only need your diagrams online,
+use [web components](/tooling/web-components/) to add views to any HTML page,
+and use the [Vite plugin](/tooling/vite-plugin/) in a React app built with Vite.
+
+## Compare the approaches
+
+| Approach | Fits when | What you get | Needs | Page |
+| --- | --- | --- | --- | --- |
+| Static website<br/>`likec4 build` | You want a site to browse all views, or you have no app to embed into | The full LikeC4 app as static files. Its Share dialog gives an `<iframe>` or web component snippet for each view | No bundler, no React. Build step: `likec4 build`, then host the files | [CLI](/tooling/cli/#build-static-website), [guide](/guides/static-website/) |
+| Web components<br/>`likec4 gen webcomponent` | Any HTML page, with any framework or none | One JavaScript file that defines `<likec4-view view-id="...">`. React is bundled inside | No bundler, no React in your app. Build step: run the command again when the model changes | [Web components](/tooling/web-components/) |
+| Vite plugin<br/>`likec4:react` | A React app built with Vite, including Astro | `LikeC4View` and `ReactLikeC4`, typed with your view ids. The plugin reads your `.c4` files, with hot reload | Vite and React. No extra build step | [Vite plugin](/tooling/vite-plugin/) |
+| Generated React components<br/>`likec4 gen react` | A React app without Vite, for example webpack or Next.js | A JavaScript module and `.d.ts` with `LikeC4View` and `ReactLikeC4`, typed with your view ids | Any bundler, React, and `likec4` as a dependency. Build step: run the command again when the model changes | [React](/tooling/react/) |
+| React components<br/>`likec4/react` | You build the model in code, or load it yourself | `LikeC4ModelProvider`, `LikeC4View`, `ReactLikeC4` and hooks. You pass them a layouted model | Any bundler and React. Build step depends on how you get the model, for example `likec4 gen model` | [React](/tooling/react/) |
+| MkDocs plugin<br/>(community) | Your docs are built with MkDocs | Views in Markdown pages, from a `likec4-view` code block | Python and pip, plus `likec4` and Graphviz on the build machine. No React | [MkDocs plugin](/tooling/community/mkdocs-plugin/) |
+
+The Vite plugin can also give you web components.
+Call `defineWebcomponent` from the `likec4:webcomponents/<project>` module, and no React code goes into your app.
+See [Web components](/tooling/vite-plugin/#web-components) on the Vite plugin page.
+
+## How to decide
+
+- **No JavaScript framework, or a site generator that is not React:** use [web components](/tooling/web-components/).
+  If you do not have a site yet, the [static website](/tooling/cli/#build-static-website) is the quickest start.
+- **Already deploy the static website:** embed views on other pages with the snippets from its Share dialog.
+- **React with Vite, or Astro:** use the [Vite plugin](/tooling/vite-plugin/).
+  The diagrams update as you edit the model.
+- **React without Vite, or Next.js:** use [generated React components](/tooling/react/).
+  Render them on the client.
+  Another way for Next.js is the [Vite plugin in library mode](/tooling/vite-plugin/#with-nextjs).
+- **You build or change the model in code:** use the components from [`likec4/react`](/tooling/react/) and pass your own model.
+- **You want to manage the styles yourself:** use `@likec4/diagram` instead of `likec4`. See [React](/tooling/react/).
+- **MkDocs:** use the [MkDocs plugin](/tooling/community/mkdocs-plugin/).
+
+## Shared settings
+
+Both are experimental.
+
+- The [app config](/tooling/app-config/) keeps CLI options in one file.
+  `likec4 build`, `likec4 gen react` and `likec4 gen webcomponent` read it.
+  The Vite plugin does not: pass the options to the plugin instead.
+- [UI customization](/tooling/customization/) replaces or wraps parts of the diagram UI with your React components.
+  `likec4 build`, `likec4 gen react` and `likec4 gen webcomponent` take it from `--customization` or the app config, the Vite plugin with the `customization` option.
+  With `likec4/react`, use `CustomizationProvider`.

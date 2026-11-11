@@ -12,9 +12,7 @@ tableOfContents:
   maxHeadingLevel: 6  
 ---
 
-import { LinkCard, Tabs, TabItem as Tab } from '@astrojs/starlight/components';
-import { Aside } from '@astrojs/starlight/components';
-import { PackageManagers } from 'starlight-package-managers';
+import { Tabs, TabItem as Tab } from '@astrojs/starlight/components';
 
 LikeC4 Docker image is a self-contained environment for running LikeC4 commands and can be used as a drop-in replacement for `likec4` CLI.  
 It is hosted in [GitHub Container Registry](https://github.com/likec4/likec4/pkgs/container/likec4) and [Docker Hub](https://hub.docker.com/r/likec4/likec4) and includes:
@@ -55,6 +53,7 @@ To work with the container you need to mount the folder with LikeC4 sources to `
 # (optional) for realtime updates: -p 24678:24678
 # (optional) use init process to correctly handle signals (eg Ctrl+C): --init
 # (optional) enable color output: -t
+# (optional) poll for file changes, see "Running the local web server on Windows" below
 docker run --rm \
   -v $PWD:/data \
   --init \
@@ -90,29 +89,15 @@ By default LikeC4 Docker sets `--use-dot` flag and uses local Graphviz binaries 
 You can override it with `--no-use-dot` flag.
 :::
 
-:::caution[Running the Local Web Server on Windows]
-When using Windows with the Docker-based preview, updates to the diagrams/ file system are not reflected in the running container when files are hosted within a Windows-based file system (i.e. on a drive such as `C:\`).
+:::caution[Running the local web server on Windows]
+The commands above set `CHOKIDAR_USEPOLLING=1` and `CHOKIDAR_INTERVAL=200`, so the server polls for file changes instead of waiting for file system notifications.
 
+Keep them on Windows when the sources are on a Windows file system (a drive such as `C:\`):
+there, changes do not reach the running container through notifications.
 This is a [known issue](https://github.com/microsoft/WSL/issues/4739) with file system notifications for Linux applications using WSL.
+Increase `CHOKIDAR_INTERVAL` (in milliseconds) to poll less often.
 
-**Workaround**:
-
-Enable polling for file changes by adding the following environment variables to the `docker run` command:
-
-```diff lang="sh" copy title="Start local web server with WSL workaround"
-docker run --rm \
-  -v $PWD:/data \
-  --init \
-  -t \
-  -p 5173:5173 \
-  -p 24678:24678 \
-+  -e CHOKIDAR_USEPOLLING=1 \   # Enable polling support
-+  -e CHOKIDAR_INTERVAL=200 \   # Adjust timing to your needs
-  likec4/likec4 \
-  start
-```
-
-**Note**: If your diagrams are hosted within a WSL-based filesystem (e.g. /home/user/...), then file system notifications should work as expected.
+If the sources are on a WSL file system (e.g. `/home/user/...`), on Linux or on macOS, notifications usually work and you can drop both variables.
 :::
 
 ### Build static website
