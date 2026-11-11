@@ -5,6 +5,7 @@ import { RelationshipModel } from '../../model/RelationModel'
 import {
   type Any,
   type EdgeId,
+  type ImportedProjectMeta,
   type NonEmptyArray,
   type ViewId,
   _stage,
@@ -25,7 +26,20 @@ const keysCount = (object: Record<string, unknown>): number => keys(object).leng
 const nodeId = (projectId: ProjectId): NodeId => stringHash(projectId) as unknown as NodeId
 
 /**
+ * Synthetic project id of an external project node: `<importName>@<importedBy>`.
+ * Workspace project ids can't contain `@`, so it never collides with them.
+ */
+const externalProjectId = (importedBy: ProjectId, importName: ProjectId): ProjectId =>
+  ProjectId(`${importName}@${importedBy}`)
+
+/**
  * Computes an overview of projects and their relationships
+ *
+ * Imports are resolved using the import metadata of the model ({@link LikeC4Model.findImportedProject}):
+ * - import of a workspace project (possibly under another name) is linked to the node of that project
+ * - import of an external project (any other source) gets its own node,
+ *   one per importing project and import name
+ * - import without metadata is linked to the workspace project with the same id as the import name
  */
 export function computeProjectsView(
   likec4models: NonEmptyArray<LikeC4Model>,
@@ -48,9 +62,33 @@ export function computeProjectsView(
   const relationshipsFromTo = (from: string, to: string): Set<RelationshipModel> =>
     relationships.get(key(from, to)).relationships
 
-  const processImportedElement = (model: LikeC4Model, importedElement: ElementModel) => {
-    const projectId = importedElement.projectId
-    invariant(projectId !== model.projectId, 'Imported element must have a different project id')
+  /**
+   * Resolves the project id of the node, that represents the project imported by the model under `importName`.
+   * Creates a node for an external project, if needed.
+   */
+  const resolveImportedProject = (model: LikeC4Model, importName: ProjectId): ProjectId => {
+    const meta = model.findImportedProject(importName)
+    if (!meta) {
+      return importName
+    }
+    switch (true) {
+      case meta.source.kind === 'workspace': {
+        return meta.source.projectId
+      }
+      default: {
+        const importedBy = ProjectId(model.projectId)
+        const projectId = externalProjectId(importedBy, importName)
+        const id = nodeId(projectId)
+        if (!nodesMap.has(id)) {
+          nodesMap.set(id, externalProjectNode({ projectId, importedBy, importName, meta, model }))
+        }
+        return projectId
+      }
+    }
+  }
+
+  const processImportedElement = (model: LikeC4Model, projectId: ProjectId, importedElement: ElementModel) => {
+    invariant(importedElement.projectId !== model.projectId, 'Imported element must have a different project id')
 
     // Incoming relationships to imported element
     const incoming = relationshipsFromTo(model.projectId, projectId)
@@ -76,14 +114,16 @@ export function computeProjectsView(
       continue
     }
 
-    for (const [projectId, imported] of entries(model.$data.imports)) {
+    for (const [importName, imported] of entries(model.$data.imports)) {
+      const projectId = resolveImportedProject(model, importName)
       for (const importedElement of imported) {
-        const fqn = GlobalFqn(projectId, importedElement.id)
+        const fqn = GlobalFqn(importName, importedElement.id)
         processImportedElement(
           model,
+          projectId,
           nonNullable(
             model.findElement(fqn),
-            `Element ${importedElement.id} from project ${projectId} not found in model ${model.projectId}`,
+            `Element ${importedElement.id} from project ${importName} not found in model ${model.projectId}`,
           ),
         )
       }
@@ -178,4 +218,45 @@ function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): 
     nodesMap.set(node.id, node)
   }
   return nodesMap
+}
+
+function externalProjectNode({ projectId, importedBy, importName, meta, model }: {
+  projectId: ProjectId
+  importedBy: ProjectId
+  importName: ProjectId
+  meta: ImportedProjectMeta
+  model: LikeC4Model<Any>
+}): ComputedProjectNode {
+  const description = [
+    `External project, imported by ${model.project.title ?? importedBy} as "${importName}"`,
+  ]
+  switch (meta.source.kind) {
+    case 'local': {
+      description.push(`Source: ${meta.source.path}`)
+      break
+    }
+  }
+  return {
+    id: nodeId(projectId),
+    kind: '@project',
+    parent: null,
+    projectId,
+    title: meta.name || importName,
+    description: {
+      txt: description.join('\n'),
+    },
+    shape: 'rectangle',
+    children: [],
+    inEdges: [],
+    outEdges: [],
+    color: 'muted',
+    level: 0,
+    style: {},
+    tags: [],
+    external: {
+      importedBy,
+      importName,
+      source: meta.source,
+    },
+  }
 }

@@ -1,5 +1,6 @@
 import { map, prop } from 'remeda'
 import { describe, it } from 'vitest'
+import type { LikeC4ModelDump, ProjectId } from '../types'
 import { type TestFqn, computed, model, parsed } from './__test__/fixture'
 import { LikeC4Model } from './LikeC4Model'
 
@@ -340,5 +341,56 @@ describe('LikeC4Model', () => {
 
     expect(reqs[0]!.technology, 'must derive from kind').toBe('HTTP')
     expect(reqs[1]!.technology, 'has explicit technology').toBe('GRPC')
+  })
+
+  describe('findImportedProject', () => {
+    it('returns null when model has no import metadata', ({ expect }) => {
+      expect(model.findImportedProject('billing')).toBeNull()
+    })
+
+    it('returns metadata by import name', ({ expect }) => {
+      const withMeta = LikeC4Model.create({
+        ...computed,
+        importedProjects: {
+          ['billing' as ProjectId]: {
+            name: 'billing-service',
+            source: { kind: 'local', path: '../billing' },
+          },
+          ['shared' as ProjectId]: {
+            name: 'shared-workspace',
+            source: { kind: 'workspace', projectId: 'shared-workspace' as ProjectId },
+          },
+        },
+      })
+      expect(withMeta.findImportedProject('billing')).toEqual({
+        name: 'billing-service',
+        source: { kind: 'local', path: '../billing' },
+      })
+      expect(withMeta.findImportedProject('shared')).toEqual({
+        name: 'shared-workspace',
+        source: { kind: 'workspace', projectId: 'shared-workspace' },
+      })
+      expect(withMeta.findImportedProject('unknown')).toBeNull()
+      expect(withMeta.findImportedProject('toString'), 'must not resolve prototype keys').toBeNull()
+    })
+
+    it('keeps metadata from model dump', ({ expect }) => {
+      const dump: LikeC4ModelDump = {
+        projectId: 'consumer',
+        specification: { elements: {} },
+        deployments: {},
+        importedProjects: {
+          billing: {
+            name: 'billing-service',
+            source: { kind: 'local', path: '../billing' },
+          },
+        },
+      }
+      const fromDump = LikeC4Model.fromDump(dump)
+      expect(fromDump.findImportedProject('billing')).toEqual({
+        name: 'billing-service',
+        source: { kind: 'local', path: '../billing' },
+      })
+    })
   })
 })
