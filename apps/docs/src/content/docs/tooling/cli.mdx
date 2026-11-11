@@ -168,6 +168,8 @@ There is also a supplementary command to preview the build:
 likec4 preview -o ./dist
 ```
 
+`likec4 preview` takes the output directory and the base URL from the [app config](/tooling/app-config/), the same way `likec4 build` does, so the two commands agree without repeating `-o` and `--base`.
+
 For example, this command can be used in CI to compare diagrams with ones from the previous or main build.
 
 ### Export to PNG

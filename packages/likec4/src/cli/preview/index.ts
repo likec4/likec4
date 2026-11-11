@@ -1,5 +1,6 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import type * as yargs from 'yargs'
+import { appConfig, base, path, withoutDefault } from '../options'
 import { handler } from './preview'
 
 const previewCmd = (yargs: yargs.Argv) => {
@@ -9,34 +10,32 @@ const previewCmd = (yargs: yargs.Argv) => {
       describe: 'Start local server to preview production build',
       builder: yargs =>
         yargs
-          .positional('path', {
+          .positional('path', withoutDefault(path))
+          .option('app-config', appConfig)
+          .option('output', {
+            alias: 'o',
             type: 'string',
-            desc: 'Directory with LikeC4 source files\nif not specified search in current directory',
+            desc: 'output directory from production build',
             normalize: true,
+            coerce: resolve,
           })
-          .options({
-            output: {
-              alias: 'o',
-              type: 'string',
-              desc: 'output directory from production build',
-              normalize: true,
-            },
-            base: {
-              type: 'string',
-              desc: 'base url the app is being served from',
-            },
-            'listen': {
-              alias: 'l',
-              type: 'string',
-              desc: 'ip address of the network interface to listen on',
-            },
-          })
-          .coerce(['path', 'output'], resolve)
-          .default('path', resolve('.'), '.')
-          .default('listen', '127.0.0.1', 'localhost'),
+          .option('base', base)
+          .option('listen', {
+            alias: 'l',
+            type: 'string',
+            desc: 'ip address of the network interface to listen on',
+            default: '127.0.0.1',
+            defaultDescription: 'localhost',
+          }),
 
       handler: async args => {
-        await handler(args)
+        await handler({
+          appConfig: args['app-config'],
+          path: args.path,
+          output: args.output,
+          base: args.base,
+          listen: args.listen,
+        })
       },
     })
 }
