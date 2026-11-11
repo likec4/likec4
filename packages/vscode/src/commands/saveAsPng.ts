@@ -4,6 +4,7 @@ import { renderViewPng } from '#copyAsPng'
 import type { ProjectId, ViewId } from '@likec4/core'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
+import { config } from '../config'
 import { isVirtual, isWebUi } from '../const'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
@@ -55,7 +56,6 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCo
       }
 
       const theme = resolveExportTheme()
-      const nodePath = vscode.workspace.getConfiguration('likec4').get<string>('node.path')
 
       try {
         await saveDirtyLikeC4Documents()
@@ -72,7 +72,7 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCo
               viewId: resolvedViewId,
               projectId: resolvedProjectId,
               theme,
-              nodePath,
+              nodePath: config.node.path,
             }),
         )
 

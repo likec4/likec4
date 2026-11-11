@@ -3,6 +3,7 @@
 import { exportCurrentViewAsPng } from '#copyAsPng'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
+import { config } from '../config'
 import { isVirtual, isWebUi } from '../const'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
@@ -49,7 +50,6 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
     }
 
     const theme = resolveExportTheme()
-    const nodePath = vscode.workspace.getConfiguration('likec4').get<string>('node.path')
 
     try {
       // CLI reads on-disk sources; save dirty LikeC4 docs so the PNG matches the preview.
@@ -67,7 +67,7 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
             viewId,
             projectId,
             theme,
-            nodePath,
+            nodePath: config.node.path,
           })
         },
       )
