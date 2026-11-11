@@ -58,6 +58,9 @@ npx likec4 gen react -o ./src/likec4.generated.js
 Check `likec4 codegen react --help` for available options.
 :::
 
+With `--customization <file>`, the [UI customization](/dsl/config/customization/) is bundled into the generated components (experimental).
+The command also reads the [app config](/dsl/config/app-config/); use `--app-config <file>` to point to it, or `--no-app-config` to ignore it.
+
 <Aside type='tip' title="Vite plugin" >
 There is also an option to use Vite plugin in library mode and get auto-updates, check this [example](/tooling/vite-plugin/#with-nextjs).
 </Aside >
@@ -84,7 +87,7 @@ const App = () => {
 | `injectFontCss`     | Injects CSS with <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans Variable</a> font from CDN.<br/>Default is `true` |
 
 :::tip
-Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts#L5-L156" target="_blank">source code</a> for all properties.
+Check <a href="https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4View.tsx" target="_blank">source code</a> for all properties.
 :::
 
 :::caution

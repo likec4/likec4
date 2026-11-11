@@ -492,13 +492,13 @@ if (result.edit) await likec4.modelEdits.rollback(result.edit.id)
 
 ## Model Builder
 
-Type-safe builder available from `@likec4/core/builder` (and `likec4/model/builder`).  
+Type-safe builder available from `likec4/model/builder` (and `@likec4/core/builder`).  
 Builder can be used to create model programmatically and supports two styles:
 
 <Tabs>
   <Tab label='Chain'>
   ```ts
-  import { Builder } from "@likec4/core/builder"
+  import { Builder } from "likec4/model/builder"
 
   const m = Builder
     .specification({
@@ -556,7 +556,7 @@ Builder can be used to create model programmatically and supports two styles:
   <Tab label='Composition'>
 
   ```ts
-  import { Builder } from "@likec4/core/builder"
+  import { Builder } from "likec4/model/builder"
 
   // Get composition functions for given specification
   const {
@@ -722,7 +722,7 @@ The same seeding entry is also available directly on the Builder for when you al
 data in hand:
 
 ```ts
-import { Builder } from "@likec4/core/builder"
+import { Builder } from "likec4/model/builder"
 
 const builder = Builder.fromParsed(parsedData)
 ```
@@ -887,9 +887,12 @@ const enriched = (await likec4.toBuilder())
   )
 
 const data = enriched.build()
-const dsl = generateLikeC4(data)              // from @likec4/generators/likec4
+const dsl = generate(data)                    // `generate` from likec4/generators/likec4
 await writeFile('./generated/model.c4', dsl)  // or use writeDSL on the LikeC4 instance
 ```
+
+See [Generate LikeC4 DSL](/tooling/code-generation/dsl/) for the input of `generate`, what it does not print,
+and the building blocks to print parts of the DSL yourself.
 
 ### `LikeC4.toTypedBuilder()` — get a *typed* Builder
 
@@ -925,7 +928,7 @@ time, not by the compiler.
 If you can't (or don't want to) pass a spec, the escape hatch is still an explicit cast on `toBuilder()`:
 
 ```ts
-import type { Builder, Types } from "@likec4/core/builder"
+import type { Builder, Types } from "likec4/model/builder"
 
 type MySpec = { elements: ['actor', 'system', 'component'] }
 const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>

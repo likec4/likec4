@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import { useSyncedRef } from '@react-hookz/web'
 import { type PropsWithChildren, type RefObject, createContext, useContext, useMemo, useRef } from 'react'
 import { isFunction, keys, mapToObj } from 'remeda'
 import type { LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
@@ -48,10 +49,9 @@ export function DiagramEventHandlers({
   handlers,
   children,
 }: PropsWithChildren<{ handlers: Required<LikeC4DiagramEventHandlers> }>) {
-  const handlersRef = useRef(
+  const handlersRef = useSyncedRef(
     handlers as Required<LikeC4DiagramEventHandlers>,
   )
-  handlersRef.current = handlers
 
   const deps = HandlerNames.map((name) => isFunction(handlers[name]) ? name : '-').join(',')
 

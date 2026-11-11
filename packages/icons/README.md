@@ -9,11 +9,9 @@ React SVG icons from these packs:
 - [Material Symbols](https://fonts.google.com/icons?icon.set=Material+Symbols), using the outlined style
 
 ```ts
-import { ArgoCd, Astro } from '@likec4/icons'
+import { Argocd, Astro } from '@likec4/icons/tech'
 // or
-import { ArgoCd, Astro } from '@likec4/icons/tech'
-// or
-import ArgoCd from '@likec4/icons/tech/argo-cd'
+import Argocd from '@likec4/icons/tech/argocd'
 import Astro from '@likec4/icons/tech/astro'
 
 // same

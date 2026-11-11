@@ -9,20 +9,26 @@ import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
-import type { AnyTextAdapter } from '@tanstack/ai'
+import { existsSync } from 'node:fs'
 import pDebounce from 'p-debounce'
+import { resolve } from 'pathe'
 import { funnel, hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
   Plugin,
   PluginOption,
 } from 'vite'
 import { detectAI } from './ai/detect-ai'
+import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
-import { type ProjectsData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
-import { type AppConfig, createAppConfigModule } from './virtuals/app-config'
+import type { AIOptions, LikeC4VitePluginOptions } from './types'
+
+export type { AIOptions, LikeC4VitePluginOptions }
+import { type ProjectData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
+import { createAppConfigModule } from './virtuals/app-config'
+import { customizationModule } from './virtuals/customization'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { diffsModule, projectDiffsModule } from './virtuals/diffs'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
@@ -38,125 +44,6 @@ import { projectReactModule, singleProjectReactModule } from './virtuals/react'
 import { rpcModule } from './virtuals/rpc'
 import { singleProjectModule } from './virtuals/single-project'
 import { projectWebcomponentsModule } from './virtuals/webcomponents'
-
-export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
-  /**
-   * The AI adapter to use
-   *
-   * @see https://tanstack.com/ai/latest/docs/getting-started/overview#adapters
-   * @example
-   * ```ts
-   * import { openRouterText } from '@tanstack/ai-openrouter'
-   *
-   * export default defineConfig({
-   *   plugins: [
-   *     likec4VitePlugin({
-   *       ai: {
-   *         adapter: openRouterText("openai/gpt-5")
-   *       },
-   *     }),
-   *   ],
-   * })
-   * ```
-   */
-  adapter: TAdapter
-  /** Model-specific provider options (type comes from adapter) */
-  modelOptions?: TAdapter['~types']['providerOptions']
-  maxTokens?: number
-}
-
-type SharedOptions = {
-  /**
-   * AI configuration, by default enabled with automatic detection based on environment variables.
-   * You can also provide explicit configuration.
-   * Or set to `disabled` to disable AI.
-   *
-   * @default 'auto' (automatic detection based on environment variables)
-   *
-   * @see https://tanstack.com/ai/latest/docs/getting-started/overview#adapters
-   * @example
-   * ```ts
-   * import { openRouterText } from '@tanstack/ai-openrouter'
-   *
-   * export default defineConfig({
-   *   plugins: [
-   *     likec4VitePlugin({
-   *       ai: {
-   *         adapter: openRouterText("openai/gpt-5")
-   *       },
-   *     }),
-   *   ],
-   * })
-   * ```
-   */
-  ai?: 'disabled' | 'auto' | AIOptions | undefined
-
-  /**
-   * Define vite environments where this plugin should be active
-   * By default, the plugin is active in all environments
-   */
-  environments?: string | string[]
-
-  /**
-   * Configuration for the static application
-   */
-  appConfig?: AppConfig
-}
-
-export type LikeC4VitePluginOptions =
-  & SharedOptions
-  & ({
-    /**
-     * Initializes a LikeC4 instance from the specified workspace path.
-     * By default it is vite project root.
-     */
-    workspace?: string
-    /**
-     * By default, if LikeC4 model is invalid, errors are printed to the console.
-     * Disable this behavior by setting this option to false.
-     *
-     * @default true
-     */
-    printErrors?: boolean
-    /**
-     * If true, initialization will return rejected promise with the LikeC4 instance.
-     * Use `likec4.getErrors()` to get the errors.
-     * @default false
-     */
-    throwIfInvalid?: boolean
-    /**
-     * Whether to use the `dot` binary for layouting or the WebAssembly version.
-     * @default 'wasm'
-     */
-    graphviz?: 'wasm' | 'binary'
-
-    /**
-     * Whether to watch for changes in the workspace.
-     * @default true if vite mode is 'development', false otherwise
-     */
-    watch?: boolean
-
-    /**
-     * The log level to use.
-     * @default 'warning'
-     */
-    logLevel?: 'trace' | 'debug' | 'info' | 'warning' | 'error' | undefined
-
-    // This option is not allowed when using `workspace`
-    languageServices?: never
-  } | {
-    /**
-     * If you have instance of {@link LikeC4LanguageServices}
-     * you can pass `languageServices` from it.
-     */
-    languageServices: LikeC4LanguageServices
-    workspace?: never
-    printErrors?: never
-    throwIfInvalid?: never
-    graphviz?: never
-    watch?: never
-    logLevel?: never
-  })
 
 /**
  * Virtual modules per LikeC4 project that should trigger HMR when model changes
@@ -202,6 +89,7 @@ const _virtuals = [
   ...hmrProjectListVirtuals,
   iconsModule,
   rpcModule,
+  customizationModule,
 ]
 
 const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
@@ -209,18 +97,26 @@ const VITE_PLUGIN_LIKEC4 = 'vite-plugin-likec4'
 export function LikeC4VitePlugin({
   environments,
   appConfig,
+  title,
+  theme,
+  useHashHistory,
+  webcomponentPrefix,
+  customization,
   ai: _ai = 'auto',
   ...pluginOpts
 }: LikeC4VitePluginOptions): PluginOption {
+  const appOptions = resolveAppOptions({ title, theme, useHashHistory, webcomponentPrefix, customization }, appConfig)
+
   let likec4: LikeC4LanguageServices
   let assetsDir: string
+  let customizationFile: string | undefined
   let rpcEnabled = false
   let ai: AIOptions | undefined = undefined
   let shouldDisposeOnStop = pluginOpts.watch ?? false
 
   const virtuals = [
     ..._virtuals,
-    createAppConfigModule(appConfig),
+    createAppConfigModule(appOptions),
   ]
 
   const initAI = async () => {
@@ -250,6 +146,7 @@ export function LikeC4VitePlugin({
       isAIAvailable,
       ai,
       assetsDir,
+      customizationFile,
       likec4,
       logger,
       ...value,
@@ -268,9 +165,9 @@ export function LikeC4VitePlugin({
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
       exportFormats: effectiveWebappExportFormats(p.config),
-    })) satisfies (data: ProjectsData) => any
+    })) satisfies (data: ProjectData[]) => any
     let _last: any
-    return <T extends ProjectsData>(update: T): boolean => {
+    return <T extends ProjectData[]>(update: T): boolean => {
       const _next = selectDataToCompare(update)
       // Initialize _last on first call
       _last ??= _next
@@ -293,6 +190,13 @@ export function LikeC4VitePlugin({
 
     async configResolved(config) {
       const isDev = rpcEnabled = config.command === 'serve'
+
+      if (appOptions.customization) {
+        customizationFile = resolve(config.root, appOptions.customization)
+        if (!existsSync(customizationFile)) {
+          throw new Error(`LikeC4 customization file not found: ${customizationFile}`)
+        }
+      }
 
       if (pluginOpts.languageServices) {
         likec4 = pluginOpts.languageServices
@@ -354,13 +258,13 @@ export function LikeC4VitePlugin({
             )
           }
         }
+        const projects = likec4.projects()
+        // Early return if no projects
+        if (!hasAtLeast(projects, 1)) {
+          return null
+        }
         for (const module of virtuals) {
           if (module.virtualId === id) {
-            const projects = likec4.projects()
-            // Early return if no projects
-            if (!hasAtLeast(projects, 1)) {
-              return null
-            }
             return await module.load.call(
               this,
               moduleopts({ projects }),
@@ -462,7 +366,7 @@ export function LikeC4VitePlugin({
           }
         }
         likec4.projectsManager.onProjectsUpdate(
-          pDebounce(reloadProjects, 100),
+          pDebounce(reloadProjects, 50),
         )
 
         likec4.builder.onModelParsed(onModelParsedBatched(async (projects) => {
@@ -513,7 +417,7 @@ function onModelParsedBatched(
         return accumulator
       },
       triggerAt: 'end',
-      minQuietPeriodMs: 130,
+      minQuietPeriodMs: 100,
       maxBurstDurationMs: 500,
     },
   ).call

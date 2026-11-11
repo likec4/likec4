@@ -1,0 +1,256 @@
+---
+title: UI customization
+description: Replace or wrap parts of the LikeC4 UI, like the logo or the shapes of the elements, with your own React components.
+head:
+  - tag: title
+    content: UI customization | LikeC4
+sidebar:
+  label: UI customization
+  order: 17
+  badge:
+    text: Experimental
+    variant: caution
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+<Aside type="caution" title="Experimental">
+UI customization is experimental: the list of slots, their props and the helpers may change.
+</Aside>
+
+Some parts of the LikeC4 UI are **slots**: you can replace them with your own React components, or wrap the built-in ones.  
+You describe the overrides in a **customization file**, and LikeC4 applies them to the application it builds, without changes in its code:
+
+```tsx
+// likec4.customization.tsx
+import { defineCustomComponents } from 'likec4/react'
+
+export default defineCustomComponents(({ wrap }) => ({
+  // Replace: the component receives the props of the slot
+  LogoSvg: props => (
+    <svg viewBox="0 0 120 32" {...props}>
+      <text x="0" y="24" fontSize="24" fill="currentColor">Acme</text>
+    </svg>
+  ),
+  // Wrap: `Original` is the built-in component
+  LikeC4Diagram: wrap(({ Original, ...props }) => (
+    <Original {...props} showNavigationButtons={false} />
+  )),
+}))
+```
+
+## Customization file
+
+The file must default-export the result of `defineCustomComponents` from `likec4/react`.  
+There are three ways to point LikeC4 to it:
+
+| Where                                        | How                                         | The path is relative to     |
+| -------------------------------------------- | ------------------------------------------- | --------------------------- |
+| [App config](/dsl/config/app-config/)           | `customization: './likec4.customization.tsx'` | the config file             |
+| [CLI](/tooling/cli/)                         | `--customization ./likec4.customization.tsx` | the current directory       |
+| [Vite plugin](/tooling/vite-plugin/#options) | `customization` option                      | the root of the Vite project |
+
+It is an error if the file does not exist.
+
+With the CLI, the overrides are applied by:
+
+- `likec4 start` and `likec4 build`: to the application
+- `likec4 export png` and `likec4 export jpg`: to the exported images (not with `--server-url`, see [App config](/dsl/config/app-config/#commands))
+- `likec4 gen react` and `likec4 gen webcomponent`: to the generated components
+
+With the Vite plugin, the overrides are applied to the components from `likec4:react`.
+
+<Aside type="tip">
+If you render LikeC4 components in your own React application, you do not need the file:
+pass the overrides to `CustomizationProvider`, see [React components](/tooling/react/#ui-slots-experimental).
+</Aside>
+
+### Hot reload
+
+`likec4 start` and the Vite dev server watch the customization file.  
+When you edit it, or a file it imports, the overrides are updated in the browser without reloading the page.
+
+### Imports
+
+With the CLI, the customization file is compiled together with the LikeC4 application:
+
+- `react`, `react-dom`, `likec4/react` and `likec4/model` always resolve to the copies used by the application.
+  You do not need to install them next to the file, but you may want to, for types in your editor.
+- Other packages (like `roughjs` in the example below) are resolved from `node_modules` next to the file, as usual. Install them yourself.
+
+## Replace and wrap
+
+`defineCustomComponents` takes an object, or a function that receives the `wrap` helper:
+
+- **Replace**: give a component. It receives the same props as the built-in one.
+- **Wrap**: give `wrap(Component)`. Your component receives the props and `Original`, the built-in component.
+  Use it to change props, or to render something around the built-in component.
+
+```tsx
+import { defineCustomComponents } from 'likec4/react'
+
+export default defineCustomComponents(({ wrap }) => ({
+  // The built-in shape, without the outline of the selected node
+  ElementShape: wrap(({ Original, ...props }) => (
+    <Original {...props} showSelectionOutline={false} />
+  )),
+}))
+```
+
+Slots you do not mention keep the built-in components.
+
+## Slots
+
+| Slot            | Built-in component                                                                    | Props               |
+| --------------- | ------------------------------------------------------------------------------------- | ------------------- |
+| `LikeC4Diagram` | The diagram: the canvas with nodes, edges and controls. The application renders it for every view | `LikeC4DiagramProps` |
+| `LikeC4View`    | [`LikeC4View`](/tooling/react/#likec4view): a view with the browser popup             | `LikeC4ViewProps`   |
+| `ReactLikeC4`   | [`ReactLikeC4`](/tooling/react/#reactlikec4): the low-level component                 | `ReactLikeC4Props`  |
+| `LogoSvg`       | LikeC4 logo with the name, in the navigation panel                                    | SVG props           |
+| `LogoIconSvg`   | LikeC4 logo without the name, in the navigation panel                                 | SVG props           |
+| `ElementShape`  | Shape of an element: rectangle, cylinder, browser and so on                           | `ElementShapeProps` |
+
+The types of the props are exported from `likec4/react`. The names of the slots are checked by TypeScript.
+
+<Aside type="caution" title="Keep ElementShape cheap">
+`ElementShape` is rendered for every node of a diagram, and in other places where a shape is shown
+(for example, the relationships browser). A replacement that does heavy work on each render slows down large diagrams:
+memoize computations, as in the example below.
+</Aside>
+
+A component that replaces `ElementShape` draws the whole shape, including what the built-in one draws for
+`multiple` elements and for the selected node. Wrap the slot if you only want to add to the built-in shape.
+
+## Example: hand-drawn shapes
+
+This example replaces the shapes with hand-drawn ones, sketched by [Rough.js](https://roughjs.com/).  
+Nodes stay the default ones: titles, icons, colors and navigation work as before, only the shape is drawn differently.
+
+The complete project, with all the shapes, is in [examples/customization-roughjs](https://github.com/likec4/likec4/tree/main/examples/customization-roughjs).
+
+<Steps>
+
+1. Install Rough.js next to your LikeC4 sources:
+
+    ```sh
+    npm install roughjs
+    ```
+
+2. Draw the shape. The slot receives the shape of the element and the size of the node:
+
+    ```tsx
+    // RoughShape.tsx
+    import type { ElementShapeProps } from 'likec4/react'
+    import { useId, useMemo } from 'react'
+    import rough from 'roughjs'
+
+    // Colors of the node are CSS variables, so themes and element colors keep working
+    const FILL = 'var(--likec4-palette-fill)'
+    const STROKE = 'var(--likec4-palette-stroke)'
+
+    function silhouette(shape: string, w: number, h: number): string {
+      switch (shape) {
+        case 'cylinder':
+        case 'storage': {
+          const ry = Math.round(w * 0.035)
+          return `M${w},${ry} A${w / 2},${ry} 0 0 0 0,${ry} V${h - ry} A${w / 2},${ry} 0 0 0 ${w},${h - ry} Z`
+        }
+        // ...other shapes
+        default:
+          return `M0,0 H${w} V${h} H0 Z`
+      }
+    }
+
+    // Every node gets its own sketch, the same on each render
+    function seedOf(id: string): number {
+      let hash = 0
+      for (let i = 0; i < id.length; i++) {
+        hash = (hash * 31 + id.charCodeAt(i)) | 0
+      }
+      return Math.abs(hash) + 1
+    }
+
+    function sketch(shape: string, width: number, height: number, seed: number) {
+      const gen = rough.generator({
+        options: { seed, roughness: 1.8, stroke: STROKE, strokeWidth: 2.5 },
+      })
+      const body = silhouette(shape, width, height)
+      return [
+        // Solid fill keeps the text readable
+        gen.path(body, { stroke: 'none', fill: FILL, fillStyle: 'solid', roughness: 0 }),
+        // Hatching and the hand-drawn outline on top of it
+        gen.path(body, { fill: STROKE, fillStyle: 'hachure', hachureGap: 8 }),
+      ].flatMap(drawable => gen.toPaths(drawable))
+    }
+
+    export function RoughShape({ data, width: w, height: h }: ElementShapeProps) {
+      const id = useId()
+      const { shape } = data
+      const width = w && w > 10 ? w : data.width
+      const height = h && h > 10 ? h : data.height
+      // The slot is rendered for every node, so the sketch is memoized
+      const paths = useMemo(
+        () => sketch(shape, width, height, seedOf(id)),
+        [shape, width, height, id],
+      )
+      return (
+        <svg
+          aria-hidden
+          viewBox={`0 0 ${width} ${height}`}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            overflow: 'visible',
+            pointerEvents: 'none',
+          }}
+        >
+          {paths.map((path, i) => (
+            <path
+              key={i}
+              d={path.d}
+              // CSS variables have to be set through `style`
+              style={{
+                fill: path.fill ?? 'none',
+                stroke: path.stroke,
+                strokeWidth: path.strokeWidth,
+              }}
+            />
+          ))}
+        </svg>
+      )
+    }
+    ```
+
+3. Replace the slot in the customization file:
+
+    ```tsx
+    // likec4.customization.tsx
+    import { defineCustomComponents } from 'likec4/react'
+    import { RoughShape } from './RoughShape'
+
+    export default defineCustomComponents({
+      ElementShape: RoughShape,
+    })
+    ```
+
+4. Point LikeC4 to the file in the [app config](/dsl/config/app-config/):
+
+    ```ts
+    // likec4.app.config.ts
+    import { defineAppConfig } from 'likec4/config'
+
+    export default defineAppConfig({
+      title: 'Rough.js shapes',
+      customization: './likec4.customization.tsx',
+    })
+    ```
+
+5. Start the dev server and edit `RoughShape.tsx`: the diagrams are redrawn as you save.
+
+    ```sh
+    likec4 start
+    ```
+
+</Steps>

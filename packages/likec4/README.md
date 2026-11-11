@@ -94,6 +94,8 @@ likec4 build -o ./dist
 
 Demo - [https://template.likec4.dev](https://template.likec4.dev/view/boutique/)
 
+The options of `start`, `build` and other commands can be kept in a `likec4.app.config.ts` file instead of flags (experimental), see [App config](https://likec4.dev/dsl/config/app-config/).
+
 > **Tip:**\
 > [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
 

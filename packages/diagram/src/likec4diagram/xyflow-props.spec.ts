@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveControlledViewport, resolveInteractionEnabled } from './DiagramXYFlow'
+import { resolveControlledViewport, resolveInteractionEnabled } from './xyflow-props'
 
 describe('resolveControlledViewport', () => {
   const bounds = { x: 100, y: 200 }

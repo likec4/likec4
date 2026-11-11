@@ -11,7 +11,7 @@ import {
   forceY,
 } from 'd3-force'
 import { useEffect, useMemo, useRef } from 'react'
-import { useDiagram } from '../../hooks/useDiagram'
+import type { DiagramApi } from '../../hooks/useDiagram'
 import type { Types } from '../types'
 import { GraphNodeDiameter } from './graph-view-to-xy'
 
@@ -40,7 +40,7 @@ const radius = GraphNodeDiameter / 2
  * has no `renderHook` infrastructure, so hook effects themselves stay untested; this is the part
  * of the hook worth covering in isolation.
  */
-export function selectGraphTopology(xynodes: readonly Types.Node[], xyedges: readonly Types.Edge[]): {
+export function selectGraphTopology(xynodes: readonly Types.AnyNode[], xyedges: readonly Types.AnyEdge[]): {
   graphNodes: Types.GraphElementNode[]
   graphEdges: Types.RelationshipEdge[]
   topologyKey: string
@@ -51,6 +51,7 @@ export function selectGraphTopology(xynodes: readonly Types.Node[], xyedges: rea
     + graphEdges.map(e => `${e.id}:${e.source}-${e.target}`).sort().join(',')
   return { graphNodes, graphEdges, topologyKey }
 }
+export type GraphTopologyData = ReturnType<typeof selectGraphTopology>
 
 /**
  * Builds the d3-force graph (nodes seeded at their current center, links between existing nodes
@@ -89,25 +90,13 @@ type GraphForceHandlers = {
  * Positions are pushed through the same `xyflow.applyChanges` channel as a regular node drag,
  * so they stay in sync with the rest of the diagram state instead of drifting out of it.
  */
-export function useGraphForceSimulation({ enabled, nodes: xynodes, edges: xyedges }: {
+export function useGraphForceSimulation({ enabled, topology, diagram }: {
   enabled: boolean
-  nodes: Types.Node[]
-  edges: Types.Edge[]
+  diagram: DiagramApi
+  topology: GraphTopologyData
 }): GraphForceHandlers {
-  const diagram = useDiagram()
   const simulationRef = useRef<Simulation<SimNode, SimLink> | undefined>(undefined)
-
-  // Switching into "graph" mode is not synchronous - `elementViewVariant` flips first, and the
-  // graph-element nodes/edges arrive a render or two later (view re-conversion is dispatched via
-  // a raised event). Re-seed the simulation once that population actually settles, identified by
-  // `topologyKey`, instead of on every `enabled`/array-identity change (which would also fire on
-  // the still-empty intermediate render, or reset the simulation on unrelated re-renders). The key
-  // covers visible edges too, so a `where`/search filter that hides or reveals a relationship
-  // without changing the node set still re-seeds the simulation.
-  const { graphNodes, graphEdges, topologyKey } = useMemo(
-    () => selectGraphTopology(xynodes, xyedges),
-    [xynodes, xyedges],
-  )
+  const { graphNodes, graphEdges, topologyKey } = topology
 
   useEffect(() => {
     if (!enabled || graphNodes.length === 0) {

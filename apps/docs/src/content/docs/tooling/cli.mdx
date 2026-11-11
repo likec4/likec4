@@ -86,6 +86,11 @@ likec4 build -h
 likec4 gen react -h
 ```
 
+:::tip[App config]
+`likec4 start`, `likec4 build`, `likec4 export png/jpg`, `likec4 gen react` and `likec4 gen webcomponent`
+can take their options from a `likec4.app.config.ts` file instead of flags, see [App config](/dsl/config/app-config/) (experimental).
+:::
+
 
 ### Preview diagrams
 
@@ -105,18 +110,22 @@ Any change in the source files triggers a hot update in the browser immediately.
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `--port`                     | Port for the dev server (default: 5173, or `PORT` env var)                                                      |
 | `--hmr-port`                 | Port for the HMR WebSocket (default: auto-discovered from 24678–24690, or `HMR_PORT` env var)                   |
-| `--listen, -l`               | IP address to listen on (default: `127.0.0.1`, or `0.0.0.0` inside a container)                                 |
+| `--listen, -l`               | IP address to listen on (default: `localhost`, or `0.0.0.0` inside a container)                                 |
 | `--no-react-hmr`             | Disable React HMR (useful for CI or static previews)                                                            |
 | `--use-dot`, `--use-dot-bin` | Use local Graphviz (`dot`) binaries instead of bundled WASM; `false` by default, `true` when inside container   |
 | `--public, --public-dir`     | Directory whose files are served as-is (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)) |
 | `--allowed-host`             | Hostname allowed to access the dev server (Vite [`server.allowedHosts`](https://vite.dev/config/server-options#server-allowedhosts)); repeatable. Defaults to allowing all hosts. |
+| `--title`                    | Base title of the app pages (default is "LikeC4")                                                               |
+| `--theme`                    | Default color scheme of the app, `light` or `dark` (default: follows system preference)                         |
+| `--customization`            | File with [UI customization](/dsl/config/customization/) (experimental)                                            |
+| `--app-config`               | Path to the [app config](/dsl/config/app-config/); `--no-app-config` to ignore it (experimental)                   |
 
 :::tip
 You can start the process in a separate terminal window and keep it running while you're editing the model in your editor, or even serve multiple projects at once.
 :::
 
 <Aside type="caution">
-By default, the web server listens on localhost (127.0.0.1). If you want it to listen on all network interfaces, add `--listen 0.0.0.0` to the serve command.
+By default, the web server listens on `localhost`. If you want it to listen on all network interfaces, add `--listen 0.0.0.0` to the serve command.
 </Aside>
 
 ### Build static website
@@ -141,6 +150,9 @@ likec4 build -o ./dist
 | `--title`                    | Base title of the app pages (default is "LikeC4")                                                                |
 | `--output-single-file`       | Generates a single self-contained HTML file                                                                      |
 | `--public, --public-dir`     | Directory whose files are copied into the output as-is (Vite [`publicDir`](https://vite.dev/guide/assets#the-public-directory)); preserved with `--output-single-file` |
+| `--theme`                    | Default color scheme of the app, `light` or `dark` (default: follows system preference)                          |
+| `--customization`            | File with [UI customization](/dsl/config/customization/) (experimental)                                             |
+| `--app-config`               | Path to the [app config](/dsl/config/app-config/); `--no-app-config` to ignore it (experimental)                    |
 
 :::note
 Internally, CLI uses Vite to build the website, and `likec4 build` calls `vite build`.  
@@ -155,6 +167,8 @@ There is also a supplementary command to preview the build:
 ```sh
 likec4 preview -o ./dist
 ```
+
+`likec4 preview` takes the output directory and the base URL from the [app config](/dsl/config/app-config/), the same way `likec4 build` does, so the two commands agree without repeating `-o` and `--base`.
 
 For example, this command can be used in CI to compare diagrams with ones from the previous or main build.
 
@@ -195,6 +209,8 @@ You will be prompted with a command to install if it's not found.
 | `--chromium-sandbox`         | enable chromium sandbox (see Playwright docs)                                                                    |
 | `--notation`                 | include view notation in exported PNG/JPEG files                                                                 |
 | `--description`              | include the view title and Markdown description in exported PNG/JPEG files                                       |
+| `--customization`            | File with [UI customization](/dsl/config/customization/), not used with `--server-url` (experimental)               |
+| `--app-config`               | Path to the [app config](/dsl/config/app-config/); `--no-app-config` to ignore it (experimental)                    |
 
 ### Export to JSON
 

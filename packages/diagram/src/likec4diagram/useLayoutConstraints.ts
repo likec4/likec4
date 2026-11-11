@@ -12,8 +12,7 @@ import { produce } from 'immer'
 import { useMemo, useRef } from 'react'
 import { clamp, difference, filter, flatMap, hasAtLeast, map, pipe, unique } from 'remeda'
 import { type XYStoreApi, useXYStoreApi } from '../hooks'
-import { useCurrentViewRouting } from '../hooks/useCurrentView'
-import { useDiagram } from '../hooks/useDiagram'
+import type { DiagramApi } from '../hooks/useDiagram'
 import { selectLabelRoutes } from '../hooks/useEdgeTracks'
 import { vector } from '../utils'
 import { initialControlPoints } from '../utils/edge-corners'
@@ -578,10 +577,14 @@ type LayoutConstraints = {
 /**
  * Keeps the layout constraints (parent nodes and children) when dragging a node
  */
-export function useLayoutConstraints(): LayoutConstraints {
+export function useLayoutConstraints({
+  routing,
+  diagram,
+}: {
+  routing: EdgeRouting
+  diagram: DiagramApi
+}): LayoutConstraints {
   const xystore = useXYStoreApi()
-  const diagram = useDiagram()
-  const routing = useCurrentViewRouting()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>(undefined)
   return useMemo((): LayoutConstraints => {
     return ({

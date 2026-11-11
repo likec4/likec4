@@ -9,12 +9,16 @@ import { fromWorkspace } from '@likec4/language-services/node'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
+import { resolveAppConfig } from '../../app-config'
 import { createLikeC4Logger } from '../../logger'
+import { relativeToCwd } from '../../vite/utils'
 import { viteBuild } from '../../vite/vite-build'
 import { notifyAvailableUpdate } from '../check-update/utils'
 import { ensureReact } from '../ensure-libs'
 import {
+  appConfig,
   base,
+  customization,
   outputSingleFile,
   path,
   publicDir,
@@ -23,6 +27,7 @@ import {
   useDotBin,
   useHashHistory,
   webcomponentPrefix,
+  withoutDefault,
 } from '../options'
 import { showSupportUsMessage } from '../support-message'
 
@@ -34,7 +39,8 @@ const buildCmd = (yargs: yargs.Argv) => {
       describe: 'Build a static website',
       builder: yargs =>
         yargs
-          .positional('path', path)
+          .positional('path', withoutDefault(path))
+          .option('app-config', appConfig)
           .option('output', {
             alias: 'o',
             type: 'string',
@@ -44,14 +50,15 @@ const buildCmd = (yargs: yargs.Argv) => {
           })
           .option('base', base)
           .option('use-hash-history', useHashHistory)
-          .option('use-dot', useDotBin)
-          .option('webcomponent-prefix', webcomponentPrefix)
+          .option('use-dot', withoutDefault(useDotBin))
+          .option('webcomponent-prefix', withoutDefault(webcomponentPrefix))
           .option('build-webcomponent', {
             type: 'boolean',
-            default: true,
+            defaultDescription: 'true',
             describe: 'enable/disable webcomponent build',
           })
-          .option('title', title)
+          .option('title', withoutDefault(title))
+          .option('customization', customization)
           .option('output-single-file', outputSingleFile)
           .option('public', publicDir)
           .option('theme', theme)
@@ -68,39 +75,52 @@ const buildCmd = (yargs: yargs.Argv) => {
             k.gray('Copy files from \'assets\' to the output directory as-is'),
           ),
       handler: async (args) => {
-        const params = {
-          useHashHistory: args['use-hash-history'] ?? false,
-          useDotBin: args['use-dot'],
-          webcomponentPrefix: args['webcomponent-prefix'],
-          buildWebcomponent: args['build-webcomponent'],
-          outputSingleFile: args['output-single-file'] ?? false,
-        }
         await notifyAvailableUpdate()
         await ensureReact()
 
         const logger = createLikeC4Logger('c4:build')
 
-        await using languageServices = await fromWorkspace(args.path, {
-          graphviz: args['use-dot'] ? 'binary' : 'wasm',
+        const config = await resolveAppConfig({
+          appConfig: args['app-config'],
+          path: args.path,
+          useDot: args['use-dot'],
+          base: args.base,
+          title: args.title,
+          theme: args.theme,
+          useHashHistory: args['use-hash-history'],
+          webcomponentPrefix: args['webcomponent-prefix'],
+          customization: args.customization,
+          publicDir: args.public,
+          output: args.output,
+          outputSingleFile: args['output-single-file'],
+          buildWebcomponent: args['build-webcomponent'],
+        })
+        if (config.configFile) {
+          logger.info(`${k.cyan('app config')} ${k.dim(relativeToCwd(config.configFile))}`)
+        }
+
+        await using languageServices = await fromWorkspace(config.workspace, {
+          graphviz: config.graphviz,
           watch: false,
         })
 
-        const outputDir = args.output ?? resolve(languageServices.workspace, 'dist')
+        const outputDir = config.build.outDir ?? resolve(languageServices.workspace, 'dist')
         let likec4AssetsDir = resolve(outputDir, 'assets')
 
         await viteBuild({
-          base: args.base,
-          useHashHistory: params.outputSingleFile || params.useHashHistory,
+          base: config.base,
+          useHashHistory: config.build.singleFile || config.useHashHistory,
           customLogger: logger,
-          webcomponentPrefix: params.webcomponentPrefix,
-          buildWebcomponent: params.buildWebcomponent,
-          title: args.title,
-          theme: args.theme,
+          webcomponentPrefix: config.webcomponentPrefix,
+          buildWebcomponent: config.build.webcomponent,
+          title: config.title,
+          theme: config.theme,
+          customization: config.customization,
           languageServices,
           likec4AssetsDir,
           outputDir,
-          outputSingleFile: params.outputSingleFile,
-          userPublicDir: args.public,
+          outputSingleFile: config.build.singleFile,
+          userPublicDir: config.publicDir,
         })
 
         showSupportUsMessage()

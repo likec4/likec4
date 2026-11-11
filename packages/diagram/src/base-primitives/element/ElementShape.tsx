@@ -6,8 +6,9 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { nonexhaustive } from '@likec4/core'
-import type { ComputedNodeStyle, ElementShape, ShapeSize } from '@likec4/core/types'
+import type { ComputedNodeStyle, ElementShape as Shape, ShapeSize } from '@likec4/core/types'
 import { elementShapeRecipe } from '@likec4/styles/recipes'
+import { customizable } from '../../customization/customizable'
 import { roundDpr } from '../../utils'
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
@@ -220,7 +221,7 @@ const ComponentTopLeftRect = ({ index, size }: { index: number; size: ShapeSize 
 }
 
 type ShapeSvgProps = {
-  shape: Exclude<ElementShape, 'rectangle'>
+  shape: Exclude<Shape, 'rectangle'>
   size?: ShapeSize | undefined
   w: number
   h: number
@@ -439,13 +440,13 @@ function ShapeSvgOutline({ shape, w, h }: ShapeSvgProps) {
   return <g className={'likec4-shape-outline'}>{svg}</g>
 }
 type RequiredData = {
-  shape: ElementShape
+  shape: Shape
   width: number
   height: number
   style?: ComputedNodeStyle
 }
 
-type ElementShapeProps = {
+export type ElementShapeProps = {
   data: RequiredData
   width?: number | undefined
   height?: number | undefined
@@ -455,7 +456,13 @@ type ElementShapeProps = {
   showSelectionOutline?: boolean | undefined
 }
 
-export function ElementShape(
+/**
+ * Shape of the element node.
+ *
+ * Customizable slot `ElementShape`: the replacement is rendered for every node
+ * (and wherever else the shape is shown), so keep it cheap and memoize heavy computations.
+ */
+export const ElementShape = customizable('ElementShape')(function ElementShape(
   { data, width, height, showSelectionOutline = true }: ElementShapeProps,
 ) {
   let w = !!width && width > 10 ? width : data.width
@@ -504,4 +511,4 @@ export function ElementShape(
       </svg>
     </>
   )
-}
+})

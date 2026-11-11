@@ -463,13 +463,13 @@ for (const view of model.views()) {
 
 ## Model Builder
 
-O construtor de modelos com segurança de tipos está disponível em `@likec4/core/builder` (ou `likec4/model/builder`).  
+O construtor de modelos com segurança de tipos está disponível em `likec4/model/builder` (ou `@likec4/core/builder`).  
 O Builder permite criar modelos programaticamente usando dois estilos:
 
 <Tabs>
   <Tab label='Chain'>
   ```ts
-  import { Builder } from "@likec4/core/builder"
+  import { Builder } from "likec4/model/builder"
 
   const m = Builder
     .specification({
@@ -527,7 +527,7 @@ O Builder permite criar modelos programaticamente usando dois estilos:
   <Tab label='Composition'>
 
   ```ts
-  import { Builder } from "@likec4/core/builder"
+  import { Builder } from "likec4/model/builder"
 
   // Get composition functions for given specification
   const {
@@ -693,7 +693,7 @@ A mesma funcionalidade de inicialização está disponível diretamente no Build
 dados processados:
 
 ```ts
-import { Builder } from "@likec4/core/builder"
+import { Builder } from "likec4/model/builder"
 
 const builder = Builder.fromParsed(parsedData)
 ```
@@ -858,7 +858,7 @@ const enriched = (await likec4.toBuilder())
   )
 
 const data = enriched.build()
-const dsl = generateLikeC4(data)              // from @likec4/generators/likec4
+const dsl = generate(data)                    // `generate` from likec4/generators/likec4
 await writeFile('./generated/model.c4', dsl)  // or use writeDSL on the LikeC4 instance
 ```
 
@@ -896,7 +896,7 @@ sendo validadas somente durante a alteração do Builder, e não pelo compilador
 Se não puder (ou não quiser) fornecer uma especificação, ainda será possível recorrer a uma conversão explícita de tipos em `toBuilder()`:
 
 ```ts
-import type { Builder, Types } from "@likec4/core/builder"
+import type { Builder, Types } from "likec4/model/builder"
 
 type MySpec = { elements: ['actor', 'system', 'component'] }
 const builder = (await likec4.toBuilder()) as unknown as Builder<Types.FromSpecification<MySpec>>

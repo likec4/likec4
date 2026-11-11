@@ -34,6 +34,10 @@ export type SharedVirtualModuleOptions =
     logger: ViteLogger
     likec4: LikeC4LanguageServices
     assetsDir: string
+    /**
+     * Absolute path to the file with UI customizations, if configured
+     */
+    customizationFile: string | undefined
   }
   & (
     {

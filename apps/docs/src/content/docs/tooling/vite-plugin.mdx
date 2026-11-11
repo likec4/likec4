@@ -68,8 +68,8 @@ This is useful for building documentation, tutorials, or any other application w
 
     export default defineConfig({
       plugins: [
+    +    LikeC4VitePlugin(),
         react(),
-    +     LikeC4VitePlugin(),
       ],
     })
     ```
@@ -211,6 +211,46 @@ This is useful for building documentation, tutorials, or any other application w
 | `printErrors`    | if model is invalid, errors are reported to the logger (default `true`) |
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | fails with rejected promise if model is invalid  (default `false`) |
 | `graphviz`       | `wasm` (default) or `binary` - use local binaries of Graphviz ("dot") or bundled WASM    |
+
+Application options, at the top level of the plugin options:
+
+| Option               | Description                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------- |
+| `title`              | base title of the application pages (default `'LikeC4'`)                                             |
+| `theme`              | default color scheme, `'light'` or `'dark'` (follows the system preference if not set)               |
+| `useHashHistory`     | hash-based navigation, e.g. `/#/view` instead of `/view` (default `false`)                           |
+| `webcomponentPrefix` | prefix for web components, e.g. `'c4'` generates `<c4-view/>` (default `'likec4'`)                   |
+| `customization`      | path to the file with [UI customization](/dsl/config/customization/), relative to the Vite root (experimental) |
+
+```ts
+// vite.config.ts
+import react from '@vitejs/plugin-react'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    LikeC4VitePlugin({
+      customization: './likec4.customization.tsx',
+    }),
+    react(),
+  ],
+})
+```
+
+`customization` is applied to the components from `likec4:react`.
+The other four are exposed by the `likec4:app-config` virtual module, which the LikeC4 application
+(the one served by `likec4 start` and `likec4 build`) reads; they do not change the components from `likec4:react`.
+
+:::note
+These options used to be nested in `appConfig` (with `pageTitle` instead of `title`).
+`appConfig` still works, but is deprecated: move the options to the top level. Top-level options win if both are set.
+:::
+
+:::note
+The plugin does not read the [app config](/dsl/config/app-config/) (`likec4.app.config.ts`).
+That file is for the LikeC4 CLI; with the plugin, pass the options as shown above.
+:::
 
 ### Multi-project workspaces
 

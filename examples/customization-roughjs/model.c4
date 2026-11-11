@@ -1,0 +1,133 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element container
+  element component {
+    style {
+      shape component
+    }
+  }
+  element database {
+    style {
+      shape storage
+    }
+  }
+  element queue {
+    style {
+      shape queue
+    }
+  }
+  element external {
+    style {
+      color muted
+    }
+  }
+}
+
+model {
+  customer = actor 'Customer' {
+    description 'Uses the product on the web and on the phone'
+  }
+
+  analyst = actor 'Analyst' {
+    description 'Builds reports'
+  }
+
+  saas = system 'Demo System' {
+    summary 'Every shape here is drawn with Rough.js'
+
+    web = container 'Web App' {
+      technology 'React'
+      description 'Single page app served from CDN'
+      style {
+        shape browser
+      }
+    }
+
+    mobile = container 'Mobile App' {
+      technology 'React Native'
+      description 'iOS and Android'
+      style {
+        shape mobile
+      }
+    }
+
+    backend = container 'Backend' {
+      technology 'Kotlin'
+      description 'Business logic'
+
+      api = component 'API' {
+        description 'GraphQL gateway'
+      }
+      billing = component 'Billing' {
+        description 'Invoices and payments'
+      }
+      reports = component 'Reports' {
+        description 'Aggregates statistics'
+        style {
+          shape document
+        }
+      }
+    }
+
+    events = queue 'Events' {
+      technology 'Kafka'
+      description 'Domain events'
+    }
+
+    db = database 'Database' {
+      technology 'PostgreSQL'
+      description 'Orders and customers'
+    }
+
+    assets = container 'Assets' {
+      technology 'S3'
+      description 'Uploads and static files'
+      style {
+        shape bucket
+      }
+    }
+  }
+
+  stripe = external 'Stripe' {
+    description 'Payments provider'
+  }
+
+  warehouse = database 'Warehouse' {
+    technology 'ClickHouse'
+    description 'Analytics store'
+    style {
+      color amber
+      shape cylinder
+    }
+  }
+
+  customer -> web 'uses'
+  customer -> mobile 'uses'
+  web -> api 'GraphQL'
+  mobile -> api 'GraphQL'
+  web -> assets 'loads static files'
+  api -> billing 'creates invoices'
+  api -> db 'reads and writes'
+  billing -> stripe 'charges cards'
+  billing -> events 'publishes'
+  events -> reports 'consumes'
+  reports -> warehouse 'writes statistics'
+  analyst -> warehouse 'queries'
+}
+
+views {
+  view index {
+    title 'Landscape'
+    include *, saas.*
+  }
+
+  view backend of saas.backend {
+    title 'Backend'
+    include *
+  }
+}

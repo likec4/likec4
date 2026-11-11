@@ -7,7 +7,6 @@
 
 export * from './builtins'
 export * from './customNodes'
-export * from './hooks'
 export * from './primitives'
 
 export type {
@@ -68,3 +67,11 @@ export { LikeC4MantineProvider } from '../LikeC4MantineProvider'
 export { LikeC4Styles } from '../LikeC4Styles'
 
 export { TagStylesProvider } from '../context/TagStylesContext'
+
+export { CustomizationProvider } from '../customization/CustomizationContext'
+
+export { defineCustomComponents } from '../customization/customizable'
+export type {
+  CustomComponents,
+  Customizables,
+} from '../customization/customization-types'

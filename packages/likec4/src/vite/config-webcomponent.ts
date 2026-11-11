@@ -3,7 +3,7 @@ import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin'
-import { viteAliases } from './aliases'
+import { reactDedupe, viteAliases } from './aliases'
 import { viteAppRoot } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
@@ -12,6 +12,10 @@ export type LikeC4ViteWebcomponentConfig = {
   outDir: string
   base: string
   filename?: string
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
 }
 
 export function viteWebcomponentConfig({
@@ -20,6 +24,7 @@ export function viteWebcomponentConfig({
   base,
   webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js',
+  customization,
 }: LikeC4ViteWebcomponentConfig): InlineConfig {
   const customLogger = createLikeC4Logger(['vite', 'webcomponent'])
   const root = viteAppRoot()
@@ -34,6 +39,7 @@ export function viteWebcomponentConfig({
     mode: 'production',
     resolve: {
       alias: viteAliases(),
+      dedupe: reactDedupe,
     },
     define: {
       'process.env.NODE_ENV': '"production"',
@@ -53,15 +59,22 @@ export function viteWebcomponentConfig({
         formats: ['iife'],
         name: 'LikeC4Views',
       },
+      rolldownOptions: {
+        onLog(level, log, defaultHandler) {
+          if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
+            return // Ignore module level directive warnings
+          }
+          defaultHandler(level, log) // otherwise, just print the log
+        },
+      },
     },
     customLogger,
     plugins: [
       LikeC4VitePlugin({
         ai: 'disabled',
         languageServices: languageServices.languageServices,
-        appConfig: {
-          webcomponentPrefix,
-        },
+        webcomponentPrefix,
+        customization,
       }),
     ],
   } satisfies InlineConfig

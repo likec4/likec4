@@ -8,7 +8,9 @@ vi.mock('@likec4/language-services/node', () => ({
   }),
 }))
 
-vi.mock('node:fs/promises', () => ({
+// Partial mock: tests run with `--no-isolate`, modules loaded here may be reused by other spec files
+vi.mock('node:fs/promises', async importOriginal => ({
+  ...(await importOriginal<typeof import('node:fs/promises')>()),
   mkdtemp: vi.fn().mockResolvedValue('/tmp/.likec4-assets-abc'),
 }))
 
@@ -17,7 +19,12 @@ const mockViteDevServer = {
     logger: {
       clearScreen: vi.fn(),
       info: vi.fn(),
+      warn: vi.fn(),
     },
+  },
+  watcher: {
+    add: vi.fn(),
+    on: vi.fn(),
   },
   resolvedUrls: { local: ['http://localhost:5173/'] },
 }
@@ -164,5 +171,56 @@ describe('serve handler', () => {
     expect(viteDevMock).toHaveBeenCalledOnce()
     const callArg = viteDevMock.mock.calls[0]![0]
     expect(callArg.allowedHosts).toBeUndefined()
+  })
+
+  it('propagates theme and customization to viteDev', async () => {
+    const { handler } = await import('./serve')
+    const { viteDev } = await import('../../vite/vite-dev')
+    const viteDevMock = viteDev as ReturnType<typeof vi.fn>
+
+    await handler({
+      path: '/tmp/test',
+      useDotBin: false,
+      webcomponentPrefix: 'likec4',
+      title: undefined,
+      useHashHistory: undefined,
+      enableHMR: false,
+      enableWebcomponent: false,
+      theme: 'dark',
+      customization: '/tmp/test/likec4.customization.tsx',
+    })
+
+    expect(viteDevMock).toHaveBeenCalledOnce()
+    const callArg = viteDevMock.mock.calls[0]![0]
+    expect(callArg.theme).toBe('dark')
+    expect(callArg.customization).toBe('/tmp/test/likec4.customization.tsx')
+    expect(mockViteDevServer.watcher.add).not.toHaveBeenCalled()
+  })
+
+  it('warns that a restart is required when the app config changes', async () => {
+    const { handler } = await import('./serve')
+    const appConfigFile = '/tmp/test/likec4.app.config.ts'
+
+    await handler({
+      path: '/tmp/test',
+      useDotBin: false,
+      webcomponentPrefix: 'likec4',
+      title: undefined,
+      useHashHistory: undefined,
+      enableHMR: false,
+      enableWebcomponent: false,
+      appConfigFile,
+    })
+
+    expect(mockViteDevServer.watcher.add).toHaveBeenCalledWith(appConfigFile)
+    const [event, onChange] = mockViteDevServer.watcher.on.mock.calls[0]!
+    expect(event).toBe('change')
+
+    onChange('/tmp/test/model.c4')
+    expect(mockViteDevServer.config.logger.warn).not.toHaveBeenCalled()
+
+    onChange(appConfigFile)
+    expect(mockViteDevServer.config.logger.warn).toHaveBeenCalledOnce()
+    expect(mockViteDevServer.config.logger.warn.mock.calls[0]![0]).toContain('restart to apply')
   })
 })

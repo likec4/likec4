@@ -1,4 +1,4 @@
-import type { NonEmptyArray, ProjectId } from '@likec4/core/types'
+import type { ProjectId } from '@likec4/core/types'
 import {
   createBrowserHistory,
   createHashHistory,
@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-router'
 import { basepath, useHashHistory } from 'likec4:app-config'
 import { isSingleProject, projects } from 'likec4:projects'
-import { map } from 'remeda'
+import { hasAtLeast } from 'remeda'
 import { NotFound } from './components/NotFound'
 import { LikeC4ProjectsContext } from './context/LikeC4ProjectsContext'
 import { rewriteSingleProjectInput, rewriteSingleProjectOutput } from './rewrite-single-project'
@@ -15,9 +15,10 @@ import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
-const _projects = projects.length > 0
-  ? map(projects, p => p.id)
-  : ['default' as ProjectId] satisfies NonEmptyArray<ProjectId>
+const projectIds = projects.map(p => p.id)
+const _projects = hasAtLeast(projectIds, 1)
+  ? projectIds
+  : ['default' as ProjectId] as const
 
 // Snapshot once at router create; HMR 1↔2 project count changes are ignored.
 const firstProjectId = _projects[0]

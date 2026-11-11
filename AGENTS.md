@@ -42,6 +42,7 @@ ask if drift behavior is unclear. Read model and API rules before downstream typ
 - `pnpm fmt` formats with dprint.
 - `pnpm test:e2e` runs Playwright tests from the isolated `e2e` workspace and takes longer than unit tests.
 - `pnpm check:agent-instructions` validates that this file remains canonical and that instruction and skill adapters do not drift.
+- `pnpm check:react-bundle-deps` validates that `@likec4/spa`, `@likec4/react` and `likec4` declare the same runtime dependencies; see the webapp rules.
 
 ## Generated Files
 

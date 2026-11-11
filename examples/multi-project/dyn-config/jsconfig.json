@@ -4,13 +4,13 @@
     "composite": true,
     "paths": {
       "likec4/config": [
-        "../../../packages/config/src/node/index.ts"
+        "../../../packages/likec4/src/config/index.ts"
       ]
     }
   },
   "references": [
     {
-      "path": "../../../packages/config"
+      "path": "../../../packages/likec4/"
     }
   ]
 }

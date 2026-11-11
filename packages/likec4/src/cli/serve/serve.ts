@@ -2,7 +2,10 @@ import { fromWorkspace } from '@likec4/language-services/node'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import k from 'tinyrainbow'
+import { normalizePath } from 'vite'
 import { printServerUrls } from '../../vite/printServerUrls'
+import { relativeToCwd } from '../../vite/utils'
 import { viteDev } from '../../vite/vite-dev'
 
 type HandlerParams = {
@@ -27,8 +30,23 @@ type HandlerParams = {
   title: string | undefined
 
   /**
+   * default color scheme of the app
+   */
+  theme?: 'light' | 'dark' | undefined
+
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
+
+  /**
+   * The loaded app config, its changes require a restart
+   */
+  appConfigFile?: string | undefined
+
+  /**
    * ip address of the network interface to listen on
-   * @default '127.0.0.1'
+   * @default 'localhost'
    */
   listen?: string | undefined
 
@@ -76,6 +94,9 @@ export async function handler({
   useDotBin,
   webcomponentPrefix,
   title,
+  theme,
+  customization,
+  appConfigFile,
   useHashHistory,
   enableWebcomponent = true,
   enableHMR = true,
@@ -104,6 +125,8 @@ export async function handler({
     base,
     webcomponentPrefix,
     title,
+    theme,
+    customization,
     languageServices,
     useHashHistory,
     likec4AssetsDir,
@@ -116,6 +139,17 @@ export async function handler({
 
   server.config.logger.clearScreen('info')
   printServerUrls(server)
+
+  if (appConfigFile) {
+    // The config is applied on start only
+    const configFile = normalizePath(appConfigFile)
+    server.watcher.add(appConfigFile)
+    server.watcher.on('change', (file) => {
+      if (normalizePath(file) === configFile) {
+        server.config.logger.warn(k.yellow(`${relativeToCwd(appConfigFile)} changed, restart to apply`))
+      }
+    })
+  }
 
   // if (!useOverview) {
   //   return

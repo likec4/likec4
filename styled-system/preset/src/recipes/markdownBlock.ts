@@ -390,6 +390,20 @@ export const markdownBlock = defineRecipe({
         ],
       },
     },
+
+    '& [data-likec4-ref-state="link"]': {
+      display: 'inline-block',
+      borderRadius: 'sm',
+      paddingInline: '1',
+      border: '1px solid',
+      borderColor: 'currentColor/15',
+      textDecoration: 'none',
+      _hover: {
+        textDecoration: 'none',
+        borderColor: 'currentColor/25',
+        backgroundColor: 'currentColor/10',
+      },
+    },
   },
 
   variants: {

@@ -11,8 +11,8 @@ import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
 import { createLikeC4Logger } from '../../../logger'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
-import { path, project, useDotBin } from '../../options'
-import { type PngExportArgs, runExportPng } from '../png/handler'
+import { appConfig, customization, path, project, useDotBin, withoutDefault } from '../../options'
+import { type PngExportArgs, resolveImageExportConfig, runExportPng } from '../png/handler'
 
 /** CLI entry: create logger and delegate to runExportPng with format=jpeg. */
 export async function jpgHandler(args: PngExportArgs): Promise<void> {
@@ -29,8 +29,10 @@ export function jpgCmd(yargs: Argv) {
     describe: 'export views to JPEG',
     builder: yargs =>
       yargs
-        .positional('path', path)
+        .positional('path', withoutDefault(path))
         .options({
+          'app-config': appConfig,
+          customization,
           'outdir': {
             alias: ['o', 'output'],
             type: 'string',
@@ -63,7 +65,7 @@ export function jpgCmd(yargs: Argv) {
             desc: 'use light theme, shortcut for --theme=light',
             conflicts: ['theme', 'dark'],
           },
-          'use-dot': useDotBin,
+          'use-dot': withoutDefault(useDotBin),
           'seq': {
             alias: ['sequence'],
             type: 'boolean',
@@ -141,8 +143,7 @@ export function jpgCmd(yargs: Argv) {
       const theme = args.theme ?? (args.dark ? 'dark' : 'light')
       await jpgHandler(
         {
-          path: args.path,
-          useDotBin: args['use-dot'],
+          ...await resolveImageExportConfig(args, createLikeC4Logger('c4:export')),
           output: args.outdir,
           project: args.project,
           timeoutMs: args.timeout * 1000,

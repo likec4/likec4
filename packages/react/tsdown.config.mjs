@@ -37,10 +37,6 @@ export default defineConfig({
   ],
   platform: 'browser',
   inputOptions: {
-    resolve: {
-      mainFields: ['module', 'main'],
-      conditionNames: ['sources', 'module', 'import', 'default'],
-    },
     onLog(level, log, defaultHandler) {
       if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
         return // Ignore module level directive warnings

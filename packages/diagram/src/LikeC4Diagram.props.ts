@@ -21,8 +21,8 @@ import type { DiagramApi } from './hooks/useDiagram'
 import type { XYFlowInstance } from './hooks/useXYFlow'
 import type { Types } from './likec4diagram/types'
 
-type Any = t.aux.Any
-type Unknown = t.aux.UnknownLayouted
+type Any = t.Any
+type Unknown = t.UnknownLayouted
 type ViewId<A> = t.aux.ViewId<A>
 type Fqn<A> = t.aux.Fqn<A>
 type RelationId = t.aux.RelationId
