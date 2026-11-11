@@ -23,7 +23,7 @@ import { splitErrorMessage } from './rpc/sendError'
 import type { AIOptions, LikeC4VitePluginOptions } from './types'
 
 export type { AIOptions, LikeC4VitePluginOptions }
-import { type ProjectsData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
+import { type ProjectData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { createAppConfigModule } from './virtuals/app-config'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { diffsModule, projectDiffsModule } from './virtuals/diffs'
@@ -151,9 +151,9 @@ export function LikeC4VitePlugin({
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
       exportFormats: effectiveWebappExportFormats(p.config),
-    })) satisfies (data: ProjectsData) => any
+    })) satisfies (data: ProjectData[]) => any
     let _last: any
-    return <T extends ProjectsData>(update: T): boolean => {
+    return <T extends ProjectData[]>(update: T): boolean => {
       const _next = selectDataToCompare(update)
       // Initialize _last on first call
       _last ??= _next
@@ -237,13 +237,13 @@ export function LikeC4VitePlugin({
             )
           }
         }
+        const projects = likec4.projects()
+        // Early return if no projects
+        if (!hasAtLeast(projects, 1)) {
+          return null
+        }
         for (const module of virtuals) {
           if (module.virtualId === id) {
-            const projects = likec4.projects()
-            // Early return if no projects
-            if (!hasAtLeast(projects, 1)) {
-              return null
-            }
             return await module.load.call(
               this,
               moduleopts({ projects }),
@@ -345,7 +345,7 @@ export function LikeC4VitePlugin({
           }
         }
         likec4.projectsManager.onProjectsUpdate(
-          pDebounce(reloadProjects, 100),
+          pDebounce(reloadProjects, 50),
         )
 
         likec4.builder.onModelParsed(onModelParsedBatched(async (projects) => {
@@ -396,7 +396,7 @@ function onModelParsedBatched(
         return accumulator
       },
       triggerAt: 'end',
-      minQuietPeriodMs: 130,
+      minQuietPeriodMs: 100,
       maxBurstDurationMs: 500,
     },
   ).call

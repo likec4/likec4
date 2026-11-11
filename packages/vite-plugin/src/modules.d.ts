@@ -33,17 +33,9 @@ declare module 'likec4:projects-overview' {
 }
 
 declare module 'likec4:icons' {
-  import type { ReactNode } from 'react'
+  import type { ElementIconRenderer, ElementIconRendererProps } from 'likec4/react'
 
-  export type ElementIconRendererProps = {
-    node: {
-      id: string
-      title: string
-      icon?: string | null | undefined
-    }
-  }
-
-  export type ElementIconRenderer = (props: ElementIconRendererProps) => ReactNode
+  export type { ElementIconRenderer, ElementIconRendererProps }
   export function getProjectIcons(projectId: string): ElementIconRenderer
 }
 
@@ -90,24 +82,32 @@ declare module 'likec4:single-project' {
 }
 
 declare module 'likec4:react' {
-  import type { aux, DiagramView, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
+  import type { aux, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
+  import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
+  import type { Atom } from 'likec4/vite-plugin/internal'
+
+  export type { DiagramView, LikeC4Model, UnknownLayouted }
 
   // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  interface Types {
   }
+  export type $Aux = Types extends { Aux: infer A extends aux.Any } ? A : UnknownLayouted
 
-  export type LikeC4ViewId = aux.ViewId<Types>
+  export type LikeC4ViewId = aux.ViewId<$Aux>
 
-  export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
-  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  // Re-export from likec4:model
+  export const $likec4data: Atom<LayoutedLikeC4ModelData<$Aux>>
+  export const $likec4model: Atom<LikeC4Model<$Aux>>
+  export function useLikeC4Model(): LikeC4Model<$Aux>
+  export function useLikeC4Views(): ReadonlyArray<DiagramView<$Aux>>
+  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<$Aux> | null
   export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
-  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
-  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types>): JSX.Element
+  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<$Aux>): JSX.Element
+  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<$Aux>): JSX.Element
+  export function IconRenderer(props: ElementIconRendererProps): JSX.Element
 }
 
 declare module 'likec4:dot' {
@@ -169,52 +169,54 @@ declare module 'likec4:model/*' {
   export type { Atom, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted }
 
   // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  interface Types {
   }
+  export type $Aux = Types extends { Aux: infer A extends aux.Any } ? A : UnknownLayouted
 
-  export type LikeC4ViewId = aux.ViewId<Types>
+  export type LikeC4ViewId = aux.ViewId<$Aux>
 
-  export const $likec4data: Atom<LayoutedLikeC4ModelData<Types>>
-  export const $likec4model: Atom<LikeC4Model<Types>>
-  export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
-  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  export const $likec4data: Atom<LayoutedLikeC4ModelData<$Aux>>
+  export const $likec4model: Atom<LikeC4Model<$Aux>>
+  export function useLikeC4Model(): LikeC4Model<$Aux>
+  export function useLikeC4Views(): ReadonlyArray<DiagramView<$Aux>>
+  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<$Aux> | null
   export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 }
 
 declare module 'likec4:icons/*' {
-  import type { ReactNode } from 'react'
-  type ElementIconRendererProps = {
-    node: {
-      id: string
-      title: string
-      icon?: string | null | undefined
-    }
-  }
-  export function IconRenderer(props: ElementIconRendererProps): ReactNode
+  import type { JSX } from 'react'
+  import type { ElementIconRendererProps } from 'likec4/react'
+
+  export function IconRenderer(props: ElementIconRendererProps): JSX.Element
 }
 
 declare module 'likec4:react/*' {
-  import type { aux, DiagramView, LikeC4Model, UnknownLayouted } from 'likec4/model'
-  import type { LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
+  import type { aux, DiagramView, LayoutedLikeC4ModelData, LikeC4Model, UnknownLayouted } from 'likec4/model'
+  import type { ElementIconRendererProps, LikeC4ViewProps, ReactLikeC4Props } from 'likec4/react'
   import type { JSX, PropsWithChildren } from 'react'
+  import type { Atom } from 'likec4/vite-plugin/internal'
 
   export type { DiagramView, LikeC4Model, UnknownLayouted }
 
   // This will be used later for augmenting the types
-  interface Types extends UnknownLayouted {
+  interface Types {
   }
+  export type $Aux = Types extends { Aux: infer A extends aux.Any } ? A : UnknownLayouted
 
-  export type LikeC4ViewId = aux.ViewId<Types>
+  export type LikeC4ViewId = aux.ViewId<$Aux>
 
-  export function useLikeC4Model(): LikeC4Model<Types>
-  export function useLikeC4Views(): ReadonlyArray<DiagramView<Types>>
-  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<Types> | null
+  // Re-export from likec4:model
+  export const $likec4data: Atom<LayoutedLikeC4ModelData<$Aux>>
+  export const $likec4model: Atom<LikeC4Model<$Aux>>
+  export function useLikeC4Model(): LikeC4Model<$Aux>
+  export function useLikeC4Views(): ReadonlyArray<DiagramView<$Aux>>
+  export function useLikeC4View(viewId: LikeC4ViewId): DiagramView<$Aux> | null
   export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
   export function LikeC4ModelProvider(props: PropsWithChildren): JSX.Element
-  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<Types>): JSX.Element
-  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<Types>): JSX.Element
+  export function LikeC4View({ viewId, ...props }: LikeC4ViewProps<$Aux>): JSX.Element
+  export function ReactLikeC4({ viewId, ...props }: ReactLikeC4Props<$Aux>): JSX.Element
+  export function IconRenderer(props: ElementIconRendererProps): JSX.Element
 }
 
 declare module 'likec4:webcomponents/*' {

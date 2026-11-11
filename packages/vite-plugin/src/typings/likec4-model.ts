@@ -4,5 +4,8 @@
  * At runtime `likec4/model` resolves to the `likec4` package.
  */
 export { LikeC4Model } from '@likec4/core/model'
+export type { LikeC4DeploymentModel, LikeC4ViewModel } from '@likec4/core/model'
+
 export type * from '@likec4/core/types'
+
 export type * as types from '@likec4/core/types'
