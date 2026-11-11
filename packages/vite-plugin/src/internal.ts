@@ -108,6 +108,6 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
     useLikeC4Model,
     useLikeC4Views,
     useLikeC4View,
-    isLikeC4ViewId: (id: unknown): id is string => typeof id === 'string' && id in $atom.get().views,
+    isLikeC4ViewId: (id: unknown): id is string => typeof id === 'string' && Object.hasOwn($atom.get().views, id),
   }
 }

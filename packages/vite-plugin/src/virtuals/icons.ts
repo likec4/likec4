@@ -294,7 +294,9 @@ if (import.meta.hot) {
       import.meta.hot.data.$update = (updateData) => {
         Object.assign(ProjectIconsRegistry, updateData)
         lazyRegistry.clear()
-        return invalidateMe
+        const shouldInvalidate = invalidateMe
+        invalidateMe = false
+        return shouldInvalidate
       }
     }
     const update = md.ProjectIconsRegistry
