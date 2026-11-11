@@ -1,4 +1,4 @@
-import { codeSplittingGroup, nodeModulesCodeSplitting, outputOptions } from '@likec4/devops/tsdown'
+import { nodeModulesCodeSplitting } from '@likec4/devops/tsdown'
 import postcssPanda from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
@@ -6,7 +6,6 @@ import { glob, readFile, writeFile } from 'node:fs/promises'
 import { basename } from 'node:path'
 import { viteAliasPlugin } from 'rolldown/experimental'
 import { defineConfig } from 'tsdown'
-import { file } from 'zod'
 
 export default defineConfig({
   entry: [
