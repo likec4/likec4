@@ -53,7 +53,7 @@ type CustomizationProviderProps = {
  * function App() {
  *   return (
  *     <CustomizationProvider components={components}>
- *       <LikeC4ModelProvider model={model}>
+ *       <LikeC4ModelProvider likec4model={model}>
  *         <LikeC4View viewId="index" />
  *       </LikeC4ModelProvider>
  *     </CustomizationProvider>

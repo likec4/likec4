@@ -46,7 +46,7 @@ type HandlerParams = {
 
   /**
    * ip address of the network interface to listen on
-   * @default '127.0.0.1'
+   * @default 'localhost'
    */
   listen?: string | undefined
 

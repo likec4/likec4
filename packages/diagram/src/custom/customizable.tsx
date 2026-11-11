@@ -111,7 +111,7 @@ function wrapOriginal<P>(
  * ```tsx
  * const components = defineCustomComponents(({ wrap }) => ({
  *   LogoSvg: () => <span>My logo</span>, // replace
- *   NavigationPanelLogo: wrap(({ Original, ...props }) => (
+ *   LogoIconSvg: wrap(({ Original, ...props }) => (
  *     <Original {...props} onClick={() => console.log('logo')} />
  *   )),
  * }))

@@ -469,7 +469,7 @@ const components = defineCustomComponents(({ wrap }) => ({
 function App() {
   return (
     <CustomizationProvider components={components}>
-      <LikeC4ModelProvider model={likec4model}>
+      <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4View viewId="index" />
       </LikeC4ModelProvider>
     </CustomizationProvider>

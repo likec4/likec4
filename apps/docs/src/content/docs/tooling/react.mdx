@@ -86,7 +86,7 @@ Below are examples of how to prepare the model:
 
     function App() {
       return (
-        <LikeC4ModelProvider model={likec4model}>
+        <LikeC4ModelProvider likec4model={likec4model}>
           {/* ... */}
         </LikeC4ModelProvider>
       )
@@ -105,7 +105,7 @@ Below are examples of how to prepare the model:
 
   function App() {
     return (
-      <LikeC4ModelProvider model={likec4model}>
+      <LikeC4ModelProvider likec4model={likec4model}>
         {/* ... */}
       </LikeC4ModelProvider>
     )
@@ -176,7 +176,7 @@ Below are examples of how to prepare the model:
 
   function App() {
     return (
-      <LikeC4ModelProvider model={likec4model}>
+      <LikeC4ModelProvider likec4model={likec4model}>
         {/* ... */}
       </LikeC4ModelProvider>
     )
@@ -203,7 +203,7 @@ import { LikeC4View, LikeC4ModelProvider } from '@likec4/diagram/bundle'
 
 function App() {
   return (
-    <LikeC4ModelProvider model={likec4model}>      
+    <LikeC4ModelProvider likec4model={likec4model}>      
       <LikeC4View
         viewId="index1"
         onNodeClick={(nodeId) => console.log(nodeId)}
@@ -228,7 +228,7 @@ import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
 function App() {
   const [viewId, setViewId] = useState('index')
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <ReactLikeC4
         viewId={viewId}
         pannable
@@ -294,7 +294,7 @@ const IconRenderer: ElementIconRenderer = (props) => (
 
 function App() {
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <LikeC4View
         viewId="index1"
         renderIcon={IconRenderer}
@@ -430,7 +430,7 @@ function LikeC4View({viewId}: {viewId: string}) {
 
 function App() {
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <LikeC4View viewId="index" />
     </LikeC4ModelProvider>
   )
@@ -469,7 +469,7 @@ const components = defineCustomComponents(({ wrap }) => ({
 function App() {
   return (
     <CustomizationProvider components={components}>
-      <LikeC4ModelProvider model={likec4model}>
+      <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4View viewId="index" />
       </LikeC4ModelProvider>
     </CustomizationProvider>
