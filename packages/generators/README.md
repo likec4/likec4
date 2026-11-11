@@ -68,6 +68,8 @@ const ts = generateLikeC4Model(model)
 
 Import from `@likec4/generators/likec4` (also available as `likec4/generators/likec4`).
 
+Docs - https://likec4.dev/tooling/code-generation/dsl/
+
 ### Generate DSL from model data
 
 ```ts
@@ -85,7 +87,8 @@ const tabs = generate(model.$data, { indent: '\t' })
 The output includes specification, model, deployment and views (element, deployment and dynamic views, including `loop`, `opt`, `par` and `break` blocks).
 
 > [!NOTE]
-> Generation is one-way: comments, source positions and original formatting are not preserved.
+> Generation is one-way: comments, source positions and original formatting are not preserved.\
+> Views with `global style`, `global predicate` or `rank` rules are not supported yet, the generator throws `not implemented`.
 
 ### Print a single piece of DSL
 

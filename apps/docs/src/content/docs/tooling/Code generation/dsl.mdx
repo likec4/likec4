@@ -1,0 +1,547 @@
+---
+title: Generate LikeC4 DSL
+description: Generate valid LikeC4 DSL from data, with a ready generator and composable building blocks.
+head:
+  - tag: title
+    content: Generate LikeC4 DSL | LikeC4
+sidebar:
+  label: LikeC4 DSL
+  order: 11
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The other pages of this section turn LikeC4 DSL into code. This one goes the other way: from data to DSL.  
+Use it to import an architecture from another source (a service catalog, a cloud inventory, an API registry),
+to scaffold a project, or to write the result of a script back as `.c4` files.
+
+Everything is exported from `likec4/generators/likec4` (the same module is published as `@likec4/generators/likec4`).  
+It works on three levels:
+
+| You have                                           | Use                                                    |
+| -------------------------------------------------- | ------------------------------------------------------ |
+| The whole model as data                            | [`generate(data)`](#generate-a-whole-model)            |
+| One piece: an element, a view, an expression       | [`print(ops.x(), value)`](#print-one-piece)            |
+| Something the model data cannot describe           | [your own operator](#build-your-own-operator), composed from the same building blocks |
+
+<Aside type="note">
+The generator is not a formatter. It prints DSL from data and knows nothing about the files the data came from, see [Limits](#limits).
+</Aside>
+
+## Generate a whole model
+
+`generate` takes model data and returns the DSL as a string:
+
+```ts
+import { generate } from 'likec4/generators/likec4'
+
+const dsl = generate({
+  specification: {
+    elements: {
+      actor: { style: { shape: 'person' } },
+      system: {},
+      component: {},
+    },
+    tags: ['deprecated'],
+  },
+  elements: [
+    { id: 'customer', kind: 'actor', title: 'Customer' },
+    { id: 'cloud', kind: 'system', title: 'Cloud' },
+    { id: 'cloud.api', kind: 'component', technology: 'Node.js', tags: ['deprecated'] },
+  ],
+  relations: [
+    { source: 'customer', target: 'cloud.api', title: 'uses' },
+  ],
+  views: {
+    index: {
+      _type: 'element',
+      id: 'index',
+      title: 'Landscape',
+      rules: [{ include: [{ wildcard: true }] }],
+    },
+  },
+})
+```
+
+```likec4 title="dsl"
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component
+
+  tag deprecated
+}
+
+model {
+  customer = actor 'Customer'
+
+  cloud = system 'Cloud' {
+    api = component {
+      #deprecated
+      technology 'Node.js'
+    }
+  }
+
+  customer -> cloud.api 'uses'
+}
+
+views {
+  view index {
+    title 'Landscape'
+
+    include *
+  }
+}
+```
+
+The input has five optional parts:
+
+| Key             | Printed as                                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `specification` | `specification { }`: element kinds, deployment node kinds, relationship kinds, tags                |
+| `elements`      | Elements of `model { }`, nested by their ids: `cloud.api` goes inside `cloud`                      |
+| `relations`     | Relationships of `model { }`, after the elements                                                   |
+| `deployment`    | `deployment { }`: nodes, instances and deployment relationships (`deployments` is accepted too)    |
+| `views`         | `views { }`: element, deployment and dynamic views                                                 |
+
+`elements` and `relations` are arrays or records. Parts that are missing or empty are not printed, and `generate({})` returns an empty string.
+
+The shape is the one of a parsed LikeC4 model, so the data of the [Model Builder](/tooling/model-api/#model-builder) and of a loaded workspace fit as they are:
+
+```ts
+import { Builder } from 'likec4/model/builder'
+import { generate } from 'likec4/generators/likec4'
+
+const data = Builder
+  .specification({
+    elements: { system: {}, component: {} },
+  })
+  .model(({ system, component, rel }, _) =>
+    _(
+      system('cloud').with(
+        component('api'),
+        component('db'),
+      ),
+      rel('cloud.api', 'cloud.db', 'reads'),
+    )
+  )
+  .build()
+
+const dsl = generate(data)
+```
+
+```likec4 title="dsl"
+specification {
+  element system
+  element component
+}
+
+model {
+  cloud = system {
+    api = component
+
+    db = component
+  }
+
+  cloud.api -> cloud.db 'reads'
+}
+```
+
+For a loaded workspace there is a shortcut, [`likec4.toDSL()`](/tooling/model-api/#likec4todsl-and-writedsl--render-dsl-back): it calls `generate` with the parsed model.
+
+### Indentation
+
+The second argument sets the indentation: a number of spaces (`2` by default) or a string.
+
+```ts
+import { generate } from 'likec4/generators/likec4'
+
+const dsl = generate(
+  {
+    elements: [
+      { id: 'cloud', kind: 'system' },
+      { id: 'cloud.api', kind: 'component' },
+    ],
+  },
+  { indent: 4 },
+)
+```
+
+```likec4 title="dsl"
+model {
+    cloud = system {
+        api = component
+    }
+}
+```
+
+## How it works
+
+`generate` is a thin wrapper. The work is done by **operators**, and `generate` only runs the one that prints a whole model.
+
+```text
+value ──▶ operators ──▶ output node ──▶ text
+
+          ops.model()                    materialize(op, value)
+          └─ body('model')               resolves indentation
+             └─ lines(2)                 and line breaks
+                ├─ foreach(element)
+                └─ foreach(relationship)
+```
+
+- An **operator** is a function that prints a part of the DSL. You get one by calling a factory: `ops.model()`, `ops.expression()`, `ops.print('->')`.
+  Operators take other operators as arguments, so a printer is a tree: `ops.model()` is a `body('model')` around the elements and the relationships.
+- Every operator receives a **context**: `ctx`, the value to print, and `out`, the place to print to. It appends to `out` and returns the context.
+  Operators like `property`, `select` and `foreach` narrow the value: they take a part of `ctx` and run nested operators with that part as their `ctx`.
+- The **output** is a tree of nodes, not a string. A nested block does not know how deep it is: indentation and line breaks are resolved once, when the tree is turned into text by `materialize` (`print` and `generate` call it).
+- **Empty parts disappear.** `body`, `lines`, `spaceBetween`, `indent` and `merge` skip the operators that printed nothing. An element without properties gets no `{ }`, a model without relationships gets no empty lines.
+- Operators for LikeC4 constructs carry a **schema**. Before printing, they parse the value with it: the value is checked and brought to one form.
+
+### What the schemas do
+
+The schemas are what makes the output valid DSL. They reject values that cannot be printed, and they accept convenient forms of the same value:
+
+```ts
+import { ops, print } from 'likec4/generators/likec4'
+
+const dsl = print(ops.model(), {
+  elements: [
+    {
+      id: 'cloud',
+      kind: 'system',
+      shape: 'browser', // shortcut for style.shape
+      tags: ['#internal'], // with or without '#'
+      links: ['https://likec4.dev'], // a string or { url, title }
+    },
+  ],
+  relations: [
+    {
+      source: 'cloud', // a string or { model: 'cloud' }
+      target: { model: 'cloud' },
+      description: { md: '**bold**\ntext' }, // a string, { txt } or { md }
+    },
+  ],
+})
+```
+
+```likec4 title="dsl"
+model {
+  cloud = system {
+    #internal
+    link https://likec4.dev
+    style {
+      shape browser
+    }
+  }
+
+  cloud -> cloud {
+    description '''
+      **bold**
+      text
+    '''
+  }
+}
+```
+
+A value that does not match the schema throws a `ZodError`:
+
+```ts
+import { ops, print } from 'likec4/generators/likec4'
+import * as z from 'zod'
+
+let message = ''
+try {
+  // 'circle' is not a shape
+  print(ops.models.element(), { id: 'cloud', kind: 'system', shape: 'circle' })
+} catch (error) {
+  message = z.prettifyError(error as z.ZodError)
+}
+```
+
+```text title="message"
+✖ Invalid option: expected one of "rectangle"|"person"|"browser"|"mobile"|"cylinder"|"storage"|"queue"|"bucket"|"document"|"component"|"agent"
+  → at shape
+```
+
+`elements` and `relations` of a whole model accept an array or a record, so their error is a union error: the message says `Invalid input` at `elements`, and the details are in `error.issues[0].errors`.
+
+The schemas are exported as `schemas`, grouped the same way as the operators: `schemas.model`, `schemas.specification`, `schemas.deployment`, `schemas.views`, `schemas.expr`, `schemas.common` and `schemas.likec4data` for the whole input.
+They are [Zod](https://zod.dev) schemas, so you can validate data yourself, before printing. The input types are there as well, for example `schemas.likec4data.Input` and `schemas.model.element.Input`.
+
+<Aside type="caution" title="Valid syntax, not a valid model">
+The schemas check values: ids, kinds and names are well-formed; shapes, sizes, line and arrow types are known.
+They do not check references. A relationship to an element that does not exist, or an element of a kind that is not in the specification, is printed as is, and LikeC4 reports the error when it reads the file:
+
+```text
+Could not resolve reference to ElementKind named 'service'.
+Could not resolve reference to Referenceable named 'nowhere'.
+Target not resolved
+```
+
+Validate the result with [`likec4 validate`](/tooling/cli/#validate) or [`LikeC4.fromSource`](/tooling/model-api/#from-source).
+</Aside>
+
+## Print one piece
+
+`print` runs one operator with a value. `ops` has an operator for every construct that `generate` prints, so you can print a fragment and put it into a file you write yourself:
+
+```ts
+import { ops, print } from 'likec4/generators/likec4'
+
+const expression = print(ops.expression(), {
+  ref: { model: 'cloud.frontend' },
+  selector: 'descendants',
+})
+
+const relationship = print(ops.models.relationship(), {
+  source: 'cloud.api',
+  target: 'cloud.db',
+  kind: 'async',
+  title: 'writes',
+  line: 'dashed',
+})
+
+const view = print(ops.elementView(), {
+  _type: 'element',
+  id: 'index',
+  title: 'Landscape',
+  rules: [
+    { include: [{ wildcard: true }] },
+    { direction: 'LR' },
+  ],
+})
+```
+
+```likec4 title="expression"
+cloud.frontend.**
+```
+
+```likec4 title="relationship"
+cloud.api -[async]-> cloud.db 'writes' {
+  style {
+    line dashed
+  }
+}
+```
+
+```likec4 title="view"
+view index {
+  title 'Landscape'
+
+  include *
+  autoLayout LeftRight
+}
+```
+
+`print(op, value, { indent })` takes the same indentation as `generate`, and `printWithTabIndent(op, value)` indents with tabs.
+
+<Aside type="note">
+There are two functions named `print`. The one imported from `likec4/generators/likec4` runs an operator and returns a string.
+`ops.print` is an operator: it appends a value to the output.
+</Aside>
+
+### Operators of the language
+
+| Operator                                                                       | Prints                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `ops.likec4data()`                                                             | The whole model, this is what `generate` runs                 |
+| `ops.specification()`                                                          | `specification { }`                                           |
+| `ops.specifications.elementKind('element')()`, `.relationshipKind()`, `.tagSpecification()` | One entry of the specification, from a `[name, spec]` pair; `elementKind('deploymentNode')()` prints a deployment node kind |
+| `ops.model()`                                                                  | `model { }` with nested elements and relationships            |
+| `ops.models.element()`, `ops.models.relationship()`                            | One element (its name is the last part of the id), one relationship |
+| `ops.deployment()`                                                             | `deployment { }`                                              |
+| `ops.deployments.instance()`, `ops.deployments.relationship()`                 | One deployed instance, one deployment relationship            |
+| `ops.views.views()`                                                            | `views { }` from a record of views                            |
+| `ops.elementView()`, `ops.deploymentView()`, `ops.dynamicView()`               | One view                                                      |
+| `ops.views.*`                                                                  | Parts of a view: `viewRuleInclude`, `viewRuleStyle`, `viewRuleGroup`, `viewRuleAutoLayout`, `step`, … |
+| `ops.expression()`                                                             | A predicate expression, as in `include` and `exclude`         |
+| `ops.expr.*`                                                                   | Parts of an expression: `fqnExpr`, `relationExpr`, `whereOperator`, … |
+| `ops.props.*`                                                                  | Properties: `tagsProperty`, `descriptionProperty`, `linksProperty`, `metadataProperty`, `styleProperties`, … |
+
+Every operator with a schema has a second form, `.noparse()`: `ops.model.noparse()` prints a value that is already parsed and skips the schema. The built-in operators use it for their nested parts, so a value is parsed once.
+
+## Build your own operator
+
+The operators of the language are composed from small building blocks, and the same blocks are exported in `ops`.
+Use them to print what the model data cannot describe, or to print your own data directly, without converting it to the LikeC4 shape first.
+
+For example, model data has no `extend`: by the time the model is parsed, an extension is merged into its element.
+To add owners to existing elements without touching their files, print `extend` blocks:
+
+```ts
+import { type Op, materialize, ops } from 'likec4/generators/likec4'
+
+type Ownership = {
+  element: string
+  team: string
+  tier?: number
+  tags?: string[]
+  links?: string[]
+}
+
+const { body, foreach, printProperty, property, select, separateNewLine, spaceBetween, text } = ops
+
+// extend <element> { ... }
+const extendElement = (): Op<Ownership> =>
+  spaceBetween(
+    ops.print('extend'),
+    printProperty('element'),
+    body(
+      // Reuse the operators of the language
+      ops.props.tagsProperty(),
+      select(
+        o => ({ owner: o.team, tier: o.tier }),
+        body('metadata')(
+          property('owner', spaceBetween(ops.print('owner'), text())),
+          property('tier'),
+        ),
+      ),
+      ops.props.linksProperty(),
+    ),
+  )
+
+// model { extend ... extend ... }
+const extendModel = (): Op<Ownership[]> =>
+  body('model')(
+    foreach(extendElement(), separateNewLine(2)),
+  )
+
+const dsl = materialize(extendModel(), [
+  { element: 'cloud.api', team: 'platform', tier: 1, tags: ['critical'] },
+  { element: 'cloud.db', team: 'data', links: ['https://wiki.example.com/db'] },
+])
+```
+
+```likec4 title="dsl"
+model {
+  extend cloud.api {
+    #critical
+    metadata {
+      owner 'platform'
+      tier 1
+    }
+  }
+
+  extend cloud.db {
+    metadata {
+      owner 'data'
+    }
+    link https://wiki.example.com/db
+  }
+}
+```
+
+Notice what the blocks do for you: `cloud.db` has no `tier` and no tags, and nothing is printed for them; the string value is quoted by `text`; the nested `metadata` block is indented without knowing its depth.
+
+### Building blocks
+
+**Text**
+
+| Operator                                  | Appends                                                                                              |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `print()`, `print(value)`, `print(fn)`    | The context, a constant, or the result of `fn(ctx)`. Strings, numbers and booleans only, as they are |
+| `inlineText()`                            | A string in single quotes on one line; line breaks become spaces, quotes are escaped                 |
+| `text()`                                  | A string in single quotes; a string with line breaks becomes an indented block                       |
+| `markdown()`                              | A string in triple quotes, as an indented block                                                      |
+| `markdownOrString()`                      | A string, `{ txt }` or `{ md }`, with the matching quotes                                            |
+| `space()`, `eq()`, `newline()`, `noop()`  | A space, `=`, a line break, nothing                                                                  |
+
+**Layout**
+
+| Operator                                  | Result                                                                                               |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `spaceBetween(...ops)`                    | Outputs on one line, separated by a space                                                            |
+| `lines(...ops)`, `lines(n)(...ops)`       | Each output on its own line; `lines(2)` leaves an empty line between them                            |
+| `body(...ops)`, `body(keyword)(...ops)`, `body(open, close)(...ops)` | Outputs on separate lines, indented and wrapped in `{ }`, `keyword { }` or `open close` |
+| `indent(...ops)`, `indent(text)`          | Outputs on new lines, one level deeper                                                               |
+| `merge(...ops)`                           | Outputs one after another, with nothing between them                                                 |
+| `join({ operations, separator, … })`      | Outputs joined with your own separator, prefix or suffix                                             |
+
+**Context**
+
+| Operator                                  | Runs nested operators                                                                                |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `property(name, op)`                      | With `ctx[name]`, if it is not `null` or `undefined`. Without `op` it prints `name value`            |
+| `printProperty(name)`                     | Prints `ctx[name]`                                                                                   |
+| `select(fn, ...ops)`                      | With `fn(ctx)`, if it is not `null` or `undefined`                                                   |
+| `foreach(op, separator)`                  | With every item of an iterable `ctx`; separators are `separateComma()`, `separateNewLine(n)`, `separateWith(s)` |
+| `foreachNewLine(...ops)`                  | With every item, each on its own line                                                                |
+| `when(condition, ...ops)`                 | With the same `ctx`, if `condition(ctx)` is true                                                     |
+| `guard(isType, ...ops)`, `guard(schema, ...ops)` | With the same `ctx`, narrowed by a type guard or parsed by a Zod schema (a mismatch with a schema throws) |
+| `withctx(value)(...ops)`                  | With `value` instead of `ctx`                                                                        |
+| `lazy(() => op)`                          | With the same `ctx`; for operators that refer to themselves                                          |
+
+**Running**
+
+| Function                                  | Result                                                                                               |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `materialize(op, value, { indent })`      | The text                                                                                             |
+| `materialize(op)`, `materialize({ op, indent })` | A function `(value) => string`, to print many values with one operator                        |
+
+`materialize`, `withctx` and `indent` are also exported next to `ops`, and so are the types: `Op<A>` is an operator for a value of type `A`, `Ctx<A>` is its context, `Output` is the output node, and `ctxOf<typeof op>` gives the value type of an operator.
+
+### An operator with a schema
+
+To write an operator from scratch, or to give one a schema, use `ops.base`: `operation(fn)` wraps a function `({ ctx, out }) => …` into an operator, and `zodOp(schema)(op)` adds parsing in front of an operator.
+With a schema, your printer rejects wrong data the same way the built-in operators do:
+
+```ts
+import { ops, print } from 'likec4/generators/likec4'
+import * as z from 'zod'
+
+const { body, printProperty, property, spaceBetween, text } = ops
+
+const service = z.object({
+  name: z.string().regex(/^[a-z][a-z0-9-]*$/),
+  description: z.string().optional(),
+  language: z.enum(['go', 'ts', 'java']).optional(),
+})
+
+// <name> = service { ... }
+const serviceElement = ops.base.zodOp(service)(
+  spaceBetween(
+    printProperty('name'),
+    ops.print('= service'),
+    body(
+      ops.props.descriptionProperty(),
+      property('language', spaceBetween(ops.print('technology'), text())),
+    ),
+  ),
+)
+
+const dsl = print(serviceElement(), {
+  name: 'billing',
+  description: 'Invoices',
+  language: 'go',
+})
+```
+
+```likec4 title="dsl"
+billing = service {
+  description 'Invoices'
+  technology 'go'
+}
+```
+
+`print(serviceElement(), { name: 'Billing Service' })` throws a `ZodError`: the name would not be a valid identifier.
+
+## Limits
+
+The generator prints what is in the data, and model data is not the source files.
+
+- **Comments, formatting and the order of statements are lost.** The data has none of them. Elements are printed parents first, relationships after all elements.
+- **One output for the whole model.** A model read from many files, or extended across them, is printed as a single document; `extend` blocks are already merged into their elements.
+- **Some parts of a model are not printed** by `generate`: definitions of global predicates and styles, custom colors of the specification, elements imported from other projects, `diff` blocks and manual layouts. These keys of the data are ignored without an error.
+- **Three view rules are not supported yet**: `global style`, `global predicate` and `rank`. A view with one of them cannot be printed, the generator throws `not implemented`. This applies to `likec4.toDSL()` as well.
+- **Values equal to the kind's defaults are omitted.** `generate` drops `description`, `summary`, `technology`, `tags` and style properties of an element when they repeat the specification of its kind.
+- **Empty lines between blocks are indented.** They contain the indentation of their block; trim trailing whitespace if it matters to you.
+
+So do not use the generator to reformat or to edit existing files: read a file, print it, and you get the same model in a different text.
+To reformat sources in place, use [`likec4 format`](/tooling/cli/#format); to apply changes to them, use the [model edits](/tooling/model-api/#model-diffs-and-safe-delete) of the API.
