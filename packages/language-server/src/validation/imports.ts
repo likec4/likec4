@@ -1,4 +1,3 @@
-import type { ProjectId } from '@likec4/core'
 import { type ValidationCheck, AstUtils } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -8,18 +7,20 @@ import { tryOrLog } from './_shared'
 const { getDocument } = AstUtils
 
 export const checkImportsFromPoject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
-  const projects = services.shared.workspace.ProjectsManager
+  const resolver = services.shared.workspace.DependencyResolver
   return tryOrLog((el, accept) => {
-    if (!projects.all.includes(el.project as ProjectId)) {
+    const doc = getDocument(el)
+    const projectId = projectIdFrom(doc)
+    // The name is resolved via `dependencies` of the consumer project, or by the workspace project name
+    const resolved = resolver.resolve(projectId, el.project)
+    if (!resolved) {
       accept('error', 'Imported project not found', {
         node: el,
         property: 'project',
       })
       return
     }
-    const doc = getDocument(el)
-    const projectId = projectIdFrom(doc)
-    if (el.project === projectId) {
+    if (resolved.projectId === projectId) {
       accept('error', 'Imported project cannot be the same as the current project', {
         node: el,
         property: 'project',

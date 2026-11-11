@@ -270,9 +270,27 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * STEP 2: Parse model data and resolve imports
    *
    * To avoid circular dependencies, first we parse all documents and then we join them.
+   *
+   * Import names (as written in `from '…'`) are resolved with {@link DependencyResolver}:
+   * elements are copied from the resolved project, and the import name stays the key of `imports`.
+   * Cache dependencies are tracked by resolved project ids.
    */
   private parseAndResolveImports(projectId: c4.ProjectId): Hashed<c4.ParsedLikeC4ModelData> | null {
     const logger = this.log.getChild(projectId)
+    const resolver = this.services.shared.workspace.DependencyResolver
+
+    // Resolves import names, skips unknown names and self-imports
+    const resolveImports = (imports: BuildModelData['imports']) =>
+      [...imports.associations()].flatMap(([importName, fqns]) => {
+        if (fqns.size === 0) {
+          return []
+        }
+        const resolved = resolver.resolveWithMeta(projectId, importName)
+        if (!resolved || resolved.dependency.projectId === projectId) {
+          return []
+        }
+        return [{ importName, fqns, resolved }]
+      })
 
     return this.cache.parsedWithImports<Hashed<BuildModelData>>(
       projectId,
@@ -282,18 +300,20 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           this.cache.setImports(projectId, [])
           return null
         }
-        const importedProjects = [...value.imports.associations()]
-          .filter(([, fqns]) => fqns.size > 0)
-          .map(([importedProjectId]) => importedProjectId)
+        const resolvedImports = resolveImports(value.imports)
+        const importedProjects = unique(resolvedImports.map(({ resolved }) => resolved.dependency.projectId))
         // Track dependencies, so that changes in imported projects invalidate this project
         this.cache.setImports(projectId, importedProjects)
-        if (importedProjects.length === 0) {
+        if (resolvedImports.length === 0) {
           return { hash, value }
         }
-        // Joined data depends on imported projects, include their hashes
-        const joinedHash = importedProjects.reduce(
-          (acc, importedProjectId) =>
-            stringHash(acc + importedProjectId + (this.buildModelData(importedProjectId)?.hash ?? '')),
+        // Joined data depends on imported projects (and how import names are resolved), include their hashes
+        const joinedHash = resolvedImports.reduce(
+          (acc, { importName, resolved: { dependency } }) =>
+            stringHash(
+              acc + importName + '=' + dependency.projectId
+                + (this.buildModelData(dependency.projectId)?.hash ?? ''),
+            ),
           hash,
         )
         return { hash: joinedHash, value }
@@ -304,24 +324,24 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
           return data
         }
 
-        const joinedImports = [...imports.associations()].reduce((acc, [projectId, fqns]) => {
-          if (fqns.size === 0) {
-            return acc
+        const joinedImports = {} as c4.ParsedLikeC4ModelData['imports']
+        const importedProjects = {} as NonNullable<c4.ParsedLikeC4ModelData['importedProjects']>
+        for (const { importName, fqns, resolved } of resolveImports(imports)) {
+          const anotherProject = this.buildModelData(resolved.dependency.projectId)?.value?.data
+          if (!anotherProject) {
+            continue
           }
-          const anotherProject = this.buildModelData(projectId)?.value?.data
-          if (anotherProject) {
-            const imported = values(anotherProject.elements).filter(element =>
-              isRequestedImportedElement(fqns, element)
-            )
-            if (hasAtLeast(imported, 1)) {
-              acc[projectId] = structuredClone(imported)
-            }
+          const imported = values(anotherProject.elements).filter(element => isRequestedImportedElement(fqns, element))
+          if (hasAtLeast(imported, 1)) {
+            // Keyed by the import name: internal ids of imported projects never appear in the model
+            joinedImports[importName] = structuredClone(imported)
+            importedProjects[importName] = structuredClone(resolved.meta)
           }
-          return acc
-        }, {} as c4.ParsedLikeC4ModelData['imports'])
+        }
         return ({
           ...data,
           imports: joinedImports,
+          importedProjects,
           views: withImportedScopedViewTitles(data.views, joinedImports),
         })
       },
