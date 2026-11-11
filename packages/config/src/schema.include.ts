@@ -2,7 +2,7 @@ import z from 'zod/v4'
 
 // Relative path (no leading slash, drive letter, or protocol)
 // eslint-disable-next-line no-useless-escape
-const RELATIVE_PATH_REGEX = /^(?!\/|[A-Za-z]:[\\\/])(?!.*:\/\/).*$/
+export const RELATIVE_PATH_REGEX = /^(?!\/|[A-Za-z]:[\\\/])(?!.*:\/\/).*$/
 
 // Schema for an include path value: must be a non-empty string representing a relative path
 const IncludePathValue = z
