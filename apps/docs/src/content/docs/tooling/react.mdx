@@ -17,7 +17,7 @@ import { PackageManagers } from 'starlight-package-managers'
 import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
 
 <p style={{display: 'flex', gap: '10px'}}>
-<a href="https://www.npmjs.com/package/%40likec4%2Fdiagram" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
+<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
 </p>
 
 The LikeC4 React library is available to embed diagrams into your applications.  
@@ -29,10 +29,10 @@ or [CLI](/tooling/code-generation/react/) for smoother developer experience.
 ## Usage
 
 You must have `react` and `react-dom` installed.  
-Add [`@likec4/core`](https://www.npmjs.com/package/%40likec4%2Fcore) and [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram):
+Add [`likec4`](https://www.npmjs.com/package/likec4):
 
 <PackageManagers
-    pkg="@likec4/core @likec4/diagram"
+    pkg="likec4"
     pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
     frame="none"
   />
@@ -80,7 +80,7 @@ Below are examples of how to prepare the model:
     Then:
 
     ```tsx copy
-    import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
+    import { LikeC4ModelProvider } from 'likec4/react'
     // import model from generated file
     import { likec4model } from './likec4-model.ts'
 
@@ -116,9 +116,10 @@ Below are examples of how to prepare the model:
   <Tab label='Model Builder'>   
   You can prepare the model with the [Builder](/tooling/model-api/#model-builder), then lay it out with `layoutLikeC4Model`:
   
-  ```tsx copy collapse={7-52}
-  import { LikeC4ModelProvider } from '@likec4/diagram/bundle'
-  import { Builder } from "@likec4/core/builder"
+  ```tsx copy collapse={8-53}
+  import { LikeC4ModelProvider } from 'likec4/react'
+  import { Builder } from "likec4/model/builder"
+  // The layout engine is a separate package
   import { layoutLikeC4Model } from "@likec4/layouts"
 
   const computedModel = Builder
@@ -188,18 +189,17 @@ Below are examples of how to prepare the model:
 </Tabs>
 
 :::tip
-If you have `likec4` as a dependency, you can use:
-- `likec4/react` instead of `@likec4/diagram/bundle`
-- `likec4/model` instead of `@likec4/core/model` and `@likec4/core/types`
-- `likec4/model/builder` instead of `@likec4/core/builder`
-- `likec4/icons/all` instead of `@likec4/icons/all`
+The `likec4` package is all you need for these examples:
+- `likec4/react`: React components and hooks
+- `likec4/model`: the model API and types (the same as `@likec4/core/model` and `@likec4/core/types`)
+- `likec4/model/builder`: the model builder (the same as `@likec4/core/builder`)
 :::
 
 
 #### LikeC4View
 
 ```tsx
-import { LikeC4View, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+import { LikeC4View, LikeC4ModelProvider } from 'likec4/react'
 
 function App() {
   return (
@@ -215,7 +215,7 @@ function App() {
 }
 ```
 
-See [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagram/src/bundle/LikeC4View.props.ts) for available props.
+See [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagram/src/LikeC4View.tsx) for available props.
 
 #### ReactLikeC4
 
@@ -223,7 +223,7 @@ See [LikeC4ViewProps](https://github.com/likec4/likec4/blob/main/packages/diagra
 This component works in most use cases, but if you need more functionality, use `ReactLikeC4`:
 
 ```tsx
-import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram/bundle'
+import { ReactLikeC4, LikeC4ModelProvider } from 'likec4/react'
 
 function App() {
   const [viewId, setViewId] = useState('index')
@@ -268,16 +268,16 @@ import {
 
   // Select from state
   useDiagramContext
-} from '@likec4/diagram/bundle'
+} from 'likec4/react'
 ```
 
 #### Icons
 
-If you use built-in icons, install [`@likec4/icons`](https://www.npmjs.com/package/%40likec4%2Ficons) (or use `likec4/icons`):
+If you use built-in icons, install [`@likec4/icons`](https://www.npmjs.com/package/%40likec4%2Ficons):
 
 ```tsx
-import type { ElementIconRenderer } from '@likec4/diagram/bundle'
-import { LikeC4ModelProvider, LikeC4View, ReactLikeC4 } from '@likec4/diagram/bundle'
+import type { ElementIconRenderer } from 'likec4/react'
+import { LikeC4ModelProvider, LikeC4View, ReactLikeC4 } from 'likec4/react'
 import { lazy, Suspense } from 'react'
 
 // Better to lazy load icons, bundle is quite large at the moment
@@ -311,7 +311,15 @@ function App() {
 
 ### Library
 
-If you want to use the package as a library with your bundler, you need to manage the CSS yourself.
+If you want to use the package as a library with your bundler, you need to manage the CSS yourself.  
+For this, add [`@likec4/core`](https://www.npmjs.com/package/%40likec4%2Fcore) and [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram) instead of `likec4`:
+
+<PackageManagers
+    pkg="@likec4/core @likec4/diagram"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+<br />
 
 The library uses [Mantine](https://mantine.dev). If you already use it and have `MantineProvider` in scope, the LikeC4 diagram will use it.
 Otherwise, it will wrap itself with `MantineProvider`.  
@@ -523,8 +531,8 @@ function App() {
 ### Custom node renderers
 
 LikeC4Diagram can use custom node renderers.\
-Compose custom node renderers using primitives from `@likec4/diagram/custom`\
-(or `@likec4/diagram/bundle/custom` for the bundled version).\
+Compose custom node renderers using primitives from `likec4/react`\
+(or from `@likec4/diagram/custom`, if you use the library).\
 See [customNodes.tsx](https://github.com/likec4/likec4/blob/main/packages/diagram/src/custom/customNodes.tsx) for examples.
 
 ```tsx
