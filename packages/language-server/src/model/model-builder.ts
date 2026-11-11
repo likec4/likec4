@@ -57,7 +57,14 @@ import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
-import { type LikeC4DocumentBuilder, type ProjectData, type ProjectsLookup, ProjectsManager } from '../workspace'
+import {
+  type ExternalProjects,
+  type LikeC4DocumentBuilder,
+  type ProjectData,
+  type ProjectsLookup,
+  isExternalProjectId,
+  ProjectsManager,
+} from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LastSeenArtifacts } from './last-seen-artifacts'
 import type { LikeC4ModelParser } from './model-parser'
@@ -542,6 +549,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         [arg, []],
       ]
     }
+    // External projects (internal ids) are not exposed to listeners
+    groupedByProject = groupedByProject.filter(([projectId]) => !isExternalProjectId(projectId))
     // Copy listeners to avoid modification during iteration
     const listeners = this.listeners.slice()
     for (const listener of listeners) {
@@ -689,6 +698,12 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
     )
 
     this.onDispose(
+      services.shared.workspace.ExternalProjects.onDidChange(() => {
+        this.removeUnregisteredExternal(services.shared.workspace.ExternalProjects)
+      }),
+    )
+
+    this.onDispose(
       services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
         if (deleted.length > 0) { // react only on deleted documents
           const lookup = services.shared.workspace.ProjectsLookup
@@ -697,6 +712,13 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
             return
           }
           for (const project of projects) {
+            if (isExternalProjectId(project)) {
+              // Do not create cache entries for external projects, only reset existing ones
+              if (this.has(project)) {
+                this.of(project).reset()
+              }
+              continue
+            }
             // Resets importers as well (via buildData reset)
             this.of(project).reset()
             // Imports are recorded again on next joinedData computation
@@ -705,6 +727,21 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
         }
       }),
     )
+  }
+
+  /**
+   * Removes cache entries of external projects that are not registered anymore
+   */
+  private removeUnregisteredExternal(externalProjects: ExternalProjects): void {
+    for (const id of this.cache.keys()) {
+      if (isExternalProjectId(id) && !externalProjects.has(id)) {
+        this.delete(id)
+        this.importedBy.delete(id)
+        for (const importers of this.importedBy.values()) {
+          importers.delete(id)
+        }
+      }
+    }
   }
 
   /**

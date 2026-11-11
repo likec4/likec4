@@ -164,6 +164,7 @@ export class ExternalProjects extends ADisposable {
       this.#listeners.length = 0
       this.#projects.clear()
       this.#ownerOf.clear()
+      this.#syncedTargets.clear()
     }))
   }
 
@@ -247,6 +248,8 @@ export class ExternalProjects extends ADisposable {
   register(project: ExternalProject): void {
     invariant(isExternalProjectId(project.id), `External project id must start with "${EXTERNAL_PROJECT_ID_PREFIX}"`)
     this.removeOwnership(project.id)
+    // (re)insert, so the order of the map is the order of registration
+    this.#projects.delete(project.id)
     this.#projects.set(project.id, project)
     for (const uri of project.files.keys()) {
       this.#ownerOf.set(uri, project.id)
@@ -299,11 +302,15 @@ export class ExternalProjects extends ADisposable {
       .filter(id => id !== ProjectsManager.DefaultProjectId)
       .map(id => projectsManager.getProject(id))
 
-    const insideWorkspace = (folder: ProjectFolder) =>
-      workspaceFolders.some(w => folder.startsWith(w))
-      || consumers.some(p =>
-        folder.startsWith(p.folder) || (p.includePaths?.some(i => folder.startsWith(i.folder)) ?? false)
-      )
+    const workspaceRoots = [
+      ...workspaceFolders,
+      ...consumers.flatMap(p => [p.folder, ...(p.includePaths?.map(i => i.folder) ?? [])]),
+    ]
+    // Folder is inside a workspace folder, a workspace project folder or an include path
+    const insideWorkspace = (folder: ProjectFolder) => workspaceRoots.some(root => folder.startsWith(root))
+    // Folder contains a workspace folder, a workspace project folder or an include path
+    // (documents of the workspace would be owned by the external project)
+    const containsWorkspace = (folder: ProjectFolder) => workspaceRoots.some(root => root.startsWith(folder))
 
     const targets = new Map<ExternalProjectId, ExternalDependencyTarget & { consumers: Set<ProjectId> }>()
     for (const consumer of consumers) {
@@ -317,6 +324,13 @@ export class ExternalProjects extends ADisposable {
           const folder = toFolder(folderUri)
           if (insideWorkspace(folder)) {
             logger.trace`dependency ${name} of ${consumer.id} is inside the workspace: ${folder}`
+            continue
+          }
+          if (containsWorkspace(folder)) {
+            logger.warn(
+              'Dependency {name} of project {projectId} is skipped: folder {folder} contains the workspace or its projects',
+              { name, projectId: consumer.id, folder: folderUri.fsPath },
+            )
             continue
           }
           const id = externalProjectIdOfFolder(folder)
@@ -344,17 +358,30 @@ export class ExternalProjects extends ADisposable {
   }
 
   /**
-   * Whether the set of dependency targets differs from the registered instances
+   * Ids of the dependency targets of the last sync (including targets that could not be loaded)
+   */
+  #syncedTargets = new Set<ExternalProjectId>()
+
+  /**
+   * Remembers the dependency targets of a sync (including targets that could not be loaded, e.g. missing folders),
+   * so {@link hasStructuralChanges} does not report them again until the dependencies change.
+   */
+  markSynced(targets: Iterable<ExternalProjectId>): void {
+    this.#syncedTargets = new Set(targets)
+  }
+
+  /**
+   * Whether the set of dependency targets differs from the targets of the last sync
    * (i.e. instances have to be added or removed).
    */
   hasStructuralChanges(
     targets: ReadonlyMap<ExternalProjectId, ExternalDependencyTarget> = this.dependencyTargets(),
   ): boolean {
-    if (targets.size !== this.#projects.size) {
+    if (targets.size !== this.#syncedTargets.size) {
       return true
     }
     for (const id of targets.keys()) {
-      if (!this.#projects.has(id)) {
+      if (!this.#syncedTargets.has(id)) {
         return true
       }
     }
@@ -516,13 +543,25 @@ export class ExternalProjects extends ADisposable {
     return picomatch(patterns, { contains: true, dot: true })
   }
 
+  /**
+   * Removes ownership of the documents of the project.
+   * If another registered project lists the same document (nested folders),
+   * the ownership moves to it (the last registered one).
+   */
   private removeOwnership(id: ExternalProjectId): void {
     const previous = this.#projects.get(id)
     if (!previous) {
       return
     }
+    const others = [...this.#projects.values()].filter(p => p.id !== id).reverse()
     for (const uri of previous.files.keys()) {
-      if (this.#ownerOf.get(uri) === id) {
+      if (this.#ownerOf.get(uri) !== id) {
+        continue
+      }
+      const next = others.find(p => p.files.has(uri))
+      if (next) {
+        this.#ownerOf.set(uri, next.id)
+      } else {
         this.#ownerOf.delete(uri)
       }
     }
