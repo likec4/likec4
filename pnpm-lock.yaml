@@ -2881,8 +2881,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
       d3-zoom:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.1
+        version: 3.0.1
       defu:
         specifier: catalog:utils
         version: 6.1.7
@@ -7543,8 +7543,8 @@ packages:
     peerDependencies:
       d3-selection: 2 - 3
 
-  d3-zoom@3.0.0:
-    resolution: {integrity: sha512-b8AmV3kfQaqWAuacbPuNbL6vahnOJflOhexLzMMNLga62+/nh0JzvJ0aO/5a5MVgUFGS7Hu1P9P03o3fJkDCyw==}
+  d3-zoom@3.0.1:
+    resolution: {integrity: sha512-kfjD3BDQu/FOatpZ6JdMSyIoDwTxIpI29ySTI2J5ZlDaH1WbuJGQJ2Q9oJkWTEZEW98j6idezoomSD3Cn2zwiw==}
     engines: {node: '>=12'}
 
   data-uri-to-buffer@4.0.1:
@@ -14578,7 +14578,7 @@ snapshots:
       d3-drag: 3.0.0
       d3-interpolate: 3.0.1
       d3-selection: 3.0.0
-      d3-zoom: 3.0.0
+      d3-zoom: 3.0.1
 
   '@yuku-core/binding-android-arm64@0.19.0':
     optional: true
@@ -15307,7 +15307,7 @@ snapshots:
       d3-selection: 3.0.0
       d3-timer: 3.0.1
 
-  d3-zoom@3.0.0:
+  d3-zoom@3.0.1:
     dependencies:
       d3-dispatch: 3.0.1
       d3-drag: 3.0.0
