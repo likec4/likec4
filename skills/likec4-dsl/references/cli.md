@@ -51,6 +51,32 @@ Build a static website for deployment.
 bunx likec4 build -o ./dist [project-dir]
 ```
 
+Preview the build with `bunx likec4 preview -o ./dist [project-dir]`.
+
+## App config (experimental)
+
+Newer versions of the CLI read `likec4.app.config.ts` (also `.mts`, `.cts`, `.js`, `.mjs`, `.cjs`) from the project directory or the current directory.
+Check that `likec4 build --help` lists `--app-config` before relying on it.
+
+```ts
+// likec4.app.config.ts
+import { defineAppConfig } from 'likec4/config'
+
+export default defineAppConfig({
+  title: 'My Architecture',
+  theme: 'dark', // 'light' | 'dark'
+  base: '/pages/',
+  customization: './likec4.customization.tsx', // UI overrides, see docs
+  build: { outDir: './dist' },
+  server: { port: 3000 },
+})
+```
+
+- Read by `serve`, `build`, `preview`, `export png|jpg`, `codegen react`, `codegen webcomponent`.
+- Flags win over the file. `--app-config <file>` points to another file, `--no-app-config` ignores it.
+- Paths in the file are relative to the file; unknown options are errors.
+- This is not `likec4.config.json` (the project configuration).
+
 ## `export`
 
 Export diagrams to various formats.
