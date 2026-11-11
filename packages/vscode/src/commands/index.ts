@@ -10,6 +10,7 @@ import { registerPreviewContextOpenSourceCommand } from './previewContextOpenSou
 import { registerPrintDotOfCurrentViewCommand } from './printDotOfCurrentView'
 import { registerReloadProjectsCommand } from './reloadProjects'
 import { registerRestartCommand } from './restart'
+import { registerSaveAsPngCommand } from './saveAsPng'
 import { registerSemanticLayoutWithAICommand } from './semanticLayoutWithAI'
 import { registerValidateLayoutCommand } from './validateLayout'
 
@@ -37,6 +38,7 @@ export function registerCommands() {
   registerLocateCommand(deps)
   registerPreviewContextOpenSourceCommand(deps)
   registerCopyAsPngCommand(deps)
+  registerSaveAsPngCommand(deps)
   registerPrintDotOfCurrentViewCommand(deps)
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
