@@ -51,14 +51,17 @@ model {
 +    component api
 +  }
 
-  frontend -> api // ⛔️ Error: 'api' not found
+  frontend -> api // ⛔️ Error: Could not resolve reference to Referenceable named 'api'.
 }
 ```
 
 The reference is ambiguous, as there are two `api` components in the model.
+An ambiguous name is not visible in the outer scope, so the error says that the reference cannot be resolved.
 
 Every element creates a new scope inside `{...}`, so `api` is unique inside `service1` and `service2`,
 but not in the scope of `model`.
+Inside the body of an element, `it` and `this` refer to the element itself
+(see [relationships](/dsl/relationships/#relationship-definition)).
 
 We can resolve by moving the relationship to the scope of `service2`:
 
@@ -100,7 +103,7 @@ model {
     frontend -> graphql // ✅ This is OK, references to unique 'graphql'
   }
 
-  frontend -> api // ⛔️ Error: 'api' is ambiguous
+  frontend -> api // ⛔️ Error: Could not resolve reference to Referenceable named 'api'.
 
   service service2 {
     component api
@@ -136,7 +139,7 @@ model {
     component api
   }
 
-  frontend -> api // ⛔️ Error: 'api' not found
+  frontend -> api // ⛔️ Error: Could not resolve reference to Referenceable named 'api'.
   frontend -> service1.api // ✅ This is OK
   frontend -> service2.api // ✅ This is OK
 }
@@ -181,7 +184,8 @@ model {
 
   frontend -> backend2.api  // ✅ This is also OK
 
-  frontend -> service.api   // ⛔️ Error: 'api' is ambiguous in 'service'
+  frontend -> service.api   // ⛔️ Error: Could not resolve reference to Referenceable named 'api'.
+                            //    'api' is ambiguous in 'service'
 
   frontend -> service.graphql // ✅ This is also OK, we omit 'backend2'
                               //    as 'graphql' is unique in 'service'

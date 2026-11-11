@@ -3,7 +3,7 @@ title: Model diffs
 description: Describe a planned change of the model, compare the model before and after it, apply or discard it, and remove elements safely
 sidebar:
   label: Model diffs
-  order: 7
+  order: 25
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -52,7 +52,8 @@ A view scoped to an element added by a diff (`view of`) exists only in the "to-b
 - A removed element or relationship must exist in the model.
   If the model changed since the diff was written, the entry is reported as an error.
 - An added element must not exist in the model.
-- A diff cannot remove elements added by a diff, and cannot extend relationships.
+- A diff cannot remove elements added by a diff, and cannot [extend relationships](/dsl/extend/#extend-relationship).
+  Remove the relationship and add a new one instead.
 
 ### Overlapping diffs
 
@@ -94,6 +95,8 @@ Elements keep their positions when you switch, because all three modes use the s
 Apply writes the final content into the files that define the model:
 
 - `extend` of an existing element goes into the element definition: tags and links are added if missing, metadata keys override existing ones, child elements and relationships go to the end of the element body.
+  This differs from `extend` in the `model` block, where duplicate metadata keys are [merged into arrays](/dsl/extend/#metadata-merging).
+  The **To-be** mode of the compare view shows the same result.
 - A relationship goes to the `model` block that defines the root element of its source.
 - New root elements go to the `model` block with the most root elements.
 

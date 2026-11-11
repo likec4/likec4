@@ -34,15 +34,22 @@ model {
 }
 ```
 
-Relacionamentos bidirecionais são renderizados com setas nas duas pontas por padrão. Use-os para interações mútuas,
-como replicação sincronizada ou protocolos em que os dois lados iniciam comunicação significativa. O estilo do
-relacionamento ainda pode sobrescrever a ponta renderizada. Para chamadas request-response em que um lado inicia a
-interação, prefira `->`.
+No modelo, `<->` define um único relacionamento marcado como bidirecional.
+Ele é renderizado com setas nas duas pontas por padrão (o estilo do relacionamento ainda pode sobrescrever a ponta).
+Use-o para interações mútuas, como replicação sincronizada ou protocolos em que os dois lados iniciam comunicação
+significativa. Para chamadas request-response em que um lado inicia a interação, prefira `->`.
+
+<Aside type='note'>
+  Nas views, `<->` tem outro significado: `include frontend <-> backend` inclui os relacionamentos entre os dois
+  elementos em qualquer direção, definidos com `->` ou `<->`. Consulte [qualquer relacionamento](/pt-br/dsl/views/predicates/#qualquer-relacionamento).
+</Aside>
 
 Relacionamentos podem ser aninhados
 
 ```likec4
 model {
+  customer = actor 'Customer'
+
   service cloud {
     component backend
     component frontend
@@ -128,7 +135,8 @@ ou sob uma perspectiva de negócio (delegação, informação, responsabilidade 
 
 Você pode definir os tipos de relacionamento que fizerem mais sentido para o seu contexto.
 
-Um tipo de relacionamento também pode definir [tags](#tags) e propriedades padrão — `title`, `description`, `technology`, `notation` e [links](#links) — herdadas por todo relacionamento desse tipo (um relacionamento pode sobrescrever qualquer uma das propriedades; tags são combinadas):
+Um tipo de relacionamento também pode definir [tags](#tags) e propriedades padrão — `title`, `description`, `technology` e [links](#links) — herdadas por todo relacionamento desse tipo (um relacionamento pode sobrescrever qualquer uma das propriedades; tags são combinadas).
+Um tipo de relacionamento também aceita `notation`, mas notações de relacionamentos ainda não são exibidas nos diagramas (consulte [notações](/pt-br/dsl/views/notations/)):
 
 ```likec4
 specification {
@@ -257,7 +265,7 @@ model {
 ```
 
 
-### Navigate To
+### Navigate to
 
 Um relacionamento pode ter uma propriedade `navigateTo`, que aponta para uma [visão dinâmica](/dsl/views/dynamic).
 Isso permite fazer _"zoom-in"_ e ver mais detalhes sobre esse relacionamento.
