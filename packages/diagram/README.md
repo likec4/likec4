@@ -36,6 +36,8 @@ You need to prepare it and wrap your diagram with`LikeC4ModelProvider` component
 
 See [📖 Documentation](https://likec4.dev/tooling/react/#likec4modelprovider) for examples.
 
+## Bundled version
+
 ### LikeC4View
 
 The easiest way to use this package is the `LikeC4View` component.\
@@ -50,7 +52,7 @@ import { likec4model } from './likec4-model.ts'
 
 function App() {
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <LikeC4View
         viewId="index1"
         onNodeClick={(nodeId) => console.log(nodeId)}
@@ -67,7 +69,7 @@ See [LikeC4ViewProps](./src/LikeC4View.tsx) for available props.
 You may need to import icons, if you use built-in node renderers.
 
 ```tsx
-import { type ElementIconRenderer, LikeC4, LikeC4ModelProvider, LikeC4View } from '@likec4/diagram'
+import { type ElementIconRenderer, LikeC4ModelProvider, LikeC4View } from '@likec4/diagram'
 import { lazy, Suspense } from 'react'
 
 // Better to lazy load icons, bundle is quite large at the moment
@@ -83,7 +85,7 @@ const IconRenderer: ElementIconRenderer = (props) => {
 
 function App() {
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <LikeC4View
         viewId="index1"
         renderIcon={IconRenderer}
@@ -104,7 +106,7 @@ import { ReactLikeC4, LikeC4ModelProvider } from '@likec4/diagram'
 function App() {
   const [viewId, setViewId] = useState('index')
   return (
-    <LikeC4ModelProvider model={likec4model}>
+    <LikeC4ModelProvider likec4model={likec4model}>
       <ReactLikeC4
         viewId={viewId}
         pannable
@@ -125,8 +127,8 @@ function App() {
 
 ### `likec4/react`
 
-Package `likec4/react` re-exports everything from Bundled version.\
-It also re-exports `likec4/icons/all`.
+If you already use the [`likec4`](https://www.npmjs.com/package/likec4) package, you do not need to install this one:
+`likec4/react` exports everything from `@likec4/diagram` and `@likec4/diagram/custom`.
 
 ## Library version
 
@@ -173,13 +175,12 @@ Here are the options:
 ### With PandaCSS
 
 ```bash
-pnpm add @likec4/styles
+pnpm add @likec4/styles @likec4/style-preset
 ```
 
 Configure your `panda.config.ts`:
 
 ```ts
-import likec4preset from '@likec4/styles/preset'
 import { defineConfig } from '@pandacss/dev'
 
 export default defineConfig({
@@ -192,7 +193,7 @@ export default defineConfig({
     '@likec4/styles',
   ],
   presets: [
-    likec4preset,
+    '@likec4/style-preset',
   ],
   theme: {
     extend: {
@@ -364,7 +365,7 @@ const components = defineCustomComponents(({ wrap }) => ({
 function App() {
   return (
     <CustomizationProvider components={components}>
-      <LikeC4ModelProvider model={likec4model}>
+      <LikeC4ModelProvider likec4model={likec4model}>
         <LikeC4View viewId="index" />
       </LikeC4ModelProvider>
     </CustomizationProvider>
@@ -388,11 +389,11 @@ See [customNodes.tsx](./src/custom/customNodes.tsx) for examples.
 import { LikeC4Diagram } from '@likec4/diagram'
 import {
   ElementActions,
+  ElementData,
   ElementDetailsButtonWithHandler,
   elementNode,
   ElementNodeContainer,
   ElementShape,
-  ElementTitle,
   ElementToolbar,
   IfNotReadOnly,
 } from '@likec4/diagram/custom'
@@ -402,7 +403,7 @@ const renderNodes = {
   element: elementNode(({ nodeProps, nodeModel }) => (
     <ElementNodeContainer nodeProps={nodeProps}>
       <ElementShape {...nodeProps} />
-      <ElementTitle {...nodeProps} />
+      <ElementData {...nodeProps} />
       <ElementActions
         {...nodeProps}
         extraButtons={[

@@ -66,7 +66,7 @@ const ts = generateLikeC4Model(model)
 
 ## LikeC4 DSL
 
-Import from `@likec4/generators/likec4`.
+Import from `@likec4/generators/likec4` (also available as `likec4/generators/likec4`).
 
 ### Generate DSL from model data
 

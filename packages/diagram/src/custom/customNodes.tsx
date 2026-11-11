@@ -363,11 +363,11 @@ export type SequenceActorNodeProps<A extends Any = Unknown> = {
  *
  * @example
  * ```tsx
- * import { defineNode, ElementNodeContainer, ElementTitle, DefaultHandles } from 'likec4/react'
+ * import { defineNode, ElementNodeContainer, ElementData, DefaultHandles } from 'likec4/react'
  *
  * const CustomElementNode = defineNode('element', (nodeProps) => (
  *   <ElementNodeContainer nodeProps={nodeProps}>
- *     <ElementTitle {...nodeProps} />
+ *     <ElementData {...nodeProps} />
  *     <DefaultHandles />
  *   </ElementNodeContainer>
  * ))
@@ -376,11 +376,11 @@ export type SequenceActorNodeProps<A extends Any = Unknown> = {
  *
  * @example
  * ```tsx
- * import { defineNode, ElementNodeContainer, ElementTitle, DefaultHandles } from 'likec4/react'
+ * import { defineNode, ElementNodeContainer, ElementData, DefaultHandles } from 'likec4/react'
  *
  * const CustomElementNode = defineNode.element((nodeProps) => (
  *   <ElementNodeContainer {...nodeProps}>
- *     <ElementTitle {...nodeProps} />
+ *     <ElementData {...nodeProps} />
  *     <DefaultHandles />
  *   </ElementNodeContainer>
  * ))
@@ -413,11 +413,11 @@ type NodeRendererFactory<T extends Types.NodeType> = (renderer: Types.NodeRender
  *
  * @example
  * ```tsx
- * import { defineNode, ElementNodeContainer, ElementTitle, DefaultHandles } from 'likec4/react'
+ * import { defineNode, ElementNodeContainer, ElementData, DefaultHandles } from 'likec4/react'
  *
  * const CustomElementNode = defineNode.element((nodeProps) => (
  *   <ElementNodeContainer {...nodeProps}>
- *     <ElementTitle {...nodeProps} />
+ *     <ElementData {...nodeProps} />
  *     <DefaultHandles />
  *   </ElementNodeContainer>
  * ))
@@ -432,11 +432,11 @@ defineNode.element = defineNode.bind(null, 'element') as NodeRendererFactory<'el
  *
  * @example
  * ```tsx
- * import { defineNode, ElementNodeContainer, ElementTitle, DefaultHandles } from 'likec4/react'
+ * import { defineNode, ElementNodeContainer, ElementData, DefaultHandles } from 'likec4/react'
  *
  * const CustomDeploymentNode = defineNode.deploymentNode((nodeProps) => (
  *   <ElementNodeContainer {...nodeProps}>
- *     <ElementTitle {...nodeProps} />
+ *     <ElementData {...nodeProps} />
  *     <DefaultHandles />
  *   </ElementNodeContainer>
  * ))
@@ -546,12 +546,12 @@ export { defineNode }
  *
  * @example
  * ```tsx
- * import { defineNodes, ElementNodeContainer, ElementTitle, DefaultHandles } from 'likec4/react'
+ * import { defineNodes, ElementNodeContainer, ElementData, DefaultHandles } from 'likec4/react'
  *
  * const CustomNodes = defineNodes({
  *   element: (nodeProps) => (
  *     <ElementNodeContainer {...nodeProps}>
- *       <ElementTitle {...nodeProps} />
+ *       <ElementData {...nodeProps} />
  *       <DefaultHandles />
  *     </ElementNodeContainer>
  *   ),

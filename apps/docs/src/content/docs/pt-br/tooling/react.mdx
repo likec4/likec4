@@ -366,7 +366,7 @@ Consulte a [documentação do PandaCSS](https://panda-css.com) para obter as ins
 O LikeC4 disponibiliza um preset.
 
 <PackageManagers
-    pkg="@likec4/styles"
+    pkg="@likec4/styles @likec4/style-preset"
     pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
     frame="none"
   />
@@ -375,7 +375,6 @@ O LikeC4 disponibiliza um preset.
 Configure seu `panda.config.ts`:
 
 ```ts
-import likec4preset from '@likec4/styles/preset'
 import { defineConfig } from '@pandacss/dev'
 
 export default defineConfig({
@@ -388,7 +387,7 @@ export default defineConfig({
     '@likec4/styles',
   ],
   presets: [
-    likec4preset,
+    '@likec4/style-preset',
   ],
   theme: {
     extend: {

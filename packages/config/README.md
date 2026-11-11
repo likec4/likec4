@@ -21,6 +21,8 @@ Docs – https://likec4.dev/
 pnpm add -D @likec4/config
 ```
 
+If you already use the [`likec4`](https://www.npmjs.com/package/likec4) package, import the same helpers from `likec4/config`.
+
 ## Recognized filenames
 
 These are treated as LikeC4 project configuration files:
@@ -127,16 +129,16 @@ export default defineConfig({
 ### Validate/parse JSON config
 
 ```ts
-import { validateProjectConfig } from '@likec4/config'
+import { LikeC4ProjectConfigOps } from '@likec4/config'
 
 const json = `
 {
   name: "my-project" // JSON5 is supported
 }
 `
-const cfg = validateProjectConfig(json)
+const cfg = LikeC4ProjectConfigOps.parse(json)
 // or
-const cfg2 = validateProjectConfig({ name: 'my-project' })
+const cfg2 = LikeC4ProjectConfigOps.validate({ name: 'my-project' })
 ```
 
 ### Load config from TypeScript/JavaScript

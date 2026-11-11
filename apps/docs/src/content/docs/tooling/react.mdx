@@ -366,7 +366,7 @@ Check the [PandaCSS](https://panda-css.com) docs for full setup instructions.
 LikeC4 provides a preset.
 
 <PackageManagers
-    pkg="@likec4/styles"
+    pkg="@likec4/styles @likec4/style-preset"
     pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
     frame="none"
   />
@@ -375,7 +375,6 @@ LikeC4 provides a preset.
 Configure your `panda.config.ts`:
 
 ```ts
-import likec4preset from '@likec4/styles/preset'
 import { defineConfig } from '@pandacss/dev'
 
 export default defineConfig({
@@ -388,7 +387,7 @@ export default defineConfig({
     '@likec4/styles',
   ],
   presets: [
-    likec4preset,
+    '@likec4/style-preset',
   ],
   theme: {
     extend: {
@@ -543,7 +542,7 @@ import {
   elementNode,
   ElementNodeContainer,
   ElementShape,
-  ElementTitle,
+  ElementData,
   ElementToolbar,
   IfNotReadOnly,
 } from '@likec4/diagram/custom'
@@ -553,7 +552,7 @@ const customNodes = {
   element: elementNode(({ nodeProps, nodeModel }) => (
     <ElementNodeContainer nodeProps={nodeProps}>
       <ElementShape {...nodeProps} />
-      <ElementTitle {...nodeProps} />
+      <ElementData {...nodeProps} />
       {/* Add extra buttons */}
       <ElementActions
         {...nodeProps}
