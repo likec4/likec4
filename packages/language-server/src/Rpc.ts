@@ -135,6 +135,7 @@ export class Rpc extends ADisposable {
             await workspace.ProjectsManager.rebuildProject(projectId as ProjectId)
           } else {
             await workspace.WorkspaceManager.rebuildAll()
+            await workspace.WorkspaceManager.whenExternalProjectsSynced()
           }
         }
         const likec4model = await likec4Services.ModelBuilder.computeModel(projectId as ProjectId, cancelToken)
@@ -213,6 +214,7 @@ export class Rpc extends ADisposable {
         logger.debug`received request ${'ReloadProjects'}`
         workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.reloadProjects(cancelToken)
+        await workspace.WorkspaceManager.whenExternalProjectsSynced()
         return
       }),
       // ----------
