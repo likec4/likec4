@@ -134,6 +134,9 @@ export default defineConfig({
               translations: { 'pt-BR': 'Trabalhar com o modelo no código' },
               items: [
                 { slug: 'tooling/model-api' },
+                { slug: 'tooling/model-api/reference' },
+                { slug: 'tooling/model-api/builder' },
+                { slug: 'tooling/model-api/edit' },
                 { slug: 'tooling/code-generation/model' },
                 { slug: 'tooling/code-generation/dsl' },
                 { slug: 'tooling/code-generation/custom' },

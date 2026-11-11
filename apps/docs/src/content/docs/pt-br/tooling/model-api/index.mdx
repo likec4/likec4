@@ -1,0 +1,202 @@
+---
+title: API de modelo
+description: Carregue seu workspace LikeC4 no Node.js e consulte o modelo de arquitetura a partir do código.
+head:
+  - tag: title
+    content: 'API de modelo: carregar e consultar | LikeC4'
+sidebar:
+  label: Carregar e consultar
+  order: 1
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { PackageManagers } from 'starlight-package-managers';
+
+A API de modelo disponibiliza seu modelo de arquitetura no código: carregue um workspace (ou uma string DSL) no Node.js e depois consulte e percorra elementos, relacionamentos, deployments e visões.
+
+Nestas páginas:
+
+- **Carregar e consultar** (esta página): crie uma instância de `LikeC4` e obtenha o modelo a partir dela.
+- [Referência do modelo](/pt-br/tooling/model-api/reference/): métodos de `LikeC4Model`, elementos, metadados de elementos, o modelo de deployment e as visões.
+- [Model Builder](/pt-br/tooling/model-api/builder/): construa um modelo em TypeScript, sem arquivos DSL.
+- [Alterar o modelo](/pt-br/tooling/model-api/edit/): adicione elementos a um workspace carregado e gere a DSL novamente.
+
+<Aside type='note'>
+O modelo obtido aqui é somente leitura: você o consulta e o percorre.
+Para criar elementos no código, consulte [Model Builder](/pt-br/tooling/model-api/builder/) e [Enriquecendo um workspace carregado](/pt-br/tooling/model-api/edit/#enriquecendo-um-workspace-carregado).
+</Aside>
+
+Adicione `likec4` às dependências:
+
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+
+## Como usar
+
+Crie uma instância de `LikeC4` a partir de um diretório de arquivos-fonte ou de uma string contendo código DSL.
+
+### A partir de um workspace
+
+Pesquise e processe os arquivos-fonte recursivamente:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+```
+
+O método também aceita opções:
+
+| Propriedade      | Descrição                                                                                         |
+| -----------------| --------------------------------------------------------------------------------------------------- |
+| `printErrors`    | Se o modelo for inválido, registra os erros no logger (padrão: `true`) |
+| <span style="text-wrap:nowrap">`throwIfInvalid`</span> | Retorna uma Promise rejeitada se o modelo for inválido (padrão: `false`) |
+| `logger`         | Onde gravar os logs: `'console'` (padrão) ou `'stderr'`.<br/>`false` deixa o logger sem configuração |
+| `logLevel`       | Nível de log: `'trace'`, `'debug'`, `'info'`, `'warning'` ou `'error'` |
+| `graphviz`       | Mecanismo de layout: `'wasm'` (padrão) usa o Graphviz WebAssembly incluído, `'binary'` usa o executável `dot` local do Graphviz |
+
+:::tip
+Consulte [Valide seu modelo](/pt-br/guides/validate-your-model/) para ver exemplos de regras personalizadas aplicadas ao modelo com a API de modelo.
+:::
+
+### A partir do código-fonte
+
+Processe o conteúdo de uma string:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element system
+    element user
+  }
+  model {
+    customer = user 'Customer'
+    cloud = system 'System'
+  }
+  views {
+    view index {
+      include *
+    }
+  }
+`)
+```
+
+`fromSource` aceita as mesmas opções que `fromWorkspace`.
+
+### Liberar recursos
+
+Uma instância de `LikeC4` mantém os serviços de linguagem. Libere-a quando não precisar mais dela:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+
+// ...
+
+// Cleanup resources
+await likec4.dispose()
+```
+
+Com a declaração `await using`, a instância é liberada automaticamente:
+
+```ts
+import { LikeC4 } from 'likec4'
+
+async function main() {
+  await using likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+
+  // ...
+  // likec4 is disposed when main() returns
+}
+```
+
+## Obter o modelo
+
+Depois de carregar o workspace, obtenha o modelo em um de dois estágios (ambos têm a mesma API de consulta):
+
+- **Calculado** (`LikeC4Model.Computed`): as visões são calculadas a partir dos predicados. É rápido e suficiente para a navegação, mas ainda não está pronto para renderização.
+- **Com layout** (`LikeC4Model.Layouted`): estende o modelo calculado com dados de layout (dimensões e posições), necessários à renderização.
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+
+// Validation errors and warnings
+if (likec4.hasErrors()) {
+  console.log(likec4.getErrors())
+}
+console.log(likec4.getWarnings())
+
+// Computed model
+const model = await likec4.computedModel()
+
+// Layouted model, ready for rendering
+const layouted = await likec4.layoutedModel()
+const diagram = layouted.view('index').$layouted
+```
+
+`likec4.syncComputedModel()` retorna o modelo calculado de forma síncrona, mas não lê os [layouts manuais](/pt-br/config/#layouts-manuais).
+
+Em um workspace com [vários projetos](/pt-br/config/multi-projects/), informe o nome do projeto: `likec4.computedModel('my-project')`. `likec4.projects()` lista os IDs dos projetos.
+
+:::tip
+A API de baixo nível está disponível em [`@likec4/core`](https://github.com/likec4/likec4/blob/main/packages/core/README.md).
+:::
+
+## Consultar o modelo
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+const model = await likec4.computedModel()
+
+// Elements of some kind
+const containers = model.elementsOfKind('container')
+
+// Filter elements with a where operator:
+//   kind is 'container' and (tag is 'deprecated' or tag is not 'internal')
+const matching = model.elementsWhere({
+  and: [
+    { kind: 'container' },
+    {
+      or: [
+        { tag: 'deprecated' },
+        {
+          tag: {
+            neq: 'internal',
+          },
+        },
+      ],
+    },
+  ],
+})
+
+// Views that include the element
+const views = model
+  .element('cloud.backend.api')
+  .views()
+
+// Source elements of incoming relationships, filtered by tag
+const callers = model
+  .element('cloud.backend.api')
+  .incoming() // relationships incoming to the element
+  .filter(r => r.isTagged('http')) // filter by tag
+  .map(r => r.source) // source elements
+  .toArray()
+```
+
+Os métodos que retornam vários itens, como `elements()`, `elementsWhere()` ou `incoming()`, retornam iteradores.
+Use os helpers de iteradores (`.filter()`, `.map()`, `.toArray()`) ou converta-os em array com o operador spread.
+
+Consulte a [Referência do modelo](/pt-br/tooling/model-api/reference/) para ver todos os métodos, os metadados de elementos, o modelo de deployment e as visões.

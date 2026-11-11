@@ -1,0 +1,302 @@
+---
+title: Referência do modelo
+description: 'LikeC4Model, LikeC4DeploymentModel e LikeC4ViewModel: como consultar elementos, relacionamentos, metadados, deployments e visões.'
+head:
+  - tag: title
+    content: 'Referência do modelo | LikeC4'
+sidebar:
+  label: Referência do modelo
+  order: 2
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+Referência dos objetos do modelo que você obtém de [`LikeC4`](/pt-br/tooling/model-api/#obter-o-modelo): o modelo lógico, seus elementos, o modelo de deployment e as visões.
+Todos têm a mesma API no modelo calculado e no modelo com layout.
+
+:::tip
+É possível gerar uma API tipada a partir do modelo. Consulte [Geração de código](/pt-br/tooling/code-generation/model/).
+:::
+
+## LikeC4Model
+
+`LikeC4Model` disponibiliza métodos para consultar e percorrer todo o modelo.
+Os métodos que retornam vários itens retornam iteradores: use os helpers de iteradores (`.filter()`, `.map()`, `.toArray()`) ou converta-os em array com o operador spread.
+
+```ts
+interface LikeC4Model {
+  /**
+   * Returns the root elements of the model.
+   */
+  roots(): Iterator<ElementModel>;
+  /**
+   * Returns all elements in the model.
+   */
+  elements(): Iterator<ElementModel>;
+  /**
+   * Returns a specific element by its FQN, throws if not found.
+   * @see findElement
+   */
+  element(id: Fqn): ElementModel;
+  /**
+   * Returns the element by its FQN, or null if not found.
+   */
+  findElement(id: string): ElementModel | null;
+  /**
+   * Returns all elements of the given kind.
+   */
+  elementsOfKind(kind: ElementKind): Iterator<ElementModel>;
+  /**
+   * Returns all elements that match the where operator.
+   */
+  elementsWhere(where: WhereOperator): Iterator<ElementModel>;
+  /**
+   * Returns all model relationships.
+   */
+  relationships(): Iterator<RelationshipModel>;
+  /**
+   * Returns a specific relationship by its ID, throws if not found.
+   */
+  relationship(id: RelationId): RelationshipModel;
+  /**
+   * Returns all model relationships that match the where operator.
+   */
+  relationshipsWhere(where: WhereOperator): Iterator<RelationshipModel>;
+  /**
+   * Returns elements, relationships and views with the given tag.
+   */
+  findByTag(tag: Tag, type?: 'elements' | 'relationships' | 'views'): Iterator<...>;
+  /**
+   * Returns all views in the model.
+   */
+  views(): Iterator<LikeC4ViewModel>;
+  /**
+   * Returns a specific view by its ID, throws if not found.
+   * @see findView
+   */
+  view(viewId: ViewId): LikeC4ViewModel;
+  /**
+   * Returns the view by its ID, or null if not found.
+   */
+  findView(viewId: string): LikeC4ViewModel | null;
+  /**
+   * The deployment model.
+   */
+  readonly deployment: LikeC4DeploymentModel;
+  /**
+   * Returns the parent element of given element.
+   * @see ancestors
+   */
+  parent(element: ElementOrFqn): ElementModel | null;
+  /**
+   * Get all children of the element (only direct children)
+   * @see descendants
+   */
+  children(element: ElementOrFqn): ReadonlySet<ElementModel>;
+  /**
+   * Get all siblings (i.e. same parent)
+   */
+  siblings(element: ElementOrFqn): Iterator<ElementModel>;
+  /**
+   * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+   * (from closest to root)
+   */
+  ancestors(element: ElementOrFqn): Iterator<ElementModel>;
+  /**
+   * Get all descendant elements (i.e. children, children’s children, etc.)
+   */
+  descendants(element: ElementOrFqn): Iterator<ElementModel>;
+  /**
+   * Incoming relationships to the element and its descendants
+   */
+  incoming(element: ElementOrFqn, filter?: 'all' | 'direct' | 'to-descendants'): Iterator<RelationshipModel>;
+  /**
+   * Outgoing relationships from the element and its descendants
+   */
+  outgoing(element: ElementOrFqn, filter?: 'all' | 'direct' | 'from-descendants'): Iterator<RelationshipModel>;
+}
+```
+
+Consulte o código-fonte para conhecer todos os métodos: [LikeC4Model](https://github.com/likec4/likec4/blob/main/packages/core/src/model/LikeC4Model.ts).
+
+## Elementos
+
+`model.element(id)` retorna um `ElementModel`.
+Ele contém as propriedades do elemento (`id`, `kind`, `title`, `description`, `technology`, `tags`, `links`, `metadata`) e métodos para percorrer o modelo a partir dele:
+
+```ts
+interface ElementModel {
+  parent: ElementModel | null;
+  children(): ReadonlySet<ElementModel>;
+  ancestors(): Iterator<ElementModel>;
+  descendants(sort?: 'asc' | 'desc'): Iterator<ElementModel>;
+  siblings(): Iterator<ElementModel>;
+  /**
+   * Incoming relationships, and source elements of them
+   */
+  incoming(filter?: 'all' | 'direct' | 'to-descendants'): Iterator<RelationshipModel>;
+  incomers(filter?: 'all' | 'direct' | 'to-descendants'): Iterator<ElementModel>;
+  /**
+   * Outgoing relationships, and target elements of them
+   */
+  outgoing(filter?: 'all' | 'direct' | 'from-descendants'): Iterator<RelationshipModel>;
+  outgoers(filter?: 'all' | 'direct' | 'from-descendants'): Iterator<ElementModel>;
+  /**
+   * Views that include the element
+   */
+  views(): ReadonlySet<LikeC4ViewModel>;
+  /**
+   * Deployed instances of the element
+   */
+  deployments(): Iterator<DeployedInstanceModel>;
+  isTagged(tag: string): boolean;
+  hasMetadata(): boolean;
+  getMetadata(): Record<string, string | string[]>;
+  getMetadata(key: string): string | string[] | undefined;
+}
+```
+
+Consulte o código-fonte para conhecer todos os métodos: [ElementModel](https://github.com/likec4/likec4/blob/main/packages/core/src/model/ElementModel.ts).
+
+## Metadados de elementos
+
+Os valores de metadados são strings ou arrays de strings. Valores booleanos são armazenados como strings (`'true'`, `'false'`).
+`getMetadata()` retorna todos os metadados e `getMetadata(key)` retorna um único valor: verifique com `Array.isArray` qual dos dois você recebeu.
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromSource(`
+  specification {
+    element service
+    element application
+  }
+  model {
+    api = service 'API Gateway' {
+      metadata {
+        version '3.2.1'
+        teams ['platform', 'payments']
+        regions ['us-east-1', 'eu-west-1']
+        critical true
+      }
+    }
+    frontend = application 'Frontend' {
+      metadata {
+        framework 'React'
+        teams 'web'
+      }
+    }
+  }
+`)
+
+const model = await likec4.computedModel()
+const api = model.element('api')
+
+if (api.hasMetadata()) {
+  // All metadata as an object
+  console.log(api.getMetadata())
+  // { version: '3.2.1', teams: ['platform', 'payments'], regions: ['us-east-1', 'eu-west-1'], critical: 'true' }
+
+  const version = api.getMetadata('version') // '3.2.1'
+  const critical = api.getMetadata('critical') === 'true' // true
+}
+
+// A value can be a string or an array of strings
+const teams = api.getMetadata('teams')
+if (Array.isArray(teams)) {
+  console.log(`Owned by ${teams.length} teams: ${teams.join(', ')}`)
+} else if (teams) {
+  console.log(`Owned by ${teams}`)
+}
+
+// Elements owned by a team, whether the value is a string or an array
+const platformElements = model.elements()
+  .filter(el => {
+    const teams = el.getMetadata('teams')
+    return Array.isArray(teams) ? teams.includes('platform') : teams === 'platform'
+  })
+  .toArray()
+
+// Elements deployed to more than one region
+const multiRegion = model.elements()
+  .filter(el => {
+    const regions = el.getMetadata('regions')
+    return Array.isArray(regions) && regions.length > 1
+  })
+  .toArray()
+
+// Group elements by framework
+const byFramework = Map.groupBy(
+  model.elements().filter(el => typeof el.getMetadata('framework') === 'string'),
+  el => el.getMetadata('framework') as string,
+)
+```
+
+:::note[Mesclagem de metadados com extend]
+Ao utilizar [`extend`](/pt-br/dsl/extend/) para adicionar metadados a elementos, as chaves duplicadas são mescladas automaticamente:
+
+- String + String = Array (se os valores forem diferentes)
+- String + Array = Array (mesclado)
+- Array + Array = Array (mesclado)
+- Valores repetidos são removidos automaticamente
+- Arrays com um único valor são convertidos novamente em strings
+
+Isso permite enriquecer os metadados progressivamente em vários arquivos. Consulte a [documentação de extensão](/pt-br/dsl/extend/#combinação-de-metadados) para saber mais.
+:::
+
+## LikeC4DeploymentModel
+
+`model.deployment` disponibiliza métodos para consultar e percorrer o modelo de deployment.
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+const model = await likec4.computedModel()
+
+const deployment = model.deployment
+
+// Deployed instances of an element
+for (const instance of deployment.instancesOf('cloud.backend.api')) {
+  console.log(`${instance.id} runs on ${instance.parent.title}`)
+}
+
+// Deployment nodes of some kind
+const clusters = deployment.nodesOfKind('kubernetes').toArray()
+
+// A specific deployment node or instance
+const node = deployment.node('prod.eu')
+const instance = deployment.instance('prod.eu.api')
+```
+
+Consulte o código-fonte para conhecer todos os métodos: [LikeC4DeploymentModel](https://github.com/likec4/likec4/blob/main/packages/core/src/model/DeploymentModel.ts).
+
+## LikeC4ViewModel
+
+`LikeC4ViewModel` disponibiliza métodos para consultar e percorrer os elementos e relacionamentos incluídos em uma visão.
+
+```ts
+import { LikeC4 } from 'likec4'
+
+const likec4 = await LikeC4.fromWorkspace('/path/to/workspace')
+const model = await likec4.layoutedModel()
+
+for (const view of model.views()) {
+  if (view.isDynamicView()) {
+    // ...
+  }
+  // Elements included in the view
+  for (const node of view.elements()) {
+    console.log(node.element.id)
+  }
+}
+
+const view = model.view('index')
+
+view.includesElement('cloud.backend.api') // true or false
+view.edges() // edges between the nodes
+view.$layouted // layouted view, with manual layout applied, ready for rendering
+```
+
+Consulte o código-fonte para conhecer todos os métodos: [LikeC4ViewModel](https://github.com/likec4/likec4/blob/main/packages/core/src/model/view/LikeC4ViewModel.ts).

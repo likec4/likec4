@@ -41,7 +41,7 @@ import { test } from 'vitest'
 
 // Initialize and compute LikeC4 Model
 const likec4 = await LikeC4.fromWorkspace('..')
-const model = likec4.computedModel()
+const model = await likec4.computedModel()
 
 // With `test.for` we generate tests for each element of kind `app`
 // This improves the output, showing each test failure separately
