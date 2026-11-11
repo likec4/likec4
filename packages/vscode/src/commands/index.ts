@@ -2,6 +2,7 @@ import useTelemetry from '#useTelemetry'
 import { useDiagramPanel } from '../panel'
 import { useLanguageClient } from '../useLanguageClient'
 import { useRpc } from '../useRpc'
+import { registerCopyAsPngCommand } from './copyAsPng'
 import { registerLocateCommand } from './locate'
 import { registerOpenPreviewCommand } from './openPreview'
 import { registerOpenProjectsOverviewCommand } from './openProjectsOverview'
@@ -35,6 +36,7 @@ export function registerCommands() {
   registerOpenProjectsOverviewCommand(deps)
   registerLocateCommand(deps)
   registerPreviewContextOpenSourceCommand(deps)
+  registerCopyAsPngCommand(deps)
   registerPrintDotOfCurrentViewCommand(deps)
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
