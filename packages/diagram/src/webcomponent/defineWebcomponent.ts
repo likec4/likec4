@@ -45,54 +45,51 @@ function readProps(element: HTMLElement): LikeC4ElementProps {
 
 type LikeC4ViewComponent = (props: LikeC4ViewProps) => React.ReactElement
 
-abstract class LikeC4ViewElement extends HTMLElement {
-  static observedAttributes = ObservedAttributes
+/**
+ * The class is created on demand: this module is also imported where `HTMLElement` does not exist (SSR, node).
+ */
+function createLikeC4ViewElement(component: LikeC4ViewComponent) {
+  return class LikeC4ViewElement extends HTMLElement {
+    static observedAttributes = ObservedAttributes
 
-  readonly shadow: ShadowRoot
-  readonly mount: HTMLDivElement
-  root: Root | undefined
+    readonly shadow: ShadowRoot
+    readonly mount: HTMLDivElement
+    root: Root | undefined
 
-  abstract get viewComponent(): LikeC4ViewComponent
+    constructor() {
+      super()
+      this.shadow = this.attachShadow({ mode: 'open', delegatesFocus: true })
+      const style = document.createElement('style')
+      style.textContent = ':host { display: contents; background-color: transparent; margin: 0; padding: 0; }'
+      this.mount = document.createElement('div')
+      this.mount.style.display = 'contents'
+      this.shadow.append(style, this.mount)
+    }
 
-  constructor() {
-    super()
-    this.shadow = this.attachShadow({ mode: 'open', delegatesFocus: true })
-    const style = document.createElement('style')
-    style.textContent = ':host { display: contents; background-color: transparent; margin: 0; padding: 0; }'
-    this.mount = document.createElement('div')
-    this.mount.style.display = 'contents'
-    this.shadow.append(style, this.mount)
-  }
-
-  connectedCallback() {
-    this.root ??= createRoot(this.mount)
-    this.render()
-  }
-
-  disconnectedCallback() {
-    this.root?.unmount()
-    this.root = undefined
-  }
-
-  attributeChangedCallback() {
-    if (this.root) {
+    connectedCallback() {
+      this.root ??= createRoot(this.mount)
       this.render()
     }
-  }
 
-  render() {
-    if (!this.root) {
-      return
+    disconnectedCallback() {
+      this.root?.unmount()
+      this.root = undefined
     }
-    this.root.render(
-      jsx(this.viewComponent, readProps(this)),
-    )
-  }
-}
 
-function createLikeC4ViewElement(component: LikeC4ViewComponent) {
-  return class extends LikeC4ViewElement {
-    override viewComponent = component
+    attributeChangedCallback() {
+      if (this.root) {
+        this.render()
+      }
+    }
+
+    render() {
+      if (!this.root) {
+        return
+      }
+      this.root.render(
+        jsx(component, readProps(this)),
+      )
+    }
   }
 }
 
