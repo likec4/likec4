@@ -169,7 +169,7 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.8.0",
     "@types/yargs": "^17.0.35",
-    "autoprefixer": "^10.6.1",
+    "autoprefixer": "^10.6.2",
     "birpc": "catalog:vite",
     "boxen": "^9.0.0",
     "clsx": "catalog:react",

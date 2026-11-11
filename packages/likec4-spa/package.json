@@ -76,7 +76,7 @@
     "@xstate/store": "catalog:xstate",
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
-    "autoprefixer": "^10.6.1",
+    "autoprefixer": "^10.6.2",
     "citty": "catalog:utils",
     "clsx": "catalog:react",
     "defu": "catalog:utils",
