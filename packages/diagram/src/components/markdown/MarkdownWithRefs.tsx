@@ -21,6 +21,7 @@ import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { IconRenderer } from '../../context/IconRenderer'
 import { useOptionalLikeC4Model } from '../../context/LikeC4ModelContext'
 import { useRootContainerRef } from '../../context/RootContainerContext'
+import { useCallbackRef } from '../../hooks'
 import { useDiagramMarkdownRefActions } from '../../hooks/useDiagramMarkdownRefActions'
 import { ViewIcon } from '../ViewIcon'
 import {
@@ -85,49 +86,51 @@ function GuardedMarkdown({ value, ...props }: Omit<MarkdownProps, 'value'> & { v
 }
 
 function MarkdownWithExistingRefs(
-  { className, resolver, ...props }: Omit<MarkdownProps, 'value'> & {
-    value: { html: string }
-    resolver: MarkdownRefResolver
-  },
+  { className, resolver, onClick, onKeyDown, onMouseOver, onMouseOut, onFocus, onBlur, ...props }:
+    & Omit<MarkdownProps, 'value'>
+    & {
+      value: { html: string }
+      resolver: MarkdownRefResolver
+    },
 ) {
   const actions = useDiagramMarkdownRefActions()
 
   // Element refs are links when element details are enabled, view refs when navigation is enabled
   const interactivity = useMarkdownRefsInteractivity(actions, resolver)
 
-  const handlers = useMemo(() => ({
-    onClick: (e: MouseEvent<HTMLDivElement>) => {
+  const handlers = {
+    onClick: useCallbackRef((e: MouseEvent<HTMLDivElement>) => {
       if (!interactivity.activate(e)) {
-        props.onClick?.(e)
+        onClick?.(e)
       }
-    },
-    onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+    }),
+    onKeyDown: useCallbackRef((e: KeyboardEvent<HTMLDivElement>) => {
       if (e.key !== 'Enter' || !interactivity.activate(e)) {
-        props.onKeyDown?.(e)
+        onKeyDown?.(e)
       }
-    },
-    onMouseOver: (e: MouseEvent<HTMLDivElement>) => {
+    }),
+    onMouseOver: useCallbackRef((e: MouseEvent<HTMLDivElement>) => {
       interactivity.open(e.target, OPEN_DELAY)
-      props.onMouseOver?.(e)
-    },
-    onMouseOut: (e: MouseEvent<HTMLDivElement>) => {
+      onMouseOver?.(e)
+    }),
+    onMouseOut: useCallbackRef((e: MouseEvent<HTMLDivElement>) => {
       const from = interactivity.closestRef(e.target)
       if (from && !(e.relatedTarget instanceof Node && from.contains(e.relatedTarget))) {
         interactivity.close(CLOSE_DELAY)
       }
-      props.onMouseOut?.(e)
-    },
-    onFocus: (e: FocusEvent<HTMLDivElement>) => {
+      onMouseOut?.(e)
+    }),
+    onFocus: useCallbackRef((e: FocusEvent<HTMLDivElement>) => {
       interactivity.open(e.target)
-      props.onFocus?.(e)
-    },
-    onBlur: (e: FocusEvent<HTMLDivElement>) => {
+      onFocus?.(e)
+    }),
+    onBlur: useCallbackRef((e: FocusEvent<HTMLDivElement>) => {
       if (!interactivity.isInsidePreview(e.relatedTarget)) {
         interactivity.close()
       }
-      props.onBlur?.(e)
-    },
-  }), [interactivity])
+      onBlur?.(e)
+    }),
+  }
 
   return (
     <>
