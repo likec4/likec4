@@ -56,7 +56,7 @@ Use `metadata` to store arbitrary project-level key-value data that can be consu
 
 ### Project name
 
-`name` identifies the project. Other projects use it to [import elements](/config/multi-projects/#import-elements).
+`name` identifies the project. Other projects use it to [import elements](/config/multi-projects/#import-elements), unless they declare the project in [`dependencies`](#dependencies).
 
 - It must be unique in the workspace.
 - It cannot be `default`: this name is reserved for files outside of any project.
@@ -214,6 +214,27 @@ Include paths must be relative paths. Absolute paths (like `/usr/share`), drive 
 
 `exclude` patterns of the project apply to the included directories too.  
 To share files between projects this way, see [Multi-projects](/config/multi-projects/#share-specification).
+
+## Dependencies
+
+:::caution[Experimental]
+The `dependencies` section is experimental. Its format may change before it becomes stable.
+:::
+
+`dependencies` maps the names you import from to the folders of the dependency projects, relative to the project folder.
+A dependency can be a project of the workspace or a folder outside the workspace.
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing": "../billing-service"
+  }
+}
+```
+
+For how imports are resolved and the limitations, see [Multi-projects](/config/multi-projects/#dependencies).
 
 ## Exclude files
 
