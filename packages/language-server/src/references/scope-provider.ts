@@ -57,8 +57,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         }
 
         if (ast.isImported(container)) {
-          const projectId = projectIdFrom(container)
-          return new StreamScope(this.fqnIndex.rootElements(projectId))
+          return this.getScopeForImported(container)
         }
 
         if (ast.isStrictFqnElementRef(container) && context.property === 'el') {
@@ -77,6 +76,21 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       logWarnError(e)
       return EMPTY_SCOPE
     }
+  }
+
+  /**
+   * Scope for `import { … } from 'name'`: root elements of the project the name resolves to
+   * (via `dependencies` of the consumer project, or by the workspace project name).
+   */
+  protected getScopeForImported(container: ast.Imported): Scope {
+    // projectIdFrom returns the import name for imported nodes, and the consumer project for documents
+    const importName = projectIdFrom(container)
+    const consumer = projectIdFrom(getDocument(container))
+    const resolved = this.services.shared.workspace.DependencyResolver.resolve(consumer, importName)
+    if (!resolved) {
+      return EMPTY_SCOPE
+    }
+    return new StreamScope(this.fqnIndex.rootElements(resolved.projectId))
   }
 
   // we need lazy resolving here

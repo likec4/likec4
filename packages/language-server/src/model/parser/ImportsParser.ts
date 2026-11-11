@@ -7,6 +7,8 @@ export function ImportsParser<TBase extends Base>(B: TBase) {
     parseImports() {
       const imports = this.doc.parseResult.value.imports ?? []
       for (const importsFromPoject of imports) {
+        // Import name as written in `from '…'`, it is the project id in the consumer model.
+        // The imported project is resolved by DependencyResolver when the model is built.
         const project = importsFromPoject.project as ProjectId
         let imported = importsFromPoject.imports as ast.Imported | undefined
         while (imported) {
