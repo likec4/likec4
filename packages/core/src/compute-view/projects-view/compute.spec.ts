@@ -225,6 +225,24 @@ describe('projects-view', () => {
       expect(nodeB.inEdges).toEqual([result.edges[0]!.id])
     })
 
+    it('skips import that resolves to the importing project itself', ({ expect }) => {
+      const projectA = withImportedProjects(importsBilling.toLikeC4Model('projectA'), {
+        billing: {
+          name: 'projectA',
+          source: { kind: 'workspace', projectId: 'projectA' as ProjectId },
+        },
+      })
+      const projectB = builder.toLikeC4Model('projectB')
+
+      const result = computeProjectsView([projectA, projectB])
+      expect(result.nodes.map(n => n.projectId)).toEqual(['projectA', 'projectB'])
+      expect(result.edges).toEqual([])
+      expect(result.nodes).toMatchObject([
+        { projectId: 'projectA', inEdges: [], outEdges: [] },
+        { projectId: 'projectB', inEdges: [], outEdges: [] },
+      ])
+    })
+
     it('adds a node for external project, titled with its original name', ({ expect }) => {
       const projectA = withImportedProjects(importsBilling.toLikeC4Model('projectA'), {
         billing: {

@@ -116,6 +116,10 @@ export function computeProjectsView(
 
     for (const [importName, imported] of entries(model.$data.imports)) {
       const projectId = resolveImportedProject(model, importName)
+      // Metadata points back at the importing project: no self-edge
+      if (projectId === model.projectId) {
+        continue
+      }
       for (const importedElement of imported) {
         const fqn = GlobalFqn(importName, importedElement.id)
         processImportedElement(
