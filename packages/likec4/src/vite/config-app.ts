@@ -15,7 +15,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 import type { LikeC4 } from '../LikeC4'
 import type { ViteLogger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin'
-import { viteAliases } from './aliases'
+import { reactDedupe, viteAliases } from './aliases'
 import { relativeToCwd, viteAppRoot, viteLogger } from './utils'
 
 export type LikeC4ViteConfig = {
@@ -29,6 +29,10 @@ export type LikeC4ViteConfig = {
   useHashHistory?: boolean | undefined
   likec4AssetsDir: string
   outputSingleFile?: boolean | undefined
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
   /**
    * Optional user-provided directory whose files are copied as-is into the
    * output (Vite publicDir). Useful for static assets like images referenced
@@ -74,6 +78,8 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         ...viteAliases(),
         'likec4/previews': likec4AssetsDir,
       },
+      // The customization file is outside of the app root, resolve React from the app
+      dedupe: reactDedupe,
     },
     configFile: false,
     mode: 'production',
@@ -112,6 +118,7 @@ export const viteConfig = async ({ languageServices, likec4AssetsDir, ...cfg }: 
         title,
         useHashHistory: cfg.useHashHistory,
         theme: cfg.theme,
+        customization: cfg.customization,
       }),
       react(),
       // Enable single file output
