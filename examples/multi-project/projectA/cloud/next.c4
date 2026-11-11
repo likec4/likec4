@@ -29,7 +29,11 @@ model {
     backend = app 'Backend V2' {
       #api
       icon tech:nestjs
-      description 'The next version of backend'
+      description '''
+        The next version of [[cloud.legacy.backend]]
+
+        More details here: [[view:cloud_legacy]]
+      '''
     }
 
     graphql = component 'GraphQL' {
