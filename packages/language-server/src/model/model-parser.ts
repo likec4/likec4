@@ -158,7 +158,7 @@ export class LikeC4ModelParser extends ADisposable {
   private createParser(doc: LangiumDocument): DocumentParser {
     invariant(isLikeC4LangiumDocument(doc), `Document ${doc.uri.toString()} is not a LikeC4 document`)
     this.cleanParserState(doc)
-    const project = this.services.shared.workspace.ProjectsManager.getProject(doc)
+    const project = this.services.shared.workspace.ProjectsLookup.getProject(doc)
     const docpath = this.services.shared.workspace.WorkspaceManager.relativePath(doc.uri)
     if (this.#logger.isEnabledFor('trace')) {
       this.#logger.trace(`project {project}, create parser {doc}`, {

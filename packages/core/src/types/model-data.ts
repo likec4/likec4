@@ -15,7 +15,7 @@ import type { DeploymentElement, DeploymentRelationship } from './model-deployme
 import type { DiffId, ModelDiff } from './model-diff'
 import type { Element, Relationship } from './model-logical'
 import type { Specification } from './model-spec'
-import type { LikeC4Project } from './project'
+import type { ImportedProjectMeta, LikeC4Project } from './project'
 import type * as scalar from './scalar'
 import type { ComputedView, LayoutedView, ParsedView } from './view'
 import type { ViewManualLayoutSnapshot } from './view-manual-layout'
@@ -41,6 +41,12 @@ interface BaseLikeC4ModelData<A extends Any> {
   relations: Record<scalar.RelationId, Relationship<A>>
   globals: ModelGlobals
   imports: Record<scalar.ProjectId, NonEmptyArray<Element<A>>>
+  /**
+   * Metadata of the imported projects, keyed by the import name (same keys as `imports`).
+   * Optional: absent when the model does not import from other projects,
+   * or when the data was produced before this field existed.
+   */
+  importedProjects?: Record<scalar.ProjectId, ImportedProjectMeta>
   /**
    * Named change sets of the model (`diff` blocks).
    * Elements and relations above are the model before any diff is applied.

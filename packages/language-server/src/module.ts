@@ -68,10 +68,13 @@ import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
 import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
+  DependencyResolver,
+  ExternalProjects,
   IndexManager,
   LangiumDocuments,
   LikeC4DocumentBuilder,
   LikeC4WorkspaceManager,
+  ProjectsLookup,
   ProjectsManager,
 } from './workspace'
 
@@ -92,6 +95,18 @@ interface LikeC4AddedSharedServices {
     // WorkspaceCache on Validated state
     Cache: WorkspaceCache<string, any>
     ProjectsManager: ProjectsManager
+    /**
+     * Facade for document ownership and inclusion (workspace and external projects)
+     */
+    ProjectsLookup: ProjectsLookup
+    /**
+     * Registry of external project instances
+     */
+    ExternalProjects: ExternalProjects
+    /**
+     * Resolves import names (`from 'name'`) to projects
+     */
+    DependencyResolver: DependencyResolver
     IndexManager: IndexManager
     LangiumDocuments: LangiumDocuments
     WorkspaceManager: LikeC4WorkspaceManager
@@ -125,6 +140,9 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       IndexManager: services => new IndexManager(services),
       LangiumDocuments: services => new LangiumDocuments(services),
       ProjectsManager: services => new ProjectsManager(services),
+      ProjectsLookup: services => new ProjectsLookup(services),
+      ExternalProjects: services => new ExternalProjects(services),
+      DependencyResolver: services => new DependencyResolver(services),
       WorkspaceManager: services => new LikeC4WorkspaceManager(services),
       DocumentBuilder: services => new LikeC4DocumentBuilder(services),
       FileSystemProvider: services => context.fileSystemProvider(services),

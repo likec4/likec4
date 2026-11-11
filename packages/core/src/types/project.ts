@@ -77,3 +77,42 @@ export interface LikeC4Project {
    */
   inferTechnologyFromIcon?: boolean | undefined
 }
+
+/**
+ * Where an imported project comes from, as seen by the importing (consumer) project.
+ * - `workspace` - another project of the same workspace; `projectId` is its real id
+ * - `local` - a dependency declared in the consumer config by a local path
+ */
+export type ImportedProjectSource =
+  | {
+    kind: 'workspace'
+    /**
+     * Real id of the workspace project (may differ from the import name,
+     * e.g. when the project id got a unique suffix)
+     */
+    projectId: ProjectId
+  }
+  | {
+    kind: 'local'
+    /**
+     * Path as written in the `dependencies` section of the consumer config,
+     * relative to the consumer project folder
+     */
+    path: string
+  }
+
+/**
+ * Metadata of a project imported by the model (`import ... from 'name'`).
+ * Stored in model data next to `imports`, keyed by the import name
+ * (the name written by the consumer).
+ */
+export interface ImportedProjectMeta {
+  /**
+   * Original name of the imported project (from its own config)
+   */
+  name: string
+  /**
+   * Where the imported project comes from
+   */
+  source: ImportedProjectSource
+}

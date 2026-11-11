@@ -59,6 +59,7 @@ export type LikeC4ModelDump = {
     styles?: {}
   }
   imports?: {}
+  importedProjects?: {}
 }
 
 export type ProjectDump = {

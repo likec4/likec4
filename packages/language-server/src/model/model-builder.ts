@@ -57,7 +57,7 @@ import { logger as mainLogger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
-import { type LikeC4DocumentBuilder, type ProjectData, ProjectsManager } from '../workspace'
+import { type LikeC4DocumentBuilder, type ProjectData, type ProjectsLookup, ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
 import type { LastSeenArtifacts } from './last-seen-artifacts'
 import type { LikeC4ModelParser } from './model-parser'
@@ -136,6 +136,7 @@ type Hashed<T> = { readonly hash: string; readonly value: T }
 
 export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4ModelBuilder {
   private readonly projects: ProjectsManager
+  private readonly projectsLookup: ProjectsLookup
   private readonly parser: LikeC4ModelParser
   private readonly listeners: ModelParsedListener[] = []
   private readonly cache: ProjectModelCache
@@ -150,6 +151,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     super()
     this.log = mainLogger.getChild('builder')
     this.projects = services.shared.workspace.ProjectsManager
+    this.projectsLookup = services.shared.workspace.ProjectsLookup
     this.parser = services.likec4.ModelParser
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
@@ -187,7 +189,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 
     const filterValidatedDocs = piped(
       identity()<LangiumDocument[]>,
-      filter(d => isNotLikeC4Builtin(d) && !this.projects.isExcluded(d)),
+      filter(d => isNotLikeC4Builtin(d) && !this.projectsLookup.isExcluded(d)),
       map(d => d.uri),
     )
 
@@ -206,7 +208,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   }
 
   private projectDocumentsCache(projectId: c4.ProjectId): ProjectDocumentsCache {
-    const project = this.projects.getProject(projectId)
+    const project = this.projectsLookup.getProject(projectId)
     const result: ProjectDocumentsCache = this.parser.documents(projectId).reduce(
       (acc, doc) => {
         if (acc === null) {
@@ -476,7 +478,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     }
     return await this.mutex.read(async () => {
       await interruptAndCheck(token)
-      const project = this.projects.getProject(projectId)
+      const project = this.projectsLookup.getProject(projectId)
       await this.readDescriptionFiles()
       const manualLayouts = await this.manualLayouts.read(project)
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
@@ -532,7 +534,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     if (isArray(arg)) {
       groupedByProject = pipe(
         arg,
-        groupBy((doc) => this.projects.ownerProjectId(doc)),
+        groupBy((doc) => this.projectsLookup.ownerProjectId(doc)),
         entries(),
       )
     } else {
@@ -668,7 +670,7 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
     super()
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Linked, async (doc) => {
-        const projectId = services.shared.workspace.ProjectsManager.ownerProjectId(doc)
+        const projectId = services.shared.workspace.ProjectsLookup.ownerProjectId(doc)
         this.of(projectId).buildData.reset()
       }),
     )
@@ -681,7 +683,7 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
     this.onDispose(
       // Model could be built between Linked and Validated phases, from parser without validation results
       services.likec4.ModelParser.onReparsedAfterValidation(doc => {
-        const projectId = services.shared.workspace.ProjectsManager.ownerProjectId(doc)
+        const projectId = services.shared.workspace.ProjectsLookup.ownerProjectId(doc)
         this.of(projectId).buildData.reset()
       }),
     )
@@ -689,8 +691,8 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
         if (deleted.length > 0) { // react only on deleted documents
-          const pm = services.shared.workspace.ProjectsManager
-          const projects = unique(map(deleted, pm.ownerProjectId.bind(pm)))
+          const lookup = services.shared.workspace.ProjectsLookup
+          const projects = unique(map(deleted, uri => lookup.ownerProjectId(uri)))
           if (!hasAtLeast(projects, 1)) {
             return
           }
