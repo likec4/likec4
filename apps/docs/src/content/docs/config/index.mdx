@@ -3,14 +3,14 @@ title: Project config
 description: Learn how to configure and customize your project
 sidebar: 
   label: Project config
-  order: 30
+  order: 2
 ---
 
-import { Card, FileTree, Aside, LinkCard, LinkButton } from '@astrojs/starlight/components';
-import AdvancedCustomizationTip from '@components/AdvancedCustomizationTip.astro';
+import { FileTree } from '@astrojs/starlight/components';
 
-To define a project, create a `likec4.config.json` file in the folder.  
-All files in the folder (and subfolders) will be part of this project:
+A project is a set of LikeC4 source files (`.c4`, `.likec4`, `.like-c4`) with its own model and views.  
+To define a project, create a config file in a folder.  
+All source files in this folder and its subfolders are part of the project:
 
 <FileTree>
 - externals
@@ -24,52 +24,90 @@ All files in the folder (and subfolders) will be part of this project:
 - **likec4.config.json**
 </FileTree>
 
-## Configuration
+The config file is optional.  
+Without it, all source files in the workspace belong to one project named `default`, with default settings.  
+Add a config file to name the project, change the options below, or split the model into [multiple projects](/config/multi-projects/).
 
-The `likec4.config.json` file must have the **name** of the project.
+## Config file
 
+LikeC4 looks for these file names:
 
-```jsonc
+- `likec4.config.json`, `.likec4.config.json` or `.likec4rc`: JSON config.
+  LikeC4 parses it as JSON5, so comments and trailing commas are allowed.
+- `likec4.config.ts`, `.mts`, `.cts`, `.js`, `.mjs` or `.cjs`: see [TypeScript config](#typescript-config).
+
+Use one config file per folder.  
+To choose between JSON and TypeScript, see [Config files](/config/files/#json-or-typescript-project-config).
+
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "project-name",  // required
-  "title": "Project Title", // optional
-  "metadata": {             // optional
+  "name": "project-name",
+  "title": "Project Title",         // optional
+  "contactPerson": "Jane Doe",      // optional
+  "metadata": {                     // optional
     "owner": "platform-team",
     "domain": "payments"
   }
 }
 ```
 
-The name must be unique if you use [multiple projects](/dsl/config/multi-projects).
-
 Use `metadata` to store arbitrary project-level key-value data that can be consumed by tooling.
 
-:::note
-You can use these names for the config file:
-- `.likec4rc`
-- `.likec4.config.json`
-- `likec4.config.json`
+### Project name
 
-LikeC4 interprets any file as JSON5
+`name` identifies the project. Other projects use it to [import elements](/config/multi-projects/#import-elements).
 
-You can also use these names:
-- `likec4.config.js`
-- `likec4.config.mjs`
-- `likec4.config.ts`
-- `likec4.config.mts`
+- It must be unique in the workspace.
+- It cannot be `default`: this name is reserved for files outside of any project.
+- It cannot contain `.`, `@` or `#`. Use letters, digits, `_` and `-`.
 
-See [Programmatic config](/dsl/config/programmatic) for more information.
-:::
+If you omit `name`, LikeC4 uses the name of the folder.  
+The JSON schema still marks `name` as required, so set it explicitly.
+
+## TypeScript config
+
+You can write the config in TypeScript or JavaScript.  
+Import `defineConfig` from `likec4/config` and export the result as default:
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+
+export default defineConfig({
+  name: 'my-project',
+  title: 'My Project',
+  exclude: ['**/node_modules/**', '**/.cache/**'],
+  include: {
+    paths: ['../shared'],
+  },
+  imageAliases: {
+    '@': './images',
+  },
+})
+```
+
+The file can be named `likec4.config.ts`, `likec4.config.mts`, `likec4.config.cts`, `likec4.config.js`, `likec4.config.mjs` or `likec4.config.cjs`.  
+LikeC4 loads it directly, without a build step.  
+It provides `likec4/config` itself, so you do not need to install `likec4` to load the file. Install it to get type checking in your editor.  
+The smaller package `@likec4/config` exports the same helpers.
+
+A TypeScript config accepts all options from this page, including [`styles`](#styles-customization).  
+Choose it when you need code:
+
+- [custom generators](/tooling/code-generation/custom/), which are functions and cannot be written in JSON;
+- styles shared as a module or a package (`defineStyle`, `defineTheme`, `defineThemeColor`), or values computed in code.
+
+`extends` works only in JSON configs, see [below](#extend-styles).
 
 ## Extend styles
 
-If you want to share styles across multiple projects, you can use `extends` in **JSON configs**.
+To share styles across multiple projects, use `extends` in a **JSON config**.
 `extends` can be a string or an array of strings.
 Each path is resolved relative to the config file that declares it, and `extends` can be recursive.
 LikeC4 merges only the `styles` section (in order); all other fields come from the root config.
 
-```jsonc
+```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -86,6 +124,35 @@ LikeC4 merges only the `styles` section (in order); all other fields come from t
   }
 }
 ```
+
+A TypeScript config ignores `extends`.
+Import the shared styles instead.
+Define them with `defineStyle` in a separate file or package:
+
+```ts title="@your-org/likec4-theme"
+import { defineStyle } from 'likec4/config'
+
+export default defineStyle({
+  theme: {
+    colors: {
+      primary: '#FF6B6B',
+    },
+  },
+})
+```
+
+```ts
+// likec4.config.ts
+import { defineConfig } from 'likec4/config'
+import styles from '@your-org/likec4-theme'
+
+export default defineConfig({
+  name: 'my-project',
+  styles,
+})
+```
+
+`defineTheme` and `defineThemeColor` help to define parts of the styles in the same way.
 
 ## Include additional directories
 
@@ -119,7 +186,7 @@ This is useful for sharing specifications, common styles, or other model files a
 </FileTree>
 
 Paths are relative to the project folder (the folder containing the config file).  
-LikeC4 recursively scans the included directories for `.c4` files.
+LikeC4 recursively scans the included directories for source files.
 
 You can also configure the scanning behavior:
 
@@ -136,14 +203,17 @@ You can also configure the scanning behavior:
 ```
 
 - **`paths`** - Array of relative directory paths (required)
-- **`maxDepth`** - Maximum directory depth to scan (default: 3, range: 1-20)
-- **`fileThreshold`** - Warn if more than this many files are loaded (default: 30)
+- **`maxDepth`** - Maximum directory depth to scan (default: 3, range: 1-20).
+  Use it to limit deep directory traversal.
+- **`fileThreshold`** - Warn if more than this many files are loaded (default: 30, range: 1-10000).
+  Use it to detect large directories included by mistake.
 
 :::note
 Include paths must be relative paths. Absolute paths (like `/usr/share`), drive letters (like `C:\`), and URLs are not allowed.
 :::
 
-For more details on sharing files between projects, see [Multi-projects](/dsl/config/multi-projects#share-specification).
+`exclude` patterns of the project apply to the included directories too.  
+To share files between projects this way, see [Multi-projects](/config/multi-projects/#share-specification).
 
 ## Exclude files
 
@@ -165,7 +235,7 @@ The exclude pattern is the same as the one used by [picomatch](https://github.co
 
 ## Infer technology from icon
 
-By default, LikeC4 automatically derives a human-readable `technology` label from bundled icon names (`aws:`, `azure:`, `gcp:`, `tech:`) when technology is not explicitly set on the element or its kind. Generic `bootstrap:` and `md:` icons are excluded.
+By default, LikeC4 automatically derives a human-readable `technology` label from bundled icon names (`aws:`, `azure:`, `gcp:`, `tech:`) when technology is not explicitly set on the element or its kind.
 
 For example, an element with `icon tech:apache-flink` gets technology **"Apache Flink"**, and `icon aws:simple-storage-service` gets **"Simple Storage Service"**. Generic `bootstrap:` and `md:` icons are excluded.
 
@@ -196,6 +266,7 @@ To enable this behavior:
 ## Landing page
 
 Configure what is shown when visiting the root URL of a generated static site.
+Use only one of `redirect`, `include` or `exclude`.
 
 ### Redirect to the index view
 
@@ -245,7 +316,7 @@ Configure which export formats are available in the generated web application.
 When `webapp.exportFormats` is omitted, all webapp exports remain enabled.
 Use an empty array to remove the Export button.
 
-```jsonc
+```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -265,8 +336,9 @@ In multi-project webapps, each project uses its own export format list.
 Configure the initial scope in the relationship browser.
 The allowed values are `global` and `view`. The default is `view`.
 
-```jsonc
+```json
 {
+  "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
   "webapp": {
     "relationshipsBrowser": {
@@ -279,11 +351,27 @@ The allowed values are `global` and `view`. The default is `view`.
 A saved user preference takes precedence over `defaultScope`.
 The `relationshipsScope` URL parameter takes precedence over both the saved preference and `defaultScope`.
 
-## Image Aliases
+## Manual layouts
+
+When you save a manual layout of a view, LikeC4 stores it as a `<view-id>.likec4.snap` file.  
+By default, these files are in the `.likec4` folder of the project.  
+Use `manualLayouts.outDir` to change the folder, relative to the project folder:
+
+```json
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "project-name",
+  "manualLayouts": {
+    "outDir": "layouts"
+  }
+}
+```
+
+## Image aliases
 
 When using local images in your LikeC4 model, you can create aliases for the folder your images are in to make them more readable and the files more transportable.
 
-Use the `likec4.config.json` to add an `imageAliases` field:
+Add an `imageAliases` field to the config:
 
 ```json
 {
@@ -336,44 +424,31 @@ model {
 </FileTree>
 
 :::note
-In the example above the `externals.c4` is a nested file, but the aliasing works based on the project root.
+Alias paths are relative to the project folder, not to the source file. In the example above, `externals/externals.c4` uses the same `@` folder as `amazon.c4`.
 :::
 
-### Naming Rules
+### Naming rules
 
-When using image aliases, keep the following rules in mind:
+- An alias starts with `@`, followed by letters, digits, `_` or `-`.
+- The path must be relative to the project folder. Absolute paths and URLs are not allowed.
 
-- Aliases must start with `@` and can include letters, numbers, and underscores.
-- The alias must be unique within the project.
-- The alias can point to a relative or absolute path.
+### Default alias
 
-### Defaults
-
-When no LikeC4 configuration file is found, or when no `imageAliases` field is found, LikeC4 uses the following defaults:
-
-```json
-{
-  "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "project-name",
-  "imageAliases": {
-    "@": "./images",
-  }
-}
-```
-
-Simply override the `@` to change the default location.
+`@` points to `./images`, unless you override it.  
+To change the default location, set `@`:
 
 ```json
 {
   "imageAliases": {
-    "@": "./my-images",
+    "@": "./my-images"
   }
 }
 ```
 
 ## Styles customization
 
-LikeC4 provides advanced style customization capabilities.  
+Override the theme and the default styles of the project.  
+The same `styles` options work in a [TypeScript config](#typescript-config).
 
 ### Theme overrides
 
@@ -382,7 +457,7 @@ Each definition can be either a CSS value or a detailed object specifying color 
 
 Example of simple color definition:
 
-```jsonc
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -399,7 +474,7 @@ Example of simple color definition:
 
 Example of detailed color definition:
 
-```jsonc
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -431,7 +506,7 @@ Example of detailed color definition:
 
 You can override sizes used in LikeC4:
 
-```jsonc
+```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -459,7 +534,7 @@ These values will be applied to all elements and relationships, unless propertie
 
 You can set the default routing for views with `styles.defaults.view.routing`.
 
-```jsonc
+```json5
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "project-name",
@@ -498,4 +573,4 @@ You can set the default routing for views with `styles.defaults.view.routing`.
 
 A view's `routing` property or `autoLayout` routing parameter overrides `styles.defaults.view.routing`. See [Edge routing](/dsl/views/layout/#edge-routing) for precedence and limitations.
 
-<AdvancedCustomizationTip />
+To change UI components, not only colors and sizes, see [UI customization](/tooling/customization/).

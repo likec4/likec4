@@ -19,6 +19,14 @@ export default defineConfig({
   redirects: {
     '/dsl/notations/': '/dsl/views/notations/',
     '/pt-br/dsl/notations/': '/pt-br/dsl/views/notations/',
+    '/dsl/config/': '/config/',
+    '/pt-br/dsl/config/': '/pt-br/config/',
+    '/dsl/config/multi-projects/': '/config/multi-projects/',
+    '/pt-br/dsl/config/multi-projects/': '/pt-br/config/multi-projects/',
+    '/dsl/config/programmatic/': '/config/',
+    '/pt-br/dsl/config/programmatic/': '/pt-br/config/',
+    '/dsl/config/app-config/': '/tooling/app-config/',
+    '/dsl/config/customization/': '/tooling/customization/',
   },
 
   integrations: [
@@ -78,6 +86,11 @@ export default defineConfig({
         {
           label: 'LikeC4',
           items: [{ autogenerate: { directory: 'dsl' } }],
+        },
+        {
+          label: 'Project setup',
+          translations: { 'pt-BR': 'Configuração do projeto' },
+          items: [{ autogenerate: { directory: 'config' } }],
         },
         {
           label: 'Showcases',

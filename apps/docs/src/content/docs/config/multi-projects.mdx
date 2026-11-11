@@ -3,7 +3,7 @@ title: Multi-projects
 description: Learn how to split your LikeC4 model into multiple projects
 sidebar: 
   label: Multi-projects
-  order: 31
+  order: 3
 ---
 
 import { Card, FileTree, Aside } from '@astrojs/starlight/components';
@@ -26,6 +26,11 @@ Create `likec4.config.json` files in the folders you want to be projects:
   - amazon.c4
   - ...
 </FileTree>
+
+LikeC4 finds projects by scanning the workspace (the folder open in the editor, or the path given to the CLI) for [config files](/config/#config-file), skipping folders like `node_modules` and `.git`.  
+Each config file defines a project in its folder.  
+A source file belongs to the project with the closest folder.  
+Files outside of any project folder, and not included by any project, belong to the `default` project.
 
 Projects can be nested.  
 In this case, files from the nested project are not part of the parent project.
@@ -69,16 +74,6 @@ You can share specification files (or any other LikeC4 sources) across multiple 
 
 Add an `include` configuration to your project to include files from directories outside the project folder:
 
-```json
-{
-  "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "cloud",
-  "include": {
-    "paths": ["../shared"]
-  }
-}
-```
-
 <FileTree>
 - shared
   - specs.c4
@@ -115,39 +110,8 @@ Both `cloud` and `externals` projects can include the shared specification:
 }
 ```
 
-### Include configuration
-
-The `include` configuration accepts an object with the following properties:
-
-```json
-{
-  "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "my-project",
-  "include": {
-    "paths": ["../shared", "../common/specs"],
-    "maxDepth": 5,
-    "fileThreshold": 50
-  }
-}
-```
-
-- **`paths`** - Array of relative directory paths (required)
-- **`maxDepth`** - Maximum directory depth to scan (default: 3, range: 1-20)
-- **`fileThreshold`** - Warn if more than this many files are loaded (default: 30)
-
-<Aside type='tip' title="Performance optimization">
-Use `maxDepth` to limit deep directory traversal, and `fileThreshold` to detect when you're accidentally including large directories.  
-If you see warnings about slow loading, consider reducing `maxDepth` or being more specific with your include paths.
-</Aside>
-
-<Aside type='tip' title="Path resolution">
-Include paths are relative to the project folder (the folder containing the config file).  
-LikeC4 recursively scans the included directories for `.c4` files.
-</Aside>
-
-<Aside type='caution' title="Path requirements">
-Include paths must be relative paths. Absolute paths, drive letters (like `C:\`), and URLs are not allowed.
-</Aside>
+Paths are relative to the project folder.  
+For `maxDepth`, `fileThreshold` and the rules for paths, see [Include additional directories](/config/#include-additional-directories).
 
 ### Using symlinks (alternative)
 

@@ -3,7 +3,7 @@ title: Vários projetos
 description: Saiba como dividir seu modelo LikeC4 em vários projetos
 sidebar: 
   label: Vários projetos
-  order: 31
+  order: 3
 ---
 
 import { Card, FileTree, Aside } from '@astrojs/starlight/components';
@@ -26,6 +26,11 @@ Crie arquivos `likec4.config.json` nas pastas que você deseja transformar em pr
   - amazon.c4
   - ...
 </FileTree>
+
+O LikeC4 encontra os projetos percorrendo o workspace (a pasta aberta no editor ou o caminho passado à CLI) em busca de [arquivos de configuração](/pt-br/config/#arquivo-de-configuração), ignorando pastas como `node_modules` e `.git`.  
+Cada arquivo de configuração define um projeto na sua pasta.  
+Um arquivo-fonte pertence ao projeto com a pasta mais próxima.  
+Arquivos fora de qualquer pasta de projeto, e não incluídos por nenhum projeto, pertencem ao projeto `default`.
 
 Os projetos podem ser aninhados.  
 Nesse caso, os arquivos do projeto aninhado não fazem parte do projeto pai.
@@ -68,16 +73,6 @@ Você pode compartilhar arquivos de especificação (ou qualquer outra fonte Lik
 
 Adicione uma configuração `include` ao seu projeto para incluir arquivos de diretórios fora da pasta do projeto:
 
-```json
-{
-  "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "cloud",
-  "include": {
-    "paths": ["../shared"]
-  }
-}
-```
-
 <FileTree>
 - shared
   - specs.c4
@@ -114,39 +109,8 @@ Os projetos `cloud` e `externals` podem incluir a especificação compartilhada:
 }
 ```
 
-### Configuração de inclusão
-
-A configuração `include` aceita um objeto com as seguintes propriedades:
-
-```json
-{
-  "$schema": "https://likec4.dev/schemas/config.json",
-  "name": "my-project",
-  "include": {
-    "paths": ["../shared", "../common/specs"],
-    "maxDepth": 5,
-    "fileThreshold": 50
-  }
-}
-```
-
-- **`paths`** - Array de caminhos relativos de diretórios (obrigatório)
-- **`maxDepth`** - Profundidade máxima de diretórios a percorrer (padrão: 3, intervalo: 1-20)
-- **`fileThreshold`** - Emite um aviso quando mais arquivos do que esse limite forem carregados (padrão: 30)
-
-<Aside type='tip' title="Otimização de desempenho">
-Use `maxDepth` para limitar a navegação em diretórios muito profundos e `fileThreshold` para detectar quando você está incluindo diretórios grandes sem querer.  
-Se receber avisos sobre carregamento lento, considere reduzir `maxDepth` ou tornar os caminhos de inclusão mais específicos.
-</Aside>
-
-<Aside type='tip' title="Resolução de caminhos">
-Os caminhos de inclusão são relativos à pasta do projeto (a pasta que contém o arquivo de configuração).  
-O LikeC4 percorre recursivamente os diretórios incluídos em busca de arquivos `.c4`.
-</Aside>
-
-<Aside type='caution' title="Requisitos dos caminhos">
-Os caminhos de inclusão devem ser relativos. Caminhos absolutos, letras de unidade (como `C:\`) e URLs não são permitidos.
-</Aside>
+Os caminhos são relativos à pasta do projeto.  
+Para `maxDepth`, `fileThreshold` e as regras dos caminhos, veja [Incluir diretórios adicionais](/pt-br/config/#incluir-diretórios-adicionais).
 
 ### Usando links simbólicos (alternativa)
 
