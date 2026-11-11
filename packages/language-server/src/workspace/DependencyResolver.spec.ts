@@ -105,4 +105,15 @@ describe('DependencyResolver', () => {
     t.services.shared.workspace.ExternalProjects.unregister(external.id)
     expect(resolver.resolve(consumer, 'billing')).toBeUndefined()
   })
+
+  it('resolves by name when the consumer project is unknown', async ({ expect }) => {
+    await using t = await workspace({
+      shared: { name: 'shared' },
+    })
+    const resolver = t.services.shared.workspace.DependencyResolver
+    // getProject throws for unknown ids
+    expect(() => t.services.shared.workspace.ProjectsLookup.getProject('unknown' as ProjectId)).toThrow()
+    expect(resolver.resolve('unknown' as ProjectId, 'shared')).toEqual({ kind: 'workspace', projectId: 'shared' })
+    expect(resolver.resolve('unknown' as ProjectId, 'billing')).toBeUndefined()
+  })
 })

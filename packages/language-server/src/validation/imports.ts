@@ -27,6 +27,14 @@ export const checkImportsFromPoject = (services: LikeC4Services): ValidationChec
       })
       return
     }
+    // A `dependencies` entry named as the current project: `@name.` would clash with own elements
+    if (el.project === projectId) {
+      accept('error', 'Import name cannot be the same as the name of the current project', {
+        node: el,
+        property: 'project',
+      })
+      return
+    }
   })
 }
 

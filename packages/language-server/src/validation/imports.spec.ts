@@ -211,5 +211,21 @@ describe('import checks', () => {
       ])
       expect(diagnostics).toHaveLength(1)
     })
+
+    it('should report dependencies entry named as the project itself', async ({ expect }) => {
+      await using t = await workspace({
+        'shared-folder': { name: 'shared', model: sharedModel },
+        'consumer': {
+          name: 'consumer',
+          dependencies: { consumer: '../shared-folder' },
+          model: `import c1 from 'consumer'`,
+        },
+      })
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics).toMatchObject([
+        { severity: 1, message: 'Import name cannot be the same as the name of the current project' },
+      ])
+      expect(diagnostics).toHaveLength(1)
+    })
   })
 })

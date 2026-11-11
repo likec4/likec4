@@ -1,4 +1,4 @@
-import { type Fqn, type ProjectId, FqnRef } from '@likec4/core'
+import { type Fqn, FqnRef } from '@likec4/core'
 import { type AstNode, AstUtils, DocumentState, JSDocDocumentationProvider } from 'langium'
 import { ast } from '../ast'
 import { logger } from '../logger'
@@ -53,15 +53,15 @@ export class LikeC4DocumentationProvider extends JSDocDocumentationProvider {
         case ast.isDeployedInstance(node): {
           const instance = parser.parseDeployedInstance(node)
           const consumer = doc.likec4ProjectId ?? this.projectsLookup.ownerProjectId(doc)
-          // Import name is resolved to the imported project (falls back to the name if unresolved)
-          const [projectId, fqn] = FqnRef.isImportRef(instance.element)
-            ? [
-              this.resolver.resolve(consumer, instance.element.project)?.projectId
-                ?? instance.element.project as ProjectId,
-              instance.element.model as Fqn,
-            ]
-            : [consumer, instance.element.model as Fqn]
-          const found = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
+          const fqn = instance.element.model as Fqn
+          let found: ReturnType<LikeC4ModelLocator['getParsedElement']> = null
+          if (FqnRef.isImportRef(instance.element)) {
+            // Import name is resolved to the imported project, nothing is found if it is unknown
+            const resolved = this.resolver.resolve(consumer, instance.element.project)
+            found = resolved ? this.locator.getParsedElement(fqn, resolved.projectId) : null
+          } else {
+            found = this.locator.getParsedElement(fqn, consumer)
+          }
           const lines = [
             `_instance of_ \`${fqn}\``,
           ]

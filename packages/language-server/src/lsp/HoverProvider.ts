@@ -216,17 +216,18 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
     const doc = AstUtils.getDocument(node)
     const parser = this.parser.forDocument(doc)
     const instance = parser.parseDeployedInstance(node)
-    // Import name is resolved to the imported project (falls back to the name if unresolved)
-    const [projectId, fqn] = FqnRef.isImportRef(instance.element)
-      ? [
-        this.services.shared.workspace.DependencyResolver.resolve(
-          doc.likec4ProjectId ?? this.services.shared.workspace.ProjectsLookup.ownerProjectId(doc),
-          instance.element.project,
-        )?.projectId ?? instance.element.project as ProjectId,
-        instance.element.model as Fqn,
-      ]
-      : [doc.likec4ProjectId, instance.element.model as Fqn]
-    const found = projectId ? this.locator.getParsedElement(fqn, projectId) : this.locator.getParsedElement(fqn)
+    const fqn = instance.element.model as Fqn
+    let found: ReturnType<LikeC4ModelLocator['getParsedElement']> = null
+    if (FqnRef.isImportRef(instance.element)) {
+      // Import name is resolved to the imported project, nothing is found if it is unknown
+      const consumer = doc.likec4ProjectId ?? this.services.shared.workspace.ProjectsLookup.ownerProjectId(doc)
+      const resolved = this.services.shared.workspace.DependencyResolver.resolve(consumer, instance.element.project)
+      found = resolved ? this.locator.getParsedElement(fqn, resolved.projectId) : null
+    } else {
+      found = doc.likec4ProjectId
+        ? this.locator.getParsedElement(fqn, doc.likec4ProjectId)
+        : this.locator.getParsedElement(fqn)
+    }
     const lines = [instance.id + '  ', `instance of \`${FqnRef.flatten(instance.element)}\``]
     if (found) {
       lines.push(`### ${found.element.title}`, 'element kind `' + found.element.kind + '` ')
