@@ -31,6 +31,10 @@ export default defineConfig({
     '/pt-br/tooling/code-generation/webcomponent/': '/pt-br/tooling/web-components/',
     '/tooling/code-generation/react/': '/tooling/react/',
     '/pt-br/tooling/code-generation/react/': '/pt-br/tooling/react/',
+    '/guides/static-website/': '/guides/publish/',
+    '/pt-br/guides/static-website/': '/pt-br/guides/publish/',
+    '/guides/deploy-github-pages/': '/guides/publish/',
+    '/pt-br/guides/deploy-github-pages/': '/pt-br/guides/publish/',
   },
 
   integrations: [
@@ -98,11 +102,6 @@ export default defineConfig({
           items: [{ autogenerate: { directory: 'config' } }],
         },
         {
-          label: 'Showcases',
-          translations: { 'pt-BR': 'Exemplos' },
-          items: [{ autogenerate: { directory: 'showcases' } }],
-        },
-        {
           label: 'Tooling',
           translations: { 'pt-BR': 'Ferramentas' },
           // Grouped by what the reader wants to do, URLs stay under /tooling/
@@ -154,7 +153,12 @@ export default defineConfig({
         {
           label: 'Guides',
           translations: { 'pt-BR': 'Guias' },
-          items: [{ autogenerate: { directory: 'guides', collapsed: true } }],
+          items: [{ autogenerate: { directory: 'guides' } }],
+        },
+        {
+          label: 'Showcases',
+          translations: { 'pt-BR': 'Exemplos' },
+          items: [{ autogenerate: { directory: 'showcases' } }],
         },
         {
           label: 'Changelog',

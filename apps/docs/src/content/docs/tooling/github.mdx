@@ -14,7 +14,7 @@ This action wraps [LikeC4 CLI](/tooling/cli) as a GitHub Action.
 <Aside type='tip'>
   GitHub repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
 
-  Also check [Deploying to GitHub Pages guide](/guides/deploy-github-pages/) for more details.
+  Also check the [Publish your diagrams guide](/guides/publish/#deploy-to-github-pages) for a complete workflow.
 </Aside>
 
 ## Usage
@@ -23,7 +23,7 @@ This action wraps [LikeC4 CLI](/tooling/cli) as a GitHub Action.
 
 ```yaml
 steps:
-  - uses: actions/checkout@v5
+  - uses: actions/checkout@v7
 
   - name: ⚙️ build
     uses: likec4/actions@v1
@@ -34,7 +34,7 @@ steps:
       base: /baseurl/
 
   - name: upload artifacts
-    uses: actions/upload-artifact@v4
+    uses: actions/upload-artifact@v7
     with:
       name: likec4
       path: dist

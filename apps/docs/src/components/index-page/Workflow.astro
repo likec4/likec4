@@ -14,12 +14,12 @@ const writeCodeSnippet = `model {
 `
 
 const terminalHtml =
-  `<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">build</span>
+  `<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">start</span>
+<span class="text-zinc-600">  Serving at http://localhost:5173</span>
+<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">build</span>
 <span class="text-zinc-600">  Building static site...</span>
-<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">generate react</span>
-<span class="text-zinc-600">  Generated React components</span>
-<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">serve</span>
-<span class="text-zinc-600">  Serving at http://localhost:5173</span>`
+<span class="text-zinc-500">$</span> <span class="text-green-300">likec4</span> <span class="text-cyan-300">gen react</span>
+<span class="text-zinc-600">  Generated React components</span>`
 const isPtBr = Astro.url.pathname.startsWith('/pt-br')
 ---
 

@@ -533,7 +533,7 @@ Os projetos se acumulam em um snapshot: publicar um projeto não remove os demai
 No GitHub Actions, a branch e a tag são lidas do ambiente do workflow:
 
 ```yaml
-- uses: actions/checkout@v6
+- uses: actions/checkout@v7
 - run: npx likec4 publish
   env:
     LIKEC4_PUBLISH_TOKEN: ${{ secrets.LIKEC4_PUBLISH_TOKEN }}

@@ -533,7 +533,7 @@ Projects accumulate into a snapshot: publishing one project does not remove the 
 In GitHub Actions, branch and tag are read from the workflow environment:
 
 ```yaml
-- uses: actions/checkout@v6
+- uses: actions/checkout@v7
 - run: npx likec4 publish
   env:
     LIKEC4_PUBLISH_TOKEN: ${{ secrets.LIKEC4_PUBLISH_TOKEN }}
