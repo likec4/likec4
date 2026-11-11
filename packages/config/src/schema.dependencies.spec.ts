@@ -40,6 +40,9 @@ describe('dependencies config', () => {
     it.for([
       'C:\\models\\shared',
       'c:/models/shared',
+      'C:foo',
+      'C:',
+      'c:bar\\baz',
     ])('should reject path with drive letter %s', (path, { expect }) => {
       expect(() => validate({ shared: path })).toThrow(/Dependency path must be a relative path string/)
     })
