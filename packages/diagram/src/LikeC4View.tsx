@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { isBoolean } from 'remeda'
 import { FitViewPaddings } from './base/const'
 import { ErrorMessage } from './components/ViewNotFound'
-import { customizable } from './custom/customizable'
+import { customizable } from './customization/customizable'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'
 import { LikeC4Diagram } from './LikeC4Diagram'
 import type {

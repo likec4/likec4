@@ -8,7 +8,7 @@
 import { nonexhaustive } from '@likec4/core'
 import type { ComputedNodeStyle, ElementShape as Shape, ShapeSize } from '@likec4/core/types'
 import { elementShapeRecipe } from '@likec4/styles/recipes'
-import { customizable } from '../../custom/customizable'
+import { customizable } from '../../customization/customizable'
 import { roundDpr } from '../../utils'
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {

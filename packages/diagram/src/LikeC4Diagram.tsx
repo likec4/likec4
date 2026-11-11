@@ -22,7 +22,7 @@ import {
 } from './context'
 import { CurrentViewModelProvider } from './context/CurrentViewModelProvider'
 import { TagStylesProvider } from './context/TagStylesContext'
-import { customizable } from './custom/customizable'
+import { customizable } from './customization/customizable'
 import { useOptionalLikeC4Editor } from './editor'
 import { useId } from './hooks/useId'
 import { useOptionalLikeC4Model } from './hooks/useLikeC4Model'

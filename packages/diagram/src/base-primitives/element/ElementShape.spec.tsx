@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { defineCustomComponents } from '../../custom/customizable'
-import { CustomizationProvider } from '../../custom/CustomizationContext'
+import { defineCustomComponents } from '../../customization/customizable'
+import { CustomizationProvider } from '../../customization/CustomizationContext'
 import { type ElementShapeProps, ElementShape } from './ElementShape'
 
 const data: ElementShapeProps['data'] = { shape: 'cylinder', width: 320, height: 180 }

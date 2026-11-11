@@ -3,7 +3,7 @@ import * as m from 'motion/react-m'
 import type { ComponentPropsWithRef } from 'react'
 import { NavigationPanel } from '../../components/NavigationPanel'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
-import { customizable } from '../../custom/customizable'
+import { customizable } from '../../customization/customizable'
 import { useNavigationActor } from '../hooks'
 
 type LogoButtonProps = {

@@ -1,6 +1,6 @@
 import { css } from '@likec4/styles/css'
 import type { SVGProps } from 'react'
-import { customizable } from '../custom/customizable'
+import { customizable } from '../customization/customizable'
 
 export const Logo = customizable('LogoSvg')(
   (props: SVGProps<SVGSVGElement>) => (
