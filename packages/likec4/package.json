@@ -246,7 +246,7 @@
     }
   },
   "engines": {
-    "node": ">=22.23.3"
+    "node": ">=22.23.5"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
