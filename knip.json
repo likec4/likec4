@@ -75,8 +75,6 @@
         "@likec4/icons",
         "@likec4/react",
         "@likec4/spa",
-        "chevrotain",
-        "d3-zoom",
         "fdir",
         "immer",
         "react-dom"
