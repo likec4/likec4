@@ -13,7 +13,9 @@ export {
 export { SequenceActorNode, SequenceParallelArea } from './SequenceActorNode'
 export { SequenceSubflowArea } from './SequenceSubFlow'
 
-export { NodeDrifts, type NodeDriftsProps } from './NodeDrifts'
+export { NodeDrifts } from './NodeDrifts'
+/** @public Part of the public API surface; kept although unused internally */
+export type { NodeDriftsProps } from './NodeDrifts'
 
 export * from './CompoundActions'
 export * from './ElementActions'

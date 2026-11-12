@@ -2159,9 +2159,6 @@ importers:
       remeda:
         specifier: catalog:utils
         version: 2.52.0
-      rolldown:
-        specifier: catalog:tsdown
-        version: 1.2.16
       std-env:
         specifier: catalog:externals
         version: 4.3.0

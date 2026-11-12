@@ -52,6 +52,7 @@ export const ManualLayoutsConfigSchema = z
     description: 'Configuration for manual layouts',
   })
 
+/** @public Part of the public API surface; kept although unused internally */
 export type ManualLayoutsConfig = z.infer<typeof ManualLayoutsConfigSchema>
 
 export { WebappExportFormats }

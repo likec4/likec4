@@ -25,7 +25,7 @@ import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import type { AIOptions, LikeC4VitePluginOptions } from './types'
 
-export type { AIOptions, LikeC4VitePluginOptions }
+export type { AIOptions }
 import { type ProjectData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { createAppConfigModule } from './virtuals/app-config'
 import { customizationModule } from './virtuals/customization'

@@ -24,6 +24,9 @@
     ],
     "packages/diagram/src/overlays/relationships-browser/SelectElement.css.ts": [
       "exports"
+    ],
+    "packages/vite-plugin/src/typings/likec4-model.ts": [
+      "types"
     ]
   },
   "workspaces": {
@@ -46,11 +49,6 @@
         "@xyflow/react",
         "langium",
         "ufo"
-      ]
-    },
-    "packages/diagram": {
-      "ignoreDependencies": [
-        "@xstate/store"
       ]
     },
     "packages/generators": {
@@ -77,14 +75,18 @@
         "@likec4/spa",
         "fdir",
         "immer",
-        "react-dom"
+        "react-dom",
+        "@floating-ui/dom",
+        "react"
       ]
     },
     "packages/likec4-spa": {
       "ignoreDependencies": [
         "@likec4/icons",
         "immer",
-        "@likec4/layouts"
+        "@likec4/layouts",
+        "@floating-ui/dom",
+        "type-fest"
       ]
     },
     "packages/lsp": {
@@ -107,7 +109,12 @@
     "packages/react": {
       "ignoreDependencies": [
         "@likec4/core",
-        "@xyflow/system"
+        "@xyflow/system",
+        "@floating-ui/dom",
+        "@mantine/core",
+        "@mantine/hooks",
+        "motion",
+        "zod"
       ]
     },
     "packages/vite-plugin": {

@@ -77,7 +77,6 @@
     "react-error-boundary": "catalog:react",
     "react-resizable-panels": "catalog:react",
     "remeda": "catalog:utils",
-    "rolldown": "catalog:tsdown",
     "std-env": "catalog:externals",
     "superjson": "catalog:utils",
     "tsx": "catalog:",
