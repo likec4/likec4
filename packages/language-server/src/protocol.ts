@@ -59,20 +59,6 @@ export namespace DidChangeProjectsNotification {
 }
 
 /**
- * When server requests to open a likec4 preview panel
- * (available only in the editor).
- * (not the best place, but seems to be working)
- */
-export namespace DidRequestOpenViewNotification {
-  export type Params = {
-    viewId: ViewId
-    projectId: ProjectId
-  }
-  export const type = new NotificationType<Params>('likec4/onRequestOpenView')
-  export type Type = typeof type
-}
-
-/**
  * Request to fetch the computed model data
  * If LSP has multiple projects, the projectId is required.
  * otherwise throws an error.

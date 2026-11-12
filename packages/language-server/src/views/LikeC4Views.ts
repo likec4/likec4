@@ -100,14 +100,6 @@ export interface LikeC4Views extends Disposable {
    */
   viewsAsGraphvizOut(projectId?: ProjectId | undefined, cancelToken?: CancellationToken): Promise<Array<GraphvizSvgOut>>
   /**
-   * Open view in the preview panel.
-   * (works only if running as a vscode extension)
-   *
-   * @param projectId - project id, if not specified - uses the default project
-   */
-  openView(viewId: ViewId, projectId?: ProjectId | undefined): Promise<void>
-
-  /**
    * Computes and layouts an adhoc view (not defined in the model)
    *
    * @param projectId - project id, if not specified - uses the default project
@@ -353,13 +345,6 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
     }
     cache.set(KEY, succeed)
     return succeed
-  }
-
-  /**
-   * Open a view in the preview panel.
-   */
-  async openView(viewId: ViewId, projectId: ProjectId): Promise<void> {
-    await this.services.Rpc.openView({ viewId, projectId })
   }
 
   async adhocView(predicates: AdhocViewPredicate[], projectId?: ProjectId | undefined): Promise<LayoutedView> {
