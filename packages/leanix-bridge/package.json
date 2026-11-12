@@ -42,10 +42,8 @@
     "test": "vitest run --no-isolate",
     "test:watch": "vitest"
   },
-  "dependencies": {
-    "@likec4/core": "workspace:*"
-  },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",

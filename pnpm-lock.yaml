@@ -1406,15 +1406,9 @@ importers:
 
   packages/generators:
     dependencies:
-      '@likec4/config':
-        specifier: workspace:*
-        version: link:../config
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       immer:
         specifier: catalog:utils
         version: 11.1.21
@@ -1440,9 +1434,15 @@ importers:
         specifier: catalog:externals
         version: 4.6.7
     devDependencies:
+      '@likec4/config':
+        specifier: workspace:*
+        version: link:../config
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@likec4/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -1790,11 +1790,10 @@ importers:
         version: 2.0.1
 
   packages/leanix-bridge:
-    dependencies:
+    devDependencies:
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
-    devDependencies:
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops

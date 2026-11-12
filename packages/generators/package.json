@@ -51,9 +51,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
-    "@likec4/log": "workspace:*",
     "immer": "catalog:utils",
     "json5": "catalog:utils",
     "langium": "catalog:langium",
@@ -64,7 +62,9 @@
     "zod": "catalog:externals"
   },
   "devDependencies": {
+    "@likec4/config": "workspace:*",
     "@likec4/devops": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "@types/pako": "catalog:",
