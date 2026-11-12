@@ -108,3 +108,16 @@ test('generate mermaid - relationship line and color as arrow and linkStyle', ({
   expect(mmd).toContain(`linkStyle 0,2 stroke:${red.relationships.line}\n`)
   expect(mmd).toContain(`linkStyle 1 stroke:${gray.relationships.line},stroke-dasharray:8 4\n`)
 })
+
+test('generate mermaid - backticks and double quotes in markdown string labels', ({ expect }) => {
+  const view = {
+    ...fakeComputedViewWithGroups,
+    nodes: fakeComputedViewWithGroups.nodes.map(node =>
+      node.children.length > 0 ? { ...node, title: 'The `infra` "zone"' } : node
+    ),
+    edges: fakeComputedViewWithGroups.edges.map(edge => ({ ...edge, label: 'calls `POST /login`' })),
+  } as ProcessedView
+  const mmd = generateMermaid(mockViewModel(view))
+  expect(mmd).toContain(`subgraph _gr1["\`The 'infra' 'zone'\`"]`)
+  expect(mmd).toContain(`App -. "\`calls 'POST /login'\`" .-> _gr1.Auth`)
+})
