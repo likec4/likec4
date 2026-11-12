@@ -6,11 +6,13 @@ import {
   type ParsedDeploymentView as DeploymentView,
   _stage,
   _type,
+  FqnExpr,
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
   RelationExpr,
 } from '../../types'
+import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
@@ -26,6 +28,7 @@ import {
   applyDeploymentNavigateTo,
   applyDeploymentViewRuleStyles,
   buildNodes,
+  deploymentElementExprToPredicate,
   deploymentExpressionToPredicate,
   toComputedEdges,
 } from './utils'
@@ -213,10 +216,15 @@ export function computeDeploymentView<M extends AnyAux>(
     edges: computedEdges,
   })
 
-  const nodes = applyDeploymentNavigateTo(
-    likec4model.deployment,
-    flatRules,
-    applyDeploymentViewRuleStyles(flatRules, sorted.nodes),
+  const nodes = applyCustomElementProperties(
+    flatRules as any,
+    applyDeploymentNavigateTo(
+      likec4model.deployment,
+      flatRules,
+      applyDeploymentViewRuleStyles(flatRules, sorted.nodes),
+    ),
+    FqnExpr.isCustom,
+    deploymentElementExprToPredicate as any,
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)
