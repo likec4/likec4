@@ -25,10 +25,16 @@ type HandlerParams = {
    */
   useCorePackage: boolean
   outfile: string | undefined
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
 }
 
 /** Generates React types and view IDs for the LikeC4 project. */
-export async function reactHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
+export async function reactHandler(
+  { path, useDotBin, useCorePackage, outfile, project, customization }: HandlerParams,
+) {
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
@@ -96,6 +102,7 @@ export async function reactHandler({ path, useDotBin, useCorePackage, outfile, p
     languageServices,
     outDir,
     filename,
+    customization,
   })
 
   await build({

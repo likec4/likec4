@@ -32,10 +32,16 @@
     "vitest:ui": "vitest --no-isolate --ui"
   },
   "dependencies": {
+    "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/hooks": "catalog:mantine",
     "immer": "catalog:utils",
+    "motion": "catalog:react",
     "react": "catalog:react",
-    "react-dom": "catalog:react"
+    "react-dom": "catalog:react",
+    "type-fest": "catalog:externals",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@fontsource-variable/ibm-plex-sans": "catalog:",
@@ -47,12 +53,9 @@
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vite-plugin": "workspace:*",
-    "@mantine/core": "catalog:mantine",
-    "@mantine/hooks": "catalog:mantine",
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
     "@react-hookz/web": "catalog:react",
-    "@rolldown/plugin-babel": "catalog:vite",
     "@tabler/icons-react": "catalog:react",
     "@tanstack/ai": "catalog:ai",
     "@tanstack/ai-client": "catalog:ai",
@@ -65,11 +68,9 @@
     "@types/react-dom": "catalog:react",
     "@vitejs/plugin-react": "catalog:vite",
     "@xyflow/react": "catalog:xyflow",
-    "babel-plugin-react-compiler": "catalog:react",
     "citty": "catalog:utils",
     "fast-equals": "catalog:utils",
     "html-to-image": "1.11.11",
-    "motion": "catalog:react",
     "nanostores": "catalog:react",
     "oxc-transform-react": "catalog:tsdown",
     "postcss": "catalog:css",
@@ -83,7 +84,6 @@
     "typescript": "catalog:",
     "vite": "catalog:vite",
     "vitest": "catalog:vitest",
-    "zod": "catalog:externals",
     "zx": "catalog:"
   }
 }

@@ -23,6 +23,8 @@ Read these files explicitly; do not depend on automatic nested instruction or sk
   `packages/layouts/src/sequence/`, including calls from `packages/layouts/src/graphviz/GraphvizLayoter.ts`:
   [sequence rules](.agents/instructions/sequence.md). Also read webapp rules when
   working in the diagram dev copy.
+- For the documentation site in `apps/docs` (pages, translations, sidebar, redirects) or the public
+  `skills/likec4-dsl` skill: [docs rules](.agents/instructions/docs.md).
 
 Critical boundaries: DSL writeback loses comments, source positions, and formatting; it is generation, not formatting.
 Keep data access out of `packages/diagram`; wire it through SPA and vite-plugin. RPC is dev-only;
@@ -43,6 +45,7 @@ ask if drift behavior is unclear. Read model and API rules before downstream typ
 - `pnpm fmt` formats with dprint.
 - `pnpm test:e2e` runs Playwright tests from the isolated `e2e` workspace and takes longer than unit tests.
 - `pnpm check:agent-instructions` validates that this file remains canonical and that instruction and skill adapters do not drift.
+- `pnpm check:react-bundle-deps` validates that `@likec4/spa`, `@likec4/react` and `likec4` declare the same runtime dependencies; see the webapp rules.
 
 ## Generated Files
 

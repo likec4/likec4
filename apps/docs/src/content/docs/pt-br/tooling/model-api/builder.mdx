@@ -1,0 +1,204 @@
+---
+title: Model Builder
+description: Construa um modelo LikeC4 em TypeScript, sem arquivos DSL.
+sidebar:
+  label: Model Builder
+  order: 3
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { TabItem as Tab, Tabs } from '@astrojs/starlight/components';
+
+O Builder cria um modelo LikeC4 em TypeScript, sem arquivos DSL. Use-o em testes unitários, em geradores que transformam outras fontes em modelos de arquitetura, ou sempre que precisar de um modelo construído em código.
+Importe-o de `likec4/model/builder` (ou `@likec4/core/builder`). Ids de elementos e visões, kinds e tags são verificados pelo sistema de tipos enquanto você constrói.  
+Para carregar um modelo a partir de arquivos DSL, veja [LikeC4 API](/pt-br/tooling/model-api/). Para estender um modelo carregado de arquivos DSL, veja [Alterar o modelo a partir do código](/pt-br/tooling/model-api/edit/).
+
+## Dois estilos
+
+O Builder suporta dois estilos: métodos encadeados, ou funções de composição obtidas a partir de uma especificação.
+
+<Tabs>
+  <Tab label='Chain'>
+  ```ts
+  import { Builder } from 'likec4/model/builder'
+
+  const model = Builder
+    .specification({
+      elements: {
+        actor: {
+          style: {
+            shape: 'person',
+          },
+        },
+        system: {},
+        component: {},
+      },
+      relationships: {
+        likes: {},
+      },
+      tags: ['tag1', 'tag2'],
+    })
+    .model(({ actor, system, component, relTo, rel }, _) =>
+      _(
+        actor('alice'),
+        actor('bob'),
+        rel('alice', 'bob', {
+          tags: ['tag1'], // autocompletar para tags
+          kind: 'likes',  // autocompletar para kind
+        }),
+        system('cloud', { tags: ['tag1', 'tag2'] }).with(
+          component('backend').with(
+            component('api'),
+            component('db'),
+            // autocompletar para ids de elementos
+            rel('cloud.backend.api', 'cloud.backend.db'),
+          ),
+          component('frontend').with(
+            relTo('cloud.backend.api'),
+          ),
+        ),
+      )
+    )
+    .views(({ view, viewOf, $include, $style }, _) =>
+      _(
+        view('index', 'Index').with(
+          $include('cloud.*'),
+        ),
+        viewOf('frontend', 'cloud.frontend').with(
+          // autocompletar para predicados
+          $include('* -> cloud.**'),
+          $style('cloud.frontend', { color: 'red' }),
+        ),
+      )
+    )
+    .toLikeC4Model()
+  ```
+  </Tab>
+
+  <Tab label='Composition'>
+  ```ts
+  import { Builder } from 'likec4/model/builder'
+
+  // Obtenha as funções de composição para a especificação
+  const {
+    model: {
+      model,
+      actor,
+      system,
+      component,
+      rel,
+      relTo,
+    },
+    views: {
+      views,
+      view,
+      viewOf,
+      $rules,
+      $include,
+      $style,
+    },
+    builder,
+  } = Builder.forSpecification({
+    elements: {
+      actor: {
+        style: {
+          shape: 'person',
+        },
+      },
+      system: {},
+      component: {},
+    },
+    relationships: {
+      likes: {},
+    },
+    tags: ['tag1', 'tag2'],
+  })
+
+  const model = builder
+    .with(
+      model(
+        actor('alice'),
+        actor('bob'),
+        rel('alice', 'bob', {
+          tags: ['tag1'],
+          kind: 'likes',
+        }),
+        system('cloud', { tags: ['tag1', 'tag2'] }).with(
+          component('backend').with(
+            component('api'),
+            component('db'),
+            rel('cloud.backend.api', 'cloud.backend.db'),
+          ),
+          component('frontend').with(
+            relTo('cloud.backend.api'),
+          ),
+        ),
+      ),
+      views(
+        view('index', 'Index').with(
+          $include('cloud.*'),
+        ),
+        // viewOf recebe as regras como argumento
+        viewOf(
+          'frontend',
+          'cloud.frontend',
+          $rules(
+            $include('* -> cloud.**'),
+            $style('cloud.frontend', { color: 'red' }),
+          ),
+        ),
+      ),
+    )
+    .toLikeC4Model()
+  ```
+  </Tab>
+</Tabs>
+
+Você pode combinar os estilos conforme suas preferências e necessidades.
+
+## Obter o resultado
+
+Um builder ainda não é um modelo. Finalize-o com um destes métodos:
+
+- `toLikeC4Model()` calcula as visões e retorna um [`LikeC4Model`](/pt-br/tooling/model-api/) que você pode consultar.
+- `build()` retorna apenas os dados do modelo parseado. As visões não são calculadas.
+
+Ambos aceitam um id de projeto opcional, por exemplo `toLikeC4Model('my-project')`.
+
+O modelo retornado mantém os ids que você declarou, então erros aparecem como erros de tipo:
+
+```ts
+import { Builder } from 'likec4/model/builder'
+
+const model = Builder
+  .specification({
+    elements: ['system', 'component'],
+  })
+  .model(({ system, component }, _) =>
+    _(
+      system('cloud').with(
+        component('frontend'),
+      ),
+    )
+  )
+  .views(({ view, $include }, _) =>
+    _(
+      view('index').with(
+        $include('*'),
+      ),
+    )
+  )
+  .toLikeC4Model()
+
+model.element('cloud.frontend') // ok
+model.view('index')             // ok
+model.view('landscape')         // erro de tipo: id de visão desconhecido
+```
+
+:::tip
+Consulte os testes unitários do repositório para mais exemplos:
+- <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style1.spec.ts">Builder-style1</a>
+- <a href="https://github.com/likec4/likec4/blob/main/packages/core/src/builder/Builder-style2.spec.ts">Builder-style2</a>
+:::

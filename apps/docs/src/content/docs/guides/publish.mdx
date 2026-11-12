@@ -1,0 +1,165 @@
+---
+title: Publish your diagrams
+description: Build a static website with your diagrams, check it locally and deploy it to GitHub Pages or any static host
+sidebar:
+  order: 1
+---
+
+Publish your diagrams as a static website.
+Anyone with the link can browse all views, and the **Share** button gives a link to a single view.
+
+You need [Node.js](https://nodejs.org) 22.23.3 or newer.
+No Node.js? Use the [Docker image](/tooling/docker/#build-static-website) instead.
+
+:::note
+The <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a> repository builds and deploys a website to GitHub Pages.
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/likec4/template)
+:::
+
+## Build the website
+
+Run `build` in the folder with your LikeC4 sources:
+
+```sh
+npx likec4 build -o ./dist
+```
+
+The `dist` folder now holds static files, ready for any host.
+All flags are listed in the [CLI reference](/tooling/cli/#build-static-website).
+Three of them matter for hosting.
+
+### `--base`: hosting under a sub-path
+
+The website only works at the base path it was built for (`/` by default).
+If you host it under a sub-path, pass that path:
+
+```sh
+npx likec4 build -o ./dist --base /architecture/
+```
+
+Without it, the page at `https://example.com/architecture/` loads blank, because the browser requests assets from `/assets/...`.
+Use `--base ./` to build a website that works from any path.
+
+### `--use-hash-history`: hosts without SPA fallback
+
+By default, each view has its own path, for example `/view/index`.
+The host must answer every such path with `index.html` (an "SPA fallback").
+If it doesn't, links to a view return 404.
+
+With `--use-hash-history`, the view is in the URL hash (`/#/view/index`), and the host only serves `index.html`.
+
+### `--output-single-file`: one HTML file
+
+`--output-single-file` writes the whole website into one self-contained HTML file.
+Send it, attach it to a wiki page, or open it from disk.
+It always uses hash-based navigation.
+
+You can keep these settings in the [app config](/tooling/app-config/) instead of repeating flags.
+
+## Check it locally
+
+Open the build in your browser before you deploy it:
+
+```sh
+npx likec4 preview -o ./dist
+```
+
+`preview` serves the built files from `dist`, not your sources.
+It prints the local URL and opens the browser.
+If you built with `--base`, pass the same `--base` to `preview` (or set `base` in the app config).
+
+:::note
+`preview` always answers unknown paths with `index.html`.
+It does not show whether your host has an SPA fallback.
+:::
+
+## Deploy to GitHub Pages
+
+1. In your repository, open **Settings → Pages**.
+   Under **Build and deployment**, set **Source** to **GitHub Actions**.
+2. Add this workflow:
+
+   ```yaml
+   # .github/workflows/pages.yml
+   name: Deploy diagrams
+
+   on:
+     push:
+       branches: [main]
+     workflow_dispatch:
+
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+
+   # One deployment at a time; don't cancel a deployment in progress
+   concurrency:
+     group: pages
+     cancel-in-progress: false
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v7
+
+         - uses: actions/setup-node@v7
+           with:
+             node-version: 22 # likec4 requires Node.js 22.23.3 or newer
+
+         - id: pages
+           uses: actions/configure-pages@v6
+
+         - name: Build
+           # base_path is "/<repo>" for a project site, empty with a custom domain
+           run: npx likec4@1.60.0 build -o ./dist --base "${{ steps.pages.outputs.base_path }}/"
+
+         - name: Serve index.html for unknown paths
+           run: cp ./dist/index.html ./dist/404.html
+
+         - uses: actions/upload-pages-artifact@v5
+           with:
+             path: ./dist
+
+     deploy:
+       needs: build
+       runs-on: ubuntu-latest
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       steps:
+         - id: deployment
+           uses: actions/deploy-pages@v5
+   ```
+
+3. Push to `main`. The site is published at `https://<user>.github.io/<repo>/`.
+
+Notes on the workflow:
+
+- **Base path.** A project site lives under `/<repo>/`, so the build needs `--base /<repo>/`.
+  `configure-pages` gives this path, and it is empty when you use a custom domain.
+- **Pinned version.** `likec4@1.60.0` builds with a known CLI version, so a new release can't change your site unexpectedly.
+  Use the version you run locally.
+  If `likec4` is in your `devDependencies`, run `npm ci` and `npx likec4 build` instead: the lockfile pins the version.
+- **404.html.** GitHub Pages has no SPA fallback, but it serves `404.html` for unknown paths.
+  A copy of `index.html` makes links to views work.
+  Alternatively, build with `--use-hash-history` and skip this step.
+
+We call the CLI with `npx` because you control the LikeC4 and Node.js versions; the [LikeC4 GitHub Action](/tooling/github/) runs its own bundled CLI version, which can lag behind the latest release.
+To use the action anyway, replace the **Build** and **404.html** steps with `likec4/actions@v1` (`action: build`, `base`, and `likec4-version` to pin the version); it writes `404.html` for you.
+
+## Deploy to other hosts
+
+Any static host works: Netlify, Cloudflare Pages, GitLab Pages, S3, nginx.
+Upload the `dist` folder, and check two things:
+
+- **Base path.** Build with `--base` if the site is not at the root of the domain.
+- **SPA fallback.** Configure the host to serve `index.html` for unknown paths, or build with `--use-hash-history`.
+
+LikeC4 builds the website with Vite, so the [Vite deployment guide](https://vite.dev/guide/static-deploy.html) applies: replace `vite build` with `likec4 build`.
+
+## Embed into an existing website
+
+To show diagrams inside your own site or app, see [Choose how to embed diagrams](/tooling/embed/).

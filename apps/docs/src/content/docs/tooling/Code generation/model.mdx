@@ -1,39 +1,111 @@
 ---
-title: Generate LikeC4Model
-description: How to generate Typed LikeC4 from DSL to access your architecture model programmatically.
+title: Typed model
+description: Generate a TypeScript module with your LikeC4 model and typed ids, and use it without parsing sources at runtime.
 head:
   - tag: title
-    content: LikeC4Model Code generation
+    content: Typed model - LikeC4 code generation
 sidebar:
-  label: LikeC4Model
+  label: Typed model
   order: 7
 tableOfContents:
   minHeadingLevel: 2
-  maxHeadingLevel: 6    
+  maxHeadingLevel: 3
 ---
 
-import { Card, Aside } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers';
 
-<p style={{display: 'flex', gap: '10px'}}>
-<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Version](https://img.shields.io/npm/v/likec4)</a>
-<a href="https://www.npmjs.com/package/likec4" target="_blank">![NPM Downloads](https://img.shields.io/npm/dm/likec4)</a>
-</p>
+`likec4 gen model` turns your sources into a TypeScript module.
+The module holds the model data and types for every id in your model.
+You import it like any other module and query it with the [model API](/tooling/model-api/reference/).
 
-Generate source code artifacts from architecture model.
-
-## Typed Model
+## Generate the module
 
 <PackageManagers
    type="dlx"
    pkg="likec4"
-   args="codegen model --outfile ./likec4-model.ts"
+   args="gen model --outfile ./src/likec4-model.ts"
    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
    frame="none"
    />
 
-<Aside type='caution' title="In progress" >
-  Documentation in progress
+`gen ts` is an alias of `gen model`.
+`codegen` and `generate` are aliases of `gen`.
 
-  Meanwhile, check [`@likec4/core/model`](https://github.com/likec4/likec4/blob/main/packages/core/README.md).
+| Option | Description |
+| ------ | ----------- |
+| `[path]` | Directory with sources. Default: the current directory, or the `LIKEC4_WORKSPACE` environment variable |
+| `-o`, `--outfile` | Output file. Must end with `.ts`, `.mts` or `.cts`. Default: `likec4-model.ts` in the workspace (in the project folder, if the workspace has several projects) |
+| `--project` | Project to generate, if the workspace has several projects |
+| `--skip-layout` | Skip the layout. Faster, but views have no positions or sizes |
+| `--use-dot` | Use the local Graphviz binaries (`dot` must be on `PATH`) instead of the bundled WASM |
+| `--use-core-package` | Import from `@likec4/core` instead of `likec4` |
+
+The file is a snapshot of your sources.
+Run the command again after you change them, for example in a `prebuild` script.
+
+## What the module exports
+
+- `likec4model`: a `LikeC4Model` instance with the model data. By default, views are laid out.
+- Types for ids: `$ElementId`, `$DeploymentId`, `$ViewId`.
+- Types for the specification: `$ElementKind`, `$RelationKind`, `$DeploymentKind`, `$Tag`, `$Tags`, `$MetadataKey`.
+- `$Aux`: the type parameter of `LikeC4Model` that carries all of the above.
+
+The module imports `LikeC4Model` from `likec4/model`.
+Add `likec4` to the dependencies of the project that uses the file:
+
+<PackageManagers
+    pkg="likec4"
+    pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
+    frame="none"
+  />
+
+## Use it
+
+```ts
+import { likec4model, type $ViewId } from './likec4-model'
+
+// Iterate views
+for (const view of likec4model.views()) {
+  console.log(view.id, view.titleOrId)
+}
+
+// Look up an element. TypeScript checks the id.
+const api = likec4model.element('cloud.backend.api')
+for (const rel of api.incoming()) {
+  console.log(`${rel.source.title} -> ${api.title}`)
+}
+
+// Error: the id is not in the model
+// likec4model.element('cloud.backend.apii')
+
+// Use the id types in your own code
+function linkToView(id: $ViewId) {
+  return `/view/${id}`
+}
+```
+
+`element()` and `view()` accept only known ids and throw if the id is not found.
+`findElement()` and `findView()` accept any string, suggest known ids and return `null` if the id is not found.
+
+See the [API reference](/tooling/model-api/reference/) for all methods.
+
+## Typed model or `LikeC4.fromWorkspace`
+
+Both give you a `LikeC4Model`.
+They differ in when the sources are parsed.
+
+| | Typed model | [`LikeC4.fromWorkspace`](/tooling/model-api/) |
+| --- | --- | --- |
+| Parses sources | Once, at build time | Every time, at runtime |
+| Runs in | Node.js and the browser | Node.js only |
+| Ids | Typed | Plain strings |
+| Model updates | Run `gen model` again | Read on each load, or with `watch` |
+
+Use the typed model in browser code, in [React components](/tooling/react/), and in [tests](/guides/validate-your-model/).
+Use `LikeC4.fromWorkspace` in Node.js scripts that need the current sources, or that must change them.
+
+<Aside type='tip'>
+  The React components draw laid-out views.
+  Don't use `--skip-layout` if you render views from `likec4model`.
 </Aside>

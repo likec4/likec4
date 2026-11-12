@@ -1,15 +1,8 @@
 import { extractViewTitleFromPath } from '@likec4/core/model'
-import { css, cx } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
-import {
-  UnstyledButton,
-} from '@mantine/core'
-import { IconChevronRight } from '@tabler/icons-react'
-import { LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { memo } from 'react'
 import { isTruthy } from 'remeda'
-import { useIsComparingLayouts } from '../context/ComparingLayoutsContext'
 import { useEnabledFeatures } from '../context/DiagramFeatures'
 import { useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { selectDiagramSnapshot, useDiagramSelector } from '../hooks/useDiagram'
@@ -23,43 +16,42 @@ import {
   ToggleReadonly,
   ViewDetailsButton,
 } from './controls'
+import { NavigationBreadcrumbs } from './controls/NavigationBreadcrumbs'
 import { ElementViewControls } from './ElementViewControls'
 import { useNavigationActor } from './hooks'
-import { breadcrumbTitle } from './styles.css'
 import { DynamicViewControls } from './walkthrough'
 
 const selectViewData = selectDiagramSnapshot(snapshot => {
   const s = snapshot.context
-
+  const isElementView = s.view._type === 'element'
+  const isComparing = isComparingLayouts(snapshot)
   // Disable readonly toggle, if any of these conditions is true:
-  const comparingLatest = isComparingLayouts(snapshot) && s.view._layout === 'auto'
+  const comparingLatest = isComparing && s.view._layout === 'auto'
   // const sequenceLayoutActive = ctx.view._type === 'dynamic' && ctx.dynamicViewVariant === 'sequence'
+
+  const isGraphForceSimulation = isElementView && s.elementViewVariant === 'graph'
 
   // If All condition is true, we show toggle
   const noActiveWalkthrough = !isTruthy(s.activeWalkthrough)
   const hasEditor = s.features.enableEditor
 
   const isReadOnly = s.toggledFeatures.enableReadOnly ?? false
+  const isEditing = !isReadOnly
 
   return ({
     viewId: s.view.id,
+    linksCount: s.view.links?.length ?? 0,
     viewTitle: (s.view.title && extractViewTitleFromPath(s.view.title)) ?? 'Untitled View',
     isDynamicView: s.view._type === 'dynamic',
     isElementView: s.view._type === 'element',
+    elementViewVariant: s.elementViewVariant,
     editBtnVisible: hasEditor && noActiveWalkthrough,
-    editBtnDisabled: comparingLatest,
+    editBtnDisabled: comparingLatest || isGraphForceSimulation,
     isReadOnly,
+    isEditing,
+    isComparing,
   })
 })
-
-const breadcrumbAnimation = {
-  initial: { opacity: 0.5, translateX: -10, translateY: 0 },
-  animate: { opacity: 1, translateX: 0, translateY: 0 },
-  exit: { opacity: 0, translateX: -10, translateY: 0 },
-  whileTap: {
-    translateY: 1,
-  },
-}
 
 export const NavigationPanelControls = memo(() => {
   const actor = useNavigationActor()
@@ -69,112 +61,32 @@ export const NavigationPanelControls = memo(() => {
     enableSearch,
     enableVscode,
   } = useEnabledFeatures()
-  const isComparing = useIsComparingLayouts()
   const viewModel = useOptionalCurrentViewModel()
   const {
     editBtnDisabled,
     editBtnVisible,
     isReadOnly,
+    isEditing,
     viewTitle,
     isDynamicView,
     isElementView,
+    elementViewVariant,
+    linksCount,
+    isComparing,
   } = useDiagramSelector(selectViewData)
 
   const hasModel = !!viewModel
-
-  const folder = viewModel?.folder
-  const folders = !folder || folder.isRoot ? [] : folder.breadcrumbs.map(s => ({
-    folderPath: s.path,
-    title: s.title,
-  }))
-
-  const folderBreadcrumbs = folders.flatMap(({ folderPath, title }, index, all) => [
-    <UnstyledButton
-      key={folderPath}
-      component={m.button}
-      layout="position"
-      className={cx(
-        breadcrumbTitle({ dimmed: true, truncate: true }),
-        // 'mantine-active',
-        css({
-          userSelect: 'none',
-          maxWidth: '[150px]',
-          display: {
-            base: 'none',
-            '@/md': 'block',
-          },
-        }),
-      )}
-      {...breadcrumbAnimation}
-      title={title}
-      onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.folder', folderPath })}
-      onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.folder', folderPath })}
-      onClick={e => {
-        e.stopPropagation()
-        actor.send({ type: 'breadcrumbs.click.folder', folderPath })
-      }}
-    >
-      {title}
-    </UnstyledButton>,
-    <m.div
-      key={folderPath + '-separator'}
-      layout
-      className={css({
-        display: {
-          base: 'none',
-          '@/md': 'block',
-        },
-        color: 'text.non-essential',
-      })}>
-      <IconChevronRight size={16} />
-    </m.div>,
-  ])
-
-  const viewBreadcrumb = (
-    <UnstyledButton
-      layoutId={'view-title'}
-      component={m.button}
-      layout="position"
-      {...breadcrumbAnimation}
-      className={cx(
-        // 'mantine-active',
-        breadcrumbTitle({ truncate: true }),
-        css({
-          userSelect: 'none',
-        }),
-      )}
-      title={viewTitle}
-      onMouseEnter={() => actor.send({ type: 'breadcrumbs.mouseEnter.viewtitle' })}
-      onMouseLeave={() => actor.send({ type: 'breadcrumbs.mouseLeave.viewtitle' })}
-      onClick={e => {
-        e.stopPropagation()
-        actor.send({ type: 'breadcrumbs.click.viewtitle' })
-      }}
-    >
-      {viewTitle}
-    </UnstyledButton>
-  )
 
   return (
     <>
       <LogoButton key="logo-button" />
       {enableNavigationButtons && <NavigationButtons key="nav-buttons" />}
 
-      <m.div
+      <NavigationBreadcrumbs
         key="breadcrumbs"
-        layout="size"
-        className={hstack({
-          gap: '1',
-          flexShrink: 1,
-          flexGrow: 1,
-          flexWrap: 'nowrap',
-          overflow: 'hidden',
-        })}>
-        <LayoutGroup id="navigation-panel-breadcrumbs">
-          {folderBreadcrumbs}
-          {viewBreadcrumb}
-        </LayoutGroup>
-      </m.div>
+        viewTitle={viewTitle}
+        viewModel={viewModel}
+      />
 
       <m.div
         key="actions"
@@ -185,11 +97,16 @@ export const NavigationPanelControls = memo(() => {
           flexWrap: 'nowrap',
           flexGrow: 0,
         })}>
-        {hasModel && <ViewDetailsButton key="details" onOpen={() => actor.closeDropdown()} />}
+        {hasModel && <ViewDetailsButton key="details" linksCount={linksCount} onOpen={() => actor.closeDropdown()} />}
         {enableVscode && <OpenSource key="open-source" />}
         {editBtnVisible && <ToggleReadonly key="toggle-readonly" disabled={editBtnDisabled} isReadOnly={isReadOnly} />}
         {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
-        {isElementView && <ElementViewControls key="element-view-controls" />}
+        {isElementView && (
+          <ElementViewControls
+            key="element-view-controls"
+            elementViewVariant={elementViewVariant}
+            disabled={isComparing || isEditing} />
+        )}
         {enableSearch && !isComparing && <SearchControl key="search-control" />}
         <LayoutWarning key="outdated-manual-layout-warning" />
       </m.div>

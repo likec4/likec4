@@ -31,7 +31,9 @@ export function useDiagramContext<T = unknown>(
   return useXstateSelector(actorRef, select, compare)
 }
 
-type PickEmittedEvent<T> = T extends DiagramEmittedEvents['type'] ? DiagramEmittedEvents & { type: T } : unknown
+type PickEmittedEvent<T> = {
+  [K in DiagramEmittedEvents as K['type']]: K['type'] extends T ? K : never
+}[DiagramEmittedEvents['type']]
 
 /**
  * Subscribe to diagram emitted events
@@ -48,23 +50,24 @@ export function useOnDiagramEvent<T extends DiagramEmittedEvents['type'] | '*'>(
   options?: { once?: boolean },
 ): void {
   const actorRef = useDiagramActorRef()
-  const callbackRef = useCallbackRef(callback)
   const wasCalled = useRef(false)
   const once = options?.once ?? false
+
+  const callbackRef = useCallbackRef((event: PickEmittedEvent<T>) => {
+    wasCalled.current = true
+    try {
+      callback(event)
+    } catch (error) {
+      console.error(error)
+    }
+  })
 
   useEffect(() => {
     if (once && wasCalled.current) {
       return
     }
     let subscription: Subscription | null = actorRef.on<T>(event, (payload) => {
-      if (!once || !wasCalled.current) {
-        try {
-          callbackRef(payload as PickEmittedEvent<T>)
-        } catch (error) {
-          console.error(error)
-        }
-      }
-      wasCalled.current = true
+      callbackRef(payload as PickEmittedEvent<T>)
       if (once) {
         subscription?.unsubscribe()
         subscription = null

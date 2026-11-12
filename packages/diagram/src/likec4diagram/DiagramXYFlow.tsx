@@ -5,12 +5,12 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { type EdgeId, type NodeId, nonNullable } from '@likec4/core'
+import { type EdgeId, nonNullable } from '@likec4/core'
 import { cx } from '@likec4/styles/css'
 import { useDebouncedCallback, useTimeout } from '@mantine/hooks'
 import { useCustomCompareMemo } from '@react-hookz/web'
 import { Controls as XYFlowControls } from '@xyflow/react'
-import type { OnMove, OnMoveEnd, Viewport } from '@xyflow/system'
+import type { OnMove, OnMoveEnd } from '@xyflow/system'
 import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent, PropsWithChildren } from 'react'
 import type { JSX } from 'react/jsx-runtime'
@@ -30,12 +30,14 @@ import { useDiagram } from '../hooks/useDiagram'
 import { useEditorActorStateHasTag } from '../hooks/useEditorActor'
 import { depsShallowEqual } from '../hooks/useUpdateEffect'
 import type { LikeC4DiagramProperties, NodeRenderers } from '../LikeC4Diagram.props'
+import { viewRouting } from '../utils/view-routing'
 import { BuiltinEdges, BuiltinNodes } from './custom'
 import { deriveToggledFeatures } from './state/machine.setup'
 import { viewBounds } from './state/utils'
 import type { Types } from './types'
-import { useLayoutConstraints } from './useLayoutConstraints'
-import { useGraphForceSimulation } from './xyflow-graph/useGraphForceSimulation'
+import { useNodeDragHandlers } from './useNodeDragHandlers'
+import { selectGraphTopology } from './xyflow-graph/useGraphForceSimulation'
+import { resolveControlledViewport, resolveInteractionEnabled } from './xyflow-props'
 
 const edgeTypes = {
   relationship: BuiltinEdges.RelationshipEdge,
@@ -70,29 +72,6 @@ function prepareNodeTypes(nodeTypes?: NodeRenderers): Types.NodeRenderers {
   }
 }
 
-export function resolveControlledViewport(
-  enableFitView: boolean,
-  initialZoom: number | undefined,
-  bounds: { x: number; y: number },
-): Viewport | undefined {
-  if (enableFitView || initialZoom !== undefined) {
-    return undefined
-  }
-  return {
-    x: -bounds.x,
-    y: -bounds.y,
-    zoom: 1,
-  }
-}
-
-export function resolveInteractionEnabled(
-  enabled: boolean,
-  override: boolean | undefined,
-  isEditorBusy: boolean,
-): boolean {
-  return (override ?? enabled) && !isEditorBusy
-}
-
 const selectXYProps = selectDiagramSnapshot((snapshot) => {
   const { context: ctx, children } = snapshot
   const { enableReadOnly } = deriveToggledFeatures(snapshot)
@@ -122,6 +101,8 @@ const selectXYProps = selectDiagramSnapshot((snapshot) => {
   return ({
     enableReadOnly,
     isGraphVariant,
+    graphTopology: isGraphVariant ? selectGraphTopology(ctx.xynodes, ctx.xyedges) : null,
+    viewRouting: viewRouting(ctx.view),
     // During SSR, consider initialized as true to avoid flashing
     initialized: IS_SERVER || (ctx.initialized.xydata && ctx.initialized.xyflow),
     nodes: ctx.xynodes,
@@ -139,7 +120,11 @@ const selectXYProps = selectDiagramSnapshot((snapshot) => {
       viewport: controlledViewport,
     }),
   })
-}, ({ nodes: aNodes, edges: aEdges, ...a }, { nodes: bNodes, edges: bEdges, ...b }) => {
+}, (
+  // Exclude graphTopology from comparison as it's derived from nodes and edges
+  { nodes: aNodes, edges: aEdges, graphTopology: _aTopology, ...a },
+  { nodes: bNodes, edges: bEdges, graphTopology: _bTopology, ...b },
+) => {
   return shallowEqual(a, b) && shallowEqual(aNodes, bNodes) && shallowEqual(aEdges, bEdges)
 })
 
@@ -168,12 +153,14 @@ export function LikeC4DiagramXYFlow({
   let {
     enableReadOnly,
     isGraphVariant,
+    graphTopology,
     initialized,
     nodes,
     edges,
     enableFitView,
     nodesDraggable,
     nodesSelectable,
+    viewRouting,
     enableControls,
     ...props
   } = useDiagramSelector(selectXYProps)
@@ -194,8 +181,13 @@ export function LikeC4DiagramXYFlow({
   const { reducedGraphics, $panning } = useRootContainer()
 
   const isReducedGraphics = reducedGraphics,
-    layoutConstraints = useLayoutConstraints(),
-    graphForceHandlers = useGraphForceSimulation({ enabled: isGraphVariant, nodes, edges }),
+    nodeDragHandlers = useNodeDragHandlers({
+      nodesDraggable,
+      viewRouting,
+      isGraphVariant,
+      graphTopology,
+      diagram,
+    }),
     $isPanning = $panning,
     isPanning = useTimeout(() => {
       $isPanning.set(true)
@@ -265,7 +257,7 @@ export function LikeC4DiagramXYFlow({
         }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.nodeClick', node })
-        onNodeClick?.(diagram.findDiagramNode(node.id as NodeId)!, e)
+        onNodeClick?.(diagram.findDiagramNode(node.data.id)!, e)
       })}
       onEdgeClick={useCallbackRef((e, edge) => {
         if (e.isPropagationStopped()) {
@@ -273,7 +265,7 @@ export function LikeC4DiagramXYFlow({
         }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.edgeClick', edge })
-        onEdgeClick?.(diagram.findDiagramEdge(edge.id as EdgeId)!, e)
+        onEdgeClick?.(diagram.findDiagramEdge(edge.data.id)!, e)
       })}
       onEdgeDoubleClick={useCallbackRef((e, edge) => {
         if (e.isPropagationStopped()) {
@@ -293,29 +285,47 @@ export function LikeC4DiagramXYFlow({
         })
       })}
       onPaneClick={useCallbackRef((e) => {
+        if (e.isPropagationStopped()) {
+          return
+        }
         e.stopPropagation()
         diagram.send({ type: 'xyflow.paneClick' })
         onCanvasClick?.(e as any)
       })}
       onDoubleClick={useCallbackRef(e => {
+        if (e.isPropagationStopped()) {
+          return
+        }
         e.stopPropagation()
         e.preventDefault()
         diagram.send({ type: 'xyflow.paneDblClick' })
         onCanvasDblClick?.(e as any)
       })}
       onNodeMouseEnter={useCallbackRef((event, node) => {
+        if (event.isPropagationStopped()) {
+          return
+        }
         event.stopPropagation()
         diagram.send({ type: 'xyflow.nodeMouseEnter', node })
       })}
       onNodeMouseLeave={useCallbackRef((event, node) => {
+        if (event.isPropagationStopped()) {
+          return
+        }
         event.stopPropagation()
         diagram.send({ type: 'xyflow.nodeMouseLeave', node })
       })}
       onEdgeMouseEnter={useCallbackRef((event, edge) => {
+        if (event.isPropagationStopped()) {
+          return
+        }
         event.stopPropagation()
         diagram.send({ type: 'xyflow.edgeMouseEnter', edge, event })
       })}
       onEdgeMouseLeave={useCallbackRef((event, edge) => {
+        if (event.isPropagationStopped()) {
+          return
+        }
         event.stopPropagation()
         diagram.send({ type: 'xyflow.edgeMouseLeave', edge, event })
       })}
@@ -347,7 +357,7 @@ export function LikeC4DiagramXYFlow({
       edgesFocusable
       elevateEdgesOnSelect={!enableReadOnly}
       zIndexMode="manual"
-      {...(nodesDraggable && (isGraphVariant ? graphForceHandlers : layoutConstraints))}
+      {...nodeDragHandlers}
       {...props}
       {...safeReactFlowProps}
       nodesDraggable={nodesDraggable}

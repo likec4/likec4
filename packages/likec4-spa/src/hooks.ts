@@ -2,7 +2,7 @@ import type { LayoutedView, LayoutType, ViewId } from '@likec4/core/types'
 import { useUpdateEffect } from '@likec4/diagram'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { type MakeRouteMatchUnion, useMatches, useParams } from '@tanstack/react-router'
-import { deepEqual, shallowEqual } from 'fast-equals'
+import { deepEqual } from 'fast-equals'
 import { type Project, useLikeC4Projects } from 'likec4:projects'
 import { useEffect, useState } from 'react'
 import { useLikeC4ModelAtom } from './context/safeCtx'
@@ -27,17 +27,7 @@ export function useLikeC4Views(): ReadonlyArray<LayoutedView> {
   const [views, setViews] = useState([] as LayoutedView[])
   useEffect(() => {
     return $likec4model.subscribe((next) => {
-      setViews(prev => {
-        const nextViews = [...next.views()].map((v) => {
-          const n = v.$layouted
-          const p = prev.find(_ => _.id === v.id)
-          return !!p && deepEqual(n, p) ? p : n
-        })
-        if (shallowEqual(prev, nextViews)) {
-          return prev
-        }
-        return nextViews
-      })
+      setViews([...next.views()].map(v => v.$layouted))
     })
   }, [$likec4model])
   return views
@@ -64,22 +54,32 @@ export function useCurrentView(): [LayoutedView | null, (layoutType: LayoutType)
   }, [viewId])
 
   const [view, setView] = useState(() => $likec4model.get().findView(viewId)?.$layouted ?? null)
-  useEffect(() => {
-    return $likec4model.subscribe((next, old) => {
-      setView(current => {
-        const vm = next.findView(viewId)
-        if (!vm) {
-          // If the view is not found, but it's the current view, keep it
-          return current?.id === viewId ? current : null
-        }
-        const nextView = layoutType === 'auto' ? vm.$view : vm.$layouted
-        if (deepEqual(current, nextView)) {
-          return current
-        }
-        return nextView
-      })
-    })
-  }, [$likec4model, viewId, layoutType])
+  useEffect(
+    () =>
+      $likec4model.subscribe((next) => {
+        setView(current => {
+          const vm = next.findView(viewId)
+          if (!vm) {
+            // If the view is not found, but it's the current view, keep it
+            return current?.id === viewId ? current : null
+          }
+          const nextView = layoutType === 'auto' ? vm.$view : vm.$layouted
+          if (
+            // Fail fast
+            current &&
+            current.id === nextView.id &&
+            current._layout === nextView._layout &&
+            current.hash === nextView.hash &&
+            // Check if the view actually changed
+            deepEqual(current, nextView)
+          ) {
+            return current
+          }
+          return nextView
+        })
+      }),
+    [$likec4model, viewId, layoutType],
+  )
 
   return [view, setLayoutType] as const
 }

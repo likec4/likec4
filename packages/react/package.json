@@ -16,12 +16,9 @@
   "type": "module",
   "exports": {
     ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
-      }
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -37,11 +34,16 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
+    "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/hooks": "catalog:mantine",
     "immer": "catalog:utils",
+    "motion": "catalog:react",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "type-fest": "catalog:externals"
+    "type-fest": "catalog:externals",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",

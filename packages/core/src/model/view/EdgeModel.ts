@@ -9,11 +9,11 @@ import {
   type RichTextOrEmpty,
   type scalar,
   isStepPath,
-  RichText,
 } from '../../types'
 import type { DeploymentRelationModel } from '../DeploymentElementModel'
 import type { RelationshipModel } from '../RelationModel'
 import type { $View, WithTags } from '../types'
+import { memoizeDescription } from '../utils/richtext'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import type { NodeModel } from './NodeModel'
 
@@ -37,6 +37,10 @@ export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
     this.$edge = $edge
   }
 
+  get $model(): typeof this.$viewModel.$model {
+    return this.$viewModel.$model
+  }
+
   get id(): scalar.EdgeId {
     return this.$edge.id
   }
@@ -50,7 +54,7 @@ export class EdgeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$edge.description, this.$viewModel.$model.resolveMarkdownRef)
+    return memoizeDescription(this, this.$edge.description)
   }
 
   get technology(): string | null {

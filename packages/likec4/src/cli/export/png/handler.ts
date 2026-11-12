@@ -15,11 +15,13 @@ import k from 'tinyrainbow'
 import { joinURL, withTrailingSlash } from 'ufo'
 import type { ViteDevServer } from 'vite'
 import type { Argv } from 'yargs'
+import { resolveAppConfig } from '../../../app-config'
 import { type ViteLogger, createLikeC4Logger, inMillis } from '../../../logger'
 import { resolveServerUrl } from '../../../vite/printServerUrls'
+import { relativeToCwd } from '../../../vite/utils'
 import { viteDev } from '../../../vite/vite-dev'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
-import { path, project, useDotBin } from '../../options'
+import { appConfig, customization, path, project, useDotBin, withoutDefault } from '../../options'
 import { takeScreenshot } from './takeScreenshot'
 
 /** CLI args for export png command (single type for handler and runExportPng). */
@@ -52,6 +54,39 @@ export type PngExportArgs = {
   notation?: boolean
   /** Include view description in exported images. */
   description?: boolean
+  /** Absolute path to the file with UI customizations, applied when the server is started by the export. */
+  customization?: string | undefined
+}
+
+/**
+ * Resolves the workspace, graphviz and the file with UI customizations for the image export:
+ * flags of the CLI, then the app config.
+ *
+ * The color scheme of the app config is not used: `--theme` of the export is the scheme of the images.
+ */
+export async function resolveImageExportConfig(
+  args: {
+    'app-config'?: string | boolean | undefined
+    path?: string | undefined
+    'use-dot'?: boolean | undefined
+    customization?: string | undefined
+  },
+  logger: ViteLogger,
+): Promise<Pick<PngExportArgs, 'path' | 'useDotBin' | 'customization'>> {
+  const config = await resolveAppConfig({
+    appConfig: args['app-config'],
+    path: args.path,
+    useDot: args['use-dot'],
+    customization: args.customization,
+  })
+  if (config.configFile) {
+    logger.info(`${k.cyan('app config')} ${k.dim(relativeToCwd(config.configFile))}`)
+  }
+  return {
+    path: config.workspace,
+    useDotBin: config.graphviz === 'binary',
+    customization: config.customization,
+  }
 }
 
 /** Launch headless Chromium, capture each view as PNG to output dir; returns list of succeeded view ids. */
@@ -151,6 +186,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
     quality,
     notation = false,
     description = false,
+    customization,
   } = args
 
   await using likec4 = await fromWorkspace(workspacePath, {
@@ -178,6 +214,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
         buildWebcomponent: false,
         openBrowser: false,
         hmr: false,
+        customization,
       })
       resolvedServerUrl = resolveServerUrl(server)
       if (!resolvedServerUrl) {
@@ -280,8 +317,10 @@ export function pngCmd(yargs: Argv) {
     describe: 'export views to PNG',
     builder: yargs =>
       yargs
-        .positional('path', path)
+        .positional('path', withoutDefault(path))
         .options({
+          'app-config': appConfig,
+          customization,
           'outdir': {
             alias: ['o', 'output'],
             type: 'string',
@@ -307,7 +346,7 @@ export function pngCmd(yargs: Argv) {
             desc: 'use light theme, shortcut for --theme=light',
             conflicts: ['theme', 'dark'],
           },
-          'use-dot': useDotBin,
+          'use-dot': withoutDefault(useDotBin),
           'seq': {
             alias: ['sequence'],
             type: 'boolean',
@@ -384,8 +423,7 @@ export function pngCmd(yargs: Argv) {
       const theme = args.theme ?? (args.dark ? 'dark' : 'light')
       await pngHandler(
         {
-          path: args.path,
-          useDotBin: args['use-dot'],
+          ...await resolveImageExportConfig(args, createLikeC4Logger('c4:export')),
           output: args.outdir,
           project: args.project,
           timeoutMs: args.timeout * 1000,

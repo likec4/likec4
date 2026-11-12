@@ -1,7 +1,7 @@
 import { nonNullable } from '@likec4/core'
 import type * as t from '@likec4/core/types'
 import { useSelector as useXstateSelector } from '@xstate/react'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual as eq } from 'fast-equals'
 import { deriveToggledFeatures, isComparingLayouts } from '../likec4diagram/state/machine.setup'
 import type {
   DiagramActorSnapshot,
@@ -96,7 +96,7 @@ export function useDiagramCompareLayout(): [
   DiagramCompareLayoutOps,
 ] {
   const actorRef = useDiagramActorRef()
-  const state = useXstateSelector(actorRef, selectCompareLayoutState, shallowEqual)
+  const state = useXstateSelector(actorRef, selectCompareLayoutState, eq)
 
   const switchLayout = useCallbackRef((layoutType: t.LayoutType) => {
     if (!state.isEnabled) {

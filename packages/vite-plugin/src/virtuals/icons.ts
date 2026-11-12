@@ -220,7 +220,7 @@ function embedUrlAsJsString(url: string): string {
 
 export const iconsModule = {
   id: 'likec4:icons',
-  virtualId: 'likec4:plugin/icons.jsx',
+  virtualId: 'likec4:plugin/icons.js',
   async load({ projects, logger }) {
     logGenerating('icons')
 
@@ -233,57 +233,75 @@ export const iconsModule = {
     })
 
     // codeql[js/bad-code-sanitization]: Generated import() specifiers are JSON string literals from joinURL('likec4:icons', id) after JSON.stringify + hardenJsonStringLiteralForEmbeddedScript; ids pass SAFE_PROJECT_ID_REGEX (no breakout in emitted JS).
-    const { imports, cases } = safeProjects
-      .reduce((acc, p, i) => {
-        const ProjectComponent = 'Project' + i.toString().padStart(2, '0')
-        const idLiteral = hardenJsonStringLiteralForEmbeddedScript(
-          embedProjectIdAsJsString(p.id),
-        )
-        const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
-          embedUrlAsJsString(joinURL('likec4:icons', p.id)),
-        )
-        acc.imports.push(`import {IconRenderer as ${ProjectComponent}} from ${pkgLiteral}`)
-        acc.cases.push(`  ${idLiteral}: ${ProjectComponent}`)
-        return acc
-      }, {
-        imports: [] as string[],
-        cases: [] as string[],
-      })
+    const cases = safeProjects.map(p => {
+      const idLiteral = hardenJsonStringLiteralForEmbeddedScript(
+        embedProjectIdAsJsString(p.id),
+      )
+      const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
+        embedUrlAsJsString(joinURL('likec4:icons', p.id)),
+      )
+      return `  ${idLiteral}: () => import(${pkgLiteral})`
+    })
 
     const code = `
+import { lazy, Suspense } from 'react'
 import { jsx } from 'react/jsx-runtime'
-${imports.join('\n')}
 
 export let ProjectIconsRegistry = {
 ${cases.join(',\n')}
 }
 
-export function getProjectIcons(projectId) {
-  return (props) => {
-    let Renderer = ProjectIconsRegistry[projectId]
-    if (!Renderer) {
-      const projects = Object.keys(ProjectIconsRegistry)
-      console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
-      if (projects.length === 0) {
-        throw new Error('No projects found, invalid state')
-      }
-      projectId = projects[0]
-      console.warn('Falling back to project: ' + projectId)
-      Renderer = ProjectIconsRegistry[projectId]
-    }
-    return jsx(Renderer, props)
+// Lazy icon renderers by requested project id, cleared on HMR updates
+const lazyRegistry = new Map()
+
+let invalidateMe = false
+
+function resolveLoader(projectId) {
+  if (Object.hasOwn(ProjectIconsRegistry, projectId)) {
+    return ProjectIconsRegistry[projectId]
   }
+  const projects = Object.keys(ProjectIconsRegistry)
+  console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
+  if (projects.length === 0) {
+    throw new Error('No projects found, invalid state')
+  }
+  invalidateMe = true
+  console.warn('Falling back to project: ' + projects[0])
+  return ProjectIconsRegistry[projects[0]]
+}
+
+function getLazyRenderer(projectId) {
+  let Renderer = lazyRegistry.get(projectId)
+  if (!Renderer) {
+    const loader = resolveLoader(projectId)
+    Renderer = lazy(async () => {
+      const { IconRenderer } = await loader()
+      return { default: IconRenderer }
+    })
+    lazyRegistry.set(projectId, Renderer)
+  }
+  return Renderer
+}
+
+export function getProjectIcons(projectId) {
+  // Renderer is resolved on each render, so that HMR updates are picked up
+  return (props) => jsx(Suspense, { children: jsx(getLazyRenderer(projectId), props) })
 }
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
     if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = ProjectIconsRegistry
+      import.meta.hot.data.$update = (updateData) => {
+        Object.assign(ProjectIconsRegistry, updateData)
+        lazyRegistry.clear()
+        const shouldInvalidate = invalidateMe
+        invalidateMe = false
+        return shouldInvalidate
+      }
     }
     const update = md.ProjectIconsRegistry
-    if (update) {
-      Object.assign(import.meta.hot.data.$update, update)
-    } else {
+    const shouldInvalidate = update ? import.meta.hot.data.$update(update) : true
+    if (shouldInvalidate) {
       import.meta.hot.invalidate()
     }
   })
@@ -291,7 +309,7 @@ if (import.meta.hot) {
 `
     return {
       code,
-      moduleType: 'jsx',
+      moduleType: 'js',
     }
   },
 } satisfies VirtualModule

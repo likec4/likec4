@@ -47,7 +47,8 @@ export let {
   $likec4model,
   useLikeC4Model,
   useLikeC4Views,
-  useLikeC4View
+  useLikeC4View,
+  isLikeC4ViewId
 } = createHooksForModel($likec4data)
 
 if (import.meta.hot) {

@@ -11,6 +11,7 @@
     "test": "playwright test",
     "start": "likec4 start",
     "build-and-preview": "likec4 build -o ./dist ./src && likec4 preview",
+    "build-and-serve:app-config": "likec4 build ./fixtures/app-config && node ./serve-static-build.mjs ./fixtures/app-config/dist 5176",
     "typecheck": "vitest run",
     "test:update-screenshots": "playwright test --update-snapshots",
     "test:playground": "playwright test -c playwright.playground.config.ts",

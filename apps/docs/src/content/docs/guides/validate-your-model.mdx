@@ -1,82 +1,137 @@
 ---
-title: Enforce and validate your model
-description: How to enforce custom rules on your LikeC4 model or validate its consistency
-sidebar: 
-  label: Validate your model
-  order: 1
+title: Validate your model in CI
+description: Check syntax, formatting and your own architecture rules on every pull request
+sidebar:
+  label: Validate in CI
+  order: 2
 ---
 
-import { Card, Aside } from '@astrojs/starlight/components';
 import { PackageManagers } from 'starlight-package-managers';
 
-Sometimes you may want to enforce custom rules on your model or validate its consistency.  
-Here's a simple recipe for how to do that.
+Catch broken models before they are merged.
+A CI check has three layers:
+
+1. **Validation**: syntax and semantic errors, and outdated manual layouts. Use `likec4 validate`.
+2. **Formatting**: source files follow the standard format. Use `likec4 format --check`.
+3. **Your own rules**: architecture constraints specific to your team. Write them as tests with Vitest and the [model API](/tooling/model-api/).
 
 :::note
-Check <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a> repository for a complete example.
+Check the <a href="https://github.com/likec4/template" target='_blank'>likec4/template</a> repository for a complete example.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/likec4/template)
 :::
 
+## Validate the model
 
-## Test your model
+`likec4 validate` checks the workspace for:
 
-In this example we'll use [Vitest](https://vitest.dev) together with the [LikeC4 API](/tooling/model-api/).  
-The LikeC4 API gives you methods to query and traverse the model - perfect for writing tests that enforce your rules.
+- syntax and semantic errors
+- layout drift: manual layouts that no longer match the model
+
+```sh
+# Fail on errors only
+npx likec4 validate
+
+# Fail on errors and on any warning
+npx likec4 validate --max-warnings 0
+```
+
+The command exits with code `0` when the model is valid.
+It exits with code `1` when there are errors, or more warnings than `--max-warnings` allows.
+Without `--max-warnings`, warnings are printed but do not fail the check.
+
+Useful options:
+
+| Option             | What it does                                                         |
+| ------------------ | -------------------------------------------------------------------- |
+| `--max-warnings N` | Fail when there are more than `N` warnings. `0` fails on any warning |
+| `--no-layout`      | Skip the layout drift check                                          |
+| `--file, -f`       | Only report errors and warnings from these files (repeatable)        |
+| `--project, -p`    | Check layout drift of one project in a multi-project workspace       |
+| `--json`           | Print the result as JSON, for other tools to read                    |
+
+The JSON output has `valid`, `errors`, `warnings`, `maxWarnings` and `stats`.
+Each error and warning has a `message`, a `file`, a `line` and a `range`.
+
+See the [CLI reference](/tooling/cli/#validate) for all options.
+
+## Check formatting
+
+`likec4 format --check` reports the files that need formatting.
+It does not change them.
+
+```sh
+npx likec4 format --check
+```
+
+The command exits with code `1` if any file needs formatting.
+Run `npx likec4 format` locally to fix them.
+
+Use `--project` or `--files` to check only part of the workspace.
+See the [CLI reference](/tooling/cli/#format).
+
+## Write your own rules
+
+Some rules are specific to your architecture.
+For example, "every `app` has a technology", or "every relationship has an owner".
+Write them as tests with [Vitest](https://vitest.dev) and the [model API](/tooling/model-api/).
 
 <PackageManagers
   pkg="likec4 vitest"
+  dev
   pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
   frame="none"
 />
 
 ### Example
 
-Suppose we want to enforce that every element of kind `app` has a `technology` specified.
+This test checks that every element of kind `app` has a `technology`:
 
 ```ts
 // test/metadata.spec.ts
-import { LikeC4 } from './LikeC4'
+import { LikeC4 } from 'likec4'
 import { test } from 'vitest'
 
-// Initialize and compute LikeC4 Model
-const likec4 = await LikeC4.fromWorkspace('..')
-const model = likec4.computedModel()
+// Load the workspace and compute the model.
+// The path is resolved from the folder where you run vitest.
+const likec4 = await LikeC4.fromWorkspace('.')
+const model = await likec4.computedModel()
 
-// With `test.for` we generate tests for each element of kind `app`
-// This improves the output, showing each test failure separately
+// `test.for` generates a test per element,
+// so each failure is reported separately
 test.for(
   model
     // Select elements of kind `app`
     .elementsWhere({ kind: 'app' })
-    // Map to array of [id, element] tuples, we need it for test names
+    // Map to [id, element] tuples, the id is used in the test name
     .map(e => [e.id, e] as const)
     .toArray(),
 )('app "%s" has technology', ([, e], { expect }) => {
   expect(e.technology).toBeTruthy()
 })
 
-// Or we can use `expect.soft` to accumulate all errors
+// Or use `expect.soft` to collect all failures in one test
 test('elements of kind `app` have technology', ({ expect }) => {
   expect.hasAssertions()
-  for (const app of model.elements()) {
-    if (app.kind !== 'app') continue // Skip non-app elements
+  for (const app of model.elementsWhere({ kind: 'app' })) {
     expect.soft(app.technology, `app ${app.id} has no technology`).toBeTruthy()
   }
 })
 ```
 
-:::note
-Calls to `LikeC4.fromWorkspace('..')` are memoized (by absolute path).  
-You can call it multiple times without performance impact - for example in `beforeEach`.
+`elementsWhere` returns an iterator.
+Use `.toArray()` when you need an array, or iterate it with `for...of`.
+See the [model API reference](/tooling/model-api/reference/) for all query methods.
 
-You can also use Vitest's [`provide`](https://vitest.dev/advanced/api/vitest.html#provide) function to reuse the same workspace path.
+:::note
+Loading a workspace parses all sources, so it takes time.
+Load it once per test file and reuse the instance.
 :::
 
+### Pre-generate the model
 
-## Pre-generate model
-
-We can optimize our tests by pre-generating the model in [global setup](https://vitest.dev/config/#globalsetup):
+Tests start faster with a pre-generated model.
+Generate it once in Vitest [global setup](https://vitest.dev/config/#globalsetup):
 
 ```ts
 // global-setup.ts
@@ -84,30 +139,33 @@ import { execSync } from 'node:child_process'
 
 export default function() {
   execSync('npx likec4 gen model -o ./test/likec4-model.ts', {
-    stdio: 'inherit'
+    stdio: 'inherit',
   })
 }
 ```
 
-The generated model is fully typed, giving us type checking and autocompletion in tests:
+The generated model is typed.
+You get type checking and autocompletion in tests:
 
 ```ts
 // test/metadata.spec.ts
 import { likec4model } from './likec4-model'
 import { test } from 'vitest'
 
-test('Relationships should have metadata', ({ expect }) => {
+test('relationships have metadata', ({ expect }) => {
   expect.hasAssertions()
   for (const r of likec4model.relationships()) {
     expect.soft(
-      r.getMetadata('key'), // here we get type checking 
-      `Relationship ${r.source.id} -> ${r.target.id} has no metadata`
+      r.getMetadata('key'), // type-checked key
+      `Relationship ${r.source.id} -> ${r.target.id} has no metadata`,
     ).toBeDefined()
   }
 })
 ```
 
-We can go further and use [test context](https://vitest.dev/api/#test-context) to improve our experience:
+### Share the model with a test fixture
+
+A [test context](https://vitest.dev/api/#test-context) fixture puts the model into every test:
 
 ```ts
 // test/likec4test.ts
@@ -118,7 +176,7 @@ interface LikeC4TestFixtures {
   likec4: typeof likec4model
 }
 
-// This wil be our test function with the model in the context
+// A test function with the model in its context
 export const likec4test = test.extend<LikeC4TestFixtures>({
   likec4: async ({}, use) => {
     await use(likec4model)
@@ -126,24 +184,57 @@ export const likec4test = test.extend<LikeC4TestFixtures>({
 })
 ```
 
-Now refactor tests to use it:
+Use it in your tests:
 
 ```ts
 // test/metadata.spec.ts
 import { likec4test } from './likec4test'
 
-likec4test('Relationships should have metadata', ({ expect, likec4 }) => {
+likec4test('relationships have metadata', ({ expect, likec4 }) => {
   expect.hasAssertions()
   for (const r of likec4.relationships()) {
     expect.soft(
-      r.getMetadata('key'), // here we get type checking 
-      `Relationship ${r.source.id} -> ${r.target.id} has no metadata`
+      r.getMetadata('key'),
+      `Relationship ${r.source.id} -> ${r.target.id} has no metadata`,
     ).toBeDefined()
   }
 })
 ```
 
-## Conclusion
+## Run the checks on pull requests
 
-This approach makes it easy to enforce custom constraints and validate your model consistency.  
-Running these checks in CI pipeline is fast and provides immediate feedback when the model breaks your rules.
+This GitHub Actions workflow runs all three checks on every pull request.
+It expects `likec4` and `vitest` in your `devDependencies`.
+
+```yaml
+# .github/workflows/likec4.yml
+name: LikeC4
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22 # likec4 requires Node.js 22.23.3 or newer
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate
+        run: npx likec4 validate --max-warnings 0
+
+      - name: Check formatting
+        run: npx likec4 format --check
+
+      - name: Architecture rules
+        run: npx vitest run
+```
+
+Each step fails the job on a non-zero exit code.
+Other CI systems (GitLab CI, Azure Pipelines, Jenkins) run the same three commands.

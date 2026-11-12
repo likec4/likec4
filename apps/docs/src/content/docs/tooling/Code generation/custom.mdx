@@ -1,8 +1,8 @@
 ---
-title: Custom Generators
+title: Custom generators
 description: How to generate custom files from the LikeC4 model.
 sidebar:
-  label: Custom Generators
+  label: Custom generators
   order: 10
 tableOfContents:
   # minHeadingLevel: 3
@@ -21,7 +21,9 @@ Ensure you have [`likec4`](https://www.npmjs.com/package/likec4) in your depende
   />
 <br />
 
-You can define custom generators in your project config:
+The [`likec4 gen`](/tooling/cli/#generate-mermaid-dot-d2-plantuml) command generates files from your model.  
+You can add your own generators to it.  
+Generators are functions, so define them in a [TypeScript or JavaScript project config](/config/#typescript-config):
 
 ```ts
 // likec4.config.ts
@@ -33,7 +35,7 @@ export default defineConfig({
   generators: {
     'hello': async ({ likec4model, ctx }) => {
       await ctx.write({
-        path: 'hello.txt', // relative to the project root
+        path: 'hello.txt', // relative to the project folder
         content: `Project: ${likec4model.project.id}`,
       })
     },
@@ -47,7 +49,7 @@ Now you can run your generator with [CLI](/tooling/cli):
 likec4 gen hello
 ```
 
-In [multi-project](/dsl/config/multi-projects) workspace use:
+In [multi-project](/config/multi-projects) workspace use:
 
 ```bash
 likec4 gen hello --project my-project
@@ -55,7 +57,18 @@ likec4 gen hello --project my-project
 likec4 gen hello --project my-project --use-dot
 ```
 
-## Reusable Generators
+## Generator parameters
+
+A generator receives an object with two fields:
+
+- `likec4model`: the [LikeC4 model](/tooling/model-api/) of the project, with layouted views.
+- `ctx`: the context of the generator:
+  - `ctx.write({ path, content })` writes a file. `path` is absolute or relative to the project folder; missing folders are created.
+  - `ctx.locate(target)` returns the source location of an element, relationship, view or deployment element.
+  - `ctx.project` has the `id`, `title` and `folder` of the project; `ctx.workspace` is the workspace folder.
+  - `ctx.abort(reason)` stops the generator.
+
+## Reusable generators
 
 There is also helper function `defineGenerators` to define reusable generators:
 
@@ -66,7 +79,7 @@ import { defineGenerators } from 'likec4/config'
 export default defineGenerators({
   'hello': async ({ likec4model, ctx }) => {
     await ctx.write({
-      path: 'hello.txt', // relative to the project root
+      path: 'hello.txt', // relative to the project folder
       content: `Project: ${likec4model.project.id}`,
     })
   },
@@ -95,7 +108,7 @@ import { defineGenerators } from '@likec4/config'
 export default defineGenerators({
   'hello': async ({ likec4model, ctx }) => {
     await ctx.write({
-      path: 'hello.txt', // relative to the project root
+      path: 'hello.txt', // relative to the project folder
       content: `Project: ${likec4model.project.id}`,
     })
   },

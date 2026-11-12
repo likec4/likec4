@@ -39,9 +39,11 @@ export type BaseEdgeData = {
 export type BaseNode<
   Data extends Record<string, unknown> = Record<string, unknown>,
   NodeType extends string = string,
-> = SetRequired<
-  Node<Data & BaseNodeData, NodeType>,
-  'type' | 'initialWidth' | 'initialHeight'
+> = Simplify<
+  SetRequired<
+    Node<Data & BaseNodeData, NodeType>,
+    'type' | 'initialWidth' | 'initialHeight'
+  >
 >
 
 export interface BaseEdge<

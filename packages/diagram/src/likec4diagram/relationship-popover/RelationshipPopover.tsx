@@ -36,9 +36,8 @@ import {
   useState,
 } from 'react'
 import { clamp, entries, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
-import { Markdown } from '../../base-primitives'
-import { DiagramMarkdownRefs } from '../../components/DiagramMarkdownRefs'
 import { Link } from '../../components/Link'
+import { MarkdownWithRefs } from '../../components/markdown'
 import { PortalToContainer } from '../../components/PortalToContainer'
 import { useRootContainerRef } from '../../context'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
@@ -605,9 +604,7 @@ const Relationship = forwardRef<
               },
             }}
           >
-            <DiagramMarkdownRefs>
-              <Markdown value={r.summary} fontSize={'sm'} textScale={0.875} />
-            </DiagramMarkdownRefs>
+            <MarkdownWithRefs value={r.summary} fontSize={'sm'} textScale={0.875} />
           </Box>
         </>
       )}

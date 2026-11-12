@@ -1,8 +1,6 @@
 import {
-  type ContextFromStoreConfig,
   type SnapshotFromStore,
   type StoreFromStoreLogicCreator,
-  createAtomConfig,
   createStoreLogic,
   useSelector as useXstateStoreSelector,
   useStore,
@@ -99,12 +97,6 @@ function StoreGuard({ children, input }: PropsWithChildren<{ input: SelectFlowRe
   useEffect(() => {
     store.trigger.updateInput({ input })
   }, [input])
-
-  useEffect(() => {
-    return store.inspect((event) => {
-      console.log('event', event)
-    }).unsubscribe
-  }, [store])
 
   return (
     <Context value={store}>

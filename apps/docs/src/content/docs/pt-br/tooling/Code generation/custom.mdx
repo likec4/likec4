@@ -21,7 +21,9 @@ Certifique-se de incluir [`likec4`](https://www.npmjs.com/package/likec4) nas de
   />
 <br />
 
-É possível definir geradores personalizados na configuração do projeto:
+O comando [`likec4 gen`](/pt-br/tooling/cli/#gerar-mermaid-dot-d2-e-plantuml) gera arquivos a partir do seu modelo.  
+Você pode adicionar seus próprios geradores a ele.  
+Geradores são funções, então defina-os em uma [configuração do projeto em TypeScript ou JavaScript](/pt-br/config/#configuração-typescript):
 
 ```ts
 // likec4.config.ts
@@ -33,7 +35,7 @@ export default defineConfig({
   generators: {
     'hello': async ({ likec4model, ctx }) => {
       await ctx.write({
-        path: 'hello.txt', // relative to the project root
+        path: 'hello.txt', // relative to the project folder
         content: `Project: ${likec4model.project.id}`,
       })
     },
@@ -47,13 +49,24 @@ Agora você pode executar o gerador usando a [CLI](/pt-br/tooling/cli/):
 likec4 gen hello
 ```
 
-Em um workspace com [múltiplos projetos](/pt-br/dsl/config/multi-projects/), utilize:
+Em um workspace com [múltiplos projetos](/pt-br/config/multi-projects/), utilize:
 
 ```bash
 likec4 gen hello --project my-project
 # Other options
 likec4 gen hello --project my-project --use-dot
 ```
+
+## Parâmetros do gerador
+
+O gerador recebe um objeto com dois campos:
+
+- `likec4model`: o [modelo LikeC4](/pt-br/tooling/model-api/) do projeto, com as visões já diagramadas.
+- `ctx`: o contexto do gerador:
+  - `ctx.write({ path, content })` grava um arquivo. `path` é absoluto ou relativo à pasta do projeto; as pastas que faltam são criadas.
+  - `ctx.locate(target)` retorna a localização no código-fonte de um elemento, relacionamento, visão ou elemento de implantação.
+  - `ctx.project` contém o `id`, o `title` e a `folder` do projeto; `ctx.workspace` é a pasta do workspace.
+  - `ctx.abort(reason)` interrompe o gerador.
 
 ## Geradores reutilizáveis
 
@@ -66,7 +79,7 @@ import { defineGenerators } from 'likec4/config'
 export default defineGenerators({
   'hello': async ({ likec4model, ctx }) => {
     await ctx.write({
-      path: 'hello.txt', // relative to the project root
+      path: 'hello.txt', // relative to the project folder
       content: `Project: ${likec4model.project.id}`,
     })
   },
@@ -95,7 +108,7 @@ import { defineGenerators } from '@likec4/config'
 export default defineGenerators({
   'hello': async ({ likec4model, ctx }) => {
     await ctx.write({
-      path: 'hello.txt', // relative to the project root
+      path: 'hello.txt', // relative to the project folder
       content: `Project: ${likec4model.project.id}`,
     })
   },

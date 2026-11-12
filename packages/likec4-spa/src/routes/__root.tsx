@@ -11,6 +11,7 @@ import { createRootRouteWithContext, Outlet, stripSearchParams } from '@tanstack
 import { defaultTheme } from 'likec4:app-config'
 import { map } from 'remeda'
 import { ErrorBoundary } from '../components/ErrorComponent'
+import { LikeC4CustomizationContext } from '../context/LikeC4CustomizationContext'
 import { resolveForceColorScheme, searchParamsSchema } from '../searchParams'
 
 export type Context = {
@@ -53,15 +54,17 @@ function RootComponent() {
   // the build default is light or dark.
   const defaultColorScheme = theme === 'auto' ? 'auto' : defaultTheme
   return (
-    <LikeC4MantineProvider
-      defaultColorScheme={defaultColorScheme}
-      {...(forceColorScheme && { forceColorScheme })}
-    >
-      <FramerMotionConfig>
-        <ErrorBoundary>
-          <Outlet />
-        </ErrorBoundary>
-      </FramerMotionConfig>
-    </LikeC4MantineProvider>
+    <LikeC4CustomizationContext>
+      <LikeC4MantineProvider
+        defaultColorScheme={defaultColorScheme}
+        {...(forceColorScheme && { forceColorScheme })}
+      >
+        <FramerMotionConfig>
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
+        </FramerMotionConfig>
+      </LikeC4MantineProvider>
+    </LikeC4CustomizationContext>
   )
 }

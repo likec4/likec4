@@ -1,0 +1,18 @@
+{
+  "name": "@likec4/example-customization-roughjs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "likec4 start",
+    "build:site": "likec4 build"
+  },
+  "dependencies": {
+    "roughjs": "^4.6.6"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:react",
+    "likec4": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

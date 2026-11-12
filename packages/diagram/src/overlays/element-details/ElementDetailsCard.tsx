@@ -19,6 +19,7 @@ import {
   ActionIcon,
   ActionIconGroup,
   Badge,
+  Button,
   CloseButton,
   Collapse,
   Flex,
@@ -36,18 +37,17 @@ import { useDebouncedCallback, useTimeoutEffect } from '@react-hookz/web'
 import {
   IconCaretRightFilled,
   IconCheck,
-  IconCopy,
   IconExternalLink,
   IconFileSymlink,
   IconZoomScan,
 } from '@tabler/icons-react'
 import type { Rect } from '@xyflow/system'
-import { type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
+import { type HTMLMotionProps, type PanInfo, m, useDragControls, useMotionValue } from 'motion/react'
 import { type PropsWithChildren, type SyntheticEvent, Fragment, useCallback, useRef, useState } from 'react'
 import { clamp, entries, only } from 'remeda'
-import { Markdown } from '../../base-primitives'
 import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
+import { MarkdownWithRefs } from '../../components/markdown'
 import { DiagramFeatures, IconRenderer, IfEnabled } from '../../context'
 import { useCallbackRef, useUpdateEffect } from '../../hooks'
 import { useCurrentViewModel } from '../../hooks/useCurrentViewModel'
@@ -107,6 +107,24 @@ const MIN_SIZE: CardSize = { width: 320, height: 300 }
 const TABS = ['Properties', 'Relationships', 'Views', 'Structure', 'Deployments'] as const
 const DEPLOYMENT_TABS = ['Properties', 'Views', 'Structure'] as const
 type TabName = typeof TABS[number]
+
+const motionProps = {
+  initial: {
+    [styles.backdropBlur]: '0px',
+    [styles.backdropOpacity]: '2%',
+  },
+  animate: {
+    [styles.backdropBlur]: '3px',
+    [styles.backdropOpacity]: '60%',
+  },
+  exit: {
+    [styles.backdropBlur]: '0px',
+    [styles.backdropOpacity]: '0%',
+    transition: {
+      duration: 0.15,
+    },
+  },
+} satisfies HTMLMotionProps<'dialog'>
 
 export function ElementDetailsCard({
   viewId,
@@ -192,12 +210,12 @@ export function ElementDetailsCard({
   )
 
   const originX = clamp((fromPosition.x - left) / _width, {
-    min: 0.05,
-    max: 0.95,
+    min: 0.01,
+    max: 0.99,
   })
   const originY = clamp((fromPosition.y - top) / _height, {
-    min: 0.05,
-    max: 0.95,
+    min: 0.01,
+    max: 0.99,
   })
 
   const width = useMotionValue(_width)
@@ -307,21 +325,7 @@ export function ElementDetailsCard({
       ref={ref}
       className={cx(styles.dialog, RemoveScroll.classNames.fullWidth)}
       layout
-      initial={{
-        [styles.backdropBlur]: '0px',
-        [styles.backdropOpacity]: '5%',
-      }}
-      animate={{
-        [styles.backdropBlur]: '3px',
-        [styles.backdropOpacity]: '60%',
-      }}
-      exit={{
-        [styles.backdropBlur]: '0px',
-        [styles.backdropOpacity]: '0%',
-        transition: {
-          duration: 0.1,
-        },
-      }}
+      {...motionProps}
       onClick={e => {
         e.stopPropagation()
         if ((e.target as any)?.nodeName?.toUpperCase() === 'DIALOG') {
@@ -357,6 +361,8 @@ export function ElementDetailsCard({
           animate={{
             opacity: 1,
             scale: 1,
+            originX,
+            originY,
           }}
           exit={{
             opacity: 0,
@@ -409,7 +415,7 @@ export function ElementDetailsCard({
                     </Txt>
                   )}
                   <div style={{ marginTop: '0.25rem' }}>
-                    <ElementFqn fqn={elementModel.id} />
+                    <ElementFqn key={elementModel.id} fqn={elementModel.id} />
                   </div>
                 </div>
               </HStack>
@@ -505,16 +511,19 @@ export function ElementDetailsCard({
                           )}
                           {elementModel.links.length > 0 && (
                             <Fact label="links">
-                              {elementModel.links.map((link, i) => <Link key={i} value={link} />)}
+                              {elementModel.links.map((link, i) => <Link key={`${link.url}-${i}`} value={link} />)}
                             </Fact>
                           )}
                           {deploymentElement?.isInstance() && (
                             <Fact label="logical element">
-                              <UnstyledButton
+                              <Button
+                                variant="default"
+                                size="compact-xs"
+                                fz="xxs"
                                 onClick={() =>
                                   diagram.openNodeDetails({ type: 'element', element: deploymentElement.element.id })}>
                                 {deploymentElement.element.title}
-                              </UnstyledButton>
+                              </Button>
                             </Fact>
                           )}
                           {elementModel.hasMetadata() && (
@@ -667,7 +676,7 @@ const FqnPart = styled('div', {
       ml: '-1',
       pl: '0',
     },
-    '&[data-hovered=true]': {
+    '&[data-hovered="true"]': {
       color: 'text.bright',
       backgroundColor: 'surface.sunken',
     },
@@ -692,14 +701,14 @@ const FqnSegment = styled('button', {
       ml: '-1',
       pl: '0',
     },
-    '&[data-hovered=true]': {
+    '&[data-hovered="true"]': {
       color: 'text.bright',
       backgroundColor: 'surface.sunken',
     },
-    _focusVisible: {
-      outline: '[2px solid var(--mantine-primary-color-filled)]',
-      outlineOffset: '[-1px]',
-    },
+    // _focusVisible: {
+    //   outline: '[2px solid var(--mantine-primary-color-filled)]',
+    //   outlineOffset: '[-1px]',
+    // },
   },
 })
 
@@ -714,13 +723,13 @@ const fqnCopyStatus = css({
   opacity: '0',
   transition: 'fast',
   pointerEvents: 'none',
-  _groupHover: {
-    opacity: '1',
-  },
-  _groupFocusWithin: {
-    opacity: '1',
-  },
-  '&[data-copied=true]': {
+  // _groupHover: {
+  //   opacity: '1',
+  // },
+  // _groupFocusWithin: {
+  //   opacity: '1',
+  // },
+  '&[data-copied="true"]': {
     opacity: '1',
     color: '[var(--mantine-color-teal-text)]',
   },
@@ -760,20 +769,19 @@ function ElementFqn<T extends Fqn | DeploymentFqn>({ fqn }: { fqn: T }) {
         gap: '0',
         alignItems: 'baseline',
       }}>
-      <SmallLabel color={'text.non-essential'}>ID</SmallLabel>
+      <SmallLabel color={'text.non-essential'}>FQN</SmallLabel>
       {segments.map(({ name, path }, index) => (
         <Fragment key={path}>
           {index > 0 && (
             <FqnPart
               aria-hidden
               {...segmentHandlers(segments[index - 1]!.path)}
-              data-hovered={!!hovered && isAncestor(segments[index - 1]!.path, hovered)}>
+              data-hovered={isHighlighted(segments[index - 1]!.path)}>
               .
             </FqnPart>
           )}
           <FqnSegment
-            type="button"
-            aria-label={`Copy ${path}`}
+            tabIndex={-1}
             data-hovered={isHighlighted(path)}
             onFocus={() => setHovered(path)}
             onBlur={() => setHovered(null)}
@@ -782,15 +790,9 @@ function ElementFqn<T extends Fqn | DeploymentFqn>({ fqn }: { fqn: T }) {
           </FqnSegment>
         </Fragment>
       ))}
-      <span className={fqnCopyStatus} data-copied={clipboard.copied} role="status">
-        {clipboard.copied
-          ? (
-            <>
-              <IconCheck size={12} stroke={2.5} />
-              Copied
-            </>
-          )
-          : <IconCopy size={12} stroke={2} aria-hidden />}
+      <span className={fqnCopyStatus} data-copied={clipboard.copied}>
+        <IconCheck size={12} stroke={2.5} />
+        Copied
       </span>
     </HStack>
   )
@@ -803,56 +805,64 @@ function stopEventPropagation(e: SyntheticEvent) {
 function ElementDescription<T extends Pick<ElementModel, 'hasSummary' | 'summary' | 'description'>>(
   { element }: { element: T },
 ) {
-  const [opened, { toggle }] = useDisclosure()
   return (
     <ScrollArea className={styles.propertiesMain} scrollbars="y" type="auto" offsetScrollbars>
-      {element.hasSummary && (
-        <>
-          <UnstyledButton
-            className={hstack({
-              gap: '1',
-              fontSize: 'xs',
-              layerStyle: opened ? 'likec4.panel.action.filled' : 'likec4.panel.action',
-            })}
-            aria-expanded={opened}
-            onClick={toggle}>
-            <div>Summary</div>
-            <IconCaretRightFilled
-              size={12}
-              className={css({
-                opacity: '0.6',
-              })}
-              style={{ transform: opened ? 'rotate(90deg)' : 'none' }} />
-          </UnstyledButton>
-          <Collapse expanded={opened}>
-            <styled.div
-              css={{
-                paddingY: '2',
-                paddingLeft: '4',
-                marginY: '2',
-                position: 'relative',
-                _before: {
-                  content: '""',
-                  position: 'absolute',
-                  left: '1',
-                  top: '0',
-                  width: '[2px]',
-                  height: '100%',
-                  backgroundColor: 'border.focus',
-                },
-              }}>
-              <Markdown value={element.summary} />
-            </styled.div>
-          </Collapse>
-        </>
-      )}
+      {element.hasSummary && <ElementSummary element={element} />}
       <styled.div
         css={{
           paddingX: '1',
           paddingTop: '2',
         }}>
-        <Markdown fontSize="lg" value={element.description} emptyText="No description" />
+        <MarkdownWithRefs fontSize="lg" value={element.description} emptyText="No description" />
       </styled.div>
     </ScrollArea>
+  )
+}
+
+function ElementSummary<T extends Pick<ElementModel, 'summary'>>(
+  { element }: { element: T },
+) {
+  const [opened, { toggle }] = useDisclosure()
+  return (
+    <>
+      <UnstyledButton
+        className={hstack({
+          gap: '1',
+          fontSize: 'xs',
+          layerStyle: opened ? 'likec4.panel.action.filled' : 'likec4.panel.action',
+          paddingLeft: '1',
+        })}
+        aria-expanded={opened}
+        onClick={toggle}>
+        <IconCaretRightFilled
+          size={12}
+          style={{
+            width: 12,
+            opacity: 0.5,
+            transform: opened ? 'rotate(90deg)' : 'none',
+          }} />
+        <div>Summary</div>
+      </UnstyledButton>
+      <Collapse expanded={opened} keepMounted={false}>
+        <styled.div
+          css={{
+            paddingY: '2',
+            paddingLeft: '4',
+            marginY: '2',
+            position: 'relative',
+            _before: {
+              content: '""',
+              position: 'absolute',
+              left: '1',
+              top: '0',
+              width: '[2px]',
+              height: '100%',
+              backgroundColor: 'border.focus',
+            },
+          }}>
+          <MarkdownWithRefs value={element.summary} />
+        </styled.div>
+      </Collapse>
+    </>
   )
 }

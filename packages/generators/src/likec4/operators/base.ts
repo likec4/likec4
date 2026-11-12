@@ -458,7 +458,7 @@ const ESCAPED_QUOTE = '\\' + QUOTE
 /**
  * Append text to the current line, wrapped in single quotes
  * Multiple lines are joined with spaces
- * Escapes single quotes by doubling them
+ * Escapes single quotes with a backslash
  */
 export function inlineText<A extends string>(): Op<A>
 export function inlineText(value: string): InferOp
@@ -489,9 +489,9 @@ function multilineText(value: string, quotes = QUOTE): AnyOp {
 
 /**
  * Appends text (handles newlines)
- * If the text contains newlines, it is wrapped in double quotes
+ * If the text contains newlines, it is printed as an indented block between single quotes
  *
- * Escapes single quotes by doubling them
+ * Escapes single quotes with a backslash
  */
 export function text<A extends string>(): Op<A>
 export function text<A>(format: (value: A) => string): Op<A>

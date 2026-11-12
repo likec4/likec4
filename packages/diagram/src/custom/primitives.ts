@@ -9,9 +9,10 @@ export {
   ElementDetailsButton,
   ElementNodeContainer,
   ElementShape,
+  type ElementShapeProps,
   ElementTag,
+  type ElementTagProps,
   ElementTags,
+  type ElementTagsProps,
   Markdown,
-  memoEdge,
-  memoNode,
 } from '../base-primitives'

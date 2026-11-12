@@ -8,7 +8,7 @@
 import type { DiagramView, DynamicViewDisplayVariant, WhereOperator } from '@likec4/core/types'
 import { useActorRef } from '@xstate/react'
 import { useStoreApi } from '@xyflow/react'
-import { deepEqual } from 'fast-equals'
+import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, useEffect } from 'react'
 import { MaxZoom, MinZoom } from '../../base/const'
 import { ComparingLayoutsProvider } from '../../context/ComparingLayoutsContext'
@@ -102,7 +102,7 @@ export function DiagramActorProvider({
 
   useEffect(() => {
     actor.send({ type: 'update.features', features })
-  }, [actor, features])
+  }, [features])
 
   useUpdateEffect(
     () =>
@@ -123,7 +123,6 @@ export function DiagramActorProvider({
         },
       }),
     [
-      actor,
       zoomable,
       where,
       pannable,
@@ -141,11 +140,11 @@ export function DiagramActorProvider({
   useUpdateEffect(() => {
     if (!_defaultVariant) return
     actor.send({ type: 'switch.dynamicViewVariant', variant: _defaultVariant })
-  }, [actor, _defaultVariant])
+  }, [_defaultVariant])
 
   useEffect(
     () => actor.send({ type: 'update.view', view, source: 'external' }),
-    [actor, view],
+    [view],
   )
 
   return (
@@ -163,7 +162,7 @@ export function DiagramActorProvider({
 const selectToggledFeatures = selectDiagramSnapshot((snapshot) => ({
   toggledFeatures: deriveToggledFeatures(snapshot),
   isComparing: isComparingLayouts(snapshot),
-}), deepEqual)
+}), (a, b) => a.isComparing === b.isComparing && shallowEqual(a.toggledFeatures, b.toggledFeatures))
 
 function ToggledFeatures({ children }: PropsWithChildren) {
   const { toggledFeatures, isComparing } = useDiagramSelector(selectToggledFeatures)

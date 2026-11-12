@@ -1,36 +1,10 @@
+import type { ResolvedLikeC4AppOptions } from '../app-options'
 import { logGenerating } from '../logger'
 import type { VirtualModule } from './_shared'
 
-export interface AppConfig {
-  /**
-   * Webcomponent prefix for likec4 webcomponents
-   * @default 'likec4'
-   */
-  webcomponentPrefix?: string
-  /**
-   * Page title for the application
-   * @default 'LikeC4'
-   */
-  pageTitle?: string
-  /**
-   * Whether to use hash history for the application
-   * @default false
-   */
-  useHashHistory?: boolean | undefined
-  /**
-   * Default color scheme for the application
-   * @default 'auto'
-   */
-  theme?: 'light' | 'dark' | undefined
-}
-
-export function createAppConfigModule(config: AppConfig | undefined): VirtualModule {
-  const {
-    webcomponentPrefix = 'likec4',
-    pageTitle = 'LikeC4',
-    useHashHistory = false,
-    theme = 'auto',
-  } = config || {}
+export function createAppConfigModule(
+  { webcomponentPrefix, title, useHashHistory, theme }: ResolvedLikeC4AppOptions,
+): VirtualModule {
   return {
     id: 'likec4:app-config',
     virtualId: 'likec4:plugin/app-config.js',
@@ -47,14 +21,14 @@ if (!BASE.endsWith('/')) {
   BASE = BASE + '/'
 }
 
-export let pageTitle = ${JSON.stringify(pageTitle)}
+export let pageTitle = ${JSON.stringify(title)}
 export let useHashHistory = ${useHashHistory}
 
 export let basepath = useHashHistory ? '/' : BASE
 
 export let isDevelopment = import.meta.env.DEV
 
-export let defaultTheme = ${JSON.stringify(theme)}
+export let defaultTheme = ${JSON.stringify(theme ?? 'auto')}
 
 export let krokiD2SvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/d2/svg'
 export let krokiPumlSvgUrl = import.meta.env.VITE_KROKI_D2_SVG_URL || 'https://kroki.io/plantuml/svg'

@@ -3,7 +3,7 @@ import { defineSlotRecipe } from '@pandacss/dev'
 export const navigationPanel = defineSlotRecipe({
   className: 'likec4-navigation-panel',
   jsx: ['NavigationPanel', /NavigationPanel/],
-  slots: ['root', 'body', 'logo', 'label', 'dropdown'],
+  slots: ['root', 'body', 'logo', 'label', 'breadcrumb', 'dropdown'],
   description: 'LikeC4 Navigation panel',
   base: {
     root: {
@@ -101,6 +101,30 @@ export const navigationPanel = defineSlotRecipe({
       transition: 'fast',
       userSelect: 'none',
       color: 'likec4.panel.text',
+    },
+    breadcrumb: {
+      backgroundColor: 'transparent',
+      cursor: 'pointer',
+      border: '0',
+      padding: '0',
+      appearance: 'none',
+      textAlign: 'start',
+      textDecoration: 'none',
+      touchAction: 'manipulation',
+      webkitTapHighlightColor: 'transparent',
+      fontSize: 'sm',
+      fontWeight: 'medium',
+      truncate: true,
+      color: {
+        base: 'likec4.panel.action',
+        _hover: 'likec4.panel.action.hover',
+      },
+      '&[data-dimmed="true"]': {
+        color: {
+          base: 'likec4.panel.text.dimmed',
+          _hover: 'likec4.panel.action',
+        },
+      },
     },
     dropdown: {
       display: 'flex',

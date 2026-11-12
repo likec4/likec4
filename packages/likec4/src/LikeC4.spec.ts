@@ -291,6 +291,12 @@ describe('LikeC4', () => {
           ],
           "folder": "cloud-system",
         },
+        "customization-roughjs": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "customization-roughjs",
+        },
         "dyn-config": {
           "documents": [
             "_spec.c4",

@@ -52,7 +52,7 @@ function createFixture(files = {}) {
   execFileSync('git', ['init', '--initial-branch=main'], { cwd: root, stdio: 'ignore' })
 
   const referenceFiles = Object.fromEntries(
-    ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md'].map(name => {
+    ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md', 'docs.md'].map(name => {
       const relativePath = `.agents/instructions/${name}`
       return [relativePath, readFileSync(path.join(repoRoot, relativePath), 'utf8')]
     }),
@@ -141,7 +141,7 @@ void describe('check-agent-instructions', () => {
   })
 
   void it('rejects empty task references', () => {
-    for (const name of ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md']) {
+    for (const name of ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md', 'docs.md']) {
       expectFail(
         createFixture({
           [`.agents/instructions/${name}`]: '# Empty reference\n',
@@ -190,7 +190,7 @@ void describe('check-agent-instructions', () => {
 
   void it('accepts CRLF in the root and task references', () => {
     const files = Object.fromEntries(
-      ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md'].map(name => {
+      ['project-map.md', 'model-api.md', 'webapp.md', 'sequence.md', 'docs.md'].map(name => {
         const relativePath = `.agents/instructions/${name}`
         return [relativePath, readFileSync(path.join(repoRoot, relativePath), 'utf8').replaceAll('\n', '\r\n')]
       }),

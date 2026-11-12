@@ -28,6 +28,7 @@ import type { LikeC4DeploymentModel } from './DeploymentModel'
 import type { ElementModel } from './ElementModel'
 import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
+import { memoizeDescription, memoizeSummary } from './utils/richtext'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<A extends Any> = IteratorLike<DeploymentElementModel<A>>
@@ -36,7 +37,7 @@ export type DeploymentNodesIterator<A extends Any> = IteratorLike<DeploymentNode
 
 export type DeploymentElementModel<A extends Any = Any> = DeploymentNodeModel<A> | DeployedInstanceModel<A>
 
-abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags<A>, WithMetadata<A> {
+export abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags<A>, WithMetadata<A> {
   /**
    * Don't use in runtime, only for type inference
    */
@@ -95,7 +96,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$node), this.$model.$model.resolveMarkdownRef)
+    return memoizeSummary(this, preferSummary(this.$node))
   }
 
   /**
@@ -103,7 +104,7 @@ abstract class AbstractDeploymentElementModel<A extends Any> implements WithTags
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$node), this.$model.$model.resolveMarkdownRef)
+    return memoizeDescription(this, preferDescription(this.$node))
   }
 
   get technology(): string | null {
@@ -470,20 +471,16 @@ export class DeployedInstanceModel<A extends Any = Any> extends AbstractDeployme
   }
 
   override get summary(): RichTextOrEmpty {
-    return RichText.memoize(
+    return memoizeSummary(
       this,
-      'summary',
       preferSummary(this.$instance) ?? preferSummary(this.element.$element),
-      this.$model.$model.resolveMarkdownRef,
     )
   }
 
   override get description(): RichTextOrEmpty {
-    return RichText.memoize(
+    return memoizeDescription(
       this,
-      'description',
       preferDescription(this.$instance) ?? preferDescription(this.element.$element),
-      this.$model.$model.resolveMarkdownRef,
     )
   }
 

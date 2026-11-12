@@ -13,13 +13,13 @@ import {
   type scalar,
   GroupElementKind,
   isGroupElementKind,
-  RichText,
 } from '../../types'
 import type * as aux from '../../types/_aux'
 import { memoizeProp } from '../../utils'
 import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
 import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
+import { memoizeDescription, memoizeRichText } from '../utils/richtext'
 import type { EdgesIterator } from './EdgeModel'
 import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
@@ -41,6 +41,10 @@ export class NodeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
     this.$node = $node
   }
 
+  get $model(): typeof this.$viewModel.$model {
+    return this.$viewModel.$model
+  }
+
   get id(): scalar.NodeId {
     return this.$node.id
   }
@@ -54,7 +58,7 @@ export class NodeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.$node.description, this.$viewModel.$model.resolveMarkdownRef)
+    return memoizeDescription(this, this.$node.description)
   }
 
   get technology(): string | null {
@@ -62,7 +66,7 @@ export class NodeModel<A extends Any = Any, V extends ProcessedView<A> = $View<A
   }
 
   get notes(): RichTextOrEmpty {
-    return RichText.memoize(this, 'notes', this.$node.notes, this.$viewModel.$model.resolveMarkdownRef)
+    return memoizeRichText(this, 'notes', this.$node.notes)
   }
 
   get parent(): NodeModel<A, V> | null {

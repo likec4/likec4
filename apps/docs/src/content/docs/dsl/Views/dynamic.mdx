@@ -1,8 +1,9 @@
 ---
 title: Dynamic views
 description: How to describe particular use-case or scenario in LikeC4
-sidebar: 
-  order: 9
+sidebar:
+  label: Dynamic views
+  order: 13
 ---
 
 import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -78,7 +79,7 @@ views {
     api -> auth // title is derived from the model
     api -> api 'process request' // allow self-call
 
-    // reverse direction, as a response to line 59
+    // reverse direction, as a response to line 60
     web <- api 'returns JSON'
 
     // Include elements, that are not participating
@@ -91,6 +92,8 @@ views {
   }
 }
 ```
+
+Besides steps, a dynamic view accepts [`include`](/dsl/views/predicates/) predicates (to add elements that do not participate in steps; `exclude` is not supported) and [`style`](/dsl/views/styles/) rules.
 
 ### Continuous steps
 
@@ -122,14 +125,14 @@ A <- B // is backward
 
 ### Flow control
 
-Steps can be grouped into flow-control blocks to express parallelism, loops, optional paths, alternatives, and error handling. Every block accepts an optional title and can be nested.
+Steps can be grouped into flow-control blocks to express parallelism, loops, optional paths, alternatives, and error handling. Every block accepts an optional title and can be [nested](#nesting).
 
 :::caution[Experimental]
 Flow control blocks are experimental — syntax and rendering may still change.  
 We are looking for your feedback in <a href="https://github.com/likec4/likec4/discussions" target='_blank'>discussions</a>.
 :::
 
-In the `sequence` variant these blocks are rendered as nested frames (`par`, `opt`, `loop`, …), mirroring classic sequence-diagram fragments.
+In the `sequence` [variant](#variants) these blocks are rendered as nested frames (`par`, `opt`, `loop`, …), mirroring classic sequence-diagram fragments.
 
 #### Parallel — `parallel` / `par`
 
@@ -151,7 +154,8 @@ dynamic view parallelexample {
 }
 ```
 
-Nested parallel blocks are not possible - <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>see this discussion</a>
+A parallel block can't be placed directly inside another parallel block - <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>see this discussion</a>.  
+It can still be nested in other blocks (e.g. `parallel` → `opt` → `parallel`).
 
 #### Optional — `opt`
 
@@ -188,12 +192,16 @@ loop 'poll for result' {
 
 #### Alternatives — `alt`
 
-Groups mutually exclusive branches. Each branch is a `when` / `if` / `else` block with an optional title:
+Groups mutually exclusive branches. Each branch is a `when` or `else` block with an optional title (`if` is an alias of `when`).  
+Branches are allowed only inside `alt`, and `alt` accepts only branches:
 
 ```likec4 copy
 alt {
   when 'authorized' {
     web -> api 'requests data'
+  }
+  if 'session expired' {
+    web -> auth 'refreshes token'
   }
   else 'not authorized' {
     web -> customer 'shows login'
@@ -217,7 +225,7 @@ try {
 
 #### Nesting
 
-Blocks can be combined and nested to any depth:
+Blocks can be combined and nested to any depth (except `parallel` directly inside `parallel`, see [above](#parallel--parallel--par)):
 
 ```likec4 copy
 alt {
@@ -232,7 +240,7 @@ alt {
 }
 ```
 
-The `sequence` variant below combines `alt` / `when` / `else`, `loop`, `try` / `catch` / `finally`, `parallel` and `opt`:
+The [`sequence` variant](#sequence) below combines `alt` / `when` / `else`, `loop`, `try` / `catch` / `finally`, `parallel` and `opt`:
 
 <DynamicLikeC4View viewId="flowControl" variant="sequence"/>
 
@@ -260,7 +268,7 @@ dynamic view moreDetails {
 
 ```likec4 copy
 dynamic view stepnotes {
-  title 'Dynamic View Parallel Example'
+  title 'Dynamic View Notes Example'
 
   ui -> api {
     notes '
@@ -288,7 +296,17 @@ Notes with triple quotes can [link elements and views](/dsl/markdown-links), e.g
 ## Variants
 
 Dynamic views support two variants: `diagram` and `sequence`.  
-By default, dynamic views are displayed as diagrams.
+By default, dynamic views are displayed as diagrams. Set the `variant` property to change it:
+
+```likec4 copy {2}
+dynamic view checkout {
+  variant sequence
+  title 'Checkout'
+
+  customer -> web 'opens checkout'
+  web -> api 'POST /orders'
+}
+```
 
 ### Diagram 
 
@@ -308,7 +326,7 @@ The sequence variant supports only connections with _leaf_ elements, i.e. elemen
 
 The sequence variant allows to set the order of actors with `include` predicate:
 
-**Default variant**:
+**Default order**:
 
 ```likec4 copy
 dynamic view order1 {
@@ -323,7 +341,7 @@ Steps define the order of actors.
 
 ![diagram sequence-order-1](../../../../assets/views/sequence-order-1.png)
 
-**Ordered variant:**  
+**Explicit order:**  
 
 ```likec4 copy {9-12}
 dynamic view order2 {

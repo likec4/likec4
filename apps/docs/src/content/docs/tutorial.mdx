@@ -124,9 +124,10 @@ and follow the steps:
         // UI fetches data from the Backend
         ui -> backend
 
-        // Customer uses the UI
-        customer -> ui 'opens in browser'
       }
+
+      // Customer uses the UI
+      customer -> ui 'opens in browser'
     }
 
     views {
@@ -166,12 +167,13 @@ and follow the steps:
         component ui
         component backend
 
-        // UI requests data from the Backend
+        // UI fetches data from the Backend
         ui -> backend
 
-        // Customer uses the UI
-        customer -> ui 'opens in browser'
       }
+
+      // Customer uses the UI
+      customer -> ui 'opens in browser'
     }
 
     views {
@@ -285,7 +287,7 @@ and follow the steps:
           '
         }
 
-        // UI requests data from the Backend
+        // UI fetches data from the Backend
         ui -> backend 'fetches via HTTPS'
       }
 
@@ -341,3 +343,14 @@ and follow the steps:
     />
 
 </Steps>
+
+## What's next
+
+- **Run it locally.** Install the [VS Code extension](/tooling/editors/), or run this in the folder with your `.c4` files:
+  ```sh
+  npx likec4 start
+  ```
+  It starts a live preview at `http://localhost:5173`.
+- **Learn the language.** Start with the [DSL introduction](/dsl/intro/), then read about [views](/dsl/views/).
+- **Share diagrams.** [Publish](/guides/publish/) them as a website, or [embed](/tooling/embed/) them in your docs.
+- **Check your model in CI.** See [Validate your model](/guides/validate-your-model/).

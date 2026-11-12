@@ -3,32 +3,23 @@
 // Copyright (c) 2023-2026 Denis Davydkov
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 //
-import { css, sva } from '@likec4/styles/css'
+import { css, cx, sva } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
+import { overlay } from '@likec4/styles/recipes'
 
 export const backdropBlur = '--_blur'
 export const backdropOpacity = '--_opacity'
 
-export const dialog = css({
-  boxSizing: 'border-box',
-  margin: '0',
-  padding: '0',
-  position: 'fixed',
-  inset: '0',
-  width: '100vw',
-  height: '100vh',
-  maxWidth: '100vw',
-  maxHeight: '100vh',
-  background: 'transparent',
-  border: 'transparent',
-  _backdrop: {
-    // WebkitBackdropFilter: `blur(${backdropBlur})`,
-    backdropFilter: 'auto',
-    backdropBlur: `var(${backdropBlur})`,
-    backgroundColor: `[rgb(36 36 36 / var(${backdropOpacity}, 5%))]`,
-  },
-})
+export const dialog = cx(
+  overlay({
+    fullscreen: true,
+  }),
+  css({
+    background: 'transparent',
+  }),
+)
+
 export const card = css({
   position: 'absolute',
   pointerEvents: 'all',
