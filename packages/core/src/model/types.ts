@@ -7,6 +7,8 @@ import type {
   LayoutedView,
   ParsedLikeC4ModelData,
   scalar,
+  ViewType,
+  ViewWithType,
 } from '../types'
 import type * as aux from '../types/_aux'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
@@ -26,6 +28,8 @@ export type ElementOrFqn<A> = aux.ElementId<A> | { id: aux.Fqn<A> }
 
 export type DeploymentOrFqn<A> = aux.DeploymentId<A> | { id: aux.DeploymentFqn<A> }
 
+export type ViewOrId<A> = aux.ViewId<A> | { id: aux.StrictViewId<A> }
+
 export type NodeOrId = string | { id: scalar.NodeId }
 export type EdgeOrId = string | { id: scalar.EdgeId }
 export type RelationOrId = string | { id: scalar.RelationId }
@@ -35,6 +39,8 @@ export type $View<A extends AnyAux> = {
   computed: ComputedView<A>
   layouted: LayoutedView<A>
 }[aux.Stage<A>]
+
+export type $ViewWithType<A extends AnyAux, V extends ViewType> = ViewWithType<$View<A>, V>
 
 export type $ViewModel<A extends AnyAux> = {
   parsed: never
