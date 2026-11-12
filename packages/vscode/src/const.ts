@@ -3,6 +3,9 @@ export const languageId = 'likec4'
 
 export const globPattern = '**/?*.{c4,likec4,like-c4}'
 
+export const isWebUi = () => vscode.env.uiKind === vscode.UIKind.Web
+export const isVirtual = () => vscode.workspace.workspaceFolders?.every(f => f.uri.scheme !== 'file') || false
+
 export const hasAI = !!vscode.lm?.selectChatModels
 
 declare global {

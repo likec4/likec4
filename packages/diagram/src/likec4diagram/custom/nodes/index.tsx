@@ -13,6 +13,8 @@ export {
 export { SequenceActorNode, SequenceParallelArea } from './SequenceActorNode'
 export { SequenceSubflowArea } from './SequenceSubFlow'
 
+export { NodeDrifts, type NodeDriftsProps } from './NodeDrifts'
+
 export * from './CompoundActions'
 export * from './ElementActions'
 export * from './toolbar/CompoundToolbar'
