@@ -2,7 +2,7 @@ import { Builder } from '@likec4/core/builder'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { aux, LayoutedView, ProcessedView } from '@likec4/core/types'
 import { expect, test, vi } from 'vitest'
-import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
+import { fakeComputedView3Levels, fakeComputedViewWithGroups, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import { generateD2 } from './generate-d2'
 
 const b = Builder
@@ -99,4 +99,34 @@ test('generate D2 - fakeDiagram2', () => {
 
 test('generate D2 - fakeComputedView 3 Levels', () => {
   expect(generateD2(mockViewModel(fakeComputedView3Levels))).toMatchSnapshot()
+})
+
+test('generate D2 - view with group', () => {
+  const d2 = generateD2(mockViewModel(fakeComputedViewWithGroups))
+  expect(d2).toMatchSnapshot()
+  expect(d2).toContain('"@gr1": {')
+  expect(d2).toContain('  "Auth": {')
+  expect(d2).toContain('  "Portal": {')
+  expect(d2).toContain('"App" -> "@gr1"."Auth": "signs in"')
+})
+
+test('generate D2 - element names that are D2 keywords, titles with ${}', () => {
+  const m = Builder
+    .specification({ elements: { component: {} } })
+    .model(({ component, rel }, _) =>
+      _(
+        component('label', 'Label').with(
+          component('icon', 'Cost ${price}'),
+        ),
+        component('top', 'Top'),
+        rel('label.icon', 'top', { title: 'uses ${x}' }),
+      )
+    )
+    .views(({ view, $include }) => view('index').with($include('*'), $include('label.*')))
+    .toLikeC4Model()
+  const d2 = generateD2(m.view('index'))
+  expect(d2).toContain('"Label": {')
+  expect(d2).toContain('"Icon": {')
+  expect(d2).toContain('label: "Cost \\${price}"')
+  expect(d2).toContain('"Label"."Icon" -> "Top": "uses \\${x}"')
 })
