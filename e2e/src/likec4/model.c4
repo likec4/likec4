@@ -63,6 +63,7 @@ model {
     }
   }
   customer .uses cloud 'uses and pays' {
+    #api
     navigateTo dynamic-view-1
   }
   cloud .uses amazon 'uses' {

@@ -36,6 +36,7 @@ import {
   useState,
 } from 'react'
 import { clamp, entries, filter, isEmpty, isTruthy, map, partition, pipe } from 'remeda'
+import { ElementTag } from '../../base-primitives/element/ElementTags'
 import { Link } from '../../components/Link'
 import { MarkdownWithRefs } from '../../components/markdown'
 import { PortalToContainer } from '../../components/PortalToContainer'
@@ -412,6 +413,7 @@ const Relationship = forwardRef<
   const sourceId = getEndpointId(r, 'source', sourceNode)
   const targetId = getEndpointId(r, 'target', targetNode)
   const links = r.links
+  const tags = r.tags
   const infoIconRef = useRef<HTMLDivElement>(null)
   const [metadataPortalTarget, setMetadataPortalTarget] = useState<HTMLDialogElement | null>(null)
 
@@ -587,6 +589,14 @@ const Relationship = forwardRef<
           >
             {r.technology}
           </Text>
+        </HStack>
+      )}
+      {tags.length > 0 && (
+        <HStack gap="2" alignItems="center">
+          <Label>tags</Label>
+          <HStack gap="1" flexWrap="wrap">
+            {tags.map(tag => <ElementTag key={tag} tag={tag} />)}
+          </HStack>
         </HStack>
       )}
       {r.summary.nonEmpty && (
