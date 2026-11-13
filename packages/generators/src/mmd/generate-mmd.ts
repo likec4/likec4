@@ -149,10 +149,21 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const styles = viewmodel.$model.$styles
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
+  // Different ids can end up with the same name, e.g. `order-service` and `order_service`
+  // are both `Order_service`. Mermaid would merge such nodes, so add a numeric suffix.
+  const usedNames = new Set<string>()
+  const uniqueName = (name: string): string => {
+    let unique = name
+    for (let i = 2; usedNames.has(unique); i++) {
+      unique = `${name}${i}`
+    }
+    usedNames.add(unique)
+    return unique
+  }
 
   const printNode = (node: Node, parentName?: string): CompositeGeneratorNode => {
     const name = nodeName(node)
-    const fqnName = (parentName ? parentName + '.' : '') + name
+    const fqnName = uniqueName((parentName ? parentName + '.' : '') + name)
     names.set(node.id, fqnName)
 
     const baseNode = new CompositeGeneratorNode()

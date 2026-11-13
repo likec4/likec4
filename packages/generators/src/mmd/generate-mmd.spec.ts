@@ -108,3 +108,43 @@ test('generate mermaid - relationship line and color as arrow and linkStyle', ({
   expect(mmd).toContain(`linkStyle 0,2 stroke:${red.relationships.line}\n`)
   expect(mmd).toContain(`linkStyle 1 stroke:${gray.relationships.line},stroke-dasharray:8 4\n`)
 })
+
+test('generate mermaid - ids with the same Mermaid name get unique names', ({ expect }) => {
+  const node = (id: string, title: string) => ({
+    id,
+    parent: null,
+    children: [],
+    title,
+    shape: 'rectangle',
+    color: 'primary',
+  })
+  const view = {
+    ...fakeDiagram,
+    nodes: [
+      node('shop', 'Shop'),
+      node('order-service', 'Order service'),
+      node('order_service', 'Legacy order service'),
+    ],
+    edges: [
+      {
+        ...fakeDiagram.edges[0],
+        id: 'shop:order-service',
+        source: 'shop',
+        target: 'order-service',
+        label: 'places orders',
+      },
+      {
+        ...fakeDiagram.edges[0],
+        id: 'order-service:order_service',
+        source: 'order-service',
+        target: 'order_service',
+        label: 'syncs to',
+      },
+    ],
+  } as unknown as ProcessedView
+  const mmd = generateMermaid(mockViewModel(view))
+  expect(mmd).toContain('Order_service@{ shape: rectangle, label: "Order service" }')
+  expect(mmd).toContain('Order_service2@{ shape: rectangle, label: "Legacy order service" }')
+  expect(mmd).toMatch(/Shop .* Order_service\n/)
+  expect(mmd).toMatch(/Order_service .* Order_service2\n/)
+})
