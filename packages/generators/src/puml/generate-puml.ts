@@ -99,7 +99,21 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const relationshipsColorProvider = (key: KeysOf<RelationshipColorValues>) => (colorKey: Color) =>
     colorKey in colors ? colors[colorKey as ThemeColor].relationships[key] : undefined
 
+  // PlantUML names are PascalCased ids, so different ids can end up with the same name,
+  // e.g. `payment.gateway` and `payment-gateway` are both `PaymentGateway`.
+  // PlantUML would merge such elements, so add a numeric suffix to keep the names unique.
   const names = new Map<NodeId, string>()
+  const usedNames = new Set<string>()
+  for (const node of nodes) {
+    const baseName = fqnName(node.id)
+    let name = baseName
+    for (let i = 2; usedNames.has(name); i++) {
+      name = `${baseName}${i}`
+    }
+    usedNames.add(name)
+    names.set(node.id, name)
+  }
+  const pumlName = (node: ComputedNode): string => names.get(node.id) ?? fqnName(node.id)
 
   const printHeader = () => {
     return new CompositeGeneratorNode()
@@ -128,7 +142,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   const printStereotypes = (node: ComputedNode): CompositeGeneratorNode => {
     const shape = pumlShape(node)
-    const fqn = fqnName(node.id)
+    const fqn = pumlName(node)
 
     return new CompositeGeneratorNode()
       .append('skinparam ', shape, '<<', fqn, '>>', '{', NL)
@@ -149,10 +163,9 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   const printNode = (node: ComputedNode): CompositeGeneratorNode => {
     const shape = pumlShape(node)
-    const fqn = fqnName(node.id)
+    const fqn = pumlName(node)
     const label = escapeLabel(node.title) || nodeName(node)
     const tech = escapeLabel(node.technology)
-    names.set(node.id, fqn)
 
     // Refs in markdown (`[[fqn]]`) are resolved to titles by the model
     const description = RichText.from(node.description, viewmodel.$model.resolveMarkdownRef)
@@ -168,8 +181,7 @@ export function generatePuml(viewmodel: LikeC4ViewModel<aux.Unknown>) {
 
   const printBoundary = (node: ComputedNode): CompositeGeneratorNode => {
     const label = escapeLabel(node.title) || nodeName(node)
-    const fqn = fqnName(node.id)
-    names.set(node.id, fqn)
+    const fqn = pumlName(node)
 
     return new CompositeGeneratorNode()
       .append('rectangle "', label, '" <<', fqn, '>> as ', fqn, ' {', NL)

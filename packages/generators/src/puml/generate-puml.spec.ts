@@ -92,3 +92,67 @@ test('generate puml - with dashed identifiers', () => {
 test('generate puml - AllShapes', ({ expect }) => {
   expect(generatePuml(mockViewModel(fakeComputedViewWithAllShapes))).toMatchSnapshot()
 })
+
+test('generate puml - ids with the same PascalCase name get unique names', () => {
+  const view: ProcessedView = {
+    edges: [
+      {
+        id: 'shop:payment.gateway',
+        label: 'charges via',
+        source: 'shop',
+        target: 'payment.gateway',
+      },
+      {
+        id: 'payment.gateway:payment-gateway',
+        label: 'forwards to',
+        source: 'payment.gateway',
+        target: 'payment-gateway',
+      },
+    ],
+    nodes: [
+      {
+        children: [],
+        color: 'primary',
+        id: 'shop',
+        parent: null,
+        shape: 'rectangle',
+        title: 'Shop',
+      },
+      {
+        children: ['payment.gateway'],
+        color: 'primary',
+        id: 'payment',
+        parent: null,
+        shape: 'rectangle',
+        title: 'Payments',
+      },
+      {
+        children: [],
+        color: 'primary',
+        id: 'payment.gateway',
+        parent: 'payment',
+        shape: 'rectangle',
+        title: 'Internal gateway',
+      },
+      {
+        children: [],
+        color: 'secondary',
+        id: 'payment-gateway',
+        parent: null,
+        shape: 'rectangle',
+        title: 'External payment gateway',
+      },
+    ],
+    autoLayout: { direction: 'TB' },
+    id: 'sameNames',
+    title: 'Same names',
+  } as any
+
+  const result = generatePuml(mockViewModel(view))
+
+  expect(result).toContain('rectangle "==Internal gateway" <<PaymentGateway>> as PaymentGateway\n')
+  expect(result).toContain('rectangle "==External payment gateway" <<PaymentGateway2>> as PaymentGateway2\n')
+  expect(result).toContain('Shop .[#777777,thickness=2].> PaymentGateway : ')
+  expect(result).toContain('PaymentGateway .[#777777,thickness=2].> PaymentGateway2 : ')
+  expect(result).toContain('skinparam rectangle<<PaymentGateway2>>{')
+})
