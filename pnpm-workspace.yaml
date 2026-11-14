@@ -88,8 +88,8 @@ catalogs:
     '@types/ws': ^8.18.2
     ws: ^8.22.0
   astro:
-    "@astrojs/check": 0.9.10
-    "@astrojs/react": 7.1.0
+    "@astrojs/check": 0.9.12
+    "@astrojs/react": 7.1.7
     "@astrojs/starlight": 0.42.10
     "@astrojs/starlight-tailwind": 5.0.0
     "@expressive-code/plugin-collapsible-sections": 0.44.3
