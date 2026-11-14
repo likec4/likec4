@@ -410,11 +410,11 @@ catalogs:
       version: 0.8.1
   langium:
     langium:
-      specifier: 4.4.0
-      version: 4.4.0
+      specifier: 4.4.2
+      version: 4.4.2
     langium-cli:
-      specifier: 4.4.0
-      version: 4.4.0
+      specifier: 4.4.1
+      version: 4.4.1
   mantine:
     '@mantine/colors-generator':
       specifier: 9.7.4
@@ -1006,7 +1006,7 @@ importers:
         version: 4.2.0
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       miniflare:
         specifier: 4.20260730.0
         version: 4.20260730.0
@@ -1575,7 +1575,7 @@ importers:
         version: 2.2.3
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       pako:
         specifier: 'catalog:'
         version: 2.2.0
@@ -1693,7 +1693,7 @@ importers:
         version: 2.2.3
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
@@ -1787,7 +1787,7 @@ importers:
         version: 2.7.0
       langium-cli:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.1
       memfs:
         specifier: 'catalog:'
         version: 4.80.0
@@ -1835,7 +1835,7 @@ importers:
         version: 6.1.7
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       pathe:
         specifier: catalog:utils
         version: 2.0.3
@@ -2232,7 +2232,7 @@ importers:
         version: 1.14.3
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       mkdirp:
         specifier: ^3.0.1
         version: 3.0.1
@@ -2613,7 +2613,7 @@ importers:
         version: 22.20.5
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -2740,7 +2740,7 @@ importers:
         version: 7.5.0
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -2983,7 +2983,7 @@ importers:
         version: 2.2.3
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
@@ -3162,7 +3162,7 @@ importers:
         version: 6.2.1
       langium:
         specifier: catalog:langium
-        version: 4.4.0
+        version: 4.4.2
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
@@ -8531,17 +8531,17 @@ packages:
     resolution: {integrity: sha512-9zy9lkjac+TR1c2tG+mkNSVlyOpInnWdSMiue4F+kq8TwJSgv6o8jhLRg8Ho6SnZ9wOYUq/yozts9qQCfk7bIw==}
     engines: {node: '>=18'}
 
-  langium-cli@4.4.0:
-    resolution: {integrity: sha512-CSqwKebp8qWa9Y5s1xgEl4qxGPH71Wf4yMXKPuwICoL2yRfVtUl2zpTwF4O5WhYOxnuSpf0rJrxzjQRK5whL7Q==}
-    engines: {node: '>=20.10.0', npm: '>=10.2.3'}
+  langium-cli@4.4.1:
+    resolution: {integrity: sha512-egbDRXcIe4rFQWcrutFJUpAKP1T4b96q3aA4HK+alRdFKHcV+/xqjgOZ195dJ7kLx1Nj8UfZgH0wWW+86+dFLg==}
+    engines: {node: ^22.22.2 || ^24.15.0 || >=26, npm: '>=10.2.3'}
     hasBin: true
 
   langium-railroad@4.4.0:
     resolution: {integrity: sha512-5dZINWslRqUkQaVtn+45SdZyOZ2+LwBGrzWKbRkVf76IZPCRTBzbmNYaCFW09Nwl5dMmv+iQvwkUwViljN0hvg==}
 
-  langium@4.4.0:
-    resolution: {integrity: sha512-VFIFtohpsmJeQ+LkaeuUNtyvkklecklI0FSLxFS8JfiGABE9XCpUJwYUNnLk6C2aOyk0w99tNlvd0pmbJ2AW/w==}
-    engines: {node: '>=20.10.0', npm: '>=10.2.3'}
+  langium@4.4.2:
+    resolution: {integrity: sha512-vnpUUwxUHK7rUUs3jLlP38rfCJE0WHP+CKnpdaAJoYZi6Cu3MEfI3q15Iz0FOyIYrXZHWSuvZMPbgDoJfaqKXw==}
+    engines: {node: ^22.22.2 || ^24.15.0 || >=26, npm: '>=10.2.3'}
 
   launch-editor@2.14.2:
     resolution: {integrity: sha512-NHJEb30MGBCkmZXLZwz25t37QR4aY03ZzPYUJXOJaOa92uWwExI9SBQUuIznBYc1xkD7cJNGX7oc3Nl3sq2kQQ==}
@@ -16381,22 +16381,22 @@ snapshots:
 
   ky@1.14.3: {}
 
-  langium-cli@4.4.0:
+  langium-cli@4.4.1:
     dependencies:
       chalk: 5.6.2
       commander: 15.0.0
       fs-extra: 11.4.1
       jsonschema: 1.5.0
-      langium: 4.4.0
+      langium: 4.4.2
       langium-railroad: 4.4.0
       lodash: 4.18.1
 
   langium-railroad@4.4.0:
     dependencies:
-      langium: 4.4.0
+      langium: 4.4.2
       railroad-diagrams: 1.0.0
 
-  langium@4.4.0:
+  langium@4.4.2:
     dependencies:
       '@chevrotain/regexp-to-ast': 13.2.0
       chevrotain: 13.2.0
