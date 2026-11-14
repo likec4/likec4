@@ -3,167 +3,189 @@
 exports[`generate D2 - element view 1`] = `
 "direction: down
 
-Alice: {
+"Alice": {
   label: "Alice"
 }
-Bob: {
+"Bob": {
   label: "Bob"
 }
-Cloud: {
+"Cloud": {
   label: "Cloud"
 
-  Frontend: {
+  "Frontend": {
     label: "frontend"
   }
-  Backend: {
+  "Backend": {
     label: "Backend"
   }
 }
 
-Alice -> Cloud.Frontend: "uses \\n at home"
-Bob -> Cloud.Frontend: "uses \\n at work"
-Cloud.Frontend -> Cloud.Backend: "requests"
+"Alice" -> "Cloud"."Frontend": "uses \\n at home"
+"Bob" -> "Cloud"."Frontend": "uses \\n at work"
+"Cloud"."Frontend" -> "Cloud"."Backend": "requests"
 "
 `;
 
 exports[`generate D2 - element view 3 levels 1`] = `
 "direction: down
 
-Alice: {
+"Alice": {
   label: "Alice"
 }
-Bob: {
+"Bob": {
   label: "Bob"
 }
-Cloud: {
+"Cloud": {
   label: "Cloud"
 
-  Frontend: {
+  "Frontend": {
     label: "frontend"
   }
-  Backend: {
+  "Backend": {
     label: "Backend"
 
-    Api: {
+    "Api": {
       label: "API"
     }
-    Db: {
+    "Db": {
       label: "DB"
     }
   }
 }
 
-Cloud.Frontend -> Cloud.Backend.Api: "requests"
-Cloud.Backend.Api -> Cloud.Backend.Db
-Alice -> Cloud.Frontend: "uses \\n at home"
-Bob -> Cloud.Frontend: "uses \\n at work"
+"Cloud"."Frontend" -> "Cloud"."Backend"."Api": "requests"
+"Cloud"."Backend"."Api" -> "Cloud"."Backend"."Db"
+"Alice" -> "Cloud"."Frontend": "uses \\n at home"
+"Bob" -> "Cloud"."Frontend": "uses \\n at work"
 "
 `;
 
 exports[`generate D2 - fakeComputedView 3 Levels 1`] = `
 "direction: down
 
-Amazon: {
+"Amazon": {
   label: "amazon"
 }
-Cloud: {
+"Cloud": {
   label: "cloud"
 
-  Backend: {
+  "Backend": {
     label: "backend"
 
-    Graphql: {
+    "Graphql": {
       label: "graphql"
     }
-    Storage: {
+    "Storage": {
       label: "storage"
     }
   }
-  FrontendAdminPanel: {
+  "FrontendAdminPanel": {
     label: "adminPanel"
   }
-  FrontendDashboard: {
+  "FrontendDashboard": {
     label: "dashboard"
   }
 }
-Customer: {
+"Customer": {
   label: "customer"
 }
-Support: {
+"Support": {
   label: "support"
 }
 
-Cloud.FrontendDashboard -> Cloud.Backend.Graphql
-Cloud.FrontendAdminPanel -> Cloud.Backend.Graphql
-Cloud.Backend.Storage -> Amazon
-Cloud.Backend.Graphql -> Cloud.Backend.Storage
-Support -> Cloud.FrontendAdminPanel
-Customer -> Cloud.FrontendDashboard
+"Cloud"."FrontendDashboard" -> "Cloud"."Backend"."Graphql"
+"Cloud"."FrontendAdminPanel" -> "Cloud"."Backend"."Graphql"
+"Cloud"."Backend"."Storage" -> "Amazon"
+"Cloud"."Backend"."Graphql" -> "Cloud"."Backend"."Storage"
+"Support" -> "Cloud"."FrontendAdminPanel"
+"Customer" -> "Cloud"."FrontendDashboard"
 "
 `;
 
 exports[`generate D2 - fakeDiagram 1`] = `
 "direction: down
 
-Amazon: {
+"Amazon": {
   label: "amazon"
 }
-Cloud: {
+"Cloud": {
   label: "cloud"
 
-  Backend: {
+  "Backend": {
     label: "backend"
   }
-  Frontend: {
+  "Frontend": {
     label: "frontend"
   }
 }
-Customer: {
+"Customer": {
   label: "customer"
 }
-Support: {
+"Support": {
   label: "support"
 }
 
-Cloud.Frontend -> Cloud.Backend: "requests"
-Cloud.Backend -> Amazon
-Support -> Cloud.Frontend
-Customer -> Cloud.Frontend: "opens"
+"Cloud"."Frontend" -> "Cloud"."Backend": "requests"
+"Cloud"."Backend" -> "Amazon"
+"Support" -> "Cloud"."Frontend"
+"Customer" -> "Cloud"."Frontend": "opens"
 "
 `;
 
 exports[`generate D2 - fakeDiagram2 1`] = `
 "direction: down
 
-Client: {
+"Client": {
   label: "client"
 }
-SystemBackend: {
+"SystemBackend": {
   label: "backend"
 }
-SystemFrontend: {
+"SystemFrontend": {
   label: "frontend"
 }
 
-SystemFrontend -> SystemBackend: "requests"
-Client -> SystemFrontend: "opens"
+"SystemFrontend" -> "SystemBackend": "requests"
+"Client" -> "SystemFrontend": "opens"
 "
 `;
 
 exports[`generate D2 - landscape 1`] = `
 "direction: down
 
-Alice: {
+"Alice": {
   label: "Alice"
 }
-Bob: {
+"Bob": {
   label: "Bob"
 }
-Cloud: {
+"Cloud": {
   label: "Cloud"
 }
 
-Alice -> Cloud: "uses \\n at home"
-Bob -> Cloud: "uses \\n at work"
+"Alice" -> "Cloud": "uses \\n at home"
+"Bob" -> "Cloud": "uses \\n at work"
+"
+`;
+
+exports[`generate D2 - view with group 1`] = `
+"direction: down
+
+"App": {
+  label: "App"
+}
+"@gr1": {
+  label: "Infra"
+
+  "Auth": {
+    label: "Auth"
+  }
+  "Portal": {
+    label: "Portal"
+  }
+}
+
+"App" -> "@gr1"."Auth": "signs in"
+"App" -> "@gr1"."Portal": "authz"
 "
 `;
