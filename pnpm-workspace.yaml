@@ -131,7 +131,7 @@ catalogs:
     zod: ^4.6.7
   hono:
     "@hono/mcp": ^0.3.5
-    "@hono/node-server": ^2.1.6
+    "@hono/node-server": ^2.1.7
     "@hono/oauth-providers": ^0.9.1
     "@hono/zod-validator": ^0.9.1
     hono: ^4.13.13
