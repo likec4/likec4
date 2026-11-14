@@ -1,4 +1,4 @@
-import type { ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { tryOrLog } from './_shared'
@@ -39,6 +39,18 @@ export const viewRuleRankChecks = (_services: LikeC4Services): ValidationCheck<a
           property: 'targets',
         })
       }
+    }
+  })
+}
+
+export const viewRuleRelationshipStyleChecks = (
+  _services: LikeC4Services,
+): ValidationCheck<ast.ViewRuleRelationshipStyle> => {
+  return tryOrLog((el, accept) => {
+    if (AstUtils.hasContainerOfType(el, ast.isDynamicView)) {
+      accept('error', 'Relationship styles are not supported in dynamic views', {
+        node: el,
+      })
     }
   })
 }
