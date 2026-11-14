@@ -1327,8 +1327,8 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       mnemonist:
-        specifier: 0.40.6
-        version: 0.40.6
+        specifier: 0.40.8
+        version: 0.40.8
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.1
@@ -9069,8 +9069,8 @@ packages:
   mnemonist@0.39.8:
     resolution: {integrity: sha512-vyWo2K3fjrUw8YeeZ1zF0fy6Mu59RHokURlld8ymdUPjMlD9EC9ov1/YPqTgqRvUN9nTr3Gqfz29LYAmu0PHPQ==}
 
-  mnemonist@0.40.6:
-    resolution: {integrity: sha512-c4mbin5HCz77Srw1L3nwThCH/0hLVYuY3oMF2plP2tKfp/gqzSgHP63qRUOpL8jutYWNNCr49LUlKSt7exkaww==}
+  mnemonist@0.40.8:
+    resolution: {integrity: sha512-tebbu8e/W45Nz7USfGcmnHUiOcNsXa9Mow8eb0UPwOk3gu6grw0/2+SefXBJCgDQpE9mdn7dNUMJBra9mcRUVw==}
 
   monaco-languageclient@11.0.2:
     resolution: {integrity: sha512-wMwWYHSXVHtD+L9MCCkapOW1zXM+zjS8zBsRQCw6PTSTty2ah4vbrm4aL/+mCmBykuYv8KJ6q+/tJLgNtBEfrw==}
@@ -17115,7 +17115,7 @@ snapshots:
     dependencies:
       obliterator: 2.0.5
 
-  mnemonist@0.40.6:
+  mnemonist@0.40.8:
     dependencies:
       obliterator: 2.0.5
 
