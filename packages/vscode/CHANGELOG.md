@@ -1,5 +1,36 @@
 # likec4-vscode
 
+## 1.61.0
+
+### Patch Changes
+
+- [#3496](https://github.com/likec4/likec4/pull/3496) [`615a6d1`](https://github.com/likec4/likec4/commit/615a6d194299331fe361ae52087e638b590389a7) Thanks [@davydkov](https://github.com/davydkov)! - TypeScript and JavaScript project configs (`likec4.config.ts`, `.mts`, `.cts`, `.mjs`, `.cjs`, `.js`) are no longer experimental. They are now loaded with [jiti](https://github.com/unjs/jiti) instead of esbuild: loading no longer writes temporary `*.bundled_*.mjs` files next to your config, the VSCode extension loads configs faster and is smaller, and `esbuild` is no longer installed with `likec4`, `@likec4/lsp` and `@likec4/mcp`. If you use `@likec4/config` or `@likec4/language-server` directly, install `jiti` instead of `bundle-require` and `esbuild` to load non-JSON configs.
+  
+  Fixed: changes to a project config (for example, title or styles) were not applied to the model until the project files were edited.
+
+- [`e3d12de`](https://github.com/likec4/likec4/commit/e3d12deba102c952f9611529f058af3c122fe85f) Thanks [@davydkov](https://github.com/davydkov)! - Fix the MCP view rendering app failing to load its assets when the MCP server runs from the VS Code extension.
+
+- [#3491](https://github.com/likec4/likec4/pull/3491) [`3a4bb8b`](https://github.com/likec4/likec4/commit/3a4bb8bd62ff1ce2af560d6280622cd5908395c6) Thanks [@davydkov](https://github.com/davydkov)! - Link to elements and views from Markdown values: `[[cloud.api]]`, `[[cloud.api|label]]` and `[[view:index]]`. In the editor, typing `[[` suggests elements and views of the project, links are highlighted, broken links and unknown prefixes get a warning, and go to definition (Ctrl+click, F12) jumps to the element or view. Inside tables, write the label separator as `\\|`; a literal `[[` is written as `\\[[`.
+  
+  Implements [#2804](https://github.com/likec4/likec4/issues/2804).
+
+- [#3504](https://github.com/likec4/likec4/pull/3504) [`3cce820`](https://github.com/likec4/likec4/commit/3cce820fadd11839d6bd745cf611722085558065) Thanks [@davydkov](https://github.com/davydkov)! - Smaller bundles: the unused brotli decoder (~490KB) is no longer bundled with the text measurement.
+
+- [#3544](https://github.com/likec4/likec4/pull/3544) [`45c55d9`](https://github.com/likec4/likec4/commit/45c55d952e811bacb2fc6572be7dbb1f37d19e1d) Thanks [@davydkov](https://github.com/davydkov)! - Copy the current diagram preview as a PNG from the preview context menu (uses the same Playwright export path as `likec4 export png`).
+
+- [#3559](https://github.com/likec4/likec4/pull/3559) [`2d016d8`](https://github.com/likec4/likec4/commit/2d016d8d91d1eb2d9514c6962de8a57965e6cb1a) Thanks [@davydkov](https://github.com/davydkov)! - Copy as PNG and Save as PNG now use the `likec4` package installed in the exported project (including nested monorepo packages and Yarn PnP), and the new `likec4.cli.path` setting points them to a specific CLI. When the CLI is missing, the error offers to install it with your package manager.
+
+- [#3546](https://github.com/likec4/likec4/pull/3546) [`74005d3`](https://github.com/likec4/likec4/commit/74005d3269b8b73b22800bf24d92bfacbcf96889) Thanks [@davydkov](https://github.com/davydkov)! - Save a view as PNG from the CodeLens next to open preview (and from the command palette).
+
+- [`e3d12de`](https://github.com/likec4/likec4/commit/e3d12deba102c952f9611529f058af3c122fe85f) Thanks [@davydkov](https://github.com/davydkov)! - The language server now watches project configs, manual layout snapshots and description files itself, using file change notifications from the editor. Any LSP client gets these updates, not only VS Code, and the CLI and Vite plugin handle changes the same way.
+  
+  - A changed description file (`descriptionFile`) updates the model in the editor.
+  - Deleting, moving or copying a folder updates the documents inside it, removes its manual layouts, and reloads the projects it contained.
+  - Saving a project config without actual changes (whitespace, comments) no longer rebuilds the project.
+  - Applying model edits no longer fails in the browser (VS Code for the Web).
+  
+  `DidChangeSnapshotNotification` is removed from the language server protocol, the server no longer needs it.
+
 ## 1.60.0
 
 ### Patch Changes
