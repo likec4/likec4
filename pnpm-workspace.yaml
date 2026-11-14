@@ -222,7 +222,7 @@ catalogs:
     unstorage: ^1.17.5
     fast-json-patch: ^3.1.1
   vite:
-    "@rolldown/plugin-babel": ^0.3.0
+    "@rolldown/plugin-babel": ^0.3.1
     "@vitejs/plugin-react": ^6.1.2
     birpc: ^4.2.0
     rollup: ^4.66.0
