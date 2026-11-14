@@ -1,20 +1,29 @@
 // SPDX-License-Identifier: MIT
 
-import { execFile } from 'node:child_process'
+import spawn, { SubprocessError } from 'nano-spawn'
 import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { promisify } from 'node:util'
-import { resolveLikec4Cli, resolveNodeBinary } from './resolveLikec4Cli'
-
-const execFileAsync = promisify(execFile)
+import { Likec4CliNotFoundError } from '../likec4CliNotFoundError'
+import {
+  type ResolvedLikec4Cli,
+  describeLikec4Cli,
+  resolveInstallCommands,
+  resolveLikec4Cli,
+  resolveNodeBinary,
+} from './resolveLikec4Cli'
 
 export type ExportViewPngParams = {
   workspacePath: string
+  /** Folder of the exported LikeC4 project; the CLI is resolved from here first. */
+  projectFolder?: string | undefined
   viewId: string
   projectId: string
   theme: 'light' | 'dark'
+  /** `likec4.node.path` */
   nodePath?: string | undefined
+  /** `likec4.cli.path` */
+  cliPath?: string | undefined
   /** Extra CLI args (tests / advanced). */
   extraArgs?: string[] | undefined
 }
@@ -23,17 +32,28 @@ export type ExportViewPngResult = {
   buffer: Buffer
   /** Absolute path of the PNG that was read (temp file, may already be deleted). */
   pngPath: string
+  /** Description of the CLI that rendered the PNG, for logs. */
+  cli: string
+  /** CLI version, when resolved from the `likec4` package. */
+  cliVersion?: string | undefined
 }
 
 /**
  * Render a single view to a PNG buffer via the same Playwright path as `likec4 export png`.
+ * @throws {Likec4CliNotFoundError} When the CLI cannot be resolved.
  */
 export async function exportViewPng(params: ExportViewPngParams): Promise<ExportViewPngResult> {
-  const cli = await resolveLikec4Cli(params.workspacePath)
+  const searchFrom = params.projectFolder && params.projectFolder !== params.workspacePath
+    ? [params.projectFolder, params.workspacePath]
+    : [params.workspacePath]
+  const cli = await resolveLikec4Cli({
+    configuredPath: params.cliPath,
+    workspacePath: params.workspacePath,
+    searchFrom,
+  })
   if (!cli) {
-    throw new Error(
-      'LikeC4 CLI not found in this workspace. Install the `likec4` package (and Playwright Chromium) to use Copy as PNG.',
-    )
+    const cwd = searchFrom[0] ?? params.workspacePath
+    throw new Likec4CliNotFoundError(cwd, await resolveInstallCommands(cwd))
   }
 
   const outdir = await mkdtemp(join(tmpdir(), 'likec4-copy-png-'))
@@ -55,14 +75,9 @@ export async function exportViewPng(params: ExportViewPngParams): Promise<Export
 
   try {
     try {
-      if (cli.kind === 'mjs') {
-        const nodeBinary = resolveNodeBinary(params.nodePath)
-        await execFileAsync(nodeBinary, [cli.entry, ...exportArgs], execOptions(params.workspacePath))
-      } else {
-        await execFileAsync(cli.bin, exportArgs, execOptions(params.workspacePath))
-      }
+      await runCli(cli, exportArgs, params)
     } catch (error) {
-      throw new Error(formatExecError(error, 'likec4 export png failed'))
+      throw new Error(formatSpawnError(error, 'likec4 export png failed'))
     }
 
     const pngPath = await findExportedPng(outdir, params.viewId)
@@ -70,9 +85,35 @@ export async function exportViewPng(params: ExportViewPngParams): Promise<Export
       throw new Error(`Export finished but no PNG was found for view "${params.viewId}".`)
     }
     const buffer = await readFile(pngPath)
-    return { buffer, pngPath }
+    return {
+      buffer,
+      pngPath,
+      cli: describeLikec4Cli(cli),
+      cliVersion: cli.kind === 'node' ? cli.version : undefined,
+    }
   } finally {
     await rm(outdir, { recursive: true, force: true }).catch(() => {})
+  }
+}
+
+async function runCli(cli: ResolvedLikec4Cli, exportArgs: string[], params: ExportViewPngParams) {
+  const options = {
+    cwd: params.workspacePath,
+    timeout: EXPORT_PROCESS_TIMEOUT_MS,
+    env: {
+      // Avoid interactive prompts from ensure-libs when deps are missing.
+      CI: process.env['CI'] ?? '1',
+    },
+  }
+  switch (cli.kind) {
+    case 'node':
+      return await spawn(resolveNodeBinary(params.nodePath), [cli.entry, ...exportArgs], options)
+    case 'command':
+      // nano-spawn escapes args and uses a shell for Windows .cmd shims (yarn, global likec4).
+      return await spawn(cli.command, [...cli.args, ...exportArgs], {
+        ...options,
+        cwd: cli.cwd ?? options.cwd,
+      })
   }
 }
 
@@ -103,43 +144,13 @@ export async function findExportedPng(outdir: string, viewId: string): Promise<s
 /** Overall budget for Vite + Playwright export of a single view (ms). */
 const EXPORT_PROCESS_TIMEOUT_MS = 180_000
 
-function execOptions(cwd: string) {
-  return {
-    cwd,
-    maxBuffer: 16 * 1024 * 1024,
-    timeout: EXPORT_PROCESS_TIMEOUT_MS,
-    env: {
-      ...process.env,
-      // Avoid interactive prompts from ensure-libs when deps are missing.
-      CI: process.env['CI'] ?? '1',
-    },
+function formatSpawnError(error: unknown, prefix: string): string {
+  if (!(error instanceof SubprocessError)) {
+    return `${prefix}: ${error instanceof Error ? error.message : String(error)}`
   }
-}
-
-function formatExecError(error: unknown, prefix: string): string {
-  if (!error || typeof error !== 'object') {
-    return `${prefix}: ${String(error)}`
-  }
-  const err = error as {
-    message?: string
-    stderr?: string | Buffer
-    stdout?: string | Buffer
-    killed?: boolean
-    signal?: string | null
-    code?: string | number | null
-  }
-  if (err.killed || err.signal === 'SIGTERM' || err.code === 'ETIMEDOUT') {
+  if (error.signalName === 'SIGTERM' && error.durationMs >= EXPORT_PROCESS_TIMEOUT_MS) {
     return `${prefix}: timed out after ${EXPORT_PROCESS_TIMEOUT_MS / 1000}s`
   }
-  const stderr = bufferToTrimmedString(err.stderr)
-  const stdout = bufferToTrimmedString(err.stdout)
-  const detail = stderr || stdout || err.message || String(error)
+  const detail = error.stderr.trim() || error.stdout.trim() || error.message
   return `${prefix}: ${detail}`
-}
-
-function bufferToTrimmedString(value: string | Buffer | undefined): string {
-  if (!value) {
-    return ''
-  }
-  return (typeof value === 'string' ? value : value.toString('utf8')).trim()
 }

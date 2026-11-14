@@ -149,6 +149,7 @@ export type ConfigKey =
   | "likec4.trace.server"
   | "likec4.formatting.quoteStyle"
   | "likec4.node.path"
+  | "likec4.cli.path"
   | "likec4.exclude"
 
 export interface ConfigKeyTypeMap {
@@ -158,6 +159,7 @@ export interface ConfigKeyTypeMap {
   "likec4.trace.server": ("off" | "messages" | "verbose"),
   "likec4.formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "likec4.node.path": string,
+  "likec4.cli.path": string,
   "likec4.exclude": string[],
 }
 
@@ -168,6 +170,7 @@ export interface ConfigShorthandMap {
   traceServer: "likec4.trace.server",
   formattingQuoteStyle: "likec4.formatting.quoteStyle",
   nodePath: "likec4.node.path",
+  cliPath: "likec4.cli.path",
   exclude: "likec4.exclude",
 }
 
@@ -178,6 +181,7 @@ export interface ConfigShorthandTypeMap {
   traceServer: ("off" | "messages" | "verbose"),
   formattingQuoteStyle: ("auto" | "single" | "double" | "ignore"),
   nodePath: string,
+  cliPath: string,
   exclude: string[],
 }
 
@@ -253,6 +257,16 @@ export const configs = {
   } as ConfigItem<"likec4.node.path">,
   /**
    *
+   * @key `likec4.cli.path`
+   * @default `""`
+   * @type `string`
+   */
+  cliPath: {
+    key: "likec4.cli.path",
+    default: "",
+  } as ConfigItem<"likec4.cli.path">,
+  /**
+   *
    * @key `likec4.exclude`
    * @default `[]`
    * @type `array`
@@ -270,6 +284,7 @@ export interface ScopedConfigKeyTypeMap {
   "trace.server": ("off" | "messages" | "verbose"),
   "formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "node.path": string,
+  "cli.path": string,
   "exclude": string[],
 }
 
@@ -282,6 +297,7 @@ export const scopedConfigs = {
     "trace.server": "off",
     "formatting.quoteStyle": "auto",
     "node.path": "",
+    "cli.path": "",
     "exclude": [],
   } satisfies ScopedConfigKeyTypeMap,
 }
@@ -302,6 +318,9 @@ export interface NestedConfigs {
     "node": {
       "path": string,
     },
+    "cli": {
+      "path": string,
+    },
     "exclude": string[],
   },
 }
@@ -319,6 +338,9 @@ export interface NestedScopedConfigs {
     "quoteStyle": ("auto" | "single" | "double" | "ignore"),
   },
   "node": {
+    "path": string,
+  },
+  "cli": {
     "path": string,
   },
   "exclude": string[],

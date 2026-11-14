@@ -3163,6 +3163,9 @@ importers:
       langium:
         specifier: catalog:langium
         version: 4.4.0
+      nano-spawn:
+        specifier: catalog:externals
+        version: 2.1.0
       nanoid:
         specifier: catalog:utils
         version: 6.0.2
@@ -3172,6 +3175,9 @@ importers:
       p-timeout:
         specifier: catalog:utils
         version: 7.0.2
+      package-manager-detector:
+        specifier: catalog:utils
+        version: 1.9.0
       pathe:
         specifier: catalog:utils
         version: 2.0.3

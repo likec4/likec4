@@ -194,6 +194,12 @@
           "default": "",
           "markdownDescription": "Path to the Node.js executable used to run the language server. If empty, uses `node` from PATH."
         },
+        "likec4.cli.path": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "markdownDescription": "%ext.config.cli.path.description%"
+        },
         "likec4.exclude": {
           "type": "array",
           "default": [],
@@ -371,9 +377,11 @@
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
+    "nano-spawn": "catalog:externals",
     "nanoid": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
+    "package-manager-detector": "catalog:utils",
     "pathe": "catalog:utils",
     "playwright": "catalog:",
     "pretty-ms": "^9.3.1",

@@ -1,57 +1,87 @@
 // SPDX-License-Identifier: MIT
 
-import { execFile } from 'node:child_process'
-import { access } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { promisify } from 'node:util'
-
-const execFileAsync = promisify(execFile)
+import { access, readFile, realpath } from 'node:fs/promises'
+import { dirname, isAbsolute, join, resolve } from 'node:path'
+import { resolveCommand } from 'package-manager-detector/commands'
+import { detect } from 'package-manager-detector/detect'
 
 export type ResolvedLikec4Cli =
   | {
-    kind: 'mjs'
-    /** Absolute path to `likec4/bin/likec4.mjs`. */
+    /** Run a JS entry with Node: `<node> <entry> ...args`. */
+    kind: 'node'
+    /** Absolute path to the CLI entry (e.g. `likec4/bin/likec4.mjs`). */
     entry: string
+    /** Version from the resolved `likec4/package.json`, when known. */
+    version?: string | undefined
+    source: 'setting' | 'package'
   }
   | {
-    kind: 'bin'
-    /** Absolute path to a POSIX `node_modules/.bin/likec4` shim (or PATH binary). */
-    bin: string
+    /** Run an executable: `<command> ...args ...exportArgs`. */
+    kind: 'command'
+    command: string
+    args: string[]
+    /** Working directory override (Yarn PnP runs from the PnP root). */
+    cwd?: string | undefined
+    source: 'setting' | 'yarn-pnp'
   }
+
+export type ResolveLikec4CliParams = {
+  /** Value of `likec4.cli.path`; relative paths resolve against `workspacePath`. */
+  configuredPath?: string | undefined
+  /** Workspace folder of the exported project. */
+  workspacePath: string
+  /** Folders to resolve the `likec4` package from, highest priority first (project folder, then workspace). */
+  searchFrom: readonly string[]
+}
 
 /**
- * Resolve the workspace `likec4` CLI by walking up from the workspace root.
- * Reuses the same Playwright-based `export png` packaging users already install for the CLI.
+ * Resolve the `likec4` CLI used for PNG export.
  *
- * Prefer the package `.mjs` entry (works with `execFile` + Node on every platform).
- * Never return a Windows `.cmd`/`.bat` shim as `kind: 'bin'` — `execFile` cannot launch those.
+ * Order:
+ * 1. `likec4.cli.path` setting (explicit wins; a missing file is an error, not a fallback).
+ * 2. The `likec4` package visible from each `searchFrom` folder, via the Node `node_modules`
+ *    lookup hierarchy (handles hoisting and workspaces). `NODE_PATH` and global folders are ignored:
+ *    package managers inject them into child processes, which would pick up an unrelated install.
+ * 3. Yarn PnP (`.pnp.cjs` above the project): `yarn likec4`.
+ *
+ * Returns `null` when nothing is found. Global installs on PATH are intentionally ignored:
+ * their version is unknown — point `likec4.cli.path` at them explicitly.
  */
-export async function resolveLikec4Cli(workspacePath: string): Promise<ResolvedLikec4Cli | null> {
-  let dir = workspacePath
-  for (;;) {
-    const mjsEntry = join(dir, 'node_modules', 'likec4', 'bin', 'likec4.mjs')
-    if (await isReadableFile(mjsEntry)) {
-      return { kind: 'mjs', entry: mjsEntry }
-    }
-
-    // POSIX shim only — skip `.cmd`/`.bat` (not execFile-safe without a shell).
-    const binShim = join(dir, 'node_modules', '.bin', 'likec4')
-    if (await isReadableFile(binShim) && !isWindowsBatchShim(binShim)) {
-      return { kind: 'bin', bin: binShim }
-    }
-
-    const parent = dirname(dir)
-    if (parent === dir) {
-      break
-    }
-    dir = parent
+export async function resolveLikec4Cli(params: ResolveLikec4CliParams): Promise<ResolvedLikec4Cli | null> {
+  const configured = params.configuredPath?.trim()
+  if (configured) {
+    return await fromConfiguredPath(configured, params.workspacePath)
   }
 
-  const fromPath = await resolveFromPath()
-  if (fromPath && !isWindowsBatchShim(fromPath)) {
-    return { kind: 'bin', bin: fromPath }
+  for (const dir of params.searchFrom) {
+    const resolved = await fromPackage(dir)
+    if (resolved) {
+      return resolved
+    }
   }
+
+  for (const dir of params.searchFrom) {
+    const pnpRoot = await findUp(dir, '.pnp.cjs')
+    if (pnpRoot) {
+      return { kind: 'command', command: 'yarn', args: ['likec4'], cwd: pnpRoot, source: 'yarn-pnp' }
+    }
+  }
+
   return null
+}
+
+/**
+ * Commands that install the CLI (and Playwright Chromium) with the package manager detected in `cwd`.
+ * Falls back to npm when no package manager is detected.
+ */
+export async function resolveInstallCommands(cwd: string): Promise<string[]> {
+  const pm = await detect({ cwd }).catch(() => null)
+  const agent = pm?.agent ?? 'npm'
+  const add = resolveCommand(agent, 'add', ['-D', 'likec4', 'playwright'])
+  const chromium = resolveCommand(agent, 'execute-local', ['playwright', 'install', 'chromium'])
+  return [add, chromium]
+    .filter((cmd) => cmd !== null)
+    .map(({ command, args }) => [command, ...args].join(' '))
 }
 
 /**
@@ -65,21 +95,84 @@ export function resolveNodeBinary(configuredPath: string | undefined): string {
   return 'node'
 }
 
-/** True for Windows cmd/bat shims that must not be passed to `execFile` directly. */
-export function isWindowsBatchShim(path: string): boolean {
-  const lower = path.toLowerCase()
-  return lower.endsWith('.cmd') || lower.endsWith('.bat')
+/** Human-readable description of the resolved CLI, for logs. */
+export function describeLikec4Cli(cli: ResolvedLikec4Cli): string {
+  switch (cli.kind) {
+    case 'node':
+      return `likec4${cli.version ? ` ${cli.version}` : ''} (${cli.entry}, from ${cli.source})`
+    case 'command':
+      return `${[cli.command, ...cli.args].join(' ')} (from ${cli.source})`
+  }
 }
 
-async function resolveFromPath(): Promise<string | null> {
+async function fromConfiguredPath(configured: string, workspacePath: string): Promise<ResolvedLikec4Cli> {
+  const path = isAbsolute(configured) ? configured : resolve(workspacePath, configured)
+  if (!(await isReadableFile(path))) {
+    throw new Error(`\`likec4.cli.path\` points to a missing file: ${path}`)
+  }
+  if (/\.[cm]?js$/i.test(path)) {
+    return { kind: 'node', entry: path, source: 'setting' }
+  }
+  return { kind: 'command', command: path, args: [], source: 'setting' }
+}
+
+async function fromPackage(dir: string): Promise<ResolvedLikec4Cli | null> {
+  const packageDir = await findUp(dir, join('node_modules', 'likec4', 'package.json'))
+  if (!packageDir) {
+    return null
+  }
+  // Follow pnpm symlinks so the CLI runs from its real location.
+  const packageJsonPath = await realpath(join(packageDir, 'node_modules', 'likec4', 'package.json'))
   try {
-    const command = process.platform === 'win32' ? 'where' : 'which'
-    const { stdout } = await execFileAsync(command, ['likec4'])
-    const candidates = stdout.split(/\r?\n/).map(line => line.trim()).filter(Boolean)
-    // Prefer a non-batch binary if `where` lists both.
-    return candidates.find(path => !isWindowsBatchShim(path)) ?? null
+    const pkg: unknown = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+    const bin = readBinEntry(pkg)
+    if (!bin) {
+      return null
+    }
+    const entry = resolve(dirname(packageJsonPath), bin)
+    if (!(await isReadableFile(entry))) {
+      return null
+    }
+    return { kind: 'node', entry, version: readVersion(pkg), source: 'package' }
   } catch {
     return null
+  }
+}
+
+function readBinEntry(pkg: unknown): string | null {
+  if (!pkg || typeof pkg !== 'object' || !('bin' in pkg)) {
+    return null
+  }
+  const { bin } = pkg
+  switch (true) {
+    case typeof bin === 'string':
+      return bin
+    case !!bin && typeof bin === 'object' && 'likec4' in bin && typeof bin.likec4 === 'string':
+      return bin.likec4
+    default:
+      return null
+  }
+}
+
+function readVersion(pkg: unknown): string | undefined {
+  if (pkg && typeof pkg === 'object' && 'version' in pkg && typeof pkg.version === 'string') {
+    return pkg.version
+  }
+  return undefined
+}
+
+/** Nearest ancestor of `from` (inclusive) that contains `relativePath`. */
+async function findUp(from: string, relativePath: string): Promise<string | null> {
+  let dir = from
+  for (;;) {
+    if (await isReadableFile(join(dir, relativePath))) {
+      return dir
+    }
+    const parent = dirname(dir)
+    if (parent === dir) {
+      return null
+    }
+    dir = parent
   }
 }
 
