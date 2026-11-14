@@ -286,6 +286,29 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     return UriUtils.relative(this.workspaceUri, uri)
   }
 
+  /**
+   * Returns true if the given URI is within the workspace.
+   *
+   * Only the first workspace folder is considered (see {@link workspaceUri}): in a multi-root
+   * workspace a file of any other folder is reported as outside.
+   */
+  public isInsideWorkspace(uri: URI | string): boolean {
+    if (!this.#performedStartup) {
+      this.#logger.warn('Workspace not initialized, returning false')
+      return false
+    }
+    uri = URI.isUri(uri) ? uri : URI.parse(uri)
+    if (uri.scheme !== this.workspaceUri.scheme) {
+      return false
+    }
+    // `..` segments are resolved first, so a path cannot leave the workspace through a folder of it.
+    // The segments are compared one by one (not as a relative path): a name may start with dots,
+    // and another drive has no relative path at all
+    const workspace = pathSegments(this.workspaceUri)
+    const target = pathSegments(UriUtils.resolvePath(uri))
+    return workspace.every((segment, i) => isSamePathSegment(segment, target[i]))
+  }
+
   public get workspaceURL(): URL {
     if (!this.#performedStartup) {
       this.#logger.warn('Workspace not initialized, returning empty URL')
@@ -357,4 +380,24 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       this.#logger.warn('Failed to read initial exclude configuration', { error: e })
     }
   }
+}
+
+const driveLetter = /^[a-zA-Z]:$/
+
+/**
+ * The segments of the path of a URI (without the empty ones a leading or trailing slash produces)
+ */
+function pathSegments(uri: URI): string[] {
+  return uri.path.split('/').filter(segment => segment.length > 0)
+}
+
+/**
+ * Whether two segments name the same entry: a drive letter is the same in any case
+ * (`file:///c%3A/` and `file:///C%3A/` are the same drive).
+ */
+function isSamePathSegment(a: string, b: string | undefined): boolean {
+  if (a === b) {
+    return true
+  }
+  return b !== undefined && driveLetter.test(a) && driveLetter.test(b) && a.toLowerCase() === b.toLowerCase()
 }

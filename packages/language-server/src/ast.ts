@@ -7,10 +7,11 @@
 
 import type * as c4 from '@likec4/core'
 import { MultiMap, nonexhaustive } from '@likec4/core/utils'
-import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
-import { AstUtils, DocumentState } from 'langium'
-import { clamp, filter, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, URI } from 'langium'
+import { AstUtils, DocumentState, UriUtils } from 'langium'
+import { clamp, filter, isEmptyish, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
 import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
+import { hasProtocol } from 'ufo'
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
@@ -96,10 +97,10 @@ export interface DescriptionFileRef {
   /** The value as written in the document */
   readonly value: string
   /**
-   * The file the value resolves to, or `null` when it does not name a file of the project
+   * The URI of the file the value resolves to (FULL URI), or `null` when it does not name a file of the project
    * (another scheme, a path outside of it): the validation reports why, and nothing is read for it.
    */
-  readonly resolvedPath: string | null
+  readonly uri: string | null
 }
 
 /** The parsed deployments and relations carry the reference to their file too */
@@ -383,6 +384,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4DeploymentRelations
     && !!doc.c4Imports
     && !!doc.c4Diffs
+    && !!doc.c4DescriptionFiles
   )
 }
 
@@ -670,5 +672,24 @@ export function isFqnRefInsideDeployment(astNode: AstNode): boolean {
     } else {
       return false
     }
+  }
+}
+
+/**
+ * Resolves the URI of a description file property relative to the document containing the property.
+ * @param astNode The description file property node
+ * @param doc The document containing the property (optional, will be resolved from node if not provided)
+ * @returns The resolved URI or null if the value is empty or resolution fails
+ */
+export function resolveDescriptionFile(astNode: ast.DescriptionFileProperty, doc?: LangiumDocument): URI | null {
+  if (isEmptyish(astNode.value) || hasProtocol(astNode.value)) {
+    return null
+  }
+  try {
+    doc ??= AstUtils.getDocument(astNode)
+    // Resolve relative to directory of the document
+    return UriUtils.joinPath(doc.uri, '..', astNode.value)
+  } catch {
+    return null
   }
 }

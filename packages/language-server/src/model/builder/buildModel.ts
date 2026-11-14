@@ -49,6 +49,7 @@ import type { LikeC4Services } from '../../module'
 import type { Project } from '../../workspace/ProjectsManager'
 import { relationFingerprint } from '../relationFingerprint'
 import { buildDiffs } from './buildDiffs'
+import { createDescriptionFileResolver } from './descriptionFileResolver'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
@@ -69,15 +70,11 @@ export function buildModelData(
   project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
-  const descriptionFiles = services.shared.workspace.DescriptionFiles
+  const descriptionFileResolver = createDescriptionFileResolver(services)
   const c4Specification = new MergedSpecification(docs, {
     inferTechFromIcon: project.config.inferTechnologyFromIcon ?? true,
-    // The files are read by the model builder before the build (see `LikeC4DescriptionFiles.read`)
-    describe: ref => {
-      const file = ref.resolvedPath ? descriptionFiles.get(project.id, ref.resolvedPath) : undefined
-      // The content of the file is used as it is: its indentation is content, not DSL indentation
-      return file && 'content' in file ? { md: file.content } : undefined
-    },
+    // The files are read on demand, and stay cached until they change (see `LikeC4DescriptionFiles`)
+    descriptionFile: descriptionFileResolver,
   })
 
   if (c4Specification.projectId === project.id) {
@@ -279,9 +276,7 @@ export function buildModelData(
         ...model
       } = parsedAstView
 
-      if (descriptionFile) {
-        description = c4Specification.descriptionOf(descriptionFile) ?? null
-      }
+      description = descriptionFileResolver(descriptionFile) ?? description
 
       if (parsedAstView[_type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
         title = elements[parsedAstView.viewOf]?.title ?? null

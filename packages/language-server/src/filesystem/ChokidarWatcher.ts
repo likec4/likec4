@@ -4,6 +4,7 @@ import chokidar from 'chokidar'
 import { URI } from 'langium'
 import type { Stats } from 'node:fs'
 import { basename } from 'node:path'
+import { extname } from 'pathe'
 import { funnel } from 'remeda'
 import { type FileEvent, FileChangeType } from 'vscode-languageserver-protocol'
 import { logger as mainLogger } from '../logger'
@@ -66,11 +67,11 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
   }
 
   /**
-   * The LikeC4 files, and the files referenced by a `descriptionFile`: a change to one of those
-   * changes the model.
+   * The LikeC4 files, and markdown files: any of them may be referenced by a `descriptionFile`
+   * (`LikeC4DescriptionFiles` picks the changes of the referenced ones).
    */
   private isWatchedFile(path: string): boolean {
-    return isAnyLikeC4File(path) || this.services.workspace.DescriptionFiles.isReferenced(URI.file(path))
+    return isAnyLikeC4File(path) || extname(path) === '.md'
   }
 
   async dispose(): Promise<void> {

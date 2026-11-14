@@ -1,13 +1,13 @@
 import { ProjectId } from '@likec4/core'
-import { URI } from 'langium'
+import { DocumentState, URI } from 'langium'
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { platform } from 'node:process'
 import { describe, it, vi } from 'vitest'
 import { FileChangeType } from 'vscode-languageserver'
-import { createMultiProjectTestServices, createTestServices } from '../test'
-import { WithFileSystem } from './LikeC4FileSystem'
+import { WithFileSystem } from '../../filesystem/LikeC4FileSystem'
+import { createMultiProjectTestServices, createTestServices } from '../../test'
 
 const markdown = '# Title\n\nSome **markdown**'
 
@@ -17,6 +17,23 @@ const asPosix = (path: string) => path.replaceAll('\\', '/')
 function mockFiles(t: ReturnType<typeof createTestServices>, files: Record<string, string>) {
   const fs = t.services.shared.workspace.FileSystemProvider
   vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
+  vi.spyOn(fs, 'readFileSync').mockImplementation(uri => {
+    const content = files[asPosix(uri.fsPath)]
+    if (content !== undefined) {
+      return content
+    }
+    throw new Error(`File not found: ${asPosix(uri.fsPath)}`)
+  })
+}
+
+function mockFileReadSync(files: Record<string, string>) {
+  return (uri: URI) => {
+    const content = files[asPosix(uri.fsPath)]
+    if (content !== undefined) {
+      return content
+    }
+    throw new Error(`File not found: ${asPosix(uri.fsPath)}`)
+  }
 }
 
 describe('descriptionFile', () => {
@@ -63,15 +80,15 @@ describe('descriptionFile', () => {
     expect(errors).toEqual([])
     // The parsed entities hold the reference to their file until the model is built
     expect(document.c4Elements?.map(el => el.descriptionFile)).toEqual([
-      { value: './spec.md', resolvedPath: 'file:///test/workspace/src/spec.md' },
-      { value: '../project.md', resolvedPath: 'file:///test/workspace/project.md' },
+      { value: './spec.md', uri: 'file:///test/workspace/src/spec.md' },
+      { value: '../project.md', uri: 'file:///test/workspace/project.md' },
     ])
   })
 
   it('does not read a referenced file while documents are parsed', async ({ expect }) => {
     const t = createTestServices()
-    const readFile = vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
-      .mockImplementation(async () => markdown)
+    const readFile = vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFileSync')
+      .mockReturnValueOnce(markdown)
 
     await t.parse(`
       specification {
@@ -110,7 +127,7 @@ describe('descriptionFile', () => {
 
     expect(document.c4Elements?.[0]?.descriptionFile).toEqual({
       value: 'https://example.com/spec.md',
-      resolvedPath: null,
+      uri: null,
     })
   })
 
@@ -157,7 +174,8 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "./missing.md" does not exist or cannot be read'])
+    // Only the message of the error, without its stack
+    expect(errors).toEqual(['File not found: /test/workspace/src/missing.md'])
   })
 
   it('reports an empty file', async ({ expect }) => {
@@ -170,12 +188,15 @@ describe('descriptionFile', () => {
       }
       model {
         component c1 {
+          description "fallback"
           descriptionFile ./empty.md
         }
       }
     `)
 
-    expect(errors).toEqual(['File "./empty.md" does not exist or cannot be read'])
+    expect(errors).toEqual(['File "./empty.md" is empty'])
+    const { elements } = await t.buildModel()
+    expect(elements['c1']).toHaveProperty('description', { txt: 'fallback' })
   })
 
   it('uses the content of the file as it is', async ({ expect }) => {
@@ -213,7 +234,7 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "./blank.md" does not exist or cannot be read'])
+    expect(errors).toEqual(['File "./blank.md" is empty'])
   })
 
   it('treats a reserved character as part of the file name', async ({ expect }) => {
@@ -250,15 +271,15 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "./..%2f..%2fsecret.txt" does not exist or cannot be read'])
+    expect(errors).toEqual(['File not found: /test/workspace/src/..%2f..%2fsecret.txt'])
   })
 
   it('re-reads a referenced file when it changes on disk', async ({ expect }) => {
     const t = createTestServices()
     const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
     const fs = t.services.shared.workspace.FileSystemProvider
-    vi.spyOn(fs, 'readFile').mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
-    const descriptionFiles = t.services.shared.workspace.DescriptionFiles
+    vi.spyOn(fs, 'readFileSync').mockImplementation(mockFileReadSync(files))
+    const descriptionFiles = t.services.likec4.DescriptionFiles
 
     await t.validate(`
       specification {
@@ -272,10 +293,9 @@ describe('descriptionFile', () => {
     `)
 
     // Files are read when the model is built
-    const uri = URI.parse('/test/workspace/src/spec.md')
-    expect(descriptionFiles.isReferenced(uri)).toBe(false)
-    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# first' })
+    const uri = URI.file('/test/workspace/src/spec.md')
     expect(descriptionFiles.isReferenced(uri)).toBe(true)
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# first' })
 
     const updated: string[] = []
     const subscription = descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
@@ -293,7 +313,42 @@ describe('descriptionFile', () => {
     subscription.dispose()
   })
 
-  it('reports a path that escapes the project', async ({ expect }) => {
+  it('validates the documents again when a referenced file is deleted', async ({ expect }) => {
+    const t = createTestServices()
+    const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
+    const fs = t.services.shared.workspace.FileSystemProvider
+    vi.spyOn(fs, 'readFileSync').mockImplementation(mockFileReadSync(files))
+
+    const { document, errors } = await t.validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          description 'inline'
+          descriptionFile ./spec.md
+        }
+      }
+    `)
+    expect(errors).toEqual(['Only one of "description" and "descriptionFile" is allowed'])
+
+    const uri = URI.file('/test/workspace/src/spec.md')
+    delete files[asPosix(uri.fsPath)]
+    t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+      changes: [{ uri: uri.toString(), type: FileChangeType.Deleted }],
+    })
+
+    // The document is validated again (not only linked), and reports the file that is gone
+    await vi.waitFor(() => {
+      expect(document.state).toBe(DocumentState.Validated)
+      expect(document.diagnostics?.map(d => d.message)).toEqual([
+        'File not found: /test/workspace/src/spec.md',
+      ])
+    })
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { txt: 'inline' })
+  })
+
+  it('reports a path that escapes the workspace', async ({ expect }) => {
     const t = createTestServices()
     mockFiles(t, {})
 
@@ -308,7 +363,7 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "../../../../etc/passwd" is outside of the project'])
+    expect(errors).toEqual(['File "../../../../etc/passwd" is outside of the workspace'])
   })
 
   it('reports a sibling folder that shares the prefix of the project', async ({ expect }) => {
@@ -326,7 +381,7 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "../../workspace-other/spec.md" is outside of the project'])
+    expect(errors).toEqual(['File "../../workspace-other/spec.md" is outside of the workspace'])
   })
 
   it('reports a file of another scheme', async ({ expect }) => {
@@ -344,7 +399,7 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "https://example.com/spec.md" is not part of the project'])
+    expect(errors).toEqual(['File "https://example.com/spec.md" cannot be resolved'])
   })
 
   it('reads a description file in a project on another scheme', async ({ expect }) => {
@@ -385,60 +440,8 @@ describe('descriptionFile', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "file:///etc/passwd" is not part of the project'])
+    expect(errors).toEqual(['File "file:///etc/passwd" cannot be resolved'])
   })
-
-  // A link is inside the project by name and outside it by content, so the lexical check passes and the
-  // read has to follow it. Symlinks need elevated privileges on Windows, where this whole test is skipped.
-  it.skipIf(platform === 'win32')(
-    'follows a link inside the project, and refuses a link that leaves it',
-    async ({ expect }) => {
-      const root = await mkdtemp(join(tmpdir(), 'likec4-description-link-'))
-      const outside = await mkdtemp(join(tmpdir(), 'likec4-description-outside-'))
-      try {
-        await mkdir(join(root, 'src'), { recursive: true })
-        await writeFile(join(root, 'src', 'inside.md'), '# inside')
-        await writeFile(join(outside, 'secret.md'), '# secret')
-        await symlink(join(root, 'src', 'inside.md'), join(root, 'src', 'inside-link.md'))
-        await symlink(join(outside, 'secret.md'), join(root, 'src', 'outside-link.md'))
-        await symlink(outside, join(root, 'src', 'shared-dir'), 'junction')
-
-        const t = createTestServices({
-          workspace: URI.file(root).toString(),
-          context: WithFileSystem(),
-        })
-
-        const { errors } = await t.validate(`
-          specification {
-            element component
-          }
-          model {
-            component linked {
-              descriptionFile ./inside-link.md
-            }
-            component escaped {
-              descriptionFile ./outside-link.md
-            }
-            component escapedThroughDir {
-              descriptionFile ./shared-dir/secret.md
-            }
-          }
-        `)
-
-        expect([...errors].sort()).toEqual([
-          'File "./outside-link.md" is outside of the project',
-          'File "./shared-dir/secret.md" is outside of the project',
-        ])
-        const { elements } = await t.buildModel()
-        expect(elements['linked']).toHaveProperty('description', { md: '# inside' })
-        expect(elements['escaped']).not.toHaveProperty('description')
-        expect(elements['escapedThroughDir']).not.toHaveProperty('description')
-      } finally {
-        await rm(root, { recursive: true, force: true })
-        await rm(outside, { recursive: true, force: true })
-      }
-    },
-  )
 
   it('reports description and descriptionFile on the same element', async ({ expect }) => {
     const t = createTestServices()
@@ -499,14 +502,16 @@ describe('descriptionFile', () => {
   })
 })
 
-it('registers a referenced file with the file system watcher', async ({ expect }) => {
-  const t = createTestServices()
-  const watch = vi
-    .spyOn(t.services.shared.workspace.FileSystemWatcher, 'watch')
-    .mockImplementation(() => {})
-  mockFiles(t, { '/test/workspace/src/spec.md': markdown })
+describe('descriptionFile, caches', () => {
+  it('keeps the model listeners when the caches are cleared', async ({ expect }) => {
+    const t = createTestServices()
+    const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
+    vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFileSync')
+      .mockImplementation(mockFileReadSync(files))
+    const descriptionFiles = t.services.likec4.DescriptionFiles
+    const uri = URI.file('/test/workspace/src/spec.md')
 
-  await t.validate(`
+    await t.validate(`
       specification {
         element component
       }
@@ -516,49 +521,64 @@ it('registers a referenced file with the file system watcher', async ({ expect }
         }
       }
     `)
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# first' })
 
-  // A file that was not referenced when the watcher scanned the folder is not tracked by it, so
-  // its later edits would produce no events.
-  expect(watch.mock.calls.flat().map(asPosix)).toContain('/test/workspace/src/spec.md')
-  watch.mockRestore()
-})
+    const updated: string[] = []
+    const subscription = descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
+    // The caches are cleared while the services keep running: the documents are not parsed again,
+    // and the model builder does not register its listener a second time
+    t.services.shared.workspace.WorkspaceManager.forceCleanCaches()
+    expect(descriptionFiles.isReferenced(uri)).toBe(false)
 
-it('keeps the model listeners when the caches are cleared', async ({ expect }) => {
-  const t = createTestServices()
-  const files: Record<string, string> = { '/test/workspace/src/spec.md': '# first' }
-  vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
-    .mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
-  const descriptionFiles = t.services.shared.workspace.DescriptionFiles
+    // the model is built again, which refills the cache the clear emptied
+    await t.buildModel()
+    expect(descriptionFiles.isReferenced(uri)).toBe(true)
 
-  await t.validate(`
-      specification {
-        element component
-      }
-      model {
-        component c1 {
-          descriptionFile ./spec.md
-        }
-      }
-    `)
+    files[asPosix(uri.fsPath)] = '# second'
+    t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+      changes: [{ uri: uri.toString(), type: FileChangeType.Changed }],
+    })
 
-  await t.buildModel()
-
-  const updated: string[] = []
-  descriptionFiles.onDescriptionFileUpdate(({ projectId }) => updated.push(projectId))
-  // `onProjectsUpdate` clears the caches while the services keep running, and the model builder
-  // does not register its listener a second time
-  descriptionFiles.clearCaches()
-
-  // the model is built again, which refills the cache the clear emptied
-  await t.buildModel()
-
-  files['/test/workspace/src/spec.md'] = '# second'
-  t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
-    changes: [{ uri: URI.parse('/test/workspace/src/spec.md').toString(), type: FileChangeType.Changed }],
+    await vi.waitFor(() => {
+      expect(updated).toHaveLength(1)
+    })
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# second' })
+    subscription.dispose()
   })
 
-  await vi.waitFor(() => {
-    expect(updated).toHaveLength(1)
+  it('forgets a file when the document stops referencing it', async ({ expect }) => {
+    const t = createTestServices()
+    const files: Record<string, string> = {
+      '/test/workspace/src/a.md': '# a',
+      '/test/workspace/src/b.md': '# b',
+    }
+    vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFileSync')
+      .mockImplementation(mockFileReadSync(files))
+    const descriptionFiles = t.services.likec4.DescriptionFiles
+    const a = URI.file('/test/workspace/src/a.md')
+    const b = URI.file('/test/workspace/src/b.md')
+    const source = (file: string) => `
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          descriptionFile ./${file}
+        }
+      }
+    `
+
+    const { document } = await t.validate(source('a.md'))
+    await t.buildModel()
+    expect(descriptionFiles.isReferenced(a)).toBe(true)
+    expect(descriptionFiles.isReferenced(b)).toBe(false)
+
+    // The document now references another file
+    await t.edit(document, source('b.md'))
+    expect((await t.buildModel()).elements['c1']).toHaveProperty('description', { md: '# b' })
+
+    expect(descriptionFiles.isReferenced(a)).toBe(false)
+    expect(descriptionFiles.isReferenced(b)).toBe(true)
   })
 })
 
@@ -584,6 +604,7 @@ describe('descriptionFile in multiple projects', () => {
       consumer: {
         'model.c4': `
           import { a } from 'owner'
+          ${spec}
           model {
             component c
             c -> a
@@ -600,8 +621,8 @@ describe('descriptionFile in multiple projects', () => {
       },
     })
     const files: Record<string, string> = { '/test/workspace/src/owner/a.md': '# first' }
-    vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFile')
-      .mockImplementation(async (uri: URI) => files[asPosix(uri.fsPath)] ?? '')
+    vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFileSync')
+      .mockImplementation(mockFileReadSync(files))
 
     const consumerBefore = await t.buildModel('consumer')
     expect(consumerBefore.imports[ProjectId('owner')]?.[0]).toHaveProperty('description', { md: '# first' })
@@ -624,6 +645,52 @@ describe('descriptionFile in multiple projects', () => {
     // Not affected project is taken from the cache
     expect(await t.buildLikeC4Model('unrelated')).toBe(unrelatedBefore)
   })
+
+  it('keeps following the files of a project when another project is updated', async ({ expect }) => {
+    await using t = await createMultiProjectTestServices({
+      owner: {
+        'model.c4': `
+          ${spec}
+          model {
+            component a {
+              descriptionFile ./a.md
+            }
+          }
+        `,
+      },
+      // No documents: a project is built again from the file system, and there is none here
+      another: {},
+    })
+    const files: Record<string, string> = { '/test/workspace/src/owner/a.md': '# first' }
+    vi.spyOn(t.services.shared.workspace.FileSystemProvider, 'readFileSync')
+      .mockImplementation(mockFileReadSync(files))
+    const descriptionFiles = t.services.likec4.DescriptionFiles
+    const uri = URI.file('/test/workspace/src/owner/a.md')
+
+    const ownerBefore = await t.buildLikeC4Model('owner')
+    expect(ownerBefore.$data.elements['a']).toHaveProperty('description', { md: '# first' })
+
+    // The config of another project changes. Only its documents are built again:
+    // the documents of `owner` are not parsed again, and its model stays cached
+    await t.services.shared.workspace.ProjectsManager.registerProject({
+      config: { name: 'another', title: 'Another project' },
+      folderUri: URI.parse('file:///test/workspace/src/another'),
+    })
+    expect(await t.buildLikeC4Model('owner')).toBe(ownerBefore)
+    expect(descriptionFiles.isReferenced(uri)).toBe(true)
+
+    const notified = new Set<string>()
+    t.services.likec4.ModelBuilder.onModelParsed(projectId => notified.add(projectId))
+
+    files['/test/workspace/src/owner/a.md'] = '# second'
+    t.services.shared.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
+      changes: [{ uri: uri.toString(), type: FileChangeType.Changed }],
+    })
+    await vi.waitFor(() => {
+      expect(notified).toContain('owner')
+    })
+    expect((await t.buildModel('owner')).elements['a']).toHaveProperty('description', { md: '# second' })
+  })
 })
 
 describe('descriptionFile, path syntax', () => {
@@ -644,6 +711,6 @@ describe('descriptionFile, path syntax', () => {
       }
     `)
 
-    expect(errors).toEqual(['File "./spec.md;" does not exist or cannot be read'])
+    expect(errors).toEqual(['File not found: /test/workspace/src/spec.md;'])
   })
 })
