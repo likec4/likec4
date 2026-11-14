@@ -403,8 +403,8 @@ catalogs:
       specifier: ^0.9.1
       version: 0.9.1
     hono:
-      specifier: ^4.13.13
-      version: 4.13.16
+      specifier: ^4.13.18
+      version: 4.13.18
     hono-sessions:
       specifier: ^0.8.1
       version: 0.8.1
@@ -892,10 +892,10 @@ importers:
         version: 37.3.11
       '@hono/oauth-providers':
         specifier: catalog:hono
-        version: 0.9.1(hono@4.13.16)
+        version: 0.9.1(hono@4.13.18)
       '@hono/zod-validator':
         specifier: catalog:hono
-        version: 0.9.1(hono@4.13.16)(zod@4.6.7)
+        version: 0.9.1(hono@4.13.18)(zod@4.6.7)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -997,10 +997,10 @@ importers:
         version: 6.2.2
       hono:
         specifier: catalog:hono
-        version: 4.13.16
+        version: 4.13.18
       hono-sessions:
         specifier: catalog:hono
-        version: 0.8.1(hono@4.13.16)
+        version: 0.8.1(hono@4.13.18)
       import-meta-resolve:
         specifier: ^4.2.0
         version: 4.2.0
@@ -2631,10 +2631,10 @@ importers:
     dependencies:
       '@hono/mcp':
         specifier: catalog:hono
-        version: 0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.16)(unstorage@1.17.5))(hono@4.13.16)(zod@4.6.7)
+        version: 0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5))(hono@4.13.18)(zod@4.6.7)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 2.1.6(hono@4.13.16)
+        version: 2.1.6(hono@4.13.18)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -2652,7 +2652,7 @@ importers:
         version: 6.4.0(picomatch@4.0.7)
       hono:
         specifier: catalog:hono
-        version: 4.13.16
+        version: 4.13.18
       jiti:
         specifier: catalog:externals
         version: 2.7.0
@@ -8211,8 +8211,8 @@ packages:
     peerDependencies:
       hono: ^4.0.0
 
-  hono@4.13.16:
-    resolution: {integrity: sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A==}
+  hono@4.13.18:
+    resolution: {integrity: sha512-H9q/E1XizaWstJxUW881dmLxEj+t/TrGGnyxINkm4+sK0qUwsMtFdo2BWI9Vs3cIS19MU6b6iCijoUoEf4f3DA==}
     engines: {node: '>=16.9.0'}
 
   hookable@6.1.2:
@@ -12434,25 +12434,25 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@hono/mcp@0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.16)(unstorage@1.17.5))(hono@4.13.16)(zod@4.6.7)':
+  '@hono/mcp@0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5))(hono@4.13.18)(zod@4.6.7)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.32.2(supports-color@10.1.0)(zod@4.6.7)
-      hono: 4.13.16
-      hono-rate-limiter: 0.5.4(hono@4.13.16)(unstorage@1.17.5)
+      hono: 4.13.18
+      hono-rate-limiter: 0.5.4(hono@4.13.18)(unstorage@1.17.5)
       pkce-challenge: 5.0.1
       zod: 4.6.7
 
-  '@hono/node-server@2.1.6(hono@4.13.16)':
+  '@hono/node-server@2.1.6(hono@4.13.18)':
     dependencies:
-      hono: 4.13.16
+      hono: 4.13.18
 
-  '@hono/oauth-providers@0.9.1(hono@4.13.16)':
+  '@hono/oauth-providers@0.9.1(hono@4.13.18)':
     dependencies:
-      hono: 4.13.16
+      hono: 4.13.18
 
-  '@hono/zod-validator@0.9.1(hono@4.13.16)(zod@4.6.7)':
+  '@hono/zod-validator@0.9.1(hono@4.13.18)(zod@4.6.7)':
     dependencies:
-      hono: 4.13.16
+      hono: 4.13.18
       zod: 4.6.7
 
   '@hpcc-js/wasm-graphviz@1.29.2': {}
@@ -13026,7 +13026,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7)':
     dependencies:
-      '@hono/node-server': 2.1.6(hono@4.13.16)
+      '@hono/node-server': 2.1.6(hono@4.13.18)
       ajv: 8.20.0
       ajv-formats: 3.0.1
       content-type: 1.0.5
@@ -13036,7 +13036,7 @@ snapshots:
       eventsource-parser: 3.0.6
       express: 5.2.1(supports-color@10.1.0)
       express-rate-limit: 8.3.1(express@5.2.1(supports-color@10.1.0))
-      hono: 4.13.16
+      hono: 4.13.18
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -16129,19 +16129,19 @@ snapshots:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  hono-rate-limiter@0.5.4(hono@4.13.16)(unstorage@1.17.5):
+  hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5):
     dependencies:
-      hono: 4.13.16
+      hono: 4.13.18
     optionalDependencies:
       unstorage: 1.17.5
 
-  hono-sessions@0.8.1(hono@4.13.16):
+  hono-sessions@0.8.1(hono@4.13.18):
     dependencies:
-      hono: 4.13.16
+      hono: 4.13.18
       iron-webcrypto: 1.2.1
       ohash: 2.0.12
 
-  hono@4.13.16: {}
+  hono@4.13.18: {}
 
   hookable@6.1.2: {}
 
