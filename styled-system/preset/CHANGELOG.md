@@ -1,5 +1,39 @@
 # @likec4/style-preset
 
+## 1.61.0
+
+### Patch Changes
+
+- [`cfa6975`](https://github.com/likec4/likec4/commit/cfa697584f1d7e5e66719569f88e24e092269080) Thanks [@davydkov](https://github.com/davydkov)! - Element details put the description first: technology, links and metadata move to a sidebar that can be resized or hidden (the layout is remembered), and element kind and tags move to the footer of the card. The card remembers its size after you resize it and stays inside the window when dragged; double-click its title or the resize handle to reset its size and position.
+  
+  The card header shows the element id; hover a part of it to highlight the path to that parent. When an element has a summary that differs from its description, the summary is collapsed above the description and expands on click.
+  
+  Metadata shows every value at once. Click a key or a value to find other elements with the same metadata. Search supports `meta:key` and `meta:key=value` queries.
+  
+  The style preset adds a `fieldLabel` text style for small all-caps field labels.
+
+- [#3522](https://github.com/likec4/likec4/pull/3522) [`7ad6179`](https://github.com/likec4/likec4/commit/7ad6179551028a89e1766bf286992f3cdab76fcc) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown are shown as pills, and they are clickable wherever element details or navigation are enabled.
+  Navigation panel: breadcrumbs animate as you navigate, and folders in them show a chevron. The view details window has a "Compare" button next to the "out of sync" badge. The Diagram/Graph switch is disabled while you edit or compare layouts, and editing is disabled in the graph mode.
+
+- [#3492](https://github.com/likec4/likec4/pull/3492) [`fa426c4`](https://github.com/likec4/likec4/commit/fa426c42d456da772cba5d8f5735fd99885d8c3f) Thanks [@davydkov](https://github.com/davydkov)! - Links to elements and views in Markdown (`[[cloud.api]]`, `[[view:index]]`) now work in diagrams. They show the element or view title (or your label) with an icon of its type, view links in a different color, and a preview card on hover or keyboard focus (title, kind, summary). In element details, relationship popovers, notes, view details, walkthrough and the sequence outline, a click (or Enter) on an element link shows that element in the details card, and a click on a view link opens the view. Broken links are dimmed and say what is missing. Inside diagram nodes, links are plain text, and they are not clickable when element details or navigation are disabled.
+
+- [#3494](https://github.com/likec4/likec4/pull/3494) [`5d6ba6b`](https://github.com/likec4/likec4/commit/5d6ba6bc428fdbf6a224cdb2b65187ca162d8a45) Thanks [@davydkov](https://github.com/davydkov)! - Relationship labels are measured with the diagram font (IBM Plex Sans) during layout, so the space reserved for a label matches the rendered label exactly and labels no longer overlap or leave extra gaps. Long labels wrap by width into balanced lines instead of by character count.
+  
+  In the relationships browser and relationship details, labels are laid out together with elements: they no longer overlap each other, and every relationship goes through its label.
+  
+  Elements are measured the same way: an element keeps the width of its size and grows in height only when its title, technology and description do not fit. Technology is always shown on a single line.
+  
+  The style preset exports `EdgeLabelMetrics`, `ElementNodeMetrics` and `DefaultFontFamily` from `@likec4/style-preset/defaults`, the metrics used by both the label styles and the layouts.
+
+- [#3366](https://github.com/likec4/likec4/pull/3366) [`250bd2c`](https://github.com/likec4/likec4/commit/250bd2c4ec45c5ee24c54844cf9a0bb64d653140) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - Model diffs in the UI, see [discussion #1192](https://github.com/likec4/likec4/discussions/1192):
+  
+  - Compare views: the view before and after the diff in one diagram, with added, removed and modified elements and relationships marked. Switch between as-is, changes and to-be modes in the playground, `likec4 start` and static builds (`likec4 build`). Vite plugin users get them from the `likec4:diffs` virtual module.
+  - Playground: review the changes of each file before they are applied, and roll back an applied change.
+
+- [`d1f5178`](https://github.com/likec4/likec4/commit/d1f51781912a64284403e707f734379699acc385) Thanks [@davydkov](https://github.com/davydkov)! - The style preset ships smaller CSS: it defines only the color tokens tags need, per default tag color: `likec4.tag.<color>.bg`, `likec4.tag.<color>.bg.hover`, `likec4.tag.<color>.border` and `likec4.tag.<color>.text`.
+  
+  `@likec4/core/styles` exports `isDefaultTagColor`.
+
 ## 1.60.0
 
 ### Patch Changes
