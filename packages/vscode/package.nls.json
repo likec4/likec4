@@ -11,5 +11,6 @@
   "ext.cmd.validate-layout": "Validate layout",
   "ext.cmd.open-projects-overview": "Open Projects Overview",
   "ext.config.node.path.title": "Node.js binary path",
+  "ext.config.cli.path.description": "Path to the LikeC4 CLI used by **Copy as PNG** and **Save as PNG** (e.g. `node_modules/likec4/bin/likec4.mjs` or a global `likec4` executable). Relative paths resolve against the workspace folder.  \nIf empty, the extension resolves the `likec4` package installed in the project (Yarn PnP: `yarn likec4`). `.js`/`.mjs` entries run with `#likec4.node.path#`.",
   "ext.cmd.semantic-layout-with-ai": "Semantic Layout with AI"
 }

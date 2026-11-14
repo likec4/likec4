@@ -10,22 +10,25 @@ import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
 import {
   defaultPngSaveUri,
+  logUsedCli,
   resolveExportTheme,
-  resolveWorkspaceFolder,
+  resolvePngExportTarget,
   saveDirtyLikeC4Documents,
+  showPngExportError,
 } from './exportPngShared'
-import type { PreviewPanel } from './types'
+import type { PreviewPanel, RpcClient } from './types'
 
 export interface SaveAsPngCommandDeps {
   sendTelemetry(commandId: string): void
   preview: PreviewPanel
+  rpc: RpcClient
 }
 
 /**
  * Register "Save as PNG" — used from CodeLens and the command palette.
  * Accepts optional `viewId` / `projectId` (CodeLens); otherwise uses the open preview.
  */
-export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCommandDeps) {
+export function registerSaveAsPngCommand({ sendTelemetry, preview, rpc }: SaveAsPngCommandDeps) {
   const { logger, output } = useExtensionLogger()
 
   useCommand(
@@ -49,8 +52,8 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCo
         return
       }
 
-      const workspaceFolder = resolveWorkspaceFolder()
-      if (!workspaceFolder) {
+      const target = await resolvePngExportTarget(rpc, resolvedProjectId)
+      if (!target) {
         await vscode.window.showWarningMessage('Open a workspace folder to save the diagram as PNG.')
         return
       }
@@ -60,7 +63,8 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCo
       try {
         await saveDirtyLikeC4Documents()
 
-        const buffer = await vscode.window.withProgress(
+        const { workspaceFolder, projectFolder } = target
+        const { buffer, cli, cliVersion } = await vscode.window.withProgress(
           {
             location: vscode.ProgressLocation.Notification,
             title: `Exporting “${resolvedViewId}” as PNG…`,
@@ -69,12 +73,15 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCo
           async () =>
             await renderViewPng({
               workspacePath: workspaceFolder.uri.fsPath,
+              projectFolder,
               viewId: resolvedViewId,
               projectId: resolvedProjectId,
               theme,
               nodePath: config.node.path,
+              cliPath: config.cli.path,
             }),
         )
+        logUsedCli(output, cli, cliVersion)
 
         const saveUri = await vscode.window.showSaveDialog({
           defaultUri: defaultPngSaveUri(resolvedViewId, workspaceFolder),
@@ -97,7 +104,7 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview }: SaveAsPngCo
         })
         output.error(`Save as PNG failed for view "${resolvedViewId}": ${message}`)
         output.show(true)
-        await vscode.window.showErrorMessage(`Save as PNG failed: ${message}`)
+        await showPngExportError('Save as PNG', error)
       }
     },
   )

@@ -8,22 +8,25 @@ import { isVirtual, isWebUi } from '../const'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
 import {
+  logUsedCli,
   resolveExportTheme,
-  resolveWorkspaceFolder,
+  resolvePngExportTarget,
   saveDirtyLikeC4Documents,
+  showPngExportError,
 } from './exportPngShared'
-import type { PreviewPanel } from './types'
+import type { PreviewPanel, RpcClient } from './types'
 
 export interface CopyAsPngCommandDeps {
   sendTelemetry(commandId: string): void
   preview: PreviewPanel
+  rpc: RpcClient
 }
 
 /**
  * Register the "Copy as PNG" preview context-menu command.
  * Uses the workspace `likec4 export png` Playwright path, then copies the PNG to the system clipboard.
  */
-export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCommandDeps) {
+export function registerCopyAsPngCommand({ sendTelemetry, preview, rpc }: CopyAsPngCommandDeps) {
   const { logger, output } = useExtensionLogger()
 
   useCommand(commands.previewContextCopyAsPng, async () => {
@@ -43,8 +46,8 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
       return
     }
 
-    const workspaceFolder = resolveWorkspaceFolder()
-    if (!workspaceFolder) {
+    const target = await resolvePngExportTarget(rpc, projectId)
+    if (!target) {
       await vscode.window.showWarningMessage('Open a workspace folder to copy the diagram as PNG.')
       return
     }
@@ -55,29 +58,32 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview }: CopyAsPngCo
       // CLI reads on-disk sources; save dirty LikeC4 docs so the PNG matches the preview.
       await saveDirtyLikeC4Documents()
 
-      await vscode.window.withProgress(
+      const { workspaceFolder, projectFolder } = target
+      const { cli, cliVersion } = await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
           title: `Copying “${viewId}” as PNG…`,
           cancellable: false,
         },
-        async () => {
+        async () =>
           await exportCurrentViewAsPng({
             workspacePath: workspaceFolder.uri.fsPath,
+            projectFolder,
             viewId,
             projectId,
             theme,
             nodePath: config.node.path,
-          })
-        },
+            cliPath: config.cli.path,
+          }),
       )
+      logUsedCli(output, cli, cliVersion)
       await vscode.window.showInformationMessage(`Copied “${viewId}” as PNG to the clipboard.`)
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       logger.error('Copy as PNG failed', { error, viewId, projectId })
       output.error(`Copy as PNG failed for view "${viewId}": ${message}`)
       output.show(true)
-      await vscode.window.showErrorMessage(`Copy as PNG failed: ${message}`)
+      await showPngExportError('Copy as PNG', error)
     }
   })
 }
