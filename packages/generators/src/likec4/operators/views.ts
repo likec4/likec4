@@ -7,7 +7,7 @@ import { CompositeGeneratorNode } from 'langium/generate'
 import { hasAtLeast, values } from 'remeda'
 import { NL } from '../../newline'
 import { schemas } from '../schemas'
-import type { ZExpression } from '../schemas/expression'
+import type { ZExpression, ZWhereOperator } from '../schemas/expression'
 import type { ViewRuleGroupOutput } from '../schemas/views'
 import {
   type Op,
@@ -118,6 +118,35 @@ export const viewRuleStyle = zodOp(schemas.views.viewRuleStyle)(
     ),
   ),
 )
+const relationshipStyleTargets = (where: ZWhereOperator.Out): string => {
+  switch (true) {
+    case 'or' in where:
+      return where.or.map(relationshipStyleTargets).join(', ')
+    case 'tag' in where:
+      return 'eq' in where.tag ? `relationship.tag = #${where.tag.eq}` : `relationship.tag != #${where.tag.neq}`
+    case 'kind' in where:
+      return 'eq' in where.kind ? `relationship.kind = ${where.kind.eq}` : `relationship.kind != ${where.kind.neq}`
+    default:
+      throw new Error('Relationship style supports only tag and kind targets')
+  }
+}
+
+export const viewRuleRelationshipStyle = zodOp(schemas.views.viewRuleRelationshipStyle)(
+  property(
+    'relationshipStyle',
+    spaceBetween(
+      print('style'),
+      print(v => relationshipStyleTargets(v.where)),
+      body(
+        colorProperty(),
+        property('line'),
+        property('head'),
+        property('tail'),
+      ),
+    ),
+  ),
+)
+
 export const viewRuleGroup = zodOp(schemas.views.viewRuleGroup)(
   spaceBetween(
     print('group'),
@@ -196,6 +225,9 @@ export const elementViewRule = zodOp(schemas.views.elementViewRule)(
     }
     if ('targets' in ctx && 'style' in ctx) {
       return exec(ctx, viewRuleStyle.noparse())
+    }
+    if ('relationshipStyle' in ctx) {
+      return exec(ctx, viewRuleRelationshipStyle.noparse())
     }
     nonexhaustive(ctx)
   },

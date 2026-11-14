@@ -1,8 +1,10 @@
+import type { RelationshipArrowType, RelationshipLineType } from '../styles/types'
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { ExclusiveUnion } from './_common'
 import type { _type } from './const'
 import type { ModelExpression, ModelFqnExpr } from './expression-model'
+import type { WhereOperator } from './operators'
 import type { BorderStyle, Color, ShapeSize, SpacingSize, TextSize } from './styles'
 import type {
   AnyExcludePredicate,
@@ -53,6 +55,25 @@ export function isViewRuleGroup(rule: object): boolean {
 
 export interface ElementViewRuleStyle<A extends AnyAux = AnyAux> extends AnyViewRuleStyle<ModelFqnExpr<A>> {}
 
+/**
+ * Styles the relationships already in the view that satisfy `where`,
+ * e.g. `style relationship.tag = #optional { line dotted }`. It does not include anything.
+ */
+export interface ElementViewRuleRelationshipStyle<A extends AnyAux = AnyAux> {
+  relationshipStyle: {
+    where: WhereOperator<A>
+    color?: Color
+    line?: RelationshipLineType
+    head?: RelationshipArrowType
+    tail?: RelationshipArrowType
+  }
+}
+export function isViewRuleRelationshipStyle<A extends AnyAux>(
+  rule: ElementViewRule<A>,
+): rule is ElementViewRuleRelationshipStyle<A> {
+  return 'relationshipStyle' in rule
+}
+
 export interface ElementViewRuleRank<A extends AnyAux = AnyAux> extends ViewRuleRank<ModelFqnExpr<A>> {}
 export function isViewRuleRank<A extends AnyAux>(rule: ElementViewRule<A>): rule is ElementViewRuleRank<A> {
   return 'rank' in rule && Array.isArray((rule as ElementViewRuleRank<A>).targets)
@@ -63,6 +84,7 @@ export type ElementViewRule<A extends AnyAux = AnyAux> = ExclusiveUnion<{
   ExcludePredicate: ElementViewExcludePredicate<A>
   Group: ElementViewRuleGroup<A>
   Style: ElementViewRuleStyle<A>
+  RelationshipStyle: ElementViewRuleRelationshipStyle<A>
   GlobalStyle: ViewRuleGlobalStyle
   GlobalPredicateRef: ViewRuleGlobalPredicateRef
   AutoLayout: ViewRuleAutoLayout

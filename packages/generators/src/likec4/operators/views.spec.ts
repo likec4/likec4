@@ -1,4 +1,5 @@
 import { type ViewsBuilder, Builder } from '@likec4/core/builder'
+import type { ElementViewRule, Tag } from '@likec4/core/types'
 import { describe, expect as viExpect, it } from 'vitest'
 import { materialize } from './base'
 import { deploymentView as deploymentViewOp, views as viewsOp } from './views'
@@ -341,6 +342,45 @@ describe('view', () => {
             where
               kind is not system
               and tag is #tag1
+        }
+      }"
+    `)
+  })
+
+  it('should print relationship style rules', () => {
+    const data = builder
+      .with(
+        // @ts-ignore
+        views(view('index', $rules($include('*')))),
+      )
+      .build()
+    const index = data.views['index']
+    if (!index || index._type !== 'element') {
+      throw new Error('Element view index not found')
+    }
+    const rules: ElementViewRule[] = [
+      ...index.rules,
+      { relationshipStyle: { where: { tag: { eq: 'tag1' as Tag } }, color: 'red', line: 'solid' } },
+      {
+        relationshipStyle: {
+          where: { or: [{ tag: { neq: 'tag2' as Tag } }, { kind: { eq: 'uses' } }] },
+          head: 'diamond',
+          tail: 'dot',
+        },
+      },
+    ]
+    viExpect(materialize(viewsOp(), { index: { ...index, rules } })).toMatchInlineSnapshot(`
+      "views {
+        view index {
+          include *
+          style relationship.tag = #tag1 {
+            color red
+            line solid
+          }
+          style relationship.tag != #tag2, relationship.kind = uses {
+            head diamond
+            tail dot
+          }
         }
       }"
     `)

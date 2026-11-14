@@ -22,6 +22,7 @@ import {
 import { invariant, nonexhaustive } from '../../utils'
 import { applyCustomElementProperties, flattenGroupRules } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
+import { applyRelationshipStyles } from '../utils/applyRelationshipStyles'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { assignGroupElements } from '../utils/assignGroupElements'
 import { buildElementNotations } from '../utils/buildElementNotations'
@@ -335,7 +336,7 @@ export function computeElementView<A extends AnyAux>(
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
       ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
     },
-    edges: applyCustomRelationProperties(rules, nodes, sorted.edges, likec4model),
+    edges: applyCustomRelationProperties(rules, nodes, applyRelationshipStyles(rules, sorted.edges), likec4model),
     nodes: map(nodes, n => {
       if (n.icon === 'none') {
         delete n.icon
