@@ -31,8 +31,10 @@ export function flattenGroupRules<A extends AnyAux, T extends ModelExpression<A>
 export function applyCustomElementProperties<A extends AnyAux>(
   _rules: ElementViewRule<A>[],
   _nodes: ComputedNode<A>[],
+  guard: (expr: any) => boolean = ModelFqnExpr.isCustom,
+  toPredicate: (expr: any) => (node: ComputedNode<A>) => boolean = elementExprToPredicate,
 ): ComputedNode<A>[] {
-  const rules = _rules.flatMap(flattenGroupRules(ModelFqnExpr.isCustom))
+  const rules = _rules.flatMap(flattenGroupRules(guard as typeof ModelFqnExpr.isCustom))
   if (rules.length === 0) {
     return _nodes
   }
@@ -69,7 +71,7 @@ export function applyCustomElementProperties<A extends AnyAux>(
     })
     const styleNotEmpty = !isEmptyish(style)
     const propsNotEmpty = !isEmptyish(rest)
-    const satisfies = elementExprToPredicate(expr)
+    const satisfies = toPredicate(expr)
     nodes.forEach((node, i) => {
       if (isGroupElementKind(node) || !satisfies(node)) {
         return

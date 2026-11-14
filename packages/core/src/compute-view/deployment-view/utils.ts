@@ -165,6 +165,26 @@ export function deploymentExpressionToPredicate<
   nonexhaustive(target)
 }
 
+export function deploymentElementExprToPredicate<
+  A extends AnyAux,
+  N extends {
+    id: string | aux.DeploymentFqn<A>
+    modelRef?: aux.Fqn<A> | undefined
+    tags?: aux.Tags<A> | null | undefined
+    kind?: aux.AllKinds<A> | null | undefined
+    metadata?: Record<string, string | string[] | undefined> | null | undefined
+  },
+>(
+  expr: FqnExpr.OrWhere<A>,
+): Predicate<N> {
+  const predicate = deploymentExpressionToPredicate<A, N>(FqnExpr.unwrap(expr))
+  if (!FqnExpr.isWhere(expr)) {
+    return predicate
+  }
+  const where = whereOperatorAsPredicate(expr.where.condition)
+  return n => predicate(n) && where({ tags: n.tags, kind: n.kind, metadata: n.metadata })
+}
+
 function instanceSummary(model: DeployedInstanceModel<any>) {
   return preferSummary(model.$instance) ?? preferSummary(model.element.$element)
 }
