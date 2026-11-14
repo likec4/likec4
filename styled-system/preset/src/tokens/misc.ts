@@ -81,10 +81,3 @@ export const cursor = defineTokens.cursor({
   move: { value: 'move' },
   'zoom-out': { value: 'zoom-out' },
 })
-
-export const blurs = defineTokens.blurs({
-  subtle: { value: '0.5px' },
-  default: { value: '1px' },
-  strong: { value: '2px' },
-  extra: { value: '4px' },
-})

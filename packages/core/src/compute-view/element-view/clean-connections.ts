@@ -1,5 +1,4 @@
 import { pipe, prop, reduce } from 'remeda'
-import type { RelationshipModel } from '../../model'
 import {
   ConnectionModel,
   differenceConnections,
@@ -12,16 +11,6 @@ import {
 import type { AnyAux } from '../../types'
 import { intersection, union } from '../../utils'
 import { ifilter, toSet } from '../../utils/iterable'
-
-export function allRelationshipsFrom(connections: Iterable<ConnectionModel>): Set<RelationshipModel> {
-  const relations = new Set<RelationshipModel>()
-  for (const c of connections) {
-    for (const rel of c.relations) {
-      relations.add(rel)
-    }
-  }
-  return relations
-}
 
 // function isInOutToDescendant(id: string): (c: ConnectionModel) => boolean {
 //   return anyPass([

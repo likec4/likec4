@@ -17,7 +17,6 @@ import {
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
-  DidRequestOpenViewNotification,
   DidRequestRemovalImpactNotification,
   FetchComputedModel,
   FetchDiffs,
@@ -437,18 +436,6 @@ export class Rpc extends ADisposable {
       )
     }
   })
-
-  async openView(params: DidRequestOpenViewNotification.Params): Promise<void> {
-    const lspConnection = this.services.shared.lsp.Connection
-    if (!lspConnection) {
-      logger.warn('No LSP connection')
-      return
-    }
-    await lspConnection.sendNotification<DidRequestOpenViewNotification.Params>(
-      DidRequestOpenViewNotification.type,
-      params,
-    )
-  }
 
   /**
    * Asks the client to show the removal impact of an element.

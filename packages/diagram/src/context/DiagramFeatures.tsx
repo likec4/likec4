@@ -126,6 +126,7 @@ export function useEnabledFeatures(): EnabledFeatures {
   return useContext(DiagramFeaturesContext)
 }
 
+/** @public Part of the public API surface; kept although unused internally */
 export type IfEnabledProps = PropsWithChildren<{
   feature: FeatureName
   /**

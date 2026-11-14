@@ -7,7 +7,6 @@ export type { ModelEditPreview, ModelEditRecord, ModelEditRequest, ModelEditResu
 export type { ReferenceKind } from './references'
 export { LikeC4RemovalImpact } from './RemovalImpact'
 export type {
-  ReferenceResolution,
   RemovalImpactReference,
   RemovalImpactReport,
   SafeDeleteOptions,

@@ -31,14 +31,6 @@ export function activateExtension(extensionKind: 'node' | 'web') {
 
   registerCommands()
 
-  rpc.onRequestOpenView(({ viewId, projectId }) => {
-    logger.debug`rpc request open view ${viewId} of project ${projectId}`
-    preview.open({
-      viewId,
-      projectId,
-    })
-  })
-
   whenExtensionActive(() => {
     logger.info(`activateExtension done in ${m.pretty}`)
     useTelemetry()

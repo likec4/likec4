@@ -69,7 +69,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "json5": "catalog:utils",
-    "type-fest": "catalog:externals",
     "zod": "catalog:externals"
   },
   "devDependencies": {
@@ -82,9 +81,7 @@
     "remeda": "catalog:utils",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
-    "turbo": "catalog:",
     "typescript": "catalog:",
-    "ufo": "catalog:utils",
     "vitest": "catalog:vitest"
   },
   "peerDependencies": {

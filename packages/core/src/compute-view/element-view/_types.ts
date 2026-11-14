@@ -1,5 +1,4 @@
 import type { LikeC4Model } from '../../model'
-import type { ConnectionModel } from '../../model'
 import type { RelationshipModel } from '../../model'
 import type { ModelExpression, ModelFqnExpr, ModelRelationExpr } from '../../types'
 
@@ -17,8 +16,6 @@ export type RelationshipWhere = Where<RelationshipModel<any>>
 export type ConnectionWhereFilter = (connections: readonly Connection[]) => Connection[]
 
 export { Memory } from './memory'
-
-export type Connections = ReadonlyArray<ConnectionModel<any>>
 
 export interface PredicateCtx<Expr = ModelExpression<any>> {
   expr: Expr

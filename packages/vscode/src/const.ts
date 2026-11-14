@@ -1,9 +1,5 @@
 import * as vscode from 'vscode'
 export const languageId = 'likec4'
-export const extensionName = 'likec4'
-export const extensionTitle = 'LikeC4'
-
-export const fileExtensions = ['.c4', '.likec4', '.like-c4'] as const
 
 export const globPattern = '**/?*.{c4,likec4,like-c4}'
 

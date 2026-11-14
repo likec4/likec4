@@ -1,8 +1,10 @@
 import { defineConfig } from '@likec4/devops/tsdown'
 import { existsSync, readdirSync } from 'node:fs'
 import { copyFile, cp, mkdir, rm } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { createRequire } from 'node:module'
+import { join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Rolldown } from 'tsdown'
 import { $, fs } from 'zx'
 
 $.verbose = true
@@ -32,6 +34,7 @@ export default defineConfig([
     dts: {
       build: true,
     },
+    plugins: [inlineChevrotainTypes()],
     hooks: {
       'build:done': async ({ options: { logger } }) => {
         logger.info('\n----- Copy artifacts ------\n')
@@ -67,6 +70,28 @@ export default defineConfig([
     dts: true,
   },
 ])
+
+/**
+ * The bundled langium declarations import `chevrotain`, which `likec4` does not depend on.
+ * chevrotain lists `import` before `types` in its exports, so the dts resolver picks the JS file and
+ * leaves the import external. Point it at the declarations so they get inlined.
+ */
+function inlineChevrotainTypes(): Rolldown.Plugin {
+  return {
+    name: 'likec4:inline-chevrotain-types',
+    resolveId: {
+      filter: { id: /^chevrotain$/ },
+      handler(id, importer) {
+        if (!importer || !/\.d\.[cm]?ts$/.test(importer)) {
+          return null
+        }
+        const entry = createRequire(importer).resolve(id)
+        const pkgRoot = entry.slice(0, entry.lastIndexOf(`${sep}node_modules${sep}chevrotain${sep}`))
+        return join(pkgRoot, 'node_modules', 'chevrotain', 'chevrotain.d.ts')
+      },
+    },
+  }
+}
 
 async function copyVitePluginModules() {
   const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))

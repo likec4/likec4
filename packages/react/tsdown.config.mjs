@@ -62,6 +62,9 @@ export default defineConfig({
   },
   dts: {
     build: true,
+    // The default oxc resolver misses `@types/*` packages (e.g. d3-zoom from @xyflow/system) and leaves
+    // them as imports the published `likec4` does not declare; tsc resolves them so they get inlined.
+    resolver: 'tsc',
   },
   deps: {
     onlyBundle: false,

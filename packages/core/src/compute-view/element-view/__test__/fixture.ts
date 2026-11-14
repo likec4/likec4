@@ -11,7 +11,6 @@ import {
   type ElementViewPredicate,
   type ElementViewPredicate as ViewRulePredicate,
   type ElementViewRule,
-  type ElementViewRule as ViewRule,
   type ElementViewRuleGroup as ViewRuleGroup,
   type ElementViewRuleStyle as ViewRuleStyle,
   type Fqn,
@@ -371,8 +370,6 @@ export const globalStyles = {
     },
   }],
 } as const
-
-export type FakeRelationIds = (typeof fakeRelations)[number]['id']
 const fakeParsedModel = {
   _stage: 'computed' as const,
   project: { id: 'test-project', config: { name: 'test-project' } },
@@ -466,14 +463,6 @@ const emptyView = {
   rules: [],
 } satisfies ParsedElementView<$Aux>
 
-export const includeWildcard = {
-  include: [
-    {
-      wildcard: true,
-    },
-  ],
-} satisfies ViewRule
-
 export type ElementRefExpr =
   | '*'
   | FakeElementIds
@@ -502,18 +491,6 @@ export function $custom(
     custom: {
       expr: $expr(expr) as any,
       ...props as any,
-    },
-  }
-}
-
-export function $customRelation(
-  relation: ModelRelationExpr.OrWhere<$Aux>,
-  props: Omit<ModelRelationExpr.Custom<$Aux>['customRelation'], 'expr'>,
-): ModelRelationExpr.Custom<$Aux> {
-  return {
-    customRelation: {
-      expr: $expr(relation) as any,
-      ...props,
     },
   }
 }

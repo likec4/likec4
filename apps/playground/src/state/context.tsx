@@ -2,7 +2,6 @@ import { PlaygroundActorSafeContext } from '$hooks/safeContext'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useActorRef } from '@xstate/react'
 import type { PropsWithChildren } from 'react'
-// import { inspector } from './inspector'
 import { useEffect } from 'react'
 import { type PlaygroundInput, playgroundMachine } from './playground-machine'
 
@@ -10,7 +9,6 @@ export function PlaygroundActorContextProvider(
   { children, workspace }: PropsWithChildren<{ workspace: PlaygroundInput }>,
 ) {
   const playgroundActor = useActorRef(playgroundMachine, {
-    // ...(import.meta.env.DEV ? inspector : {}),
     systemId: 'playground',
     input: workspace,
   })

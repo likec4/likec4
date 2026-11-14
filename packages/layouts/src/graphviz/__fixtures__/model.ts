@@ -188,8 +188,6 @@ export const fakeElements = {
   }),
 } satisfies Record<string, Element>
 
-export type FakeElementIds = keyof typeof fakeElements
-
 const fakeRelations = {
   'customer:cloud.frontend.dashboard': {
     id: 'customer:cloud.frontend.dashboard' as RelationId,

@@ -3,7 +3,6 @@ import {
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
-  DidRequestOpenViewNotification,
   FetchComputedModel,
   FetchProjects,
   FetchProjectsOverview,
@@ -98,10 +97,6 @@ export const useRpc = defineService(() => {
       return useDisposable(client.onNotification(DidChangeProjectsNotification.type, cb))
     },
 
-    onRequestOpenView(cb: (params: DidRequestOpenViewNotification.Params) => void) {
-      return useDisposable(client.onNotification(DidRequestOpenViewNotification.type, cb))
-    },
-
     async layoutView(params: LayoutView.Params) {
       const { result } = await queue(() => client.sendRequest(LayoutView.req, params))
       return result
@@ -161,5 +156,3 @@ export const useRpc = defineService(() => {
     },
   }
 })
-
-export type Rpc = ReturnType<typeof useRpc>

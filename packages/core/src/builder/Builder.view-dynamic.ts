@@ -17,8 +17,6 @@ interface AltBranchBuilder<T extends AnyTypes> {
   addBranch(alias: Step.Alt['branches'][number]): this
 }
 
-export type AltBranches<T extends AnyTypes> = (b: AltBranchBuilder<T>) => AltBranchBuilder<T>
-
 export interface AddDynamicViewRules<Id extends string> {
   with<S extends AnyTypes>(
     ...rules: Array<

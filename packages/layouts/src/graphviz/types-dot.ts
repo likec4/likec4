@@ -4,7 +4,6 @@ import type { Tagged } from 'type-fest'
 export type GvNodeName = Tagged<string, 'GvNodeName'>
 
 export type GvId = Tagged<number, 'GvId'>
-export type Inches = Tagged<string, 'Inches'>
 
 export type Point = [x: number, y: number]
 

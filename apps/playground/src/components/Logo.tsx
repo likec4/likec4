@@ -25,18 +25,3 @@ export const Logo = forwardRef<SVGSVGElement, LogoProps>(
     )
   },
 )
-
-export const LogoIcon = forwardRef<SVGSVGElement, LogoProps>(
-  (props, ref) => {
-    return (
-      (
-        <svg ref={ref} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 56 56" {...props}>
-          <path
-            fill={'#5E98AF'}
-            d="M33.95 33.78V0H2.37A2.37 2.37 0 0 0 0 2.35V33.9h33.95v-.12ZM38.57 33.78H55.6v-14.6c0-1.3-1.06-2.35-2.36-2.35H38.57v16.95ZM33.95 38.37H17.04v14.6c0 1.29 1.06 2.35 2.36 2.35h14.67V38.37h-.12ZM38.57 38.37v16.95h14.67c1.3 0 2.36-1.06 2.36-2.36v-14.6H38.57Z"
-          />
-        </svg>
-      )
-    )
-  },
-)

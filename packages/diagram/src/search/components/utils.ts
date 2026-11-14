@@ -68,17 +68,6 @@ export function queryAllFocusable(
 }
 
 /**
- * Workaround: defers execution of the callback, to finish search panel close animation.
- * Otherwise, there could be weird artifacts when navigating to large diagrams.
- * @todo Find a better way to handle this, possibly with animationend event.
- */
-export function whenSearchAnimationEnds(
-  callback: () => void,
-): void {
-  setTimeout(callback, 400)
-}
-
-/**
  * Title of the view prefixed with the folders it belongs to, e.g. `Folder 1 / Folder 2 / View`.
  * Views at the root are returned as is.
  */

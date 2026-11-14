@@ -195,11 +195,6 @@ export const useMessenger = defineService(() => {
 //     broadcastModelUpdate()
 //   })
 
-//   rpc.onRequestOpenView((params) => {
-//     logger.debug`request open view ${params.viewId} of project ${params.projectId}`
-//     preview.open(params.viewId, params.projectId)
-//   })
-
 //   const activeTextEditor = useActiveTextEditor()
 
 //   useDisposable(messenger.onRequest(FetchComputedModel, async () => {

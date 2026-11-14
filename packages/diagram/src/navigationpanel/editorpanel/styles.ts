@@ -1,46 +1,5 @@
 import { css } from '@likec4/styles/css'
 
-export const navigationButtons = css({
-  gap: 'xxs',
-  _empty: {
-    display: 'none',
-  },
-})
-
-export const panel = css({
-  top: 'md',
-  left: 'md',
-  margin: '0',
-  pointerEvents: 'none',
-  '& :where(button, .action-icon, [role=\'dialog\'])': {
-    pointerEvents: 'all',
-  },
-  ['& .action-icon']: {
-    ['--ai-size']: '2rem',
-  },
-  ['& .tabler-icon']: {
-    boxSize: '[65%]',
-  },
-  _reduceGraphics: {
-    '& .action-icon': {
-      '--ai-radius': '0px',
-    },
-  },
-})
-
-export const actionIconGroup = css({
-  shadow: {
-    base: 'md',
-    _whenPanning: 'none',
-  },
-})
-
-export const autolayoutIcon = css({
-  ['& .tabler-icon']: {
-    boxSize: '[65%]',
-  },
-})
-
 export const autolayoutButton = css({
   flex: '[1 1 40%]',
   textAlign: 'center',

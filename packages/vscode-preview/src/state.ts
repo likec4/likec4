@@ -38,14 +38,8 @@ export function openProjectsScreen() {
  * Current view id
  */
 export const $viewId = atom(vscodeState.viewId)
-export function useViewId() {
-  return useStore($viewId)
-}
 
 export const $projectId = atom(vscodeState.projectId)
-export function useProjectId() {
-  return useStore($projectId)
-}
 
 if (vscodeState.model) {
   queryClient.setQueryData(

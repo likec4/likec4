@@ -24,7 +24,6 @@ export type ProjectData = LikeC4Project & {
   readonly path: string
   readonly config: Readonly<LikeC4ProjectConfig>
 }
-export type ProjectsData = NonEmptyArray<ProjectData>
 
 export type VirtualModuleLoadResult = Rolldown.SourceDescription | string
 

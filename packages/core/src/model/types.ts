@@ -28,6 +28,7 @@ export type ElementOrFqn<A> = aux.ElementId<A> | { id: aux.Fqn<A> }
 
 export type DeploymentOrFqn<A> = aux.DeploymentId<A> | { id: aux.DeploymentFqn<A> }
 
+/** @public Part of the public API surface; kept although unused internally */
 export type ViewOrId<A> = aux.ViewId<A> | { id: aux.StrictViewId<A> }
 
 export type NodeOrId = string | { id: scalar.NodeId }
@@ -40,6 +41,7 @@ export type $View<A extends AnyAux> = {
   layouted: LayoutedView<A>
 }[aux.Stage<A>]
 
+/** @public Part of the public API surface; kept although unused internally */
 export type $ViewWithType<A extends AnyAux, V extends ViewType> = ViewWithType<$View<A>, V>
 
 export type $ViewModel<A extends AnyAux> = {

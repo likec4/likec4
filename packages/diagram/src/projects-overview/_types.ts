@@ -1,9 +1,5 @@
 import type { LayoutedProjectEdge } from '@likec4/core/compute-view'
-import type {
-  DiagramNode,
-  ExclusiveUnion,
-  ProjectId,
-} from '@likec4/core/types'
+import type { DiagramNode, ProjectId } from '@likec4/core/types'
 import type {
   ReactFlowInstance,
   ReactFlowState,
@@ -47,10 +43,6 @@ export namespace ProjectsOverviewTypes {
   export type NodeType = AnyNode['type']
   export type Node<T extends NodeType = NodeType> = Extract<AnyNode, { type: T }>
   export type NodeProps<T extends NodeType = NodeType> = BaseNodeProps<Node<T>>
-
-  export type NodeData = ExclusiveUnion<{
-    ProjectNodeData: ProjectNodeData
-  }>
 
   export type NodeRenderer<T extends NodeType = NodeType> = FunctionComponent<NodeProps<T>>
   export type NodeRenderers = {
