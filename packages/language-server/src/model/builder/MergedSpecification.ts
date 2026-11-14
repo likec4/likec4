@@ -17,16 +17,15 @@ import {
   unique,
 } from 'remeda'
 import type {
-  DescriptionFileRef,
   ParsedAstDeployment,
   ParsedAstDeploymentRelation,
   ParsedAstElement,
   ParsedAstRelation,
   ParsedAstSpecification,
   ParsedLikeC4LangiumDocument,
-  WithDescriptionFile,
 } from '../../ast'
 import { logger, logWarnError } from '../../logger'
+import type { DescriptionFileResolver, WithDescription } from './descriptionFileResolver'
 
 const iconTechPrefixRe = /^(aws|azure|gcp|tech):(.+)$/
 
@@ -75,22 +74,6 @@ function applyBidirectional(
   }
 }
 
-/**
- * The `MergedSpecification` class is responsible for merging multiple parsed
- * LikeC4Langium documents into a single specification. It consolidates tags,
- * elements, deployments, relationships, and colors from the provided documents
- * and provides methods to convert parsed models into C4 model elements and relations.
- */
-/**
- * Resolves the content of a file referenced with `descriptionFile`,
- * `undefined` when the file cannot be read (the validation reports it)
- */
-export type DescriptionFileResolver = (ref: DescriptionFileRef) => c4.MarkdownOrString | undefined
-
-type WithDescription = WithDescriptionFile & {
-  description?: c4.MarkdownOrString | null | undefined
-}
-
 type MergedSpecs = {
   elements: Record<c4.ElementKind, c4.ElementSpecification>
   deployments: Record<c4.DeploymentKind, c4.ElementSpecification>
@@ -98,6 +81,12 @@ type MergedSpecs = {
   colors: ParsedAstSpecification['colors']
 }
 
+/**
+ * The `MergedSpecification` class is responsible for merging multiple parsed
+ * LikeC4Langium documents into a single specification. It consolidates tags,
+ * elements, deployments, relationships, and colors from the provided documents
+ * and provides methods to convert parsed models into C4 model elements and relations.
+ */
 export class MergedSpecification {
   public readonly specs: MergedSpecs = {
     elements: {},
@@ -122,7 +111,7 @@ export class MergedSpecification {
 
   public readonly inferTechFromIcon: boolean
 
-  private readonly describe: DescriptionFileResolver
+  private readonly descriptionFileResolver: DescriptionFileResolver
 
   constructor(
     docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
@@ -131,10 +120,10 @@ export class MergedSpecification {
       /**
        * Resolves the content of the files referenced with `descriptionFile`
        */
-      describe?: DescriptionFileResolver
+      descriptionFile?: DescriptionFileResolver
     },
   ) {
-    this.describe = opts?.describe ?? (() => undefined)
+    this.descriptionFileResolver = opts?.descriptionFile ?? (() => undefined)
     const tags = {} as ParsedAstSpecification['tags']
     let projectIds = [] as c4.ProjectId[]
     for (const doc of docs) {
@@ -177,30 +166,23 @@ export class MergedSpecification {
   }
 
   /**
-   * The content of the file referenced with `descriptionFile`,
-   * `undefined` when the file cannot be read (the validation reports it)
-   */
-  descriptionOf(ref: DescriptionFileRef): c4.MarkdownOrString | undefined {
-    return this.describe(ref)
-  }
-
-  /**
    * Replaces the reference to a description file with the content of the file.
-   * The file wins over an inline description (the two together are reported by the validation),
-   * and there is nothing to describe when the file cannot be read.
+   * The content of the file replaces an inline description. The inline description stays when the
+   * file cannot be read, or when the reference is not valid (the parser drops it then, and the
+   * validation reports why - the two together included).
    */
-  withDescriptionFile<T extends WithDescription>(item: T): Omit<T, 'descriptionFile'> {
-    const { descriptionFile, ...rest } = item
-    if (!descriptionFile) {
+  withDescriptionFile<T extends WithDescription>(
+    item: T,
+  ): Omit<T, 'descriptionFile'> {
+    if (Object.hasOwn(item, 'descriptionFile')) {
+      const { descriptionFile, ...rest } = item
+      const description = this.descriptionFileResolver(descriptionFile)
+      if (description) {
+        return { ...rest, description }
+      }
       return rest
     }
-    const description = this.descriptionOf(descriptionFile)
-    if (description) {
-      return { ...rest, description }
-    }
-    const { description: _inline, ...withoutDescription } = rest
-    // `description` is optional in T (see WithDescription)
-    return withoutDescription as Omit<T, 'descriptionFile'>
+    return item
   }
 
   /**

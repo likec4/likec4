@@ -1,4 +1,4 @@
-import { Fqn } from '@likec4/core/types'
+import { Fqn, hasProp } from '@likec4/core/types'
 import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -13,6 +13,9 @@ export const markdownRefsChecks = (services: LikeC4Services): ValidationCheck<as
   const fqnIndex = services.likec4.FqnIndex
   const index = services.shared.workspace.IndexManager
   return tryOrLog((node, accept) => {
+    if (!hasProp(node, 'markdown')) {
+      return
+    }
     const document = AstUtils.getDocument(node)
     const refs = markdownRefsOf(node, document)
     if (refs.length === 0) {

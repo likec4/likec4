@@ -1,26 +1,62 @@
+import type { NonEmptyArray } from '@likec4/core'
 import { DefaultDocumentUpdateHandler } from 'langium/lsp'
 import { basename, extname } from 'pathe'
+import { hasAtLeast } from 'remeda'
 import { withTrailingSlash } from 'ufo'
-import { type FileEvent, type FileSystemWatcher, type TextDocumentChangeEvent, Disposable } from 'vscode-languageserver'
+import {
+  type DidChangeWatchedFilesParams,
+  type FileEvent,
+  type FileSystemWatcher,
+  type TextDocumentChangeEvent,
+  Disposable,
+} from 'vscode-languageserver'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import { URI } from 'vscode-uri'
 import { hasLikeC4Ext, insideNodeModulesOrRepo } from '../../filesystem/utils'
 import { LikeC4LanguageMetaData } from '../../generated/module'
+import { logger } from '../../logger'
 import type { LikeC4SharedServices } from '../../module'
+import type { DocOrUri } from '../../workspace'
 
 export class LikeC4DocumentUpdateHandler extends DefaultDocumentUpdateHandler {
+  #logger = logger.getChild('document-updater')
+
   constructor(protected services: LikeC4SharedServices) {
     super(services)
   }
 
+  /**
+   * Added to describe the flow explicitly
+   * - IDE/Other editors call this method when they detect file changes
+   * - Then {@link fireDocumentUpdate} is called (and we handle ONLY LikeC4 files)
+   */
   override didChangeContent(change: TextDocumentChangeEvent<TextDocument>): void {
-    // Only handle LikeC4 files, let the parent class handle other file types
-    if (
-      change.document.languageId === LikeC4LanguageMetaData.languageId &&
-      this.isNotExcluded(URI.parse(change.document.uri))
-    ) {
-      super.didChangeContent(change)
+    if (this.#logger.isEnabledFor('trace')) {
+      this.#logger.trace`didChangeContent ${change.document.uri}`
     }
+    // Only handle LikeC4 files
+    if (change.document.languageId === LikeC4LanguageMetaData.languageId) {
+      if (this.isNotExcluded(change.document)) {
+        super.didChangeContent(change)
+      }
+      return
+    }
+  }
+
+  /**
+   * Added to describe the flow explicitly
+   * - Chokidar/IDE/Other watchers call this method when they detect file changes
+   * - First it triggers {@link onWatchedFilesChangeEmitter} (THATS WHAT WE NEED - we have watchers with filters {@link onWatchedFilesChangeBy})
+   * - Then {@link fireDocumentUpdate} is called (and we handle ONLY LikeC4 files)
+   */
+  override didChangeWatchedFiles(params: DidChangeWatchedFilesParams): void {
+    if (this.#logger.isEnabledFor('trace')) {
+      this.#logger.trace`didChangeWatchedFiles`
+      params.changes.forEach(c => {
+        this.#logger.trace`  - ${c.uri}`
+      })
+    }
+    super.didChangeWatchedFiles(params)
   }
 
   /**
@@ -73,17 +109,20 @@ export class LikeC4DocumentUpdateHandler extends DefaultDocumentUpdateHandler {
    * Subscribe to watched file changes that match the given filter.
    * Returns a disposable to unsubscribe.
    */
-  onWatchedFilesChangeBy(filter: (uri: FileEvent) => boolean, listener: (changes: FileEvent[]) => void): Disposable {
-    const isNotExcluded = (change: FileEvent) => this.isNotExcluded(URI.parse(change.uri))
+  onWatchedFilesChangeBy(
+    filter: (uri: FileEvent) => boolean,
+    listener: (changes: NonEmptyArray<FileEvent>) => void,
+  ): Disposable {
+    const isNotExcluded = (change: FileEvent) => this.isNotExcluded(change.uri)
     return this.onWatchedFilesChangeEmitter.event(({ changes }) => {
       const filtered = changes.filter(filter).filter(isNotExcluded)
-      if (filtered.length > 0) {
+      if (hasAtLeast(filtered, 1)) {
         listener(filtered)
       }
     })
   }
 
-  protected isNotExcluded(uri: URI): boolean {
+  protected isNotExcluded(uri: DocOrUri): boolean {
     return !this.services.workspace.ProjectsManager.isExcludedByWorkspace(uri)
   }
 }

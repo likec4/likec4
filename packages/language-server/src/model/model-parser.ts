@@ -7,7 +7,7 @@
 
 import type { ProjectId } from '@likec4/core'
 import { hasProp, invariant, MultiMap, objectHash } from '@likec4/core/utils'
-import { type LangiumDocument, type Stream, Disposable, DocumentState } from 'langium'
+import { type LangiumDocument, type Stream, Disposable, DocumentState, Emitter } from 'langium'
 import { pipe } from 'remeda'
 import {
   type LikeC4DocumentProps,
@@ -52,16 +52,26 @@ const DocumentParserFromMixins = pipe(
 export class DocumentParser extends DocumentParserFromMixins {
 }
 
-type ReparsedListener = (doc: LikeC4LangiumDocument) => void
+type DidParsedLikeC4LangiumDocument = {
+  doc: ParsedLikeC4LangiumDocument
+  /**
+   * True if parser was recreated after validation
+   */
+  afterValidation: boolean
+}
+
+type ParsedListener = (event: DidParsedLikeC4LangiumDocument) => void
 
 export class LikeC4ModelParser extends ADisposable {
   #logger = rootLogger.getChild('parser')
-  private readonly reparsedListeners: ReparsedListener[] = []
+
+  private readonly onDidParsedEmitter: Emitter<DidParsedLikeC4LangiumDocument>
 
   constructor(private services: LikeC4Services) {
     super()
 
     this.onDispose(
+      this.onDidParsedEmitter = new Emitter<DidParsedLikeC4LangiumDocument>(),
       // Clear cached parser when document is unlinked
       services.shared.workspace.DocumentBuilder.onDocumentResetBelow(
         DocumentState.Linked,
@@ -86,7 +96,8 @@ export class LikeC4ModelParser extends ADisposable {
               doc: services.shared.workspace.WorkspaceManager.relativePath(doc.uri),
             })
           }
-          this.createParser(doc)
+          const parser = this.createParser(doc)
+          this.notifyListeners(parser.doc, false)
         },
       ),
       // Parser created at Linked phase does not know about validation errors (there are no diagnostics yet).
@@ -95,40 +106,46 @@ export class LikeC4ModelParser extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentPhase(
         DocumentState.Validated,
         doc => {
-          if (!isLikeC4LangiumDocument(doc) || !doc.likec4Parser || !isValidationStateChanged(doc, doc.likec4Parser)) {
+          if (
+            !isParsedLikeC4LangiumDocument(doc) || !isValidationStateChanged(doc, doc.likec4Parser)
+          ) {
             return
           }
           this.createParser(doc)
-          this.notifyReparsed(doc)
+          this.notifyListeners(doc, true)
         },
       ),
-      Disposable.create(() => {
-        this.reparsedListeners.length = 0
-      }),
     )
+  }
+
+  /**
+   * Subscribe to events when document is parsed: when it is linked, and once more after validation
+   * if the validation state differs from the one parser was created with (`afterValidation` is set)
+   */
+  onDocumentParsed(listener: ParsedListener): Disposable {
+    return this.onDidParsedEmitter.event(listener)
   }
 
   /**
    * Subscribe to events when document is reparsed after validation
    * (validation state differs from the one parser was created with)
    */
-  onReparsedAfterValidation(listener: ReparsedListener): Disposable {
-    this.reparsedListeners.push(listener)
-    return Disposable.create(() => {
-      const index = this.reparsedListeners.indexOf(listener)
-      if (index >= 0) {
-        this.reparsedListeners.splice(index, 1)
+  onReparsedAfterValidation(listener: ParsedListener): Disposable {
+    return this.onDidParsedEmitter.event(event => {
+      if (event.afterValidation) {
+        listener(event)
       }
     })
   }
 
-  private notifyReparsed(doc: LikeC4LangiumDocument): void {
-    for (const listener of this.reparsedListeners) {
-      try {
-        listener(doc)
-      } catch (error) {
-        this.#logger.warn('Error in reparsed listener', { error })
-      }
+  private notifyListeners(doc: ParsedLikeC4LangiumDocument, afterValidation: boolean): void {
+    try {
+      this.onDidParsedEmitter.fire({
+        doc,
+        afterValidation,
+      })
+    } catch (error) {
+      this.#logger.warn('Error in reparsed listener', { error })
     }
   }
 

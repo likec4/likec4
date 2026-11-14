@@ -1,10 +1,18 @@
 import { isAnyOf } from '@likec4/core/utils'
 import type { LangiumDocument } from 'langium'
 import { AstUtils, GrammarUtils, interruptAndCheck } from 'langium'
+import { UriUtils } from 'langium'
 import type { DocumentLinkProvider } from 'langium/lsp'
-import { hasLeadingSlash, hasProtocol, isRelative, joinRelativeURL, withoutBase, withoutLeadingSlash } from 'ufo'
+import {
+  hasLeadingSlash,
+  hasProtocol,
+  isRelative,
+  joinRelativeURL,
+  withoutBase,
+  withoutLeadingSlash,
+} from 'ufo'
 import { type DocumentLink, type DocumentLinkParams, CancellationToken } from 'vscode-languageserver'
-import { ast, isLikeC4UserDocument } from '../ast'
+import { ast, isLikeC4UserDocument, resolveDescriptionFile } from '../ast'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 
@@ -29,7 +37,12 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     ) {
       try {
         const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
-        const target = range && this.resolveLink(doc, n.value)
+        if (!range) {
+          continue
+        }
+        const target = ast.isDescriptionFileProperty(n)
+          ? resolveDescriptionFile(n, doc)?.toString()
+          : this.resolveLink(doc, n.value)
         if (target && hasProtocol(target)) {
           links.push({
             range,
@@ -49,10 +62,10 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return link
     }
     if (isRelative(link)) {
-      return joinRelativeURL(doc.uri.toString(), '../', link)
+      return joinRelativeURL(UriUtils.dirname(doc.uri).toString(), link)
     }
-    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri
-    return joinRelativeURL(base.toString(), link)
+    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri.toString()
+    return joinRelativeURL(base, link)
   }
 
   relativeLink(doc: LangiumDocument, link: string): string | null {

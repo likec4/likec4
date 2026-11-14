@@ -38,6 +38,7 @@ import {
   parseAstSizeValue,
   parseAstSizingValue,
   parseMarkdownAsString,
+  resolveDescriptionFile,
   toColor,
 } from '../../ast'
 import { isBundledIcon } from '../../generated/icons'
@@ -407,63 +408,54 @@ export class BaseParser {
    * The property is a rule of its own - its value is a path, not markdown - so the parser picks it up
    * beside the string properties.
    */
-  descriptionFileOf<T extends ReadonlyArray<unknown | ast.DescriptionFileProperty>>(
+  descriptionFileProp<T extends ReadonlyArray<unknown | ast.DescriptionFileProperty>>(
     props: T | undefined,
-  ): { descriptionFile?: string } {
-    const prop = props?.filter(ast.isDescriptionFileProperty).at(-1)
-    // Validity is not checked: the validation reports a file that cannot be read on this property,
-    // and the reference has to stay, so the file is read (and watched) once it is created
-    const value = prop?.value?.trim()
-    return value ? { descriptionFile: value } : {}
+  ): ast.DescriptionFileProperty | undefined {
+    if (!props) {
+      return undefined
+    }
+    return props.filter(ast.isDescriptionFileProperty).at(-1)
   }
 
   /**
    * The file a body references with `descriptionFile`, resolved.
    *
-   * The value is a path, not a URL: its segments are encoded so `#`, `?` and `%` stay file name
-   * characters, and it is resolved the way a `link` is - `./` and `../` against the document,
-   * anything else against the project folder. `resolvedPath` is null when the value does not name a
-   * file of the project (another scheme, a path outside of it): the validation reports why, and
-   * nothing is read for it.
+   * The value is a path, resolved against the folder of the document (see `resolveDescriptionFile`).
+   * `uri` is null when the value does not name a file (another scheme): the validation reports why,
+   * and nothing is read for it.
    *
-   * The reference is recorded on the document, because the files are read when the model is built -
-   * not while documents are parsed - and a parsed entity holds only the reference until then.
+   * The reference is recorded on the document, so `LikeC4DescriptionFiles` knows the files to follow.
+   * A parsed entity holds only the reference: the content is taken when the model is built.
    */
   parseDescriptionFile(
-    container: ast.DescriptionFileProperty['$container'] | undefined,
+    container:
+      | ast.DescriptionFileProperty
+      | ast.DescriptionFileProperty['$container']
+      | undefined,
   ): { descriptionFile?: DescriptionFileRef } {
     if (!container) {
       return {}
     }
-    const prop = this.descriptionFileOf(container.props)
-    if (!prop || !prop.descriptionFile) {
+    let prop: ast.DescriptionFileProperty | undefined
+    if (ast.isDescriptionFileProperty(container)) {
+      prop = container
+    } else {
+      prop = this.descriptionFileProp(container.props)
+    }
+    if (!prop || !prop.value) {
       return {}
     }
     const ref: DescriptionFileRef = {
-      value: prop.descriptionFile,
-      resolvedPath: this.resolveDescriptionFile(prop.descriptionFile),
+      value: prop.value,
+      uri: resolveDescriptionFile(prop, this.doc)?.toString() ?? null,
     }
-    if (ref.resolvedPath) {
-      this.doc.c4DescriptionFiles.add(ref.resolvedPath)
+    // we track the file even if it is invalid
+    // we need to track it to be able to re-read it when building the model
+    if (ref.uri) {
+      this.doc.c4DescriptionFiles.add(ref.uri)
     }
-    return { descriptionFile: ref }
-  }
-
-  /**
-   * Resolves the file a `descriptionFile` value names, or `null` when it does not name a file of the
-   * project.
-   */
-  resolveDescriptionFile(value: string): string | null {
-    // a value that names another scheme (`https:`, `file:`, `C:`) is not a file of this project
-    if (hasProtocol(value)) {
-      return null
-    }
-    try {
-      const path = value.split('/').map(encodeURIComponent).join('/')
-      return this.services.lsp.DocumentLinkProvider.resolveLink(this.doc, path)
-    } catch {
-      return null
-    }
+    // but we only return it if it is valid
+    return this.isValid(prop) ? { descriptionFile: ref } : {}
   }
 
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {

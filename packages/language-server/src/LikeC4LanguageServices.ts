@@ -498,6 +498,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       this.services.likec4.ModelParser.dispose()
       this.services.likec4.ModelBuilder.dispose()
       this.services.likec4.Views.dispose()
+      this.services.likec4.DescriptionFiles.dispose()
       this.services.likec4.LastSeen.dispose()
       this.services.Rpc.dispose()
       this.services.shared.workspace.ManualLayouts.dispose()

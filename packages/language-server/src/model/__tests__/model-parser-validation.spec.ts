@@ -122,7 +122,10 @@ describe('LikeC4ModelParser -- validation errors', () => {
         ${duplicateViews}
       `)
       expect(listener).toHaveBeenCalledOnce()
-      expect(listener).toHaveBeenCalledWith(document)
+      expect(listener).toHaveBeenCalledWith({
+        doc: document,
+        afterValidation: true,
+      })
     })
 
     test('does not notify when document is valid', async ({ t, expect }) => {

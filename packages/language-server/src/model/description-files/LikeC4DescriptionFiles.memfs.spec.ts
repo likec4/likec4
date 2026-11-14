@@ -6,8 +6,8 @@ import stripIndent from 'strip-indent'
 import { describe, it, vi } from 'vitest'
 import { FileChangeType } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
-import { createTestServices, mockMethod } from '../test'
-import { WithFileSystem } from './LikeC4FileSystem'
+import { WithFileSystem } from '../../filesystem/LikeC4FileSystem'
+import { createTestServices, mockMethod } from '../../test'
 
 let seq = 0
 
@@ -41,10 +41,7 @@ async function testWorkspace(files: Record<string, string>) {
   mockMethod(fs, 'readFile').mockImplementation(async uri =>
     vol.existsSync(uri.fsPath) ? vol.readFileSync(uri.fsPath, 'utf-8').toString() : ''
   )
-  // used by the containment check of description files
-  mockMethod(fs, 'realpath').mockImplementation(async uri =>
-    vol.existsSync(uri.fsPath) ? vol.realpathSync(uri.fsPath).toString() : undefined
-  )
+  mockMethod(fs, 'readFileSync').mockImplementation(uri => vol.readFileSync(uri.fsPath, 'utf-8').toString())
   await t.initialize()
 
   const modelBuilder = t.services.likec4.ModelBuilder
