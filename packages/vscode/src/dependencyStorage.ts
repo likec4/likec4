@@ -12,7 +12,7 @@ export const DEPENDENCY_STORAGE_FOLDER = 'dependencies'
  */
 export type DependencyStorageFileSystem = Pick<
   vscode.FileSystem,
-  'readFile' | 'writeFile' | 'createDirectory' | 'readDirectory' | 'rename' | 'delete'
+  'readFile' | 'writeFile' | 'createDirectory' | 'readDirectory' | 'rename' | 'delete' | 'stat'
 >
 
 type Logger = {
@@ -61,6 +61,15 @@ const NOT_FOUND_CODES = new Set(['FileNotFound', 'EntryNotFound', 'FileNotADirec
 function isFileNotFound(error: unknown): boolean {
   return error instanceof Error && 'code' in error && typeof error.code === 'string' && NOT_FOUND_CODES.has(error.code)
 }
+
+function hasCode(error: unknown, ...codes: string[]): boolean {
+  return error instanceof Error && 'code' in error && typeof error.code === 'string' && codes.includes(error.code)
+}
+
+/**
+ * Temporary files older than this are removed on registration (left by an interrupted write)
+ */
+export const STALE_TEMP_FILE_AGE_MS = 60 * 60 * 1000
 
 function randomName(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
@@ -141,18 +150,37 @@ export function createDependencyStorageHandlers(
       return { items }
     },
 
-    // Writes a temporary file outside of the key tree and renames it into place,
-    // so readers never see a partially written value
+    // Writes a temporary file outside of the key tree and renames it into place: no partial reads
+    // (a reader sees either the previous value, no value, or the new value).
+    // Not atomic: `rename` with overwrite of VS Code deletes the target first.
     async setItem({ key, value }) {
       const segments = itemSegments(key)
       const target = vscode.Uri.joinPath(root, ...segments)
       const tempFolder = vscode.Uri.joinPath(root, DEPENDENCY_STORAGE_TEMP_FOLDER)
       const temp = vscode.Uri.joinPath(tempFolder, randomName())
+      try {
+        const stat = await fs.stat(target)
+        if ((stat.type & vscode.FileType.Directory) !== 0) {
+          throw new Error(`Dependency storage key ${key} is a folder, refusing to overwrite it`)
+        }
+      } catch (error) {
+        if (!isFileNotFound(error)) {
+          throw error
+        }
+      }
       await fs.createDirectory(tempFolder)
       await fs.createDirectory(vscode.Uri.joinPath(root, ...segments.slice(0, -1)))
       try {
         await fs.writeFile(temp, encoder.encode(value))
-        await fs.rename(temp, target, { overwrite: true })
+        try {
+          await fs.rename(temp, target, { overwrite: true })
+        } catch (error) {
+          // A concurrent write of the same key may race between delete and rename of the target: retry once
+          if (!hasCode(error, 'FileNotFound', 'EntryNotFound', 'FileExists', 'EntryExists')) {
+            throw error
+          }
+          await fs.rename(temp, target, { overwrite: true })
+        }
       } catch (error) {
         try {
           await fs.delete(temp, { useTrash: false })
@@ -180,17 +208,45 @@ export function createDependencyStorageHandlers(
  *
  * Must be called before the client starts.
  */
+/**
+ * Removes temporary files older than {@link STALE_TEMP_FILE_AGE_MS} (best effort, never throws).
+ */
+export async function removeStaleTempFiles(
+  root: vscode.Uri,
+  fs: DependencyStorageFileSystem,
+  now: number = Date.now(),
+): Promise<void> {
+  const tempFolder = vscode.Uri.joinPath(root, DEPENDENCY_STORAGE_TEMP_FOLDER)
+  let entries: [string, vscode.FileType][]
+  try {
+    entries = await fs.readDirectory(tempFolder)
+  } catch {
+    return
+  }
+  await Promise.all(entries.map(async ([name]) => {
+    try {
+      const uri = vscode.Uri.joinPath(tempFolder, name)
+      const stat = await fs.stat(uri)
+      if (now - stat.mtime > STALE_TEMP_FILE_AGE_MS) {
+        await fs.delete(uri, { recursive: true, useTrash: false })
+      }
+    } catch {
+      // best effort
+    }
+  }))
+}
+
 export function registerDependencyStorage(
   client: BaseLanguageClient,
   globalStorageUri: vscode.Uri,
   fs: DependencyStorageFileSystem,
   logger?: Logger,
 ): vscode.Disposable {
-  const handlers = createDependencyStorageHandlers(
-    vscode.Uri.joinPath(globalStorageUri, DEPENDENCY_STORAGE_FOLDER),
-    fs,
-    logger,
-  )
+  const root = vscode.Uri.joinPath(globalStorageUri, DEPENDENCY_STORAGE_FOLDER)
+  const handlers = createDependencyStorageHandlers(root, fs, logger)
+  removeStaleTempFiles(root, fs).catch(() => {
+    // best effort, never fails activation
+  })
   const disposables = [
     client.onRequest(DependencyStorageRequests.GetItem.req, params => handlers.getItem(params)),
     client.onRequest(DependencyStorageRequests.GetItems.req, params => handlers.getItems(params)),

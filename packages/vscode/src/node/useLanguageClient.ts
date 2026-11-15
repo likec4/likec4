@@ -99,6 +99,8 @@ const useLanguageClient = defineService(() => {
       useExtensionLogger('dependencies').logger,
     ),
   )
+  // Shows the install commands (the browser server does not support git dependencies)
+  void vscode.commands.executeCommand('setContext', 'likec4.dependencyStorage', true)
 
   const suggestChangeNode = once(() => {
     const message =

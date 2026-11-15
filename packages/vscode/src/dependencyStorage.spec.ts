@@ -6,6 +6,8 @@ import {
   createDependencyStorageHandlers,
   DEPENDENCY_STORAGE_TEMP_FOLDER,
   registerDependencyStorage,
+  removeStaleTempFiles,
+  STALE_TEMP_FILE_AGE_MS,
   withDependencyStorageOption,
 } from './dependencyStorage'
 
@@ -71,7 +73,19 @@ function fsError(code: string): Error {
 function fakeFileSystem() {
   const files = new Map<string, Uint8Array>()
   const dirs = new Set<string>()
+  const mtimes = new Map<string, number>()
   const fs = {
+    stat: vi.fn<(uri: vscode.Uri) => Promise<vscode.FileStat>>(async uri => {
+      const key = uri.toString()
+      const mtime = mtimes.get(key) ?? Date.now()
+      if (files.has(key)) {
+        return { type: vscode.FileType.File, ctime: mtime, mtime, size: files.get(key)!.length }
+      }
+      if (dirs.has(key) || [...files.keys()].some(path => path.startsWith(`${key}/`))) {
+        return { type: vscode.FileType.Directory, ctime: mtime, mtime, size: 0 }
+      }
+      throw fsError('FileNotFound')
+    }),
     readFile: vi.fn<(uri: vscode.Uri) => Promise<Uint8Array>>(async uri => {
       const content = files.get(uri.toString())
       if (!content) {
@@ -123,7 +137,7 @@ function fakeFileSystem() {
       return [...entries]
     }),
   }
-  return { files, dirs, fs }
+  return { files, dirs, mtimes, fs }
 }
 
 const encode = (value: string) => new TextEncoder().encode(value)
@@ -173,6 +187,56 @@ describe('dependency storage of the extension', () => {
     expect(fs.delete).toHaveBeenCalledOnce()
     expect(fs.delete.mock.calls[0]?.[0].toString()).toBe(fs.writeFile.mock.calls[0]?.[0].toString())
     expect(files.size).toBe(0)
+  })
+
+  it('retries the rename once if the target changed concurrently', async () => {
+    const { files, fs } = fakeFileSystem()
+    fs.rename.mockRejectedValueOnce(fsError('FileExists'))
+    const handlers = createDependencyStorageHandlers(root, fs)
+
+    await handlers.setItem({ key: 'a:b', value: '1' })
+    expect(fs.rename).toHaveBeenCalledTimes(2)
+    expect(new TextDecoder().decode(files.get(uri('a', 'b')))).toBe('1')
+  })
+
+  it('fails if the retried rename fails, and removes the temporary file', async () => {
+    const { files, fs } = fakeFileSystem()
+    fs.rename.mockRejectedValueOnce(fsError('FileNotFound')).mockRejectedValueOnce(fsError('FileExists'))
+    const handlers = createDependencyStorageHandlers(root, fs)
+
+    await expect(handlers.setItem({ key: 'a:b', value: '1' })).rejects.toThrow('FileExists')
+    expect(fs.rename).toHaveBeenCalledTimes(2)
+    expect(files.size).toBe(0)
+  })
+
+  it('refuses to overwrite a folder', async () => {
+    const { files, fs } = fakeFileSystem()
+    const handlers = createDependencyStorageHandlers(root, fs)
+    await handlers.setItem({ key: 'a:b:c', value: '1' })
+
+    await expect(handlers.setItem({ key: 'a:b', value: '2' })).rejects.toThrow(/refusing to overwrite/)
+    expect(fs.rename).toHaveBeenCalledOnce()
+    expect([...files.keys()]).toEqual([uri('a', 'b', 'c')])
+  })
+
+  it('removes stale temporary files, never failing', async () => {
+    const { files, mtimes, fs } = fakeFileSystem()
+    const now = 10 * STALE_TEMP_FILE_AGE_MS
+    const stale = uri(DEPENDENCY_STORAGE_TEMP_FOLDER, 'stale')
+    const fresh = uri(DEPENDENCY_STORAGE_TEMP_FOLDER, 'fresh')
+    files.set(stale, encode('x'))
+    files.set(fresh, encode('y'))
+    files.set(uri('a', 'b'), encode('z'))
+    mtimes.set(stale, now - STALE_TEMP_FILE_AGE_MS - 1)
+    mtimes.set(fresh, now - 1000)
+
+    await removeStaleTempFiles(root, fs, now)
+    expect([...files.keys()].sort()).toEqual([fresh, uri('a', 'b')].sort())
+
+    fs.readDirectory.mockRejectedValueOnce(fsError('NoPermissions'))
+    await expect(removeStaleTempFiles(root, fs, now)).resolves.toBeUndefined()
+    fs.stat.mockRejectedValueOnce(fsError('NoPermissions'))
+    await expect(removeStaleTempFiles(root, fs, now)).resolves.toBeUndefined()
   })
 
   it('reads a value', async () => {

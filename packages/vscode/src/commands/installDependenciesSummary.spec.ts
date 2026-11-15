@@ -42,6 +42,34 @@ describe('summarizeInstallResults', () => {
     })
   })
 
+  it('counts malformed entries and unknown statuses as failed', () => {
+    const res = {
+      results: [
+        null,
+        { projectId: 'shop', name: 'x' },
+        { projectId: 'shop', name: 'y', result: { status: 'weird' } },
+      ],
+    } as unknown as InstallDependencies.Res
+    expect(summarizeInstallResults(res, false)).toEqual({
+      level: 'warning',
+      message:
+        'LikeC4 git dependencies: 0 installed, 3 failed (?/?: unexpected result; shop/x: unexpected result; shop/y: unexpected result)',
+    })
+  })
+
+  it('reports cached results of an update as already up to date', () => {
+    const res: InstallDependencies.Res = {
+      results: [
+        result('a', { status: 'installed', instance, files: 1, cached: false }),
+        result('b', { status: 'installed', instance, files: 1, cached: true }),
+      ],
+    }
+    expect(summarizeInstallResults(res, true)).toEqual({
+      level: 'info',
+      message: 'LikeC4 git dependencies: 1 updated, 1 already up to date',
+    })
+  })
+
   it('is info when everything is installed', () => {
     const res: InstallDependencies.Res = {
       results: [result('a', { status: 'installed', instance, files: 1, cached: false })],
