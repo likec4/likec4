@@ -4,44 +4,12 @@ import * as vscode from 'vscode'
 import { ExecuteCommandRequest } from 'vscode-languageclient'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
+import { summarizeInstallResults } from './installDependenciesSummary'
 import type { RpcClient } from './types'
 
 export interface InstallDependenciesCommandDeps {
   sendTelemetry(commandId: string): void
   rpc: RpcClient
-}
-
-/**
- * Summary of the results of the server command, shown to the user
- */
-export function summarizeInstallResults(
-  res: InstallDependencies.Res | null | undefined,
-  update: boolean,
-): { level: 'info' | 'warning'; message: string } {
-  const results = res?.results ?? []
-  if (results.length === 0) {
-    return { level: 'info', message: 'LikeC4: no git dependencies found' }
-  }
-  const failed = results.flatMap(({ projectId, name, result }) =>
-    result.status === 'failed' ? [`${projectId}/${name}: ${result.error}`] : []
-  )
-  const unsupported = results.filter(({ result }) => result.status === 'unsupported').length
-  const installed = results.length - failed.length - unsupported
-  const verb = update ? 'updated' : 'installed'
-  switch (true) {
-    case failed.length > 0:
-      return {
-        level: 'warning',
-        message: `LikeC4: ${installed} of ${results.length} git dependencies ${verb}, failed: ${failed.join('; ')}`,
-      }
-    case unsupported > 0:
-      return {
-        level: 'warning',
-        message: `LikeC4: git dependencies are not supported in this environment (${unsupported} skipped)`,
-      }
-    default:
-      return { level: 'info', message: `LikeC4: ${installed} git dependencies ${verb}` }
-  }
 }
 
 /**
@@ -61,19 +29,29 @@ export function registerInstallDependenciesCommands({ sendTelemetry, rpc }: Inst
           title: update ? 'LikeC4: updating git dependencies' : 'LikeC4: installing git dependencies',
         },
         async () => {
-          const result: InstallDependencies.Res | null = await rpc.client.sendRequest(ExecuteCommandRequest.type, {
-            command: InstallDependencies.command,
-            arguments: [params],
-          })
+          const result: InstallDependencies.Res | null | undefined = await rpc.client.sendRequest(
+            ExecuteCommandRequest.type,
+            {
+              command: InstallDependencies.command,
+              arguments: [params],
+            },
+          )
           return result
         },
       )
       const { level, message } = summarizeInstallResults(res, update)
-      if (level === 'warning') {
-        logger.warn(message)
-        void vscode.window.showWarningMessage(message)
-      } else {
-        void vscode.window.showInformationMessage(message)
+      switch (level) {
+        case 'error':
+          logger.error(message)
+          void vscode.window.showErrorMessage(message)
+          break
+        case 'warning':
+          logger.warn(message)
+          void vscode.window.showWarningMessage(message)
+          break
+        case 'info':
+          void vscode.window.showInformationMessage(message)
+          break
       }
     } catch (error) {
       logger.error('Failed to install git dependencies', { error })

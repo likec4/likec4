@@ -12,7 +12,7 @@ export const DEPENDENCY_STORAGE_FOLDER = 'dependencies'
  */
 export type DependencyStorageFileSystem = Pick<
   vscode.FileSystem,
-  'readFile' | 'writeFile' | 'createDirectory' | 'readDirectory'
+  'readFile' | 'writeFile' | 'createDirectory' | 'readDirectory' | 'rename' | 'delete'
 >
 
 type Logger = {
@@ -32,6 +32,12 @@ export interface DependencyStorageHandlers {
 const KEY_SEPARATOR = ':'
 
 /**
+ * Folder of temporary files inside the storage root (values are written there and renamed into place).
+ * Never a key segment: keys start with `instances` or `versions`, and keys starting with it are rejected.
+ */
+export const DEPENDENCY_STORAGE_TEMP_FOLDER = '.tmp'
+
+/**
  * Splits an unstorage key into path segments (`a:b:c` -> `['a', 'b', 'c']`).
  * Segments are already file-safe (see `encodeKeySegment` of the language server),
  * here only path traversal is rejected.
@@ -43,12 +49,21 @@ function keySegments(key: string): string[] {
       throw new Error(`Invalid dependency storage key: ${key}`)
     }
   }
+  if (segments[0] === DEPENDENCY_STORAGE_TEMP_FOLDER) {
+    throw new Error(`Invalid dependency storage key: ${key}`)
+  }
   return segments
 }
 
+// Codes of `vscode.FileSystemError` meaning "there is nothing at this path"
+const NOT_FOUND_CODES = new Set(['FileNotFound', 'EntryNotFound', 'FileNotADirectory', 'EntryNotADirectory'])
+
 function isFileNotFound(error: unknown): boolean {
-  return error instanceof Error && 'code' in error
-    && (error.code === 'FileNotFound' || error.code === 'EntryNotFound')
+  return error instanceof Error && 'code' in error && typeof error.code === 'string' && NOT_FOUND_CODES.has(error.code)
+}
+
+function randomName(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 
 /**
@@ -75,6 +90,8 @@ export function createDependencyStorageHandlers(
   }
   const uriOf = (key: string): vscode.Uri => vscode.Uri.joinPath(root, ...itemSegments(key))
 
+  // A file that cannot be read (e.g. no permissions) is "not installed" as well, with a warning:
+  // the server then offers to install it again, which overwrites the file
   const read = async (key: string): Promise<string | null> => {
     const uri = uriOf(key)
     try {
@@ -87,7 +104,7 @@ export function createDependencyStorageHandlers(
     }
   }
 
-  // Lists keys of files in the folder recursively, `prefix` is the key of the folder
+  // Lists keys of files in the folder recursively (sibling folders concurrently), `prefix` is the key of the folder
   const list = async (folder: vscode.Uri, prefix: string[]): Promise<string[]> => {
     let entries: [string, vscode.FileType][]
     try {
@@ -98,19 +115,20 @@ export function createDependencyStorageHandlers(
       }
       return []
     }
-    const keys: string[] = []
-    for (const [name, type] of entries) {
+    const nested = await Promise.all(entries.map(async ([name, type]): Promise<string[]> => {
       const segments = [...prefix, name]
       switch (true) {
+        case prefix.length === 0 && name === DEPENDENCY_STORAGE_TEMP_FOLDER:
+          return []
         case (type & vscode.FileType.Directory) !== 0:
-          keys.push(...await list(vscode.Uri.joinPath(folder, name), segments))
-          break
+          return await list(vscode.Uri.joinPath(folder, name), segments)
         case (type & vscode.FileType.File) !== 0:
-          keys.push(segments.join(KEY_SEPARATOR))
-          break
+          return [segments.join(KEY_SEPARATOR)]
+        default:
+          return []
       }
-    }
-    return keys
+    }))
+    return nested.flat()
   }
 
   return {
@@ -123,10 +141,26 @@ export function createDependencyStorageHandlers(
       return { items }
     },
 
+    // Writes a temporary file outside of the key tree and renames it into place,
+    // so readers never see a partially written value
     async setItem({ key, value }) {
       const segments = itemSegments(key)
+      const target = vscode.Uri.joinPath(root, ...segments)
+      const tempFolder = vscode.Uri.joinPath(root, DEPENDENCY_STORAGE_TEMP_FOLDER)
+      const temp = vscode.Uri.joinPath(tempFolder, randomName())
+      await fs.createDirectory(tempFolder)
       await fs.createDirectory(vscode.Uri.joinPath(root, ...segments.slice(0, -1)))
-      await fs.writeFile(vscode.Uri.joinPath(root, ...segments), encoder.encode(value))
+      try {
+        await fs.writeFile(temp, encoder.encode(value))
+        await fs.rename(temp, target, { overwrite: true })
+      } catch (error) {
+        try {
+          await fs.delete(temp, { useTrash: false })
+        } catch {
+          // the temporary file may not exist
+        }
+        throw error
+      }
     },
 
     async getKeys({ base }) {
@@ -164,12 +198,22 @@ export function registerDependencyStorage(
     client.onRequest(DependencyStorageRequests.GetKeys.req, params => handlers.getKeys(params)),
   ]
 
-  const current = client.clientOptions.initializationOptions
-  const initializationOptions: LikeC4InitializationOptions & Record<string, unknown> = {
-    ...(typeof current === 'object' && current !== null ? current : {}),
-    dependencyStorage: true,
-  }
-  client.clientOptions.initializationOptions = initializationOptions
+  client.clientOptions.initializationOptions = withDependencyStorageOption(client.clientOptions.initializationOptions)
 
   return vscode.Disposable.from(...disposables)
+}
+
+/**
+ * Adds `dependencyStorage: true` to `initializationOptions` of the client,
+ * which may be a value or a function (`LanguageClientOptions.initializationOptions`)
+ */
+export function withDependencyStorageOption(current: unknown): unknown {
+  const extend = (options: unknown): LikeC4InitializationOptions & Record<string, unknown> => ({
+    ...(typeof options === 'object' && options !== null ? options : {}),
+    dependencyStorage: true,
+  })
+  if (typeof current === 'function') {
+    return () => extend(current())
+  }
+  return extend(current)
 }

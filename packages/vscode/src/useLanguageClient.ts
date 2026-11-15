@@ -3,15 +3,12 @@ import useEnvLanguageClient from '#useLanguageClient'
 import { watchDebounced } from '@reactive-vscode/vueuse'
 import {
   defineService,
-  extensionContext,
   useDisposable,
   watch,
 } from 'reactive-vscode'
-import * as vscode from 'vscode'
 import { State } from 'vscode-languageclient'
 import { config } from './config'
 import { isDev } from './const'
-import { registerDependencyStorage } from './dependencyStorage'
 import { useExtensionLogger } from './useExtensionLogger'
 import { useIsActivated } from './useIsActivated'
 
@@ -36,16 +33,6 @@ export const useLanguageClient = defineService(() => {
   const { logger } = useExtensionLogger('lc')
 
   const client = useEnvLanguageClient()
-
-  // Storage of git dependencies of the language server: files in `globalStorageUri` (before the client starts)
-  useDisposable(
-    registerDependencyStorage(
-      client,
-      extensionContext.value!.globalStorageUri,
-      vscode.workspace.fs,
-      useExtensionLogger('dependencies').logger,
-    ),
-  )
 
   function startLanguageServer() {
     if (client.isRunning()) {

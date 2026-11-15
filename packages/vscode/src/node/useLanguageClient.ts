@@ -18,6 +18,7 @@ import {
   TransportKind,
 } from 'vscode-languageclient/node'
 import { config } from '../config'
+import { registerDependencyStorage } from '../dependencyStorage'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { isLikeC4Source } from '../utils.ts'
 
@@ -87,6 +88,17 @@ const useLanguageClient = defineService(() => {
   }
 
   const client = new NodeLanguageClient('likec4', 'LikeC4 Language Server', serverOptions, clientOptions)
+
+  // Storage of git dependencies of the language server: files in `globalStorageUri`.
+  // Node only: the browser server does not support git dependencies.
+  useDisposable(
+    registerDependencyStorage(
+      client,
+      extensionContext.value!.globalStorageUri,
+      vscode.workspace.fs,
+      useExtensionLogger('dependencies').logger,
+    ),
+  )
 
   const suggestChangeNode = once(() => {
     const message =

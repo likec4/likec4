@@ -260,11 +260,11 @@
         },
         {
           "command": "likec4.install-dependencies",
-          "when": "likec4.activated"
+          "when": "likec4.activated && !isWeb"
         },
         {
           "command": "likec4.update-dependencies",
-          "when": "likec4.activated"
+          "when": "likec4.activated && !isWeb"
         }
       ]
     },
