@@ -2176,6 +2176,9 @@ importers:
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.2(typescript@6.0.3)
+      '@rolldown/plugin-node-polyfills':
+        specifier: catalog:tsdown
+        version: 1.0.4
       '@tanstack/ai':
         specifier: catalog:ai
         version: 0.69.0(zod@4.6.7)

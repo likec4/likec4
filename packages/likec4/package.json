@@ -226,6 +226,7 @@
     "@likec4/vite-plugin": "workspace:*",
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
+    "@rolldown/plugin-node-polyfills": "catalog:tsdown",
     "@tanstack/ai": "catalog:ai",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",

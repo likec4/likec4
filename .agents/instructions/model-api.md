@@ -23,6 +23,7 @@ All three share `projectId`, `project`, `elements`, `relations`, `deployments`, 
 ## Composite TypeScript project gotcha
 
 - `packages/core` has `composite: true`. Downstream packages such as `language-services`, `likec4`, and `generators` read `.d.ts` files from `packages/core/lib/`, not source files.
+- A new core export also needs a mirror in `likec4/core/*`; see "Bundled core" in the webapp rules.
 - After adding a new export or method in core, run `pnpm exec tsc --build` before typechecking downstream. Otherwise TypeScript may report phantom `Property X does not exist on Y` errors from stale declarations.
 - If downstream `tsc -b` reports errors that package-local source-mode `tsc --noEmit` does not, clear stale build info with `find packages -name "*.tsbuildinfo" -delete`, then rebuild.
 
