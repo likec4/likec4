@@ -122,7 +122,7 @@ Os nomes longos também diferem: a saída de `build` é `--output`, a saída das
 ## Dependências do git
 
 Instale e atualize as [dependências do git](/pt-br/config/multi-projects/#dependências-do-git) do workspace (experimental).
-Os comandos que leem o workspace nunca baixam dependências: `build`, `export`, `gen`, `validate`, `sync leanix`, `diff`, `safe-delete` e `publish` falham até que as dependências do git estejam instaladas.
+Os comandos que leem o workspace nunca baixam dependências: `build`, `export`, `gen`, `sync leanix`, `diff`, `safe-delete` e `publish` (sem `--force`) falham até que as dependências do git estejam instaladas, e `validate` relata o erro.
 
 ### Instalar
 
@@ -141,7 +141,7 @@ As execuções seguintes reutilizam os commits guardados e não baixam nada que 
 
 | Opção           | Descrição                                                      |
 | --------------- | -------------------------------------------------------------- |
-| `path`          | Caminho do workspace (padrão: diretório atual)                 |
+| `path`          | Caminho do workspace (padrão: diretório atual; ou a variável `LIKEC4_WORKSPACE`) |
 | `--project, -p` | Instala apenas as dependências deste projeto                   |
 
 ### Atualizar
@@ -160,7 +160,7 @@ likec4 update billing --project checkout --path ./architecture
 | Opção                      | Descrição                                                                    |
 | -------------------------- | ---------------------------------------------------------------------------- |
 | `name`                     | Dependência a atualizar (chave da seção `dependencies`), todas se não informada |
-| `--path, --workspace`      | Caminho do workspace (padrão: diretório atual)                               |
+| `--path, --workspace`      | Caminho do workspace (padrão: diretório atual; ou a variável `LIKEC4_WORKSPACE`) |
 | `--project, -p`            | Atualiza apenas as dependências deste projeto                                |
 
 Os dois comandos terminam com código diferente de zero se a instalação de uma dependência falhar.

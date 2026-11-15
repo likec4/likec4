@@ -112,11 +112,11 @@ Projects to import from, under a name you choose. Maps the import name (used in 
 
 Git sources `{ "git", "ref", "path" }`:
 
-- `git`: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` or `git@host:org/repo.git`. `http://`, `file://`, `git://`, `ext::` and URLs with a password or token are rejected (use a git credential helper or SSH keys).
-- `ref` (required): branch, tag or commit SHA. `path` (optional): folder of the project in the repository, relative, no `..`. Other fields are rejected.
-- Nothing is downloaded while loading the workspace: run `likec4 install` first (`likec4 update [name]` resolves refs again). Until installed, `build`, `export`, `gen`, `validate` etc. fail with `Dependency is not installed` / `Dependencies are not installed`, and the editor reports `Dependency 'name' is not installed` plus `Could not resolve reference` on imported names.
-- The first install pins the ref to a commit in the local cache (`LIKEC4_CACHE_DIR`); there is no lock file, so other machines resolve refs again. Prefer tags or SHAs.
-- Only `.c4`/`.likec4` files and the root JSON config are downloaded; TS/JS configs are not run, `include` is ignored, local images and Markdown files are not available.
+- `git`: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` or `git@host:org/repo.git`. `http://`, `file://`, `git://`, `ext::` and URLs with a password (`user:password@`) are rejected. Do not put tokens in the URL (a token used as the user name is not detected); use a git credential helper or SSH keys.
+- `ref` (required): branch, tag or full commit SHA (abbreviated SHAs are not supported). `path` (optional): folder of the project in the repository, relative, no `..`. Other fields are rejected.
+- Nothing is downloaded while loading the workspace: run `likec4 install` first (`likec4 update [name]` resolves refs again). Until installed, `build`, `export`, `gen`, `sync leanix`, `diff`, `safe-delete`, `publish` (unless `--force`) fail with `Dependency is not installed` / `Dependencies are not installed`, `validate` reports the error and exits non-zero, and the editor reports `Dependency 'name' is not installed` plus `Could not resolve reference` on imported names.
+- The first install pins the ref to a commit in the local cache (`LIKEC4_CACHE_DIR`); there is no lock file, so other machines resolve refs again. Prefer tags or full SHAs.
+- Only `.c4`/`.likec4` files and the JSON config at the root of `path` are downloaded; TS/JS configs are not run, `include` is ignored, local images and Markdown files are not available.
 - Requires `git` >= 2.35.2. Not supported in the browser (playground, vscode.dev). VS Code has its own cache: run "LikeC4: Install git dependencies".
 
 Docs: https://likec4.dev/config/multi-projects/#dependencies

@@ -122,7 +122,7 @@ The long names differ too: the output of `build` is `--output`, the output of th
 ## Git dependencies
 
 Install and update the [git dependencies](/config/multi-projects/#git-dependencies) of the workspace (experimental).
-Commands that read the workspace never download dependencies: `build`, `export`, `gen`, `validate`, `sync leanix`, `diff`, `safe-delete` and `publish` fail until the git dependencies are installed.
+Commands that read the workspace never download dependencies: `build`, `export`, `gen`, `sync leanix`, `diff`, `safe-delete` and `publish` (unless `--force`) fail until the git dependencies are installed, and `validate` reports the error.
 
 ### Install
 
@@ -141,7 +141,7 @@ Later runs reuse the remembered commits and download nothing that is already ins
 
 | Option          | Description                                                    |
 | --------------- | -------------------------------------------------------------- |
-| `path`          | Path to workspace (default: current directory)                 |
+| `path`          | Path to workspace (default: current directory; falls back to `LIKEC4_WORKSPACE` env) |
 | `--project, -p` | Install dependencies of this project only                      |
 
 ### Update
@@ -160,7 +160,7 @@ likec4 update billing --project checkout --path ./architecture
 | Option                     | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
 | `name`                     | Dependency to update (key of the `dependencies` section), all if not set |
-| `--path, --workspace`      | Path to workspace (default: current directory)                           |
+| `--path, --workspace`      | Path to workspace (default: current directory; falls back to `LIKEC4_WORKSPACE` env) |
 | `--project, -p`            | Update dependencies of this project only                                 |
 
 Both commands exit with a non-zero code if a dependency fails to install.

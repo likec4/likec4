@@ -20,6 +20,10 @@ vi.mock('@likec4/language-services/node', async importOriginal => await importOr
  * Element ids of each project, captured by the mocked vite build while the workspace is loaded
  */
 const builtModels = new Map<string, string[]>()
+/**
+ * Titles of elements of each project (element id -> title), captured by the mocked vite build
+ */
+const builtTitles = new Map<string, Record<string, string>>()
 const viteBuild = vi.hoisted(() => vi.fn<(options: { languageServices: LikeC4 }) => Promise<void>>())
 vi.mock('../../vite/vite-build', () => ({ viteBuild }))
 vi.mock('../check-update/utils', () => ({ notifyAvailableUpdate: vi.fn<() => Promise<void>>(async () => {}) }))
@@ -68,38 +72,54 @@ function setup() {
   return { fixture, tag, exportJson }
 }
 
-const billingFiles = (...components: string[]) => ({
+/**
+ * Files of the billing repository: the title of each component names the version (e.g. 'api v1')
+ */
+const billingFiles = (version: string, ...components: string[]) => ({
   'likec4.config.json': JSON.stringify({ name: 'billing' }),
   'model.c4': `
     specification {
       element component
     }
     model {
-      ${components.map(c => `component ${c}`).join('\n')}
+      ${components.map(c => `component ${c} '${c} ${version}'`).join('\n')}
     }
   `,
 })
 
-describe.sequential('git dependencies end-to-end', () => {
+/**
+ * Runs `likec4 install` and checks that it did not report a failure
+ */
+async function install(workspace: string) {
+  await runCli(installCmd, 'install', workspace)
+  expect(process.exitCode).not.toBe(1)
+}
+
+// Each test stubs process.env, so they run one by one; git commands need time
+describe.sequential('git dependencies end-to-end', { timeout: 30_000 }, () => {
   beforeEach(() => {
     builtModels.clear()
+    builtTitles.clear()
     viteBuild.mockReset()
     viteBuild.mockImplementation(async ({ languageServices }) => {
       for (const project of languageServices.languageServices.projects()) {
         const model = await languageServices.computedModel(project.id)
-        builtModels.set(project.id, [...model.elements()].map(e => e.id).sort())
+        const elements = [...model.elements()]
+        builtModels.set(project.id, elements.map(e => e.id).sort())
+        builtTitles.set(project.id, Object.fromEntries(elements.map(e => [e.id, e.title])))
       }
     })
   })
   afterEach(() => {
     vi.unstubAllEnvs()
+    process.exitCode = undefined
   })
 
   it('install, then build: the model contains elements of the git dependency', async () => {
     const { fixture, exportJson } = setup()
     const billing = fixture.repository('billing')
     billing.commit({
-      ...billingFiles('api'),
+      ...billingFiles('main', 'api'),
       // a project in a subfolder of the repository
       'shared/likec4.config.json': JSON.stringify({ name: 'shared' }),
       'shared/model.c4': `
@@ -138,7 +158,7 @@ describe.sequential('git dependencies end-to-end', () => {
       `,
     })
 
-    await runCli(installCmd, 'install', fixture.workspace)
+    await install(fixture.workspace)
     await runCli(buildCmd, 'build', fixture.workspace, '-o', join(fixture.root, 'dist'))
     expect(viteBuild).toHaveBeenCalledOnce()
     expect(builtModels.get('cloud')).toEqual(['@billing.api', '@shared.events', 'cloud'])
@@ -149,12 +169,12 @@ describe.sequential('git dependencies end-to-end', () => {
   it('two projects on different versions of one repository build in one workspace', async () => {
     const { fixture, tag, exportJson } = setup()
     const billing = fixture.repository('billing')
-    const v1 = billing.commit(billingFiles('api'))
+    const v1 = billing.commit(billingFiles('v1', 'api'))
     tag(billing.bare, 'v1', v1)
-    const v2 = billing.commit(billingFiles('api', 'invoices'))
+    const v2 = billing.commit(billingFiles('v2', 'api', 'invoices'))
     tag(billing.bare, 'v2', v2)
-    // `main` moves on: the projects stay on their tags
-    billing.commit(billingFiles('api', 'invoices', 'refunds'))
+    // `main` moves on: the projects stay on their tags and the SHA
+    billing.commit(billingFiles('main', 'api', 'invoices', 'refunds'))
 
     const project = (name: string, ref: string, imports: string[]) => ({
       [`${name}/likec4.config.json`]: JSON.stringify({
@@ -184,7 +204,7 @@ describe.sequential('git dependencies end-to-end', () => {
       ...project('pinned', v1, ['api']),
     })
 
-    await runCli(installCmd, 'install', fixture.workspace)
+    await install(fixture.workspace)
     await runCli(buildCmd, 'build', fixture.workspace, '-o', join(fixture.root, 'dist'))
     expect(viteBuild).toHaveBeenCalledOnce()
     const expected = new Map([
@@ -193,6 +213,10 @@ describe.sequential('git dependencies end-to-end', () => {
       ['pinned', ['@billing.api', 'pinned']],
     ])
     expect(builtModels).toEqual(expected)
+    // titles tell the versions apart
+    expect(builtTitles.get('legacy')).toMatchObject({ '@billing.api': 'api v1' })
+    expect(builtTitles.get('modern')).toMatchObject({ '@billing.api': 'api v2', '@billing.invoices': 'invoices v2' })
+    expect(builtTitles.get('pinned')).toMatchObject({ '@billing.api': 'api v1' })
     expect(await exportJson()).toEqual(expected)
 
     // each project sees only its version of the repository
@@ -202,8 +226,9 @@ describe.sequential('git dependencies end-to-end', () => {
   it('one project uses two versions of one repository under different names', async () => {
     const { fixture, tag, exportJson } = setup()
     const billing = fixture.repository('billing')
-    tag(billing.bare, 'v1', billing.commit(billingFiles('api')))
-    tag(billing.bare, 'v2', billing.commit(billingFiles('api', 'invoices')))
+    tag(billing.bare, 'v1', billing.commit(billingFiles('v1', 'api')))
+    tag(billing.bare, 'v2', billing.commit(billingFiles('v2', 'api', 'invoices')))
+    billing.commit(billingFiles('main', 'api', 'invoices'))
     fixture.writeWorkspace({
       'likec4.config.json': JSON.stringify({
         name: 'cloud',
@@ -226,7 +251,14 @@ describe.sequential('git dependencies end-to-end', () => {
       `,
     })
 
-    await runCli(installCmd, 'install', fixture.workspace)
+    await install(fixture.workspace)
+    await runCli(buildCmd, 'build', fixture.workspace, '-o', join(fixture.root, 'dist'))
+    expect(viteBuild).toHaveBeenCalledOnce()
+    expect(builtTitles.get('cloud')).toEqual({
+      '@billing-v1.api': 'api v1',
+      '@billing-v2.invoices': 'invoices v2',
+      'cloud': 'cloud',
+    })
     expect(await exportJson()).toEqual(new Map([['cloud', ['@billing-v1.api', '@billing-v2.invoices', 'cloud']]]))
   })
 })

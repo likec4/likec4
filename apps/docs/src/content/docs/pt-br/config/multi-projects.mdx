@@ -78,7 +78,7 @@ Declare os projetos dos quais você importa na seção `dependencies` da configu
 Cada entrada associa um nome de importação ao projeto de dependência:
 
 - um caminho para a pasta do projeto (a pasta com o arquivo de configuração dele), relativo à pasta do arquivo de configuração;
-- uma [fonte git](#dependências-do-git): uma pasta de um repositório git em uma branch, uma tag ou um commit.
+- uma [fonte git](#dependências-do-git): uma pasta de um repositório git em uma branch, uma tag ou o SHA completo de um commit.
 
 <FileTree>
 - platform-model
@@ -212,11 +212,12 @@ Em vez de um caminho, informe um objeto com a URL do repositório, uma ref e, op
 | Campo  | Descrição |
 | ------ | --------- |
 | `git`  | URL do repositório: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` ou `git@host:org/repo.git` |
-| `ref`  | Obrigatório. Uma branch, uma tag ou o SHA de um commit |
+| `ref`  | Obrigatório. Uma branch, uma tag ou o SHA completo de um commit (SHAs abreviados não são suportados) |
 | `path` | Pasta do projeto de dependência (a pasta com o arquivo de configuração dele), relativa à raiz do repositório. A raiz do repositório, se omitido |
 
 - Outras formas de URL (`http://`, `file://`, `git://`, `ext::`, caminhos locais) são rejeitadas.
-- URLs com senha ou token são rejeitadas. Use um credential helper do git ou chaves SSH.
+- URLs com senha (`https://user:password@host/...`) são rejeitadas.
+  Também não coloque tokens na URL (um token usado como nome de usuário não é detectado): use um credential helper do git ou chaves SSH.
 - `path` deve ser relativo e não pode conter `..`.
 - Outros campos são rejeitados.
 
@@ -254,7 +255,8 @@ likec4 build
 
 Enquanto uma dependência do git não estiver instalada:
 
-- `likec4 build`, `likec4 export`, `likec4 gen`, `likec4 validate`, `likec4 sync leanix`, `likec4 diff`, `likec4 safe-delete` e `likec4 publish` falham.
+- `likec4 build`, `likec4 export`, `likec4 gen`, `likec4 sync leanix`, `likec4 diff`, `likec4 safe-delete` e `likec4 publish` (sem `--force`) falham.
+  `likec4 validate` relata o erro e termina com código diferente de zero.
   Com `--project`, apenas as dependências desse projeto são verificadas.
 - `likec4 start`, `likec4 mcp` e o [plugin do Vite](/pt-br/tooling/vite-plugin/) continuam em execução e relatam o erro no modelo.
 - No editor, a importação relata `Dependency 'billing' is not installed`, com a correção rápida **Install dependency 'billing'**.
@@ -300,7 +302,7 @@ Versões diferentes de um repositório podem ser usadas lado a lado: em projetos
 
 Não há arquivo de lock: os commits ficam guardados no cache de cada máquina.
 O build é reproduzível em uma máquina, mas outra máquina (ou uma execução de CI com o cache vazio) resolve as refs novamente.
-Use uma tag ou o SHA de um commit como `ref` para obter o mesmo modelo em todos os lugares.
+Use uma tag ou o SHA completo de um commit como `ref` para obter o mesmo modelo em todos os lugares.
 
 #### O que é baixado
 

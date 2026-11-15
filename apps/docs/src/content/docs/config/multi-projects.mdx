@@ -79,7 +79,7 @@ Declare the projects you import from in the `dependencies` section of the projec
 Each entry maps an import name to the dependency project:
 
 - a path to the folder of the project (the folder with its config file), relative to the folder of the config file;
-- a [git source](#git-dependencies): a folder of a git repository at a branch, a tag or a commit.
+- a [git source](#git-dependencies): a folder of a git repository at a branch, a tag or a full commit SHA.
 
 <FileTree>
 - platform-model
@@ -213,11 +213,12 @@ Instead of a path, give an object with the repository URL, a ref and, optionally
 | Field  | Description |
 | ------ | ----------- |
 | `git`  | URL of the repository: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` or `git@host:org/repo.git` |
-| `ref`  | Required. A branch, a tag or a commit SHA |
+| `ref`  | Required. A branch, a tag or a full commit SHA (abbreviated SHAs are not supported) |
 | `path` | Folder of the dependency project (the folder with its config file), relative to the repository root. The repository root if omitted |
 
 - Other URL forms (`http://`, `file://`, `git://`, `ext::`, local paths) are rejected.
-- URLs with a password or a token are rejected. Use a git credential helper or SSH keys.
+- URLs with a password (`https://user:password@host/...`) are rejected.
+  Do not put tokens in the URL either (a token used as the user name is not detected): use a git credential helper or SSH keys.
 - `path` must be relative and cannot contain `..`.
 - Other fields are rejected.
 
@@ -255,7 +256,8 @@ likec4 build
 
 Until a git dependency is installed:
 
-- `likec4 build`, `likec4 export`, `likec4 gen`, `likec4 validate`, `likec4 sync leanix`, `likec4 diff`, `likec4 safe-delete` and `likec4 publish` fail.
+- `likec4 build`, `likec4 export`, `likec4 gen`, `likec4 sync leanix`, `likec4 diff`, `likec4 safe-delete` and `likec4 publish` (unless `--force`) fail.
+  `likec4 validate` reports the error and exits with a non-zero code.
   With `--project`, only the dependencies of that project are checked.
 - `likec4 start`, `likec4 mcp` and the [Vite plugin](/tooling/vite-plugin/) keep running and report the error in the model.
 - In the editor, the import reports `Dependency 'billing' is not installed`, with the quick fix **Install dependency 'billing'**.
@@ -301,7 +303,7 @@ Different versions of one repository can be used side by side: in different proj
 
 There is no lock file: the commits are remembered in the cache of each machine.
 The build is reproducible on one machine, but another machine (or a CI run with an empty cache) resolves the refs again.
-Use a tag or a commit SHA as `ref` to get the same model everywhere.
+Use a tag or a full commit SHA as `ref` to get the same model everywhere.
 
 #### What is downloaded
 
