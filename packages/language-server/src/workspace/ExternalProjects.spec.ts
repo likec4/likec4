@@ -437,6 +437,42 @@ views {
     expect(t.services.likec4.FqnIndex.elements(id).map(e => e.id).toArray().sort()).toEqual(['added', 'changed'])
   })
 
+  it('relinks consumers when only the config of a dependency changes on reload', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/workspace/a/model.c4': `import { api } from 'shared'`,
+      'file:///test/shared/likec4.config.json': config({ name: 'shared-lib' }),
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { ProjectsManager, WorkspaceManager, DocumentBuilder, ExternalProjects } = t.services.shared.workspace
+
+    // Only the name changes, documents stay the same
+    fs.write({ 'file:///test/shared/likec4.config.json': config({ name: 'shared-renamed' }) })
+    // A model computed after the rebuild of the reload, but before the new config is registered,
+    // keeps the old metadata: consumers must be relinked after the registry changes
+    let registered = false
+    ExternalProjects.onDidChange(() => {
+      registered = true
+    })
+    const relinked = [] as string[]
+    const update = DocumentBuilder.update.bind(DocumentBuilder)
+    mockMethod(DocumentBuilder, 'update').mockImplementation((changed, deleted, token) => {
+      if (registered) {
+        relinked.push(...changed.map(uri => uri.toString()))
+      }
+      return update(changed, deleted, token)
+    })
+    await ProjectsManager.reloadProjects()
+    await WorkspaceManager.whenExternalProjectsSynced()
+
+    expect(ExternalProjects.get('#file:///test/shared')?.config.name).toBe('shared-renamed')
+    expect(relinked).toContain('file:///test/workspace/a/model.c4')
+    const model = await t.services.likec4.ModelBuilder.parseModel('a' as ProjectId)
+    expect(model?.$data.importedProjects?.['shared' as ProjectId]?.name).toBe('shared-renamed')
+  })
+
   it('adds an instance when a dependency is added to a project config', async ({ create, expect }) => {
     const t = create({ workspace: 'file:///test/workspace' })
     const fs = mockFileSystem(t, {
