@@ -3,6 +3,7 @@ import { useDiagramPanel } from '../panel'
 import { useLanguageClient } from '../useLanguageClient'
 import { useRpc } from '../useRpc'
 import { registerCopyAsPngCommand } from './copyAsPng'
+import { registerInstallDependenciesCommands } from './installDependencies'
 import { registerLocateCommand } from './locate'
 import { registerOpenPreviewCommand } from './openPreview'
 import { registerOpenProjectsOverviewCommand } from './openProjectsOverview'
@@ -43,4 +44,5 @@ export function registerCommands() {
   registerValidateLayoutCommand(deps)
   registerReloadProjectsCommand(deps)
   registerSemanticLayoutWithAICommand(deps)
+  registerInstallDependenciesCommands(deps)
 }

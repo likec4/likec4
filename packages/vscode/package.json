@@ -257,6 +257,14 @@
         {
           "command": "likec4.open-projects-overview",
           "when": "likec4.activated"
+        },
+        {
+          "command": "likec4.install-dependencies",
+          "when": "likec4.activated && likec4.dependencyStorage"
+        },
+        {
+          "command": "likec4.update-dependencies",
+          "when": "likec4.activated && likec4.dependencyStorage"
         }
       ]
     },
@@ -314,6 +322,16 @@
       {
         "command": "likec4.semantic-layout-with-ai",
         "title": "%ext.cmd.semantic-layout-with-ai%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.install-dependencies",
+        "title": "%ext.cmd.install-dependencies%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.update-dependencies",
+        "title": "%ext.cmd.update-dependencies%",
         "category": "%ext.title%"
       }
     ],

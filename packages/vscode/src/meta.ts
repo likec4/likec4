@@ -24,6 +24,8 @@ export type CommandKey =
   | "likec4.validate-layout"
   | "likec4.open-projects-overview"
   | "likec4.semantic-layout-with-ai"
+  | "likec4.install-dependencies"
+  | "likec4.update-dependencies"
 
 /**
  * Commands map registered by `likec4.likec4-vscode`
@@ -84,6 +86,16 @@ export const commands = {
    * @value `likec4.semantic-layout-with-ai`
    */
   semanticLayoutWithAi: "likec4.semantic-layout-with-ai",
+  /**
+   * %ext.cmd.install-dependencies%
+   * @value `likec4.install-dependencies`
+   */
+  installDependencies: "likec4.install-dependencies",
+  /**
+   * %ext.cmd.update-dependencies%
+   * @value `likec4.update-dependencies`
+   */
+  updateDependencies: "likec4.update-dependencies",
 } satisfies Record<string, CommandKey>
 
 /**
