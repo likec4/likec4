@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:react",
-    "@likec4/core": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "immer": "catalog:utils",
@@ -47,6 +46,7 @@
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/icons": "workspace:*",

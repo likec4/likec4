@@ -1,4 +1,6 @@
-import { defineConfig } from '@likec4/devops/tsdown'
+import { codeSplittingGroup, defineConfig, outputOptions } from '@likec4/devops/tsdown'
+import nodePolyfills from '@rolldown/plugin-node-polyfills'
+import type { Rolldown } from 'tsdown'
 import { existsSync, readdirSync } from 'node:fs'
 import { copyFile, cp, mkdir, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -32,6 +34,12 @@ export default defineConfig([
     dts: {
       build: true,
     },
+    // @likec4/core is built separately (see below), share a single copy of it
+    deps: {
+      onlyBundle: false,
+      neverBundle: [/^likec4\/core/],
+    },
+    plugins: [aliasCore()],
     hooks: {
       'build:done': async ({ options: { logger } }) => {
         logger.info('\n----- Copy artifacts ------\n')
@@ -65,8 +73,73 @@ export default defineConfig([
     target: false,
     minify: false,
     dts: true,
+    // Share a single copy of core with the main build
+    deps: {
+      onlyBundle: false,
+      neverBundle: [/^likec4\/core/],
+    },
+    plugins: [aliasCore()],
+  },
+  {
+    // Bundled @likec4/core, exposed as `likec4/core/*`.
+    // Built for any platform (browser, node), same as @likec4/core itself
+    entry: {
+      'index': './src/core/index.ts',
+      'builder': './src/core/builder.ts',
+      'geometry': './src/core/geometry.ts',
+      'compute-view': './src/core/compute-view.ts',
+      'model': './src/core/model.ts',
+      'styles': './src/core/styles.ts',
+      'types': './src/core/types.ts',
+      'utils': './src/core/utils.ts',
+    },
+    outDir: './dist/core',
+    platform: 'neutral',
+    target: false,
+    nodeProtocol: 'strip',
+    outputOptions: outputOptions({
+      codeSplitting: {
+        groups: [
+          codeSplittingGroup(/node_modules\/mdast/, 'libs/mdast'),
+          codeSplittingGroup(/node_modules\/remark/, 'libs/remark'),
+        ],
+      },
+    }),
+    plugins: [nodePolyfills()],
+  },
+  {
+    // Bundled @likec4/layouts, exposed as `likec4/layouts`.
+    // Shares the core with the other builds
+    entry: {
+      'index': './src/layouts/index.ts',
+    },
+    outDir: './dist/layouts',
+    platform: 'neutral',
+    target: false,
+    // graphology needs `events`
+    nodeProtocol: 'strip',
+    minify: false,
+    dts: true,
+    deps: {
+      onlyBundle: false,
+      neverBundle: [/^likec4\/core/],
+    },
+    plugins: [aliasCore(), nodePolyfills()],
   },
 ])
+
+/**
+ * Rewrites `@likec4/core/*` to the external `likec4/core/*`, the entries of the core build.
+ */
+function aliasCore(): Rolldown.Plugin {
+  return {
+    name: 'likec4:alias-core',
+    resolveId: {
+      filter: { id: /^@likec4\/core(\/.*)?$/ },
+      handler: (id: string) => ({ id: id.replace('@likec4/core', 'likec4/core'), external: true }),
+    },
+  }
+}
 
 async function copyVitePluginModules() {
   const vitePluginModulesPath = fileURLToPath(import.meta.resolve('@likec4/vite-plugin/modules'))

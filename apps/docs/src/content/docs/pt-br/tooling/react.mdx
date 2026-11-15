@@ -123,8 +123,7 @@ A seguir, algumas maneiras de preparar o modelo:
   ```tsx copy collapse={8-53}
   import { LikeC4ModelProvider } from 'likec4/react'
   import { Builder } from "likec4/model/builder"
-  // O mecanismo de layout é um pacote separado
-  import { layoutLikeC4Model } from "@likec4/layouts"
+  import { layoutLikeC4Model } from "likec4/layouts"
 
   const computedModel = Builder
     .specification({
@@ -193,8 +192,10 @@ A seguir, algumas maneiras de preparar o modelo:
 :::tip
 O pacote `likec4` é tudo de que você precisa para estes exemplos:
 - `likec4/react`: componentes e hooks React
-- `likec4/model`: a API do modelo e os tipos (o mesmo que `@likec4/core/model` e `@likec4/core/types`)
-- `likec4/model/builder`: o construtor de modelos (o mesmo que `@likec4/core/builder`)
+- `likec4/model`: a API do modelo e os tipos
+- `likec4/model/builder`: o construtor de modelos
+- `likec4/layouts`: o mecanismo de layout (`layoutLikeC4Model`)
+- `likec4/core`: a API de baixo nível do core, com `likec4/core/model`, `likec4/core/types`, `likec4/core/builder`, `likec4/core/compute-view`, `likec4/core/geometry`, `likec4/core/styles` e `likec4/core/utils`
 :::
 
 Nos exemplos a seguir, `likec4model` é o modelo preparado de uma das formas acima.
@@ -463,10 +464,10 @@ const App = () => {
 ## Biblioteca
 
 Se quiser utilizar o pacote como biblioteca com seu bundler, será necessário gerenciar o CSS.  
-Para isso, adicione [`@likec4/core`](https://www.npmjs.com/package/%40likec4%2Fcore) e [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram) em vez de `likec4`:
+Para isso, adicione [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram) em vez de `likec4`:
 
 <PackageManagers
-    pkg="@likec4/core @likec4/diagram"
+    pkg="@likec4/diagram"
     pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
     frame="none"
   />

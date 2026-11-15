@@ -99,6 +99,8 @@
     "@types/fontkit": "catalog:",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
+    "graphology": "catalog:",
+    "graphology-types": "catalog:",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
