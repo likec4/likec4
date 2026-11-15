@@ -577,6 +577,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         changedProjects.add(project.id)
         continue
       }
+      // Config changed (e.g. its name, which is part of the metadata of consumer models), even if documents did not
+      if (previous.hash !== project.hash) {
+        changedProjects.add(project.id)
+      }
       for (const [uri, text] of project.files) {
         if (previous.files.get(uri) !== text) {
           changedProjects.add(project.id)
