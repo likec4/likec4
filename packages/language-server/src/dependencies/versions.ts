@@ -56,7 +56,9 @@ export interface ResolveDependencyVersionParams {
 
 /**
  * Returns the commit SHA of the ref known without the remote repository:
- * the ref itself if it is a full commit SHA, or the SHA of the version index.
+ * the SHA of the version index, or the ref itself if it is a full SHA.
+ * A full SHA of an annotated tag is recorded in the index with the SHA of its commit,
+ * so the index is read first: an installed tag object is found without git.
  * Never runs git. Returns undefined if the ref has to be resolved in the remote repository.
  */
 export async function knownDependencyVersion(
@@ -64,17 +66,17 @@ export async function knownDependencyVersion(
   repository: string,
   ref: string,
 ): Promise<ResolvedDependencyVersion | undefined> {
-  const sha = refAsFullSha(ref)
-  if (sha) {
-    return { sha, source: 'sha' }
-  }
   const record = await storage.readVersion(repository, ref)
-  return record ? { sha: record.sha, source: 'index' } : undefined
+  if (record) {
+    return { sha: record.sha, source: 'index' }
+  }
+  const sha = refAsFullSha(ref)
+  return sha ? { sha, source: 'sha' } : undefined
 }
 
 /**
  * Resolves the ref of a git dependency to a commit SHA:
- * 1. a full commit SHA is used as is (git is not run);
+ * 1. a full SHA: the version index or the SHA itself (git is not run, also with `update`: a SHA never moves);
  * 2. otherwise the SHA of the version index is used, unless `update`;
  * 3. otherwise the ref is resolved in the remote repository (`git ls-remote`: tags before branches,
  *    annotated tags are peeled to commits).
@@ -87,11 +89,7 @@ export async function knownDependencyVersion(
 export async function resolveDependencyVersion(
   params: ResolveDependencyVersionParams,
 ): Promise<ResolvedDependencyVersion> {
-  const sha = refAsFullSha(params.ref)
-  if (sha) {
-    return { sha, source: 'sha' }
-  }
-  if (!params.update) {
+  if (!params.update || refAsFullSha(params.ref)) {
     const known = await knownDependencyVersion(params.storage, params.repository, params.ref)
     if (known) {
       return known
@@ -105,7 +103,7 @@ export async function resolveDependencyVersion(
     const hint = looksLikeAbbreviatedSha(params.ref)
       ? ' (abbreviated commit SHAs are not supported, use the full SHA)'
       : ''
-    throw new Error(`Ref "${params.ref}" not found in ${params.repository}${hint}`)
+    throw new Error(`Ref ${JSON.stringify(params.ref)} not found in ${params.repository}${hint}`)
   }
   return { sha: resolved.sha, source: 'remote', refName: resolved.name }
 }

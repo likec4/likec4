@@ -1,6 +1,18 @@
+import { parseGitRepositoryUrl } from '@likec4/config'
 import { describe, it } from 'vitest'
-import { gitEnvironment, gitRefCandidates, isValidGitRef, parseLsRemote, pickRemoteRef, refAsFullSha } from './git'
-import { redactGitUrl } from './install'
+import {
+  findGitExecutable,
+  GIT_CONFIG_ARGS,
+  gitEnvironment,
+  gitRefCandidates,
+  isSupportedGitVersion,
+  isValidGitRef,
+  parseGitVersion,
+  parseLsRemote,
+  pickRemoteRef,
+  refAsFullSha,
+} from './git'
+import { gitRemoteUrl, redactGitUrl, stripGitUrlCredentials } from './install'
 
 const A = 'a'.repeat(40)
 const B = 'b'.repeat(40)
@@ -75,5 +87,103 @@ describe('git', () => {
   it('redacts credentials of URLs', ({ expect }) => {
     expect(redactGitUrl('https://user:token@example.com/org/repo.git')).toBe('https://***@example.com/org/repo.git')
     expect(redactGitUrl('git@example.com:org/repo.git')).toBe('git@example.com:org/repo.git')
+  })
+
+  it('keeps only allowed GIT_* variables and drops askpass programs', ({ expect }) => {
+    const env = gitEnvironment({
+      GIT_SSH_COMMAND: 'ssh -i key',
+      GIT_SSL_CAINFO: '/ca.pem',
+      GIT_CONFIG_GLOBAL: '/gitconfig',
+      GIT_TEMPLATE_DIR: '/templates',
+      GIT_DEFAULT_HASH: 'sha256',
+      GIT_SHALLOW_FILE: '/shallow',
+      GIT_ASKPASS: '/askpass',
+      SSH_ASKPASS: '/ssh-askpass',
+      HTTPS_PROXY: 'http://proxy',
+    })
+    expect(Object.keys(env).filter(k => k.includes('ASKPASS'))).toEqual(['SSH_ASKPASS_REQUIRE'])
+    expect(env).toMatchObject({
+      GIT_SSH_COMMAND: 'ssh -i key',
+      GIT_SSL_CAINFO: '/ca.pem',
+      GIT_CONFIG_GLOBAL: '/gitconfig',
+      HTTPS_PROXY: 'http://proxy',
+      SSH_ASKPASS_REQUIRE: 'never',
+    })
+    for (const key of ['GIT_TEMPLATE_DIR', 'GIT_DEFAULT_HASH', 'GIT_SHALLOW_FILE', 'GIT_ASKPASS', 'SSH_ASKPASS']) {
+      expect(env).not.toHaveProperty(key)
+    }
+    expect(GIT_CONFIG_ARGS).toEqual(
+      expect.arrayContaining(['core.askPass=', 'init.templateDir=', 'transfer.fsckObjects=true']),
+    )
+  })
+
+  it('checks the git version', ({ expect }) => {
+    expect(parseGitVersion('git version 2.39.2 (Apple Git-143)')).toEqual([2, 39, 2])
+    expect(parseGitVersion('git version 2.45.1.windows.1\n')).toEqual([2, 45, 1])
+    expect(parseGitVersion('git version 3.0')).toEqual([3, 0, 0])
+    expect(parseGitVersion('hello')).toBeUndefined()
+    expect(isSupportedGitVersion([2, 35, 0])).toBe(true)
+    expect(isSupportedGitVersion([2, 55, 0])).toBe(true)
+    expect(isSupportedGitVersion([3, 0, 0])).toBe(true)
+    expect(isSupportedGitVersion([2, 34, 9])).toBe(false)
+    expect(isSupportedGitVersion([1, 99, 0])).toBe(false)
+  })
+
+  describe('findGitExecutable', () => {
+    const lookup = (existing: string[]) => {
+      const checked: string[] = []
+      const isExecutable = (path: string) => {
+        checked.push(path)
+        return Promise.resolve(existing.includes(path))
+      }
+      return { checked, isExecutable }
+    }
+
+    it('searches absolute PATH entries only (POSIX)', async ({ expect }) => {
+      const { checked, isExecutable } = lookup(['git', './git', 'bin/git', '/opt/bin/git'])
+      const found = await findGitExecutable({
+        env: { PATH: '::.:bin:/usr/bin:/opt/bin' },
+        platform: 'linux',
+        isExecutable,
+      })
+      expect(found).toBe('/opt/bin/git')
+      expect(checked).toEqual(['/usr/bin/git', '/opt/bin/git'])
+    })
+
+    it('searches absolute PATH entries with PATHEXT .exe and .com only (Windows)', async ({ expect }) => {
+      const { checked, isExecutable } = lookup(['git.exe', 'C:\\Git\\cmd\\git.exe'])
+      const found = await findGitExecutable({
+        env: { Path: '.;bin;"C:\\Git\\cmd"', PATHEXT: '.COM;.EXE;.BAT;.CMD' },
+        platform: 'win32',
+        isExecutable,
+      })
+      expect(found).toBe('C:\\Git\\cmd\\git.exe')
+      expect(checked).toEqual(['C:\\Git\\cmd\\git.com', 'C:\\Git\\cmd\\git.exe'])
+    })
+
+    it('accepts absolute paths, rejects relative paths', async ({ expect }) => {
+      const { isExecutable } = lookup(['/usr/local/bin/git', './git'])
+      expect(await findGitExecutable({ name: '/usr/local/bin/git', env: {}, platform: 'linux', isExecutable }))
+        .toBe('/usr/local/bin/git')
+      expect(await findGitExecutable({ name: './git', env: { PATH: '/usr/bin' }, platform: 'linux', isExecutable }))
+        .toBeUndefined()
+      expect(await findGitExecutable({ env: {}, platform: 'linux', isExecutable })).toBeUndefined()
+    })
+  })
+
+  it('rebuilds the URL passed to git from the parsed parts', ({ expect }) => {
+    const remote = (url: string) => gitRemoteUrl(parseGitRepositoryUrl(url)!, url)
+    expect(remote('https://GitHub.com/my-org/billing.git/')).toBe('https://github.com/my-org/billing.git')
+    expect(remote('https://deploy@example.com:8443/a/b')).toBe('https://deploy@example.com:8443/a/b')
+    expect(remote('https://example.com:443/a/bill%23ing.git')).toBe('https://example.com/a/bill%23ing.git')
+    expect(remote('ssh://git@example.com:2222/a/b.git')).toBe('ssh://git@example.com:2222/a/b.git')
+    expect(remote('git@github.com:my-org/billing.git')).toBe('git@github.com:my-org/billing.git')
+    expect(remote('github.com:my-org/billing')).toBe('github.com:my-org/billing')
+  })
+
+  it('strips credentials from stored URLs', ({ expect }) => {
+    expect(stripGitUrlCredentials('https://user:token@example.com/a/b.git')).toBe('https://user@example.com/a/b.git')
+    expect(stripGitUrlCredentials(' https://user@example.com/a/b.git ')).toBe('https://user@example.com/a/b.git')
+    expect(stripGitUrlCredentials('git@example.com:a/b.git')).toBe('git@example.com:a/b.git')
   })
 })

@@ -1,13 +1,13 @@
 import { parseGitRepositoryUrl } from '@likec4/config'
 import { Cancellation } from 'langium'
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, describe, it } from 'vitest'
 import { createTestServices } from '../test'
-import { type GitRunner, createGitRunner } from './git'
-import { createGitDependencyInstaller } from './install'
+import { type GitRunner, createGitRunner, fetchGitCommit } from './git'
+import { type GitDependencyInstallerOptions, createGitDependencyInstaller } from './install'
 import { dependencyCacheKey } from './storage'
 
 const URL = 'https://example.test/org/billing.git'
@@ -18,7 +18,7 @@ const REPOSITORY = 'example.test/org/billing'
  * Temporary folder with a local git repository and its bare clone (the "remote").
  * Tests never go to the network: allowed URLs (`https://example.test/...`) are mapped to the bare repository.
  */
-function createFixture() {
+function createFixture(installerOptions?: GitDependencyInstallerOptions) {
   const root = mkdtempSync(join(tmpdir(), 'likec4-install-'))
   // isolate git from the configuration of the user (signing, hooks, default branch, ...)
   const globalConfig = join(root, 'gitconfig')
@@ -39,6 +39,8 @@ function createFixture() {
   const git = (cwd: string, ...args: string[]) =>
     execFileSync('git', args, { cwd, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
   git(root, 'init', '--quiet', '--bare', '--initial-branch=main', bare)
+  // partial clone (--filter=blob:none) is supported by the "remote"
+  git(bare, 'config', 'uploadpack.allowFilter', 'true')
   git(root, 'init', '--quiet', '--initial-branch=main', work)
 
   /**
@@ -55,6 +57,22 @@ function createFixture() {
     git(work, 'push', '--quiet', '--tags', bare, 'main')
     return git(work, 'rev-parse', 'HEAD')
   }
+  /**
+   * Adds a symbolic link to the index (portable: no symbolic link on the file system), commits and pushes.
+   */
+  const commitSymlink = (path: string, target: string) => {
+    const blob = execFileSync('git', ['hash-object', '-w', '--stdin'], {
+      cwd: work,
+      env,
+      input: target,
+      encoding: 'utf8',
+    })
+      .trim()
+    git(work, 'update-index', '--add', '--cacheinfo', `120000,${blob},${path}`)
+    git(work, 'commit', '--quiet', '--no-verify', '-m', 'symlink')
+    git(work, 'push', '--quiet', bare, 'main')
+    return git(work, 'rev-parse', 'HEAD')
+  }
   const tag = (name: string) => {
     git(work, 'tag', '-a', name, '-m', name)
     git(work, 'push', '--quiet', bare, `refs/tags/${name}`)
@@ -63,8 +81,27 @@ function createFixture() {
   // real git, with the local transport allowed for the bare repository of the fixture
   const realGit = createGitRunner({ env, allowProtocol: 'file' })
   const calls: string[][] = []
-  const runGit: GitRunner = (args, options) => {
+  const cwds: string[] = []
+  // when set, git commands wait for it (or for the abort of the command)
+  let gate: Promise<void> | undefined
+  const runGit: GitRunner = async (args, options) => {
     calls.push([...args])
+    cwds.push(options.cwd)
+    if (gate) {
+      const wait = gate
+      await new Promise<void>((resolve, reject) => {
+        const onAbort = () => reject(new Error('git command was cancelled'))
+        if (options.signal?.aborted) {
+          onAbort()
+          return
+        }
+        options.signal?.addEventListener('abort', onAbort, { once: true })
+        void wait.then(() => {
+          options.signal?.removeEventListener('abort', onAbort)
+          resolve()
+        })
+      })
+    }
     return realGit(args, options)
   }
   // allowed URL (by identity) -> bare repository
@@ -77,6 +114,7 @@ function createFixture() {
           runGit,
           remoteUrl: url => remotes.get(url.id) ?? join(root, 'missing.git'),
           tempDir: temp,
+          ...installerOptions,
         }),
     },
   })
@@ -93,18 +131,54 @@ function createFixture() {
     work,
     git,
     commit,
+    commitSymlink,
     tag,
     calls,
+    cwds,
+    realGit,
+    /**
+     * Holds git commands until the returned function is called
+     */
+    hold: () => {
+      let release = () => {}
+      gate = new Promise<void>(resolve => {
+        release = () => {
+          gate = undefined
+          resolve()
+        }
+      })
+      return release
+    },
     remotes,
     installer,
     storage,
     keys,
-    gitCommands: () => calls.map(args => args[0]),
+    gitCommands: () => calls.map(gitCommand),
     tempIsEmpty: () => readdirSync(temp).length === 0,
   }
 }
 
 type Fixture = ReturnType<typeof createFixture>
+
+/**
+ * Git command of the arguments (without `-C <dir>` and global options)
+ */
+function gitCommand(args: readonly string[]): string | undefined {
+  let i = 0
+  while (i < args.length && args[i]!.startsWith('-')) {
+    i += args[i] === '-C' ? 2 : 1
+  }
+  return args[i]
+}
+
+/**
+ * Files with the name in the folder (recursive)
+ */
+function findFiles(dir: string, name: string): string[] {
+  return readdirSync(dir, { withFileTypes: true, recursive: true })
+    .filter(entry => entry.isFile() && entry.name === name)
+    .map(entry => join(entry.parentPath, entry.name))
+}
 
 const BILLING_FILES = {
   'arch/likec4.config.json': '{"name":"billing"}',
@@ -114,8 +188,8 @@ const BILLING_FILES = {
 
 describe('GitDependencyInstaller', () => {
   const fixtures = [] as Fixture[]
-  const setup = async () => {
-    const fixture = createFixture()
+  const setup = async (options?: GitDependencyInstallerOptions) => {
+    const fixture = createFixture(options)
     fixtures.push(fixture)
     await fixture.initialize()
     return fixture
@@ -218,7 +292,7 @@ describe('GitDependencyInstaller', () => {
     const result = await f.installer.install({ git: URL, ref: 'v2.0', path: 'arch' })
     expect(result).toMatchObject({ status: 'installed', instance: { sha: second } })
 
-    const lsRemote = f.calls.filter(args => args[0] === 'ls-remote')
+    const lsRemote = f.calls.filter(args => gitCommand(args) === 'ls-remote')
     expect(lsRemote).toHaveLength(1)
     expect(lsRemote[0]).toContain('refs/tags/v2.0')
     expect(lsRemote[0]!.join(' ')).not.toContain('main')
@@ -297,7 +371,8 @@ describe('GitDependencyInstaller', () => {
       cached: true,
     })
     expect(f.calls).toEqual([])
-    expect((await f.storage.readVersion(REPOSITORY, sha.toUpperCase()))?.sha).toBe(sha)
+    // full SHAs are recorded in lower case
+    expect((await f.storage.readVersion(REPOSITORY, sha))?.sha).toBe(sha)
   })
 
   it('installs a full commit SHA', async ({ expect }) => {
@@ -327,8 +402,7 @@ describe('GitDependencyInstaller', () => {
       'root.c4': 'model {}',
       'likec4.config.json': '{"name":"root"}',
     })
-    symlinkSync('../outside/other.c4', join(f.work, 'arch', 'link.c4'))
-    const sha = f.commit({}, 'symlink')
+    const sha = f.commitSymlink('arch/link.c4', '../outside/other.c4')
 
     const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
     expect(result).toMatchObject({ status: 'installed', instance: { sha } })
@@ -464,6 +538,154 @@ describe('GitDependencyInstaller', () => {
     expect(f.calls).toEqual([])
   })
 
+  it('runs git outside of the checkout', async ({ expect }) => {
+    const f = await setup()
+    f.commit(BILLING_FILES)
+    expect(await f.installer.install({ git: URL, ref: 'main', path: 'arch' })).toMatchObject({ status: 'installed' })
+    expect(f.cwds.length).toBeGreaterThan(0)
+    // the temporary directory of the install, the checkout is its "repo" subdirectory addressed with -C
+    for (const cwd of f.cwds) {
+      expect(dirname(cwd)).toBe(f.temp)
+    }
+    for (const args of f.calls.filter(args => gitCommand(args) !== 'ls-remote')) {
+      expect(args.slice(0, 2)).toEqual(['-C', join(f.cwds[0]!, 'repo')])
+    }
+  })
+
+  it('requires the exact case of the path', async ({ expect }) => {
+    const f = await setup()
+    f.commit(BILLING_FILES)
+    const result = await f.installer.install({ git: URL, ref: 'main', path: 'ARCH' })
+    expect(result).toMatchObject({ status: 'failed', error: expect.stringContaining('Path "ARCH" not found') })
+    expect(await f.keys()).toEqual([])
+    expect(f.tempIsEmpty()).toBe(true)
+  })
+
+  it('installs a SHA of an annotated tag once', async ({ expect }) => {
+    const f = await setup()
+    const commit = f.commit(BILLING_FILES)
+    f.tag('v1.0')
+    const tagObject = f.git(f.work, 'rev-parse', 'refs/tags/v1.0')
+    expect(tagObject).not.toBe(commit)
+
+    const first = await f.installer.install({ git: URL, ref: tagObject, path: 'arch' })
+    expect(first).toMatchObject({ status: 'installed', cached: false, instance: { sha: commit } })
+    expect((await f.storage.readVersion(REPOSITORY, tagObject))?.sha).toBe(commit)
+
+    f.calls.length = 0
+    const second = await f.installer.install({ git: URL, ref: tagObject, path: 'arch' }, { update: true })
+    expect(second).toMatchObject({ status: 'installed', cached: true, instance: { sha: commit } })
+    expect(f.calls).toEqual([])
+  })
+
+  it('downloads only blobs of the path (partial clone)', async ({ expect }) => {
+    const f = await setup()
+    f.commit({ ...BILLING_FILES, 'big/blob.txt': 'x'.repeat(100_000) })
+    const blob = f.git(f.work, 'rev-parse', 'HEAD:big/blob.txt')
+    const model = f.git(f.work, 'rev-parse', 'HEAD:arch/model.c4')
+    const dir = join(f.root, 'checkout')
+    mkdirSync(dir)
+    await fetchGitCommit(
+      f.realGit,
+      { remote: f.bare, what: 'refs/heads/main', shaLength: 40, subdir: 'arch', dir },
+      { cwd: f.root },
+    )
+    const objects = f.git(dir, 'rev-list', '--objects', '--missing=print', 'HEAD')
+    expect(objects).toContain(`?${blob}`)
+    expect(objects).not.toContain(`?${model}`)
+    expect(existsSync(join(dir, 'big'))).toBe(false)
+  })
+
+  it('stores the URL as written, without credentials', async ({ expect }) => {
+    const f = await setup()
+    const sha = f.commit(BILLING_FILES)
+    const git = 'https://deploy@example.test/org/billing.git'
+    expect(await f.installer.install({ git, ref: 'main', path: 'arch' })).toMatchObject({ status: 'installed' })
+    expect((await f.storage.readEntry({ repository: REPOSITORY, sha, subdir: 'arch' }))?.url).toBe(git)
+    expect((await f.storage.readVersion(REPOSITORY, 'main'))?.url).toBe(git)
+  })
+
+  it('removes stale temporary directories', async ({ expect }) => {
+    const f = await setup()
+    f.commit(BILLING_FILES)
+    const stale = join(f.temp, 'likec4-git-stale')
+    const fresh = join(f.temp, 'likec4-git-fresh')
+    const other = join(f.temp, 'other')
+    for (const dir of [stale, fresh, other]) {
+      mkdirSync(dir)
+    }
+    const old = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    utimesSync(stale, old, old)
+    utimesSync(other, old, old)
+    await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(readdirSync(f.temp).sort()).toEqual(['likec4-git-fresh', 'other'])
+  })
+
+  describe('concurrent installs', () => {
+    it('a cancelled caller does not cancel the shared install', async ({ expect }) => {
+      const f = await setup()
+      const sha = f.commit(BILLING_FILES)
+      const release = f.hold()
+      const a = new Cancellation.CancellationTokenSource()
+      const b = new Cancellation.CancellationTokenSource()
+      const first = f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { cancelToken: a.token })
+      const second = f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { cancelToken: b.token })
+      a.cancel()
+      expect(await first).toEqual({ status: 'failed', error: 'Installation was cancelled' })
+      release()
+      expect(await second).toMatchObject({ status: 'installed', instance: { sha } })
+    })
+
+    it('the shared install is aborted when all callers cancelled', async ({ expect }) => {
+      const f = await setup()
+      const sha = f.commit(BILLING_FILES)
+      const release = f.hold()
+      const a = new Cancellation.CancellationTokenSource()
+      const b = new Cancellation.CancellationTokenSource()
+      const first = f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { cancelToken: a.token })
+      const second = f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { cancelToken: b.token })
+      // the run reaches git
+      await expect.poll(() => f.calls.length).toBeGreaterThan(0)
+      a.cancel()
+      b.cancel()
+      expect(await first).toMatchObject({ status: 'failed' })
+      expect(await second).toMatchObject({ status: 'failed' })
+      expect(await f.keys()).toEqual([])
+      // the next install does not join the aborted run
+      const next = f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+      release()
+      expect(await next).toMatchObject({ status: 'installed', instance: { sha } })
+      expect(f.tempIsEmpty()).toBe(true)
+    })
+
+    it('an update waits for the running install', async ({ expect }) => {
+      const f = await setup()
+      const sha = f.commit(BILLING_FILES)
+      const release = f.hold()
+      const install = f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+      const update = f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { update: true })
+      await expect.poll(() => f.calls.length).toBe(1)
+      release()
+      expect(await install).toMatchObject({ status: 'installed', cached: false, instance: { sha } })
+      expect(await update).toMatchObject({ status: 'installed', cached: true, instance: { sha } })
+      // the update resolved the ref again after the install finished
+      const commands = f.gitCommands()
+      expect(commands.filter(c => c === 'ls-remote')).toHaveLength(2)
+      expect(commands.lastIndexOf('ls-remote')).toBeGreaterThan(commands.indexOf('checkout'))
+    })
+
+    it('fails when the deadline is exceeded', async ({ expect }) => {
+      const f = await setup({ deadline: 50 })
+      f.commit(BILLING_FILES)
+      const release = f.hold()
+      const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+      release()
+      expect(result).toMatchObject({ status: 'failed', error: expect.stringContaining('timed out') })
+      expect(await f.keys()).toEqual([])
+      expect(f.tempIsEmpty()).toBe(true)
+    })
+  })
+
   it('neither creates nor reads likec4.lock', async ({ expect }) => {
     const f = await setup()
     const sha = f.commit({ ...BILLING_FILES, 'arch/likec4.lock': 'lock' })
@@ -476,9 +698,7 @@ describe('GitDependencyInstaller', () => {
     const entry = await f.storage.readEntry({ repository: REPOSITORY, sha, subdir: 'arch' })
     expect(Object.keys(entry?.files ?? {})).not.toContain('likec4.lock')
     expect(existsSync(join(f.work, 'arch', 'likec4.lock'))).toBe(true)
-    const locks = execFileSync('find', [f.root, '-name', 'likec4.lock', '-not', '-path', `${f.work}/*`], {
-      encoding: 'utf8',
-    }).trim().split('\n')
+    const locks = findFiles(f.root, 'likec4.lock').filter(path => !path.startsWith(join(f.work, '')))
     expect(locks).toEqual([join(f.root, 'likec4.lock')])
   })
 })
