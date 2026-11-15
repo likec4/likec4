@@ -14,7 +14,9 @@ import {
 import { ast } from '../ast'
 import { clientPreviewsRemovalImpact } from '../model-diff'
 import type { LikeC4Services } from '../module'
+import { InstallDependencies } from '../protocol'
 import { projectIdFrom } from '../utils'
+import { DependencyDiagnosticCodes, isDependencyDiagnosticData } from '../validation/imports'
 import { LikeC4Commands } from './ExecuteCommandHandler'
 
 type CommandOrCodeAction = Command | CodeAction
@@ -29,7 +31,8 @@ export class LikeC4CodeActionProvider implements CodeActionProvider {
   constructor(private services: LikeC4Services) {}
 
   /**
-   * Offers safe delete on element headers, apply or discard on diff headers,
+   * Offers the install of a git dependency on its "not installed" diagnostic (quick fix),
+   * safe delete on element headers, apply or discard on diff headers,
    * and conversion of a plain string to Markdown.
    * The removal impact preview is offered only to clients that show it.
    *
@@ -45,6 +48,60 @@ export class LikeC4CodeActionProvider implements CodeActionProvider {
     if (this.services.shared.workspace.ProjectsLookup.isExternalDocument(document)) {
       return undefined
     }
+    const quickFixes = this.installDependencyQuickFixes(document, params)
+    const actions = this.refactorings(document, params)
+    if (quickFixes.length === 0) {
+      return actions
+    }
+    return [...quickFixes, ...(actions ?? [])]
+  }
+
+  /**
+   * Quick fixes for `likec4-dependency-not-installed` diagnostics: run the install command of the server
+   */
+  protected installDependencyQuickFixes(document: LangiumDocument, params: CodeActionParams): CodeAction[] {
+    const fixes = [] as CodeAction[]
+    // The client may ask only for some kinds of actions (`quickfix` covers `quickfix.*`, as in the LSP spec)
+    const only = params.context.only
+    if (only && !only.some(kind => kind === CodeActionKind.QuickFix || kind === CodeActionKind.Empty)) {
+      return fixes
+    }
+    for (const diagnostic of params.context.diagnostics) {
+      if (diagnostic.code !== DependencyDiagnosticCodes.NotInstalled) {
+        continue
+      }
+      // Data of the diagnostic, or the import at the diagnostic (if the client did not keep the data)
+      let args: InstallDependencies.Params | undefined
+      if (isDependencyDiagnosticData(diagnostic.data)) {
+        args = { projectId: diagnostic.data.projectId, name: diagnostic.data.name }
+      } else {
+        const root = document.parseResult.value.$cstNode
+        const offset = document.textDocument.offsetAt(diagnostic.range.start)
+        const node = root ? findLeafNodeAtOffset(root, offset)?.astNode : undefined
+        const imports = node ? AstUtils.getContainerOfType(node, ast.isImportsFromPoject) : undefined
+        if (imports) {
+          args = { projectId: projectIdFrom(document), name: imports.project }
+        }
+      }
+      if (!args) {
+        continue
+      }
+      const action = CodeAction.create(
+        `Install dependency '${args.name}'`,
+        Command.create(`Install dependency '${args.name}'`, InstallDependencies.command, args),
+        CodeActionKind.QuickFix,
+      )
+      action.diagnostics = [diagnostic]
+      action.isPreferred = true
+      fixes.push(action)
+    }
+    return fixes
+  }
+
+  protected refactorings(
+    document: LangiumDocument,
+    params: CodeActionParams,
+  ): CommandOrCodeAction[] | undefined {
     const root = document.parseResult.value.$cstNode
     if (!root) {
       return undefined
