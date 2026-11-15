@@ -13,6 +13,7 @@ function externalProject(key: string, folder: string): ExternalProject {
     configUri: URI.parse(`${ProjectFolder(folder)}likec4.config.json`),
     config: { name: key },
     includeConfig: { paths: [], maxDepth: 3, fileThreshold: 30 },
+    hash: 'test',
     files: new Map([[`${ProjectFolder(folder)}model.c4` as NormalizedUri, 'model {}']]),
   }
 }

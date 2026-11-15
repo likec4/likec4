@@ -5,12 +5,12 @@ import {
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
 import type { ProjectId } from '@likec4/core/types'
-import { invariant } from '@likec4/core/utils'
+import { invariant, objectHash } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import { type LangiumDocument, Disposable, URI, UriUtils } from 'langium'
 import picomatch from 'picomatch'
-import { hasAtLeast, isNullish } from 'remeda'
+import { hasAtLeast, isNullish, omit } from 'remeda'
 import { cleanDoubleSlashes, hasProtocol, isRelative, joinRelativeURL, joinURL, withoutTrailingSlash } from 'ufo'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -504,6 +504,12 @@ export class ExternalProjects extends ADisposable {
       includeConfig,
       exclude,
       files,
+      // Same formula as hashes of workspace projects (ProjectsManager)
+      hash: objectHash([
+        id + projectFolder + configUri.toString(),
+        omit(config, ['generators', 'include']),
+        includeConfig,
+      ]),
     }
   }
 

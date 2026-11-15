@@ -550,6 +550,7 @@ describe('ExternalProjects', () => {
       configUri: URI.parse(`${ProjectFolder(folder)}likec4.config.json`),
       config: { name: 'x' },
       includeConfig: { paths: [], maxDepth: 3, fileThreshold: 30 },
+      hash: 'test',
       files: new Map(files.map(uri => [uri as NormalizedUri, 'model {}'])),
     })
     const outer = '#file:///deps' as ProjectId
