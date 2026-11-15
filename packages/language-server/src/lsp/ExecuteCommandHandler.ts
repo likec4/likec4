@@ -1,6 +1,5 @@
 import { parseGitRepositoryUrl } from '@likec4/config'
-import type { ProjectId } from '@likec4/core'
-import { DiffId, Fqn, nonNullable } from '@likec4/core'
+import { DiffId, Fqn, nonNullable, ProjectId } from '@likec4/core'
 import { type ExecuteCommandAcceptor, AbstractExecuteCommandHandler } from 'langium/lsp'
 import type { WorkDoneProgressReporter } from 'vscode-languageserver'
 import type { DependencyInstallResult, DependencyState, GitDependencySource } from '../dependencies/types'
@@ -8,6 +7,7 @@ import { logger as rootLogger } from '../logger'
 import type { ApplyEditsResult, ModelEditRequest } from '../model-diff'
 import type { LikeC4Services, LikeC4SharedServices } from '../module'
 import { InstallDependencies } from '../protocol'
+import { normalizeGitSubdir } from '../workspace/dependency-uri'
 
 const logger = rootLogger.getChild('commands')
 
@@ -45,38 +45,92 @@ function readArgs(args: unknown[]): [ProjectId, string] {
   return [projectId as ProjectId, id]
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false
+  }
+  const prototype: unknown = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
+}
+
 /**
  * Reads optional `[params]` of {@link InstallDependencies.command}
+ *
+ * @throws if the params are not a plain object with expected fields
  */
 function readInstallParams(args: unknown[]): InstallDependencies.Params {
   const [params] = args
   if (params === undefined || params === null) {
     return {}
   }
-  if (
-    typeof params !== 'object'
-    || ('projectId' in params && params.projectId !== undefined && typeof params.projectId !== 'string')
-    || ('name' in params && params.name !== undefined && typeof params.name !== 'string')
-    || ('update' in params && params.update !== undefined && typeof params.update !== 'boolean')
-  ) {
-    throw new Error(`Invalid command arguments: ${JSON.stringify(args)}`)
+  const invalid = () => new Error(`Invalid command arguments: ${JSON.stringify(args)}`)
+  if (!isPlainObject(params)) {
+    throw invalid()
   }
-  const projectId = 'projectId' in params && typeof params.projectId === 'string' ? params.projectId : undefined
-  const name = 'name' in params && typeof params.name === 'string' ? params.name : undefined
-  const update = 'update' in params && params.update === true
+  const { projectId, name, update } = params
+  if (
+    (projectId !== undefined && typeof projectId !== 'string')
+    || (name !== undefined && typeof name !== 'string')
+    || (update !== undefined && typeof update !== 'boolean')
+  ) {
+    throw invalid()
+  }
   return {
-    ...(projectId !== undefined && { projectId: projectId as ProjectId }),
+    ...(projectId !== undefined && { projectId: ProjectId(projectId) }),
     ...(name !== undefined && { name }),
-    ...(update && { update }),
+    ...(update === true && { update }),
   }
 }
 
 /**
- * Key of an install of a git source: installs of the same source are joined
+ * Key of a git source: installs of the same source are serialized
+ * (repository identity, ref and normalized subdirectory)
  */
-function installKey(source: GitDependencySource, update: boolean): string {
+function installKey(source: GitDependencySource): string {
   const repository = parseGitRepositoryUrl(source.git)?.id ?? source.git.trim()
-  return JSON.stringify([repository, source.ref, source.path ?? '', update])
+  let subdir: string
+  try {
+    subdir = normalizeGitSubdir(source.path)
+  } catch {
+    // Invalid subdirectory: the installer reports it, any key works
+    subdir = source.path ?? ''
+  }
+  return JSON.stringify([repository, source.ref, subdir])
+}
+
+/**
+ * Install of a source, see {@link LikeC4ExecuteCommandHandler.installDependencies}
+ */
+interface RunningInstall {
+  promise: Promise<DependencyInstallResult>
+  update: boolean
+  /**
+   * Call of the command that started the install
+   */
+  owner: object
+}
+
+/**
+ * Result of a dependency install within a call of the command
+ */
+type InstallOutcome =
+  & InstallDependencies.Res['results'][number]
+  & {
+    /**
+     * The call joined an install started by another call (that call reports it)
+     */
+    joined: boolean
+    /**
+     * The dependency was installed before the call (the installer was not called)
+     */
+    alreadyInstalled: boolean
+  }
+
+/**
+ * Formats names as `'a', 'b'`
+ */
+function quoteNames(names: Iterable<string>): string {
+  return [...new Set(names)].map(name => `'${name}'`).join(', ')
 }
 
 /**
@@ -85,9 +139,9 @@ function installKey(source: GitDependencySource, update: boolean): string {
  */
 export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
   /**
-   * Running installs by source (see {@link installKey}): a repeated call joins them
+   * Last requested install by source (see {@link installKey}): later requests join or follow it
    */
-  #installs = new Map<string, Promise<DependencyInstallResult>>()
+  #installs = new Map<string, RunningInstall>()
 
   constructor(private shared: LikeC4SharedServices) {
     super()
@@ -130,38 +184,47 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
    * Installs git dependencies of the consumer project (of all projects if not specified),
    * then passes installed instances to external projects (registers them and relinks consumers).
    *
-   * Git and network run outside of the workspace write-lock, the lock is taken only by the sync of external projects.
-   * Installs of the same source join a running one, so concurrent calls run the installer once per source.
-   * Never throws for failed installs: they are reported to the user and returned in the result.
+   * - Without `update`, dependencies that are already installed are skipped (reported as cached).
+   * - Git and network run outside of the workspace write-lock, the lock is taken only by the sync
+   *   of external projects, which runs only if something was installed.
+   * - Installs of the same source are serialized: a request joins the running install of the source,
+   *   an `update` request that arrives during an install without `update` runs after it.
+   *   So concurrent calls run the installer once per source; the messages are shown by the call that ran it.
+   * - Never throws for failed installs: they are reported to the user and returned in the result.
    */
   async installDependencies(params: InstallDependencies.Params = {}): Promise<InstallDependencies.Res> {
     const update = params.update === true
     const states = this.shared.dependencies.States.all(params.projectId)
       .filter(state => params.name === undefined || state.name === params.name)
-    const window = this.window
     if (states.length === 0) {
       logger.debug`no git dependencies to install`
       return { results: [] }
     }
     const installer = this.shared.dependencies.Installer
     if (!installer.supported) {
-      window?.showErrorMessage(
+      this.window?.showErrorMessage(
         'LikeC4: Remote dependencies are not supported in this environment. Use VS Code desktop or the LikeC4 CLI.',
       )
       return { results: states.map(state => this.toResult(state, { status: 'unsupported' })) }
     }
 
-    const progress = await this.beginProgress(states.length)
+    const toInstall = states.filter(state => update || state.status !== 'installed')
+    const progress = toInstall.length > 0 ? await this.beginProgress(toInstall.length) : undefined
     let completed = 0
-    const results = await Promise.all(states.map(async state => {
-      const result = await this.install(state.source, update)
+    // Identity of this call: installs it started are reported by it
+    const call = {}
+    const outcomes = await Promise.all(states.map(async (state): Promise<InstallOutcome> => {
+      if (!update && state.status === 'installed') {
+        return { ...this.toResult(state, this.alreadyInstalled(state)), joined: false, alreadyInstalled: true }
+      }
+      const { result, joined } = await this.install(state.source, update, call)
       completed++
-      progress?.report(Math.round(completed / states.length * 100), `${completed}/${states.length}`)
-      return this.toResult(state, result)
+      progress?.report(Math.round(completed / toInstall.length * 100), `${completed}/${toInstall.length}`)
+      return { ...this.toResult(state, result), joined, alreadyInstalled: false }
     }))
 
     try {
-      if (results.some(({ result }) => result.status === 'installed')) {
+      if (outcomes.some(o => !o.alreadyInstalled && o.result.status === 'installed')) {
         progress?.report('Loading dependencies')
         // Registers installed instances and relinks consumers (takes the write-lock itself)
         await this.shared.workspace.WorkspaceManager.syncExternalProjects('reread')
@@ -170,29 +233,57 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
       progress?.done()
     }
 
-    this.reportInstall(results)
-    return { results }
+    this.reportInstall(outcomes)
+    return { results: outcomes.map(({ projectId, name, result }) => ({ projectId, name, result })) }
   }
 
   /**
-   * Runs the installer for the source, or joins the running install of the same source
+   * Runs the installer for the source, joins the running install of the same source,
+   * or (for `update` during an install without it) runs after it.
    */
-  private install(source: GitDependencySource, update: boolean): Promise<DependencyInstallResult> {
-    const key = installKey(source, update)
-    let running = this.#installs.get(key)
-    if (!running) {
-      running = this.shared.dependencies.Installer.install(source, { update })
+  private install(
+    source: GitDependencySource,
+    update: boolean,
+    call: object,
+  ): Promise<{ result: DependencyInstallResult; joined: boolean }> {
+    const key = installKey(source)
+    const running = this.#installs.get(key)
+    if (running && (running.update || !update)) {
+      const joined = running.owner !== call
+      return running.promise.then(result => ({ result, joined }))
+    }
+    const installer = this.shared.dependencies.Installer
+    const run = () =>
+      installer.install(source, { update })
         .catch((error: unknown): DependencyInstallResult => ({
           // The installer never throws by the contract, but be defensive
           status: 'failed',
           error: error instanceof Error ? error.message : String(error),
         }))
-        .finally(() => {
-          this.#installs.delete(key)
-        })
-      this.#installs.set(key, running)
+    const entry: RunningInstall = {
+      promise: running ? running.promise.then(run, run) : run(),
+      update,
+      owner: call,
     }
-    return running
+    this.#installs.set(key, entry)
+    void entry.promise.finally(() => {
+      if (this.#installs.get(key) === entry) {
+        this.#installs.delete(key)
+      }
+    })
+    return entry.promise.then(result => ({ result, joined: false }))
+  }
+
+  /**
+   * Result for a dependency that is installed already
+   */
+  private alreadyInstalled(state: DependencyState & { status: 'installed' }): DependencyInstallResult {
+    return {
+      status: 'installed',
+      instance: state.instance,
+      files: this.shared.workspace.ExternalProjects.get(state.projectId)?.files.size ?? 0,
+      cached: true,
+    }
   }
 
   private toResult(
@@ -221,29 +312,41 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
     }
   }
 
-  private reportInstall(results: InstallDependencies.Res['results']) {
+  /**
+   * Shows the result; installs joined from other calls are reported by those calls
+   */
+  private reportInstall(outcomes: ReadonlyArray<InstallOutcome>) {
     const window = this.window
-    let installed = 0
-    for (const { projectId, name, result } of results) {
-      switch (result.status) {
-        case 'failed':
+    const installed = [] as string[]
+    const already = [] as string[]
+    for (const { projectId, name, result, joined, alreadyInstalled } of outcomes) {
+      if (joined) {
+        continue
+      }
+      switch (true) {
+        case alreadyInstalled:
+          already.push(name)
+          break
+        case result.status === 'installed':
+          installed.push(name)
+          break
+        case result.status === 'failed':
           logger.warn`failed to install dependency ${name} of ${projectId}: ${result.error}`
           window?.showErrorMessage(`LikeC4: Failed to install dependency '${name}': ${result.error}`)
           break
-        case 'unsupported':
+        case result.status === 'unsupported':
           window?.showErrorMessage(
             `LikeC4: Dependency '${name}' cannot be installed: remote dependencies are not supported in this environment`,
           )
           break
-        case 'installed':
-          installed++
-          break
       }
     }
-    if (installed > 0) {
-      window?.showInformationMessage(
-        installed === 1 ? `LikeC4: Dependency installed` : `LikeC4: ${installed} dependencies installed`,
-      )
+    const messages = [
+      ...(installed.length > 0 ? [`installed ${quoteNames(installed)}`] : []),
+      ...(already.length > 0 ? [`already installed ${quoteNames(already)}`] : []),
+    ]
+    if (messages.length > 0) {
+      window?.showInformationMessage(`LikeC4: ${messages.join('; ')}`)
     }
   }
 

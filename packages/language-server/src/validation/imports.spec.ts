@@ -1,3 +1,4 @@
+import type { ProjectId } from '@likec4/core/types'
 import { URI } from 'langium'
 import { describe, it, vi } from 'vitest'
 import { gitDependencyWorkspace, installed, notInstalled, unsupported } from '../lsp/_git-dependencies-spec'
@@ -293,6 +294,30 @@ describe('import checks', () => {
       expect(diagnostics).toEqual([])
     })
 
+    // Step 2: the name of a git dependency that is not installed does not resolve (no instance),
+    // so imported names get linking errors in addition to the dependency diagnostic (stubs are step 3).
+    // The generic "Imported project not found" is not added.
+    it.for(
+      [
+        ['not installed', notInstalled('consumer'), DependencyDiagnosticCodes.NotInstalled],
+        ['unsupported', unsupported('consumer'), DependencyDiagnosticCodes.Unsupported],
+      ] as const,
+    )('reports %s dependency once when the name does not resolve', async ([_, state, code], { expect }) => {
+      await using t = await gitDependencyWorkspace({
+        provider: false,
+        consumerModel: `import { c1, c2 } from 'billing'`,
+      })
+      t.setState(state, true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics.filter(d => d.code === code)).toHaveLength(1)
+      expect(diagnostics.map(d => d.message)).not.toContain('Imported project not found')
+      // One linking error per imported name
+      expect(diagnostics.filter(d => d.code !== code).map(d => d.message).sort()).toEqual([
+        `Could not resolve reference to Element named 'c1'.`,
+        `Could not resolve reference to Element named 'c2'.`,
+      ])
+    })
+
     it('revalidates consumer documents when states change', async ({ expect }) => {
       await using t = await gitDependencyWorkspace()
       t.setState(notInstalled('consumer'), true)
@@ -309,6 +334,21 @@ describe('import checks', () => {
       await vi.waitFor(() => {
         expect(t.consumer.diagnostics).toEqual([])
       })
+    })
+
+    it('does not revalidate when states of the consumer did not change', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      t.setState(notInstalled('consumer'), true)
+      await t.validateAll()
+      const diagnostics = t.consumer.diagnostics
+      expect(diagnostics?.map(d => d.code)).toEqual([DependencyDiagnosticCodes.NotInstalled])
+
+      // The producer fires without a change (e.g. after every sync)
+      t.fire({ consumers: ['consumer' as ProjectId] })
+      await new Promise(resolve => setTimeout(resolve, 20))
+      await t.services.shared.workspace.WorkspaceLock.read(() => undefined)
+      // Same diagnostics: the document was not rebuilt
+      expect(t.consumer.diagnostics).toBe(diagnostics)
     })
   })
 })

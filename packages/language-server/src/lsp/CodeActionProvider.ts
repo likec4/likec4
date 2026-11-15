@@ -61,6 +61,11 @@ export class LikeC4CodeActionProvider implements CodeActionProvider {
    */
   protected installDependencyQuickFixes(document: LangiumDocument, params: CodeActionParams): CodeAction[] {
     const fixes = [] as CodeAction[]
+    // The client may ask only for some kinds of actions (`quickfix` covers `quickfix.*`, as in the LSP spec)
+    const only = params.context.only
+    if (only && !only.some(kind => kind === CodeActionKind.QuickFix || kind === CodeActionKind.Empty)) {
+      return fixes
+    }
     for (const diagnostic of params.context.diagnostics) {
       if (diagnostic.code !== DependencyDiagnosticCodes.NotInstalled) {
         continue

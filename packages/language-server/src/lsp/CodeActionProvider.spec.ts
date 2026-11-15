@@ -54,7 +54,7 @@ model {
   })
 
   describe('git dependencies', () => {
-    async function quickFixes(state: DependencyState, transform = (d: Diagnostic) => d) {
+    async function quickFixes(state: DependencyState, transform = (d: Diagnostic) => d, only?: string[]) {
       await using t = await gitDependencyWorkspace()
       t.setState(state, true)
       const { diagnostics } = await t.validateAll()
@@ -63,7 +63,11 @@ model {
       const actions = await t.services.lsp.CodeActionProvider!.getCodeActions(doc, {
         textDocument: { uri: doc.textDocument.uri },
         range: { start: position, end: position },
-        context: { diagnostics: diagnostics.map(transform), triggerKind: CodeActionTriggerKind.Automatic },
+        context: {
+          diagnostics: diagnostics.map(transform),
+          triggerKind: CodeActionTriggerKind.Automatic,
+          ...(only && { only }),
+        },
       })
       return { actions, diagnostics }
     }
@@ -95,6 +99,13 @@ model {
           },
         },
       ])
+    })
+
+    it('respects the kinds requested by the client', async ({ expect }) => {
+      const quickfix = await quickFixes(notInstalled('consumer'), d => d, [CodeActionKind.QuickFix])
+      expect(quickfix.actions).toHaveLength(1)
+      const refactor = await quickFixes(notInstalled('consumer'), d => d, [CodeActionKind.Refactor])
+      expect(refactor.actions ?? []).toEqual([])
     })
 
     it.for(

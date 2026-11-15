@@ -103,7 +103,7 @@ describe('install dependencies command', () => {
 
     expect(progress.begin).toHaveBeenCalledWith('LikeC4: Installing dependency', 0, '0/1')
     expect(progress.done).toHaveBeenCalledOnce()
-    expect(window.showInformationMessage).toHaveBeenCalledWith('LikeC4: Dependency installed')
+    expect(window.showInformationMessage).toHaveBeenCalledExactlyOnceWith(`LikeC4: installed 'billing'`)
     expect(window.showErrorMessage).not.toHaveBeenCalled()
   })
 
@@ -166,8 +166,10 @@ describe('install dependencies command', () => {
     await expect(second).resolves.toEqual(expected)
     expect(t.install).toHaveBeenCalledOnce()
 
-    // A later call runs the installer again (e.g. the repository changed)
+    // The dependency is installed now: a later call runs the installer again only with update
     await handler.executeCommand(InstallDependencies.command, [])
+    expect(t.install).toHaveBeenCalledOnce()
+    await handler.executeCommand(InstallDependencies.command, [{ update: true }])
     expect(t.install).toHaveBeenCalledTimes(2)
   })
 
@@ -202,6 +204,126 @@ describe('install dependencies command', () => {
     expect(t.sync).not.toHaveBeenCalled()
   })
 
+  it('skips installed dependencies without update', async ({ expect }) => {
+    await using t = await gitDependencyWorkspace()
+    t.setState(installed('consumer'), true)
+    t.setState(notInstalled('billing', 'crm'), true)
+    const { window } = fakeWindow()
+    const handler = new TestCommandHandler(t.services.shared, window)
+
+    const { results } = await handler.installDependencies()
+
+    expect(results).toEqual([
+      {
+        projectId: 'consumer',
+        name: 'billing',
+        result: { status: 'installed', instance: expect.anything(), files: 0, cached: true },
+      },
+      { projectId: 'billing', name: 'crm', result: installedResult },
+    ])
+    // Installer is called only for the dependency that is not installed
+    expect(t.install).toHaveBeenCalledOnce()
+    expect(t.sync).toHaveBeenCalledOnce()
+    expect(window.showInformationMessage).toHaveBeenCalledExactlyOnceWith(
+      `LikeC4: installed 'crm'; already installed 'billing'`,
+    )
+  })
+
+  it('does not sync when everything is installed already', async ({ expect }) => {
+    await using t = await gitDependencyWorkspace()
+    t.setState(installed('consumer'), true)
+    const { window, progress } = fakeWindow()
+    const handler = new TestCommandHandler(t.services.shared, window)
+
+    const { results } = await handler.installDependencies()
+
+    expect(results).toMatchObject([{ result: { status: 'installed', cached: true } }])
+    expect(t.install).not.toHaveBeenCalled()
+    expect(t.sync).not.toHaveBeenCalled()
+    expect(progress.begin).not.toHaveBeenCalled()
+    expect(window.showInformationMessage).toHaveBeenCalledExactlyOnceWith(`LikeC4: already installed 'billing'`)
+  })
+
+  it('names installed dependencies in the message', async ({ expect }) => {
+    await using t = await gitDependencyWorkspace({
+      install: () => Promise.resolve(installedResult),
+    })
+    t.setState(notInstalled('consumer'), true)
+    t.setState(
+      { ...notInstalled('consumer', 'crm'), source: { git: 'git@github.com:my-org/crm.git', ref: 'main' } },
+      true,
+    )
+    const { window } = fakeWindow()
+    const handler = new TestCommandHandler(t.services.shared, window)
+
+    await handler.installDependencies()
+
+    expect(t.install).toHaveBeenCalledTimes(2)
+    expect(window.showInformationMessage).toHaveBeenCalledExactlyOnceWith(`LikeC4: installed 'billing', 'crm'`)
+  })
+
+  it('shows messages once for joined calls', async ({ expect }) => {
+    const result = deferred<DependencyInstallResult>()
+    await using t = await gitDependencyWorkspace({ install: () => result.promise })
+    t.setState(notInstalled('consumer'), true)
+    const { window } = fakeWindow()
+    const handler = new TestCommandHandler(t.services.shared, window)
+
+    const first = handler.installDependencies()
+    const second = handler.installDependencies()
+    await vi.waitFor(() => expect(t.install).toHaveBeenCalled())
+    result.resolve(installedResult)
+    await Promise.all([first, second])
+
+    expect(t.install).toHaveBeenCalledOnce()
+    expect(window.showInformationMessage).toHaveBeenCalledExactlyOnceWith(`LikeC4: installed 'billing'`)
+  })
+
+  it('runs update after the running install of the same source', async ({ expect }) => {
+    const first = deferred<DependencyInstallResult>()
+    const calls = [] as string[]
+    await using t = await gitDependencyWorkspace({
+      install: async (_source, options) => {
+        calls.push(options?.update ? 'update:start' : 'install:start')
+        if (!options?.update) {
+          await first.promise
+        }
+        calls.push(options?.update ? 'update:end' : 'install:end')
+        return installedResult
+      },
+    })
+    t.setState(notInstalled('consumer'), true)
+    const handler = t.services.shared.lsp.ExecuteCommandHandler
+
+    const install = handler.installDependencies()
+    await vi.waitFor(() => expect(t.install).toHaveBeenCalledOnce())
+    // Same source, path written differently
+    t.setState({ ...notInstalled('consumer'), source: { ...billingSource, path: './' } }, true)
+    const update = handler.installDependencies({ update: true })
+    await new Promise(resolve => setTimeout(resolve, 10))
+    // Not started concurrently
+    expect(calls).toEqual(['install:start'])
+    first.resolve(installedResult)
+    await Promise.all([install, update])
+
+    expect(calls).toEqual(['install:start', 'install:end', 'update:start', 'update:end'])
+  })
+
+  it('joins an update with a request without update', async ({ expect }) => {
+    const result = deferred<DependencyInstallResult>()
+    await using t = await gitDependencyWorkspace({ install: () => result.promise })
+    t.setState(notInstalled('consumer'), true)
+    const handler = t.services.shared.lsp.ExecuteCommandHandler
+
+    const update = handler.installDependencies({ update: true })
+    const install = handler.installDependencies()
+    await vi.waitFor(() => expect(t.install).toHaveBeenCalled())
+    result.resolve(installedResult)
+    await Promise.all([update, install])
+
+    expect(t.install).toHaveBeenCalledExactlyOnceWith(billingSource, { update: true })
+  })
+
   it('does not install on hosts without installer', async ({ expect }) => {
     await using t = await gitDependencyWorkspace({ supported: false })
     t.setState(notInstalled('consumer'), true)
@@ -217,10 +339,18 @@ describe('install dependencies command', () => {
     )
   })
 
-  it('rejects invalid arguments', async ({ expect }) => {
+  it.for(
+    [
+      ['a field of wrong type', { name: 1 }],
+      ['an array', ['consumer']],
+      ['a string', 'consumer'],
+      ['a class instance', new Date()],
+    ] as const,
+  )('rejects %s as arguments', async ([_, params], { expect }) => {
     await using t = await gitDependencyWorkspace()
     await expect(
-      t.services.shared.lsp.ExecuteCommandHandler.executeCommand(InstallDependencies.command, [{ name: 1 }]),
+      t.services.shared.lsp.ExecuteCommandHandler.executeCommand(InstallDependencies.command, [params]),
     ).rejects.toThrow('Invalid command arguments')
+    expect(t.install).not.toHaveBeenCalled()
   })
 })

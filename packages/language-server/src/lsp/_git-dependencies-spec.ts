@@ -70,6 +70,16 @@ export async function gitDependencyWorkspace(options?: {
    * @default true
    */
   supported?: boolean
+  /**
+   * Register the provider project `billing`, so the import name resolves.
+   * Without it the name does not resolve, as for a git dependency that is not installed.
+   * @default true
+   */
+  provider?: boolean
+  /**
+   * Model of the consumer document
+   */
+  consumerModel?: string
 }) {
   const install = vi.fn<DependencyInstaller['install']>(options?.install ?? (() => Promise.resolve(installedResult)))
   const installer: DependencyInstaller = {
@@ -122,12 +132,13 @@ export async function gitDependencyWorkspace(options?: {
   })
 
   const projectsManager = shared.workspace.ProjectsManager
-  await projectsManager.registerProject({
-    config: { name: 'billing' },
-    folderUri: URI.parse('file:///test/workspace/src/billing'),
-  })
-  await t.addDocument(
-    `
+  if (options?.provider !== false) {
+    await projectsManager.registerProject({
+      config: { name: 'billing' },
+      folderUri: URI.parse('file:///test/workspace/src/billing'),
+    })
+    await t.addDocument(
+      `
       specification {
         element component
       }
@@ -135,14 +146,15 @@ export async function gitDependencyWorkspace(options?: {
         component c1
       }
     `,
-    'billing/model.c4',
-  )
+      'billing/model.c4',
+    )
+  }
   await projectsManager.registerProject({
     config: { name: 'consumer' },
     folderUri: URI.parse('file:///test/workspace/src/consumer'),
   })
   const consumer: LikeC4LangiumDocument = await t.addDocument(
-    `import c1 from 'billing'`,
+    options?.consumerModel ?? `import c1 from 'billing'`,
     'consumer/model.c4',
   )
 

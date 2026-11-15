@@ -111,14 +111,17 @@ function checkDependencyState(
 export const checkImportsFromPoject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
   const resolver = services.shared.workspace.DependencyResolver
   const states = services.shared.dependencies.States
-  revalidateOnDependencyStatesChange(services.shared)
+  const tracker = dependencyStatesTracker(services.shared)
   return tryOrLog((el, accept) => {
     const doc = getDocument(el)
     const projectId = projectIdFrom(doc)
     // Git dependency: report its state (not installed, unsupported, parse errors)
     const state = states.get(projectId, el.project)
-    if (state && checkDependencyState(el, state, accept)) {
-      return
+    if (state) {
+      tracker.validated(projectId)
+      if (checkDependencyState(el, state, accept)) {
+        return
+      }
     }
     // The name is resolved via `dependencies` of the consumer project, or by the workspace project name
     const resolved = resolver.resolve(projectId, el.project)
@@ -147,30 +150,97 @@ export const checkImportsFromPoject = (services: LikeC4Services): ValidationChec
   })
 }
 
-const subscribedServices = new WeakSet<LikeC4SharedServices>()
+/**
+ * Remembers the dependency states the diagnostics of each consumer were computed with
+ */
+interface DependencyStatesTracker {
+  /**
+   * Called when imports of the consumer are validated with its current states
+   */
+  validated(consumer: ProjectId): void
+}
+
+const trackers = new WeakMap<LikeC4SharedServices, DependencyStatesTracker>()
 
 /**
- * Relinks and revalidates documents with imports of consumer projects whose dependency states changed
- * (e.g. after install), so diagnostics on imports follow the states.
- *
- * Changes are batched and applied after the running sync of external projects (which may have fired them),
- * under the workspace write-lock. Subscribes once per shared services.
+ * Snapshot of what diagnostics depend on: status and number of files with parse errors of each dependency
  */
-export function revalidateOnDependencyStatesChange(shared: LikeC4SharedServices): void {
-  if (subscribedServices.has(shared)) {
-    return
+function statesSnapshot(states: ReadonlyArray<DependencyState>): string {
+  return states
+    .map(s => `${s.name}\0${s.status}\0${s.status === 'installed' ? s.filesWithErrors : ''}`)
+    .sort()
+    .join('\n')
+}
+
+/**
+ * Returns the tracker of dependency states of the shared services, creates it on first call.
+ *
+ * The tracker relinks and revalidates documents with imports of consumer projects whose dependency states
+ * changed (e.g. after install), so diagnostics on imports follow the states:
+ * - changes are batched and applied after the running sync of external projects (which may have fired them);
+ * - only consumers whose states differ from the states their diagnostics were computed with are revalidated
+ *   (no build loops if the producer fires on every build);
+ * - waits for running builds (read-lock), then relinks under the write-lock.
+ *
+ * The subscription is disposed with `DependencyStates`.
+ */
+function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStatesTracker {
+  const existing = trackers.get(shared)
+  if (existing) {
+    return existing
   }
-  subscribedServices.add(shared)
+  const states = shared.dependencies.States
+  // Consumer -> snapshot of states its imports were validated with
+  const seen = new Map<ProjectId, string>()
   const pending = new Set<ProjectId>()
   let scheduled = false
 
+  const changedConsumers = (candidates: Iterable<ProjectId>): Set<ProjectId> => {
+    const changed = new Set<ProjectId>()
+    for (const consumer of candidates) {
+      const previous = seen.get(consumer)
+      // Never validated with git dependency states: nothing to update, unless it has states now
+      const current = statesSnapshot(states.all(consumer))
+      if ((previous ?? '') !== current) {
+        changed.add(consumer)
+      }
+    }
+    return changed
+  }
+
+  const schedule = () => {
+    if (scheduled || pending.size === 0) {
+      return
+    }
+    scheduled = true
+    // Not from within a running sync (it may have fired the change): taking the write-lock would cancel it
+    shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+      .then(revalidate)
+      .catch(error => {
+        logger.warn('Failed to revalidate documents after dependency states changed', { error })
+      })
+  }
+
   const revalidate = async () => {
+    const lock = shared.workspace.WorkspaceLock
+    // Let running builds complete, instead of cancelling them
+    await lock.read(() => undefined)
     scheduled = false
-    const consumers = new Set(pending)
+    const candidates = new Set(pending)
     pending.clear()
     const lookup = shared.workspace.ProjectsLookup
     const builder = shared.workspace.DocumentBuilder
-    await shared.workspace.WorkspaceLock.write(async token => {
+    await lock.write(async token => {
+      if (token.isCancellationRequested) {
+        // Superseded by another write before anything was reset: try again after it
+        candidates.forEach(c => pending.add(c))
+        schedule()
+        return
+      }
+      const consumers = changedConsumers(candidates)
+      if (consumers.size === 0) {
+        return
+      }
       const documents = shared.workspace.LangiumDocuments.all
         .filter(doc =>
           isLikeC4UserDocument(doc)
@@ -185,7 +255,8 @@ export function revalidateOnDependencyStatesChange(shared: LikeC4SharedServices)
         return
       }
       logger.debug`relink ${documents.length} documents after dependency states changed`
-      // Relink and validate without parsing again (the content did not change)
+      // Relink and validate without parsing again (the content did not change).
+      // States are reset synchronously: if the update is cancelled, the next build validates them
       for (const doc of documents) {
         builder.resetToState(doc, DocumentState.ComputedScopes)
       }
@@ -193,17 +264,18 @@ export function revalidateOnDependencyStatesChange(shared: LikeC4SharedServices)
     })
   }
 
-  shared.dependencies.States.onDidChange(({ consumers }) => {
-    consumers.forEach(c => pending.add(c))
-    if (scheduled || pending.size === 0) {
-      return
-    }
-    scheduled = true
-    // Not from within a running sync (it may have fired the change): taking the write-lock would cancel it
-    shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
-      .then(revalidate)
-      .catch(error => {
-        logger.warn('Failed to revalidate documents after dependency states changed', { error })
-      })
-  })
+  states.onDispose(
+    states.onDidChange(({ consumers }) => {
+      consumers.forEach(c => pending.add(c))
+      schedule()
+    }),
+  )
+
+  const tracker: DependencyStatesTracker = {
+    validated(consumer) {
+      seen.set(consumer, statesSnapshot(states.all(consumer)))
+    },
+  }
+  trackers.set(shared, tracker)
+  return tracker
 }
