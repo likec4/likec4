@@ -30,6 +30,8 @@ const useDocumentSelector = defineService(() => {
       }
 
       documentSelector.push({ language: languageId, scheme: 'vscode-remote', pattern: globPattern })
+      // Read-only documents of dependencies outside the workspace, served by the language server
+      documentSelector.push({ language: languageId, scheme: 'likec4-dep' })
 
       return old && deepEqual(old, documentSelector) ? old : documentSelector
     } catch (error) {

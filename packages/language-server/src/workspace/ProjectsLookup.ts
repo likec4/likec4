@@ -1,10 +1,15 @@
 import type { ProjectId } from '@likec4/core/types'
-import type { LangiumDocument, URI } from 'langium'
+import { type LangiumDocument, URI } from 'langium'
 import type { LikeC4SharedServices } from '../module'
+import { isDependencyUri } from './dependency-uri'
 import { type ExternalProjects, isExternalProjectId } from './ExternalProjects'
-import type { ProjectData, ProjectsManager } from './ProjectsManager'
+import { type ProjectData, ProjectsManager } from './ProjectsManager'
 
 type DocOrUri = LangiumDocument | string | URI
+
+function isDependencyDocument(document: DocOrUri): boolean {
+  return isDependencyUri(typeof document === 'string' || URI.isUri(document) ? document : document.uri)
+}
 
 /**
  * Facade for document ownership and inclusion.
@@ -12,8 +17,9 @@ type DocOrUri = LangiumDocument | string | URI
  * Has the same signatures as the corresponding methods of {@link ProjectsManager},
  * and is the single entry point for these questions outside of the workspace.
  *
- * External project instances (see {@link ExternalProjects}) are asked first, then {@link ProjectsManager}:
- * - a document of an external project is owned by that project, and is included only by it;
+ * Documents of external projects (see {@link ExternalProjects}) have the `likec4-dep` URI scheme
+ * and are answered by ExternalProjects, all other documents by {@link ProjectsManager}:
+ * - a document of an external project is owned by that project (derived from the URI), and is included only by it;
  * - documents of external projects are indexed and linked, but excluded from processing
  *   (not validated, no diagnostics are published, not part of user documents),
  *   the same way as the built-in library.
@@ -31,14 +37,16 @@ export class ProjectsLookup {
 
   /**
    * Determines which project the given document belongs to.
-   * If the document belongs to an external project, returns its internal id.
+   * Documents with the `likec4-dep` scheme belong to the external project derived from the URI
+   * (ProjectsManager is not asked about them).
    * If the document does not belong to any project, returns the default project ID.
    */
   ownerProjectId(document: DocOrUri): ProjectId {
-    return this.externalProjects.ownerProjectId(document)
-      // documents of a just unregistered instance, while their deletion is reported
-      ?? this.externalProjects.retiredOwnerProjectId(document)
-      ?? this.projectsManager.ownerProjectId(document)
+    if (isDependencyDocument(document)) {
+      // Malformed dependency URI: not an external project, but never a workspace project either
+      return this.externalProjects.ownerProjectId(document) ?? ProjectsManager.DefaultProjectId
+    }
+    return this.projectsManager.ownerProjectId(document)
   }
 
   /**
@@ -49,7 +57,10 @@ export class ProjectsLookup {
     if (typeof arg === 'string') {
       return this.externalProjects.get(arg) ?? this.projectsManager.getProject(arg)
     }
-    return this.externalProjects.ownerOf(arg) ?? this.projectsManager.getProject(arg)
+    if (isDependencyDocument(arg)) {
+      return this.externalProjects.ownerOf(arg) ?? this.projectsManager.getProject(ProjectsManager.DefaultProjectId)
+    }
+    return this.projectsManager.getProject(arg)
   }
 
   /**
@@ -61,10 +72,10 @@ export class ProjectsLookup {
    * and documents of external projects are not included by workspace projects.
    */
   isIncluded(projectId: ProjectId, document: DocOrUri): boolean {
-    if (isExternalProjectId(projectId)) {
-      return this.externalProjects.ownerProjectId(document) === projectId
+    if (isDependencyDocument(document)) {
+      return isExternalProjectId(projectId) && this.externalProjects.ownerProjectId(document) === projectId
     }
-    if (this.externalProjects.ownerProjectId(document)) {
+    if (isExternalProjectId(projectId)) {
       return false
     }
     return this.projectsManager.isIncluded(projectId, document)
@@ -81,17 +92,11 @@ export class ProjectsLookup {
   isExcluded(projectId: ProjectId, document: DocOrUri): boolean
   isExcluded(...args: [DocOrUri] | [ProjectId, DocOrUri]): boolean {
     if (args.length === 1) {
-      if (this.externalProjects.ownerProjectId(args[0])) {
-        return true
-      }
-      return this.projectsManager.isExcluded(args[0])
+      return isDependencyDocument(args[0]) || this.projectsManager.isExcluded(args[0])
     }
     const [projectId, document] = args
-    if (isExternalProjectId(projectId)) {
-      return this.externalProjects.ownerProjectId(document) !== projectId
-    }
-    if (this.externalProjects.ownerProjectId(document)) {
-      return true
+    if (isDependencyDocument(document) || isExternalProjectId(projectId)) {
+      return !this.isIncluded(projectId, document)
     }
     return this.projectsManager.isExcluded(projectId, document)
   }

@@ -26,7 +26,8 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     _params: DocumentLinkParams,
     cancelToken: CancellationToken = CancellationToken.None,
   ): Promise<DocumentLink[]> {
-    if (!isLikeC4UserDocument(doc) || this.services.shared.workspace.ProjectsManager.isExcluded(doc)) {
+    // Documents of external projects (`likec4-dep` scheme) are excluded: their relative links are not resolvable
+    if (!isLikeC4UserDocument(doc) || this.services.shared.workspace.ProjectsLookup.isExcluded(doc)) {
       return Promise.resolve([])
     }
     const links: DocumentLink[] = []
@@ -64,8 +65,8 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (isRelative(link)) {
       return joinRelativeURL(UriUtils.dirname(doc.uri).toString(), link)
     }
-    const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri.toString()
-    return joinRelativeURL(base, link)
+    const base = this.services.shared.workspace.ProjectsLookup.getProject(doc).folderUri
+    return joinRelativeURL(base.toString(), link)
   }
 
   relativeLink(doc: LangiumDocument, link: string): string | null {
@@ -73,7 +74,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
       return withoutLeadingSlash(link)
     }
     if (isRelative(link)) {
-      const base = this.services.shared.workspace.ProjectsManager.getProject(doc).folderUri.toString()
+      const base = this.services.shared.workspace.ProjectsLookup.getProject(doc).folderUri.toString()
       const docURL = new URL(doc.uri.toString())
       const linkURL = new URL(link, docURL).toString()
       return withoutLeadingSlash(

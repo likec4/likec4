@@ -400,7 +400,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       for (const project of loaded) {
         externalProjects.register(project)
         for (const [uri, text] of project.files) {
-          // Nested dependency folders list the same files: one document per URI
           if (seen.has(uri) || this.langiumDocuments.hasDocument(URI.parse(uri))) {
             continue
           }
@@ -549,7 +548,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const externalProjects = this.services.workspace.ExternalProjects
     const next = new Map(loaded.map(p => [p.id, p]))
 
-    // Files after the change: the last loaded instance wins (same as ownership in the registry)
+    // Files after the change (URIs of instances are distinct, see dependency-uri.ts)
     const nextFiles = new Map<string, string>()
     for (const project of loaded) {
       for (const [uri, text] of project.files) {
@@ -565,11 +564,9 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         changedProjects.add(previous.id)
       }
       for (const [uri, text] of previous.files) {
+        // Delete the document if it is gone or its content changed
         if (project?.files.get(uri) !== text) {
           changedProjects.add(previous.id)
-        }
-        // Delete the document if it is gone or its content changed
-        if (externalProjects.ownerProjectId(uri) === previous.id && nextFiles.get(uri) !== text) {
           deleted.push(URI.parse(uri))
         }
       }
@@ -616,7 +613,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       .toArray()
 
     if (changedProjects.size === 0 && deleted.length === 0) {
-      externalProjects.clearRetiredOwners()
       return
     }
     this.#logger.debug`external projects changed: ${[...changedProjects].join(', ')}`
@@ -630,13 +626,8 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         this.langiumDocuments.addDocument(this.documentFactory.fromString(text, docUri))
       }
     }
-    try {
-      // Builds added documents and relinks consumers
-      await update
-    } finally {
-      // Deleted documents have been reported (before the build)
-      externalProjects.clearRetiredOwners()
-    }
+    // Builds added documents and relinks consumers
+    await update
   }
 
   /**

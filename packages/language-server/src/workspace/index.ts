@@ -1,3 +1,4 @@
+export * from './dependency-uri'
 export * from './DependencyResolver'
 export * from './DocumentBuilder'
 export * from './ExternalProjects'

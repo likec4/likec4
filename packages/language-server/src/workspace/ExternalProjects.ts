@@ -15,6 +15,12 @@ import { cleanDoubleSlashes, hasProtocol, isRelative, joinRelativeURL, joinURL, 
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { ADisposable } from '../utils'
+import {
+  isDependencyUri,
+  isValidLocalDependencyFolder,
+  localDependencyFolder,
+  localDependencyUri,
+} from './dependency-uri'
 import { type NormalizedUri, type ProjectData, ProjectFolder, ProjectsManager } from './ProjectsManager'
 
 const logger = mainLogger.getChild('external-projects')
@@ -52,6 +58,9 @@ export function externalProjectId(key: string): ExternalProjectId {
  * An instance of an external project (a dependency that is not a workspace project).
  * The instance is loaded into memory entirely on registration:
  * documents are read from {@link ExternalProject.files}, not from the file system.
+ *
+ * Documents have URIs with the `likec4-dep` scheme (see `dependency-uri.ts`),
+ * the instance they belong to is derived from the URI.
  */
 export interface ExternalProject extends ProjectData {
   /**
@@ -59,7 +68,7 @@ export interface ExternalProject extends ProjectData {
    */
   id: ExternalProjectId
   /**
-   * Documents of the instance, loaded in memory: normalized document URI -> text
+   * Documents of the instance, loaded in memory: `likec4-dep` document URI -> text
    */
   readonly files: ReadonlyMap<NormalizedUri, string>
 }
@@ -156,7 +165,6 @@ export interface ExternalDependencyTarget {
  */
 export class ExternalProjects extends ADisposable {
   #projects = new Map<ExternalProjectId, ExternalProject>()
-  #ownerOf = new Map<NormalizedUri, ExternalProjectId>()
   #listeners = [] as Array<() => void>
 
   constructor(protected services: LikeC4SharedServices) {
@@ -164,9 +172,7 @@ export class ExternalProjects extends ADisposable {
     this.onDispose(Disposable.create(() => {
       this.#listeners.length = 0
       this.#projects.clear()
-      this.#ownerOf.clear()
       this.#syncedTargets.clear()
-      this.#retiredOwners.clear()
     }))
   }
 
@@ -203,13 +209,19 @@ export class ExternalProjects extends ADisposable {
   }
 
   /**
-   * Returns the id of the external project that owns the document, or undefined.
+   * Returns the id of the external project the document belongs to, derived from its `likec4-dep` URI
+   * (also for instances that are not registered, e.g. just removed), or undefined for other documents.
    */
   ownerProjectId(document: DocOrUri): ExternalProjectId | undefined {
-    if (this.#ownerOf.size === 0) {
+    const uri = typeof document === 'string' || URI.isUri(document) ? document : document.uri
+    if (!isDependencyUri(uri)) {
       return undefined
     }
-    return this.#ownerOf.get(toNormalizedUri(document))
+    const folder = localDependencyFolder(uri)
+    if (!folder) {
+      return undefined
+    }
+    return this.findByFolder(folder)?.id ?? externalProjectIdOfFolder(folder)
   }
 
   /**
@@ -238,9 +250,7 @@ export class ExternalProjects extends ADisposable {
    * Returns undefined if the document does not belong to any external project.
    */
   readFile(document: DocOrUri): string | undefined {
-    const uri = toNormalizedUri(document)
-    const id = this.#ownerOf.get(uri)
-    return id ? this.#projects.get(id)?.files.get(uri) : undefined
+    return this.ownerOf(document)?.files.get(toNormalizedUri(document))
   }
 
   /**
@@ -249,14 +259,7 @@ export class ExternalProjects extends ADisposable {
    */
   register(project: ExternalProject): void {
     invariant(isExternalProjectId(project.id), `External project id must start with "${EXTERNAL_PROJECT_ID_PREFIX}"`)
-    this.removeOwnership(project.id)
-    // (re)insert, so the order of the map is the order of registration
-    this.#projects.delete(project.id)
     this.#projects.set(project.id, project)
-    for (const uri of project.files.keys()) {
-      this.#ownerOf.set(uri, project.id)
-      this.#retiredOwners.delete(uri)
-    }
     this.notifyListeners()
   }
 
@@ -269,7 +272,6 @@ export class ExternalProjects extends ADisposable {
     if (!project) {
       return undefined
     }
-    this.removeOwnership(project.id)
     this.#projects.delete(project.id)
     this.notifyListeners()
     return project
@@ -438,6 +440,11 @@ export class ExternalProjects extends ADisposable {
       return undefined
     }
 
+    if (!isValidLocalDependencyFolder(folderUri)) {
+      logger.warn`dependency folder is not supported (local folder expected): ${folderUri}`
+      return undefined
+    }
+
     const { config, configUri } = await this.loadConfig(folderUri)
     const includeConfig = {
       ...LikeC4ProjectConfigOps.normalizeInclude(config.include),
@@ -454,7 +461,8 @@ export class ExternalProjects extends ADisposable {
           continue
         }
         try {
-          files.set(toNormalizedUri(entry.uri), await fs.readFile(entry.uri))
+          const uri = localDependencyUri(folderUri, entry.uri).toString() as NormalizedUri
+          files.set(uri, await fs.readFile(entry.uri))
         } catch (error) {
           logger.warn(`Failed to read dependency document {uri}`, { uri: entry.uri.fsPath, error })
         }
@@ -571,55 +579,6 @@ export class ExternalProjects extends ADisposable {
       }
     }
     return false
-  }
-
-  /**
-   * Former owners of documents of unregistered instances (document URI -> id),
-   * kept until {@link clearRetiredOwners}, so deleted documents are attributed to the instance they belonged to.
-   */
-  #retiredOwners = new Map<NormalizedUri, ExternalProjectId>()
-
-  /**
-   * Returns the id of the unregistered instance that owned the document (until {@link clearRetiredOwners}).
-   */
-  retiredOwnerProjectId(document: DocOrUri): ExternalProjectId | undefined {
-    if (this.#retiredOwners.size === 0) {
-      return undefined
-    }
-    return this.#retiredOwners.get(toNormalizedUri(document))
-  }
-
-  /**
-   * Forgets former owners of documents of unregistered instances
-   * (called when deletion of their documents has been reported).
-   */
-  clearRetiredOwners(): void {
-    this.#retiredOwners.clear()
-  }
-
-  /**
-   * Removes ownership of the documents of the project.
-   * If another registered project lists the same document (nested folders),
-   * the ownership moves to it (the last registered one).
-   */
-  private removeOwnership(id: ExternalProjectId): void {
-    const previous = this.#projects.get(id)
-    if (!previous) {
-      return
-    }
-    const others = [...this.#projects.values()].filter(p => p.id !== id).reverse()
-    for (const uri of previous.files.keys()) {
-      if (this.#ownerOf.get(uri) !== id) {
-        continue
-      }
-      const next = others.find(p => p.files.has(uri))
-      if (next) {
-        this.#ownerOf.set(uri, next.id)
-      } else {
-        this.#ownerOf.delete(uri)
-        this.#retiredOwners.set(uri, id)
-      }
-    }
   }
 
   private notifyListeners(): void {

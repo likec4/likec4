@@ -47,7 +47,7 @@ describe('project dependencies contracts', () => {
     it('registers and unregisters instances', async ({ expect }) => {
       const { services } = await createMultiProjectTestServices({ a: { model: 'model {}' } })
       const external = services.shared.workspace.ExternalProjects
-      const docUri = 'file:///deps/shared/model.c4'
+      const docUri = 'likec4-dep://local/deps/shared/-/model.c4'
       const project = externalProject('shared', 'file:///deps/shared', { [docUri]: 'model {}' })
       let changes = 0
       external.onDidChange(() => changes++)
@@ -63,7 +63,10 @@ describe('project dependencies contracts', () => {
 
       expect(external.unregister('#shared')).toBe(project)
       expect(external.has('#shared')).toBe(false)
-      expect(external.ownerProjectId(docUri)).toBeUndefined()
+      // not registered: the owner is derived from the URI
+      expect(external.ownerProjectId(docUri)).toBe('#file:///deps/shared')
+      expect(external.ownerOf(docUri)).toBeUndefined()
+      expect(external.ownerProjectId('file:///deps/shared/model.c4')).toBeUndefined()
       expect(changes).toBe(2)
     })
   })

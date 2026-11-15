@@ -1,7 +1,7 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import { isLikeC4Config, loadConfig } from '@likec4/config/node'
 import { fdir } from 'fdir'
-import { URI } from 'langium'
+import { type FileSystemNode, URI } from 'langium'
 import { NodeFileSystemProvider } from 'langium/node'
 import { mkdirSync, statSync } from 'node:fs'
 import { readFile as fsReadFile, unlink, writeFile as fsWriteFile } from 'node:fs/promises'
@@ -10,6 +10,7 @@ import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { compareByUri, compareByUriDeepFirst } from '../utils'
+import { isDependencyUri } from '../workspace/dependency-uri'
 import { WithChokidarWatcher } from './ChokidarWatcher'
 import { NoFileSystemWatcher } from './noop'
 import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './types'
@@ -50,9 +51,22 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     return isNodeModulesOrRepo(name) || this.isExcluded(path)
   }
 
+  /**
+   * Text of a document of an external project (`likec4-dep` scheme), from memory
+   */
+  private readDependency(uri: URI): string | undefined {
+    if (!isDependencyUri(uri)) {
+      return undefined
+    }
+    return this.services.workspace.ExternalProjects.readFile(uri)
+  }
+
   override async readFile(uri: URI): Promise<string> {
     if (isLikeC4Builtin(uri)) {
       return Promise.resolve(Content)
+    }
+    if (isDependencyUri(uri)) {
+      return this.readDependency(uri) ?? ''
     }
     try {
       // Read with own `node:fs` (not the one of langium), same as other file operations here
@@ -61,6 +75,47 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
       this.#logger.warn(`Failed to read file ${uri.fsPath}`, { error })
       return ''
     }
+  }
+
+  override readFileSync(uri: URI): string {
+    if (isLikeC4Builtin(uri)) {
+      return Content
+    }
+    if (isDependencyUri(uri)) {
+      return this.readDependency(uri) ?? ''
+    }
+    return super.readFileSync(uri)
+  }
+
+  override exists(uri: URI): Promise<boolean> {
+    if (isDependencyUri(uri)) {
+      return Promise.resolve(this.readDependency(uri) !== undefined)
+    }
+    return super.exists(uri)
+  }
+
+  override existsSync(uri: URI): boolean {
+    if (isDependencyUri(uri)) {
+      return this.readDependency(uri) !== undefined
+    }
+    return super.existsSync(uri)
+  }
+
+  override async stat(uri: URI): Promise<FileSystemNode> {
+    if (isDependencyUri(uri)) {
+      return this.statSync(uri)
+    }
+    return await super.stat(uri)
+  }
+
+  override statSync(uri: URI): FileSystemNode {
+    if (isDependencyUri(uri)) {
+      if (this.readDependency(uri) === undefined) {
+        throw new Error(`Document of external project not found: ${uri.toString()}`)
+      }
+      return { isFile: true, isDirectory: false, uri }
+    }
+    return super.statSync(uri)
   }
 
   override async readDirectory(
