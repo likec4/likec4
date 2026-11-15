@@ -48,7 +48,7 @@ describe('buildProjectsCatalog', () => {
   })
 
   it('sums workspace totals', () => {
-    expect(catalog.totals).toEqual({ projects: 3, elements: 35, views: 6, links: 3 })
+    expect(catalog.totals).toEqual({ projects: 3, elements: 35, views: 6 })
   })
 
   it('reports unknown totals when metrics are missing', () => {

@@ -1,7 +1,7 @@
 import { defaultTheme } from '@likec4/core/styles'
 import { cx } from '@likec4/styles/css'
-import { Tooltip } from '@mantine/core'
-import { IconArrowUpRight, IconChevronDown } from '@tabler/icons-react'
+import { HoverCard, Tooltip } from '@mantine/core'
+import { IconArrowUpRight, IconChevronDown, IconFolder, IconUser } from '@tabler/icons-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { type CSSProperties, useState } from 'react'
 import {
@@ -114,50 +114,70 @@ function ProjectCard({ project }: { project: CatalogProject }) {
   const [expanded, setExpanded] = useState(false)
   const panelId = `project-deps-${project.id}`
   return (
-    <article className={cx('group', styles.card)}>
-      <div className={styles.cardHead}>
-        <ProjectMonogram projectId={project.id} title={project.title} size="lg" />
-        <div className={styles.cardTitles}>
-          <h3 className={styles.cardTitle}>
-            <Link
-              className={styles.cardLink}
-              to="/project/$projectId/"
-              params={{ projectId: project.id }}
-              title={project.title}>
-              {project.title}
-            </Link>
-          </h3>
-          <span className={styles.cardSub}>
-            {project.id}
-          </span>
-        </div>
-        <IconArrowUpRight size={18} className={styles.cardOpen} aria-hidden />
-      </div>
-      <div className={styles.cardBody}>
+    <HoverCard
+      openDelay={500}
+      closeDelay={100}
+      position="bottom-start"
+      offset={6}
+      shadow="md"
+      withinPortal>
+      <HoverCard.Target>
+        <article className={cx('group', styles.card)}>
+          <div className={styles.cardHead}>
+            <ProjectMonogram projectId={project.id} title={project.title} size="lg" />
+            <div className={styles.cardTitles}>
+              <h3 className={styles.cardTitle}>
+                <Link
+                  className={styles.cardLink}
+                  to="/project/$projectId/"
+                  params={{ projectId: project.id }}
+                  title={project.title}>
+                  {project.title}
+                </Link>
+              </h3>
+              <span className={styles.cardSub}>
+                {project.id}
+              </span>
+            </div>
+            <IconArrowUpRight size={18} className={styles.cardOpen} aria-hidden />
+          </div>
+          <div className={styles.cardBody}>
+            <div className={styles.detail} data-empty={!project.contactPerson || undefined}>
+              <IconUser size={14} aria-hidden />
+              <span title={project.contactPerson ?? undefined}>{project.contactPerson ?? 'No contact person'}</span>
+            </div>
+            <div className={styles.detail} data-empty={!project.path || undefined}>
+              <IconFolder size={14} aria-hidden />
+              <span title={project.path ?? undefined}>{project.path ?? '—'}</span>
+            </div>
+          </div>
+          <div className={styles.cardFoot}>
+            <DependencySummary label="Depends on" links={project.dependsOn} />
+            <DependencySummary label="Used by" links={project.usedBy} />
+            <button
+              type="button"
+              className={styles.expand}
+              aria-expanded={expanded}
+              aria-controls={panelId}
+              aria-label={`${expanded ? 'Hide' : 'Show'} dependencies of ${project.title}`}
+              onClick={() => setExpanded(v => !v)}>
+              <IconChevronDown size={16} />
+            </button>
+          </div>
+          {expanded && (
+            <div className={styles.expandPanel} id={panelId}>
+              <DependencyList label="Depends on" empty="No dependencies" links={project.dependsOn} />
+              <DependencyList label="Used by" empty="Not used by other projects" links={project.usedBy} />
+            </div>
+          )}
+        </article>
+      </HoverCard.Target>
+      <HoverCard.Dropdown className={styles.metricsCard}>
         <Metric label="Elements" value={project.elements} />
         <Metric label="Relationships" value={project.relationships} />
         <Metric label="Views" value={project.views} />
-      </div>
-      <div className={styles.cardFoot}>
-        <DependencySummary label="Depends on" links={project.dependsOn} />
-        <DependencySummary label="Used by" links={project.usedBy} />
-        <button
-          type="button"
-          className={styles.expand}
-          aria-expanded={expanded}
-          aria-controls={panelId}
-          aria-label={`${expanded ? 'Hide' : 'Show'} dependencies of ${project.title}`}
-          onClick={() => setExpanded(v => !v)}>
-          <IconChevronDown size={16} />
-        </button>
-      </div>
-      {expanded && (
-        <div className={styles.expandPanel} id={panelId}>
-          <DependencyList label="Depends on" empty="No dependencies" links={project.dependsOn} />
-          <DependencyList label="Used by" empty="Not used by other projects" links={project.usedBy} />
-        </div>
-      )}
-    </article>
+      </HoverCard.Dropdown>
+    </HoverCard>
   )
 }
 

@@ -1,7 +1,8 @@
-import { LikeC4ProjectsOverview, useChangeLikeC4Project } from '@likec4/diagram'
+import { LikeC4ProjectsOverview, LogoIcon, useChangeLikeC4Project } from '@likec4/diagram'
 import { Menu } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import { IconCheck, IconChevronDown, IconLayoutGrid, IconList, IconTopologyStar3 } from '@tabler/icons-react'
+import { useLikeC4Projects } from 'likec4:projects'
 import { useLikeC4ProjectsOverview } from 'likec4:projects-overview'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
@@ -30,7 +31,11 @@ export function ProjectsOverviewPage({ view, onViewChange }: {
 }) {
   const changeProject = useChangeLikeC4Project()
   const projectsOverview = useLikeC4ProjectsOverview()
-  const catalog = useMemo(() => buildProjectsCatalog(projectsOverview), [projectsOverview])
+  const projectInfos = useLikeC4Projects()
+  const catalog = useMemo(
+    () => buildProjectsCatalog(projectsOverview, projectInfos),
+    [projectsOverview, projectInfos],
+  )
 
   const [sort, setSort] = useState<CatalogSort>('name')
   const [search, setSearch] = useState<{ opened: boolean; initialQuery: string }>({ opened: false, initialQuery: '' })
@@ -74,14 +79,13 @@ export function ProjectsOverviewPage({ view, onViewChange }: {
     <>
       <section className={styles.header}>
         <div className={styles.headerTitles}>
-          <span className={styles.eyebrow}>Workspace</span>
+          <LogoIcon className={styles.logo} aria-hidden />
           <h1 className={styles.title}>Projects</h1>
         </div>
         <div className={styles.summary}>
           <Metric label="Projects" value={totals.projects} size="lg" />
           <Metric label="Elements" value={totals.elements} size="lg" />
           <Metric label="Views" value={totals.views} size="lg" />
-          <Metric label="Cross-project links" value={totals.links} size="lg" />
         </div>
       </section>
 

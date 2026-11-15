@@ -15,7 +15,11 @@ declare module 'likec4:projects' {
   export interface Project {
     id: ProjectId
     title?: string
+    /**
+     * Folder of the project, relative to the workspace
+     */
     path: string
+    contactPerson?: string
     landingPage?: LandingPageConfig
     relationshipBrowserDefaultScope: RelationshipBrowserScope
     exportFormats: readonly WebappExportFormat[]
