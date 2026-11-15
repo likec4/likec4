@@ -134,3 +134,53 @@ export function normalizeDependencies(
   const parsed = DependenciesSchema.safeParse(dependencies ?? {})
   return parsed.success ? parsed.data : {}
 }
+
+/**
+ * Git source of a dependency: a folder of a git repository at a git ref.
+ *
+ * Only the type: the `dependencies` section does not accept git sources yet
+ * (validation of git entries is added separately).
+ *
+ * @example
+ * ```json
+ * {
+ *   "dependencies": {
+ *     "billing": { "git": "git@github.com:my-org/billing.git", "ref": "v1.2.0", "path": "architecture" }
+ *   }
+ * }
+ * ```
+ */
+export interface GitDependencySource {
+  /**
+   * URL of the git repository: `https://`, `ssh://` or scp-like `git@host:org/repo.git`
+   * (see `parseGitRepositoryUrl`)
+   */
+  git: string
+  /**
+   * Git ref: a branch, a tag or a commit SHA.
+   * Resolved to a commit SHA on install, the SHA is remembered until update.
+   */
+  ref: string
+  /**
+   * Subdirectory of the repository with the dependency project (the folder with its LikeC4 config),
+   * relative to the repository root. The repository root if omitted.
+   */
+  path?: string | undefined
+}
+
+/**
+ * Entry of the `dependencies` section: a relative path of a local dependency, or a git source.
+ */
+export type DependencyEntry = DependencyPath | GitDependencySource
+
+/**
+ * Checks if the dependency entry is a git source.
+ */
+export function isGitDependencySource(entry: unknown): entry is GitDependencySource {
+  return typeof entry === 'object'
+    && entry !== null
+    && 'git' in entry
+    && typeof entry.git === 'string'
+    && 'ref' in entry
+    && typeof entry.ref === 'string'
+}

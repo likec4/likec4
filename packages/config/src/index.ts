@@ -29,8 +29,23 @@ export {
 
 export type {
   DependenciesConfig,
+  DependencyEntry,
   DependencyPath,
+  GitDependencySource,
 } from './schema.dependencies'
+
+export {
+  isGitDependencySource,
+} from './schema.dependencies'
+
+export type {
+  GitRepositoryUrl,
+  GitUrlProtocol,
+} from './git-url'
+
+export {
+  parseGitRepositoryUrl,
+} from './git-url'
 
 export type {
   IncludeConfig,
