@@ -36,9 +36,9 @@ export interface ResolveDependencyVersionParams {
    */
   repository: string
   /**
-   * URL passed to git (validated by the caller)
+   * Repository with the remote `origin` (see `initGitRepository`): `ls-remote` runs inside it
    */
-  remote: string
+  dir: string
   /**
    * Ref as written in the config (validated by the caller)
    */
@@ -95,7 +95,7 @@ export async function resolveDependencyVersion(
       return known
     }
   }
-  const resolved = await lsRemoteRef(params.runGit, params.remote, params.ref, {
+  const resolved = await lsRemoteRef(params.runGit, params.dir, params.ref, {
     cwd: params.cwd,
     signal: params.signal,
   })

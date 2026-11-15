@@ -12,9 +12,11 @@ import {
   type GitRunner,
   createGitRunner,
   fetchGitCommit,
+  initGitRepository,
   isValidGitRef,
   listGitSpecialFiles,
   refAsFullSha,
+  SOURCE_FILE_EXTENSIONS,
 } from './git'
 import type {
   DependencyCacheEntry,
@@ -51,8 +53,6 @@ export const TEMP_DIR_PREFIX = 'likec4-git-'
  * Temporary directories older than this are removed when the installer starts (milliseconds)
  */
 const STALE_TEMP_DIR_AGE = 24 * 60 * 60 * 1000
-
-const SOURCE_EXTENSIONS = ['.c4', '.likec4']
 
 // Characters of a subdirectory that would change the meaning of a sparse checkout pattern
 // eslint-disable-next-line no-control-regex
@@ -130,6 +130,7 @@ export function redactGitUrl(url: string): string {
  * URL passed to git: rebuilt from the parsed parts (protocol, user, host, port, path),
  * so the host git connects to is always the host of the repository identity (`url.id`).
  * The `.git` suffix is kept as written, passwords are never included.
+ * The path of scp-like URLs is passed as written (git does not decode it), the identity uses the decoded path.
  *
  * @param raw the URL as written in the config (accepted by `parseGitRepositoryUrl`)
  */
@@ -139,8 +140,9 @@ export function gitRemoteUrl(url: GitRepositoryUrl, raw: string): string {
   const port = url.port !== undefined ? `:${url.port}` : ''
   switch (url.protocol) {
     case 'scp': {
-      const user = /^([^@/:\s]+)@/.exec(value)?.[1]
-      return `${user ? `${user}@` : ''}${url.host}:${url.path}${suffix}`
+      // git does not percent-decode scp-like paths: the path is passed as written
+      const [, user, , path = url.path] = /^(?:([^@/:\s]+)@)?([^@/:\s[\]]+):(\S+)$/.exec(value) ?? []
+      return `${user ? `${user}@` : ''}${url.host}:${path}`
     }
     case 'https':
     case 'ssh': {
@@ -190,8 +192,7 @@ function errorMessage(error: unknown): string {
 }
 
 function isSourceFile(name: string): boolean {
-  const lower = name.toLowerCase()
-  return SOURCE_EXTENSIONS.some(ext => lower.endsWith(ext))
+  return SOURCE_FILE_EXTENSIONS.some(ext => name.length > ext.length && name.endsWith(ext))
 }
 
 /**
@@ -384,14 +385,31 @@ export class GitDependencyInstaller implements DependencyInstaller {
     return run
   }
 
+  /**
+   * Runs the install until it finishes, the deadline passes or the controller is aborted (all callers cancelled),
+   * whatever comes first: a hard bound, even if git does not react to the abort.
+   * The abandoned install keeps cleaning up in the background (its writes are skipped: the signal is aborted).
+   */
   async #withDeadline<T>(controller: AbortController, fn: (signal: AbortSignal) => Promise<T>): Promise<T> {
     let timedOut = false
     const timer = setTimeout(() => {
       timedOut = true
       controller.abort()
     }, this.#deadline)
+    let stop = () => {}
+    const aborted = new Promise<'aborted'>(resolve => {
+      stop = () => resolve('aborted')
+    })
+    controller.signal.addEventListener('abort', stop, { once: true })
+    const work = fn(controller.signal)
     try {
-      return await fn(controller.signal)
+      const winner = await Promise.race([work.then(value => ({ value })), aborted])
+      if (winner === 'aborted') {
+        // the abandoned install may still fail: its error is not reported
+        work.catch(() => {})
+        throw new Error(CANCELLED)
+      }
+      return winner.value
     } catch (error) {
       if (timedOut) {
         throw new Error(`Installation timed out after ${Math.round(this.#deadline / 1000)}s`)
@@ -399,6 +417,8 @@ export class GitDependencyInstaller implements DependencyInstaller {
       throw error
     } finally {
       clearTimeout(timer)
+      controller.signal.removeEventListener('abort', stop)
+      stop()
     }
   }
 
@@ -486,12 +506,18 @@ export class GitDependencyInstaller implements DependencyInstaller {
     const temp = await mkdtemp(join(this.#tempDir ?? tmpdir(), TEMP_DIR_PREFIX))
     // git runs in the temporary directory, never in the checkout
     const gitOptions = { cwd: temp, signal }
+    const checkout = join(temp, 'repo')
     try {
+      // ls-remote and fetch run in the repository with "origin" (user configuration may depend on the remote)
+      const known = update && !refAsFullSha(ref) ? undefined : await knownDependencyVersion(storage, repository, ref)
+      let shaLength = known?.sha.length ?? 40
+      await mkdir(checkout)
+      await initGitRepository(this.#runGit, { remote, dir: checkout, shaLength }, gitOptions)
       const resolved = await resolveDependencyVersion({
         storage,
         runGit: this.#runGit,
         repository,
-        remote,
+        dir: checkout,
         ref,
         update,
         ...gitOptions,
@@ -509,27 +535,28 @@ export class GitDependencyInstaller implements DependencyInstaller {
         }
       }
 
-      const checkout = join(temp, 'repo')
-      await mkdir(checkout)
+      if (resolved.sha.length !== shaLength) {
+        // the remote uses another hash algorithm (SHA-256): the repository is created again
+        shaLength = resolved.sha.length
+        await rm(checkout, { recursive: true, force: true })
+        await mkdir(checkout)
+        await initGitRepository(this.#runGit, { remote, dir: checkout, shaLength }, gitOptions)
+      }
       logger.debug`fetching ${repository} at ${resolved.sha}`
       // the ref may move between ls-remote and fetch: the fetched commit wins
       const sha = await fetchGitCommit(this.#runGit, {
-        remote,
         what: resolved.refName ?? resolved.sha,
-        shaLength: resolved.sha.length,
         subdir,
         dir: checkout,
       }, gitOptions)
 
       const root = subdir ? join(checkout, ...subdir.split('/')) : checkout
+      // the path exists in the commit (checked by fetchGitCommit); without sources it is not checked out
       const stats = await lstat(root).catch(() => undefined)
-      if (!stats?.isDirectory()) {
-        throw new Error(`Path ${JSON.stringify(subdir)} not found at ${sha}`)
-      }
       const prefix = subdir ? `${subdir}/` : ''
       const special = await listGitSpecialFiles(this.#runGit, checkout, gitOptions)
       const skip = new Set([...special].filter(p => p.startsWith(prefix)).map(p => p.slice(prefix.length)))
-      const files = await collectDependencyFiles(root, skip)
+      const files = stats?.isDirectory() ? await collectDependencyFiles(root, skip) : {}
       const count = Object.keys(files).length
       if (!Object.keys(files).some(isSourceFile)) {
         throw new Error(

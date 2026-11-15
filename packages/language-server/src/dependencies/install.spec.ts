@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, describe, it } from 'vitest'
 import { createTestServices } from '../test'
-import { type GitRunner, createGitRunner, fetchGitCommit } from './git'
+import { type GitRunner, createGitRunner, fetchGitCommit, initGitRepository } from './git'
 import { type GitDependencyInstallerOptions, createGitDependencyInstaller } from './install'
 import { dependencyCacheKey } from './storage'
 
@@ -56,6 +56,30 @@ function createFixture(installerOptions?: GitDependencyInstallerOptions) {
     git(work, 'commit', '--quiet', '--no-verify', '-m', message)
     git(work, 'push', '--quiet', '--tags', bare, 'main')
     return git(work, 'rev-parse', 'HEAD')
+  }
+  /**
+   * Writes files and commits them with a commit object written as is (`hash-object --literally`), pushes.
+   * @param people author and committer lines
+   */
+  const commitLiterally = (files: Record<string, string>, people: string[]) => {
+    for (const [path, content] of Object.entries(files)) {
+      const file = join(work, path)
+      mkdirSync(dirname(file), { recursive: true })
+      writeFileSync(file, content)
+    }
+    git(work, 'add', '--all')
+    const tree = git(work, 'write-tree')
+    const parent = git(work, 'rev-parse', 'HEAD')
+    const content = [`tree ${tree}`, `parent ${parent}`, ...people, '', 'literally', ''].join('\n')
+    const sha = execFileSync('git', ['hash-object', '--literally', '-t', 'commit', '-w', '--stdin'], {
+      cwd: work,
+      env,
+      input: content,
+      encoding: 'utf8',
+    }).trim()
+    git(work, 'update-ref', 'refs/heads/main', sha)
+    git(work, 'push', '--quiet', bare, 'main')
+    return sha
   }
   /**
    * Adds a symbolic link to the index (portable: no symbolic link on the file system), commits and pushes.
@@ -132,6 +156,7 @@ function createFixture(installerOptions?: GitDependencyInstallerOptions) {
     git,
     commit,
     commitSymlink,
+    commitLiterally,
     tag,
     calls,
     cwds,
@@ -272,7 +297,7 @@ describe('GitDependencyInstaller', () => {
     f.calls.length = 0
     const updated = await f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { update: true })
     expect(updated).toMatchObject({ status: 'installed', cached: true, instance: { sha } })
-    expect(f.gitCommands()).toEqual(['ls-remote'])
+    expect(f.gitCommands()).toEqual(['init', 'config', 'config', 'config', 'ls-remote'])
   })
 
   it('changed ref in the config resolves only this record', async ({ expect }) => {
@@ -417,7 +442,15 @@ describe('GitDependencyInstaller', () => {
 
   it('installs the repository root when path is omitted', async ({ expect }) => {
     const f = await setup()
-    const sha = f.commit({ 'model.c4': 'model {}', 'likec4.config.json': '{"name":"root"}', 'a/b.c4': '' })
+    const sha = f.commit({
+      'model.c4': 'model {}',
+      'likec4.config.json': '{"name":"root"}',
+      'a/b.c4': '',
+      'a/likec4.config.json': '{}',
+      'README.md': '# root',
+      'likec4.config.ts': 'export default {}',
+      'upper.C4': 'model {}',
+    })
 
     const result = await f.installer.install({ git: URL, ref: 'main' })
     expect(result).toEqual({
@@ -552,6 +585,7 @@ describe('GitDependencyInstaller', () => {
     }
   })
 
+  // meaningful on case-insensitive file systems (macOS, Windows): the checkout of "ARCH" would succeed there
   it('requires the exact case of the path', async ({ expect }) => {
     const f = await setup()
     f.commit(BILLING_FILES)
@@ -578,22 +612,56 @@ describe('GitDependencyInstaller', () => {
     expect(f.calls).toEqual([])
   })
 
-  it('downloads only blobs of the path (partial clone)', async ({ expect }) => {
+  it('downloads only blobs of the sources of the path (partial clone)', async ({ expect }) => {
     const f = await setup()
-    f.commit({ ...BILLING_FILES, 'big/blob.txt': 'x'.repeat(100_000) })
+    f.commit({ ...BILLING_FILES, 'big/blob.txt': 'x'.repeat(100_000), 'arch/logo.png': 'png' })
     const blob = f.git(f.work, 'rev-parse', 'HEAD:big/blob.txt')
+    const logo = f.git(f.work, 'rev-parse', 'HEAD:arch/logo.png')
     const model = f.git(f.work, 'rev-parse', 'HEAD:arch/model.c4')
     const dir = join(f.root, 'checkout')
     mkdirSync(dir)
-    await fetchGitCommit(
-      f.realGit,
-      { remote: f.bare, what: 'refs/heads/main', shaLength: 40, subdir: 'arch', dir },
-      { cwd: f.root },
-    )
+    const options = { cwd: f.root }
+    await initGitRepository(f.realGit, { remote: f.bare, dir }, options)
+    await fetchGitCommit(f.realGit, { what: 'refs/heads/main', subdir: 'arch', dir }, options)
     const objects = f.git(dir, 'rev-list', '--objects', '--missing=print', 'HEAD')
     expect(objects).toContain(`?${blob}`)
+    expect(objects).toContain(`?${logo}`)
     expect(objects).not.toContain(`?${model}`)
     expect(existsSync(join(dir, 'big'))).toBe(false)
+    expect(existsSync(join(dir, 'arch', 'logo.png'))).toBe(false)
+  })
+
+  it('installs commits with harmless defects (no fsck)', async ({ expect }) => {
+    const f = await setup()
+    f.commit(BILLING_FILES)
+    // bad time zone and a missing space before the date
+    const sha = f.commitLiterally({ 'arch/model.c4': 'model { e = actor }' }, [
+      'author test <test@example.test> 1700000000 +0000x',
+      'committer test <test@example.test>1700000000 +0000',
+    ])
+    const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(result).toMatchObject({ status: 'installed', instance: { sha } })
+    expect((await f.storage.readEntry({ repository: REPOSITORY, sha, subdir: 'arch' }))?.files['model.c4'])
+      .toBe('model { e = actor }')
+  })
+
+  it('installs a nested path', async ({ expect }) => {
+    const f = await setup()
+    const sha = f.commit({
+      'a/b/likec4.config.json': '{"name":"nested"}',
+      'a/b/model.c4': 'model {}',
+      'a/other.c4': 'model {}',
+      'a/bc/other.c4': 'model {}',
+    })
+    const result = await f.installer.install({ git: URL, ref: 'main', path: 'a/b/' })
+    expect(result).toEqual({
+      status: 'installed',
+      instance: { repository: REPOSITORY, sha, subdir: 'a/b' },
+      files: 2,
+      cached: false,
+    })
+    const entry = await f.storage.readEntry({ repository: REPOSITORY, sha, subdir: 'a/b' })
+    expect(Object.keys(entry?.files ?? {}).sort()).toEqual(['likec4.config.json', 'model.c4'])
   })
 
   it('stores the URL as written, without credentials', async ({ expect }) => {
@@ -679,10 +747,11 @@ describe('GitDependencyInstaller', () => {
       f.commit(BILLING_FILES)
       const release = f.hold()
       const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
-      release()
       expect(result).toMatchObject({ status: 'failed', error: expect.stringContaining('timed out') })
+      release()
+      // the abandoned install cleans up in the background and writes nothing
+      await expect.poll(() => f.tempIsEmpty()).toBe(true)
       expect(await f.keys()).toEqual([])
-      expect(f.tempIsEmpty()).toBe(true)
     })
   })
 
