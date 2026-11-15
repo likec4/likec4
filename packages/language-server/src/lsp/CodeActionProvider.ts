@@ -41,6 +41,10 @@ export class LikeC4CodeActionProvider implements CodeActionProvider {
     params: CodeActionParams,
     _cancelToken?: CancellationToken,
   ): MaybePromise<CommandOrCodeAction[] | undefined> {
+    // Documents of external projects (dependencies) are read-only: no refactorings
+    if (this.services.shared.workspace.ProjectsLookup.isExternalDocument(document)) {
+      return undefined
+    }
     const root = document.parseResult.value.$cstNode
     if (!root) {
       return undefined

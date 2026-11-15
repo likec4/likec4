@@ -164,6 +164,59 @@ describe('ExternalProjects', () => {
     ])
   })
 
+  it('offers no previews or refactorings in documents of external projects', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const withView = `
+specification {
+  element component
+}
+model {
+  api = component 'API'
+}
+views {
+  view index {
+    include *
+  }
+}
+`
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/workspace/a/model.c4': withView,
+      'file:///test/shared/likec4.config.json': config({ name: 'shared-lib' }),
+      'file:///test/shared/model.c4': withView,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+
+    const { LangiumDocuments, ProjectsLookup } = t.services.shared.workspace
+    const { CodeLensProvider, CodeActionProvider } = t.services.lsp
+    const depDoc = LangiumDocuments.getDocument(URI.parse('likec4-dep://local/test/shared/-/model.c4'))!
+    const userDoc = LangiumDocuments.getDocument(URI.parse('file:///test/workspace/a/model.c4'))!
+    expect(depDoc).toBeDefined()
+    expect(userDoc).toBeDefined()
+    expect(ProjectsLookup.isExternalDocument(depDoc)).toBe(true)
+    expect(ProjectsLookup.isExternalDocument(userDoc)).toBe(false)
+
+    // no "open preview" / "save png" lenses with internal project ids
+    expect(await CodeLensProvider!.provideCodeLens(depDoc, { textDocument: { uri: depDoc.uri.toString() } })).toEqual(
+      [],
+    )
+    const userLenses = await CodeLensProvider!.provideCodeLens(userDoc, {
+      textDocument: { uri: userDoc.uri.toString() },
+    })
+    expect(userLenses?.map(l => l.command?.arguments)).toEqual([['index', 'a'], ['index', 'a']])
+
+    // no refactorings ("Safe delete", "Preview removal impact") on elements of an external project
+    const apiOffset = (doc: LangiumDocument) => doc.textDocument.positionAt(doc.textDocument.getText().indexOf('api ='))
+    const actionsAt = (doc: LangiumDocument) =>
+      CodeActionProvider!.getCodeActions(doc, {
+        textDocument: { uri: doc.uri.toString() },
+        range: { start: apiOffset(doc), end: apiOffset(doc) },
+        context: { diagnostics: [] },
+      })
+    expect(await actionsAt(depDoc)).toBeUndefined()
+    expect(await actionsAt(userDoc)).not.toHaveLength(0)
+  })
+
   it('shares one instance between consumers of the same folder', async ({ create, expect }) => {
     const t = create({ workspace: 'file:///test/workspace' })
     mockFileSystem(t, {

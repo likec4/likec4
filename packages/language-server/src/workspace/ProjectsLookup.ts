@@ -36,6 +36,14 @@ export class ProjectsLookup {
   }
 
   /**
+   * Checks if the document belongs to an external project (a dependency outside of the workspace).
+   * Such documents are read-only sources of elements: no views, previews or refactorings are offered for them.
+   */
+  isExternalDocument(document: DocOrUri): boolean {
+    return isDependencyDocument(document)
+  }
+
+  /**
    * Determines which project the given document belongs to.
    * Documents with the `likec4-dep` scheme belong to the external project derived from the URI
    * (ProjectsManager is not asked about them).
