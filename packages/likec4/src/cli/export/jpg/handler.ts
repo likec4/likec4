@@ -12,7 +12,7 @@ import type { Argv } from 'yargs'
 import { createLikeC4Logger } from '../../../logger'
 import { ensurePlaywright, ensureReact } from '../../ensure-libs'
 import { appConfig, customization, path, project, useDotBin, withoutDefault } from '../../options'
-import { type PngExportArgs, resolveImageExportConfig, runExportPng } from '../png/handler'
+import { type PngExportArgs, notationPanelOptions, resolveImageExportConfig, runExportPng } from '../png/handler'
 
 /** CLI entry: create logger and delegate to runExportPng with format=jpeg. */
 export async function jpgHandler(args: PngExportArgs): Promise<void> {
@@ -115,6 +115,7 @@ export function jpgCmd(yargs: Argv) {
             desc: 'include view notation in exported JPEG files',
             default: false,
           },
+          ...notationPanelOptions,
           'description': {
             boolean: true,
             desc: 'include view description in exported JPEG files',
@@ -158,6 +159,8 @@ export function jpgCmd(yargs: Argv) {
           format: 'jpeg',
           quality: args.quality,
           notation: args.notation,
+          notationPosition: args['notation-position'],
+          notationText: args['notation-text'],
           description: args.description,
         } satisfies PngExportArgs,
       )
