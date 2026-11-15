@@ -36,11 +36,11 @@ describe('dependencies contracts', () => {
   describe('cache keys', () => {
     it('builds keys of instances', ({ expect }) => {
       expect(dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: SHA, subdir: '' }))
-        .toBe(`instances:github.com:my-org:billing:${SHA}:@`)
+        .toBe(`instances:github.com:my-org:billing:@:${SHA}:@`)
       expect(dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: SHA, subdir: './docs/arch/' }))
-        .toBe(`instances:github.com:my-org:billing:${SHA}:@docs%2farch`)
+        .toBe(`instances:github.com:my-org:billing:@:${SHA}:@docs%2farch`)
       expect(dependencyCacheKey({ repository: 'example.com:2222/group/sub/repo', sha: SHA, subdir: 'a:b?c' }))
-        .toBe(`instances:example.com%3a2222:group:sub:repo:${SHA}:@a%3ab%3fc`)
+        .toBe(`instances:example.com%3a2222:group:sub:repo:@:${SHA}:@a%3ab%3fc`)
     })
 
     it('gives distinct keys to distinct instances', ({ expect }) => {
@@ -62,9 +62,11 @@ describe('dependencies contracts', () => {
     })
 
     it('builds keys of the version index', ({ expect }) => {
-      expect(dependencyVersionKey('github.com/my-org/billing', 'main')).toBe('versions:github.com:my-org:billing:main')
+      expect(dependencyVersionKey('github.com/my-org/billing', 'main')).toBe(
+        'versions:github.com:my-org:billing:@:main',
+      )
       expect(dependencyVersionKey('github.com/my-org/billing', 'release/1.0'))
-        .toBe('versions:github.com:my-org:billing:release%2f1.0')
+        .toBe('versions:github.com:my-org:billing:@:release%2f1.0')
       expect(() => dependencyVersionKey('github.com/my-org/billing', '')).toThrow()
     })
 
@@ -72,7 +74,7 @@ describe('dependencies contracts', () => {
       const versionKeys = ['main', 'Main', 'MAIN', '^main', '%5Emain'].map(ref =>
         dependencyVersionKey('github.com/My-Org/billing', ref)
       )
-      expect(versionKeys[1]).toBe('versions:github.com:^my-^org:billing:^main')
+      expect(versionKeys[1]).toBe('versions:github.com:^my-^org:billing:@:^main')
       expect(new Set(versionKeys.map(k => k.toLowerCase())).size).toBe(versionKeys.length)
       for (const key of versionKeys) {
         expect(key).toBe(key.toLowerCase())
@@ -80,7 +82,7 @@ describe('dependencies contracts', () => {
       const instanceKeys = ['Docs', 'docs', 'a/B'].map(subdir =>
         dependencyCacheKey({ repository: 'github.com/My-Org/Billing', sha: SHA, subdir })
       )
-      expect(instanceKeys[0]).toBe(`instances:github.com:^my-^org:^billing:${SHA}:@^docs`)
+      expect(instanceKeys[0]).toBe(`instances:github.com:^my-^org:^billing:@:${SHA}:@^docs`)
       expect(new Set(instanceKeys.map(k => k.toLowerCase())).size).toBe(instanceKeys.length)
     })
 
@@ -112,12 +114,44 @@ describe('dependencies contracts', () => {
         }
       }
       expect(new Set(keys).size).toBe(keys.length)
-      expect(dependencyVersionKey('host.com/con/b', 'a*b.')).toBe('versions:host.com:%63on:b:a%2ab%2e')
+      expect(dependencyVersionKey('host.com/con/b', 'a*b.')).toBe('versions:host.com:%63on:b:@:a%2ab%2e')
       // escaped forms do not collide with literal input
       const lookalikes = ['con', '%63on', 'a.', 'a%2e', 'a*', 'a%2a'].map(ref =>
         dependencyVersionKey('host.com/a/b', ref)
       )
       expect(new Set(lookalikes).size).toBe(lookalikes.length)
+    })
+
+    it('never gives a key that is a strict prefix of another key (leaf vs folder)', ({ expect }) => {
+      const repositories = [
+        'host/a/b',
+        'host/a/b/main',
+        'host/a/b/main/x',
+        `host/a/b/${SHA}`,
+        `host/a/b/${SHA}/@`,
+        'host/a/b/@',
+        'host/a/b/@docs',
+        'host/a/@/b',
+        'host/a/b/versions',
+        'host/a/b/instances',
+      ]
+      const refs = ['main', 'x', '@', SHA, 'main/x', '@docs']
+      const subdirs = ['', 'docs', '@', 'main', SHA]
+      const keys = [
+        ...repositories.flatMap(repository => refs.map(ref => dependencyVersionKey(repository, ref))),
+        ...repositories.flatMap(repository =>
+          subdirs.map(subdir => dependencyCacheKey({ repository, sha: SHA, subdir }))
+        ),
+        ...repositories.map(repository => dependencyCacheKey({ repository, sha: SHA2, subdir: '' })),
+      ]
+      expect(new Set(keys).size).toBe(keys.length)
+      for (const key of keys) {
+        for (const other of keys) {
+          expect(other.startsWith(`${key}:`), `${key} is a folder of ${other}`).toBe(false)
+        }
+      }
+      // encoded segments never equal the marker
+      expect(dependencyVersionKey('host/@/b', '@')).toBe('versions:host:%40:b:@:%40')
     })
 
     it('requires full SHAs in keys and version records', async ({ expect }) => {

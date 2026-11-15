@@ -56,6 +56,14 @@ export function encodeKeySegment(segment: string): string {
 }
 
 /**
+ * Segment that separates the repository segments from the rest of a key.
+ * Encoded segments never equal it (`@` is always escaped as `%40` by {@link encodeKeySegment}),
+ * so a key is never a strict `:`-prefix of another key: a leaf (file) never collides with a folder of the `fs-lite`
+ * driver or of a client storage that maps keys to paths.
+ */
+export const KEY_REPOSITORY_END = '@'
+
+/**
  * Key segments of the repository identity (`host[:port]/path`): one encoded segment per path segment.
  */
 export function repositoryKeySegments(repository: string): string[] {
@@ -68,17 +76,18 @@ export function repositoryKeySegments(repository: string): string[] {
  * Key of the installed instance (the triple "repository, SHA, subdirectory") in the dependency storage:
  *
  * ```
- * instances:<host[:port]>:<repository path segments>:<sha>:@<subdir>
+ * instances:<host[:port]>:<repository path segments>:@:<sha>:@<subdir>
  * ```
  *
  * Each segment is encoded with {@link encodeKeySegment} (`:` of the port is `%3a`, `/` of the subdirectory is `%2f`,
  * upper case letters are prefixed with `^`), the subdirectory segment is `@` for the repository root.
- * The last two segments are always the SHA and the subdirectory, so keys are unambiguous.
+ * The marker {@link KEY_REPOSITORY_END} ends the repository segments (they never equal it),
+ * followed by exactly the SHA and the subdirectory: keys are unambiguous and prefix-free.
  *
  * @example
  * ```ts
  * dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: '<full sha>', subdir: 'docs/arch' })
- * // instances:github.com:my-org:billing:<sha>:@docs%2farch
+ * // instances:github.com:my-org:billing:@:<sha>:@docs%2farch
  * ```
  */
 export function dependencyCacheKey(instance: GitDependencyInstance): string {
@@ -87,6 +96,7 @@ export function dependencyCacheKey(instance: GitDependencyInstance): string {
   return [
     DEPENDENCY_INSTANCES_PREFIX,
     ...repositoryKeySegments(instance.repository),
+    KEY_REPOSITORY_END,
     instance.sha,
     `@${fileSafeEncode(subdir)}`,
   ].join(':')

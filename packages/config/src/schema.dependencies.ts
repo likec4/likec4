@@ -1,5 +1,5 @@
 import z from 'zod/v4'
-import { parseGitRepositoryUrl } from './git-url'
+import { hasGitUrlCredentials, parseGitRepositoryUrl } from './git-url'
 import { RELATIVE_PATH_REGEX } from './schema.include'
 
 /**
@@ -64,14 +64,20 @@ const DependencyPathSchema = z
 
 const GIT_URL_ERROR = 'Git dependency URL must use https://, ssh:// or git@host:org/repo.git'
 
+// Coarse check of the URL form, exported to the JSON schema (so editors flag obvious mistakes, e.g. "http://").
+// The authoritative check is parseGitRepositoryUrl.
+const GIT_URL_FORM_REGEX = /^(?:[Hh][Tt][Tt][Pp][Ss]:\/\/|[Ss][Ss][Hh]:\/\/|(?:[A-Za-z0-9._~-]+@)?[^/:\s@]+:(?![/:]))/
+
 const GitUrlSchema = z
   .string({
     error: (issue) => issue.input === undefined ? 'Git dependency URL is required' : GIT_URL_ERROR,
   })
   .trim()
-  .refine((value) => value.length > 0, {
+  .min(1, { abort: true, error: 'Git dependency URL cannot be empty' })
+  .regex(GIT_URL_FORM_REGEX, { abort: true, error: GIT_URL_ERROR })
+  .refine((value) => !hasGitUrlCredentials(value), {
     abort: true,
-    error: 'Git dependency URL cannot be empty',
+    error: 'Git dependency URL must not contain credentials, use a git credential helper or SSH keys instead',
   })
   .refine((value) => parseGitRepositoryUrl(value) !== undefined, {
     error: GIT_URL_ERROR,
@@ -83,8 +89,32 @@ const GitUrlSchema = z
     ].join('\n'),
   })
 
-// eslint-disable-next-line no-control-regex
-const INVALID_REF_REGEX = /^-|[\s\x00-\x1f\x7f]/
+/**
+ * Checks a git ref against the rules of `git check-ref-format` (and rejects refs that look like options):
+ * no whitespace, control characters, `~ ^ : ? * [ \`, `..`, `@{` or `//`,
+ * does not start with `-` or `/`, does not end with `/`, `.` or `.lock`,
+ * no component starts with `.`, and it is not `@`.
+ */
+function isValidGitRef(ref: string): boolean {
+  switch (true) {
+    // eslint-disable-next-line no-control-regex
+    case /[\s\x00-\x1f\x7f~^:?*[\\]/.test(ref):
+    case ref.includes('..') || ref.includes('@{') || ref.includes('//'):
+    case ref.startsWith('-') || ref.startsWith('/'):
+    case ref.endsWith('/') || ref.endsWith('.') || ref.endsWith('.lock'):
+    case ref.split('/').some(component => component.startsWith('.')):
+    case ref === '@':
+      return false
+    default:
+      return true
+  }
+}
+
+const GIT_REF_ERROR = [
+  'Git dependency ref must be a branch, a tag or a commit SHA',
+  '(no whitespace, "~", "^", ":", "?", "*", "[", "\\", "..", "@{",',
+  'cannot start with "-" or "/", cannot end with "/", "." or ".lock")',
+].join(' ')
 
 const GitRefSchema = z
   .string({
@@ -92,12 +122,9 @@ const GitRefSchema = z
       issue.input === undefined ? 'Git dependency ref is required' : 'Git dependency ref must be a string',
   })
   .trim()
-  .refine((value) => value.length > 0, {
-    abort: true,
-    error: 'Git dependency ref cannot be empty',
-  })
-  .refine((value) => !INVALID_REF_REGEX.test(value), {
-    error: 'Git dependency ref must be a branch, a tag or a commit SHA (no whitespace, cannot start with "-")',
+  .min(1, { abort: true, error: 'Git dependency ref cannot be empty' })
+  .refine(isValidGitRef, {
+    error: GIT_REF_ERROR,
   })
   .meta({
     description: 'Git ref: a branch, a tag or a commit SHA',
@@ -109,10 +136,7 @@ const GIT_PATH_ERROR =
 const GitPathSchema = z
   .string({ error: GIT_PATH_ERROR })
   .overwrite(normalizeSeparators)
-  .refine((value) => value.length > 0, {
-    abort: true,
-    error: 'Git dependency path cannot be empty, omit it for the repository root',
-  })
+  .min(1, { abort: true, error: 'Git dependency path cannot be empty, omit it for the repository root' })
   .regex(RELATIVE_PATH_REGEX, GIT_PATH_ERROR)
   .regex(NO_DRIVE_LETTER_REGEX, GIT_PATH_ERROR)
   .refine((value) => !value.split('/').includes('..'), {

@@ -114,6 +114,25 @@ describe('dependencies config', () => {
       )
     })
 
+    it.for([
+      'https://user:token@github.com/my-org/billing.git',
+      'https://:ghp_token@github.com/my-org/billing.git',
+      'ssh://git:secret@github.com/my-org/billing.git',
+    ])('should reject URL with credentials %s', (url, { expect }) => {
+      expect(() => git({ git: url, ref: 'v1' })).toThrow(
+        'Git dependency URL must not contain credentials, use a git credential helper or SSH keys instead',
+      )
+    })
+
+    it.for([
+      'https://user@github.com/my-org/billing.git',
+      'ssh://git@github.com/my-org/billing.git',
+      'git@github.com:my-org/billing.git',
+      'github.com:my-org/billing.git',
+    ])('should accept URL with a user name only %s', (url, { expect }) => {
+      expect(git({ git: url, ref: 'v1' })).toEqual({ git: url, ref: 'v1' })
+    })
+
     it('should reject empty URL', ({ expect }) => {
       expect(() => git({ git: '', ref: 'v1' })).toThrow(/Git dependency URL cannot be empty/)
       expect(() => git({ git: '   ', ref: 'v1' })).toThrow(/Git dependency URL cannot be empty/)
@@ -140,10 +159,43 @@ describe('dependencies config', () => {
     })
 
     it.for([
+      'main',
+      'v1.2.0',
+      'feature/billing-api',
+      'release/2026.11',
+      'refs/tags/v1.2.0',
+      '0123456789abcdef0123456789abcdef01234567',
+      'f'.repeat(64),
+      'v1@2',
+    ])('should accept ref %s', (ref, { expect }) => {
+      expect(git({ git: 'git@github.com:my-org/billing.git', ref })).toEqual({
+        git: 'git@github.com:my-org/billing.git',
+        ref,
+      })
+    })
+
+    it.for([
       '--upload-pack=evil',
       '-b',
       'feature branch',
       'v1\n2',
+      'main:refs/heads/evil',
+      'v1..v2',
+      'main~1',
+      'main^',
+      'feat?',
+      'feat*',
+      'feat[1]',
+      'feat\\x',
+      'main@{1}',
+      '@',
+      'feature.lock',
+      'feature/',
+      '/feature',
+      'feature//x',
+      'feature.',
+      '.hidden',
+      'feature/.hidden',
     ])('should reject ref %j', (ref, { expect }) => {
       expect(() => git({ git: 'git@github.com:my-org/billing.git', ref })).toThrow(
         /Git dependency ref must be a branch, a tag or a commit SHA/,
@@ -310,13 +362,23 @@ describe('dependencies config', () => {
       expect(schemaJson.$defs.GitDependencySource).toMatchObject({
         type: 'object',
         properties: {
-          git: { type: 'string' },
-          ref: { type: 'string' },
-          path: { type: 'string' },
+          git: { type: 'string', minLength: 1, pattern: expect.any(String) },
+          ref: { type: 'string', minLength: 1 },
+          path: { type: 'string', minLength: 1 },
         },
         required: ['git', 'ref'],
         additionalProperties: false,
       })
+      // The coarse pattern of the URL flags obvious mistakes in editors
+      const pattern = new RegExp(schemaJson.$defs.GitDependencySource.properties.git.pattern)
+      expect(pattern.test('git@github.com:my-org/billing.git')).toBe(true)
+      expect(pattern.test('github.com:my-org/billing.git')).toBe(true)
+      expect(pattern.test('https://github.com/my-org/billing.git')).toBe(true)
+      expect(pattern.test('ssh://git@github.com/my-org/billing.git')).toBe(true)
+      expect(pattern.test('http://github.com/my-org/billing.git')).toBe(false)
+      expect(pattern.test('file:///repos/billing.git')).toBe(false)
+      expect(pattern.test('git://github.com/my-org/billing.git')).toBe(false)
+      expect(pattern.test('ext::sh -c evil')).toBe(false)
     })
   })
 })

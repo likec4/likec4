@@ -2,7 +2,7 @@ import { invariant } from '@likec4/core/utils'
 import { isPlainObject } from 'remeda'
 import type { Storage } from 'unstorage'
 import { isFullGitSha } from '../workspace/dependency-uri'
-import { encodeKeySegment, repositoryKeySegments } from './storage'
+import { encodeKeySegment, KEY_REPOSITORY_END, repositoryKeySegments } from './storage'
 import type { DependencyVersionRecord } from './types'
 
 /**
@@ -14,21 +14,24 @@ export const DEPENDENCY_VERSIONS_PREFIX = 'versions'
  * Key of the version index record of a ref of a repository:
  *
  * ```
- * versions:<host[:port]>:<repository path segments>:<ref>
+ * versions:<host[:port]>:<repository path segments>:@:<ref>
  * ```
  *
- * Each segment is encoded with {@link encodeKeySegment} (`release/1.0` is `release%2f1.0`, `Main` is `^main`),
- * the ref is always the last segment.
+ * Each segment is encoded with {@link encodeKeySegment} (`release/1.0` is `release%2f1.0`, `Main` is `^main`).
+ * The marker {@link KEY_REPOSITORY_END} ends the repository segments (they never equal it),
+ * the ref is the only segment after it: keys are unambiguous and prefix-free
+ * (`versions:host:a:b:@:main` is a file, the refs of `host/a/b/main` live under `versions:host:a:b:main:@`).
  *
  * @example
  * ```ts
- * dependencyVersionKey('github.com/my-org/billing', 'main') // versions:github.com:my-org:billing:main
+ * dependencyVersionKey('github.com/my-org/billing', 'main') // versions:github.com:my-org:billing:@:main
  * ```
  */
 export function dependencyVersionKey(repository: string, ref: string): string {
   return [
     DEPENDENCY_VERSIONS_PREFIX,
     ...repositoryKeySegments(repository),
+    KEY_REPOSITORY_END,
     encodeKeySegment(ref),
   ].join(':')
 }
