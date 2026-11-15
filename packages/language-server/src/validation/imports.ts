@@ -183,7 +183,11 @@ function statesSnapshot(states: ReadonlyArray<DependencyState>): string {
  * - waits for running builds (read-lock), then relinks under the write-lock;
  *   if the write is cancelled before it starts, the consumers are queued again.
  *
- * Snapshots of deleted documents are dropped. Subscriptions are disposed with `DependencyStates`.
+ * The producer of states (`DependencyStates`) changes them only under the workspace write-lock
+ * (before it relinks), so snapshots recorded during one build are consistent with each other.
+ *
+ * Snapshots of deleted documents and of documents without imports are dropped.
+ * Subscriptions are disposed with `DependencyStates`.
  */
 function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStatesTracker {
   const existing = trackers.get(shared)
@@ -234,7 +238,7 @@ function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStates
       if (!recorded || !consumers.has(recorded.consumer) || lookup.isExcluded(doc)) {
         continue
       }
-      const consumer = lookup.ownerProjectId(doc)
+      const consumer = projectIdFrom(doc)
       const snapshot = snapshotOf(consumer)
       if (consumer === recorded.consumer && recorded.snapshot === snapshot) {
         continue
@@ -278,6 +282,11 @@ function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStates
     states.onDidChange(({ consumers }) => {
       consumers.forEach(c => pending.add(c))
       schedule()
+    }),
+    shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, doc => {
+      if (isLikeC4UserDocument(doc) && doc.parseResult.value.imports.length === 0) {
+        seen.delete(doc.uri.toString())
+      }
     }),
     shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
       for (const uri of deleted) {

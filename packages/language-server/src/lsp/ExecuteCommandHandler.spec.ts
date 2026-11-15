@@ -149,6 +149,22 @@ describe('install dependencies command', () => {
     expect(window.showErrorMessage).toHaveBeenCalledWith(`LikeC4: Failed to install dependency 'billing': boom`)
   })
 
+  it('reports an installer that throws synchronously as failed', async ({ expect }) => {
+    await using t = await gitDependencyWorkspace({
+      install: () => {
+        throw new Error('sync boom')
+      },
+    })
+    t.setState(notInstalled('consumer'), true)
+    const handler = t.services.shared.lsp.ExecuteCommandHandler
+
+    const { results } = await handler.installDependencies()
+    expect(results).toMatchObject([{ result: { status: 'failed', error: 'sync boom' } }])
+    // The install is settled: a later call runs the installer again
+    await handler.installDependencies()
+    expect(t.install).toHaveBeenCalledTimes(2)
+  })
+
   it('joins a running install: concurrent calls run the installer once', async ({ expect }) => {
     const result = deferred<DependencyInstallResult>()
     await using t = await gitDependencyWorkspace({

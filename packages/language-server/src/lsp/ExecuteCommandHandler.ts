@@ -264,8 +264,10 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
       return running
     }
     const installer = this.shared.dependencies.Installer
+    // A synchronous throw of the installer becomes a failed result too
     const run = () =>
-      installer.install(source, { update })
+      Promise.resolve()
+        .then(() => installer.install(source, { update }))
         .catch((error: unknown): DependencyInstallResult => ({
           // The installer never throws by the contract, but be defensive
           status: 'failed',
@@ -284,7 +286,8 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
       reported: new Set(),
     }
     this.#installs.set(key, entry)
-    void entry.promise.finally(() => {
+    // Removed after the owner synced: later calls join and wait for the sync instead of installing again
+    void entry.settled.then(() => {
       if (this.#installs.get(key) === entry) {
         this.#installs.delete(key)
       }
