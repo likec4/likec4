@@ -710,24 +710,19 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     // Deleted documents are removed synchronously, before the first await of the update
     const update = this.documentBuilder.update(consumerDocs, deleted, cancelToken)
     // Add documents that are not in the workspace (decided by actual presence)
-    const addedGitDocuments = [] as URI[]
     for (const [uri, text] of nextFiles) {
       const docUri = URI.parse(uri)
       if (!this.langiumDocuments.hasDocument(docUri)) {
         this.langiumDocuments.addDocument(this.documentFactory.fromString(text, docUri))
-        const owner = externalProjects.ownerProjectId(docUri)
-        if (owner && next.get(owner)?.git) {
-          addedGitDocuments.push(docUri)
-        }
       }
     }
     // States of git dependencies, before relinking consumers (diagnostics of this build see them),
     // fired after the write-lock is released (see runExternalProjectsSync)
     this.updateDependencyStates({ notify: false })
-    // Content of replaced, removed or installed documents changed: editors showing them re-request it
-    // (documents of git instances never change, they are only added or removed)
-    if (deleted.length > 0 || addedGitDocuments.length > 0) {
-      this.refreshDependencyDocuments([...deleted, ...addedGitDocuments])
+    // Content of replaced or removed documents changed: editors showing them re-request it
+    // (added documents are served once registered: the content provider waits for the sync)
+    if (deleted.length > 0) {
+      this.refreshDependencyDocuments(deleted)
     }
     // Builds added documents and relinks consumers
     await update

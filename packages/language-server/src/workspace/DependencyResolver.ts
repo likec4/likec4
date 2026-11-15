@@ -132,7 +132,8 @@ export class DependencyResolver {
     source: GitDependencySource,
   ): ResolvedDependencyWithMeta | undefined {
     const externalProjects = this.services.workspace.ExternalProjects
-    const resolution = externalProjects.gitResolution(consumer, name)
+    // The resolution must be of the current source: the config may have changed after the last sync
+    const resolution = externalProjects.gitResolutionFor(consumer, name, source)
     if (resolution?.status !== 'installed') {
       return undefined
     }

@@ -618,7 +618,7 @@ export class ExternalProjects extends ADisposable {
    */
   dependencyStates(): DependencyState[] {
     const langiumDocuments = this.services.workspace.LangiumDocuments
-    const supported = this.services.dependencies.Installer.supported
+    const notInstalled = this.notInstalledStatus()
     const errorsByProject = new Map<ExternalProjectId, number>()
     const filesWithErrors = (project: ExternalProject): number => {
       let count = errorsByProject.get(project.id)
@@ -649,7 +649,8 @@ export class ExternalProjects extends ADisposable {
         }
       }
       return {
-        status: resolution.status === 'unsupported' || !supported ? 'unsupported' : 'not-installed',
+        // Installed, but the instance is not registered (should not happen): as not installed
+        status: resolution.status === 'installed' ? notInstalled : resolution.status,
         consumer,
         name,
         source,
@@ -722,34 +723,38 @@ export class ExternalProjects extends ADisposable {
       return { projects: [], resolutions: [] }
     }
     const storage = this.services.dependencies.Storage
-    const notInstalled = this.services.dependencies.Installer.supported ? 'not-installed' : 'unsupported'
+    const notInstalled = this.notInstalledStatus()
 
-    // Version index: one read per (repository, ref)
-    const versions = new Map<string, Promise<DependencyVersionRecord | undefined>>()
-    const readVersion = (target: GitDependencyTarget) => {
+    // Version index: one read per (repository, ref), in parallel.
+    // `failed` - the storage could not be read (not the same as "no version")
+    type VersionRead = DependencyVersionRecord | undefined | 'failed'
+    const versions = new Map<string, Promise<VersionRead>>()
+    const readVersion = (target: GitDependencyTarget): Promise<VersionRead> => {
       const key = JSON.stringify([target.repository, target.source.ref])
       let version = versions.get(key)
       if (!version) {
-        version = storage.readVersion(target.repository, target.source.ref).catch(error => {
-          logger.warn(`Failed to read the version of {repository}@{ref}`, {
+        version = storage.readVersion(target.repository, target.source.ref).catch((error): VersionRead => {
+          logger.warn(`Failed to read the version of {repository}@{ref}, the previous state is kept`, {
             repository: target.repository,
             ref: target.source.ref,
             error,
           })
-          return undefined
+          return 'failed'
         })
         versions.set(key, version)
       }
       return version
     }
+    const versionReads = await Promise.all(targets.map(readVersion))
 
     const instances = new Map<ExternalProjectId, GitDependencyInstance>()
-    const resolved = [] as Array<{ target: GitDependencyTarget; projectId: ExternalProjectId | undefined }>
-    for (const target of targets) {
-      const version = await readVersion(target)
+    const resolved = targets.map((target, index) => {
+      const version = versionReads[index]
+      if (version === 'failed') {
+        return { target, projectId: 'failed' as const }
+      }
       if (!version) {
-        resolved.push({ target, projectId: undefined })
-        continue
+        return { target, projectId: undefined }
       }
       const instance: GitDependencyInstance = {
         repository: target.repository,
@@ -758,26 +763,48 @@ export class ExternalProjects extends ADisposable {
       }
       const projectId = externalProjectIdOfGitInstance(instance)
       instances.set(projectId, instance)
-      resolved.push({ target, projectId })
-    }
+      return { target, projectId }
+    })
 
     // Installed instances, with one batch request
     const toRead = [...instances.entries()]
-    let entries = [] as Array<DependencyCacheEntry | undefined>
-    try {
-      entries = await storage.readEntries(toRead.map(([, instance]) => instance))
-    } catch (error) {
-      logger.warn('Failed to read git dependencies from the dependency storage', { error })
+    let entries: Array<DependencyCacheEntry | undefined> | 'failed' = []
+    if (toRead.length > 0) {
+      try {
+        entries = await storage.readEntries(toRead.map(([, instance]) => instance))
+      } catch (error) {
+        logger.warn('Failed to read git dependencies from the dependency storage, the previous state is kept', {
+          error,
+        })
+        entries = 'failed'
+      }
     }
     const projects = new Map<ExternalProjectId, ExternalProject>()
-    for (const [index, [id, instance]] of toRead.entries()) {
-      const entry = entries[index]
-      if (entry) {
-        projects.set(id, this.gitProject(instance, entry))
+    if (entries !== 'failed') {
+      for (const [index, [id, instance]] of toRead.entries()) {
+        const entry = entries[index]
+        if (entry) {
+          projects.set(id, this.gitProject(instance, entry))
+        }
       }
     }
 
     const resolutions = resolved.map(({ target, projectId }): GitDependencyResolution => {
+      if (projectId === 'failed' || (projectId && entries === 'failed')) {
+        // The storage could not be read: keep the previous resolution (and its instance) of the same source
+        const previous = this.gitResolution(target.consumer, target.name)
+        if (previous && gitTargetKey(previous.target) === gitTargetKey(target)) {
+          const registered = previous.status === 'installed' ? this.#projects.get(previous.projectId) : undefined
+          if (registered) {
+            projects.set(registered.id, registered)
+            return { ...previous, target }
+          }
+          if (previous.status !== 'installed') {
+            return { ...previous, target }
+          }
+        }
+        return { status: notInstalled, target }
+      }
       const project = projectId ? projects.get(projectId) : undefined
       if (project?.git) {
         return { status: 'installed', target, instance: project.git, projectId: project.id }
@@ -788,6 +815,40 @@ export class ExternalProjects extends ADisposable {
       logger.debug`loaded ${projects.size} git dependency instances`
     }
     return { projects: [...projects.values()], resolutions }
+  }
+
+  /**
+   * Status of a git dependency that is not installed:
+   * `unsupported` if the host cannot install dependencies (e.g. browser), `not-installed` otherwise
+   */
+  protected notInstalledStatus(): 'not-installed' | 'unsupported' {
+    return this.services.dependencies.Installer.supported ? 'not-installed' : 'unsupported'
+  }
+
+  /**
+   * Resolution of the git dependency `name` of the consumer, if it was resolved for the given source
+   * (repository, ref and subdirectory). Undefined if the config changed after the last sync
+   * (until the next sync resolves the new source).
+   */
+  gitResolutionFor(
+    consumer: ProjectId,
+    name: string,
+    source: GitDependencySource,
+  ): GitDependencyResolution | undefined {
+    const resolution = this.gitResolution(consumer, name)
+    if (!resolution) {
+      return undefined
+    }
+    try {
+      const target = resolution.target
+      return parseGitRepositoryUrl(source.git)?.id === target.repository
+          && source.ref === target.source.ref
+          && normalizeGitSubdir(source.path) === target.subdir
+        ? resolution
+        : undefined
+    } catch {
+      return undefined
+    }
   }
 
   /**
