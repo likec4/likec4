@@ -471,6 +471,7 @@ export function inlineText(value?: string) {
     invariant(isString(v), 'Value must be a string - got ' + typeof v)
     const escapedValue = v
       .replace(/(\r?\n|\t)+/g, ' ')
+      .replaceAll('\\', '\\\\')
       .replaceAll(QUOTE, ESCAPED_QUOTE)
       .trim()
     out.append(`${QUOTE}${escapedValue}${QUOTE}`)
@@ -480,9 +481,7 @@ export function inlineText(value?: string) {
 function multilineText(value: string, quotes = QUOTE): AnyOp {
   return merge(
     print(quotes),
-    indent(
-      value.replaceAll(QUOTE, ESCAPED_QUOTE),
-    ),
+    indent(value.replaceAll('\\', '\\\\').replaceAll(QUOTE, ESCAPED_QUOTE)),
     print(quotes),
   )
 }
