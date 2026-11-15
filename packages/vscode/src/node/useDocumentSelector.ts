@@ -39,6 +39,7 @@ const useDocumentSelector = defineService(() => {
       return old ?? [
         { language: languageId, scheme: 'file', pattern: globPattern },
         { language: languageId, scheme: 'vscode-remote', pattern: globPattern },
+        { language: languageId, scheme: 'likec4-dep' },
       ]
     }
   })

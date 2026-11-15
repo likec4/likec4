@@ -2,13 +2,19 @@ import type { ProjectId } from '@likec4/core'
 import { URI } from 'langium'
 import { describe, it } from 'vitest'
 import { createMultiProjectTestServices } from '../test'
-import { type ExternalProject, externalProjectId, isExternalProjectId } from './ExternalProjects'
+import {
+  type ExternalProject,
+  externalProjectId,
+  externalProjectIdOfFolder,
+  isExternalProjectId,
+} from './ExternalProjects'
 import { type NormalizedUri, ProjectFolder } from './ProjectsManager'
 
 function externalProject(key: string, folder: string, files: Record<string, string>): ExternalProject {
   const folderUri = URI.parse(ProjectFolder(folder))
   return {
-    id: externalProjectId(key),
+    // ids of local instances are derived from the folder, as the owner of their likec4-dep documents
+    id: externalProjectIdOfFolder(folder),
     folder: ProjectFolder(folder),
     folderUri,
     configUri: URI.parse(`${ProjectFolder(folder)}likec4.config.json`),
@@ -49,22 +55,23 @@ describe('project dependencies contracts', () => {
       const external = services.shared.workspace.ExternalProjects
       const docUri = 'likec4-dep://local/deps/shared/-/model.c4'
       const project = externalProject('shared', 'file:///deps/shared', { [docUri]: 'model {}' })
+      const id = '#file:///deps/shared'
       let changes = 0
       external.onDidChange(() => changes++)
 
       external.register(project)
-      expect(external.has('#shared')).toBe(true)
-      expect(external.get('#shared')).toBe(project)
-      expect(external.ownerProjectId(URI.parse(docUri))).toBe('#shared')
+      expect(external.has(id)).toBe(true)
+      expect(external.get(id)).toBe(project)
+      expect(external.ownerProjectId(URI.parse(docUri))).toBe(id)
       expect(external.ownerOf(docUri)).toBe(project)
       expect(external.readFile(docUri)).toBe('model {}')
       expect(external.findByFolder('file:///deps/shared')).toBe(project)
-      expect(external.documents('#shared').map(String)).toEqual([docUri])
+      expect(external.documents(id).map(String)).toEqual([docUri])
 
-      expect(external.unregister('#shared')).toBe(project)
-      expect(external.has('#shared')).toBe(false)
-      // not registered: the owner is derived from the URI
-      expect(external.ownerProjectId(docUri)).toBe('#file:///deps/shared')
+      expect(external.unregister(id)).toBe(project)
+      expect(external.has(id)).toBe(false)
+      // not registered: the same owner, derived from the URI
+      expect(external.ownerProjectId(docUri)).toBe(id)
       expect(external.ownerOf(docUri)).toBeUndefined()
       expect(external.ownerProjectId('file:///deps/shared/model.c4')).toBeUndefined()
       expect(changes).toBe(2)

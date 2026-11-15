@@ -43,7 +43,7 @@ export class ProjectsLookup {
    */
   ownerProjectId(document: DocOrUri): ProjectId {
     if (isDependencyDocument(document)) {
-      // Malformed dependency URI: not an external project, but never a workspace project either
+      // Malformed dependency URI (cannot be parsed): not an external project, never a workspace project either
       return this.externalProjects.ownerProjectId(document) ?? ProjectsManager.DefaultProjectId
     }
     return this.projectsManager.ownerProjectId(document)

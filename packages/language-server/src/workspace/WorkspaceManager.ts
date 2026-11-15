@@ -626,8 +626,29 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         this.langiumDocuments.addDocument(this.documentFactory.fromString(text, docUri))
       }
     }
+    // Content of replaced or removed documents changed: editors showing them re-request it
+    if (deleted.length > 0) {
+      this.refreshDependencyDocuments(deleted)
+    }
     // Builds added documents and relinks consumers
     await update
+  }
+
+  /**
+   * Asks the client to refresh the content of documents of external projects (`likec4-dep` scheme)
+   * it shows (`workspace/textDocumentContent/refresh`). Does not wait for the client.
+   */
+  public refreshDependencyDocuments(uris: ReadonlyArray<URI>): void {
+    const connection = this.services.lsp.Connection
+    if (!connection) {
+      return
+    }
+    for (const uri of uris) {
+      connection.workspace.textDocumentContent.refresh(uri.toString()).catch(error => {
+        // The client may not support it
+        this.#logger.debug('Failed to refresh content of {uri}', { uri: uri.toString(), error })
+      })
+    }
   }
 
   /**

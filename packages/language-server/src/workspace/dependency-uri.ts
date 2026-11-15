@@ -153,3 +153,30 @@ export function localDependencyFolder(uri: URI | string | DependencyUri): URI | 
   }
   return URI.from({ scheme: 'file', path: parsed.instance })
 }
+
+/**
+ * Returns the `file` URI of a document of a local dependency (instance folder + path),
+ * or undefined if the URI is not a URI of a local dependency (e.g. a git dependency).
+ */
+export function localDependencyFile(uri: URI | string): URI | undefined {
+  const parsed = parseDependencyUri(uri)
+  if (!parsed || parsed.authority !== LOCAL_DEPENDENCY_AUTHORITY) {
+    return undefined
+  }
+  return URI.from({ scheme: 'file', path: `${parsed.instance}/${parsed.path}` })
+}
+
+/**
+ * The URI of the source of a document:
+ * the real `file` URI for a document of a local dependency, the document URI otherwise
+ * (documents of the workspace, and of non-local dependencies, which have no file).
+ *
+ * Use it wherever a document URI is a base to resolve relative paths (icons, links, description files),
+ * or is exposed as a file location.
+ */
+export function documentSourceUri(uri: URI): URI {
+  if (!isDependencyUri(uri)) {
+    return uri
+  }
+  return localDependencyFile(uri) ?? uri
+}

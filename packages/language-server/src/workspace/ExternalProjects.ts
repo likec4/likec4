@@ -16,10 +16,11 @@ import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { ADisposable } from '../utils'
 import {
-  isDependencyUri,
+  DEPENDENCY_URI_SCHEME,
   isValidLocalDependencyFolder,
   localDependencyFolder,
   localDependencyUri,
+  parseDependencyUri,
 } from './dependency-uri'
 import { type NormalizedUri, type ProjectData, ProjectFolder, ProjectsManager } from './ProjectsManager'
 
@@ -144,6 +145,25 @@ export function externalProjectIdOfFolder(folder: URI | string): ExternalProject
 }
 
 /**
+ * Internal id of the external project a `likec4-dep` document belongs to, derived from the URI alone:
+ * - local dependency: {@link externalProjectIdOfFolder} of the instance folder (same as on registration)
+ * - other dependencies (git, planned): `#likec4-dep://<authority>/<instance>`
+ *
+ * Returns undefined for other URIs, or a malformed `likec4-dep` URI.
+ */
+export function externalProjectIdOfUri(uri: URI | string): ExternalProjectId | undefined {
+  const parsed = parseDependencyUri(uri)
+  if (!parsed) {
+    return undefined
+  }
+  const folder = localDependencyFolder(parsed)
+  if (folder) {
+    return externalProjectIdOfFolder(folder)
+  }
+  return externalProjectId(`${DEPENDENCY_URI_SCHEME}://${parsed.authority}${parsed.instance}`)
+}
+
+/**
  * A dependency of workspace projects that resolves to a folder outside the workspace.
  */
 export interface ExternalDependencyTarget {
@@ -210,18 +230,11 @@ export class ExternalProjects extends ADisposable {
 
   /**
    * Returns the id of the external project the document belongs to, derived from its `likec4-dep` URI
-   * (also for instances that are not registered, e.g. just removed), or undefined for other documents.
+   * (see {@link externalProjectIdOfUri}): the same id while the instance is registered and after it is removed.
+   * Returns undefined for other documents.
    */
   ownerProjectId(document: DocOrUri): ExternalProjectId | undefined {
-    const uri = typeof document === 'string' || URI.isUri(document) ? document : document.uri
-    if (!isDependencyUri(uri)) {
-      return undefined
-    }
-    const folder = localDependencyFolder(uri)
-    if (!folder) {
-      return undefined
-    }
-    return this.findByFolder(folder)?.id ?? externalProjectIdOfFolder(folder)
+    return externalProjectIdOfUri(typeof document === 'string' || URI.isUri(document) ? document : document.uri)
   }
 
   /**
@@ -255,10 +268,20 @@ export class ExternalProjects extends ADisposable {
 
   /**
    * Registers (or replaces) an external project instance.
+   *
+   * The id of the instance must be the id derived from the URIs of its documents
+   * (for a local dependency: {@link externalProjectIdOfFolder}), otherwise its documents are not owned by it.
    * Does not create Langium documents: this is done by the caller under the workspace write-lock.
    */
   register(project: ExternalProject): void {
     invariant(isExternalProjectId(project.id), `External project id must start with "${EXTERNAL_PROJECT_ID_PREFIX}"`)
+    for (const uri of project.files.keys()) {
+      const owner = externalProjectIdOfUri(uri)
+      invariant(
+        owner === undefined || owner === project.id,
+        `Document ${uri} belongs to ${owner}, not to the external project ${project.id}`,
+      )
+    }
     this.#projects.set(project.id, project)
     this.notifyListeners()
   }

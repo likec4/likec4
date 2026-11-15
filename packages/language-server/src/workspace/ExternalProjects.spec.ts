@@ -543,41 +543,133 @@ describe('ExternalProjects', () => {
     await t.initialize()
     const external = t.services.shared.workspace.ExternalProjects
     const lookup = t.services.shared.workspace.ProjectsLookup
-    const instance = (key: string, folder: string, files: string[]): ExternalProject => ({
-      id: externalProjectId(key),
+    const instance = (folder: string, files: string[], id = externalProjectIdOfFolder(folder)): ExternalProject => ({
+      id,
       folder: ProjectFolder(folder),
       folderUri: URI.parse(ProjectFolder(folder)),
       configUri: URI.parse(`${ProjectFolder(folder)}likec4.config.json`),
-      config: { name: key },
+      config: { name: 'x' },
       includeConfig: { paths: [], maxDepth: 3, fileThreshold: 30 },
       files: new Map(files.map(uri => [uri as NormalizedUri, 'model {}'])),
     })
+    const outer = '#file:///deps' as ProjectId
+    const inner = '#file:///deps/inner' as ProjectId
     const outerDoc = 'likec4-dep://local/deps/-/inner/model.c4'
     const innerDoc = 'likec4-dep://local/deps/inner/-/model.c4'
-    // not registered: the id derived from the folder
-    expect(external.ownerProjectId(innerDoc)).toBe('#file:///deps/inner')
-    expect(lookup.ownerProjectId(innerDoc)).toBe('#file:///deps/inner')
-
-    // registered: the id of the instance loaded from the folder
-    external.register(instance('outer', 'file:///deps', [outerDoc]))
-    external.register(instance('inner', 'file:///deps/inner', [innerDoc]))
-    expect(external.ownerProjectId(outerDoc)).toBe('#outer')
-    expect(external.ownerProjectId(innerDoc)).toBe('#inner')
+    // the same id before registration, while registered and after unregister
+    expect(external.ownerProjectId(innerDoc)).toBe(inner)
+    expect(lookup.ownerProjectId(innerDoc)).toBe(inner)
+    external.register(instance('file:///deps', [outerDoc]))
+    external.register(instance('file:///deps/inner', [innerDoc]))
+    expect(external.ownerProjectId(outerDoc)).toBe(outer)
+    expect(external.ownerProjectId(innerDoc)).toBe(inner)
+    expect(external.ownerOf(innerDoc)?.id).toBe(inner)
     expect(external.readFile(innerDoc)).toBe('model {}')
-    expect(lookup.isIncluded('#outer' as ProjectId, innerDoc)).toBe(false)
-    expect(lookup.isIncluded('#inner' as ProjectId, innerDoc)).toBe(true)
-
-    // registration order does not matter
-    external.unregister('#outer')
-    external.register(instance('outer', 'file:///deps', [outerDoc]))
-    expect(external.ownerProjectId(innerDoc)).toBe('#inner')
-    external.unregister('#inner')
-    expect(external.ownerProjectId(outerDoc)).toBe('#outer')
+    expect(lookup.isIncluded(outer, innerDoc)).toBe(false)
+    expect(lookup.isIncluded(inner, innerDoc)).toBe(true)
+    external.unregister(inner)
+    expect(external.ownerProjectId(innerDoc)).toBe(inner)
+    expect(lookup.ownerProjectId(innerDoc)).toBe(inner)
+    expect(external.ownerOf(innerDoc)).toBeUndefined()
     expect(external.readFile(innerDoc)).toBeUndefined()
+    expect(external.ownerProjectId(outerDoc)).toBe(outer)
+
+    // an instance cannot own documents of another instance
+    expect(() => external.register(instance('file:///deps', [innerDoc]))).toThrow()
+    expect(() => external.register(instance('file:///deps', [outerDoc], '#other' as ProjectId & `#${string}`)))
+      .toThrow()
+
+    // non-local dependencies (git, planned) get their own ids, never the default project
+    const gitDoc = 'likec4-dep://github.com/my-org/billing%40abc/-/model.c4'
+    expect(external.ownerProjectId(gitDoc)).toBe('#likec4-dep://github.com/my-org/billing@abc')
+    expect(lookup.ownerProjectId(gitDoc)).toBe('#likec4-dep://github.com/my-org/billing@abc')
 
     // file documents are never owned by external projects
     expect(external.ownerProjectId('file:///deps/inner/model.c4')).toBeUndefined()
     expect(lookup.ownerProjectId('file:///deps/inner/model.c4')).toBe('default')
+  })
+
+  it('resolves relative icons and links of a local dependency against its real files', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/workspace/a/model.c4': `
+        import { db, nested } from 'shared'
+        model {
+          component app {
+            -> db
+          }
+        }
+      `,
+      'file:///test/shared/model.c4': `
+        specification {
+          element component
+        }
+        model {
+          component db {
+            icon ./icons/db.svg
+            link ./docs/a.md
+            link ../outside.md
+            link /docs/b.md
+          }
+        }
+      `,
+      'file:///test/shared/nested/more.c4': `
+        model {
+          component nested {
+            icon ../icons/nested.svg
+            link ../docs/c.md
+          }
+        }
+      `,
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+
+    const model = await t.services.likec4.ModelBuilder.computeModel('a' as ProjectId)
+    const db = model.findElement('@shared.db')!
+    expect(db).not.toBeNull()
+    expect(db.$element.style.icon).toBe('file:///test/shared/icons/db.svg')
+    expect(db.links.map(l => [l.url, l.relative])).toEqual([
+      ['./docs/a.md', 'docs/a.md'],
+      ['../outside.md', 'file:///test/outside.md'],
+      ['/docs/b.md', 'docs/b.md'],
+    ])
+    const nested = model.findElement('@shared.nested')!
+    expect(nested.$element.style.icon).toBe('file:///test/shared/icons/nested.svg')
+    expect(nested.links.map(l => l.relative)).toEqual(['docs/c.md'])
+
+    // links of the dependency document (editor) and description files resolve to real files
+    const linkProvider = t.services.lsp.DocumentLinkProvider
+    const doc = t.services.shared.workspace.LangiumDocuments.getDocument(
+      URI.parse('likec4-dep://local/test/shared/-/nested/more.c4'),
+    )!
+    expect(linkProvider.resolveLink(doc, '../docs/c.md')).toBe('file:///test/shared/docs/c.md')
+    expect(linkProvider.resolveLink(doc, '../../outside.md')).toBe('file:///test/outside.md')
+    expect(linkProvider.resolveLink(doc, 'docs/d.md')).toBe('file:///test/shared/docs/d.md')
+    const links = await linkProvider.getDocumentLinks(doc, { textDocument: { uri: doc.uri.toString() } })
+    expect(links.map(l => l.target)).toEqual(['file:///test/shared/docs/c.md'])
+  })
+
+  it('asks the client to refresh replaced and removed dependency documents', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({ name: 'a', dependencies: { shared: '../../shared' } }),
+      'file:///test/shared/model.c4': sharedModel,
+      'file:///test/shared/removed.c4': 'model { component removed }',
+      'file:///test/shared/same.c4': 'model { component same }',
+    })
+    await startWorkspace(t, 'file:///test/workspace')
+    const { WorkspaceManager } = t.services.shared.workspace
+    const refresh = mockMethod(WorkspaceManager, 'refreshDependencyDocuments')
+
+    fs.write({ 'file:///test/shared/model.c4': 'model { component changed }' })
+    fs.remove('file:///test/shared/removed.c4')
+    await ProjectsManager_reload(t)
+
+    expect(refresh.mock.calls.flatMap(([uris]) => uris.map(String)).sort()).toEqual([
+      'likec4-dep://local/test/shared/-/model.c4',
+      'likec4-dep://local/test/shared/-/removed.c4',
+    ])
   })
 
   it('keeps registry and documents consistent when applying is cancelled', async ({ create, expect }) => {

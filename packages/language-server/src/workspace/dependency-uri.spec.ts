@@ -2,8 +2,10 @@ import { URI } from 'langium'
 import { describe, it } from 'vitest'
 import {
   buildDependencyUri,
+  documentSourceUri,
   isDependencyUri,
   isValidLocalDependencyFolder,
+  localDependencyFile,
   localDependencyFolder,
   localDependencyUri,
   parseDependencyUri,
@@ -105,5 +107,22 @@ describe('dependency-uri', () => {
     expect(isValidLocalDependencyFolder(URI.parse('vscode-vfs://github/org/repo'))).toBe(false)
     expect(() => localDependencyUri(URI.parse('file:///work/shared'), URI.parse('file:///work/other/m.c4')))
       .toThrow()
+  })
+
+  it('maps documents of local dependencies back to their files', ({ expect }) => {
+    const folder = URI.file('C:/work/shared')
+    const file = URI.file('C:/work/shared/views/a b.c4')
+    const uri = localDependencyUri(folder, file)
+    expect(localDependencyFile(uri)?.toString()).toBe(URI.parse(file.toString()).toString())
+    expect(documentSourceUri(uri).toString()).toBe('file:///c%3A/work/shared/views/a%20b.c4')
+    const escaped = localDependencyUri(URI.parse('file:///work/-'), URI.parse('file:///work/-/-/m.c4'))
+    expect(documentSourceUri(escaped).toString()).toBe('file:///work/-/-/m.c4')
+
+    // non-local dependencies and other documents keep their URIs
+    const git = URI.parse('likec4-dep://github.com/my-org/billing%40abc/-/model.c4')
+    expect(localDependencyFile(git)).toBeUndefined()
+    expect(documentSourceUri(git)).toBe(git)
+    const workspaceDoc = URI.parse('file:///work/app/model.c4')
+    expect(documentSourceUri(workspaceDoc)).toBe(workspaceDoc)
   })
 })
