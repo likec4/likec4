@@ -160,12 +160,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       // Dependencies outside the workspace
       if (projectsCount > 0) {
         documents.push(...await this.startupExternalProjects(documents))
-        // Git dependencies are read from the dependency storage outside of the workspace write-lock (held by startup):
-        // the sync registers installed instances and relinks their consumers after the initial build
-        if (this.services.workspace.ExternalProjects.gitDependencyTargets().length > 0) {
-          this.#syncAfterStartup = true
-          void this.requestExternalProjectsSync('structural')
-        }
       }
 
       if (hasAtLeast(documents, 1)) {
@@ -183,6 +177,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       for (const doc of documents) {
         this.saveAddDocument(doc)
       }
+      // States of git dependencies (documents are parsed), the initial build sees them.
+      // Fired after the startup releases the write-lock (see initialized), or with the next sync
+      if (projectsCount > 0) {
+        this.updateDependencyStates({ notify: false })
+      }
       return documents
     } finally {
       this.#performedStartup = true
@@ -192,12 +191,12 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   /**
-   * Initializes the workspace (under the write-lock), then waits for the sync of git dependencies
-   * requested by the startup (it reads the dependency storage outside of the lock).
+   * Initializes the workspace (under the write-lock), then fires the states of git dependencies
+   * set by the startup (outside of the lock).
    */
   override async initialized(params: InitializedParams): Promise<void> {
     await super.initialized(params)
-    await this.whenExternalProjectsSynced()
+    this.updateDependencyStates()
   }
 
   /**
@@ -409,6 +408,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * registers them and returns their documents (to be added to the workspace).
    * Runs within startup, which holds the workspace write-lock.
    *
+   * Installed git dependencies are read from the dependency storage here as well:
+   * the storage is local (file system, or requests to the client), never network or git,
+   * so consumers are linked against them by the initial build.
+   *
    * @param existing documents found in the workspace (not duplicated)
    */
   protected async startupExternalProjects(existing: ReadonlyArray<LangiumDocument>): Promise<LangiumDocument[]> {
@@ -416,7 +419,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const documents = [] as LangiumDocument[]
     try {
       const targets = externalProjects.dependencyTargets()
-      const loaded = await externalProjects.loadAll(targets)
+      const gitTargets = externalProjects.gitDependencyTargets()
+      const loadedLocal = await externalProjects.loadAll(targets)
+      const git = await externalProjects.loadGit(gitTargets)
+      const loaded = [...loadedLocal, ...git.projects]
       const seen = new Set(existing.map(d => d.uri.toString()))
       for (const project of loaded) {
         externalProjects.register(project)
@@ -429,6 +435,8 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         }
       }
       externalProjects.markSynced(targets.keys())
+      externalProjects.setGitResolutions(git.resolutions)
+      externalProjects.markGitSynced(gitTargets)
       if (loaded.length > 0) {
         this.#logger.info`loaded ${loaded.length} external projects`
       }
@@ -437,12 +445,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     }
     return documents
   }
-
-  /**
-   * The sync requested by the startup waits for the startup (and its initial build) to release the write-lock
-   * before it reads the dependency storage
-   */
-  #syncAfterStartup = false
 
   /**
    * Chain of syncs of external projects (they run one after another)
@@ -532,10 +534,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const lock = this.services.workspace.WorkspaceLock
     const maxAttempts = 3
     try {
-      if (this.#syncAfterStartup) {
-        this.#syncAfterStartup = false
-        await lock.read(() => undefined)
-      }
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         const targets = externalProjects.dependencyTargets()
         const gitTargets = externalProjects.gitDependencyTargets()

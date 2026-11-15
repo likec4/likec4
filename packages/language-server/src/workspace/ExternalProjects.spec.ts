@@ -1079,8 +1079,7 @@ const supportedInstaller = (): DependencyInstaller => ({
 })
 
 /**
- * Starts the workspace as the language server does (`initialized`: startup under the write-lock),
- * it resolves after the sync of git dependencies
+ * Starts the workspace as the language server does (`initialized`: startup and initial build under the write-lock)
  */
 async function startWithGit(t: TestServices) {
   const workspaceFolder: WorkspaceFolder = { name: 'workspace', uri: 'file:///test/workspace' }
@@ -1174,7 +1173,7 @@ describe('ExternalProjects: git dependencies', () => {
     expect(model.$data.imports['billing' as ProjectId]?.map(e => e.id)).toEqual(['invoices'])
     expect(model.$data.importedProjects?.['billing' as ProjectId]).toEqual({
       name: 'billing-core',
-      source: { kind: 'git', url: BILLING_URL, ref: 'v1' },
+      source: { kind: 'git', url: BILLING_URL, ref: 'v1', sha: SHA_V1 },
     })
     expect([...model.relationships()].map(r => `${r.source.id} -> ${r.target.id}`)).toEqual([
       'webapp -> @billing.invoices',
@@ -1524,7 +1523,7 @@ describe('ExternalProjects: git dependencies', () => {
       'file:///test/workspace/a/model.c4': 'model { }',
     })
     const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
-    // requested before the sync of git dependencies completes (e.g. a tab restored by the editor)
+    // requested before the startup completes (e.g. a tab restored by the editor)
     const start = startWithGit(t)
     const provider = t.services.shared.lsp.TextDocumentContentProvider!
     expect(provider.schemes).toEqual(['likec4-dep'])

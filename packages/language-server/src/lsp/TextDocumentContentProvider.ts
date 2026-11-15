@@ -9,8 +9,8 @@ import { DEPENDENCY_URI_SCHEME } from '../workspace/dependency-uri'
  * so "Go to definition" opens a read-only copy of a dependency document.
  *
  * Differs from {@link DefaultTextDocumentContentProvider} in two ways:
- * - waits for the sync of external projects: git dependencies are registered by a sync after startup,
- *   so an editor that restores a tab with a dependency document gets its content instead of an error;
+ * - waits for the startup and the pending syncs of external projects (reload, install),
+ *   so an editor showing a dependency document gets the content of the registered instance;
  * - falls back to the registered instances (memory of `ExternalProjects`) if there is no Langium document.
  *
  * Not called under the workspace lock (Langium does not take it for this request).

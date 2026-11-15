@@ -1,5 +1,5 @@
 import { type GitDependencySource, isGitDependencySource } from '@likec4/config'
-import type { ImportedProjectMeta, ImportedProjectSource, ProjectId } from '@likec4/core/types'
+import type { ImportedProjectMeta, ProjectId } from '@likec4/core/types'
 import { UriUtils } from 'langium'
 import { logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -147,7 +147,13 @@ export class DependencyResolver {
       },
       meta: {
         name: external.config.name,
-        source: gitImportedProjectSource(source),
+        source: {
+          kind: 'git',
+          url: source.git,
+          ref: source.ref,
+          ...(source.path ? { path: source.path } : {}),
+          sha: resolution.instance.sha,
+        },
       },
     }
   }
@@ -179,21 +185,4 @@ export class DependencyResolver {
       },
     }
   }
-}
-
-/**
- * Source of an imported git dependency for `importedProjects` of the consumer model.
- *
- * `ImportedProjectSource` of `@likec4/core` has no `git` kind yet
- * (consumers of the metadata treat unknown kinds as external projects).
- * TODO: replace the cast when the core type gets the `git` kind.
- */
-function gitImportedProjectSource(source: GitDependencySource): ImportedProjectSource {
-  const git = {
-    kind: 'git',
-    url: source.git,
-    ref: source.ref,
-    ...(source.path ? { path: source.path } : {}),
-  }
-  return git as unknown as ImportedProjectSource
 }
