@@ -1,7 +1,7 @@
 import { nonexhaustive } from '@likec4/core'
 import type { AstNode, ValidationCheck } from 'langium'
 import { isNumber, isString } from 'remeda'
-import { ast, resolveDescriptionFile } from '../ast'
+import { ast, parseAstHexColor, resolveDescriptionFile } from '../ast'
 import type { LikeC4Services } from '../module'
 import { tryOrLog } from './_shared'
 
@@ -51,14 +51,15 @@ export const iconPropertyRuleChecks = (
 export const colorLiteralRuleChecks = (_: LikeC4Services): ValidationCheck<ast.ColorLiteral> => {
   return (node, accept) => {
     if (node.$type === 'HexColor') {
-      if (node.hex === undefined || (isString(node.hex) && !node.hex.match(/^[a-fA-F0-9]+$/))) {
+      const hex = node.hex === undefined ? undefined : parseAstHexColor(node)
+      if (hex === undefined || !hex.match(/^[a-fA-F0-9]+$/)) {
         accept('error', `Invalid HEX`, {
           node,
           property: 'hex',
         })
         return
       }
-      const length = isNumber(node.hex) ? node.hex.toString().length : node.hex.length
+      const length = hex.length
       if (length !== 6 && length !== 3 && length !== 8) {
         accept('error', `Invalid value "${node.$cstNode?.text}", must be 3, 6 or 8 characters long`, {
           node,

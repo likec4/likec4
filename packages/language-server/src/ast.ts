@@ -8,7 +8,7 @@
 import type * as c4 from '@likec4/core'
 import { MultiMap, nonexhaustive } from '@likec4/core/utils'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, URI } from 'langium'
-import { AstUtils, DocumentState, UriUtils } from 'langium'
+import { AstUtils, DocumentState, GrammarUtils, UriUtils } from 'langium'
 import { clamp, filter, isEmptyish, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
 import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
 import { hasProtocol } from 'ufo'
@@ -440,6 +440,16 @@ export function parseMarkdownAsString(node?: ast.MarkdownOrString): string | und
 export function parseAstPercent(value: string): number {
   const opacity = parseFloat(value)
   return isNaN(opacity) ? 100 : clamp(opacity, { min: 0, max: 100 })
+}
+
+/**
+ * Digits of a HEX color as written in the source, without `#`.
+ *
+ * Digits-only values (e.g. `#000000` or `#012345`) are parsed as a number, which drops leading zeros,
+ * so the text of the CST node is used when available.
+ */
+export function parseAstHexColor(node: ast.HexColor): string {
+  return GrammarUtils.findNodeForProperty(node.$cstNode, 'hex')?.text ?? String(node.hex)
 }
 
 export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number {
