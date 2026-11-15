@@ -1,16 +1,125 @@
-import { type ValidationCheck, AstUtils } from 'langium'
-import type { ast } from '../ast'
-import type { LikeC4Services } from '../module'
+import type { ProjectId } from '@likec4/core/types'
+import { type ValidationAcceptor, type ValidationCheck, AstUtils, DocumentState } from 'langium'
+import { type ast, isLikeC4UserDocument } from '../ast'
+import type { DependencyState } from '../dependencies/types'
+import { logger as rootLogger } from '../logger'
+import type { LikeC4Services, LikeC4SharedServices } from '../module'
 import { projectIdFrom } from '../utils'
 import { tryOrLog } from './_shared'
 
 const { getDocument } = AstUtils
 
+const logger = rootLogger.getChild('dependencies')
+
+/**
+ * Codes of diagnostics reported on `import … from 'name'` when the name is a git dependency of the consumer
+ * (see `DependencyStates`). Local dependencies and workspace projects get no such diagnostics.
+ *
+ * - `likec4-dependency-not-installed` (error): the dependency is not installed.
+ *   Has a quick fix that runs the `likec4.lsp.install-dependencies` command;
+ *   the diagnostic `data` is {@link DependencyDiagnosticData}.
+ * - `likec4-dependency-parse-errors` (warning): the installed dependency has documents with parse errors;
+ *   one warning with the number of such documents.
+ * - `likec4-dependency-unsupported` (error): the host cannot load git dependencies (e.g. browser).
+ */
+export const DependencyDiagnosticCodes = {
+  NotInstalled: 'likec4-dependency-not-installed',
+  ParseErrors: 'likec4-dependency-parse-errors',
+  Unsupported: 'likec4-dependency-unsupported',
+} as const
+
+export type DependencyDiagnosticCode = typeof DependencyDiagnosticCodes[keyof typeof DependencyDiagnosticCodes]
+
+/**
+ * Data of the `likec4-dependency-not-installed` diagnostic: arguments of the install command
+ */
+export interface DependencyDiagnosticData {
+  /**
+   * Consumer project
+   */
+  projectId: ProjectId
+  /**
+   * Import name, as written in `from '…'`
+   */
+  name: string
+}
+
+/**
+ * Checks if the value is {@link DependencyDiagnosticData} (diagnostic data comes back from the client)
+ */
+export function isDependencyDiagnosticData(value: unknown): value is DependencyDiagnosticData {
+  return typeof value === 'object'
+    && value !== null
+    && 'projectId' in value
+    && typeof value.projectId === 'string'
+    && 'name' in value
+    && typeof value.name === 'string'
+}
+
+/**
+ * Reports the state of a git dependency on the import.
+ *
+ * @returns true if the dependency cannot be used in this state (other checks of the import are skipped)
+ */
+function checkDependencyState(
+  el: ast.ImportsFromPoject,
+  state: DependencyState,
+  accept: ValidationAcceptor,
+): boolean {
+  const name = state.name
+  switch (state.status) {
+    case 'not-installed': {
+      const data: DependencyDiagnosticData = { projectId: state.consumer, name }
+      accept('error', `Dependency '${name}' is not installed. Run the quick fix or \`likec4 install\`.`, {
+        node: el,
+        property: 'project',
+        code: DependencyDiagnosticCodes.NotInstalled,
+        data,
+      })
+      return true
+    }
+    case 'unsupported': {
+      accept(
+        'error',
+        `Dependency '${name}' cannot be loaded: remote dependencies are not supported in this environment. Use VS Code desktop or the LikeC4 CLI.`,
+        {
+          node: el,
+          property: 'project',
+          code: DependencyDiagnosticCodes.Unsupported,
+        },
+      )
+      return true
+    }
+    case 'installed': {
+      if (state.filesWithErrors > 0) {
+        const files = state.filesWithErrors === 1 ? '1 file' : `${state.filesWithErrors} files`
+        accept(
+          'warning',
+          `Dependency '${name}' has ${files} with parse errors, its model may be incomplete. Check the version of the dependency or run \`likec4 update ${name}\`.`,
+          {
+            node: el,
+            property: 'project',
+            code: DependencyDiagnosticCodes.ParseErrors,
+          },
+        )
+      }
+      return false
+    }
+  }
+}
+
 export const checkImportsFromPoject = (services: LikeC4Services): ValidationCheck<ast.ImportsFromPoject> => {
   const resolver = services.shared.workspace.DependencyResolver
+  const states = services.shared.dependencies.States
+  revalidateOnDependencyStatesChange(services.shared)
   return tryOrLog((el, accept) => {
     const doc = getDocument(el)
     const projectId = projectIdFrom(doc)
+    // Git dependency: report its state (not installed, unsupported, parse errors)
+    const state = states.get(projectId, el.project)
+    if (state && checkDependencyState(el, state, accept)) {
+      return
+    }
     // The name is resolved via `dependencies` of the consumer project, or by the workspace project name
     const resolved = resolver.resolve(projectId, el.project)
     if (!resolved) {
@@ -38,24 +147,63 @@ export const checkImportsFromPoject = (services: LikeC4Services): ValidationChec
   })
 }
 
-// export const checkImported = (services: LikeC4Services): ValidationCheck<ast.Imported> => {
-//   const fqnIndex = services.likec4.FqnIndex
-//   const projects = services.shared.workspace.ProjectsManager
-//   return tryOrLog((el, accept) => {
-//     const doc = getDocument(el)
-//     const importFromProject = el.$container.project as ProjectId
-//     if (importFromProject === projectId || !projects.all.includes(importFromProject)) {
-//       accept('error', 'Invalid import', {
-//         node: el,
-//       })
-//       return
-//     }
-//     const fqn = fqnIndex.byFqn(importFromProject, el.element.$refText as Fqn).head()
-//     if (!fqn) {
-//       accept('error', `Imported element not found in project "${importFromProject}"`, {
-//         node: el,
-//       })
-//       return
-//     }
-//   })
-// }
+const subscribedServices = new WeakSet<LikeC4SharedServices>()
+
+/**
+ * Relinks and revalidates documents with imports of consumer projects whose dependency states changed
+ * (e.g. after install), so diagnostics on imports follow the states.
+ *
+ * Changes are batched and applied after the running sync of external projects (which may have fired them),
+ * under the workspace write-lock. Subscribes once per shared services.
+ */
+export function revalidateOnDependencyStatesChange(shared: LikeC4SharedServices): void {
+  if (subscribedServices.has(shared)) {
+    return
+  }
+  subscribedServices.add(shared)
+  const pending = new Set<ProjectId>()
+  let scheduled = false
+
+  const revalidate = async () => {
+    scheduled = false
+    const consumers = new Set(pending)
+    pending.clear()
+    const lookup = shared.workspace.ProjectsLookup
+    const builder = shared.workspace.DocumentBuilder
+    await shared.workspace.WorkspaceLock.write(async token => {
+      const documents = shared.workspace.LangiumDocuments.all
+        .filter(doc =>
+          isLikeC4UserDocument(doc)
+          // Documents that are not validated yet are validated by the running build
+          && doc.state >= DocumentState.Validated
+          && doc.parseResult.value.imports.length > 0
+          && !lookup.isExcluded(doc)
+          && consumers.has(lookup.ownerProjectId(doc))
+        )
+        .toArray()
+      if (documents.length === 0) {
+        return
+      }
+      logger.debug`relink ${documents.length} documents after dependency states changed`
+      // Relink and validate without parsing again (the content did not change)
+      for (const doc of documents) {
+        builder.resetToState(doc, DocumentState.ComputedScopes)
+      }
+      await builder.update([], [], token)
+    })
+  }
+
+  shared.dependencies.States.onDidChange(({ consumers }) => {
+    consumers.forEach(c => pending.add(c))
+    if (scheduled || pending.size === 0) {
+      return
+    }
+    scheduled = true
+    // Not from within a running sync (it may have fired the change): taking the write-lock would cancel it
+    shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+      .then(revalidate)
+      .catch(error => {
+        logger.warn('Failed to revalidate documents after dependency states changed', { error })
+      })
+  })
+}

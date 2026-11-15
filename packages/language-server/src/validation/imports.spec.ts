@@ -1,6 +1,8 @@
 import { URI } from 'langium'
-import { describe, it } from 'vitest'
+import { describe, it, vi } from 'vitest'
+import { gitDependencyWorkspace, installed, notInstalled, unsupported } from '../lsp/_git-dependencies-spec'
 import { createMultiProjectTestServices, createTestServices } from '../test'
+import { DependencyDiagnosticCodes } from './imports'
 
 describe('import checks', () => {
   it('should report invalid import from same project (default)', async ({ expect }) => {
@@ -226,6 +228,87 @@ describe('import checks', () => {
         { severity: 1, message: 'Import name cannot be the same as the name of the current project' },
       ])
       expect(diagnostics).toHaveLength(1)
+    })
+  })
+
+  describe('git dependencies', () => {
+    it('reports not installed dependency', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      t.setState(notInstalled('consumer'), true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics).toMatchObject([
+        {
+          severity: 1,
+          code: DependencyDiagnosticCodes.NotInstalled,
+          message: 'Dependency \'billing\' is not installed. Run the quick fix or `likec4 install`.',
+          data: { projectId: 'consumer', name: 'billing' },
+          range: { start: { line: 0, character: 15 } },
+        },
+      ])
+      expect(diagnostics).toHaveLength(1)
+    })
+
+    it('reports unsupported dependency', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      t.setState(unsupported('consumer'), true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics).toMatchObject([
+        {
+          severity: 1,
+          code: DependencyDiagnosticCodes.Unsupported,
+          message: expect.stringContaining(
+            'Dependency \'billing\' cannot be loaded: remote dependencies are not supported',
+          ),
+        },
+      ])
+      expect(diagnostics).toHaveLength(1)
+    })
+
+    it('reports one warning with the number of files with parse errors', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      t.setState(installed('consumer', 'billing', 2), true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics).toMatchObject([
+        {
+          severity: 2,
+          code: DependencyDiagnosticCodes.ParseErrors,
+          message: expect.stringContaining('Dependency \'billing\' has 2 files with parse errors'),
+        },
+      ])
+      expect(diagnostics).toHaveLength(1)
+    })
+
+    it('reports nothing for installed dependency without parse errors', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      t.setState(installed('consumer'), true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics).toEqual([])
+    })
+
+    it('reports nothing for names that are not git dependencies', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      // a git dependency of another consumer, with the same name
+      t.setState(notInstalled('billing'), true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics).toEqual([])
+    })
+
+    it('revalidates consumer documents when states change', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      t.setState(notInstalled('consumer'), true)
+      const { diagnostics } = await t.validateAll()
+      expect(diagnostics.map(d => d.code)).toEqual([DependencyDiagnosticCodes.NotInstalled])
+
+      t.setState(installed('consumer', 'billing', 1))
+      await vi.waitFor(() => {
+        expect(t.consumer.diagnostics?.map(d => d.code)).toEqual([DependencyDiagnosticCodes.ParseErrors])
+      })
+      expect(t.consumer.diagnostics?.[0]?.message).toContain('has 1 file with parse errors')
+
+      t.setState(installed('consumer'))
+      await vi.waitFor(() => {
+        expect(t.consumer.diagnostics).toEqual([])
+      })
     })
   })
 })
