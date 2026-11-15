@@ -1973,6 +1973,12 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      graphology:
+        specifier: 'catalog:'
+        version: 0.26.0(graphology-types@0.24.8)
+      graphology-types:
+        specifier: 'catalog:'
+        version: 0.24.8
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -2031,9 +2037,6 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
@@ -2119,6 +2122,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2326,9 +2332,6 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2363,6 +2366,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2777,9 +2783,6 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2811,6 +2814,9 @@ importers:
       '@dagrejs/dagre':
         specifier: 'catalog:'
         version: 1.1.8
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops

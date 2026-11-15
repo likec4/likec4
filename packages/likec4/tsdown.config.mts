@@ -26,6 +26,15 @@ export default defineConfig([
       'src/model/index.ts',
       'src/cli/index.ts',
       'src/generators/likec4.ts',
+      // Bundled @likec4/core, mirrors its exports as `likec4/core/*`
+      'src/core/index.ts',
+      'src/core/builder.ts',
+      'src/core/geometry.ts',
+      'src/core/compute-view.ts',
+      'src/core/model.ts',
+      'src/core/styles.ts',
+      'src/core/types.ts',
+      'src/core/utils.ts',
       'src/index.ts',
     ],
     platform: 'node',
@@ -65,6 +74,20 @@ export default defineConfig([
     target: false,
     minify: false,
     dts: true,
+    // Share a single copy of core with the main build
+    deps: {
+      onlyBundle: false,
+      neverBundle: [/^likec4\/core/],
+    },
+    plugins: [
+      {
+        name: 'likec4:alias-core',
+        resolveId: {
+          filter: { id: /^@likec4\/core(\/.*)?$/ },
+          handler: (id: string) => ({ id: id.replace('@likec4/core', 'likec4/core'), external: true }),
+        },
+      },
+    ],
   },
 ])
 
