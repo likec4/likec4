@@ -12,6 +12,7 @@ import { type LikeC4LangiumDocument, ast } from '../ast'
 import { iconRegistry, isBundledIconGroup } from '../generated/icons'
 import { logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { uniqueSingles } from '../utils'
 
 type ElementsContainer = ast.Model | ast.DiffAdd | ast.ElementBody | ast.ExtendElementBody
 type DeploymentsContainer =
@@ -20,15 +21,8 @@ type DeploymentsContainer =
   | ast.ExtendDeploymentBody
   | ast.DeployedInstanceBody
 
-function uniqueDescriptions(
-  descs: AstNodeDescription[],
-): AstNodeDescription[] {
-  return pipe(
-    descs,
-    groupBy(desc => `${desc.type}.${desc.name}`),
-    entries(),
-    flatMap(([_, descs]) => descs.length === 1 ? descs : []),
-  )
+function uniqueDescriptions(descs: AstNodeDescription[]): AstNodeDescription[] {
+  return uniqueSingles(descs, desc => `${desc.type}.${desc.name}`)
 }
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
@@ -374,7 +368,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         }
       }
 
-      if (subcontainer) {
+      if (subcontainer && subcontainer.elements.length > 0) {
         try {
           descedants.push(
             ...this.processDeployments(subcontainer, scopes, document),
