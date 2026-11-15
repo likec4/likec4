@@ -10,7 +10,7 @@ import { DefaultLikeC4ModelBuilder } from '../model/model-builder'
 import { mockMethod, test as it } from '../test'
 import type { createTestServices } from '../test/testServices'
 import { localDependencyUri } from './dependency-uri'
-import { type ExternalProject, externalProjectId, externalProjectIdOfFolder } from './ExternalProjects'
+import { type ExternalProject, externalProjectIdOfFolder } from './ExternalProjects'
 import { type NormalizedUri, ProjectFolder } from './ProjectsManager'
 
 type TestServices = ReturnType<typeof createTestServices>
