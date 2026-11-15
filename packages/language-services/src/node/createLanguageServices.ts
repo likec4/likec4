@@ -1,3 +1,4 @@
+import { WithNodeDependencies } from '@likec4/language-server'
 import { WithFileSystem, WithLikeC4ManualLayouts } from '@likec4/language-server/filesystem'
 import {
   createLanguageServices as createCustomLanguageServices,
@@ -62,6 +63,8 @@ export function createLanguageServices(
       ...options.useFileSystem
         ? {
           ...WithFileSystem(options.watch),
+          // Git dependencies: storage in the cache directory (LIKEC4_CACHE_DIR), git installer
+          ...WithNodeDependencies(),
           ...options.manualLayouts ? WithLikeC4ManualLayouts : NoLikeC4ManualLayouts,
         }
         : {
