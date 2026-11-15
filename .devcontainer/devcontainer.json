@@ -5,9 +5,13 @@
   "image": "mcr.microsoft.com/devcontainers/base:debian",
   "features": {
     // Install asdf version manager first. The postCreateCommand will install Node.js, pnpm, and dprint.
-    "ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {},
-    "ghcr.io/devcontainers-extra/features/tsx:1": {},
-    "ghcr.io/devcontainers-extra/features/turborepo-npm:1": {}
+    // tsx, turbo and dprint are workspace devDependencies, so no extra features are needed.
+    "ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {}
+  },
+  "remoteEnv": {
+    // asdf >= 0.16 is a standalone binary; the feature only adds it to PATH via .bashrc,
+    // which non-interactive lifecycle commands don't read. Shims are needed for node/pnpm/dprint.
+    "PATH": "/root/.asdf/shims:/root/.asdf/bin:${containerEnv:PATH}"
   },
   "containerEnv": {
     "TURBO_CACHE_DIR": "/workspace/.turbo",
@@ -56,7 +60,9 @@
   "onCreateCommand": "sudo chown -R root:root .pnpm-store node_modules .turbo",
   // Use 'postCreateCommand' to run commands after the container is created.
   // Using asdf to install nodejs, pnpm, and dprint as per .tool-versions, then install dependencies.
-  "postCreateCommand": "bash -c 'asdf plugin add nodejs || true && asdf plugin add pnpm || true && asdf plugin add dprint || true && asdf install && pnpm install --prefer-offline'",
+  "postCreateCommand": "bash -c 'set -e; for p in nodejs pnpm dprint; do asdf plugin list | grep -qx $p || asdf plugin add $p; done; asdf install; asdf reshim; pnpm install --prefer-offline'",
+  // Wait for tools and dependencies before VS Code extensions try to discover them.
+  "waitFor": "postCreateCommand",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -73,7 +79,7 @@
       ],
       "settings": {
         "terminal.integrated.defaultProfile.osx": "zsh",
-        "terminal.integrated.defaultProfile.linux": "zsh"
+        "terminal.integrated.defaultProfile.linux": "bash"
       }
     }
   },
