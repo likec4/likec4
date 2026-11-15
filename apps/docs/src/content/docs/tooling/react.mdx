@@ -123,8 +123,7 @@ Below are examples of how to prepare the model:
   ```tsx copy collapse={8-53}
   import { LikeC4ModelProvider } from 'likec4/react'
   import { Builder } from "likec4/model/builder"
-  // The layout engine is a separate package
-  import { layoutLikeC4Model } from "@likec4/layouts"
+  import { layoutLikeC4Model } from "likec4/layouts"
 
   const computedModel = Builder
     .specification({
@@ -195,6 +194,7 @@ The `likec4` package is all you need for these examples:
 - `likec4/react`: React components and hooks
 - `likec4/model`: the model API and types
 - `likec4/model/builder`: the model builder
+- `likec4/layouts`: the layout engine (`layoutLikeC4Model`)
 - `likec4/core`: the low-level core API, with `likec4/core/model`, `likec4/core/types`, `likec4/core/builder`, `likec4/core/compute-view`, `likec4/core/geometry`, `likec4/core/styles` and `likec4/core/utils`
 :::
 

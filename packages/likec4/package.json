@@ -91,6 +91,14 @@
         "default": "./dist/core/utils.mjs"
       }
     },
+    "./layouts": {
+      "sources": "./src/layouts/index.ts",
+      "default": {
+        "types": "./dist/layouts/index.d.mts",
+        "import": "./dist/layouts/index.mjs",
+        "default": "./dist/layouts/index.mjs"
+      }
+    },
     "./config/schema.json": "./config/schema.json",
     "./config": {
       "sources": "./src/config/index.ts",

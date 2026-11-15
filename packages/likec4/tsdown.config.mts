@@ -107,6 +107,25 @@ export default defineConfig([
     }),
     plugins: [nodePolyfills()],
   },
+  {
+    // Bundled @likec4/layouts, exposed as `likec4/layouts`.
+    // Shares the core with the other builds
+    entry: {
+      'index': './src/layouts/index.ts',
+    },
+    outDir: './dist/layouts',
+    platform: 'neutral',
+    target: false,
+    // graphology needs `events`
+    nodeProtocol: 'strip',
+    minify: false,
+    dts: true,
+    deps: {
+      onlyBundle: false,
+      neverBundle: [/^likec4\/core/],
+    },
+    plugins: [aliasCore(), nodePolyfills()],
+  },
 ])
 
 /**

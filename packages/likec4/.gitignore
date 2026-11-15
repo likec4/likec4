@@ -26,6 +26,7 @@ core/types/package.json
 core/utils/package.json
 config/package.json
 generators/likec4/package.json
+layouts/package.json
 model/builder/package.json
 model/package.json
 react/package.json
