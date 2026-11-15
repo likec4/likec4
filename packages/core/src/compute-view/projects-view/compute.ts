@@ -153,6 +153,11 @@ function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): 
   const nodesMap = new Map<NodeId, ComputedProjectNode>()
   for (const model of likec4models) {
     const projectId = ProjectId(model.projectId)
+    const metrics = {
+      elements: keysCount(model.$data.elements),
+      relationships: keysCount(model.$data.relations),
+      views: keysCount(model.$data.views),
+    }
     const node: ComputedProjectNode = {
       id: nodeId(projectId),
       kind: '@project',
@@ -161,9 +166,9 @@ function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): 
       title: model.project.title ?? model.project.id,
       description: {
         txt: [
-          `Elements: ${keysCount(model.$data.elements)}`,
-          `Relationships: ${keysCount(model.$data.relations)}`,
-          `Views: ${keysCount(model.$data.views)}`,
+          `Elements: ${metrics.elements}`,
+          `Relationships: ${metrics.relationships}`,
+          `Views: ${metrics.views}`,
         ].join('\n'),
       },
       shape: 'rectangle',
@@ -174,6 +179,7 @@ function buildNodesForEachModel(likec4models: NonEmptyArray<LikeC4Model<Any>>): 
       level: 0,
       style: {},
       tags: [],
+      metrics,
     }
     nodesMap.set(node.id, node)
   }

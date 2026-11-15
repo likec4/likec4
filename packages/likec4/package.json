@@ -194,6 +194,7 @@
     "@likec4/icons": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
+    "@tanstack/react-virtual": "catalog:tanstack",
     "@vitejs/plugin-react": "catalog:vite",
     "chokidar": "catalog:externals",
     "fdir": "catalog:externals",

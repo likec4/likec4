@@ -35,6 +35,7 @@
     "@floating-ui/dom": "catalog:react",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
+    "@tanstack/react-virtual": "catalog:tanstack",
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "react": "catalog:react",

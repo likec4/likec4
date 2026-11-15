@@ -19,6 +19,7 @@ import { stopPropagation } from '../../utils'
 const backdropBlur = '--_blur'
 const backdropOpacity = '--_opacity'
 const cssVarLevel = '--_level'
+const LIFT_EASE = [0.23, 1, 0.32, 1] as const
 
 export type OverlayProps = PropsWithChildren<{
   fullscreen?: boolean | undefined
@@ -39,6 +40,12 @@ export type OverlayProps = PropsWithChildren<{
    */
   openDelay?: number
   /**
+   * Motion of the dialog when it opens and closes.
+   * - `scale` (default): grows from the top edge, for panels and details
+   * - `lift`: fades in and moves 8px down, no scale; for full-screen palettes like search
+   */
+  motionPreset?: 'scale' | 'lift'
+  /**
    * Called when the overlay is closed by outside click or escape key
    */
   onClose: () => void
@@ -55,6 +62,7 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
   withBackdrop = true,
   backdrop,
   openDelay = 120,
+  motionPreset = 'scale',
   ...rest
 }, ref) => {
   // Initial state is false, will be set to true in useLayoutEffect if openDelay is 0
@@ -152,6 +160,21 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
     },
   } satisfies Record<string, TargetAndTransition>), [overlayLevel, targetBackdropOpacity])
 
+  const liftMotionProps = useMemo(() =>
+    (
+      motionNotReduced
+        ? {
+          initial: { opacity: 0, transform: 'translateY(-8px)' },
+          animate: { opacity: 1, transform: 'translateY(0px)', transition: { duration: 0.18, ease: LIFT_EASE } },
+          exit: { opacity: 0, transform: 'translateY(-4px)', transition: { duration: 0.12, ease: LIFT_EASE } },
+        }
+        : {
+          initial: { opacity: 0 },
+          animate: { opacity: 1, transition: { duration: 0.18, ease: LIFT_EASE } },
+          exit: { opacity: 0, transition: { duration: 0.12, ease: LIFT_EASE } },
+        }
+    ) satisfies Record<string, TargetAndTransition>, [motionNotReduced])
+
   return (
     <m.dialog
       ref={useMergedRef(
@@ -170,12 +193,16 @@ export const Overlay = forwardRef<HTMLDialogElement, OverlayProps>(({
         // @ts-ignore
         [cssVarLevel]: overlayLevel,
       }}
-      {...motionNotReduced ? motionProps : {
-        initial: {
-          [backdropBlur]: '8px',
-          [backdropOpacity]: targetBackdropOpacity,
-        },
-      }}
+      {...motionPreset === 'lift'
+        ? liftMotionProps
+        : motionNotReduced
+        ? motionProps
+        : {
+          initial: {
+            [backdropBlur]: '8px',
+            [backdropOpacity]: targetBackdropOpacity,
+          },
+        }}
       onDoubleClick={stopPropagation}
       onPointerDown={stopPropagation}
       {...rest}
