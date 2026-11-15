@@ -6,6 +6,7 @@ import {
   documentSourceUri,
   gitDependencyUri,
   isDependencyUri,
+  isFullGitSha,
   isGitSha,
   isValidLocalDependencyFolder,
   localDependencyFile,
@@ -224,6 +225,11 @@ describe('dependency-uri', () => {
       expect(isGitSha('main')).toBe(false)
       expect(isGitSha(SHA.toUpperCase())).toBe(false)
       expect(() => gitDependencyUri({ repository: 'github.com/a/b', sha: 'main', subdir: '' }, 'm.c4')).toThrow()
+      // abbreviated SHAs are parsed, but instances are built from full SHAs only
+      expect(() => gitDependencyUri({ repository: 'github.com/a/b', sha: '0123abcd', subdir: '' }, 'm.c4')).toThrow()
+      expect(parseGitDependencyUri('likec4-dep://github.com/a/b%400123abcd/-/m.c4')?.instance.sha).toBe('0123abcd')
+      expect(isFullGitSha(SHA)).toBe(true)
+      expect(isFullGitSha('0123abcd')).toBe(false)
       expect(() => gitDependencyUri({ repository: 'github.com', sha: SHA, subdir: '' }, 'm.c4')).toThrow()
       expect(() => gitDependencyUri({ repository: 'github.com/a/b', sha: SHA, subdir: '' }, '')).toThrow()
       // local dependencies and URIs without SHA are not git dependencies

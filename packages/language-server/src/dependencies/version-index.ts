@@ -1,7 +1,7 @@
 import { invariant } from '@likec4/core/utils'
 import { isPlainObject } from 'remeda'
 import type { Storage } from 'unstorage'
-import { isGitSha } from '../workspace/dependency-uri'
+import { isFullGitSha } from '../workspace/dependency-uri'
 import { encodeKeySegment, repositoryKeySegments } from './storage'
 import type { DependencyVersionRecord } from './types'
 
@@ -17,7 +17,8 @@ export const DEPENDENCY_VERSIONS_PREFIX = 'versions'
  * versions:<host[:port]>:<repository path segments>:<ref>
  * ```
  *
- * Each segment is URI-encoded (`release/1.0` is `release%2F1.0`), the ref is always the last segment.
+ * Each segment is encoded with {@link encodeKeySegment} (`release/1.0` is `release%2f1.0`, `Main` is `^main`),
+ * the ref is always the last segment.
  *
  * @example
  * ```ts
@@ -42,7 +43,7 @@ export function isDependencyVersionRecord(value: unknown): value is DependencyVe
     && typeof value['url'] === 'string'
     && typeof value['ref'] === 'string'
     && typeof value['sha'] === 'string'
-    && isGitSha(value['sha'])
+    && isFullGitSha(value['sha'])
     && typeof value['resolvedAt'] === 'string'
 }
 

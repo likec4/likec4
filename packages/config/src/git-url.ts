@@ -42,7 +42,13 @@ const DEFAULT_PORTS: Record<'https' | 'ssh', number> = {
 }
 
 // [user@]host:path, where path does not start with "/" (scp-like syntax of git)
-const SCP_LIKE_REGEX = /^(?:[^@/:\s]+@)?([^@/:\s[\]]+):(?!\/)(\S+)$/
+const SCP_LIKE_REGEX = /^(?:([^@/:\s]+)@)?([^@/:\s[\]]+):(?!\/)(\S+)$/
+
+// User of ssh and scp-like URLs: must not look like an option of ssh ("-oProxyCommand=...")
+const USER_REGEX = /^[A-Za-z0-9._~][A-Za-z0-9._~-]*$/
+
+// Encoded "/" and "\" in a path would change the identity of the repository
+const ENCODED_SEPARATOR_REGEX = /%2f|%5c/i
 
 const HOST_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/
 
@@ -59,10 +65,21 @@ function normalizeRepositoryPath(path: string): string | undefined {
       segments[segments.length - 1] = name
     }
   }
-  if (segments.length === 0 || segments.some(s => s === '.' || s === '..' || /[\s\\]/.test(s))) {
+  if (segments.length === 0 || segments.some(s => s === '.' || s === '..' || /[\s\\:]/.test(s))) {
     return undefined
   }
   return segments.join('/')
+}
+
+function isValidUser(encoded: string): boolean {
+  if (encoded.length === 0) {
+    return true
+  }
+  try {
+    return USER_REGEX.test(decodeURIComponent(encoded))
+  } catch {
+    return false
+  }
 }
 
 function hasDotSegments(value: string): boolean {
@@ -104,7 +121,13 @@ function result(
  * Returns undefined for other forms (`http://`, `file://`, `git://`, `ext::`, local paths, ...)
  * and for malformed URLs.
  *
- * URLs with a query string or a fragment are rejected.
+ * Rejected as well:
+ * - remote helper syntax (anything with `::`, e.g. `ext::sh -c ...`)
+ * - a query string or a fragment
+ * - path segments with `:`, `.` or `..`, encoded `/` and `\` (`%2F`, `%5C`)
+ * - users that start with `-` or contain characters other than `A-Z a-z 0-9 . _ ~ -` (ssh option injection)
+ * - hosts that are not plain host names (start with `-`, IPv6 literals)
+ *
  * The user (and password) of the URL is not a part of the repository identity ({@link GitRepositoryUrl.id}).
  *
  * @example
@@ -116,7 +139,8 @@ function result(
  */
 export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined {
   const value = url.trim()
-  if (value.length === 0) {
+  // "::" is the syntax of git remote helpers ("ext::sh -c ...", "fd::17")
+  if (value.length === 0 || value.includes('::')) {
     return undefined
   }
   const protocol = /^([a-z][a-z0-9+.-]*):\/\//i.exec(value)?.[1]?.toLowerCase()
@@ -125,9 +149,9 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
     if (!scp) {
       return undefined
     }
-    const [, host = '', path = ''] = scp
+    const [, user, host = '', path = ''] = scp
     // "C:repo" is a Windows path with a drive letter, not a host
-    if (host.length < 2) {
+    if (host.length < 2 || (user !== undefined && !USER_REGEX.test(user)) || ENCODED_SEPARATOR_REGEX.test(path)) {
       return undefined
     }
     return result('scp', host, undefined, path)
@@ -145,7 +169,13 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
   } catch {
     return undefined
   }
-  if (parsed.hostname.length === 0 || parsed.search.length > 0 || parsed.hash.length > 0) {
+  if (
+    parsed.hostname.length === 0
+    || parsed.search.length > 0
+    || parsed.hash.length > 0
+    || ENCODED_SEPARATOR_REGEX.test(parsed.pathname)
+    || !isValidUser(parsed.username)
+  ) {
     return undefined
   }
   const port = parsed.port.length > 0 ? Number(parsed.port) : undefined

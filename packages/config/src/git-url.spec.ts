@@ -54,6 +54,18 @@ describe('parseGitRepositoryUrl', () => {
     'https://github.com/my-org/billing#main',
     'https://[::1]/my-org/billing',
     'git@github.com:/my-org/billing.git',
+    'ext::sh',
+    'fd::17/foo',
+    'foo::bar',
+    'github.com:my-org/a:b',
+    '-oProxyCommand=x@github.com:a/b',
+    'ssh://-oProxyCommand=x@github.com/a/b',
+    'ssh://us%20er@github.com/a/b',
+    'git@-github.com:a/b',
+    'ssh://-github.com/a/b',
+    'https://github.com/my-org%2Fbilling',
+    'https://github.com/my-org%5Cbilling',
+    'git@github.com:my-org%2fbilling',
   ])('rejects %s', (url, { expect }) => {
     expect(parseGitRepositoryUrl(url)).toBeUndefined()
   })

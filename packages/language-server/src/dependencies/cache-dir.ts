@@ -47,6 +47,8 @@ function join(platform: string, ...segments: string[]): string {
  * - macOS: `~/Library/Caches/likec4`
  * - Windows: `%LOCALAPPDATA%\likec4\cache` or `~\AppData\Local\likec4\cache`
  *
+ * @throws if there is no override and the home directory is needed but empty (instead of returning a relative path)
+ *
  * Pure function (no `node:*` imports): Node hosts pass `process.env`, `process.platform` and `os.homedir()`.
  */
 export function likec4CacheDir({ env, platform, homedir }: DependencyCacheDirParams): string {
@@ -54,18 +56,27 @@ export function likec4CacheDir({ env, platform, homedir }: DependencyCacheDirPar
   if (override) {
     return override
   }
+  const home = (): string => {
+    const value = nonEmpty(homedir)
+    if (!value) {
+      throw new Error(
+        `Cannot determine the LikeC4 cache directory: home directory is unknown, set ${LIKEC4_CACHE_DIR_ENV}`,
+      )
+    }
+    return value
+  }
   switch (true) {
     case platform === 'win32':
       return join(
         platform,
-        nonEmpty(env['LOCALAPPDATA']) ?? join(platform, homedir, 'AppData', 'Local'),
+        nonEmpty(env['LOCALAPPDATA']) ?? join(platform, home(), 'AppData', 'Local'),
         'likec4',
         'cache',
       )
     case platform === 'darwin':
-      return join(platform, homedir, 'Library', 'Caches', 'likec4')
+      return join(platform, home(), 'Library', 'Caches', 'likec4')
     default:
-      return join(platform, nonEmpty(env['XDG_CACHE_HOME']) ?? join(platform, homedir, '.cache'), 'likec4')
+      return join(platform, nonEmpty(env['XDG_CACHE_HOME']) ?? join(platform, home(), '.cache'), 'likec4')
   }
 }
 

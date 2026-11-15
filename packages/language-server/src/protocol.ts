@@ -490,14 +490,18 @@ export interface LikeC4InitializationOptions {
  * Requests from the server to the client storage of git dependencies
  * (sent only if the client declared `dependencyStorage: true` in {@link LikeC4InitializationOptions}).
  *
- * Mirrors the driver interface of unstorage: keys are unstorage keys (`:`-separated, see `dependencyCacheKey`),
- * values are JSON values (records of installed instances and of the version index).
+ * Mirrors the driver interface of unstorage: keys are unstorage keys (`:`-separated, see `dependencyCacheKey`).
+ * Values are serialized: the unstorage `Storage` of the server stringifies values before the driver
+ * and parses (`destr`) what the driver returns, so the client stores and returns strings as is.
+ *
+ * There is no `has-item` request: the driver answers `hasItem` with {@link DependencyStorageRequests.GetItem}
+ * (`value !== null`).
  */
 export namespace DependencyStorageRequests {
   /**
-   * JSON value stored by the server
+   * Serialized value (JSON text of records of installed instances and of the version index)
    */
-  export type Value = unknown
+  export type Value = string
 
   /**
    * Reads the value, `null` if there is none

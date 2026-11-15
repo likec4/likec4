@@ -1,7 +1,9 @@
 import { isPlainObject } from 'remeda'
 import type { Storage } from 'unstorage'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { GitDependencyInstance } from '../workspace/dependency-uri'
+import { createLspStorageDriver } from './lspStorageDriver'
 import {
   hasDependencyCacheEntry,
   readDependencyCacheEntries,
@@ -23,6 +25,29 @@ export const CLIENT_DEPENDENCY_STORAGE_OPTION = 'dependencyStorage'
  */
 export function clientDeclaresDependencyStorage(initializationOptions: unknown): boolean {
   return isPlainObject(initializationOptions) && initializationOptions[CLIENT_DEPENDENCY_STORAGE_OPTION] === true
+}
+
+const logger = rootLogger.getChild('dependencies')
+
+/**
+ * Switches the dependency storage to the client storage, if the client declares it in `initializationOptions`
+ * (see {@link clientDeclaresDependencyStorage}). Registered by `createLanguageServices` when there is a connection.
+ *
+ * If the client storage cannot be created, the storage of the host is kept and a warning is logged.
+ */
+export function trackClientDependencyStorage(shared: LikeC4SharedServices): void {
+  shared.lsp.LanguageServer.onInitialize(params => {
+    const connection = shared.lsp.Connection
+    if (!connection || !clientDeclaresDependencyStorage(params.initializationOptions)) {
+      return
+    }
+    try {
+      shared.dependencies.Storage.use(createLspStorageDriver(connection))
+      logger.debug`using the dependency storage of the client`
+    } catch (error) {
+      logger.warn('Failed to use the dependency storage of the client, the storage of the host is used', { error })
+    }
+  })
 }
 
 /**

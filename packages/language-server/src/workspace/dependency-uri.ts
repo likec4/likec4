@@ -193,11 +193,25 @@ const GIT_SHA_REGEX = /^[0-9a-f]{7,64}$/
 const GIT_REPOSITORY_SEGMENT_REGEX = /^(.+)@([0-9a-f]{7,64})$/
 
 /**
- * Checks if the string is a commit SHA as used in git dependency URIs and cache keys
- * (lower case hex, 7 to 64 characters).
+ * Full commit SHA: lower case hex, 40 (SHA-1) or 64 (SHA-256) characters
+ */
+const FULL_GIT_SHA_REGEX = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/
+
+/**
+ * Checks if the string looks like a commit SHA (lower case hex, 7 to 64 characters, abbreviated SHAs included).
+ * Used when parsing URIs; building URIs and keys requires {@link isFullGitSha}.
  */
 export function isGitSha(value: string): boolean {
   return GIT_SHA_REGEX.test(value)
+}
+
+/**
+ * Checks if the string is a full commit SHA (lower case hex, 40 or 64 characters).
+ * Instances, cache keys and version records use full SHAs only,
+ * so one commit never gets two instances (abbreviated and full).
+ */
+export function isFullGitSha(value: string): boolean {
+  return FULL_GIT_SHA_REGEX.test(value)
 }
 
 /**
@@ -211,7 +225,7 @@ export interface GitDependencyInstance {
    */
   readonly repository: string
   /**
-   * Commit SHA (lower case hex)
+   * Full commit SHA (lower case hex, 40 or 64 characters, see {@link isFullGitSha})
    */
   readonly sha: string
   /**
@@ -253,6 +267,11 @@ function splitRepository(repository: string): { authority: string; segments: str
  * The instance (repository, SHA, subdirectory) precedes the `-` separator,
  * the path of the file relative to the subdirectory follows it.
  *
+ * Note: `URI.toString()` encodes `@` as `%40` (`.../billing%40<sha>/-/...`):
+ * compare URIs via {@link parseGitDependencyUri} (or as `URI` strings built the same way), never by a literal `@`.
+ *
+ * @throws if the SHA is not a full SHA (see {@link isFullGitSha})
+ *
  * @example
  * ```ts
  * gitDependencyUri({ repository: 'github.com/my-org/billing', sha, subdir: 'architecture' }, 'model.c4')
@@ -260,7 +279,7 @@ function splitRepository(repository: string): { authority: string; segments: str
  * ```
  */
 export function gitDependencyUri(instance: GitDependencyInstance, path: string): URI {
-  invariant(isGitSha(instance.sha), `Invalid commit SHA of a git dependency: ${instance.sha}`)
+  invariant(isFullGitSha(instance.sha), `Git dependency requires a full commit SHA: ${instance.sha}`)
   const { authority, segments } = splitRepository(instance.repository)
   const subdir = normalizeGitSubdir(instance.subdir)
   const repositoryPath = segments.join('/')

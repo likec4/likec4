@@ -4,6 +4,7 @@ import { defu } from 'defu'
 import { startLanguageServer as startLanguim } from 'langium/lsp'
 import type { Connection } from 'vscode-languageserver'
 import { configureLanguageServerLogger } from './configureLogger'
+import { WithNodeDependencies } from './dependencies/node'
 import { WithFileSystem } from './filesystem/LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './filesystem/LikeC4ManualLayouts'
 import { logger } from './logger'
@@ -29,7 +30,10 @@ export {
 export {
   WithFileSystem,
   WithLikeC4ManualLayouts,
+  WithNodeDependencies,
 }
+
+export type { NodeDependenciesOptions } from './dependencies/node'
 
 interface StartLanguageServerOptions {
   /**
@@ -107,6 +111,7 @@ export function startLanguageServer(options?: StartLanguageServerOptions): {
     {
       ...connection && { connection },
       ...WithFileSystem(opts.enableWatcher),
+      ...WithNodeDependencies(),
       ...opts.enableManualLayouts && WithLikeC4ManualLayouts,
       ...WithGraphviz(opts.graphviz === 'binary' ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },

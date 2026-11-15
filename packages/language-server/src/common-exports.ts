@@ -24,6 +24,7 @@ export type {
   DependencyStatus,
   DependencyStorage,
   DependencyVersionRecord,
+  DidChangeDependencyStates,
   GitDependencyInstance,
   GitDependencySource,
 } from './dependencies'

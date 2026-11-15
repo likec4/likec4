@@ -16,6 +16,7 @@ import {
   DependencyStates,
   DependencyStorage,
   NoDependencies,
+  trackClientDependencyStorage,
 } from './dependencies'
 import { LikeC4DocumentationProvider } from './documentation'
 import type {
@@ -372,6 +373,7 @@ export function createLanguageServices<I1, I2, I3, I extends I1 & I2 & I3 & Like
     void shared.workspace.ConfigurationProvider.initialized({})
   } else {
     trackClientCapabilities(shared)
+    trackClientDependencyStorage(shared)
     shared.workspace.WorkspaceManager.ready.then(() => likec4.Rpc.init()).catch((error) => {
       logger.error(loggable(error))
     })

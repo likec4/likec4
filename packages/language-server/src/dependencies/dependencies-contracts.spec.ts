@@ -38,9 +38,9 @@ describe('dependencies contracts', () => {
       expect(dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: SHA, subdir: '' }))
         .toBe(`instances:github.com:my-org:billing:${SHA}:@`)
       expect(dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: SHA, subdir: './docs/arch/' }))
-        .toBe(`instances:github.com:my-org:billing:${SHA}:@docs%2Farch`)
+        .toBe(`instances:github.com:my-org:billing:${SHA}:@docs%2farch`)
       expect(dependencyCacheKey({ repository: 'example.com:2222/group/sub/repo', sha: SHA, subdir: 'a:b?c' }))
-        .toBe(`instances:example.com%3A2222:group:sub:repo:${SHA}:@a%3Ab%3Fc`)
+        .toBe(`instances:example.com%3a2222:group:sub:repo:${SHA}:@a%3ab%3fc`)
     })
 
     it('gives distinct keys to distinct instances', ({ expect }) => {
@@ -64,8 +64,38 @@ describe('dependencies contracts', () => {
     it('builds keys of the version index', ({ expect }) => {
       expect(dependencyVersionKey('github.com/my-org/billing', 'main')).toBe('versions:github.com:my-org:billing:main')
       expect(dependencyVersionKey('github.com/my-org/billing', 'release/1.0'))
-        .toBe('versions:github.com:my-org:billing:release%2F1.0')
+        .toBe('versions:github.com:my-org:billing:release%2f1.0')
       expect(() => dependencyVersionKey('github.com/my-org/billing', '')).toThrow()
+    })
+
+    it('gives keys without upper case letters (case-insensitive file systems)', ({ expect }) => {
+      const versionKeys = ['main', 'Main', 'MAIN', '^main', '%5Emain'].map(ref =>
+        dependencyVersionKey('github.com/My-Org/billing', ref)
+      )
+      expect(versionKeys[1]).toBe('versions:github.com:^my-^org:billing:^main')
+      expect(new Set(versionKeys.map(k => k.toLowerCase())).size).toBe(versionKeys.length)
+      for (const key of versionKeys) {
+        expect(key).toBe(key.toLowerCase())
+      }
+      const instanceKeys = ['Docs', 'docs', 'a/B'].map(subdir =>
+        dependencyCacheKey({ repository: 'github.com/My-Org/Billing', sha: SHA, subdir })
+      )
+      expect(instanceKeys[0]).toBe(`instances:github.com:^my-^org:^billing:${SHA}:@^docs`)
+      expect(new Set(instanceKeys.map(k => k.toLowerCase())).size).toBe(instanceKeys.length)
+    })
+
+    it('requires full SHAs in keys and version records', async ({ expect }) => {
+      expect(() => dependencyCacheKey({ repository: 'github.com/a/b', sha: SHA.slice(0, 7), subdir: '' })).toThrow()
+      expect(dependencyCacheKey({ repository: 'github.com/a/b', sha: SHA + SHA.slice(0, 24), subdir: '' }))
+        .toContain(SHA + SHA.slice(0, 24))
+      await expect(writeDependencyVersion(createStorage(), {
+        format: 1,
+        repository: 'github.com/a/b',
+        url: 'git@github.com:a/b.git',
+        ref: 'main',
+        sha: SHA.slice(0, 7),
+        resolvedAt: '2026-11-15T00:00:00.000Z',
+      })).rejects.toThrow()
     })
   })
 
@@ -177,6 +207,15 @@ describe('dependencies contracts', () => {
         .toBe('C:\\Users\\u\\AppData\\Local\\likec4\\cache\\dependencies')
       expect(likec4CacheDir({ platform: 'win32', env: {}, homedir: 'C:\\Users\\u' }))
         .toBe('C:\\Users\\u\\AppData\\Local\\likec4\\cache')
+    })
+
+    it('throws without home directory and override', ({ expect }) => {
+      expect(() => dependencyCacheDir({ platform: 'linux', env: {}, homedir: '' })).toThrow(/LIKEC4_CACHE_DIR/)
+      expect(() => dependencyCacheDir({ platform: 'darwin', env: {}, homedir: ' ' })).toThrow(/LIKEC4_CACHE_DIR/)
+      expect(dependencyCacheDir({ platform: 'linux', env: { LIKEC4_CACHE_DIR: '/c' }, homedir: '' }))
+        .toBe('/c/dependencies')
+      expect(dependencyCacheDir({ platform: 'linux', env: { XDG_CACHE_HOME: '/x' }, homedir: '' }))
+        .toBe('/x/likec4/dependencies')
     })
   })
 })

@@ -1,7 +1,7 @@
 import { invariant } from '@likec4/core/utils'
 import { isPlainObject } from 'remeda'
 import { type Storage, createStorage } from 'unstorage'
-import { type GitDependencyInstance, isGitSha, normalizeGitSubdir } from '../workspace/dependency-uri'
+import { type GitDependencyInstance, isFullGitSha, normalizeGitSubdir } from '../workspace/dependency-uri'
 import type { DependencyCacheEntry } from './types'
 
 /**
@@ -10,12 +10,26 @@ import type { DependencyCacheEntry } from './types'
 export const DEPENDENCY_INSTANCES_PREFIX = 'instances'
 
 /**
- * Encodes a key segment: unstorage treats `:`, `/` and `\` as separators and drops everything after `?`,
- * the `fs` driver maps segments to folders.
+ * Injective encoding without upper case letters:
+ * URI-encodes, lower-cases hex digits of escapes and prefixes upper case letters with `^` (`Main` -> `^main`).
+ * `%` and `^` of the input are always escaped (`%25`, `%5e`), so the encoding is unambiguous.
+ */
+function caseSafeEncode(value: string): string {
+  return encodeURIComponent(value)
+    .replace(/%[0-9A-F]{2}/g, escape => escape.toLowerCase())
+    .replace(/[A-Z]/g, letter => `^${letter.toLowerCase()}`)
+}
+
+/**
+ * Encodes a key segment:
+ * - unstorage treats `:`, `/` and `\` as separators and drops everything after `?`,
+ *   the `fs` driver maps segments to folders: the segment is URI-encoded;
+ * - file systems of macOS and Windows are case-insensitive: upper case letters are escaped
+ *   (`Main` -> `^main`, `%2F` -> `%2f`), so `Main` and `main` never share a file.
  */
 export function encodeKeySegment(segment: string): string {
   invariant(segment.length > 0 && segment !== '.' && segment !== '..', `Invalid storage key segment: "${segment}"`)
-  return encodeURIComponent(segment)
+  return caseSafeEncode(segment)
 }
 
 /**
@@ -34,24 +48,24 @@ export function repositoryKeySegments(repository: string): string[] {
  * instances:<host[:port]>:<repository path segments>:<sha>:@<subdir>
  * ```
  *
- * Each segment is URI-encoded (`:` of the port is `%3A`, `/` of the subdirectory is `%2F`),
- * the subdirectory segment is `@` for the repository root.
+ * Each segment is encoded with {@link encodeKeySegment} (`:` of the port is `%3a`, `/` of the subdirectory is `%2f`,
+ * upper case letters are prefixed with `^`), the subdirectory segment is `@` for the repository root.
  * The last two segments are always the SHA and the subdirectory, so keys are unambiguous.
  *
  * @example
  * ```ts
- * dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: 'abc1234', subdir: 'docs/arch' })
- * // instances:github.com:my-org:billing:abc1234:@docs%2Farch
+ * dependencyCacheKey({ repository: 'github.com/my-org/billing', sha: '<full sha>', subdir: 'docs/arch' })
+ * // instances:github.com:my-org:billing:<sha>:@docs%2farch
  * ```
  */
 export function dependencyCacheKey(instance: GitDependencyInstance): string {
-  invariant(isGitSha(instance.sha), `Invalid commit SHA of a git dependency: ${instance.sha}`)
+  invariant(isFullGitSha(instance.sha), `Git dependency requires a full commit SHA: ${instance.sha}`)
   const subdir = normalizeGitSubdir(instance.subdir)
   return [
     DEPENDENCY_INSTANCES_PREFIX,
     ...repositoryKeySegments(instance.repository),
     instance.sha,
-    `@${encodeURIComponent(subdir)}`,
+    `@${caseSafeEncode(subdir)}`,
   ].join(':')
 }
 
