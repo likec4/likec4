@@ -5,7 +5,7 @@ import { LibIcons } from '../generated/icons'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import { isDependencyUri } from '../workspace/dependency-uri'
+import { DependencyFileSystem } from './DependencyFileSystem'
 import type {
   FileNode,
   FileSystemModuleContext,
@@ -21,16 +21,20 @@ import type {
  * Serves only in-memory documents: the built-in library and documents of external projects (`likec4-dep` scheme).
  */
 export class NoopFileSystemProvider implements FileSystemProvider {
-  constructor(private services?: LikeC4SharedServices) {}
+  /**
+   * Documents of external projects (`likec4-dep` scheme), served from memory
+   */
+  #dependencies: DependencyFileSystem
+
+  constructor(services?: LikeC4SharedServices) {
+    this.#dependencies = new DependencyFileSystem(services)
+  }
 
   /**
    * Text of a document of an external project, from memory
    */
   private readDependency(uri: URI): string | undefined {
-    if (!isDependencyUri(uri)) {
-      return undefined
-    }
-    return this.services?.workspace.ExternalProjects.readFile(uri)
+    return this.#dependencies.readFile(uri)
   }
 
   scanProjectFiles(): Promise<FileNode[]> {

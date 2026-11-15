@@ -299,8 +299,11 @@ describe('projects-view', () => {
       const projectA = withImportedProjects(importsBilling.toLikeC4Model('projectA'), {
         billing: {
           name: 'billing-service',
-          // Kinds added later (e.g. git) must fall into the external branch
-          source: { kind: 'git', url: 'https://example.com/billing.git' } as unknown as ImportedProjectMeta['source'],
+          // Kinds added later must fall into the external branch
+          source: {
+            kind: 'future',
+            url: 'https://example.com/billing.git',
+          } as unknown as ImportedProjectMeta['source'],
         },
       })
       const result = computeProjectsView([projectA])
@@ -309,6 +312,31 @@ describe('projects-view', () => {
         projectId: 'billing@projectA',
         title: 'billing-service',
         description: { txt: 'External project, imported by projectA as "billing"' },
+      })
+      expect(result.edges).toHaveLength(1)
+    })
+
+    it('describes a git dependency as an external project with its source', ({ expect }) => {
+      const source = {
+        kind: 'git',
+        url: 'https://example.com/billing.git',
+        ref: 'v1.2.0',
+        path: 'architecture',
+        sha: 'a'.repeat(40),
+      } as const
+      const projectA = withImportedProjects(importsBilling.toLikeC4Model('projectA'), {
+        billing: { name: 'billing-service', source },
+      })
+      const result = computeProjectsView([projectA])
+      expect(result.nodes).toHaveLength(2)
+      expect(result.nodes[1]).toMatchObject({
+        projectId: 'billing@projectA',
+        title: 'billing-service',
+        description: {
+          txt: 'External project, imported by projectA as "billing"\n'
+            + 'Source: https://example.com/billing.git (architecture) at v1.2.0',
+        },
+        external: { importedBy: 'projectA', importName: 'billing', source },
       })
       expect(result.edges).toHaveLength(1)
     })

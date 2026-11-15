@@ -9,7 +9,7 @@ import type {
   PartialLangiumServices,
   PartialLangiumSharedServices,
 } from 'langium/lsp'
-import { createDefaultModule, createDefaultSharedModule, DefaultTextDocumentContentProvider } from 'langium/lsp'
+import { createDefaultModule, createDefaultSharedModule } from 'langium/lsp'
 import {
   type DependenciesModuleContext,
   type DependencyInstaller,
@@ -46,6 +46,7 @@ import {
   LikeC4SemanticTokenProvider,
 } from './lsp'
 import { LikeC4ExecuteCommandHandler } from './lsp/ExecuteCommandHandler'
+import { LikeC4TextDocumentContentProvider } from './lsp/TextDocumentContentProvider'
 import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
@@ -74,7 +75,6 @@ import { LikeC4DocumentValidator, registerValidationChecks } from './validation'
 import type { LikeC4Views, LikeC4ViewsModuleContext } from './views'
 import { DefaultLikeC4Views, WithWasmGraphviz } from './views'
 import {
-  DEPENDENCY_URI_SCHEME,
   DependencyResolver,
   ExternalProjects,
   IndexManager,
@@ -164,7 +164,7 @@ function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
       NodeKindProvider: services => new NodeKindProvider(services),
       WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services),
       // Serves documents of external projects (in memory) to the client (`workspace/textDocumentContent`)
-      TextDocumentContentProvider: services => new DefaultTextDocumentContentProvider(services, DEPENDENCY_URI_SCHEME),
+      TextDocumentContentProvider: services => new LikeC4TextDocumentContentProvider(services),
       ExecuteCommandHandler: services => new LikeC4ExecuteCommandHandler(services),
     },
     workspace: {

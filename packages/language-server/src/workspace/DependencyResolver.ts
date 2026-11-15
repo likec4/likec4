@@ -1,4 +1,4 @@
-import { isGitDependencySource } from '@likec4/config'
+import { type GitDependencySource, isGitDependencySource } from '@likec4/config'
 import type { ImportedProjectMeta, ProjectId } from '@likec4/core/types'
 import { UriUtils } from 'langium'
 import { logWarnError } from '../logger'
@@ -40,6 +40,7 @@ export interface ResolvedDependencyWithMeta {
  * 1. If the consumer declares the name in `dependencies`, the entry wins:
  *    - the folder of a workspace project resolves to that project
  *    - the folder of a registered external project resolves to that instance
+ *    - a git source resolves to its installed instance (see `ExternalProjects.loadGit`)
  *    - otherwise the name is unknown (no fallback to the workspace search by name)
  * 2. Without an entry, the name is the id of a workspace project (as before `dependencies`).
  *
@@ -86,9 +87,11 @@ export class DependencyResolver {
     }
 
     const dependencyPath = dependencies[name]
-    // Git sources are not resolved yet
-    if (!dependencyPath || isGitDependencySource(dependencyPath)) {
+    if (!dependencyPath) {
       return undefined
+    }
+    if (isGitDependencySource(dependencyPath)) {
+      return this.gitDependency(consumerProject.id, name, dependencyPath)
     }
     const folder = ProjectFolder(UriUtils.joinPath(consumerProject.folderUri, dependencyPath))
 
@@ -120,6 +123,44 @@ export class DependencyResolver {
   }
 
   /**
+   * Resolves a git dependency to its registered instance (the SHA the ref resolved to, see `ExternalProjects.loadGit`).
+   * Returns undefined if the dependency is not installed (or not synced yet).
+   */
+  protected gitDependency(
+    consumer: ProjectId,
+    name: string,
+    source: GitDependencySource,
+  ): ResolvedDependencyWithMeta | undefined {
+    const externalProjects = this.services.workspace.ExternalProjects
+    // The resolution must be of the current source: the config may have changed after the last sync
+    const resolution = externalProjects.gitResolutionFor(consumer, name, source)
+    if (resolution?.status !== 'installed') {
+      return undefined
+    }
+    const external = externalProjects.get(resolution.projectId)
+    if (!external) {
+      return undefined
+    }
+    return {
+      dependency: {
+        kind: 'external',
+        projectId: external.id,
+      },
+      meta: {
+        name: external.config.name,
+        source: {
+          kind: 'git',
+          url: withoutUserInfo(source.git),
+          ref: source.ref,
+          // Normalized subdirectory, absent for the repository root
+          ...(resolution.target.subdir ? { path: resolution.target.subdir } : {}),
+          sha: resolution.instance.sha,
+        },
+      },
+    }
+  }
+
+  /**
    * Returns the consumer project, or undefined if it is not registered.
    * `getProject` throws for unknown ids (e.g. a stale id of a removed project, or an id of an external
    * project that is not registered yet): the import is then resolved without `dependencies`.
@@ -146,4 +187,20 @@ export class DependencyResolver {
       },
     }
   }
+}
+
+/**
+ * Removes the user info (user name, password or token) from a git URL, it must not reach the model:
+ * `https://token@host/org/repo.git` -> `https://host/org/repo.git`,
+ * `ssh://git@host:2222/org/repo.git` -> `ssh://host:2222/org/repo.git`,
+ * `git@host:org/repo.git` -> `host:org/repo.git`.
+ */
+export function withoutUserInfo(url: string): string {
+  const trimmed = url.trim()
+  const withProtocol = /^([a-z][a-z0-9+.-]*:\/\/)[^/?#]*@/i
+  if (withProtocol.test(trimmed)) {
+    return trimmed.replace(withProtocol, '$1')
+  }
+  // scp-like syntax: [user@]host:path
+  return trimmed.replace(/^[^/@:]+@(?=[^/:]+:)/, '')
 }

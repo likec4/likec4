@@ -82,6 +82,7 @@ export interface LikeC4Project {
  * Where an imported project comes from, as seen by the importing (consumer) project.
  * - `workspace` - another project of the same workspace; `projectId` is its real id
  * - `local` - a dependency declared in the consumer config by a local path
+ * - `git` - a dependency declared in the consumer config by a git source, installed at `sha`
  */
 export type ImportedProjectSource =
   | {
@@ -99,6 +100,27 @@ export type ImportedProjectSource =
      * relative to the consumer project folder
      */
     path: string
+  }
+  | {
+    kind: 'git'
+    /**
+     * Repository URL as written in the `dependencies` section of the consumer config,
+     * without user info (no user name, password or token)
+     */
+    url: string
+    /**
+     * Git ref as written in the consumer config (branch, tag or commit SHA)
+     */
+    ref: string
+    /**
+     * Folder of the dependency project in the repository (normalized: forward slashes,
+     * no leading `./`, no leading or trailing slashes). Absent for the repository root.
+     */
+    path?: string
+    /**
+     * Full commit SHA the ref resolved to (the installed instance)
+     */
+    sha: string
   }
 
 /**

@@ -396,5 +396,83 @@ describe('WorkspaceManager', () => {
       // internal ids of external projects do not leak into the model
       expect(JSON.stringify(data)).not.toMatch(/"#|@#/)
     })
+
+    it('loads installed git dependencies during startup, before the initial build', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      const sha = 'a'.repeat(40)
+      const url = 'https://github.com/my-org/billing.git'
+      mockFileSystem(t, {
+        'file:///test/workspace/consumer/likec4.config.json': JSON.stringify({
+          name: 'consumer',
+          dependencies: { billing: { git: url, ref: 'main' } },
+        }),
+        'file:///test/workspace/consumer/model.c4': `
+          import { invoices } from 'billing'
+          model { }
+        `,
+      })
+      const storage = t.services.shared.dependencies.Storage
+      await storage.writeVersion({
+        format: 1,
+        repository: 'github.com/my-org/billing',
+        url,
+        ref: 'main',
+        sha,
+        resolvedAt: '2026-11-15T00:00:00.000Z',
+      })
+      await storage.writeEntry({
+        format: 1,
+        repository: 'github.com/my-org/billing',
+        url,
+        sha,
+        subdir: '',
+        files: { 'model.c4': 'specification { element service } model { service invoices }' },
+      })
+
+      const { WorkspaceManager, WorkspaceLock, LangiumDocuments } = t.services.shared.workspace
+      const write = WorkspaceLock.write.bind(WorkspaceLock)
+      let writing = 0
+      mockMethod(WorkspaceLock, 'write').mockImplementation(async action => {
+        writing++
+        try {
+          return await write(action)
+        } finally {
+          writing--
+        }
+      })
+      const readUnderLock = [] as boolean[]
+      const readVersion = storage.readVersion.bind(storage)
+      mockMethod(storage, 'readVersion').mockImplementation(async (repository, ref) => {
+        readUnderLock.push(writing > 0)
+        return readVersion(repository, ref)
+      })
+      const events = [] as Array<{ consumers: ReadonlyArray<string>; writing: boolean }>
+      t.services.shared.dependencies.States.onDidChange(e => events.push({ ...e, writing: writing > 0 }))
+      const updates = mockMethod(t.services.shared.workspace.DocumentBuilder, 'update')
+
+      const workspaceFolder: WorkspaceFolder = { name: 'workspace', uri: 'file:///test/workspace' }
+      WorkspaceManager.initialize({
+        capabilities: {},
+        processId: null,
+        rootUri: workspaceFolder.uri,
+        workspaceFolders: [workspaceFolder],
+      })
+      await WorkspaceManager.initialized({})
+      await WorkspaceManager.whenExternalProjectsSynced()
+
+      // read by the startup (under its write-lock): the storage is local, never network or git
+      expect(readUnderLock).toEqual([true])
+      // the initial build links the consumer: no relink, no unresolved import
+      expect(updates).not.toHaveBeenCalled()
+      const consumerDoc = LangiumDocuments.getDocument(URI.parse('file:///test/workspace/consumer/model.c4'))!
+      expect(consumerDoc.references.filter(ref => ref.error).map(ref => ref.error?.message)).toEqual([])
+      expect(t.services.shared.dependencies.States.get('consumer' as ProjectId, 'billing')?.status).toBe('installed')
+      // states are fired once, after the startup released the write-lock
+      expect(events).toEqual([{ consumers: ['consumer'], writing: false }])
+      expect(LangiumDocuments.hasDocument(URI.parse(`likec4-dep://github.com/my-org/billing@${sha}/-/model.c4`)))
+        .toBe(true)
+      const model = await t.services.likec4.ModelBuilder.computeModel('consumer' as ProjectId)
+      expect(model.$data.imports['billing' as ProjectId]?.map(e => e.id)).toEqual(['invoices'])
+    })
   })
 })

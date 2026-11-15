@@ -17,15 +17,22 @@ import type {
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
 import { filter, hasAtLeast, isNot, map, pipe, sort, uniqueBy } from 'remeda'
-import type { WorkspaceFolder } from 'vscode-languageserver'
+import type { InitializedParams, WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import { isLikeC4UserDocument } from '../ast'
 import type { FileNode, FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { serverLogger } from '../logger'
+import { LikeC4TextDocumentContentProvider } from '../lsp/TextDocumentContentProvider'
 import type { LikeC4SharedServices } from '../module'
 import { compareByUri } from '../utils'
-import type { ExternalDependencyTarget, ExternalProject, ExternalProjectId } from './ExternalProjects'
+import {
+  type ExternalDependencyTarget,
+  type ExternalProject,
+  type ExternalProjectId,
+  type GitDependencyResolution,
+  ExternalProjects,
+} from './ExternalProjects'
 
 function sameKeys(a: ReadonlyMap<string, unknown>, b: ReadonlyMap<string, unknown>): boolean {
   return a.size === b.size && [...a.keys()].every(k => b.has(k))
@@ -171,12 +178,36 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       for (const doc of documents) {
         this.saveAddDocument(doc)
       }
+      // States of git dependencies (documents are parsed), the initial build sees them.
+      // Fired after the startup releases the write-lock (see initialized), or with the next sync
+      if (projectsCount > 0) {
+        this.updateDependencyStates({ notify: false })
+      }
       return documents
     } finally {
       this.#performedStartup = true
       // Resolve the ready promise to indicate that workspace startup is complete
       this._ready.resolve()
     }
+  }
+
+  /**
+   * Initializes the workspace (under the write-lock), then fires the states of git dependencies
+   * set by the startup (outside of the lock), and waits for the syncs the startup queued.
+   */
+  override async initialized(params: InitializedParams): Promise<void> {
+    try {
+      await super.initialized(params)
+    } finally {
+      this.updateDependencyStates()
+    }
+    // The retry of git dependencies the startup could not read the storage for, and the syncs it queued:
+    // hosts that build right after `initialized` (CLI) must not build concurrently with them
+    if (this.#startupRetry) {
+      await this.#startupRetry
+      this.#startupRetry = undefined
+    }
+    await this.whenExternalProjectsSynced()
   }
 
   /**
@@ -388,6 +419,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * registers them and returns their documents (to be added to the workspace).
    * Runs within startup, which holds the workspace write-lock.
    *
+   * Installed git dependencies are read from the dependency storage here as well:
+   * the storage is local (file system, or requests to the client), never network or git,
+   * so consumers are linked against them by the initial build.
+   *
    * @param existing documents found in the workspace (not duplicated)
    */
   protected async startupExternalProjects(existing: ReadonlyArray<LangiumDocument>): Promise<LangiumDocument[]> {
@@ -395,7 +430,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const documents = [] as LangiumDocument[]
     try {
       const targets = externalProjects.dependencyTargets()
-      const loaded = await externalProjects.loadAll(targets)
+      const gitTargets = externalProjects.gitDependencyTargets()
+      const loadedLocal = await externalProjects.loadAll(targets)
+      // Bounded by `ExternalProjects.storageTimeout`: on timeout the targets are failed and retried later
+      const git = await externalProjects.loadGit(gitTargets)
+      const loaded = [...loadedLocal, ...git.projects]
       const seen = new Set(existing.map(d => d.uri.toString()))
       for (const project of loaded) {
         externalProjects.register(project)
@@ -408,6 +447,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
         }
       }
       externalProjects.markSynced(targets.keys())
+      externalProjects.setGitResolutions(git.resolutions)
+      externalProjects.markGitSynced(gitTargets, git.failed)
+      // After the startup (and a delay): the client may not serve its storage yet
+      this.scheduleStorageRetry(git.failed.length, this.startupRetryDelay)
       if (loaded.length > 0) {
         this.#logger.info`loaded ${loaded.length} external projects`
       }
@@ -504,42 +547,140 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     const externalProjects = this.services.workspace.ExternalProjects
     const lock = this.services.workspace.WorkspaceLock
     const maxAttempts = 3
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      const targets = externalProjects.dependencyTargets()
-      if (mode === 'structural' && !externalProjects.hasStructuralChanges(targets)) {
-        return
-      }
-      if (targets.size === 0 && externalProjects.all().length === 0) {
-        externalProjects.markSynced([])
-        return
-      }
-      // File system I/O, outside of the lock
-      const loaded = await externalProjects.loadAll(targets)
-      // Wait for the builds that requested this sync (they may run without the lock)
-      await Promise.allSettled(after)
-      if (!externalProjects.differsFromRegistered(loaded) && sameKeys(externalProjects.dependencyTargets(), targets)) {
-        // Nothing to apply: do not take the write-lock (it would cancel a running write)
-        externalProjects.markSynced(targets.keys())
-        return
-      }
-      // Let running writes (e.g. the reload that requested this sync) complete, instead of cancelling them
-      await lock.read(() => undefined)
-      let retry = false
-      await lock.write(async token => {
-        // Current targets: consumers might have changed while reading
-        const current = externalProjects.dependencyTargets()
-        if (!sameKeys(current, targets)) {
-          // Dependencies changed while reading
-          retry = true
+    // Git targets the storage could not be read for (retried once by a structural sync)
+    let failedGitTargets = 0
+    try {
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const targets = externalProjects.dependencyTargets()
+        const gitTargets = externalProjects.gitDependencyTargets()
+        if (mode === 'structural' && !externalProjects.hasStructuralChanges(targets, gitTargets)) {
           return
         }
-        await this.applyExternalProjects(current, loaded, token)
-      })
-      if (!retry) {
-        return
+        if (
+          targets.size === 0
+          && gitTargets.length === 0
+          && externalProjects.all().length === 0
+          && externalProjects.gitResolutions().length === 0
+        ) {
+          externalProjects.markSynced([])
+          externalProjects.markGitSynced([])
+          return
+        }
+        // File system and storage I/O, outside of the lock
+        const loadedLocal = await externalProjects.loadAll(targets)
+        const git = await externalProjects.loadGit(gitTargets)
+        failedGitTargets = git.failed.length
+        const loaded = [...loadedLocal, ...git.projects]
+        // Wait for the builds that requested this sync (they may run without the lock)
+        await Promise.allSettled(after)
+        if (
+          !externalProjects.differsFromRegistered(loaded)
+          && externalProjects.changedGitConsumers(git.resolutions).size === 0
+          && sameKeys(externalProjects.dependencyTargets(), targets)
+          && ExternalProjects.sameGitTargets(externalProjects.gitDependencyTargets(), gitTargets)
+        ) {
+          // Nothing to apply: do not take the write-lock (it would cancel a running write)
+          externalProjects.markSynced(targets.keys())
+          // Statuses may change (e.g. not installed -> unsupported), imports resolve to the same instances
+          externalProjects.setGitResolutions(git.resolutions)
+          externalProjects.markGitSynced(gitTargets, git.failed)
+          return
+        }
+        // Let running writes (e.g. the reload that requested this sync) complete, instead of cancelling them
+        await lock.read(() => undefined)
+        let retry = false
+        await lock.write(async token => {
+          // Current targets: consumers might have changed while reading
+          const current = externalProjects.dependencyTargets()
+          if (
+            !sameKeys(current, targets)
+            || !ExternalProjects.sameGitTargets(externalProjects.gitDependencyTargets(), gitTargets)
+          ) {
+            // Dependencies changed while reading
+            retry = true
+            return
+          }
+          externalProjects.markGitSynced(gitTargets, git.failed)
+          await this.applyExternalProjects(current, loaded, token, git.resolutions)
+        })
+        if (!retry) {
+          return
+        }
       }
+      this.#logger.warn`dependencies keep changing, external projects are not synced after ${maxAttempts} attempts`
+    } finally {
+      // States of git dependencies, fired outside of the write-lock
+      this.updateDependencyStates()
+      this.scheduleStorageRetry(failedGitTargets)
     }
-    this.#logger.warn`dependencies keep changing, external projects are not synced after ${maxAttempts} attempts`
+  }
+
+  /**
+   * Number of structural syncs requested in a row because the dependency storage could not be read
+   */
+  #storageRetries = 0
+
+  /**
+   * Maximum number of structural syncs requested in a row because the dependency storage could not be read
+   * (bounded: no loop on a storage that keeps failing; the next reload or install retries again)
+   */
+  protected maxStorageRetries = 1
+
+  /**
+   * After a sync (or the startup) that could not read the dependency storage for some git targets,
+   * requests one structural sync to retry them (those targets are not marked as synced).
+   * Not awaited: called outside of the write-lock, the sync is queued after the current one.
+   *
+   * @param failed number of git targets the storage could not be read for
+   */
+  protected scheduleStorageRetry(failed: number, delay?: number): void {
+    if (failed === 0) {
+      this.#storageRetries = 0
+      return
+    }
+    if (this.#storageRetries >= this.maxStorageRetries) {
+      this.#logger.warn`dependency storage could not be read for ${failed} git dependencies, not retrying`
+      return
+    }
+    this.#storageRetries++
+    if (delay === undefined) {
+      void this.requestExternalProjectsSync('structural')
+      return
+    }
+    // Started after the workspace is ready and the delay (not awaited here: called under the startup write-lock)
+    this.#startupRetry = this.ready
+      .then(() => new Promise<void>(resolve => setTimeout(resolve, delay)))
+      .then(() => this.requestExternalProjectsSync('structural'))
+      .catch(error => {
+        this.#logger.warn('Failed to retry git dependencies', { error })
+      })
+  }
+
+  /**
+   * Delay of the retry of git dependencies the startup could not read the storage for
+   * (after the workspace is ready), so a client that does not serve its storage yet does not burn the retry
+   */
+  protected startupRetryDelay = 1000
+
+  /**
+   * Retry of git dependencies scheduled by the startup, awaited by {@link initialized}
+   */
+  #startupRetry: Promise<void> | undefined
+
+  /**
+   * Replaces the states of git dependencies with the ones of the registered instances.
+   * Fires `DependencyStates.onDidChange` for consumers whose states changed, unless `notify: false`
+   * (must not fire under the write-lock).
+   */
+  protected updateDependencyStates(options?: { notify?: boolean }): void {
+    try {
+      this.services.dependencies.States.update(
+        this.services.workspace.ExternalProjects.dependencyStates(),
+        options,
+      )
+    } catch (error) {
+      this.#logger.warn('Failed to update states of git dependencies', { error })
+    }
   }
 
   /**
@@ -556,6 +697,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     targets: ReadonlyMap<ExternalProjectId, ExternalDependencyTarget>,
     loaded: ReadonlyArray<ExternalProject>,
     cancelToken?: Cancellation.CancellationToken,
+    gitResolutions: ReadonlyArray<GitDependencyResolution> = [],
   ): Promise<void> {
     const externalProjects = this.services.workspace.ExternalProjects
     const next = new Map(loaded.map(p => [p.id, p]))
@@ -607,12 +749,18 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       externalProjects.register(project)
     }
     externalProjects.markSynced(targets.keys())
+    // Consumers of git dependencies that resolve to another instance (or are installed or removed)
+    const consumers = new Set<string>(externalProjects.setGitResolutions(gitResolutions))
 
     // Documents of consumers of changed instances
     // (consumers of removed instances have changed config, they are rebuilt by the projects manager)
-    const consumers = new Set<string>()
     for (const id of changedProjects) {
       targets.get(id)?.consumers.forEach(c => consumers.add(c))
+    }
+    for (const resolution of gitResolutions) {
+      if (resolution.status === 'installed' && changedProjects.has(resolution.projectId)) {
+        consumers.add(resolution.target.consumer)
+      }
     }
     const lookup = this.services.workspace.ProjectsLookup
     const consumerDocs = consumers.size === 0 ? [] : this.langiumDocuments.all
@@ -624,7 +772,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       .map(doc => doc.uri)
       .toArray()
 
-    if (changedProjects.size === 0 && deleted.length === 0) {
+    if (changedProjects.size === 0 && deleted.length === 0 && consumerDocs.length === 0) {
       return
     }
     this.#logger.debug`external projects changed: ${[...changedProjects].join(', ')}`
@@ -632,15 +780,26 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     // Deleted documents are removed synchronously, before the first await of the update
     const update = this.documentBuilder.update(consumerDocs, deleted, cancelToken)
     // Add documents that are not in the workspace (decided by actual presence)
+    const contentProvider = this.services.lsp.TextDocumentContentProvider
+    const requested = contentProvider instanceof LikeC4TextDocumentContentProvider ? contentProvider : undefined
+    const added = [] as URI[]
     for (const [uri, text] of nextFiles) {
       const docUri = URI.parse(uri)
       if (!this.langiumDocuments.hasDocument(docUri)) {
         this.langiumDocuments.addDocument(this.documentFactory.fromString(text, docUri))
+        // The editor asked for it before (e.g. a tab opened while not installed): it re-requests the content
+        if (requested?.wasRequested(docUri)) {
+          added.push(docUri)
+        }
       }
     }
-    // Content of replaced or removed documents changed: editors showing them re-request it
-    if (deleted.length > 0) {
-      this.refreshDependencyDocuments(deleted)
+    // States of git dependencies, before relinking consumers (diagnostics of this build see them),
+    // fired after the write-lock is released (see runExternalProjectsSync)
+    this.updateDependencyStates({ notify: false })
+    // Content of replaced or removed documents changed, and added documents the editor asked for before:
+    // editors showing them re-request it
+    if (deleted.length > 0 || added.length > 0) {
+      this.refreshDependencyDocuments([...deleted, ...added])
     }
     // Builds added documents and relinks consumers
     await update
