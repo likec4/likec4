@@ -100,6 +100,7 @@ const buildCmd = (yargs: yargs.Argv) => {
         }
 
         await using languageServices = await fromWorkspace(config.workspace, {
+          requireInstalledDependencies: true,
           graphviz: config.graphviz,
           watch: false,
         })

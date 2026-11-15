@@ -25,6 +25,7 @@ type JsonExportArgs = {
 async function runExportJson(args: JsonExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
   await using languageServices = await fromWorkspace(args.path, {
+    requireInstalledDependencies: true,
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })

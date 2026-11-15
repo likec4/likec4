@@ -275,6 +275,7 @@ async function runExportDrawio(args: DrawioExportArgs, logger: ViteLogger): Prom
 
   // 1) Init workspace (same fromWorkspace as build for consistent CI)
   await using likec4 = await fromWorkspace(args.path, {
+    requireInstalledDependencies: true,
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })

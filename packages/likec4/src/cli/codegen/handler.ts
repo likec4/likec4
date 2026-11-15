@@ -181,6 +181,7 @@ export async function legacyHandler({ path, useDotBin, ...outparams }: HandlerPa
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   const languageServices = await fromWorkspace(path, {
+    requireInstalledDependencies: true,
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })
