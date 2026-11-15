@@ -35,6 +35,7 @@ const router = createTanstackRouter<RouteTree, 'always', true>({
   },
   InnerWrap: LikeC4ProjectsContext,
   basepath,
+  scrollRestoration: true,
   trailingSlash: 'always',
   defaultViewTransition: false,
   history: useHashHistory ? createHashHistory() : createBrowserHistory(),

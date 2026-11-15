@@ -16,70 +16,6 @@ const meta = {
   ...textSecondary,
 } as const
 
-export const dialog = css({
-  backgroundColor: '[color-mix(in srgb, var(--colors-surface-canvas) 92%, transparent)]',
-  backdropFilter: 'auto',
-  backdropBlur: '[10px]',
-})
-
-export const body = css({
-  width: '100%',
-  height: '100%',
-  maxHeight: '100vh',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '3',
-  paddingTop: '5',
-  paddingX: '4',
-  background: 'transparent',
-  fontFamily: 'body',
-  color: 'text',
-})
-
-export const top = css({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2',
-  paddingX: '3',
-})
-
-export const input = css({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '2',
-  height: '[48px]',
-  paddingLeft: '3',
-  paddingRight: '2',
-  borderRadius: 'md',
-  borderWidth: '1',
-  borderStyle: 'solid',
-  borderColor: 'border.subtle',
-  backgroundColor: 'surface.field',
-  _focusWithin: {
-    borderColor: 'primary.border',
-    boxShadow: '[0 0 0 1px var(--colors-primary-border)]',
-  },
-  '& > svg': {
-    flexShrink: '0',
-    ...textSecondary,
-  },
-  '& input': {
-    flex: '1',
-    minWidth: '0',
-    height: '100%',
-    border: 'none',
-    backgroundColor: 'transparent',
-    color: 'text.bright',
-    fontFamily: 'body',
-    fontSize: 'lg',
-    outline: 'none',
-    _placeholder: {
-      color: 'text.dimmed',
-    },
-  },
-})
-
 export const scopeToken = css({
   display: 'inline-flex',
   flexShrink: '1',
@@ -181,66 +117,6 @@ export const scopeNone = css({
   ...textSecondary,
 })
 
-export const hint = css({
-  paddingX: '3',
-  paddingY: '6',
-  fontSize: 'sm',
-  ...textSecondary,
-  '& code': {
-    fontFamily: 'mono',
-    fontSize: 'xs',
-    paddingX: '1',
-    borderRadius: 'xs',
-    backgroundColor: 'surface.sunken',
-    color: 'text',
-  },
-})
-
-export const cols = css({
-  flex: '1',
-  minHeight: '0',
-  display: 'grid',
-  gridTemplateColumns: { base: '1fr', md: '1fr 1fr' },
-  gap: '4',
-})
-
-export const col = css({
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: '0',
-})
-
-export const colTitle = css({
-  display: 'flex',
-  alignItems: 'baseline',
-  gap: '2',
-  paddingX: '3',
-  paddingBottom: '2',
-  fontSize: 'sm',
-  fontWeight: 'semibold',
-  ...textSecondary,
-})
-
-export const list = css({
-  flex: '1',
-  minHeight: '0',
-  overflowY: 'auto',
-  paddingX: '3',
-  paddingBottom: '4',
-})
-
-export const groupHead = css({
-  minWidth: '0',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '2',
-  paddingY: '1.5',
-  backgroundColor: '[color-mix(in srgb, var(--colors-surface-canvas) 96%, transparent)]',
-  fontSize: 'xs',
-  fontWeight: 'semibold',
-  color: 'text',
-})
-
 export const linkButton = css({
   marginLeft: 'auto',
   border: 'none',
@@ -280,39 +156,8 @@ export const rows = css({
   gap: '1.5',
 })
 
-export const row = css({
-  display: 'grid',
-  gridTemplateColumns: '[22px 1fr auto]',
-  alignItems: 'start',
-  columnGap: '2.5',
-  width: '100%',
-  paddingY: '2',
-  paddingX: '3',
-  borderWidth: '1',
-  borderStyle: 'solid',
-  borderColor: 'border.subtle',
-  borderRadius: 'sm',
-  backgroundColor: 'surface.default',
-  color: 'inherit',
-  fontFamily: 'body',
-  textAlign: 'left',
-  cursor: 'pointer',
-  outline: 'none',
-  _hover: {
-    borderColor: 'border.default',
-  },
-  _focus: {
-    borderColor: 'primary.border',
-    boxShadow: '[0 0 0 1px var(--colors-primary-border)]',
-    backgroundColor: '[color-mix(in srgb, var(--colors-primary-body-light) 50%, var(--colors-surface-default))]',
-  },
-  '& > svg': {
-    marginTop: '[1px]',
-    ...textSecondary,
-  },
-})
-
 export const rowMain = css({
+  flex: '1',
   display: 'flex',
   flexDirection: 'column',
   gap: '0.5',
@@ -322,65 +167,17 @@ export const rowMain = css({
 export const rowTitle = css({
   display: 'flex',
   alignItems: 'center',
-  gap: '2',
+  gap: 'xs',
   minWidth: '0',
-  fontSize: 'md',
-  fontWeight: 'medium',
-  color: 'text.bright',
-  '& > span:first-child': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-})
-
-export const kind = css({
-  flexShrink: '0',
-  fontFamily: 'body',
-  fontSize: 'xxs',
-  paddingX: '[5px]',
-  paddingY: '[1px]',
-  borderRadius: 'xs',
-  backgroundColor: 'surface.sunken',
-  ...textSecondary,
 })
 
 export const rowPath = css({
-  ...meta,
   // element FQN and view id are code
   fontFamily: 'mono',
   fontSize: '[11px]',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-})
-
-export const rowDesc = css({
-  fontSize: 'xs',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  ...textSecondary,
-})
-
-export const rowMeta = css({
-  ...meta,
-  whiteSpace: 'nowrap',
-  paddingTop: '0.5',
-})
-
-export const pickHead = css({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '2',
-  paddingX: '3',
-  paddingBottom: '2',
-  fontSize: 'sm',
-  ...textSecondary,
-  '& b': {
-    color: 'text.bright',
-    fontWeight: 'semibold',
-  },
 })
 
 export const pickList = css({
