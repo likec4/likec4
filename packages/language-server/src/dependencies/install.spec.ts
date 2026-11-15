@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, describe, it } from 'vitest'
 import { createTestServices } from '../test'
-import { type GitRunner, createGitRunner, fetchGitCommit, initGitRepository } from './git'
+import { type GitRunner, createGitRunner, fetchGitCommit, GIT_BATCH_SSH_COMMAND, initGitRepository } from './git'
 import { type GitDependencyInstallerOptions, createGitDependencyInstaller } from './install'
 import { dependencyCacheKey } from './storage'
 
@@ -18,7 +18,7 @@ const REPOSITORY = 'example.test/org/billing'
  * Temporary folder with a local git repository and its bare clone (the "remote").
  * Tests never go to the network: allowed URLs (`https://example.test/...`) are mapped to the bare repository.
  */
-function createFixture(installerOptions?: GitDependencyInstallerOptions) {
+function createFixture(installerOptions?: GitDependencyInstallerOptions, objectFormat: 'sha1' | 'sha256' = 'sha1') {
   const root = mkdtempSync(join(tmpdir(), 'likec4-install-'))
   // isolate git from the configuration of the user (signing, hooks, default branch, ...)
   const globalConfig = join(root, 'gitconfig')
@@ -38,10 +38,10 @@ function createFixture(installerOptions?: GitDependencyInstallerOptions) {
   mkdirSync(temp)
   const git = (cwd: string, ...args: string[]) =>
     execFileSync('git', args, { cwd, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
-  git(root, 'init', '--quiet', '--bare', '--initial-branch=main', bare)
+  git(root, 'init', '--quiet', '--bare', '--initial-branch=main', `--object-format=${objectFormat}`, bare)
   // partial clone (--filter=blob:none) is supported by the "remote"
   git(bare, 'config', 'uploadpack.allowFilter', 'true')
-  git(root, 'init', '--quiet', '--initial-branch=main', work)
+  git(root, 'init', '--quiet', '--initial-branch=main', `--object-format=${objectFormat}`, work)
 
   /**
    * Writes files to the work tree, commits and pushes. Returns the commit SHA.
@@ -148,6 +148,7 @@ function createFixture(installerOptions?: GitDependencyInstallerOptions) {
 
   return {
     initialize,
+    globalConfig,
     root,
     env,
     bare,
@@ -213,8 +214,8 @@ const BILLING_FILES = {
 
 describe('GitDependencyInstaller', () => {
   const fixtures = [] as Fixture[]
-  const setup = async (options?: GitDependencyInstallerOptions) => {
-    const fixture = createFixture(options)
+  const setup = async (options?: GitDependencyInstallerOptions, objectFormat?: 'sha1' | 'sha256') => {
+    const fixture = createFixture(options, objectFormat)
     fixtures.push(fixture)
     await fixture.initialize()
     return fixture
@@ -297,7 +298,7 @@ describe('GitDependencyInstaller', () => {
     f.calls.length = 0
     const updated = await f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { update: true })
     expect(updated).toMatchObject({ status: 'installed', cached: true, instance: { sha } })
-    expect(f.gitCommands()).toEqual(['init', 'config', 'config', 'config', 'ls-remote'])
+    expect(f.gitCommands()).toEqual(['init', 'config', 'config', 'config', 'config', 'ls-remote'])
   })
 
   it('changed ref in the config resolves only this record', async ({ expect }) => {
@@ -687,6 +688,100 @@ describe('GitDependencyInstaller', () => {
     utimesSync(other, old, old)
     await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
     expect(readdirSync(f.temp).sort()).toEqual(['likec4-git-fresh', 'other'])
+  })
+
+  it('installs a SHA-256 repository', async ({ expect }) => {
+    const f = await setup(undefined, 'sha256')
+    const sha = f.commit(BILLING_FILES)
+    expect(sha).toMatch(/^[0-9a-f]{64}$/)
+    const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(result).toMatchObject({ status: 'installed', cached: false, instance: { sha }, files: 3 })
+    expect((await f.storage.readVersion(REPOSITORY, 'main'))?.sha).toBe(sha)
+  })
+
+  it('ignores init.defaultObjectFormat of the user', async ({ expect }) => {
+    const f = await setup()
+    const sha = f.commit(BILLING_FILES)
+    writeFileSync(f.globalConfig, '[init]\n\tdefaultObjectFormat = sha256\n')
+    const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(result).toMatchObject({ status: 'installed', instance: { sha } })
+  })
+
+  it('fails if the configuration of the user adds a URL to the remote', async ({ expect }) => {
+    const f = await setup()
+    f.commit(BILLING_FILES)
+    writeFileSync(f.globalConfig, '[remote "likec4-dependency"]\n\turl = /somewhere/else.git\n')
+    const result = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(result).toMatchObject({ status: 'failed', error: expect.stringContaining('Unexpected URL of the remote') })
+    expect(f.gitCommands()).not.toContain('ls-remote')
+    expect(await f.keys()).toEqual([])
+  })
+
+  it('sets a batch ssh command on Windows only when none is configured', async ({ expect }) => {
+    const f = await setup()
+    const init = async (platform: string) => {
+      const dir = mkdtempSync(join(f.root, 'init-'))
+      await initGitRepository(f.realGit, { remote: f.bare, dir, platform }, { cwd: f.root })
+      try {
+        return f.git(dir, 'config', '--local', '--get', 'core.sshCommand')
+      } catch {
+        // not set
+        return ''
+      }
+    }
+    expect(await init('win32')).toBe(GIT_BATCH_SSH_COMMAND)
+    expect(await init('linux')).toBe('')
+    writeFileSync(f.globalConfig, '[core]\n\tsshCommand = ssh -i key\n')
+    expect(await init('win32')).toBe('')
+  })
+
+  it('an install abandoned while awaiting the storage writes nothing, the next run waits for it', async ({ expect }) => {
+    const f = await setup({ deadline: 1500 })
+    const sha = f.commit(BILLING_FILES)
+    const instance = { repository: REPOSITORY, sha, subdir: 'arch' }
+    await f.storage.writeEntry({
+      format: 1,
+      repository: REPOSITORY,
+      url: URL,
+      sha,
+      subdir: 'arch',
+      files: { 'a.c4': '' },
+    })
+
+    // hold the storage read after ls-remote (the instance is installed: only the version index would be written)
+    let releaseRead = () => {}
+    const readHeld = new Promise<void>(resolve => {
+      releaseRead = resolve
+    })
+    let reads = 0
+    const readEntry = f.storage.readEntry.bind(f.storage)
+    f.storage.readEntry = async entry => {
+      reads++
+      await readHeld
+      return readEntry(entry)
+    }
+    let versionWrites = 0
+    const writeVersion = f.storage.writeVersion.bind(f.storage)
+    f.storage.writeVersion = async record => {
+      versionWrites++
+      return writeVersion(record)
+    }
+
+    const first = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(first).toMatchObject({ status: 'failed', error: expect.stringContaining('timed out') })
+    expect(reads).toBe(1)
+
+    // the next run of the same source waits for the abandoned install
+    const calls = f.calls.length
+    const second = f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    await new Promise(resolve => setTimeout(resolve, 200))
+    expect(f.calls.length).toBe(calls)
+
+    releaseRead()
+    expect(await second).toMatchObject({ status: 'installed', cached: true, instance })
+    // only the second run wrote the version index
+    expect(versionWrites).toBe(1)
+    expect(f.tempIsEmpty()).toBe(true)
   })
 
   describe('concurrent installs', () => {

@@ -76,7 +76,8 @@ function normalizeRepositoryPath(path: string): string | undefined {
 }
 
 /**
- * Decodes the path the same way for all forms (so `bill%23ing` gives one identity in https and scp-like URLs).
+ * Decodes the path of `https://` and `ssh://` URLs (scp-like paths with `%` are rejected, git does not decode them),
+ * so `https://host/org/bill%23ing` and `git@host:org/bill#ing` have one identity.
  * Returns undefined for encoded separators (`%2F`, `%5C`), malformed escapes,
  * control characters and a `%` that remains after decoding.
  */
@@ -168,8 +169,10 @@ function result(
  * - path segments with `:`, `.` or `..`, segments starting with `-`, encoded `/` and `\` (`%2F`, `%5C`)
  * - control characters, a `%` that remains after decoding the path
  *
- * Paths are percent-decoded in all forms, so `git@host:org/bill%23ing` and `https://host/org/bill%23ing`
- * have the same identity.
+ * - `%` in scp-like paths (git passes them to the server as written)
+ *
+ * Paths of `https://` and `ssh://` URLs are percent-decoded, so `git@host:org/bill#ing` and
+ * `https://host/org/bill%23ing` have the same identity.
  * - users that start with `-` or contain characters other than `A-Z a-z 0-9 . _ ~ -` (ssh option injection)
  * - hosts that are not plain host names (start with `-`, IPv6 literals)
  *
@@ -199,6 +202,11 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
     const [, user, host = '', rawPath = ''] = scp
     // "C:repo" is a Windows path with a drive letter, not a host
     if (host.length < 2 || (user !== undefined && !USER_REGEX.test(user))) {
+      return undefined
+    }
+    // git passes scp-like paths to the server as written (no percent-decoding):
+    // escapes are rejected, so the identity is the path as written
+    if (rawPath.includes('%')) {
       return undefined
     }
     const path = decodePath(rawPath)

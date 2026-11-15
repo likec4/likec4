@@ -317,6 +317,10 @@ export class GitDependencyInstaller implements DependencyInstaller {
   readonly #deadline: number
   readonly #now: () => Date
   readonly #runs = new Map<string, InstallRun>()
+  /**
+   * Completion of all runs of a key, abandoned installs included: the next run of the key waits for it
+   */
+  readonly #tails = new Map<string, Promise<void>>()
   #sweep: Promise<void> | undefined
 
   constructor(protected services: LikeC4SharedServices, options?: GitDependencyInstallerOptions) {
@@ -341,7 +345,7 @@ export class GitDependencyInstaller implements DependencyInstaller {
     let run = this.#runs.get(key)
     // join a running install, unless this is an update and the running one is not, or it was aborted
     if (!run || (update && !run.update) || run.controller.signal.aborted) {
-      run = this.#startRun(key, validated, update, run?.promise)
+      run = this.#startRun(key, validated, update, this.#tails.get(key))
     }
     return this.#wait(run, options?.cancelToken)
   }
@@ -350,7 +354,7 @@ export class GitDependencyInstaller implements DependencyInstaller {
     key: string,
     validated: ValidatedGitDependencySource,
     update: boolean,
-    previous: Promise<DependencyInstallResult> | undefined,
+    previous: Promise<void> | undefined,
   ): InstallRun {
     const controller = new AbortController()
     const run: InstallRun = {
@@ -360,6 +364,8 @@ export class GitDependencyInstaller implements DependencyInstaller {
       pinned: 0,
       promise: Promise.resolve({ status: 'unsupported' }),
     }
+    // the install itself: keeps running in the background when the run is abandoned
+    let work: Promise<unknown> = Promise.resolve()
     run.promise = (async (): Promise<DependencyInstallResult> => {
       if (previous) {
         await previous
@@ -369,7 +375,11 @@ export class GitDependencyInstaller implements DependencyInstaller {
       }
       this.#sweep ??= removeStaleTempDirs(this.#tempDir ?? tmpdir())
       await this.#sweep
-      return await this.#withDeadline(controller, signal => this.#install(validated, update, signal))
+      return await this.#withDeadline(controller, signal => {
+        const install = this.#install(validated, update, signal)
+        work = install
+        return install
+      })
     })()
       .catch((error: unknown): DependencyInstallResult => {
         const message = errorMessage(error)
@@ -382,6 +392,13 @@ export class GitDependencyInstaller implements DependencyInstaller {
         }
       })
     this.#runs.set(key, run)
+    const tail = run.promise.then(() => work).then(() => {}, () => {})
+    this.#tails.set(key, tail)
+    void tail.then(() => {
+      if (this.#tails.get(key) === tail) {
+        this.#tails.delete(key)
+      }
+    })
     return run
   }
 
@@ -472,18 +489,22 @@ export class GitDependencyInstaller implements DependencyInstaller {
     const repository = url.id
     // never store credentials
     const storedUrl = stripGitUrlCredentials(source.git)
-    const writeVersion = (sha: string) =>
-      storage.writeVersion(createDependencyVersionRecord({
+    const throwIfAborted = () => {
+      if (signal.aborted) {
+        throw new Error(CANCELLED)
+      }
+    }
+    // every write checks the signal right before it: an abandoned install (deadline, all callers cancelled)
+    // never writes, also when it was abandoned while awaiting the storage
+    const writeVersion = async (sha: string) => {
+      throwIfAborted()
+      await storage.writeVersion(createDependencyVersionRecord({
         repository,
         url: storedUrl,
         ref,
         sha,
         resolvedAt: this.#now(),
       }))
-    const throwIfAborted = () => {
-      if (signal.aborted) {
-        throw new Error(CANCELLED)
-      }
     }
 
     // SHA known without the remote and the instance is installed: git is not run
@@ -573,6 +594,7 @@ export class GitDependencyInstaller implements DependencyInstaller {
         files,
       }
       // one write: the instance is either installed completely or not at all
+      throwIfAborted()
       await storage.writeEntry(entry)
       if (resolved.source !== 'index' || sha !== resolved.sha) {
         await writeVersion(sha)

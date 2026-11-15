@@ -187,7 +187,7 @@ describe('git', () => {
     expect(remote('ssh://git@example.com:2222/a/b.git')).toBe('ssh://git@example.com:2222/a/b.git')
     expect(remote('git@github.com:my-org/billing.git')).toBe('git@github.com:my-org/billing.git')
     // scp-like paths are passed as written (git does not decode them)
-    expect(remote('git@GitHub.com:my-org/bill%23ing.git/')).toBe('git@github.com:my-org/bill%23ing.git/')
+    expect(remote('git@GitHub.com:my-org/bill#ing.git/')).toBe('git@github.com:my-org/bill#ing.git/')
     expect(remote('github.com:my-org/billing')).toBe('github.com:my-org/billing')
   })
 
@@ -200,6 +200,8 @@ describe('git', () => {
   it('sanitizes output of git for messages', ({ expect }) => {
     expect(sanitizeGitOutput('remote: \u001b[31mevil\u001b[0m\r\nline')).toBe('remote:  [31mevil [0m line')
     expect(sanitizeGitOutput('x'.repeat(300))).toHaveLength(201)
+    // bidirectional overrides and zero-width characters
+    expect(sanitizeGitOutput('a\u202eb\u200bc')).toBe('a b c')
   })
 
   it('sparse checkout patterns cover only sources and JSON configs', ({ expect }) => {

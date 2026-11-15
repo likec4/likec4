@@ -1,9 +1,9 @@
 // Node-only: runs the system git for git dependencies.
 // Imported only from `install.ts` / `versions.ts` (Node entry), never from the browser entry.
 import { ConfigFilenames, isLikeC4JsonConfig } from '@likec4/config'
-import { type ChildProcess, spawn } from 'node:child_process'
+import { type ChildProcess, spawn, spawnSync } from 'node:child_process'
 import { constants } from 'node:fs'
-import { access, stat } from 'node:fs/promises'
+import { access, mkdtemp, realpath, rm, stat } from 'node:fs/promises'
 import { devNull, tmpdir } from 'node:os'
 import { posix, win32 } from 'node:path'
 import { isFullGitSha } from '../workspace/dependency-uri'
@@ -331,10 +331,11 @@ export const GIT_CONFIG_ARGS: readonly string[] = [
 const DRAIN_GRACE = 2000
 
 // eslint-disable-next-line no-control-regex
-const CONTROL_CHARS_REGEX = /[\x00-\x1f\x7f-\x9f]+/g
+const CONTROL_CHARS_REGEX = /[\x00-\x1f\x7f-\x9f\p{Cf}]+/gu
 
 /**
- * Makes text from git (or the server, via git) safe for messages: control characters become spaces,
+ * Makes text from git (or the server, via git) safe for messages: control and format characters
+ * (bidirectional overrides, zero-width characters) become spaces,
  * truncated to `max` characters.
  */
 export function sanitizeGitOutput(text: string, max = 200): string {
@@ -353,13 +354,22 @@ function installExitHook(): void {
     return
   }
   exitHookInstalled = true
+  // synchronous: nothing asynchronous runs in an "exit" handler
   process.once('exit', () => {
     for (const child of runningProcesses) {
+      const pid = child.pid
+      if (pid === undefined) {
+        continue
+      }
       try {
-        if (process.platform !== 'win32' && child.pid !== undefined) {
-          process.kill(-child.pid, 'SIGKILL')
+        if (process.platform === 'win32') {
+          spawnSync(taskkillPath(process.env), ['/pid', String(pid), '/T', '/F'], {
+            stdio: 'ignore',
+            windowsHide: true,
+            timeout: 5000,
+          })
         } else {
-          child.kill('SIGKILL')
+          process.kill(-pid, 'SIGKILL')
         }
       } catch {
         // already gone
@@ -373,6 +383,11 @@ function installExitHook(): void {
  * the process group on POSIX (git is spawned detached, children stay in its group),
  * `taskkill /T` on Windows (children of an exited process cannot be found there).
  */
+function taskkillPath(env: Env): string {
+  const systemRoot = envValue(env, 'SYSTEMROOT', 'win32') ?? 'C:\\Windows'
+  return win32.join(systemRoot, 'System32', 'taskkill.exe')
+}
+
 function killProcessTree(child: ChildProcess, env: Env): void {
   const pid = child.pid
   if (pid === undefined) {
@@ -390,8 +405,7 @@ function killProcessTree(child: ChildProcess, env: Env): void {
     return
   }
   try {
-    const systemRoot = envValue(env, 'SYSTEMROOT', 'win32') ?? 'C:\\Windows'
-    spawn(win32.join(systemRoot, 'System32', 'taskkill.exe'), ['/pid', String(pid), '/T', '/F'], {
+    spawn(taskkillPath(env), ['/pid', String(pid), '/T', '/F'], {
       stdio: 'ignore',
       windowsHide: true,
     }).once('error', () => child.kill('SIGKILL'))
@@ -414,7 +428,22 @@ interface SpawnGitParams {
  * Runs git. Settles when the output streams close, or `drainGrace` after git exited (or was killed)
  * if they stay open, so a grandchild holding the streams never blocks the caller.
  */
-function spawnGit({ executable, args, cwd, env, timeout, drainGrace, signal }: SpawnGitParams): Promise<string> {
+/**
+ * Maximum standard output of one git command (bytes)
+ */
+const MAX_STDOUT = 16 * 1024 * 1024
+/**
+ * Maximum error output of one git command (bytes)
+ */
+const MAX_STDERR = 1024 * 1024
+
+async function spawnGit(params: SpawnGitParams): Promise<string> {
+  // repository discovery never leaves the working directory (CVE-2022-24765): the ceiling is its real parent
+  const realCwd = await realpath(params.cwd).catch(() => params.cwd)
+  return await spawnGitIn({ ...params, cwd: realCwd })
+}
+
+function spawnGitIn({ executable, args, cwd, env, timeout, drainGrace, signal }: SpawnGitParams): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (signal?.aborted) {
       reject(new GitCommandError('git command was cancelled', args, undefined, ''))
@@ -423,7 +452,6 @@ function spawnGit({ executable, args, cwd, env, timeout, drainGrace, signal }: S
     installExitHook()
     const child = spawn(executable, [...GIT_CONFIG_ARGS, ...args], {
       cwd,
-      // repository discovery never leaves the working directory (CVE-2022-24765)
       env: { ...env, GIT_CEILING_DIRECTORIES: posixOrWin32().dirname(cwd) },
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -434,9 +462,25 @@ function spawnGit({ executable, args, cwd, env, timeout, drainGrace, signal }: S
     runningProcesses.add(child)
     const stdout: Buffer[] = []
     const stderr: Buffer[] = []
-    child.stdout?.on('data', (chunk: Buffer) => stdout.push(chunk))
-    child.stderr?.on('data', (chunk: Buffer) => stderr.push(chunk))
-    let killedBy: 'timeout' | 'cancel' | undefined
+    let stdoutSize = 0
+    let stderrSize = 0
+    child.stdout?.on('data', (chunk: Buffer) => {
+      stdoutSize += chunk.byteLength
+      if (stdoutSize > MAX_STDOUT) {
+        kill('overflow')
+        return
+      }
+      stdout.push(chunk)
+    })
+    child.stderr?.on('data', (chunk: Buffer) => {
+      stderrSize += chunk.byteLength
+      if (stderrSize > MAX_STDERR) {
+        kill('overflow')
+        return
+      }
+      stderr.push(chunk)
+    })
+    let killedBy: 'timeout' | 'cancel' | 'overflow' | undefined
     let settled = false
     let graceTimer: ReturnType<typeof setTimeout> | undefined
     const command = gitSubcommand(args)
@@ -468,6 +512,12 @@ function spawnGit({ executable, args, cwd, env, timeout, drainGrace, signal }: S
         case killedBy === 'timeout':
           fail(`git ${command} timed out after ${timeout}ms`, undefined)
           break
+        case killedBy === 'overflow':
+          fail(
+            `git ${command} produced too much output (limits: ${MAX_STDOUT} bytes, ${MAX_STDERR} bytes of errors)`,
+            undefined,
+          )
+          break
         case code === 0:
           settled = true
           resolve(Buffer.concat(stdout).toString('utf8'))
@@ -492,7 +542,7 @@ function spawnGit({ executable, args, cwd, env, timeout, drainGrace, signal }: S
         finish(code, killSignal)
       }, drainGrace)
     }
-    const kill = (reason: 'timeout' | 'cancel') => {
+    const kill = (reason: 'timeout' | 'cancel' | 'overflow') => {
       killedBy ??= reason
       killProcessTree(child, env)
       startGrace(null, 'SIGKILL')
@@ -537,7 +587,9 @@ interface GitSetup {
  *
  * Every command: arguments as an array without a shell, standard input closed, environment {@link gitEnvironment}
  * with `GIT_CEILING_DIRECTORIES` set to the parent of the working directory, configuration {@link GIT_CONFIG_ARGS};
- * the process tree is killed on timeout, when the signal is aborted and when the Node process exits.
+ * the process tree is killed on timeout, when the signal is aborted and when the Node process exits
+ * (`process.on('exit')`). Signals do not run `exit` handlers and git runs in its own process group, so hosts
+ * (CLI) must turn SIGINT/SIGTERM into `process.exit()`; the library installs no signal handlers.
  *
  * Prompts: POSIX git runs in its own session without a terminal, askpass programs are disabled
  * (`SSH_ASKPASS_REQUIRE=never`, no `GIT_ASKPASS`/`SSH_ASKPASS`, empty `core.askPass`), terminal prompts of git
@@ -557,15 +609,21 @@ export function createGitRunner(options?: GitRunnerOptions): GitRunner {
     if (!executable) {
       throw new GitCommandError(`git executable not found in PATH: ${JSON.stringify(name)}`, [], undefined, '')
     }
-    const cwd = tmpdir()
-    const output = await spawnGit({
-      executable,
-      args: ['version'],
-      cwd,
-      env: { ...env, GIT_DIR: posixOrWin32().join(cwd, 'likec4-no-repository', '.git') },
-      timeout,
-      drainGrace,
-    })
+    // the probe reads no repository: GIT_DIR points to a missing directory in a fresh directory
+    const cwd = await mkdtemp(posixOrWin32().join(tmpdir(), 'likec4-git-probe-'))
+    let output: string
+    try {
+      output = await spawnGit({
+        executable,
+        args: ['version'],
+        cwd,
+        env: { ...env, GIT_DIR: posixOrWin32().join(cwd, 'missing', '.git') },
+        timeout,
+        drainGrace,
+      })
+    } finally {
+      await rm(cwd, { recursive: true, force: true }).catch(() => {})
+    }
     const version = parseGitVersion(output)
     if (!version || !isSupportedGitVersion(version)) {
       throw new GitCommandError(
@@ -680,27 +738,60 @@ export function pickRemoteRef(
 }
 
 /**
- * Initializes an empty repository for a git dependency in `dir` (an empty directory) with the remote `origin`
- * configured as a promisor (partial clone without blobs). `ls-remote` and `fetch` run inside it,
- * so the configuration of the user that depends on the remote (`includeIf "hasconfig:remote.*.url:..."`) applies.
+ * Name of the remote of the repository of a git dependency (unlikely to be configured by the user)
+ */
+export const GIT_REMOTE_NAME = 'likec4-dependency'
+
+/**
+ * SSH command set on Windows when the user configured none: never prompts
+ */
+export const GIT_BATCH_SSH_COMMAND = 'ssh -o BatchMode=yes'
+
+/**
+ * Initializes an empty repository for a git dependency in `dir` (an empty directory) with the remote
+ * {@link GIT_REMOTE_NAME} configured as a promisor (partial clone without blobs). `ls-remote` and `fetch` run inside
+ * it, so the configuration of the user that depends on the remote (`includeIf "hasconfig:remote.*.url:..."`) applies.
+ *
+ * - the object format is always explicit (`init.defaultObjectFormat` of the user is ignored);
+ * - the URL of the remote is verified (no other URL may come from the configuration of the user);
+ * - Windows only: if no ssh command is configured (`core.sshCommand` in this repository, includes applied),
+ *   {@link GIT_BATCH_SSH_COMMAND} is set locally, so ssh cannot prompt in a terminal.
+ *   `GIT_SSH_COMMAND`/`GIT_SSH` of the environment still win. On POSIX, git runs without a terminal.
  *
  * @param params.remote URL passed to git (validated by the caller)
  * @param params.shaLength 64 for SHA-256 repositories
+ * @param params.platform `process.platform` by default
  */
 export async function initGitRepository(
   runGit: GitRunner,
-  params: { remote: string; dir: string; shaLength?: number | undefined },
+  params: { remote: string; dir: string; shaLength?: number | undefined; platform?: string | undefined },
   options: GitCommandOptions,
 ): Promise<void> {
   const git = (...args: string[]) => runGit(['-C', params.dir, ...args], options)
-  await git(...(params.shaLength === 64 ? ['init', '--quiet', '--object-format=sha256'] : ['init', '--quiet']))
-  await git('config', '--end-of-options', 'remote.origin.url', params.remote)
-  await git('config', '--end-of-options', 'remote.origin.promisor', 'true')
-  await git('config', '--end-of-options', 'remote.origin.partialclonefilter', 'blob:none')
+  await git('init', '--quiet', `--object-format=${params.shaLength === 64 ? 'sha256' : 'sha1'}`)
+  const remote = `remote.${GIT_REMOTE_NAME}`
+  await git('config', '--end-of-options', `${remote}.url`, params.remote)
+  await git('config', '--end-of-options', `${remote}.promisor`, 'true')
+  await git('config', '--end-of-options', `${remote}.partialclonefilter`, 'blob:none')
+  const urls = (await git('config', '--get-all', '--end-of-options', `${remote}.url`)).split('\n').filter(Boolean)
+  if (urls.length !== 1 || urls[0] !== params.remote) {
+    throw new GitCommandError(
+      `Unexpected URL of the remote ${GIT_REMOTE_NAME} (check the git configuration)`,
+      ['config'],
+      undefined,
+      '',
+    )
+  }
+  if ((params.platform ?? process.platform) === 'win32') {
+    const configured = await git('config', '--get', 'core.sshCommand').catch(() => '')
+    if (configured.trim() === '') {
+      await git('config', '--end-of-options', 'core.sshCommand', GIT_BATCH_SSH_COMMAND)
+    }
+  }
 }
 
 /**
- * Resolves the ref in the remote `origin` of the repository ({@link initGitRepository}) with `git ls-remote`
+ * Resolves the ref in the remote {@link GIT_REMOTE_NAME} of the repository ({@link initGitRepository}) with `git ls-remote`
  * (no download). Returns undefined if the remote has no such ref.
  */
 export async function lsRemoteRef(
@@ -710,7 +801,7 @@ export async function lsRemoteRef(
   options: GitCommandOptions,
 ): Promise<{ name: string; sha: string } | undefined> {
   const output = await runGit(
-    ['-C', dir, 'ls-remote', '--quiet', '--end-of-options', 'origin', ...gitRefCandidates(ref)],
+    ['-C', dir, 'ls-remote', '--quiet', '--end-of-options', GIT_REMOTE_NAME, ...gitRefCandidates(ref)],
     options,
   )
   return pickRemoteRef(ref, parseLsRemote(output))
@@ -796,7 +887,7 @@ export async function fetchGitCommit(
     '--recurse-submodules=no',
     '--filter=blob:none',
     '--end-of-options',
-    'origin',
+    GIT_REMOTE_NAME,
     `+${what}:${FETCHED_REF}`,
   )
   const sha = (await git('rev-parse', '--verify', '--end-of-options', `${FETCHED_REF}^{commit}`)).trim().toLowerCase()
