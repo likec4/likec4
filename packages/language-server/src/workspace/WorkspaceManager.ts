@@ -31,8 +31,6 @@ import {
   type ExternalProject,
   type ExternalProjectId,
   type GitDependencyResolution,
-  type GitDependencyTarget,
-  type LoadedGitDependencies,
   ExternalProjects,
 } from './ExternalProjects'
 
@@ -203,8 +201,12 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
     } finally {
       this.updateDependencyStates()
     }
-    // A sync queued by the startup (retry of git dependencies the storage could not be read for):
-    // hosts that build right after `initialized` (CLI) must not build concurrently with it
+    // The retry of git dependencies the startup could not read the storage for, and the syncs it queued:
+    // hosts that build right after `initialized` (CLI) must not build concurrently with them
+    if (this.#startupRetry) {
+      await this.#startupRetry
+      this.#startupRetry = undefined
+    }
     await this.whenExternalProjectsSynced()
   }
 
@@ -430,7 +432,8 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       const targets = externalProjects.dependencyTargets()
       const gitTargets = externalProjects.gitDependencyTargets()
       const loadedLocal = await externalProjects.loadAll(targets)
-      const git = await this.startupLoadGit(gitTargets)
+      // Bounded by `ExternalProjects.storageTimeout`: on timeout the targets are failed and retried later
+      const git = await externalProjects.loadGit(gitTargets)
       const loaded = [...loadedLocal, ...git.projects]
       const seen = new Set(existing.map(d => d.uri.toString()))
       for (const project of loaded) {
@@ -446,8 +449,8 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       externalProjects.markSynced(targets.keys())
       externalProjects.setGitResolutions(git.resolutions)
       externalProjects.markGitSynced(gitTargets, git.failed)
-      // Not awaited: the sync is queued and applied after the startup releases the write-lock
-      this.scheduleStorageRetry(git.failed.length)
+      // After the startup (and a delay): the client may not serve its storage yet
+      this.scheduleStorageRetry(git.failed.length, this.startupRetryDelay)
       if (loaded.length > 0) {
         this.#logger.info`loaded ${loaded.length} external projects`
       }
@@ -455,36 +458,6 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       this.#logger.warn('Failed to load external projects', { error })
     }
     return documents
-  }
-
-  /**
-   * Maximum time the startup waits for the dependency storage (it holds the workspace write-lock),
-   * e.g. for a client that does not answer storage requests
-   */
-  protected startupStorageTimeout = 10_000
-
-  /**
-   * Reads installed git dependencies from the storage within the startup, with {@link startupStorageTimeout}.
-   * On timeout no git dependency is registered by the startup: all targets are reported as failed,
-   * and a structural sync after the startup reads them again (see {@link scheduleStorageRetry}).
-   */
-  protected async startupLoadGit(gitTargets: ReadonlyArray<GitDependencyTarget>): Promise<LoadedGitDependencies> {
-    const externalProjects = this.services.workspace.ExternalProjects
-    if (gitTargets.length === 0) {
-      return { projects: [], resolutions: [], failed: [] }
-    }
-    const loading = externalProjects.loadGit(gitTargets)
-    try {
-      return await pTimeout(loading, { milliseconds: this.startupStorageTimeout })
-    } catch (error) {
-      // The read continues in the background, its result is dropped
-      loading.catch(() => {})
-      this.#logger.warn('Dependency storage did not answer within {timeout} ms, git dependencies are loaded later', {
-        timeout: this.startupStorageTimeout,
-        error,
-      })
-      return { projects: [], resolutions: [], failed: [...gitTargets] }
-    }
   }
 
   /**
@@ -660,7 +633,7 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    *
    * @param failed number of git targets the storage could not be read for
    */
-  protected scheduleStorageRetry(failed: number): void {
+  protected scheduleStorageRetry(failed: number, delay?: number): void {
     if (failed === 0) {
       this.#storageRetries = 0
       return
@@ -670,8 +643,29 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
       return
     }
     this.#storageRetries++
-    void this.requestExternalProjectsSync('structural')
+    if (delay === undefined) {
+      void this.requestExternalProjectsSync('structural')
+      return
+    }
+    // Started after the workspace is ready and the delay (not awaited here: called under the startup write-lock)
+    this.#startupRetry = this.ready
+      .then(() => new Promise<void>(resolve => setTimeout(resolve, delay)))
+      .then(() => this.requestExternalProjectsSync('structural'))
+      .catch(error => {
+        this.#logger.warn('Failed to retry git dependencies', { error })
+      })
   }
+
+  /**
+   * Delay of the retry of git dependencies the startup could not read the storage for
+   * (after the workspace is ready), so a client that does not serve its storage yet does not burn the retry
+   */
+  protected startupRetryDelay = 1000
+
+  /**
+   * Retry of git dependencies scheduled by the startup, awaited by {@link initialized}
+   */
+  #startupRetry: Promise<void> | undefined
 
   /**
    * Replaces the states of git dependencies with the ones of the registered instances.

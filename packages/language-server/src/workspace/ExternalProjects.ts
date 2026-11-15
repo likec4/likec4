@@ -12,6 +12,7 @@ import { invariant, objectHash } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
 import { type LangiumDocument, Disposable, URI, UriUtils } from 'langium'
+import pTimeout from 'p-timeout'
 import picomatch from 'picomatch'
 import { hasAtLeast, isNullish, omit } from 'remeda'
 import { cleanDoubleSlashes, hasProtocol, isRelative, joinRelativeURL, joinURL, withoutTrailingSlash } from 'ufo'
@@ -732,6 +733,17 @@ export class ExternalProjects extends ADisposable {
     }
     const storage = this.services.dependencies.Storage
     const notInstalled = this.notInstalledStatus()
+    // All storage reads of this call share one deadline: a storage that does not answer
+    // (e.g. a dead client) must not block the sync queue
+    const deadline = Date.now() + this.storageTimeout
+    const withDeadline = <T>(promise: Promise<T>): Promise<T> => {
+      // The read may continue in the background, its late result or error is dropped
+      promise.catch(() => {})
+      return pTimeout(promise, {
+        milliseconds: Math.max(0, deadline - Date.now()),
+        message: `Dependency storage did not answer within ${this.storageTimeout} ms`,
+      })
+    }
 
     // Version index: one read per (repository, ref), in parallel.
     // `failed` - the storage could not be read (not the same as "no version")
@@ -741,14 +753,16 @@ export class ExternalProjects extends ADisposable {
       const key = JSON.stringify([target.repository, target.source.ref])
       let version = versions.get(key)
       if (!version) {
-        version = storage.readVersion(target.repository, target.source.ref).catch((error): VersionRead => {
-          logger.warn(`Failed to read the version of {repository}@{ref}, the previous state is kept`, {
-            repository: target.repository,
-            ref: target.source.ref,
-            error,
-          })
-          return 'failed'
-        })
+        version = withDeadline(storage.readVersion(target.repository, target.source.ref)).catch(
+          (error): VersionRead => {
+            logger.warn(`Failed to read the version of {repository}@{ref}, the previous state is kept`, {
+              repository: target.repository,
+              ref: target.source.ref,
+              error,
+            })
+            return 'failed'
+          },
+        )
         versions.set(key, version)
       }
       return version
@@ -779,7 +793,7 @@ export class ExternalProjects extends ADisposable {
     let entries: Array<DependencyCacheEntry | undefined> | 'failed' = []
     if (toRead.length > 0) {
       try {
-        entries = await storage.readEntries(toRead.map(([, instance]) => instance))
+        entries = await withDeadline(storage.readEntries(toRead.map(([, instance]) => instance)))
       } catch (error) {
         logger.warn('Failed to read git dependencies from the dependency storage, the previous state is kept', {
           error,
@@ -831,6 +845,12 @@ export class ExternalProjects extends ADisposable {
     }
     return { projects: [...projects.values()], resolutions, failed }
   }
+
+  /**
+   * Maximum time {@link loadGit} waits for the dependency storage (all reads of one call).
+   * On timeout the targets are handled as unreadable: previous resolutions are kept, others get no state.
+   */
+  storageTimeout = 10_000
 
   /**
    * Status of a git dependency that is not installed:

@@ -1,10 +1,10 @@
 import { isLikeC4Config, LikeC4ProjectConfigOps, parseGitRepositoryUrl } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
-import { configureLogger } from '@likec4/log'
+import { configureLogger, getNoopSink } from '@likec4/log'
 import JSON5 from 'json5'
 import { type LangiumDocument, Cancellation, DocumentState, URI, UriUtils } from 'langium'
 import { addDiagnosticsHandler } from 'langium/lsp'
-import { describe } from 'vitest'
+import { describe, onTestFinished } from 'vitest'
 import type { Connection, WorkspaceFolder } from 'vscode-languageserver'
 import type { DependencyInstaller } from '../dependencies/types'
 import type { FileNode } from '../filesystem'
@@ -1089,6 +1089,8 @@ const supportedInstaller = (): DependencyInstaller => ({
  */
 function captureWarnings(): string[] {
   const warnings = [] as string[]
+  // Restore the noop sink of the test services
+  onTestFinished(() => configureLogger({ sinks: { console: getNoopSink() } }))
   configureLogger({
     sinks: {
       console: record => {
@@ -1715,6 +1717,7 @@ describe('ExternalProjects: git dependencies', () => {
       'file:///test/workspace/a/model.c4': consumerModel('billing'),
     })
     const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
+    t.services.shared.workspace.WorkspaceManager['startupRetryDelay'] = 0
     const { Storage, States } = t.services.shared.dependencies
     const readEntries = Storage.readEntries.bind(Storage)
     const statesSeen = [] as Array<string | undefined>
@@ -1750,6 +1753,7 @@ describe('ExternalProjects: git dependencies', () => {
       }),
       'file:///test/workspace/a/model.c4': consumerModel('billing'),
     })
+    t.services.shared.workspace.WorkspaceManager['startupRetryDelay'] = 0
     const { Storage, States } = t.services.shared.dependencies
     const reads = mockMethod(Storage, 'readVersion').mockRejectedValue(new Error('storage is unavailable'))
     await startWithGit(t)
@@ -1773,7 +1777,8 @@ describe('ExternalProjects: git dependencies', () => {
     })
     const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
     const { WorkspaceManager, ExternalProjects } = t.services.shared.workspace
-    WorkspaceManager['startupStorageTimeout'] = 20
+    ExternalProjects.storageTimeout = 20
+    WorkspaceManager['startupRetryDelay'] = 0
     const { Storage, States } = t.services.shared.dependencies
     const readVersion = Storage.readVersion.bind(Storage)
     const reads = mockMethod(Storage, 'readVersion').mockImplementation((repository, ref) => {
@@ -1795,9 +1800,7 @@ describe('ExternalProjects: git dependencies', () => {
     await startWithGit(t)
     // the startup did not wait for the storage
     expect(instancesAtInitialBuild[0]).toBe(0)
-    expect(warnings).toContain(
-      'Dependency storage did not answer within {timeout} ms, git dependencies are loaded later',
-    )
+    expect(warnings).toContain('Failed to read the version of {repository}@{ref}, the previous state is kept')
 
     // a structural sync after the startup loads it
     await WorkspaceManager.whenExternalProjectsSynced()
@@ -1808,6 +1811,44 @@ describe('ExternalProjects: git dependencies', () => {
       URI.parse('file:///test/workspace/a/model.c4'),
     )!
     expect(doc.references.filter(ref => ref.error).map(ref => ref.error?.message)).toEqual([])
+  })
+
+  it('does not block the sync queue on a storage that does not answer', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { billing: { git: BILLING_URL, ref: 'v1' } },
+      }),
+      'file:///test/workspace/a/model.c4': consumerModel('billing'),
+    })
+    const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
+    await startWithGit(t)
+    const { WorkspaceManager, ExternalProjects } = t.services.shared.workspace
+    const { Storage, States } = t.services.shared.dependencies
+    const id = externalProjectIdOfGitInstance(instance)
+    expect(States.get('a' as ProjectId, 'billing')?.status).toBe('installed')
+
+    ExternalProjects.storageTimeout = 20
+    const warnings = captureWarnings()
+    // answers far after the timeout
+    const late = <T>(value: T) => new Promise<T>(resolve => setTimeout(() => resolve(value), 300))
+    const realReadVersion = Storage.readVersion.bind(Storage)
+    const readVersion = mockMethod(Storage, 'readVersion').mockImplementation(() => late(undefined))
+    const started = Date.now()
+    await WorkspaceManager.syncExternalProjects()
+    expect(Date.now() - started).toBeLessThan(250)
+    // the previous state is kept
+    expect(ExternalProjects.has(id)).toBe(true)
+    expect(States.get('a' as ProjectId, 'billing')?.status).toBe('installed')
+    expect(warnings).toContain('Failed to read the version of {repository}@{ref}, the previous state is kept')
+
+    // a later sync still runs
+    readVersion.mockImplementation(realReadVersion)
+    const readEntries = mockMethod(Storage, 'readEntries')
+    await WorkspaceManager.syncExternalProjects()
+    expect(readEntries).toHaveBeenCalledTimes(1)
+    expect(ExternalProjects.has(id)).toBe(true)
   })
 
   it('reads local dependencies once at startup, together with git dependencies', async ({ create, expect }) => {
