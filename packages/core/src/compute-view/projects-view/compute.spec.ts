@@ -39,6 +39,11 @@ describe('projects-view', () => {
           "inEdges": [],
           "kind": "@project",
           "level": 0,
+          "metrics": {
+            "elements": 2,
+            "relationships": 0,
+            "views": 0,
+          },
           "outEdges": [],
           "parent": null,
           "projectId": "projectA",
@@ -59,6 +64,11 @@ describe('projects-view', () => {
           "inEdges": [],
           "kind": "@project",
           "level": 0,
+          "metrics": {
+            "elements": 2,
+            "relationships": 0,
+            "views": 0,
+          },
           "outEdges": [],
           "parent": null,
           "projectId": "projectB",

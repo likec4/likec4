@@ -134,6 +134,10 @@ export {
 
 export { SearchControl } from './components/SearchControl'
 
+export { createViewSearch, viewTitleWithFolder } from './search/components/utils'
+export { createFuzzySearch } from './search/fuzzy'
+export { matchesMetadataSearch, METADATA_SEARCH_PREFIX } from './search/metadata-search'
+
 export { DefaultMantineProvider, LikeC4MantineProvider } from './LikeC4MantineProvider'
 
 export { FramerMotionConfig } from './context/FramerMotionConfig'

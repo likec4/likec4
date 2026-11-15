@@ -38,6 +38,7 @@
     "@likec4/core": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
+    "@tanstack/react-virtual": "catalog:tanstack",
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "react": "catalog:react",
