@@ -5,6 +5,8 @@ import type { DependencyInstallResult } from '../dependencies'
 import type { LikeC4SharedServices } from '../module'
 import { InstallDependencies } from '../protocol'
 import { DependencyDiagnosticCodes } from '../validation/imports'
+import { externalProjectId } from '../workspace/ExternalProjects'
+import type { NormalizedUri } from '../workspace/ProjectsManager'
 import {
   billingSource,
   deferred,
@@ -28,7 +30,7 @@ function fakeWindow() {
     showErrorMessage: vi.fn<(message: string) => void>(),
     showWarningMessage: vi.fn<(message: string) => void>(),
     showInformationMessage: vi.fn<(message: string) => void>(),
-    createWorkDoneProgress: () => Promise.resolve<WorkDoneProgressReporter>(progress),
+    createWorkDoneProgress: vi.fn<() => Promise<WorkDoneProgressReporter>>(() => Promise.resolve(progress)),
   }
   return { window, progress }
 }
@@ -322,6 +324,77 @@ describe('install dependencies command', () => {
     await Promise.all([update, install])
 
     expect(t.install).toHaveBeenCalledExactlyOnceWith(billingSource, { update: true })
+  })
+
+  it('reports cached files as the loaded documents of the registered instance', async ({ expect }) => {
+    await using t = await gitDependencyWorkspace()
+    const billing = t.services.shared.workspace.ProjectsManager.getProject('billing' as ProjectId)
+    t.services.shared.workspace.ExternalProjects.register({
+      ...billing,
+      id: externalProjectId('billing'),
+      files: new Map([
+        ['file:///deps/billing/a.c4' as NormalizedUri, 'model {}'],
+        ['file:///deps/billing/b.c4' as NormalizedUri, 'model {}'],
+      ]),
+    })
+    t.setState(installed('consumer'), true)
+
+    const { results } = await t.services.shared.lsp.ExecuteCommandHandler.installDependencies()
+
+    expect(results).toMatchObject([{ result: { status: 'installed', files: 2, cached: true } }])
+    expect(t.install).not.toHaveBeenCalled()
+  })
+
+  it('reports names of a joined call that differ from the names of the owner', async ({ expect }) => {
+    const result = deferred<DependencyInstallResult>()
+    await using t = await gitDependencyWorkspace({ install: () => result.promise })
+    t.setState(notInstalled('consumer'), true)
+    // Same source under another name in another consumer
+    t.setState(notInstalled('billing', 'payments'), true)
+    const { window } = fakeWindow()
+    const handler = new TestCommandHandler(t.services.shared, window)
+
+    const owner = handler.installDependencies({ projectId: 'consumer' as ProjectId })
+    const joined = handler.installDependencies({ projectId: 'billing' as ProjectId })
+    await vi.waitFor(() => expect(t.install).toHaveBeenCalled())
+    result.resolve(installedResult)
+    await Promise.all([owner, joined])
+
+    expect(t.install).toHaveBeenCalledOnce()
+    expect(window.showInformationMessage.mock.calls.map(([message]) => message).sort()).toEqual([
+      `LikeC4: installed 'billing'`,
+      `LikeC4: installed 'payments'`,
+    ])
+  })
+
+  it('a call that only joined does not show progress and does not sync, but waits for the sync', async ({ expect }) => {
+    const result = deferred<DependencyInstallResult>()
+    const sync = deferred<void>()
+    await using t = await gitDependencyWorkspace({ install: () => result.promise })
+    t.sync.mockImplementation(() => sync.promise)
+    t.setState(notInstalled('consumer'), true)
+    const { window, progress } = fakeWindow()
+    const handler = new TestCommandHandler(t.services.shared, window)
+
+    const owner = handler.installDependencies()
+    const joined = handler.installDependencies()
+    let joinedDone = false
+    void joined.then(() => {
+      joinedDone = true
+    })
+    await vi.waitFor(() => expect(t.install).toHaveBeenCalled())
+    result.resolve(installedResult)
+    await vi.waitFor(() => expect(t.sync).toHaveBeenCalledOnce())
+    await new Promise(resolve => setTimeout(resolve, 10))
+    // The owner has not synced yet
+    expect(joinedDone).toBe(false)
+    sync.resolve()
+    await Promise.all([owner, joined])
+
+    expect(t.sync).toHaveBeenCalledOnce()
+    expect(window.createWorkDoneProgress).toHaveBeenCalledOnce()
+    expect(progress.begin).toHaveBeenCalledOnce()
+    expect(window.showInformationMessage).toHaveBeenCalledExactlyOnceWith(`LikeC4: installed 'billing'`)
   })
 
   it('does not install on hosts without installer', async ({ expect }) => {

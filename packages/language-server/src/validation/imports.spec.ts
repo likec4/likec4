@@ -1,9 +1,13 @@
 import type { ProjectId } from '@likec4/core/types'
-import { URI } from 'langium'
-import { describe, it, vi } from 'vitest'
-import { gitDependencyWorkspace, installed, notInstalled, unsupported } from '../lsp/_git-dependencies-spec'
+import { DocumentState, URI } from 'langium'
+import { describe, it, onTestFinished, vi } from 'vitest'
+import { deferred, gitDependencyWorkspace, installed, notInstalled, unsupported } from '../lsp/_git-dependencies-spec'
+import type { LikeC4SharedServices } from '../module'
 import { createMultiProjectTestServices, createTestServices } from '../test'
 import { DependencyDiagnosticCodes } from './imports'
+
+const diagnosticCodes = (doc: { diagnostics?: Array<{ code?: unknown }> | undefined }) =>
+  doc.diagnostics?.map(d => d.code)
 
 describe('import checks', () => {
   it('should report invalid import from same project (default)', async ({ expect }) => {
@@ -309,7 +313,10 @@ describe('import checks', () => {
       })
       t.setState(state, true)
       const { diagnostics } = await t.validateAll()
-      expect(diagnostics.filter(d => d.code === code)).toHaveLength(1)
+      expect(diagnostics.filter(d => d.code === code)).toMatchObject([
+        // On the name in `from 'billing'`
+        { range: { start: { line: 0, character: 23 }, end: { line: 0, character: 32 } } },
+      ])
       expect(diagnostics.map(d => d.message)).not.toContain('Imported project not found')
       // One linking error per imported name
       expect(diagnostics.filter(d => d.code !== code).map(d => d.message).sort()).toEqual([
@@ -349,6 +356,91 @@ describe('import checks', () => {
       await t.services.shared.workspace.WorkspaceLock.read(() => undefined)
       // Same diagnostics: the document was not rebuilt
       expect(t.consumer.diagnostics).toBe(diagnostics)
+    })
+
+    /**
+     * Waits until scheduled revalidations are done
+     */
+    async function settled(t: { services: { shared: LikeC4SharedServices } }) {
+      await new Promise(resolve => setTimeout(resolve, 20))
+      await t.services.shared.workspace.WorkspaceLock.read(() => undefined)
+    }
+
+    it('revalidates a document whose snapshot is outdated, after another document of the consumer', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      const second = await t.addDocument(`import c1 from 'billing'`, 'consumer/second.c4')
+      t.setState(notInstalled('consumer'), true)
+      await t.validateAll()
+      expect(diagnosticCodes(t.consumer)).toEqual([DependencyDiagnosticCodes.NotInstalled])
+      expect(diagnosticCodes(second)).toEqual([DependencyDiagnosticCodes.NotInstalled])
+
+      // The second document is validated with new states before the change is fired
+      t.setState(installed('consumer'), true)
+      await t.edit(second, `import c1 from 'billing'\n`)
+      expect(diagnosticCodes(second)).toEqual([])
+      expect(diagnosticCodes(t.consumer)).toEqual([DependencyDiagnosticCodes.NotInstalled])
+
+      t.fire({ consumers: ['consumer' as ProjectId] })
+      await vi.waitFor(() => {
+        expect(diagnosticCodes(t.consumer)).toEqual([])
+      })
+    })
+
+    it('does not rebuild a consumer whose imports are not git dependencies on repeated changes', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      // `billing` is a workspace project, `crm` is a git dependency that is not imported
+      t.setState(notInstalled('consumer', 'crm'), true)
+      await t.validateAll()
+      let validations = 0
+      const listener = t.services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Validated, doc => {
+        if (doc.uri.toString() === t.consumer.uri.toString()) {
+          validations++
+        }
+      })
+      onTestFinished(() => listener.dispose())
+      for (let i = 0; i < 3; i++) {
+        t.fire({ consumers: ['consumer' as ProjectId] })
+        await settled(t)
+      }
+      expect(validations).toBe(0)
+
+      // A real change: one rebuild, then nothing again
+      t.setState(installed('consumer', 'crm'))
+      await vi.waitFor(() => expect(validations).toBe(1))
+      for (let i = 0; i < 3; i++) {
+        t.fire({ consumers: ['consumer' as ProjectId] })
+        await settled(t)
+      }
+      expect(validations).toBe(1)
+      expect(t.consumer.diagnostics).toEqual([])
+    })
+
+    it('revalidates after its write is cancelled by another write', async ({ expect }) => {
+      await using t = await gitDependencyWorkspace()
+      const lock = t.services.shared.workspace.WorkspaceLock
+      t.setState(notInstalled('consumer'), true)
+      await t.validateAll()
+
+      // A running write: the revalidation waits for it in its read
+      const firstWrite = deferred<void>()
+      const write = lock.write(() => firstWrite.promise)
+      t.setState(installed('consumer', 'billing', 1))
+      await new Promise(resolve => setTimeout(resolve, 10))
+      // A read in the same batch as the read of the revalidation, still running when the revalidation requests its write
+      const read = deferred<void>()
+      const reading = lock.read(() => read.promise)
+      firstWrite.resolve()
+      await write
+      await new Promise(resolve => setTimeout(resolve, 10))
+      // This write cancels the queued write of the revalidation before it starts
+      const another = lock.write(() => undefined)
+      read.resolve()
+      await reading
+      await another
+
+      await vi.waitFor(() => {
+        expect(diagnosticCodes(t.consumer)).toEqual([DependencyDiagnosticCodes.ParseErrors])
+      })
     })
   })
 })

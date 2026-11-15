@@ -108,6 +108,15 @@ interface RunningInstall {
    * Call of the command that started the install
    */
   owner: object
+  /**
+   * Resolves when the owner call has passed the result to external projects (or failed)
+   */
+  settled: Promise<void>
+  settle: () => void
+  /**
+   * Dependency names whose result is already shown to the user (a joined call does not repeat them)
+   */
+  reported: Set<string>
 }
 
 /**
@@ -117,13 +126,9 @@ type InstallOutcome =
   & InstallDependencies.Res['results'][number]
   & {
     /**
-     * The call joined an install started by another call (that call reports it)
+     * Install the result comes from, undefined for a dependency installed before the call
      */
-    joined: boolean
-    /**
-     * The dependency was installed before the call (the installer was not called)
-     */
-    alreadyInstalled: boolean
+    install: RunningInstall | undefined
   }
 
 /**
@@ -186,10 +191,12 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
    *
    * - Without `update`, dependencies that are already installed are skipped (reported as cached).
    * - Git and network run outside of the workspace write-lock, the lock is taken only by the sync
-   *   of external projects, which runs only if something was installed.
+   *   of external projects, which runs only if this call installed something.
    * - Installs of the same source are serialized: a request joins the running install of the source,
    *   an `update` request that arrives during an install without `update` runs after it.
-   *   So concurrent calls run the installer once per source; the messages are shown by the call that ran it.
+   *   So concurrent calls run the installer once per source. A call that only joined installs of other calls
+   *   shows no progress and does not sync: it waits until the owner calls have synced.
+   * - Each dependency name is reported to the user once per install.
    * - Never throws for failed installs: they are reported to the user and returned in the result.
    */
   async installDependencies(params: InstallDependencies.Params = {}): Promise<InstallDependencies.Res> {
@@ -208,49 +215,53 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
       return { results: states.map(state => this.toResult(state, { status: 'unsupported' })) }
     }
 
-    const toInstall = states.filter(state => update || state.status !== 'installed')
-    const progress = toInstall.length > 0 ? await this.beginProgress(toInstall.length) : undefined
-    let completed = 0
-    // Identity of this call: installs it started are reported by it
+    // Identity of this call: installs it starts are owned by it
     const call = {}
-    const outcomes = await Promise.all(states.map(async (state): Promise<InstallOutcome> => {
-      if (!update && state.status === 'installed') {
-        return { ...this.toResult(state, this.alreadyInstalled(state)), joined: false, alreadyInstalled: true }
-      }
-      const { result, joined } = await this.install(state.source, update, call)
-      completed++
-      progress?.report(Math.round(completed / toInstall.length * 100), `${completed}/${toInstall.length}`)
-      return { ...this.toResult(state, result), joined, alreadyInstalled: false }
+    const started = states.map(state => ({
+      state,
+      install: !update && state.status === 'installed' ? undefined : this.install(state.source, update, call),
     }))
+    const owned = new Set(started.flatMap(({ install }) => install?.owner === call ? [install] : []))
+    const joined = new Set(started.flatMap(({ install }) => install && install.owner !== call ? [install] : []))
 
+    const progress = owned.size > 0 ? await this.beginProgress(owned.size) : undefined
+    let completed = 0
+    const outcomes: InstallOutcome[] = []
     try {
-      if (outcomes.some(o => !o.alreadyInstalled && o.result.status === 'installed')) {
+      await Promise.all([...owned].map(async install => {
+        await install.promise
+        completed++
+        progress?.report(Math.round(completed / owned.size * 100), `${completed}/${owned.size}`)
+      }))
+      for (const { state, install } of started) {
+        const result = install ? await install.promise : this.alreadyInstalled(state)
+        outcomes.push({ ...this.toResult(state, result), install })
+      }
+      if (outcomes.some(o => o.install?.owner === call && o.result.status === 'installed')) {
         progress?.report('Loading dependencies')
         // Registers installed instances and relinks consumers (takes the write-lock itself)
         await this.shared.workspace.WorkspaceManager.syncExternalProjects('reread')
       }
     } finally {
       progress?.done()
+      owned.forEach(install => install.settle())
     }
+    // Installs of other calls: wait until they are passed to external projects
+    await Promise.all([...joined].map(install => install.settled))
 
     this.reportInstall(outcomes)
     return { results: outcomes.map(({ projectId, name, result }) => ({ projectId, name, result })) }
   }
 
   /**
-   * Runs the installer for the source, joins the running install of the same source,
-   * or (for `update` during an install without it) runs after it.
+   * Returns the running install of the source to join, or starts a new one
+   * (after the running one, if this is an `update` and the running one is not).
    */
-  private install(
-    source: GitDependencySource,
-    update: boolean,
-    call: object,
-  ): Promise<{ result: DependencyInstallResult; joined: boolean }> {
+  private install(source: GitDependencySource, update: boolean, call: object): RunningInstall {
     const key = installKey(source)
     const running = this.#installs.get(key)
     if (running && (running.update || !update)) {
-      const joined = running.owner !== call
-      return running.promise.then(result => ({ result, joined }))
+      return running
     }
     const installer = this.shared.dependencies.Installer
     const run = () =>
@@ -260,10 +271,17 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
           status: 'failed',
           error: error instanceof Error ? error.message : String(error),
         }))
+    let settle = () => {}
+    const settled = new Promise<void>(resolve => {
+      settle = resolve
+    })
     const entry: RunningInstall = {
       promise: running ? running.promise.then(run, run) : run(),
       update,
       owner: call,
+      settled,
+      settle,
+      reported: new Set(),
     }
     this.#installs.set(key, entry)
     void entry.promise.finally(() => {
@@ -271,13 +289,17 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
         this.#installs.delete(key)
       }
     })
-    return entry.promise.then(result => ({ result, joined: false }))
+    return entry
   }
 
   /**
-   * Result for a dependency that is installed already
+   * Result for a dependency that is installed already.
+   * `files` is the number of loaded documents of the registered instance (0 if it is not registered).
    */
-  private alreadyInstalled(state: DependencyState & { status: 'installed' }): DependencyInstallResult {
+  private alreadyInstalled(state: DependencyState): DependencyInstallResult {
+    if (state.status !== 'installed') {
+      return { status: 'failed', error: `Dependency '${state.name}' is not installed` }
+    }
     return {
       status: 'installed',
       instance: state.instance,
@@ -313,28 +335,30 @@ export class LikeC4ExecuteCommandHandler extends AbstractExecuteCommandHandler {
   }
 
   /**
-   * Shows the result; installs joined from other calls are reported by those calls
+   * Shows the result. A dependency name is reported once per install (calls that joined it do not repeat it).
    */
   private reportInstall(outcomes: ReadonlyArray<InstallOutcome>) {
     const window = this.window
     const installed = [] as string[]
     const already = [] as string[]
-    for (const { projectId, name, result, joined, alreadyInstalled } of outcomes) {
-      if (joined) {
+    for (const { projectId, name, result, install } of outcomes) {
+      if (!install) {
+        already.push(name)
         continue
       }
-      switch (true) {
-        case alreadyInstalled:
-          already.push(name)
-          break
-        case result.status === 'installed':
+      if (install.reported.has(name)) {
+        continue
+      }
+      install.reported.add(name)
+      switch (result.status) {
+        case 'installed':
           installed.push(name)
           break
-        case result.status === 'failed':
+        case 'failed':
           logger.warn`failed to install dependency ${name} of ${projectId}: ${result.error}`
           window?.showErrorMessage(`LikeC4: Failed to install dependency '${name}': ${result.error}`)
           break
-        case result.status === 'unsupported':
+        case 'unsupported':
           window?.showErrorMessage(
             `LikeC4: Dependency '${name}' cannot be installed: remote dependencies are not supported in this environment`,
           )

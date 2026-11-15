@@ -1,5 +1,5 @@
 import type { ProjectId } from '@likec4/core/types'
-import { type ValidationAcceptor, type ValidationCheck, AstUtils, DocumentState } from 'langium'
+import { type LangiumDocument, type ValidationAcceptor, type ValidationCheck, AstUtils, DocumentState } from 'langium'
 import { type ast, isLikeC4UserDocument } from '../ast'
 import type { DependencyState } from '../dependencies/types'
 import { logger as rootLogger } from '../logger'
@@ -116,12 +116,10 @@ export const checkImportsFromPoject = (services: LikeC4Services): ValidationChec
     const doc = getDocument(el)
     const projectId = projectIdFrom(doc)
     // Git dependency: report its state (not installed, unsupported, parse errors)
+    tracker.validated(doc, projectId)
     const state = states.get(projectId, el.project)
-    if (state) {
-      tracker.validated(projectId)
-      if (checkDependencyState(el, state, accept)) {
-        return
-      }
+    if (state && checkDependencyState(el, state, accept)) {
+      return
     }
     // The name is resolved via `dependencies` of the consumer project, or by the workspace project name
     const resolved = resolver.resolve(projectId, el.project)
@@ -151,13 +149,13 @@ export const checkImportsFromPoject = (services: LikeC4Services): ValidationChec
 }
 
 /**
- * Remembers the dependency states the diagnostics of each consumer were computed with
+ * Remembers the dependency states the diagnostics of each document were computed with
  */
 interface DependencyStatesTracker {
   /**
-   * Called when imports of the consumer are validated with its current states
+   * Called when imports of the document are validated with the current states of its consumer project
    */
-  validated(consumer: ProjectId): void
+  validated(document: LangiumDocument, consumer: ProjectId): void
 }
 
 const trackers = new WeakMap<LikeC4SharedServices, DependencyStatesTracker>()
@@ -176,13 +174,16 @@ function statesSnapshot(states: ReadonlyArray<DependencyState>): string {
  * Returns the tracker of dependency states of the shared services, creates it on first call.
  *
  * The tracker relinks and revalidates documents with imports of consumer projects whose dependency states
- * changed (e.g. after install), so diagnostics on imports follow the states:
+ * changed (e.g. after install, or a status change that the sync of external projects does not relink),
+ * so diagnostics on imports follow the states:
+ * - every validated document with imports records the snapshot of the states of its consumer;
+ * - on change, documents whose recorded snapshot differs from the current one are revalidated,
+ *   and their snapshot is set to the current one first (repeated events without changes do nothing);
  * - changes are batched and applied after the running sync of external projects (which may have fired them);
- * - only consumers whose states differ from the states their diagnostics were computed with are revalidated
- *   (no build loops if the producer fires on every build);
- * - waits for running builds (read-lock), then relinks under the write-lock.
+ * - waits for running builds (read-lock), then relinks under the write-lock;
+ *   if the write is cancelled before it starts, the consumers are queued again.
  *
- * The subscription is disposed with `DependencyStates`.
+ * Snapshots of deleted documents are dropped. Subscriptions are disposed with `DependencyStates`.
  */
 function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStatesTracker {
   const existing = trackers.get(shared)
@@ -190,23 +191,10 @@ function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStates
     return existing
   }
   const states = shared.dependencies.States
-  // Consumer -> snapshot of states its imports were validated with
-  const seen = new Map<ProjectId, string>()
+  // Document URI -> consumer and snapshot of states its imports were validated with
+  const seen = new Map<string, { consumer: ProjectId; snapshot: string }>()
   const pending = new Set<ProjectId>()
   let scheduled = false
-
-  const changedConsumers = (candidates: Iterable<ProjectId>): Set<ProjectId> => {
-    const changed = new Set<ProjectId>()
-    for (const consumer of candidates) {
-      const previous = seen.get(consumer)
-      // Never validated with git dependency states: nothing to update, unless it has states now
-      const current = statesSnapshot(states.all(consumer))
-      if ((previous ?? '') !== current) {
-        changed.add(consumer)
-      }
-    }
-    return changed
-  }
 
   const schedule = () => {
     if (scheduled || pending.size === 0) {
@@ -221,36 +209,58 @@ function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStates
       })
   }
 
+  /**
+   * Validated documents of the consumers, whose recorded snapshot differs from the current states.
+   * Sets their snapshot to the current one.
+   */
+  const takeOutdated = (consumers: ReadonlySet<ProjectId>): LangiumDocument[] => {
+    const current = new Map<ProjectId, string>()
+    const snapshotOf = (consumer: ProjectId) => {
+      let snapshot = current.get(consumer)
+      if (snapshot === undefined) {
+        snapshot = statesSnapshot(states.all(consumer))
+        current.set(consumer, snapshot)
+      }
+      return snapshot
+    }
+    const lookup = shared.workspace.ProjectsLookup
+    const outdated = [] as LangiumDocument[]
+    for (const doc of shared.workspace.LangiumDocuments.all) {
+      // Documents that are not validated yet are validated (and recorded) by the running build
+      if (!isLikeC4UserDocument(doc) || doc.state < DocumentState.Validated) {
+        continue
+      }
+      const recorded = seen.get(doc.uri.toString())
+      if (!recorded || !consumers.has(recorded.consumer) || lookup.isExcluded(doc)) {
+        continue
+      }
+      const consumer = lookup.ownerProjectId(doc)
+      const snapshot = snapshotOf(consumer)
+      if (consumer === recorded.consumer && recorded.snapshot === snapshot) {
+        continue
+      }
+      seen.set(doc.uri.toString(), { consumer, snapshot })
+      outdated.push(doc)
+    }
+    return outdated
+  }
+
   const revalidate = async () => {
     const lock = shared.workspace.WorkspaceLock
     // Let running builds complete, instead of cancelling them
     await lock.read(() => undefined)
     scheduled = false
-    const candidates = new Set(pending)
+    const consumers = new Set(pending)
     pending.clear()
-    const lookup = shared.workspace.ProjectsLookup
     const builder = shared.workspace.DocumentBuilder
     await lock.write(async token => {
       if (token.isCancellationRequested) {
         // Superseded by another write before anything was reset: try again after it
-        candidates.forEach(c => pending.add(c))
+        consumers.forEach(c => pending.add(c))
         schedule()
         return
       }
-      const consumers = changedConsumers(candidates)
-      if (consumers.size === 0) {
-        return
-      }
-      const documents = shared.workspace.LangiumDocuments.all
-        .filter(doc =>
-          isLikeC4UserDocument(doc)
-          // Documents that are not validated yet are validated by the running build
-          && doc.state >= DocumentState.Validated
-          && doc.parseResult.value.imports.length > 0
-          && !lookup.isExcluded(doc)
-          && consumers.has(lookup.ownerProjectId(doc))
-        )
-        .toArray()
+      const documents = takeOutdated(consumers)
       if (documents.length === 0) {
         return
       }
@@ -269,11 +279,16 @@ function dependencyStatesTracker(shared: LikeC4SharedServices): DependencyStates
       consumers.forEach(c => pending.add(c))
       schedule()
     }),
+    shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
+      for (const uri of deleted) {
+        seen.delete(uri.toString())
+      }
+    }),
   )
 
   const tracker: DependencyStatesTracker = {
-    validated(consumer) {
-      seen.set(consumer, statesSnapshot(states.all(consumer)))
+    validated(document, consumer) {
+      seen.set(document.uri.toString(), { consumer, snapshot: statesSnapshot(states.all(consumer)) })
     },
   }
   trackers.set(shared, tracker)
