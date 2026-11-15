@@ -1,6 +1,6 @@
 // Node-only: runs the system git for git dependencies.
 // Imported only from `install.ts` / `versions.ts` (Node entry), never from the browser entry.
-import { ConfigFilenames, isLikeC4JsonConfig } from '@likec4/config'
+import { ConfigFilenames, GIT_DEFAULT_BRANCH_REF, isLikeC4JsonConfig } from '@likec4/config'
 import { type ChildProcess, spawn, spawnSync } from 'node:child_process'
 import { constants } from 'node:fs'
 import { access, mkdtemp, realpath, rm, stat } from 'node:fs/promises'
@@ -703,8 +703,9 @@ export function looksLikeAbbreviatedSha(ref: string): boolean {
  */
 export function gitRefCandidates(ref: string): string[] {
   switch (true) {
-    case ref === 'HEAD':
-      return ['HEAD']
+    // the default branch of the remote (a git URL string without "#ref")
+    case ref === GIT_DEFAULT_BRANCH_REF:
+      return [GIT_DEFAULT_BRANCH_REF]
     case ref.startsWith('refs/'):
       return [ref, `${ref}^{}`]
     default:

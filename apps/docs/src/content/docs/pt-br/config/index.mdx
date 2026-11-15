@@ -224,6 +224,7 @@ A seção `dependencies` é experimental. O formato dela pode mudar antes de se 
 `dependencies` associa os nomes usados na importação aos projetos de dependência.
 Uma dependência é uma pasta relativa à pasta do projeto (um projeto do workspace ou uma pasta fora do workspace)
 ou uma pasta de um repositório git em uma branch, uma tag ou o SHA completo de um commit.
+Uma string que começa com `https://` ou `ssh://` é um repositório git, opcionalmente seguido de `#` e da ref (a branch padrão sem ela).
 
 ```json
 {
@@ -231,6 +232,7 @@ ou uma pasta de um repositório git em uma branch, uma tag ou o SHA completo de 
   "name": "checkout",
   "dependencies": {
     "billing": "../billing-service",
+    "payments": "https://github.com/my-org/payments.git#v1.4.0",
     "platform": {
       "git": "https://github.com/my-org/platform.git",
       "ref": "v2.0.0",

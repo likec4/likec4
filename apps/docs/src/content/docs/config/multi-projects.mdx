@@ -79,7 +79,8 @@ Declare the projects you import from in the `dependencies` section of the projec
 Each entry maps an import name to the dependency project:
 
 - a path to the folder of the project (the folder with its config file), relative to the folder of the config file;
-- a [git source](#git-dependencies): a folder of a git repository at a branch, a tag or a full commit SHA.
+- a [git source](#git-dependencies): a folder of a git repository at a branch, a tag or a full commit SHA,
+  given as an object or as a [URL string](#short-form) that starts with `https://` or `ssh://`.
 
 <FileTree>
 - platform-model
@@ -222,6 +223,31 @@ Instead of a path, give an object with the repository URL, a ref and, optionally
 - `path` must be relative and cannot contain `..`.
 - Other fields are rejected.
 
+#### Short form
+
+A git dependency at the repository root can be written as a string: the repository URL, optionally followed by `#` and the ref.
+Without `#ref`, the dependency uses the default branch of the repository:
+
+```json title="checkout/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing": "https://github.com/my-org/billing.git#v1.2.0",
+    "payments": "ssh://git@github.com/my-org/payments.git"
+  }
+}
+```
+
+- A string that starts with `https://` or `ssh://` is a git dependency, any other string is a path.
+- `"https://github.com/my-org/billing.git#v1.2.0"` is the same as `{ "git": "https://github.com/my-org/billing.git", "ref": "v1.2.0" }`:
+  both get the same commit and the same files.
+- Everything after the first `#` is the ref, with the same rules as `ref` (for example, `#release/1.0` is a branch or tag name).
+- Without `#ref`, the default branch is resolved like any branch: the first install remembers its commit, and `likec4 update` moves it.
+  Messages show this ref as `HEAD`: `ssh://git@github.com/my-org/payments.git#HEAD`.
+- Use the object form for a project in a folder of the repository (`path`) or for a `git@host:org/repo.git` URL.
+  A string like `"git@github.com:my-org/billing.git"` is read as a local path.
+
 Import from a git dependency the same way as from a local one:
 
 ```likec4 title="checkout/checkout.c4"
@@ -303,7 +329,7 @@ Different versions of one repository can be used side by side: in different proj
 
 There is no lock file: the commits are remembered in the cache of each machine.
 The build is reproducible on one machine, but another machine (or a CI run with an empty cache) resolves the refs again.
-Use a tag or a full commit SHA as `ref` to get the same model everywhere.
+Use a tag or a full commit SHA as `ref` to get the same model everywhere (a [URL string](#short-form) without `#ref` follows the default branch).
 
 #### What is downloaded
 

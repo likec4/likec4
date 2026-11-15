@@ -44,15 +44,59 @@ function collapseSlashes(path: string): string {
 // which RELATIVE_PATH_REGEX accepts
 const NO_DRIVE_LETTER_REGEX = /^(?![A-Za-z]:)/
 
+// Relative path of a dependency (after backslashes are converted): no leading slash, no drive letter,
+// no protocol, and not a mistyped git URL ("https:/host/...", "https:\\host\...")
+const DEPENDENCY_PATH_REGEX = /^(?!\/|[A-Za-z]:|(?:[Hh][Tt][Tt][Pp][Ss]|[Ss][Ss][Hh]):\/)(?!.*:\/\/).*$/
+
 const RELATIVE_PATH_ERROR =
   'Dependency path must be a relative path string (no leading slash, drive letter, or protocol)'
 
+const PROTOCOL_PATH_ERROR = [
+  'Dependency path must be a relative path string (no protocol);',
+  'a git dependency is a URL starting with https:// or ssh:// (e.g. "https://github.com/my-org/billing.git#v1.2.0")',
+  'or a git source object { "git": "...", "ref": "..." }',
+].join(' ')
+
+// Prefix of the shorthand of a git dependency: a string that starts with https:// or ssh:// (any case).
+// Written without the "i" flag, the JSON schema has no regex flags.
+const GIT_SHORTHAND_PREFIX_REGEX = /^(?:[Hh][Tt][Tt][Pp][Ss]|[Ss][Ss][Hh]):\/\//
+
+// A mistyped git URL (after backslashes are converted): "https:/host/...", "https:\\host\..." -> "https://host/..."
+const GIT_URL_TYPO_REGEX = /^(?:[Hh][Tt][Tt][Pp][Ss]|[Ss][Ss][Hh]):\//
+
+const GIT_URL_TYPO_ERROR =
+  'Dependency looks like a git URL: write it as https://host/org/repo.git or ssh://host/org/repo.git (with "//" and forward slashes)'
+
+/**
+ * Checks if the dependency string is the shorthand of a git dependency (starts with `https://` or `ssh://`),
+ * other strings are relative paths of local dependencies.
+ */
+function isGitShorthand(value: string): boolean {
+  return GIT_SHORTHAND_PREFIX_REGEX.test(value.trim())
+}
+
 const DependencyPathSchema = z
   .string({ error: 'Dependency path must be a relative path string' })
+  // Shorthands of git dependencies are validated by GitShorthandSchema:
+  // abort, so that the union reports the errors of that option.
+  // Checked before backslashes are converted: "https:\\host\repo" is not a shorthand, it is reported below.
+  .refine((value) => !isGitShorthand(value), { abort: true, error: 'Git dependency URL is not a path' })
   .overwrite(normalizeSeparators)
   .min(1, 'Dependency path cannot be empty')
-  .regex(RELATIVE_PATH_REGEX, RELATIVE_PATH_ERROR)
-  .regex(NO_DRIVE_LETTER_REGEX, RELATIVE_PATH_ERROR)
+  // One check (one error per path): relative, no drive letter, no protocol, not a mistyped git URL
+  .regex(DEPENDENCY_PATH_REGEX, {
+    error: (issue) => {
+      const input = typeof issue.input === 'string' ? issue.input : ''
+      switch (true) {
+        case GIT_URL_TYPO_REGEX.test(input):
+          return GIT_URL_TYPO_ERROR
+        case input.includes('://'):
+          return PROTOCOL_PATH_ERROR
+        default:
+          return RELATIVE_PATH_ERROR
+      }
+    },
+  })
   .overwrite(collapseSlashes)
   .meta({
     description: [
@@ -90,19 +134,19 @@ const GitUrlSchema = z
   })
 
 /**
- * Checks a git ref against the rules of `git check-ref-format` (and rejects refs that look like options):
- * no whitespace, control characters, `~ ^ : ? * [ \`, `..`, `@{` or `//`,
- * does not start with `-` or `/`, does not end with `/`, `.` or `.lock`,
- * no component starts with `.`, and it is not `@`.
+ * Checks a git ref with the rules the installer applies (`isValidGitRef` of the language server):
+ * the rules of `git check-ref-format`, restricted to `A-Z a-z 0-9 . _ / + @ -`, at most 255 characters,
+ * no `..`, `//` or `@{`, does not start with `-` or `/`, does not end with `/` or `.`,
+ * no component starts with `.` or ends with `.lock`, and it is not `@`.
  */
 function isValidGitRef(ref: string): boolean {
   switch (true) {
-    // eslint-disable-next-line no-control-regex
-    case /[\s\x00-\x1f\x7f~^:?*[\\]/.test(ref):
+    case ref.length > 255:
+    case !/^[A-Za-z0-9._/+@-]+$/.test(ref):
     case ref.includes('..') || ref.includes('@{') || ref.includes('//'):
     case ref.startsWith('-') || ref.startsWith('/'):
-    case ref.endsWith('/') || ref.endsWith('.') || ref.endsWith('.lock'):
-    case ref.split('/').some(component => component.startsWith('.')):
+    case ref.endsWith('/') || ref.endsWith('.'):
+    case ref.split('/').some(component => component.startsWith('.') || component.endsWith('.lock')):
     case ref === '@':
       return false
     default:
@@ -112,8 +156,8 @@ function isValidGitRef(ref: string): boolean {
 
 const GIT_REF_ERROR = [
   'Git dependency ref must be a branch, a tag or a commit SHA',
-  '(no whitespace, "~", "^", ":", "?", "*", "[", "\\", "..", "@{",',
-  'cannot start with "-" or "/", cannot end with "/", "." or ".lock")',
+  '(letters A-Z a-z, digits and "." "_" "/" "+" "@" "-", at most 255 characters, no "..", "//" or "@{",',
+  'cannot start with "-" or "/", cannot end with "/" or ".", no part starting with "." or ending with ".lock")',
 ].join(' ')
 
 const GitRefSchema = z
@@ -165,21 +209,99 @@ const GitDependencySourceSchema = z
     ].join('\n'),
   })
 
-const DEPENDENCY_ENTRY_ERROR =
-  'Dependency path must be a relative path string, or a git source object { "git": "...", "ref": "...", "path": "..." }'
+/**
+ * Ref of the git shorthand without `#ref`: the default branch of the remote repository
+ * (`HEAD` of the remote, resolved with `git ls-remote` like any branch).
+ */
+export const GIT_DEFAULT_BRANCH_REF = 'HEAD'
+
+/**
+ * Shorthand of a git dependency: `"https://host/org/repo.git#ref"` or `"ssh://[user@]host/org/repo.git#ref"`.
+ * The `#ref` is optional, the default branch ({@link GIT_DEFAULT_BRANCH_REF}) if omitted.
+ * Transformed to the git source object `{ git, ref }` (no `path`, it exists only in the object form),
+ * so the shorthand is identical in effect to the equivalent object.
+ * The URL and the ref are validated as the `git` and `ref` of the object form.
+ */
+const GitShorthandSchema = z
+  .string()
+  .trim()
+  // Other strings are paths: abort, so that the union reports the errors of the path option
+  .regex(GIT_SHORTHAND_PREFIX_REGEX, { abort: true, error: 'Git dependency URL must start with https:// or ssh://' })
+  // Validated in the transform: failed checks before a transform abort the option,
+  // then the union would report a generic error instead of these issues
+  .transform((value, ctx): GitDependencySource => {
+    const { url, ref } = splitGitShorthand(value)
+    const issues = [
+      ...(GitUrlSchema.safeParse(url).error?.issues ?? []).map(({ message }) => ({
+        message: message === GIT_URL_ERROR ? GIT_SHORTHAND_URL_ERROR : message,
+      })),
+      ...(ref === undefined ? [] : refIssues(ref)),
+    ]
+    if (issues.length > 0) {
+      for (const issue of issues) {
+        // continue: the issue does not abort the option, so the union reports it (see DependencyEntrySchema)
+        ctx.addIssue({ code: 'custom', message: issue.message, input: value, continue: true })
+      }
+      return z.NEVER
+    }
+    return {
+      git: url.trim(),
+      ref: ref?.trim() ?? GIT_DEFAULT_BRANCH_REF,
+    }
+  })
+  .meta({
+    description: [
+      'URL of a git repository with an optional ref after "#": a branch, a tag or a commit SHA.',
+      'The default branch of the repository if the ref is omitted.',
+      'Allowed forms: https://host/org/repo.git[#ref], ssh://[user@]host[:port]/org/repo.git[#ref]',
+      'Example: "https://github.com/my-org/billing.git#v1.2.0"',
+    ].join('\n'),
+  })
+
+const GIT_SHORTHAND_URL_ERROR = [
+  'Git dependency URL must be https://host/org/repo.git or ssh://[user@]host[:port]/org/repo.git,',
+  'optionally followed by "#ref" (no query string)',
+].join(' ')
+
+/**
+ * Splits the git shorthand at the first `#` (URLs of git dependencies cannot have a fragment).
+ */
+function splitGitShorthand(value: string): { url: string; ref: string | undefined } {
+  const hash = value.indexOf('#')
+  return hash < 0
+    ? { url: value, ref: undefined }
+    : { url: value.slice(0, hash), ref: value.slice(hash + 1) }
+}
+
+function refIssues(ref: string): ReadonlyArray<{ message: string }> {
+  if (ref.trim().length === 0) {
+    return [{ message: 'Git dependency ref after "#" cannot be empty, omit "#" to use the default branch' }]
+  }
+  return GitRefSchema.safeParse(ref).error?.issues ?? []
+}
+
+const DEPENDENCY_ENTRY_ERROR = [
+  'Dependency path must be a relative path string, a git URL "https://..." or "ssh://..." with an optional "#ref",',
+  'or a git source object { "git": "...", "ref": "...", "path": "..." }',
+].join(' ')
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-const DependencyEntrySchema = z.union([DependencyPathSchema, GitDependencySourceSchema], {
+// Index of GitDependencySourceSchema in the options of DependencyEntrySchema
+const GIT_SOURCE_OPTION = 2
+
+// Options are mutually exclusive: a string is either a git shorthand (https:// or ssh://) or a path.
+// Each option aborts on input of the other ones, so the union reports the errors of the matching option.
+const DependencyEntrySchema = z.union([DependencyPathSchema, GitShorthandSchema, GitDependencySourceSchema], {
   // Reported when no option matches the type of the input (e.g. a number),
   // or the object has a missing or mistyped field (then the union cannot pick the option itself).
   error: (issue) => {
     if (issue.code !== 'invalid_union' || !isPlainObject(issue.input)) {
       return DEPENDENCY_ENTRY_ERROR
     }
-    const gitIssues = issue.errors[1] ?? []
+    const gitIssues = issue.errors[GIT_SOURCE_OPTION] ?? []
     if (gitIssues.length === 0) {
       return DEPENDENCY_ENTRY_ERROR
     }
@@ -221,10 +343,12 @@ export const DependenciesSchema = z
       'Projects this project depends on.',
       'Maps the import name (used in `import ... from \'name\'`) to the dependency project:',
       '- a path to the folder of the project, relative to the folder containing this config file',
+      '- a git repository URL starting with https:// or ssh://, with an optional "#ref"',
+      '  (branch, tag or commit SHA; the default branch if omitted)',
       '- a git source { git, ref, path }: a repository URL (https://, ssh:// or git@host:org/repo.git),',
       '  a ref (branch, tag or commit SHA) and an optional folder in the repository',
       'Import names follow the project name rules: they cannot be "default" or contain ".", "@" or "#".',
-      'Example: { "shared": "../shared-model", "billing": { "git": "git@github.com:my-org/billing.git", "ref": "v1.2.0" } }',
+      'Example: { "shared": "../shared-model", "billing": "https://github.com/my-org/billing.git#v1.2.0" }',
     ].join('\n'),
   })
 
@@ -237,9 +361,13 @@ export const DependenciesSchema = z
 export type DependencyPath = z.infer<typeof DependencyPathSchema>
 
 /**
- * The `dependencies` section of the project config.
+ * The `dependencies` section of the project config (after validation).
  * Maps the import name (used in `import ... from 'name'`) to the dependency location:
  * a relative path ({@link DependencyPath}) or a git source ({@link GitDependencySource}).
+ *
+ * In the config file a git dependency can also be written as a string, a URL starting with `https://` or `ssh://`
+ * with an optional `#ref` (`"https://github.com/my-org/billing.git#v1.2.0"`). Validation transforms it to the git
+ * source `{ git, ref }`, with `ref` {@link GIT_DEFAULT_BRANCH_REF} (the default branch) if `#ref` is omitted.
  *
  * The import name follows the project name rules: it cannot contain ".", "@" or "#".
  *
@@ -249,7 +377,8 @@ export type DependencyPath = z.infer<typeof DependencyPathSchema>
  *   "name": "my-project",
  *   "dependencies": {
  *     "shared": "../shared-model",
- *     "billing": { "git": "git@github.com:my-org/billing.git", "ref": "v1.2.0" }
+ *     "billing": { "git": "git@github.com:my-org/billing.git", "ref": "v1.2.0" },
+ *     "payments": "https://github.com/my-org/payments.git#main"
  *   }
  * }
  * ```
@@ -257,8 +386,9 @@ export type DependencyPath = z.infer<typeof DependencyPathSchema>
 export type DependenciesConfig = Record<string, DependencyEntry>
 
 /**
- * Normalizes the `dependencies` section: validates it and normalizes paths
- * (relative paths of local dependencies and `path` of git sources).
+ * Normalizes the `dependencies` section: validates it, normalizes paths
+ * (relative paths of local dependencies and `path` of git sources)
+ * and transforms git URL strings (`"https://...#ref"`) to git sources.
  * Returns an empty object if the section is missing or invalid.
  */
 export function normalizeDependencies(
@@ -292,6 +422,8 @@ export interface GitDependencySource {
   /**
    * Git ref: a branch, a tag or a commit SHA.
    * Resolved to a commit SHA on install, the SHA is remembered until update.
+   * {@link GIT_DEFAULT_BRANCH_REF} (`HEAD`) is the default branch of the remote repository
+   * (the ref of a git URL string without `#ref`).
    */
   ref: string
   /**

@@ -35,6 +35,7 @@ export type {
 } from './schema.dependencies'
 
 export {
+  GIT_DEFAULT_BRANCH_REF,
   isGitDependencySource,
 } from './schema.dependencies'
 
