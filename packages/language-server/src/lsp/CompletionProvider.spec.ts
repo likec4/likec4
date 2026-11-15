@@ -1126,9 +1126,9 @@ describe('LikeC4CompletionProvider', () => {
         documentUri: 'file:///test/workspace/src/project2/doc2.c4',
       },
       expectedItems: [
+        'e1',
         'c1',
         'c2',
-        'e1',
       ],
       disposeAfterCheck: true,
     })
@@ -1153,9 +1153,9 @@ describe('LikeC4CompletionProvider', () => {
         documentUri: 'file:///test/workspace/src/project2/doc2.c4',
       },
       expectedItems: [
+        'e1',
         'c1',
         'c2',
-        'e1',
       ],
     })
   })
@@ -1196,9 +1196,9 @@ describe('LikeC4CompletionProvider', () => {
         documentUri: 'file:///test/workspace/src/project2/doc2.c4',
       },
       expectedItems: [
+        'e1',
         'c1',
         'c2',
-        'e1',
       ],
     })
   })

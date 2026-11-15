@@ -7,6 +7,7 @@ export * from './fqnRef'
 export * from './markdown-refs'
 export * from './projectId'
 export * from './stringHash'
+export { UniqueSingleMap, uniqueSingles } from './UniqueSingleMap'
 
 export function safeCall<T>(fn: () => T): T | undefined {
   try {
