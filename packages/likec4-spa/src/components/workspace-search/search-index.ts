@@ -10,6 +10,7 @@ export interface SearchProject {
 export interface ViewRef {
   readonly id: ViewId
   readonly title: string
+  readonly _type: LikeC4Model.View['_type']
 }
 
 export interface SearchElement {
@@ -84,7 +85,7 @@ export function indexModel(projectId: ProjectId, model: Readonly<LikeC4Model.Lay
       summary: element.summary.text ?? '',
       tags: element.tags,
       metadata: element.metadata,
-      views: [...element.views()].map(view => ({ id: view.id, title: viewTitleWithFolder(view) })),
+      views: [...element.views()].map(view => ({ id: view.id, title: viewTitleWithFolder(view), _type: view._type })),
     })
   }
   const views: SearchView[] = []

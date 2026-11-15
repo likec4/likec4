@@ -1,7 +1,6 @@
 import { LikeC4ProjectsOverview, LogoIcon, useChangeLikeC4Project } from '@likec4/diagram'
-import { Menu } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
-import { IconCheck, IconChevronDown, IconLayoutGrid, IconList, IconTopologyStar3 } from '@tabler/icons-react'
+import { IconLayoutGrid, IconList, IconTopologyStar3 } from '@tabler/icons-react'
 import { useLikeC4Projects } from 'likec4:projects'
 import { useLikeC4ProjectsOverview } from 'likec4:projects-overview'
 import { type ReactNode, useMemo, useState } from 'react'
@@ -9,17 +8,23 @@ import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
 import { type CatalogSort, buildProjectsCatalog, selectProjects } from '../components/projects-overview/catalog'
 import { Metric, ProjectsCards, ProjectsTable } from '../components/projects-overview/ProjectsCatalog'
 import * as styles from '../components/projects-overview/styles'
+import {
+  type SortOption,
+  type ViewModeOption,
+  SortMenu,
+  ViewModeSwitch,
+} from '../components/projects-overview/Toolbar'
 import { WorkspaceSearch, WorkspaceSearchTrigger } from '../components/workspace-search/WorkspaceSearch'
 
 export type ProjectsOverviewMode = 'cards' | 'table' | 'map'
 
-const SORT_OPTIONS: ReadonlyArray<{ value: CatalogSort; label: string }> = [
+const SORT_OPTIONS: ReadonlyArray<SortOption<CatalogSort>> = [
   { value: 'name', label: 'Name' },
   { value: 'elements', label: 'Elements' },
   { value: 'usedBy', label: 'Most depended on' },
 ]
 
-const MODES: ReadonlyArray<{ value: ProjectsOverviewMode; label: string; icon: ReactNode }> = [
+const MODES: ReadonlyArray<ViewModeOption<ProjectsOverviewMode>> = [
   { value: 'cards', label: 'Cards', icon: <IconLayoutGrid size={14} aria-hidden /> },
   { value: 'table', label: 'Table', icon: <IconList size={14} aria-hidden /> },
   { value: 'map', label: 'Map', icon: <IconTopologyStar3 size={14} aria-hidden /> },
@@ -93,42 +98,11 @@ export function ProjectsOverviewPage({ view, onViewChange }: {
         <WorkspaceSearchTrigger onOpen={openSearch} />
         {!isMap && (
           <>
-            <Menu position="bottom-start" width={200} shadow="md" withinPortal>
-              <Menu.Target>
-                <button type="button" className={styles.sortButton} aria-label="Sort projects">
-                  Sort: {SORT_OPTIONS.find(o => o.value === sort)?.label}
-                  <IconChevronDown size={14} aria-hidden />
-                </button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Label>Sort projects by</Menu.Label>
-                {SORT_OPTIONS.map(o => (
-                  <Menu.Item
-                    key={o.value}
-                    onClick={() => setSort(o.value)}
-                    rightSection={o.value === sort ? <IconCheck size={14} aria-hidden /> : null}
-                    aria-checked={o.value === sort}
-                    role="menuitemradio">
-                    {o.label}
-                  </Menu.Item>
-                ))}
-              </Menu.Dropdown>
-            </Menu>
+            <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort projects by" />
           </>
         )}
         <span className={styles.toolbarSpacer} />
-        <div className={styles.seg} role="group" aria-label="View">
-          {MODES.map(mode => (
-            <button
-              key={mode.value}
-              type="button"
-              aria-pressed={view === mode.value}
-              onClick={() => onViewChange(mode.value)}>
-              {mode.icon}
-              {mode.label}
-            </button>
-          ))}
-        </div>
+        <ViewModeSwitch modes={MODES} value={view} onChange={onViewChange} />
         <ColorSchemeToggle />
       </div>
     </>

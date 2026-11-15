@@ -1,16 +1,15 @@
 import type { Fqn, ProjectId, ViewId } from '@likec4/core/types'
+import { ViewIcon } from '@likec4/diagram'
 import { FramerMotionConfig, Overlay } from '@likec4/diagram/custom'
 import { cx } from '@likec4/styles/css'
+import { searchOverlay } from '@likec4/styles/recipes'
 import { Highlight } from '@mantine/core'
 import {
   IconBrowser,
   IconCube,
   IconDatabase,
   IconDeviceMobile,
-  IconHierarchy2,
   IconSearch,
-  IconServer2,
-  IconTimeline,
   IconUser,
   IconX,
 } from '@tabler/icons-react'
@@ -35,10 +34,13 @@ import {
   type SearchView,
   searchWorkspace,
 } from './search-index'
+import { SearchPanel } from './SearchPanel'
 import * as styles from './styles'
 import { type WorkspaceIndexState, useWorkspaceIndex } from './useWorkspaceIndex'
 
 type Column = 'el' | 'vw' | 'pick'
+
+const searchClasses = searchOverlay()
 
 export interface WorkspaceSearchProps {
   opened: boolean
@@ -97,7 +99,7 @@ export const WorkspaceSearch = memo(({ opened, initialQuery, onClose }: Workspac
             fullscreen
             withBackdrop={false}
             backdrop={{ opacity: 0.9 }}
-            classes={{ dialog: styles.dialog, body: styles.body }}
+            classes={{ dialog: searchClasses.dialog, body: searchClasses.body }}
             openDelay={0}
             motionPreset="lift"
             onClose={onClose}
@@ -123,7 +125,10 @@ function SearchBody({ state, initialQuery, onClose }: {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [query, setQuery] = useState(initialQuery)
-  const [scope, setScope] = useState<ProjectId | null>(null)
+  const [pickedScope, setScope] = useState<ProjectId | null>(null)
+  // a workspace with one project searches just that project: no scope chips, no groups
+  const singleProject = index.projects.length === 1 ? (index.projects[0]?.id ?? null) : null
+  const scope = singleProject ?? pickedScope
   const [pick, setPick] = useState<SearchElement | null>(null)
 
   useEffect(() => {
@@ -235,7 +240,7 @@ function SearchBody({ state, initialQuery, onClose }: {
         e.preventDefault()
         openFirst()
         break
-      case e.key === 'Backspace' && scope !== null && input.selectionStart === 0 && input.selectionEnd === 0:
+      case e.key === 'Backspace' && pickedScope !== null && input.selectionStart === 0 && input.selectionEnd === 0:
         e.preventDefault()
         applyScope(null)
         break
@@ -244,7 +249,7 @@ function SearchBody({ state, initialQuery, onClose }: {
         e.stopPropagation()
         if (pick) {
           setPick(null)
-        } else if (query !== '' || scope !== null) {
+        } else if (query !== '' || pickedScope !== null) {
           setQuery('')
           applyScope(null)
         } else {
@@ -312,7 +317,7 @@ function SearchBody({ state, initialQuery, onClose }: {
       break
     default:
       content = (
-        <div className={styles.cols}>
+        <SearchPanel.Columns>
           <ResultColumn
             col="el"
             registerFocus={registerFocus}
@@ -320,7 +325,7 @@ function SearchBody({ state, initialQuery, onClose }: {
             groups={result.elements}
             grouped={scope === null}
             titleOf={titleOf}
-            empty={emptyText('elements', query, scope && titleOf(scope))}
+            empty={emptyText('elements', query, pickedScope && titleOf(pickedScope))}
             renderRow={(item, k) => (
               <ElementRow
                 key={item.id}
@@ -337,7 +342,7 @@ function SearchBody({ state, initialQuery, onClose }: {
             groups={result.views}
             grouped={scope === null}
             titleOf={titleOf}
-            empty={emptyText('views', query, scope && titleOf(scope))}
+            empty={emptyText('views', query, pickedScope && titleOf(pickedScope))}
             renderRow={(item, k) => (
               <ViewRow
                 key={item.id}
@@ -347,16 +352,16 @@ function SearchBody({ state, initialQuery, onClose }: {
                 onOpen={() => goToView(item.projectId, item.id)} />
             )}
           />
-        </div>
+        </SearchPanel.Columns>
       )
   }
 
   return (
-    <>
-      <div className={styles.top}>
-        <div className={styles.input}>
+    <SearchPanel.Root>
+      <SearchPanel.Header className="group">
+        <SearchPanel.Field>
           <IconSearch size={18} aria-hidden />
-          {scope && (
+          {scope && !singleProject && (
             <span className={styles.scopeToken} title={titleOf(scope)}>
               <ProjectMonogram projectId={scope} title={titleOf(scope)} size="chip" />
               <span className={styles.truncate}>{titleOf(scope)}</span>
@@ -369,7 +374,11 @@ function SearchBody({ state, initialQuery, onClose }: {
             ref={inputRef}
             type="text"
             value={query}
-            placeholder={scope ? 'Search in this project' : 'Search elements and views in all projects'}
+            placeholder={singleProject
+              ? 'Search elements and views'
+              : scope
+              ? 'Search in this project'
+              : 'Search elements and views in all projects'}
             aria-label="Search"
             autoComplete="off"
             spellCheck={false}
@@ -382,14 +391,16 @@ function SearchBody({ state, initialQuery, onClose }: {
           <button type="button" className={styles.close} aria-label="Close search" onClick={onClose}>
             <IconX size={16} />
           </button>
-        </div>
-        <ScopeChips
-          result={result}
-          scope={scope}
-          totalProjects={index.projects.length}
-          titleOf={titleOf}
-          onScope={applyScope} />
-      </div>
+        </SearchPanel.Field>
+        {!singleProject && (
+          <ScopeChips
+            result={result}
+            scope={scope}
+            totalProjects={index.projects.length}
+            titleOf={titleOf}
+            onScope={applyScope} />
+        )}
+      </SearchPanel.Header>
       <div
         ref={containerRef}
         onKeyDown={onRowsKeyDown}
@@ -410,8 +421,8 @@ function SearchBody({ state, initialQuery, onClose }: {
         style={{ display: 'contents' }}>
         {content}
       </div>
-      <Footer state={state} />
-    </>
+      <Footer state={state} singleProject={singleProject !== null} />
+    </SearchPanel.Root>
   )
 }
 
@@ -436,7 +447,7 @@ function ScopeChips({ result, scope, totalProjects, titleOf, onScope }: {
     .map(([id]) => id)
   const without = result.scopeCandidates ? 0 : Math.max(0, totalProjects - result.counts.size)
   return (
-    <div className={styles.scopes} role="group" aria-label="Limit to project">
+    <SearchPanel.Tags role="group" aria-label="Limit to project">
       <button
         type="button"
         className={styles.scope}
@@ -459,7 +470,7 @@ function ScopeChips({ result, scope, totalProjects, titleOf, onScope }: {
         </button>
       ))}
       {without > 0 && <span className={styles.scopeNone}>{without} with no matches</span>}
-    </div>
+    </SearchPanel.Tags>
   )
 }
 
@@ -587,13 +598,13 @@ function ResultColumn<T extends SearchElement | SearchView>({
 
   const total = rowIndexes.length
   return (
-    <section className={styles.col} aria-label={title}>
-      <div className={styles.colTitle}>
+    <SearchPanel.Column aria-label={title}>
+      <SearchPanel.ColumnTitle>
         {title}
         {total > 0 && <span className={styles.count}>{total}</span>}
-      </div>
-      <div ref={scrollRef} className={styles.list} data-list={col}>
-        {total === 0 && <div className={styles.hint}>{empty}</div>}
+      </SearchPanel.ColumnTitle>
+      <SearchPanel.List ref={scrollRef} data-list={col}>
+        {total === 0 && <SearchPanel.Hint>{empty}</SearchPanel.Hint>}
         <div className={styles.virtualInner} style={{ height: virtualizer.getTotalSize() }}>
           {virtualizer.getVirtualItems().map(virtualItem => {
             const item = items[virtualItem.index]
@@ -611,11 +622,11 @@ function ResultColumn<T extends SearchElement | SearchView>({
                 style={isActiveHead ? undefined : { transform: `translateY(${virtualItem.start}px)` }}>
                 {item.type === 'head'
                   ? (
-                    <div className={styles.groupHead}>
+                    <SearchPanel.GroupHead>
                       <ProjectMonogram projectId={item.projectId} title={titleOf(item.projectId)} size="chip" />
                       <span className={styles.truncate} title={titleOf(item.projectId)}>{titleOf(item.projectId)}</span>
                       <span className={styles.count}>{item.count}</span>
-                    </div>
+                    </SearchPanel.GroupHead>
                   )
                   : (
                     <div style={{ paddingBottom: item.last ? GROUP_GAP : ROW_GAP }}>
@@ -626,8 +637,8 @@ function ResultColumn<T extends SearchElement | SearchView>({
             )
           })}
         </div>
-      </div>
-    </section>
+      </SearchPanel.List>
+    </SearchPanel.Column>
   )
 }
 
@@ -659,17 +670,6 @@ function elementIcon(shape: string): ReactNode {
   }
 }
 
-function viewIcon(viewType: SearchView['viewType']): ReactNode {
-  switch (viewType) {
-    case 'dynamic':
-      return <IconTimeline size={20} stroke={1.6} aria-hidden />
-    case 'deployment':
-      return <IconServer2 size={20} stroke={1.6} aria-hidden />
-    default:
-      return <IconHierarchy2 size={20} stroke={1.6} aria-hidden />
-  }
-}
-
 function ElementRow({ element, k, words, onOpen }: {
   element: SearchElement
   k: number
@@ -678,22 +678,30 @@ function ElementRow({ element, k, words, onOpen }: {
 }) {
   const views = element.views.length
   return (
-    <button type="button" className={styles.row} data-col="el" data-k={k} onClick={() => onOpen(element)}>
-      {elementIcon(element.shape)}
+    <SearchPanel.Button type="button" className="group" data-col="el" data-k={k} onClick={() => onOpen(element)}>
+      <SearchPanel.ButtonIcon>{elementIcon(element.shape)}</SearchPanel.ButtonIcon>
       <span className={styles.rowMain}>
         <span className={styles.rowTitle}>
-          <Highlight component="span" highlight={words}>{element.title}</Highlight>
-          <span className={styles.kind}>{element.kind}</span>
+          <SearchPanel.ButtonTitle className={styles.truncate}>
+            <Highlight component="span" highlight={words}>{element.title}</Highlight>
+          </SearchPanel.ButtonTitle>
+          <SearchPanel.Badge>
+            <Highlight component="span" highlight={words}>{element.kind}</Highlight>
+          </SearchPanel.Badge>
         </span>
-        <Highlight component="span" highlight={words} className={styles.rowPath}>{element.id}</Highlight>
+        <SearchPanel.ButtonDescription className={styles.rowPath}>
+          <Highlight component="span" highlight={words}>{element.id}</Highlight>
+        </SearchPanel.ButtonDescription>
         {element.summary && (
-          <Highlight component="span" highlight={words} className={styles.rowDesc}>{element.summary}</Highlight>
+          <SearchPanel.ButtonDescription className={styles.truncate}>
+            <Highlight component="span" highlight={words}>{element.summary}</Highlight>
+          </SearchPanel.ButtonDescription>
         )}
       </span>
-      <span className={styles.rowMeta}>
+      <SearchPanel.ButtonMeta>
         {views === 0 ? 'no views' : `${views} ${views === 1 ? 'view' : 'views'}`}
-      </span>
-    </button>
+      </SearchPanel.ButtonMeta>
+    </SearchPanel.Button>
   )
 }
 
@@ -704,19 +712,24 @@ function ViewRow({ view, k, words, onOpen }: {
   onOpen: () => void
 }) {
   return (
-    <button type="button" className={styles.row} data-col="vw" data-k={k} onClick={onOpen}>
-      {viewIcon(view.viewType)}
+    <SearchPanel.Button type="button" className="group" data-col="vw" data-k={k} onClick={onOpen}>
+      <SearchPanel.ButtonIcon>
+        <ViewIcon view={{ id: view.id, _type: view.viewType }} size={16} />
+      </SearchPanel.ButtonIcon>
       <span className={styles.rowMain}>
-        <span className={styles.rowTitle}>
+        <SearchPanel.ButtonTitle className={styles.truncate}>
           <Highlight component="span" highlight={words}>{view.title}</Highlight>
-        </span>
-        <span className={styles.rowPath}>{view.id}</span>
+        </SearchPanel.ButtonTitle>
+        <SearchPanel.ButtonDescription className={styles.rowPath}>
+          <Highlight component="span" highlight={[]}>{view.id}</Highlight>
+        </SearchPanel.ButtonDescription>
         {view.description && (
-          <Highlight component="span" highlight={words} className={styles.rowDesc}>{view.description}</Highlight>
+          <SearchPanel.ButtonDescription className={styles.truncate}>
+            <Highlight component="span" highlight={words}>{view.description}</Highlight>
+          </SearchPanel.ButtonDescription>
         )}
       </span>
-      <span className={styles.rowMeta} />
-    </button>
+    </SearchPanel.Button>
   )
 }
 
@@ -727,45 +740,48 @@ function PickView({ element, projectTitle, onPick, onBack }: {
   onBack: () => void
 }) {
   return (
-    <div className={styles.col}>
-      <div className={styles.pickHead}>
+    <SearchPanel.Column>
+      <SearchPanel.ColumnTitle>
         <span className={styles.truncate}>
           Pick a view with <b>{element.title}</b> · {projectTitle}
         </span>
         <button type="button" className={styles.linkButton} onClick={onBack}>Back to results</button>
-      </div>
-      <div className={styles.list}>
+      </SearchPanel.ColumnTitle>
+      <SearchPanel.List>
         <div className={styles.pickList}>
           <div className={styles.rows}>
             {element.views.map((view, k) => (
-              <button
+              <SearchPanel.Button
                 key={view.id}
                 type="button"
-                className={styles.row}
+                className="group"
                 data-col="pick"
                 data-k={k}
                 onClick={() => onPick(view.id)}>
-                <IconHierarchy2 size={20} stroke={1.6} aria-hidden />
+                <SearchPanel.ButtonIcon>
+                  <ViewIcon view={view} size={16} />
+                </SearchPanel.ButtonIcon>
                 <span className={styles.rowMain}>
-                  <span className={styles.rowTitle}>
-                    <span>{view.title}</span>
-                  </span>
-                  <span className={styles.rowPath}>{view.id}</span>
+                  <SearchPanel.ButtonTitle className={styles.truncate}>
+                    <Highlight component="span" highlight={[]}>{view.title}</Highlight>
+                  </SearchPanel.ButtonTitle>
+                  <SearchPanel.ButtonDescription className={styles.rowPath}>
+                    <Highlight component="span" highlight={[]}>{view.id}</Highlight>
+                  </SearchPanel.ButtonDescription>
                 </span>
-                <span className={styles.rowMeta} />
-              </button>
+              </SearchPanel.Button>
             ))}
           </div>
         </div>
-      </div>
-    </div>
+      </SearchPanel.List>
+    </SearchPanel.Column>
   )
 }
 
-function Footer({ state }: { state: WorkspaceIndexState }) {
+function Footer({ state, singleProject }: { state: WorkspaceIndexState; singleProject: boolean }) {
   const loading = state.loaded + state.failed.length < state.total
   return (
-    <div className={styles.foot}>
+    <SearchPanel.Footer className={styles.foot}>
       <span>
         <kbd>↑</kbd>
         <kbd>↓</kbd>move
@@ -777,9 +793,11 @@ function Footer({ state }: { state: WorkspaceIndexState }) {
       <span>
         <kbd>↵</kbd>open
       </span>
-      <span>
-        <kbd>@</kbd>limit to a project
-      </span>
+      {!singleProject && (
+        <span>
+          <kbd>@</kbd>limit to a project
+        </span>
+      )}
       <span>
         <kbd>esc</kbd>back · close
       </span>
@@ -789,20 +807,26 @@ function Footer({ state }: { state: WorkspaceIndexState }) {
           : `${state.loaded} ${state.loaded === 1 ? 'project' : 'projects'} indexed`}
         {state.failed.length > 0 && ` · ${state.failed.length} failed`}
       </span>
-    </div>
+    </SearchPanel.Footer>
   )
 }
 
 /**
  * Field on the projects page that opens the workspace search; typing into it opens the search with that text
  */
-export function WorkspaceSearchTrigger({ onOpen }: { onOpen: (initialQuery: string) => void }) {
+export function WorkspaceSearchTrigger({
+  onOpen,
+  label = 'Search elements and views in all projects',
+}: {
+  onOpen: (initialQuery: string) => void
+  label?: string
+}) {
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
   return (
     <button
       type="button"
       className={cx('group', styles.trigger)}
-      aria-label="Search elements and views in all projects"
+      aria-label={label}
       aria-keyshortcuts="Meta+K /"
       onClick={() => onOpen('')}
       onKeyDown={e => {
@@ -812,7 +836,7 @@ export function WorkspaceSearchTrigger({ onOpen }: { onOpen: (initialQuery: stri
         }
       }}>
       <IconSearch size={16} aria-hidden />
-      <span>Search elements and views in all projects</span>
+      <span>{label}</span>
       <span className={styles.kbd} aria-hidden="true">{isMac ? '⌘ + K' : 'Ctrl + K'}</span>
     </button>
   )

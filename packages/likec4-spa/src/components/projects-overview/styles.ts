@@ -147,41 +147,19 @@ export const toolbarSpacer = css({
   flex: '1',
 })
 
-export const seg = css({
-  display: 'inline-flex',
-  padding: '0.5',
-  gap: '0.5',
-  borderRadius: 'sm',
-  backgroundColor: 'surface.sunken',
-  borderWidth: '1',
-  borderStyle: 'solid',
-  borderColor: 'border.subtle',
-  '& button': {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '1.5',
-    height: '[26px]',
-    paddingX: '2.5',
-    border: 'none',
-    borderRadius: '[3px]',
-    backgroundColor: 'transparent',
-    fontFamily: 'body',
-    fontSize: 'xs',
-    fontWeight: 'medium',
-    cursor: 'pointer',
-    ...textSecondary,
-    _hover: {
-      color: 'text',
-    },
-    '&[aria-pressed="true"]': {
-      backgroundColor: 'surface.default',
-      color: 'text.bright',
-      boxShadow: 'xs',
-    },
-    _focusVisible: {
-      outline: '[2px solid var(--colors-primary-border)]',
-      outlineOffset: '[2px]',
-    },
+/**
+ * Icon + text inside a SegmentedControl item: a block-level flex box, so it is centred
+ * in the item instead of sitting on the text baseline
+ */
+export const modeLabel = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '1.5',
+  lineHeight: '1',
+  '& > svg': {
+    display: 'block',
+    flexShrink: '0',
   },
 })
 
