@@ -256,9 +256,15 @@ export interface LoadedGitDependencies {
    */
   projects: ExternalProject[]
   /**
-   * Resolution of each target
+   * Resolution of each target, except {@link failed} ones
    */
   resolutions: GitDependencyResolution[]
+  /**
+   * Targets the storage could not be read for, with no previous resolution of the same source to keep.
+   * They get no resolution (and no state: no "install" advice for a dependency that may be installed),
+   * must not be marked as synced, and are retried by the next sync.
+   */
+  failed: GitDependencyTarget[]
 }
 
 /**
@@ -679,9 +685,11 @@ export class ExternalProjects extends ADisposable {
   /**
    * Remembers the git dependency targets of a sync (including targets that are not installed),
    * so {@link hasStructuralChanges} does not report them again until the dependencies change.
+   * Targets in `except` (the storage could not be read for them) stay unsynced: the next sync retries them.
    */
-  markGitSynced(targets: Iterable<GitDependencyTarget>): void {
-    this.#syncedGitTargets = new Set([...targets].map(gitTargetKey))
+  markGitSynced(targets: Iterable<GitDependencyTarget>, except: Iterable<GitDependencyTarget> = []): void {
+    const failed = new Set([...except].map(gitTargetKey))
+    this.#syncedGitTargets = new Set([...targets].map(gitTargetKey).filter(key => !failed.has(key)))
   }
 
   /**
@@ -720,7 +728,7 @@ export class ExternalProjects extends ADisposable {
     targets: ReadonlyArray<GitDependencyTarget> = this.gitDependencyTargets(),
   ): Promise<LoadedGitDependencies> {
     if (targets.length === 0) {
-      return { projects: [], resolutions: [] }
+      return { projects: [], resolutions: [], failed: [] }
     }
     const storage = this.services.dependencies.Storage
     const notInstalled = this.notInstalledStatus()
@@ -789,7 +797,9 @@ export class ExternalProjects extends ADisposable {
       }
     }
 
-    const resolutions = resolved.map(({ target, projectId }): GitDependencyResolution => {
+    const resolutions = [] as GitDependencyResolution[]
+    const failed = [] as GitDependencyTarget[]
+    for (const { target, projectId } of resolved) {
       if (projectId === 'failed' || (projectId && entries === 'failed')) {
         // The storage could not be read: keep the previous resolution (and its instance) of the same source
         const previous = this.gitResolution(target.consumer, target.name)
@@ -797,24 +807,29 @@ export class ExternalProjects extends ADisposable {
           const registered = previous.status === 'installed' ? this.#projects.get(previous.projectId) : undefined
           if (registered) {
             projects.set(registered.id, registered)
-            return { ...previous, target }
+            resolutions.push({ ...previous, target })
+            continue
           }
           if (previous.status !== 'installed') {
-            return { ...previous, target }
+            resolutions.push({ ...previous, target })
+            continue
           }
         }
-        return { status: notInstalled, target }
+        // Nothing to keep: unknown until a successful read
+        failed.push(target)
+        continue
       }
       const project = projectId ? projects.get(projectId) : undefined
       if (project?.git) {
-        return { status: 'installed', target, instance: project.git, projectId: project.id }
+        resolutions.push({ status: 'installed', target, instance: project.git, projectId: project.id })
+      } else {
+        resolutions.push({ status: notInstalled, target })
       }
-      return { status: notInstalled, target }
-    })
+    }
     if (projects.size > 0) {
       logger.debug`loaded ${projects.size} git dependency instances`
     }
-    return { projects: [...projects.values()], resolutions }
+    return { projects: [...projects.values()], resolutions, failed }
   }
 
   /**

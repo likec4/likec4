@@ -16,8 +16,21 @@ import { DEPENDENCY_URI_SCHEME } from '../workspace/dependency-uri'
  * Not called under the workspace lock (Langium does not take it for this request).
  */
 export class LikeC4TextDocumentContentProvider extends DefaultTextDocumentContentProvider {
+  /**
+   * URIs the client asked content for (with or without result): when such a document is registered later
+   * (install, switch back to a SHA), the client is asked to refresh it
+   */
+  #requested = new Set<string>()
+
   constructor(protected services: LikeC4SharedServices) {
     super(services, DEPENDENCY_URI_SCHEME)
+  }
+
+  /**
+   * Whether the client asked for the content of the document before
+   */
+  wasRequested(uri: URI | string): boolean {
+    return this.#requested.has(typeof uri === 'string' ? URI.parse(uri).toString() : uri.toString())
   }
 
   override async provideTextDocumentContent(
@@ -28,6 +41,7 @@ export class LikeC4TextDocumentContentProvider extends DefaultTextDocumentConten
     if (!this.schemes.includes(uri.scheme)) {
       return undefined
     }
+    this.#requested.add(uri.toString())
     const workspaceManager = this.services.workspace.WorkspaceManager
     await workspaceManager.ready
     await workspaceManager.whenExternalProjectsSynced()

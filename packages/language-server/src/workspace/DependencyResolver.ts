@@ -150,9 +150,10 @@ export class DependencyResolver {
         name: external.config.name,
         source: {
           kind: 'git',
-          url: source.git,
+          url: withoutUserInfo(source.git),
           ref: source.ref,
-          ...(source.path ? { path: source.path } : {}),
+          // Normalized subdirectory, absent for the repository root
+          ...(resolution.target.subdir ? { path: resolution.target.subdir } : {}),
           sha: resolution.instance.sha,
         },
       },
@@ -186,4 +187,20 @@ export class DependencyResolver {
       },
     }
   }
+}
+
+/**
+ * Removes the user info (user name, password or token) from a git URL, it must not reach the model:
+ * `https://token@host/org/repo.git` -> `https://host/org/repo.git`,
+ * `ssh://git@host:2222/org/repo.git` -> `ssh://host:2222/org/repo.git`,
+ * `git@host:org/repo.git` -> `host:org/repo.git`.
+ */
+export function withoutUserInfo(url: string): string {
+  const trimmed = url.trim()
+  const withProtocol = /^([a-z][a-z0-9+.-]*:\/\/)[^/?#]*@/i
+  if (withProtocol.test(trimmed)) {
+    return trimmed.replace(withProtocol, '$1')
+  }
+  // scp-like syntax: [user@]host:path
+  return trimmed.replace(/^[^/@:]+@(?=[^/:]+:)/, '')
 }

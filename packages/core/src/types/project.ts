@@ -104,8 +104,8 @@ export type ImportedProjectSource =
   | {
     kind: 'git'
     /**
-     * Repository URL as written in the `dependencies` section of the consumer config
-     * (never contains a password: the config rejects URLs with passwords)
+     * Repository URL as written in the `dependencies` section of the consumer config,
+     * without user info (no user name, password or token)
      */
     url: string
     /**
@@ -113,8 +113,8 @@ export type ImportedProjectSource =
      */
     ref: string
     /**
-     * Folder of the dependency project in the repository, as written in the consumer config.
-     * Absent for the repository root.
+     * Folder of the dependency project in the repository (normalized: forward slashes,
+     * no leading `./`, no leading or trailing slashes). Absent for the repository root.
      */
     path?: string
     /**

@@ -1,5 +1,6 @@
 import { isLikeC4Config, LikeC4ProjectConfigOps, parseGitRepositoryUrl } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
+import { configureLogger } from '@likec4/log'
 import JSON5 from 'json5'
 import { type LangiumDocument, Cancellation, DocumentState, URI, UriUtils } from 'langium'
 import { addDiagnosticsHandler } from 'langium/lsp'
@@ -8,10 +9,12 @@ import type { Connection, WorkspaceFolder } from 'vscode-languageserver'
 import type { DependencyInstaller } from '../dependencies/types'
 import type { FileNode } from '../filesystem'
 import { DependencyFileSystem } from '../filesystem/DependencyFileSystem'
+import { LikeC4TextDocumentContentProvider } from '../lsp/TextDocumentContentProvider'
 import { DefaultLikeC4ModelBuilder } from '../model/model-builder'
 import { mockMethod, test as it } from '../test'
 import type { createTestServices } from '../test/testServices'
 import { type GitDependencyInstance, gitDependencyUri, localDependencyUri } from './dependency-uri'
+import { withoutUserInfo } from './DependencyResolver'
 import { type ExternalProject, externalProjectIdOfFolder, externalProjectIdOfGitInstance } from './ExternalProjects'
 import { type NormalizedUri, ProjectFolder } from './ProjectsManager'
 
@@ -1081,6 +1084,23 @@ const supportedInstaller = (): DependencyInstaller => ({
 /**
  * Starts the workspace as the language server does (`initialized`: startup and initial build under the write-lock)
  */
+/**
+ * Captures warnings of the language server logger (replaces the noop sink of the test services)
+ */
+function captureWarnings(): string[] {
+  const warnings = [] as string[]
+  configureLogger({
+    sinks: {
+      console: record => {
+        if (record.level === 'warning') {
+          warnings.push(String(record.rawMessage))
+        }
+      },
+    },
+  })
+  return warnings
+}
+
 async function startWithGit(t: TestServices) {
   const workspaceFolder: WorkspaceFolder = { name: 'workspace', uri: 'file:///test/workspace' }
   const { WorkspaceManager } = t.services.shared.workspace
@@ -1091,6 +1111,8 @@ async function startWithGit(t: TestServices) {
     workspaceFolders: [workspaceFolder],
   })
   await WorkspaceManager.initialized({})
+  // syncs queued by the startup (retries) take the write-lock: do not build concurrently outside of it
+  await WorkspaceManager.whenExternalProjectsSynced()
   await buildAll(t)
 }
 
@@ -1225,6 +1247,12 @@ describe('ExternalProjects: git dependencies', () => {
       const model = await t.services.likec4.ModelBuilder.computeModel(consumer as ProjectId)
       expect(model.$data.imports[name as ProjectId]?.map(e => e.id)).toEqual(['invoices'])
     }
+    // no user info in the model
+    const b = await t.services.likec4.ModelBuilder.computeModel('b' as ProjectId)
+    expect(b.$data.importedProjects?.['invoicing' as ProjectId]?.source).toMatchObject({
+      kind: 'git',
+      url: 'github.com:my-org/billing.git',
+    })
   })
 
   it('loads different SHAs of one repository side by side', async ({ create, expect }) => {
@@ -1387,7 +1415,21 @@ describe('ExternalProjects: git dependencies', () => {
     const firedUnderLock = [] as boolean[]
     States.onDidChange(() => firedUnderLock.push(writing > 0))
 
-    const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
+    // the editor asked for a document before install (a tab opened while not installed)
+    const provider = t.services.shared.lsp.TextDocumentContentProvider
+    expect(provider).toBeInstanceOf(LikeC4TextDocumentContentProvider)
+    const requestedUri = gitDependencyUri(
+      { repository: 'github.com/my-org/billing', sha: SHA_V1, subdir: '' },
+      'model.c4',
+    ).toString()
+    expect(await provider!.provideTextDocumentContent({ uri: requestedUri }, Cancellation.CancellationToken.None))
+      .toBeUndefined()
+
+    const instance = await installGit(t, {
+      ref: 'v1',
+      sha: SHA_V1,
+      files: { 'model.c4': billingV1, 'other.c4': 'model { }' },
+    })
     await WorkspaceManager.syncExternalProjects()
     await buildAll(t)
     expect(statesInRelink).toEqual(['installed'])
@@ -1399,8 +1441,10 @@ describe('ExternalProjects: git dependencies', () => {
     expect(model.$data.imports['billing' as ProjectId]?.map(e => e.id)).toEqual(['invoices'])
     expect(States.get('a' as ProjectId, 'billing')?.status).toBe('installed')
     expect(events).toEqual([{ consumers: ['a'] }])
-    // added documents are not refreshed (the content provider waits for the sync)
-    expect(refresh).not.toHaveBeenCalled()
+    // only the added document the editor asked for is refreshed
+    expect(refresh.mock.calls.flatMap(([uris]) => uris.map(String))).toEqual([requestedUri])
+    expect(await provider!.provideTextDocumentContent({ uri: requestedUri }, Cancellation.CancellationToken.None))
+      .toEqual({ text: billingV1 })
 
     // nothing changed: no event, no write-lock
     writes.mockClear()
@@ -1507,6 +1551,8 @@ describe('ExternalProjects: git dependencies', () => {
     expect(registered.config.name).toBe('billing-arch')
     expect(registered.includeConfig.paths).toEqual([])
     expect(registered.folder).toBe(`likec4-dep://github.com/my-org/billing%40${SHA_V1}/architecture/-/`)
+    expect(t.services.shared.workspace.DependencyResolver.resolveWithMeta('a' as ProjectId, 'billing')?.meta.source)
+      .toEqual({ kind: 'git', url: BILLING_URL, ref: 'v1', path: 'architecture', sha: SHA_V1 })
     expect(LangiumDocuments.all.filter(d => d.uri.scheme === 'likec4-dep').map(d => d.uri.toString()).toArray())
       .toEqual([gitDependencyUri(instance, 'model.c4').toString()])
     // nothing was read from the file system for the dependency
@@ -1633,6 +1679,7 @@ describe('ExternalProjects: git dependencies', () => {
     expect(statesBefore.map(s => s.status)).toEqual(['installed', 'not-installed'])
     const events = [] as unknown[]
     States.onDidChange(e => events.push(e))
+    const warnings = captureWarnings()
 
     // the batch read of instances fails
     const readEntries = mockMethod(Storage, 'readEntries').mockRejectedValue(new Error('storage is unavailable'))
@@ -1649,8 +1696,148 @@ describe('ExternalProjects: git dependencies', () => {
     readVersion.mockRestore()
 
     expect(events).toEqual([])
+    expect(warnings).toEqual([
+      'Failed to read git dependencies from the dependency storage, the previous state is kept',
+      'Failed to read the version of {repository}@{ref}, the previous state is kept',
+      'Failed to read the version of {repository}@{ref}, the previous state is kept',
+    ])
     const model = await t.services.likec4.ModelBuilder.computeModel('a' as ProjectId)
     expect(model.$data.imports['billing' as ProjectId]?.map(e => e.id)).toEqual(['invoices'])
+  })
+
+  it('retries once when the storage cannot be read at startup, without a state meanwhile', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace', context: { dependencyInstaller: supportedInstaller } })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { billing: { git: BILLING_URL, ref: 'v1' } },
+      }),
+      'file:///test/workspace/a/model.c4': consumerModel('billing'),
+    })
+    const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
+    const { Storage, States } = t.services.shared.dependencies
+    const readEntries = Storage.readEntries.bind(Storage)
+    const statesSeen = [] as Array<string | undefined>
+    const reads = mockMethod(Storage, 'readEntries').mockImplementation(async instances => {
+      statesSeen.push(States.get('a' as ProjectId, 'billing')?.status)
+      if (reads.mock.calls.length === 1) {
+        throw new Error('storage is unavailable')
+      }
+      return readEntries(instances)
+    })
+    const events = [] as Array<string | undefined>
+    States.onDidChange(() => events.push(States.get('a' as ProjectId, 'billing')?.status))
+    await startWithGit(t)
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+    await buildAll(t)
+
+    expect(reads).toHaveBeenCalledTimes(2)
+    // the startup could not read: no state (no "install" advice) until the retry
+    expect(statesSeen).toEqual([undefined, undefined])
+    expect(events).toEqual(['installed'])
+    expect(States.get('a' as ProjectId, 'billing')?.status).toBe('installed')
+    expect(t.services.shared.workspace.ExternalProjects.has(externalProjectIdOfGitInstance(instance))).toBe(true)
+    const model = await t.services.likec4.ModelBuilder.computeModel('a' as ProjectId)
+    expect(model.$data.imports['billing' as ProjectId]?.map(e => e.id)).toEqual(['invoices'])
+  })
+
+  it('does not retry a storage that keeps failing more than once', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace', context: { dependencyInstaller: supportedInstaller } })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { billing: { git: BILLING_URL, ref: 'v1' } },
+      }),
+      'file:///test/workspace/a/model.c4': consumerModel('billing'),
+    })
+    const { Storage, States } = t.services.shared.dependencies
+    const reads = mockMethod(Storage, 'readVersion').mockRejectedValue(new Error('storage is unavailable'))
+    await startWithGit(t)
+    const { WorkspaceManager, ExternalProjects } = t.services.shared.workspace
+    await WorkspaceManager.whenExternalProjectsSynced()
+    // startup and one retry
+    expect(reads).toHaveBeenCalledTimes(2)
+    expect(States.get('a' as ProjectId, 'billing')).toBeUndefined()
+    // the target is not marked as synced: the next sync reads again
+    expect(ExternalProjects.hasStructuralChanges()).toBe(true)
+  })
+
+  it('does not hang the startup on a storage that does not answer', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { billing: { git: BILLING_URL, ref: 'v1' } },
+      }),
+      'file:///test/workspace/a/model.c4': consumerModel('billing'),
+    })
+    const instance = await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
+    const { WorkspaceManager, ExternalProjects } = t.services.shared.workspace
+    WorkspaceManager['startupStorageTimeout'] = 20
+    const { Storage, States } = t.services.shared.dependencies
+    const readVersion = Storage.readVersion.bind(Storage)
+    const reads = mockMethod(Storage, 'readVersion').mockImplementation((repository, ref) => {
+      if (reads.mock.calls.length === 1) {
+        // answers after the startup timeout
+        return new Promise(resolve => setTimeout(() => resolve(readVersion(repository, ref)), 200))
+      }
+      return readVersion(repository, ref)
+    })
+    const warnings = captureWarnings()
+    // registered instances when the startup builds the workspace
+    const instancesAtInitialBuild = [] as number[]
+    const { DocumentBuilder } = t.services.shared.workspace
+    const build = DocumentBuilder.build.bind(DocumentBuilder)
+    mockMethod(DocumentBuilder, 'build').mockImplementation((documents, options, token) => {
+      instancesAtInitialBuild.push(ExternalProjects.all().length)
+      return build(documents, options, token)
+    })
+    await startWithGit(t)
+    // the startup did not wait for the storage
+    expect(instancesAtInitialBuild[0]).toBe(0)
+    expect(warnings).toContain(
+      'Dependency storage did not answer within {timeout} ms, git dependencies are loaded later',
+    )
+
+    // a structural sync after the startup loads it
+    await WorkspaceManager.whenExternalProjectsSynced()
+    await buildAll(t)
+    expect(ExternalProjects.has(externalProjectIdOfGitInstance(instance))).toBe(true)
+    expect(States.get('a' as ProjectId, 'billing')?.status).toBe('installed')
+    const doc = t.services.shared.workspace.LangiumDocuments.getDocument(
+      URI.parse('file:///test/workspace/a/model.c4'),
+    )!
+    expect(doc.references.filter(ref => ref.error).map(ref => ref.error?.message)).toEqual([])
+  })
+
+  it('reads local dependencies once at startup, together with git dependencies', async ({ create, expect }) => {
+    const t = create({ workspace: 'file:///test/workspace' })
+    const fs = mockFileSystem(t, {
+      'file:///test/workspace/a/likec4.config.json': config({
+        name: 'a',
+        dependencies: { billing: { git: BILLING_URL, ref: 'v1' }, shared: '../../shared' },
+      }),
+      'file:///test/workspace/a/model.c4': consumerModel('billing'),
+      'file:///test/shared/model.c4': sharedModel,
+    })
+    await installGit(t, { ref: 'v1', sha: SHA_V1, files: { 'model.c4': billingV1 } })
+    await startWithGit(t)
+    await t.services.shared.workspace.WorkspaceManager.whenExternalProjectsSynced()
+    expect(fs.readFile.mock.calls.map(([uri]) => uri.toString()).filter(uri => uri.startsWith('file:///test/shared/')))
+      .toEqual(['file:///test/shared/model.c4'])
+    expect(t.services.shared.workspace.ExternalProjects.all()).toHaveLength(2)
+  })
+
+  it('removes user info from the URL of the imported project', async ({ expect }) => {
+    expect(withoutUserInfo('https://token@github.com/my-org/billing.git')).toBe('https://github.com/my-org/billing.git')
+    expect(withoutUserInfo('https://user:secret@github.com/my-org/billing.git'))
+      .toBe('https://github.com/my-org/billing.git')
+    expect(withoutUserInfo('ssh://git@github.com:2222/my-org/billing.git')).toBe(
+      'ssh://github.com:2222/my-org/billing.git',
+    )
+    expect(withoutUserInfo('git@github.com:my-org/billing.git')).toBe('github.com:my-org/billing.git')
+    expect(withoutUserInfo('https://github.com/my-org/billing.git')).toBe('https://github.com/my-org/billing.git')
+    expect(withoutUserInfo('https://github.com/my-org/a@b.git')).toBe('https://github.com/my-org/a@b.git')
   })
 
   it('gives nested subdirectories of one commit distinct owners', async ({ create, expect }) => {
