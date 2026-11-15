@@ -193,8 +193,9 @@ Below are examples of how to prepare the model:
 :::tip
 The `likec4` package is all you need for these examples:
 - `likec4/react`: React components and hooks
-- `likec4/model`: the model API and types (the same as `@likec4/core/model` and `@likec4/core/types`)
-- `likec4/model/builder`: the model builder (the same as `@likec4/core/builder`)
+- `likec4/model`: the model API and types
+- `likec4/model/builder`: the model builder
+- `likec4/core`: the low-level core API, with `likec4/core/model`, `likec4/core/types`, `likec4/core/builder`, `likec4/core/compute-view`, `likec4/core/geometry`, `likec4/core/styles` and `likec4/core/utils`
 :::
 
 In the examples below, `likec4model` is the model prepared in one of the ways above.
@@ -463,10 +464,10 @@ const App = () => {
 ## Library
 
 If you want to use the package as a library with your bundler, you need to manage the CSS yourself.  
-For this, add [`@likec4/core`](https://www.npmjs.com/package/%40likec4%2Fcore) and [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram) instead of `likec4`:
+For this, add [`@likec4/diagram`](https://www.npmjs.com/package/%40likec4%2Fdiagram) instead of `likec4`:
 
 <PackageManagers
-    pkg="@likec4/core @likec4/diagram"
+    pkg="@likec4/diagram"
     pkgManagers={['npm', 'pnpm', 'yarn', 'bun']}
     frame="none"
   />

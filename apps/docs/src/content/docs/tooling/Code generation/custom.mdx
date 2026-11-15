@@ -99,20 +99,3 @@ export default defineConfig({
 })
 ```
 
-:::tip
-You can also use smaller package `@likec4/config`:
-
-```ts
-import { defineGenerators } from '@likec4/config'
-
-export default defineGenerators({
-  'hello': async ({ likec4model, ctx }) => {
-    await ctx.write({
-      path: 'hello.txt', // relative to the project folder
-      content: `Project: ${likec4model.project.id}`,
-    })
-  },
-})
-```
-
-:::
