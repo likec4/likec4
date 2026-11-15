@@ -44,6 +44,10 @@ function collapseSlashes(path: string): string {
 // which RELATIVE_PATH_REGEX accepts
 const NO_DRIVE_LETTER_REGEX = /^(?![A-Za-z]:)/
 
+// Relative path of a dependency (after backslashes are converted): no leading slash, no drive letter,
+// no protocol, and not a mistyped git URL ("https:/host/...", "https:\\host\...")
+const DEPENDENCY_PATH_REGEX = /^(?!\/|[A-Za-z]:|(?:[Hh][Tt][Tt][Pp][Ss]|[Ss][Ss][Hh]):\/)(?!.*:\/\/).*$/
+
 const RELATIVE_PATH_ERROR =
   'Dependency path must be a relative path string (no leading slash, drive letter, or protocol)'
 
@@ -57,6 +61,12 @@ const PROTOCOL_PATH_ERROR = [
 // Written without the "i" flag, the JSON schema has no regex flags.
 const GIT_SHORTHAND_PREFIX_REGEX = /^(?:[Hh][Tt][Tt][Pp][Ss]|[Ss][Ss][Hh]):\/\//
 
+// A mistyped git URL (after backslashes are converted): "https:/host/...", "https:\\host\..." -> "https://host/..."
+const GIT_URL_TYPO_REGEX = /^(?:[Hh][Tt][Tt][Pp][Ss]|[Ss][Ss][Hh]):\//
+
+const GIT_URL_TYPO_ERROR =
+  'Dependency looks like a git URL: write it as https://host/org/repo.git or ssh://host/org/repo.git (with "//" and forward slashes)'
+
 /**
  * Checks if the dependency string is the shorthand of a git dependency (starts with `https://` or `ssh://`),
  * other strings are relative paths of local dependencies.
@@ -67,16 +77,26 @@ function isGitShorthand(value: string): boolean {
 
 const DependencyPathSchema = z
   .string({ error: 'Dependency path must be a relative path string' })
-  .overwrite(normalizeSeparators)
   // Shorthands of git dependencies are validated by GitShorthandSchema:
-  // abort, so that the union reports the errors of that option
+  // abort, so that the union reports the errors of that option.
+  // Checked before backslashes are converted: "https:\\host\repo" is not a shorthand, it is reported below.
   .refine((value) => !isGitShorthand(value), { abort: true, error: 'Git dependency URL is not a path' })
+  .overwrite(normalizeSeparators)
   .min(1, 'Dependency path cannot be empty')
-  .regex(RELATIVE_PATH_REGEX, {
-    error: (issue) =>
-      typeof issue.input === 'string' && issue.input.includes('://') ? PROTOCOL_PATH_ERROR : RELATIVE_PATH_ERROR,
+  // One check (one error per path): relative, no drive letter, no protocol, not a mistyped git URL
+  .regex(DEPENDENCY_PATH_REGEX, {
+    error: (issue) => {
+      const input = typeof issue.input === 'string' ? issue.input : ''
+      switch (true) {
+        case GIT_URL_TYPO_REGEX.test(input):
+          return GIT_URL_TYPO_ERROR
+        case input.includes('://'):
+          return PROTOCOL_PATH_ERROR
+        default:
+          return RELATIVE_PATH_ERROR
+      }
+    },
   })
-  .regex(NO_DRIVE_LETTER_REGEX, RELATIVE_PATH_ERROR)
   .overwrite(collapseSlashes)
   .meta({
     description: [
@@ -114,19 +134,19 @@ const GitUrlSchema = z
   })
 
 /**
- * Checks a git ref against the rules of `git check-ref-format` (and rejects refs that look like options):
- * no whitespace, control characters, `~ ^ : ? * [ \`, `..`, `@{` or `//`,
- * does not start with `-` or `/`, does not end with `/`, `.` or `.lock`,
- * no component starts with `.`, and it is not `@`.
+ * Checks a git ref with the rules the installer applies (`isValidGitRef` of the language server):
+ * the rules of `git check-ref-format`, restricted to `A-Z a-z 0-9 . _ / + @ -`, at most 255 characters,
+ * no `..`, `//` or `@{`, does not start with `-` or `/`, does not end with `/` or `.`,
+ * no component starts with `.` or ends with `.lock`, and it is not `@`.
  */
 function isValidGitRef(ref: string): boolean {
   switch (true) {
-    // eslint-disable-next-line no-control-regex
-    case /[\s\x00-\x1f\x7f~^:?*[\\]/.test(ref):
+    case ref.length > 255:
+    case !/^[A-Za-z0-9._/+@-]+$/.test(ref):
     case ref.includes('..') || ref.includes('@{') || ref.includes('//'):
     case ref.startsWith('-') || ref.startsWith('/'):
-    case ref.endsWith('/') || ref.endsWith('.') || ref.endsWith('.lock'):
-    case ref.split('/').some(component => component.startsWith('.')):
+    case ref.endsWith('/') || ref.endsWith('.'):
+    case ref.split('/').some(component => component.startsWith('.') || component.endsWith('.lock')):
     case ref === '@':
       return false
     default:
@@ -136,8 +156,8 @@ function isValidGitRef(ref: string): boolean {
 
 const GIT_REF_ERROR = [
   'Git dependency ref must be a branch, a tag or a commit SHA',
-  '(no whitespace, "~", "^", ":", "?", "*", "[", "\\", "..", "@{",',
-  'cannot start with "-" or "/", cannot end with "/", "." or ".lock")',
+  '(letters A-Z a-z, digits and "." "_" "/" "+" "@" "-", at most 255 characters, no "..", "//" or "@{",',
+  'cannot start with "-" or "/", cannot end with "/" or ".", no part starting with "." or ending with ".lock")',
 ].join(' ')
 
 const GitRefSchema = z

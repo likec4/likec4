@@ -193,6 +193,11 @@ describe('dependencies config', () => {
       'main@{1}',
       '@',
       'feature.lock',
+      'feature.lock/x',
+      'feat#x',
+      'ветка',
+      'feat%20x',
+      'a'.repeat(256),
       'feature/',
       '/feature',
       'feature//x',
@@ -380,12 +385,42 @@ describe('dependencies config', () => {
       'https://github.com/my-org/billing.git#-v1',
       'https://github.com/my-org/billing.git#main..dev',
       'https://github.com/my-org/billing.git#release/',
+      'https://github.com/my-org/billing.git#main#x',
     ])('should validate the ref of %s as the ref of the object form', (value, { expect }) => {
       expect(() => shorthand(value)).toThrow(/Git dependency ref must be a branch, a tag or a commit SHA/)
       const ref = value.slice(value.indexOf('#') + 1)
       expect(() => validate({ billing: { git: 'https://github.com/my-org/billing.git', ref } })).toThrow(
         /Git dependency ref must be a branch, a tag or a commit SHA/,
       )
+    })
+
+    it.for([
+      'https://github.com/my-org/billing.git#a#b',
+      'https://github.com/my-org/billing.git#ветка',
+      'https://github.com/my-org/billing.git#v1.lock',
+    ])('should reject %s, as the installer would', (value, { expect }) => {
+      expect(() => shorthand(value)).toThrow(/Git dependency ref must be a branch, a tag or a commit SHA/)
+    })
+
+    it.for([
+      'https:\\github.com\\my-org\\billing.git',
+      'https:\\\\github.com\\my-org\\billing.git',
+      'https:/github.com/my-org/billing.git',
+      'ssh:\\\\git@github.com\\my-org\\billing.git',
+    ])('should report %j as a mistyped git URL', (value, { expect }) => {
+      expect(() => shorthand(value)).toThrow(
+        'Dependency looks like a git URL: write it as https://host/org/repo.git or ssh://host/org/repo.git',
+      )
+    })
+
+    it.for([
+      'a://b',
+      'C://models',
+    ])('should report one error for %s', (value, { expect }) => {
+      const result = LikeC4ProjectJsonConfigSchema.safeParse({ name: 'consumer', dependencies: { shared: value } })
+      expect(result.error?.issues.map(issue => issue.message)).toEqual([
+        expect.stringMatching(/^Dependency path must be a relative path string \(no protocol\)/),
+      ])
     })
 
     it('should reject empty ref after "#"', ({ expect }) => {
@@ -511,8 +546,7 @@ describe('dependencies config', () => {
       })
       // A string is either a relative path or a git URL starting with https:// or ssh://
       const [pathOption, shorthandOption] = schemaJson.$defs.DependenciesConfig.additionalProperties.anyOf
-      const isPath = (value: string) =>
-        pathOption.allOf.every(({ pattern }: { pattern: string }) => new RegExp(pattern).test(value))
+      const isPath = (value: string) => new RegExp(pathOption.pattern).test(value)
       const isShorthand = (value: string) => new RegExp(shorthandOption.pattern).test(value)
       for (const value of ['https://github.com/my-org/billing.git', 'ssh://git@github.com/my-org/billing.git#v1']) {
         expect(isShorthand(value), value).toBe(true)
@@ -522,7 +556,15 @@ describe('dependencies config', () => {
         expect(isShorthand(value), value).toBe(false)
         expect(isPath(value), value).toBe(true)
       }
-      for (const value of ['http://github.com/my-org/billing.git', 'file:///repos/billing.git']) {
+      for (
+        const value of [
+          'http://github.com/my-org/billing.git',
+          'file:///repos/billing.git',
+          'https:/github.com/my-org/billing.git',
+          'C:/models',
+          '/models',
+        ]
+      ) {
         expect(isShorthand(value), value).toBe(false)
         expect(isPath(value), value).toBe(false)
       }

@@ -241,10 +241,11 @@ Sem `#ref`, a dependência usa a branch padrão do repositório:
 - Uma string que começa com `https://` ou `ssh://` é uma dependência do git; qualquer outra string é um caminho.
 - `"https://github.com/my-org/billing.git#v1.2.0"` é o mesmo que `{ "git": "https://github.com/my-org/billing.git", "ref": "v1.2.0" }`:
   os dois recebem o mesmo commit e os mesmos arquivos.
-- Tudo depois do primeiro `#` é a ref, com as mesmas regras de `ref` (por exemplo, `#release/1.0` é uma branch).
+- Tudo depois do primeiro `#` é a ref, com as mesmas regras de `ref` (por exemplo, `#release/1.0` é um nome de branch ou de tag).
 - Sem `#ref`, a branch padrão é resolvida como qualquer branch: a primeira instalação guarda o commit dela, e `likec4 update` o atualiza.
   As mensagens mostram essa ref como `HEAD`: `ssh://git@github.com/my-org/payments.git#HEAD`.
 - Use a forma de objeto para um projeto em uma pasta do repositório (`path`) ou para uma URL `git@host:org/repo.git`.
+  Uma string como `"git@github.com:my-org/billing.git"` é lida como um caminho local.
 
 Importe de uma dependência do git da mesma forma que de uma dependência local:
 
