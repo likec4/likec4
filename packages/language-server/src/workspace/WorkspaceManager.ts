@@ -441,6 +441,18 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   /**
+   * Requests sync of external projects, e.g. after git dependencies were installed into the dependency storage.
+   * Reads outside of the workspace write-lock, takes it only to register documents and relink consumers.
+   *
+   * Must not be awaited inside `WorkspaceLock.write` (see {@link whenExternalProjectsSynced}).
+   *
+   * @param mode `reread` (default) re-reads all instances, `structural` syncs only if instances are added or removed
+   */
+  public syncExternalProjects(mode: 'structural' | 'reread' = 'reread'): Promise<void> {
+    return this.requestExternalProjectsSync(mode)
+  }
+
+  /**
    * Requests sync of external projects (dependencies outside the workspace).
    * Syncs are serialized: a request joins a queued (not started) sync, or queues a new one.
    *

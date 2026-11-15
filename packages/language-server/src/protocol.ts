@@ -18,6 +18,7 @@ import type {
 import type { AILayoutHints } from '@likec4/layouts/ai'
 import { NotificationType, NotificationType0, RequestType, RequestType0 } from 'vscode-jsonrpc'
 import type { DiagnosticSeverity, DocumentUri, Location, Position, Range, URI } from 'vscode-languageserver-types'
+import type { DependencyInstallResult } from './dependencies/types'
 import type {
   ApplyEditsResult,
   ModelEditPreview,
@@ -25,6 +26,8 @@ import type {
   ModelEditResult,
   RemovalImpactReport,
 } from './model-diff'
+
+export type { DependencyInstallResult, GitDependencyInstance } from './dependencies/types'
 
 export type {
   ApplyEditsResult,
@@ -465,4 +468,125 @@ export namespace DidRequestRemovalImpactNotification {
   }
   export const type = new NotificationType<Params>('likec4/onRequestRemovalImpact')
   export type Type = typeof type
+}
+
+/**
+ * Options the client passes in `initializationOptions` of the `initialize` request.
+ */
+export interface LikeC4InitializationOptions {
+  /**
+   * The client shows the removal impact preview (handles {@link DidRequestRemovalImpactNotification}).
+   */
+  removalImpactPreview?: boolean | undefined
+  /**
+   * The client provides the storage of git dependencies: it answers the requests of
+   * {@link DependencyStorageRequests} (VS Code stores files in `globalStorageUri`).
+   * Otherwise the server uses the storage of its host (file system cache directory, or in memory).
+   */
+  dependencyStorage?: boolean | undefined
+}
+
+/**
+ * Requests from the server to the client storage of git dependencies
+ * (sent only if the client declared `dependencyStorage: true` in {@link LikeC4InitializationOptions}).
+ *
+ * Mirrors the driver interface of unstorage: keys are unstorage keys (`:`-separated, see `dependencyCacheKey`),
+ * values are JSON values (records of installed instances and of the version index).
+ */
+export namespace DependencyStorageRequests {
+  /**
+   * JSON value stored by the server
+   */
+  export type Value = unknown
+
+  /**
+   * Reads the value, `null` if there is none
+   */
+  export namespace GetItem {
+    export type Params = {
+      key: string
+    }
+    export type Res = {
+      value: Value | null
+    }
+    export const req = new RequestType<Params, Res, void>('likec4/dependency-storage/get-item')
+    export type Req = typeof req
+  }
+
+  /**
+   * Batch read: values of several keys, missing keys are omitted (or have `null` value)
+   */
+  export namespace GetItems {
+    export type Params = {
+      keys: string[]
+    }
+    export type Res = {
+      items: Array<{
+        key: string
+        value: Value | null
+      }>
+    }
+    export const req = new RequestType<Params, Res, void>('likec4/dependency-storage/get-items')
+    export type Req = typeof req
+  }
+
+  /**
+   * Writes (or replaces) the value
+   */
+  export namespace SetItem {
+    export type Params = {
+      key: string
+      value: Value
+    }
+    export const req = new RequestType<Params, void, void>('likec4/dependency-storage/set-item')
+    export type Req = typeof req
+  }
+
+  /**
+   * Lists keys, starting with `base` if it is set (`base` is a key prefix, e.g. `instances:github.com`)
+   */
+  export namespace GetKeys {
+    export type Params = {
+      base?: string | undefined
+    }
+    export type Res = {
+      keys: string[]
+    }
+    export const req = new RequestType<Params, Res, void>('likec4/dependency-storage/get-keys')
+    export type Req = typeof req
+  }
+}
+
+/**
+ * Command of the server (`workspace/executeCommand`) to install git dependencies:
+ * resolves refs, downloads sources into the dependency storage and registers instances.
+ * Sent by the quick fix on an import of a dependency that is not installed, or by a command of the editor.
+ *
+ * Arguments: `[params]` (params can be omitted to install all dependencies of all projects).
+ */
+export namespace InstallDependencies {
+  export const command = 'likec4.lsp.install-dependencies'
+
+  export type Params = {
+    /**
+     * Consumer project, all projects if not set
+     */
+    projectId?: ProjectId | undefined
+    /**
+     * Import name (key of the `dependencies` section), all git dependencies of the project if not set
+     */
+    name?: string | undefined
+    /**
+     * Resolve refs again (`likec4 update`)
+     */
+    update?: boolean | undefined
+  }
+
+  export type Res = {
+    results: Array<{
+      projectId: ProjectId
+      name: string
+      result: DependencyInstallResult
+    }>
+  }
 }

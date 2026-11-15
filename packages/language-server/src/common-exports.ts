@@ -11,6 +11,22 @@ export type {
 } from './model'
 
 export type { ast } from './ast'
+
+export type {
+  DependenciesModuleContext,
+  DependencyCacheDirParams,
+  DependencyCacheEntry,
+  DependencyInstaller,
+  DependencyInstallOptions,
+  DependencyInstallResult,
+  DependencyState,
+  DependencyStates,
+  DependencyStatus,
+  DependencyStorage,
+  DependencyVersionRecord,
+  GitDependencyInstance,
+  GitDependencySource,
+} from './dependencies'
 export type { FormatOptions, LikeC4LanguageServices } from './LikeC4LanguageServices'
 
 export type {
@@ -57,6 +73,15 @@ export {
 }
 
 export { documentSourceUri } from './workspace/dependency-uri'
+
+export {
+  DEPENDENCIES_CACHE_SUBDIR,
+  dependencyCacheDir,
+  LIKEC4_CACHE_DIR_ENV,
+  likec4CacheDir,
+  NoDependencies,
+  UnsupportedDependencyInstaller,
+} from './dependencies'
 
 export type {
   FileSystemModuleContext,

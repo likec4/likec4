@@ -1,15 +1,23 @@
+import { parseGitRepositoryUrl } from '@likec4/config'
 import { URI } from 'langium'
 import { describe, it } from 'vitest'
 import {
   buildDependencyUri,
   documentSourceUri,
+  gitDependencyUri,
   isDependencyUri,
+  isGitSha,
   isValidLocalDependencyFolder,
   localDependencyFile,
   localDependencyFolder,
   localDependencyUri,
+  normalizeGitSubdir,
   parseDependencyUri,
+  parseGitDependencyUri,
 } from './dependency-uri'
+import { externalProjectIdOfUri } from './ExternalProjects'
+
+const SHA = '0123456789abcdef0123456789abcdef01234567'
 
 describe('dependency-uri', () => {
   it('builds and parses URIs of local dependencies', ({ expect }) => {
@@ -124,5 +132,104 @@ describe('dependency-uri', () => {
     expect(documentSourceUri(git)).toBe(git)
     const workspaceDoc = URI.parse('file:///work/app/model.c4')
     expect(documentSourceUri(workspaceDoc)).toBe(workspaceDoc)
+  })
+
+  describe('git dependencies', () => {
+    it.for(
+      [
+        // url, subdir, expected URI
+        [
+          'https://github.com/my-org/billing.git',
+          '',
+          `likec4-dep://github.com/my-org/billing%40${SHA}/-/architecture/model.c4`,
+        ],
+        [
+          'https://github.com/my-org/billing',
+          'docs/arch',
+          `likec4-dep://github.com/my-org/billing%40${SHA}/docs/arch/-/architecture/model.c4`,
+        ],
+        [
+          'ssh://git@github.com/my-org/billing.git',
+          'docs',
+          `likec4-dep://github.com/my-org/billing%40${SHA}/docs/-/architecture/model.c4`,
+        ],
+        [
+          'ssh://git@git.example.com:2222/group/sub/billing.git',
+          'docs/arch',
+          `likec4-dep://git.example.com:2222/group/sub/billing%40${SHA}/docs/arch/-/architecture/model.c4`,
+        ],
+        [
+          'git@github.com:my-org/billing.git',
+          'docs/arch',
+          `likec4-dep://github.com/my-org/billing%40${SHA}/docs/arch/-/architecture/model.c4`,
+        ],
+        [
+          'git@gitlab.example.com:group/-/billing.git',
+          '-/nested',
+          `likec4-dep://gitlab.example.com/group/--/billing%40${SHA}/--/nested/-/architecture/model.c4`,
+        ],
+      ] as const,
+    )('round-trips %s (subdir "%s")', ([url, subdir, expected], { expect }) => {
+      const repository = parseGitRepositoryUrl(url)?.id
+      expect(repository).toBeDefined()
+      const instance = { repository: repository!, sha: SHA, subdir }
+      const uri = gitDependencyUri(instance, 'architecture/model.c4')
+      expect(uri.toString()).toBe(expected)
+      expect(isDependencyUri(uri)).toBe(true)
+      expect(parseGitDependencyUri(uri.toString())).toEqual({ instance, path: 'architecture/model.c4' })
+      expect(parseGitDependencyUri(URI.parse(uri.toString()))).toEqual({ instance, path: 'architecture/model.c4' })
+      // not a local dependency, no file
+      expect(localDependencyFolder(uri)).toBeUndefined()
+      expect(documentSourceUri(uri)).toBe(uri)
+      // owner is derived from the URI alone
+      expect(externalProjectIdOfUri(uri)).toBe(
+        `#likec4-dep://${repository!.split('/')[0]}${parseDependencyUri(uri)!.instance}`,
+      )
+    })
+
+    it('gives the same URIs to different spellings of one repository', ({ expect }) => {
+      const uris = [
+        'https://github.com/my-org/billing.git',
+        'https://GitHub.com:443/my-org/billing/',
+        'ssh://git@github.com:22/my-org/billing.git',
+        'git@github.com:my-org/billing.git',
+      ].map(url => gitDependencyUri({ repository: parseGitRepositoryUrl(url)!.id, sha: SHA, subdir: '' }, 'm.c4'))
+      expect(new Set(uris.map(u => u.toString())).size).toBe(1)
+      expect(new Set(uris.map(u => externalProjectIdOfUri(u))).size).toBe(1)
+    })
+
+    it('gives distinct instances to different SHAs and subdirectories', ({ expect }) => {
+      const repository = 'github.com/my-org/billing'
+      const owners = [
+        { repository, sha: SHA, subdir: '' },
+        { repository, sha: SHA, subdir: 'docs' },
+        { repository, sha: 'fedcba9876543210fedcba9876543210fedcba98', subdir: '' },
+      ].map(instance => externalProjectIdOfUri(gitDependencyUri(instance, 'docs/model.c4')))
+      expect(new Set(owners).size).toBe(3)
+    })
+
+    it('normalizes subdirectories', ({ expect }) => {
+      expect(normalizeGitSubdir(undefined)).toBe('')
+      expect(normalizeGitSubdir('.')).toBe('')
+      expect(normalizeGitSubdir('/')).toBe('')
+      expect(normalizeGitSubdir('./docs//arch/')).toBe('docs/arch')
+      expect(normalizeGitSubdir('docs\\arch')).toBe('docs/arch')
+      expect(() => normalizeGitSubdir('docs/../..')).toThrow()
+      const uri = gitDependencyUri({ repository: 'github.com/a/b', sha: SHA, subdir: './docs/' }, 'm.c4')
+      expect(parseGitDependencyUri(uri)?.instance.subdir).toBe('docs')
+    })
+
+    it('rejects invalid instances and URIs', ({ expect }) => {
+      expect(isGitSha(SHA)).toBe(true)
+      expect(isGitSha('main')).toBe(false)
+      expect(isGitSha(SHA.toUpperCase())).toBe(false)
+      expect(() => gitDependencyUri({ repository: 'github.com/a/b', sha: 'main', subdir: '' }, 'm.c4')).toThrow()
+      expect(() => gitDependencyUri({ repository: 'github.com', sha: SHA, subdir: '' }, 'm.c4')).toThrow()
+      expect(() => gitDependencyUri({ repository: 'github.com/a/b', sha: SHA, subdir: '' }, '')).toThrow()
+      // local dependencies and URIs without SHA are not git dependencies
+      expect(parseGitDependencyUri('likec4-dep://local/work/shared@0123abcd/-/model.c4')).toBeUndefined()
+      expect(parseGitDependencyUri('likec4-dep://github.com/my-org/billing/-/model.c4')).toBeUndefined()
+      expect(parseGitDependencyUri('file:///work/billing/model.c4')).toBeUndefined()
+    })
   })
 })

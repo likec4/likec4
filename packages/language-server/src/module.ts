@@ -10,6 +10,13 @@ import type {
   PartialLangiumSharedServices,
 } from 'langium/lsp'
 import { createDefaultModule, createDefaultSharedModule, DefaultTextDocumentContentProvider } from 'langium/lsp'
+import {
+  type DependenciesModuleContext,
+  type DependencyInstaller,
+  DependencyStates,
+  DependencyStorage,
+  NoDependencies,
+} from './dependencies'
 import { LikeC4DocumentationProvider } from './documentation'
 import type {
   FileSystemModuleContext,
@@ -77,6 +84,7 @@ import {
   ProjectsManager,
 } from './workspace'
 
+export { NoDependencies } from './dependencies'
 export { NoFileSystem, NoLikeC4ManualLayouts } from './filesystem/noop'
 export { WithGraphviz, WithWasmGraphviz } from './views'
 
@@ -84,6 +92,23 @@ export { WithGraphviz, WithWasmGraphviz } from './views'
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
 
 interface LikeC4AddedSharedServices {
+  /**
+   * Git dependencies: storage, installer and states
+   */
+  dependencies: {
+    /**
+     * Storage of installed instances and the version index (provided by the host, in-memory by default)
+     */
+    Storage: DependencyStorage
+    /**
+     * Installer of git dependencies (provided by Node hosts, not supported by default)
+     */
+    Installer: DependencyInstaller
+    /**
+     * States of git dependencies of consumer projects
+     */
+    States: DependencyStates
+  }
   lsp: {
     DocumentUpdateHandler: LikeC4DocumentUpdateHandler
     NodeKindProvider: NodeKindProvider
@@ -121,12 +146,18 @@ export type LikeC4SharedModuleContext =
   & Omit<DefaultSharedModuleContext, 'fileSystemProvider'>
   & FileSystemModuleContext
   & LikeC4ManualLayoutsModuleContext
+  & DependenciesModuleContext
 
 function createLikeC4SharedModule(context: LikeC4SharedModuleContext): Module<
   LikeC4SharedServices,
   PartialLangiumSharedServices & LikeC4AddedSharedServices
 > {
   return ({
+    dependencies: {
+      Storage: services => new DependencyStorage(services, context.dependencyStorage(services)),
+      Installer: services => context.dependencyInstaller(services),
+      States: services => new DependencyStates(services),
+    },
     lsp: {
       DocumentUpdateHandler: services => new LikeC4DocumentUpdateHandler(services),
       NodeKindProvider: services => new NodeKindProvider(services),
@@ -358,6 +389,7 @@ export function createSharedServices(context: Partial<LanguageServicesContext> =
   const moduleContext = {
     ...NoFileSystem,
     ...NoLikeC4ManualLayouts,
+    ...NoDependencies,
     ...context,
   }
   return inject(
