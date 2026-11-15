@@ -1,3 +1,4 @@
+import { isGitDependencySource } from '@likec4/config'
 import type { ImportedProjectMeta, ProjectId } from '@likec4/core/types'
 import { UriUtils } from 'langium'
 import { logWarnError } from '../logger'
@@ -85,7 +86,8 @@ export class DependencyResolver {
     }
 
     const dependencyPath = dependencies[name]
-    if (!dependencyPath) {
+    // Git sources are not resolved yet
+    if (!dependencyPath || isGitDependencySource(dependencyPath)) {
       return undefined
     }
     const folder = ProjectFolder(UriUtils.joinPath(consumerProject.folderUri, dependencyPath))

@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import { parseGitRepositoryUrl } from './git-url'
+import { hasGitUrlCredentials, parseGitRepositoryUrl } from './git-url'
 import { isGitDependencySource } from './schema.dependencies'
 
 describe('parseGitRepositoryUrl', () => {
@@ -9,7 +9,7 @@ describe('parseGitRepositoryUrl', () => {
       ['https://github.com/my-org/billing', 'https'],
       ['https://github.com/my-org/billing/', 'https'],
       ['https://GitHub.com:443/my-org/billing.git', 'https'],
-      ['https://user:token@github.com/my-org/billing.git', 'https'],
+      ['https://user@github.com/my-org/billing.git', 'https'],
       ['ssh://git@github.com/my-org/billing.git', 'ssh'],
       ['ssh://git@github.com:22/my-org/billing.git', 'ssh'],
       ['git@github.com:my-org/billing.git', 'scp'],
@@ -99,5 +99,28 @@ describe('isGitDependencySource', () => {
     expect(isGitDependencySource('../shared')).toBe(false)
     expect(isGitDependencySource({ git: 'git@github.com:my-org/billing.git' })).toBe(false)
     expect(isGitDependencySource(null)).toBe(false)
+  })
+})
+
+describe('parseGitRepositoryUrl credentials', () => {
+  it.for([
+    'https://user:token@github.com/my-org/billing.git',
+    'https://:token@github.com/my-org/billing.git',
+    'https://user:@github.com/my-org/billing.git',
+    'ssh://git:secret@github.com/my-org/billing.git',
+    'HTTPS://user:token@github.com/my-org/billing.git',
+  ])('rejects URL with credentials %s', (url, { expect }) => {
+    expect(hasGitUrlCredentials(url)).toBe(true)
+    expect(parseGitRepositoryUrl(url)).toBeUndefined()
+  })
+
+  it.for([
+    'https://github.com/my-org/billing.git',
+    'https://user@github.com/my-org/billing.git',
+    'ssh://git@github.com:2222/my-org/billing.git',
+    'git@github.com:my-org/billing.git',
+  ])('accepts URL without credentials %s', (url, { expect }) => {
+    expect(hasGitUrlCredentials(url)).toBe(false)
+    expect(parseGitRepositoryUrl(url)).toBeDefined()
   })
 })

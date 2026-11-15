@@ -1,6 +1,7 @@
 import {
   type LikeC4ProjectConfig,
   ConfigFilenames,
+  isGitDependencySource,
   isLikeC4JsonConfig,
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
@@ -347,6 +348,10 @@ export class ExternalProjects extends ADisposable {
         continue
       }
       for (const [name, path] of Object.entries(dependencies)) {
+        // Git sources are not local folders
+        if (isGitDependencySource(path)) {
+          continue
+        }
         try {
           const folderUri = UriUtils.resolvePath(consumer.folderUri, path)
           const folder = toFolder(folderUri)
