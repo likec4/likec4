@@ -27,6 +27,7 @@ The `likec4` CLI is a tool for various operations and automation tasks, such as:
 - Export views to PNG, JPEG, JSON, Markdown and Draw.io
 - Generate Mermaid, Dot, D2 and PlantUML sources, [React components](/tooling/react/#generated-components), [Web Components](/tooling/web-components/) and a [typed model](/tooling/code-generation/model/)
 - Validate and format source files (CI-friendly)
+- Install and update [git dependencies](/config/multi-projects/#git-dependencies)
 - Apply [model diffs](/dsl/diff/) and safely delete elements
 - Publish models to LikeC4 Cloud
 - Run the language server and the [MCP server](/tooling/ai-tools/#mcp-server)
@@ -117,6 +118,53 @@ Prefer long option names in scripts: some short options mean different things in
 
 The long names differ too: the output of `build` is `--output`, the output of the exports is `--outdir`
 (`export png/jpg` also accept `--output` for compatibility, `export drawio` does not).
+
+## Git dependencies
+
+Install and update the [git dependencies](/config/multi-projects/#git-dependencies) of the workspace (experimental).
+Commands that read the workspace never download dependencies: `build`, `export`, `gen`, `validate`, `sync leanix`, `diff`, `safe-delete` and `publish` fail until the git dependencies are installed.
+
+### Install
+
+```sh
+# Install git dependencies of all projects in the current directory
+likec4 install
+# Alias
+likec4 i
+
+# Install git dependencies of one project
+likec4 install --project checkout
+```
+
+The first install resolves each `ref` to a commit and remembers it in the cache.
+Later runs reuse the remembered commits and download nothing that is already installed.
+
+| Option          | Description                                                    |
+| --------------- | -------------------------------------------------------------- |
+| `path`          | Path to workspace (default: current directory)                 |
+| `--project, -p` | Install dependencies of this project only                      |
+
+### Update
+
+Resolve the refs again and install the new commits, for example when a branch has moved:
+
+```sh
+# Update all git dependencies of the workspace in the current directory
+likec4 update
+# Update the dependency "billing" of all projects
+likec4 update billing
+# Update the dependency "billing" of the project "checkout" in ./architecture
+likec4 update billing --project checkout --path ./architecture
+```
+
+| Option                     | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `name`                     | Dependency to update (key of the `dependencies` section), all if not set |
+| `--path, --workspace`      | Path to workspace (default: current directory)                           |
+| `--project, -p`            | Update dependencies of this project only                                 |
+
+Both commands exit with a non-zero code if a dependency fails to install.
+The `LIKEC4_CACHE_DIR` environment variable sets the cache directory, see [Cache](/config/multi-projects/#cache).
 
 ## Preview and build
 

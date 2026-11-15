@@ -27,6 +27,7 @@ A CLI `likec4` permite executar diversas operações e tarefas de automação, c
 - Exportar visões para PNG, JPEG, JSON, Markdown e Draw.io
 - Gerar código-fonte Mermaid, Dot, D2 e PlantUML, [componentes React](/pt-br/tooling/react/#componentes-gerados), [Web Components](/pt-br/tooling/web-components/) e um [modelo tipado](/pt-br/tooling/code-generation/model/)
 - Validar e formatar arquivos-fonte (adequado para CI)
+- Instalar e atualizar [dependências do git](/pt-br/config/multi-projects/#dependências-do-git)
 - Aplicar [diffs do modelo](/dsl/diff/) e remover elementos com segurança
 - Publicar modelos no LikeC4 Cloud
 - Executar o servidor de linguagem e o [servidor MCP](/pt-br/tooling/ai-tools/#servidor-mcp)
@@ -117,6 +118,53 @@ Prefira os nomes longos das opções em scripts: algumas opções curtas têm si
 
 Os nomes longos também diferem: a saída de `build` é `--output`, a saída das exportações é `--outdir`
 (`export png/jpg` também aceitam `--output` por compatibilidade, `export drawio` não).
+
+## Dependências do git
+
+Instale e atualize as [dependências do git](/pt-br/config/multi-projects/#dependências-do-git) do workspace (experimental).
+Os comandos que leem o workspace nunca baixam dependências: `build`, `export`, `gen`, `validate`, `sync leanix`, `diff`, `safe-delete` e `publish` falham até que as dependências do git estejam instaladas.
+
+### Instalar
+
+```sh
+# Install git dependencies of all projects in the current directory
+likec4 install
+# Alias
+likec4 i
+
+# Install git dependencies of one project
+likec4 install --project checkout
+```
+
+A primeira instalação resolve cada `ref` para um commit e o guarda no cache.
+As execuções seguintes reutilizam os commits guardados e não baixam nada que já esteja instalado.
+
+| Opção           | Descrição                                                      |
+| --------------- | -------------------------------------------------------------- |
+| `path`          | Caminho do workspace (padrão: diretório atual)                 |
+| `--project, -p` | Instala apenas as dependências deste projeto                   |
+
+### Atualizar
+
+Resolva as refs novamente e instale os novos commits, por exemplo quando uma branch mudou:
+
+```sh
+# Update all git dependencies of the workspace in the current directory
+likec4 update
+# Update the dependency "billing" of all projects
+likec4 update billing
+# Update the dependency "billing" of the project "checkout" in ./architecture
+likec4 update billing --project checkout --path ./architecture
+```
+
+| Opção                      | Descrição                                                                    |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| `name`                     | Dependência a atualizar (chave da seção `dependencies`), todas se não informada |
+| `--path, --workspace`      | Caminho do workspace (padrão: diretório atual)                               |
+| `--project, -p`            | Atualiza apenas as dependências deste projeto                                |
+
+Os dois comandos terminam com código diferente de zero se a instalação de uma dependência falhar.
+A variável de ambiente `LIKEC4_CACHE_DIR` define o diretório de cache, veja [Cache](/pt-br/config/multi-projects/#cache).
 
 ## Pré-visualizar e gerar o site
 

@@ -221,20 +221,27 @@ To share files between projects this way, see [Multi-projects](/config/multi-pro
 The `dependencies` section is experimental. Its format may change before it becomes stable.
 :::
 
-`dependencies` maps the names you import from to the folders of the dependency projects, relative to the project folder.
-A dependency can be a project of the workspace or a folder outside the workspace.
+`dependencies` maps the names you import from to the dependency projects.
+A dependency is a folder relative to the project folder (a project of the workspace or a folder outside the workspace),
+or a folder of a git repository at a branch, a tag or a commit.
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "checkout",
   "dependencies": {
-    "billing": "../billing-service"
+    "billing": "../billing-service",
+    "platform": {
+      "git": "https://github.com/my-org/platform.git",
+      "ref": "v2.0.0",
+      "path": "architecture"
+    }
   }
 }
 ```
 
-For how imports are resolved and the limitations, see [Multi-projects](/config/multi-projects/#dependencies).
+Git dependencies are installed with [`likec4 install`](/tooling/cli/#git-dependencies).
+For how imports are resolved, git dependencies and the limitations, see [Multi-projects](/config/multi-projects/#dependencies).
 
 ## Exclude files
 

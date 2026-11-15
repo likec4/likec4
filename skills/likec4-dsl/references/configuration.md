@@ -85,14 +85,19 @@ Reference external directories containing `.c4` files.
 
 ### `dependencies` (experimental)
 
-Projects to import from, under a name you choose. Maps the import name (used in `import { x } from 'name'`) to the folder of the dependency project, relative to the config file. The format may change before it becomes stable.
+Projects to import from, under a name you choose. Maps the import name (used in `import { x } from 'name'`) to the folder of the dependency project, relative to the config file, or to a git source. The format may change before it becomes stable.
 
 ```json
 {
   "name": "checkout",
   "dependencies": {
     "billing": "../billing-service",
-    "platform": "../../platform-model"
+    "platform": "../../platform-model",
+    "payments": {
+      "git": "https://github.com/my-org/payments.git",
+      "ref": "v1.2.0",
+      "path": "architecture"
+    }
   }
 }
 ```
@@ -104,6 +109,15 @@ Projects to import from, under a name you choose. Maps the import name (used in 
 - A folder inside the workspace that is not a project folder (for example, an `include` path) fails with `Imported project not found`.
 - Not transitive: `dependencies` of a dependency are ignored; only its own elements can be imported.
 - A project cannot import itself: an entry pointing to its own folder, or an import name equal to its own `name`, is an error.
+
+Git sources `{ "git", "ref", "path" }`:
+
+- `git`: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` or `git@host:org/repo.git`. `http://`, `file://`, `git://`, `ext::` and URLs with a password or token are rejected (use a git credential helper or SSH keys).
+- `ref` (required): branch, tag or commit SHA. `path` (optional): folder of the project in the repository, relative, no `..`. Other fields are rejected.
+- Nothing is downloaded while loading the workspace: run `likec4 install` first (`likec4 update [name]` resolves refs again). Until installed, `build`, `export`, `gen`, `validate` etc. fail with `Dependency is not installed` / `Dependencies are not installed`, and the editor reports `Dependency 'name' is not installed` plus `Could not resolve reference` on imported names.
+- The first install pins the ref to a commit in the local cache (`LIKEC4_CACHE_DIR`); there is no lock file, so other machines resolve refs again. Prefer tags or SHAs.
+- Only `.c4`/`.likec4` files and the root JSON config are downloaded; TS/JS configs are not run, `include` is ignored, local images and Markdown files are not available.
+- Requires `git` >= 2.35.2. Not supported in the browser (playground, vscode.dev). VS Code has its own cache: run "LikeC4: Install git dependencies".
 
 Docs: https://likec4.dev/config/multi-projects/#dependencies
 
@@ -261,7 +275,7 @@ workspace/
 ```
 
 Use `include.paths` to share `.c4` files across projects.
-Use `dependencies` (experimental) to import a project under another name, or a project outside the workspace.
+Use `dependencies` (experimental) to import a project under another name, a project outside the workspace, or a project from a git repository.
 
 ## Minimal Starter Config
 

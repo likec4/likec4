@@ -159,6 +159,22 @@ Options: `--format` (`-f`, `text` default or `json`), `--group` (`-g`, one of: `
 
 Icon groups: `aws` (~307 icons), `azure` (~614), `gcp` (~216), `tech` (~2000), `bootstrap` (~2051).
 
+## `install` (alias: `i`) and `update` (experimental)
+
+Download git dependencies (`dependencies` entries with `{ "git", "ref", "path" }`) into the cache.
+Commands that read the workspace (`build`, `export`, `gen`, ...) never download them and fail with `Dependency is not installed` (or `Dependencies are not installed`) until `install` runs.
+
+```bash
+bunx likec4 install [project-dir]
+bunx likec4 install --project <name> [project-dir]
+# resolve refs again (all dependencies, or one by its import name)
+bunx likec4 update [--path project-dir]
+bunx likec4 update <dependency> --project <project> --path <project-dir>
+```
+
+`update` takes the workspace with `--path` (a positional argument is the dependency name).
+Check that `likec4 install --help` works before relying on it (newer CLI versions only).
+
 ## `format`
 
 Format LikeC4 source files in-place.

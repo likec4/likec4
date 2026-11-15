@@ -76,8 +76,10 @@ The `dependencies` section is experimental. Its format may change before it beco
 </Aside>
 
 Declare the projects you import from in the `dependencies` section of the project config.
-Each entry maps an import name to the folder of the dependency project (the folder with its config file).
-The path is relative to the folder of the config file.
+Each entry maps an import name to the dependency project:
+
+- a path to the folder of the project (the folder with its config file), relative to the folder of the config file;
+- a [git source](#git-dependencies): a folder of a git repository at a branch, a tag or a commit.
 
 <FileTree>
 - platform-model
@@ -153,7 +155,7 @@ views {
 
 An import name follows the [project name](/config/#project-name) rules: it cannot be `default` and cannot contain `.`, `@` or `#`.  
 The import name does not have to match the `name` of the dependency.  
-Paths must be relative: absolute paths, drive letters and URLs are not allowed.
+A local path must be relative: absolute paths, drive letters and URLs are not allowed.
 
 LikeC4 resolves `import ... from 'name'` this way:
 
@@ -189,12 +191,176 @@ A folder inside the workspace, inside a project folder, or inside `include` path
 If it is not a project folder of the workspace, the import fails with `Imported project not found`.
 A folder that contains the workspace is skipped as well.
 
+### Git dependencies
+
+A dependency can come from a git repository.
+Instead of a path, give an object with the repository URL, a ref and, optionally, the folder of the project in the repository:
+
+```json title="checkout/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing": {
+      "git": "https://github.com/my-org/billing.git",
+      "ref": "v1.2.0",
+      "path": "architecture"
+    }
+  }
+}
+```
+
+| Field  | Description |
+| ------ | ----------- |
+| `git`  | URL of the repository: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` or `git@host:org/repo.git` |
+| `ref`  | Required. A branch, a tag or a commit SHA |
+| `path` | Folder of the dependency project (the folder with its config file), relative to the repository root. The repository root if omitted |
+
+- Other URL forms (`http://`, `file://`, `git://`, `ext::`, local paths) are rejected.
+- URLs with a password or a token are rejected. Use a git credential helper or SSH keys.
+- `path` must be relative and cannot contain `..`.
+- Other fields are rejected.
+
+Import from a git dependency the same way as from a local one:
+
+```likec4 title="checkout/checkout.c4"
+import { invoices } from 'billing'
+
+specification {
+  element system
+}
+
+model {
+  checkout = system 'Checkout' {
+    -> invoices 'creates invoices'
+  }
+}
+
+views {
+  view index {
+    include *
+  }
+}
+```
+
+#### Install
+
+LikeC4 does not download dependencies while it loads the workspace.
+Run [`likec4 install`](/tooling/cli/#git-dependencies) in the workspace first, then build as usual:
+
+```sh
+likec4 install
+likec4 build
+```
+
+Until a git dependency is installed:
+
+- `likec4 build`, `likec4 export`, `likec4 gen`, `likec4 validate`, `likec4 sync leanix`, `likec4 diff`, `likec4 safe-delete` and `likec4 publish` fail.
+  With `--project`, only the dependencies of that project are checked.
+- `likec4 start`, `likec4 mcp` and the [Vite plugin](/tooling/vite-plugin/) keep running and report the error in the model.
+- In the editor, the import reports `Dependency 'billing' is not installed`, with the quick fix **Install dependency 'billing'**.
+  The imported names also report `Could not resolve reference` errors until the dependency is installed.
+
+`likec4 validate` reports the error of the import, the other commands list the dependencies to install:
+
+```
+Dependency is not installed:
+  - 'billing' of project 'checkout' (https://github.com/my-org/billing.git#v1.2.0:architecture)
+Run `likec4 install` to install it.
+```
+
+Only `likec4 install` and `likec4 update` (and the install commands of the editor) download dependencies.
+
+#### Versions
+
+The first install resolves `ref` to a commit and remembers it in the [cache](#cache).
+Later installs use this commit, even if the branch or the tag has moved.
+To move to the current commit of the ref, run [`likec4 update`](/tooling/cli/#git-dependencies).
+
+Projects that use the same repository and ref get the same commit.
+Different versions of one repository can be used side by side: in different projects of the workspace, or in one project under different import names:
+
+```json title="checkout/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing-v1": {
+      "git": "https://github.com/my-org/billing.git",
+      "ref": "v1.2.0",
+      "path": "architecture"
+    },
+    "billing": {
+      "git": "https://github.com/my-org/billing.git",
+      "ref": "v2.0.0",
+      "path": "architecture"
+    }
+  }
+}
+```
+
+There is no lock file: the commits are remembered in the cache of each machine.
+The build is reproducible on one machine, but another machine (or a CI run with an empty cache) resolves the refs again.
+Use a tag or a commit SHA as `ref` to get the same model everywhere.
+
+#### What is downloaded
+
+LikeC4 downloads the `path` folder of the repository at the commit and keeps only:
+
+- `.c4` and `.likec4` files, at any depth;
+- the JSON config (`likec4.config.json`, `.likec4.config.json` or `.likec4rc`) in the `path` folder.
+
+A TypeScript or JavaScript config of the dependency is not executed, and `include` of the dependency is ignored.
+Like a [project outside the workspace](#projects-outside-the-workspace), a git dependency is only a source of elements to import.
+If its files have parse errors, the import reports a warning with the number of such files.
+
+#### Requirements
+
+- `git` 2.35.2 or newer on the `PATH`.
+- Private repositories use the credentials and SSH keys you have configured for git.
+  LikeC4 never asks for a password: git runs without prompts, and an install that needs input fails.
+- In CI, configure access in the global git configuration, for example with `git config --global url.<base>.insteadOf <url>` or a credential helper.
+  `GIT_CONFIG_COUNT`, `GIT_CONFIG_KEY_*`, `GIT_CONFIG_VALUE_*` and `GIT_CONFIG_PARAMETERS` environment variables are ignored.
+
+#### Cache
+
+Installed dependencies are stored in the `dependencies` folder of the LikeC4 cache directory:
+
+| System  | Cache directory |
+| ------- | --------------- |
+| macOS   | `~/Library/Caches/likec4` |
+| Linux   | `$XDG_CACHE_HOME/likec4`, or `~/.cache/likec4` |
+| Windows | `%LOCALAPPDATA%\likec4\cache` |
+
+The `LIKEC4_CACHE_DIR` environment variable sets another cache directory.
+
+The VS Code extension keeps its own cache in the storage of the extension.
+Install dependencies there with the **LikeC4: Install git dependencies** command or the quick fix, and update them with **LikeC4: Update git dependencies**.
+The CLI and VS Code do not share the cache: install the dependencies on each side.
+Other editors that run `likec4 lsp` use the cache of the CLI.
+
+In VS Code, **Go to definition** on an imported element opens a read-only copy of the dependency file.
+
+#### Model API
+
+[`LikeC4.fromWorkspace`](/tooling/model-api/) does not download dependencies either.
+A dependency that is not installed is reported in `getErrors()`, and `fromWorkspace` rejects only with `throwIfInvalid: true`.
+
 ### Limitations
 
-- A dependency is a path to a local folder.
 - Dependencies are not transitive: `dependencies` of a dependency are ignored, and only the elements of the dependency itself can be imported, not the elements it imports.
 - Do not declare dependency folders nested in one another.
 - Code completion in `from '...'` does not suggest import names from `dependencies`.
+- A project cannot limit which of its elements other projects import.
+- A dependency cannot share its specification with the projects that import it, and `include` cannot point to a git repository ([#2378](https://github.com/likec4/likec4/issues/2378)).
+- Git dependencies are not supported in the browser: the playground and vscode.dev.
+  In vscode.dev, the import reports `remote dependencies are not supported in this environment`.
+- Git is the only way to download a dependency: there is no download over plain HTTP, no short form such as `github:org/repo`, and no published packages as a source.
+- Images and external Markdown descriptions from a git dependency are not available: local icon images and Markdown files of the dependency are not downloaded.
+  [Bundled icons](/dsl/styling/#bundled-icons) and icons with `https://` URLs work.
+- There is no command to clean the cache.
+- A project cannot declare the LikeC4 version it requires.
+- An import name that is not declared in `dependencies` always falls back to the workspace projects; this lookup cannot be turned off.
 
 ## Share specification
 

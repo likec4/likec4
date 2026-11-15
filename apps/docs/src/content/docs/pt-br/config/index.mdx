@@ -221,20 +221,27 @@ Para compartilhar arquivos entre projetos dessa forma, consulte [Vários projeto
 A seção `dependencies` é experimental. O formato dela pode mudar antes de se tornar estável.
 :::
 
-`dependencies` associa os nomes usados na importação às pastas dos projetos de dependência, relativas à pasta do projeto.
-Uma dependência pode ser um projeto do workspace ou uma pasta fora do workspace.
+`dependencies` associa os nomes usados na importação aos projetos de dependência.
+Uma dependência é uma pasta relativa à pasta do projeto (um projeto do workspace ou uma pasta fora do workspace)
+ou uma pasta de um repositório git em uma branch, uma tag ou um commit.
 
 ```json
 {
   "$schema": "https://likec4.dev/schemas/config.json",
   "name": "checkout",
   "dependencies": {
-    "billing": "../billing-service"
+    "billing": "../billing-service",
+    "platform": {
+      "git": "https://github.com/my-org/platform.git",
+      "ref": "v2.0.0",
+      "path": "architecture"
+    }
   }
 }
 ```
 
-Para saber como as importações são resolvidas e quais são as limitações, veja [Vários projetos](/pt-br/config/multi-projects/#dependências).
+As dependências do git são instaladas com [`likec4 install`](/pt-br/tooling/cli/#dependências-do-git).
+Para saber como as importações são resolvidas, como funcionam as dependências do git e quais são as limitações, veja [Vários projetos](/pt-br/config/multi-projects/#dependências).
 
 ## Excluir arquivos
 
