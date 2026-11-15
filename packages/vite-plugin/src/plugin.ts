@@ -162,6 +162,7 @@ export function LikeC4VitePlugin({
       id: p.id,
       title: p.title,
       path: p.path,
+      contactPerson: p.config.contactPerson,
       folder: p.folder.toString(),
       landingPage: p.config.landingPage,
       exportFormats: effectiveWebappExportFormats(p.config),

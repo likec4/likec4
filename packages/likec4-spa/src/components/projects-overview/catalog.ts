@@ -14,6 +14,11 @@ export interface CatalogProject {
   readonly id: ProjectId
   readonly title: string
   /**
+   * Folder of the project, relative to the workspace
+   */
+  readonly path: string | null
+  readonly contactPerson: string | null
+  /**
    * Missing when the view was layouted by an older version
    */
   readonly elements: number | null
@@ -35,7 +40,6 @@ export interface ProjectsCatalog {
     readonly projects: number
     readonly elements: number | null
     readonly views: number | null
-    readonly links: number
   }
 }
 
@@ -58,7 +62,20 @@ const sumOf = (values: ReadonlyArray<number | null>): number | null => {
 /**
  * Turns the layouted projects view into a flat list of projects with their cross-project links
  */
-export function buildProjectsCatalog(view: LayoutedProjectsView): ProjectsCatalog {
+/**
+ * Project details from the workspace config (`likec4:projects`)
+ */
+export interface ProjectInfo {
+  readonly id: string
+  readonly path?: string | undefined
+  readonly contactPerson?: string | undefined
+}
+
+export function buildProjectsCatalog(
+  view: LayoutedProjectsView,
+  infos: ReadonlyArray<ProjectInfo> = [],
+): ProjectsCatalog {
+  const infoById = new Map(infos.map(info => [info.id, info] as const))
   const nodeToProject = new Map(view.nodes.map(node => [node.id, node] as const))
 
   const dependsOn = new Map<ProjectId, ProjectLink[]>()
@@ -86,6 +103,8 @@ export function buildProjectsCatalog(view: LayoutedProjectsView): ProjectsCatalo
   const projects = view.nodes.map((node): CatalogProject => ({
     id: node.projectId,
     title: node.title,
+    path: infoById.get(node.projectId)?.path || null,
+    contactPerson: infoById.get(node.projectId)?.contactPerson || null,
     elements: node.metrics?.elements ?? null,
     relationships: node.metrics?.relationships ?? null,
     views: node.metrics?.views ?? null,
@@ -99,7 +118,6 @@ export function buildProjectsCatalog(view: LayoutedProjectsView): ProjectsCatalo
       projects: projects.length,
       elements: sumOf(projects.map(p => p.elements)),
       views: sumOf(projects.map(p => p.views)),
-      links: projects.reduce((acc, p) => acc + p.dependsOn.length, 0),
     },
   }
 }

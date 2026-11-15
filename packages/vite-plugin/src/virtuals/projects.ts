@@ -17,6 +17,7 @@ type ProjectData = {
   id: string
   title: string | undefined
   path: string
+  contactPerson: string | undefined
   landingPage: LikeC4ProjectConfig['landingPage']
   relationshipBrowserDefaultScope: RelationshipBrowserScope
   exportFormats: WebappExportFormat[]
@@ -64,6 +65,7 @@ export const projectsModule = {
         id: p.id,
         title: p.title,
         path: p.path,
+        contactPerson: p.config.contactPerson,
         landingPage: p.config.landingPage,
         relationshipBrowserDefaultScope: p.config.webapp?.relationshipsBrowser?.defaultScope ?? 'view',
         exportFormats: effectiveWebappExportFormats(p.config),

@@ -9,9 +9,10 @@ const textSecondary = {
   },
 } as const
 
-const mono = {
-  fontFamily: 'mono',
-  fontSize: '[11px]',
+const meta = {
+  fontFamily: 'body',
+  fontSize: 'xs',
+  fontVariantNumeric: 'tabular-nums',
   ...textSecondary,
 } as const
 
@@ -172,7 +173,7 @@ export const scope = css({
   },
 })
 
-export const count = css({ ...mono, flexShrink: '0' })
+export const count = css({ ...meta, flexShrink: '0' })
 
 export const scopeNone = css({
   fontSize: 'xs',
@@ -335,7 +336,7 @@ export const rowTitle = css({
 
 export const kind = css({
   flexShrink: '0',
-  fontFamily: 'mono',
+  fontFamily: 'body',
   fontSize: 'xxs',
   paddingX: '[5px]',
   paddingY: '[1px]',
@@ -345,7 +346,10 @@ export const kind = css({
 })
 
 export const rowPath = css({
-  ...mono,
+  ...meta,
+  // element FQN and view id are code
+  fontFamily: 'mono',
+  fontSize: '[11px]',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
@@ -360,7 +364,7 @@ export const rowDesc = css({
 })
 
 export const rowMeta = css({
-  ...mono,
+  ...meta,
   whiteSpace: 'nowrap',
   paddingTop: '0.5',
 })

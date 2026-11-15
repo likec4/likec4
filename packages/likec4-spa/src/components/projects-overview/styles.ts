@@ -31,35 +31,31 @@ export const pageScroll = css({
 export const header = css({
   display: 'flex',
   flexWrap: 'wrap',
-  alignItems: 'flex-end',
+  alignItems: 'center',
   justifyContent: 'space-between',
-  gap: '8',
-  paddingTop: { base: '8', sm: '12' },
-  paddingBottom: '8',
+  gap: '6',
+  paddingTop: '6',
+  paddingBottom: '6',
   paddingX: padX,
 })
 
 export const headerTitles = css({
   display: 'flex',
-  flexDirection: 'column',
+  alignItems: 'center',
   gap: '3',
   minWidth: '0',
 })
 
-export const eyebrow = css({
-  fontFamily: 'mono',
-  fontSize: 'xxs',
-  lineHeight: '[1.2]',
-  fontWeight: 'medium',
-  letterSpacing: '[0.12em]',
-  textTransform: 'uppercase',
-  ...textSecondary,
+export const logo = css({
+  flexShrink: '0',
+  width: '[28px]',
+  height: '[28px]',
 })
 
 export const title = css({
   margin: '0',
   fontFamily: 'display',
-  fontSize: { base: '[26px]', sm: '[34px]' },
+  fontSize: { base: '[22px]', sm: '[26px]' },
   lineHeight: '[1.1]',
   fontWeight: 'bold',
   letterSpacing: '[-0.02em]',
@@ -69,13 +65,7 @@ export const title = css({
 export const summary = css({
   display: 'flex',
   flexWrap: 'wrap',
-  gap: { base: '6', sm: '10' },
-})
-
-export const summaryItem = css({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2',
+  gap: { base: '5', sm: '8' },
 })
 
 export const fieldLabel = css({
@@ -88,7 +78,7 @@ export const fieldLabel = css({
 })
 
 export const metricValue = css({
-  fontFamily: 'mono',
+  fontFamily: 'body',
   fontSize: 'xl',
   lineHeight: '[1.1]',
   fontWeight: 'medium',
@@ -96,7 +86,7 @@ export const metricValue = css({
   color: 'text.bright',
   fontVariantNumeric: 'tabular-nums',
   '&[data-size="lg"]': {
-    fontSize: '[26px]',
+    fontSize: '[20px]',
   },
 })
 
@@ -275,7 +265,7 @@ export const cardLink = css({
 })
 
 export const cardSub = css({
-  fontFamily: 'mono',
+  fontFamily: 'body',
   fontSize: 'xs',
   lineHeight: '[1.35]',
   overflow: 'hidden',
@@ -298,14 +288,44 @@ export const cardOpen = css({
 })
 
 export const cardBody = css({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  gap: '4',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2',
   paddingY: '4',
   paddingX: '5',
   borderTopWidth: '1',
   borderTopStyle: 'solid',
   borderColor: 'border.subtle',
+})
+
+export const detail = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '2',
+  minWidth: '0',
+  fontSize: 'sm',
+  color: 'text',
+  '& > svg': {
+    flexShrink: '0',
+    color: 'text.dimmed',
+  },
+  '& > span': {
+    minWidth: '0',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  '&[data-empty] > span': {
+    color: 'text.dimmed',
+  },
+})
+
+export const metricsCard = css({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, auto)',
+  gap: '6',
+  paddingY: '3',
+  paddingX: '4',
 })
 
 export const metric = css({
@@ -388,7 +408,7 @@ export const miniMore = css({
   width: '[22px]',
   height: '[22px]',
   borderRadius: 'sm',
-  fontFamily: 'mono',
+  fontFamily: 'body',
   fontSize: 'micro',
   fontWeight: 'semibold',
   backgroundColor: 'surface.sunken',
@@ -398,7 +418,7 @@ export const miniMore = css({
 })
 
 export const depEmpty = css({
-  fontFamily: 'mono',
+  fontFamily: 'body',
   fontSize: 'xs',
   ...textSecondary,
 })
@@ -472,7 +492,7 @@ export const depsItem = css({
     whiteSpace: 'nowrap',
   },
   '& > span:last-child': {
-    fontFamily: 'mono',
+    fontFamily: 'body',
     fontSize: 'xs',
     fontVariantNumeric: 'tabular-nums',
     ...textSecondary,
@@ -498,7 +518,7 @@ export const table = css({
   fontSize: 'sm',
   '& th': {
     textAlign: 'left',
-    fontFamily: 'mono',
+    fontFamily: 'body',
     fontSize: 'xxs',
     fontWeight: 'medium',
     letterSpacing: '[0.06em]',
@@ -532,7 +552,7 @@ export const table = css({
   },
   '& [data-num]': {
     textAlign: 'right',
-    fontFamily: 'mono',
+    fontFamily: 'body',
     fontVariantNumeric: 'tabular-nums',
   },
   '& [data-dimmed]': {
