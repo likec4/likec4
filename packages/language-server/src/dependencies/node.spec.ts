@@ -59,7 +59,7 @@ describe('node dependencies', () => {
     await initialize()
     const storage = services.shared.dependencies.Storage
 
-    expect(services.shared.dependencies.Installer.supported).toBe(false)
+    expect(services.shared.dependencies.Installer.supported).toBe(true)
     expect(await storage.hasEntry(entry)).toBe(false)
     expect(existsSync(cacheDir)).toBe(false)
 

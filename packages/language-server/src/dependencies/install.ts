@@ -1,22 +1,640 @@
 // Node-only: installer of git dependencies (system git, shallow fetch, sparse checkout).
-// Stub of the contracts package: it is filled by the installer package together with `git.ts` and `versions.ts`.
 // Imported only from `node.ts` (Node entry), never from the browser entry.
+import { type GitRepositoryUrl, isLikeC4JsonConfig, parseGitRepositoryUrl } from '@likec4/config'
+import type { Cancellation } from 'langium'
+import { lstat, mkdir, mkdtemp, readdir, readFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import type { DependencyInstaller, DependencyInstallResult } from './types'
+import { type GitDependencyInstance, normalizeGitSubdir } from '../workspace/dependency-uri'
+import {
+  type GitRunner,
+  createGitRunner,
+  fetchGitCommit,
+  initGitRepository,
+  isValidGitRef,
+  listGitSpecialFiles,
+  refAsFullSha,
+  SOURCE_FILE_EXTENSIONS,
+} from './git'
+import type {
+  DependencyCacheEntry,
+  DependencyInstaller,
+  DependencyInstallOptions,
+  DependencyInstallResult,
+  GitDependencySource,
+} from './types'
+import { createDependencyVersionRecord, knownDependencyVersion, resolveDependencyVersion } from './versions'
+
+const logger = rootLogger.getChild(['dependencies', 'install'])
+
+/**
+ * Maximum number of files of one instance
+ */
+export const MAX_DEPENDENCY_FILES = 10_000
+
+/**
+ * Maximum total size of files of one instance (bytes)
+ */
+export const MAX_DEPENDENCY_SIZE = 64 * 1024 * 1024
+
+/**
+ * Default deadline of one install, all git commands included (milliseconds)
+ */
+export const DEPENDENCY_INSTALL_DEADLINE = 10 * 60 * 1000
+
+/**
+ * Prefix of temporary checkout directories
+ */
+export const TEMP_DIR_PREFIX = 'likec4-git-'
+
+/**
+ * Temporary directories older than this are removed when the installer starts (milliseconds)
+ */
+const STALE_TEMP_DIR_AGE = 24 * 60 * 60 * 1000
+
+// Characters of a subdirectory that would change the meaning of a sparse checkout pattern
+// eslint-disable-next-line no-control-regex
+const UNSAFE_SUBDIR_REGEX = /[*?[\]\\!#\x00-\x1f\x7f]/
+
+const CANCELLED = 'Installation was cancelled'
+
+/**
+ * Options of {@link GitDependencyInstaller}
+ */
+export interface GitDependencyInstallerOptions {
+  /**
+   * Runs git commands. Default: the system git ({@link createGitRunner})
+   */
+  runGit?: GitRunner | undefined
+  /**
+   * Maps the validated repository URL to the URL passed to git.
+   * Default: {@link gitRemoteUrl}, the URL rebuilt from its parsed parts.
+   */
+  remoteUrl?: ((url: GitRepositoryUrl, source: GitDependencySource) => string) | undefined
+  /**
+   * Parent directory of temporary checkouts
+   * @default os.tmpdir()
+   */
+  tempDir?: string | undefined
+  /**
+   * Deadline of one install (milliseconds)
+   * @default DEPENDENCY_INSTALL_DEADLINE
+   */
+  deadline?: number | undefined
+  /**
+   * Current time (for `resolvedAt` of the version index)
+   */
+  now?: (() => Date) | undefined
+}
+
+/**
+ * Validated git source, see {@link validateGitDependencySource}
+ */
+export interface ValidatedGitDependencySource {
+  source: GitDependencySource
+  url: GitRepositoryUrl
+  /**
+   * Ref without surrounding whitespace, full SHAs in lower case
+   */
+  ref: string
+  /**
+   * Normalized subdirectory (`''` for the repository root)
+   */
+  subdir: string
+}
+
+const SCHEME_USERINFO_REGEX = /^([a-z][a-z0-9+.-]*:\/\/)([^/?#]*)@/i
+
+/**
+ * Removes the password (token) from a URL: `https://user:token@host/...` -> `https://user@host/...`.
+ * URLs without credentials are returned as is (trimmed).
+ */
+export function stripGitUrlCredentials(url: string): string {
+  return url.trim().replace(SCHEME_USERINFO_REGEX, (_, scheme: string, userinfo: string) => {
+    const colon = userinfo.indexOf(':')
+    return colon < 0 ? `${scheme}${userinfo}@` : `${scheme}${userinfo.slice(0, colon)}@`
+  })
+}
+
+/**
+ * Removes the user information from a URL for messages and logs:
+ * `https://user:token@host/...` -> `https://***@host/...`.
+ */
+export function redactGitUrl(url: string): string {
+  return url.replace(SCHEME_USERINFO_REGEX, '$1***@')
+}
+
+/**
+ * URL passed to git: rebuilt from the parsed parts (protocol, user, host, port, path),
+ * so the host git connects to is always the host of the repository identity (`url.id`).
+ * The `.git` suffix is kept as written, passwords are never included.
+ * The path of scp-like URLs is passed as written (git does not decode it), the identity uses the decoded path.
+ *
+ * @param raw the URL as written in the config (accepted by `parseGitRepositoryUrl`)
+ */
+export function gitRemoteUrl(url: GitRepositoryUrl, raw: string): string {
+  const value = raw.trim()
+  const suffix = value.replace(/\/+$/, '').toLowerCase().endsWith('.git') ? '.git' : ''
+  const port = url.port !== undefined ? `:${url.port}` : ''
+  switch (url.protocol) {
+    case 'scp': {
+      // git does not percent-decode scp-like paths: the path is passed as written
+      const [, user, , path = url.path] = /^(?:([^@/:\s]+)@)?([^@/:\s[\]]+):(\S+)$/.exec(value) ?? []
+      return `${user ? `${user}@` : ''}${url.host}:${path}`
+    }
+    case 'https':
+    case 'ssh': {
+      const user = new URL(value).username
+      const path = url.path.split('/').map(encodeURIComponent).join('/')
+      return `${url.protocol}://${user ? `${user}@` : ''}${url.host}${port}/${path}${suffix}`
+    }
+  }
+}
+
+/**
+ * Validates the git source again, independently of the validation of the config:
+ * the URL must be `https://`, `ssh://` or scp-like without credentials (`parseGitRepositoryUrl`),
+ * the ref must be safe for git ({@link isValidGitRef}), the path must be a relative subdirectory.
+ *
+ * Returns the error message if the source is invalid.
+ */
+export function validateGitDependencySource(source: GitDependencySource): ValidatedGitDependencySource | string {
+  if (typeof source.git !== 'string' || typeof source.ref !== 'string') {
+    return 'Invalid git dependency source'
+  }
+  const url = parseGitRepositoryUrl(source.git)
+  if (!url) {
+    return `Invalid git repository URL ${
+      JSON.stringify(redactGitUrl(source.git))
+    }: only https://, ssh:// and git@host:org/repo.git without credentials are allowed`
+  }
+  const trimmed = source.ref.trim()
+  if (!isValidGitRef(trimmed)) {
+    return `Invalid git ref ${JSON.stringify(source.ref)}`
+  }
+  const ref = refAsFullSha(trimmed) ?? trimmed
+  let subdir: string
+  try {
+    subdir = normalizeGitSubdir(source.path)
+  } catch {
+    return `Invalid path ${JSON.stringify(source.path)}: must be a subdirectory of the repository`
+  }
+  if (UNSAFE_SUBDIR_REGEX.test(subdir) || subdir.split('/').some(s => s.startsWith('-'))) {
+    return `Invalid path ${JSON.stringify(source.path)}: unsupported characters`
+  }
+  return { source, url, ref, subdir }
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+function isSourceFile(name: string): boolean {
+  return SOURCE_FILE_EXTENSIONS.some(ext => name.length > ext.length && name.endsWith(ext))
+}
+
+/**
+ * Reads files of the instance from the checkout: `.c4` and `.likec4` documents at any depth,
+ * JSON config files (`isLikeC4JsonConfig`) at the root of the instance only.
+ * Executable configs, images and other files are skipped; symbolic links are never followed.
+ * Sizes are checked before files are read.
+ *
+ * @param root folder of the instance
+ * @param skip paths relative to `root` to skip (e.g. symbolic links checked out as plain files)
+ * @returns files by path relative to `root` (forward slashes)
+ * @throws if there are more than {@link MAX_DEPENDENCY_FILES} files or {@link MAX_DEPENDENCY_SIZE} bytes
+ */
+export async function collectDependencyFiles(
+  root: string,
+  skip: ReadonlySet<string> = new Set(),
+): Promise<Record<string, string>> {
+  const files: Record<string, string> = {}
+  let count = 0
+  let size = 0
+  const walk = async (dir: string, prefix: string): Promise<void> => {
+    const entries = await readdir(dir, { withFileTypes: true })
+    entries.sort((a, b) => a.name.localeCompare(b.name))
+    for (const entry of entries) {
+      const path = join(dir, entry.name)
+      const relative = prefix ? `${prefix}/${entry.name}` : entry.name
+      switch (true) {
+        case entry.isDirectory(): {
+          if (entry.name !== '.git') {
+            await walk(path, relative)
+          }
+          break
+        }
+        // symbolic links, sockets, ...
+        case !entry.isFile() || skip.has(relative):
+          break
+        case isSourceFile(entry.name) || (prefix === '' && isLikeC4JsonConfig(entry.name)): {
+          const stats = await lstat(path)
+          if (!stats.isFile()) {
+            break
+          }
+          count++
+          size += stats.size
+          if (count > MAX_DEPENDENCY_FILES || size > MAX_DEPENDENCY_SIZE) {
+            throw new Error(
+              `Dependency is too large (more than ${MAX_DEPENDENCY_FILES} files or ${MAX_DEPENDENCY_SIZE} bytes)`,
+            )
+          }
+          files[relative] = await readFile(path, 'utf8')
+          break
+        }
+      }
+    }
+  }
+  await walk(root, '')
+  return files
+}
+
+/**
+ * Removes temporary checkouts left by killed processes (older than a day). Best effort.
+ */
+async function removeStaleTempDirs(parent: string): Promise<void> {
+  const entries = await readdir(parent, { withFileTypes: true }).catch(() => [])
+  const now = Date.now()
+  for (const entry of entries) {
+    // TEMP_DIR_PREFIX also covers the directories of the git version probe (`likec4-git-probe-`)
+    if (!entry.isDirectory() || !entry.name.startsWith(TEMP_DIR_PREFIX)) {
+      continue
+    }
+    const path = join(parent, entry.name)
+    try {
+      const stats = await lstat(path)
+      if (now - stats.mtimeMs > STALE_TEMP_DIR_AGE) {
+        await rm(path, { recursive: true, force: true, maxRetries: 3 })
+      }
+    } catch {
+      // ignore
+    }
+  }
+}
+
+/**
+ * Waits for the promise, or until the signal is aborted (no listener is left behind)
+ */
+function untilAborted(promise: Promise<unknown>, signal: AbortSignal): Promise<void> {
+  if (signal.aborted) {
+    return Promise.resolve()
+  }
+  return new Promise<void>(resolve => {
+    const done = () => {
+      signal.removeEventListener('abort', done)
+      resolve()
+    }
+    signal.addEventListener('abort', done, { once: true })
+    void promise.then(done, done)
+  })
+}
+
+/**
+ * Run of an install shared by concurrent callers with the same source
+ */
+interface InstallRun {
+  readonly update: boolean
+  readonly controller: AbortController
+  /**
+   * Callers that can still cancel (have a cancellation token and did not cancel yet)
+   */
+  cancellable: number
+  /**
+   * Callers without a cancellation token: the run is never aborted while they wait
+   */
+  pinned: number
+  promise: Promise<DependencyInstallResult>
+}
 
 /**
  * Installer of git dependencies for Node hosts.
  *
- * Stub: reports `supported: false` and returns `unsupported`, i.e. Node hosts behave like hosts without git
- * until the installer is implemented.
+ * `install`:
+ * 1. validates the source again ({@link validateGitDependencySource}), before git is run;
+ * 2. resolves the ref to a commit SHA: the version index, a full SHA as is, or `git ls-remote`
+ *    (always with `update`), see `resolveDependencyVersion`;
+ * 3. if the instance is in the storage, only the version index is written (git is not run at all
+ *    when the SHA is known without the remote);
+ * 4. otherwise downloads the commit into a temporary directory (shallow partial fetch, sparse checkout of the path),
+ *    writes `.c4`, `.likec4` files and the JSON config to the storage with one write,
+ *    then writes the version index; the temporary directory is removed in any case.
+ *
+ * Failures leave the storage and the version index unchanged.
+ * Installs of the same source (repository, ref, path) are serialized: concurrent calls join the running install,
+ * an `update` waits for a running install and then runs. A caller that cancels gets `failed` at once;
+ * the shared run is aborted only when all its callers cancelled. Each run has a deadline.
  */
 export class GitDependencyInstaller implements DependencyInstaller {
-  readonly supported: boolean = false
+  readonly supported: boolean = true
 
-  constructor(protected services: LikeC4SharedServices) {}
+  readonly #runGit: GitRunner
+  readonly #remoteUrl: (url: GitRepositoryUrl, source: GitDependencySource) => string
+  readonly #tempDir: string | undefined
+  readonly #deadline: number
+  readonly #now: () => Date
+  readonly #runs = new Map<string, InstallRun>()
+  /**
+   * Completion of all runs of a key, abandoned installs included: the next run of the key waits for it
+   */
+  readonly #tails = new Map<string, Promise<void>>()
+  #sweep: Promise<void> | undefined
 
-  install(): Promise<DependencyInstallResult> {
-    return Promise.resolve({ status: 'unsupported' })
+  constructor(protected services: LikeC4SharedServices, options?: GitDependencyInstallerOptions) {
+    this.#runGit = options?.runGit ?? createGitRunner()
+    this.#remoteUrl = options?.remoteUrl ?? ((url, source) => gitRemoteUrl(url, source.git))
+    this.#tempDir = options?.tempDir
+    this.#deadline = options?.deadline ?? DEPENDENCY_INSTALL_DEADLINE
+    this.#now = options?.now ?? (() => new Date())
+  }
+
+  /**
+   * Installs the git source. Never throws: errors are returned as `failed`.
+   */
+  install(source: GitDependencySource, options?: DependencyInstallOptions): Promise<DependencyInstallResult> {
+    const validated = validateGitDependencySource(source)
+    if (typeof validated === 'string') {
+      logger.warn(validated)
+      return Promise.resolve({ status: 'failed', error: validated })
+    }
+    const update = options?.update === true
+    // callers of the same instance join one run; runs of the same (repository, ref) are serialized,
+    // because they share the record of the version index
+    const key = JSON.stringify([validated.url.id, validated.ref, validated.subdir])
+    const serialKey = JSON.stringify([validated.url.id, validated.ref])
+    let run = this.#runs.get(key)
+    // join a running install, unless this is an update and the running one is not, or it was aborted
+    if (!run || (update && !run.update) || run.controller.signal.aborted) {
+      run = this.#startRun(key, serialKey, validated, update)
+    }
+    return this.#wait(run, options?.cancelToken)
+  }
+
+  #startRun(key: string, serialKey: string, validated: ValidatedGitDependencySource, update: boolean): InstallRun {
+    const previous = this.#tails.get(serialKey)
+    const controller = new AbortController()
+    const run: InstallRun = {
+      update,
+      controller,
+      cancellable: 0,
+      pinned: 0,
+      promise: Promise.resolve({ status: 'unsupported' }),
+    }
+    // the install itself (started after the previous runs of the serial key):
+    // keeps running in the background when the run is abandoned
+    let work: Promise<unknown> | undefined
+    // the wait for the previous runs is bounded by the deadline and the abort of this run
+    run.promise = this.#withDeadline(controller, async signal => {
+      if (previous) {
+        await untilAborted(previous, signal)
+      }
+      if (signal.aborted) {
+        throw new Error(CANCELLED)
+      }
+      this.#sweep ??= removeStaleTempDirs(this.#tempDir ?? tmpdir())
+      await this.#sweep
+      const install = this.#install(validated, update, signal)
+      work = install
+      return await install
+    })
+      .catch((error: unknown): DependencyInstallResult => {
+        const message = errorMessage(error)
+        logger.warn(`Failed to install ${validated.url.id}#${validated.ref}: ${message}`)
+        return { status: 'failed', error: message }
+      })
+      .finally(() => {
+        if (this.#runs.get(key) === run) {
+          this.#runs.delete(key)
+        }
+      })
+    this.#runs.set(key, run)
+    // completion of this run and everything before it, settled either way
+    const tail: Promise<void> = Promise.all([previous, run.promise.then(() => work)]).then(() => {}, () => {})
+    this.#tails.set(serialKey, tail)
+    void run.promise.then(() => {
+      // nothing was started (abandoned while waiting): the tail is the previous one, no pile-up
+      if (!work && this.#tails.get(serialKey) === tail) {
+        if (previous) {
+          this.#tails.set(serialKey, previous)
+        } else {
+          this.#tails.delete(serialKey)
+        }
+      }
+    })
+    void tail.then(() => {
+      if (this.#tails.get(serialKey) === tail) {
+        this.#tails.delete(serialKey)
+      }
+    })
+    return run
+  }
+
+  /**
+   * Runs the install until it finishes, the deadline passes or the controller is aborted (all callers cancelled),
+   * whatever comes first: a hard bound, even if git does not react to the abort.
+   * The abandoned install keeps cleaning up in the background and never starts a write after being abandoned
+   * (the signal is checked right before every write).
+   */
+  async #withDeadline<T>(controller: AbortController, fn: (signal: AbortSignal) => Promise<T>): Promise<T> {
+    let timedOut = false
+    const timer = setTimeout(() => {
+      timedOut = true
+      controller.abort()
+    }, this.#deadline)
+    let stop = () => {}
+    const aborted = new Promise<'aborted'>(resolve => {
+      stop = () => resolve('aborted')
+    })
+    controller.signal.addEventListener('abort', stop, { once: true })
+    const work = fn(controller.signal)
+    try {
+      const winner = await Promise.race([work.then(value => ({ value })), aborted])
+      if (winner === 'aborted') {
+        // the abandoned install may still fail: its error is not reported
+        work.catch(() => {})
+        throw new Error(CANCELLED)
+      }
+      return winner.value
+    } catch (error) {
+      if (timedOut) {
+        throw new Error(`Installation timed out after ${Math.round(this.#deadline / 1000)}s`)
+      }
+      throw error
+    } finally {
+      clearTimeout(timer)
+      controller.signal.removeEventListener('abort', stop)
+      stop()
+    }
+  }
+
+  #wait(run: InstallRun, token: Cancellation.CancellationToken | undefined): Promise<DependencyInstallResult> {
+    if (!token) {
+      run.pinned++
+      return run.promise
+    }
+    if (token.isCancellationRequested) {
+      this.#cancelWaiter(run, false)
+      return Promise.resolve({ status: 'failed', error: CANCELLED })
+    }
+    run.cancellable++
+    return new Promise<DependencyInstallResult>(resolve => {
+      let done = false
+      const listener = token.onCancellationRequested(() => {
+        if (done) {
+          return
+        }
+        done = true
+        listener.dispose()
+        resolve({ status: 'failed', error: CANCELLED })
+        this.#cancelWaiter(run, true)
+      })
+      void run.promise.then(result => {
+        if (done) {
+          return
+        }
+        done = true
+        listener.dispose()
+        resolve(result)
+      })
+    })
+  }
+
+  #cancelWaiter(run: InstallRun, counted: boolean): void {
+    if (counted) {
+      run.cancellable--
+    }
+    if (run.cancellable <= 0 && run.pinned === 0) {
+      run.controller.abort()
+    }
+  }
+
+  async #install(
+    { source, url, ref, subdir }: ValidatedGitDependencySource,
+    update: boolean,
+    signal: AbortSignal,
+  ): Promise<DependencyInstallResult> {
+    const storage = this.services.dependencies.Storage
+    const repository = url.id
+    // never store credentials
+    const storedUrl = stripGitUrlCredentials(source.git)
+    const throwIfAborted = () => {
+      if (signal.aborted) {
+        throw new Error(CANCELLED)
+      }
+    }
+    // every write checks the signal right before it: an abandoned install (deadline, all callers cancelled)
+    // never starts a write after being abandoned, also when it was abandoned while awaiting the storage
+    const writeVersion = async (sha: string) => {
+      throwIfAborted()
+      await storage.writeVersion(createDependencyVersionRecord({
+        repository,
+        url: storedUrl,
+        ref,
+        sha,
+        resolvedAt: this.#now(),
+      }))
+    }
+
+    // SHA known without the remote and the instance is installed: git is not run
+    if (!update || refAsFullSha(ref)) {
+      const known = await knownDependencyVersion(storage, repository, ref)
+      if (known) {
+        const instance: GitDependencyInstance = { repository, sha: known.sha, subdir }
+        const entry = await storage.readEntry(instance)
+        if (entry) {
+          if (known.source === 'sha') {
+            await writeVersion(known.sha)
+          }
+          return { status: 'installed', instance, files: Object.keys(entry.files).length, cached: true }
+        }
+      }
+    }
+
+    throwIfAborted()
+    const remote = this.#remoteUrl(url, source)
+    const temp = await mkdtemp(join(this.#tempDir ?? tmpdir(), TEMP_DIR_PREFIX))
+    // git runs in the temporary directory, never in the checkout
+    const gitOptions = { cwd: temp, signal }
+    const checkout = join(temp, 'repo')
+    try {
+      // ls-remote and fetch run in the repository with "origin" (user configuration may depend on the remote)
+      const known = update && !refAsFullSha(ref) ? undefined : await knownDependencyVersion(storage, repository, ref)
+      let shaLength = known?.sha.length ?? 40
+      await mkdir(checkout)
+      await initGitRepository(this.#runGit, { remote, dir: checkout, shaLength }, gitOptions)
+      const resolved = await resolveDependencyVersion({
+        storage,
+        runGit: this.#runGit,
+        repository,
+        dir: checkout,
+        ref,
+        update,
+        ...gitOptions,
+      })
+      const existing = await storage.readEntry({ repository, sha: resolved.sha, subdir })
+      if (existing) {
+        if (resolved.source !== 'index') {
+          await writeVersion(resolved.sha)
+        }
+        return {
+          status: 'installed',
+          instance: { repository, sha: resolved.sha, subdir },
+          files: Object.keys(existing.files).length,
+          cached: true,
+        }
+      }
+
+      if (resolved.sha.length !== shaLength) {
+        // the remote uses another hash algorithm (SHA-256): the repository is created again
+        shaLength = resolved.sha.length
+        await rm(checkout, { recursive: true, force: true })
+        await mkdir(checkout)
+        await initGitRepository(this.#runGit, { remote, dir: checkout, shaLength }, gitOptions)
+      }
+      logger.debug`fetching ${repository} at ${resolved.sha}`
+      // the ref may move between ls-remote and fetch: the fetched commit wins
+      const sha = await fetchGitCommit(this.#runGit, {
+        what: resolved.refName ?? resolved.sha,
+        subdir,
+        dir: checkout,
+      }, gitOptions)
+
+      const root = subdir ? join(checkout, ...subdir.split('/')) : checkout
+      // the path exists in the commit (checked by fetchGitCommit); without sources it is not checked out
+      const stats = await lstat(root).catch(() => undefined)
+      const prefix = subdir ? `${subdir}/` : ''
+      const special = await listGitSpecialFiles(this.#runGit, checkout, subdir, gitOptions)
+      const skip = new Set([...special].filter(p => p.startsWith(prefix)).map(p => p.slice(prefix.length)))
+      const files = stats?.isDirectory() ? await collectDependencyFiles(root, skip) : {}
+      const count = Object.keys(files).length
+      if (!Object.keys(files).some(isSourceFile)) {
+        throw new Error(
+          `No .c4 or .likec4 files in ${repository}${subdir ? ` (path ${JSON.stringify(subdir)})` : ''} at ${sha}`,
+        )
+      }
+      throwIfAborted()
+      const entry: DependencyCacheEntry = {
+        format: 1,
+        repository,
+        url: storedUrl,
+        sha,
+        subdir,
+        files,
+      }
+      // one write: the instance is either installed completely or not at all
+      throwIfAborted()
+      await storage.writeEntry(entry)
+      if (resolved.source !== 'index' || sha !== resolved.sha) {
+        await writeVersion(sha)
+      }
+      logger.info`installed ${repository}#${ref} at ${sha} (${count} files)`
+      return { status: 'installed', instance: { repository, sha, subdir }, files: count, cached: false }
+    } finally {
+      await rm(temp, { recursive: true, force: true, maxRetries: 3 }).catch((error: unknown) => {
+        logger.warn(`Failed to remove temporary directory ${temp}: ${errorMessage(error)}`)
+      })
+    }
   }
 }
 
@@ -24,6 +642,9 @@ export class GitDependencyInstaller implements DependencyInstaller {
  * Creates the installer of git dependencies for Node hosts
  * (`dependencyInstaller` of {@link WithNodeDependencies}).
  */
-export function createGitDependencyInstaller(services: LikeC4SharedServices): DependencyInstaller {
-  return new GitDependencyInstaller(services)
+export function createGitDependencyInstaller(
+  services: LikeC4SharedServices,
+  options?: GitDependencyInstallerOptions,
+): DependencyInstaller {
+  return new GitDependencyInstaller(services, options)
 }

@@ -66,6 +66,9 @@ describe('parseGitRepositoryUrl', () => {
     'https://github.com/my-org%2Fbilling',
     'https://github.com/my-org%5Cbilling',
     'git@github.com:my-org%2fbilling',
+    // git does not decode scp-like paths: escapes are rejected
+    'git@github.com:my-org/bill%23ing.git',
+    'github.com:my-org/billing%20x',
     'git@github.com:a/b%3Ac',
     'https://github.com/a/b%3Ac',
     'https://github.com/a/b%2525',
@@ -84,7 +87,7 @@ describe('parseGitRepositoryUrl', () => {
 describe('parseGitRepositoryUrl decoding', () => {
   it('decodes paths of all forms the same way', ({ expect }) => {
     const ids = [
-      'git@github.com:my-org/bill%23ing.git',
+      'git@github.com:my-org/bill#ing.git',
       'https://github.com/my-org/bill%23ing',
       'ssh://git@github.com/my-org/bill%23ing.git',
     ].map(url => parseGitRepositoryUrl(url)?.id)
