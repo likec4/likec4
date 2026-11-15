@@ -80,11 +80,11 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   // we need lazy resolving here
-  protected *genUniqueDescedants(element: ast.Element | ast.DeploymentNode | undefined) {
+  protected *genUniqueDescedants(element: ast.Element | ast.DeploymentNode | undefined, projectId?: ProjectId) {
     if (!element) {
       return
     }
-    const projectId = projectIdFrom(element)
+    projectId ??= projectIdFrom(element)
 
     if (ast.isElement(element)) {
       const fqn = this.fqnIndex.getFqn(element)
@@ -95,6 +95,16 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       const fqn = this.deploymentsIndex.getFqn(element)
       yield* this.deploymentsIndex.uniqueDescedants(projectId, fqn)
     }
+  }
+
+  /**
+   * Project whose index holds the descendants of `element` as seen from `projectId`.
+   * A document included by several projects can be extended in any of them, so the referencing project wins.
+   */
+  protected descendantsProjectOf(element: AstNode, projectId: ProjectId): ProjectId {
+    return this.services.shared.workspace.ProjectsManager.isIncluded(projectId, getDocument(element))
+      ? projectId
+      : projectIdFrom(element)
   }
 
   protected *genScopeExtendElement({ element }: ast.ExtendElement): Generator<AstNodeDescription> {
@@ -171,7 +181,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genUniqueDescedants(parentRef.imported.ref))
     }
     if (ast.isDeploymentNode(parentRef)) {
-      return stream(this.genUniqueDescedants(parentRef))
+      return stream(this.genUniqueDescedants(parentRef, this.descendantsProjectOf(parentRef, projectId)))
     }
     if (ast.isDeployedInstance(parentRef)) {
       const target = parentRef.target.modelElement.value.ref
@@ -184,7 +194,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       return stream(this.genUniqueDescedants(resolvedTarget))
     }
     if (ast.isElement(parentRef)) {
-      return stream(this.genUniqueDescedants(parentRef))
+      return stream(this.genUniqueDescedants(parentRef, this.descendantsProjectOf(parentRef, projectId)))
     }
     return nonexhaustive(parentRef)
   }
