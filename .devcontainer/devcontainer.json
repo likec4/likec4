@@ -4,8 +4,8 @@
   // Base image - asdf features will install tools from .tool-versions
   "image": "mcr.microsoft.com/devcontainers/base:debian",
   "features": {
-    // Install asdf version manager first. The postCreateCommand will install Node.js, pnpm, and dprint.
-    // tsx, turbo and dprint are workspace devDependencies, so no extra features are needed.
+    // Install asdf version manager first. The postCreateCommand installs Node.js and pnpm.
+    // dprint, tsx, and turbo are workspace devDependencies, so no extra features are needed.
     "ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {}
   },
   "remoteEnv": {
@@ -59,8 +59,8 @@
   // Use 'onCreateCommand' to run commands when creating the container for the first time.
   "onCreateCommand": "sudo chown -R root:root .pnpm-store node_modules .turbo",
   // Use 'postCreateCommand' to run commands after the container is created.
-  // Using asdf to install nodejs, pnpm, and dprint as per .tool-versions, then install dependencies.
-  "postCreateCommand": "bash -c 'set -e; for p in nodejs pnpm dprint; do asdf plugin list | grep -qx $p || asdf plugin add $p; done; asdf install; asdf reshim; pnpm install --prefer-offline'",
+  // Using asdf to install nodejs and pnpm as per .tool-versions, then install dependencies.
+  "postCreateCommand": "bash -c 'set -e; for p in nodejs pnpm; do asdf plugin list | grep -qx $p || asdf plugin add $p; done; asdf install; asdf reshim; pnpm install --prefer-offline'",
   // Wait for tools and dependencies before VS Code extensions try to discover them.
   "waitFor": "postCreateCommand",
   // Configure tool-specific properties.
