@@ -85,7 +85,7 @@ Reference external directories containing `.c4` files.
 
 ### `dependencies` (experimental)
 
-Projects to import from, under a name you choose. Maps the import name (used in `import { x } from 'name'`) to the folder of the dependency project, relative to the config file, or to a git source. The format may change before it becomes stable.
+Projects to import from, under a name you choose. Maps the import name (used in `import { x } from 'name'`) to the folder of the dependency project, relative to the config file, or to a git source (an object, or a URL string). The format may change before it becomes stable.
 
 ```json
 {
@@ -93,6 +93,7 @@ Projects to import from, under a name you choose. Maps the import name (used in 
   "dependencies": {
     "billing": "../billing-service",
     "platform": "../../platform-model",
+    "ledger": "https://github.com/my-org/ledger.git#v2.0.0",
     "payments": {
       "git": "https://github.com/my-org/payments.git",
       "ref": "v1.2.0",
@@ -102,7 +103,7 @@ Projects to import from, under a name you choose. Maps the import name (used in 
 }
 ```
 
-- Import names follow the `name` rules: not `"default"`, no `.`, `@`, `#`. Paths must be relative (no absolute paths, drive letters or URLs).
+- Import names follow the `name` rules: not `"default"`, no `.`, `@`, `#`. Paths must be relative (no absolute paths, drive letters or URLs other than the git short form below).
 - An entry wins over a workspace project with the same name. Without an entry, `from 'name'` looks up a workspace project by `name`.
 - A folder of a workspace project resolves to that project (its `name` may differ from the import name).
 - A folder outside the workspace is loaded only as a source of elements: its `.c4`/`.likec4` files, only a JSON config (TS/JS config is not executed; without JSON config the name is the folder name), its `include` is ignored, its errors are not reported, its views are not built. Files outside the workspace are not watched: run "LikeC4: Reload projects" in VS Code or restart the CLI after changes.
@@ -114,6 +115,7 @@ Git sources `{ "git", "ref", "path" }`:
 
 - `git`: `https://host/org/repo.git`, `ssh://[user@]host[:port]/org/repo.git` or `git@host:org/repo.git`. `http://`, `file://`, `git://`, `ext::` and URLs with a password (`user:password@`) are rejected. Do not put tokens in the URL (a token used as the user name is not detected); use a git credential helper or SSH keys.
 - `ref` (required): branch, tag or full commit SHA (abbreviated SHAs are not supported). `path` (optional): folder of the project in the repository, relative, no `..`. Other fields are rejected.
+- Short form: a string starting with `https://` or `ssh://` is a git source at the repository root, `"<url>#<ref>"` equals `{ "git": "<url>", "ref": "<ref>" }` (same commit, same files). Without `#ref` it follows the default branch (shown as `#HEAD`; pinned on first install, moved by `likec4 update`). No `path` and no `git@host:org/repo.git` in the short form: use the object. Other strings are paths; `http://`, `file://`, `git://` strings are rejected.
 - Nothing is downloaded while loading the workspace: run `likec4 install` first (`likec4 update [name]` resolves refs again). Until installed, `build`, `export`, `gen`, `sync leanix`, `diff`, `safe-delete`, `publish` (unless `--force`) fail with `Dependency is not installed` / `Dependencies are not installed`, `validate` reports the error and exits non-zero, and the editor reports `Dependency 'name' is not installed` plus `Could not resolve reference` on imported names.
 - The first install pins the ref to a commit in the local cache (`LIKEC4_CACHE_DIR`); there is no lock file, so other machines resolve refs again. Prefer tags or full SHAs.
 - Only `.c4`/`.likec4` files and the JSON config at the root of `path` are downloaded; TS/JS configs are not run, `include` is ignored, local images and Markdown files are not available.

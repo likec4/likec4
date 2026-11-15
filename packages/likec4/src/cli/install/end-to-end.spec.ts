@@ -4,13 +4,15 @@
  */
 import type { LikeC4 } from '@likec4/language-services/node'
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { appendFileSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { stripVTControlCharacters } from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 import yargs from 'yargs'
 import buildCmd from '../build'
 import exportCmd from '../export'
 import { createGitDependencyFixture } from './__fixtures__/git-dependency-fixture'
+import { runInstall } from './handler'
 import installCmd from './index'
 
 // The suite runs with `--no-isolate`, and other spec files mock this module: use the actual implementation
@@ -260,5 +262,112 @@ describe.sequential('git dependencies end-to-end', { timeout: 30_000 }, () => {
       'cloud': 'cloud',
     })
     expect(await exportJson()).toEqual(new Map([['cloud', ['@billing-v1.api', '@billing-v2.invoices', 'cloud']]]))
+  })
+
+  it('git URL strings are identical to the object form, a URL without #ref follows the default branch', async () => {
+    const { fixture, tag, exportJson } = setup()
+    const billing = fixture.repository('billing')
+    // each dependency imports its own element (an element can be imported under one name only)
+    const components = ['api', 'invoices', 'refunds', 'ledger']
+    const first = billing.commit(billingFiles('first', ...components))
+    tag(billing.bare, 'v1', first)
+    // https:// URLs are served by the fake ssh too: rewritten in the (isolated) global git configuration
+    appendFileSync(
+      fixture.env['GIT_CONFIG_GLOBAL']!,
+      '[url "ssh://example.test/"]\n\tinsteadOf = https://git.example.test/\n',
+    )
+    const httpsUrl = 'https://git.example.test/billing.git'
+    fixture.writeWorkspace({
+      'likec4.config.json': JSON.stringify({
+        name: 'cloud',
+        dependencies: {
+          'short': `${httpsUrl}#main`,
+          'object': { git: httpsUrl, ref: 'main' },
+          'pinned': `${httpsUrl}#v1`,
+          // no #ref: the default branch of the repository
+          'latest': billing.url,
+        },
+      }),
+      'model.c4': `
+        import { api } from 'short'
+        import { invoices } from 'object'
+        import { refunds } from 'pinned'
+        import { ledger } from 'latest'
+        specification {
+          element system
+        }
+        model {
+          system cloud
+          cloud -> api
+          cloud -> invoices
+          cloud -> refunds
+          cloud -> ledger
+        }
+      `,
+    })
+    const logs: string[] = []
+    const logger = {
+      info: (msg: string) => void logs.push(stripVTControlCharacters(msg)),
+      error: (msg: string) => void logs.push(stripVTControlCharacters(msg)),
+    }
+    const runUpdate = async (update: boolean) => {
+      logs.length = 0
+      const result = await runInstall({ path: fixture.workspace, update }, logger)
+      expect(result.ok).toBe(true)
+      return new Map(result.reports.map(r => [r.name, r]))
+    }
+
+    const installed = await runUpdate(false)
+    expect([...installed.values()].map(r => [r.name, r.source])).toEqual([
+      ['short', { git: httpsUrl, ref: 'main' }],
+      ['object', { git: httpsUrl, ref: 'main' }],
+      ['pinned', { git: httpsUrl, ref: 'v1' }],
+      ['latest', { git: billing.url, ref: 'HEAD' }],
+    ])
+    for (const report of installed.values()) {
+      expect(report.result).toMatchObject({ status: 'installed', instance: { sha: first } })
+    }
+    // the string and the object share one instance (one SHA, one set of documents)
+    expect(installed.get('short')?.result).toEqual(installed.get('object')?.result)
+    expect(logs).toEqual([
+      expect.stringMatching(
+        /^✓ short of project 'cloud' \(https:\/\/git\.example\.test\/billing\.git#main\) installed/,
+      ),
+      expect.stringMatching(/^✓ object of project 'cloud' \(https:\/\/git\.example\.test\/billing\.git#main\) /),
+      expect.stringMatching(/^✓ pinned of project 'cloud' \(https:\/\/git\.example\.test\/billing\.git#v1\) /),
+      expect.stringMatching(/^✓ latest of project 'cloud' \(ssh:\/\/example\.test\/billing\.git#HEAD\) installed/),
+    ])
+
+    // the default branch moves on: install keeps the resolved commit, update moves it
+    const second = billing.commit(billingFiles('second', ...components))
+    const kept = await runUpdate(false)
+    for (const report of kept.values()) {
+      expect(report.result).toMatchObject({ status: 'installed', instance: { sha: first } })
+    }
+    const updated = await runUpdate(true)
+    expect([...updated.values()].map(r => [r.name, r.previousSha, r.result])).toMatchObject([
+      ['short', first, { status: 'installed', instance: { sha: second } }],
+      ['object', first, { status: 'installed', instance: { sha: second } }],
+      ['pinned', first, { status: 'installed', instance: { sha: first } }],
+      ['latest', first, { status: 'installed', instance: { sha: second } }],
+    ])
+    expect(logs).toContain(
+      `✓ latest of project 'cloud' (ssh://example.test/billing.git#HEAD) updated ${first.slice(0, 12)} → ${
+        second.slice(0, 12)
+      }`,
+    )
+
+    await runCli(buildCmd, 'build', fixture.workspace, '-o', join(fixture.root, 'dist'))
+    expect(viteBuild).toHaveBeenCalledOnce()
+    expect(builtTitles.get('cloud')).toEqual({
+      '@short.api': 'api second',
+      '@object.invoices': 'invoices second',
+      '@pinned.refunds': 'refunds first',
+      '@latest.ledger': 'ledger second',
+      'cloud': 'cloud',
+    })
+    expect(await exportJson()).toEqual(
+      new Map([['cloud', ['@latest.ledger', '@object.invoices', '@pinned.refunds', '@short.api', 'cloud']]]),
+    )
   })
 })

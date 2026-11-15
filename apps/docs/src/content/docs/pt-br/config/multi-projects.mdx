@@ -78,7 +78,8 @@ Declare os projetos dos quais você importa na seção `dependencies` da configu
 Cada entrada associa um nome de importação ao projeto de dependência:
 
 - um caminho para a pasta do projeto (a pasta com o arquivo de configuração dele), relativo à pasta do arquivo de configuração;
-- uma [fonte git](#dependências-do-git): uma pasta de um repositório git em uma branch, uma tag ou o SHA completo de um commit.
+- uma [fonte git](#dependências-do-git): uma pasta de um repositório git em uma branch, uma tag ou o SHA completo de um commit,
+  informada como um objeto ou como uma [string de URL](#forma-curta) que começa com `https://` ou `ssh://`.
 
 <FileTree>
 - platform-model
@@ -221,6 +222,30 @@ Em vez de um caminho, informe um objeto com a URL do repositório, uma ref e, op
 - `path` deve ser relativo e não pode conter `..`.
 - Outros campos são rejeitados.
 
+#### Forma curta
+
+Uma dependência do git na raiz do repositório pode ser escrita como uma string: a URL do repositório, opcionalmente seguida de `#` e da ref.
+Sem `#ref`, a dependência usa a branch padrão do repositório:
+
+```json title="checkout/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing": "https://github.com/my-org/billing.git#v1.2.0",
+    "payments": "ssh://git@github.com/my-org/payments.git"
+  }
+}
+```
+
+- Uma string que começa com `https://` ou `ssh://` é uma dependência do git; qualquer outra string é um caminho.
+- `"https://github.com/my-org/billing.git#v1.2.0"` é o mesmo que `{ "git": "https://github.com/my-org/billing.git", "ref": "v1.2.0" }`:
+  os dois recebem o mesmo commit e os mesmos arquivos.
+- Tudo depois do primeiro `#` é a ref, com as mesmas regras de `ref` (por exemplo, `#release/1.0` é uma branch).
+- Sem `#ref`, a branch padrão é resolvida como qualquer branch: a primeira instalação guarda o commit dela, e `likec4 update` o atualiza.
+  As mensagens mostram essa ref como `HEAD`: `ssh://git@github.com/my-org/payments.git#HEAD`.
+- Use a forma de objeto para um projeto em uma pasta do repositório (`path`) ou para uma URL `git@host:org/repo.git`.
+
 Importe de uma dependência do git da mesma forma que de uma dependência local:
 
 ```likec4 title="checkout/checkout.c4"
@@ -302,7 +327,7 @@ Versões diferentes de um repositório podem ser usadas lado a lado: em projetos
 
 Não há arquivo de lock: os commits ficam guardados no cache de cada máquina.
 O build é reproduzível em uma máquina, mas outra máquina (ou uma execução de CI com o cache vazio) resolve as refs novamente.
-Use uma tag ou o SHA completo de um commit como `ref` para obter o mesmo modelo em todos os lugares.
+Use uma tag ou o SHA completo de um commit como `ref` para obter o mesmo modelo em todos os lugares (uma [string de URL](#forma-curta) sem `#ref` segue a branch padrão).
 
 #### O que é baixado
 
