@@ -239,6 +239,11 @@ function externalProjectNode({ projectId, importedBy, importName, meta, model }:
       description.push(`Source: ${meta.source.path}`)
       break
     }
+    case 'git': {
+      const { url, ref, path } = meta.source
+      description.push(`Source: ${url}${path ? ` (${path})` : ''} at ${ref}`)
+      break
+    }
   }
   return {
     id: nodeId(projectId),
