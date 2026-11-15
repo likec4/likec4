@@ -117,6 +117,22 @@ function hasDotSegments(value: string): boolean {
   return decoded.split(/[/\\]/).some(s => s === '.' || s === '..')
 }
 
+/**
+ * Checks if a `https://` or `ssh://` URL contains credentials (a password or a token): `scheme://user:secret@host/...`.
+ * A user name alone (`ssh://git@host/...`) is not a credential.
+ *
+ * Credentials must not be stored in the config: use a git credential helper or SSH keys instead.
+ */
+export function hasGitUrlCredentials(url: string): boolean {
+  const match = /^[a-z][a-z0-9+.-]*:\/\/([^/?#]*)/i.exec(url.trim())
+  const authority = match?.[1]
+  if (!authority) {
+    return false
+  }
+  const at = authority.lastIndexOf('@')
+  return at >= 0 && authority.slice(0, at).includes(':')
+}
+
 function result(
   protocol: GitUrlProtocol,
   hostname: string,
@@ -157,7 +173,9 @@ function result(
  * - users that start with `-` or contain characters other than `A-Z a-z 0-9 . _ ~ -` (ssh option injection)
  * - hosts that are not plain host names (start with `-`, IPv6 literals)
  *
- * The user (and password) of the URL is not a part of the repository identity ({@link GitRepositoryUrl.id}).
+ * - credentials (`https://user:token@host/...`), see {@link hasGitUrlCredentials}
+ *
+ * The user of the URL is not a part of the repository identity ({@link GitRepositoryUrl.id}).
  *
  * @example
  * ```ts
@@ -189,6 +207,9 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
   if (protocol !== 'https' && protocol !== 'ssh') {
     return undefined
   }
+  if (hasGitUrlCredentials(value)) {
+    return undefined
+  }
   // URL resolves dot segments ("a/../b" -> "b"), reject them before parsing
   if (hasDotSegments(value.slice(protocol.length + 3))) {
     return undefined
@@ -203,6 +224,7 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
     parsed.hostname.length === 0
     || parsed.search.length > 0
     || parsed.hash.length > 0
+    || parsed.password.length > 0
     || !isValidUser(parsed.username)
   ) {
     return undefined
