@@ -18,10 +18,8 @@
     "test:mcp-app": "playwright test -c playwright.mcp-app.config.ts"
   },
   "dependencies": {
-    "@likec4/diagram": "file:../packages/diagram/package.tgz",
     "@likec4/icons": "file:../packages/icons/package.tgz",
     "@likec4/mcp": "file:../packages/mcp/package.tgz",
-    "@likec4/styles": "file:../styled-system/styles/package.tgz",
     "@modelcontextprotocol/ext-apps": "1.7.5",
     "@playwright/test": "^1.64.0",
     "@types/node": "~22.19.17",

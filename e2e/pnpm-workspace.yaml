@@ -14,8 +14,6 @@ allowBuilds:
 # whole closure resolving from the build instead of from npm.
 overrides:
   "@likec4/config": "file:../packages/config/package.tgz"
-  "@likec4/core": "file:../packages/core/package.tgz"
-  "@likec4/diagram": "file:../packages/diagram/package.tgz"
   "@likec4/generators": "file:../packages/generators/package.tgz"
   "@likec4/icons": "file:../packages/icons/package.tgz"
   "@likec4/language-server": "file:../packages/language-server/package.tgz"
@@ -24,5 +22,4 @@ overrides:
   "@likec4/log": "file:../packages/log/package.tgz"
   "@likec4/mcp": "file:../packages/mcp/package.tgz"
   "@likec4/style-preset": "file:../styled-system/preset/package.tgz"
-  "@likec4/styles": "file:../styled-system/styles/package.tgz"
   "likec4": "file:../packages/likec4/package.tgz"
