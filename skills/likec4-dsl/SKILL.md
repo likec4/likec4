@@ -468,7 +468,7 @@ Load a reference file when the task involves the corresponding topic. Claude rea
 | `references/relationships-bidirectional.md`  | Bidirectional relationship syntax and `<->` view predicate patterns                                                                       |
 | `references/diffs.md`                        | Planned model changes (`diff` blocks), applying or discarding them, safe delete of elements                                               |
 | `references/bridge-leanix-drawio.md`         | LeanIX bridge · `drawio --profile leanix` · round-trip · mapping · MCP vs bridge · sync/artifacts/managed cells                           |
-| `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, format; flag disambiguation                                                       |
+| `references/cli.md`                          | Full CLI reference: serve, build, export, codegen, mcp, install/update, format; flag disambiguation                                       |
 | `references/configuration.md`                | Project config options, multi-project setup, include/exclude paths, generators                                                            |
 | `references/examples.md`                     | Compact real-world examples: extend, groups, globals, dynamic views, deployment, rank                                                     |
 | `references/troubleshooting.md`              | Errors, unexpected output, eval failures — 6 error tables, 5-step debug workflow, 7 best practices                                        |
