@@ -66,8 +66,29 @@ describe('parseGitRepositoryUrl', () => {
     'https://github.com/my-org%2Fbilling',
     'https://github.com/my-org%5Cbilling',
     'git@github.com:my-org%2fbilling',
+    'git@github.com:a/b%3Ac',
+    'https://github.com/a/b%3Ac',
+    'https://github.com/a/b%2525',
+    'git@github.com:a/b%2525',
+    'git@github.com:a/b%zz',
+    'https://github.com/a/b%01',
+    'https://github.com/a/b\tc',
+    'git@github.com:my-org/-billing',
+    'https://github.com/-my-org/billing',
+    'ssh://git@github.com/my-org/--upload-pack=x',
   ])('rejects %s', (url, { expect }) => {
     expect(parseGitRepositoryUrl(url)).toBeUndefined()
+  })
+})
+
+describe('parseGitRepositoryUrl decoding', () => {
+  it('decodes paths of all forms the same way', ({ expect }) => {
+    const ids = [
+      'git@github.com:my-org/bill%23ing.git',
+      'https://github.com/my-org/bill%23ing',
+      'ssh://git@github.com/my-org/bill%23ing.git',
+    ].map(url => parseGitRepositoryUrl(url)?.id)
+    expect(ids).toEqual(['github.com/my-org/bill#ing', 'github.com/my-org/bill#ing', 'github.com/my-org/bill#ing'])
   })
 })
 

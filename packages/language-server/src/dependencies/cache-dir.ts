@@ -25,11 +25,31 @@ export interface DependencyCacheDirParams {
    * `os.homedir()`
    */
   homedir: string
+  /**
+   * `process.cwd()`: base of a relative `LIKEC4_CACHE_DIR`.
+   * Without it, a relative `LIKEC4_CACHE_DIR` is rejected.
+   */
+  cwd?: string | undefined
 }
 
 function nonEmpty(value: string | undefined): string | undefined {
   const trimmed = value?.trim()
   return trimmed ? trimmed : undefined
+}
+
+function isAbsolutePath(platform: string, path: string): boolean {
+  return platform === 'win32'
+    ? /^[A-Za-z]:[\\/]/.test(path) || /^[\\/]{2}/.test(path)
+    : path.startsWith('/')
+}
+
+/**
+ * Value of an environment variable with an absolute path, undefined if it is not set or relative
+ * (relative values are ignored, as the XDG Base Directory specification requires for `XDG_CACHE_HOME`).
+ */
+function absoluteEnv(platform: string, value: string | undefined): string | undefined {
+  const path = nonEmpty(value)
+  return path && isAbsolutePath(platform, path) ? path : undefined
 }
 
 function join(platform: string, ...segments: string[]): string {
@@ -42,19 +62,29 @@ function join(platform: string, ...segments: string[]): string {
 
 /**
  * Cache directory of LikeC4:
- * - `$LIKEC4_CACHE_DIR` if set
+ * - `$LIKEC4_CACHE_DIR` if set; a relative value is resolved against `cwd` (rejected without `cwd`)
  * - Linux and others: `$XDG_CACHE_HOME/likec4` or `~/.cache/likec4`
  * - macOS: `~/Library/Caches/likec4`
  * - Windows: `%LOCALAPPDATA%\likec4\cache` or `~\AppData\Local\likec4\cache`
  *
- * @throws if there is no override and the home directory is needed but empty (instead of returning a relative path)
+ * Relative `XDG_CACHE_HOME` and `LOCALAPPDATA` are ignored.
+ *
+ * @throws if there is no override and the home directory is needed but empty (instead of returning a relative path),
+ * or if `LIKEC4_CACHE_DIR` is relative and there is no `cwd`
  *
  * Pure function (no `node:*` imports): Node hosts pass `process.env`, `process.platform` and `os.homedir()`.
  */
-export function likec4CacheDir({ env, platform, homedir }: DependencyCacheDirParams): string {
+export function likec4CacheDir({ env, platform, homedir, cwd }: DependencyCacheDirParams): string {
   const override = nonEmpty(env[LIKEC4_CACHE_DIR_ENV])
   if (override) {
-    return override
+    if (isAbsolutePath(platform, override)) {
+      return override
+    }
+    const base = nonEmpty(cwd)
+    if (!base || !isAbsolutePath(platform, base)) {
+      throw new Error(`${LIKEC4_CACHE_DIR_ENV} must be an absolute path: ${override}`)
+    }
+    return join(platform, base, override)
   }
   const home = (): string => {
     const value = nonEmpty(homedir)
@@ -69,14 +99,14 @@ export function likec4CacheDir({ env, platform, homedir }: DependencyCacheDirPar
     case platform === 'win32':
       return join(
         platform,
-        nonEmpty(env['LOCALAPPDATA']) ?? join(platform, home(), 'AppData', 'Local'),
+        absoluteEnv(platform, env['LOCALAPPDATA']) ?? join(platform, home(), 'AppData', 'Local'),
         'likec4',
         'cache',
       )
     case platform === 'darwin':
       return join(platform, home(), 'Library', 'Caches', 'likec4')
     default:
-      return join(platform, nonEmpty(env['XDG_CACHE_HOME']) ?? join(platform, home(), '.cache'), 'likec4')
+      return join(platform, absoluteEnv(platform, env['XDG_CACHE_HOME']) ?? join(platform, home(), '.cache'), 'likec4')
   }
 }
 

@@ -84,6 +84,42 @@ describe('dependencies contracts', () => {
       expect(new Set(instanceKeys.map(k => k.toLowerCase())).size).toBe(instanceKeys.length)
     })
 
+    it('gives keys safe as file names on Windows', ({ expect }) => {
+      const windowsUnsafe = (segment: string) =>
+        /[<>:"/\\|?*]/.test(segment)
+        || [...segment].some(char => char.charCodeAt(0) < 0x20)
+        || /[. ]$/.test(segment)
+        || segment.startsWith(' ')
+        || /^(?:con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(segment)
+      // fs-lite rejects keys with segments ending in ".."
+      const fsLiteRejects = (key: string) => /\.\.:|\.\.$/.test(key)
+      const repositories = [
+        'host.com/a*b/c',
+        'host.com/con/nul.c4',
+        'host.com/x../y.',
+        'host.com/ a /b',
+        'host.com/com1/LPT9',
+      ]
+      const refs = ['main', 'a*b', 'v1.', 'x..', ' ref ', 'con', 'NUL', 'aux.txt', 'feature/<x>|"y"?']
+      const keys = [
+        ...repositories.map(repository => dependencyCacheKey({ repository, sha: SHA, subdir: 'docs..' })),
+        ...repositories.flatMap(repository => refs.map(ref => dependencyVersionKey(repository, ref))),
+      ]
+      for (const key of keys) {
+        expect(fsLiteRejects(key), key).toBe(false)
+        for (const segment of key.split(':')) {
+          expect(windowsUnsafe(segment), `${segment} of ${key}`).toBe(false)
+        }
+      }
+      expect(new Set(keys).size).toBe(keys.length)
+      expect(dependencyVersionKey('host.com/con/b', 'a*b.')).toBe('versions:host.com:%63on:b:a%2ab%2e')
+      // escaped forms do not collide with literal input
+      const lookalikes = ['con', '%63on', 'a.', 'a%2e', 'a*', 'a%2a'].map(ref =>
+        dependencyVersionKey('host.com/a/b', ref)
+      )
+      expect(new Set(lookalikes).size).toBe(lookalikes.length)
+    })
+
     it('requires full SHAs in keys and version records', async ({ expect }) => {
       expect(() => dependencyCacheKey({ repository: 'github.com/a/b', sha: SHA.slice(0, 7), subdir: '' })).toThrow()
       expect(dependencyCacheKey({ repository: 'github.com/a/b', sha: SHA + SHA.slice(0, 24), subdir: '' }))
@@ -207,6 +243,22 @@ describe('dependencies contracts', () => {
         .toBe('C:\\Users\\u\\AppData\\Local\\likec4\\cache\\dependencies')
       expect(likec4CacheDir({ platform: 'win32', env: {}, homedir: 'C:\\Users\\u' }))
         .toBe('C:\\Users\\u\\AppData\\Local\\likec4\\cache')
+    })
+
+    it('ignores relative XDG_CACHE_HOME and LOCALAPPDATA', ({ expect }) => {
+      expect(dependencyCacheDir({ platform: 'linux', env: { XDG_CACHE_HOME: 'rel' }, homedir: '/home/u' }))
+        .toBe('/home/u/.cache/likec4/dependencies')
+      expect(likec4CacheDir({ platform: 'win32', env: { LOCALAPPDATA: 'rel' }, homedir: 'C:\\Users\\u' }))
+        .toBe('C:\\Users\\u\\AppData\\Local\\likec4\\cache')
+    })
+
+    it('resolves relative LIKEC4_CACHE_DIR against cwd, rejects it without cwd', ({ expect }) => {
+      expect(dependencyCacheDir({ platform: 'linux', env: { LIKEC4_CACHE_DIR: 'cache' }, homedir: '/h', cwd: '/work' }))
+        .toBe('/work/cache/dependencies')
+      expect(() => dependencyCacheDir({ platform: 'linux', env: { LIKEC4_CACHE_DIR: 'cache' }, homedir: '/h' }))
+        .toThrow(/LIKEC4_CACHE_DIR must be an absolute path/)
+      expect(dependencyCacheDir({ platform: 'win32', env: { LIKEC4_CACHE_DIR: 'D:\\c' }, homedir: '' }))
+        .toBe('D:\\c\\dependencies')
     })
 
     it('throws without home directory and override', ({ expect }) => {

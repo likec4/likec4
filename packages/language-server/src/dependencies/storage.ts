@@ -9,27 +9,50 @@ import type { DependencyCacheEntry } from './types'
  */
 export const DEPENDENCY_INSTANCES_PREFIX = 'instances'
 
-/**
- * Injective encoding without upper case letters:
- * URI-encodes, lower-cases hex digits of escapes and prefixes upper case letters with `^` (`Main` -> `^main`).
- * `%` and `^` of the input are always escaped (`%25`, `%5e`), so the encoding is unambiguous.
- */
-function caseSafeEncode(value: string): string {
-  return encodeURIComponent(value)
-    .replace(/%[0-9A-F]{2}/g, escape => escape.toLowerCase())
-    .replace(/[A-Z]/g, letter => `^${letter.toLowerCase()}`)
+// Windows reserved device names (also with an extension, e.g. "con.c4")
+const WINDOWS_RESERVED_NAME_REGEX = /^(?:con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/
+
+function percentEscape(char: string): string {
+  return `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`
 }
 
 /**
- * Encodes a key segment:
+ * Injective encoding of a key segment, safe as a file name on case-insensitive and Windows file systems:
+ * 1. URI-encodes (`:`, `/`, `\`, `?`, `<`, `>`, `"`, `|`, spaces and control characters become escapes),
+ *    and escapes `*` (`%2a`);
+ * 2. lower-cases hex digits of escapes and prefixes upper case letters with `^` (`Main` -> `^main`);
+ * 3. escapes a trailing `.` (`a.` -> `a%2e`, so no segment ends with `..` or `.`);
+ * 4. escapes the first character of Windows reserved names (`con` -> `%63on`, `nul.c4` -> `%6eul.c4`).
+ *
+ * `%` and `^` of the input are always escaped (`%25`, `%5e`) and every other change is a percent escape,
+ * so the encoding is unambiguous (decoding: drop `^` before letters, then URI-decode).
+ */
+function fileSafeEncode(value: string): string {
+  let encoded = encodeURIComponent(value)
+    .replaceAll('*', '%2a')
+    .replace(/%[0-9A-F]{2}/g, escape => escape.toLowerCase())
+    .replace(/[A-Z]/g, letter => `^${letter.toLowerCase()}`)
+  if (encoded.endsWith('.')) {
+    encoded = `${encoded.slice(0, -1)}%2e`
+  }
+  if (WINDOWS_RESERVED_NAME_REGEX.test(encoded)) {
+    encoded = `${percentEscape(encoded.charAt(0))}${encoded.slice(1)}`
+  }
+  return encoded
+}
+
+/**
+ * Encodes a key segment (see `fileSafeEncode`):
  * - unstorage treats `:`, `/` and `\` as separators and drops everything after `?`,
- *   the `fs` driver maps segments to folders: the segment is URI-encoded;
+ *   the `fs-lite` driver maps segments to folders and rejects keys with segments ending in `..`;
  * - file systems of macOS and Windows are case-insensitive: upper case letters are escaped
- *   (`Main` -> `^main`, `%2F` -> `%2f`), so `Main` and `main` never share a file.
+ *   (`Main` -> `^main`, `%2F` -> `%2f`), so `Main` and `main` never share a file;
+ * - Windows forbids `<>:"|?*`, trailing dots and spaces, and reserved names (`con`, `nul`, `com1`, ...):
+ *   they are escaped.
  */
 export function encodeKeySegment(segment: string): string {
   invariant(segment.length > 0 && segment !== '.' && segment !== '..', `Invalid storage key segment: "${segment}"`)
-  return caseSafeEncode(segment)
+  return fileSafeEncode(segment)
 }
 
 /**
@@ -65,7 +88,7 @@ export function dependencyCacheKey(instance: GitDependencyInstance): string {
     DEPENDENCY_INSTANCES_PREFIX,
     ...repositoryKeySegments(instance.repository),
     instance.sha,
-    `@${caseSafeEncode(subdir)}`,
+    `@${fileSafeEncode(subdir)}`,
   ].join(':')
 }
 

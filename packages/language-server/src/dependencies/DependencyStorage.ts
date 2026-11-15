@@ -1,5 +1,5 @@
 import { isPlainObject } from 'remeda'
-import type { Storage } from 'unstorage'
+import { type Storage, createStorage } from 'unstorage'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { GitDependencyInstance } from '../workspace/dependency-uri'
@@ -42,7 +42,7 @@ export function trackClientDependencyStorage(shared: LikeC4SharedServices): void
       return
     }
     try {
-      shared.dependencies.Storage.use(createLspStorageDriver(connection))
+      shared.dependencies.Storage.use(createStorage({ driver: createLspStorageDriver(connection) }))
       logger.debug`using the dependency storage of the client`
     } catch (error) {
       logger.warn('Failed to use the dependency storage of the client, the storage of the host is used', { error })

@@ -165,9 +165,9 @@ describe('dependency-uri', () => {
           `likec4-dep://github.com/my-org/billing%40${SHA}/docs/arch/-/architecture/model.c4`,
         ],
         [
-          'git@gitlab.example.com:group/-/billing.git',
+          'git@gitlab.example.com:group/billing.git',
           '-/nested',
-          `likec4-dep://gitlab.example.com/group/--/billing%40${SHA}/--/nested/-/architecture/model.c4`,
+          `likec4-dep://gitlab.example.com/group/billing%40${SHA}/--/nested/-/architecture/model.c4`,
         ],
       ] as const,
     )('round-trips %s (subdir "%s")', ([url, subdir, expected], { expect }) => {
@@ -186,6 +186,22 @@ describe('dependency-uri', () => {
       expect(externalProjectIdOfUri(uri)).toBe(
         `#likec4-dep://${repository!.split('/')[0]}${parseDependencyUri(uri)!.instance}`,
       )
+    })
+
+    it('escapes "-" segments of the repository identity', ({ expect }) => {
+      // not accepted by parseGitRepositoryUrl, but the URI format stays unambiguous
+      const instance = { repository: 'example.com/group/-/billing', sha: SHA, subdir: '-' }
+      const uri = gitDependencyUri(instance, 'm.c4')
+      expect(uri.toString()).toBe(`likec4-dep://example.com/group/--/billing%40${SHA}/--/-/m.c4`)
+      expect(parseGitDependencyUri(uri.toString())).toEqual({ instance, path: 'm.c4' })
+    })
+
+    it('rejects abbreviated SHAs in strict mode', ({ expect }) => {
+      const uri = 'likec4-dep://github.com/a/b%400123abcd/-/m.c4'
+      expect(parseGitDependencyUri(uri)?.instance.sha).toBe('0123abcd')
+      expect(parseGitDependencyUri(uri, { requireFullSha: true })).toBeUndefined()
+      const full = gitDependencyUri({ repository: 'github.com/a/b', sha: SHA, subdir: '' }, 'm.c4')
+      expect(parseGitDependencyUri(full, { requireFullSha: true })?.instance.sha).toBe(SHA)
     })
 
     it('gives the same URIs to different spellings of one repository', ({ expect }) => {

@@ -47,6 +47,9 @@ const SCP_LIKE_REGEX = /^(?:([^@/:\s]+)@)?([^@/:\s[\]]+):(?!\/)(\S+)$/
 // User of ssh and scp-like URLs: must not look like an option of ssh ("-oProxyCommand=...")
 const USER_REGEX = /^[A-Za-z0-9._~][A-Za-z0-9._~-]*$/
 
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARS_REGEX = /[\x00-\x1f\x7f]/
+
 // Encoded "/" and "\" in a path would change the identity of the repository
 const ENCODED_SEPARATOR_REGEX = /%2f|%5c/i
 
@@ -65,10 +68,32 @@ function normalizeRepositoryPath(path: string): string | undefined {
       segments[segments.length - 1] = name
     }
   }
-  if (segments.length === 0 || segments.some(s => s === '.' || s === '..' || /[\s\\:]/.test(s))) {
+  // segments starting with "-" could be taken for options of git or ssh
+  if (segments.length === 0 || segments.some(s => s === '.' || s === '..' || s.startsWith('-') || /[\s\\:]/.test(s))) {
     return undefined
   }
   return segments.join('/')
+}
+
+/**
+ * Decodes the path the same way for all forms (so `bill%23ing` gives one identity in https and scp-like URLs).
+ * Returns undefined for encoded separators (`%2F`, `%5C`), malformed escapes,
+ * control characters and a `%` that remains after decoding.
+ */
+function decodePath(raw: string): string | undefined {
+  if (ENCODED_SEPARATOR_REGEX.test(raw)) {
+    return undefined
+  }
+  let decoded: string
+  try {
+    decoded = decodeURIComponent(raw)
+  } catch {
+    return undefined
+  }
+  if (decoded.includes('%') || CONTROL_CHARS_REGEX.test(decoded)) {
+    return undefined
+  }
+  return decoded
 }
 
 function isValidUser(encoded: string): boolean {
@@ -124,7 +149,11 @@ function result(
  * Rejected as well:
  * - remote helper syntax (anything with `::`, e.g. `ext::sh -c ...`)
  * - a query string or a fragment
- * - path segments with `:`, `.` or `..`, encoded `/` and `\` (`%2F`, `%5C`)
+ * - path segments with `:`, `.` or `..`, segments starting with `-`, encoded `/` and `\` (`%2F`, `%5C`)
+ * - control characters, a `%` that remains after decoding the path
+ *
+ * Paths are percent-decoded in all forms, so `git@host:org/bill%23ing` and `https://host/org/bill%23ing`
+ * have the same identity.
  * - users that start with `-` or contain characters other than `A-Z a-z 0-9 . _ ~ -` (ssh option injection)
  * - hosts that are not plain host names (start with `-`, IPv6 literals)
  *
@@ -140,7 +169,7 @@ function result(
 export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined {
   const value = url.trim()
   // "::" is the syntax of git remote helpers ("ext::sh -c ...", "fd::17")
-  if (value.length === 0 || value.includes('::')) {
+  if (value.length === 0 || value.includes('::') || CONTROL_CHARS_REGEX.test(value)) {
     return undefined
   }
   const protocol = /^([a-z][a-z0-9+.-]*):\/\//i.exec(value)?.[1]?.toLowerCase()
@@ -149,12 +178,13 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
     if (!scp) {
       return undefined
     }
-    const [, user, host = '', path = ''] = scp
+    const [, user, host = '', rawPath = ''] = scp
     // "C:repo" is a Windows path with a drive letter, not a host
-    if (host.length < 2 || (user !== undefined && !USER_REGEX.test(user)) || ENCODED_SEPARATOR_REGEX.test(path)) {
+    if (host.length < 2 || (user !== undefined && !USER_REGEX.test(user))) {
       return undefined
     }
-    return result('scp', host, undefined, path)
+    const path = decodePath(rawPath)
+    return path === undefined ? undefined : result('scp', host, undefined, path)
   }
   if (protocol !== 'https' && protocol !== 'ssh') {
     return undefined
@@ -173,17 +203,11 @@ export function parseGitRepositoryUrl(url: string): GitRepositoryUrl | undefined
     parsed.hostname.length === 0
     || parsed.search.length > 0
     || parsed.hash.length > 0
-    || ENCODED_SEPARATOR_REGEX.test(parsed.pathname)
     || !isValidUser(parsed.username)
   ) {
     return undefined
   }
   const port = parsed.port.length > 0 ? Number(parsed.port) : undefined
-  let path: string
-  try {
-    path = decodeURIComponent(parsed.pathname)
-  } catch {
-    return undefined
-  }
-  return result(protocol, parsed.hostname, port, path)
+  const path = decodePath(parsed.pathname)
+  return path === undefined ? undefined : result(protocol, parsed.hostname, port, path)
 }

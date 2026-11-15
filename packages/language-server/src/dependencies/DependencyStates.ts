@@ -17,8 +17,9 @@ export interface DidChangeDependencyStates {
 /**
  * States of git dependencies of consumer projects.
  *
- * Owned by the producer of states (git instances in external projects): it computes states
- * and fires {@link onDidChange}. Diagnostics and code actions only read them with {@link get} and {@link all}.
+ * This class is the producer: it computes states and fires {@link onDidChange} itself, through the protected
+ * `onDidChangeEmitter` (this file is filled by the package of git instances in external projects, which owns it).
+ * Diagnostics and code actions only read states with {@link get} and {@link all} and subscribe to {@link onDidChange}.
  *
  * Synchronous: answers from memory (registered instances and the result of the last sync of external projects),
  * so validation can use it.

@@ -302,12 +302,31 @@ export interface GitDependencyDocumentUri {
 }
 
 /**
+ * Options of {@link parseGitDependencyUri}
+ */
+export interface ParseGitDependencyUriOptions {
+  /**
+   * Accept only full SHAs (see {@link isFullGitSha}): returns undefined for abbreviated ones.
+   * @default false
+   */
+  requireFullSha?: boolean | undefined
+}
+
+/**
  * Parses the URI of a document of a git dependency (built by {@link gitDependencyUri}).
  * Returns undefined for other URIs (including local dependencies).
  *
  * The repository path ends at the first segment `<name>@<sha>`, the rest of the instance is the subdirectory.
+ *
+ * By default abbreviated SHAs are accepted (`isGitSha`), but {@link gitDependencyUri} and cache keys
+ * require full SHAs and throw otherwise. For URIs from untrusted sources (e.g. sent by the client),
+ * pass `{ requireFullSha: true }`, or check {@link isFullGitSha} of `instance.sha`
+ * before building keys or URIs from the result.
  */
-export function parseGitDependencyUri(uri: URI | string | DependencyUri): GitDependencyDocumentUri | undefined {
+export function parseGitDependencyUri(
+  uri: URI | string | DependencyUri,
+  options?: ParseGitDependencyUriOptions,
+): GitDependencyDocumentUri | undefined {
   const parsed = typeof uri === 'string' || URI.isUri(uri) ? parseDependencyUri(uri) : uri
   if (!parsed || parsed.authority === LOCAL_DEPENDENCY_AUTHORITY) {
     return undefined
@@ -320,6 +339,9 @@ export function parseGitDependencyUri(uri: URI | string | DependencyUri): GitDep
       continue
     }
     const [, name = '', sha = ''] = match
+    if (options?.requireFullSha && !isFullGitSha(sha)) {
+      return undefined
+    }
     return {
       instance: {
         repository: [parsed.authority, ...segments.slice(0, index), name].join('/'),

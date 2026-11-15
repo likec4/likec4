@@ -67,5 +67,19 @@ describe('node dependencies', () => {
     expect(existsSync(cacheDir)).toBe(true)
     expect(await storage.readEntry(entry)).toEqual(entry)
     expect(await storage.readEntries([entry, { ...entry, subdir: '' }])).toEqual([entry, undefined])
+
+    // segments that are not valid file names as is
+    const hostile = { ...entry, repository: 'host.com/con/a*b..', subdir: 'x..' }
+    await storage.writeEntry(hostile)
+    expect(await storage.readEntry(hostile)).toEqual(hostile)
+    await storage.writeVersion({
+      format: 1,
+      repository: hostile.repository,
+      url: 'git@host.com:con/a*b...git',
+      ref: 'v1..',
+      sha: SHA,
+      resolvedAt: '2026-11-15T00:00:00.000Z',
+    })
+    expect((await storage.readVersion(hostile.repository, 'v1..'))?.sha).toBe(SHA)
   })
 })

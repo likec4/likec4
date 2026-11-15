@@ -41,6 +41,7 @@ export function WithNodeDependencies(options?: NodeDependenciesOptions): Depende
               env: process.env,
               platform: process.platform,
               homedir: homedir(),
+              cwd: process.cwd(),
             }),
           })),
       }),
