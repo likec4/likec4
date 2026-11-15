@@ -258,6 +258,7 @@ async function removeStaleTempDirs(parent: string): Promise<void> {
   const entries = await readdir(parent, { withFileTypes: true }).catch(() => [])
   const now = Date.now()
   for (const entry of entries) {
+    // TEMP_DIR_PREFIX also covers the directories of the git version probe (`likec4-git-probe-`)
     if (!entry.isDirectory() || !entry.name.startsWith(TEMP_DIR_PREFIX)) {
       continue
     }
@@ -271,6 +272,23 @@ async function removeStaleTempDirs(parent: string): Promise<void> {
       // ignore
     }
   }
+}
+
+/**
+ * Waits for the promise, or until the signal is aborted (no listener is left behind)
+ */
+function untilAborted(promise: Promise<unknown>, signal: AbortSignal): Promise<void> {
+  if (signal.aborted) {
+    return Promise.resolve()
+  }
+  return new Promise<void>(resolve => {
+    const done = () => {
+      signal.removeEventListener('abort', done)
+      resolve()
+    }
+    signal.addEventListener('abort', done, { once: true })
+    void promise.then(done, done)
+  })
 }
 
 /**
@@ -341,21 +359,20 @@ export class GitDependencyInstaller implements DependencyInstaller {
       return Promise.resolve({ status: 'failed', error: validated })
     }
     const update = options?.update === true
+    // callers of the same instance join one run; runs of the same (repository, ref) are serialized,
+    // because they share the record of the version index
     const key = JSON.stringify([validated.url.id, validated.ref, validated.subdir])
+    const serialKey = JSON.stringify([validated.url.id, validated.ref])
     let run = this.#runs.get(key)
     // join a running install, unless this is an update and the running one is not, or it was aborted
     if (!run || (update && !run.update) || run.controller.signal.aborted) {
-      run = this.#startRun(key, validated, update, this.#tails.get(key))
+      run = this.#startRun(key, serialKey, validated, update)
     }
     return this.#wait(run, options?.cancelToken)
   }
 
-  #startRun(
-    key: string,
-    validated: ValidatedGitDependencySource,
-    update: boolean,
-    previous: Promise<void> | undefined,
-  ): InstallRun {
+  #startRun(key: string, serialKey: string, validated: ValidatedGitDependencySource, update: boolean): InstallRun {
+    const previous = this.#tails.get(serialKey)
     const controller = new AbortController()
     const run: InstallRun = {
       update,
@@ -364,23 +381,23 @@ export class GitDependencyInstaller implements DependencyInstaller {
       pinned: 0,
       promise: Promise.resolve({ status: 'unsupported' }),
     }
-    // the install itself: keeps running in the background when the run is abandoned
-    let work: Promise<unknown> = Promise.resolve()
-    run.promise = (async (): Promise<DependencyInstallResult> => {
+    // the install itself (started after the previous runs of the serial key):
+    // keeps running in the background when the run is abandoned
+    let work: Promise<unknown> | undefined
+    // the wait for the previous runs is bounded by the deadline and the abort of this run
+    run.promise = this.#withDeadline(controller, async signal => {
       if (previous) {
-        await previous
+        await untilAborted(previous, signal)
       }
-      if (controller.signal.aborted) {
-        return { status: 'failed', error: CANCELLED }
+      if (signal.aborted) {
+        throw new Error(CANCELLED)
       }
       this.#sweep ??= removeStaleTempDirs(this.#tempDir ?? tmpdir())
       await this.#sweep
-      return await this.#withDeadline(controller, signal => {
-        const install = this.#install(validated, update, signal)
-        work = install
-        return install
-      })
-    })()
+      const install = this.#install(validated, update, signal)
+      work = install
+      return await install
+    })
       .catch((error: unknown): DependencyInstallResult => {
         const message = errorMessage(error)
         logger.warn(`Failed to install ${validated.url.id}#${validated.ref}: ${message}`)
@@ -392,11 +409,22 @@ export class GitDependencyInstaller implements DependencyInstaller {
         }
       })
     this.#runs.set(key, run)
-    const tail = run.promise.then(() => work).then(() => {}, () => {})
-    this.#tails.set(key, tail)
+    // completion of this run and everything before it, settled either way
+    const tail: Promise<void> = Promise.all([previous, run.promise.then(() => work)]).then(() => {}, () => {})
+    this.#tails.set(serialKey, tail)
+    void run.promise.then(() => {
+      // nothing was started (abandoned while waiting): the tail is the previous one, no pile-up
+      if (!work && this.#tails.get(serialKey) === tail) {
+        if (previous) {
+          this.#tails.set(serialKey, previous)
+        } else {
+          this.#tails.delete(serialKey)
+        }
+      }
+    })
     void tail.then(() => {
-      if (this.#tails.get(key) === tail) {
-        this.#tails.delete(key)
+      if (this.#tails.get(serialKey) === tail) {
+        this.#tails.delete(serialKey)
       }
     })
     return run
@@ -405,7 +433,8 @@ export class GitDependencyInstaller implements DependencyInstaller {
   /**
    * Runs the install until it finishes, the deadline passes or the controller is aborted (all callers cancelled),
    * whatever comes first: a hard bound, even if git does not react to the abort.
-   * The abandoned install keeps cleaning up in the background (its writes are skipped: the signal is aborted).
+   * The abandoned install keeps cleaning up in the background and never starts a write after being abandoned
+   * (the signal is checked right before every write).
    */
   async #withDeadline<T>(controller: AbortController, fn: (signal: AbortSignal) => Promise<T>): Promise<T> {
     let timedOut = false
@@ -495,7 +524,7 @@ export class GitDependencyInstaller implements DependencyInstaller {
       }
     }
     // every write checks the signal right before it: an abandoned install (deadline, all callers cancelled)
-    // never writes, also when it was abandoned while awaiting the storage
+    // never starts a write after being abandoned, also when it was abandoned while awaiting the storage
     const writeVersion = async (sha: string) => {
       throwIfAborted()
       await storage.writeVersion(createDependencyVersionRecord({
@@ -575,7 +604,7 @@ export class GitDependencyInstaller implements DependencyInstaller {
       // the path exists in the commit (checked by fetchGitCommit); without sources it is not checked out
       const stats = await lstat(root).catch(() => undefined)
       const prefix = subdir ? `${subdir}/` : ''
-      const special = await listGitSpecialFiles(this.#runGit, checkout, gitOptions)
+      const special = await listGitSpecialFiles(this.#runGit, checkout, subdir, gitOptions)
       const skip = new Set([...special].filter(p => p.startsWith(prefix)).map(p => p.slice(prefix.length)))
       const files = stats?.isDirectory() ? await collectDependencyFiles(root, skip) : {}
       const count = Object.keys(files).length

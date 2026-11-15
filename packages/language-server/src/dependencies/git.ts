@@ -379,15 +379,18 @@ function installExitHook(): void {
 }
 
 /**
- * Kills the process and its children (best effort), also after the process itself exited:
- * the process group on POSIX (git is spawned detached, children stay in its group),
- * `taskkill /T` on Windows (children of an exited process cannot be found there).
+ * Absolute path of `taskkill.exe` (never searched in `PATH` or the working directory)
  */
 function taskkillPath(env: Env): string {
   const systemRoot = envValue(env, 'SYSTEMROOT', 'win32') ?? 'C:\\Windows'
   return win32.join(systemRoot, 'System32', 'taskkill.exe')
 }
 
+/**
+ * Kills the process and its children (best effort), also after the process itself exited:
+ * the process group on POSIX (git is spawned detached, children stay in its group),
+ * `taskkill /T` on Windows (children of an exited process cannot be found there).
+ */
 function killProcessTree(child: ChildProcess, env: Env): void {
   const pid = child.pid
   if (pid === undefined) {
@@ -425,10 +428,6 @@ interface SpawnGitParams {
 }
 
 /**
- * Runs git. Settles when the output streams close, or `drainGrace` after git exited (or was killed)
- * if they stay open, so a grandchild holding the streams never blocks the caller.
- */
-/**
  * Maximum standard output of one git command (bytes)
  */
 const MAX_STDOUT = 16 * 1024 * 1024
@@ -437,12 +436,22 @@ const MAX_STDOUT = 16 * 1024 * 1024
  */
 const MAX_STDERR = 1024 * 1024
 
+/**
+ * Runs git. Settles when the output streams close, or `drainGrace` after git exited (or was killed)
+ * if they stay open, so a grandchild holding the streams never blocks the caller.
+ * `GIT_CEILING_DIRECTORIES` is the parent of the real path of the working directory.
+ */
 async function spawnGit(params: SpawnGitParams): Promise<string> {
   // repository discovery never leaves the working directory (CVE-2022-24765): the ceiling is its real parent
   const realCwd = await realpath(params.cwd).catch(() => params.cwd)
   return await spawnGitIn({ ...params, cwd: realCwd })
 }
 
+/**
+ * Spawns git in the (real) working directory and collects its output, see {@link spawnGit}:
+ * kills the process tree on timeout, abort or too much output, and gives up on the streams
+ * `drainGrace` after the process exited.
+ */
 function spawnGitIn({ executable, args, cwd, env, timeout, drainGrace, signal }: SpawnGitParams): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (signal?.aborted) {
@@ -754,17 +763,24 @@ export const GIT_BATCH_SSH_COMMAND = 'ssh -o BatchMode=yes'
  *
  * - the object format is always explicit (`init.defaultObjectFormat` of the user is ignored);
  * - the URL of the remote is verified (no other URL may come from the configuration of the user);
- * - Windows only: if no ssh command is configured (`core.sshCommand` in this repository, includes applied),
- *   {@link GIT_BATCH_SSH_COMMAND} is set locally, so ssh cannot prompt in a terminal.
- *   `GIT_SSH_COMMAND`/`GIT_SSH` of the environment still win. On POSIX, git runs without a terminal.
+ * - Windows only: if no ssh command is configured (`GIT_SSH_COMMAND` or `GIT_SSH` in the environment,
+ *   `core.sshCommand` in this repository with includes applied), {@link GIT_BATCH_SSH_COMMAND} is set locally,
+ *   so ssh cannot prompt in a terminal. On POSIX, git runs without a terminal.
  *
  * @param params.remote URL passed to git (validated by the caller)
  * @param params.shaLength 64 for SHA-256 repositories
  * @param params.platform `process.platform` by default
+ * @param params.env environment of git, `process.env` by default
  */
 export async function initGitRepository(
   runGit: GitRunner,
-  params: { remote: string; dir: string; shaLength?: number | undefined; platform?: string | undefined },
+  params: {
+    remote: string
+    dir: string
+    shaLength?: number | undefined
+    platform?: string | undefined
+    env?: Env | undefined
+  },
   options: GitCommandOptions,
 ): Promise<void> {
   const git = (...args: string[]) => runGit(['-C', params.dir, ...args], options)
@@ -782,7 +798,11 @@ export async function initGitRepository(
       '',
     )
   }
-  if ((params.platform ?? process.platform) === 'win32') {
+  const platform = params.platform ?? process.platform
+  const env = params.env ?? process.env
+  // GIT_SSH_COMMAND wins over core.sshCommand, which wins over GIT_SSH: do not shadow GIT_SSH
+  const sshFromEnv = ['GIT_SSH_COMMAND', 'GIT_SSH'].some(name => !!envValue(env, name, platform)?.trim())
+  if (platform === 'win32' && !sshFromEnv) {
     const configured = await git('config', '--get', 'core.sshCommand').catch(() => '')
     if (configured.trim() === '') {
       await git('config', '--end-of-options', 'core.sshCommand', GIT_BATCH_SSH_COMMAND)
@@ -915,13 +935,17 @@ export async function fetchGitCommit(
  * Lists files of the checkout that are not regular files in git (symbolic links, submodules):
  * paths relative to the repository root (forward slashes).
  * They are checked out as plain files (`core.symlinks=false`) or empty folders and must not be read as sources.
+ * Only files matching {@link sparseCheckoutPatterns} of the subdirectory are listed.
  */
 export async function listGitSpecialFiles(
   runGit: GitRunner,
   dir: string,
+  subdir: string,
   options: GitCommandOptions,
 ): Promise<Set<string>> {
-  const output = await runGit(['-C', dir, 'ls-files', '--stage', '-z'], options)
+  // only files that may be read (sources and JSON configs of the subdirectory): small output in large repositories
+  const pathspecs = sparseCheckoutPatterns(subdir).map(pattern => `:(glob)${pattern.slice(1)}`)
+  const output = await runGit(['-C', dir, 'ls-files', '--stage', '-z', '--', ...pathspecs], options)
   const special = new Set<string>()
   for (const line of output.split('\0')) {
     // <mode> <object> <stage>\t<path>

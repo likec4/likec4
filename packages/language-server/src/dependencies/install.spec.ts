@@ -719,9 +719,9 @@ describe('GitDependencyInstaller', () => {
 
   it('sets a batch ssh command on Windows only when none is configured', async ({ expect }) => {
     const f = await setup()
-    const init = async (platform: string) => {
+    const init = async (platform: string, env: Record<string, string> = {}) => {
       const dir = mkdtempSync(join(f.root, 'init-'))
-      await initGitRepository(f.realGit, { remote: f.bare, dir, platform }, { cwd: f.root })
+      await initGitRepository(f.realGit, { remote: f.bare, dir, platform, env }, { cwd: f.root })
       try {
         return f.git(dir, 'config', '--local', '--get', 'core.sshCommand')
       } catch {
@@ -731,6 +731,9 @@ describe('GitDependencyInstaller', () => {
     }
     expect(await init('win32')).toBe(GIT_BATCH_SSH_COMMAND)
     expect(await init('linux')).toBe('')
+    // GIT_SSH is shadowed by core.sshCommand: not set either
+    expect(await init('win32', { GIT_SSH: 'C:\\plink.exe' })).toBe('')
+    expect(await init('win32', { GIT_SSH_COMMAND: 'ssh -i key' })).toBe('')
     writeFileSync(f.globalConfig, '[core]\n\tsshCommand = ssh -i key\n')
     expect(await init('win32')).toBe('')
   })
@@ -782,6 +785,63 @@ describe('GitDependencyInstaller', () => {
     // only the second run wrote the version index
     expect(versionWrites).toBe(1)
     expect(f.tempIsEmpty()).toBe(true)
+  })
+
+  it('a run abandoned on a hung storage call does not block later callers beyond their deadline', async ({ expect }) => {
+    const f = await setup({ deadline: 400 })
+    const sha = f.commit(BILLING_FILES)
+    // the storage hangs on reads after ls-remote until released
+    let release = () => {}
+    const held = new Promise<void>(resolve => {
+      release = resolve
+    })
+    let hold = true
+    const readEntry = f.storage.readEntry.bind(f.storage)
+    f.storage.readEntry = async entry => {
+      if (hold) {
+        await held
+      }
+      return readEntry(entry)
+    }
+    const first = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+    expect(first).toMatchObject({ status: 'failed', error: expect.stringContaining('timed out') })
+
+    // repeated retries wait for the abandoned run, each fails at its own deadline without running git
+    const calls = f.calls.length
+    for (let i = 0; i < 3; i++) {
+      const retry = await f.installer.install({ git: URL, ref: 'main', path: 'arch' })
+      expect(retry).toMatchObject({ status: 'failed', error: expect.stringContaining('timed out') })
+    }
+    // a cancelled retry
+    const source = new Cancellation.CancellationTokenSource()
+    const cancelled = f.installer.install({ git: URL, ref: 'main', path: 'arch' }, { cancelToken: source.token })
+    source.cancel()
+    expect(await cancelled).toMatchObject({ status: 'failed', error: 'Installation was cancelled' })
+    expect(f.calls.length).toBe(calls)
+
+    hold = false
+    release()
+    expect(await f.installer.install({ git: URL, ref: 'main', path: 'arch' })).toMatchObject({
+      status: 'installed',
+      instance: { sha },
+    })
+    await expect.poll(() => f.tempIsEmpty()).toBe(true)
+  })
+
+  it('installs of different paths with the same ref share one version record', async ({ expect }) => {
+    const f = await setup()
+    const sha = f.commit({ ...BILLING_FILES, 'docs/model.c4': 'model {}' })
+    const [a, b] = await Promise.all([
+      f.installer.install({ git: URL, ref: 'main', path: 'arch' }),
+      f.installer.install({ git: URL, ref: 'main', path: 'docs' }),
+    ])
+    expect(a).toMatchObject({ status: 'installed', instance: { sha, subdir: 'arch' } })
+    expect(b).toMatchObject({ status: 'installed', instance: { sha, subdir: 'docs' } })
+    const keys = await f.keys()
+    expect(keys.filter(k => k.startsWith('versions:'))).toHaveLength(1)
+    expect(keys.filter(k => k.startsWith('instances:'))).toHaveLength(2)
+    // serialized: the second run found the SHA in the version index (one ls-remote)
+    expect(f.gitCommands().filter(c => c === 'ls-remote')).toHaveLength(1)
   })
 
   describe('concurrent installs', () => {
