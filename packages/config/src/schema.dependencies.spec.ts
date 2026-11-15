@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, it } from 'vitest'
 import z from 'zod/v4'
 import { LikeC4ProjectConfigOps, LikeC4ProjectJsonConfigSchema, validateProjectConfig } from './schema'
+import { isGitDependencySource } from './schema.dependencies'
 
 const validate = (dependencies: unknown) => validateProjectConfig({ name: 'consumer', dependencies })
 
@@ -60,25 +61,172 @@ describe('dependencies config', () => {
       expect(() => validate({ shared: '   ' })).toThrow(/Dependency path cannot be empty/)
     })
 
-    it('should reject object instead of string (git sources are not supported)', ({ expect }) => {
-      expect(() =>
-        validate({
-          shared: { git: 'https://github.com/acme/shared.git', ref: 'v1.0.0', path: 'model' },
-        })
-      ).toThrow(/Dependency path must be a relative path string/)
-    })
-
     it.for([
       42,
       null,
       ['../shared'],
-    ])('should reject non-string value %j', (value, { expect }) => {
+    ])('should reject value that is neither a path nor a git source %j', (value, { expect }) => {
       expect(() => validate({ shared: value })).toThrow(/Dependency path must be a relative path string/)
     })
 
     it('should reject non-object dependencies', ({ expect }) => {
       expect(() => validate('../shared')).toThrow()
       expect(() => validate(['../shared'])).toThrow()
+    })
+  })
+
+  describe('git sources', () => {
+    const git = (source: Record<string, unknown>) => validate({ billing: source }).dependencies?.['billing']
+
+    it.for([
+      'https://github.com/my-org/billing.git',
+      'ssh://git@github.com/my-org/billing.git',
+      'ssh://git@git.example.com:2222/my-org/billing.git',
+      'git@github.com:my-org/billing.git',
+    ])('should accept allowed URL %s', (url, { expect }) => {
+      expect(git({ git: url, ref: 'v1.2.0' })).toEqual({ git: url, ref: 'v1.2.0' })
+    })
+
+    it('should accept a git source together with local paths', ({ expect }) => {
+      const config = validate({
+        shared: '../shared-model',
+        billing: { git: 'git@github.com:my-org/billing.git', ref: 'main', path: 'architecture' },
+      })
+      expect(config.dependencies).toEqual({
+        shared: '../shared-model',
+        billing: { git: 'git@github.com:my-org/billing.git', ref: 'main', path: 'architecture' },
+      })
+    })
+
+    it.for([
+      'http://github.com/my-org/billing.git',
+      'file:///repos/billing.git',
+      'git://github.com/my-org/billing.git',
+      'ext::sh -c touch% /tmp/pwned',
+      'git+ssh://git@github.com/my-org/billing.git',
+      '../billing',
+      '/repos/billing.git',
+      'ssh://-oProxyCommand=evil/my-org/billing.git',
+      'https://github.com/my-org/billing%2F..%2Fother.git',
+    ])('should reject URL %s naming the allowed forms', (url, { expect }) => {
+      expect(() => git({ git: url, ref: 'v1' })).toThrow(
+        'Git dependency URL must use https://, ssh:// or git@host:org/repo.git',
+      )
+    })
+
+    it('should reject empty URL', ({ expect }) => {
+      expect(() => git({ git: '', ref: 'v1' })).toThrow(/Git dependency URL cannot be empty/)
+      expect(() => git({ git: '   ', ref: 'v1' })).toThrow(/Git dependency URL cannot be empty/)
+    })
+
+    it('should reject missing URL', ({ expect }) => {
+      expect(() => git({ ref: 'v1' })).toThrow(/Git dependency URL is required/)
+    })
+
+    it('should reject git source without ref', ({ expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git' })).toThrow(/Git dependency ref is required/)
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', path: 'architecture' })).toThrow(
+        /Git dependency ref is required/,
+      )
+    })
+
+    it('should reject empty ref', ({ expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref: '' })).toThrow(
+        /Git dependency ref cannot be empty/,
+      )
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref: '  ' })).toThrow(
+        /Git dependency ref cannot be empty/,
+      )
+    })
+
+    it.for([
+      '--upload-pack=evil',
+      '-b',
+      'feature branch',
+      'v1\n2',
+    ])('should reject ref %j', (ref, { expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref })).toThrow(
+        /Git dependency ref must be a branch, a tag or a commit SHA/,
+      )
+    })
+
+    it.for([
+      '..',
+      '../other',
+      'architecture/../../other',
+      'architecture\\..\\..\\other',
+    ])('should reject path with ".." segment %s', (path, { expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref: 'v1', path })).toThrow(
+        /Git dependency path must stay inside the repository/,
+      )
+    })
+
+    it.for([
+      '/architecture',
+      '\\architecture',
+      '\\\\server\\share',
+      'C:\\architecture',
+      'c:/architecture',
+      'C:architecture',
+      'https://example.com/architecture',
+    ])('should reject absolute path %s', (path, { expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref: 'v1', path })).toThrow(
+        /Git dependency path must be a relative path inside the repository/,
+      )
+    })
+
+    it('should reject empty path', ({ expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref: 'v1', path: '' })).toThrow(
+        /Git dependency path cannot be empty/,
+      )
+    })
+
+    it('should reject unknown fields', ({ expect }) => {
+      expect(() => git({ git: 'git@github.com:my-org/billing.git', ref: 'v1', branch: 'main' })).toThrow(
+        /Unrecognized key: "branch"/,
+      )
+    })
+
+    it.for([
+      { git: 42, ref: 'v1' },
+      { git: 'git@github.com:my-org/billing.git', ref: 1 },
+      { git: 'git@github.com:my-org/billing.git', ref: 'v1', path: 1 },
+    ])('should reject fields of wrong type %j', (source, { expect }) => {
+      expect(() => git(source)).toThrow(/Git dependency/)
+    })
+
+    it('should normalize URL, ref and path', ({ expect }) => {
+      expect(git({ git: ' git@github.com:my-org/billing.git ', ref: ' v1 ', path: ' .\\architecture\\\\model\\ ' }))
+        .toEqual({ git: 'git@github.com:my-org/billing.git', ref: 'v1', path: './architecture/model' })
+    })
+
+    it('LikeC4ProjectConfigOps.normalizeDependencies should pass git sources through with normalized path', ({ expect }) => {
+      expect(
+        LikeC4ProjectConfigOps.normalizeDependencies({
+          shared: '..\\shared\\',
+          billing: { git: 'git@github.com:my-org/billing.git', ref: 'v1', path: 'architecture\\' },
+        }),
+      ).toEqual({
+        shared: '../shared',
+        billing: { git: 'git@github.com:my-org/billing.git', ref: 'v1', path: 'architecture' },
+      })
+    })
+
+    it('LikeC4ProjectConfigOps.normalizeDependencies should return empty object for invalid git source', ({ expect }) => {
+      expect(
+        LikeC4ProjectConfigOps.normalizeDependencies({
+          billing: { git: 'file:///repos/billing.git', ref: 'v1' },
+        }),
+      ).toEqual({})
+    })
+
+    it('isGitDependencySource should distinguish git sources from paths', ({ expect }) => {
+      const config = validate({
+        shared: '../shared-model',
+        billing: { git: 'git@github.com:my-org/billing.git', ref: 'v1' },
+      })
+      expect(isGitDependencySource(config.dependencies?.['shared'])).toBe(false)
+      expect(isGitDependencySource(config.dependencies?.['billing'])).toBe(true)
     })
   })
 
@@ -152,7 +300,22 @@ describe('dependencies config', () => {
       })
       expect(schemaJson.$defs.DependenciesConfig).toMatchObject({
         type: 'object',
-        additionalProperties: { type: 'string', minLength: 1 },
+        additionalProperties: {
+          anyOf: [
+            { type: 'string', minLength: 1 },
+            { $ref: '#/$defs/GitDependencySource' },
+          ],
+        },
+      })
+      expect(schemaJson.$defs.GitDependencySource).toMatchObject({
+        type: 'object',
+        properties: {
+          git: { type: 'string' },
+          ref: { type: 'string' },
+          path: { type: 'string' },
+        },
+        required: ['git', 'ref'],
+        additionalProperties: false,
       })
     })
   })
