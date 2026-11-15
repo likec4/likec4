@@ -37,7 +37,7 @@ export async function leanixDryRunHandler(params: LeanixDryRunHandlerParams): Pr
 
   try {
     await using likec4 = await fromWorkspace(workspacePath, {
-      requireInstalledDependencies: true,
+      requireInstalledDependencies: { project },
       graphviz: useDotBin ? 'binary' : 'wasm',
       watch: false,
     })

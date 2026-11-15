@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import type { ConfigureLanguageServerLoggerOptions } from '@likec4/language-server'
-import { DependenciesNotInstalledError } from '@likec4/language-services/node'
 import {
   configureLogger,
   getAnsiColorFormatter,
@@ -21,6 +20,7 @@ import checkUpdateCmd from './check-update'
 import codegenCmd from './codegen'
 import diffCmd from './diff'
 import exportCmd from './export'
+import { handleCliFailure } from './fail'
 import formatCmd from './format'
 import installCmd from './install'
 import listIconsCmd from './list-icons'
@@ -112,18 +112,7 @@ async function main() {
     .demandCommand(1, 'Please run with valid command')
     .recommendCommands()
     .showHelpOnFail(true)
-    .fail((msg, err, y) => {
-      // Expected failure of commands that read the workspace: the message says what to do, no help and stack
-      if (err instanceof DependenciesNotInstalledError) {
-        console.error(k.red(err.message))
-        exit(1)
-      }
-      // Default behavior of yargs (showHelpOnFail)
-      y.showHelp('error')
-      console.error()
-      console.error(msg || err)
-      exit(1)
-    })
+    .fail(handleCliFailure)
     .showHidden()
     .updateStrings({
       'Globals:': k.bold('Globals:'),

@@ -59,7 +59,7 @@ async function canWrite(outfile: string, force: boolean): Promise<boolean> {
 export async function runExportMarkdown(args: MarkdownExportArgs, logger: ViteLogger): Promise<void> {
   const timer = startTimer(logger)
   await using likec4 = await fromWorkspace(args.path, {
-    requireInstalledDependencies: true,
+    requireInstalledDependencies: { project: args.project },
     graphviz: args.useDot ? 'binary' : 'wasm',
     watch: false,
   })

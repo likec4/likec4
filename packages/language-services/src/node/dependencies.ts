@@ -46,10 +46,36 @@ export class DependenciesNotInstalledError extends Error {
 }
 
 /**
- * Git dependencies of the workspace that are not installed (no SHA in the version index, or no instance in the storage)
+ * Thrown by {@link installDependencies} if the project or the dependency to install is unknown
  */
-export function notInstalledDependencies(langium: LikeC4Langium): NotInstalledDependency[] {
-  return langium.shared.dependencies.States.all()
+export class InstallTargetNotFoundError extends Error {
+  override readonly name = 'InstallTargetNotFoundError'
+
+  constructor(
+    /**
+     * What is not found
+     */
+    readonly target: 'project' | 'dependency',
+    message: string,
+  ) {
+    super(message)
+  }
+}
+
+/**
+ * Git dependencies of the workspace that are not installed (no SHA in the version index, or no instance in the storage)
+ *
+ * @param project - only dependencies of this consumer project, if it is a known project id
+ *   (otherwise, e.g. a path, dependencies of all projects)
+ */
+export function notInstalledDependencies(
+  langium: LikeC4Langium,
+  project?: string | undefined,
+): NotInstalledDependency[] {
+  const known = project !== undefined
+    && langium.shared.workspace.ProjectsManager.all.some(id => id === project)
+  const consumer = known ? langium.shared.workspace.ProjectsManager.ensureProjectId(project as ProjectId) : undefined
+  return langium.shared.dependencies.States.all(consumer)
     .filter(state => state.status === 'not-installed')
     .map(({ consumer, name, source }) => ({ projectId: consumer, name, source }))
 }
@@ -91,21 +117,24 @@ export interface DependencyInstallReport {
  * Installs git dependencies of the workspace and registers installed instances (see `likec4 install`).
  * Runs git and network.
  *
- * @throws if the project or the dependency name is unknown
+ * @throws {@link InstallTargetNotFoundError} if the project or the dependency name is unknown
  */
 export async function installDependencies(
   langium: LikeC4Langium,
   options?: InstallDependenciesOptions,
 ): Promise<DependencyInstallReport[]> {
-  const projectId = options?.project !== undefined
-    ? langium.shared.workspace.ProjectsManager.ensureProjectId(options.project as ProjectId)
-    : undefined
+  const projectsManager = langium.shared.workspace.ProjectsManager
+  const project = options?.project
+  if (project !== undefined && !projectsManager.all.some(id => id === project)) {
+    throw new InstallTargetNotFoundError('project', `Project '${project}' not found`)
+  }
+  const projectId = project !== undefined ? projectsManager.ensureProjectId(project as ProjectId) : undefined
   const name = options?.name
   const before = langium.shared.dependencies.States.all(projectId)
     .filter(state => name === undefined || state.name === name)
   if (name !== undefined && before.length === 0) {
     const scope = projectId !== undefined ? ` of project '${projectId}'` : ''
-    throw new Error(`Git dependency '${name}'${scope} not found`)
+    throw new InstallTargetNotFoundError('dependency', `Git dependency '${name}'${scope} not found`)
   }
   if (before.length === 0) {
     return []

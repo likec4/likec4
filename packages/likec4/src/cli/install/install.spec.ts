@@ -2,6 +2,7 @@
  * `likec4 install` / `likec4 update` and commands that read the workspace, with git dependencies
  * served from local repositories (fake ssh, see the fixture). Nothing goes to the network.
  */
+import { InstallTargetNotFoundError } from '@likec4/language-services/node'
 import { existsSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { stripVTControlCharacters } from 'node:util'
@@ -9,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 
 import yargs from 'yargs'
 import buildCmd from '../build'
 import exportCmd from '../export'
+import { withWorkspaceHint } from '../update'
 import { runValidate } from '../validate/handler'
 import { createGitDependencyFixture } from './__fixtures__/git-dependency-fixture'
 import { runInstall } from './handler'
@@ -122,7 +124,28 @@ function setup(options?: { withoutDependencies?: boolean }) {
     logs.error.length = 0
     return runInstall({ path: fixture.workspace, update: false, ...opts }, logger)
   }
-  return { fixture, billing, payments, sha, logs, install }
+  /**
+   * Adds the project 'other' (in the folder `other`) without git dependencies
+   */
+  const addOtherProject = () =>
+    fixture.writeWorkspace({
+      'other/likec4.config.json': JSON.stringify({ name: 'other' }),
+      'other/model.c4': `
+        specification {
+          element system
+        }
+        model {
+          system other
+        }
+        views {
+          view index {
+            include *
+          }
+        }
+      `,
+    })
+
+  return { fixture, billing, payments, sha, logs, install, addOtherProject }
 }
 
 /**
@@ -284,7 +307,50 @@ describe.sequential('likec4 install / update', () => {
     expect(t.fixture.cacheFiles()).toEqual([])
   })
 
+  it('rejects an unknown project or dependency with an expected error', async () => {
+    const t = setup()
+    await expect(t.install({ project: 'nope' })).rejects.toThrow(
+      new InstallTargetNotFoundError('project', `Project 'nope' not found`),
+    )
+    const error = await t.install({ update: true, name: 'nope' }).then(() => undefined, (e: unknown) => e)
+    expect(error).toBeInstanceOf(InstallTargetNotFoundError)
+    // `likec4 update <path>` reads the path as a name: the message hints at --path
+    expect(withWorkspaceHint(error, t.fixture.workspace)).toEqual(
+      new InstallTargetNotFoundError(
+        'dependency',
+        `Git dependency 'nope' not found in the workspace ${t.fixture.workspace} (pass the workspace with --path)`,
+      ),
+    )
+    expect(t.fixture.cacheFiles()).toEqual([])
+  })
+
+  it('install --project installs dependencies of that project only', async () => {
+    const t = setup()
+    t.addOtherProject()
+    expect(await t.install({ project: 'other' })).toEqual({ ok: true, reports: [] })
+    expect(t.fixture.cacheFiles()).toEqual([])
+    const result = await t.install({ project: 'cloud' })
+    expect(result.reports.map(r => [r.projectId, r.name])).toEqual([['cloud', 'billing'], ['cloud', 'payments']])
+  })
+
   describe('commands that read the workspace', () => {
+    it('with --project, require only dependencies of that project', async () => {
+      const t = setup()
+      t.addOtherProject()
+      const outfile = join(t.fixture.root, 'model.json')
+      // 'other' has no git dependencies
+      await runCli(exportCmd, 'export', 'json', t.fixture.workspace, '-o', outfile, '--skip-layout', '-p', 'other')
+      const json = JSON.parse(readFileSync(outfile, 'utf8')) as { projectId: string }
+      expect(json.projectId).toBe('other')
+      // 'cloud' and the whole workspace need the install
+      await expect(
+        runCli(exportCmd, 'export', 'json', t.fixture.workspace, '-o', outfile, '--skip-layout', '-p', 'cloud'),
+      ).rejects.toThrow(NOT_INSTALLED)
+      await expect(runCli(exportCmd, 'export', 'json', t.fixture.workspace, '-o', outfile, '--skip-layout'))
+        .rejects.toThrow(NOT_INSTALLED)
+      expect(t.fixture.cacheFiles()).toEqual([])
+    })
+
     it('build fails without install, passes after install', async () => {
       const t = setup()
       const outdir = join(t.fixture.root, 'dist')

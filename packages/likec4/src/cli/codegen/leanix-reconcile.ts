@@ -53,7 +53,7 @@ export async function loadDryRunFromWorkspace(
   useDotBin: boolean,
 ): Promise<LeanixInventoryDryRun | undefined> {
   await using likec4 = await fromWorkspace(workspacePath, {
-    requireInstalledDependencies: true,
+    requireInstalledDependencies: { project },
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

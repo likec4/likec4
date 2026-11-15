@@ -61,7 +61,7 @@ const safeDeleteCmd = (yargs: yargs.Argv) => {
     handler: async args => {
       const logger = createLikeC4Logger('c4:safe-delete')
       await using likec4 = await fromWorkspace(args.path, {
-        requireInstalledDependencies: true,
+        requireInstalledDependencies: { project: args.project },
         watch: false,
         // Logs go to stderr, so stdout has only the JSON
         ...(args.json && { printErrors: false, configureLogger: 'stderr' as const }),

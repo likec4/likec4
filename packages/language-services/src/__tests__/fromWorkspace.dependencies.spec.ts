@@ -85,6 +85,37 @@ describe.sequential('fromWorkspace with git dependencies', () => {
     expect(t.fixture.cacheFiles()).toEqual([])
   })
 
+  it('requireInstalledDependencies with a project checks only dependencies of that project', async () => {
+    const t = setup()
+    t.fixture.writeWorkspace({
+      'other/likec4.config.json': JSON.stringify({ name: 'other' }),
+      'other/model.c4': `
+        specification {
+          element system
+        }
+        model {
+          system other
+        }
+      `,
+    })
+    {
+      await using likec4 = await fromWorkspace(t.fixture.workspace, {
+        ...options,
+        requireInstalledDependencies: { project: 'other' },
+      })
+      expect(likec4.projects()).toEqual(expect.arrayContaining(['cloud', 'other']))
+    }
+    await expect(fromWorkspace(t.fixture.workspace, { ...options, requireInstalledDependencies: { project: 'cloud' } }))
+      .rejects.toThrow(DependenciesNotInstalledError)
+    // not a project id (e.g. a path): all projects are checked
+    await expect(
+      fromWorkspace(t.fixture.workspace, { ...options, requireInstalledDependencies: { project: './other' } }),
+    )
+      .rejects.toThrow(DependenciesNotInstalledError)
+    await expect(fromWorkspace(t.fixture.workspace, { ...options, requireInstalledDependencies: {} }))
+      .rejects.toThrow(DependenciesNotInstalledError)
+  })
+
   it('loads the dependency after install, into the cache directory from LIKEC4_CACHE_DIR', async () => {
     const t = setup()
     const results = await installWorkspaceDependencies(t.fixture.workspace)

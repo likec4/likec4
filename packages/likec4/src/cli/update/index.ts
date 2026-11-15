@@ -1,8 +1,22 @@
+import { InstallTargetNotFoundError } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { exitOnSignals, runInstall } from '../install/handler'
 import { path, project } from '../options'
+
+/**
+ * Adds the workspace to the message of an unknown dependency: `likec4 update <path>` reads the path as a name
+ */
+export function withWorkspaceHint(error: unknown, path: string): unknown {
+  if (error instanceof InstallTargetNotFoundError && error.target === 'dependency') {
+    return new InstallTargetNotFoundError(
+      'dependency',
+      `${error.message} in the workspace ${path} (pass the workspace with --path)`,
+    )
+  }
+  return error
+}
 
 const updateCmd = (yargs: yargs.Argv) => {
   return yargs
@@ -45,7 +59,9 @@ const updateCmd = (yargs: yargs.Argv) => {
             name: args.name,
             update: true,
           }, logger)
-        )
+        ).catch((error: unknown) => {
+          throw withWorkspaceHint(error, args.path)
+        })
         if (!ok) {
           process.exitCode = 1
         }

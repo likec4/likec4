@@ -34,15 +34,23 @@ export type {
 
 export { LikeC4 } from '../common/LikeC4'
 
-export { DependenciesNotInstalledError, formatGitDependencySource, type NotInstalledDependency } from './dependencies'
+export {
+  DependenciesNotInstalledError,
+  formatGitDependencySource,
+  InstallTargetNotFoundError,
+  type NotInstalledDependency,
+} from './dependencies'
 
 /**
  * Options of {@link fromWorkspace} (Node)
  */
 export type FromWorkspaceOptions = CommonFromWorkspaceOptions & {
   /**
-   * If true, rejects with {@link DependenciesNotInstalledError} when git dependencies of the workspace
+   * If set, rejects with {@link DependenciesNotInstalledError} when git dependencies
    * are not installed (see `likec4 install`). Used by CLI commands that need the complete model.
+   * - `true`: dependencies of all projects of the workspace
+   * - `{ project }`: dependencies of this project only, if it is a known project id
+   *   (all projects if `project` is not set or not a project id, e.g. a path)
    *
    * Otherwise a dependency that is not installed is reported as a model error
    * on the import (see {@link LikeC4.getErrors}), and the instance is created
@@ -50,7 +58,7 @@ export type FromWorkspaceOptions = CommonFromWorkspaceOptions & {
    *
    * @default false
    */
-  requireInstalledDependencies?: boolean | undefined
+  requireInstalledDependencies?: boolean | { project?: string | undefined } | undefined
 }
 
 /**
@@ -110,8 +118,9 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
   const logger = rootLogger.getChild('lang')
   const langium = await loadWorkspace(path, options)
 
-  if (options?.requireInstalledDependencies) {
-    const notInstalled = notInstalledDependencies(langium)
+  const required = options?.requireInstalledDependencies
+  if (required) {
+    const notInstalled = notInstalledDependencies(langium, required === true ? undefined : required.project)
     if (notInstalled.length > 0) {
       await langium.likec4.likec4.LanguageServices.dispose()
       throw new DependenciesNotInstalledError(notInstalled)
@@ -134,7 +143,7 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
 }
 
 /**
- * Options of {@link installDependencies}
+ * Options of {@link installWorkspaceDependencies}
  */
 export type InstallWorkspaceDependenciesOptions =
   & InstallDependenciesOptions
@@ -148,7 +157,7 @@ export type InstallWorkspaceDependenciesOptions =
  * The cache directory is `$LIKEC4_CACHE_DIR/dependencies`, or `dependencies` in the user cache directory.
  *
  * @param path - The workspace directory path
- * @throws if the project or the dependency name is unknown
+ * @throws {@link InstallTargetNotFoundError} if the project or the dependency name is unknown
  */
 export async function installWorkspaceDependencies(
   path: string,
