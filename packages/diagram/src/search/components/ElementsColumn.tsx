@@ -17,6 +17,7 @@ import {
 } from '@likec4/core/utils'
 import { cx, cx as clsx } from '@likec4/styles/css'
 import { Txt } from '@likec4/styles/jsx'
+import { searchOverlay } from '@likec4/styles/recipes'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
@@ -39,7 +40,6 @@ import { createFuzzySearch } from '../fuzzy'
 import { useNormalizedSearch } from '../hooks'
 import { matchesMetadataSearch, METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
-import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
 import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
@@ -159,7 +159,7 @@ function useElementsColumnData() {
 }
 type ElementsColumnData = ReturnType<typeof useElementsColumnData>
 
-const btn = buttonsva()
+const btn = searchOverlay()
 
 export const ElementsColumn = memo(() => {
   const data = useElementsColumnData()
@@ -271,7 +271,7 @@ function ElementTreeNode(
       shape: element.shape,
       icon: element.icon,
     },
-    className: cx(btn.icon, styles.elementIcon),
+    className: cx(btn.buttonIcon, styles.elementIcon),
   })
   const key = `@tree.${node.value}`
 
@@ -297,7 +297,7 @@ function ElementTreeNode(
         layout
         tabIndex={-1}
         data-value={element.id}
-        className={clsx(btn.root, 'group', 'likec4-element-button')}
+        className={clsx(btn.button, 'group', 'likec4-element-button')}
         {...viewsCount > 0 && {
           onClick: (e) => {
             if (!node.hasChildren || expanded) {
@@ -313,7 +313,7 @@ function ElementTreeNode(
             <Highlight
               component="div"
               highlight={searchTerms}
-              className={btn.title!}
+              className={btn.buttonTitle!}
               lineClamp={1}>
               {label}
             </Highlight>
@@ -321,7 +321,7 @@ function ElementTreeNode(
               <Highlight
                 component="div"
                 highlight={last(searchTerms)}
-                className={cx(styles.elementId, btn.descriptionColor)}>
+                className={cx(styles.elementId, btn.buttonMeta)}>
                 {nameFromFqn(element.id)}
               </Highlight>
             </Tooltip>
@@ -329,13 +329,13 @@ function ElementTreeNode(
           <Highlight
             component="div"
             highlight={element.summary.nonEmpty ? searchTerms : []}
-            className={btn.description!}
+            className={btn.buttonDescription!}
             lineClamp={1}>
             {element.summary.nonEmpty ? element.summary.text : 'No description'}
           </Highlight>
         </Box>
 
-        <Txt as={'div'} className={cx(styles.elementViewsCount, btn.descriptionColor)} size={'xs'}>
+        <Txt as={'div'} className={cx(styles.elementViewsCount, btn.buttonMeta)} size={'xs'}>
           {viewsCount === 0 ? 'No views' : (
             <>
               {viewsCount} view{viewsCount > 1 ? 's' : ''}

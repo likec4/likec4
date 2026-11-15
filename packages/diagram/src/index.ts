@@ -126,11 +126,7 @@ export {
   useSearchContext,
 } from './search/SearchContext'
 
-export {
-  bodyCss as searchBodyCss,
-  dialogCss as searchDialogCss,
-  SearchPanelContent,
-} from './search/Search'
+export { SearchPanelContent } from './search/Search'
 
 export { SearchControl } from './components/SearchControl'
 
@@ -148,3 +144,5 @@ export {
 } from './components/Logo'
 
 export { defineLikeC4Webcomponent } from './webcomponent/defineWebcomponent'
+
+export { ViewIcon } from './components/ViewIcon'

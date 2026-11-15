@@ -35,19 +35,28 @@ export function viewIcon(viewType: 'index' | 'element' | 'deployment' | 'dynamic
 }
 
 export function ViewIcon(
-  { type, className, ...props }: IconProps & { type: 'index' | 'element' | 'deployment' | 'dynamic' },
+  { type, view, className, ...props }:
+    & IconProps
+    & ({
+      type: 'index' | 'element' | 'deployment' | 'dynamic'
+      view?: never
+    } | {
+      view: { id: string; _type: 'element' | 'deployment' | 'dynamic' }
+      type?: never
+    }),
 ) {
-  if (type === 'index') {
+  const viewType = type ?? (view.id === 'index' ? 'index' : view._type)
+  if (viewType === 'index') {
     return <IconStarFilled size={16} className={cx(viewTypeIconCss, className)} {...props} />
   }
-  if (type === 'element') {
+  if (viewType === 'element') {
     return <IconZoomScan size={18} stroke={2} className={cx(viewTypeIconCss, className)} {...props} />
   }
-  if (type === 'deployment') {
+  if (viewType === 'deployment') {
     return <IconStack2 size={16} stroke={1.5} className={cx(viewTypeIconCss, className)} {...props} />
   }
-  if (type === 'dynamic') {
+  if (viewType === 'dynamic') {
     return <IconDirectionSignFilled size={18} className={cx(viewTypeIconCss, className)} {...props} />
   }
-  nonexhaustive(type)
+  nonexhaustive(viewType)
 }
