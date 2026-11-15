@@ -20,7 +20,9 @@ import checkUpdateCmd from './check-update'
 import codegenCmd from './codegen'
 import diffCmd from './diff'
 import exportCmd from './export'
+import { handleCliFailure } from './fail'
 import formatCmd from './format'
+import installCmd from './install'
 import listIconsCmd from './list-icons'
 import lspCmd from './lsp'
 import mcpCmd from './mcp'
@@ -30,6 +32,7 @@ import publishCmd from './publish'
 import safeDeleteCmd from './safe-delete'
 import serveCmd from './serve'
 import syncCmd from './sync'
+import updateCmd from './update'
 import validateCmd from './validate'
 
 /**
@@ -65,7 +68,7 @@ async function main() {
     buildCmd,
     codegenCmd,
     exportCmd,
-    formatCmd,
+    y => updateCmd(installCmd(formatCmd(y))),
     previewCmd,
     publishCmd,
     syncCmd,
@@ -109,6 +112,7 @@ async function main() {
     .demandCommand(1, 'Please run with valid command')
     .recommendCommands()
     .showHelpOnFail(true)
+    .fail(handleCliFailure)
     .showHidden()
     .updateStrings({
       'Globals:': k.bold('Globals:'),

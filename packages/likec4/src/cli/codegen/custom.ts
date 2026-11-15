@@ -35,6 +35,7 @@ type HandlerParams = {
 export async function customHandler({ name, path, useDotBin, project }: HandlerParams) {
   const timer = startTimer(logger)
   await using likec4 = await fromWorkspace(path, {
+    requireInstalledDependencies: { project },
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

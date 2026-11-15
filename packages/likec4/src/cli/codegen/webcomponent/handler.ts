@@ -41,6 +41,7 @@ export async function webcomponentHandler({
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
   await using languageServices = await fromWorkspace(path, {
+    requireInstalledDependencies: { project },
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

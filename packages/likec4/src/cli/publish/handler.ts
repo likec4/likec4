@@ -293,6 +293,7 @@ export async function publishHandler(params: PublishHandlerParams): Promise<void
   await using likec4 = await fromWorkspace(workspacePath, {
     // Decision #8: validation errors block the publish unless --force
     throwIfInvalid: !params.force,
+    requireInstalledDependencies: !params.force && { project: params.project },
     printErrors: true,
     graphviz: params.useDotBin ? 'binary' : 'wasm',
     watch: false,

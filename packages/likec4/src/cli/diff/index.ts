@@ -23,7 +23,10 @@ async function applyDiff(
   args: { path: string; diff: string; project?: string | undefined; dryRun: boolean; acceptOverlaps?: boolean },
 ) {
   const logger = createLikeC4Logger(`c4:diff:${action}`)
-  await using likec4 = await fromWorkspace(args.path, { watch: false })
+  await using likec4 = await fromWorkspace(args.path, {
+    watch: false,
+    requireInstalledDependencies: { project: args.project },
+  })
   if (likec4.hasErrors()) {
     logger.warn('The workspace has errors, the result may need manual fixes')
   }
@@ -82,6 +85,7 @@ const diffCmd = (yargs: yargs.Argv) => {
           handler: async args => {
             const logger = createLikeC4Logger('c4:diff:list')
             await using likec4 = await fromWorkspace(args.path, {
+              requireInstalledDependencies: { project: args.project },
               watch: false,
               // Logs go to stderr, so stdout has only the JSON
               ...(args.json && { printErrors: false, configureLogger: 'stderr' as const }),

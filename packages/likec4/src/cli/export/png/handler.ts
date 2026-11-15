@@ -229,6 +229,7 @@ export async function runExportPng(args: PngExportArgs, logger: ViteLogger): Pro
   } = args
 
   await using likec4 = await fromWorkspace(workspacePath, {
+    requireInstalledDependencies: { project },
     graphviz: useDotBin ? 'binary' : 'wasm',
     watch: false,
   })

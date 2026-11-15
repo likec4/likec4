@@ -90,6 +90,7 @@ export async function runSyncLeanix(args: SyncLeanixArgs): Promise<void> {
       throw new Error('Choose either dryRun or apply, not both')
     }
     await using likec4 = await fromWorkspace(workspacePath, {
+      requireInstalledDependencies: { project },
       graphviz: useDotBin ? 'binary' : 'wasm',
       watch: false,
     })

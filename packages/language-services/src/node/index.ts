@@ -8,13 +8,25 @@ import { withTrailingSlash } from 'ufo'
 import { createFromSources } from '../common/createFromSources'
 import { handleInitOptions } from '../common/handleInitOptions'
 import { type LikeC4Diagnostic, type LikeC4Langium, type LikeC4LanguageServices, LikeC4 } from '../common/LikeC4'
-import { type FromWorkspaceOptions, type InitOptions, DefaultInitOptions } from '../common/options'
+import {
+  type FromWorkspaceOptions as CommonFromWorkspaceOptions,
+  type InitOptions,
+  DefaultInitOptions,
+} from '../common/options'
 import { configureLogger } from './configureLogger'
 import { type CreateLanguageServiceOptions, createLanguageServices } from './createLanguageServices'
+import {
+  type DependencyInstallReport,
+  type InstallDependenciesOptions,
+  DependenciesNotInstalledError,
+  installDependencies,
+  notInstalledDependencies,
+} from './dependencies'
 
 export type {
-  FromWorkspaceOptions,
+  DependencyInstallReport,
   InitOptions,
+  InstallDependenciesOptions,
   LikeC4Diagnostic,
   LikeC4Langium,
   LikeC4LanguageServices,
@@ -22,14 +34,38 @@ export type {
 
 export { LikeC4 } from '../common/LikeC4'
 
+export {
+  DependenciesNotInstalledError,
+  formatGitDependencySource,
+  InstallTargetNotFoundError,
+  type NotInstalledDependency,
+} from './dependencies'
+
 /**
- * Create a LikeC4 instance from a workspace directory
- *
- * @param path - The workspace directory path
- * @param options - Optional configuration options
- * @returns A Promise that resolves to a LikeC4 instance
+ * Options of {@link fromWorkspace} (Node)
  */
-export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
+export type FromWorkspaceOptions = CommonFromWorkspaceOptions & {
+  /**
+   * If set, rejects with {@link DependenciesNotInstalledError} when git dependencies
+   * are not installed (see `likec4 install`). Used by CLI commands that need the complete model.
+   * - `true`: dependencies of all projects of the workspace
+   * - `{ project }`: dependencies of this project only, if it is a known project id
+   *   (all projects if `project` is not set or not a project id, e.g. a path)
+   *
+   * Otherwise a dependency that is not installed is reported as a model error
+   * on the import (see {@link LikeC4.getErrors}), and the instance is created
+   * (unless {@link InitOptions.throwIfInvalid} is set).
+   *
+   * @default false
+   */
+  requireInstalledDependencies?: boolean | { project?: string | undefined } | undefined
+}
+
+/**
+ * Creates language services and loads the workspace.
+ * Installed git dependencies are read from the cache, nothing is downloaded.
+ */
+async function loadWorkspace(path: string, options: FromWorkspaceOptions | undefined): Promise<LikeC4Langium> {
   const workspacePath = resolve(path)
   // Normalize folder URI with trailing slash so LSP/workspace consumers resolve paths consistently (CI vs local)
   const folderUri = URI.file(workspacePath).toString()
@@ -64,6 +100,32 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
     workspaceFolders: [workspace],
   })
   await WorkspaceManager.initialized({})
+  return langium
+}
+
+/**
+ * Create a LikeC4 instance from a workspace directory
+ *
+ * Git dependencies are read from the cache and never downloaded (see {@link installWorkspaceDependencies}).
+ * A dependency that is not installed is a model error (see {@link LikeC4.getErrors}),
+ * or rejects with {@link DependenciesNotInstalledError} if {@link FromWorkspaceOptions.requireInstalledDependencies} is set.
+ *
+ * @param path - The workspace directory path
+ * @param options - Optional configuration options
+ * @returns A Promise that resolves to a LikeC4 instance
+ */
+export async function fromWorkspace(path: string, options?: FromWorkspaceOptions): Promise<LikeC4> {
+  const logger = rootLogger.getChild('lang')
+  const langium = await loadWorkspace(path, options)
+
+  const required = options?.requireInstalledDependencies
+  if (required) {
+    const notInstalled = notInstalledDependencies(langium, required === true ? undefined : required.project)
+    if (notInstalled.length > 0) {
+      await langium.likec4.likec4.LanguageServices.dispose()
+      throw new DependenciesNotInstalledError(notInstalled)
+    }
+  }
 
   const userDocuments = langium.shared.workspace.LangiumDocuments.userDocuments.toArray()
 
@@ -78,6 +140,40 @@ export async function fromWorkspace(path: string, options?: FromWorkspaceOptions
   logger.info(`${k.dim('workspace:')} found ${userDocuments.length} source files`)
 
   return handleInitOptions(langium, rootLogger, options)
+}
+
+/**
+ * Options of {@link installWorkspaceDependencies}
+ */
+export type InstallWorkspaceDependenciesOptions =
+  & InstallDependenciesOptions
+  & Pick<InitOptions, 'configureLogger' | 'logLevel'>
+
+/**
+ * Installs git dependencies of the workspace into the cache (`likec4 install`, or `likec4 update` with `update`):
+ * resolves refs that are not in the version index yet (all refs with `update`) and downloads the sources.
+ * Requires git. Never throws for failed installs: they are returned with the status `failed`.
+ *
+ * The cache directory is `$LIKEC4_CACHE_DIR/dependencies`, or `dependencies` in the user cache directory.
+ *
+ * @param path - The workspace directory path
+ * @throws {@link InstallTargetNotFoundError} if the project or the dependency name is unknown
+ */
+export async function installWorkspaceDependencies(
+  path: string,
+  options?: InstallWorkspaceDependenciesOptions,
+): Promise<DependencyInstallReport[]> {
+  const langium = await loadWorkspace(path, {
+    configureLogger: options?.configureLogger ?? false,
+    logLevel: options?.logLevel,
+    // the model is not needed
+    manualLayouts: false,
+  })
+  try {
+    return await installDependencies(langium, options)
+  } finally {
+    await langium.likec4.likec4.LanguageServices.dispose()
+  }
 }
 
 /**
