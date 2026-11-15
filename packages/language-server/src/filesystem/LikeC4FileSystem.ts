@@ -10,8 +10,8 @@ import { Content, isLikeC4Builtin } from '../likec4lib'
 import { logger as rootLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { compareByUri, compareByUriDeepFirst } from '../utils'
-import { isDependencyUri } from '../workspace/dependency-uri'
 import { WithChokidarWatcher } from './ChokidarWatcher'
+import { DependencyFileSystem } from './DependencyFileSystem'
 import { NoFileSystemWatcher } from './noop'
 import type { FileNode, FileSystemModuleContext, FileSystemProvider } from './types'
 import { hasLikeC4Ext, isNodeModulesOrRepo } from './utils'
@@ -37,8 +37,14 @@ export const WithFileSystem = (
 class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider implements FileSystemProvider {
   #logger = rootLogger.getChild('filesystem')
 
+  /**
+   * Documents of external projects (`likec4-dep` scheme), served from memory
+   */
+  #dependencies: DependencyFileSystem
+
   constructor(private services: LikeC4SharedServices) {
     super()
+    this.#dependencies = new DependencyFileSystem(services)
   }
 
   private isExcluded(path: string): boolean {
@@ -51,22 +57,12 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     return isNodeModulesOrRepo(name) || this.isExcluded(path)
   }
 
-  /**
-   * Text of a document of an external project (`likec4-dep` scheme), from memory
-   */
-  private readDependency(uri: URI): string | undefined {
-    if (!isDependencyUri(uri)) {
-      return undefined
-    }
-    return this.services.workspace.ExternalProjects.readFile(uri)
-  }
-
   override async readFile(uri: URI): Promise<string> {
     if (isLikeC4Builtin(uri)) {
       return Promise.resolve(Content)
     }
-    if (isDependencyUri(uri)) {
-      return this.readDependency(uri) ?? ''
+    if (this.#dependencies.handles(uri)) {
+      return this.#dependencies.readFile(uri) ?? ''
     }
     try {
       // Read with own `node:fs` (not the one of langium), same as other file operations here
@@ -81,39 +77,36 @@ class SymLinkTraversingFileSystemProvider extends NodeFileSystemProvider impleme
     if (isLikeC4Builtin(uri)) {
       return Content
     }
-    if (isDependencyUri(uri)) {
-      return this.readDependency(uri) ?? ''
+    if (this.#dependencies.handles(uri)) {
+      return this.#dependencies.readFile(uri) ?? ''
     }
     return super.readFileSync(uri)
   }
 
   override exists(uri: URI): Promise<boolean> {
-    if (isDependencyUri(uri)) {
-      return Promise.resolve(this.readDependency(uri) !== undefined)
+    if (this.#dependencies.handles(uri)) {
+      return Promise.resolve(this.#dependencies.exists(uri))
     }
     return super.exists(uri)
   }
 
   override existsSync(uri: URI): boolean {
-    if (isDependencyUri(uri)) {
-      return this.readDependency(uri) !== undefined
+    if (this.#dependencies.handles(uri)) {
+      return this.#dependencies.exists(uri)
     }
     return super.existsSync(uri)
   }
 
   override async stat(uri: URI): Promise<FileSystemNode> {
-    if (isDependencyUri(uri)) {
-      return this.statSync(uri)
+    if (this.#dependencies.handles(uri)) {
+      return this.#dependencies.stat(uri)
     }
     return await super.stat(uri)
   }
 
   override statSync(uri: URI): FileSystemNode {
-    if (isDependencyUri(uri)) {
-      if (this.readDependency(uri) === undefined) {
-        throw new Error(`Document of external project not found: ${uri.toString()}`)
-      }
-      return { isFile: true, isDirectory: false, uri }
+    if (this.#dependencies.handles(uri)) {
+      return this.#dependencies.stat(uri)
     }
     return super.statSync(uri)
   }

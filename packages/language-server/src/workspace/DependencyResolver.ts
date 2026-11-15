@@ -1,5 +1,5 @@
-import { isGitDependencySource } from '@likec4/config'
-import type { ImportedProjectMeta, ProjectId } from '@likec4/core/types'
+import { type GitDependencySource, isGitDependencySource } from '@likec4/config'
+import type { ImportedProjectMeta, ImportedProjectSource, ProjectId } from '@likec4/core/types'
 import { UriUtils } from 'langium'
 import { logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -40,6 +40,7 @@ export interface ResolvedDependencyWithMeta {
  * 1. If the consumer declares the name in `dependencies`, the entry wins:
  *    - the folder of a workspace project resolves to that project
  *    - the folder of a registered external project resolves to that instance
+ *    - a git source resolves to its installed instance (see `ExternalProjects.loadGit`)
  *    - otherwise the name is unknown (no fallback to the workspace search by name)
  * 2. Without an entry, the name is the id of a workspace project (as before `dependencies`).
  *
@@ -86,9 +87,11 @@ export class DependencyResolver {
     }
 
     const dependencyPath = dependencies[name]
-    // Git sources are not resolved yet
-    if (!dependencyPath || isGitDependencySource(dependencyPath)) {
+    if (!dependencyPath) {
       return undefined
+    }
+    if (isGitDependencySource(dependencyPath)) {
+      return this.gitDependency(consumerProject.id, name, dependencyPath)
     }
     const folder = ProjectFolder(UriUtils.joinPath(consumerProject.folderUri, dependencyPath))
 
@@ -120,6 +123,36 @@ export class DependencyResolver {
   }
 
   /**
+   * Resolves a git dependency to its registered instance (the SHA the ref resolved to, see `ExternalProjects.loadGit`).
+   * Returns undefined if the dependency is not installed (or not synced yet).
+   */
+  protected gitDependency(
+    consumer: ProjectId,
+    name: string,
+    source: GitDependencySource,
+  ): ResolvedDependencyWithMeta | undefined {
+    const externalProjects = this.services.workspace.ExternalProjects
+    const resolution = externalProjects.gitResolution(consumer, name)
+    if (resolution?.status !== 'installed') {
+      return undefined
+    }
+    const external = externalProjects.get(resolution.projectId)
+    if (!external) {
+      return undefined
+    }
+    return {
+      dependency: {
+        kind: 'external',
+        projectId: external.id,
+      },
+      meta: {
+        name: external.config.name,
+        source: gitImportedProjectSource(source),
+      },
+    }
+  }
+
+  /**
    * Returns the consumer project, or undefined if it is not registered.
    * `getProject` throws for unknown ids (e.g. a stale id of a removed project, or an id of an external
    * project that is not registered yet): the import is then resolved without `dependencies`.
@@ -146,4 +179,21 @@ export class DependencyResolver {
       },
     }
   }
+}
+
+/**
+ * Source of an imported git dependency for `importedProjects` of the consumer model.
+ *
+ * `ImportedProjectSource` of `@likec4/core` has no `git` kind yet
+ * (consumers of the metadata treat unknown kinds as external projects).
+ * TODO: replace the cast when the core type gets the `git` kind.
+ */
+function gitImportedProjectSource(source: GitDependencySource): ImportedProjectSource {
+  const git = {
+    kind: 'git',
+    url: source.git,
+    ref: source.ref,
+    ...(source.path ? { path: source.path } : {}),
+  }
+  return git as unknown as ImportedProjectSource
 }

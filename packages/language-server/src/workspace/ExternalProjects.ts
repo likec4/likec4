@@ -1,9 +1,11 @@
 import {
+  type GitDependencySource,
   type LikeC4ProjectConfig,
   ConfigFilenames,
   isGitDependencySource,
   isLikeC4JsonConfig,
   LikeC4ProjectConfigOps,
+  parseGitRepositoryUrl,
 } from '@likec4/config'
 import type { ProjectId } from '@likec4/core/types'
 import { invariant, objectHash } from '@likec4/core/utils'
@@ -13,14 +15,18 @@ import { type LangiumDocument, Disposable, URI, UriUtils } from 'langium'
 import picomatch from 'picomatch'
 import { hasAtLeast, isNullish, omit } from 'remeda'
 import { cleanDoubleSlashes, hasProtocol, isRelative, joinRelativeURL, joinURL, withoutTrailingSlash } from 'ufo'
+import type { DependencyCacheEntry, DependencyState, DependencyVersionRecord } from '../dependencies/types'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import { ADisposable } from '../utils'
 import {
+  type GitDependencyInstance,
   DEPENDENCY_URI_SCHEME,
+  gitDependencyUri,
   isValidLocalDependencyFolder,
   localDependencyFolder,
   localDependencyUri,
+  normalizeGitSubdir,
   parseDependencyUri,
 } from './dependency-uri'
 import { type NormalizedUri, type ProjectData, ProjectFolder, ProjectsManager } from './ProjectsManager'
@@ -73,6 +79,10 @@ export interface ExternalProject extends ProjectData {
    * Documents of the instance, loaded in memory: `likec4-dep` document URI -> text
    */
   readonly files: ReadonlyMap<NormalizedUri, string>
+  /**
+   * Instance of a git dependency (repository, SHA, subdirectory), undefined for a local dependency
+   */
+  readonly git?: GitDependencyInstance | undefined
 }
 
 type DocOrUri = LangiumDocument | URI | string
@@ -178,6 +188,116 @@ export interface ExternalDependencyTarget {
 }
 
 /**
+ * Internal id of the instance of a git dependency (the triple "repository, SHA, subdirectory"),
+ * the same as derived from the URIs of its documents (see {@link externalProjectIdOfUri}):
+ * `#likec4-dep://<host>/<repository path>@<sha>[/<subdir>]`.
+ * All consumers of the same instance share it.
+ */
+export function externalProjectIdOfGitInstance(instance: GitDependencyInstance): ExternalProjectId {
+  const id = externalProjectIdOfUri(gitDependencyUri(instance, 'likec4.config.json'))
+  invariant(id, `Invalid git dependency instance: ${instance.repository}@${instance.sha}`)
+  return id
+}
+
+/**
+ * A git dependency declared in the `dependencies` section of a workspace project (the pair "consumer, name").
+ */
+export interface GitDependencyTarget {
+  /**
+   * Workspace project that declares the dependency
+   */
+  consumer: ProjectId
+  /**
+   * Import name (key of the `dependencies` section)
+   */
+  name: string
+  source: GitDependencySource
+  /**
+   * Identity of the repository (`host[:port]/path`)
+   */
+  repository: string
+  /**
+   * Normalized subdirectory (see `normalizeGitSubdir`), `''` for the repository root
+   */
+  subdir: string
+}
+
+/**
+ * Key of a git dependency target: changes when the consumer, the name or the source (repository, ref, subdirectory) changes
+ */
+function gitTargetKey(target: GitDependencyTarget): string {
+  return JSON.stringify([target.consumer, target.name, target.repository, target.source.ref, target.subdir])
+}
+
+/**
+ * Result of resolving a git dependency target against the dependency storage:
+ * - `installed` - the version index has a SHA for the ref, and the instance is in the storage
+ * - `not-installed` - no SHA for the ref, or the instance is not in the storage
+ * - `unsupported` - not installed, and the host cannot install dependencies (e.g. browser)
+ */
+export type GitDependencyResolution =
+  | {
+    status: 'installed'
+    target: GitDependencyTarget
+    instance: GitDependencyInstance
+    projectId: ExternalProjectId
+  }
+  | {
+    status: 'not-installed' | 'unsupported'
+    target: GitDependencyTarget
+  }
+
+/**
+ * Git dependencies loaded from the dependency storage, see {@link ExternalProjects.loadGit}
+ */
+export interface LoadedGitDependencies {
+  /**
+   * Installed instances (one per instance, shared by all consumers)
+   */
+  projects: ExternalProject[]
+  /**
+   * Resolution of each target
+   */
+  resolutions: GitDependencyResolution[]
+}
+
+/**
+ * Instance the import resolves to (undefined if not installed)
+ */
+function resolvedInstance(resolution: GitDependencyResolution | undefined): ExternalProjectId | undefined {
+  return resolution?.status === 'installed' ? resolution.projectId : undefined
+}
+
+function groupResolutions(
+  resolutions: ReadonlyArray<GitDependencyResolution>,
+): Map<ProjectId, Map<string, GitDependencyResolution>> {
+  const grouped = new Map<ProjectId, Map<string, GitDependencyResolution>>()
+  for (const resolution of resolutions) {
+    const { consumer, name } = resolution.target
+    let byName = grouped.get(consumer)
+    if (!byName) {
+      byName = new Map()
+      grouped.set(consumer, byName)
+    }
+    byName.set(name, resolution)
+  }
+  return grouped
+}
+
+/**
+ * Name used when a git dependency has no (readable) JSON config:
+ * the last segment of the subdirectory or of the repository path.
+ */
+function gitFallbackName(instance: GitDependencyInstance): string {
+  const segments = [...instance.repository.split('/'), ...instance.subdir.split('/')].filter(s => s.length > 0)
+  const name = (segments.at(-1) ?? '').replace(/\.git$/, '').replace(/[.@#]/g, '-')
+  if (name === '' || name === ProjectsManager.DefaultProjectId) {
+    return 'dependency'
+  }
+  return name
+}
+
+/**
  * Registry of external project instances.
  *
  * The registry is synchronous (reads from memory).
@@ -194,6 +314,8 @@ export class ExternalProjects extends ADisposable {
       this.#listeners.length = 0
       this.#projects.clear()
       this.#syncedTargets.clear()
+      this.#syncedGitTargets.clear()
+      this.#gitResolutions.clear()
     }))
   }
 
@@ -348,7 +470,7 @@ export class ExternalProjects extends ADisposable {
         continue
       }
       for (const [name, path] of Object.entries(dependencies)) {
-        // Git sources are not local folders
+        // Git sources are not local folders, see gitDependencyTargets
         if (isGitDependencySource(path)) {
           continue
         }
@@ -391,9 +513,159 @@ export class ExternalProjects extends ADisposable {
   }
 
   /**
+   * Collects git dependencies of workspace projects (from the `dependencies` section of their configs).
+   * Synchronous: reads only configs. The SHA of each target is read from the storage by {@link loadGit}.
+   *
+   * Sources that cannot be parsed (invalid URL or subdirectory) are skipped (the config schema rejects them).
+   */
+  gitDependencyTargets(): GitDependencyTarget[] {
+    const projectsManager = this.services.workspace.ProjectsManager
+    const targets = [] as GitDependencyTarget[]
+    for (const id of projectsManager.all) {
+      if (id === ProjectsManager.DefaultProjectId) {
+        continue
+      }
+      const dependencies = projectsManager.getProject(id).config.dependencies
+      if (!dependencies) {
+        continue
+      }
+      for (const [name, source] of Object.entries(dependencies)) {
+        if (!isGitDependencySource(source)) {
+          continue
+        }
+        try {
+          const repository = parseGitRepositoryUrl(source.git)?.id
+          if (!repository) {
+            logger.warn`git dependency ${name} of ${id} is skipped: invalid URL ${source.git}`
+            continue
+          }
+          targets.push({ consumer: id, name, source, repository, subdir: normalizeGitSubdir(source.path) })
+        } catch (error) {
+          logger.warn(`Git dependency {name} of project {projectId} is skipped`, { name, projectId: id, error })
+        }
+      }
+    }
+    return targets
+  }
+
+  /**
+   * Whether the git dependency targets are the same (same consumers, names and sources).
+   */
+  static sameGitTargets(a: ReadonlyArray<GitDependencyTarget>, b: ReadonlyArray<GitDependencyTarget>): boolean {
+    if (a.length !== b.length) {
+      return false
+    }
+    const keys = new Set(a.map(gitTargetKey))
+    return b.every(t => keys.has(gitTargetKey(t)))
+  }
+
+  /**
+   * Resolution of git dependencies of the last applied sync: consumer -> name -> resolution
+   */
+  #gitResolutions = new Map<ProjectId, Map<string, GitDependencyResolution>>()
+
+  /**
+   * Resolution of the git dependency `name` of the consumer (as of the last applied sync),
+   * undefined if the name is not a git dependency of the consumer, or dependencies were not synced yet.
+   */
+  gitResolution(consumer: ProjectId, name: string): GitDependencyResolution | undefined {
+    return this.#gitResolutions.get(consumer)?.get(name)
+  }
+
+  /**
+   * Resolutions of all git dependencies (as of the last applied sync).
+   */
+  gitResolutions(): GitDependencyResolution[] {
+    return [...this.#gitResolutions.values()].flatMap(byName => [...byName.values()])
+  }
+
+  /**
+   * Consumers whose imports of git dependencies resolve differently with the given resolutions
+   * (a dependency becomes installed or not installed, or resolves to another instance),
+   * i.e. consumers to relink.
+   */
+  changedGitConsumers(resolutions: ReadonlyArray<GitDependencyResolution>): Set<ProjectId> {
+    const changed = new Set<ProjectId>()
+    const next = groupResolutions(resolutions)
+    for (const consumer of new Set([...next.keys(), ...this.#gitResolutions.keys()])) {
+      const previous = this.#gitResolutions.get(consumer) ?? new Map<string, GitDependencyResolution>()
+      const current = next.get(consumer) ?? new Map<string, GitDependencyResolution>()
+      for (const name of new Set([...previous.keys(), ...current.keys()])) {
+        if (resolvedInstance(previous.get(name)) !== resolvedInstance(current.get(name))) {
+          changed.add(consumer)
+          break
+        }
+      }
+    }
+    return changed
+  }
+
+  /**
+   * Replaces the resolutions of git dependencies (called together with registering their instances).
+   *
+   * @returns consumers whose resolutions changed (see {@link changedGitConsumers})
+   */
+  setGitResolutions(resolutions: ReadonlyArray<GitDependencyResolution>): Set<ProjectId> {
+    const changed = this.changedGitConsumers(resolutions)
+    this.#gitResolutions = groupResolutions(resolutions)
+    return changed
+  }
+
+  /**
+   * States of git dependencies of consumers, computed from the resolutions of the last applied sync
+   * and the registered instances (synchronous, from memory).
+   * `filesWithErrors` counts documents of the instance with lexer or parser errors.
+   */
+  dependencyStates(): DependencyState[] {
+    const langiumDocuments = this.services.workspace.LangiumDocuments
+    const supported = this.services.dependencies.Installer.supported
+    const errorsByProject = new Map<ExternalProjectId, number>()
+    const filesWithErrors = (project: ExternalProject): number => {
+      let count = errorsByProject.get(project.id)
+      if (count === undefined) {
+        count = 0
+        for (const uri of project.files.keys()) {
+          const doc = langiumDocuments.getDocument(URI.parse(uri))
+          if (doc && (doc.parseResult.lexerErrors.length > 0 || doc.parseResult.parserErrors.length > 0)) {
+            count++
+          }
+        }
+        errorsByProject.set(project.id, count)
+      }
+      return count
+    }
+    return this.gitResolutions().map((resolution): DependencyState => {
+      const { consumer, name, source } = resolution.target
+      const project = resolution.status === 'installed' ? this.#projects.get(resolution.projectId) : undefined
+      if (resolution.status === 'installed' && project) {
+        return {
+          status: 'installed',
+          consumer,
+          name,
+          source,
+          instance: resolution.instance,
+          projectId: resolution.projectId,
+          filesWithErrors: filesWithErrors(project),
+        }
+      }
+      return {
+        status: resolution.status === 'unsupported' || !supported ? 'unsupported' : 'not-installed',
+        consumer,
+        name,
+        source,
+      }
+    })
+  }
+
+  /**
    * Ids of the dependency targets of the last sync (including targets that could not be loaded)
    */
   #syncedTargets = new Set<ExternalProjectId>()
+
+  /**
+   * Keys of the git dependency targets of the last sync (including targets that are not installed)
+   */
+  #syncedGitTargets = new Set<string>()
 
   /**
    * Remembers the dependency targets of a sync (including targets that could not be loaded, e.g. missing folders),
@@ -404,13 +676,22 @@ export class ExternalProjects extends ADisposable {
   }
 
   /**
+   * Remembers the git dependency targets of a sync (including targets that are not installed),
+   * so {@link hasStructuralChanges} does not report them again until the dependencies change.
+   */
+  markGitSynced(targets: Iterable<GitDependencyTarget>): void {
+    this.#syncedGitTargets = new Set([...targets].map(gitTargetKey))
+  }
+
+  /**
    * Whether the set of dependency targets differs from the targets of the last sync
-   * (i.e. instances have to be added or removed).
+   * (i.e. instances have to be added or removed, or git dependencies changed).
    */
   hasStructuralChanges(
     targets: ReadonlyMap<ExternalProjectId, ExternalDependencyTarget> = this.dependencyTargets(),
+    gitTargets: ReadonlyArray<GitDependencyTarget> = this.gitDependencyTargets(),
   ): boolean {
-    if (targets.size !== this.#syncedTargets.size) {
+    if (targets.size !== this.#syncedTargets.size || gitTargets.length !== this.#syncedGitTargets.size) {
       return true
     }
     for (const id of targets.keys()) {
@@ -418,7 +699,175 @@ export class ExternalProjects extends ADisposable {
         return true
       }
     }
+    for (const target of gitTargets) {
+      if (!this.#syncedGitTargets.has(gitTargetKey(target))) {
+        return true
+      }
+    }
     return false
+  }
+
+  /**
+   * Loads git dependencies from the dependency storage into memory (does not register them):
+   * reads the SHA of each target from the version index, then the installed instances.
+   *
+   * Never goes to the network: a target without a SHA, or without an instance in the storage, is not installed.
+   * One instance (repository, SHA, subdirectory) is loaded once and shared by all its consumers.
+   * Must be called outside of the workspace write-lock (the storage is asynchronous).
+   */
+  async loadGit(
+    targets: ReadonlyArray<GitDependencyTarget> = this.gitDependencyTargets(),
+  ): Promise<LoadedGitDependencies> {
+    if (targets.length === 0) {
+      return { projects: [], resolutions: [] }
+    }
+    const storage = this.services.dependencies.Storage
+    const notInstalled = this.services.dependencies.Installer.supported ? 'not-installed' : 'unsupported'
+
+    // Version index: one read per (repository, ref)
+    const versions = new Map<string, Promise<DependencyVersionRecord | undefined>>()
+    const readVersion = (target: GitDependencyTarget) => {
+      const key = JSON.stringify([target.repository, target.source.ref])
+      let version = versions.get(key)
+      if (!version) {
+        version = storage.readVersion(target.repository, target.source.ref).catch(error => {
+          logger.warn(`Failed to read the version of {repository}@{ref}`, {
+            repository: target.repository,
+            ref: target.source.ref,
+            error,
+          })
+          return undefined
+        })
+        versions.set(key, version)
+      }
+      return version
+    }
+
+    const instances = new Map<ExternalProjectId, GitDependencyInstance>()
+    const resolved = [] as Array<{ target: GitDependencyTarget; projectId: ExternalProjectId | undefined }>
+    for (const target of targets) {
+      const version = await readVersion(target)
+      if (!version) {
+        resolved.push({ target, projectId: undefined })
+        continue
+      }
+      const instance: GitDependencyInstance = {
+        repository: target.repository,
+        sha: version.sha,
+        subdir: target.subdir,
+      }
+      const projectId = externalProjectIdOfGitInstance(instance)
+      instances.set(projectId, instance)
+      resolved.push({ target, projectId })
+    }
+
+    // Installed instances, with one batch request
+    const toRead = [...instances.entries()]
+    let entries = [] as Array<DependencyCacheEntry | undefined>
+    try {
+      entries = await storage.readEntries(toRead.map(([, instance]) => instance))
+    } catch (error) {
+      logger.warn('Failed to read git dependencies from the dependency storage', { error })
+    }
+    const projects = new Map<ExternalProjectId, ExternalProject>()
+    for (const [index, [id, instance]] of toRead.entries()) {
+      const entry = entries[index]
+      if (entry) {
+        projects.set(id, this.gitProject(instance, entry))
+      }
+    }
+
+    const resolutions = resolved.map(({ target, projectId }): GitDependencyResolution => {
+      const project = projectId ? projects.get(projectId) : undefined
+      if (project?.git) {
+        return { status: 'installed', target, instance: project.git, projectId: project.id }
+      }
+      return { status: notInstalled, target }
+    })
+    if (projects.size > 0) {
+      logger.debug`loaded ${projects.size} git dependency instances`
+    }
+    return { projects: [...projects.values()], resolutions }
+  }
+
+  /**
+   * Creates an external project from an installed instance of a git dependency.
+   *
+   * - Documents are the `.c4` and `.likec4` files of the entry, under `likec4-dep` URIs of the instance.
+   * - Only a JSON config of the entry is read (executable configs are never in the storage).
+   *   Without config, the default config is used (name is the last segment of the subdirectory or repository).
+   * - `include.paths` of the dependency is ignored.
+   */
+  protected gitProject(instance: GitDependencyInstance, entry: DependencyCacheEntry): ExternalProject {
+    const id = externalProjectIdOfGitInstance(instance)
+    const files = new Map<NormalizedUri, string>()
+    let configFile: { filename: string; text: string } | undefined
+    for (const filename of ConfigFilenames) {
+      const text = entry.files[filename]
+      if (isLikeC4JsonConfig(filename) && typeof text === 'string') {
+        configFile = { filename, text }
+        break
+      }
+    }
+    for (const [path, text] of Object.entries(entry.files)) {
+      if (!EXTERNAL_PROJECT_EXTENSIONS.some(ext => path.length > ext.length && path.endsWith(ext))) {
+        continue
+      }
+      try {
+        files.set(gitDependencyUri(instance, path).toString() as NormalizedUri, text)
+      } catch (error) {
+        logger.warn(`Invalid path {path} in git dependency {id}`, { path, id, error })
+      }
+    }
+
+    const defaultConfig = () => {
+      try {
+        return LikeC4ProjectConfigOps.validate({ name: gitFallbackName(instance) })
+      } catch {
+        return LikeC4ProjectConfigOps.validate({ name: 'dependency' })
+      }
+    }
+    let config: LikeC4ProjectConfig
+    if (configFile) {
+      try {
+        config = LikeC4ProjectConfigOps.parse(configFile.text)
+      } catch (error) {
+        logger.warn(`Failed to load the config of git dependency {id}, the default config is used: {error}`, {
+          id,
+          error: loggable(error),
+        })
+        config = defaultConfig()
+      }
+    } else {
+      config = defaultConfig()
+    }
+    const configUri = gitDependencyUri(instance, configFile?.filename ?? 'likec4.config.json')
+    // Parent of all documents of the instance: `likec4-dep://<host>/<repo>@<sha>[/<subdir>]/-/`
+    const folder = ProjectFolder(UriUtils.dirname(configUri))
+    const includeConfig = {
+      ...LikeC4ProjectConfigOps.normalizeInclude(config.include),
+      // include.paths of a dependency is ignored
+      paths: [],
+    }
+    logger.debug`loaded ${id} (${config.name}) with ${files.size} documents`
+    return {
+      id,
+      config,
+      folder,
+      folderUri: URI.parse(folder),
+      configUri,
+      includeConfig,
+      // Files of the entry are selected by the installer
+      exclude: () => false,
+      files,
+      git: instance,
+      // Same formula as hashes of workspace projects (ProjectsManager)
+      hash: objectHash([
+        id + folder + configUri.toString(),
+        omit(config, ['generators', 'include']),
+        includeConfig,
+      ]),
+    }
   }
 
   /**
