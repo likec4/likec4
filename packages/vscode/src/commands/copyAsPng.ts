@@ -9,6 +9,7 @@ import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
 import {
   logUsedCli,
+  resolveExportNotation,
   resolveExportTheme,
   resolvePngExportTarget,
   saveDirtyLikeC4Documents,
@@ -74,6 +75,7 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview, rpc }: CopyAs
             theme,
             nodePath: config.node.path,
             cliPath: config.cli.path,
+            notation: resolveExportNotation(),
           }),
       )
       logUsedCli(output, cli, cliVersion)

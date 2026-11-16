@@ -2,8 +2,10 @@
 
 import type { ProjectId } from '@likec4/core'
 import * as vscode from 'vscode'
+import { config } from '../config'
 import { Likec4CliNotFoundError } from '../likec4CliNotFoundError'
 import { version as extensionVersion } from '../meta'
+import type { PngExportNotation } from '../pngExportNotation'
 import type { OutputLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 import type { RpcClient } from './types'
@@ -131,6 +133,17 @@ export function resolveExportTheme(): 'light' | 'dark' {
       return 'dark'
     default:
       return 'light'
+  }
+}
+
+/**
+ * Notation (legend) of exported PNGs from the `likec4.export.notation*` settings.
+ */
+export function resolveExportNotation(): PngExportNotation {
+  return {
+    enabled: config.export.notation,
+    position: config.export.notationPosition,
+    text: config.export.notationText,
   }
 }
 

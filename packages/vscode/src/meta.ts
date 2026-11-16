@@ -150,6 +150,9 @@ export type ConfigKey =
   | "likec4.formatting.quoteStyle"
   | "likec4.node.path"
   | "likec4.cli.path"
+  | "likec4.export.notation"
+  | "likec4.export.notationPosition"
+  | "likec4.export.notationText"
   | "likec4.exclude"
 
 export interface ConfigKeyTypeMap {
@@ -160,6 +163,9 @@ export interface ConfigKeyTypeMap {
   "likec4.formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "likec4.node.path": string,
   "likec4.cli.path": string,
+  "likec4.export.notation": boolean,
+  "likec4.export.notationPosition": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  "likec4.export.notationText": ("short" | "full" | "kind"),
   "likec4.exclude": string[],
 }
 
@@ -171,6 +177,9 @@ export interface ConfigShorthandMap {
   formattingQuoteStyle: "likec4.formatting.quoteStyle",
   nodePath: "likec4.node.path",
   cliPath: "likec4.cli.path",
+  exportNotation: "likec4.export.notation",
+  exportNotationPosition: "likec4.export.notationPosition",
+  exportNotationText: "likec4.export.notationText",
   exclude: "likec4.exclude",
 }
 
@@ -182,6 +191,9 @@ export interface ConfigShorthandTypeMap {
   formattingQuoteStyle: ("auto" | "single" | "double" | "ignore"),
   nodePath: string,
   cliPath: string,
+  exportNotation: boolean,
+  exportNotationPosition: ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  exportNotationText: ("short" | "full" | "kind"),
   exclude: string[],
 }
 
@@ -267,6 +279,36 @@ export const configs = {
   } as ConfigItem<"likec4.cli.path">,
   /**
    *
+   * @key `likec4.export.notation`
+   * @default `false`
+   * @type `boolean`
+   */
+  exportNotation: {
+    key: "likec4.export.notation",
+    default: false,
+  } as ConfigItem<"likec4.export.notation">,
+  /**
+   *
+   * @key `likec4.export.notationPosition`
+   * @default `"bottom-right"`
+   * @type `string`
+   */
+  exportNotationPosition: {
+    key: "likec4.export.notationPosition",
+    default: "bottom-right",
+  } as ConfigItem<"likec4.export.notationPosition">,
+  /**
+   *
+   * @key `likec4.export.notationText`
+   * @default `"short"`
+   * @type `string`
+   */
+  exportNotationText: {
+    key: "likec4.export.notationText",
+    default: "short",
+  } as ConfigItem<"likec4.export.notationText">,
+  /**
+   *
    * @key `likec4.exclude`
    * @default `[]`
    * @type `array`
@@ -285,6 +327,9 @@ export interface ScopedConfigKeyTypeMap {
   "formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "node.path": string,
   "cli.path": string,
+  "export.notation": boolean,
+  "export.notationPosition": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  "export.notationText": ("short" | "full" | "kind"),
   "exclude": string[],
 }
 
@@ -298,6 +343,9 @@ export const scopedConfigs = {
     "formatting.quoteStyle": "auto",
     "node.path": "",
     "cli.path": "",
+    "export.notation": false,
+    "export.notationPosition": "bottom-right",
+    "export.notationText": "short",
     "exclude": [],
   } satisfies ScopedConfigKeyTypeMap,
 }
@@ -321,6 +369,11 @@ export interface NestedConfigs {
     "cli": {
       "path": string,
     },
+    "export": {
+      "notation": boolean,
+      "notationPosition": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+      "notationText": ("short" | "full" | "kind"),
+    },
     "exclude": string[],
   },
 }
@@ -342,6 +395,11 @@ export interface NestedScopedConfigs {
   },
   "cli": {
     "path": string,
+  },
+  "export": {
+    "notation": boolean,
+    "notationPosition": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+    "notationText": ("short" | "full" | "kind"),
   },
   "exclude": string[],
 }

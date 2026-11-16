@@ -5,6 +5,7 @@ import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Likec4CliNotFoundError } from '../likec4CliNotFoundError'
+import { type PngExportNotation, pngExportNotationArgs } from '../pngExportNotation'
 import {
   type ResolvedLikec4Cli,
   describeLikec4Cli,
@@ -24,6 +25,8 @@ export type ExportViewPngParams = {
   nodePath?: string | undefined
   /** `likec4.cli.path` */
   cliPath?: string | undefined
+  /** `likec4.export.notation*` */
+  notation?: PngExportNotation | undefined
   /** Extra CLI args (tests / advanced). */
   extraArgs?: string[] | undefined
 }
@@ -69,6 +72,7 @@ export async function exportViewPng(params: ExportViewPngParams): Promise<Export
     params.projectId,
     '--theme',
     params.theme,
+    ...pngExportNotationArgs(params.notation),
     ...(params.extraArgs ?? []),
     params.workspacePath,
   ]
