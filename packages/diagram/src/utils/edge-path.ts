@@ -306,5 +306,23 @@ export function layoutedEdgePath({
     const [from, to] = inDrawingOrder(edge)
     return orthoPath(bezierControlPoints(points), from, to)
   }
-  return { d: bezierPath(points), segments: polylineToSegments(splineToPolyline(points)) }
+  const segments = polylineToSegments(splineToPolyline(points))
+  return { d: straightPath(segments) ?? bezierPath(points), segments }
+}
+
+/**
+ * Straight lines through the segments, or `null` without any.
+ * Graphviz puts both control points of an ortho cubic on its ends, so drawn as is the cubic has no
+ * tangent at its ends, and some browsers (Safari) then point arrowheads to the right.
+ */
+function straightPath(segments: ReadonlyArray<Segment>): string | null {
+  const start = segments[0]?.[0]
+  if (!start) {
+    return null
+  }
+  let d = `M ${Math.trunc(start.x)},${Math.trunc(start.y)}`
+  for (const [, to] of segments) {
+    d += ` L ${Math.trunc(to.x)},${Math.trunc(to.y)}`
+  }
+  return d
 }
