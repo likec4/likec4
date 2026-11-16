@@ -1,6 +1,6 @@
 import { findLast, map } from 'remeda'
 import { type DeploymentConnectionModel, type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import type { AnyAux, DeploymentViewRule } from '../../types'
+import type { AnyAux, aux, ComputedNode, DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
   type ParsedDeploymentView as DeploymentView,
@@ -12,7 +12,7 @@ import {
   isViewRulePredicate,
   RelationExpr,
 } from '../../types'
-import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
+import { createApplyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
@@ -185,6 +185,11 @@ function processGroupRules(
   return memory
 }
 
+// Group nodes have kind `@group`, which deployment predicates don't accept (applyCustomElementProperties skips them)
+type DeploymentNodeFilter<A extends AnyAux> = Omit<ComputedNode<A>, 'kind'> & {
+  kind: aux.ElementKind<A> | aux.DeploymentKind<A>
+}
+
 function flattenDeploymentRules<A extends AnyAux>(rules: DeploymentViewRule<A>[]): DeploymentViewRule<A>[] {
   return rules.flatMap(rule => isViewRuleGroup(rule) ? flattenDeploymentRules(rule.groupRules) : [rule])
 }
@@ -216,15 +221,20 @@ export function computeDeploymentView<M extends AnyAux>(
     edges: computedEdges,
   })
 
+  const applyCustomElementProperties = createApplyCustomElementProperties({
+    guard: FqnExpr.isCustom<M>,
+    toPredicate: expr => {
+      const satisfies = deploymentElementExprToPredicate<M, DeploymentNodeFilter<M>>(expr)
+      return (node: ComputedNode<M>) => node.kind !== '@group' && satisfies({ ...node, kind: node.kind })
+    },
+  })
   const nodes = applyCustomElementProperties(
-    flatRules as any,
+    flatRules,
     applyDeploymentNavigateTo(
       likec4model.deployment,
       flatRules,
       applyDeploymentViewRuleStyles(flatRules, sorted.nodes),
     ),
-    FqnExpr.isCustom,
-    deploymentElementExprToPredicate as any,
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)

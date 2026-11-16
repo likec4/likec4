@@ -5,8 +5,11 @@ import {
   type ComputedNodeStyle,
   type ElementViewRule,
   type ModelExpression,
+  type ViewRuleGlobalPredicateRef,
   exact,
+  FqnExpr,
   isGroupElementKind,
+  isViewRuleGlobalPredicateRef,
   isViewRuleGroup,
   isViewRulePredicate,
   ModelFqnExpr,
@@ -28,13 +31,68 @@ export function flattenGroupRules<A extends AnyAux, T extends ModelExpression<A>
   }
 }
 
+type CustomElementExpr<A extends AnyAux> = ModelFqnExpr.Custom<A> | FqnExpr.Custom<A>
+
+/**
+ * Rules of element and deployment views: predicates carry `include`, groups carry `groupRules`.
+ */
+interface RuleTree<Expr> {
+  include?: ReadonlyArray<Expr> | undefined
+  groupRules?: ReadonlyArray<RuleTree<Expr> | ViewRuleGlobalPredicateRef> | undefined
+}
+
+function collectIncluded<Expr, Custom extends Expr>(
+  rules: ReadonlyArray<RuleTree<Expr> | ViewRuleGlobalPredicateRef>,
+  guard: (expr: Expr) => expr is Custom,
+): Custom[] {
+  return rules.flatMap(rule => {
+    if (isViewRuleGlobalPredicateRef(rule)) {
+      return []
+    }
+    if (rule.groupRules) {
+      return collectIncluded(rule.groupRules, guard)
+    }
+    return rule.include?.filter(guard) ?? []
+  })
+}
+
+/**
+ * Creates `applyCustomElementProperties` for a view type.
+ * `guard` picks the custom element expressions (`with { ... }`) from the include rules,
+ * `toPredicate` turns the wrapped expression into a node predicate.
+ */
+export function createApplyCustomElementProperties<
+  A extends AnyAux,
+  Expr,
+  Custom extends Expr & CustomElementExpr<A>,
+>({
+  guard,
+  toPredicate,
+}: {
+  guard: (expr: Expr) => expr is Custom
+  toPredicate: (expr: Custom['custom']['expr']) => (node: ComputedNode<A>) => boolean
+}) {
+  return (
+    rules: ReadonlyArray<RuleTree<Expr> | ViewRuleGlobalPredicateRef>,
+    nodes: ComputedNode<A>[],
+  ): ComputedNode<A>[] => applyCustomProperties(collectIncluded(rules, guard), nodes, toPredicate)
+}
+
 export function applyCustomElementProperties<A extends AnyAux>(
-  _rules: ElementViewRule<A>[],
-  _nodes: ComputedNode<A>[],
-  guard: (expr: any) => boolean = ModelFqnExpr.isCustom,
-  toPredicate: (expr: any) => (node: ComputedNode<A>) => boolean = elementExprToPredicate,
+  rules: ElementViewRule<A>[],
+  nodes: ComputedNode<A>[],
 ): ComputedNode<A>[] {
-  const rules = _rules.flatMap(flattenGroupRules(guard as typeof ModelFqnExpr.isCustom))
+  return createApplyCustomElementProperties({
+    guard: ModelFqnExpr.isCustom<A>,
+    toPredicate: elementExprToPredicate,
+  })(rules, nodes)
+}
+
+function applyCustomProperties<A extends AnyAux, Custom extends CustomElementExpr<A>>(
+  rules: Custom[],
+  _nodes: ComputedNode<A>[],
+  toPredicate: (expr: Custom['custom']['expr']) => (node: ComputedNode<A>) => boolean,
+): ComputedNode<A>[] {
   if (rules.length === 0) {
     return _nodes
   }
