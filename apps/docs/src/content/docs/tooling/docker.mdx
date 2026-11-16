@@ -50,7 +50,6 @@ To work with the container you need to mount the folder with LikeC4 sources to `
 ```sh copy title="Start local web server"
 # mount LikeC4 sources to /data: -v $(pwd):/data
 # publish ports: -p 5173:5173
-# (optional) for realtime updates: -p 24678:24678
 # (optional) use init process to correctly handle signals (eg Ctrl+C): --init
 # (optional) enable color output: -t
 # (optional) poll for file changes, see "Running the local web server on Windows" below
@@ -59,16 +58,15 @@ docker run --rm \
   --init \
   -t \
   -p 5173:5173 \
-  -p 24678:24678 \
   -e CHOKIDAR_USEPOLLING=1 \
   -e CHOKIDAR_INTERVAL=200 \
   likec4/likec4 \
   start
 ```
 
-The HMR WebSocket port is auto-discovered from the range 24678–24690. To pin it to a specific port, use `--hmr-port` (or the `HMR_PORT` env var) and publish that exact port:
+Live updates (HMR) use the dev server port, so publishing `5173` is enough. If you need the HMR WebSocket on a separate port, set it with `--hmr-port` (or the `HMR_PORT` env var) and publish that port too:
 
-```sh copy title="Pin the HMR port"
+```sh copy title="Separate HMR port"
 docker run --rm \
   -v $PWD:/data \
   --init \

@@ -67,7 +67,7 @@ describe('serve handler', () => {
     expect(callArg.hmrPort).toBe(24700)
   })
 
-  it('propagates undefined hmrPort when not provided (triggers auto-discovery)', async () => {
+  it('propagates undefined hmrPort when not provided (HMR uses the dev server port)', async () => {
     const { handler } = await import('./serve')
     const { viteDev } = await import('../../vite/vite-dev')
     const viteDevMock = viteDev as ReturnType<typeof vi.fn>

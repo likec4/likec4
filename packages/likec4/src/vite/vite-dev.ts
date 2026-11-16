@@ -29,8 +29,9 @@ function validatePort(port: number, source: string): void {
 
 /**
  * Resolves the HMR WebSocket port to use.
- * Priority: explicit argument > HMR_PORT env var > auto-discovered from 24678–24690.
- * When HMR is disabled, returns `undefined`.
+ * Priority: explicit argument > HMR_PORT env var.
+ * Returns `undefined` when HMR is disabled, or when no port is given:
+ * then Vite serves the HMR WebSocket on the dev server port.
  *
  * Exported for testing.
  */
@@ -50,7 +51,7 @@ export async function resolveHmrPort(
     validatePort(envPort, 'HMR_PORT')
     return envPort
   }
-  return getPort({ port: portNumbers(24678, 24690) })
+  return undefined
 }
 
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
@@ -116,12 +117,14 @@ export async function viteDev({
 
   const resolvedHmrPort = await resolveHmrPort(hmrPort, hmr)
   if (hmr && resolvedHmrPort !== undefined) {
-    const source = hmrPort ? ' (explicit)' : env['HMR_PORT'] ? ' (env)' : ' (auto-discovered)'
+    const source = hmrPort ? ' (explicit)' : ' (env)'
     logger.info(`Enabling HMR: localhost:${resolvedHmrPort}${source}`)
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${resolvedHmrPort} is published from container`))
     }
-  } else if (!hmr) {
+  } else if (hmr) {
+    logger.info(`Enabling HMR on the dev server port`)
+  } else {
     logger.info(`Disabling HMR`)
   }
 
