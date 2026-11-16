@@ -1,5 +1,5 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import type { ProjectId } from '@likec4/core/types'
+import { ProjectId } from '@likec4/core/types'
 import { existsSync, statSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { URI } from 'vscode-uri'
@@ -50,37 +50,36 @@ export function ensureProject(
  * safe to pin: `likec4.config.json` validation rejects `"default"` as a project name, so a
  * real project can never claim this id.
  */
-const SYNTHETIC_DEFAULT_PROJECT_ID = 'default'
+const SYNTHETIC_DEFAULT_PROJECT_ID = ProjectId('default')
 
 /**
  * Every project of the workspace, for commands that process all of them.
  *
- * `projectsManager.all` is the authoritative list of registered projects, but it always
- * appends a synthetic `default` entry pointing at the workspace root. That entry has to be
- * dropped when real projects exist: with a single named project it resolves to that project
- * and duplicates it, with several it contributes an empty model.
+ * `projectsManager.all` always appends a synthetic `default` entry for the workspace root. It is kept only when it is
+ * the sole project (no config at all), or when it owns stray sources and can be computed on its own. With a single
+ * named project `ensureProjectId('default')` resolves to that project, so keeping the entry would duplicate it; its
+ * stray sources are skipped with a warning instead.
  *
- * It must **not** be dropped unconditionally:
- * - a workspace with no `likec4.config.json` at all has `all === ['default']`, and there the
- *   default entry *is* the real project;
- * - `default` also owns any stray sources that sit outside every configured project.
- *
- * `languageServices.projects()` cannot be the base list either. It is grouped by document
- * *ownership*, so a project that pulls all of its sources in through `include.paths` and owns
- * no `.c4` file of its own never appears in it - even though it renders real diagrams. It is
- * only consulted here to decide whether the synthetic `default` entry carries any content.
+ * `languageServices.projects()` cannot be the base list: it groups by document ownership, so it misses projects that
+ * get all their sources through `include.paths`.
  */
 export function workspaceProjects(likec4: LikeC4): ProjectId[] {
-  const all = [...new Set(likec4.projectsManager.all)]
-  const ownsDocuments = new Set<string>(likec4.languageServices.projects().map(p => p.id))
-  const selected = all.filter(id =>
-    id !== SYNTHETIC_DEFAULT_PROJECT_ID
-    || ownsDocuments.has(id)
-    || all.length === 1
-  )
-  const dropped = all.filter(id => !selected.includes(id))
-  if (dropped.length > 0) {
-    logger.debug`skipping synthetic empty project(s): ${dropped.join(', ')}`
+  const projectsManager = likec4.projectsManager
+  const all = [...new Set(projectsManager.all)]
+  if (!all.includes(SYNTHETIC_DEFAULT_PROJECT_ID) || all.length === 1) {
+    return all
   }
-  return selected
+  const named = all.filter(id => id !== SYNTHETIC_DEFAULT_PROJECT_ID)
+  const ownsDocuments = likec4.languageServices.projects().some(p => p.id === SYNTHETIC_DEFAULT_PROJECT_ID)
+  const addressable = projectsManager.ensureProjectId(SYNTHETIC_DEFAULT_PROJECT_ID) === SYNTHETIC_DEFAULT_PROJECT_ID
+  switch (true) {
+    case ownsDocuments && addressable:
+      return [...named, SYNTHETIC_DEFAULT_PROJECT_ID]
+    case ownsDocuments:
+      logger.warn`skipping sources outside every project, move them into a project folder`
+      return named
+    default:
+      logger.debug`skipping synthetic empty project: ${SYNTHETIC_DEFAULT_PROJECT_ID}`
+      return named
+  }
 }

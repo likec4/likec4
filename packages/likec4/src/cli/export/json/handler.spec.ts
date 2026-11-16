@@ -70,6 +70,20 @@ describe('export json handler', () => {
     expect(out).toMatchObject({ projectId: 'a' })
   })
 
+  it('writes a single named project once when sources sit outside it', { timeout: 60_000 }, async () => {
+    await workspace({
+      'a/likec4.config.json': '{ "name": "a" }',
+      'a/model.c4': model('s1'),
+      'model.c4': model('s0'),
+    })
+
+    const out = await exportJson()
+
+    expect(out).not.toBeInstanceOf(Array)
+    expect(out).toMatchObject({ projectId: 'a' })
+    expect(Object.keys((out as { elements: object }).elements)).toEqual(['s1'])
+  })
+
   it('writes every named project once', { timeout: 60_000 }, async () => {
     await workspace({
       'a/likec4.config.json': '{ "name": "a" }',

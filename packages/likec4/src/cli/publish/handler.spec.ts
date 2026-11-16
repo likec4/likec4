@@ -26,6 +26,7 @@ type MockLikeC4 = {
   projectsManager: {
     all: string[]
     getProject: (id: string) => { folderUri: { fsPath: string } }
+    ensureProjectId: (id: string) => string
   }
   languageServices: {
     projects: () => Array<{ id: string; folder: { fsPath: string } }>
@@ -122,8 +123,8 @@ describe('publish handler', () => {
    * says otherwise.
    *
    * Mirrors the real `ProjectsManager`: `all` additionally carries the synthetic `default`
-   * entry pointing at the workspace root, while `languageServices.projects()` lists only
-   * the projects that own source documents.
+   * entry pointing at the workspace root, which resolves to the only named project when there
+   * is one, while `languageServices.projects()` lists only the projects that own source documents.
    */
   function mockWorkspace(
     projects: Record<string, string>,
@@ -141,6 +142,10 @@ describe('publish handler', () => {
       projectsManager: {
         all: [...folders.keys()],
         getProject: (id: string) => ({ folderUri: { fsPath: folders.get(id)! } }),
+        ensureProjectId: (id: string) => {
+          const named = [...folders.keys()].filter(key => key !== 'default')
+          return id === 'default' && named.length === 1 ? named[0]! : id
+        },
       },
       languageServices: {
         projects: () => documentOwners.map(id => ({ id, folder: { fsPath: folders.get(id)! } })),
@@ -271,13 +276,24 @@ describe('publish handler', () => {
 
     it('keeps the default project when it owns stray sources outside every other project', async () => {
       mockWorkspace(
+        { alpha: join(workspace, 'alpha'), beta: join(workspace, 'beta') },
+        { defaultOwnsDocuments: true },
+      )
+
+      await publishHandler({ ...baseArgs, path: workspace, origin: undefined, sha: undefined })
+
+      expect(Object.keys(sentPayload().projects).sort()).toEqual(['workspace', 'workspace/alpha', 'workspace/beta'])
+    })
+
+    it('skips stray sources when the default project resolves to the only named one', async () => {
+      mockWorkspace(
         { alpha: join(workspace, 'alpha') },
         { defaultOwnsDocuments: true },
       )
 
       await publishHandler({ ...baseArgs, path: workspace, origin: undefined, sha: undefined })
 
-      expect(Object.keys(sentPayload().projects).sort()).toEqual(['workspace', 'workspace/alpha'])
+      expect(Object.keys(sentPayload().projects)).toEqual(['workspace/alpha'])
     })
 
     it('does not warn about the working tree when git reports it clean', async () => {
