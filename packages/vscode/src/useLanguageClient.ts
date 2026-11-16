@@ -1,6 +1,7 @@
 import useDocumentSelector from '#useDocumentSelector'
 import useEnvLanguageClient from '#useLanguageClient'
 import { watchDebounced } from '@reactive-vscode/vueuse'
+import { deepEqual } from 'fast-equals'
 import {
   defineService,
   useDisposable,
@@ -77,7 +78,14 @@ export const useLanguageClient = defineService(() => {
     await restartLanguageServer()
   })
 
-  watchDebounced(() => config.exclude, () => {
+  // Any `likec4.*` change re-reads the whole configuration, so `exclude` comes back as a new array.
+  // Restart only when its content changed, not on unrelated settings such as `likec4.export.*`.
+  let currentExclude = [...config.exclude]
+  watchDebounced(() => config.exclude, (exclude) => {
+    if (deepEqual(exclude, currentExclude)) {
+      return
+    }
+    currentExclude = [...exclude]
     logger.debug`${'exclude'} configuration changed, restarting language server`
     void restartLanguageServer()
   }, {
