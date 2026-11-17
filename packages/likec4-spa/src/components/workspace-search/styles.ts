@@ -3,18 +3,14 @@ import { css } from '@likec4/styles/css'
 // Values follow the WorkspaceSearch component of the "LikeC4 Workspace Projects" design system
 
 const textSecondary = {
-  color: '[var(--mantine-color-gray-7)]',
-  _dark: {
-    color: '[var(--mantine-color-dark-1)]',
-  },
+  color: 'text.dimmed',
 } as const
 
-const meta = {
+const meta = css.raw(textSecondary, {
   fontFamily: 'body',
   fontSize: 'xs',
   fontVariantNumeric: 'tabular-nums',
-  ...textSecondary,
-} as const
+})
 
 export const scopeToken = css({
   display: 'inline-flex',
@@ -48,7 +44,7 @@ export const scopeToken = css({
   },
 })
 
-export const close = css({
+export const close = css(textSecondary, {
   flexShrink: '0',
   display: 'inline-grid',
   placeItems: 'center',
@@ -60,7 +56,6 @@ export const close = css({
   borderRadius: 'sm',
   backgroundColor: 'surface.default',
   cursor: 'pointer',
-  ...textSecondary,
   _hover: {
     color: 'text',
   },
@@ -109,12 +104,14 @@ export const scope = css({
   },
 })
 
-export const count = css({ ...meta, flexShrink: '0' })
+export const count = css(meta, {
+  flexShrink: '0',
+})
 
 export const scopeNone = css({
+  ...textSecondary,
   fontSize: 'xs',
   paddingX: '1',
-  ...textSecondary,
 })
 
 export const linkButton = css({
@@ -186,6 +183,7 @@ export const pickList = css({
 })
 
 export const foot = css({
+  ...textSecondary,
   flexShrink: '0',
   display: 'flex',
   flexWrap: 'wrap',
@@ -197,7 +195,6 @@ export const foot = css({
   borderTopStyle: 'solid',
   borderColor: 'border.subtle',
   fontSize: 'xs',
-  ...textSecondary,
   '& kbd': {
     display: 'inline-block',
     minWidth: '[18px]',

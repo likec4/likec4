@@ -9,34 +9,32 @@ import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLite
 export const generateCustomizationCode = (customizationFile: string | undefined): string => {
   if (!customizationFile) {
     return `
-import { atom, useStore } from 'likec4/vite-plugin/internal'
-
-export let $customComponents = atom(undefined)
-
-export function useCustomComponents() {
-  return useStore($customComponents)
-}
+export { Fragment as CustomizationContext } from "react";
 `
   }
   const fileLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(customizationFile))
   return `
-import { atom, useStore } from 'likec4/vite-plugin/internal'
+import { jsx } from "react/jsx-runtime";
+import { CustomizationProvider } from 'likec4/react';
+import { atom, useStore } from 'likec4/vite-plugin/internal';
 import components from ${fileLiteral}
 
-export let $customComponents = atom(components)
+export let ComponentsAtom = atom({...components})
 
-export function useCustomComponents() {
-  return useStore($customComponents)
+export function CustomizationContext(props) {
+  const components = useStore(ComponentsAtom)
+  return jsx(CustomizationProvider, { ...props, components })
 }
 
 if (import.meta.hot) {
-  import.meta.hot.accept(md => {
+  import.meta.hot.accept((md) => {
     if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = $customComponents
+      import.meta.hot.data.$update = (update) => {
+        ComponentsAtom.set(update)
+      }
     }
-    const update = md?.$customComponents
-    if (update) {
-      import.meta.hot.data.$update.set(update.get())
+    if (md) {
+      import.meta.hot.data.$update(md.ComponentsAtom.get())
     } else {
       import.meta.hot.invalidate()
     }
@@ -47,12 +45,13 @@ if (import.meta.hot) {
 
 export const customizationModule: VirtualModule = {
   id: 'likec4:customization',
-  virtualId: 'likec4:plugin/customization.js',
+  virtualId: 'likec4:plugin/customization',
   async load({ customizationFile }) {
     logGenerating('customization')
     return {
       code: generateCustomizationCode(customizationFile),
       moduleType: 'js',
+      moduleSideEffects: false,
     }
   },
 }

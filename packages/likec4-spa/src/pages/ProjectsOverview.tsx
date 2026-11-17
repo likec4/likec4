@@ -6,7 +6,8 @@ import { useLikeC4ProjectsOverview } from 'likec4:projects-overview'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
 import { type CatalogSort, buildProjectsCatalog, selectProjects } from '../components/projects-overview/catalog'
-import { Metric, ProjectsCards, ProjectsTable } from '../components/projects-overview/ProjectsCatalog'
+import { Metric, ProjectsCards } from '../components/projects-overview/ProjectsCatalog'
+import { ProjectsTable } from '../components/projects-overview/ProjectsTable'
 import * as styles from '../components/projects-overview/styles'
 import {
   type SortOption,
@@ -61,7 +62,11 @@ export function ProjectsOverviewPage({ view, onViewChange }: {
     case isMap:
       content = (
         <main className={styles.mapArea}>
-          <LikeC4ProjectsOverview view={projectsOverview} onNavigateToProject={changeProject} />
+          <LikeC4ProjectsOverview
+            view={projectsOverview}
+            onNavigateToProject={changeProject}
+            hideNavigationPanel
+          />
         </main>
       )
       break

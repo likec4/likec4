@@ -3011,6 +3011,9 @@ importers:
       p-debounce:
         specifier: catalog:utils
         version: 5.1.1
+      p-limit:
+        specifier: catalog:utils
+        version: 7.3.3
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0

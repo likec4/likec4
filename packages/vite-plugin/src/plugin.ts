@@ -10,7 +10,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-services'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { loggable } from '@likec4/log'
 import { existsSync } from 'node:fs'
-import pDebounce from 'p-debounce'
+import { limitFunction } from 'p-limit'
 import { resolve } from 'pathe'
 import { funnel, hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
 import type {
@@ -21,11 +21,10 @@ import { detectAI } from './ai/detect-ai'
 import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
+import { enableOpenProjectInEditor } from './openProjectInEditor'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import type { AIOptions, LikeC4VitePluginOptions } from './types'
-
-export type { AIOptions, LikeC4VitePluginOptions }
 import { type ProjectData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
 import { createAppConfigModule } from './virtuals/app-config'
 import { customizationModule } from './virtuals/customization'
@@ -45,6 +44,7 @@ import { rpcModule } from './virtuals/rpc'
 import { singleProjectModule } from './virtuals/single-project'
 import { projectWebcomponentsModule } from './virtuals/webcomponents'
 
+export type { AIOptions, LikeC4VitePluginOptions }
 /**
  * Virtual modules per LikeC4 project that should trigger HMR when model changes
  */
@@ -153,6 +153,19 @@ export function LikeC4VitePlugin({
     }
   }
 
+  const disposables: (() => void)[] = []
+  type Disposable = { dispose: () => void } | (() => void)
+  const disposeOnStop = (...disposablesToAdd: Disposable[]) => {
+    disposables.push(
+      ...disposablesToAdd.map((d) => {
+        if ('dispose' in d) {
+          return () => d.dispose()
+        }
+        return d
+      }),
+    )
+  }
+
   /**
    * Returns a function that detects changes in the projects data
    * @returns true if the projects data has changed, false otherwise
@@ -162,9 +175,8 @@ export function LikeC4VitePlugin({
       id: p.id,
       title: p.title,
       path: p.path,
-      contactPerson: p.config.contactPerson,
+      config: p.config,
       folder: p.folder.toString(),
-      landingPage: p.config.landingPage,
       exportFormats: effectiveWebappExportFormats(p.config),
     })) satisfies (data: ProjectData[]) => any
     let _last: any
@@ -232,23 +244,28 @@ export function LikeC4VitePlugin({
         for (const module of projectVirtuals) {
           const projectId = module.matches(id)
           if (projectId) {
-            return module.virtualId(projectId)
+            return {
+              id: module.virtualId(projectId),
+            }
           }
         }
         for (const module of virtuals) {
           if (module.id === id) {
-            return module.virtualId
+            return {
+              id: module.virtualId,
+            }
           }
         }
-        return null
+        return
       },
     },
 
     load: {
       filter: {
-        id: /likec4:plugin/,
+        id: [/likec4:plugin/],
       },
       async handler(id) {
+        // Handle project-specific virtual modules
         for (const module of projectVirtuals) {
           const projectId = module.matches(id)
           if (projectId) {
@@ -264,6 +281,8 @@ export function LikeC4VitePlugin({
         if (!hasAtLeast(projects, 1)) {
           return null
         }
+
+        // Handle global virtual modules
         for (const module of virtuals) {
           if (module.virtualId === id) {
             return await module.load.call(
@@ -272,82 +291,81 @@ export function LikeC4VitePlugin({
             )
           }
         }
+
         return null
       },
     },
 
-    async configureServer(server) {
-      if (!rpcEnabled) {
-        return
-      }
-      // Enable RPC via HMR
-      enablePluginRPC.call(
-        this,
-        moduleopts({ server }),
-      )
-
-      if (ai) {
-        logger.info(
-          k.dim('enabling') + ' ' + k.magenta('AI Chat'),
-        )
-        const { enableAIServer } = await import('./ai/enableServer')
-        enableAIServer.call(
+    configureServer: {
+      async handler(server) {
+        if (!rpcEnabled) {
+          return
+        }
+        enableOpenProjectInEditor(server, likec4)
+        // Enable RPC via HMR
+        enablePluginRPC.call(
           this,
           moduleopts({ server }),
         )
-      }
-      // Call when server is ready
-      return () => {
-        const hotChannel = server.hot
 
-        const isProjectsChange = projectsChangeDetector()
-
-        const reloadModule = async (id: string): Promise<boolean> => {
-          const md = server.moduleGraph.getModuleById(id)
-          if (!md || md.importers.size === 0) {
-            return false
-          }
-          try {
-            await server.reloadModule(md)
-            return true
-          } catch (err) {
-            logger.error(loggable(err))
-            return false
-          }
+        if (ai) {
+          logger.info(
+            k.dim('enabling') + ' ' + k.magenta('AI Chat'),
+          )
+          const { enableAIServer } = await import('./ai/enableServer')
+          enableAIServer.call(
+            this,
+            moduleopts({ server }),
+          )
         }
+        // Call when server is ready
+        return () => {
+          const hotChannel = server.hot
 
-        const hasErrors = () => {
-          const [error] = likec4.getErrors()
-          if (!error) {
-            return false
+          const reloadModule = async (id: string): Promise<boolean> => {
+            const md = server.moduleGraph.getModuleById(id)
+            if (!md || md.importers.size === 0) {
+              return false
+            }
+            try {
+              await server.reloadModule(md)
+              return true
+            } catch (err) {
+              logger.error(loggable(err))
+              return false
+            }
           }
-          try {
-            hotChannel.send({
-              type: 'error',
-              err: {
-                name: 'LikeC4ValidationError',
-                ...splitErrorMessage(error.message),
-                plugin: 'vite-plugin-likec4',
-                loc: {
-                  file: error.sourceFsPath,
-                  line: error.line,
-                  column: error.range.start.character + 1,
+
+          const hasErrors = () => {
+            const [error] = likec4.getErrors()
+            if (!error) {
+              return false
+            }
+            try {
+              hotChannel.send({
+                type: 'error',
+                err: {
+                  name: 'LikeC4ValidationError',
+                  ...splitErrorMessage(error.message),
+                  plugin: 'vite-plugin-likec4',
+                  loc: {
+                    file: error.sourceFsPath,
+                    line: error.line,
+                    column: error.range.start.character + 1,
+                  },
                 },
-              },
-            })
-            logger.trace(
-              k.dim('sent LikeC4ValidationError'),
-            )
-          } catch (err) {
-            logger.error(loggable(err))
+              })
+              logger.trace(
+                k.dim('sent LikeC4ValidationError'),
+              )
+            } catch (err) {
+              logger.error(loggable(err))
+            }
+            return true
           }
-          return true
-        }
 
-        const reloadProjects = async () => {
-          const projects = likec4.projects()
-          // Update on project data change?
-          if (isProjectsChange(projects)) {
+          const reloadAllProjects = limitFunction(async () => {
+            const projects = likec4.projects()
             logger.trace(
               k.dim('onProjectsUpdate - change detected'),
             )
@@ -360,33 +378,43 @@ export function LikeC4VitePlugin({
             if (projects.length > 1) {
               await reloadModule(projectsOverviewModule.virtualId)
             }
-          } else {
-            logger.trace(
-              k.dim('onProjectsUpdate - no change'),
-            )
-          }
-        }
-        likec4.projectsManager.onProjectsUpdate(
-          pDebounce(reloadProjects, 50),
-        )
+          }, { concurrency: 1 })
 
-        likec4.builder.onModelParsed(onModelParsedBatched(async (projects) => {
-          if (hasErrors()) {
-            return
-          }
-          for (const projectId of projects) {
-            logger.trace(
-              k.dim('onModelParsed project') + ' ' + k.cyan(projectId),
-            )
-            for (const projectModule of hmrProjectVirtuals) {
-              await reloadModule(projectModule.virtualId(projectId))
+          const reloadModels = limitFunction(async (projects: ReadonlySet<ProjectId>) => {
+            if (hasErrors()) {
+              return
             }
-          }
-        }))
-      }
+            for (const projectId of projects) {
+              logger.trace(
+                k.dim('onModelParsed project') + ' ' + k.cyan(projectId),
+              )
+              for (const projectModule of hmrProjectVirtuals) {
+                await reloadModule(projectModule.virtualId(projectId))
+              }
+            }
+          }, { concurrency: 1 })
+
+          disposeOnStop(
+            () => {
+              reloadAllProjects.clearQueue()
+              reloadModels.clearQueue()
+            },
+            likec4.projectsManager.onProjectsUpdate(
+              onProjectsUpdateBatched(reloadAllProjects),
+            ),
+            likec4.builder.onModelParsed(
+              onModelParsedBatched(reloadModels),
+            ),
+          )
+        }
+      },
     },
 
     async buildEnd() {
+      for (const disposable of disposables) {
+        disposable()
+      }
+      disposables.length = 0
       if (shouldDisposeOnStop) {
         await likec4.dispose()
       }
@@ -400,6 +428,22 @@ export function LikeC4VitePlugin({
     }),
     mainPlugin,
   ]
+}
+
+function onProjectsUpdateBatched(
+  callback: () => Promise<void>,
+): () => void {
+  return funnel(
+    () => {
+      callback().catch((error) => {
+        logger.error(loggable(error))
+      })
+    },
+    {
+      minGapMs: 300,
+      triggerAt: 'both',
+    },
+  ).call
 }
 
 function onModelParsedBatched(
@@ -418,8 +462,8 @@ function onModelParsedBatched(
         return accumulator
       },
       triggerAt: 'end',
-      minQuietPeriodMs: 100,
-      maxBurstDurationMs: 500,
+      minQuietPeriodMs: 50,
+      maxBurstDurationMs: 300,
     },
   ).call
 }

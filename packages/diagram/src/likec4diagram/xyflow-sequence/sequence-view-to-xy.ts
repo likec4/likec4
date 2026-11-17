@@ -54,9 +54,8 @@ const calcCollapsedFlows = piped(
  * @param currentViewId The ID of the current view (optional, used to exclude navigation to the current view)
  */
 export function sequenceLayoutToXY(
-  { view, currentViewId, collapsedFlows }: {
+  { view, collapsedFlows }: {
     view: LayoutedDynamicView
-    currentViewId: ViewId | undefined
     collapsedFlows: DiagramContext['collapsedSequenceFlows']
   },
 ): {
@@ -66,8 +65,8 @@ export function sequenceLayoutToXY(
 } {
   const flow = hasProp(view, 'flow') ? dynamicViewFlow(view) : undefined
 
-  // We calculate sequence layout here if any flow is collapsed
-  const layout = flow && !isEmptyish(collapsedFlows)
+  // We recalculate layout here if any flow is collapsed or layout is manual
+  const layout = flow && (!isEmptyish(collapsedFlows) || view._layout === 'manual')
     ? calcSequenceLayout(view, flow, calcCollapsedFlows(collapsedFlows))
     : view.sequenceLayout
 

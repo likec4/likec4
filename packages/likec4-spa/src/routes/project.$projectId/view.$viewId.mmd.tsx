@@ -4,7 +4,6 @@ import { ViewAsMmd } from '../../pages/ViewAsMmd'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/mmd')({
   component: Page,
-  staleTime: Infinity,
   loader: async ({ params, context }) => {
     const projectId = context.projectId
     const { viewId } = params

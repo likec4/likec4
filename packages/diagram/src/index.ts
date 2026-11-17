@@ -97,6 +97,8 @@ export { filterProjects, projectSearchHighlights } from './utils/filterProjects'
 
 export { useUpdateEffect } from './hooks/useUpdateEffect'
 
+export { useCallbackRef } from './hooks/useCallbackRef'
+
 export type { Types } from './likec4diagram/types'
 
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'

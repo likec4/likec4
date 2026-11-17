@@ -9,12 +9,13 @@ import { LikeC4Model } from 'likec4/model'
 import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
 import { useMemo } from 'react'
-import { mapValues } from 'remeda'
 import type { LikeC4VitePluginRpc } from './rpc/protocol'
 
 export { atom, batched, computed, map } from 'nanostores'
 
 export { useStore } from '@nanostores/react'
+
+export { deepEqual, shallowEqual }
 
 export type { Atom, ReadableAtom, WritableAtom } from 'nanostores'
 export type { LikeC4VitePluginRpc } from './rpc/protocol'
@@ -65,19 +66,7 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
   const $likec4model = computed($atom, (data) => LikeC4Model.create(data))
 
   function updateModel(data: LayoutedLikeC4ModelData) {
-    const current = $atom.get()
-    const next = {
-      ...data,
-      views: mapValues(data.views, (next) => {
-        const currentView = current.views[next.id]
-        return deepEqual(currentView, next) ? currentView : next
-      }),
-    }
-    // Check for shallow first, then deep equality to avoid unnecessary updates
-    if (shallowEqual(next.views, current.views) && deepEqual(next, current)) {
-      return
-    }
-    $atom.set(next as LayoutedLikeC4ModelData)
+    $atom.set(data)
   }
 
   // Return views with manual layouts applied via $layouted (#2553).
@@ -96,7 +85,11 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
 
   function useLikeC4View(viewId: string): LayoutedView | null {
     const $view = useMemo(
-      () => computed($likec4model, (model) => model.findView(viewId)?.$layouted ?? null),
+      () => {
+        const $computed = computed($likec4model, (model) => model.findView(viewId)?.$layouted ?? null)
+        $computed.eq = deepEqual
+        return $computed
+      },
       [viewId],
     )
     return useStore($view)
@@ -110,4 +103,20 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
     useLikeC4View,
     isLikeC4ViewId: (id: unknown): id is string => typeof id === 'string' && Object.hasOwn($atom.get().views, id),
   }
+}
+
+/**
+ * Dev only: asks the dev server to open the project config in the editor
+ * (the server resolves the path by project id, see `enableOpenProjectInEditor`)
+ */
+export function openProjectInEditor(projectId: string): void {
+  fetch(`/__likec4/open-project?id=${encodeURIComponent(projectId)}`).catch(console.error)
+}
+
+/**
+ * Dev only: asks the dev server to open the source of an element, relation or view in the editor.
+ * Accepts the same params as `onOpenSource` of the diagram, plus `projectId`.
+ */
+export function openSourceInEditor(params: Record<string, unknown>): void {
+  fetch(`/__likec4/open-source?params=${encodeURIComponent(JSON.stringify(params))}`).catch(console.error)
 }

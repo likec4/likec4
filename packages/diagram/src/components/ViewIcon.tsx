@@ -1,4 +1,4 @@
-import { nonexhaustive } from '@likec4/core'
+import { type ViewType, nonexhaustive } from '@likec4/core'
 import { css, cx } from '@likec4/styles/css'
 import { type IconProps, IconDirectionSignFilled, IconStack2, IconStarFilled, IconZoomScan } from '@tabler/icons-react'
 import type { JSX } from 'react/jsx-runtime'
@@ -38,14 +38,19 @@ export function ViewIcon(
   { type, view, className, ...props }:
     & IconProps
     & ({
-      type: 'index' | 'element' | 'deployment' | 'dynamic'
+      type: 'index' | ViewType
       view?: never
     } | {
-      view: { id: string; _type: 'element' | 'deployment' | 'dynamic' }
+      view:
+        & { id: string }
+        & (
+          | { type: ViewType; _type?: never }
+          | { _type: ViewType; type?: never }
+        )
       type?: never
     }),
 ) {
-  const viewType = type ?? (view.id === 'index' ? 'index' : view._type)
+  const viewType = type ?? (view.id === 'index' ? 'index' : (view._type ?? view.type))
   if (viewType === 'index') {
     return <IconStarFilled size={16} className={cx(viewTypeIconCss, className)} {...props} />
   }
