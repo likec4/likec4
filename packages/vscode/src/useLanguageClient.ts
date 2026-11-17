@@ -80,24 +80,10 @@ export const useLanguageClient = defineService(() => {
 
   // Any `likec4.*` change re-reads the whole configuration, so `exclude` comes back as a new array.
   // Restart only when its content changed, not on unrelated settings such as `likec4.export.*`.
-  // Each change is compared with the previous value, so a change that is reverted within the
-  // debounce window still restarts the server (it may have read the intermediate value).
-  let lastExclude = [...config.exclude]
-  let excludeChanged = false
-  watch(() => config.exclude, (exclude) => {
-    if (deepEqual(exclude, lastExclude)) {
+  watchDebounced(() => config.exclude, (exclude, previous) => {
+    if (deepEqual(exclude, previous)) {
       return
     }
-    lastExclude = [...exclude]
-    excludeChanged = true
-  }, {
-    deep: true,
-  })
-  watchDebounced(() => config.exclude, () => {
-    if (!excludeChanged) {
-      return
-    }
-    excludeChanged = false
     logger.debug`${'exclude'} configuration changed, restarting language server`
     void restartLanguageServer()
   }, {
