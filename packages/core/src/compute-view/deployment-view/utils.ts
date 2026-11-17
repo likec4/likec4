@@ -165,6 +165,29 @@ export function deploymentExpressionToPredicate<
   nonexhaustive(target)
 }
 
+/**
+ * Predicate for a custom element expression (`with { ... }`) over computed nodes.
+ * `where` conditions are checked against the deployment element behind the node,
+ * the same way the include predicates and `navigateTo` check them.
+ */
+export function deploymentElementExprToPredicate<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
+  expr: FqnExpr.OrWhere<A>,
+): Predicate<ComputedNode<A>> {
+  const predicate = deploymentExpressionToPredicate<A, ComputedNode<A>>(FqnExpr.unwrap(expr))
+  if (!FqnExpr.isWhere(expr)) {
+    return predicate
+  }
+  const where = whereOperatorAsPredicate(expr.where.condition)
+  return node => {
+    if (!predicate(node)) {
+      return false
+    }
+    const element = node.deploymentRef ? model.findElement(node.deploymentRef) : null
+    return element != null && applyElementPredicate(element, where)
+  }
+}
+
 function instanceSummary(model: DeployedInstanceModel<any>) {
   return preferSummary(model.$instance) ?? preferSummary(model.element.$element)
 }
