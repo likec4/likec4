@@ -148,7 +148,7 @@ export const port = {
 export const hmrPort = {
   number: true,
   desc:
-    'port number for the HMR WebSocket server (default is auto-discovered from 24678-24690, or HMR_PORT environment variable)',
+    'port number for a separate HMR WebSocket server (default is the dev server port, or HMR_PORT environment variable)',
   nargs: 1,
 } as const satisfies Options
 
