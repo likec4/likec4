@@ -32,7 +32,6 @@ import {
   type ParsedLikeC4LangiumDocument,
   ast,
   calcValidationHash,
-  parseAstHexColor,
   parseAstIconPositionValue,
   parseAstOpacityProperty,
   parseAstPercent,
@@ -583,7 +582,7 @@ export class BaseParser {
       return undefined
     }
     if (ast.isHexColor(astNode)) {
-      return `#${parseAstHexColor(astNode)}`
+      return `#${astNode.hex}`
     }
     if (ast.isRGBAColor(astNode)) {
       let alpha = isNumber(astNode.alpha) ? astNode.alpha : undefined
