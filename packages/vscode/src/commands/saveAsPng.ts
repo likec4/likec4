@@ -11,7 +11,6 @@ import { useExtensionLogger } from '../useExtensionLogger'
 import {
   defaultPngSaveUri,
   logUsedCli,
-  resolveExportNotation,
   resolveExportTheme,
   resolvePngExportTarget,
   saveDirtyLikeC4Documents,
@@ -80,7 +79,7 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview, rpc }: SaveAs
               theme,
               nodePath: config.node.path,
               cliPath: config.cli.path,
-              notation: resolveExportNotation(),
+              notation: config.export.notation,
             }),
         )
         logUsedCli(output, cli, cliVersion)

@@ -25,7 +25,7 @@ export type ExportViewPngParams = {
   nodePath?: string | undefined
   /** `likec4.cli.path` */
   cliPath?: string | undefined
-  /** `likec4.export.notation*` */
+  /** `likec4.export.notation.*` */
   notation?: PngExportNotation | undefined
   /** Extra CLI args (tests / advanced). */
   extraArgs?: string[] | undefined

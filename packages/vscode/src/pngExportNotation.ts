@@ -2,7 +2,7 @@
 
 /**
  * Notation (legend) of images from **Copy as PNG** and **Save as PNG**,
- * from the `likec4.export.notation*` settings.
+ * from the `likec4.export.notation.*` settings.
  */
 export type PngExportNotation = {
   enabled: boolean
