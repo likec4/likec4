@@ -509,7 +509,7 @@ const layoutDriftedIcon = (
     size={10}
     className={css({
       position: 'absolute',
-      color: 'surface.warning',
+      color: 'text.warning',
     })}
     style={{
       left: -3,

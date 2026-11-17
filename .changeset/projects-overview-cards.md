@@ -14,3 +14,7 @@ The projects page can now search inside every project: press `⌘K` or `/` to fi
 `Overlay` from `@likec4/diagram/custom` accepts `motionPreset="lift"`: a short fade with an 8px drop instead of the scale-in, for full-screen palettes.
 
 `likec4:projects` now includes each project's `contactPerson` from its config.
+
+In dev mode, clicking a project's folder on its card opens the project config in your editor, and "go to source" in a diagram opens the element, relationship or view at its exact position.
+
+Project cards flag views whose manual layout has drifted; hover the warning to see which views and jump to them.

@@ -193,7 +193,6 @@ export const cardHead = css({
   gap: '3.5',
   paddingTop: '5',
   paddingX: '5',
-  paddingBottom: '4',
 })
 
 /**
@@ -272,15 +271,22 @@ export const cardOpen = css({
   },
 })
 
+/**
+ * Details hang off the title's left edge: card padding (20) + monogram (36) + head gap (14).
+ * Grows to fill the card, so footers line up across a row of equal-height cards
+ */
 export const cardBody = css({
+  // above the stretched link of the head
+  position: 'relative',
+  zIndex: '[1]',
+  flex: '1',
   display: 'flex',
   flexDirection: 'column',
   gap: '2',
-  paddingY: '4',
-  paddingX: '5',
-  borderTopWidth: '1',
-  borderTopStyle: 'solid',
-  borderColor: 'border.subtle',
+  paddingTop: '3',
+  paddingRight: '5',
+  paddingBottom: '[18px]',
+  paddingLeft: '[70px]',
 })
 
 export const detailButton = css({
@@ -343,13 +349,20 @@ export const cardFoot = css({
   display: 'flex',
   alignItems: 'center',
   gap: '5',
-  minHeight: '[56px]',
-  paddingY: '2.5',
+  minHeight: '[52px]',
+  paddingY: '2',
   paddingLeft: '5',
   paddingRight: '3',
+  backgroundColor: 'surface.sunken',
   borderTopWidth: '1',
   borderTopStyle: 'solid',
   borderColor: 'border.subtle',
+  // inner radius of the card border
+  borderBottomRadius: '[calc(var(--radii-md) - 1px)]',
+  // the expanded dependencies panel follows
+  '&:not(:last-child)': {
+    borderBottomRadius: '0',
+  },
 })
 
 export const depSummary = css({

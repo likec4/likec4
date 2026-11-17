@@ -212,7 +212,8 @@ function ProjectCard({ project }: { project: CatalogProject }) {
 
 export function ProjectsCards({ projects }: { projects: ReadonlyArray<CatalogProject> }) {
   return (
-    <CardGrid>
+    // equal-height cards, so footers line up along a row
+    <CardGrid css={{ alignItems: 'stretch', gap: { base: '5', sm: '6' } }}>
       {projects.map(project => <ProjectCard key={project.id} project={project} />)}
     </CardGrid>
   )
@@ -289,7 +290,31 @@ const driftsLink = css({
   _hover: { textDecoration: 'none' },
 })
 
-const iconColor = css({ color: 'text.warning', fill: 'text.warning' })
+/**
+ * Drift warning as a washed pill. Colours are mixed against the theme's own surface and bright text,
+ * so the same rules hold contrast in light and dark
+ */
+const driftBadge = css({
+  width: 'fit-content',
+  maxWidth: '100%',
+  gap: '1.5',
+  // keeps the icon on the column of the other detail icons
+  marginLeft: '[-10px]',
+  paddingY: '[3px]',
+  paddingX: '2.5',
+  borderRadius: 'pill',
+  backgroundColor: '[color-mix(in oklab, var(--mantine-color-orange-6) 13%, var(--colors-surface-default))]',
+  boxShadow: '[inset 0 0 0 1px color-mix(in oklab, var(--mantine-color-orange-6) 25%, var(--colors-surface-default))]',
+})
+
+const driftIcon = css({
+  fill: '[color-mix(in oklab, var(--mantine-color-orange-7) 88%, var(--colors-text-bright))]',
+})
+
+const driftText = css({
+  color: 'text.warning',
+  fontWeight: 'medium',
+})
 
 const truncate = css({
   minWidth: '0',
@@ -349,9 +374,9 @@ const ProjectDriftsWarningLoaded = ({ projectId }: { projectId: ProjectId }) => 
       shadow="md"
       withinPortal>
       <HoverCard.Target>
-        <styled.div className={styles.detail}>
-          <IconAlertTriangleFilled size={14} aria-hidden className={iconColor} />
-          <styled.span className={iconColor}>
+        <styled.div className={cx(styles.detail, driftBadge)}>
+          <IconAlertTriangleFilled size={14} aria-hidden className={driftIcon} />
+          <styled.span className={driftText}>
             {hasDrifts.length} view{hasDrifts.length === 1 ? '' : 's'} drifted
           </styled.span>
         </styled.div>
