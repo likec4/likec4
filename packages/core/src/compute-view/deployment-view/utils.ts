@@ -165,24 +165,27 @@ export function deploymentExpressionToPredicate<
   nonexhaustive(target)
 }
 
-export function deploymentElementExprToPredicate<
-  A extends AnyAux,
-  N extends {
-    id: string | aux.DeploymentFqn<A>
-    modelRef?: aux.Fqn<A> | undefined
-    tags?: aux.Tags<A> | null | undefined
-    kind?: aux.AllKinds<A> | null | undefined
-    metadata?: Record<string, string | string[] | undefined> | null | undefined
-  },
->(
+/**
+ * Predicate for a custom element expression (`with { ... }`) over computed nodes.
+ * `where` conditions are checked against the deployment element behind the node,
+ * the same way the include predicates and `navigateTo` check them.
+ */
+export function deploymentElementExprToPredicate<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
   expr: FqnExpr.OrWhere<A>,
-): Predicate<N> {
-  const predicate = deploymentExpressionToPredicate<A, N>(FqnExpr.unwrap(expr))
+): Predicate<ComputedNode<A>> {
+  const predicate = deploymentExpressionToPredicate<A, ComputedNode<A>>(FqnExpr.unwrap(expr))
   if (!FqnExpr.isWhere(expr)) {
     return predicate
   }
   const where = whereOperatorAsPredicate(expr.where.condition)
-  return n => predicate(n) && where({ tags: n.tags, kind: n.kind, metadata: n.metadata })
+  return node => {
+    if (!predicate(node)) {
+      return false
+    }
+    const element = node.deploymentRef ? model.findElement(node.deploymentRef) : null
+    return element != null && applyElementPredicate(element, where)
+  }
 }
 
 function instanceSummary(model: DeployedInstanceModel<any>) {

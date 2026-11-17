@@ -1,6 +1,6 @@
 import { findLast, map } from 'remeda'
 import { type DeploymentConnectionModel, type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import type { AnyAux, aux, ComputedNode, DeploymentViewRule } from '../../types'
+import type { AnyAux, DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
   type ParsedDeploymentView as DeploymentView,
@@ -185,11 +185,6 @@ function processGroupRules(
   return memory
 }
 
-// Group nodes have kind `@group`, which deployment predicates don't accept (applyCustomElementProperties skips them)
-type DeploymentNodeFilter<A extends AnyAux> = Omit<ComputedNode<A>, 'kind'> & {
-  kind: aux.ElementKind<A> | aux.DeploymentKind<A>
-}
-
 function flattenDeploymentRules<A extends AnyAux>(rules: DeploymentViewRule<A>[]): DeploymentViewRule<A>[] {
   return rules.flatMap(rule => isViewRuleGroup(rule) ? flattenDeploymentRules(rule.groupRules) : [rule])
 }
@@ -223,10 +218,7 @@ export function computeDeploymentView<M extends AnyAux>(
 
   const applyCustomElementProperties = createApplyCustomElementProperties({
     guard: FqnExpr.isCustom<M>,
-    toPredicate: expr => {
-      const satisfies = deploymentElementExprToPredicate<M, DeploymentNodeFilter<M>>(expr)
-      return (node: ComputedNode<M>) => node.kind !== '@group' && satisfies({ ...node, kind: node.kind })
-    },
+    toPredicate: expr => deploymentElementExprToPredicate(likec4model.deployment, expr),
   })
   const nodes = applyCustomElementProperties(
     flatRules,
