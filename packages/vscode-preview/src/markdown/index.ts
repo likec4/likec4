@@ -1,16 +1,23 @@
-let started = false
+import { documentKey, positionSnapshots, previewDiagnostics, startFrameTrace } from './viewport.ts'
+
+const diag = previewDiagnostics()
+diag.marks['scriptStart'] ??= Math.round(performance.now())
 
 function startApp(): void {
-  if (started) {
+  if (diag.started) {
     return
   }
-  started = true
+  diag.started = true
   void import('./app.tsx').then((app) => {
     app.start()
   })
 }
 
 function onReady(): void {
+  positionSnapshots(documentKey())
+  diag.marks['snapshotsPositioned'] ??= Math.round(performance.now())
+  startFrameTrace()
+
   if (document.readyState === 'complete') {
     setTimeout(startApp, 0)
     return

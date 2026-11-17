@@ -1,7 +1,7 @@
 import postcssPanda from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -82,6 +82,14 @@ export default defineConfig(({ mode }) => {
               })
             }
           },
+        },
+      },
+      {
+        name: 'copy-preview-css',
+        closeBundle() {
+          const targetDir = isWatchDev ? resolve('..', 'vscode', 'dist', 'markdown') : resolve('dist/markdown')
+          mkdirSync(targetDir, { recursive: true })
+          copyFileSync(resolve('src/markdown/preview.css'), resolve(targetDir, 'preview.css'))
         },
       },
     ],

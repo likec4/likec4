@@ -172,4 +172,21 @@ describe('likec4MarkdownIt', () => {
     expect(second).toContain('class="likec4-model"')
     expect(second).toContain('-index-1"')
   })
+
+  it('passes stale and trimmed data cleanly to renderHostBody', () => {
+    const { deps, snap } = createDeps({
+      snapshot: () => ({
+        ...snap,
+        state: 'stale',
+        message: 'model.c4:3: syntax error',
+      }),
+      renderHostBody: (_s, viewId, opts, hostId, data) =>
+        `<div class="notice">${data.state}:${data.message}</div><svg data-host="${hostId}" data-view="${viewId}" data-scheme="${opts.scheme}"/>`,
+    })
+    const md = likec4MarkdownIt(new MarkdownIt(), deps)
+    const html = md.render('```likec4-view color-scheme=light\nindex\n```\n')
+    expect(html).toContain('"state":"stale"')
+    expect(html).toContain('stale:model.c4:3: syntax error')
+    expect(html).toContain('data-scheme="light"')
+  })
 })

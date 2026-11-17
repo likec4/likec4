@@ -100,4 +100,31 @@ describe('HostManager', () => {
     expect(unmountCount).toHaveBeenCalledTimes(1)
     expect(manager.entries.size).toBe(0)
   })
+
+  it('defers off-screen hosts until shouldMount permits mounting and keeps static slot ready', () => {
+    const doc = document
+    const content = doc.getElementById('content')!
+    content.innerHTML = `${renderHostHtml('h-visible', 'v1')}${renderHostHtml('h-far', 'v2')}`
+    const hVisible = doc.getElementById('h-visible')!
+    const hFar = doc.getElementById('h-far')!
+    let mountFar = false
+
+    const manager = new HostManager(doc, {
+      createRoot: () => ({ render: vi.fn<() => void>(), unmount: vi.fn<() => void>() }),
+      shouldMount: (host) => host.id === 'h-visible' || mountFar,
+      model: () => ({ hash: 'm1' }),
+      view: (input) => input.hostId,
+    })
+
+    manager.scan()
+    expect(manager.entries.has(hVisible)).toBe(true)
+    expect(manager.entries.has(hFar)).toBe(false)
+    expect(manager.deferred.has(hFar)).toBe(true)
+    expect(hVisible.shadowRoot?.querySelector('slot')).not.toBeNull()
+
+    mountFar = true
+    manager.scan()
+    expect(manager.entries.has(hFar)).toBe(true)
+    expect(manager.deferred.size).toBe(0)
+  })
 })

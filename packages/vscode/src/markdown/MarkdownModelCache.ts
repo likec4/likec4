@@ -1,10 +1,12 @@
 import type { ProjectId } from '@likec4/core/types'
 import { loggable } from '@likec4/log'
+import { posix } from 'pathe'
 import { defineService, useDisposable, watch } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 import { useIsActivated } from '../useIsActivated.ts'
 import { useRpc } from '../useRpc.ts'
+import { isLikeC4Source } from '../utils.ts'
 import { jsonForScript } from './html.ts'
 import { projectKey } from './markdownItPlugin.ts'
 import { RefreshScheduler } from './refresh.ts'
@@ -12,8 +14,11 @@ import {
   type ProjectResolution,
   type ResolvedProject,
   type UriLocation,
+  documentDirOf,
   documentUriOf,
   fromRpcProjects,
+  isWithinLocation,
+  normalizeUri,
   resolveProject,
 } from './resolveProject.ts'
 import { sha1Hex, stableHash } from './sha1.ts'
@@ -51,8 +56,10 @@ export const useMarkdownModelCache = defineService(() => {
   let pendingProjectsReason = ''
 
   const snapshots = new Map<string, ProjectSnapshot>()
+  const lastValid = new Map<string, { snap: ProjectSnapshot; prev?: ProjectSnapshot | undefined; okAt: number }>()
   const inflightModels = new Set<string>()
   const dirtyModels = new Set<string>()
+  const diagTimers = new Map<string, ReturnType<typeof setTimeout>>()
   const docRefs = new Map<string, Set<string>>()
   const pendingDiscoveryDocs = new Set<string>()
 
@@ -79,8 +86,13 @@ export const useMarkdownModelCache = defineService(() => {
 
   useDisposable({
     dispose() {
+      for (const timer of diagTimers.values()) {
+        clearTimeout(timer)
+      }
+      diagTimers.clear()
       scheduler.dispose()
       snapshots.clear()
+      lastValid.clear()
       docRefs.clear()
       pendingDiscoveryDocs.clear()
     },
@@ -95,6 +107,89 @@ export const useMarkdownModelCache = defineService(() => {
     return false
   }
 
+  function diagnosticOwnerProject(uri: vscode.Uri): ResolvedProject | undefined {
+    if (!projects || projects.length === 0) {
+      return undefined
+    }
+    const targetUri = documentUriOf(uri)
+    if (targetUri) {
+      const targetLoc = normalizeUri(targetUri)
+      const direct = projects.find((p) =>
+        p.docs.some((d) => {
+          const docLoc = normalizeUri(d)
+          return docLoc.scheme === targetLoc.scheme
+            && docLoc.authority === targetLoc.authority
+            && docLoc.path === targetLoc.path
+        })
+      )
+      if (direct) {
+        return direct
+      }
+    }
+    const dir = documentDirOf(uri)
+    if (!dir) {
+      return undefined
+    }
+    const resolved = resolveProject(dir, undefined, projects)
+    if (!resolved.ok) {
+      return undefined
+    }
+    const project = resolved.project
+    return isWithinLocation(dir, {
+        scheme: project.scheme,
+        authority: project.authority,
+        path: project.folderPath,
+      })
+      ? project
+      : undefined
+  }
+
+  function projectDiagnosticError(projectId: ProjectId): string | undefined {
+    const errors: Array<{ file: string; line: number; message: string }> = []
+    for (const [uri, diagnostics] of vscode.languages.getDiagnostics()) {
+      const errDiags = diagnostics.filter(
+        (d) => d.severity === vscode.DiagnosticSeverity.Error && (d.source === 'likec4' || isLikeC4Source(uri.path)),
+      )
+      if (errDiags.length === 0) {
+        continue
+      }
+      const owner = diagnosticOwnerProject(uri)
+      if (!owner || owner.id !== projectId) {
+        continue
+      }
+      const file = posix.basename(uri.path) || uri.fsPath
+      for (const d of errDiags) {
+        errors.push({ file, line: d.range.start.line + 1, message: d.message })
+      }
+    }
+    if (errors.length === 0) {
+      return undefined
+    }
+    const first = errors[0]!
+    const extra = errors.length > 1 ? ` (+${errors.length - 1} more)` : ''
+    return `${first.file}:${first.line}: ${first.message}${extra}`
+  }
+
+  function buildStaleOrErrorSnapshot(projectId: ProjectId, message: string, fromDiagnostics: boolean): ProjectSnapshot {
+    const valid = lastValid.get(projectId)
+    const fallback = valid && fromDiagnostics && Date.now() - valid.okAt < 600 && valid.prev
+      ? valid.prev
+      : valid?.snap
+    if (fallback?.data) {
+      return {
+        ...fallback,
+        state: 'stale',
+        message,
+      }
+    }
+    return {
+      hash: sha1Hex(`error:${message}`),
+      state: 'error',
+      message,
+      viewIds: new Set(),
+    }
+  }
+
   async function fetchProjectModel(projectId: ProjectId, reason: string): Promise<void> {
     if (!isActivated.value) {
       return
@@ -106,38 +201,69 @@ export const useMarkdownModelCache = defineService(() => {
     }
     inflightModels.add(key)
     try {
+      const diagError = projectDiagnosticError(projectId)
+      const fromDiagnostics = reason === 'diagnostics changed'
       let next: ProjectSnapshot
-      try {
-        const { model } = await rpc.fetchLayoutedModel(projectId)
-        if (!model) {
-          const message = `Failed to load layouted model for project "${projectId}".`
-          next = {
-            hash: sha1Hex(`empty:${projectId}`),
-            state: 'error',
-            message,
-            viewIds: new Set(),
+
+      if (diagError && fromDiagnostics && lastValid.has(key)) {
+        next = buildStaleOrErrorSnapshot(projectId, diagError, true)
+      } else {
+        try {
+          const { model } = await rpc.fetchLayoutedModel(projectId)
+          if (!model) {
+            next = buildStaleOrErrorSnapshot(
+              projectId,
+              diagError ?? `Failed to load layouted model for project "${projectId}".`,
+              false,
+            )
+          } else {
+            const modelJson = jsonForScript(model)
+            const modelBytes = textEncoder.encode(modelJson).byteLength
+            const hash = stableHash(model)
+            const viewIds = new Set(Object.keys(model.views))
+            if (diagError) {
+              const valid = lastValid.get(key)
+              if (valid?.snap.data) {
+                next = buildStaleOrErrorSnapshot(projectId, diagError, false)
+              } else if (viewIds.size > 0) {
+                next = {
+                  hash,
+                  state: 'stale',
+                  message: diagError,
+                  viewIds,
+                  data: model,
+                  modelJson,
+                  modelBytes,
+                }
+              } else {
+                next = {
+                  hash: sha1Hex(`error:${diagError}`),
+                  state: 'error',
+                  message: diagError,
+                  viewIds: new Set(),
+                }
+              }
+            } else {
+              next = {
+                hash,
+                state: 'ok',
+                viewIds,
+                data: model,
+                modelJson,
+                modelBytes,
+              }
+              const prevValid = lastValid.get(key)?.snap
+              lastValid.set(key, {
+                snap: next,
+                prev: prevValid && prevValid.hash !== next.hash ? prevValid : lastValid.get(key)?.prev,
+                okAt: Date.now(),
+              })
+            }
           }
-        } else {
-          const modelJson = jsonForScript(model)
-          const modelBytes = textEncoder.encode(modelJson).byteLength
-          const hash = stableHash(model)
-          next = {
-            hash,
-            state: 'ok',
-            viewIds: new Set(Object.keys(model.views)),
-            data: model,
-            modelJson,
-            modelBytes,
-          }
-        }
-      } catch (err) {
-        const message = err instanceof Error ? err.message : loggable(err)
-        logger.debug`failed to fetch layouted model for ${projectId}: ${message}`
-        next = {
-          hash: sha1Hex(`error:${message}`),
-          state: 'error',
-          message,
-          viewIds: new Set(),
+        } catch (err) {
+          const caught = err instanceof Error ? err.message : loggable(err)
+          logger.debug`failed to fetch layouted model for ${projectId}: ${caught}`
+          next = buildStaleOrErrorSnapshot(projectId, diagError ?? caught, false)
         }
       }
 
@@ -175,6 +301,7 @@ export const useMarkdownModelCache = defineService(() => {
       for (const oldKey of prevIds) {
         if (!nextIds.has(oldKey)) {
           snapshots.delete(oldKey)
+          lastValid.delete(oldKey)
           removed.push(oldKey)
         }
       }
@@ -231,6 +358,43 @@ export const useMarkdownModelCache = defineService(() => {
       void fetchProjectModel(projectId, 'model changed')
     }
   })
+
+  function scheduleDiagnosticsSync(projectId: ProjectId): void {
+    const existing = diagTimers.get(projectId)
+    if (existing) {
+      clearTimeout(existing)
+    }
+    diagTimers.set(
+      projectId,
+      setTimeout(() => {
+        diagTimers.delete(projectId)
+        if (!isActivated.value) {
+          return
+        }
+        if (snapshots.has(projectId) || hasReferencingDocument(projectId)) {
+          void fetchProjectModel(projectId, 'diagnostics changed')
+        }
+      }, 40),
+    )
+  }
+
+  useDisposable(
+    vscode.languages.onDidChangeDiagnostics((event) => {
+      if (!isActivated.value || !projects) {
+        return
+      }
+      const affected = new Set<ProjectId>()
+      for (const uri of event.uris) {
+        const owner = diagnosticOwnerProject(uri)
+        if (owner) {
+          affected.add(owner.id)
+        }
+      }
+      for (const projectId of affected) {
+        scheduleDiagnosticsSync(projectId)
+      }
+    }),
+  )
 
   useDisposable(
     vscode.workspace.onDidCloseTextDocument((doc) => {

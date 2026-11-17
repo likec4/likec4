@@ -212,6 +212,28 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "%ext.config.markdownPreview.enabled.description%"
+        },
+        "likec4.markdownPreview.colorScheme": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "light",
+            "dark"
+          ],
+          "default": "auto",
+          "markdownDescription": "%ext.config.markdownPreview.colorScheme.description%"
+        },
+        "likec4.markdownPreview.maxHeight": {
+          "type": "number",
+          "default": 600,
+          "minimum": 100,
+          "markdownDescription": "%ext.config.markdownPreview.maxHeight.description%"
+        },
+        "likec4.markdownPreview.maxModelBytes": {
+          "type": "number",
+          "default": 2097152,
+          "minimum": 65536,
+          "markdownDescription": "%ext.config.markdownPreview.maxModelBytes.description%"
         }
       }
     },
@@ -355,7 +377,8 @@
       "./dist/markdown/index.js"
     ],
     "markdown.previewStyles": [
-      "./dist/preview/fonts.css"
+      "./dist/preview/fonts.css",
+      "./dist/markdown/preview.css"
     ]
   },
   "activationEvents": [
