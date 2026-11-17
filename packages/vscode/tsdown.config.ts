@@ -2,7 +2,7 @@ import { stubBrotli } from '@likec4/devops/tsdown'
 import nodeModulesPolyfillPlugin from '@rolldown/plugin-node-polyfills'
 import { existsSync } from 'node:fs'
 import { cp } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { isProduction } from 'std-env'
 import { defineConfig } from 'tsdown'
@@ -138,12 +138,27 @@ async function copyPreview(): Promise<void> {
   if (!existsSync(vscodePreview)) {
     throw new Error(`vscode-preview dist not found: ${vscodePreview}`)
   }
-  console.info('Copy vscode preview from %s', vscodePreview)
+  const markdownPreview = resolve('../vscode-preview/dist/markdown')
+  if (!existsSync(markdownPreview)) {
+    throw new Error(`vscode-preview markdown dist not found: ${markdownPreview}`)
+  }
 
+  console.info('Copy vscode preview from %s', vscodePreview)
   emptyDir('dist/preview')
   await cp(
     vscodePreview,
     'dist/preview',
+    {
+      recursive: true,
+      filter: (source) => source !== markdownPreview && !source.startsWith(`${markdownPreview}${sep}`),
+    },
+  )
+
+  console.info('Copy vscode markdown preview from %s', markdownPreview)
+  emptyDir('dist/markdown')
+  await cp(
+    markdownPreview,
+    'dist/markdown',
     { recursive: true },
   )
 }

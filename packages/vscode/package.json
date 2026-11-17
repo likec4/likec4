@@ -207,6 +207,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "likec4.markdownPreview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%ext.config.markdownPreview.enabled.description%"
         }
       }
     },
@@ -344,6 +349,13 @@
           }
         ]
       }
+    ],
+    "markdown.markdownItPlugins": true,
+    "markdown.previewScripts": [
+      "./dist/markdown/index.js"
+    ],
+    "markdown.previewStyles": [
+      "./dist/preview/fonts.css"
     ]
   },
   "activationEvents": [
@@ -370,6 +382,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@reactive-vscode/vueuse": "^1.0.2",
     "@rolldown/plugin-node-polyfills": "catalog:tsdown",
+    "@types/markdown-it": "catalog:",
     "@types/node": "catalog:",
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
@@ -377,6 +390,7 @@
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
+    "markdown-it": "catalog:",
     "nano-spawn": "catalog:externals",
     "nanoid": "catalog:utils",
     "p-queue": "catalog:utils",

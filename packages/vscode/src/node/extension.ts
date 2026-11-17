@@ -11,10 +11,14 @@ export const { activate, deactivate } = defineExtension(() => {
   const { output, configureLogger } = useConfigureLogger()
   configureLogger()
   try {
-    activateExtension('node')
+    const { extendMarkdownIt } = activateExtension('node')
     useMcpRegistration()
     useLikeC4ChatParticipant()
+    return {
+      extendMarkdownIt,
+    }
   } catch (e) {
     output.error(loggable(e))
+    return undefined
   }
 })

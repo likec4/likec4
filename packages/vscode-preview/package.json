@@ -6,13 +6,14 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./protocol": "./protocol.ts"
+    "./protocol": "./protocol.ts",
+    "./markdown-protocol": "./markdown-protocol.ts"
   },
   "scripts": {
     "test": "vitest run --no-isolate",
     "test:watch": "vitest",
     "typecheck": "tsc --build --verbose",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.markdown.config.ts",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
     "lint": "run -T eslint src/ --fix",
@@ -42,6 +43,8 @@
     "@xyflow/react": "catalog:xyflow",
     "@xyflow/system": "catalog:xyflow",
     "fast-equals": "catalog:utils",
+    "jsdom": "catalog:",
+    "morphdom": "catalog:",
     "nanostores": "catalog:react",
     "oxc-transform-react": "catalog:tsdown",
     "postcss": "catalog:css",

@@ -11,33 +11,45 @@ import { globPattern } from '../const'
 import { type OutputLogger, useConfigureLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 
-export const { activate, deactivate } = defineExtension(async () => {
+export const { activate, deactivate } = defineExtension(() => {
   const { output } = useConfigureLogger()
   try {
-    // Language-server worker does not have access to the file system
-    // so we do this trick - find all files and open editors
-    // so that language server can load them via textDocument requests
-    const docs = await recursiveSearchSources(output)
+    const { rpc, extendMarkdownIt, ensureLanguageServer } = activateExtension('web')
 
-    if (docs.length <= 0) {
-      output.warn(`[activate] with pattern {globPattern} no docs found`, { globPattern })
-    } else {
-      output.info(`[activate] with pattern {globPattern} found:\n${docs.map(s => '  - ' + s).join('\n')}`, {
-        globPattern,
-      })
-    }
+    void (async () => {
+      try {
+        // Language-server worker does not have access to the file system
+        // so we do this trick - find all files and open editors
+        // so that language server can load them via textDocument requests
+        const docs = await recursiveSearchSources(output)
 
-    const { rpc } = activateExtension('web')
+        if (docs.length <= 0) {
+          output.warn(`[activate] with pattern {globPattern} no docs found`, { globPattern })
+          return
+        }
 
-    if (docs.length > 0) {
-      const minWait = 3000
-      await delay(minWait, minWait + 1000)
+        output.info(`[activate] with pattern {globPattern} found:\n${docs.map(s => '  - ' + s).join('\n')}`, {
+          globPattern,
+        })
 
-      output.info(`send buildDocuments`)
-      await rpc.buildDocuments(docs)
+        ensureLanguageServer('web sources found')
+
+        const minWait = 3000
+        await delay(minWait, minWait + 1000)
+
+        output.info(`send buildDocuments`)
+        await rpc.buildDocuments(docs)
+      } catch (e) {
+        output.error(loggable(e))
+      }
+    })()
+
+    return {
+      extendMarkdownIt,
     }
   } catch (e) {
     output.error(loggable(e))
+    return undefined
   }
 })
 

@@ -151,6 +151,7 @@ export type ConfigKey =
   | "likec4.node.path"
   | "likec4.cli.path"
   | "likec4.exclude"
+  | "likec4.markdownPreview.enabled"
 
 export interface ConfigKeyTypeMap {
   "likec4.graphviz.mode": ("wasm" | "binary"),
@@ -161,6 +162,7 @@ export interface ConfigKeyTypeMap {
   "likec4.node.path": string,
   "likec4.cli.path": string,
   "likec4.exclude": string[],
+  "likec4.markdownPreview.enabled": boolean,
 }
 
 export interface ConfigShorthandMap {
@@ -172,6 +174,7 @@ export interface ConfigShorthandMap {
   nodePath: "likec4.node.path",
   cliPath: "likec4.cli.path",
   exclude: "likec4.exclude",
+  markdownPreviewEnabled: "likec4.markdownPreview.enabled",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -183,6 +186,7 @@ export interface ConfigShorthandTypeMap {
   nodePath: string,
   cliPath: string,
   exclude: string[],
+  markdownPreviewEnabled: boolean,
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -275,6 +279,16 @@ export const configs = {
     key: "likec4.exclude",
     default: [],
   } as ConfigItem<"likec4.exclude">,
+  /**
+   *
+   * @key `likec4.markdownPreview.enabled`
+   * @default `true`
+   * @type `boolean`
+   */
+  markdownPreviewEnabled: {
+    key: "likec4.markdownPreview.enabled",
+    default: true,
+  } as ConfigItem<"likec4.markdownPreview.enabled">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -286,6 +300,7 @@ export interface ScopedConfigKeyTypeMap {
   "node.path": string,
   "cli.path": string,
   "exclude": string[],
+  "markdownPreview.enabled": boolean,
 }
 
 export const scopedConfigs = {
@@ -299,6 +314,7 @@ export const scopedConfigs = {
     "node.path": "",
     "cli.path": "",
     "exclude": [],
+    "markdownPreview.enabled": true,
   } satisfies ScopedConfigKeyTypeMap,
 }
 
@@ -322,6 +338,9 @@ export interface NestedConfigs {
       "path": string,
     },
     "exclude": string[],
+    "markdownPreview": {
+      "enabled": boolean,
+    },
   },
 }
 
@@ -344,5 +363,8 @@ export interface NestedScopedConfigs {
     "path": string,
   },
   "exclude": string[],
+  "markdownPreview": {
+    "enabled": boolean,
+  },
 }
 
