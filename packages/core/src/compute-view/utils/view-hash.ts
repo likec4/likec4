@@ -1,15 +1,16 @@
-import { isTruthy, map, mapToObj, pipe } from 'remeda'
+import { indexBy, isTruthy, map, mapToObj, pipe, prop } from 'remeda'
 import type { SetOptional } from 'type-fest'
-import { type ComputedView, flattenMarkdownOrString } from '../../types'
+import { type ProcessedView, flattenMarkdownOrString } from '../../types'
 import { objectHash } from '../../utils'
 
-export function calcViewLayoutHash<V extends ComputedView<any>>(view: SetOptional<V, 'hash'>): V {
+export function calcViewLayoutHash<V extends ProcessedView<any>>(view: SetOptional<V, 'hash'>): V {
   const tohash = {
     id: view.id,
     __: view._type ?? 'element',
     autoLayout: view.autoLayout,
     // Include resolved orthogonal routing while preserving hashes for spline views.
     ...(view.routing && { routing: view.routing }),
+    ...(view._type === 'dynamic' && { flow: view.flow, variant: view.variant }),
     nodes: pipe(
       view.nodes,
       map(n => ({
@@ -32,7 +33,7 @@ export function calcViewLayoutHash<V extends ComputedView<any>>(view: SetOptiona
         ...(n.style.sizing && { sizing: n.style.sizing }),
         children: n.children,
       })),
-      mapToObj(({ id, ...node }) => [id, node]),
+      indexBy(prop('id')),
     ),
     edges: pipe(
       view.edges,
