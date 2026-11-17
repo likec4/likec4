@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import type { NonEmptyArray } from '../types/_common'
-import { isOrthoSpline, splineToPolyline } from './spline'
+import { type OrthoSpline, isOrthoSpline, splineToPolyline } from './spline'
 import type { Point, XYPoint } from './types'
 
 describe('isOrthoSpline', () => {
@@ -31,8 +31,18 @@ describe('isOrthoSpline', () => {
     const points: ReadonlyArray<Point> = [[5, 5]]
     expect(isOrthoSpline(points)).toBe(true)
     if (isOrthoSpline(points)) {
-      expectTypeOf(points).toEqualTypeOf<NonEmptyArray<Point>>()
+      expectTypeOf(points).toEqualTypeOf<OrthoSpline>()
+      expectTypeOf(points).toExtend<NonEmptyArray<Point>>()
     }
+  })
+
+  it('keeps a rejected non-empty array non-empty', () => {
+    const points: NonEmptyArray<Point> = [[0, 0], [10, 10], [20, 0], [30, 10]]
+    if (isOrthoSpline(points)) {
+      throw new Error('expected a curved spline to be rejected')
+    }
+    expectTypeOf(points).toEqualTypeOf<NonEmptyArray<Point>>()
+    expect(points.map(([x]) => x)).toEqual([0, 10, 20, 30])
   })
 })
 

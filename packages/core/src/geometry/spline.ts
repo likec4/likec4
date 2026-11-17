@@ -1,3 +1,4 @@
+import type { Tagged } from 'type-fest'
 import type { NonEmptyArray } from '../types/_common'
 import { invariant } from '../utils/invariant'
 import type { Point, XYPoint } from './types'
@@ -8,10 +9,16 @@ export function nearlyEqual(a: number, b: number): boolean {
 }
 
 /**
+ * A complete Graphviz spline whose cubics are all horizontal or vertical, as checked by {@link isOrthoSpline}.
+ * Tagged so that a `false` result does not narrow a caller's `NonEmptyArray<Point>` to `never`.
+ */
+export type OrthoSpline = Tagged<NonEmptyArray<Point>, 'OrthoSpline'>
+
+/**
  * True when `points` is a complete Graphviz spline (`1 + 3n` points, at least one) and every cubic is
  * horizontal or vertical within one unit. A single point is an ortho spline without cubics.
  */
-export function isOrthoSpline(points: ReadonlyArray<Point>): points is NonEmptyArray<Point> {
+export function isOrthoSpline(points: ReadonlyArray<Point>): points is OrthoSpline {
   if (!isSplineLength(points.length)) {
     return false
   }
