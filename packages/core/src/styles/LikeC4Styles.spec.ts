@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest'
 import type { LikeC4ProjectStylesConfig } from '../types'
 import { computeColorValues } from './compute-color-values'
-import { LikeC4Styles } from './LikeC4Styles'
+import { defaultStyle, LikeC4Styles } from './LikeC4Styles'
 import type { CustomColorDefinitions } from './types'
 
 describe('LikeC4Styles', () => {
@@ -23,6 +23,11 @@ describe('LikeC4Styles', () => {
 
     it('should return DEFAULT when both are empty objects', ({ expect }) => {
       const result = LikeC4Styles.from({}, {})
+      expect(result).toBe(LikeC4Styles.DEFAULT)
+    })
+
+    it('should return DEFAULT when both are empty objects', ({ expect }) => {
+      const result = LikeC4Styles.from(defaultStyle)
       expect(result).toBe(LikeC4Styles.DEFAULT)
     })
 
@@ -86,13 +91,17 @@ describe('LikeC4Styles', () => {
         },
         defaults: {
           shape: 'rectangle',
+          color: 'primary',
+          group: {
+            border: 'dashed',
+          },
         },
       }
       const result = LikeC4Styles.from(stylesConfig)
       expect(result).toBe(LikeC4Styles.DEFAULT)
     })
 
-    it('should return DEFAULT when merged config equals default style', ({ expect }) => {
+    it('should return DEFAULT when merged config equals default style (size: md)', ({ expect }) => {
       const stylesConfig: LikeC4ProjectStylesConfig = {
         theme: {
           colors: {},
@@ -101,6 +110,16 @@ describe('LikeC4Styles', () => {
       }
       const result = LikeC4Styles.from(stylesConfig)
       expect(result).toBe(LikeC4Styles.DEFAULT)
+    })
+
+    it('should not return DEFAULT when customCss has content even if config matches default', ({ expect }) => {
+      const stylesConfig: LikeC4ProjectStylesConfig = {
+        customCss: {
+          content: '.test {}',
+        },
+      }
+      const result = LikeC4Styles.from(stylesConfig)
+      expect(result).not.toBe(LikeC4Styles.DEFAULT)
     })
 
     it('should not return DEFAULT when customCss has content even if config matches default', ({ expect }) => {
@@ -130,10 +149,9 @@ describe('LikeC4Styles', () => {
       const customColors: CustomColorDefinitions = {
         customRed: computeColorValues('#FF0000'),
       }
-      const styles1 = LikeC4Styles.from(undefined, customColors)
-      const styles2 = LikeC4Styles.from(undefined, customColors)
-      expect(styles2).not.toBe(styles1)
-      expect(styles1.equals(styles2)).toBe(true)
+      const styles1 = LikeC4Styles.from(undefined, structuredClone(customColors))
+      const styles2 = LikeC4Styles.from(undefined, structuredClone(customColors))
+      expect(styles2).toBe(styles1)
     })
 
     it('should return false for instances with different custom colors', ({ expect }) => {
@@ -189,7 +207,7 @@ describe('LikeC4Styles', () => {
         customCss,
       }
       const config2: LikeC4ProjectStylesConfig = {
-        customCss,
+        customCss: { ...customCss },
       }
       const styles1 = LikeC4Styles.from(config1, customColors)
       const styles2 = LikeC4Styles.from(config2, customColors)
