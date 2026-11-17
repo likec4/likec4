@@ -16,5 +16,6 @@
   "ext.config.markdownPreview.enabled.description": "Render `likec4-view` fenced code blocks inside VS Code's built-in Markdown preview.",
   "ext.config.markdownPreview.colorScheme.description": "Default color scheme (`auto`, `light`, or `dark`) for `likec4-view` blocks that do not set `color-scheme=`.",
   "ext.config.markdownPreview.maxHeight.description": "Maximum height (in pixels) of a rendered diagram in Markdown preview.",
-  "ext.config.markdownPreview.maxModelBytes.description": "Maximum embedded LikeC4 model payload size (in bytes) per Markdown document before trimming unreferenced views and disabling cross-view browser navigation."
+  "ext.config.markdownPreview.maxModelBytes.description": "Maximum embedded LikeC4 model payload size (in bytes) per Markdown document before trimming unreferenced views and disabling cross-view browser navigation.",
+  "ext.config.markdownPreview.panZoom.description": "Enable panning and zooming inside embedded diagrams in VS Code's built-in Markdown preview (scroll wheel continues scrolling the Markdown document; use pinch or Ctrl/Cmd + wheel to zoom)."
 }

@@ -98,6 +98,10 @@ export default defineConfig([
     target: false,
     format: 'iife',
     platform: 'browser',
+    deps: {
+      neverBundle: ['vscode'],
+      alwaysBundle: ['picomatch', 'std-env'],
+    },
     inputOptions: {
       resolve: {
         conditionNames: ['worker', 'browser', 'import'],

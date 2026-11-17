@@ -31,6 +31,7 @@ export const useMarkdownPreview = defineService(() => {
       () => config.markdownPreview.colorScheme,
       () => config.markdownPreview.maxHeight,
       () => config.markdownPreview.maxModelBytes,
+      () => config.markdownPreview.panZoom,
     ],
     () => {
       cache.refreshAllPreviews('likec4.markdownPreview configuration changed')
@@ -110,7 +111,7 @@ export const useMarkdownPreview = defineService(() => {
       maxModelBytes,
       maxHeight,
       colorScheme,
-      panZoom: () => false,
+      panZoom: () => Boolean(config.markdownPreview.panZoom),
       resolve: (docDir, explicit) => cache.resolve(docDir, explicit),
       snapshot: (project) => cache.getSnapshot(project),
       recordReferences: (docKey, projects) => cache.recordReferences(docKey, projects),

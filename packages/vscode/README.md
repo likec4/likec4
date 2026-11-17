@@ -55,6 +55,7 @@ The extension provides (via [language server protocol](https://microsoft.github.
 - Resolve references (like `find all references`, `go to definition` .. )
 - "Safe" renames
 - Hover information
+- Rendering ` ```likec4-view ` blocks directly inside VS Code's built-in Markdown preview (compatible with `mkdocs-likec4` options: `project=`, `browser=`, `dynamic-variant=`, `color-scheme=`, with live reload on unsaved `.c4` edits)
 
 Extension is universal and can run as web-version.\
 Open [likec4/template](https://github.com/likec4/template) in the browser using any of:

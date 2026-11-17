@@ -234,6 +234,11 @@
           "default": 2097152,
           "minimum": 65536,
           "markdownDescription": "%ext.config.markdownPreview.maxModelBytes.description%"
+        },
+        "likec4.markdownPreview.panZoom": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%ext.config.markdownPreview.panZoom.description%"
         }
       }
     },
