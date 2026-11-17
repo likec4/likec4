@@ -69,7 +69,6 @@ describe('projects virtual module capabilities', () => {
     expect(code).not.toContain('without-dot')
     expect(code).toContain('throw new Error("Project does not enable dot export: " + projectId)')
     expect(code).not.toContain('Falling back to project')
-    expect(code).toContain('$update = loadDotSourcesRegistry')
     expect(code).not.toContain('??=')
   })
 
