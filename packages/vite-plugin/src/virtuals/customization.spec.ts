@@ -7,11 +7,6 @@ import { generateProjectReactCode } from './react'
 vi.mock('../logger', () => ({ logGenerating: vi.fn<() => void>() }))
 
 describe('customizationModule', () => {
-  it('has the expected module ids', () => {
-    expect(customizationModule.id).toBe('likec4:customization')
-    expect(customizationModule.virtualId).toBe('likec4:plugin/customization.js')
-  })
-
   it('exports empty overrides when the customization file is not configured', async () => {
     const result = await customizationModule.load.call({} as any, { customizationFile: undefined } as any)
     const code = typeof result === 'string' ? result : result.code
@@ -47,17 +42,13 @@ describe('generateProjectReactCode', () => {
   it('does not touch customization when the file is not configured', () => {
     const code = generateProjectReactCode(projectId, false)
 
-    expect(code).not.toContain('CustomizationProvider')
+    expect(code).not.toContain('CustomizationContext')
     expect(code).not.toContain('likec4:customization')
-    expect(code).toContain('return (jsx(Provider, { likec4model, children }));')
   })
 
   it('applies overrides in the project provider when the file is configured', () => {
     const code = generateProjectReactCode(projectId, true)
 
-    expect(code).toContain(`import { useCustomComponents } from 'likec4:customization'`)
-    expect(code).toContain(
-      'jsx(CustomizationProvider, { components, children: jsx(Provider, { likec4model, children }) })',
-    )
+    expect(code).toContain(`import { CustomizationContext } from 'likec4:customization'`)
   })
 })

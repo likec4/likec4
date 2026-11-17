@@ -1,13 +1,7 @@
 import { css } from '@likec4/styles/css'
+import { styled } from '@likec4/styles/jsx'
 
 // Values follow the "LikeC4 Workspace Projects" design system (bundle.css)
-
-const textSecondary = {
-  color: '[var(--mantine-color-gray-7)]',
-  _dark: {
-    color: '[var(--mantine-color-dark-1)]',
-  },
-} as const
 
 const padX = { base: '4', sm: '8', xl: '12' } as const
 
@@ -74,7 +68,7 @@ export const fieldLabel = css({
   fontWeight: 'semibold',
   letterSpacing: '[0.08em]',
   textTransform: 'uppercase',
-  ...textSecondary,
+  color: 'text.dimmed',
 })
 
 export const metricValue = css({
@@ -163,16 +157,17 @@ export const modeLabel = css({
   },
 })
 
-export const grid = css({
-  display: 'grid',
-  gridTemplateColumns: { base: '1fr', sm: 'repeat(auto-fill, minmax(340px, 1fr))' },
-  alignItems: 'start',
-  gap: { base: '5', sm: '8' },
-  paddingTop: '8',
-  paddingBottom: '12',
-  paddingX: padX,
+export const CardGrid = styled('div', {
+  base: {
+    display: 'grid',
+    gridTemplateColumns: { base: '1fr', sm: 'repeat(auto-fill, minmax(340px, 1fr))' },
+    alignItems: 'start',
+    gap: { base: '5', sm: '8' },
+    paddingTop: '8',
+    paddingBottom: '12',
+    paddingX: padX,
+  },
 })
-
 export const card = css({
   position: 'relative',
   display: 'flex',
@@ -199,6 +194,18 @@ export const cardHead = css({
   paddingTop: '5',
   paddingX: '5',
   paddingBottom: '4',
+})
+
+/**
+ * Makes the head the only clickable area of the card: the stretched link covers the head, not the whole card,
+ * so the rest of the card keeps its own hovers and buttons
+ */
+export const cardHeadLinked = css({
+  position: 'relative',
+  borderTopRadius: 'md',
+  '& a::after': {
+    borderRadius: '[inherit]',
+  },
 })
 
 export const cardTitles = css({
@@ -249,14 +256,14 @@ export const cardSub = css({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  ...textSecondary,
+  color: 'text.dimmed',
 })
 
 export const cardOpen = css({
   flexShrink: '0',
   opacity: '0',
   transition: 'fast',
-  ...textSecondary,
+  color: 'text.dimmed',
   _groupHover: {
     opacity: '1',
   },
@@ -276,6 +283,21 @@ export const cardBody = css({
   borderColor: 'border.subtle',
 })
 
+export const detailButton = css({
+  appearance: 'none',
+  background: 'none',
+  border: 'none',
+  padding: '0',
+  textAlign: 'left',
+  cursor: 'pointer',
+  width: 'fit-content',
+  maxWidth: '100%',
+  '&:hover > span': {
+    color: 'text.link',
+    textDecoration: 'underline',
+  },
+})
+
 export const detail = css({
   display: 'flex',
   alignItems: 'center',
@@ -283,6 +305,7 @@ export const detail = css({
   minWidth: '0',
   fontSize: 'sm',
   color: 'text',
+  cursor: 'default',
   '& > svg': {
     flexShrink: '0',
     color: 'text.dimmed',
@@ -344,42 +367,6 @@ export const stack = css({
   },
 })
 
-export const monogram = css({
-  flexShrink: '0',
-  display: 'inline-grid',
-  placeItems: 'center',
-  // --mono is the element stroke color of the project's palette
-  backgroundColor: '[var(--mono)]',
-  color: '[#ffffff]',
-  fontFamily: 'body',
-  fontWeight: 'semibold',
-  letterSpacing: '[0.02em]',
-  borderRadius: 'sm',
-  '&[data-size="lg"]': {
-    width: '[36px]',
-    height: '[36px]',
-    fontSize: 'sm',
-  },
-  '&[data-size="sm"]': {
-    width: '[24px]',
-    height: '[24px]',
-    fontSize: 'xxs',
-  },
-  '&[data-size="chip"]': {
-    width: '[20px]',
-    height: '[20px]',
-    fontSize: 'micro',
-  },
-  '&[data-size="mini"]': {
-    width: '[22px]',
-    height: '[22px]',
-    fontSize: 'micro',
-    // ring in the card surface, so overlapping monograms stay readable
-    boxShadow: '[0 0 0 2px var(--colors-surface-default)]',
-    cursor: '[help]',
-  },
-})
-
 export const miniMore = css({
   display: 'inline-grid',
   placeItems: 'center',
@@ -392,13 +379,13 @@ export const miniMore = css({
   backgroundColor: 'surface.sunken',
   boxShadow: '[0 0 0 2px var(--colors-surface-default), inset 0 0 0 1px var(--colors-border-subtle)]',
   cursor: '[help]',
-  ...textSecondary,
+  color: 'text.dimmed',
 })
 
 export const depEmpty = css({
   fontFamily: 'body',
   fontSize: 'xs',
-  ...textSecondary,
+  color: 'text.dimmed',
 })
 
 export const expand = css({
@@ -411,7 +398,7 @@ export const expand = css({
   borderRadius: 'sm',
   backgroundColor: 'transparent',
   cursor: 'pointer',
-  ...textSecondary,
+  color: 'text.dimmed',
   _hover: {
     backgroundColor: 'surface.hover',
     color: 'text',
@@ -473,7 +460,7 @@ export const depsItem = css({
     fontFamily: 'body',
     fontSize: 'xs',
     fontVariantNumeric: 'tabular-nums',
-    ...textSecondary,
+    color: 'text.dimmed',
   },
 })
 
@@ -508,7 +495,7 @@ export const table = css({
     borderBottomStyle: 'solid',
     borderColor: 'border.subtle',
     whiteSpace: 'nowrap',
-    ...textSecondary,
+    color: 'text.dimmed',
   },
   '& td': {
     paddingX: '4',
@@ -534,7 +521,7 @@ export const table = css({
     fontVariantNumeric: 'tabular-nums',
   },
   '& [data-dimmed]': {
-    ...textSecondary,
+    color: 'text.dimmed',
   },
 })
 

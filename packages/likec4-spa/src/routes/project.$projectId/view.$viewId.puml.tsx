@@ -4,7 +4,6 @@ import { ViewAsPuml } from '../../pages/ViewAsPuml'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/puml')({
   component: Page,
-  staleTime: Infinity,
   loader: async ({ params, context }) => {
     const projectId = context.projectId
     const { viewId } = params

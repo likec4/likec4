@@ -320,5 +320,36 @@ export const searchOverlay = defineSlotRecipe({
       color: 'text.dimmed',
     },
   },
+  variants: {
+    size: {
+      md: {},
+      // for popovers and hover cards
+      sm: {
+        button: {
+          minHeight: '[40px]',
+          padding: '[7px 8px 7px 10px]',
+          gap: '1.5',
+        },
+        buttonIcon: {
+          flex: '[0 0 16px]',
+          boxSize: '[16px]',
+          '--ti-size': '16px',
+        },
+        buttonTitle: {
+          fontSize: 'sm',
+        },
+        buttonDescription: {
+          marginTop: '0',
+          fontSize: 'xs',
+        },
+        buttonMeta: {
+          fontSize: 'xxs',
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
   staticCss: ['*'],
 })

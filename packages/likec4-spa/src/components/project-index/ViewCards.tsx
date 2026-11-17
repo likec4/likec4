@@ -8,6 +8,7 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { randomInteger } from 'remeda'
 import * as base from '../projects-overview/styles'
+import { CardGrid } from '../projects-overview/styles'
 import * as styles from './styles'
 import { type IndexView, viewTypeLabel } from './views'
 
@@ -75,9 +76,9 @@ function ViewCard({ projectId, view }: { projectId: ProjectId; view: IndexView }
 
 export function ViewCards({ projectId, views }: { projectId: ProjectId; views: ReadonlyArray<IndexView> }) {
   return (
-    <div className={base.grid}>
+    <CardGrid>
       {views.map(view => <ViewCard key={view.id} projectId={projectId} view={view} />)}
-    </div>
+    </CardGrid>
   )
 }
 

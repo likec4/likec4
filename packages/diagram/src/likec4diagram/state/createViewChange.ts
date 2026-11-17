@@ -1,13 +1,18 @@
-import type {
-  DiagramEdge,
-  DiagramNode,
-  LayoutedView,
-  ViewChange,
-} from '@likec4/core/types'
+import { calcViewLayoutHash } from '@likec4/core/compute-view'
+import type { DiagramEdge, DiagramNode, LayoutedView, ViewChange } from '@likec4/core/types'
 import { getNodeDimensions } from '@xyflow/system'
 import { hasAtLeast, map } from 'remeda'
 import { calcViewBounds } from '../../utils/view-bounds'
 import type { DiagramContext } from './types'
+
+function omitFields<T extends { drifts?: any; diffBefore?: any; diffStatus?: any }>({
+  drifts: _drifts,
+  diffBefore: _diffBefore,
+  diffStatus: _diffStatus,
+  ...rest
+}: T) {
+  return rest
+}
 
 export function createViewChange(
   parentContext: Pick<DiagramContext, 'view' | 'xynodes' | 'xyedges' | 'xystore'>,
@@ -16,6 +21,7 @@ export function createViewChange(
     view: {
       drifts: _1, // Ignore drifts from view
       _layout: _2, // Ignore layout type from view
+      hasLayoutDrift: _3, // Ignore layout drift flag from view
       ...view
     },
     xynodes,
@@ -35,7 +41,7 @@ export function createViewChange(
     const { width, height } = getNodeDimensions(internal)
 
     return {
-      ...node,
+      ...omitFields(node),
       shape: xynodedata.shape,
       color: xynodedata.color,
       style: {
@@ -57,7 +63,7 @@ export function createViewChange(
     const data = xyedge.data
     const controlPoints = data.controlPoints ?? []
     const _updated: DiagramEdge = {
-      ...edge,
+      ...omitFields(edge),
       points: data.points,
     }
     if (data.labelBBox) {
@@ -85,13 +91,14 @@ export function createViewChange(
     return _updated
   })
 
-  const snapshot: LayoutedView = {
+  const snapshot = calcViewLayoutHash<LayoutedView>({
     ...view,
+    _stage: 'layouted',
     _layout: 'manual',
     bounds: calcViewBounds({ nodes, edges }),
     nodes,
     edges,
-  }
+  })
 
   return {
     op: 'save-view-snapshot',

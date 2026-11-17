@@ -24,30 +24,33 @@ type ProjectData = {
 }
 
 const code = (projects: NonEmptyArray<ProjectData>) => `
-import { atom, useStore } from 'likec4/vite-plugin/internal'
+import { atom, computed, useStore, deepEqual } from 'likec4/vite-plugin/internal'
 
 export const isSingleProject = ${projects.length === 1};
-export const projects = ${JSON5.stringify(projects, null, 2)};
+export let projects = ${JSON5.stringify(projects, null, 2)};
 
 export const $projects = atom([...projects])
+export const $projectIds = computed($projects, projects => projects.map(p => p.id))
+$projectIds.eq = deepEqual
 
 export function useLikeC4Projects() {
   return useStore($projects)
 }
 
+export function useLikeC4ProjectIds() {
+  return useStore($projectIds)
+}
+
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$projects) {
-      import.meta.hot.data.$projects = $projects
+    import.meta.hot.data.$update ??= (newdata) => {
+      projects.length = 0
+      projects.push(...newdata)
+      $projects.set(newdata)
     }
-    if (!import.meta.hot.data.projects) {
-      import.meta.hot.data.projects = projects
-    }      
     const update = md.projects
     if (update) {
-      import.meta.hot.data.projects.length = 0
-      import.meta.hot.data.projects.push(...update)
-      import.meta.hot.data.$projects.set(update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }
@@ -63,7 +66,7 @@ export const projectsModule = {
     return {
       code: code(map(projects, p => ({
         id: p.id,
-        title: p.title,
+        title: p.config.title ?? p.id,
         path: p.path,
         contactPerson: p.config.contactPerson,
         landingPage: p.config.landingPage,

@@ -163,9 +163,9 @@ function register<
         return <ref.Original {...props} />
       }
       if (Cmp[WrappedMarker]) {
-        return <Cmp Original={ref.Original} {...props} />
+        return <>{Cmp({ Original: ref.Original, ...props })}</>
       }
-      return <Cmp {...props} />
+      return <>{Cmp(props)}</>
     }) as OriginalFC,
   }
   ref.HMRBoundary.displayName = displayName

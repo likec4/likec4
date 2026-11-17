@@ -5,7 +5,7 @@ import {
   createRouter as createTanstackRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import { basepath, useHashHistory } from 'likec4:app-config'
+import { basepath, isDevelopment, useHashHistory } from 'likec4:app-config'
 import { isSingleProject, projects } from 'likec4:projects'
 import { hasAtLeast } from 'remeda'
 import { NotFound } from './components/NotFound'
@@ -15,7 +15,7 @@ import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
-const projectIds = projects.map(p => p.id)
+const projectIds = projects.map(p => p.id) as ReadonlyArray<ProjectId>
 const _projects = hasAtLeast(projectIds, 1)
   ? projectIds
   : ['default' as ProjectId] as const
@@ -39,7 +39,7 @@ const router = createTanstackRouter<RouteTree, 'always', true>({
   trailingSlash: 'always',
   defaultViewTransition: false,
   history: useHashHistory ? createHashHistory() : createBrowserHistory(),
-  defaultStaleTime: Infinity,
+  defaultStaleTime: isDevelopment ? 100 : Infinity,
   defaultNotFoundComponent: () => {
     return <NotFound />
   },

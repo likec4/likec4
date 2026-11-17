@@ -1,9 +1,10 @@
 import type { Fqn, ProjectId, ViewId } from '@likec4/core/types'
-import { ViewIcon } from '@likec4/diagram'
+import { useCallbackRef, ViewIcon } from '@likec4/diagram'
 import { FramerMotionConfig, Overlay } from '@likec4/diagram/custom'
 import { cx } from '@likec4/styles/css'
+import { Center } from '@likec4/styles/jsx'
 import { searchOverlay } from '@likec4/styles/recipes'
-import { Highlight } from '@mantine/core'
+import { Highlight, Loader } from '@mantine/core'
 import {
   IconBrowser,
   IconCube,
@@ -20,6 +21,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
   memo,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -56,28 +58,6 @@ export interface WorkspaceSearchProps {
  * Same layout and keys as the diagram search, results grouped by project.
  */
 export const WorkspaceSearch = memo(({ opened, initialQuery, onClose }: WorkspaceSearchProps) => {
-  // Load on first open (or earlier, when idle); the index stays warm afterwards
-  const [requested, setRequested] = useState(false)
-  useEffect(() => {
-    if (opened) {
-      setRequested(true)
-    }
-  }, [opened])
-  // Warm the index while the page is idle, so the first open shows results immediately
-  useEffect(() => {
-    if (requested) {
-      return
-    }
-    const request = () => setRequested(true)
-    if (typeof window.requestIdleCallback === 'function') {
-      const id = window.requestIdleCallback(request, { timeout: 2000 })
-      return () => window.cancelIdleCallback(id)
-    }
-    const id = window.setTimeout(request, 300)
-    return () => window.clearTimeout(id)
-  }, [requested])
-  const state = useWorkspaceIndex(requested)
-
   // Retains the dialog element beyond unmount, so onExitComplete can close it after the exit animation
   const dialogElRef = useRef<HTMLDialogElement | null>(null)
   const captureDialogRef = useCallback((node: HTMLDialogElement | null) => {
@@ -105,7 +85,9 @@ export const WorkspaceSearch = memo(({ opened, initialQuery, onClose }: Workspac
             onClose={onClose}
             data-likec4-search="true"
           >
-            <SearchBody state={state} initialQuery={initialQuery} onClose={onClose} />
+            <Suspense fallback={loader}>
+              <SearchBody initialQuery={initialQuery} onClose={onClose} />
+            </Suspense>
           </Overlay>
         )}
       </AnimatePresence>
@@ -114,11 +96,17 @@ export const WorkspaceSearch = memo(({ opened, initialQuery, onClose }: Workspac
 })
 WorkspaceSearch.displayName = 'WorkspaceSearch'
 
-function SearchBody({ state, initialQuery, onClose }: {
-  state: WorkspaceIndexState
+const loader = (
+  <Center w="100%" style={{ height: 100 }}>
+    <Loader />
+  </Center>
+)
+
+function SearchBody({ initialQuery, onClose }: {
   initialQuery: string
   onClose: () => void
 }) {
+  const state = useWorkspaceIndex(true)
   const { index } = state
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -183,14 +171,14 @@ function SearchBody({ state, initialQuery, onClose }: {
     inputRef.current?.focus()
   }, [])
 
-  const goToView = useCallback((projectId: ProjectId, viewId: ViewId, focusOnElement?: Fqn) => {
+  const goToView = useCallbackRef((projectId: ProjectId, viewId: ViewId, focusOnElement?: Fqn) => {
     onClose()
     void navigate({
       to: '/project/$projectId/view/$viewId/',
       params: { projectId, viewId },
       search: focusOnElement ? { focusOnElement } : {},
     })
-  }, [navigate, onClose])
+  })
 
   const openElement = useCallback((element: SearchElement) => {
     const [first, ...rest] = element.views
@@ -224,7 +212,7 @@ function SearchBody({ state, initialQuery, onClose }: {
     }
   }
 
-  const onInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const onInputKeyDown = useCallbackRef((e: KeyboardEvent<HTMLInputElement>) => {
     const input = e.currentTarget
     const singleCandidate = result.scopeCandidates?.length === 1 ? result.scopeCandidates[0] : undefined
     switch (true) {
@@ -257,9 +245,9 @@ function SearchBody({ state, initialQuery, onClose }: {
         }
         break
     }
-  }
+  })
 
-  const onRowsKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  const onRowsKeyDown = useCallbackRef((e: KeyboardEvent<HTMLDivElement>) => {
     if (!(e.target instanceof HTMLElement)) {
       return
     }
@@ -270,35 +258,41 @@ function SearchBody({ state, initialQuery, onClose }: {
     const col = row.dataset['col'] as Column
     const k = pending.current?.col === col ? pending.current.k : Number(row.dataset['k'])
     switch (true) {
-      case e.key === 'ArrowDown':
+      case e.key === 'ArrowDown': {
         e.preventDefault()
         focusRow(col, k + 1)
         break
-      case e.key === 'ArrowUp':
+      }
+      case e.key === 'ArrowUp': {
         e.preventDefault()
         if (k === 0) backToInput()
         else focusRow(col, k - 1)
         break
-      case e.key === 'ArrowRight' && col === 'el':
+      }
+      case e.key === 'ArrowRight' && col === 'el': {
         e.preventDefault()
         focusRow('vw', k)
         break
-      case e.key === 'ArrowLeft' && col === 'vw':
+      }
+      case e.key === 'ArrowLeft' && col === 'vw': {
         e.preventDefault()
         focusRow('el', k)
         break
-      case e.key === 'Escape':
+      }
+      case e.key === 'Escape': {
         e.preventDefault()
         e.stopPropagation()
         if (col === 'pick') setPick(null)
         backToInput()
         break
-      case e.key.length === 1 && e.key !== ' ' && !e.metaKey && !e.ctrlKey && !e.altKey:
+      }
+      case e.key.length === 1 && e.key !== ' ' && !e.metaKey && !e.ctrlKey && !e.altKey: {
         // typing anywhere goes back to the input
         backToInput()
         break
+      }
     }
-  }
+  })
 
   let content: ReactNode
   switch (true) {
@@ -689,12 +683,19 @@ function ElementRow({ element, k, words, onOpen }: {
             <Highlight component="span" highlight={words}>{element.kind}</Highlight>
           </SearchPanel.Badge>
         </span>
-        <SearchPanel.ButtonDescription className={styles.rowPath}>
+        {
+          /* <SearchPanel.ButtonDescription className={styles.rowPath}>
           <Highlight component="span" highlight={words}>{element.id}</Highlight>
-        </SearchPanel.ButtonDescription>
+        </SearchPanel.ButtonDescription> */
+        }
         {element.summary && (
           <SearchPanel.ButtonDescription className={styles.truncate}>
             <Highlight component="span" highlight={words}>{element.summary}</Highlight>
+          </SearchPanel.ButtonDescription>
+        )}
+        {!element.summary && (
+          <SearchPanel.ButtonDescription className={styles.truncate}>
+            <span>No description</span>
           </SearchPanel.ButtonDescription>
         )}
       </span>
