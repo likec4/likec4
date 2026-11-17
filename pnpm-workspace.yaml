@@ -111,7 +111,7 @@ catalogs:
     "@radix-ui/colors": ^3.0.0
     "@pandacss/types": ^1.12.2
     "@tailwindcss/vite": ^4.3.2
-    postcss: 8.5.30
+    postcss: 8.5.33
     tailwindcss: ^4.3.2
     postcss-import: ^17.0.0
   esbuild:
@@ -131,7 +131,7 @@ catalogs:
     zod: ^4.6.7
   hono:
     "@hono/mcp": ^0.3.5
-    "@hono/node-server": ^2.1.6
+    "@hono/node-server": ^2.1.8
     "@hono/oauth-providers": ^0.9.1
     "@hono/zod-validator": ^0.9.1
     hono: ^4.13.18

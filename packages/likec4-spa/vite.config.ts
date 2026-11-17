@@ -39,6 +39,7 @@ export default defineConfig({
     conditions: ['sources', 'module', 'import', 'default'],
     alias: {
       '@likec4/styles': resolve('styled-system'),
+      '@likec4/core': 'likec4/core',
       '@likec4/diagram/custom': 'likec4/react',
       '@likec4/diagram': 'likec4/react',
     },

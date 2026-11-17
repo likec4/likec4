@@ -258,8 +258,8 @@ catalogs:
       specifier: ^4.3.2
       version: 4.3.2
     postcss:
-      specifier: 8.5.30
-      version: 8.5.30
+      specifier: 8.5.33
+      version: 8.5.33
     postcss-import:
       specifier: ^17.0.0
       version: 17.0.0
@@ -394,8 +394,8 @@ catalogs:
       specifier: ^0.3.5
       version: 0.3.5
     '@hono/node-server':
-      specifier: ^2.1.6
-      version: 2.1.6
+      specifier: ^2.1.8
+      version: 2.1.8
     '@hono/oauth-providers':
       specifier: ^0.9.1
       version: 0.9.1
@@ -1027,7 +1027,7 @@ importers:
         version: 1.5.5
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -1330,8 +1330,8 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       mnemonist:
-        specifier: 0.40.6
-        version: 0.40.6
+        specifier: 0.40.8
+        version: 0.40.8
       natural-compare-lite:
         specifier: catalog:utils
         version: 1.4.1
@@ -1503,7 +1503,7 @@ importers:
         version: 3.49.0(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/bezier-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -1533,10 +1533,10 @@ importers:
         version: 1.88.0(oxlint-tsgolint@7.0.2004)
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       postcss-import:
         specifier: catalog:css
-        version: 17.0.0(postcss@8.5.30)
+        version: 17.0.0(postcss@8.5.33)
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -1976,6 +1976,12 @@ importers:
       '@types/which':
         specifier: ^3.0.4
         version: 3.0.4
+      graphology:
+        specifier: 'catalog:'
+        version: 0.26.0(graphology-types@0.24.8)
+      graphology-types:
+        specifier: 'catalog:'
+        version: 0.24.8
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -2034,9 +2040,6 @@ importers:
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
@@ -2125,6 +2128,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2176,6 +2182,9 @@ importers:
       '@pandacss/dev':
         specifier: catalog:css
         version: 1.12.2(typescript@6.0.3)
+      '@rolldown/plugin-node-polyfills':
+        specifier: catalog:tsdown
+        version: 1.0.4
       '@tanstack/ai':
         specifier: catalog:ai
         version: 0.69.0(zod@4.6.7)
@@ -2199,7 +2208,7 @@ importers:
         version: 17.0.35
       autoprefixer:
         specifier: ^10.6.2
-        version: 10.6.2(postcss@8.5.30)
+        version: 10.6.2(postcss@8.5.33)
       birpc:
         specifier: catalog:vite
         version: 4.2.0
@@ -2262,7 +2271,7 @@ importers:
         version: 5.0.0
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       pretty-ms:
         specifier: ^9.3.1
         version: 9.3.1
@@ -2332,9 +2341,6 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2372,6 +2378,9 @@ importers:
       '@likec4/config':
         specifier: workspace:*
         version: link:../config
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2431,7 +2440,7 @@ importers:
         version: 1.167.48(@tanstack/react-router@1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.60.1)(supports-color@10.1.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
@@ -2461,7 +2470,7 @@ importers:
         version: 0.0.84
       autoprefixer:
         specifier: ^10.6.2
-        version: 10.6.2(postcss@8.5.30)
+        version: 10.6.2(postcss@8.5.33)
       citty:
         specifier: catalog:utils
         version: 0.2.2
@@ -2497,7 +2506,7 @@ importers:
         version: 7.3.3
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
@@ -2643,7 +2652,7 @@ importers:
         version: 0.3.5(@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7))(hono-rate-limiter@0.5.4(hono@4.13.18)(unstorage@1.17.5))(hono@4.13.18)(zod@4.6.7)
       '@hono/node-server':
         specifier: catalog:hono
-        version: 2.1.6(hono@4.13.18)
+        version: 2.1.8(hono@4.13.18)
       '@hpcc-js/wasm-graphviz':
         specifier: catalog:externals
         version: 1.29.2
@@ -2786,9 +2795,6 @@ importers:
       '@floating-ui/dom':
         specifier: catalog:react
         version: 1.8.0
-      '@likec4/core':
-        specifier: workspace:*
-        version: link:../core
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2823,6 +2829,9 @@ importers:
       '@dagrejs/dagre':
         specifier: 'catalog:'
         version: 1.1.8
+      '@likec4/core':
+        specifier: workspace:*
+        version: link:../core
       '@likec4/devops':
         specifier: workspace:*
         version: link:../../devops
@@ -2855,7 +2864,7 @@ importers:
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/d3-zoom':
         specifier: ^3.0.9
         version: 3.0.9
@@ -2912,10 +2921,10 @@ importers:
         version: 1.88.0(oxlint-tsgolint@7.0.2004)
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       postcss-import:
         specifier: catalog:css
-        version: 17.0.0(postcss@8.5.30)
+        version: 17.0.0(postcss@8.5.33)
       react-error-boundary:
         specifier: catalog:react
         version: 6.1.6(@types/react@19.3.0)(react@19.3.1)
@@ -3342,10 +3351,10 @@ importers:
         version: 0.156.0
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       postcss-import:
         specifier: catalog:css
-        version: 17.0.0(postcss@8.5.30)
+        version: 17.0.0(postcss@8.5.33)
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -3461,7 +3470,7 @@ importers:
         version: 2.1.0
       postcss:
         specifier: catalog:css
-        version: 8.5.30
+        version: 8.5.33
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -4724,8 +4733,8 @@ packages:
       hono-rate-limiter: ^0.5.4
       zod: ^3.25.0 || ^4.0.0
 
-  '@hono/node-server@2.1.6':
-    resolution: {integrity: sha512-p/KH9MnfNcsm3sR6x4lNgm5j+QN4Et8srKredl9DZfXiyZ1UQ3aQ2YVpFLbqktYN5JI+DB+VZFKM2PqE5hLKjQ==}
+  '@hono/node-server@2.1.8':
+    resolution: {integrity: sha512-jdf7FHh6A1lzjpHHQUgxsg2GeER2vMetnAOfeActzcoli6jamlK+NAwL6Dsr5Fl3BS3tYUQzCdtZjU8Qxv7bEA==}
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4 || ^5.0.0-0
@@ -9093,8 +9102,8 @@ packages:
   mnemonist@0.39.8:
     resolution: {integrity: sha512-vyWo2K3fjrUw8YeeZ1zF0fy6Mu59RHokURlld8ymdUPjMlD9EC9ov1/YPqTgqRvUN9nTr3Gqfz29LYAmu0PHPQ==}
 
-  mnemonist@0.40.6:
-    resolution: {integrity: sha512-c4mbin5HCz77Srw1L3nwThCH/0hLVYuY3oMF2plP2tKfp/gqzSgHP63qRUOpL8jutYWNNCr49LUlKSt7exkaww==}
+  mnemonist@0.40.8:
+    resolution: {integrity: sha512-tebbu8e/W45Nz7USfGcmnHUiOcNsXa9Mow8eb0UPwOk3gu6grw0/2+SefXBJCgDQpE9mdn7dNUMJBra9mcRUVw==}
 
   monaco-languageclient@11.0.2:
     resolution: {integrity: sha512-wMwWYHSXVHtD+L9MCCkapOW1zXM+zjS8zBsRQCw6PTSTty2ah4vbrm4aL/+mCmBykuYv8KJ6q+/tJLgNtBEfrw==}
@@ -9581,12 +9590,12 @@ packages:
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
-  postcss@8.5.30:
-    resolution: {integrity: sha512-zkd+e9S1AQHhmaBKye9zlFHWjOwVgqXl1q3ECYy8561K7qxR2cREf/STLskulBFd78k6AOFeA+ff1TtEzk9bAA==}
-    engines: {node: ^10 || ^12 || >=14}
-
   postcss@8.5.31:
     resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postcss@8.5.33:
+    resolution: {integrity: sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   prettier@3.2.5:
@@ -12392,8 +12401,8 @@ snapshots:
       hast-util-to-html: 9.0.5
       hast-util-to-text: 4.0.2
       hastscript: 9.0.1
-      postcss: 8.5.30
-      postcss-nested: 7.0.2(postcss@8.5.30)
+      postcss: 8.5.33
+      postcss-nested: 7.0.2(postcss@8.5.33)
       unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.2
 
@@ -12466,7 +12475,7 @@ snapshots:
       pkce-challenge: 5.0.1
       zod: 4.6.7
 
-  '@hono/node-server@2.1.6(hono@4.13.18)':
+  '@hono/node-server@2.1.8(hono@4.13.18)':
     dependencies:
       hono: 4.13.18
 
@@ -13050,7 +13059,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.32.2(supports-color@10.1.0)(zod@4.6.7)':
     dependencies:
-      '@hono/node-server': 2.1.6(hono@4.13.18)
+      '@hono/node-server': 2.1.8(hono@4.13.18)
       ajv: 8.20.0
       ajv-formats: 3.0.1
       content-type: 1.0.5
@@ -14152,34 +14161,19 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.30))(postcss@8.5.30)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
+  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
     dependencies:
       lightningcss: 1.33.0
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.30)(tsx@4.23.15)(yaml@2.9.1)
+      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(yaml@2.9.1)
       rolldown: 1.2.16
       tsdown: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
     optionalDependencies:
-      postcss: 8.5.30
-      postcss-import: 17.0.0(postcss@8.5.30)
+      postcss: 8.5.33
+      postcss-import: 17.0.0(postcss@8.5.33)
     transitivePeerDependencies:
       - jiti
       - tsx
       - yaml
-
-  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.31))(postcss@8.5.31)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
-    dependencies:
-      lightningcss: 1.33.0
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.31)(tsx@4.23.15)(yaml@2.9.1)
-      rolldown: 1.2.16
-      tsdown: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
-    optionalDependencies:
-      postcss: 8.5.31
-      postcss-import: 17.0.0(postcss@8.5.31)
-    transitivePeerDependencies:
-      - jiti
-      - tsx
-      - yaml
-    optional: true
 
   '@turbo/darwin-64@2.11.9':
     optional: true
@@ -14560,7 +14554,7 @@ snapshots:
       '@vue/shared': 3.5.25
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.30
+      postcss: 8.5.33
       source-map-js: 1.2.2
 
   '@vue/compiler-ssr@3.5.25':
@@ -14863,13 +14857,13 @@ snapshots:
       stubborn-fs: 2.0.0
       when-exit: 2.1.4
 
-  autoprefixer@10.6.2(postcss@8.5.30):
+  autoprefixer@10.6.2(postcss@8.5.33):
     dependencies:
       browserslist: 4.29.4
       caniuse-lite: 1.0.30001823
       fraction.js: 5.3.4
       picocolors: 1.1.1
-      postcss: 8.5.30
+      postcss: 8.5.33
       postcss-value-parser: 4.2.0
 
   available-typed-arrays@1.0.7:
@@ -17147,7 +17141,7 @@ snapshots:
     dependencies:
       obliterator: 2.0.5
 
-  mnemonist@0.40.6:
+  mnemonist@0.40.8:
     dependencies:
       obliterator: 2.0.5
 
@@ -17616,39 +17610,21 @@ snapshots:
     dependencies:
       postcss: 8.5.31
 
-  postcss-import@17.0.0(postcss@8.5.30):
+  postcss-import@17.0.0(postcss@8.5.33):
     dependencies:
-      postcss: 8.5.30
+      postcss: 8.5.33
       postcss-value-parser: 4.2.0
       read-cache: 1.0.2
       resolve: 1.22.12
 
-  postcss-import@17.0.0(postcss@8.5.31):
-    dependencies:
-      postcss: 8.5.31
-      postcss-value-parser: 4.2.0
-      read-cache: 1.0.2
-      resolve: 1.22.12
-    optional: true
-
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.30)(tsx@4.23.15)(yaml@2.9.1):
+  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(yaml@2.9.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.7.0
-      postcss: 8.5.30
+      postcss: 8.5.33
       tsx: 4.23.15
       yaml: 2.9.1
-
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.31)(tsx@4.23.15)(yaml@2.9.1):
-    dependencies:
-      lilconfig: 3.1.3
-    optionalDependencies:
-      jiti: 2.7.0
-      postcss: 8.5.31
-      tsx: 4.23.15
-      yaml: 2.9.1
-    optional: true
 
   postcss-minify-selectors@7.0.5(postcss@8.5.31):
     dependencies:
@@ -17656,14 +17632,14 @@ snapshots:
       postcss: 8.5.31
       postcss-selector-parser: 7.1.1
 
-  postcss-nested@7.0.2(postcss@8.5.30):
-    dependencies:
-      postcss: 8.5.30
-      postcss-selector-parser: 7.1.1
-
   postcss-nested@7.0.2(postcss@8.5.31):
     dependencies:
       postcss: 8.5.31
+      postcss-selector-parser: 7.1.1
+
+  postcss-nested@7.0.2(postcss@8.5.33):
+    dependencies:
+      postcss: 8.5.33
       postcss-selector-parser: 7.1.1
 
   postcss-normalize-whitespace@7.0.1(postcss@8.5.31):
@@ -17678,13 +17654,13 @@ snapshots:
 
   postcss-value-parser@4.2.0: {}
 
-  postcss@8.5.30:
+  postcss@8.5.31:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
-  postcss@8.5.31:
+  postcss@8.5.33:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -18716,7 +18692,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.5.0
     optionalDependencies:
-      '@tsdown/css': 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.31))(postcss@8.5.31)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+      '@tsdown/css': 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       tsx: 4.23.15
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -19076,7 +19052,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.30
+      postcss: 8.5.33
       rolldown: 1.2.16
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -19091,7 +19067,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.30
+      postcss: 8.5.33
       rolldown: 1.2.16
       tinyglobby: 0.2.17
     optionalDependencies:

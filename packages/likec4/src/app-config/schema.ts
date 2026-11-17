@@ -65,7 +65,7 @@ export const LikeC4AppConfigSchema = z.strictObject({
        */
       port: Port.optional(),
       /**
-       * Port of the HMR WebSocket server
+       * Port of a separate HMR WebSocket server, by default HMR uses the dev server port
        */
       hmrPort: Port.optional(),
       /**

@@ -137,7 +137,7 @@ Any change in the source files triggers a hot update in the browser immediately.
 | Option                       | Description                                                                                                     |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `--port`                     | Port for the dev server (default: 5173, or `PORT` env var)                                                      |
-| `--hmr-port`                 | Port for the HMR WebSocket (default: auto-discovered from 24678–24690, or `HMR_PORT` env var)                   |
+| `--hmr-port`                 | Port for a separate HMR WebSocket (default: the dev server port, or `HMR_PORT` env var)                         |
 | `--listen, -l`               | IP address to listen on (default: `localhost`, or `0.0.0.0` inside a container)                                 |
 | `--allowed-host`             | Hostname allowed to access the dev server (Vite [`server.allowedHosts`](https://vite.dev/config/server-options#server-allowedhosts)); repeatable. Defaults to allowing all hosts. |
 | `--base, --base-url`         | Base URL the app is served from, e.g. "/" or "/pages/"                                                          |

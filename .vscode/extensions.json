@@ -4,6 +4,7 @@
     "langium.langium-vscode",
     "unifiedjs.vscode-mdx",
     "vitest.explorer",
-    "oxc.oxc-vscode"
+    "oxc.oxc-vscode",
+    "eamodio.gitlens"
   ]
 }
