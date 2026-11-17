@@ -49,16 +49,13 @@ describe('resolveHmrPort', () => {
     vi.restoreAllMocks()
   })
 
-  it('auto-discovers port from 24678–24690 range when no hmrPort given and HMR enabled', async () => {
+  it('returns undefined when no hmrPort given and HMR enabled (HMR shares the dev server port)', async () => {
     const getPort = await getGetPortMock()
-    getPort.mockResolvedValueOnce(24682)
 
     const result = await resolveHmrPort(undefined, true)
 
-    // getPort should have been called (auto-discovery triggered)
-    expect(getPort).toHaveBeenCalledOnce()
-    // result comes from getPort's return value
-    expect(result).toBe(24682)
+    expect(getPort).not.toHaveBeenCalled()
+    expect(result).toBeUndefined()
   })
 
   it('uses explicit hmrPort verbatim without calling getPort', async () => {
