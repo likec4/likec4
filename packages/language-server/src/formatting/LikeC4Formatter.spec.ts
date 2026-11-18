@@ -1354,6 +1354,34 @@ describe('formating', () => {
     )
 
     it(
+      'formats link and metadata colons idempotently',
+      async ({ expect, format }) => {
+        const expected = [
+          '',
+          'model {',
+          '  system sys1 {',
+          '    link: https://example.com',
+          '    metadata {',
+          '      key: \'value\'',
+          '    }',
+          '  }',
+          '}',
+        ].join('\n')
+        const once = await format(`
+          model {
+            system sys1 {
+              link :https://example.com
+              metadata {
+                key :'value'
+              }
+            }
+          }`)
+        expect(once).toBe(expected)
+        expect(await format(once)).toBe(expected)
+      },
+    )
+
+    it(
       'formats navigateTo property',
       async ({ expect, format }) =>
         expect(
