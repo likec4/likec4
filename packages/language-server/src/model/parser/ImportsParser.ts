@@ -12,6 +12,8 @@ import type { Base } from './Base'
 export function* streamImports(doc: LikeC4LangiumDocument): Generator<[ProjectId, ast.Imported]> {
   const imports = doc.parseResult.value.imports ?? []
   for (const importsFromPoject of imports) {
+    // Import name as written in `from '…'`, it is the project id in the consumer model.
+    // The imported project is resolved by DependencyResolver (scope provider, model builder).
     const project = importsFromPoject.project as ProjectId
     let imported = importsFromPoject.imports as ast.Imported | undefined
     while (imported) {

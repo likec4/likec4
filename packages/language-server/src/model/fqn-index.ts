@@ -38,12 +38,13 @@ import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { ADisposable, UniqueSingleMap } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
-import { type LangiumDocuments, ProjectsManager } from '../workspace'
+import { type LangiumDocuments, type ProjectsLookup, ProjectsManager } from '../workspace'
 
 const isIndexableElement = isAnyOf(ast.isElement, ast.isExtendElement)
 
 export class FqnIndex<AstNd = ast.Element> extends ADisposable {
   protected projects: ProjectsManager
+  protected projectsLookup: ProjectsLookup
   protected langiumDocuments: LangiumDocuments
   protected documentCache: SimpleCache<string, DocumentFqnIndex>
   protected workspaceCache: ContextCache<ProjectId, string, AstNodeDescriptionWithFqn[]>
@@ -56,6 +57,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     super()
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     this.projects = services.shared.workspace.ProjectsManager
+    this.projectsLookup = services.shared.workspace.ProjectsLookup
 
     this.onDispose(
       this.documentCache = new SimpleCache(),
@@ -272,7 +274,7 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     if (rootElements.length === 0) {
       return DocumentFqnIndex.EMPTY
     }
-    const projectId = document.likec4ProjectId ?? this.projects.ownerProjectId(document)
+    const projectId = document.likec4ProjectId ?? this.projectsLookup.ownerProjectId(document)
     const root = new Array<AstNodeDescriptionWithFqn>()
     const children = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()
     const descendants = new MultiMap<Fqn, AstNodeDescriptionWithFqn>()

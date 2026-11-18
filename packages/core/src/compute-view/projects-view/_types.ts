@@ -7,12 +7,41 @@ import type {
   ComputedNode,
   DiagramEdge,
   DiagramNode,
+  ImportedProjectSource,
   ProjectId,
   ViewAutoLayout,
 } from '../../types'
 
+/**
+ * Describes a node of the projects overview that represents an external project:
+ * a dependency imported by a workspace project, that is not a workspace project itself.
+ */
+export interface ExternalProjectNodeInfo {
+  /**
+   * Workspace project that imports the external project
+   */
+  readonly importedBy: ProjectId
+  /**
+   * Name of the import, as written by the importing project (`import ... from 'name'`)
+   */
+  readonly importName: ProjectId
+  /**
+   * Where the external project comes from, as declared by the importing project
+   */
+  readonly source: ImportedProjectSource
+}
+
 export interface ComputedProjectNode extends ComputedNode {
+  /**
+   * Id of the workspace project.
+   * For external projects (see {@link external}) this is a synthetic id
+   * in format `<importName>@<importedBy>`, it never matches a workspace project id.
+   */
   readonly projectId: ProjectId
+  /**
+   * Present only if the node represents an external project (not a workspace project)
+   */
+  readonly external?: ExternalProjectNodeInfo
 }
 
 export interface ComputedProjectEdge extends ComputedEdge {
@@ -20,7 +49,15 @@ export interface ComputedProjectEdge extends ComputedEdge {
 }
 
 export interface LayoutedProjectNode extends DiagramNode {
+  /**
+   * Id of the workspace project, or a synthetic id for external projects
+   * (see {@link ComputedProjectNode.projectId})
+   */
   readonly projectId: ProjectId
+  /**
+   * Present only if the node represents an external project (not a workspace project)
+   */
+  readonly external?: ExternalProjectNodeInfo
 }
 
 export interface LayoutedProjectEdge extends DiagramEdge {

@@ -20,6 +20,7 @@ import { isNotLikeC4Builtin } from './likec4lib'
 import type { DocumentParser } from './model/model-parser'
 import { stringHash } from './utils'
 import type { IsValidFn } from './validation'
+import { documentSourceUri } from './workspace/dependency-uri'
 
 export { ast }
 
@@ -696,7 +697,8 @@ export function resolveDescriptionFile(astNode: ast.DescriptionFileProperty, doc
   try {
     doc ??= AstUtils.getDocument(astNode)
     // Resolve relative to directory of the document
-    return UriUtils.joinPath(doc.uri, '..', astNode.value)
+    // (documents of local dependencies, `likec4-dep` scheme, resolve against their real file)
+    return UriUtils.joinPath(documentSourceUri(doc.uri), '..', astNode.value)
   } catch {
     return null
   }

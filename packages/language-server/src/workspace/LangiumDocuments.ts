@@ -5,15 +5,15 @@ import { groupBy, map, pipe, prop } from 'remeda'
 import { type LikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
 import type { LikeC4SharedServices } from '../module'
 import { compareByUri } from '../utils/compareByUri'
-import type { ProjectsManager } from './ProjectsManager'
+import type { ProjectsLookup } from './ProjectsLookup'
 
 export class LangiumDocuments extends DefaultLangiumDocuments {
   constructor(protected override services: LikeC4SharedServices) {
     super(services)
   }
 
-  protected get projectsManager(): ProjectsManager {
-    return this.services.workspace.ProjectsManager
+  protected get projectsLookup(): ProjectsLookup {
+    return this.services.workspace.ProjectsLookup
   }
 
   /**
@@ -29,7 +29,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   override addDocument(document: LangiumDocument): void {
     if (isLikeC4UserDocument(document)) {
       // Set project ID
-      document.likec4ProjectId = this.projectsManager.ownerProjectId(document)
+      document.likec4ProjectId = this.projectsLookup.ownerProjectId(document)
     }
     super.addDocument(document)
     this.sortedDocuments = null
@@ -49,7 +49,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
     const doc = super.getDocument(uri)
     if (isLikeC4UserDocument(doc)) {
       // Set project ID
-      doc.likec4ProjectId = this.projectsManager.ownerProjectId(doc)
+      doc.likec4ProjectId = this.projectsLookup.ownerProjectId(doc)
     }
     return doc
   }
@@ -59,7 +59,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    */
   get userDocuments(): Stream<LikeC4LangiumDocument> {
     return stream(this.sorted)
-      .filter((doc): doc is LikeC4LangiumDocument => isLikeC4UserDocument(doc) && !this.projectsManager.isExcluded(doc))
+      .filter((doc): doc is LikeC4LangiumDocument => isLikeC4UserDocument(doc) && !this.projectsLookup.isExcluded(doc))
   }
   /**
    * Returns all documents (ensures project IDs are set)
@@ -67,7 +67,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   override get all(): Stream<LangiumDocument> {
     return stream(this.sorted).map((doc) => {
       if (isLikeC4UserDocument(doc)) {
-        doc.likec4ProjectId = this.projectsManager.ownerProjectId(doc)
+        doc.likec4ProjectId = this.projectsLookup.ownerProjectId(doc)
       }
       return doc
     })
@@ -77,7 +77,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
    * Returns all documents for a project, including both project documents and documents included by the project.
    */
   projectDocuments(projectId: ProjectId): Stream<LikeC4LangiumDocument> {
-    const projects = this.services.workspace.ProjectsManager
+    const projects = this.services.workspace.ProjectsLookup
     return stream(this.sorted)
       .filter((doc): doc is LikeC4LangiumDocument => {
         if (isLikeC4UserDocument(doc) && projects.isIncluded(projectId, doc)) {
@@ -89,7 +89,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
   }
 
   groupedByProject(): Record<ProjectId, NonEmptyArray<LikeC4LangiumDocument>> {
-    const projects = this.services.workspace.ProjectsManager
+    const projects = this.services.workspace.ProjectsLookup
     return pipe(
       this.userDocuments.toArray(),
       map(doc => {
@@ -108,7 +108,7 @@ export class LangiumDocuments extends DefaultLangiumDocuments {
     const uris = [] as URI[]
     for (const doc of this.sorted) {
       delete doc.likec4ProjectId
-      if (isLikeC4UserDocument(doc) && !this.projectsManager.isExcluded(doc)) {
+      if (isLikeC4UserDocument(doc) && !this.projectsLookup.isExcluded(doc)) {
         uris.push(doc.uri)
       }
     }

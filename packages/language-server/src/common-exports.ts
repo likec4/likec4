@@ -56,6 +56,8 @@ export {
   NoLikeC4ManualLayouts,
 }
 
+export { documentSourceUri } from './workspace/dependency-uri'
+
 export type {
   FileSystemModuleContext,
   FileSystemProvider,

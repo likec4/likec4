@@ -60,11 +60,141 @@ model {
 }
 ```
 
+The name after `from` is the `name` of a project in the same workspace.
+To import a project under another name, or a project outside the workspace, declare it in [`dependencies`](#dependencies).
+
 <Aside type='caution' title="Limitations">
 At the moment, the following limitations apply:
-- Referenced projects must be loaded in the same workspace
-- Only top-level **model** elements can be imported
+- Without `dependencies`, referenced projects must be loaded in the same workspace
+- Only top-level **model** elements can be imported. Their nested elements are available through them
 </Aside>
+
+## Dependencies
+
+<Aside type='caution' title="Experimental">
+The `dependencies` section is experimental. Its format may change before it becomes stable.
+</Aside>
+
+Declare the projects you import from in the `dependencies` section of the project config.
+Each entry maps an import name to the folder of the dependency project (the folder with its config file).
+The path is relative to the folder of the config file.
+
+<FileTree>
+- platform-model
+  - likec4.config.json // "name": "platform"
+  - auth.c4
+- workspace
+  - billing-service
+    - likec4.config.json // "name": "billing-core"
+    - billing.c4
+  - checkout
+    - **likec4.config.json**
+    - checkout.c4
+</FileTree>
+
+```json title="workspace/checkout/likec4.config.json"
+{
+  "$schema": "https://likec4.dev/schemas/config.json",
+  "name": "checkout",
+  "dependencies": {
+    "billing": "../billing-service",
+    "platform": "../../platform-model"
+  }
+}
+```
+
+The dependencies define the elements to import:
+
+```likec4 title="workspace/billing-service/billing.c4"
+specification {
+  element service
+}
+
+model {
+  invoices = service 'Invoices'
+}
+```
+
+```likec4 title="platform-model/auth.c4"
+specification {
+  element service
+}
+
+model {
+  auth = service 'Auth' {
+    tokens = service 'Tokens'
+  }
+}
+```
+
+The `.c4` files of the project use the import name, not the path:
+
+```likec4 title="workspace/checkout/checkout.c4"
+import { invoices } from 'billing'
+import { auth } from 'platform'
+
+specification {
+  element system
+}
+
+model {
+  checkout = system 'Checkout' {
+    -> invoices 'creates invoices'
+    -> auth.tokens 'validates tokens'
+  }
+}
+
+views {
+  view index {
+    include *
+  }
+}
+```
+
+An import name follows the [project name](/config/#project-name) rules: it cannot be `default` and cannot contain `.`, `@` or `#`.  
+The import name does not have to match the `name` of the dependency.  
+Paths must be relative: absolute paths, drive letters and URLs are not allowed.
+
+LikeC4 resolves `import ... from 'name'` this way:
+
+1. If the project declares `name` in `dependencies`, the entry wins, even if the workspace has a project with this name.
+   If LikeC4 finds no project in the folder of the entry, the import fails with `Imported project not found`.
+2. Otherwise, LikeC4 looks for a workspace project with this `name`, as without `dependencies`.
+
+A project cannot import itself.
+An entry that points to the folder of the project itself, or an import name equal to the name of the project, is an error.
+
+A config file is required to declare `dependencies`: files of the `default` project can only import workspace projects by their name.
+
+### Projects in the workspace
+
+If the path points to the folder of a project in the workspace, the import uses this project, with all its settings.
+
+### Projects outside the workspace
+
+If the path points to a folder outside the workspace (the folder open in the editor, or the path given to the CLI), LikeC4 loads it only as a source of elements to import:
+
+- It reads `.c4` and `.likec4` files in the folder and its subfolders, except files matched by the `exclude` patterns of the dependency.
+- It reads only a JSON config (`likec4.config.json`, `.likec4.config.json` or `.likec4rc`).
+  A TypeScript or JavaScript config is not executed.
+  Without a JSON config, default settings are used, and the name of the dependency is the name of its folder.
+- `include` of the dependency is ignored.
+- It is not a project of the workspace: LikeC4 does not report errors in its files and does not build its views.
+- Several projects of the workspace can depend on the same folder.
+
+Files outside the workspace are not watched.
+After you change them, run **LikeC4: Reload projects** in VS Code, or restart the CLI.
+
+A folder inside the workspace, inside a project folder, or inside `include` paths of a project is not loaded as a dependency outside the workspace.
+If it is not a project folder of the workspace, the import fails with `Imported project not found`.
+A folder that contains the workspace is skipped as well.
+
+### Limitations
+
+- A dependency is a path to a local folder.
+- Dependencies are not transitive: `dependencies` of a dependency are ignored, and only the elements of the dependency itself can be imported, not the elements it imports.
+- Do not declare dependency folders nested in one another.
+- Code completion in `from '...'` does not suggest import names from `dependencies`.
 
 ## Share specification
 
