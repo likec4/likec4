@@ -1,4 +1,7 @@
+import type { LikeC4Model } from '@likec4/core/model'
+import { preferSummary } from '@likec4/core/types'
 import { isFunction } from 'remeda'
+import { createFuzzySearch } from '../fuzzy'
 import { focusable } from './_shared.css'
 
 export function stopAndPrevent(e: React.KeyboardEvent | KeyboardEvent) {
@@ -73,4 +76,27 @@ export function whenSearchAnimationEnds(
   callback: () => void,
 ): void {
   setTimeout(callback, 400)
+}
+
+/**
+ * Title of the view prefixed with the folders it belongs to, e.g. `Folder 1 / Folder 2 / View`.
+ * Views at the root are returned as is.
+ */
+export function viewTitleWithFolder(view: Pick<LikeC4Model.View, 'folder' | 'titleOrUntitled'>): string {
+  if (view.folder.isRoot) {
+    return view.titleOrUntitled
+  }
+  return [...view.folder.breadcrumbs.map(folder => folder.title), view.titleOrUntitled].join(' / ')
+}
+
+/**
+ * Fuzzy search over the views (see `createFuzzySearch`): matches the view id, its title with the folder path,
+ * and its summary or description.
+ */
+export function createViewSearch<V extends LikeC4Model.View>(views: readonly V[]): (search: string) => V[] {
+  return createFuzzySearch(views, [
+    { name: 'id', getFn: view => view.id },
+    { name: 'title', getFn: view => viewTitleWithFolder(view) },
+    { name: 'description', getFn: view => preferSummary(view.$view)?.md ?? '' },
+  ])
 }

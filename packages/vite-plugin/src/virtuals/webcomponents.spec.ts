@@ -17,24 +17,22 @@ describe('projectWebcomponentsModule', () => {
 })
 
 describe('generateWebcomponentsCode', () => {
-  it('generates a custom element backed by the project React module', () => {
+  it('defines a custom element backed by the project React module', () => {
     const code = generateWebcomponentsCode('project-a' as ProjectId)
 
+    expect(code).toContain(`import { defineLikeC4Webcomponent } from 'likec4/react'`)
     expect(code).toContain(`import { LikeC4View } from ${jsStringLiteral('likec4:react/project-a')}`)
     expect(code).toContain('export function defineWebcomponent(name)')
-    expect(code).toContain(
-      `static observedAttributes = ['view-id', 'browser', 'dynamic-variant', 'color-scheme']`,
-    )
-    expect(code).toContain(`viewId: element.getAttribute('view-id') ?? 'index'`)
-    expect(code).toContain(`customElements.define(name, LikeC4ViewElement)`)
+    expect(code).toContain(`return defineLikeC4Webcomponent(name, LikeC4View, ${jsStringLiteral('project-a')})`)
   })
 
   it('hardens project ids embedded in generated JavaScript', () => {
     const projectId = 'project-a";\nthrow new Error("injected")//' as ProjectId
     const code = generateWebcomponentsCode(projectId)
 
-    expect(code).toContain(`const projectId = ${jsStringLiteral(projectId)}`)
+    expect(code).toContain(`defineLikeC4Webcomponent(name, LikeC4View, ${jsStringLiteral(projectId)})`)
     expect(code).toContain(`from ${jsStringLiteral(`likec4:react/${projectId}`)}`)
     expect(code).not.toContain(`from 'likec4:react/${projectId}'`)
+    expect(code).not.toContain(`LikeC4View, "${projectId}")`)
   })
 })

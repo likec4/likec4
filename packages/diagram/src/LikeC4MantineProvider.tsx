@@ -6,6 +6,7 @@ import {
   type DefaultMantineColor,
   type MantineColorsTuple,
   type MantineProviderProps,
+  ActionBar,
   Card,
   Code,
   createTheme,
@@ -149,6 +150,18 @@ const likec4Theme = createTheme({
         closeDelay: 120,
         offset: 8,
       },
+      classNames: {
+        tooltip: css({
+          shadow: {
+            base: 'sm',
+            _dark: 'lg',
+          },
+          _dark: {
+            bg: 'surface.canvas',
+            border: 'subtle',
+          },
+        }),
+      },
     }),
     SegmentedControl: SegmentedControl.extend({
       vars: (theme, props) => ({
@@ -166,6 +179,12 @@ const likec4Theme = createTheme({
       },
     }),
     Menu: Menu.extend({
+      defaultProps: {
+        radius: 'sm',
+        shadow: 'lg',
+      },
+    }),
+    ActionBar: ActionBar.extend({
       defaultProps: {
         radius: 'sm',
         shadow: 'lg',

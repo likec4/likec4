@@ -9,6 +9,7 @@ import {
   type IncludeConfig,
   type LikeC4ProjectConfig,
   type LikeC4ProjectConfigInput,
+  isLikeC4Config,
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
 import type { NonEmptyArray, NonEmptyReadonlyArray } from '@likec4/core'
@@ -16,23 +17,42 @@ import type { ProjectId } from '@likec4/core/types'
 import {
   compareNaturalHierarchically,
   DefaultMap,
+  delay,
   invariant,
   isString,
   nonNullable,
+  objectHash,
+  onNextTick,
+  stringHash,
 } from '@likec4/core/utils'
 import { loggable, wrapError } from '@likec4/log'
 import {
   type Cancellation,
   type LangiumDocument,
+  type TextDocument,
   Disposable,
   isOperationCancelled,
   URI,
   UriUtils,
 } from 'langium'
+import PQueue from 'p-queue'
 import { isAbsolute } from 'pathe'
 import picomatch from 'picomatch'
-import { filter, find, hasAtLeast, isEmptyish, isNullish, isTruthy, map, pipe, prop, purry, sort } from 'remeda'
-import type { Tagged } from 'type-fest'
+import {
+  filter,
+  find,
+  hasAtLeast,
+  isEmptyish,
+  isNullish,
+  isTruthy,
+  map,
+  omit,
+  pipe,
+  prop,
+  purry,
+  sort,
+} from 'remeda'
+import type { SetOptional, Tagged } from 'type-fest'
 import {
   cleanDoubleSlashes,
   hasProtocol,
@@ -42,6 +62,7 @@ import {
   withoutTrailingSlash,
   withTrailingSlash,
 } from 'ufo'
+import { FileChangeType } from 'vscode-languageserver-protocol'
 import { isLikeC4Builtin } from '../likec4lib'
 import { logger as mainLogger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
@@ -52,22 +73,31 @@ const logger = mainLogger.getChild('projects')
 // string containing URI with protocol and path
 export type NormalizedUri = Tagged<string, 'NormalizedUri'>
 
-type DocOrUri = LangiumDocument | string | URI
+export type DocOrUri = LangiumDocument | TextDocument | string | URI
+
+function isTextDocument(doc: DocOrUri): doc is TextDocument {
+  return typeof doc === 'object' && 'uri' in doc && 'languageId' in doc && 'getText' in doc &&
+    typeof doc.getText === 'function'
+}
 
 function isLangiumDocument(doc: DocOrUri): doc is LangiumDocument {
   return typeof doc === 'object' && 'uri' in doc && 'textDocument' in doc
 }
 
 function normalizeUri(uri: DocOrUri): NormalizedUri {
-  if (isLangiumDocument(uri)) {
-    return uri.uri.toString() as NormalizedUri
-  }
   if (typeof uri === 'string') {
     if (hasProtocol(uri, { acceptRelative: false, strict: true })) {
       return uri as NormalizedUri
     }
     return URI.file(uri).toString() as NormalizedUri
   }
+  if (isLangiumDocument(uri)) {
+    return uri.uri.toString() as NormalizedUri
+  }
+  if (isTextDocument(uri)) {
+    return uri.uri as NormalizedUri
+  }
+
   return uri.toString() as NormalizedUri
 }
 
@@ -202,6 +232,11 @@ export interface ProjectData extends Project {
    * Normalized include configuration (paths, maxDepth, fileThreshold).
    */
   includeConfig: IncludeConfig
+
+  /**
+   * Hash of the project configuration
+   */
+  hash: string
 }
 
 const compareProjectByFolder = (a: ProjectData, b: ProjectData) => compareUri(a.folderUri, b.folderUri)
@@ -312,6 +347,7 @@ export class ProjectsManager extends ADisposable {
         configUri,
         exclude: DefaultProject.exclude,
         includeConfig: { ...DefaultProject.includeConfig },
+        hash: stringHash(folder || 'default'),
       }
     }
     return nonNullable(this.#projects.find(p => p.id === id), `Project ${id} not found`)
@@ -345,9 +381,38 @@ export class ProjectsManager extends ADisposable {
   constructor(protected services: LikeC4SharedServices) {
     super()
     this.onDispose(
-      Disposable.create(() => {
+      Disposable.create(async () => {
+        this.cancelScheduledReloads()
+        if (this.#reloadQueue.pending) {
+          await this.#reloadQueue.onIdle()
+        }
+        this.clearCaches()
+        ;(this.#projects as any[]).length = 0
         this.#updateListeners.length = 0
       }),
+    )
+    onNextTick(() =>
+      this.onDispose(
+        services.lsp.DocumentUpdateHandler.onWatchedFilesChangeBy(
+          // Process like-c4 config files and deleted folders with projects (or their include paths)
+          ({ uri, type }) => isLikeC4Config(uri) || (type === FileChangeType.Deleted && this.hasProjectsInside(uri)),
+          (changes) => {
+            // Ignore file changes during initialization or reload
+            if (this.isInitiatingOrReloading) {
+              return
+            }
+            for (const change of changes) {
+              if (change.type === FileChangeType.Deleted) {
+                this.cancelScheduledReloads()
+                void this.reloadProjects()
+                return
+              }
+              this.scheduleReloadProject(change.uri)
+            }
+            return
+          },
+        ),
+      )
     )
     logger.trace`created`
   }
@@ -356,14 +421,11 @@ export class ProjectsManager extends ADisposable {
    * Checks if a document is excluded by workspace-level patterns.
    * These patterns come from VS Code settings and take precedence over project-level excludes.
    */
-  public isExcludedByWorkspace(uri: NormalizedUri | URI): boolean {
+  public isExcludedByWorkspace(uri: DocOrUri): boolean {
     if (!this.#workspaceExclude) {
       return false
     }
-    if (URI.isUri(uri)) {
-      uri = normalizeUri(uri)
-    }
-    return this.#workspaceExclude(uriPathForMatcher(uri))
+    return this.#workspaceExclude(uriPathForMatcher(normalizeUri(uri)))
   }
 
   /**
@@ -537,6 +599,9 @@ export class ProjectsManager extends ADisposable {
    * - if the document is included by the project
    */
   isIncluded(projectId: ProjectId, document: LangiumDocument | URI | string): boolean {
+    if (isLangiumDocument(document) && isLikeC4Builtin(document)) {
+      return false
+    }
     const uri = normalizeUri(document)
     // Workspace-level excludes (from VS Code settings) take precedence
     if (this.isExcludedByWorkspace(uri)) {
@@ -603,14 +668,14 @@ export class ProjectsManager extends ADisposable {
     // find project by folder, config file can be renamed
     let project = this.#projects.find(p => p.folder === folder)
     if (!project) {
-      project = {
+      project = withProjectHash({
         id: this.uniqueProjectId(config.name),
         config,
         folder,
         configUri,
         folderUri,
         includeConfig,
-      }
+      })
 
       // add new project and sort
       this.#projects = ensureProjectsOrder([...this.#projects, project])
@@ -623,6 +688,21 @@ export class ProjectsManager extends ADisposable {
         logger.info`remove ${project.id}`
         project.id = this.uniqueProjectId(config.name)
         logger.info`add ${project.id}`
+      } else {
+        // Check if project has structural changes
+        const newHash = computeProjectHash({
+          id: project.id,
+          config,
+          includeConfig,
+          configUri,
+          folder,
+        })
+        if (project.hash === newHash) {
+          // Update reference to config object to avoid stale config
+          project.config = config
+          logger.trace`project ${project.id} has no structural changes, skipping reload`
+          return project
+        }
       }
 
       this.warnIfConfigOverride(project, configUri)
@@ -633,6 +713,7 @@ export class ProjectsManager extends ADisposable {
       project.folderUri = folderUri
       project.configUri = configUri
       project.includeConfig = includeConfig
+      project.hash = computeProjectHash(project)
     }
 
     // Ignore Errors if any
@@ -787,7 +868,9 @@ export class ProjectsManager extends ADisposable {
     }
     this.clearCaches()
     this.notifyListeners()
-    await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
+    if (this.services.workspace.WorkspaceManager.isReady) {
+      await this.services.workspace.WorkspaceManager.rebuildAll(cancelToken)
+    }
   }
 
   protected uniqueProjectId(name: string): ProjectId {
@@ -839,7 +922,7 @@ export class ProjectsManager extends ADisposable {
       return
     }
 
-    log.info`rebuild project documents: ${docs.length}`
+    log.info`rebuild project (documents: ${docs.length})`
     this.clearCaches()
     await this.services.workspace.DocumentBuilder
       .update(docs, [], cancelToken)
@@ -1003,5 +1086,86 @@ export class ProjectsManager extends ADisposable {
     } catch {
       // ignore
     }
+  }
+
+  #pendingReloads = new Set<string>()
+  // No timeout: p-queue does not cancel timed out tasks, it only frees the slot and breaks serialization
+  #reloadQueue = new PQueue({ concurrency: 1 })
+  /**
+   * Aborted to cancel scheduled reloads.
+   * Not passed to the queue: p-queue frees the slot of an aborted running task, and the reload would run
+   * concurrently with the next one. Instead, a cancelled task completes immediately when it starts.
+   */
+  #reloadAbort = new AbortController()
+  private scheduleReloadProject(projectConfigUri: string): void {
+    if (this.#pendingReloads.has(projectConfigUri)) {
+      return
+    }
+    this.#pendingReloads.add(projectConfigUri)
+
+    // add delay on first reload to debounce rapid changes
+    const delayMs = this.#pendingReloads.size === 1 ? 250 : 50
+    const signal = this.#reloadAbort.signal
+    void this.#reloadQueue.add(async () => {
+      if (!signal.aborted) {
+        await delay(delayMs)
+      }
+    })
+    void this.#reloadQueue.add(async () => {
+      if (signal.aborted) {
+        return
+      }
+      try {
+        await this.services.workspace.WorkspaceLock.write(async (token) => {
+          // Remove before reading the config, so changes made during the reload schedule a new one
+          this.#pendingReloads.delete(projectConfigUri)
+          await this.registerConfigFile(URI.parse(projectConfigUri), token)
+        })
+      } catch (error) {
+        logger.warn(loggable(error))
+      }
+    })
+  }
+
+  /**
+   * Whether the given folder contains a project folder or an include path of some project
+   * (i.e. deleting the folder removes them)
+   */
+  private hasProjectsInside(folder: string): boolean {
+    const parent = ProjectFolder(folder)
+    return this.#projects.some(p =>
+      p.folder.startsWith(parent) || (p.includePaths?.some(i => i.folder.startsWith(parent)) ?? false)
+    )
+  }
+
+  /**
+   * Cancels scheduled (not started) reloads, a running reload completes.
+   * (`PQueue.clear()` is not used: it drops the tasks and their promises never settle)
+   */
+  private cancelScheduledReloads(): void {
+    this.#reloadAbort.abort()
+    this.#reloadAbort = new AbortController()
+    this.#pendingReloads.clear()
+  }
+}
+
+function computeProjectHash(
+  project: Pick<ProjectData, 'id' | 'config' | 'includeConfig' | 'folder' | 'configUri'>,
+): string {
+  return objectHash([
+    project.id + project.folder + project.configUri.toString(),
+    omit(project.config, [
+      // These fields are not used for hash calculation
+      'generators',
+      'include', // include is already in includeConfig
+    ]),
+    project.includeConfig,
+  ])
+}
+
+function withProjectHash(project: SetOptional<ProjectData, 'hash'>): ProjectData {
+  return {
+    ...project,
+    hash: computeProjectHash(project),
   }
 }

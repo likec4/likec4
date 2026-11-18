@@ -1,61 +1,61 @@
-import { describe, expect, it } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe } from 'vitest'
+import { test as it } from '../../test'
 import { deriveTechnologyFromIcon } from '../builder/MergedSpecification'
 
 describe('deriveTechnologyFromIcon', () => {
-  it('derives technology from tech: prefix', () => {
+  it('derives technology from tech: prefix', ({ expect }) => {
     expect(deriveTechnologyFromIcon('tech:apache-flink')).toBe('Apache Flink')
     expect(deriveTechnologyFromIcon('tech:react')).toBe('React')
     expect(deriveTechnologyFromIcon('tech:nodejs')).toBe('Nodejs')
     expect(deriveTechnologyFromIcon('tech:docker')).toBe('Docker')
   })
 
-  it('derives technology from aws: prefix', () => {
+  it('derives technology from aws: prefix', ({ expect }) => {
     expect(deriveTechnologyFromIcon('aws:simple-storage-service')).toBe('Simple Storage Service')
     expect(deriveTechnologyFromIcon('aws:lambda')).toBe('Lambda')
     expect(deriveTechnologyFromIcon('aws:ec2')).toBe('Ec2')
   })
 
-  it('derives technology from azure: prefix', () => {
+  it('derives technology from azure: prefix', ({ expect }) => {
     expect(deriveTechnologyFromIcon('azure:virtual-machine')).toBe('Virtual Machine')
     expect(deriveTechnologyFromIcon('azure:app-service')).toBe('App Service')
   })
 
-  it('derives technology from gcp: prefix', () => {
+  it('derives technology from gcp: prefix', ({ expect }) => {
     expect(deriveTechnologyFromIcon('gcp:compute-engine')).toBe('Compute Engine')
     expect(deriveTechnologyFromIcon('gcp:cloud-run')).toBe('Cloud Run')
   })
 
-  it('strips -icon suffix', () => {
+  it('strips -icon suffix', ({ expect }) => {
     expect(deriveTechnologyFromIcon('tech:codeclimate-icon')).toBe('Codeclimate')
     expect(deriveTechnologyFromIcon('tech:apache-flink-icon')).toBe('Apache Flink')
     expect(deriveTechnologyFromIcon('tech:adobe-icon')).toBe('Adobe')
   })
 
-  it('returns undefined for generic icon groups', () => {
+  it('returns undefined for generic icon groups', ({ expect }) => {
     expect(deriveTechnologyFromIcon('bootstrap:house')).toBeUndefined()
     expect(deriveTechnologyFromIcon('bootstrap:gear-fill')).toBeUndefined()
     expect(deriveTechnologyFromIcon('md:home')).toBeUndefined()
   })
 
-  it('returns undefined for undefined/null/empty input', () => {
+  it('returns undefined for undefined/null/empty input', ({ expect }) => {
     expect(deriveTechnologyFromIcon(undefined)).toBeUndefined()
     expect(deriveTechnologyFromIcon('')).toBeUndefined()
   })
 
-  it('returns undefined for URL icons', () => {
+  it('returns undefined for URL icons', ({ expect }) => {
     expect(deriveTechnologyFromIcon('https://example.com/icon.png')).toBeUndefined()
     expect(deriveTechnologyFromIcon('http://example.com/icon.png')).toBeUndefined()
   })
 
-  it('returns undefined for "none"', () => {
+  it('returns undefined for "none"', ({ expect }) => {
     expect(deriveTechnologyFromIcon('none')).toBeUndefined()
   })
 })
 
 describe('inferTechnologyFromIcon integration', () => {
-  it('derives technology from element icon', async () => {
-    const { validate, buildModel } = createTestServices()
+  it('derives technology from element icon', async ({ t, expect }) => {
+    const { validate, buildModel } = t
     await validate(`
       specification {
         element component
@@ -83,8 +83,8 @@ describe('inferTechnologyFromIcon integration', () => {
     expect(model.elements['comp4']?.technology).toBe('Compute Engine')
   })
 
-  it('does not derive from generic icon groups', async () => {
-    const { validate, buildModel } = createTestServices()
+  it('does not derive from generic icon groups', async ({ t, expect }) => {
+    const { validate, buildModel } = t
     await validate(`
       specification {
         element component
@@ -100,8 +100,8 @@ describe('inferTechnologyFromIcon integration', () => {
     expect(model.elements['comp1']?.technology).toBeUndefined()
   })
 
-  it('preserves explicit element technology', async () => {
-    const { validate, buildModel } = createTestServices()
+  it('preserves explicit element technology', async ({ t, expect }) => {
+    const { validate, buildModel } = t
     await validate(`
       specification {
         element component
@@ -117,8 +117,8 @@ describe('inferTechnologyFromIcon integration', () => {
     expect(model.elements['comp1']?.technology).toBe('Custom Tech')
   })
 
-  it('preserves kind-level technology', async () => {
-    const { validate, buildModel } = createTestServices()
+  it('preserves kind-level technology', async ({ t, expect }) => {
+    const { validate, buildModel } = t
     await validate(`
       specification {
         element component {
@@ -136,8 +136,8 @@ describe('inferTechnologyFromIcon integration', () => {
     expect(model.elements['comp1']?.technology).toBe('Kind Tech')
   })
 
-  it('derives technology from kind-level icon', async () => {
-    const { validate, buildModel } = createTestServices()
+  it('derives technology from kind-level icon', async ({ t, expect }) => {
+    const { validate, buildModel } = t
     await validate(`
       specification {
         element component {
@@ -155,8 +155,8 @@ describe('inferTechnologyFromIcon integration', () => {
     expect(model.elements['comp1']?.technology).toBe('Docker')
   })
 
-  it('can be disabled via config', async () => {
-    const { validate, buildModel } = createTestServices({
+  it('can be disabled via config', async ({ create, expect }) => {
+    const { validate, buildModel } = create({
       projectConfig: {
         inferTechnologyFromIcon: false,
       },

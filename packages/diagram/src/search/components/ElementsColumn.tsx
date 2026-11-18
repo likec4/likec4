@@ -35,7 +35,9 @@ import { filter, first, hasAtLeast, last, only, pipe, reduce } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
+import { createFuzzySearch } from '../fuzzy'
 import { useNormalizedSearch } from '../hooks'
+import { matchesMetadataSearch, METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
 import * as styles from './ElementsColumn.css'
@@ -71,6 +73,14 @@ function useElementsColumnData() {
       toArray(),
     ), [model])
 
+  const fuzzy = useMemo(() =>
+    createFuzzySearch(allElements, [
+      { name: 'name', getFn: ({ element }) => element.name },
+      { name: 'title', getFn: ({ element }) => element.title },
+      { name: 'id', getFn: ({ element }) => element.id },
+      { name: 'summary', getFn: ({ element }) => element.summary.text ?? '' },
+    ]), [allElements])
+
   const search = useNormalizedSearch()
 
   return useMemo(() => {
@@ -88,6 +98,8 @@ function useElementsColumnData() {
       elements = filter(allElements, ({ element }) => {
         return element.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
       })
+    } else if (search.startsWith(METADATA_SEARCH_PREFIX)) {
+      elements = filter(allElements, ({ element }) => matchesMetadataSearch(element.metadata, search))
     } else if (hasAtLeast(searchTerms, 2)) {
       const satisfies = (element: LikeC4Model.Element) => {
         const fqnParts = element.id.toLocaleLowerCase().split('.')
@@ -109,10 +121,7 @@ function useElementsColumnData() {
       }
       elements = filter(allElements, ({ element }) => satisfies(element))
     } else {
-      elements = filter(allElements, ({ element }) => {
-        const value = element.title + ' ' + element.name + ' ' + (element.summary.md || '')
-        return value.toLocaleLowerCase().includes(search)
-      })
+      elements = fuzzy(search)
     }
 
     const byid = {} as Record<Fqn, LikeC4ModelTreeNodeData>
@@ -146,7 +155,7 @@ function useElementsColumnData() {
       roots,
       searchTerms: hasAtLeast(searchTerms, 1) ? searchTerms : [search] as NonEmptyArray<string>,
     }
-  }, [allElements, search])
+  }, [allElements, fuzzy, search])
 }
 type ElementsColumnData = ReturnType<typeof useElementsColumnData>
 

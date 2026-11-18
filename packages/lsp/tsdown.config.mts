@@ -1,3 +1,4 @@
+import { stubBrotli } from '@likec4/devops/tsdown'
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
@@ -18,4 +19,7 @@ export default defineConfig({
       conditionNames: ['production', 'sources', 'node', 'import', 'default'],
     },
   },
+  plugins: [
+    stubBrotli(),
+  ],
 })

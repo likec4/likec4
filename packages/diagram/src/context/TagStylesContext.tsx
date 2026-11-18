@@ -1,12 +1,10 @@
 import { type TagSpecification, isTagColorSpecified } from '@likec4/core'
-import { DefaultTagColors, getContrastedColorsAPCA, isValidColor, LikeC4Styles } from '@likec4/core/styles'
+import { getContrastedColorsAPCA, isDefaultTagColor, isValidColor, LikeC4Styles } from '@likec4/core/styles'
 import { useMantineStyleNonce } from '@mantine/core'
 import { type PropsWithChildren, createContext, memo, useContext } from 'react'
 import { entries, flatMap, isEmpty, join, pipe } from 'remeda'
 import { useLikeC4Specification } from '../hooks/useLikeC4Model'
 import { useLikeC4Styles } from '../hooks/useLikeC4Styles'
-
-const radixColors: readonly string[] = DefaultTagColors
 
 export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles = LikeC4Styles.DEFAULT): string {
   const color = spec.color
@@ -22,16 +20,12 @@ export function generateColorVars(spec: TagSpecification, styles: LikeC4Styles =
   --colors-likec4-tag-text: ${text};
     `
   }
-  if (radixColors.includes(color)) {
-    let textcolor = `var(--colors-${color}-12)`
-    if (['mint', 'grass', 'lime', 'yellow', 'amber'].includes(color)) {
-      textcolor = 'rgba(0 0 0 / 0.85)'
-    }
+  if (isDefaultTagColor(color)) {
     return `
-  --colors-likec4-tag-border: var(--colors-${color}-8);
-  --colors-likec4-tag-bg: var(--colors-${color}-9);
-  --colors-likec4-tag-bg-hover: var(--colors-${color}-10);
-  --colors-likec4-tag-text: ${textcolor};
+  --colors-likec4-tag-border: var(--colors-likec4-tag-${color}-border);
+  --colors-likec4-tag-bg: var(--colors-likec4-tag-${color}-bg);
+  --colors-likec4-tag-bg-hover: var(--colors-likec4-tag-${color}-bg-hover);
+  --colors-likec4-tag-text: var(--colors-likec4-tag-${color}-text);
     `
   }
   // Theme color (e.g. `primary`, `secondary`) or a project-defined custom color —

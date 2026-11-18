@@ -1793,10 +1793,105 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model.specification.relationships).toMatchObject({
       async: {
-        style: {
-          multiple: true,
-        },
+        multiple: true,
       },
+    })
+  })
+
+  it('applies custom relation properties in deployment views', async ({ expect, t }) => {
+    const { validate, buildLikeC4Model } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      deploymentNode node
+    }
+    model {
+      a = component 'A'
+      b = component 'B'
+      a -> b 'Logical title'
+    }
+    deployment {
+      node env {
+        node n1 {
+          i1 = instanceOf a
+        }
+        node n2 {
+          i2 = instanceOf b
+        }
+      }
+    }
+    views {
+      deployment view instances {
+        include env.**
+        include env.n1.i1 -> env.n2.i2 with {
+          title 'HTTPS'
+          color red
+          line dotted
+          technology 'TLS'
+        }
+      }
+      deployment view nodes {
+        include env.n1 -> env.n2 with {
+          title 'HTTPS'
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildLikeC4Model()
+    const [instancesEdge] = model.view('instances').edges()
+    expect(instancesEdge?.$edge).toMatchObject({
+      label: 'HTTPS',
+      color: 'red',
+      line: 'dotted',
+      technology: 'TLS',
+    })
+    const nodesEdges = [...model.view('nodes').edges()].map(e => e.$edge)
+    expect(nodesEdges).toHaveLength(1)
+    expect(nodesEdges[0]).toMatchObject({
+      source: 'env.n1',
+      target: 'env.n2',
+      label: 'HTTPS',
+    })
+  })
+
+  it('uses relationship kind style for dynamic view steps', async ({ expect, t }) => {
+    const { validate, buildLikeC4Model } = t
+    const { diagnostics } = await validate(`
+    specification {
+      element system
+      relationship async {
+        description 'Asynchronous'
+        color red
+        line dotted
+        head diamond
+      }
+    }
+    model {
+      system s1
+      system s2
+    }
+    views {
+      dynamic view flow {
+        s1 -[async]-> s2
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildLikeC4Model()
+    // relationship kind specification is flat (as declared in core types)
+    expect(model.specification.relationships['async']).toEqual({
+      description: { txt: 'Asynchronous' },
+      color: 'red',
+      line: 'dotted',
+      head: 'diamond',
+    })
+    const view = model.view('flow')
+    const [edge] = view.edges()
+    expect(edge?.$edge).toMatchObject({
+      color: 'red',
+      line: 'dotted',
+      head: 'diamond',
     })
   })
 

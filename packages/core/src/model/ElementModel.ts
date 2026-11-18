@@ -1,4 +1,4 @@
-import { isEmpty, isShallowEqual, isTruthy, unique } from 'remeda'
+import { isEmpty, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type {
   Any,
@@ -12,7 +12,7 @@ import type {
   Link,
   RichTextOrEmpty,
 } from '../types'
-import { exact, preferDescription, preferSummary, RichText, splitGlobalFqn } from '../types'
+import { exact, preferDescription, preferSummary, splitGlobalFqn } from '../types'
 import type * as aux from '../types/_aux'
 import type * as scalar from '../types/scalar'
 import { commonAncestor, hierarchyLevel, isAncestor, nameFromFqn, sortNaturalByFqn } from '../utils/fqn'
@@ -22,6 +22,7 @@ import type { DeployedInstancesIterator } from './DeploymentElementModel'
 import type { LikeC4Model } from './LikeC4Model'
 import type { RelationshipModel, RelationshipsIterator } from './RelationModel'
 import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
+import { memoizeDescription, memoizeSummary } from './utils/richtext'
 import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type ElementsIterator<M extends AnyAux> = IteratorLike<ElementModel<M>>
@@ -107,11 +108,9 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
 
   /**
    * Returns true if the element has a summary and a description
-   * (if one is missing - it falls back to another)
    */
   get hasSummary(): boolean {
-    return !!this.$element.summary && !!this.$element.description &&
-      !isShallowEqual(this.$element.summary, this.$element.description)
+    return this.summary.nonEmpty && !this.summary.equals(this.description)
   }
 
   /**
@@ -119,7 +118,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    * Falls back to description if summary is not provided.
    */
   get summary(): RichTextOrEmpty {
-    return RichText.memoize(this, 'summary', preferSummary(this.$element))
+    return memoizeSummary(this, preferSummary(this.$element))
   }
 
   /**
@@ -127,7 +126,7 @@ export class ElementModel<A extends AnyAux = Any> implements WithTags<A>, WithMe
    * Falls back to summary if description is not provided.
    */
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', preferDescription(this.$element))
+    return memoizeDescription(this, preferDescription(this.$element))
   }
 
   get technology(): string | null {

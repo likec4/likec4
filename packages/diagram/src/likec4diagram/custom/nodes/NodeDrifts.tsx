@@ -1,15 +1,15 @@
 import { Box } from '@likec4/styles/jsx'
+import { useIsComparingLayouts } from '../../../context/ComparingLayoutsContext'
 import type { Types } from '../../types'
 
 export type NodeDriftsProps = {
   nodeProps: Types.NodeProps
 }
 
-export function NodeDrifts({
-  nodeProps: { data },
-}: NodeDriftsProps) {
+export function NodeDrifts({ nodeProps: { data } }: NodeDriftsProps) {
+  const isComparing = useIsComparingLayouts()
   const drifts = data.drifts
-  if (!drifts || drifts.length === 0) {
+  if (!isComparing || !drifts || drifts.length === 0) {
     return null
   }
   return (

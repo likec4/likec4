@@ -43,12 +43,20 @@ export function convertToXYFlow({ dynamicViewVariant, elementViewVariant, ...par
       currentViewId: params.currentViewId,
       collapsedFlows: params.collapsedSequenceFlows,
     })
+    // If layout changed from predefined, return new view with updated variant and layout
+    if (layout !== view.sequenceLayout || view.variant !== dynamicViewVariant) {
+      return {
+        view: {
+          ...view,
+          sequenceLayout: layout,
+          variant: dynamicViewVariant,
+        },
+        xynodes,
+        xyedges,
+      }
+    }
     return {
-      view: {
-        ...view,
-        sequenceLayout: layout,
-        variant: dynamicViewVariant,
-      },
+      view,
       xynodes,
       xyedges,
     }

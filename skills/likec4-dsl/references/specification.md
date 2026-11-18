@@ -3,6 +3,7 @@
 The `specification` block defines all named vocabularies for the project: element kinds, deployment node kinds, relationship kinds, tags, and custom color tokens. Every kind used in `model` or `deployment` blocks must be declared here first.
 
 **Key rules:**
+
 - Specification is global across all files in the project.
 - Duplicate identifiers (same kind, same tag, etc.) will cause a validation error.
 - Multiple `specification` blocks (in one file or across files) are allowed, but not recommended.
@@ -34,7 +35,10 @@ specification {
   relationship IDENTIFIER {
     technology "default tech for this relationship kind"
     description "default description for this relationship kind"
-    style { ... }          // default style for this relationship kind
+    // default style properties go directly in the body, not in a style block
+    color amber
+    line dashed
+    head diamond
   }
 
   // Define a custom named color token
@@ -67,9 +71,9 @@ specification {
 
 ## Common Mistakes
 
-| Mistake | Fix |
-|---------|-----|
-| Using a kind not defined here | Define `element KIND { }` or `deploymentNode KIND { }` in specification first |
-| Duplicate tag or kind identifier | Each identifier must be unique within its type category |
-| `#tag` in specification argument | Tags are defined without `#`; they are used with `#` elsewhere: `tag critical` → `#critical` |
-| Raw hex color in style | Define a named color token first: `color my-blue #003366`, then use `color my-blue` in styles |
+| Mistake                          | Fix                                                                                           |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
+| Using a kind not defined here    | Define `element KIND { }` or `deploymentNode KIND { }` in specification first                 |
+| Duplicate tag or kind identifier | Each identifier must be unique within its type category                                       |
+| `#tag` in specification argument | Tags are defined without `#`; they are used with `#` elsewhere: `tag critical` → `#critical`  |
+| Raw hex color in style           | Define a named color token first: `color my-blue #003366`, then use `color my-blue` in styles |

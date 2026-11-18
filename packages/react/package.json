@@ -1,6 +1,6 @@
 {
   "name": "@likec4/react",
-  "version": "1.60.0",
+  "version": "1.61.0",
   "private": true,
   "description": "LikeC4 React bundle",
   "homepage": "https://likec4.dev",
@@ -16,12 +16,9 @@
   "type": "module",
   "exports": {
     ".": {
-      "sources": "./src/index.ts",
-      "default": {
-        "types": "./dist/index.d.mts",
-        "import": "./dist/index.mjs",
-        "default": "./dist/index.mjs"
-      }
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -37,24 +34,25 @@
     "clean": "likec4ops clean"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*",
+    "@floating-ui/dom": "catalog:react",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/hooks": "catalog:mantine",
     "immer": "catalog:utils",
+    "motion": "catalog:react",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "type-fest": "catalog:externals"
+    "type-fest": "catalog:externals",
+    "zod": "catalog:externals"
   },
   "devDependencies": {
     "@babel/core": "catalog:react",
     "@dagrejs/dagre": "catalog:",
-    "@floating-ui/dom": "catalog:react",
     "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/styles": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@lume/kiwi": "catalog:utils",
-    "@mantine/core": "catalog:mantine",
-    "@mantine/hooks": "catalog:mantine",
     "@microsoft/api-extractor": "^7.59.4",
     "@nanostores/media-query": "catalog:react",
     "@nanostores/react": "catalog:react",
@@ -76,15 +74,11 @@
     "d3-zoom": "^3.0.0",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
-    "immer": "catalog:utils",
-    "motion": "catalog:react",
     "nanostores": "catalog:react",
     "oxc-transform-react": "catalog:tsdown",
     "oxlint": "catalog:",
     "postcss": "catalog:css",
     "postcss-import": "catalog:css",
-    "react": "catalog:react",
-    "react-dom": "catalog:react",
     "react-error-boundary": "catalog:react",
     "remeda": "catalog:utils",
     "rolldown": "catalog:tsdown",

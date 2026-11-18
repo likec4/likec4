@@ -22,6 +22,10 @@ type HandlerParams = {
   useDotBin: boolean
   webcomponentPrefix: string | undefined
   outfile: string | undefined
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
 }
 
 /** Generates webcomponent build and types for the LikeC4 project. */
@@ -31,6 +35,7 @@ export async function webcomponentHandler({
   useDotBin,
   webcomponentPrefix = 'likec4',
   outfile,
+  customization,
 }: HandlerParams) {
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
@@ -45,7 +50,8 @@ export async function webcomponentHandler({
   }
   logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
 
-  const diagrams = await languageServices.diagrams(projectId)
+  const model = await languageServices.layoutedModel(projectId)
+  const diagrams = [...model.views()].map(vm => vm.$layouted)
   if (!hasAtLeast(diagrams, 1)) {
     logger.warn('no views found')
     process.exitCode = 1
@@ -93,6 +99,7 @@ export async function webcomponentHandler({
     filename: filename,
     webcomponentPrefix,
     base: '/',
+    customization,
   })
   logger.debug(`${k.dim('vite build webcomponent')}`)
   await build({

@@ -58,6 +58,7 @@ export {
   selectDiagramContext,
   selectDiagramSnapshot,
   useDiagram,
+  useDiagramActorRef,
   useDiagramSelector,
   useOnDiagramEvent,
 } from './hooks/useDiagram'
@@ -91,6 +92,8 @@ export {
 } from './hooks/useLikeC4Project'
 
 export { useLikeC4Styles } from './hooks/useLikeC4Styles'
+
+export { filterProjects, projectSearchHighlights } from './utils/filterProjects'
 
 export { useUpdateEffect } from './hooks/useUpdateEffect'
 
@@ -139,3 +142,5 @@ export {
   Logo,
   LogoIcon,
 } from './components/Logo'
+
+export { defineLikeC4Webcomponent } from './webcomponent/defineWebcomponent'

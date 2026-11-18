@@ -1,5 +1,6 @@
 import { defineSemanticTokens } from '@pandacss/dev'
 import { alpha } from '../helpers.ts'
+import { tagColors } from './semantic-colors.tags.ts'
 import { black, dark, gray, green, orange, red, value, white, yellow } from './value.ts'
 
 export const { likec4 } = defineSemanticTokens.colors({
@@ -12,11 +13,12 @@ export const { likec4 } = defineSemanticTokens.colors({
 
     tag: {
       bg: {
-        DEFAULT: value(`{colors.tomato.9}`),
-        hover: value(`{colors.tomato.10}`),
+        DEFAULT: value(`{colors.likec4.tag.tomato.bg}`),
+        hover: value(`{colors.likec4.tag.tomato.bg.hover}`),
       },
-      border: value(`{colors.tomato.8}`),
-      text: value(`{colors.tomato.3}`),
+      border: value(`{colors.likec4.tag.tomato.border}`),
+      text: value(`{colors.likec4.tag.tomato.text}`),
+      ...tagColors,
     },
 
     panel: {

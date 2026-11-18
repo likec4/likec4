@@ -10,6 +10,8 @@ import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 import { memo, useEffect, useMemo, useRef } from 'react'
 import { find, isTruthy } from 'remeda'
 import { BaseXYFlow } from '../../base/BaseXYFlow'
+import { useEnabledFeatures } from '../../context/DiagramFeatures'
+import { useEdgeLabelFontLoader } from '../../hooks/useEdgeLabelFontLoader'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import type { RelationshipDetailsTypes, RelationshipDetailsTypes as Types } from './_types'
 import type { RelationshipDetailsActorRef, RelationshipDetailsSnapshot } from './actor'
@@ -81,6 +83,8 @@ const SyncRelationshipDetailsXYFlow = memo(() => {
   const subject = useSelector(actor, selectSubject, deepEqual)
   const likec4model = useLikeC4Model()
   const view = likec4model.findView(subject.viewId) ?? null
+  const { enableNavigateTo } = useEnabledFeatures()
+  const [fontsVersion, ensureFontsLoaded] = useEdgeLabelFontLoader()
   const data = useMemo(() => {
     let data: RelationshipDetailsViewData
     if ('edgeId' in subject && isTruthy(subject.edgeId)) {
@@ -95,12 +99,20 @@ const SyncRelationshipDetailsXYFlow = memo(() => {
     } else {
       return null
     }
-    return layoutRelationshipDetails(data, view)
+    return layoutRelationshipDetails(data, view, { withNavigateButtons: enableNavigateTo })
   }, [
     subject,
     view,
     likec4model,
+    enableNavigateTo,
+    fontsVersion,
   ])
+
+  useEffect(() => {
+    if (data) {
+      ensureFontsLoaded(data.edges.flatMap(edge => edge.label ?? []))
+    }
+  }, [data])
 
   const store = useStoreApi<RelationshipDetailsTypes.Node, RelationshipDetailsTypes.Edge>()
   const instance = useReactFlow<RelationshipDetailsTypes.Node, RelationshipDetailsTypes.Edge>()

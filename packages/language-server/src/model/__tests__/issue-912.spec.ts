@@ -1,12 +1,12 @@
 import type { ViewId } from '@likec4/core'
 import { withReadableEdges } from '@likec4/core/compute-view'
-import { describe, it, vi } from 'vitest'
-import { createTestServices } from '../../test'
+import { describe, vi } from 'vitest'
+import { test as it } from '../../test'
 
 // https://github.com/likec4/likec4/issues/911
 describe('Issue 911 - Parent-relations cant contain comments', () => {
-  it('should assign label', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices()
+  it('should assign label', async ({ expect, t }) => {
+    const { validate, buildModel } = t
     await validate(`
       specification {
         element node

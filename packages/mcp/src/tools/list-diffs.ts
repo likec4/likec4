@@ -1,3 +1,4 @@
+import { resolveMarkdownRefs } from '@likec4/core/utils'
 import * as z from 'zod/v4'
 import { likec4Tool } from '../utils'
 import { projectIdSchema } from './_common'
@@ -57,10 +58,18 @@ Notes:
 })(async (languageServices, args) => {
   const projectId = languageServices.projectsManager.ensureProjectId(args.project)
   const diffs = await languageServices.modelDiffs.list(projectId)
+  const model = diffs.some(diff => diff.description && 'md' in diff.description)
+    ? await languageServices.computedModel(projectId)
+    : null
   return {
     diffs: diffs.map(diff => ({
       ...diff,
-      description: diff.description ? ('md' in diff.description ? diff.description.md : diff.description.txt) : null,
+      // Refs in markdown (`[[fqn]]`) become plain titles
+      description: diff.description
+        ? ('md' in diff.description
+          ? resolveMarkdownRefs(diff.description.md, model?.resolveMarkdownRef)
+          : diff.description.txt)
+        : null,
     })),
   }
 })

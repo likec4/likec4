@@ -32,6 +32,90 @@ describe('WorkspaceManager', () => {
     check('file:///test/other/model.c4').toBe('../other/model.c4')
   })
 
+  describe('isInsideWorkspace', () => {
+    it('accepts the workspace folder and everything below it', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      await t.initialize()
+      const workspace = t.services.shared.workspace.WorkspaceManager
+
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/model.c4'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/project/docs/spec.md'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/'))).toBe(true)
+      // The URI can be given as a string
+      expect(workspace.isInsideWorkspace('file:///test/workspace/project/docs/spec.md')).toBe(true)
+    })
+
+    it('rejects a path outside of the workspace folder', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      await t.initialize()
+      const workspace = t.services.shared.workspace.WorkspaceManager
+
+      // parent, and a folder next to the workspace
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test'))).toBe(false)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/other/spec.md'))).toBe(false)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///etc/passwd'))).toBe(false)
+      // a folder whose name only starts with the name of the workspace
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace-other/spec.md'))).toBe(false)
+      expect(workspace.isInsideWorkspace('file:///test/other/spec.md')).toBe(false)
+    })
+
+    it('rejects another scheme', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      await t.initialize()
+      const workspace = t.services.shared.workspace.WorkspaceManager
+
+      expect(workspace.isInsideWorkspace(URI.parse('https://example.com/test/workspace/spec.md'))).toBe(false)
+      expect(workspace.isInsideWorkspace(URI.parse('vscode-vfs://github/test/workspace/spec.md'))).toBe(false)
+    })
+
+    it('accepts a name inside the workspace that starts with dots', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      await t.initialize()
+      const workspace = t.services.shared.workspace.WorkspaceManager
+
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/..notes.md'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/..docs/spec.md'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/.hidden/spec.md'))).toBe(true)
+    })
+
+    it('resolves `..` segments before the check', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      await t.initialize()
+      const workspace = t.services.shared.workspace.WorkspaceManager
+
+      // leaves the workspace
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/../other/spec.md'))).toBe(false)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/project/../../other/spec.md'))).toBe(false)
+      expect(workspace.isInsideWorkspace('file:///test/workspace/project/../../../etc/passwd')).toBe(false)
+      // stays inside, or comes back
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/project/../shared/spec.md'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///test/workspace/../workspace/spec.md'))).toBe(true)
+    })
+
+    it('compares the drive letter without its case, and rejects another drive', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///c%3A/test/workspace' })
+      await t.initialize()
+      const workspace = t.services.shared.workspace.WorkspaceManager
+
+      expect(workspace.isInsideWorkspace(URI.parse('file:///c%3A/test/workspace/spec.md'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///C%3A/test/workspace/spec.md'))).toBe(true)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///d%3A/test/workspace/spec.md'))).toBe(false)
+      expect(workspace.isInsideWorkspace(URI.parse('file:///d%3A/other/spec.md'))).toBe(false)
+    })
+
+    it('rejects everything until the workspace is initialized', async ({ create, expect }) => {
+      const t = create({ workspace: 'file:///test/workspace' })
+      const workspace = t.services.shared.workspace.WorkspaceManager
+      const uri = URI.parse('file:///test/workspace/model.c4')
+
+      expect(workspace.isInsideWorkspace(uri)).toBe(false)
+
+      await t.initialize()
+      expect(workspace.isInsideWorkspace(uri)).toBe(true)
+    })
+  })
+
   it('should load project include paths during workspace startup', async ({ create, expect }) => {
     const testServices = create({ workspace: 'file:///test/workspace' })
     try {

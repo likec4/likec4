@@ -1,5 +1,5 @@
 import { type LayoutedLikeC4ModelData, LikeC4Styles } from '@likec4/core'
-import type { LikeC4Model } from '@likec4/core/model'
+import { LikeC4Model } from '@likec4/core/model'
 import type { DiagramView } from '@likec4/core/types'
 import {
   buildDrawioExportOptionsForViews,
@@ -92,8 +92,10 @@ async function fillFromLayoutedModel(
   try {
     const model = await getLayoutedModel()
     if (model?.views && typeof model.views === 'object') {
-      for (const view of Object.values(model.views)) {
-        if (!byId.has(view.id)) byId.set(view.id, toViewModel(view, styles))
+      // Views in model data are auto-layouted, `$layouted` applies manual layouts (if any)
+      const likec4model = LikeC4Model.create(model)
+      for (const vm of likec4model.views()) {
+        if (!byId.has(vm.id)) byId.set(vm.id, toViewModel(vm.$layouted, styles))
       }
     }
   } catch (e) {

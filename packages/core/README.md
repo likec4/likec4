@@ -7,7 +7,9 @@ A core package for LikeC4, containing types, api, utilities and guards.
 
 > [!NOTE]
 > This package is a low level API for working with LikeC4.\
-> It is exposed mostly through [`likec4`](../likec4/README.md), that generates models from DSL.
+> It is exposed mostly through [`likec4`](../likec4/README.md), that generates models from DSL.\
+> With `likec4` installed, prefer `likec4/model` (the same as `@likec4/core/model` and `@likec4/core/types`)
+> and `likec4/model/builder` (the same as `@likec4/core/builder`).
 
 ## Types
 

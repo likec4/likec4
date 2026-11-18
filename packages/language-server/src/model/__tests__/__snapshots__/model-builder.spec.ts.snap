@@ -601,9 +601,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       },
     },
     "relationships": {
-      "async": {
-        "style": {},
-      },
+      "async": {},
     },
     "tags": {
       "next": {
@@ -745,7 +743,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
     },
     "relationships": {
       "async": {
-        "style": {},
         "technology": "Async",
       },
     },

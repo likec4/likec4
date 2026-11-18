@@ -15,11 +15,13 @@ import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
 import { useHashHistory } from 'likec4:app-config'
 import { useState } from 'react'
+import { useCurrentProject } from '../../../hooks'
 import { AlertLocalhost } from './AlertLocalhost'
 import { CopyButtonChild } from './CopyButtonChild'
 
 export const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
   const router = useRouter()
+  const { id: projectId } = useCurrentProject()
 
   const { colorScheme } = useMantineColorScheme()
   const [theme, setTheme] = useState<MantineColorScheme>(colorScheme)
@@ -27,13 +29,13 @@ export const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
   const padding = 20
 
   let location = router.buildLocation({
-    to: '/embed/$viewId/', // '/' at the end added by Gemini 3, must have to pass typecheck
-    params: { viewId: diagram.id },
+    to: '/project/$projectId/embed/$viewId/',
+    params: { projectId, viewId: diagram.id },
     search: {
       padding,
-      ...(theme !== 'auto' ? { theme } : {}), // changed from "theme: theme !== 'auto' ? theme : undefined" by Gemini 3
+      ...(theme !== 'auto' ? { theme } : {}),
     },
-  }).href
+  }).publicHref
 
   location = useHashHistory ? `#${location}` : location
 

@@ -1,10 +1,9 @@
-import { filter, funnel, indexBy, keys, map, mapValues, once, pipe, sort } from 'remeda'
+import { filter, funnel, keys, map, mapValues, once, pipe, sort } from 'remeda'
 import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import {
   type DiagramView,
-  type LayoutedLikeC4ModelData,
   type ProjectId,
   invariant,
   nonexhaustive,
@@ -18,7 +17,6 @@ import {
   ChangeView,
   DidChangeModelNotification,
   DidChangeProjectsNotification,
-  DidChangeSnapshotNotification,
   DidRequestOpenViewNotification,
   DidRequestRemovalImpactNotification,
   FetchComputedModel,
@@ -34,7 +32,6 @@ import {
   LayoutView,
   Locate,
   PreviewModelEdit,
-  RegisterProject,
   ReloadProjects,
   RollbackModelEdit,
   ValidateLayout,
@@ -146,27 +143,15 @@ export class Rpc extends ADisposable {
         return { model: null }
       }),
       // ----------
-      connection.onNotification(DidChangeSnapshotNotification.type, async (params) => {
-        const uri = URI.parse(params.update ?? params.delete)
-        const event = 'update' in params ? { update: uri } : { delete: uri }
-        logger.debug`received notification ${'onDidChangeSnapshot'} with ${params}`
-        await workspace.ManualLayouts.handleFileSystemUpdate(event)
-      }),
-      // ----------
       connection.onRequest(FetchLayoutedModel.req, async ({ projectId }, cancelToken) => {
         logger.debug`received request ${'fetchLayoutedModel'} for project ${projectId}`
-        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId)
+        const model = await likec4Services.LanguageServices.layoutedModel(projectId as ProjectId, cancelToken)
         if (model === null) {
           return { model: null }
         }
-        const diagrams = await likec4Services.Views.diagrams(projectId as ProjectId, cancelToken)
-        return {
-          model: {
-            ...model.$data,
-            _stage: 'layouted' as const,
-            views: indexBy(diagrams, d => d.id),
-          } satisfies LayoutedLikeC4ModelData,
-        }
+        // Views are auto-layouted, manual layouts are in `manualLayouts`
+        // (applied by `LikeC4Model.create(data).view(id).$layouted`)
+        return { model: model.$data }
       }),
       // ----------
       connection.onRequest(LayoutView.req, async ({
@@ -228,19 +213,6 @@ export class Rpc extends ADisposable {
         workspace.ManualLayouts.clearCaches()
         await workspace.ProjectsManager.reloadProjects(cancelToken)
         return
-      }),
-      // ----------
-      connection.onRequest(RegisterProject.req, async (params, cancelToken) => {
-        logger.debug`received request ${'RegisterProject'}`
-        workspace.ManualLayouts.clearCaches()
-        let project
-        if ('configUri' in params) {
-          project = await workspace.ProjectsManager.registerConfigFile(URI.parse(params.configUri), cancelToken)
-        } else {
-          project = await workspace.ProjectsManager.registerProject(params, cancelToken)
-        }
-
-        return { id: project.id }
       }),
       // ----------
       connection.onRequest(FetchViewsFromAllProjects.req, async (cancelToken) => {
@@ -315,7 +287,7 @@ export class Rpc extends ADisposable {
         const projectId = params.projectId as ProjectId | undefined
         switch (true) {
           case 'element' in params:
-            return likec4Services.ModelLocator.locateElement(params.element, projectId)
+            return likec4Services.ModelLocator.locateElement(params.element, projectId, params.property)
           case 'relation' in params:
             return likec4Services.ModelLocator.locateRelation(params.relation, projectId)
           case 'astPath' in params:
@@ -327,7 +299,7 @@ export class Rpc extends ADisposable {
           case 'view' in params:
             return likec4Services.ModelLocator.locateView(params.view, projectId)
           case 'deployment' in params:
-            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId)
+            return likec4Services.ModelLocator.locateDeploymentElement(params.deployment, projectId, params.property)
           default:
             nonexhaustive(params)
         }

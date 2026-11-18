@@ -42,6 +42,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "support" [
     likec4_id = "support";
@@ -50,6 +51,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "cloud" [
     likec4_id = "cloud";
@@ -58,6 +60,7 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "amazon" [
     likec4_id = "amazon";
@@ -66,22 +69,23 @@ digraph {
     margin = "0.223,0.223";
     width = 4.445;
     height = 2.5;
+    fixedsize = true;
   ];
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
+    label = <<TABLE FIXEDSIZE="TRUE" WIDTH="117" HEIGHT="25" BORDER="0" CELLPADDING="0" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
     dir = "both";
   ];
   "customer" -> "cloud" [
     likec4_id = "customer:cloud";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
+    label = <<TABLE FIXEDSIZE="TRUE" WIDTH="120" HEIGHT="25" BORDER="0" CELLPADDING="0" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
   ];
   "support" -> "cloud" [
     likec4_id = "support:cloud";
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
+    label = <<TABLE FIXEDSIZE="TRUE" WIDTH="69" HEIGHT="25" BORDER="0" CELLPADDING="0" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
   ];
 }

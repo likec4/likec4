@@ -21,8 +21,9 @@ O plugin LikeC4 para Vite permite incorporar visões diretamente, sem etapas pr�
 O plugin gera automaticamente o código necessário para renderizar visões na aplicação, com suporte a Hot Module Replacement (HMR).
 
 Isso é útil na criação de documentação, tutoriais ou outras aplicações que precisem exibir diagramas.  
+Não tem certeza de que esta é a abordagem certa? Consulte [Incorporar na sua aplicação](/tooling/embed/) para comparar as opções.
 
-## Guia
+## Primeiros passos
 
 <br />
 
@@ -45,7 +46,8 @@ Isso é útil na criação de documentação, tutoriais ou outras aplicações q
 
 2. ### Instalar o LikeC4
 
-    Adicione a dependência `likec4`:
+    Adicione `likec4` como dependência de desenvolvimento. O plugin é executado durante o build, e o Vite
+    empacota tudo o que a aplicação importa dos módulos virtuais, então `likec4` não é necessário em tempo de execução:
     
     <PackageManagers
        pkg="likec4"
@@ -201,9 +203,11 @@ Isso é útil na criação de documentação, tutoriais ou outras aplicações q
 
 <AdvancedCustomizationTip />
 
-## Plugin
+## Opções e módulos do plugin
 
 ### Opções
+
+Opções que carregam o modelo LikeC4:
 
 | Opção          | Descrição                                                                                         |
 | -----------------| --------------------------------------------------------------------------------------------------- |
@@ -211,10 +215,57 @@ Isso é útil na criação de documentação, tutoriais ou outras aplicações q
 | `printErrors`    | se o modelo for inválido, os erros serão registrados no logger (padrão `true`) |
 | <span style="text-wrap:nowrap">`throwIfInvalid`</span> | rejeita a Promise se o modelo for inválido (padrão `false`) |
 | `graphviz`       | `wasm` (padrão) ou `binary`: utiliza os executáveis locais Graphviz ("dot") ou o WASM incluído    |
+| `watch`          | monitora alterações nos arquivos-fonte no servidor de desenvolvimento (padrão `true`; o build nunca monitora) |
+| `logLevel`       | `'trace'`, `'debug'`, `'info'`, `'warning'` (padrão) ou `'error'` |
+| <span style="text-wrap:nowrap">`languageServices`</span> | um modelo já inicializado, veja [Utilização com a API](#utilização-com-a-api); não pode ser combinada com as opções acima |
+
+Opções da aplicação, no nível superior das opções do plugin.
+Observe a coluna "Lida por": apenas `customization` altera os componentes que você incorpora.
+
+| Opção                | Lida por                                      | Descrição                                                                                            |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `customization`      | `likec4:react`, `likec4:webcomponents/*`      | caminho do arquivo de [personalização da interface](/tooling/customization/), relativo à raiz do Vite (experimental) |
+| `title`              | `likec4:app-config`                           | título base das páginas da aplicação (padrão `'LikeC4'`)                                              |
+| `theme`              | `likec4:app-config`                           | esquema de cores padrão, `'light'` ou `'dark'` (acompanha a preferência do sistema se não definido)   |
+| `useHashHistory`     | `likec4:app-config`                           | navegação baseada em hash, por exemplo `/#/view` em vez de `/view` (padrão `false`)                   |
+| `webcomponentPrefix` | `likec4:app-config`                           | prefixo dos Web Components, por exemplo `'c4'` gera `<c4-view/>` (padrão `'likec4'`)                  |
+
+- `customization` se aplica aos componentes React de `likec4:react` e `likec4:react/<projeto>`,
+  e aos Web Components de `likec4:webcomponents/<projeto>`, que renderizam esses componentes React.
+- `title`, `theme`, `useHashHistory` e `webcomponentPrefix` apenas definem valores no módulo virtual `likec4:app-config`,
+  lido pela aplicação LikeC4 (a servida por `likec4 start` e `likec4 build`).
+  Elas não alteram os componentes de `likec4:react` nem de `likec4:webcomponents/<projeto>`
+  (este registra o elemento com o nome que você passa), e o seu código só as vê se importar `likec4:app-config`.
+
+```ts
+// vite.config.ts
+import react from '@vitejs/plugin-react'
+import { LikeC4VitePlugin } from 'likec4/vite-plugin'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    LikeC4VitePlugin({
+      customization: './likec4.customization.tsx',
+    }),
+    react(),
+  ],
+})
+```
+
+:::note
+Essas opções ficavam aninhadas em `appConfig` (com `pageTitle` em vez de `title`).
+`appConfig` ainda funciona, mas está obsoleta: mova as opções para o nível superior. As opções do nível superior prevalecem se ambas forem definidas.
+:::
+
+:::note
+O plugin não lê a [configuração da aplicação](/tooling/app-config/) (`likec4.app.config.ts`).
+Esse arquivo é da CLI do LikeC4; com o plugin, passe as opções como mostrado acima.
+:::
 
 ### Workspaces com múltiplos projetos
 
-Se você tiver [múltiplos projetos](/pt-br/dsl/config/multi-projects/) no workspace:
+Se você tiver [múltiplos projetos](/pt-br/config/multi-projects/) no workspace:
 
 ```tsx "project-a" "project-b"
 // src/main.tsx
@@ -234,29 +285,16 @@ const example = () => (
 
 ### Web Components
 
-Utilize o módulo virtual `likec4:webcomponents/*`, específico do projeto, para renderizar uma visão LikeC4 em HTML sem adicionar
-componentes React ao código da aplicação:
+O módulo virtual `likec4:webcomponents/<projeto>`, específico do projeto, renderiza visões LikeC4 como elementos HTML personalizados,
+sem componentes React no código da aplicação:
 
 ```ts
 import { defineWebcomponent } from 'likec4:webcomponents/project-a'
 
-defineWebcomponent('likec4-view-project-a')
+defineWebcomponent('likec4-view-project-a') // depois use <likec4-view-project-a view-id="index">
 ```
 
-O elemento personalizado oferece os mesmos atributos dos web components gerados pelo LikeC4:
-
-```html
-<likec4-view-project-a
-  view-id="index"
-  browser="true"
-  dynamic-variant="sequence"
-  color-scheme="dark">
-</likec4-view-project-a>
-```
-
-O ID do projeto na importação deve corresponder a um projeto do workspace LikeC4. O nome do elemento personalizado deve seguir as
-[regras de nomenclatura de elementos personalizados](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names),
-incluindo pelo menos um hífen.
+Consulte [Web Components](/pt-br/tooling/web-components/#com-o-plugin-vite) para as regras de nomenclatura e os atributos disponíveis.
 
 ### Utilização com a API
 
@@ -318,7 +356,7 @@ import { mmdSource } from 'likec4:mmd/project-a'
 Lista completa: <a href="https://github.com/likec4/likec4/blob/main/packages/vite-plugin/src/modules.d.ts">vite-plugin/modules.d.ts</a>
 
 
-## Utilização 
+## Integração com frameworks
 
 Veja exemplos de utilização do plugin com diferentes frameworks.
 
@@ -361,7 +399,6 @@ const { viewId } = Astro.props
 
 <ReactLikeC4View
   viewId={viewId}
-  {/* Configure view */}
   controls={false}
   browser={{
     // options for likec4 browser
@@ -396,7 +433,7 @@ Consulte o código-fonte para ver como os <a href="https://github.com/likec4/lik
 :::
 
 :::caution
-Não se esqueça de adicionar as referências de tipos, conforme descrito [aqui](/pt-br/tooling/vite-plugin/#adicionar-referências-de-tipos).  
+Não se esqueça de [adicionar as referências de tipos](#adicionar-referências-de-tipos).  
 No Astro, elas ficam no arquivo `src/env.d.ts`.
 :::
 
@@ -467,6 +504,8 @@ Você pode executar `vite build --watch` para monitorar alterações nos arquivo
 
 :::tip
 Você também pode utilizar o LikeC4 com outros frameworks:
-- Pela [geração de código React](/tooling/code-generation/react/)   
-- Para ferramentas de documentação não baseadas em React, como Docusaurus, consulte [Web Components](/tooling/code-generation/webcomponent/)
+- Pela [geração de código React](/pt-br/tooling/react/)
+- Para ferramentas de documentação que não utilizam Vite, como Docusaurus ou MkDocs, consulte [Web Components](/pt-br/tooling/web-components/)
+
+Consulte [Incorporar na sua aplicação](/tooling/embed/) para comparar todas as opções.
 :::

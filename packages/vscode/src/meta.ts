@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "likec4"
 export const name = "likec4-vscode"
-export const version = "1.60.0"
+export const version = "1.61.0"
 export const displayName = "LikeC4"
 export const description = "Support for the LikeC4 modeling language"
 export const extensionId = `${publisher}.${name}`
@@ -17,6 +17,8 @@ export type CommandKey =
   | "likec4.restart"
   | "likec4.reload-projects"
   | "likec4.preview-context-open-source"
+  | "likec4.preview-context-copy-as-png"
+  | "likec4.save-as-png"
   | "likec4.locate"
   | "likec4.print-dot-of-currentview"
   | "likec4.validate-layout"
@@ -47,6 +49,16 @@ export const commands = {
    * @value `likec4.preview-context-open-source`
    */
   previewContextOpenSource: "likec4.preview-context-open-source",
+  /**
+   * %ext.cmd.preview-context-copy-as-png%
+   * @value `likec4.preview-context-copy-as-png`
+   */
+  previewContextCopyAsPng: "likec4.preview-context-copy-as-png",
+  /**
+   * %ext.cmd.save-as-png%
+   * @value `likec4.save-as-png`
+   */
+  saveAsPng: "likec4.save-as-png",
   /**
    * %ext.cmd.locate%
    * @value `likec4.locate`
@@ -137,6 +149,10 @@ export type ConfigKey =
   | "likec4.trace.server"
   | "likec4.formatting.quoteStyle"
   | "likec4.node.path"
+  | "likec4.cli.path"
+  | "likec4.export.notation.enabled"
+  | "likec4.export.notation.position"
+  | "likec4.export.notation.text"
   | "likec4.exclude"
 
 export interface ConfigKeyTypeMap {
@@ -146,6 +162,10 @@ export interface ConfigKeyTypeMap {
   "likec4.trace.server": ("off" | "messages" | "verbose"),
   "likec4.formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "likec4.node.path": string,
+  "likec4.cli.path": string,
+  "likec4.export.notation.enabled": boolean,
+  "likec4.export.notation.position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  "likec4.export.notation.text": ("short" | "full" | "kind"),
   "likec4.exclude": string[],
 }
 
@@ -156,6 +176,10 @@ export interface ConfigShorthandMap {
   traceServer: "likec4.trace.server",
   formattingQuoteStyle: "likec4.formatting.quoteStyle",
   nodePath: "likec4.node.path",
+  cliPath: "likec4.cli.path",
+  exportNotationEnabled: "likec4.export.notation.enabled",
+  exportNotationPosition: "likec4.export.notation.position",
+  exportNotationText: "likec4.export.notation.text",
   exclude: "likec4.exclude",
 }
 
@@ -166,6 +190,10 @@ export interface ConfigShorthandTypeMap {
   traceServer: ("off" | "messages" | "verbose"),
   formattingQuoteStyle: ("auto" | "single" | "double" | "ignore"),
   nodePath: string,
+  cliPath: string,
+  exportNotationEnabled: boolean,
+  exportNotationPosition: ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  exportNotationText: ("short" | "full" | "kind"),
   exclude: string[],
 }
 
@@ -241,6 +269,46 @@ export const configs = {
   } as ConfigItem<"likec4.node.path">,
   /**
    *
+   * @key `likec4.cli.path`
+   * @default `""`
+   * @type `string`
+   */
+  cliPath: {
+    key: "likec4.cli.path",
+    default: "",
+  } as ConfigItem<"likec4.cli.path">,
+  /**
+   *
+   * @key `likec4.export.notation.enabled`
+   * @default `false`
+   * @type `boolean`
+   */
+  exportNotationEnabled: {
+    key: "likec4.export.notation.enabled",
+    default: false,
+  } as ConfigItem<"likec4.export.notation.enabled">,
+  /**
+   *
+   * @key `likec4.export.notation.position`
+   * @default `"bottom-right"`
+   * @type `string`
+   */
+  exportNotationPosition: {
+    key: "likec4.export.notation.position",
+    default: "bottom-right",
+  } as ConfigItem<"likec4.export.notation.position">,
+  /**
+   *
+   * @key `likec4.export.notation.text`
+   * @default `"short"`
+   * @type `string`
+   */
+  exportNotationText: {
+    key: "likec4.export.notation.text",
+    default: "short",
+  } as ConfigItem<"likec4.export.notation.text">,
+  /**
+   *
    * @key `likec4.exclude`
    * @default `[]`
    * @type `array`
@@ -258,6 +326,10 @@ export interface ScopedConfigKeyTypeMap {
   "trace.server": ("off" | "messages" | "verbose"),
   "formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "node.path": string,
+  "cli.path": string,
+  "export.notation.enabled": boolean,
+  "export.notation.position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  "export.notation.text": ("short" | "full" | "kind"),
   "exclude": string[],
 }
 
@@ -270,6 +342,10 @@ export const scopedConfigs = {
     "trace.server": "off",
     "formatting.quoteStyle": "auto",
     "node.path": "",
+    "cli.path": "",
+    "export.notation.enabled": false,
+    "export.notation.position": "bottom-right",
+    "export.notation.text": "short",
     "exclude": [],
   } satisfies ScopedConfigKeyTypeMap,
 }
@@ -290,6 +366,16 @@ export interface NestedConfigs {
     "node": {
       "path": string,
     },
+    "cli": {
+      "path": string,
+    },
+    "export": {
+      "notation": {
+        "enabled": boolean,
+        "position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+        "text": ("short" | "full" | "kind"),
+      },
+    },
     "exclude": string[],
   },
 }
@@ -308,6 +394,16 @@ export interface NestedScopedConfigs {
   },
   "node": {
     "path": string,
+  },
+  "cli": {
+    "path": string,
+  },
+  "export": {
+    "notation": {
+      "enabled": boolean,
+      "position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+      "text": ("short" | "full" | "kind"),
+    },
   },
   "exclude": string[],
 }

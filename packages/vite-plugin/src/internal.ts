@@ -1,11 +1,11 @@
 /**
  * This module is used by the Vite plugin to generate the virtual modules
  */
-import { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
 import { deepEqual, shallowEqual } from 'fast-equals'
+import { LikeC4Model } from 'likec4/model'
 import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
 import { useMemo } from 'react'
@@ -18,6 +18,7 @@ export { useStore } from '@nanostores/react'
 
 export type { Atom, ReadableAtom, WritableAtom } from 'nanostores'
 export type { LikeC4VitePluginRpc } from './rpc/protocol'
+export type { LikeC4AppConfig } from './types'
 
 export interface LikeC4VitePluginRpcOptions {
   /**
@@ -59,6 +60,7 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
   useLikeC4Model: () => LikeC4Model.Layouted
   useLikeC4Views: () => ReadonlyArray<LayoutedView>
   useLikeC4View: (viewId: string) => LayoutedView | null
+  isLikeC4ViewId: (id: unknown) => id is string
 } {
   const $likec4model = computed($atom, (data) => LikeC4Model.create(data))
 
@@ -106,5 +108,6 @@ export function createHooksForModel($atom: WritableAtom<LayoutedLikeC4ModelData>
     useLikeC4Model,
     useLikeC4Views,
     useLikeC4View,
+    isLikeC4ViewId: (id: unknown): id is string => typeof id === 'string' && Object.hasOwn($atom.get().views, id),
   }
 }

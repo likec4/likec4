@@ -7,10 +7,11 @@
 
 import type * as c4 from '@likec4/core'
 import { MultiMap, nonexhaustive } from '@likec4/core/utils'
-import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument } from 'langium'
-import { AstUtils, DocumentState } from 'langium'
-import { clamp, filter, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
-import type { ConditionalPick, MergeExclusive, Simplify, UnionToTuple, ValueOf, Writable } from 'type-fest'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, URI } from 'langium'
+import { AstUtils, DocumentState, UriUtils } from 'langium'
+import { clamp, filter, isEmptyish, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
+import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
+import { hasProtocol } from 'ufo'
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
@@ -75,15 +76,15 @@ export interface ParsedAstSpecification {
     astPath: string
     color?: c4.TagSpecification['color']
   }>
-  elements: Record<c4.ElementKind, c4.ElementSpecification>
-  relationships: Record<c4.RelationshipKind, c4.RelationshipSpecification>
+  elements: Record<c4.ElementKind, WithDescriptionFile & c4.ElementSpecification>
+  relationships: Record<c4.RelationshipKind, WithDescriptionFile & c4.RelationshipSpecification>
   colors: Record<
     c4.CustomColor,
     {
       color: c4.ColorLiteral
     }
   >
-  deployments: Record<c4.DeploymentKind, c4.ElementSpecification>
+  deployments: Record<c4.DeploymentKind, WithDescriptionFile & c4.ElementSpecification>
 }
 
 /**
@@ -96,14 +97,14 @@ export interface DescriptionFileRef {
   /** The value as written in the document */
   readonly value: string
   /**
-   * The file the value resolves to, or `null` when it does not name a file of the project
+   * The URI of the file the value resolves to (FULL URI), or `null` when it does not name a file of the project
    * (another scheme, a path outside of it): the validation reports why, and nothing is read for it.
    */
-  readonly resolvedPath: string | null
+  readonly uri: string | null
 }
 
 /** The parsed deployments and relations carry the reference to their file too */
-type WithDescriptionFile = {
+export type WithDescriptionFile = {
   descriptionFile?: DescriptionFileRef
 }
 
@@ -304,8 +305,11 @@ export interface LikeC4DocumentProps {
   c4DeploymentRelations: ParsedAstDeploymentRelation[]
   c4Imports: MultiMap<c4.ProjectId, c4.Fqn, Set<c4.Fqn>>
   c4Diffs: ParsedAstDiff[]
-  /** The files this document references with `descriptionFile`, as the parser resolved them */
-  c4DescriptionFiles: DescriptionFileRef[]
+  /**
+   * The files this document references with `descriptionFile`, as the parser resolved them
+   * (set of resolved paths)
+   */
+  c4DescriptionFiles: Set<string>
   likec4Parser: DocumentParser
 }
 
@@ -332,7 +336,16 @@ export const LikeC4DocumentPropKeys = [
   'c4Diffs',
   'c4DescriptionFiles',
   'likec4Parser',
-] as const satisfies UnionToTuple<keyof LikeC4DocumentProps>
+] as const satisfies ReadonlyArray<keyof LikeC4DocumentProps>
+
+/**
+ * Fails to compile if some key of {@link LikeC4DocumentProps} is missing in {@link LikeC4DocumentPropKeys}
+ * (`UnionToTuple` is not used, as its order depends on the order of the union members in the compiler)
+ */
+export type LikeC4DocumentPropKeysAreComplete = AssertNever<
+  Exclude<keyof LikeC4DocumentProps, (typeof LikeC4DocumentPropKeys)[number]>
+>
+type AssertNever<T extends never> = T
 
 export function isLikeC4PropKey<T>(key: T): key is T & keyof LikeC4DocumentProps {
   return typeof key === 'string' && LikeC4DocumentPropKeys.includes(key as any)
@@ -376,6 +389,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4DeploymentRelations
     && !!doc.c4Imports
     && !!doc.c4Diffs
+    && !!doc.c4DescriptionFiles
   )
 }
 
@@ -605,7 +619,7 @@ const _isModel = (astNode: AstNode) => {
     ast.isModelDiff(astNode) ||
     ast.isElementBody(astNode) ||
     ast.isExtendElementBody(astNode) ||
-    ast.isElementViewBody(astNode) ||
+    ast.isElementView(astNode) ||
     ast.isDynamicViewBody(astNode) ||
     ast.isElementRef(astNode)
 }
@@ -618,50 +632,77 @@ const _isDeployment = (astNode: AstNode) => {
     ast.isDeployedInstanceBody(astNode)
 }
 
+/**
+ * Returns `true` if the node is inside `global { }` or among view-independent rules of `views { }`
+ * (e.g. `style` outside of a view), where both model and deployment elements can be referenced.
+ *
+ * Rules inside a view do not count, they belong to the view.
+ */
 export function isFqnRefInsideGlobals(astNode: AstNode): boolean {
-  while (true) {
-    if (_isDeployment(astNode) || _isModel(astNode)) {
+  let node: AstNode | undefined = astNode
+  while (node) {
+    if (ast.isModel(node) || ast.isModelDeployments(node) || ast.isLikeC4View(node)) {
       return false
     }
-    if (ast.isGlobals(astNode) || ast.isModelViews(astNode)) {
+    if (ast.isGlobals(node) || ast.isModelViews(node)) {
       return true
     }
-    if (astNode.$container) {
-      astNode = astNode.$container
-    } else {
-      return false
-    }
+    node = node.$container
   }
+  return false
 }
 
+/**
+ * Returns `true` if the closest enclosing context of the node is model
+ * (model, element body, element or dynamic view, `ElementRef`), where only model elements can be referenced.
+ */
 export function isFqnRefInsideModel(astNode: AstNode): boolean {
-  while (true) {
-    if (_isDeployment(astNode)) {
+  let node: AstNode | undefined = astNode
+  while (node) {
+    if (_isDeployment(node)) {
       return false
     }
-    if (_isModel(astNode)) {
+    if (_isModel(node)) {
       return true
     }
-    if (astNode.$container) {
-      astNode = astNode.$container
-    } else {
-      return false
-    }
+    node = node.$container
   }
+  return false
 }
 
+/**
+ * Returns `true` if the closest enclosing context of the node is deployment
+ * (deployment model, deployment node or instance body, deployment view).
+ */
 export function isFqnRefInsideDeployment(astNode: AstNode): boolean {
-  while (true) {
-    if (_isModel(astNode)) {
+  let node: AstNode | undefined = astNode
+  while (node) {
+    if (_isModel(node)) {
       return false
     }
-    if (_isDeployment(astNode)) {
+    if (_isDeployment(node)) {
       return true
     }
-    if (astNode.$container) {
-      astNode = astNode.$container
-    } else {
-      return false
-    }
+    node = node.$container
+  }
+  return false
+}
+
+/**
+ * Resolves the URI of a description file property relative to the document containing the property.
+ * @param astNode The description file property node
+ * @param doc The document containing the property (optional, will be resolved from node if not provided)
+ * @returns The resolved URI or null if the value is empty or resolution fails
+ */
+export function resolveDescriptionFile(astNode: ast.DescriptionFileProperty, doc?: LangiumDocument): URI | null {
+  if (isEmptyish(astNode.value) || hasProtocol(astNode.value)) {
+    return null
+  }
+  try {
+    doc ??= AstUtils.getDocument(astNode)
+    // Resolve relative to directory of the document
+    return UriUtils.joinPath(doc.uri, '..', astNode.value)
+  } catch {
+    return null
   }
 }

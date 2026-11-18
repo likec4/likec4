@@ -14,6 +14,7 @@ If workspace already has `likec4` as a dependency, check its version from packag
 | Task              | Correct Command                                                       |
 | ----------------- | --------------------------------------------------------------------- |
 | Validate files    | `bunx likec4 validate --json --no-layout --file <file> [project-dir]` |
+| Fail on warnings  | `bunx likec4 validate --max-warnings 0 [project-dir]`                 |
 | Start dev server  | `bunx likec4 serve [project-dir]`                                     |
 | Export PNG        | `bunx likec4 export png -o ./images [project-dir]`                    |
 | Build static site | `bunx likec4 build -o ./dist [project-dir]`                           |
@@ -23,12 +24,12 @@ If workspace already has `likec4` as a dependency, check its version from packag
 
 ### ❌ Common mistakes (avoid these)
 
-| Incorrect                                  | Why it fails                              | Correct                                  |
-| ------------------------------------------ | ----------------------------------------- | ---------------------------------------- |
-| `bunx likec4 check ...`                    | Command doesn't exist                     | Use `bunx likec4 validate ...`           |
-| `bunx likec4 lint ...`                     | Command doesn't exist                     | Use `bunx likec4 validate ...`           |
-| `bunx likec4 verify ...`                   | Command doesn't exist                     | Use `bunx likec4 validate ...`           |
-| `bunx likec4 export png --out-dir ./images` | Unknown flag (`--out-dir`)                | Use `-o ./images` or `--outdir ./images` |
+| Incorrect                                   | Why it fails               | Correct                                  |
+| ------------------------------------------- | -------------------------- | ---------------------------------------- |
+| `bunx likec4 check ...`                     | Command doesn't exist      | Use `bunx likec4 validate ...`           |
+| `bunx likec4 lint ...`                      | Command doesn't exist      | Use `bunx likec4 validate ...`           |
+| `bunx likec4 verify ...`                    | Command doesn't exist      | Use `bunx likec4 validate ...`           |
+| `bunx likec4 export png --out-dir ./images` | Unknown flag (`--out-dir`) | Use `-o ./images` or `--outdir ./images` |
 
 ## `serve` (aliases: `start`, `dev`)
 
@@ -49,6 +50,32 @@ Build a static website for deployment.
 ```bash
 bunx likec4 build -o ./dist [project-dir]
 ```
+
+Preview the build with `bunx likec4 preview -o ./dist [project-dir]`.
+
+## App config (experimental)
+
+Newer versions of the CLI read `likec4.app.config.ts` (also `.mts`, `.cts`, `.js`, `.mjs`, `.cjs`) from the project directory or the current directory.
+Check that `likec4 build --help` lists `--app-config` before relying on it.
+
+```ts
+// likec4.app.config.ts
+import { defineAppConfig } from 'likec4/config'
+
+export default defineAppConfig({
+  title: 'My Architecture',
+  theme: 'dark', // 'light' | 'dark'
+  base: '/pages/',
+  customization: './likec4.customization.tsx', // UI overrides, see docs
+  build: { outDir: './dist' },
+  server: { port: 3000 },
+})
+```
+
+- Read by `serve`, `build`, `preview`, `export png|jpg`, `codegen react`, `codegen webcomponent`.
+- Flags win over the file. `--app-config <file>` points to another file, `--no-app-config` ignores it.
+- Paths in the file are relative to the file; unknown options are errors.
+- This is not `likec4.config.json` (the project configuration).
 
 ## `export`
 
@@ -74,11 +101,11 @@ bunx likec4 export drawio --all-in-one -o ./diagrams [project-dir]
 
 Use these when the task is **LeanIX inventory**, **bridge artifacts**, or **Draw.io with stable bridge-managed ids** — not for generic DSL editing alone.
 
-| Task                                           | Command                                                                  |
-| ---------------------------------------------- | ------------------------------------------------------------------------ |
-| Manifest + LeanIX dry-run + report             | `bunx likec4 gen leanix dry-run -o out/bridge [project-dir]`             |
+| Task                                           | Command                                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Manifest + LeanIX dry-run + report             | `bunx likec4 gen leanix dry-run -o out/bridge [project-dir]`                                                                    |
 | Sync workflow (review / apply)                 | `bunx likec4 sync leanix --dry-run -o out/bridge [project-dir]` / `bunx likec4 sync leanix --apply -o out/bridge [project-dir]` |
-| Draw.io with `likec4Id`, `bridgeManaged`, etc. | `bunx likec4 export drawio --profile leanix -o ./diagrams [project-dir]` |
+| Draw.io with `likec4Id`, `bridgeManaged`, etc. | `bunx likec4 export drawio --profile leanix -o ./diagrams [project-dir]`                                                        |
 
 Full boundaries, round-trip notes, and MCP vs bridge: **`references/bridge-leanix-drawio.md`**.
 

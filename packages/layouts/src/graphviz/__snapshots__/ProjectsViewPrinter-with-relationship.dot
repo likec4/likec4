@@ -56,6 +56,6 @@ digraph {
     likec4_id = "17usd85";
     likec4_project = "projectA";
     weight = 2;
-    label = <<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">a -&gt; b</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="12">[ technology ]</FONT></TD></TR></TABLE>>;
+    label = <<TABLE FIXEDSIZE="TRUE" WIDTH="79" HEIGHT="38" BORDER="0" CELLPADDING="0" CELLSPACING="0" BGCOLOR="#18191BA0"><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="14">a -&gt; b</FONT></TD></TR><TR><TD ALIGN="TEXT" BALIGN="LEFT"><FONT POINT-SIZE="11">[ technology ]</FONT></TD></TR></TABLE>>;
   ];
 }

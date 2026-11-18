@@ -3,7 +3,7 @@ import { Builder } from '@likec4/core/builder'
 import { MantineProvider } from '@mantine/core'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
-import { ElementDetailsCard } from './ElementDetailsCard'
+import { ElementDetailsCard, fqnPathSegments } from './ElementDetailsCard'
 import type { DetailsSubject } from './subject'
 
 const model = Builder.specification({
@@ -76,7 +76,9 @@ describe('deployment details card', () => {
     const html = render({ type: 'deployment', deployment: scalar.DeploymentFqn('prod') })
 
     expect(html).toContain('Production environment')
-    expect(html).toContain('Production summary')
+    // summary differs from description, so it is collapsed behind a toggle
+    expect(html).toMatch(/aria-expanded="false">(?:(?!<\/button>).)*<div>Summary<\/div><\/button>/)
+    expect(html).not.toContain('Production summary')
     expect(html).toContain('<strong>Production</strong> description')
     expect(html).toContain('OpenTofu')
     expect(html).toContain('Production docs')
@@ -113,5 +115,25 @@ describe('deployment details card', () => {
     expect(html).toContain('Logical owner')
     expect(html).toContain('Relationships')
     expect(html).toContain('Deployments')
+  })
+})
+
+describe('element id', () => {
+  it('splits an FQN into segments with the path from the root', () => {
+    expect(fqnPathSegments('cloud.backend.api')).toEqual([
+      { name: 'cloud', path: 'cloud' },
+      { name: 'backend', path: 'cloud.backend' },
+      { name: 'api', path: 'cloud.backend.api' },
+    ])
+    expect(fqnPathSegments('api')).toEqual([{ name: 'api', path: 'api' }])
+  })
+
+  it('renders a copy button for each segment of a deployment FQN', () => {
+    const html = render({ type: 'deployment', deployment: scalar.DeploymentFqn('prod.server.api') })
+
+    expect(html).toContain('>FQN<')
+    for (const segment of ['prod', 'server', 'api']) {
+      expect(html).toMatch(new RegExp(`<button tabindex="-1" data-hovered="false"[^>]*>${segment}</button>`))
+    }
   })
 })

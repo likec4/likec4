@@ -72,8 +72,9 @@ test.describe('Overview page', () => {
     await page.getByRole('button', { name: /Search/ }).click()
     // Click the "Landscape" view in the Views column
     await page.getByRole('button', { name: /Landscape/ }).click()
-    // Should navigate to the view page
-    await expect(page).toHaveURL(/\/view\/index\//)
+    // Multi-project: navigation uses /project/:id/view/... (no bare /view rewrite).
+    // /single-index/ is scoped to the first discovered project (export-config in this workspace).
+    await expect(page).toHaveURL(/\/project\/export-config\/view\/index\//)
   })
 
   test('search overlay closes after navigating to a view (#2353)', async ({ page }) => {
@@ -83,7 +84,7 @@ test.describe('Overview page', () => {
 
     // Navigate to a view via the search panel
     await page.getByRole('button', { name: /Landscape/ }).click()
-    await expect(page).toHaveURL(/\/view\/index\//)
+    await expect(page).toHaveURL(/\/project\/export-config\/view\/index\//)
 
     // The search dialog must be fully gone — no ghost overlay trapping focus
     await expect(page.locator('dialog[open]')).toHaveCount(0)
@@ -91,5 +92,10 @@ test.describe('Overview page', () => {
 
     // The diagram view should be interactive (not blocked by overlay)
     await expect(page.locator('.react-flow__pane')).toBeVisible()
+  })
+
+  test('bare /view/index/ is not-found on multi-project site', async ({ page }) => {
+    await page.goto('/view/index/')
+    await expect(page.getByText('Nothing to see here')).toBeVisible()
   })
 })

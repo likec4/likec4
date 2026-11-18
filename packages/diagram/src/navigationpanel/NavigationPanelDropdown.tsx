@@ -9,6 +9,7 @@ import { compareNaturalHierarchically, ifilter, ifirst, nonexhaustive, toArray }
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, VStack } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
+import { navigationPanel } from '@likec4/styles/recipes'
 import {
   Breadcrumbs,
   Button,
@@ -40,9 +41,10 @@ import {
 } from 'react'
 import { isArray, isEmpty, pipe, sort } from 'remeda'
 import { EmptyBox } from '../components/EmptyBox'
+import { ErrorBoundary } from '../components/ErrorFallback'
 import { type NavigationLinkProps, NavigationLink } from '../components/NavigationLink'
 import { viewIcon } from '../components/ViewIcon'
-import { type CurrentViewModel, ErrorBoundary, useOptionalCurrentViewModel } from '../custom'
+import { type CurrentViewModel, useOptionalCurrentViewModel } from '../hooks/useCurrentViewModel'
 import { useOnDiagramEvent } from '../hooks/useDiagram'
 import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import { Tooltip } from './_common'
@@ -53,7 +55,6 @@ import {
   useNavigationActorRef,
   useNavigationActorSelector,
 } from './hooks'
-import { breadcrumbTitle } from './styles.css'
 
 const scopedKeydownHandler: KeyboardEventHandler<HTMLElement> = createScopedKeydownHandler({
   siblingSelector: '[data-likec4-focusable]',
@@ -240,6 +241,8 @@ const inheritColor = css({
   },
 })
 
+const breadcrumbTitle = navigationPanel().breadcrumb
+
 function FoundedView(
   { view, highlight, ...props }: FoundedViewProps & Omit<ComponentPropsWithoutRef<'button'>, keyof FoundedViewProps>,
 ) {
@@ -252,7 +255,7 @@ function FoundedView(
       component={'div'}
       className={cx(
         inheritColor,
-        breadcrumbTitle({ truncate: true }),
+        breadcrumbTitle,
         css({
           '& > mark': {
             backgroundColor: {
@@ -293,6 +296,7 @@ function FoundedView(
     <Highlight
       key={b.path}
       component={'div'}
+      data-dimmed="true"
       className={cx(
         css({
           _groupHover: {
@@ -300,7 +304,7 @@ function FoundedView(
           },
         }),
         inheritColor,
-        breadcrumbTitle({ dimmed: true, truncate: true }),
+        breadcrumbTitle,
       )}
       maw={170}
       highlight={isArray(highlight) ? highlight : []}

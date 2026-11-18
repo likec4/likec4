@@ -1,4 +1,5 @@
 import { defineRecipe } from '@pandacss/dev'
+import { EdgeLabelMetrics } from '../defaults/typography.ts'
 
 export const edgeActionBtn = defineRecipe({
   className: 'likec4-edge-action-btn',
@@ -14,7 +15,7 @@ export const edgeActionBtn = defineRecipe({
     // '--ai-bg': 'var(--xy-edge-label-background-color)',
     '--ai-bg': 'transparent',
     '--ai-hover': `color-mix(in oklab , var(--xy-edge-label-background-color), {colors.likec4.mixColor} 10%)`,
-    '--ai-size': `28px`,
+    '--ai-size': `${EdgeLabelMetrics.actionButtonSize}px`,
     '--ai-radius': `{radii.sm}`,
     _hover: {
       translateY: '[2px]',

@@ -13,10 +13,10 @@ import {
 
 const snapshot = ({
   drifts,
-  compareEnabled,
+  comparing,
 }: {
   drifts: readonly [LayoutedViewDriftReason, ...LayoutedViewDriftReason[]] | null
-  compareEnabled: boolean
+  comparing: boolean
 }) =>
   ({
     context: {
@@ -27,7 +27,6 @@ const snapshot = ({
         enableReadOnly: false,
       },
       toggledFeatures: {
-        enableCompareWithLatest: compareEnabled,
         enableReadOnly: false,
       },
       view: {
@@ -35,7 +34,8 @@ const snapshot = ({
         drifts,
       },
     },
-  }) as DiagramActorSnapshot
+    hasTag: (tag: string) => comparing && tag === 'comparing',
+  }) as unknown as DiagramActorSnapshot
 
 describe('useDiagramCompareLayout public API', () => {
   it('exports the built-in manual-layout controller from the package root', () => {
@@ -49,7 +49,7 @@ describe('useDiagramCompareLayout public API', () => {
   it('returns null drifts when comparison is unavailable', () => {
     const state = selectCompareLayoutState(snapshot({
       drifts: null,
-      compareEnabled: false,
+      comparing: false,
     }))
 
     expect(state.isEnabled).toBe(false)
@@ -62,7 +62,7 @@ describe('useDiagramCompareLayout public API', () => {
   it('returns non-empty drifts when comparison is available', () => {
     const state = selectCompareLayoutState(snapshot({
       drifts: ['nodes-added'],
-      compareEnabled: true,
+      comparing: true,
     }))
 
     expect(state.isEnabled).toBe(true)
@@ -70,5 +70,16 @@ describe('useDiagramCompareLayout public API', () => {
       const drifts: readonly [LayoutedViewDriftReason, ...LayoutedViewDriftReason[]] = state.drifts
       expect(drifts).toEqual(['nodes-added'])
     }
+    expect(state.state).toBe('comparing')
+  })
+
+  it('is inactive when not in comparing state', () => {
+    const state = selectCompareLayoutState(snapshot({
+      drifts: ['nodes-added'],
+      comparing: false,
+    }))
+
+    expect(state.isEnabled).toBe(true)
+    expect(state.state).toBe('inactive')
   })
 })

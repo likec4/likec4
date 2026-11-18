@@ -1,7 +1,7 @@
 {
   "name": "likec4-vscode",
   "displayName": "LikeC4",
-  "version": "1.60.0",
+  "version": "1.61.0",
   "private": true,
   "description": "Support for the LikeC4 modeling language",
   "categories": [
@@ -41,6 +41,10 @@
     "#useTelemetry": {
       "browser": "./src/browser/useTelemetry.ts",
       "default": "./src/node/useTelemetry.ts"
+    },
+    "#copyAsPng": {
+      "browser": "./src/browser/copyAsPng.ts",
+      "default": "./src/node/copyAsPng.ts"
     }
   },
   "main": "dist/node/extension.cjs",
@@ -126,6 +130,13 @@
         }
       }
     ],
+    "configurationDefaults": {
+      "[likec4]": {
+        "editor.quickSuggestions": {
+          "strings": "on"
+        }
+      }
+    },
     "configuration": {
       "title": "%ext.title%",
       "properties": {
@@ -183,6 +194,43 @@
           "default": "",
           "markdownDescription": "Path to the Node.js executable used to run the language server. If empty, uses `node` from PATH."
         },
+        "likec4.cli.path": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "markdownDescription": "%ext.config.cli.path.description%"
+        },
+        "likec4.export.notation.enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%ext.config.export.notation.enabled.description%"
+        },
+        "likec4.export.notation.position": {
+          "type": "string",
+          "enum": [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right"
+          ],
+          "default": "bottom-right",
+          "markdownDescription": "%ext.config.export.notation.position.description%"
+        },
+        "likec4.export.notation.text": {
+          "type": "string",
+          "enum": [
+            "short",
+            "full",
+            "kind"
+          ],
+          "default": "short",
+          "markdownEnumDescriptions": [
+            "%ext.config.export.notation.text.short%",
+            "%ext.config.export.notation.text.full%",
+            "%ext.config.export.notation.text.kind%"
+          ],
+          "markdownDescription": "%ext.config.export.notation.text.description%"
+        },
         "likec4.exclude": {
           "type": "array",
           "default": [],
@@ -198,12 +246,24 @@
         {
           "command": "likec4.preview-context-open-source",
           "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.preview-context-copy-as-png",
+          "when": "activeWebviewPanelId == 'likec4-preview'"
         }
       ],
       "commandPalette": [
         {
           "command": "likec4.preview-context-open-source",
           "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.preview-context-copy-as-png",
+          "when": "activeWebviewPanelId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.save-as-png",
+          "when": "resourceLangId == likec4 || activeWebviewPanelId == 'likec4-preview'"
         },
         {
           "command": "likec4.locate",
@@ -250,6 +310,16 @@
       {
         "command": "likec4.preview-context-open-source",
         "title": "%ext.cmd.preview-context-open-source%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.preview-context-copy-as-png",
+        "title": "%ext.cmd.preview-context-copy-as-png%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.save-as-png",
+        "title": "%ext.cmd.save-as-png%",
         "category": "%ext.title%"
       },
       {
@@ -312,9 +382,8 @@
     "onWebviewPanel:likec4-preview"
   ],
   "dependencies": {
-    "bundle-require": "catalog:externals",
-    "esbuild": "catalog:esbuild-wasm",
     "fdir": "catalog:externals",
+    "jiti": "catalog:externals",
     "picomatch": "catalog:externals",
     "std-env": "catalog:externals"
   },
@@ -322,6 +391,7 @@
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/config": "workspace:*",
     "@likec4/core": "workspace:*",
+    "@likec4/devops": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
@@ -338,14 +408,17 @@
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
+    "nano-spawn": "catalog:externals",
     "nanoid": "catalog:utils",
     "p-queue": "catalog:utils",
     "p-timeout": "catalog:utils",
+    "package-manager-detector": "catalog:utils",
     "pathe": "catalog:utils",
     "playwright": "catalog:",
     "pretty-ms": "^9.3.1",
     "reactive-vscode": "^1.0.2",
     "remeda": "catalog:utils",
+    "shiki": "catalog:astro",
     "tsdown": "catalog:tsdown",
     "tslib": "^2.8.1",
     "tsx": "catalog:",

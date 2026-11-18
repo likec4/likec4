@@ -65,7 +65,7 @@ First of all, thank you for showing interest in contributing to LikeC4! All your
    - Launch [`Run Extension`](https://github.com/likec4/likec4/blob/c88cfdb3856aff4b28c5f72da7ded8caf8c47c62/.vscode/launch.json#L18) to start a new VSCode instance with the extension loaded.
 
 > [!TIP]
-> 
+>
 > If you work mostly on `vscode-preview` package, you don't need to restart `Run Extension` when you make changes.\
 > Keep `pnpm dev` in `vscode-preview` running, VSCode will pick up changes when close-open the panel.
 

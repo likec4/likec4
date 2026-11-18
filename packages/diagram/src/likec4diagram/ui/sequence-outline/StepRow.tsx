@@ -5,7 +5,7 @@ import { hstack } from '@likec4/styles/patterns'
 import { IconArrowRight } from '@tabler/icons-react'
 import { m } from 'motion/react'
 import { useRef } from 'react'
-import { Markdown } from '../../../base-primitives/Markdown'
+import { MarkdownWithRefs } from '../../../components/markdown'
 import { useDiagram } from '../../../hooks/safeContext'
 import { recessed } from './depth-of-field'
 import { SEQ_CARD_LAYOUT_ID, SEQ_TRANSITION } from './motion'
@@ -155,7 +155,7 @@ const ActiveStepCard = ({ node }: { node: OutlineTreeNodeStep }) => {
           animate={{ visibility: 'visible', overflow: 'visible', height: 'auto' }}
           exit={{ visibility: 'hidden', overflow: 'hidden', height: 10 }}
           transition={SEQ_TRANSITION}>
-          <Markdown
+          <MarkdownWithRefs
             value={RichText.from(notes)}
             fontSize={'md'}
             textScale={0.95}

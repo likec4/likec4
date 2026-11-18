@@ -1,9 +1,9 @@
 ---
 title: Organize views
-description: How to organize views in LikeC4
+description: Group views into folders and set their order in the sidebar
 sidebar: 
   label: Organize
-  order: 10
+  order: 16
 ---
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
@@ -71,11 +71,11 @@ Views can be defined in the same file, but placed in different folders:
 
 ```likec4
 views {
-  dynamic view {
+  dynamic view checkout {
     title 'Use Cases / 16.2 Checkout / Checkout flow'    
   }
 
-  deployment view {
+  deployment view staging {
     title 'Deployments / Staging / Checkout microservice'    
   }
 }
@@ -95,7 +95,7 @@ views 'Domain 1 / Subdomain' {
     title 'Landscape'  
   }
   
-  dynamic view {
+  dynamic view checkout {
     // You can add nested folder  
     // Will be displayed as 'Domain 1 / Subdomain / Use Cases / 16.2 Checkout'
     title 'Use Cases / 16.2 Checkout'    

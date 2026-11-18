@@ -1,5 +1,9 @@
 # @likec4/docs-astro
 
+## 1.61.0
+
+No changes in this release.
+
 ## 1.60.0
 
 No changes in this release.

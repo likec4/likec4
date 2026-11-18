@@ -1,27 +1,41 @@
 ---
 title: Views
-description: How to visualize software architecture in diagrams using LikeC4
-sidebar: 
-  label: Views
-  order: 8
+description: What views are in LikeC4, the three kinds of views, and how to define, scope and extend them
+sidebar:
+  label: Overview
+  order: 10
 tableOfContents:
   minHeadingLevel: 2
-  maxHeadingLevel: 6
+  maxHeadingLevel: 3
 ---
 
 import { Aside, TabItem, Tabs } from '@astrojs/starlight/components';
 
-LikeC4 is model-based. Views are projections of the model from various perspectives, scopes, and levels of detail, such as:
+LikeC4 is model-based. A view is a projection of the model: it picks elements and relationships from the model and renders them as a diagram.
+When the model changes, every view that shows the changed part is updated.
 
--	System/service overviews
--	Component interactions in specific use cases
--	Data flows and sequence diagrams
+LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included — it's entirely up to you and your context.
 
-LikeC4 does not enforce specific rules, such as a strict number of levels or what should be included — it's entirely up to you and your context.  
+## Kinds of views
+
+| Kind            | Keyword           | Shows                                                                                   |
+| :-------------- | :---------------- | :-------------------------------------------------------------------------------------- |
+| Element view    | `view`            | Elements and relationships of the model, chosen with [predicates](/dsl/views/predicates/) |
+| Dynamic view    | `dynamic view`    | A scenario as ordered steps between elements, as a diagram or a sequence diagram ([dynamic views](/dsl/views/dynamic/)) |
+| Deployment view | `deployment view` | Deployment nodes and the instances deployed to them ([deployment views](/dsl/deployment/views/)) |
+
+This page covers what all views share. The next pages explain:
+
+- [Predicates](/dsl/views/predicates/) - what an element view shows
+- [Styles](/dsl/views/styles/) - how elements look in a view, and how to share styles between views
+- [Dynamic views](/dsl/views/dynamic/) - scenarios as steps, diagram or sequence
+- [Layout](/dsl/views/layout/) - direction, spacing, edge routing, rank constraints, and the Diagram/Graph modes
+- [Notations](/dsl/views/notations/) - the legend of a view
+- [Organize](/dsl/views/organize/) - folders and order of views
 
 ## View definition
 
-Views are defined in `views` section.  
+Views are defined in `views` section.
 They can be named (must be unique) or unnamed (can't be referenced, but still can be exported):
 
 ```likec4
@@ -38,13 +52,13 @@ views {
 The view name is used as the image filename during export and as part of the URL when sharing, so it's advisable to define one.
 
 <Aside title="Default view">
-  `index` is a special view, and is rendered by default if no view name is specified.  
+  `index` is a special view, and is rendered by default if no view name is specified.
   If it is not defined - will be generated and include top-level elements
 </Aside>
 
 ### View properties
 
-Views can have a `title`, `description`, `tags`, `links`, and [`routing`](/dsl/views/predicates/#edge-routing):
+Views can have a `title`, `description`, `tags`, `links`, [`routing`](/dsl/views/layout/#edge-routing) and [`order`](/dsl/views/organize/#order-views):
 
 ```likec4
 views {
@@ -68,22 +82,11 @@ views {
 }
 ```
 
-Properties must be defined before any [predicates](/dsl/views/predicates/).  
-
-## Diagram and Graph display modes
-
-Starting with v1.60.0, element views support two display modes:
-
-- **Diagram**: renders elements in the diagram layout.
-- **Graph**: renders leaf elements as compact circles linked by straight lines, with draggable nodes arranged by an animated, physics-based simulation.
-
-Graph mode currently flattens the view hierarchy: it only shows leaf elements (those without children). Compound/group nodes and any relationships connected directly to those nodes are omitted. Switch back to **Diagram** to see the full hierarchy and those relationships.
-
-Use the **Diagram / Graph** toggle in the navigation panel to switch modes. This changes the presentation of an element view without changing its DSL model definition.
+Properties must be defined before any [predicates](/dsl/views/predicates/).
 
 ## Scoped views
 
-A view can be defined for a specific element (`view of ...`).  
+A view can be defined for a specific element (`view of ...`).
 The view will then inherit the [scope](/dsl/references#scope) of that element:
 
 :::note
@@ -142,6 +145,7 @@ views {
   view view2 extends view1 {
     title 'Same as View1, but with more details'
 
+    // see Styles in views
     style * {
       color muted
     }

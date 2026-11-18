@@ -44,7 +44,7 @@ model {
     supportUser = actor 'Support User' 'Support team member with limited access' {
       description '''
         Support users require limited access to the system
-        to help customers with their issues
+        to help [[customer|customers]] with their issues
 
       '''
       -> customer 'helps with questions' {
@@ -65,20 +65,22 @@ views {
   view index {
     title 'Landscape'
     description '''
-> [!NOTE]
-> Information that users should know.
+      > [!NOTE]
+      > Information that users should know.
 
-> [!TIP]
-> Helpful advice for better results.
+      > [!TIP]
+      > Helpful advice for better results.
 
-> [!IMPORTANT]
-> Key information for success.
+      > [!IMPORTANT]
+      > Key information for success.
 
-> [!WARNING]
-> Urgent information to avoid problems.
+      > [!WARNING]
+      > Urgent information to avoid problems.
 
-> [!CAUTION]
-> Risks or negative outcomes.
+      > [!CAUTION]
+      > Risks or negative outcomes.
+
+      Here is a link to [[view:dynamic-view-1]]
     '''
 
     group 'SAAS' {
@@ -116,10 +118,14 @@ views {
       color indigo
     }
     autoLayout BottomTop
+    style customer {
+      shape agent
+    }
   }
 
   dynamic view dynamic-view-1 {
     title 'Use Cases / Dynamic View Example'
+    description 'Empty description, please fill it in'
 
     link https://docs.likec4.dev/dsl/views/dynamic/ 'Docs'
 
@@ -128,7 +134,7 @@ views {
       > [!NOTE]
       > Information that users should know.
 
-      Customer opens dashboard in Browser
+      Customer opens [[cloud.ui.dashboard]] in Browser
 
       '''
     }
@@ -143,8 +149,11 @@ views {
         Multi line
       '
     }
-    ui.dashboard <- cloud.graphql 'returns' {
-      technology 'unknown'
+    ui.dashboard <- cloud.graphql {
+      title '
+        returns data over SSE
+      '
+      technology 'SSE'
       navigateTo cloud-to-amazon
     }
 
@@ -170,7 +179,10 @@ views {
         ui.dashboard -> cloud.next.backend
       }
       if 'second' {
-        cloud.graphql -> cloud.next.backend 'First call' {
+        cloud.graphql -> cloud.next.backend 'Second call' {
+          notes '''
+            Second call notes
+          '''
           line solid
           color red
         }
@@ -201,7 +213,7 @@ views {
 
     include cloud
 
-    autoLayout TopBottom
+    autoLayout TopBottom 100 108 spline
     style * {
       color secondary
     }

@@ -64,10 +64,6 @@ export class NoopFileSystemProvider implements FileSystemProvider {
     throw new Error(`No file system is available (${uri.toString()})`)
   }
 
-  realpath(): Promise<string | undefined> {
-    return Promise.resolve(undefined)
-  }
-
   readDirectory(): Promise<FileNode[]> {
     return Promise.resolve([])
   }
@@ -105,10 +101,6 @@ export class NoopFileSystemWatcher implements FileSystemWatcher {
 export class NoopLikeC4ManualLayouts implements LikeC4ManualLayouts {
   constructor() {
     logger.debug`NoopLikeC4ManualLayouts created`
-  }
-
-  handleFileSystemUpdate(): Promise<void> {
-    return Promise.resolve()
   }
 
   readSnapshot(): Promise<LayoutedView | null> {

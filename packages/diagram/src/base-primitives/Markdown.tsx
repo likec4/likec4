@@ -1,15 +1,19 @@
-import type { RichTextOrEmpty as RichTextType } from '@likec4/core/types'
+import { type RichTextOrEmpty as RichTextType, isRichText } from '@likec4/core/types'
+import { nonNullable } from '@likec4/core/utils'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { markdownBlock } from '@likec4/styles/recipes'
 import type { Tokens } from '@likec4/styles/tokens'
 import { Text } from '@mantine/core'
-import { type ComponentPropsWithoutRef, forwardRef } from 'react'
+import {
+  type ComponentPropsWithoutRef,
+  forwardRef,
+} from 'react'
 
 export type MarkdownProps =
   & Omit<ComponentPropsWithoutRef<'div'>, 'dangerouslySetInnerHTML' | 'children' | 'color' | 'translate'>
   & {
-    value: RichTextType
+    value: RichTextType | { html: string }
 
     /**
      * When markdown block is used inside a diagram node, this variant should be used to apply the likec4 palette.
@@ -39,7 +43,6 @@ export type MarkdownProps =
      */
     emptyText?: string
   }
-
 export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
   value,
   textScale = 1,
@@ -51,14 +54,28 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
   fontSize,
   ...props
 }, ref) => {
-  if (value.isEmpty && hideIfEmpty) {
+  if (isRichText(value) && value.isEmpty && hideIfEmpty) {
     return null
   }
-  const content = value.nonEmpty
-    ? value.isMarkdown
-      ? { dangerouslySetInnerHTML: { __html: value.html } }
-      : { children: <p>{value.text}</p> }
-    : { children: <Text component="span" fz={'xs'} c="dimmed" style={{ userSelect: 'none' }}>{emptyText}</Text> }
+
+  // We received html directly, so we assume it's markdown
+  const isMarkdown = !isRichText(value) || (value.nonEmpty && value.isMarkdown)
+
+  let content
+  switch (true) {
+    case isMarkdown:
+      content = { dangerouslySetInnerHTML: { __html: nonNullable(value.html, 'Markdown html is required') } }
+      break
+    case isRichText(value) && value.nonEmpty:
+      content = { children: <p>{value.text}</p> }
+      break
+    default:
+      content = {
+        children: <Text component="span" fz={'xs'} c="dimmed" style={{ userSelect: 'none' }}>{emptyText}</Text>,
+      }
+      break
+  }
+
   return (
     <Box
       {...props}
@@ -66,7 +83,7 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(({
       className={cx(
         markdownBlock({
           uselikec4palette,
-          value: value.isMarkdown ? 'markdown' : 'plaintext',
+          value: isMarkdown ? 'markdown' : 'plaintext',
         }),
         className,
       )}

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/layouts",
-  "version": "1.60.0",
+  "version": "1.61.0",
   "description": "Layout algorithms for LikeC4 views",
   "homepage": "https://likec4.dev",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -70,12 +70,14 @@
     "postpack": "likec4ops postpack"
   },
   "dependencies": {
+    "@chenglou/pretext": "catalog:",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/core": "workspace:*",
     "@likec4/log": "workspace:*",
     "@lume/kiwi": "catalog:utils",
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
+    "fontkit": "catalog:",
     "indent-string": "catalog:utils",
     "json5": "catalog:utils",
     "khroma": "catalog:utils",
@@ -91,15 +93,20 @@
     "zod": "catalog:externals"
   },
   "devDependencies": {
+    "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/devops": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
+    "@types/fontkit": "catalog:",
     "@types/node": "catalog:",
     "@types/which": "^3.0.4",
+    "graphology": "catalog:",
+    "graphology-types": "catalog:",
     "tsdown": "catalog:tsdown",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:vitest",
+    "wawoff2": "catalog:",
     "zx": "catalog:"
   },
   "publishConfig": {

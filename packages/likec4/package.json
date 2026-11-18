@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.60.0",
+  "version": "1.61.0",
   "description": "Toolchain for your architecture diagrams",
   "keywords": [
     "likec4",
@@ -25,6 +25,78 @@
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
+      }
+    },
+    "./core": {
+      "sources": "./src/core/index.ts",
+      "default": {
+        "types": "./dist/core/index.d.mts",
+        "import": "./dist/core/index.mjs",
+        "default": "./dist/core/index.mjs"
+      }
+    },
+    "./core/builder": {
+      "sources": "./src/core/builder.ts",
+      "default": {
+        "types": "./dist/core/builder.d.mts",
+        "import": "./dist/core/builder.mjs",
+        "default": "./dist/core/builder.mjs"
+      }
+    },
+    "./core/geometry": {
+      "sources": "./src/core/geometry.ts",
+      "default": {
+        "types": "./dist/core/geometry.d.mts",
+        "import": "./dist/core/geometry.mjs",
+        "default": "./dist/core/geometry.mjs"
+      }
+    },
+    "./core/compute-view": {
+      "sources": "./src/core/compute-view.ts",
+      "default": {
+        "types": "./dist/core/compute-view.d.mts",
+        "import": "./dist/core/compute-view.mjs",
+        "default": "./dist/core/compute-view.mjs"
+      }
+    },
+    "./core/model": {
+      "sources": "./src/core/model.ts",
+      "default": {
+        "types": "./dist/core/model.d.mts",
+        "import": "./dist/core/model.mjs",
+        "default": "./dist/core/model.mjs"
+      }
+    },
+    "./core/styles": {
+      "sources": "./src/core/styles.ts",
+      "default": {
+        "types": "./dist/core/styles.d.mts",
+        "import": "./dist/core/styles.mjs",
+        "default": "./dist/core/styles.mjs"
+      }
+    },
+    "./core/types": {
+      "sources": "./src/core/types.ts",
+      "default": {
+        "types": "./dist/core/types.d.mts",
+        "import": "./dist/core/types.mjs",
+        "default": "./dist/core/types.mjs"
+      }
+    },
+    "./core/utils": {
+      "sources": "./src/core/utils.ts",
+      "default": {
+        "types": "./dist/core/utils.d.mts",
+        "import": "./dist/core/utils.mjs",
+        "default": "./dist/core/utils.mjs"
+      }
+    },
+    "./layouts": {
+      "sources": "./src/layouts/index.ts",
+      "default": {
+        "types": "./dist/layouts/index.d.mts",
+        "import": "./dist/layouts/index.mjs",
+        "default": "./dist/layouts/index.mjs"
       }
     },
     "./config/schema.json": "./config/schema.json",
@@ -117,18 +189,22 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@floating-ui/dom": "catalog:react",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
-    "@likec4/core": "workspace:*",
     "@likec4/icons": "workspace:*",
+    "@mantine/core": "catalog:mantine",
+    "@mantine/hooks": "catalog:mantine",
     "@vitejs/plugin-react": "catalog:vite",
-    "bundle-require": "catalog:externals",
     "chokidar": "catalog:externals",
-    "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
     "immer": "catalog:utils",
+    "jiti": "catalog:externals",
+    "motion": "catalog:react",
     "nano-spawn": "catalog:externals",
     "picomatch": "catalog:externals",
     "playwright": "catalog:",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
     "std-env": "catalog:externals",
     "type-fest": "catalog:externals",
     "vite": "catalog:vite",
@@ -140,6 +216,7 @@
     "@dagrejs/dagre": "catalog:",
     "@fontsource-variable/ibm-plex-sans": "catalog:",
     "@likec4/config": "workspace:*",
+    "@likec4/core": "workspace:*",
     "@likec4/devops": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -157,6 +234,7 @@
     "@likec4/vite-plugin": "workspace:*",
     "@nanostores/react": "catalog:react",
     "@pandacss/dev": "catalog:css",
+    "@rolldown/plugin-node-polyfills": "catalog:tsdown",
     "@tanstack/ai": "catalog:ai",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:externals",
@@ -164,7 +242,7 @@
     "@types/react-dom": "catalog:react",
     "@types/semver": "^7.8.0",
     "@types/yargs": "^17.0.35",
-    "autoprefixer": "^10.6.1",
+    "autoprefixer": "^10.6.2",
     "birpc": "catalog:vite",
     "boxen": "^9.0.0",
     "clsx": "catalog:react",

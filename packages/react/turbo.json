@@ -21,7 +21,8 @@
     },
     "build": {
       "dependsOn": [
-        "typecheck",
+        "sources",
+        "@likec4/diagram#build"
       ],
       "outputs": [
         "dist/**",

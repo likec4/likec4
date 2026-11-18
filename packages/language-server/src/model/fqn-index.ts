@@ -10,8 +10,11 @@ import { type NonEmptyArray, type ProjectId, Fqn, isAnyOf } from '@likec4/core/t
 import {
   ancestorsFqn,
   compareNatural,
+  ifilter,
+  imap,
   MultiMap,
   sortNaturalByFqn,
+  toArray,
 } from '@likec4/core/utils'
 import {
   type LangiumDocument,
@@ -33,7 +36,7 @@ import {
 } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { ADisposable } from '../utils'
+import { ADisposable, UniqueSingleMap } from '../utils'
 import { readStrictFqn } from '../utils/elementRef'
 import { type LangiumDocuments, ProjectsManager } from '../workspace'
 
@@ -60,8 +63,10 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
       services.shared.workspace.DocumentBuilder.onDocumentResetBelow(
         DocumentState.IndexedContent,
         ({ doc }) => {
-          if (this.documentCache.delete(doc.textDocument.uri)) {
-            this.logger.trace(`document cache entry deleted for ${doc.textDocument.uri}`)
+          if (this.documentCache.delete(doc.textDocument.uri) && this.logger.isEnabledFor('trace')) {
+            this.logger.trace(
+              `clear cache for ${services.shared.workspace.WorkspaceManager.relativePath(doc.textDocument.uri)}`,
+            )
           }
         },
       ),
@@ -153,42 +158,65 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
     }))
   }
 
-  public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
-    return stream(
-      this.workspaceCache.get(projectId, `rootElements`, () => {
-        const allroots = new MultiMap<string, AstNodeDescriptionWithFqn>()
-        for (const doc of this.documents(projectId)) {
-          for (const desc of this.get(doc).rootElements()) {
-            allroots.set(desc.name, desc)
-          }
-        }
-        return uniqueByName(allroots)
-      }),
-    )
+  /**
+   * Returns all elements of the project (from all documents, including nested
+   * elements and elements added in `extend` blocks), in document order.
+   * The same FQN may appear more than once if it is defined in several documents.
+   */
+  public elements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
+    return stream(this.workspaceCache.get(projectId, `elements`, () => {
+      return this
+        .documents(projectId)
+        .flatMap(doc => this.get(doc).elements())
+        .toArray()
+    }))
   }
 
+  /**
+   * Returns root elements of the project, from all documents, in document order.
+   *
+   * Unlike {@link directChildrenOf}, the result is neither deduplicated nor sorted (and not cached):
+   * if the same name is declared in several documents, all declarations are returned,
+   * and scope lookup takes the first one (duplicates are reported by validation).
+   */
+  public rootElements(projectId: ProjectId): Stream<AstNodeDescriptionWithFqn> {
+    return this
+      .documents(projectId)
+      .flatMap(doc => this.get(doc).rootElements())
+  }
+
+  /**
+   * Returns direct children of the element, collected from all documents of the project
+   * (including children added in `extend` blocks), sorted by name.
+   * Names declared more than once are ambiguous and excluded.
+   */
   public directChildrenOf(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(projectId, `directChildrenOf:${parent}`, () => {
-        const allchildren = new MultiMap<string, AstNodeDescriptionWithFqn>()
+        const allchildren = new UniqueSingleMap<string, AstNodeDescriptionWithFqn>()
         for (const doc of this.documents(projectId)) {
-          for (const desc of this.get(doc).children(parent)) {
-            allchildren.set(desc.name, desc)
+          for (const child of this.get(doc).children(parent)) {
+            allchildren.set(child.name, child)
           }
         }
-        return uniqueByName(allchildren)
+        return Array.from(allchildren.uniqueValues()).toSorted(compareNaturalByName)
       }),
     )
   }
 
   /**
-   * Returns descedant elements with unique names in the scope
+   * Returns descedant elements with unique names in the scope:
+   * first direct children (sorted by name), then deeper descendants (sorted by FQN).
+   *
+   * A name is excluded if it is ambiguous - declared by several children or by several deeper descendants.
+   * Direct child always wins over deeper descendant with the same name
+   * (even if the child itself is ambiguous and excluded).
    */
   public uniqueDescedants(projectId: ProjectId, parent: Fqn): Stream<AstNodeDescriptionWithFqn> {
     return stream(
       this.workspaceCache.get(projectId, `uniqueDescedants:${parent}`, () => {
-        const children = new MultiMap<string, AstNodeDescriptionWithFqn>(),
-          descendants = new MultiMap<string, AstNodeDescriptionWithFqn>()
+        const children = new UniqueSingleMap<string, AstNodeDescriptionWithFqn>(),
+          descendants = new UniqueSingleMap<string, AstNodeDescriptionWithFqn>()
 
         for (const doc of this.documents(projectId)) {
           const docIndex = this.get(doc)
@@ -199,14 +227,19 @@ export class FqnIndex<AstNd = ast.Element> extends ADisposable {
             descendants.set(desc.name, desc)
           }
         }
-        const uniqueChildren = uniqueByName(children)
 
-        const uniqueDescendants = [...descendants.associations()]
-          .flatMap(([_name, descs]) => descs.length === 1 && !children.has(_name) ? descs : [])
+        const uniqueDescendants = pipe(
+          descendants.uniqueEntries(),
+          // Exclude descendants if there is a child with the same name
+          imap(([name, desc]) => children.has(name) ? null : desc),
+          ifilter(isTruthy),
+          toArray(),
+          sortNaturalByFqn(),
+        )
 
         return [
-          ...uniqueChildren,
-          ...sortNaturalByFqn(uniqueDescendants),
+          ...Array.from(children.uniqueValues()).toSorted(compareNaturalByName),
+          ...uniqueDescendants,
         ]
       }),
     )
@@ -325,12 +358,6 @@ function compareNaturalByName(a: AstNodeDescriptionWithFqn, b: AstNodeDescriptio
   return compareNatural(a.name, b.name)
 }
 
-function uniqueByName(multimap: MultiMap<string, AstNodeDescriptionWithFqn>) {
-  return [...multimap.associations()]
-    .flatMap(([_name, descs]) => (descs.length === 1 ? descs : []))
-    .sort(compareNaturalByName)
-}
-
 export class DocumentFqnIndex {
   static readonly EMPTY = new DocumentFqnIndex(
     [],
@@ -363,6 +390,13 @@ export class DocumentFqnIndex {
 
   public byFqn(fqn: Fqn): readonly AstNodeDescriptionWithFqn[] {
     return this._byfqn.get(fqn) ?? []
+  }
+
+  /**
+   * All elements of the document
+   */
+  public elements(): readonly AstNodeDescriptionWithFqn[] {
+    return [...this._byfqn.values()]
   }
 
   public children(parent: Fqn): readonly AstNodeDescriptionWithFqn[] {

@@ -6,7 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { LikeC4Model } from '@likec4/core/model'
-import { type Fqn, preferSummary } from '@likec4/core/types'
+import type { Fqn } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { vstack } from '@likec4/styles/patterns'
@@ -28,9 +28,10 @@ import { EmptyBox } from '../../components/EmptyBox'
 import { ViewIcon } from '../../components/ViewIcon'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { useNormalizedSearch } from '../hooks'
+import { METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
 import { buttonsva } from './_shared.css'
-import { centerY, moveFocusToSearchInput, queryAllFocusable } from './utils'
+import { centerY, createViewSearch, moveFocusToSearchInput, queryAllFocusable, viewTitleWithFolder } from './utils'
 import * as styles from './ViewsColumn.css'
 
 export const NothingFound = () => (
@@ -43,24 +44,22 @@ const useFoundViews = () => {
   const { currentViewId } = useSearchContext()
   const likec4model = useLikeC4Model()
   const search = useNormalizedSearch()
+  const allViews = useMemo(() => [...likec4model.views()], [likec4model])
+  const fuzzy = useMemo(() => createViewSearch(allViews), [allViews])
   return useMemo(() => {
-    let views = [...likec4model.views()]
+    let views = allViews
     if (search) {
-      if (search.startsWith('kind:')) {
+      if (search.startsWith('kind:') || search.startsWith(METADATA_SEARCH_PREFIX)) {
         views = []
+      } else if (search.startsWith('#')) {
+        const searchTag = search.slice(1)
+        views = views.filter(view => view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag)))
       } else {
-        const searchTag = search.startsWith('#') ? search.slice(1) : null
-        views = views.filter(view => {
-          if (searchTag) {
-            return view.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
-          }
-          const desc = preferSummary(view.$view)?.md || ' '
-          return `${view.id} ${view.title} ${desc}`.toLocaleLowerCase().includes(search)
-        })
+        views = fuzzy(search)
       }
     }
     return [views, search, currentViewId] as const
-  }, [likec4model, search, currentViewId])
+  }, [allViews, fuzzy, search, currentViewId])
 }
 
 export const ViewsColumn = memo(() => {
@@ -136,6 +135,7 @@ export function ViewButton(
   const ctx = useSearchContext()
   const nextViewId = view.id
   const isCurrentView = nextViewId === currentViewId
+  const label = viewTitleWithFolder(view)
 
   const navigate = () => {
     ctx.navigateTo(nextViewId, focusOnElement)
@@ -169,8 +169,8 @@ export function ViewButton(
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
-          <Highlight component="div" highlight={search} className={btn.title!} lineClamp={1}>
-            {view.titleOrUntitled}
+          <Highlight component="div" highlight={search} className={btn.title!} lineClamp={2} title={label}>
+            {label}
           </Highlight>
           {isCurrentView && <Badge size="xs" fz={9} radius={'sm'}>current</Badge>}
         </Group>

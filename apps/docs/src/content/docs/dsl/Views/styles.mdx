@@ -1,0 +1,212 @@
+---
+title: Styles in views
+description: Change how elements look in a single view, and share styles between views
+sidebar:
+  label: Styles
+  order: 12
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Styles of element kinds and elements are defined in the [specification and the model](/dsl/styling/) and apply to every view.
+A view can change them for itself with `style` predicates.
+Views can also share styles: in a `views` block, or by name from the `global` block.
+
+To change relationships in a view (color, line, title), see [relationship customization](/dsl/views/predicates/#relationship-customization).
+
+## Style predicates
+
+Style predicates change how elements are rendered in the view.
+They are applied in the order they are defined, and each one merges with the previous ones:
+
+```likec4
+view apiApp of internetBankingSystem.apiApplication {
+
+  include *
+
+  // apply to all elements
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  // apply only to these elements
+  style singlePageApplication, mobileApp {
+    color secondary
+    size xlarge
+  }
+
+  // apply to all nested elements of apiApplication
+  // (in style predicates, .* and .** match the same elements)
+  style apiApplication.* {
+    color primary
+    multiple true
+  }
+
+  // apply to apiApplication and its children
+  style apiApplication._ {
+    color primary
+  }
+
+  // apply only to elements with specific tag
+  style element.tag = #deprecated {
+    color muted
+  }
+
+  // apply to elements not tagged
+  style element.tag != #deprecated {
+    opacity 20%
+  }
+}
+```
+
+:::caution
+[`group`](/dsl/views/predicates/#groups) does not support nested `style` predicates (yet).
+:::
+
+## Shared local styles
+
+Styles can be shared within `views` block (_"local styles"_):
+
+```likec4
+views {
+  // apply to all views in this block
+  style * {
+    color muted
+    opacity 10%
+  }
+
+  view of apiApp {
+    include *
+    style cloud.web.* {
+      color green
+    }
+  }
+
+  view of mobileApp {
+    include *
+    style cloud.ui.* {
+      color amber
+    }    
+  }
+}
+
+views {
+  // Styles from previous block are not applied here
+  // ...
+}
+```
+
+<Aside title="Order">
+Styles are applied in the order they are defined.  
+First, local styles from `views` block and then from `view`
+</Aside>
+
+:::caution
+[Overrides](/dsl/views/predicates/#with-overrides) (`with { ... }` in `include`) are always applied last, after all styles.
+:::
+
+
+## Shared global styles
+
+Styles can be shared globally.  
+Global styles must be named and defined in `global` block:
+
+```likec4  {4,9,15,25,33-34}
+global {
+  // Format:
+  //  style <name> <targets> { ... }
+  style mute_all * {
+    color muted
+    opacity 10%
+  }
+
+  style applications
+    singlePageApplication._,
+    mobileApp._ {
+      color secondary
+    } 
+
+  style mute_deprecated
+    element.tag = #deprecated {
+      color muted
+    }  
+}
+
+views {
+  view of singlePageApplication {  
+    // Styles are applied in the order they are defined
+    // 1. Apply global style
+    global style mute_all
+
+    // 2. Then this
+    style cloud.* {
+      color green
+    }
+
+    // 3. and 4.
+    global style applications
+    global style mute_deprecated    
+  }  
+}
+```
+
+## Shared style groups
+
+Global styles can be grouped:
+
+```likec4 {3,18}
+global {
+  // Define style group
+  styleGroup common_styles {
+    style singlePageApplication, mobileApp {
+      color secondary
+    }
+    style element.tag = #deprecated {
+      color muted
+    }
+  }
+}
+
+views {  
+  view mobileApp of mobileApp {
+    include *
+
+    // Apply styles from group
+    global style common_styles
+
+    // Override
+    style mobileApp {
+      color primary
+    }
+  }
+}
+```
+
+:::tip
+Global styles and groups can be used as `views`-locals:
+
+```likec4
+global {
+  style mute_all * { color muted }
+  styleGroup theme1 { /* ... */ }
+  styleGroup theme2 { /* ... */ }
+}
+
+// All views within this block have styles from 'theme1'
+views {
+  global style theme1
+  view view1 { /* ... */ }
+}
+
+// All views have 'mute_all' style and all from 'theme2'
+views {
+  global style mute_all
+  global style theme2
+  view view2 { /* ... */ }
+}
+```
+:::

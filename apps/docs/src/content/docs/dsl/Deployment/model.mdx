@@ -3,7 +3,7 @@ title: Deployment Model
 description: How to define deployment model in LikeC4
 sidebar: 
   label: Model
-  order: 11
+  order: 20
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -13,7 +13,7 @@ It references the [logical model](/dsl/model) and inherits its relationships.
 
 ## Specification
 
-First, following the [same approach](/dsl/specification/#element-kind), deployment node kinds have to defined within the specification:
+First, following the [same approach](/dsl/specification/#element-kind), deployment node kinds have to be defined within the specification:
 
 ```likec4
 specification {
@@ -194,10 +194,13 @@ Assume, we don't need this relationship in our logical model, but it makes sense
 Deployment relationships can be "kinded", and have [same properties](/dsl/relationships/#relationship-properties) as logical ones:
 
 ```likec4
+specification {
+  relationship streaming
+}
 deployment {
   environment prod {
     vm2.db -[streaming]-> vm1.db {
-      #next, #live
+      #next #live
       title 'replicates'
       description 'Streaming replication'
     }

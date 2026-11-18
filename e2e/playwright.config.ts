@@ -40,6 +40,8 @@ export default defineConfig({
     : 'html',
 
   use: {
+    // Set explicitly: with several web servers Playwright does not derive it from the port
+    baseURL: 'http://localhost:62001',
     browserName: 'chromium',
     colorScheme: 'light',
     trace: 'on',
@@ -62,15 +64,27 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'pnpm build-and-preview',
-    port: 62001,
-    stdout: 'pipe',
-    timeout: 60 * 1000,
-    env: {
-      NODE_ENV: 'production',
+  webServer: [
+    {
+      command: 'pnpm build-and-preview',
+      port: 62001,
+      stdout: 'pipe',
+      timeout: 60 * 1000,
+      env: {
+        NODE_ENV: 'production',
+      },
     },
-  },
+    // Site built with the app config and UI customization, see tests/app-config-customization.spec.ts
+    {
+      command: 'pnpm build-and-serve:app-config',
+      url: 'http://127.0.0.1:5176',
+      stdout: 'pipe',
+      timeout: 60 * 1000,
+      env: {
+        NODE_ENV: 'production',
+      },
+    },
+  ],
   // To run locally
   // webServer: {
   //   command: 'pnpm dev:e2e',

@@ -38,6 +38,7 @@ import {
   parseAstSizeValue,
   parseAstSizingValue,
   parseMarkdownAsString,
+  resolveDescriptionFile,
   toColor,
 } from '../../ast'
 import { isBundledIcon } from '../../generated/icons'
@@ -407,85 +408,54 @@ export class BaseParser {
    * The property is a rule of its own - its value is a path, not markdown - so the parser picks it up
    * beside the string properties.
    */
-  descriptionFileOf(props: ReadonlyArray<AstNode> | undefined): { descriptionFile?: string } {
-    const prop = props?.filter(ast.isDescriptionFileProperty).at(-1)
-    return prop && this.isValid(prop) ? { descriptionFile: prop.value } : {}
+  descriptionFileProp<T extends ReadonlyArray<unknown | ast.DescriptionFileProperty>>(
+    props: T | undefined,
+  ): ast.DescriptionFileProperty | undefined {
+    if (!props) {
+      return undefined
+    }
+    return props.filter(ast.isDescriptionFileProperty).at(-1)
   }
 
   /**
    * The file a body references with `descriptionFile`, resolved.
    *
-   * The value is a path, not a URL: its segments are encoded so `#`, `?` and `%` stay file name
-   * characters, and it is resolved the way a `link` is - `./` and `../` against the document,
-   * anything else against the project folder. `resolvedPath` is null when the value does not name a
-   * file of the project (another scheme, a path outside of it): the validation reports why, and
-   * nothing is read for it.
+   * The value is a path, resolved against the folder of the document (see `resolveDescriptionFile`).
+   * `uri` is null when the value does not name a file (another scheme): the validation reports why,
+   * and nothing is read for it.
    *
-   * The reference is recorded on the document, because the files are read when the model is built -
-   * not while documents are parsed - and a parsed entity holds only the reference until then.
+   * The reference is recorded on the document, so `LikeC4DescriptionFiles` knows the files to follow.
+   * A parsed entity holds only the reference: the content is taken when the model is built.
    */
-  parseDescriptionFile(value: string | undefined): DescriptionFileRef | undefined {
-    const resolved = value?.trim()
-    if (!resolved) {
-      return undefined
+  parseDescriptionFile(
+    container:
+      | ast.DescriptionFileProperty
+      | ast.DescriptionFileProperty['$container']
+      | undefined,
+  ): { descriptionFile?: DescriptionFileRef } {
+    if (!container) {
+      return {}
+    }
+    let prop: ast.DescriptionFileProperty | undefined
+    if (ast.isDescriptionFileProperty(container)) {
+      prop = container
+    } else {
+      prop = this.descriptionFileProp(container.props)
+    }
+    if (!prop || !prop.value) {
+      return {}
     }
     const ref: DescriptionFileRef = {
-      value: resolved,
-      resolvedPath: this.resolveDescriptionFile(resolved),
+      value: prop.value,
+      uri: resolveDescriptionFile(prop, this.doc)?.toString() ?? null,
     }
-    this.doc.c4DescriptionFiles.push(ref)
-    return ref
-  }
-
-  /**
-   * The description a `descriptionFile` property provides, resolved like {@link parseDescription}.
-   */
-  parseDescriptionProperty(prop: ast.DescriptionFileProperty): c4.MarkdownOrString | undefined {
-    return this.parseDescription({
-      descriptionFile: this.parseDescriptionFile(prop.value),
-    })
-  }
-
-  /**
-   * A `descriptionFile` is deliberate, so it wins over an inline `description` of the same body
-   * (an inline description on the node still wins over both, as it does today).
-   * The two in the same body are reported as an error by the validation.
-   *
-   * The content of the file is resolved when the model is built, so there is nothing to describe
-   * until it has been read.
-   */
-  parseDescription(
-    props: {
-      description?: ast.MarkdownOrString | undefined
-      descriptionFile?: DescriptionFileRef | undefined
-    },
-  ): c4.MarkdownOrString | undefined {
-    if (props.descriptionFile) {
-      const description = this.services.shared.workspace.DescriptionFiles.get(this.doc.uri, props.descriptionFile.value)
-      // When the file cannot be read the validation reports it, and there is nothing to describe
-      // The content of the file is used as it is: its indentation is content, not DSL indentation
-      return description && 'content' in description
-        ? { md: description.content }
-        : undefined
+    // we track the file even if it is invalid
+    // we need to track it to be able to re-read it when building the model
+    if (ref.uri) {
+      this.doc.c4DescriptionFiles.add(ref.uri)
     }
-    return this.parseMarkdownOrString(props.description)
-  }
-
-  /**
-   * Resolves the file a `descriptionFile` value names, or `null` when it does not name a file of the
-   * project.
-   */
-  resolveDescriptionFile(value: string): string | null {
-    // a value that names another scheme (`https:`, `file:`, `C:`) is not a file of this project
-    if (hasProtocol(value)) {
-      return null
-    }
-    try {
-      const path = value.split('/').map(encodeURIComponent).join('/')
-      return this.services.lsp.DocumentLinkProvider.resolveLink(this.doc, path)
-    } catch {
-      return null
-    }
+    // but we only return it if it is valid
+    return this.isValid(prop) ? { descriptionFile: ref } : {}
   }
 
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
@@ -761,7 +731,6 @@ export class BaseParser {
       title?: ast.MarkdownOrString | undefined
       summary?: ast.MarkdownOrString | undefined
       description?: ast.MarkdownOrString | undefined
-      descriptionFile?: string | undefined
       technology?: ast.MarkdownOrString | undefined
     },
     override?: {
@@ -774,15 +743,13 @@ export class BaseParser {
     title?: string
     summary?: c4.MarkdownOrString
     description?: c4.MarkdownOrString
-    descriptionFile?: DescriptionFileRef
     technology?: string
   } {
     const title = removeIndent(override?.title ?? parseMarkdownAsString(props.title))
 
-    const descriptionFile = this.parseDescriptionFile(props.descriptionFile)
     const description = override?.description
       ? { txt: removeIndent(override.description) }
-      : this.parseDescription({ description: props.description, descriptionFile })
+      : this.parseMarkdownOrString(props.description)
 
     const summary = override?.summary
       ? { txt: removeIndent(override.summary) }
@@ -795,7 +762,6 @@ export class BaseParser {
       title,
       summary,
       description,
-      descriptionFile,
       technology,
     })
   }

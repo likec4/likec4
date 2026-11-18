@@ -1,17 +1,32 @@
-import { css, cx } from '@likec4/styles/css'
-import { hstack } from '@likec4/styles/patterns'
-import { UnstyledButton } from '@mantine/core'
+import type { CssProperty } from '@likec4/styles/types'
 import * as m from 'motion/react-m'
-import { Logo, LogoIcon } from '../../components/Logo'
+import type { ComponentPropsWithRef } from 'react'
+import { NavigationPanel } from '../../components/NavigationPanel'
 import { useDiagramEventHandlers } from '../../context/DiagramEventHandlers'
+import { customizable } from '../../customization/customizable'
 import { useNavigationActor } from '../hooks'
+
+type LogoButtonProps = {
+  onClick: React.MouseEventHandler<HTMLButtonElement>
+  onMouseEnter: React.MouseEventHandler<HTMLButtonElement>
+  onMouseLeave: React.MouseEventHandler<HTMLButtonElement>
+} & Omit<ComponentPropsWithRef<'button'>, CssProperty>
+
+// const NavigationPanelLogo = customizable('NavigationPanelLogo')(
+//   (props: LogoButtonProps) => <NavigationPanel.Logo {...props} />,
+// )
+// declare module '@likec4/diagram-customization' {
+//   interface RegisterCustomizable {
+//     NavigationPanelLogo: register<typeof NavigationPanelLogo>
+//   }
+// }
 
 export const LogoButton = () => {
   const actor = useNavigationActor()
   const { onLogoClick } = useDiagramEventHandlers()
   return (
     <m.div layout="position">
-      <UnstyledButton
+      <NavigationPanel.Logo
         onMouseEnter={() => {
           actor.send({ type: 'breadcrumbs.mouseEnter.root' })
         }}
@@ -27,37 +42,7 @@ export const LogoButton = () => {
           }
           actor.send({ type: 'breadcrumbs.click.root' })
         }}
-        className={cx(
-          'mantine-active',
-          hstack({
-            padding: '0.5',
-            // _active: {
-            //   transform: 'translateY(1px)',
-            // },
-            width: {
-              base: '[20px]',
-              '@/md': '[64px]',
-            },
-          }),
-        )}
-      >
-        <Logo
-          className={css({
-            display: {
-              base: 'none',
-              '@/md': 'block',
-            },
-          })}
-        />
-        <LogoIcon
-          className={css({
-            display: {
-              base: 'block',
-              '@/md': 'none',
-            },
-          })}
-        />
-      </UnstyledButton>
+      />
     </m.div>
   )
 }

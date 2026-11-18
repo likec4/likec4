@@ -18,6 +18,31 @@ export const path = {
   coerce: resolve,
 } as const satisfies PositionalOptions
 
+/**
+ * Returns the option without its default value, to tell a given flag from an omitted one:
+ * an omitted flag falls back to the app config, see {@link resolveAppConfig}
+ */
+export function withoutDefault<O extends object>(
+  option: O,
+): Omit<O, 'default'> & { defaultDescription?: string } {
+  const { default: value, ...rest } = option as O & { default?: unknown }
+  return value === undefined ? rest : { ...rest, defaultDescription: JSON.stringify(value) }
+}
+
+export const appConfig = {
+  string: true,
+  desc:
+    'path to the app config (default is likec4.app.config.{ts,js,..} in the workspace or the current directory), --no-app-config to ignore it',
+} as const satisfies Options
+
+export const customization = {
+  string: true,
+  desc: 'file with UI customizations, default-exports `defineCustomComponents` from likec4/react',
+  normalize: true,
+  nargs: 1,
+  coerce: resolve,
+} as const satisfies Options
+
 export const useDotBin = {
   alias: 'use-dot-bin',
   boolean: true,
@@ -123,7 +148,7 @@ export const port = {
 export const hmrPort = {
   number: true,
   desc:
-    'port number for the HMR WebSocket server (default is auto-discovered from 24678-24690, or HMR_PORT environment variable)',
+    'port number for a separate HMR WebSocket server (default is the dev server port, or HMR_PORT environment variable)',
   nargs: 1,
 } as const satisfies Options
 

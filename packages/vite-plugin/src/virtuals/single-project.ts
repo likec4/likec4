@@ -12,7 +12,8 @@ export {
   $likec4model,
   useLikeC4Model,
   useLikeC4Views,
-  useLikeC4View
+  useLikeC4View,
+  isLikeC4ViewId
 } from 'likec4:model/${id}'
 export const projectId = ${projectIdLiteral}
 `

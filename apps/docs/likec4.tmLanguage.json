@@ -376,10 +376,49 @@
       "match": "\\b\\d+(\\.\\d+|%)?"
     },
     {
+      "include": "#markdown-string"
+    },
+    {
       "include": "#string"
     }
   ],
   "repository": {
+    "markdown-string": {
+      "comment": "Markdown string, e.g. '''text''' or \"\"\"text\"\"\"",
+      "name": "string.quoted.triple.likec4",
+      "begin": "('{3}|\"{3})",
+      "end": "(\\1)",
+      "beginCaptures": { "1": { "name": "punctuation.definition.string.begin.likec4" } },
+      "endCaptures": { "1": { "name": "punctuation.definition.string.end.likec4" } },
+      "patterns": [
+        { "include": "#markdown-fenced-code" },
+        { "include": "#markdown-inline-code" },
+        { "include": "#markdown-ref" }
+      ]
+    },
+    "markdown-fenced-code": {
+      "name": "markup.fenced_code.block.likec4",
+      "begin": "(^|\\G)\\s*(`{3,}|~{3,}).*$",
+      "end": "(^|\\G)\\s*(\\2)\\s*$|(?='{3}|\"{3})"
+    },
+    "markdown-inline-code": {
+      "match": "(`+)(?:[^`]|(?!(?<!`)\\1(?!`))`)*+(\\1)",
+      "name": "markup.inline.raw.string.likec4"
+    },
+    "markdown-ref": {
+      "comment": "Link to an element or a view inside markdown: [[fqn]], [[fqn|label]], [[view:id]]. DSL strings are unescaped before Markdown: \\[[ is a ref (the DSL escape is part of the match, so the markdown grammar does not take it as an escape), \\\\[[ is a literal; the label separator may have backslashes (\\\\| in tables)",
+      "match": "(?<!\\\\)\\\\?(\\[\\[)(?:([A-Za-z][\\w-]*)(:))?([^\\s\\[\\]|\\\\:]+)(?:(\\\\*\\|)([^\\[\\]\\n]*?))?(\\]\\])",
+      "name": "meta.link.ref.likec4",
+      "captures": {
+        "1": { "name": "punctuation.definition.link.begin.likec4" },
+        "2": { "name": "keyword.other.namespace.likec4" },
+        "3": { "name": "punctuation.separator.namespace.likec4" },
+        "4": { "name": "entity.name.type.likec4 markup.underline.link.likec4" },
+        "5": { "name": "punctuation.separator.label.likec4" },
+        "6": { "name": "string.other.link.description.likec4" },
+        "7": { "name": "punctuation.definition.link.end.likec4" }
+      }
+    },
     "comments": {
       "patterns": [
         {

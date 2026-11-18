@@ -25,10 +25,16 @@ type HandlerParams = {
    */
   useCorePackage: boolean
   outfile: string | undefined
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
 }
 
 /** Generates React types and view IDs for the LikeC4 project. */
-export async function reactHandler({ path, useDotBin, useCorePackage, outfile, project }: HandlerParams) {
+export async function reactHandler(
+  { path, useDotBin, useCorePackage, outfile, project, customization }: HandlerParams,
+) {
   await ensureReact()
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
@@ -42,7 +48,8 @@ export async function reactHandler({ path, useDotBin, useCorePackage, outfile, p
   }
   logger.info(`${k.dim('format')} ${k.green('react')}`)
 
-  const diagrams = await languageServices.diagrams(projectId)
+  const model = await languageServices.layoutedModel(projectId)
+  const diagrams = [...model.views()].map(vm => vm.$layouted)
   if (diagrams.length === 0) {
     process.exitCode = 1
     throw new Error('no views found')
@@ -95,14 +102,13 @@ export async function reactHandler({ path, useDotBin, useCorePackage, outfile, p
     languageServices,
     outDir,
     filename,
+    customization,
   })
 
   await build({
     ...cfg,
     logLevel: 'warn',
   })
-
-  const model = await languageServices.layoutedModel(projectId)
 
   const dts = resolve(outDir, basename(outfilepath, ext) + (ext === '.mjs' ? '.d.mts' : '.d.ts'))
   await writeFile(dts, generateReactTypes(model, { useCorePackage }))

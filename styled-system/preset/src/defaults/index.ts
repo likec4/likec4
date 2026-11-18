@@ -15,6 +15,8 @@ export const defaultTheme = {
 } as const satisfies LikeC4Theme
 
 export * from './element-colors.ts'
+export * from './element-node.ts'
 export * from './relationship-colors.ts'
 export * from './types.ts'
+export * from './typography.ts'
 export * from './vars.ts'

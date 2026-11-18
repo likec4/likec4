@@ -19,6 +19,7 @@ import { hasAtLeast, isTruthy } from 'remeda'
 import type { Writable } from 'type-fest'
 import { EDGE_LABEL_MAX_CHARS, EDGE_LABEL_MAX_LINES, wrap } from './dot-labels'
 import { placeEdgeLabels } from './place-edge-label'
+import { edgeLabelBox } from './text-metrics'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx } from './utils'
 
@@ -149,12 +150,28 @@ function parseGraphvizEdge(
   graphvizEdge: GraphvizJson.Edge,
   { id, source, target, dir, label, description, ...computedEdge }: ComputedEdge,
   viewId: string,
+  measuredLabels: boolean,
 ): DiagramEdge {
-  const labelBBox = parseLabelBbox(graphvizEdge._ldraw_ ?? graphvizEdge._tldraw_ ?? graphvizEdge._hldraw_)
   const isBack = graphvizEdge.dir === 'back' || dir === 'back'
-  label = (label && labelBBox)
-    ? wrap(label, { maxchars: EDGE_LABEL_MAX_CHARS, maxLines: EDGE_LABEL_MAX_LINES }).join('\n')
-    : null
+  const box = measuredLabels ? edgeLabelBox({ label, technology: computedEdge.technology }) : null
+  const labelPos = graphvizEdge.lp ?? graphvizEdge.xlp
+  let labelBBox: LabelBBox | null
+  if (box && labelPos) {
+    // Label was measured, Graphviz reserved exact size, position it by the center
+    const { x, y } = parsePos(labelPos)
+    labelBBox = {
+      x: Math.round(x - box.width / 2),
+      y: Math.round(y - box.height / 2),
+      width: box.width,
+      height: box.height,
+    }
+    label = box.label
+  } else {
+    labelBBox = parseLabelBbox(graphvizEdge._ldraw_ ?? graphvizEdge._tldraw_ ?? graphvizEdge._hldraw_)
+    label = (label && labelBBox)
+      ? wrap(label, { maxchars: EDGE_LABEL_MAX_CHARS, maxLines: EDGE_LABEL_MAX_LINES }).join('\n')
+      : null
+  }
 
   return {
     id,
@@ -246,7 +263,8 @@ export function parseGraphvizJson(
       continue
     }
     edges.push(
-      parseGraphvizEdge(graphvizEdge, computedEdge, view.id),
+      // Labels of dynamic views (steps) are not measured yet, see stepEdgeLabel
+      parseGraphvizEdge(graphvizEdge, computedEdge, view.id, view._type !== 'dynamic'),
     )
   }
 

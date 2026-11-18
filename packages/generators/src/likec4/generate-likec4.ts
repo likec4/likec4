@@ -75,7 +75,7 @@ export function print(
 }
 
 /**
- * Same as {@link printOperation} but uses tab indentation
+ * Same as {@link print} but uses tab indentation
  */
 export function printWithTabIndent(operation: AnyOp): string
 export function printWithTabIndent<O extends AnyOp>(

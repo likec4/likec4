@@ -3,7 +3,7 @@ title: Modelo de deployment
 description: Como definir um modelo de deployment no LikeC4
 sidebar: 
   label: Modelo
-  order: 11
+  order: 20
 ---
 
 import { Aside } from '@astrojs/starlight/components';
@@ -187,10 +187,13 @@ Podemos assumir que não precisamos desse relacionamento no modelo lógico, mas 
 Relacionamentos de deployment podem ter um tipo e possuem as [mesmas propriedades](/pt-br/dsl/relationships/#propriedades-de-relacionamento) dos relacionamentos lógicos:
 
 ```likec4
+specification {
+  relationship streaming
+}
 deployment {
   environment prod {
     vm2.db -[streaming]-> vm1.db {
-      #next, #live
+      #next #live
       title 'replicates'
       description 'Streaming replication'
     }

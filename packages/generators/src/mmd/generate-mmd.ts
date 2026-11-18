@@ -1,8 +1,9 @@
 import { nonexhaustive } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
-import type { aux, NodeId, ProcessedView as AnyView } from '@likec4/core/types'
+import type { LikeC4Styles } from '@likec4/core/styles'
+import type { aux, Color, NodeId, ProcessedView as AnyView, RelationshipLineType } from '@likec4/core/types'
 import { CompositeGeneratorNode, joinToNode } from 'langium/generate'
-import { isNullish as isNil } from 'remeda'
+import { groupBy, isNullish as isNil } from 'remeda'
 import { NL, toStringLF } from '../newline'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
@@ -20,6 +21,12 @@ const nodeName = (node: Node): string => {
 }
 
 const toSingleQuotes = (str: string): string => str.replace(/\\?"/g, `'`)
+
+/**
+ * Text for a Mermaid markdown string (`"\`...\`"`): a double quote or a backtick inside would end the string,
+ * so both become single quotes.
+ */
+const toMarkdownStringText = (str: string): string => toSingleQuotes(str).replaceAll('`', `'`)
 
 const mmdshape = ({ shape, title }: Node): string => {
   const label = `label: ${JSON.stringify(title)}`
@@ -58,19 +65,116 @@ const mmdshape = ({ shape, title }: Node): string => {
   }
 }
 
+/**
+ * Mermaid arrow for a relationship line: solid lines stay solid, dashed and dotted lines are drawn dotted
+ * (Mermaid has no dashed arrow, `linkStyle` adds the dash pattern).
+ *
+ * @example mmdArrow('solid', 'calls') // ' -- "`calls`" --> '
+ */
+const mmdArrow = (line: RelationshipLineType, label: string | null): string => {
+  const text = label ? `"\`${toMarkdownStringText(label)}\`"` : null
+  switch (true) {
+    case line === 'solid': {
+      return text ? ` -- ${text} --> ` : ' --> '
+    }
+    case line === 'dashed':
+    case line === 'dotted': {
+      return text ? ` -. ${text} .-> ` : ' -.-> '
+    }
+    default:
+      nonexhaustive(line)
+  }
+}
+
+/**
+ * Dash pattern of a relationship line in `linkStyle`, `null` for solid and dotted lines,
+ * which the Mermaid arrow already draws.
+ */
+const mmdDashArray = (line: RelationshipLineType): string | null => (line === 'dashed' ? '8 4' : null)
+
+/**
+ * `classDef` and `class` statements that give leaf nodes the fill, border and text colors of their element color.
+ */
+function printNodeColors(
+  styles: LikeC4Styles,
+  leaves: ReadonlyArray<{ color: Color; name: string }>,
+): CompositeGeneratorNode | undefined {
+  const byColor = groupBy(leaves, leaf => leaf.color)
+  // Mermaid applies `classDef default` to every node without a class, and colors such as `brand-blue` and
+  // `brand_blue` sanitize to one name: a taken name gets a numeric suffix
+  const classNames = new Set(['default'])
+  const uniqueClassName = (color: string): string => {
+    const base = safeChars(color)
+    let className = base
+    for (let suffix = 2; classNames.has(className); suffix++) {
+      className = `${base}_${suffix}`
+    }
+    classNames.add(className)
+    return className
+  }
+  return joinToNode(
+    Object.entries(byColor),
+    ([color, colored]) => {
+      const { fill, stroke, hiContrast } = styles.colors(color).elements
+      const className = uniqueClassName(color)
+      return new CompositeGeneratorNode()
+        .append('classDef ', className, ' fill:', fill, ',stroke:', stroke, ',color:', hiContrast, NL)
+        .append('class ', colored.map(leaf => leaf.name).join(','), ' ', className)
+    },
+    { appendNewLineIfNotEmpty: true },
+  )
+}
+
+/**
+ * `linkStyle` statements that give edges the line color of their relationship color and their dash pattern,
+ * one statement per distinct style, edges addressed by their index in the order they are printed.
+ */
+function printEdgeStyles(styles: LikeC4Styles, edges: ReadonlyArray<Edge>): CompositeGeneratorNode | undefined {
+  const indexesByStyle = new Map<string, number[]>()
+  edges.forEach((edge, index) => {
+    // Only the line: the label color is meant for LikeC4's dark label background, Mermaid's stays light
+    const stroke = styles.colors(edge.color).relationships.line
+    const dashArray = mmdDashArray(edge.line)
+    const style = `stroke:${stroke}` + (dashArray ? `,stroke-dasharray:${dashArray}` : '')
+    const indexes = indexesByStyle.get(style)
+    if (indexes) {
+      indexes.push(index)
+    } else {
+      indexesByStyle.set(style, [index])
+    }
+  })
+  return joinToNode(
+    [...indexesByStyle],
+    ([style, indexes]) => `linkStyle ${indexes.join(',')} ${style}`,
+    { appendNewLineIfNotEmpty: true },
+  )
+}
+
 export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
   const view = viewmodel.$view
+  const styles = viewmodel.$model.$styles
   const { nodes, edges } = view
   const names = new Map<NodeId, string>()
+  // Different ids can end up with the same name, e.g. `order-service` and `order_service`
+  // are both `Order_service`. Mermaid would merge such nodes, so add a numeric suffix.
+  const usedNames = new Set<string>()
+  const uniqueName = (name: string): string => {
+    let unique = name
+    for (let i = 2; usedNames.has(unique); i++) {
+      unique = `${name}${i}`
+    }
+    usedNames.add(unique)
+    return unique
+  }
 
   const printNode = (node: Node, parentName?: string): CompositeGeneratorNode => {
     const name = nodeName(node)
-    const fqnName = (parentName ? parentName + '.' : '') + name
+    const fqnName = uniqueName((parentName ? parentName + '.' : '') + name)
     names.set(node.id, fqnName)
 
     const baseNode = new CompositeGeneratorNode()
     if (node.children.length > 0) {
-      const label = toSingleQuotes(node.title)
+      const label = toMarkdownStringText(node.title)
       baseNode
         .append('subgraph ', fqnName, '["`', label, '`"]', NL)
         .indent({
@@ -91,13 +195,10 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
     }
     return baseNode
   }
-  //     return `${names.get(edge.source)} -> ${names.get(edge.target)}${edge.label ? ': ' + edge.label : ''}`
   const printEdge = (edge: Edge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode().append(
       names.get(edge.source),
-      ' -.',
-      edge.label ? ' "`' + toSingleQuotes(edge.label) + '`" .-' : '-',
-      '> ',
+      mmdArrow(edge.line, edge.label),
       names.get(edge.target),
     )
   }
@@ -131,6 +232,16 @@ export function generateMermaid(viewmodel: LikeC4ViewModel<aux.Unknown>) {
                 appendNewLineIfNotEmpty: true,
               }),
             )
+            .append(
+              printNodeColors(
+                styles,
+                nodes
+                  // The person shape is an icon with the label below it, outside the fill: a light text color would vanish
+                  .filter(n => n.children.length === 0 && n.shape !== 'person')
+                  .map(n => ({ color: n.color, name: names.get(n.id)! })),
+              ),
+            )
+            .appendIf(edges.length > 0, printEdgeStyles(styles, edges))
         },
         indentation: 2,
       }),

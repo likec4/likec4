@@ -1,0 +1,28 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+}
+
+model {
+  customer = actor 'Customer'
+  shop = system 'Shop'
+  warehouse = system 'Warehouse' {
+    style {
+      shape storage
+    }
+  }
+
+  customer -> shop 'orders'
+  shop -> warehouse 'reserves'
+}
+
+views {
+  view index {
+    title 'Landscape'
+    include *
+  }
+}

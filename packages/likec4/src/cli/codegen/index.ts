@@ -1,7 +1,20 @@
 import { resolve } from 'path'
 import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
-import { outdir, path, project, useCorePackage, useDotBin, webcomponentPrefix } from '../options'
+import { resolveAppConfig } from '../../app-config'
+import { logger } from '../../logger'
+import { relativeToCwd } from '../../vite/utils'
+import {
+  appConfig,
+  customization,
+  outdir,
+  path,
+  project,
+  useCorePackage,
+  useDotBin,
+  webcomponentPrefix,
+  withoutDefault,
+} from '../options'
 import { showSupportUsMessage } from '../support-message'
 import { customHandler } from './custom'
 import { legacyHandler } from './handler'
@@ -12,6 +25,12 @@ import { modelHandler } from './model'
 import { reactHandler } from './react'
 import { webcomponentHandler } from './webcomponent/handler'
 
+function logAppConfig(configFile: string | undefined) {
+  if (configFile) {
+    logger.info(`${k.cyan('app config')} ${k.dim(relativeToCwd(configFile))}`)
+  }
+}
+
 const codegenCmd = (yargs: yargs.Argv) => {
   return yargs
     .command({
@@ -20,7 +39,9 @@ const codegenCmd = (yargs: yargs.Argv) => {
       describe: 'Generate various artifacts from LikeC4 sources',
       builder: yargs =>
         yargs
-          .positional('path', path)
+          // The default is set by subcommands: here it would hide
+          // that the path is not given to the ones that read the app config
+          .positional('path', withoutDefault(path))
           // ----------------------
           // react command
           .command(
@@ -28,7 +49,9 @@ const codegenCmd = (yargs: yargs.Argv) => {
             'generate react component to render likec4 view',
             yargs =>
               yargs
-                .positional('path', path)
+                .positional('path', withoutDefault(path))
+                .option('app-config', appConfig)
+                .option('customization', customization)
                 .option('project', project)
                 .option('outfile', {
                   alias: ['o', 'output'],
@@ -37,15 +60,23 @@ const codegenCmd = (yargs: yargs.Argv) => {
                   normalize: true,
                   coerce: resolve,
                 })
-                .option('use-dot', useDotBin)
+                .option('use-dot', withoutDefault(useDotBin))
                 .option('use-core-package', useCorePackage),
             async args => {
+              const config = await resolveAppConfig({
+                appConfig: args['app-config'],
+                path: args.path,
+                useDot: args['use-dot'],
+                customization: args.customization,
+              })
+              logAppConfig(config.configFile)
               await reactHandler({
                 project: args.project,
-                useDotBin: args.useDotBin,
-                path: args.path,
+                useDotBin: config.graphviz === 'binary',
+                path: config.workspace,
                 outfile: args.outfile,
                 useCorePackage: args.useCorePackage,
+                customization: config.customization,
               })
               showSupportUsMessage()
             },
@@ -58,7 +89,9 @@ const codegenCmd = (yargs: yargs.Argv) => {
             describe: 'generate js with webcomponents',
             builder: yargs =>
               yargs
-                .positional('path', path)
+                .positional('path', withoutDefault(path))
+                .option('app-config', appConfig)
+                .option('customization', customization)
                 .option('project', project)
                 .option('outfile', {
                   alias: ['o', 'output'],
@@ -67,15 +100,24 @@ const codegenCmd = (yargs: yargs.Argv) => {
                   normalize: true,
                   coerce: resolve,
                 })
-                .option('webcomponent-prefix', webcomponentPrefix)
-                .option('use-dot', useDotBin),
+                .option('webcomponent-prefix', withoutDefault(webcomponentPrefix))
+                .option('use-dot', withoutDefault(useDotBin)),
             handler: async args => {
+              const config = await resolveAppConfig({
+                appConfig: args['app-config'],
+                path: args.path,
+                useDot: args['use-dot'],
+                webcomponentPrefix: args['webcomponent-prefix'],
+                customization: args.customization,
+              })
+              logAppConfig(config.configFile)
               await webcomponentHandler({
                 project: args.project,
-                useDotBin: args.useDotBin,
-                path: args.path,
+                useDotBin: config.graphviz === 'binary',
+                path: config.workspace,
                 outfile: args.outfile,
-                webcomponentPrefix: args.webcomponentPrefix,
+                webcomponentPrefix: config.webcomponentPrefix,
+                customization: config.customization,
               })
               showSupportUsMessage()
             },
@@ -345,7 +387,7 @@ const codegenCmd = (yargs: yargs.Argv) => {
       handler: async (args: any) => {
         await customHandler({
           name: args.command,
-          path: args.path,
+          path: args.path ?? path.coerce(path.default),
           project: args.project,
           useDotBin: args.useDotBin,
         })

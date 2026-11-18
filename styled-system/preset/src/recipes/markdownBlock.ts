@@ -3,6 +3,36 @@ import { __v } from '../const.ts'
 import { mantine } from '../generated.ts'
 import { alpha } from '../helpers.ts'
 
+/**
+ * SVG icon (24x24, tabler) as a data URL, to be used as a mask (color comes from `background-color`)
+ */
+function iconUrl(paths: string, filled = false): string {
+  const attrs = filled
+    ? `fill='black'`
+    : `fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'`
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' ${attrs}>${paths}</svg>`
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
+}
+
+/**
+ * Icons of Markdown refs, same as in the UI: cube for elements, view type icons for views
+ */
+const refIcons = {
+  element: iconUrl(
+    `<path d='M21 16.008v-8.018a1.98 1.98 0 0 0 -1 -1.717l-7 -4.008a2.016 2.016 0 0 0 -2 0l-7 4.008c-.619 .355 -1 1.01 -1 1.718v8.018c0 .709 .381 1.363 1 1.717l7 4.008a2.016 2.016 0 0 0 2 0l7 -4.008c.619 -.355 1 -1.01 1 -1.718'/><path d='M12 22v-10'/><path d='M12 12l8.73 -5.04'/><path d='M3.27 6.96l8.73 5.04'/>`,
+  ),
+  elementView: iconUrl(
+    `<path d='M8 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0'/><path d='M16 16l-2.5 -2.5'/><path d='M3 7v-2a2 2 0 0 1 2 -2h2'/><path d='M3 17v2a2 2 0 0 0 2 2h2'/><path d='M17 3h2a2 2 0 0 1 2 2v2'/><path d='M17 21h2a2 2 0 0 0 2 -2v-2'/>`,
+  ),
+  dynamicView: iconUrl(
+    `<path d='M10.52 2.614a2.095 2.095 0 0 1 2.835 -.117l.126 .117l7.905 7.905c.777 .777 .816 2.013 .117 2.836l-.117 .126l-7.905 7.905a2.094 2.094 0 0 1 -2.836 .117l-.126 -.117l-7.907 -7.906a2.096 2.096 0 0 1 -.115 -2.835l.117 -.126l7.905 -7.905zm5.969 9.535l.01 -.116l-.003 -.12l-.016 -.114l-.03 -.11l-.044 -.112l-.052 -.098l-.076 -.105l-.07 -.081l-3.5 -3.5l-.095 -.083a1 1 0 0 0 -1.226 0l-.094 .083l-.083 .094a1 1 0 0 0 0 1.226l.083 .094l1.792 1.793h-5.085l-.117 .007a1 1 0 0 0 0 1.986l.117 .007h5.085l-1.792 1.793l-.083 .094a1 1 0 0 0 1.403 1.403l.094 -.083l3.5 -3.5l.097 -.112l.05 -.074l.037 -.067l.05 -.112l.023 -.076l.025 -.117z'/>`,
+    true,
+  ),
+  deploymentView: iconUrl(
+    `<path d='M12 4l-8 4l8 4l8 -4l-8 -4'/><path d='M4 12l8 4l8 -4'/><path d='M4 16l8 4l8 -4'/>`,
+  ),
+}
+
 export const markdownBlock = defineRecipe({
   className: 'likec4-markdown-block',
   jsx: [
@@ -389,6 +419,45 @@ export const markdownBlock = defineRecipe({
           'var(--fgColor-danger,var(--color-danger-fg))',
         ],
       },
+    },
+
+    // Refs resolved by the diagram (see resolveMarkdownRefs), generic Markdown has no icons
+    '& [data-likec4-ref-state="link"]': {
+      '--likec4-ref-icon': refIcons.element,
+      display: 'inline-block',
+      borderRadius: 'sm',
+      paddingInline: '1',
+      border: '1px solid',
+      borderColor: 'currentColor/15',
+      textDecoration: 'none',
+      _before: {
+        content: '""',
+        display: 'inline-block',
+        width: '0.9em',
+        height: '0.9em',
+        marginInlineEnd: '0.25em',
+        verticalAlign: '-0.1em',
+        backgroundColor: 'currentColor',
+        maskImage: 'var(--likec4-ref-icon)',
+        maskSize: 'contain',
+        maskRepeat: 'no-repeat',
+        maskPosition: 'center',
+      },
+      _hover: {
+        textDecoration: 'none',
+        borderColor: 'currentColor/25',
+        backgroundColor: 'currentColor/10',
+      },
+    },
+    '& [data-likec4-ref-state="link"][data-likec4-ref-kind="view"]': {
+      '--likec4-ref-icon': refIcons.elementView,
+      color: 'var(--color-done-fg)',
+    },
+    '& [data-likec4-ref-state="link"][data-likec4-ref-view-type="dynamic"]': {
+      '--likec4-ref-icon': refIcons.dynamicView,
+    },
+    '& [data-likec4-ref-state="link"][data-likec4-ref-view-type="deployment"]': {
+      '--likec4-ref-icon': refIcons.deploymentView,
     },
   },
 

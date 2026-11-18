@@ -1,0 +1,140 @@
+# Webapp architecture
+
+Canonical task guidance referenced by root AGENTS.md. Read the sections that apply to the task.
+
+## App ↔ Language Server Architecture
+
+The webapp talks to the Language Server through three layered packages. When extending the flow, pick the right layer:
+
+- `packages/diagram` is the UI contract. It renders diagrams from a `LikeC4Model`, defines the consumer contract via `LikeC4ModelProvider` in `packages/diagram/src/LikeC4ModelProvider.tsx`, and exposes `useLikeC4Model`-style hooks. It must not know how data is fetched, stored, or mutated.
+- `packages/likec4-spa` is the UI host. It materializes the diagram into a runnable app, imports `likec4:*` virtual modules, wraps them in nanostores for HMR reactivity, and mounts `LikeC4ModelProvider`. See `packages/likec4-spa/src/context/LikeC4ModelContext.tsx`.
+- `packages/vite-plugin` is the data and RPC bridge. It owns the `likec4:*` virtual modules in `packages/vite-plugin/src/virtuals/` and the birpc channel between SPA and Language Server over Vite HMR in `packages/vite-plugin/src/rpc/rpc.ts` and `packages/vite-plugin/src/virtuals/rpc.ts`.
+
+Dev-mode flow: `SPA → likec4:rpc (birpc over import.meta.hot) → vite-plugin (server.hot.on) → @likec4/language-services → updated likec4:model → HMR → SPA nanostore → diagram re-renders`.
+
+In production builds (`likec4 build`), RPC is absent and virtual modules are inlined as static JSON. The diagram is read-only.
+
+### Where to make changes
+
+- New visual feature, no new data: change `packages/diagram` only.
+- New data shape from the model: add a virtual module in `packages/vite-plugin`, surface a hook or atom in `packages/likec4-spa`, then consume it in `packages/diagram`.
+- New action that mutates the model through a round trip to the LSP: add an RPC method in `packages/vite-plugin/src/rpc`, then call it from `packages/likec4-spa`.
+- Do not import `@likec4/language-server` directly from `packages/likec4-spa`; always go through the vite-plugin RPC.
+
+## App build and packaging
+
+The app is not pre-bundled into one artifact. Each layer is built as a library, and Vite produces the final bundle on the user's machine when `likec4 start`, `build`, `export png|jpg`, `gen react` or `gen webcomponent` runs.
+
+- `packages/react` (`@likec4/react`, private) bundles `packages/diagram` (the root and `./custom`) with its styles into one module. The packages in its `dependencies` stay external: `react`, `react-dom`, Mantine, `motion` and others. `@likec4/core/*` is rewritten to the external `likec4/core/*` by an alias in `tsdown.config.mjs`; `@likec4/core` is only a devDependency, for types.
+- `packages/likec4-spa` is built by `vite build` in library mode (`vite.config.ts`): unminified ES modules, one entry per route, page, component and context, plus `src/main`, `codegen/react`, `codegen/webcomponent` and the CSS. Its `dependencies`, `likec4/*` and `likec4:*` are external. `@likec4/diagram` and `@likec4/diagram/custom` are aliased to `likec4/react`, `@likec4/core` to `likec4/core`.
+- `packages/likec4` copies both outputs in the `build:done` hook of `tsdown.config.mts`: `packages/react/dist` becomes `packages/likec4/react/` (the `likec4/react` export) and `packages/likec4-spa/dist` becomes `packages/likec4/__app__/`. Both folders are git-ignored build output.
+- At run time `packages/likec4/src/vite/config-*.ts` use `__app__` as the Vite root. `src/vite/aliases.ts` points `likec4/react`, `likec4/model` and `likec4/vite-plugin/internal` to the files of the installed `likec4` package. Third-party packages resolve from the `dependencies` of `likec4`.
+
+### Bundled core
+
+`@likec4/core` is a devDependency of `likec4` and ships inside it as `likec4/core`, `likec4/core/builder`, `/geometry`, `/compute-view`, `/model`, `/styles`, `/types` and `/utils`. The mirror has the same subpaths as `@likec4/core`, except `utils/graphology`, which is internal (`@likec4/layouts` bundles its own `graphology`).
+
+- `packages/likec4/src/core/*.ts` are one-line `export * from '@likec4/core/...'` files. They are the entries of a separate `tsdown` build in `packages/likec4/tsdown.config.mts` that writes `dist/core/` for any platform (`platform: 'neutral'`, node polyfills, like the build of `packages/core`).
+- The other `likec4` builds (CLI, `vite-plugin`, `model`, `config`, `vite-plugin/internal`) rewrite `@likec4/core/*` to the external `likec4/core/*` with the `aliasCore` plugin. This keeps one copy of the core. Do not add core entries to the `platform: 'node'` build: Node-only imports (`node:module`, `node:crypto`) would leak into browser chunks.
+- `likec4/layouts` mirrors the root of `@likec4/layouts` (`src/layouts/index.ts`). It has its own neutral build with the same `aliasCore` plugin and node polyfills (graphology needs `events`), so its types use the core copy of `likec4`. Docs examples must use it together with `likec4/model*` and `likec4/react`; `@likec4/layouts` has its own core declarations, and TypeScript rejects mixing them because `LikeC4Model` has protected members.
+- To add a core export: add it to `packages/core/package.json`, then add a wrapper in `packages/likec4/src/core/`, an entry in the core build and an `exports` item in `packages/likec4/package.json`.
+- Packages inside the monorepo still import `@likec4/core`; only the bundled outputs are rewritten.
+- `@likec4/core` stays published. A project that imports both `likec4` and `@likec4/core` gets two copies, so `instanceof` between them fails. Docs and examples use `likec4/core/*`.
+- The e2e workspace installs only `likec4`, `@likec4/icons` and `@likec4/mcp` tarballs. After a change to `dependencies` of `likec4`, check `pnpm pack` output and `e2e/pnpm-workspace.yaml` `overrides`.
+
+Rules that follow from this:
+
+- There is one copy of `@likec4/core` at run time, `likec4/core/*`. The app, `likec4/react`, `likec4/model` and `likec4/vite-plugin/internal` all import it, so classes like `LikeC4Model` pass `instanceof` between them. Never bundle core into another entry; see "Bundled core" below.
+- There is one copy of the diagram at run time, `likec4/react`. The app, the generated `likec4:*` modules and the user's customization file all import it, so contexts and registries such as `CustomizationProvider` and `customizable` are shared. Do not bundle `@likec4/diagram` into the SPA, into the codegen entries or into generated code.
+- In `packages/likec4-spa` import the diagram only from `@likec4/diagram` and `@likec4/diagram/custom`. Deep imports do not survive the alias; export what you need from `packages/diagram/src/index.ts` or `packages/diagram/src/custom/index.ts`.
+- Code generated by `packages/vite-plugin` reaches LikeC4 code only through `likec4/react`, `likec4/vite-plugin/internal` and `likec4:*`.
+- A new runtime dependency of the diagram or of the SPA must be declared with the same spec in `packages/likec4-spa`, `packages/react` and `packages/likec4`. `pnpm check:react-bundle-deps` verifies this and runs in CI.
+- `packages/likec4` reads some entries of `__app__` by path: `index.html`, `src/main.mjs`, `src/style.css`, `src/fonts.css`, `codegen/react.mjs`, `codegen/webcomponent.mjs`. They come from `lib.entry` in `packages/likec4-spa/vite.config.ts`; keep both sides in sync.
+- A consumer that loads `packages/react/dist` from outside the `likec4` package (for example `apps/docs`) cannot resolve `likec4/core/*` and needs an alias to `packages/likec4/dist/core/*`, see `vite.resolve.alias` in `apps/docs/astro.config.mjs`.
+- A change in `packages/diagram` or `packages/likec4-spa` reaches the built CLI only after the chain is rebuilt (`pnpm build`). For development use `pnpm dev` in `packages/likec4-spa`, which runs from sources.
+
+## Package-specific instructions
+
+### packages/diagram
+
+Imports flow upward only; never have a lower layer import from a higher one.
+
+- `base/` is the ReactFlow foundation for types, constants, and `BaseXYFlow`; it contains no business logic.
+- `base-primitives/` contains concrete Element, Compound, Edge, and Markdown components built on `base/`. New diagram building blocks go here.
+- `custom/` supports custom renderer projects. Keep original renderer logic in focused modules and avoid turning this folder into a cross-feature dependency hub.
+- `customization/` is the UI slot mechanism: `customizable(name)` registers a slot, `CustomizationProvider` and `defineCustomComponents` override it. It is a utility layer, so any layer may register a slot. `customization-types.ts` lists the registered slots through type-only imports of their components; this is the only place where it may import from higher layers. The public API is re-exported from `custom/index.ts`.
+- `overlays/`, `navigationpanel/`, `search/`, and `projects-overview/` are sibling stateful features. Each owns its own XState actor.
+- `likec4diagram/` is the top-level diagram engine. It hosts the main machine in `state/machine.ts` and embeds the editor as a child actor when editing is enabled.
+- `editor/` is an orthogonal feature injected into `likec4diagram/` through an actor reference. Do not nest it inside `likec4diagram/`, and do not import from `likec4diagram/` here.
+- `context/`, `customization/`, `hooks/`, `components/`, `shadowroot/`, and `utils/` are utility layers used by everything above.
+- When adding a new feature, default to a sibling folder under `src/` with its own actor. Promote it into `likec4diagram/` only if it must coordinate with the main machine.
+
+State management:
+
+- XState machines are the default for coordinated or persistent state. Use file patterns such as `actor.ts`, `*Actor.ts`, and `state/machine.ts`.
+- `@xstate/store` is available as a dependency, but current source does not import it. Do not introduce it without a clear reason and keep any future usage local to one feature.
+- `nanostores` are reserved for ambient reactive concerns such as media queries and container size. Do not use them for feature or model state; that belongs in `@likec4/spa`.
+- `useState` and `useReducer` are for transient UI state only, such as hover, focus, and form inputs.
+
+Public API and app contract:
+
+- `packages/diagram/src/index.ts` is the public API.
+- Do not treat package shims or build output such as `packages/diagram/adhoc-editor/package.json`, `lib/`, or `dist/` as active source layers.
+- Do not import Vite virtual modules (`likec4:*`) or call the language server from `packages/diagram`.
+- `packages/diagram` defines the consumer contract through `LikeC4ModelProvider` and `useLikeC4Model`-style hooks. Data wiring belongs in `packages/likec4-spa` and `packages/vite-plugin`.
+
+### packages/likec4-spa
+
+This package is the webapp host (`@likec4/spa`) and materializes `@likec4/diagram` into a runnable Vite SPA. Imports flow upward only.
+
+- `src/routes/` contains TanStack Router route definitions. `routeTree.gen.ts` is generated by the TanStack Router Vite plugin during dev/build; do not edit it.
+- `src/pages/` contains page-level components, one per route. It owns async data wiring. Import from `src/context/` and `likec4:*` virtual modules. Do not import sibling pages.
+- `src/components/` contains reusable UI. Pages may import components, but components must not import pages.
+- `src/context/` contains React providers that bridge `likec4:*` virtual modules into `@likec4/diagram`. `LikeC4ModelContext.tsx` is where the diagram's `LikeC4ModelProvider` contract is fulfilled. `LikeC4CustomizationContext.tsx` feeds the overrides from `likec4:customization` into the diagram's `CustomizationProvider`. New context that adapts virtual-module data goes here.
+- `src/main.tsx` and `src/router.tsx` are entrypoints. `start-dev.ts` is the dev-server bootstrap invoked by `pnpm dev`.
+- `codegen/` contains the entries for `likec4 gen react` and `likec4 gen webcomponent` (`react.tsx`, `webcomponent.tsx`) and the pages to try them in dev.
+- `lib/` and `dist/` are build output; `dist/` is copied to `packages/likec4/__app__/`. Do not edit them by hand.
+
+State management:
+
+- `nanostores` are this package's primary reactive primitive. Use atoms for state that crosses route boundaries or needs to survive HMR, such as the model atom in `context/LikeC4ModelContext.tsx` or the sidebar drawer in `components/sidebar/state.ts`.
+- Keep atom modules small and HMR-friendly.
+- Use React `useState` and `useReducer` only for local UI state inside a single page or component.
+- No XState in `packages/likec4-spa`. Diagram-side state machines live in `@likec4/diagram`; do not add machines here.
+
+Public API and contracts:
+
+- `package.json` is `private: true`; this is an app, not a library, so there are no stable exports.
+- Talk to the Language Server only through `likec4:rpc` from `@likec4/vite-plugin`.
+- Do not import `@likec4/language-server` or `@likec4/vite-plugin` source directly.
+- Model, project, app-config, icon, RPC, and export-format data should come from `likec4:*` virtual modules. Dev-only integrations such as AI chat or external renderers may use their documented endpoints.
+- Adding new model-backed data means adding a virtual module in `@likec4/vite-plugin`, not fetching language-server data here.
+- New routes require `routeTree.gen.ts` to be regenerated by the TanStack Router Vite plugin.
+
+### packages/vite-plugin
+
+This package is the data and RPC bridge between `@likec4/spa` and other consumers and `@likec4/language-services`. It owns the `likec4:*` virtual modules and the birpc channel over Vite HMR.
+
+Subdirectory layering:
+
+- `src/index.ts` is the public plugin entry. It re-exports `LikeC4VitePlugin` and `LikeC4VitePluginOptions`. Keep the surface minimal.
+- `src/plugin.ts` is the plugin factory. It wires `resolveId`, `load`, and `configureServer`, and registers the virtual-module list. New virtual modules must be added to its registration arrays.
+- `src/internal.ts` is exported through the `./internal` subpath and consumed by generated virtual-module code and by `packages/likec4` static-site build. It re-exports nanostores helpers, `createRpc`, and `createHooksForModel`. Treat this as a stable contract because generated code in the wild depends on it.
+- `src/virtuals/` contains the virtual module loaders. Keep each file focused on its own related `likec4:*` ids and use `_shared.ts` helpers; do not cross-import between virtuals.
+- `src/rpc/` contains server-side birpc setup. `protocol.ts` is the typed contract, `rpc.ts` wires `enablePluginRPC` over `server.hot`, and `src/rpc/functions/` contains handlers such as `updateView.ts` and `calcAdhocView.ts`.
+- `src/modules.d.ts` contains ambient TypeScript declarations for every `likec4:*` id. It is required for IDE/type-check and published through the `./modules` subpath.
+
+Adding new functionality:
+
+- New virtual module: create a file in `src/virtuals/`, export a `VirtualModule` or `ProjectVirtualModule` with a unique `likec4:*` id and a `load()` returning generated code, register it in `src/plugin.ts`, and declare its module type in `src/modules.d.ts`.
+- New RPC method: add the signature to `src/rpc/protocol.ts`, implement the handler in `src/rpc/functions/`, and wire it into `createBirpc` in `src/rpc/rpc.ts`. The client wrapper in `src/virtuals/rpc.ts` picks up the new method through the protocol type.
+- All virtual ids use the `likec4:*` prefix. Project-scoped ids include the project id, such as `likec4:model/{projectId}`.
+- Application options (`title`, `theme`, `useHashHistory`, `webcomponentPrefix`, `customization`) are top-level plugin options validated by `LikeC4AppOptionsSchema` in `src/app-options.ts`; `appConfig` is a deprecated alias. `likec4:app-config` exposes them to the SPA, and `likec4:customization` default-imports the user's customization file. The plugin does not read `likec4.app.config.*`: the CLI loads that file in `packages/likec4/src/app-config/` and passes the result as plugin options. A new option shared by CLI commands goes to the schema there and to `resolveAppConfig`.
+
+Boundaries:
+
+- Do not import from `@likec4/diagram`; this is a Vite/Node-side package, not a UI package.
+- Imports from `@likec4/language-server` in `packages/vite-plugin` must be type-only.
+- The runtime language service instance comes from `@likec4/language-services/node` (`fromWorkspace`) or through the `languageServices` plugin option.
+- RPC is dev-only. Generated code in `virtuals/rpc.ts` guards on `import.meta.hot`, and handlers are registered in `configureServer` only.
+- Do not assume RPC is available in production builds; in build mode virtual modules are inlined as static JSON.

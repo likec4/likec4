@@ -21,12 +21,12 @@ import { type Logger, loggable } from '@likec4/log'
 import {
   type Cancellation,
   type LangiumDocument,
-  type URI,
   type WorkspaceLock,
   Disposable,
   DocumentState,
   interruptAndCheck,
   SimpleCache,
+  URI,
 } from 'langium'
 import {
   entries,
@@ -36,6 +36,7 @@ import {
   identity,
   indexBy,
   isArray,
+  isEmptyish,
   map,
   mapValues,
   pipe,
@@ -45,10 +46,8 @@ import {
   values,
 } from 'remeda'
 import { CancellationToken } from 'vscode-jsonrpc'
-import { type ParsedLikeC4LangiumDocument, isLikeC4LangiumDocument, isLikeC4UserDocument } from '../ast'
+import type { ParsedLikeC4LangiumDocument } from '../ast'
 import type {
-  DescriptionFileReference,
-  LikeC4DescriptionFiles,
   LikeC4ManualLayouts,
   ManualLayoutsSnapshot,
 } from '../filesystem'
@@ -59,10 +58,9 @@ import { ADisposable, performanceMark } from '../utils'
 import { assignNavigateTo } from '../view-utils'
 import { type LikeC4DocumentBuilder, type ProjectData, ProjectsManager } from '../workspace'
 import { type BuildModelData, buildModelData } from './builder/buildModel'
+import type { LikeC4DescriptionFiles } from './description-files/LikeC4DescriptionFiles'
 import type { LastSeenArtifacts } from './last-seen-artifacts'
 import type { LikeC4ModelParser } from './model-parser'
-
-const builderLogger = mainLogger.getChild('builder')
 
 type ModelParsedListener = (projectId: ProjectId, docs: URI[]) => void
 
@@ -146,15 +144,17 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private readonly descriptionFiles: LikeC4DescriptionFiles
   private readonly mutex: WorkspaceLock
   private readonly lastSeen: LastSeenArtifacts
+  private readonly log: Logger
 
   constructor(protected services: LikeC4Services) {
     super()
+    this.log = mainLogger.getChild('builder')
     this.projects = services.shared.workspace.ProjectsManager
     this.parser = services.likec4.ModelParser
     this.DocumentBuilder = services.shared.workspace.DocumentBuilder
     this.mutex = services.shared.workspace.WorkspaceLock
     this.manualLayouts = services.shared.workspace.ManualLayouts
-    this.descriptionFiles = services.shared.workspace.DescriptionFiles
+    this.descriptionFiles = services.likec4.DescriptionFiles
     this.lastSeen = services.likec4.LastSeen
 
     this.onDispose(
@@ -174,17 +174,13 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       this.manualLayouts.onManualLayoutUpdate(({ projectId }) => {
         this.notifyListeners(projectId)
       }),
-      // A referenced description file changed: the parsed model carries its content, so the caches
-      // have to go with it. Not only the ones of the project that owns the file: a project that
-      // imports from it holds a cached copy of the imported elements (see
-      // `unsafeSyncJoinedModelData`) and would keep serving the old description. A precise walk of
-      // the project graph is possible, but a description file changing is rare enough that clearing
-      // the model cache is the cheaper honest answer.
-      this.descriptionFiles.onDescriptionFileUpdate(() => {
-        this.cache.clear()
-        this.notifyListeners(
-          Array.from(this.services.shared.workspace.LangiumDocuments.all, doc => doc.uri),
-        )
+      // A referenced description file changed. The build data of the project is already reset (see
+      // `ProjectModelCache`; the hash of the model data includes the content of the files), but the
+      // documents referencing the file have to be validated again: the validation reports a file that
+      // cannot be read, and the parser drops a reference that is not valid.
+      // Projects that import from it are reset as well (via buildData reset), and notified too
+      this.descriptionFiles.onDescriptionFileUpdate((params) => {
+        this.onDescriptionFileUpdate(params)
       }),
     )
 
@@ -205,21 +201,51 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         },
       ),
     )
-    builderLogger.debug`created`
+    this.log.debug`created`
+  }
+
+  private onDescriptionFileUpdate({ projectId, docs }: { projectId: c4.ProjectId; docs: URI[] }) {
+    this.mutex.write(async (token) => {
+      // Documents are reset inside the write lock, as any other state change
+      for (const uri of docs) {
+        const doc = this.services.shared.workspace.LangiumDocuments.getDocument(uri)
+        if (doc && doc.state >= DocumentState.Linked) {
+          this.DocumentBuilder.resetToState(doc, DocumentState.ComputedScopes)
+        }
+      }
+      // `update` rebuilds every document that is not validated: the ones reset above, and the ones
+      // left behind by a build this write has cancelled (`build` would skip the latter).
+      // It also validates them, with the same options as any other update
+      await this.DocumentBuilder.update([], [], token)
+    }).then(
+      () => {
+        for (const affected of [projectId, ...this.cache.importersOf(projectId)]) {
+          this.notifyListeners(affected)
+        }
+      },
+      error => {
+        this.log.warn('Failed to update document builder', error)
+      },
+    )
+  }
+
+  private documentHash(doc: ParsedLikeC4LangiumDocument): string | null {
+    const descriptionFilesHash = this.descriptionFiles.hashReferences(doc) ?? ''
+    return stringHash(doc.likec4Parser.hash + descriptionFilesHash)
   }
 
   private projectDocumentsCache(projectId: c4.ProjectId): ProjectDocumentsCache {
     const project = this.projects.getProject(projectId)
-    return this.parser.documents(projectId).reduce(
+    const result: ProjectDocumentsCache = this.parser.documents(projectId).reduce(
       (acc, doc) => {
         if (acc === null) {
           return {
             project,
-            hash: doc.likec4Parser.hash,
+            hash: stringHash(project.hash + this.documentHash(doc)),
             docs: [doc],
           }
         }
-        acc.hash = stringHash(acc.hash + doc.likec4Parser.hash)
+        acc.hash = stringHash(acc.hash + this.documentHash(doc))
         acc.docs.push(doc)
         return acc
       },
@@ -228,6 +254,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
       project,
       hash: null,
     }
+    return result
   }
 
   /**
@@ -242,15 +269,12 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   private buildModelData(projectId: c4.ProjectId | ProjectDocumentsCache): Hashed<BuildModelData | null> | null {
     // const logger ?= builderLogger.getChild(projectId)
     const projectCache = typeof projectId === 'string' ? this.projectDocumentsCache(projectId) : projectId
-    if (projectCache.hash === null) {
-      return null
-    }
     return this.cache.buildModelData(
       projectCache.project.id,
-      () => projectCache,
-      ({ docs }) => {
+      () => projectCache.hash === null ? null : projectCache,
+      ({ project, docs }) => {
         try {
-          return buildModelData(this.services, projectCache.project, docs)
+          return buildModelData(this.services, project, docs)
         } catch {
           return null
         }
@@ -264,9 +288,11 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
    * To avoid circular dependencies, first we parse all documents and then we join them.
    */
   private parseAndResolveImports(projectId: c4.ProjectId): Hashed<c4.ParsedLikeC4ModelData> | null {
-    const logger = builderLogger.getChild(projectId)
+    const logger = this.log.getChild(projectId)
 
-    return this.cache.parsedWithImports<Hashed<BuildModelData>>(
+    return this.cache.parsedWithImports<
+      Hashed<{ data: c4.ParsedLikeC4ModelData; imports: c4.ParsedLikeC4ModelData['imports'] | null }>
+    >(
       projectId,
       () => {
         const { hash, value } = this.buildModelData(projectId) ?? {}
@@ -280,24 +306,12 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         // Track dependencies, so that changes in imported projects invalidate this project
         this.cache.setImports(projectId, importedProjects)
         if (importedProjects.length === 0) {
-          return { hash, value }
-        }
-        // Joined data depends on imported projects, include their hashes
-        const joinedHash = importedProjects.reduce(
-          (acc, importedProjectId) =>
-            stringHash(acc + importedProjectId + (this.buildModelData(importedProjectId)?.hash ?? '')),
-          hash,
-        )
-        return { hash: joinedHash, value }
-      },
-      ({ value: { imports, data } }) => {
-        if (imports.size === 0) {
-          logger.trace(`unsafeSyncJoinedModelData: no imports`)
-          return data
+          return { hash, value: { data: value.data, imports: null } }
         }
 
-        const joinedImports = [...imports.associations()].reduce((acc, [projectId, fqns]) => {
-          if (fqns.size === 0) {
+        const imports = importedProjects.reduce((acc, projectId) => {
+          const fqns = value.imports.get(projectId)
+          if (!fqns || fqns.size === 0) {
             return acc
           }
           const anotherProject = this.buildModelData(projectId)?.value?.data
@@ -306,15 +320,29 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
               isRequestedImportedElement(fqns, element)
             )
             if (hasAtLeast(imported, 1)) {
-              acc[projectId] = structuredClone(imported)
+              acc[projectId] = imported
             }
           }
           return acc
         }, {} as c4.ParsedLikeC4ModelData['imports'])
+
+        if (isEmptyish(imports)) {
+          return { hash, value: { data: value.data, imports: null } }
+        }
+        return {
+          hash: stringHash(hash + objectHash(imports)),
+          value: { data: value.data, imports },
+        }
+      },
+      ({ value: { data, imports } }) => {
+        if (!imports) {
+          logger.trace(`unsafeSyncJoinedModelData: no imports`)
+          return data
+        }
         return ({
           ...data,
-          imports: joinedImports,
-          views: withImportedScopedViewTitles(data.views, joinedImports),
+          imports,
+          views: withImportedScopedViewTitles(data.views, imports),
         })
       },
     )
@@ -342,7 +370,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     projectId: c4.ProjectId,
     manualLayouts: ManualLayoutsSnapshot | null = null,
   ): Hashed<c4.ComputedLikeC4ModelData> | null {
-    const logger = builderLogger.getChild(projectId)
+    const logger = this.log.getChild(projectId)
     return this.cache.computedData(
       projectId,
       () => {
@@ -352,7 +380,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         }
         const { hash, value } = parsedModel
         return {
-          hash: manualLayouts ? objectHash([hash, manualLayouts.hash]) : hash,
+          hash: manualLayouts ? stringHash(hash + manualLayouts.hash) : hash,
           parsedModel: value,
           manualLayouts,
         }
@@ -409,7 +437,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   ): LikeC4Model<UnknownComputed> {
     // Reset latest computed data/model if manual layouts changed
     if (this.DocumentBuilder.currentPhase < DocumentState.Linked) {
-      builderLogger.warn('Method called before linking, it is WRONG')
+      this.log.warn('Method called before linking, it is WRONG')
     }
     this.cache.of(projectId).useManualLayouts(manualLayouts)
     const computedModel = this.cache.computedModel(
@@ -439,17 +467,22 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model<UnknownParsed>> {
     cancelToken ??= CancellationToken.None
-    await this.DocumentBuilder.waitUntil(DocumentState.Linked, cancelToken)
     projectId = this.projects.ensureProjectId(projectId)
-    const logger = builderLogger.getChild(projectId)
-    await interruptAndCheck(cancelToken)
-    await this.readDescriptionFiles()
-    const parsedModel = this.unsafeSyncParsedModel(projectId)
-    if (!parsedModel) {
-      logger.debug`parseModel: returning EMPTY`
-      return LikeC4Model.EMPTY.asParsed
+    const logger = this.log.getChild(projectId)
+    if (this.DocumentBuilder.currentPhase < DocumentState.Linked) {
+      logger.trace`parseModel: waiting for linked`
+      await this.DocumentBuilder.waitUntil(DocumentState.Linked, cancelToken)
+      logger.trace`parseModel: linked`
+      await interruptAndCheck(cancelToken)
     }
-    return parsedModel.value
+    return await this.mutex.read(async () => {
+      const parsedModel = this.unsafeSyncParsedModel(projectId)
+      if (!parsedModel) {
+        logger.debug`parseModel: returning EMPTY`
+        return LikeC4Model.EMPTY.asParsed
+      }
+      return parsedModel.value
+    })
   }
 
   public async computeModel(
@@ -457,15 +490,16 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
     cancelToken?: CancellationToken,
   ): Promise<LikeC4Model<UnknownComputed>> {
     projectId = this.projects.ensureProjectId(projectId)
-    const logger = builderLogger.getChild(projectId)
+    const logger = this.log.getChild(projectId)
     const token = cancelToken ?? CancellationToken.None
-    logger.debug`computeModel: waiting for linked`
-    await this.DocumentBuilder.waitUntil(DocumentState.Linked, token)
-    logger.debug`computeModel: linked`
+    if (this.DocumentBuilder.currentPhase < DocumentState.Linked) {
+      logger.trace`computeModel: waiting for linked`
+      await this.DocumentBuilder.waitUntil(DocumentState.Linked, token)
+      logger.trace`computeModel: linked`
+    }
     return await this.mutex.read(async () => {
       await interruptAndCheck(token)
       const project = this.projects.getProject(projectId)
-      await this.readDescriptionFiles()
       const manualLayouts = await this.manualLayouts.read(project)
       const result = this.unsafeSyncComputeModel(projectId, manualLayouts)
       if (result === LikeC4Model.EMPTY && projectId !== ProjectsManager.DefaultProjectId) {
@@ -486,37 +520,8 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
   }
 
   public clearCache(): void {
-    builderLogger.debug(`clear all caches`)
+    this.log.debug(`clear all caches`)
     this.cache.clear()
-  }
-
-  /**
-   * Reads the files referenced by `descriptionFile` in every parsed document, and parses the
-   * documents whose content arrived again.
-   *
-   * A parsed entity holds the reference to its file until the model is built, and the read belongs
-   * here - not to the document build phases - so a workspace that is only parsed reads nothing. The
-   * parser is synchronous, so the documents that were parsed before their files were read have to be
-   * parsed again for the descriptions to be resolved (they are parsed again anyway when their content
-   * is in the parser hash).
-   */
-  private async readDescriptionFiles(): Promise<void> {
-    const refs: DescriptionFileReference[] = []
-    for (const doc of this.services.shared.workspace.LangiumDocuments.all) {
-      if (!isLikeC4LangiumDocument(doc)) {
-        continue
-      }
-      for (const ref of doc.c4DescriptionFiles ?? []) {
-        refs.push({ docUri: doc.uri, ...ref })
-      }
-    }
-    if (refs.length === 0) {
-      return
-    }
-    const reread = await this.descriptionFiles.read(refs)
-    if (reread.length > 0) {
-      this.parser.reparse(reread)
-    }
   }
 
   private notifyListeners(docs: URI[]): void
@@ -544,7 +549,7 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
         try {
           listener(projectId, docs)
         } catch (e) {
-          builderLogger.warn(loggable(e))
+          this.log.warn(loggable(e))
         }
       }
     }
@@ -554,42 +559,47 @@ export class DefaultLikeC4ModelBuilder extends ADisposable implements LikeC4Mode
 /**
  * Creates a cache with LRU eviction and optional reset callback.
  * - `find(key, create)` returns cached value if hash matches, otherwise creates and caches new value
- * - `reset()` clears the cache and calls the optional `onReset` callback
+ * - `reset()` clears the latest cache and calls the optional `onReset` callback
  */
 function getOrCreate<V>(params: {
   logger: Logger
   capacity?: number
   onReset?: () => void
 }) {
-  const map = new LRUMap<string, Hashed<V>>(params.capacity ?? 100)
+  const map = new LRUMap<string, Hashed<V>>(params.capacity ?? 50)
 
-  let latest: Hashed<V> | undefined
+  let latest: Hashed<V> | undefined | null
 
   return {
     reset: () => {
-      if (latest) {
-        params.logger.trace('reset')
+      if (latest !== undefined) {
+        params.logger.trace('reset latest')
         latest = undefined
-        params.onReset?.()
       }
+      params.onReset?.()
     },
-    find: <K extends { hash: string }>(key: () => K | null, create: (key: K) => V) => {
-      if (latest) {
-        params.logger.trace('returning latest')
+    find: <K extends { hash: string }>(key: () => K | null, create: (key: K) => V): Hashed<V> | null => {
+      if (latest !== undefined) {
+        params.logger.trace('use latest')
         return latest
       }
       const arg = key()
       if (!arg) {
-        return null
+        return latest = null
       }
       let cached = map.get(arg.hash)
       if (!cached) {
-        params.logger.trace('cache miss, creating new entry {hash}', { hash: arg.hash })
+        params.logger.trace('cache miss, create {hash} (cache size: {size})', {
+          hash: arg.hash,
+          size: map.size + 1,
+        })
         cached = { hash: arg.hash, value: create(arg) }
         map.set(arg.hash, cached)
-        params.logger.trace('entry created, cache size: {size}', { size: map.size })
       } else {
-        params.logger.trace('cache hit for {hash}', { hash: arg.hash })
+        params.logger.trace('cache hit {hash} (cache size: {size})', {
+          hash: arg.hash,
+          size: map.size,
+        })
       }
       return latest = cached
     },
@@ -597,7 +607,7 @@ function getOrCreate<V>(params: {
 }
 
 function createProjectCache(project: ProjectId, onBuildDataReset?: () => void) {
-  const logger = builderLogger.getChild(project)
+  const logger = mainLogger.getChild(['builder', project])
   const buildData = getOrCreate<BuildModelData | null>({
     logger: logger.getChild('buildData'),
     onReset: () => {
@@ -612,14 +622,14 @@ function createProjectCache(project: ProjectId, onBuildDataReset?: () => void) {
       computedData.reset()
     },
   })
-  const computedData = getOrCreate<c4.ComputedLikeC4ModelData>({
-    logger: logger.getChild('computedData'),
-    onReset: () => {
-      computedModel.reset()
-    },
-  })
   const parsedModel = getOrCreate<LikeC4Model.Parsed>({
     logger: logger.getChild('parsedModel'),
+    onReset: () => {
+      computedData.reset()
+    },
+  })
+  const computedData = getOrCreate<c4.ComputedLikeC4ModelData>({
+    logger: logger.getChild('computedData'),
     onReset: () => {
       computedModel.reset()
     },
@@ -647,10 +657,10 @@ function createProjectCache(project: ProjectId, onBuildDataReset?: () => void) {
     },
     reset: () => {
       computedModel.reset()
-      buildData.reset()
-      joinedData.reset()
       computedData.reset()
       parsedModel.reset()
+      joinedData.reset()
+      buildData.reset()
     },
   }
 }
@@ -660,9 +670,13 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
     super()
     this.onDispose(
       services.shared.workspace.DocumentBuilder.onDocumentPhase(DocumentState.Linked, async (doc) => {
-        if (isLikeC4UserDocument(doc) && doc.likec4ProjectId) {
-          this.of(doc.likec4ProjectId).buildData.reset()
-        }
+        const projectId = services.shared.workspace.ProjectsManager.ownerProjectId(doc)
+        this.of(projectId).buildData.reset()
+      }),
+    )
+    this.onDispose(
+      services.likec4.DescriptionFiles.onDescriptionFileUpdate(({ projectId }) => {
+        this.of(projectId).buildData.reset()
       }),
     )
     this.onDispose(
@@ -673,10 +687,9 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
 
     this.onDispose(
       // Model could be built between Linked and Validated phases, from parser without validation results
-      services.likec4.ModelParser.onReparsedAfterValidation(doc => {
-        if (isLikeC4UserDocument(doc) && doc.likec4ProjectId) {
-          this.of(doc.likec4ProjectId).buildData.reset()
-        }
+      services.likec4.ModelParser.onReparsedAfterValidation(({ doc }) => {
+        const projectId = services.shared.workspace.ProjectsManager.ownerProjectId(doc)
+        this.of(projectId).buildData.reset()
       }),
     )
 
@@ -688,7 +701,6 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
           if (!hasAtLeast(projects, 1)) {
             return
           }
-          builderLogger.trace`clear project caches for: ${projects} (on delete ${deleted.map(d => d.fsPath)})`
           for (const project of projects) {
             // Resets importers as well (via buildData reset)
             this.of(project).reset()
@@ -727,6 +739,25 @@ class ProjectModelCache extends SimpleCache<ProjectId, ReturnType<typeof createP
       }
       importers.add(project)
     }
+  }
+
+  /**
+   * Projects that (transitively) import from the given project
+   */
+  public importersOf(project: ProjectId): ProjectId[] {
+    const visited = new Set<ProjectId>([project])
+    const queue = [project]
+    let next: ProjectId | undefined
+    while ((next = queue.pop())) {
+      for (const importer of this.importedBy.get(next) ?? []) {
+        if (!visited.has(importer)) {
+          visited.add(importer)
+          queue.push(importer)
+        }
+      }
+    }
+    visited.delete(project)
+    return [...visited]
   }
 
   /**

@@ -13,7 +13,7 @@ import type { DynamicViewFlowData } from './view-dynamic-flow'
 import type { DiagramEdge, DiagramNode, LayoutedDynamicView } from './view-layouted'
 
 export type LayoutedViewDriftReason =
-  | 'not-exists'
+  | 'removed' // exists in manual layout but not in latest
   | 'type-changed'
   | 'nodes-added'
   | 'nodes-removed'

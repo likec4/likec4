@@ -2,7 +2,8 @@
 title: Visões dinâmicas
 description: Como descrever um caso de uso ou cenário específico no LikeC4
 sidebar:
-  order: 9
+  label: Visões dinâmicas
+  order: 13
 ---
 
 import { Aside, FileTree, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -92,6 +93,8 @@ views {
 }
 ```
 
+Além das etapas, uma visão dinâmica aceita predicados [`include`](/pt-br/dsl/views/predicates/) (para adicionar elementos que não participam das etapas; `exclude` não é suportado) e regras [`style`](/pt-br/dsl/views/styles/).
+
 ### Etapas contínuas
 
 Sintaxe alternativa para descrever etapas contínuas: `A -> B -> C`
@@ -121,14 +124,14 @@ A <- B // is backward
 
 ### Controle de fluxo
 
-As etapas podem ser agrupadas em blocos de controle de fluxo para expressar paralelismo, loops, caminhos opcionais, alternativas e tratamento de erros. Todo bloco aceita um título opcional e pode ser aninhado.
+As etapas podem ser agrupadas em blocos de controle de fluxo para expressar paralelismo, loops, caminhos opcionais, alternativas e tratamento de erros. Todo bloco aceita um título opcional e pode ser [aninhado](#aninhamento).
 
 :::caution[Experimental]
 Blocos de controle de fluxo são experimentais — a sintaxe e a renderização ainda podem mudar.  
 Estamos buscando seu feedback nas <a href="https://github.com/likec4/likec4/discussions" target='_blank'>discussões</a>.
 :::
 
-Na variante `sequence`, esses blocos são renderizados como quadros aninhados (`par`, `opt`, `loop`, …), refletindo os fragmentos clássicos de diagramas de sequência.
+Na [variante](#variantes) `sequence`, esses blocos são renderizados como quadros aninhados (`par`, `opt`, `loop`, …), refletindo os fragmentos clássicos de diagramas de sequência.
 
 #### Paralelo — `parallel` / `par`
 
@@ -150,7 +153,8 @@ dynamic view parallelexample {
 }
 ```
 
-Não é possível aninhar blocos paralelos — <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>consulte esta discussão</a>.
+Um bloco paralelo não pode ser colocado diretamente dentro de outro bloco paralelo — <a href="https://github.com/likec4/likec4/discussions/816#discussioncomment-10015146" target='_blank'>consulte esta discussão</a>.  
+Ele ainda pode ser aninhado em outros blocos (por exemplo, `parallel` → `opt` → `parallel`).
 
 #### Opcional — `opt`
 
@@ -187,12 +191,16 @@ loop 'poll for result' {
 
 #### Alternativas — `alt`
 
-Agrupa ramificações mutuamente exclusivas. Cada ramificação é um bloco `when` / `if` / `else` com um título opcional:
+Agrupa ramificações mutuamente exclusivas. Cada ramificação é um bloco `when` ou `else` com um título opcional (`if` é um alias de `when`).  
+Ramificações só são permitidas dentro de `alt`, e `alt` aceita apenas ramificações:
 
 ```likec4 copy
 alt {
   when 'authorized' {
     web -> api 'requests data'
+  }
+  if 'session expired' {
+    web -> auth 'refreshes token'
   }
   else 'not authorized' {
     web -> customer 'shows login'
@@ -216,7 +224,7 @@ try {
 
 #### Aninhamento
 
-Os blocos podem ser combinados e aninhados em qualquer profundidade:
+Os blocos podem ser combinados e aninhados em qualquer profundidade (exceto `parallel` diretamente dentro de `parallel`, veja [acima](#paralelo--parallel--par)):
 
 ```likec4 copy
 alt {
@@ -231,7 +239,7 @@ alt {
 }
 ```
 
-A variante `sequence` abaixo combina `alt` / `when` / `else`, `loop`, `try` / `catch` / `finally`, `parallel` e `opt`:
+A [variante `sequence`](#sequência) abaixo combina `alt` / `when` / `else`, `loop`, `try` / `catch` / `finally`, `parallel` e `opt`:
 
 <DynamicLikeC4View viewId="flowControl" variant="sequence"/>
 
@@ -259,7 +267,7 @@ dynamic view moreDetails {
 
 ```likec4 copy
 dynamic view stepnotes {
-  title 'Dynamic View Parallel Example'
+  title 'Dynamic View Notes Example'
 
   ui -> api {
     notes '
@@ -285,7 +293,17 @@ dynamic view stepnotes {
 ## Variantes
 
 As visões dinâmicas oferecem duas variantes: `diagram` e `sequence`.  
-Por padrão, as visões dinâmicas são exibidas como diagramas.
+Por padrão, as visões dinâmicas são exibidas como diagramas. Use a propriedade `variant` para mudar isso:
+
+```likec4 copy {2}
+dynamic view checkout {
+  variant sequence
+  title 'Checkout'
+
+  customer -> web 'opens checkout'
+  web -> api 'POST /orders'
+}
+```
 
 ### Diagrama
 
@@ -305,7 +323,7 @@ A variante de sequência aceita apenas conexões com elementos _folha_, ou seja,
 
 A variante de sequência permite definir a ordem dos atores com o predicado `include`:
 
-**Variante padrão**:
+**Ordem padrão**:
 
 ```likec4 copy
 dynamic view order1 {
@@ -320,7 +338,7 @@ As etapas definem a ordem dos atores.
 
 ![ordem da sequência 1](../../../../../assets/views/sequence-order-1.png)
 
-**Variante ordenada:**  
+**Ordem explícita:**  
 
 ```likec4 copy {9-12}
 dynamic view order2 {

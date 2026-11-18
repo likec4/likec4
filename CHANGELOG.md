@@ -1,3 +1,87 @@
+## [1.61.0](https://github.com/likec4/likec4/compare/v1.60.0...v1.61.0) (2026-11-14)
+
+### 🚀 Features
+
+- **Model Diffs**:\
+  New `diff` block describes a named change set of the model: `remove` elements and relationships, `add` new elements and `extend` existing ones. The model stays as is: diffs are validated against it, and views can reference elements that a diff adds. Compare views show a view before and after the diff in one diagram, with added, removed and modified elements and relationships marked; switch between as-is, changes and to-be modes in the playground, `likec4 start` and static builds (Vite plugin users get them from the `likec4:diffs` virtual module). Apply or discard a diff with code actions in the editor, `likec4 diff list` and `likec4 diff apply|discard [--dry-run]`. Overlapping diffs are reported on both diffs and never resolved automatically (`--accept-overlaps`). See [discussion #1192](https://github.com/likec4/likec4/discussions/1192). Thanks [@edeak-jsq](https://github.com/edeak-jsq) [#3366](https://github.com/likec4/likec4/pull/3366), [#3458](https://github.com/likec4/likec4/pull/3458)
+
+- **Safe Delete**:\
+  Remove an element and everything that references it in one edit, with a dry run that reports relationships, deployed instances, affected views and orphans. Available as a code action in the editor, as `likec4 safe-delete [--dry-run]`, and through the MCP tools `removal-impact` and `list-diffs`. Thanks [@edeak-jsq](https://github.com/edeak-jsq) [#3366](https://github.com/likec4/likec4/pull/3366)
+
+- **Links to Elements and Views in Markdown**:\
+  Link to elements and views from Markdown values with `[[cloud.api]]`, `[[cloud.api|label]]` and `[[view:index]]`. In the editor, typing `[[` suggests elements and views, links are highlighted, broken links get a warning, and go to definition jumps to the target. In diagrams, links are shown as pills with the title and an icon, with a preview card on hover; a click opens the element details or the view. PlantUML, Draw.io and Markdown exports and MCP tool results show the title instead of the raw `[[…]]`. Implements [#2804](https://github.com/likec4/likec4/issues/2804). [#3491](https://github.com/likec4/likec4/pull/3491), [#3492](https://github.com/likec4/likec4/pull/3492), [#3497](https://github.com/likec4/likec4/pull/3497)
+
+- **`descriptionFile`**:\
+  Reference a markdown file as the description of an element, a relationship or a view. The path is resolved relative to the `.c4` file that uses it and must stay inside the workspace. Thanks [@paoValle](https://github.com/paoValle) [#3317](https://github.com/likec4/likec4/pull/3317)
+
+- **Reworked Element Details**:\
+  The details card puts the description first: technology, links and metadata move to a sidebar that can be resized or hidden, and element kind and tags move to the footer. The card remembers its size and stays inside the window when dragged. The header shows the element id: click any part of it to copy the path. Metadata shows every value at once, and a click on a key or a value finds other elements with the same metadata (search supports `meta:key` and `meta:key=value`). [#3489](https://github.com/likec4/likec4/pull/3489)
+
+- **Deployment Node and Instance Details**:\
+  Details popups for deployment nodes and deployed instances show descriptions, links, metadata, views and the deployment structure. Instance details respect overrides, show inherited metadata of the logical element and give access to its details. Implements [#2373](https://github.com/likec4/likec4/issues/2373). Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3362](https://github.com/likec4/likec4/pull/3362)
+
+- **Groups in Deployment Views**:\
+  Styled and nested `group` boundaries around deployment nodes and instances in deployment views. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3354](https://github.com/likec4/likec4/pull/3354)
+
+- **Google Material Symbols**:\
+  Use Google Material Symbols as icons through the `md:` prefix. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3389](https://github.com/likec4/likec4/pull/3389)
+
+- **Labels Measured with the Diagram Font**:\
+  Relationship labels and elements are measured with the diagram font during layout, so the space reserved for a label matches the rendered label: labels no longer overlap or leave extra gaps, and long labels wrap by width into balanced lines. An element keeps the width of its size and grows in height only when its content does not fit. In the relationships browser and relationship details, labels are laid out together with elements. [#3494](https://github.com/likec4/likec4/pull/3494)
+
+- **Fuzzy Search**:\
+  The Search dialog uses fuzzy search for elements and views: a word can have a typo ("chekout" finds "checkout"). Views show their folder path in the search dialog and the "Select view" picker, and folder names match too. The project selectors get a search field and scroll, so workspaces with dozens of projects stay usable. The MCP `search-element` tool is fuzzy and ranked by relevance, returns each result's `description`, and combines words with `kind:`, `shape:`, `meta:` and `#tag` conditions. Thanks [@AbdelrhmanAiiob](https://github.com/AbdelrhmanAiiob) [#3476](https://github.com/likec4/likec4/pull/3476), [@SwastikTripathi](https://github.com/SwastikTripathi) [#3477](https://github.com/likec4/likec4/pull/3477), [@parisni](https://github.com/parisni) [#3468](https://github.com/likec4/likec4/pull/3468), [@parse](https://github.com/parse) [#3303](https://github.com/likec4/likec4/pull/3303)
+
+- **Copy and Save as PNG in VS Code**:\
+  Copy the current diagram preview as a PNG from the preview context menu, or save a view as PNG from the CodeLens and the command palette. Both use the `likec4` package installed in the project (the new `likec4.cli.path` setting points to a specific CLI). [#3544](https://github.com/likec4/likec4/pull/3544), [#3546](https://github.com/likec4/likec4/pull/3546), [#3559](https://github.com/likec4/likec4/pull/3559)
+
+- **TypeScript and JavaScript Project Configs are Stable**:\
+  `likec4.config.ts` (and `.mts`, `.cts`, `.mjs`, `.cjs`, `.js`) are no longer experimental. They are loaded with [jiti](https://github.com/unjs/jiti) instead of esbuild: no temporary `*.bundled_*.mjs` files next to your config, a faster and smaller VS Code extension, and `esbuild` is no longer installed with `likec4`, `@likec4/lsp` and `@likec4/mcp`. If you use `@likec4/config` or `@likec4/language-server` directly, install `jiti` instead of `bundle-require` and `esbuild` to load non-JSON configs. [#3496](https://github.com/likec4/likec4/pull/3496)
+
+- **`likec4 validate --max-warnings`**:\
+  `likec4 validate` prints warnings and accepts `--max-warnings <n>`, so CI can fail on any warning with `--max-warnings 0`. Without the flag, warnings do not change the exit code. `LikeC4` adds `getWarnings()`. [#3493](https://github.com/likec4/likec4/pull/3493)
+
+- **App Config and UI Customization (experimental)**:\
+  Keep the options of the CLI in `likec4.app.config.ts` (with `defineAppConfig` from `likec4/config`) instead of repeating flags; `likec4 start`, `build`, `preview`, `export png/jpg`, `gen react` and `gen webcomponent` read it, and flags still win over the file. Override or wrap UI components (`LikeC4Diagram`, `ElementShape`, logos, …) with `defineCustomComponents` from `likec4/react`, passed with `--customization <file>` or the `customization` option of the Vite plugin. In the Vite plugin, `title`, `theme`, `useHashHistory` and `webcomponentPrefix` are now top-level options, and `appConfig` is deprecated. [#3522](https://github.com/likec4/likec4/pull/3522)
+
+- **Mermaid Export Keeps Colors and Line Styles**:\
+  `likec4 gen mermaid` keeps element colors and relationship line colors and patterns. Previously every node used Mermaid's default style and every edge was dotted. Thanks [@bim-ba](https://github.com/bim-ba) [#3485](https://github.com/likec4/likec4/pull/3485)
+
+- **Relationship Tags in the Relationship Popover**:\
+  Relationship tags are shown next to technology and description. Thanks [@amandomv](https://github.com/amandomv) [#3555](https://github.com/likec4/likec4/pull/3555)
+
+- **Language Server Watches Files Itself**:\
+  The language server watches project configs, manual layout snapshots and description files, so any LSP client gets these updates, not only VS Code. Model updates while editing are faster: parsed and computed models are cached and rebuilt only for affected projects. [#3382](https://github.com/likec4/likec4/pull/3382)
+
+- **API Changes**:\
+  `diagrams()` is deprecated, use `layoutedModel()` instead: `model.view(id).$layouted` returns the view with manual layout applied. `DiagramApi` gets `startCompare()` and `endCompare()`, replacing `toggleFeature('CompareWithLatest')`. Syntax tree types are exported as `ast` (type-only) from `likec4` and `@likec4/language-server`. `locate` honours `property` for elements and deployment nodes. Relationship kinds in the model specification are no longer nested under `style`. On multi-project sites, `/view`, `/embed` and `/export` without `/project/:id` are no longer found. Thanks [@parse](https://github.com/parse) [#3479](https://github.com/likec4/likec4/pull/3479), [#3478](https://github.com/likec4/likec4/pull/3478), [#3495](https://github.com/likec4/likec4/pull/3495), [#3503](https://github.com/likec4/likec4/pull/3503), [#3510](https://github.com/likec4/likec4/pull/3510)
+
+### 🐞 Bug Fixes
+
+- Fixed `styles.customCss` having no effect: the listed files are now read and their CSS is applied to diagrams. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3490](https://github.com/likec4/likec4/pull/3490)
+- Fixed project config with `styles.customCss` being rejected with `Invalid input at styles.customCss`, closes [#3285](https://github.com/likec4/likec4/issues/3285). Thanks [@luantaraschi](https://github.com/luantaraschi) [#3367](https://github.com/likec4/likec4/pull/3367)
+- Fixed `.c4` files saved with a UTF-8 byte order mark (BOM) failing to parse. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3519](https://github.com/likec4/likec4/pull/3519)
+- Fixed explicit relationships to parent elements being dropped when descendant relationships point in the opposite direction, closes [#3302](https://github.com/likec4/likec4/issues/3302). Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3375](https://github.com/likec4/likec4/pull/3375)
+- Fixed deployment views ignoring `with { ... }` on relation predicates. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3521](https://github.com/likec4/likec4/pull/3521)
+- Fixed relationship styling from the current view not being applied in the relationships browser, closes [#1915](https://github.com/likec4/likec4/issues/1915). Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3441](https://github.com/likec4/likec4/pull/3441)
+- Fixed elements getting extra width when their markdown description has a list or several paragraphs. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3473](https://github.com/likec4/likec4/pull/3473)
+- Fixed navigation thumbnails of dynamic views with `variant sequence` showing a flow layout. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3467](https://github.com/likec4/likec4/pull/3467)
+- Fixed sequence-step navigation links back to the previous view disappearing after switching views. Thanks [@hosswald](https://github.com/hosswald) [#3515](https://github.com/likec4/likec4/pull/3515)
+- Fixed Graph view element labels being invisible in light mode. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3446](https://github.com/likec4/likec4/pull/3446)
+- Fixed the relationship metadata tooltip rendering under the dialog overlay. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3455](https://github.com/likec4/likec4/pull/3455)
+- Fixed element details throwing when the navigation target view is absent from a partial model. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3461](https://github.com/likec4/likec4/pull/3461)
+- Fixed D2 export for elements named like a D2 keyword (`label`, `icon`, `link`, ...), titles containing `${`, and views with groups. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3549](https://github.com/likec4/likec4/pull/3549)
+- Fixed Mermaid and PlantUML exports merging elements whose ids map to the same name (like `order-service` and `order_service`). Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3551](https://github.com/likec4/likec4/pull/3551), [#3550](https://github.com/likec4/likec4/pull/3550)
+- Fixed `likec4 validate` failing with "Specify exact project" in a multi-project workspace: it now checks the layout of every project. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3512](https://github.com/likec4/likec4/pull/3512)
+- Fixed changes to a project config (for example, title or styles) not being applied until the project files were edited. [#3496](https://github.com/likec4/likec4/pull/3496)
+- Fixed a project that imports elements from another project not picking up changes in the imported project. Elements, views and styles with validation errors are now excluded from the model. [#3382](https://github.com/likec4/likec4/pull/3382)
+- Fixed the VS Code preview showing the next view in auto layout after navigating away while comparing layouts. [#3503](https://github.com/likec4/likec4/pull/3503)
+- Fixed the MCP view rendering app failing to load its assets when the MCP server runs from the VS Code extension.
+- Fixed applying model edits in the browser (VS Code for the Web).
+- Fixed Escape closing the details card instead of the search opened on top of it.
+- Updated the container image to Debian 13, closes [#3426](https://github.com/likec4/likec4/issues/3426). Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3440](https://github.com/likec4/likec4/pull/3440)
+
+
 ## [1.60.0](https://github.com/likec4/likec4/compare/v1.59.4...v1.60.0) (2026-10-15)
 
 ### 🚀 Features

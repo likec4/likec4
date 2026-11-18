@@ -6,11 +6,11 @@ LikeC4 projects are defined by a config file. The file's location determines pro
 
 LikeC4 recognizes (in any order):
 
-| Format     | File names                                               |
-| ---------- | -------------------------------------------------------- |
-| JSON/JSON5 | `.likec4rc`, `.likec4.config.json`, `likec4.config.json` |
-| JavaScript | `likec4.config.js`, `likec4.config.mjs`                  |
-| TypeScript | `likec4.config.ts`, `likec4.config.mts`                  |
+| Format     | File names                                                   |
+| ---------- | ------------------------------------------------------------ |
+| JSON/JSON5 | `.likec4rc`, `.likec4.config.json`, `likec4.config.json`     |
+| JavaScript | `likec4.config.js`, `likec4.config.cjs`, `likec4.config.mjs` |
+| TypeScript | `likec4.config.ts`, `likec4.config.cts`, `likec4.config.mts` |
 
 ## JSON Config Schema
 

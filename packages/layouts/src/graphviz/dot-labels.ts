@@ -5,9 +5,11 @@ import {
   LikeC4Styles,
   RichText,
 } from '@likec4/core'
+import { EdgeLabelMetrics, ElementNodeMetrics } from '@likec4/core/styles'
 import { nonexhaustive } from '@likec4/core/utils'
 import { identity, isDefined, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
+import { type ElementNodeBox, edgeLabelBox } from './text-metrics'
 import { IconSizePoints, pxToPoints } from './utils'
 
 export function sanitize(text: string) {
@@ -63,6 +65,24 @@ function wrapWithFont({
   return `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${html}</FONT>`
 }
 
+function fontLines(lines: string[], fontsize: number, color?: string) {
+  const Color = color ? ` COLOR="${color}"` : ``
+  return `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${lines.map(sanitize).join('<BR/>')}</FONT>`
+}
+
+function measuredNodeLines(measured: ElementNodeBox, textSize: number, secondaryColor: string): string[] {
+  const { technology, description } = ElementNodeMetrics
+  return [
+    fontLines(measured.title, textSize),
+    ...measured.technology.length > 0
+      ? [fontLines(measured.technology, textSize * technology.fontSizeRatio, secondaryColor)]
+      : [],
+    ...measured.description.length > 0
+      ? [fontLines(measured.description, textSize * description.fontSizeRatio, secondaryColor)]
+      : [],
+  ]
+}
+
 /**
  * "Faking" a node icon with a blue square
  * to preserve space for real icons.
@@ -100,6 +120,7 @@ function maxchars(size: ShapeSize) {
 export function nodeLabel(
   node: ComputedNode,
   styles: LikeC4Styles,
+  measured: ElementNodeBox | null = null,
 ) {
   const { sizes: { size }, values } = styles.nodeSizes(node.style)
   const colorValues = styles.colors(node.color).elements
@@ -111,7 +132,8 @@ export function nodeLabel(
   const fitted = isFixed ? styles.fitNodeContent(node) : null
   const textSize = fitted?.textSize ?? values.textSize
   const iconSize = fitted?.iconSize ?? values.iconSize
-  const lines = [
+  // Measured lines are wrapped as they are rendered (the node gets exact size, see DotPrinter)
+  const lines = measured ? measuredNodeLines(measured, textSize, colorValues.loContrast) : [
     wrapWithFont({
       text: node.title,
       fontsize: textSize,
@@ -128,7 +150,7 @@ export function nodeLabel(
       ? 35
       : 45
   }
-  if (size !== 'xs') {
+  if (!measured && size !== 'xs') {
     if (isTruthy(node.technology?.trim())) {
       lines.push(
         wrapWithFont({
@@ -215,44 +237,29 @@ export const EDGE_LABEL_MAX_CHARS = 40
 export const EDGE_LABEL_MAX_LINES = 5
 const BGCOLOR = `BGCOLOR="${LikeC4Styles.DEFAULT.relationshipColors.labelBg}A0"`
 
-export function edgelabel({ label, technology }: ComputedEdge) {
-  const lines = [] as string[]
-  if (isTruthy(label?.trim())) {
-    lines.push(
-      wrapWithFont({
-        text: label,
-        maxchars: EDGE_LABEL_MAX_CHARS,
-        fontsize: 14,
-        maxLines: EDGE_LABEL_MAX_LINES,
-        bold: label === '[...]',
-      }),
-    )
-  }
-  // if (isTruthy(description)) {
-  //   lines.push(
-  //     wrapWithFont({
-  //       text: description,
-  //       maxchars: EDGE_LABEL_MAX_CHARS,
-  //       maxLines: 4,
-  //       fontsize: 14
-  //     })
-  //   )
-  // }
-  if (isTruthy(technology?.trim())) {
-    lines.push(
-      wrapWithFont({
-        text: `[ ${technology} ]`,
-        fontsize: 12,
-        maxLines: 1,
-        maxchars: EDGE_LABEL_MAX_CHARS,
-      }),
-    )
-  }
-  if (lines.length === 0) {
+/**
+ * Returns HTML-like label for the edge.
+ * The label is measured and wrapped as it is rendered in the diagram (see text-metrics),
+ * Graphviz reserves exactly this size (FIXEDSIZE), text is kept for DOT/SVG exports.
+ */
+export function edgelabel({ label, technology }: Pick<ComputedEdge, 'label' | 'technology'>) {
+  const box = edgeLabelBox({ label, technology })
+  if (!box) {
     return null
   }
-  const rows = lines.map(line => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD></TR>`).join('')
-  return `<<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" ${BGCOLOR}>${rows}</TABLE>>`
+  const { label: labelStyle, technology: techStyle } = EdgeLabelMetrics
+  const rows = [] as string[]
+  if (box.label) {
+    const lines = box.label.split('\n').map(sanitize).join('<BR/>')
+    rows.push(`<FONT POINT-SIZE="${pxToPoints(labelStyle.fontSize)}">${lines}</FONT>`)
+  }
+  if (isTruthy(technology?.trim())) {
+    rows.push(`<FONT POINT-SIZE="${pxToPoints(techStyle.fontSize)}">${sanitize(`[ ${technology} ]`)}</FONT>`)
+  }
+  const cells = rows.map(row => `<TR><TD ALIGN="TEXT" BALIGN="LEFT">${row}</TD></TR>`).join('')
+  return `<<TABLE FIXEDSIZE="TRUE" WIDTH="${pxToPoints(box.width)}" HEIGHT="${
+    pxToPoints(box.height)
+  }" BORDER="0" CELLPADDING="0" CELLSPACING="0" ${BGCOLOR}>${cells}</TABLE>>`
 }
 
 export function stepEdgeLabel(step: number, text?: string | null) {

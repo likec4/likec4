@@ -148,6 +148,10 @@ function waitForRebuild(
       subscription.dispose()
       resolve()
     }, timeoutMs)
+    // Do not keep Node.js process alive (in browsers timer is a number)
+    if (typeof timer === 'object') {
+      timer.unref()
+    }
   })
 }
 

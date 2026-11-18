@@ -3,6 +3,7 @@ import { type PropsWithChildren, createContext, useContext } from 'react'
 import type { JSX } from 'react/jsx-runtime'
 import { useSetState } from '../hooks/useSetState'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
+import { ComparingLayoutsProvider } from './ComparingLayoutsContext'
 
 const FeatureNames = [
   'Controls',
@@ -34,10 +35,7 @@ export type FeatureName = typeof FeatureNames[number]
 
 // Features that can be toggled on/off at runtime in diagram context
 export type TogglableFeature =
-  & (
-    | 'ReadOnly'
-    | 'CompareWithLatest'
-  )
+  & 'ReadOnly'
   & FeatureName
 
 export type EnabledFeatures = {
@@ -117,7 +115,9 @@ const overridesForOverlays: Partial<EnabledFeatures> = {
 DiagramFeatures.Overlays = ({ children }: PropsWithChildren) => {
   return (
     <DiagramFeatures overrides={overridesForOverlays}>
-      {children}
+      <ComparingLayoutsProvider value={false}>
+        {children}
+      </ComparingLayoutsProvider>
     </DiagramFeatures>
   )
 }
@@ -154,23 +154,20 @@ export function IfEnabled({
   and = true,
 }: PropsWithChildren<{ feature: FeatureName; and?: boolean }>): JSX.Element | null {
   const enabled = useEnabledFeatures()[`enable${feature}`] === true
-  return enabled && and ? <>{children}</> : null
+  return <>{enabled && and ? children : null}</>
 }
 
 export function IfNotEnabled({ feature, children }: PropsWithChildren<{ feature: FeatureName }>): JSX.Element | null {
   const notEnabled = useEnabledFeatures()[`enable${feature}`] !== true
-  return notEnabled ? <>{children}</> : null
+  return <>{notEnabled ? children : null}</>
 }
 
 export function IfReadOnly({ children }: PropsWithChildren): JSX.Element | null {
   const isReadOnly = useEnabledFeatures().enableReadOnly === true
-  return isReadOnly ? <>{children}</> : null
+  return <>{isReadOnly ? children : null}</>
 }
 
 export function IfNotReadOnly({ children }: PropsWithChildren): JSX.Element | null {
   const isReadOnly = useEnabledFeatures().enableReadOnly === true
-  if (isReadOnly) {
-    return null
-  }
-  return <>{children}</>
+  return <>{isReadOnly ? null : children}</>
 }

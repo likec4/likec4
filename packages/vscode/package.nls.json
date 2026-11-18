@@ -5,9 +5,18 @@
   "ext.cmd.reload-projects": "Reload projects",
   "ext.cmd.locate": "Locate element",
   "ext.cmd.preview-context-open-source": "Open source",
+  "ext.cmd.preview-context-copy-as-png": "Copy as PNG",
+  "ext.cmd.save-as-png": "Save as PNG",
   "ext.cmd.print-dot-of-currentview": "Print DOT of current view to output",
   "ext.cmd.validate-layout": "Validate layout",
   "ext.cmd.open-projects-overview": "Open Projects Overview",
   "ext.config.node.path.title": "Node.js binary path",
+  "ext.config.cli.path.description": "Path to the LikeC4 CLI used by **Copy as PNG** and **Save as PNG** (e.g. `node_modules/likec4/bin/likec4.mjs` or a global `likec4` executable). Relative paths resolve against the workspace folder.  \nIf empty, the extension resolves the `likec4` package installed in the project (Yarn PnP: `yarn likec4`). `.js`/`.mjs` entries run with `#likec4.node.path#`.",
+  "ext.config.export.notation.enabled.description": "Include the view notation (legend) in images from **Copy as PNG** and **Save as PNG**. It lists the element kinds of the view that have a `notation` in the specification.",
+  "ext.config.export.notation.position.description": "Corner of the image for the notation, when `#likec4.export.notation.enabled#` is on. The notation is placed beside the diagram and never covers it.  \nOlder LikeC4 CLIs (1.61.0 and earlier) ignore this setting.",
+  "ext.config.export.notation.text.description": "Labels of the notation entries, when `#likec4.export.notation.enabled#` is on.  \nOlder LikeC4 CLIs (1.61.0 and earlier) ignore this setting.",
+  "ext.config.export.notation.text.short": "Text before the first `:` of the notation (the whole text if there is none)",
+  "ext.config.export.notation.text.full": "The complete notation text",
+  "ext.config.export.notation.text.kind": "Only the element kinds",
   "ext.cmd.semantic-layout-with-ai": "Semantic Layout with AI"
 }

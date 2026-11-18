@@ -9,13 +9,24 @@ export interface DiagnosticItem {
 }
 
 export interface ValidateResult {
+  /**
+   * `false` when there are errors, or when `--max-warnings` is given and
+   * there are more warnings than allowed
+   */
   valid: boolean
   errors: DiagnosticItem[]
+  warnings: DiagnosticItem[]
+  /**
+   * Value of `--max-warnings`, or `null` when warnings are not limited
+   */
+  maxWarnings: number | null
   stats: {
     totalFiles: number
     totalErrors: number
+    totalWarnings: number
     filteredFiles: number
     filteredErrors: number
+    filteredWarnings: number
   }
 }
 
@@ -25,10 +36,15 @@ export interface ValidateInput {
    */
   documents: readonly string[]
   errors: readonly DiagnosticItem[]
+  warnings?: readonly DiagnosticItem[] | undefined
   /**
    * Resolved paths given with `--file`, or `null` when the flag was not used
    */
   fileFilter: readonly string[] | null
+  /**
+   * Number of warnings allowed before validation fails, or `null` when warnings are not limited
+   */
+  maxWarnings?: number | null | undefined
 }
 
 /**
@@ -39,19 +55,40 @@ function matchesFilter(file: string, fileFilter: readonly string[]): boolean {
   return fileFilter.some(f => file === f || file.endsWith('/' + f) || file.endsWith('\\' + f))
 }
 
-export function buildValidateResult({ documents, errors, fileFilter }: ValidateInput): ValidateResult {
+/**
+ * Parses the `--max-warnings` option, which must be a non-negative integer
+ */
+export function parseMaxWarnings(value: number | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error(`--max-warnings must be a non-negative integer, got ${value}`)
+  }
+  return value
+}
+
+export function buildValidateResult(
+  { documents, errors, warnings = [], fileFilter, maxWarnings = null }: ValidateInput,
+): ValidateResult {
   const filteredErrors = fileFilter ? errors.filter(e => matchesFilter(e.file, fileFilter)) : [...errors]
+  const filteredWarnings = fileFilter ? warnings.filter(w => matchesFilter(w.file, fileFilter)) : [...warnings]
   // Counted over the documents, so that a matched file with no diagnostics is still counted
   const filteredFiles = fileFilter ? documents.filter(doc => matchesFilter(doc, fileFilter)).length : documents.length
+  const tooManyWarnings = maxWarnings !== null && filteredWarnings.length > maxWarnings
 
   return {
-    valid: filteredErrors.length === 0,
-    errors: [...filteredErrors],
+    valid: filteredErrors.length === 0 && !tooManyWarnings,
+    errors: filteredErrors,
+    warnings: filteredWarnings,
+    maxWarnings,
     stats: {
       totalFiles: documents.length,
       totalErrors: errors.length,
+      totalWarnings: warnings.length,
       filteredFiles,
       filteredErrors: filteredErrors.length,
+      filteredWarnings: filteredWarnings.length,
     },
   }
 }

@@ -49,6 +49,7 @@ import type { LikeC4Services } from '../../module'
 import type { Project } from '../../workspace/ProjectsManager'
 import { relationFingerprint } from '../relationFingerprint'
 import { buildDiffs } from './buildDiffs'
+import { createDescriptionFileResolver } from './descriptionFileResolver'
 import { MergedExtends } from './MergedExtends'
 import { MergedSpecification } from './MergedSpecification'
 
@@ -69,8 +70,11 @@ export function buildModelData(
   project: Project,
   docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
 ): BuildModelData {
+  const descriptionFileResolver = createDescriptionFileResolver(services)
   const c4Specification = new MergedSpecification(docs, {
     inferTechFromIcon: project.config.inferTechnologyFromIcon ?? true,
+    // The files are read on demand, and stay cached until they change (see `LikeC4DescriptionFiles`)
+    descriptionFile: descriptionFileResolver,
   })
 
   if (c4Specification.projectId === project.id) {
@@ -265,12 +269,14 @@ export function buildModelData(
         id,
         title,
         description,
+        descriptionFile,
         // ignore these properties
         astPath: _ignore,
-        descriptionFile: _descriptionFile,
         // model should include discriminant __
         ...model
       } = parsedAstView
+
+      description = descriptionFileResolver(descriptionFile) ?? description
 
       if (parsedAstView[_type] === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
         title = elements[parsedAstView.viewOf]?.title ?? null
@@ -414,11 +420,7 @@ export function buildModelData(
       specification: {
         tags: c4Specification.tags,
         elements: c4Specification.specs.elements,
-        relationships: mapValues(c4Specification.specs.relationships, ({ notation, technology, ...style }) => ({
-          ...(notation && { notation }),
-          ...(technology && { technology }),
-          style,
-        })),
+        relationships: c4Specification.specs.relationships,
         deployments: c4Specification.specs.deployments,
         ...(metadataKeys.size > 0 && { metadataKeys: [...metadataKeys].sort(compareNatural) }),
         customColors,

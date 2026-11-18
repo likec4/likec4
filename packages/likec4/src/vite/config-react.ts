@@ -3,19 +3,24 @@ import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
 import { createLikeC4Logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin'
-import { viteAliases } from './aliases'
+import { reactDedupe, viteAliases } from './aliases'
 import { relativeToCwd, viteAppRoot } from './utils'
 
 type LikeC4ViteReactConfig = {
   languageServices: LikeC4
   outDir: string
   filename?: string
+  /**
+   * Absolute path to the file with UI customizations
+   */
+  customization?: string | undefined
 }
 
 export async function viteReactConfig({
   languageServices,
   outDir,
   filename = 'likec4-react.mjs',
+  customization,
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
   const customLogger = createLikeC4Logger(['vite', 'react'])
   const root = viteAppRoot()
@@ -31,6 +36,7 @@ export async function viteReactConfig({
     mode: 'production',
     resolve: {
       alias: viteAliases(),
+      dedupe: reactDedupe,
     },
     build: {
       outDir,
@@ -47,11 +53,9 @@ export async function viteReactConfig({
       },
       rolldownOptions: {
         external: [
-          'likec4/react',
-          'likec4/model',
+          /^likec4(\/.*)?$/,
           /^react(\/.*)?$/,
           /^react-dom(\/.*)?$/,
-          /@likec4\/core.*/,
         ],
       },
     },
@@ -59,6 +63,7 @@ export async function viteReactConfig({
       LikeC4VitePlugin({
         ai: 'disabled',
         languageServices: languageServices.languageServices,
+        customization,
       }),
     ],
   }

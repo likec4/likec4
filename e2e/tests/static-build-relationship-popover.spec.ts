@@ -27,3 +27,14 @@ test('static build embed pages show relationship popup on edge hover (#2962)', a
   await expect(page.getByRole('button', { name: /^browse relationships$/i })).toHaveCount(1)
   await expect(page.getByRole('button', { name: /^browse relationships$/i })).toBeVisible()
 })
+
+test('relationship popup shows relationship tags (#3255)', async ({ page }) => {
+  await page.goto(embedUrl(VIEW))
+  await expect(canvas(page)).toBeVisible({ timeout: TIMEOUT_CANVAS })
+
+  await page.locator(RELATIONSHIP_LABEL).filter({ hasText: 'uses and pays' }).first().hover()
+
+  const popover = page.locator('.nowheel').filter({ hasText: RELATIONSHIP_POPOVER_TEXT })
+  await expect(popover).toBeVisible()
+  await expect(popover.locator('[data-likec4-tag="api"]')).toBeVisible()
+})

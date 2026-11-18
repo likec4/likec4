@@ -160,6 +160,18 @@ export const textStyles = defineTextStyles({
   caption: {
     value: { fontFamily: 'body', fontSize: 'xs', color: 'text.nonessential' },
   },
+  fieldLabel: {
+    description: 'Field label above a value (details sidebar, footer) — 9px, all-caps, letter-spaced',
+    value: {
+      fontFamily: 'body',
+      fontWeight: 'semibold',
+      fontSize: 'micro',
+      lineHeight: 'tight',
+      textTransform: 'uppercase',
+      letterSpacing: 'caps.label',
+      color: 'text/60',
+    },
+  },
   eyebrow: {
     description: 'eyebrow / data label — Mono, all-caps, letter-spaced',
     value: {

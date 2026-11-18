@@ -1,19 +1,68 @@
 import defu from 'defu'
+import type { Element } from 'hast'
+import type { State } from 'mdast-util-to-hast'
 import rehypePrism from 'rehype-prism-plus/common'
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
+import rehypeSanitize, { type Options as SanitizeSchema, defaultSchema } from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
 import remarkGfm from 'remark-gfm'
 import { remarkAlert } from 'remark-github-blockquote-alert'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
+import { type LikeC4RefNode, remarkLikeC4Refs } from './refs'
+import { remarkResolveLikeC4Refs } from './resolve-refs'
+import type { MarkdownRefTitleResolver } from './types'
 
-function parser() {
-  return unified()
+/**
+ * Renders a ref as `<a data-likec4-ref="<target>" data-likec4-ref-kind="<kind>">label or target</a>`.
+ * If the ref has a namespace (`view:`, or an unknown one), it is in the `data-likec4-ref-namespace` attribute.
+ * If the ref has a label, the anchor also has an empty `data-likec4-ref-label` attribute,
+ * so that consumers keep the label instead of replacing it with the title.
+ * The anchor text is the label, otherwise the title from the resolver (if given), otherwise the target.
+ * Resolving the target (title, click) in the UI is up to the consumer, who has the model.
+ */
+function likec4RefToHast(state: State, node: LikeC4RefNode): Element {
+  const result: Element = {
+    type: 'element',
+    tagName: 'a',
+    properties: {
+      dataLikec4Ref: node.ref.target,
+      dataLikec4RefKind: node.ref.kind,
+      ...(node.ref.namespace !== null && { dataLikec4RefNamespace: node.ref.namespace }),
+      ...(node.ref.label !== null && { dataLikec4RefLabel: true }),
+    },
+    children: [{ type: 'text', value: node.value }],
+  }
+  state.patch(node, result)
+  return state.applyData(node, result)
+}
+
+/**
+ * Allowed attributes of the ref anchor, see {@link likec4RefToHast}
+ */
+const likec4RefAttributes: NonNullable<SanitizeSchema['attributes']>[string] = [
+  'dataLikec4Ref',
+  ['dataLikec4RefKind', 'element', 'view', 'unknown'],
+  'dataLikec4RefNamespace',
+  'dataLikec4RefLabel',
+]
+
+function parser(resolve?: MarkdownRefTitleResolver) {
+  const processor = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkAlert)
-    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(remarkLikeC4Refs)
+  if (resolve) {
+    processor.use(remarkResolveLikeC4Refs, resolve)
+  }
+  return processor
+    .use(remarkRehype, {
+      allowDangerousHtml: true,
+      handlers: {
+        likec4Ref: likec4RefToHast,
+      },
+    })
     .use(rehypePrism, { ignoreMissing: true })
     .use(
       rehypeSanitize,
@@ -23,6 +72,7 @@ function parser() {
             '*': [
               'className',
             ],
+            'a': likec4RefAttributes,
             'svg': [
               'width',
               'height',
@@ -50,6 +100,12 @@ function parser() {
     })
 }
 
-export function markdownToHtml(markdown: string): string {
-  return ('' + parser().processSync(markdown)).trim()
+/**
+ * Converts markdown to sanitized HTML.
+ * Refs become anchors, see {@link likec4RefToHast}.
+ * @param markdown - The markdown to convert.
+ * @param resolve - Optional resolver of ref titles (e.g. from the model), used for the anchor text.
+ */
+export function markdownToHtml(markdown: string, resolve?: MarkdownRefTitleResolver): string {
+  return ('' + parser(resolve).processSync(markdown)).trim()
 }

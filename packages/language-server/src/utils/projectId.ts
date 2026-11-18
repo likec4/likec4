@@ -1,6 +1,6 @@
 import { type ProjectId, invariant } from '@likec4/core'
 import { type AstNode, type LangiumDocument, AstUtils, isAstNode } from 'langium'
-import { ast } from '../ast'
+import { ast, isLikeC4LangiumDocument } from '../ast'
 import { logger } from '../logger'
 import { ProjectsManager } from '../workspace'
 
@@ -11,6 +11,14 @@ import { ProjectsManager } from '../workspace'
  * @returns Resolved project ID (or DefaultProjectId when document has none)
  */
 export function projectIdFrom(value: AstNode | LangiumDocument | ast.ImportsFromPoject | ast.Imported): ProjectId {
+  if (!isAstNode(value)) {
+    if (!isLikeC4LangiumDocument(value) || !value.likec4ProjectId) {
+      logger
+        .warn`Document ${value.uri.fsPath} does not have a project ID assigned, this may lead to unexpected behavior.`
+      return ProjectsManager.DefaultProjectId
+    }
+    return value.likec4ProjectId
+  }
   if (ast.isImported(value)) {
     while (value.$type === 'Imported' && value.$container) {
       value = value.$container

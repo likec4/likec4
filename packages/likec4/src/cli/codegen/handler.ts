@@ -67,9 +67,10 @@ async function singleFileCodegenAction(
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = await languageServices.diagrams()
+  const model = await languageServices.layoutedModel()
+  const views = [...model.views()].map(vm => vm.$layouted)
 
-  const generatedSource = generateViewsDataTs([...views])
+  const generatedSource = generateViewsDataTs(views)
 
   await writeFile(outfile, generatedSource)
 

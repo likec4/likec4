@@ -83,4 +83,4 @@ ENTRYPOINT ["/usr/local/bin/likec4"]
 CMD ["-h"]
 
 # Default ports
-EXPOSE 5173 24678
+EXPOSE 5173

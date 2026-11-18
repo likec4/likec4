@@ -8,7 +8,6 @@ import {
   centerOnNodeOrEdge,
   closeAllOverlays,
   collapseOrExpandSequenceFlow,
-  disableCompareWithLatest,
   emitEdgeClick,
   emitNodeClick,
   emitOpenSource,
@@ -42,6 +41,7 @@ import {
   updateView,
 } from './machine.actions'
 import { machine, to } from './machine.setup'
+import { comparing } from './machine.state.ready.comparing'
 import { focused } from './machine.state.ready.focused'
 import { idle } from './machine.state.ready.idle'
 import { printing } from './machine.state.ready.printing'
@@ -71,6 +71,7 @@ export const ready = machine.createStateConfig({
     focused,
     walkthrough,
     printing,
+    comparing,
   },
   on: {
     'layout.align': {
@@ -93,7 +94,6 @@ export const ready = machine.createStateConfig({
       guard: 'enabled: Editor',
       actions: [
         cancelEditing(),
-        disableCompareWithLatest(),
         assign({
           viewportChangedManually: false,
         }),

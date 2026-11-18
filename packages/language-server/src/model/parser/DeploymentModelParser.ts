@@ -91,15 +91,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
-      const bodyProps = {
-        ...pipe(
-          astNode.body?.props ?? [],
-          filter(isValid),
-          filter(ast.isElementStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(astNode.body?.props),
-      }
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(isValid),
+        filter(ast.isElementStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
 
       const { title, ...descAndTech } = this.parseBaseProps(bodyProps, {
         title: astNode.title,
@@ -111,6 +108,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         kind,
         title: title ?? nameFromFqn(id),
         ...descAndTech,
+        ...this.parseDescriptionFile(astNode.body),
         tags,
         links,
         style,
@@ -129,15 +127,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const style = this.parseElementStyle(astNode.body?.props)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
-      const bodyProps = {
-        ...pipe(
-          astNode.body?.props ?? [],
-          filter(isValid),
-          filter(ast.isElementStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(astNode.body?.props),
-      }
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(isValid),
+        filter(ast.isElementStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
 
       const baseProps = this.parseBaseProps(bodyProps, {
         title: astNode.title,
@@ -154,6 +149,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         ...baseProps,
         style,
         metadata,
+        ...this.parseDescriptionFile(astNode.body),
       })
     }
 
@@ -202,15 +198,12 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
       const kind = (astNode.kind ?? astNode.dotKind?.kind)?.ref?.name as (c4.RelationshipKind | undefined)
       const metadata = this.getMetadata(astNode.body?.props.find(ast.isMetadataProperty))
 
-      const bodyProps = {
-        ...pipe(
-          astNode.body?.props ?? [],
-          filter(ast.isRelationStringProperty),
-          filter(p => isTruthy(p.value)),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(astNode.body?.props),
-      }
+      const bodyProps = pipe(
+        astNode.body?.props ?? [],
+        filter(ast.isRelationStringProperty),
+        filter(p => isTruthy(p.value)),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
 
       const navigateTo = pipe(
         astNode.body?.props ?? [],
@@ -239,6 +232,7 @@ export function DeploymentModelParser<TBase extends WithExpressionV2>(B: TBase) 
         isBidirectional: astNode.isBidirectional || undefined,
         ...titleDescAndTech,
         metadata,
+        ...this.parseDescriptionFile(astNode.body),
         kind,
         tags,
         links,

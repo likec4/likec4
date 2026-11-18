@@ -37,10 +37,6 @@ export default defineConfig({
   ],
   platform: 'browser',
   inputOptions: {
-    resolve: {
-      mainFields: ['module', 'main'],
-      conditionNames: ['sources', 'module', 'import', 'default'],
-    },
     onLog(level, log, defaultHandler) {
       if (log.code === 'MODULE_LEVEL_DIRECTIVE') {
         return // Ignore module level directive warnings
@@ -70,7 +66,7 @@ export default defineConfig({
   deps: {
     onlyBundle: false,
     neverBundle: [
-      /^@likec4\/core/,
+      /^likec4\/core/,
       'immer',
       'type-fest',
       /^react(\/|$)/,
@@ -85,6 +81,10 @@ export default defineConfig({
     }),
     viteAliasPlugin({
       entries: [
+        {
+          find: /^@likec4\/core(\/.*)?$/,
+          replacement: 'likec4/core$1',
+        },
         {
           find: /@likec4\/styles\/(.*)/,
           replacement: join(process.cwd(), 'styled-system', '$1', 'index.mjs'),

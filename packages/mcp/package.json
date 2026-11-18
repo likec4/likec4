@@ -1,6 +1,6 @@
 {
   "name": "@likec4/mcp",
-  "version": "1.60.0",
+  "version": "1.61.0",
   "description": "Model Context Protocol server for LikeC4",
   "keywords": [
     "likec4",
@@ -49,11 +49,10 @@
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@modelcontextprotocol/ext-apps": "catalog:mcp",
     "@modelcontextprotocol/sdk": "catalog:mcp",
-    "bundle-require": "catalog:externals",
     "chokidar": "catalog:externals",
-    "esbuild": "catalog:esbuild",
     "fdir": "catalog:externals",
     "hono": "catalog:hono",
+    "jiti": "catalog:externals",
     "picomatch": "catalog:externals",
     "std-env": "catalog:externals",
     "tinyrainbow": "catalog:utils",

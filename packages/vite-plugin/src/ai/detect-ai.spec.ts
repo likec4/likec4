@@ -29,7 +29,8 @@ const resetEnv = () => {
   delete process.env['MINIMAX_REGION']
 }
 
-describe('detectAI', () => {
+// Tests mutate process.env and shared module mocks; the project runs tests concurrently by default
+describe.sequential('detectAI', () => {
   beforeEach(() => {
     vi.resetModules()
     mocks.ensurePackage.mockClear()

@@ -55,7 +55,15 @@ export * as scalar from './scalar'
 
 export type * from '../styles/types'
 
-export { RichText, type RichTextEmpty, type RichTextOrEmpty } from './RichText'
+export {
+  isRichText,
+  RichText,
+  type RichTextEmpty,
+  type RichTextNonEmpty,
+  type RichTextOrEmpty,
+} from './RichText'
+
+export type { MarkdownRef, MarkdownRefTitleResolver } from '../utils/markdown'
 
 export type * from './guards'
 export {

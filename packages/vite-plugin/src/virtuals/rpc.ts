@@ -44,7 +44,7 @@ export const rpcModule: VirtualModule = {
     return {
       code: code(opts),
       moduleType: 'js',
-      moduleSideEffects: false,
+      moduleSideEffects: 'no-treeshake',
     }
   },
 }

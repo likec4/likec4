@@ -15,7 +15,7 @@ import type {
   ViewManualLayoutSnapshot,
   ViewWithType,
 } from '../../types'
-import { type RichTextOrEmpty, _stage, _type, RichText } from '../../types'
+import { type RichTextOrEmpty, _stage, _type } from '../../types'
 import type * as aux from '../../types/_aux'
 import type { AnyComputed, AnyLayouted } from '../../types/_aux'
 import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
@@ -28,6 +28,7 @@ import type {
   WithTags,
 } from '../types'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
+import { memoizeDescription } from '../utils/richtext'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
 import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
@@ -191,7 +192,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
   }
 
   get description(): RichTextOrEmpty {
-    return RichText.memoize(this, 'description', this.#view.description)
+    return memoizeDescription(this, this.#view.description)
   }
 
   get tags(): aux.Tags<A> {
@@ -278,8 +279,9 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
     }
     const snapshot = this.#manualLayoutSnapshot
     if (snapshot) {
-      // If the view already has manual layout applied (can happen when the
-      // Vite client receives pre-processed data), return it as-is (#2882).
+      // Defensive guard (#2882): model data is expected to keep auto-layouted views
+      // and manual layouts separately (see `LikeC4LanguageServices.layoutedModel`).
+      // If the view already has manual layout applied, return it as-is instead of failing.
       if (this.#view._layout === 'manual') {
         return this.#view
       }

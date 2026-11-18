@@ -13,6 +13,7 @@ import {
   EXPORT_NOTATION_WIDTH,
   exportDescriptionHeight,
   exportNotationHeight,
+  exportNotationShortTitle,
 } from './export-layout'
 
 describe('computeExportPageLayout', () => {
@@ -106,6 +107,7 @@ describe('computeExportPageLayout', () => {
       padding: 20,
       description: null,
       notationEntries: 2,
+      notationPosition: 'top-right',
     })
 
     expect(layout.notation).toEqual({
@@ -128,6 +130,7 @@ describe('computeExportPageLayout', () => {
       padding: 20,
       description,
       notationEntries: 2,
+      notationPosition: 'top-right',
     })
 
     const descriptionHeight = exportDescriptionHeight({
@@ -160,5 +163,69 @@ describe('computeExportPageLayout', () => {
 
     expect(layout.height).toBe(exportNotationHeight(5) + 20 * 2)
     expect(layout.height).toBeGreaterThan(layout.diagram.height)
+  })
+
+  it('aligns the notation to the bottom-right corner by default', () => {
+    const layout = computeExportPageLayout({
+      bounds,
+      padding: 20,
+      description: null,
+      notationEntries: 2,
+      notationHeight: 120,
+    })
+
+    expect(layout.diagram.left).toBe(0)
+    expect(layout.notation).toEqual({
+      left: layout.diagram.width + EXPORT_NOTATION_GAP,
+      // bottom edge of the panel meets the bottom edge of the drawn diagram
+      top: 20 + bounds.height - 120,
+      width: EXPORT_NOTATION_WIDTH,
+      height: 120,
+    })
+  })
+
+  it.each(['top-left', 'bottom-left'] as const)('moves the diagram right for a %s notation', notationPosition => {
+    const layout = computeExportPageLayout({
+      bounds,
+      padding: 20,
+      description: null,
+      notationEntries: 2,
+      notationPosition,
+    })
+
+    expect(layout.notation!.left).toBe(20)
+    expect(layout.diagram.left).toBe(20 + EXPORT_NOTATION_WIDTH + EXPORT_NOTATION_GAP)
+    expect(layout.width).toBe(layout.diagram.left + layout.diagram.width)
+  })
+
+  it('uses the measured notation height instead of the estimate', () => {
+    const layout = computeExportPageLayout({
+      bounds: {
+        ...bounds,
+        height: 50,
+      },
+      padding: 20,
+      description: null,
+      notationEntries: 2,
+      notationHeight: 400,
+      notationPosition: 'bottom-left',
+    })
+
+    expect(layout.notation).toMatchObject({ top: 20, height: 400 })
+    expect(layout.height).toBe(400 + 20 * 2)
+  })
+})
+
+describe('exportNotationShortTitle', () => {
+  it('uses the text before the first colon', () => {
+    expect(exportNotationShortTitle('Database: A specific container type: with details')).toBe('Database')
+  })
+
+  it.each([
+    ['Software system', 'Software system'],
+    [': starts with a colon', ': starts with a colon'],
+    ['  Padded  ', 'Padded'],
+  ])('falls back to the whole text for %j', (title, expected) => {
+    expect(exportNotationShortTitle(title)).toBe(expected)
   })
 })

@@ -1,18 +1,21 @@
 ---
-title: View Predicates
-description: How to visualize software architecture in diagrams using LikeC4
-sidebar: 
+title: View predicates
+description: Choose which elements and relationships a view shows, with include, exclude, where and groups
+sidebar:
   label: Predicates
-  order: 8
+  order: 11
 tableOfContents:
   minHeadingLevel: 2
-  maxHeadingLevel: 6
+  maxHeadingLevel: 4
 ---
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Views are not static, they are generated from the model. Any changes in the model are applied immediately and update views.
-Two types of predicates define what is visible: element and relationship predicates.
+Predicates define what an element view shows.
+Two types of predicates pick what is visible: element and relationship predicates.
+`where` narrows their results, and groups draw boundaries around them.
+
+For how elements look in a view, see [Styles](/dsl/views/styles/). For the layout, see [Layout](/dsl/views/layout/).
 
 <Aside>
   Views contain elements and their connections (relationships).  
@@ -161,23 +164,7 @@ view view3 {
 }
 ```
 
-### By element kind or tag
-
-```likec4
-// elements by kind
-include element.kind != system
-exclude element.kind = container
-
-// elements by tag
-include element.tag != #V2
-exclude element.tag = #next
-```
-
-:::caution
-These predicates may be deprecated in the future, please consider [`where`](#filter) operator
-:::
-
-### Element Selectors
+### Element selectors
 
 #### Children `.*`
 
@@ -252,15 +239,15 @@ view {
   include customer
 
   // include nothing, customer has no relation to backend
-  include -> backend
+  include -> cloud.backend
 
   // add ui,
   // because customer has a relationship with nested ui.webApp
-  include -> ui
+  include -> cloud.ui
 
   // add backend, because visible ui has a relationship to backend
   // derived from ui.webApp -> backend.api
-  include -> backend
+  include -> cloud.backend
 }
 
 // This view includes customer and ui
@@ -277,7 +264,7 @@ Relationship predicates are useful for refining your diagrams, allowing you to n
 
 ### Outgoing
 
-Include elements if only they have outgoing relationships to already visible elements:
+Include elements only if they have outgoing relationships to already visible elements:
 
 ```likec4
 include customer ->
@@ -368,9 +355,7 @@ include cloud.*
     and (tag is #v1 or tag is #v2)
 ```
 
-<br/>
-
-**Relationship predicates**
+#### With relationship predicates
 
 When `where` is used with element predicates, it is applied to the elements.    
 When used with relationship predicates - to the relationships.
@@ -383,15 +368,18 @@ include
 
   // only incoming http-requests
   -> backend
-    where kind is http-request
-  -[http-request]-> backend
-  .http-request backend
+    where kind is http-request,
+
+  // relationships of kind http-request from any element to backend
+  * -[http-request]-> backend,
+  // the same, shorter
+  * .http-request backend
 ```
 
 It is also possible to filter relations by tag or kind of its endpoints.
 ```likec4
 include
-  // only relationships outgoing from elements with with tag #next
+  // only relationships outgoing from elements with tag #next
   cloud.* -> amazon.*
     where source.tag is #next,
 
@@ -400,9 +388,7 @@ include
     where target.kind is microservice
 ```
 
-<br/>
-
-**Together with `with`**
+#### Together with `with`
 
 It is possible to use `where` together with `with`, but `where` should be defined first:
 
@@ -430,7 +416,7 @@ exclude * -> * where tag is not #commands
 
 ```
 
-Together with [predicate groups](#global-predicate-groups) you may define a "baseline" (includes everything), and then filter out in inherited views.
+Together with [predicate groups](#global-predicate-groups) you may define a "baseline" (includes everything), and then filter out in [inherited views](/dsl/views/#extend-views).
 
 :::
 
@@ -502,6 +488,24 @@ exclude * -> *
 In deployment views, `source.metadata.*` and `target.metadata.*` follow the deployment metadata rules.
 Metadata defined on a deployed instance replaces the metadata from its model element.
 
+### By element kind or tag (legacy)
+
+Before `where`, elements were filtered by kind or tag with this syntax:
+
+```likec4
+// elements by kind
+include element.kind != system
+exclude element.kind = container
+
+// elements by tag
+include element.tag != #V2
+exclude element.tag = #next
+```
+
+:::caution
+These predicates may be deprecated in the future, use [`where`](#filter) instead.
+:::
+
 ## Global predicate groups
 
 If you find yourself repeating the same predicates in multiple views, you can define them as global group:
@@ -571,26 +575,7 @@ view {
 }
 ```
 
-In deployment views, use deployment nodes or instances in the group's predicates:
-
-```likec4
-deployment view production {
-  group 'Application servers' {
-    color amber
-    opacity 20%
-    border solid
-
-    include prod.app1, prod.app2
-  }
-}
-```
-
-Deployment groups support nested groups and `include`/`exclude` predicates, with the same ordering rules
-as element groups. Unlike element groups, they are inserted inside their shared visible deployment parent.
-Selecting members with different deployment parents is rejected with an error, even when the parents
-are not visible or share a common ancestor.
-See [deployment groups](/dsl/deployment/views#groups) for examples.
-Global predicate groups are only supported in element views.
+Deployment views have groups too, with their own rules, see [deployment groups](/dsl/deployment/views/#groups).
 
 Groups may also reference [global predicate groups](#global-predicate-groups), to reuse a set of predicates
 and keep the matched elements inside the group:
@@ -691,345 +676,3 @@ group {
   }
   ```  
 </Aside>
-
-## Style predicates
-
-Style predicates define how elements are rendered, and applied in the order they are defined merging with previous ones:
-
-```likec4
-view apiApp of internetBankingSystem.apiApplication {
-
-  include *
-
-  // apply to all elements
-  style * {
-    color muted
-    opacity 10%
-  }
-
-  // apply only to these elements
-  style singlePageApplication, mobileApp {
-    color secondary
-    size xlarge
-  }
-
-  // apply only to nested of apiApplication
-  style apiApplication.* {
-    color primary
-    multiple true
-  }
-
-  // apply to apiApplication and nested
-  style apiApplication._ {
-    color primary
-  }
-
-  // apply only to elements with specific tag
-  style element.tag = #deprecated {
-    color muted
-  }
-
-  // apply to elements not tagged
-  style element.tag != #deprecated {
-    opacity 20%
-  }
-}
-```
-
-:::caution
-[`Group`](#groups) does not support nested `style` predicates (yet).
-:::
-
-### Shared local styles
-
-Styles can be shared within `views` block (_"local styles"_):
-
-```likec4
-views {
-  // apply to all views in this block
-  style * {
-    color muted
-    opacity 10%
-  }
-
-  view of apiApp {
-    include *
-    style cloud.web.* {
-      color green
-    }
-  }
-
-  view of mobileApp {
-    include *
-    style cloud.ui.* {
-      color amber
-    }    
-  }
-}
-
-views {
-  // Styles from previous block are not applied here
-  // ...
-}
-```
-
-<Aside title="Order">
-Styles are applied in the order they are defined.  
-First, local styles from `views` block and then from `view`
-</Aside>
-
-:::caution
-[Overrides](#with-overrides) are always applied last, after all styles
-:::
-
-
-### Shared global styles
-
-Styles can be shared globally.  
-Global styles must be named and defined in `global` block:
-
-```likec4  {4,9,15,25,33-34}
-global {
-  // Format:
-  //  style <name> <targets> { ... }
-  style mute_all * {
-    color muted
-    opacity 10%
-  }
-
-  style applications
-    singlePageApplication._,
-    mobileApp._ {
-      color secondary
-    } 
-
-  style mute_deprecated
-    element.tag = #deprecated {
-      color muted
-    }  
-}
-
-views {
-  view of singlePageApplication {  
-    // Styles are applied in the order they are defined
-    // 1. Apply global style
-    global style mute_all
-
-    // 2. Then this
-    style cloud.* {
-      color green
-    }
-
-    // 3. and 4.
-    global style applications
-    global style mute_deprecated    
-  }  
-}
-```
-
-### Shared style groups
-
-Global styles can be grouped:
-
-```likec4 {3,18}
-global {
-  // Define style group
-  styleGroup common_styles {
-    style singlePageApplication, mobileApp {
-      color secondary
-    }
-    style element.tag = #deprecated {
-      color muted
-    }
-  }
-}
-
-views {  
-  view mobileApp of mobileApp {
-    include *
-
-    // Apply styles from group
-    global style common_styles
-
-    // Override
-    style mobileApp {
-      color primary
-    }
-  }
-}
-```
-
-:::tip
-Global styles and groups can be used as `views`-locals:
-
-```likec4
-global {
-  style mute_all * { color muted }
-  styleGroup theme1 { //...
-  styleGroup theme2 { //...
-}
-
-// All views within this block have styles from 'theme1'
-views {
-  global style theme1
-  view view1 { //... 
-}
-
-// All views have 'mute_all' style and all from 'theme2'
-views {
-  global style mute_all
-  global style theme2
-  view view2 { //... 
-}
-```
-:::
-
-
-## Auto-layout
-
-```likec4
-view {
-  include *
-  autoLayout LeftRight 120 110
-}
-```
-
-Parameters are:
-- direction: possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
-- rank distance: optional, must be a positive number
-- node distance. optional, must be a positive number
-- edge routing: optional, possible values are `spline` or `ortho`. See [Edge routing](#edge-routing).
-
-<Aside>
-Manual changes are supported in VSCode extension, but functionality is limited.  
-Your <a href="https://github.com/likec4/likec4/discussions/343" target="_blank">feedback</a> is much appreciated.
-</Aside>
-
-## Edge routing
-
-To draw relationships with horizontal and vertical segments, set `routing ortho` in your view:
-
-```likec4
-view {
-  routing ortho
-  include *
-}
-```
-
-Use `spline` for curved relationships or `ortho` for right-angle bends. The default is `spline`.
-Routing applies to element, dynamic, and deployment views. Sequence diagrams use their own layout and ignore this setting.
-
-You can also set routing as the last `autoLayout` parameter:
-
-```likec4
-autoLayout LeftRight 120 110 ortho
-```
-
-LikeC4 uses the first routing value defined in this precedence order:
-
-1. The view's `routing` property.
-2. The last `autoLayout` rule's routing parameter.
-3. The project default, [`styles.defaults.view.routing`](/dsl/config/#default-styles).
-4. The built-in default, `spline`.
-
-If you set routing in both the view property and `autoLayout`, the property takes precedence. The language server reports a warning on the `autoLayout` parameter.
-
-In the web editor, switch routing from the layout panel; the change is written back to the view source.
-
-Changing routing preserves saved node positions and connection control points. LikeC4 renders the saved layout with the selected routing mode. Changing routing alone doesn't invalidate the layout or report layout drift.
-
-### Routing limitations
-
-Graphviz can route an orthogonal relationship through an unrelated group box. It can also place parallel routes so close together that they are hard to distinguish.
-
-To reduce crowding, show fewer relationships or edit individual connections. Increasing `autoLayout` spacing gives nodes more room, but doesn't guarantee more space between routes.
-
-Edited edges that share a straight segment move onto separate tracks where space at their endpoints permits. Unedited Graphviz routes keep their original positions.
-
-Automatic labels avoid nodes, other labels, and relationship lines where space permits. Dense views can still contain label overlaps if no clear position is available.
-
-
-## Extend views
-
-Views can be extended to avoid duplication, to create a "baseline" or, for example, "slides" for a presentation:
-
-```likec4
-views {
-
-  view view1 {
-    include *
-  }
-
-  view view2 extends view1 {
-    title 'Same as View1, but with more details'
-
-    style * {
-      color muted
-    }
-
-    include some.backend
-  }
-
-  // cascade inheritance
-  view view3 extends view2 {
-    title 'Same as View2, but with more details'
-
-    include * -> some.backend
-  }
-
-}
-```
-
-The predicates and style rules of extended views applied after the ones from ancestors.
-
-Extended view also inherits the scope:
-
-```likec4
-views {
-
-  view view1 of cloud.backend {
-    title 'Backend components'
-  }
-
-  view view2 extends view1 {
-    include api // ✅ This is OK, references 'cloud.backend.api'
-  }
-
-}
-```
-## Rank constraints
-
-You can keep specific elements on the same horizontal/vertical level (or push them to the beginning/end of the layout)
-by adding an explicit `rank` block to the view.
-These rank constraints are forwarded to the Graphviz layout engine to achieve the desired layout effects.
-
-```likec4
-view checkoutFlow {
-  include *
-
-  // keep the API nodes aligned
-  rank same {
-    cloud.backend.api,
-    cloud.backend.billingApi,
-  }
-
-  // make customers appear at the beginning of the diagram, exclusive of the elements
-  rank source {
-    customer
-  }
-
-  // render reporting systems at the end, exclusive of the elements
-  rank sink {
-    analytics,
-    dataWarehouse
-  }
-}
-```
-
-- Allowed rank values: `same`, `min`, `max`, `source`, `sink`. If omitted, `same` is assumed.
-- Targets are regular `FqnRef`s, so you can reference nested elements just like in other rules. Non-existent or duplicate targets are ignored.
-- The constraint only affects elements that actually remain in the computed view. If a predicate later removes an element, it also disappears from the rank block.
-- Rank rules participate in manual tiling of compound nodes as well, so authored constraints combine with the automatic layout instead of fighting it.
-
-Use rank constraints sparingly—they are most helpful for anchoring critical columns/rows
-(e.g., ingress vs. egress nodes, semantic grouping in lieu of container) to achieve better layout.

@@ -1,5 +1,4 @@
 import { loggable } from '@likec4/log'
-import react from '@vitejs/plugin-react'
 import getPort, { portNumbers } from 'get-port'
 import isInsideContainer from 'is-inside-container'
 import { mkdtemp } from 'node:fs/promises'
@@ -30,8 +29,9 @@ function validatePort(port: number, source: string): void {
 
 /**
  * Resolves the HMR WebSocket port to use.
- * Priority: explicit argument > HMR_PORT env var > auto-discovered from 24678–24690.
- * When HMR is disabled, returns `undefined`.
+ * Priority: explicit argument > HMR_PORT env var.
+ * Returns `undefined` when HMR is disabled, or when no port is given:
+ * then Vite serves the HMR WebSocket on the dev server port.
  *
  * Exported for testing.
  */
@@ -51,7 +51,7 @@ export async function resolveHmrPort(
     validatePort(envPort, 'HMR_PORT')
     return envPort
   }
-  return getPort({ port: portNumbers(24678, 24690) })
+  return undefined
 }
 
 type Config = SetOptional<LikeC4ViteConfig, 'likec4AssetsDir'> & {
@@ -117,16 +117,14 @@ export async function viteDev({
 
   const resolvedHmrPort = await resolveHmrPort(hmrPort, hmr)
   if (hmr && resolvedHmrPort !== undefined) {
-    const source = hmrPort ? ' (explicit)' : env['HMR_PORT'] ? ' (env)' : ' (auto-discovered)'
+    const source = hmrPort ? ' (explicit)' : ' (env)'
     logger.info(`Enabling HMR: localhost:${resolvedHmrPort}${source}`)
-    config.plugins = [
-      react(),
-      ...config.plugins,
-    ]
     if (isInsideContainer()) {
       logger.info(k.yellow(`ensure port ${resolvedHmrPort} is published from container`))
     }
-  } else if (!hmr) {
+  } else if (hmr) {
+    logger.info(`Enabling HMR on the dev server port`)
+  } else {
     logger.info(`Disabling HMR`)
   }
 
@@ -149,6 +147,7 @@ export async function viteDev({
         'react-dom',
         'react/compiler-runtime',
         'react/jsx-runtime',
+        'react/jsx-dev-runtime',
         'react-dom/client',
         'likec4/vite-plugin/internal',
         '@likec4/core/styles',
@@ -187,6 +186,7 @@ export async function viteDev({
       languageServices: languageServices,
       outDir: publicDir,
       base: config.base,
+      customization: cfg.customization,
     })
     logger.info(`Building webcomponent`) // don't wait, we want to start the server asap
     await build({

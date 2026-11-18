@@ -20,16 +20,9 @@ const [{ dependencies }] = await $`pnpm ls -P --json --filter likec4-vscode`.jso
   }>
 }]>()
 
-// Replace esbuild with esbuild-wasm
 const packageJson = JSON.parse(await readFile('package.json', 'utf-8'))
 packageJson.dependencies = Object.fromEntries(
-  Object.entries(dependencies)
-    .map(([name, { version }]) => {
-      if (name === 'esbuild') {
-        return [name, `npm:esbuild-wasm@${version}`]
-      }
-      return [name, version]
-    }),
+  Object.entries(dependencies).map(([name, { version }]) => [name, version]),
 )
 packageJson.devDependencies = {}
 

@@ -33,6 +33,27 @@ const isErrorDiagnostic = (diagnostic: { severity?: number }): boolean => {
   return diagnostic.severity === 1
 }
 
+const isWarningDiagnostic = (diagnostic: { severity?: number }): boolean => {
+  return diagnostic.severity === 2
+}
+
+/**
+ * Validation diagnostic of a workspace document, as returned by
+ * {@link LikeC4.getErrors} and {@link LikeC4.getWarnings}
+ */
+export interface LikeC4Diagnostic {
+  message: string
+  /**
+   * Zero-based line of the diagnostic start, same as `range.start.line`
+   */
+  line: number
+  range: {
+    start: { line: number; character: number }
+    end: { line: number; character: number }
+  }
+  sourceFsPath: string
+}
+
 export class LikeC4 {
   protected readonly langium: LikeC4Langium
 
@@ -120,9 +141,16 @@ Please specify a project folder`)
   }
 
   /**
-   * Diagram is a computed view, layouted using Graphviz
-   * If diagram has manual layout, it will be used.
-   * Used in React components
+   * Returns diagrams - views layouted using Graphviz, with manual layouts applied (if any).
+   *
+   * Equivalent to `[...(await likec4.layoutedModel()).views()].map(v => v.$layouted)`,
+   * but loses the auto-layouted version of views and the model itself.
+   *
+   * @deprecated Use {@link layoutedModel} and `$layouted` of its views instead:
+   * ```ts
+   * const model = await likec4.layoutedModel(project)
+   * const diagrams = [...model.views()].map(v => v.$layouted)
+   * ```
    */
   async diagrams(project?: string | undefined): Promise<LayoutedView[]> {
     const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
@@ -279,27 +307,55 @@ Please specify a project folder`)
   }
 
   /**
-   * Same as {@link computedModel()}, but also applies layout
-   * Ready for rendering
+   * Same as {@link computedModel()}, but also layouts views. Ready for rendering.
+   *
+   * Manual layouts are **not applied** to the model data:
+   * - `$data.views` always contains the latest auto-layouted views (Graphviz)
+   * - `$data.manualLayouts` contains manual layout snapshots (from `.likec4/*.likec4.snap`) as is
+   *
+   * Manual layouts are applied by the view model, on access:
+   * - `model.view(id).$layouted` - view with manual layout applied (if any), use it for rendering
+   * - `model.view(id).$view` - latest auto-layouted view, with drifts from manual layout (if any)
+   * - `model.view(id).$manual` - view with manual layout applied, or `null` if there is no manual layout
+   *
+   * Keeping them separate allows switching between auto and manual layouts and detecting layout drifts.
+   * Serialized `$data` is enough: manual layouts are applied again after `LikeC4Model.create($data)`.
+   * Do not read positions from `$data.views` directly, these are auto-layouted.
+   *
+   * @example
+   * ```ts
+   * import { LikeC4 } from 'likec4'
+   *
+   * const likec4 = await LikeC4.fromWorkspace('path/to/workspace')
+   * const model = await likec4.layoutedModel()
+   * const view = model.view('index').$layouted // ready for rendering, with manual layout applied
+   * ```
    */
   async layoutedModel(project?: string | undefined): Promise<LikeC4Model.Layouted> {
     const projectId = this.projectsManager.ensureProjectId(project as ProjectId)
     return await this.languageServices.layoutedModel(projectId)
   }
 
-  getErrors(): Array<{
-    message: string
-    line: number
-    range: {
-      start: { line: number; character: number }
-      end: { line: number; character: number }
-    }
-    sourceFsPath: string
-  }> {
+  /**
+   * Returns validation errors of all documents in the workspace
+   */
+  getErrors(): LikeC4Diagnostic[] {
+    return this.collectDiagnostics(isErrorDiagnostic)
+  }
+
+  /**
+   * Returns validation warnings of all documents in the workspace.
+   * Warnings do not make the model invalid, see {@link getErrors}
+   */
+  getWarnings(): LikeC4Diagnostic[] {
+    return this.collectDiagnostics(isWarningDiagnostic)
+  }
+
+  private collectDiagnostics(predicate: (diagnostic: { severity?: number }) => boolean): LikeC4Diagnostic[] {
     const docs = [...this.LangiumDocuments.userDocuments]
     return docs.flatMap(doc => {
-      const errors = doc.diagnostics?.filter(isErrorDiagnostic) ?? []
-      return errors.map(({ message, range }) => ({
+      const diagnostics = doc.diagnostics?.filter(predicate) ?? []
+      return diagnostics.map(({ message, range }) => ({
         message: typeof message === 'string' ? message : message.value,
         line: range.start.line,
         range,

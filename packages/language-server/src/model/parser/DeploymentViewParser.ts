@@ -1,5 +1,5 @@
 import * as c4 from '@likec4/core'
-import { invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
+import { exact, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import { filter, isNonNullish, mapToObj, pipe } from 'remeda'
 import { type ParsedAstDeploymentView, ast, parseMarkdownAsString, toAutoLayout, ViewOps } from '../../ast'
 import { logWarnError } from '../../logger'
@@ -29,14 +29,11 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
         ) as c4.ViewId
       }
 
-      const deploymentViewBodyProps = {
-        ...pipe(
-          props,
-          filter(ast.isViewStringProperty),
-          mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
-        ),
-        ...this.descriptionFileOf(props),
-      }
+      const deploymentViewBodyProps = pipe(
+        props,
+        filter(ast.isViewStringProperty),
+        mapToObj(p => [p.key, p.value as ast.MarkdownOrString | undefined]),
+      )
       const {
         title = null,
         description = null,
@@ -51,18 +48,19 @@ export function DeploymentViewParser<TBase extends WithExpressionV2 & WithDeploy
 
       ViewOps.writeId(astNode, id as c4.ViewId)
 
-      return {
+      return exact({
         [c4._type]: 'deployment',
         id: id as c4.ViewId,
         astPath,
         title: toSingleLine(title) ?? null,
         description,
+        ...this.parseDescriptionFile(body),
         ...(order !== undefined && { order }),
         ...(routing && { routing }),
         tags,
         links: isNonEmptyArray(links) ? links : null,
         rules: this.tryMap('deployment', body.rules, n => this.parseDeploymentViewRule(n)),
-      }
+      })
     }
 
     parseDeploymentViewRule(astRule: ast.DeploymentViewRule): c4.DeploymentViewRule {

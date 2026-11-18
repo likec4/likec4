@@ -25,6 +25,7 @@ import type {
   ParsedLikeC4LangiumDocument,
 } from '../../ast'
 import { logger, logWarnError } from '../../logger'
+import type { DescriptionFileResolver, WithDescription } from './descriptionFileResolver'
 
 const iconTechPrefixRe = /^(aws|azure|gcp|tech):(.+)$/
 
@@ -73,6 +74,13 @@ function applyBidirectional(
   }
 }
 
+type MergedSpecs = {
+  elements: Record<c4.ElementKind, c4.ElementSpecification>
+  deployments: Record<c4.DeploymentKind, c4.ElementSpecification>
+  relationships: Record<c4.RelationshipKind, c4.RelationshipSpecification>
+  colors: ParsedAstSpecification['colors']
+}
+
 /**
  * The `MergedSpecification` class is responsible for merging multiple parsed
  * LikeC4Langium documents into a single specification. It consolidates tags,
@@ -80,7 +88,7 @@ function applyBidirectional(
  * and provides methods to convert parsed models into C4 model elements and relations.
  */
 export class MergedSpecification {
-  public readonly specs: Omit<ParsedAstSpecification, 'tags'> = {
+  public readonly specs: MergedSpecs = {
     elements: {},
     deployments: {},
     relationships: {},
@@ -103,7 +111,19 @@ export class MergedSpecification {
 
   public readonly inferTechFromIcon: boolean
 
-  constructor(docs: ReadonlyArray<ParsedLikeC4LangiumDocument>, opts?: { inferTechFromIcon?: boolean }) {
+  private readonly descriptionFileResolver: DescriptionFileResolver
+
+  constructor(
+    docs: ReadonlyArray<ParsedLikeC4LangiumDocument>,
+    opts?: {
+      inferTechFromIcon?: boolean
+      /**
+       * Resolves the content of the files referenced with `descriptionFile`
+       */
+      descriptionFile?: DescriptionFileResolver
+    },
+  ) {
+    this.descriptionFileResolver = opts?.descriptionFile ?? (() => undefined)
     const tags = {} as ParsedAstSpecification['tags']
     let projectIds = [] as c4.ProjectId[]
     for (const doc of docs) {
@@ -121,10 +141,16 @@ export class MergedSpecification {
       }
 
       Object.assign(tags, spec.tags)
-      Object.assign(this.specs.elements, spec.elements)
-      Object.assign(this.specs.relationships, spec.relationships)
+      for (const [kind, elementSpec] of Object.entries(spec.elements)) {
+        this.specs.elements[kind as c4.ElementKind] = this.withDescriptionFile(elementSpec)
+      }
+      for (const [kind, relationSpec] of Object.entries(spec.relationships)) {
+        this.specs.relationships[kind as c4.RelationshipKind] = this.withDescriptionFile(relationSpec)
+      }
       Object.assign(this.specs.colors, spec.colors)
-      Object.assign(this.specs.deployments, spec.deployments)
+      for (const [kind, deploymentSpec] of Object.entries(spec.deployments)) {
+        this.specs.deployments[kind as c4.DeploymentKind] = this.withDescriptionFile(deploymentSpec)
+      }
       Object.assign(this.globals.predicates, c4Globals.predicates)
       Object.assign(this.globals.dynamicPredicates, c4Globals.dynamicPredicates)
       Object.assign(this.globals.styles, c4Globals.styles)
@@ -140,20 +166,41 @@ export class MergedSpecification {
   }
 
   /**
+   * Replaces the reference to a description file with the content of the file.
+   * The content of the file replaces an inline description. The inline description stays when the
+   * file cannot be read, or when the reference is not valid (the parser drops it then, and the
+   * validation reports why - the two together included).
+   */
+  withDescriptionFile<T extends WithDescription>(
+    item: T,
+  ): Omit<T, 'descriptionFile'> {
+    if (Object.hasOwn(item, 'descriptionFile')) {
+      const { descriptionFile, ...rest } = item
+      const description = this.descriptionFileResolver(descriptionFile)
+      if (description) {
+        return { ...rest, description }
+      }
+      return rest
+    }
+    return item
+  }
+
+  /**
    * Converts a parsed model into a C4 model element.
    */
-  toModelElement = ({
-    tags,
-    links,
-    style,
-    id,
-    kind,
-    title,
-    description,
-    technology,
-    summary,
-    metadata,
-  }: ParsedAstElement): c4.Element | null => {
+  toModelElement = (parsed: ParsedAstElement): c4.Element | null => {
+    let {
+      tags,
+      links,
+      style,
+      id,
+      kind,
+      title,
+      description,
+      technology,
+      summary,
+      metadata,
+    } = this.withDescriptionFile(parsed)
     try {
       const __kind = this.specs.elements[kind]
       if (!__kind) {
@@ -209,19 +256,19 @@ export class MergedSpecification {
   /**
    * Converts a parsed model into a C4 model relation.
    */
-  toModelRelation = ({
-    astPath: _astPath, // omit
-    descriptionFile: _descriptionFile, // the description is resolved when the model is built
-    source,
-    target,
-    kind,
-    links,
-    id,
-    title,
-    tags,
-    isBidirectional,
-    ...model
-  }: ParsedAstRelation): c4.Relationship | null => {
+  toModelRelation = (parsed: ParsedAstRelation): c4.Relationship | null => {
+    let {
+      astPath: _astPath, // omit
+      source,
+      target,
+      kind,
+      links,
+      id,
+      title,
+      tags,
+      isBidirectional,
+      ...model
+    } = this.withDescriptionFile(parsed)
     if (isNonNullish(kind) && this.specs.relationships[kind]) {
       const { multiple: _multiple, tags: specTags, ...spec } = this.specs.relationships[kind]
       if (specTags && isNonEmptyArray(specTags)) {
@@ -267,9 +314,7 @@ export class MergedSpecification {
    */
   toDeploymentElement = (parsed: ParsedAstDeployment): c4.DeploymentElement | null => {
     if ('element' in parsed && !('kind' in parsed)) {
-      // the reference to the file is not part of the model, and a deployed instance of an element
-      // takes the description of that element
-      const { descriptionFile: _descriptionFile, ...instance } = parsed
+      const instance = this.withDescriptionFile(parsed)
       return {
         ...instance,
         element: FqnRef.flatten(parsed.element),
@@ -289,9 +334,8 @@ export class MergedSpecification {
         id,
         style,
         title,
-        descriptionFile: _descriptionFile, // the description is resolved when the model is built
         ...rest
-      } = parsed
+      } = this.withDescriptionFile(parsed)
       title = title === nameFromFqn(parsed.id) && __kind.title ? __kind.title : title
       return exact({
         ...__kind,
@@ -312,18 +356,18 @@ export class MergedSpecification {
   /**
    * Converts a parsed deployment relation into a C4 deployment relation.
    */
-  toDeploymentRelation = ({
-    astPath: _astPath, // omit
-    descriptionFile: _descriptionFile, // the description is resolved when the model is built
-    source,
-    target,
-    kind,
-    links,
-    id,
-    tags,
-    isBidirectional,
-    ...model
-  }: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
+  toDeploymentRelation = (parsed: ParsedAstDeploymentRelation): c4.DeploymentRelationship | null => {
+    let {
+      astPath: _astPath, // omit
+      source,
+      target,
+      kind,
+      links,
+      id,
+      tags,
+      isBidirectional,
+      ...model
+    } = this.withDescriptionFile(parsed)
     if (isNonNullish(kind) && this.specs.relationships[kind as c4.RelationshipKind]) {
       const spec = this.specs.relationships[kind as c4.RelationshipKind]!
       const { multiple: _multiple, tags: specTags, ...restSpec } = spec

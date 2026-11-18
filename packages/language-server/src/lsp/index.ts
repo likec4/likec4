@@ -1,5 +1,6 @@
 export * from './CodeLensProvider'
 export * from './CompletionProvider'
+export * from './DefinitionProvider'
 export * from './DocumentHighlightProvider'
 export * from './DocumentLinkProvider'
 export * from './DocumentSymbolProvider'

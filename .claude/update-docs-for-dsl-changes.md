@@ -50,7 +50,7 @@ const shapes = [
   'mobile',
   'queue',
   'document',
-  'YOUR_SHAPE',  // <-- add here
+  'YOUR_SHAPE', // <-- add here
 ] as const
 ```
 
@@ -69,11 +69,13 @@ This regenerates `apps/docs/src/components/likec4-theme/colors.c4` with shape x 
 Find the shapes section (around line 75-89) and add the new shape to the prose list:
 
 **Before:**
+
 ```
 Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`, `bucket`, and `document`.
 ```
 
 **After:**
+
 ```
 Available shapes: `rectangle` (default), `storage`, `cylinder`, `browser`, `mobile`, `person`, `queue`, `bucket`, `document`, and `YOUR_SHAPE`.
 ```
@@ -95,6 +97,7 @@ cd apps/docs && pnpm dev
 ```
 
 Check that:
+
 - The styling page (`/dsl/styling/`) shows the new shape in the "All Shapes" diagram
 - Code blocks with `shape YOUR_SHAPE` get syntax highlighting
 - The shape name appears in the prose list
@@ -105,17 +108,18 @@ Check that:
 
 The same pattern applies for other style properties documented in `styling.mdx`:
 
-| Property | Docs section | Example component |
-|----------|-------------|-------------------|
-| Shape | `### Shape` (~line 75) | `<LikeC4ThemeView viewId="allshapes"/>` |
-| Color | `### Color` (~line 91) | `<LikeC4ThemeView viewId="index"/>` |
-| Size | `### Size` (~line 130) | `<LikeC4ThemeView viewId="sizes"/>` |
-| Opacity | `### Opacity` (~line 148) | `<LikeC4ThemeView viewId="opacity"/>` |
-| Border | `### Border` (~line 167) | `<LikeC4ThemeView viewId="borders"/>` |
-| Multiple | `### Multiple` (~line 184) | `<LikeC4ThemeView viewId="multiple"/>` |
-| Icon | `### Icon` (~line 200) | `<LikeC4ThemeView viewId="icons"/>` |
+| Property | Docs section               | Example component                       |
+| -------- | -------------------------- | --------------------------------------- |
+| Shape    | `### Shape` (~line 75)     | `<LikeC4ThemeView viewId="allshapes"/>` |
+| Color    | `### Color` (~line 91)     | `<LikeC4ThemeView viewId="index"/>`     |
+| Size     | `### Size` (~line 130)     | `<LikeC4ThemeView viewId="sizes"/>`     |
+| Opacity  | `### Opacity` (~line 148)  | `<LikeC4ThemeView viewId="opacity"/>`   |
+| Border   | `### Border` (~line 167)   | `<LikeC4ThemeView viewId="borders"/>`   |
+| Multiple | `### Multiple` (~line 184) | `<LikeC4ThemeView viewId="multiple"/>`  |
+| Icon     | `### Icon` (~line 200)     | `<LikeC4ThemeView viewId="icons"/>`     |
 
 Each property section follows the same pattern:
+
 1. Code example showing DSL syntax
 2. Prose listing available values
 3. `<LikeC4ThemeView>` component rendering a live example from `.c4` files
@@ -124,16 +128,16 @@ Each property section follows the same pattern:
 
 ## Key Files Reference
 
-| File | Purpose | Auto-generated? |
-|------|---------|----------------|
-| `apps/docs/src/content/docs/dsl/styling.mdx` | Main style property reference | No - edit manually |
-| `apps/docs/src/content/docs/dsl/specification.mdx` | Element kind definitions | No - edit manually |
-| `apps/docs/src/content/docs/dsl/notations.mdx` | Notation/legend docs | No - edit manually |
-| `apps/docs/scripts/generate-theme-c4.mts` | Generates colors.c4 | No - edit manually |
-| `apps/docs/src/components/likec4-theme/colors.c4` | All shapes x all colors | **Yes** - run script |
-| `apps/docs/src/components/likec4-theme/allshapes.c4` | View: all shapes for primary | No - but rarely needs changes |
-| `apps/docs/src/components/likec4-theme/LikeC4ThemeView.astro` | Renders .c4 views inline | No - but rarely needs changes |
-| `apps/docs/likec4.tmLanguage.json` | Syntax highlighting in code blocks | No - edit manually |
+| File                                                          | Purpose                            | Auto-generated?               |
+| ------------------------------------------------------------- | ---------------------------------- | ----------------------------- |
+| `apps/docs/src/content/docs/dsl/styling.mdx`                  | Main style property reference      | No - edit manually            |
+| `apps/docs/src/content/docs/dsl/specification.mdx`            | Element kind definitions           | No - edit manually            |
+| `apps/docs/src/content/docs/dsl/notations.mdx`                | Notation/legend docs               | No - edit manually            |
+| `apps/docs/scripts/generate-theme-c4.mts`                     | Generates colors.c4                | No - edit manually            |
+| `apps/docs/src/components/likec4-theme/colors.c4`             | All shapes x all colors            | **Yes** - run script          |
+| `apps/docs/src/components/likec4-theme/allshapes.c4`          | View: all shapes for primary       | No - but rarely needs changes |
+| `apps/docs/src/components/likec4-theme/LikeC4ThemeView.astro` | Renders .c4 views inline           | No - but rarely needs changes |
+| `apps/docs/likec4.tmLanguage.json`                            | Syntax highlighting in code blocks | No - edit manually            |
 
 ---
 

@@ -2,14 +2,11 @@ import type { ViewId } from '@likec4/core'
 import { UriUtils } from 'langium'
 import { vol } from 'memfs'
 import stripIndent from 'strip-indent'
-import { type ExpectStatic, describe, it, vi } from 'vitest'
+import { type ExpectStatic, describe, it } from 'vitest'
 import { URI } from 'vscode-uri'
 import { WithFileSystem } from '../filesystem'
 import type { ChangeView } from '../protocol'
 import { createTestServices, mockMethod } from '../test'
-
-vi.mock('node:fs')
-vi.mock('node:fs/promises')
 
 let seq = 0
 async function testDoc(expect: ExpectStatic, document: string) {

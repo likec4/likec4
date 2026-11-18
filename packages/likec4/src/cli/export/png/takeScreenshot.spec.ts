@@ -36,6 +36,48 @@ describe('createExportViewUrl', () => {
     expect(url.searchParams.get('notation')).toBe('true')
   })
 
+  it('omits notation position and text when they are the defaults', () => {
+    const url = parseExportUrl(createExportViewUrl({
+      viewId: 'orders',
+      padding: 20,
+      theme: 'light',
+      notation: true,
+      notationPosition: 'bottom-right',
+      notationText: 'short',
+    }))
+
+    expect(url.searchParams.get('notation')).toBe('true')
+    expect(url.searchParams.has('notationPosition')).toBe(false)
+    expect(url.searchParams.has('notationText')).toBe(false)
+  })
+
+  it('adds non-default notation position and text', () => {
+    const url = parseExportUrl(createExportViewUrl({
+      viewId: 'orders',
+      padding: 20,
+      theme: 'light',
+      notation: true,
+      notationPosition: 'top-left',
+      notationText: 'full',
+    }))
+
+    expect(url.searchParams.get('notationPosition')).toBe('top-left')
+    expect(url.searchParams.get('notationText')).toBe('full')
+  })
+
+  it('ignores notation position and text without notation', () => {
+    const url = parseExportUrl(createExportViewUrl({
+      viewId: 'orders',
+      padding: 20,
+      theme: 'light',
+      notationPosition: 'top-left',
+      notationText: 'kind',
+    }))
+
+    expect(url.searchParams.has('notationPosition')).toBe(false)
+    expect(url.searchParams.has('notationText')).toBe(false)
+  })
+
   it('adds description query parameter when requested', () => {
     const url = parseExportUrl(createExportViewUrl({
       viewId: 'orders',

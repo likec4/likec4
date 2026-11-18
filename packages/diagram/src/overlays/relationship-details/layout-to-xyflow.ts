@@ -132,6 +132,7 @@ export function layoutResultToXYFlow(
       target,
       relationId,
       label,
+      labelBBox = null,
       technology,
       description,
       navigateTo = null,
@@ -154,6 +155,7 @@ export function layoutResultToXYFlow(
       data: {
         relationId,
         label,
+        labelBBox,
         color,
         navigateTo,
         line,
