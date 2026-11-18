@@ -1,5 +1,14 @@
 # @likec4/diagram
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3581](https://github.com/likec4/likec4/pull/3581) [`a1ac0c4`](https://github.com/likec4/likec4/commit/a1ac0c43e6218196f389853f22ddfcdf24199579) Thanks [@bardrop](https://github.com/bardrop)! - Arrowheads of edges with `ortho` routing now follow the last segment in every browser. Safari drew them all pointing right.
+- Updated dependencies [[`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706)]:
+  - @likec4/core@1.61.1
+  - @likec4/styles@1.61.1
+
 ## 1.61.0
 
 ### Minor Changes

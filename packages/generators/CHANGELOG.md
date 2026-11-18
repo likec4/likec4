@@ -1,5 +1,19 @@
 # @likec4/generators
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3564](https://github.com/likec4/likec4/pull/3564) [`4e082a2`](https://github.com/likec4/likec4/commit/4e082a2eb642cb4a323c6e5de2d6ff5e92cb3db6) Thanks [@D0ktay](https://github.com/D0ktay)! - `toDSL()` and `writeDSL()` now escape backslashes in generated strings, so values such as `C:\tools\` or `regex \d+` are read back unchanged instead of corrupting the output.
+
+- [#3588](https://github.com/likec4/likec4/pull/3588) [`71b60d8`](https://github.com/likec4/likec4/commit/71b60d80eb3f38228be491c1b2da4dbb82553e43) Thanks [@vanshbarfiwala-lgtm](https://github.com/vanshbarfiwala-lgtm)! - Keep distinct elements and their relationships separate in D2 exports when element IDs differ only by case or normalize to the same name.
+
+- [#3548](https://github.com/likec4/likec4/pull/3548) [`55955d7`](https://github.com/likec4/likec4/commit/55955d7e20cbf5a6f8a377e4b68e50f0cd771ba3) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Mermaid export: a backtick in a relationship label or in the title of an element with children no longer produces a diagram Mermaid cannot parse
+- Updated dependencies [[`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706)]:
+  - @likec4/core@1.61.1
+  - @likec4/config@1.61.1
+  - @likec4/log@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes
