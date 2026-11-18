@@ -1353,6 +1353,24 @@ describe('formating', () => {
         `),
     )
 
+    it('keeps optional property colons stable across formatting passes', async ({ expect, format }) => {
+      const formatted = await format`
+        model {
+          system sys1 {
+            link  : https://example.com
+            metadata {
+              owner  : 'team'
+              active : true
+            }
+          }
+        }`
+
+      expect(formatted).toContain('link: https://example.com')
+      expect(formatted).toContain('owner: \'team\'')
+      expect(formatted).toContain('active: true')
+      expect(await format(formatted)).toBe(formatted)
+    })
+
     it(
       'formats navigateTo property',
       async ({ expect, format }) =>
