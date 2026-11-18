@@ -1,6 +1,16 @@
 import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
-import { ActionIcon, Box, Group, Paper, Stack, Text, ThemeIcon, Tooltip as MantineTooltip } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  ThemeIcon,
+  Tooltip as MantineTooltip,
+  UnstyledButton,
+} from '@mantine/core'
 import { IconArrowRight, IconExternalLink, IconInfoCircle } from '@tabler/icons-react'
 import { useSelector } from '@xstate/react'
 import { useCallback } from 'react'
@@ -9,6 +19,19 @@ import { useDiagram } from '../../hooks'
 import { RelationshipsBrowser } from '../relationships-browser/RelationshipsBrowser'
 import { useElementDetailsActorRef } from './actorContext'
 import * as css from './TabPanelRelationships.css'
+
+type RelationshipsScope = 'global' | 'view'
+
+type RelationshipsCount = {
+  total: number
+  included: number
+}
+
+export type RelationshipsStats = {
+  incoming: RelationshipsCount
+  outgoing: RelationshipsCount
+  hidden: number
+}
 
 type RelationshipsTabPanelProps = {
   node: LikeC4Model.Node | null
@@ -37,26 +60,23 @@ export function TabPanelRelationships({
     useCallback(s => s.children[`${delailsActor.id}-relationships`], [delailsActor.id]),
   )
 
-  const incoming = [...element.incoming()].map(r => r.id)
-  const outgoing = [...element.outgoing()].map(r => r.id)
+  const scope = useSelector(relationshipsBrowserActor, s => s?.context.scope ?? 'view')
+  const { incoming, outgoing, hidden } = relationshipsStats(element, node, scope)
 
-  const incomingInView = node ? unique([...node.incoming()].flatMap(e => e.$edge.relations)) : []
-  const outgoingInView = node ? unique([...node.outgoing()].flatMap(e => e.$edge.relations)) : []
+  const showAllRelationships = () => {
+    relationshipsBrowserActor?.send({ type: 'change.scope', scope: 'global' })
+  }
 
-  const notIncludedRelations = [
-    ...incoming,
-    ...outgoing,
-  ].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length
   return (
     <Stack gap={'xs'} pos={'relative'} w={'100%'} h={'100%'}>
-      {(incoming.length + outgoing.length) > 0 && (
+      {(incoming.total + outgoing.total) > 0 && (
         <Group gap={'xs'} wrap="nowrap" align="center">
           <Box>
             <Group gap={8} mb={4} wrap="nowrap">
               <RelationshipsStat
                 title="incoming"
-                total={incoming.length}
-                included={incomingInView.length}
+                total={incoming.total}
+                included={incoming.included}
               />
               <ThemeIcon size={'sm'} variant="transparent" c="dimmed">
                 <IconArrowRight style={{ width: 16 }} />
@@ -67,23 +87,21 @@ export function TabPanelRelationships({
               </ThemeIcon>
               <RelationshipsStat
                 title="outgoing"
-                total={outgoing.length}
-                included={outgoingInView.length}
+                total={outgoing.total}
+                included={outgoing.included}
               />
             </Group>
           </Box>
-          {notIncludedRelations > 0 && (
-            <Tooltip label="Current view does not include some relationships">
-              <Group
-                mt={'xs'}
-                gap={6}
-                c="orange"
-                style={{ cursor: 'pointer' }}>
-                <IconInfoCircle style={{ width: 14 }} />
-                <Text fz="sm">
-                  {notIncludedRelations} relationship{notIncludedRelations > 1 ? 's are' : ' is'} hidden
-                </Text>
-              </Group>
+          {hidden > 0 && (
+            <Tooltip label="Current view does not include some relationships, click to show all">
+              <UnstyledButton mt={'xs'} onClick={showAllRelationships}>
+                <Group gap={6} c="orange" wrap="nowrap">
+                  <IconInfoCircle style={{ width: 14 }} />
+                  <Text fz="sm">
+                    {hidden} relationship{hidden > 1 ? 's are' : ' is'} hidden
+                  </Text>
+                </Group>
+              </UnstyledButton>
             </Tooltip>
           )}
         </Group>
@@ -121,6 +139,35 @@ export function TabPanelRelationships({
       </Box>
     </Stack>
   )
+}
+
+/**
+ * Counts the relationships of the element, and how many of them the current view shows when the scope is `view`.
+ */
+export function relationshipsStats(
+  element: LikeC4Model.Element,
+  node: LikeC4Model.Node | null,
+  scope: RelationshipsScope,
+): RelationshipsStats {
+  const incoming = [...element.incoming()].map(r => r.id)
+  const outgoing = [...element.outgoing()].map(r => r.id)
+
+  if (scope === 'global') {
+    return {
+      incoming: { total: incoming.length, included: incoming.length },
+      outgoing: { total: outgoing.length, included: outgoing.length },
+      hidden: 0,
+    }
+  }
+
+  const incomingInView = node ? unique([...node.incoming()].flatMap(e => e.$edge.relations)) : []
+  const outgoingInView = node ? unique([...node.outgoing()].flatMap(e => e.$edge.relations)) : []
+
+  return {
+    incoming: { total: incoming.length, included: incomingInView.length },
+    outgoing: { total: outgoing.length, included: outgoingInView.length },
+    hidden: [...incoming, ...outgoing].filter(r => !incomingInView.includes(r) && !outgoingInView.includes(r)).length,
+  }
 }
 
 function RelationshipsStat({
