@@ -74,6 +74,8 @@ export default defineConfig(({ mode }) => {
         buildApp: {
           order: 'pre',
           handler() {
+            // `pnpm dev` runs `pandacss codegen --clean` once before starting parallel watchers;
+            // restart `pnpm dev` if `panda.config.mjs` changes during a watch session.
             if (!existsSync(resolve('styled-system'))) {
               this.info('shipping panda')
               execSync('pandacss codegen --clean', {
