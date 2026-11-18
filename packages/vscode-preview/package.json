@@ -16,7 +16,7 @@
     "build": "vite build && vite build --config vite.markdown.config.ts",
     "watch:preview": "vite build --watch --mode watch-dev",
     "watch:markdown": "vite build --watch --mode watch-dev --config vite.markdown.config.ts",
-    "dev": "run-p \"watch:*\"",
+    "dev": "pandacss codegen --clean && run-p \"watch:*\"",
     "start": "vite",
     "lint": "run -T eslint src/ --fix",
     "clean": "likec4ops clean"

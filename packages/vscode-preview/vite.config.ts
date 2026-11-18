@@ -70,6 +70,9 @@ export default defineConfig(({ mode }) => {
         buildApp: {
           order: 'pre',
           handler() {
+            if (isWatchDev) {
+              return
+            }
             this.info('shipping panda')
             execSync('pandacss codegen --clean', {
               stdio: 'inherit',

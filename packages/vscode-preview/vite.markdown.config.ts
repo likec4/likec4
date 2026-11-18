@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => {
         buildApp: {
           order: 'pre',
           handler() {
-            if (!existsSync(resolve('styled-system'))) {
+            if (!isWatchDev && !existsSync(resolve('styled-system'))) {
               this.info('shipping panda')
               execSync('pandacss codegen --clean', {
                 stdio: 'inherit',
