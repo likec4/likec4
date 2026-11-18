@@ -1,0 +1,27 @@
+.likec4-notice {
+  font-family: var(--vscode-font-family, sans-serif);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 0 0 6px 0;
+  border-left: 3px solid var(--vscode-descriptionForeground, #888);
+  background: var(--vscode-textBlockQuote-background, rgba(127, 127, 127, 0.1));
+  color: var(--vscode-foreground, inherit);
+}
+
+.likec4-notice-warning {
+  border-left-color: var(--vscode-editorWarning-foreground, #cca700);
+}
+
+.likec4-notice-error {
+  border-left-color: var(--vscode-editorError-foreground, #f14c4c);
+}
+
+.likec4-notice-info {
+  border-left-color: var(--vscode-descriptionForeground, #888);
+}
+
+.likec4-view > svg.likec4-static {
+  max-width: 100%;
+  height: auto;
+}

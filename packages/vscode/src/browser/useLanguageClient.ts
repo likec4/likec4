@@ -8,7 +8,11 @@ import {
 } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import type { LanguageClientOptions } from 'vscode-languageclient/browser'
-import { LanguageClient as BrowserLanguageClient } from 'vscode-languageclient/browser'
+import {
+  BrowserMessageReader,
+  BrowserMessageWriter,
+  LanguageClient as BrowserLanguageClient,
+} from 'vscode-languageclient/browser'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { isLikeC4Source } from '../utils'
 
@@ -24,13 +28,11 @@ const useLanguageClient = defineService(() => {
 
   output.info(`worker: ${serverMain}`)
 
-  const worker = new Worker(serverMain, {
-    name: 'LikeC4 Language Server',
-    type: 'module',
-  })
+  let worker: Worker | null = null
 
   onDeactivate(() => {
-    worker.terminate()
+    worker?.terminate()
+    worker = null
   })
 
   const documentSelector = useDocumentSelector()
@@ -54,8 +56,21 @@ const useLanguageClient = defineService(() => {
     documentSelector: toValue(documentSelector),
   }
 
-  // Create and start the language client.
-  const client = new BrowserLanguageClient('likec4', 'LikeC4 Language Server', worker, clientOptions)
+  // Create the language client lazily; the Web Worker is spawned only when client.start() runs.
+  const client = new BrowserLanguageClient(
+    'likec4',
+    'LikeC4 Language Server',
+    async () => {
+      worker ??= new Worker(serverMain, {
+        name: 'LikeC4 Language Server',
+      })
+      return {
+        reader: new BrowserMessageReader(worker),
+        writer: new BrowserMessageWriter(worker),
+      }
+    },
+    clientOptions,
+  )
   return useDisposable(client)
 })
 

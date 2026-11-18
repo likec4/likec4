@@ -207,6 +207,38 @@
           "items": {
             "type": "string"
           }
+        },
+        "likec4.markdownPreview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%ext.config.markdownPreview.enabled.description%"
+        },
+        "likec4.markdownPreview.colorScheme": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "light",
+            "dark"
+          ],
+          "default": "auto",
+          "markdownDescription": "%ext.config.markdownPreview.colorScheme.description%"
+        },
+        "likec4.markdownPreview.maxHeight": {
+          "type": "number",
+          "default": 600,
+          "minimum": 100,
+          "markdownDescription": "%ext.config.markdownPreview.maxHeight.description%"
+        },
+        "likec4.markdownPreview.maxModelBytes": {
+          "type": "number",
+          "default": 2097152,
+          "minimum": 65536,
+          "markdownDescription": "%ext.config.markdownPreview.maxModelBytes.description%"
+        },
+        "likec4.markdownPreview.panZoom": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%ext.config.markdownPreview.panZoom.description%"
         }
       }
     },
@@ -344,6 +376,14 @@
           }
         ]
       }
+    ],
+    "markdown.markdownItPlugins": true,
+    "markdown.previewScripts": [
+      "./dist/markdown/index.js"
+    ],
+    "markdown.previewStyles": [
+      "./dist/preview/fonts.css",
+      "./dist/markdown/preview.css"
     ]
   },
   "activationEvents": [
@@ -370,6 +410,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@reactive-vscode/vueuse": "^1.0.2",
     "@rolldown/plugin-node-polyfills": "catalog:tsdown",
+    "@types/markdown-it": "catalog:",
     "@types/node": "catalog:",
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
@@ -377,6 +418,7 @@
     "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
+    "markdown-it": "catalog:",
     "nano-spawn": "catalog:externals",
     "nanoid": "catalog:utils",
     "p-queue": "catalog:utils",

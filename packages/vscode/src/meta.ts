@@ -151,6 +151,11 @@ export type ConfigKey =
   | "likec4.node.path"
   | "likec4.cli.path"
   | "likec4.exclude"
+  | "likec4.markdownPreview.enabled"
+  | "likec4.markdownPreview.colorScheme"
+  | "likec4.markdownPreview.maxHeight"
+  | "likec4.markdownPreview.maxModelBytes"
+  | "likec4.markdownPreview.panZoom"
 
 export interface ConfigKeyTypeMap {
   "likec4.graphviz.mode": ("wasm" | "binary"),
@@ -161,6 +166,11 @@ export interface ConfigKeyTypeMap {
   "likec4.node.path": string,
   "likec4.cli.path": string,
   "likec4.exclude": string[],
+  "likec4.markdownPreview.enabled": boolean,
+  "likec4.markdownPreview.colorScheme": ("auto" | "light" | "dark"),
+  "likec4.markdownPreview.maxHeight": number,
+  "likec4.markdownPreview.maxModelBytes": number,
+  "likec4.markdownPreview.panZoom": boolean,
 }
 
 export interface ConfigShorthandMap {
@@ -172,6 +182,11 @@ export interface ConfigShorthandMap {
   nodePath: "likec4.node.path",
   cliPath: "likec4.cli.path",
   exclude: "likec4.exclude",
+  markdownPreviewEnabled: "likec4.markdownPreview.enabled",
+  markdownPreviewColorScheme: "likec4.markdownPreview.colorScheme",
+  markdownPreviewMaxHeight: "likec4.markdownPreview.maxHeight",
+  markdownPreviewMaxModelBytes: "likec4.markdownPreview.maxModelBytes",
+  markdownPreviewPanZoom: "likec4.markdownPreview.panZoom",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -183,6 +198,11 @@ export interface ConfigShorthandTypeMap {
   nodePath: string,
   cliPath: string,
   exclude: string[],
+  markdownPreviewEnabled: boolean,
+  markdownPreviewColorScheme: ("auto" | "light" | "dark"),
+  markdownPreviewMaxHeight: number,
+  markdownPreviewMaxModelBytes: number,
+  markdownPreviewPanZoom: boolean,
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -275,6 +295,56 @@ export const configs = {
     key: "likec4.exclude",
     default: [],
   } as ConfigItem<"likec4.exclude">,
+  /**
+   *
+   * @key `likec4.markdownPreview.enabled`
+   * @default `true`
+   * @type `boolean`
+   */
+  markdownPreviewEnabled: {
+    key: "likec4.markdownPreview.enabled",
+    default: true,
+  } as ConfigItem<"likec4.markdownPreview.enabled">,
+  /**
+   *
+   * @key `likec4.markdownPreview.colorScheme`
+   * @default `"auto"`
+   * @type `string`
+   */
+  markdownPreviewColorScheme: {
+    key: "likec4.markdownPreview.colorScheme",
+    default: "auto",
+  } as ConfigItem<"likec4.markdownPreview.colorScheme">,
+  /**
+   *
+   * @key `likec4.markdownPreview.maxHeight`
+   * @default `600`
+   * @type `number`
+   */
+  markdownPreviewMaxHeight: {
+    key: "likec4.markdownPreview.maxHeight",
+    default: 600,
+  } as ConfigItem<"likec4.markdownPreview.maxHeight">,
+  /**
+   *
+   * @key `likec4.markdownPreview.maxModelBytes`
+   * @default `2097152`
+   * @type `number`
+   */
+  markdownPreviewMaxModelBytes: {
+    key: "likec4.markdownPreview.maxModelBytes",
+    default: 2097152,
+  } as ConfigItem<"likec4.markdownPreview.maxModelBytes">,
+  /**
+   *
+   * @key `likec4.markdownPreview.panZoom`
+   * @default `false`
+   * @type `boolean`
+   */
+  markdownPreviewPanZoom: {
+    key: "likec4.markdownPreview.panZoom",
+    default: false,
+  } as ConfigItem<"likec4.markdownPreview.panZoom">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -286,6 +356,11 @@ export interface ScopedConfigKeyTypeMap {
   "node.path": string,
   "cli.path": string,
   "exclude": string[],
+  "markdownPreview.enabled": boolean,
+  "markdownPreview.colorScheme": ("auto" | "light" | "dark"),
+  "markdownPreview.maxHeight": number,
+  "markdownPreview.maxModelBytes": number,
+  "markdownPreview.panZoom": boolean,
 }
 
 export const scopedConfigs = {
@@ -299,6 +374,11 @@ export const scopedConfigs = {
     "node.path": "",
     "cli.path": "",
     "exclude": [],
+    "markdownPreview.enabled": true,
+    "markdownPreview.colorScheme": "auto",
+    "markdownPreview.maxHeight": 600,
+    "markdownPreview.maxModelBytes": 2097152,
+    "markdownPreview.panZoom": false,
   } satisfies ScopedConfigKeyTypeMap,
 }
 
@@ -322,6 +402,13 @@ export interface NestedConfigs {
       "path": string,
     },
     "exclude": string[],
+    "markdownPreview": {
+      "enabled": boolean,
+      "colorScheme": ("auto" | "light" | "dark"),
+      "maxHeight": number,
+      "maxModelBytes": number,
+      "panZoom": boolean,
+    },
   },
 }
 
@@ -344,5 +431,12 @@ export interface NestedScopedConfigs {
     "path": string,
   },
   "exclude": string[],
+  "markdownPreview": {
+    "enabled": boolean,
+    "colorScheme": ("auto" | "light" | "dark"),
+    "maxHeight": number,
+    "maxModelBytes": number,
+    "panZoom": boolean,
+  },
 }
 

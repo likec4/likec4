@@ -1,6 +1,7 @@
 import postcssPanda from '@pandacss/dev/postcss'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
@@ -70,6 +71,9 @@ export default defineConfig(({ mode }) => {
         buildApp: {
           order: 'pre',
           handler() {
+            if (isWatchDev && existsSync(resolve('styled-system'))) {
+              return
+            }
             this.info('shipping panda')
             execSync('pandacss codegen --clean', {
               stdio: 'inherit',
