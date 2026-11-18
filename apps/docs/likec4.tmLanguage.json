@@ -130,7 +130,7 @@
       }
     },
     {
-      "match": "\\b(element\\.kind|element\\.tag)\\s+(\\!=|==?)\\s+([#_\\*\\.\\w]+)\\b",
+      "match": "\\b(element\\.kind|element\\.tag|relationship\\.kind|relationship\\.tag)\\s+(\\!=|==?)\\s+([#_\\*\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"

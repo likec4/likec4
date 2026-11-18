@@ -50,7 +50,7 @@ import {
   checkTag,
 } from './specification'
 import { viewChecks, viewOrderChecks, viewRuleAutoLayoutChecks } from './view'
-import { viewRuleRankChecks } from './view-checks'
+import { viewRuleRankChecks, viewRuleRelationshipStyleChecks } from './view-checks'
 import {
   checkFqnExprWith,
   checkFqnRefExpr,
@@ -202,6 +202,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ColorLiteral: colorLiteralRuleChecks(services),
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
     ViewRuleRank: viewRuleRankChecks(services),
+    ViewRuleRelationshipStyle: viewRuleRelationshipStyleChecks(services),
     ViewOrderProperty: viewOrderChecks(services),
     ModelDiff: modelDiffChecks(services),
     DiffRemoveEntry: diffRemoveEntryChecks(services),

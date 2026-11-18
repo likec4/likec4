@@ -16,6 +16,7 @@ import {
   parseMarkdownAsString,
   toAutoLayout,
   toColor,
+  toRelationshipStyle,
   ViewOps,
 } from '../../ast'
 import { safeCall, stringHash } from '../../utils'
@@ -25,7 +26,11 @@ import type { WithPredicates } from './PredicatesParser'
 
 export type WithViewsParser = ReturnType<typeof ViewsParser>
 
-type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ViewRuleGlobalStyle
+type ViewRuleStyleOrGlobalRef = c4.ElementViewRuleStyle | c4.ElementViewRuleRelationshipStyle | c4.ViewRuleGlobalStyle
+type DynamicViewRuleStyleOrGlobalRef = Exclude<ViewRuleStyleOrGlobalRef, c4.ElementViewRuleRelationshipStyle>
+const isDynamicViewStyle = (rule: ViewRuleStyleOrGlobalRef): rule is DynamicViewRuleStyleOrGlobalRef =>
+  !('relationshipStyle' in rule)
+
 export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B: TBase) {
   return class ViewsParser extends B {
     parseViews() {
@@ -199,10 +204,33 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
       if (ast.isViewRuleStyle(astRule)) {
         return this.parseViewRuleStyle(astRule)
       }
+      if (ast.isViewRuleRelationshipStyle(astRule)) {
+        return this.parseViewRuleRelationshipStyle(astRule)
+      }
       if (ast.isViewRuleGlobalStyle(astRule)) {
         return this.parseViewRuleGlobalStyle(astRule)
       }
       nonexhaustive(astRule)
+    }
+
+    parseViewRuleRelationshipStyle(astRule: ast.ViewRuleRelationshipStyle): c4.ElementViewRuleRelationshipStyle {
+      const conditions = astRule.targets.map((target): c4.WhereOperator => {
+        if (ast.isRelationshipTagExpression(target)) {
+          const tag = target.tag.tag.ref?.name
+          invariant(tag, `Tag ${target.$cstNode?.text} is not resolved`)
+          return { tag: target.isEqual ? { eq: tag as c4.Tag } : { neq: tag as c4.Tag } }
+        }
+        const kind = target.kind.ref?.name
+        invariant(kind, `Relationship kind ${target.$cstNode?.text} is not resolved`)
+        return { kind: target.isEqual ? { eq: kind } : { neq: kind } }
+      })
+      invariant(isNonEmptyArray(conditions), 'Relationship style has no targets')
+      return {
+        relationshipStyle: {
+          where: conditions.length === 1 ? conditions[0] : { or: conditions },
+          ...toRelationshipStyle(astRule.props, this.isValid),
+        },
+      }
     }
 
     parseViewRuleGroup(astNode: ast.ViewRuleGroup): c4.ElementViewRuleGroup {
@@ -316,7 +344,7 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         links: isNonEmptyArray(links) ? links : null,
         variant,
         rules: [
-          ...additionalStyles,
+          ...additionalStyles.filter(isDynamicViewStyle),
           ...this.tryMap('views', body.rules, n => this.parseDynamicViewRule(n)),
         ],
         steps: this.parseSteps(body.steps),
@@ -331,7 +359,9 @@ export function ViewsParser<TBase extends WithPredicates & WithDeploymentView>(B
         return this.parseViewRuleGlobalPredicateRef(astRule)
       }
       if (ast.isViewRuleStyleOrGlobalRef(astRule)) {
-        return this.parseViewRuleStyleOrGlobalRef(astRule)
+        const rule = this.parseViewRuleStyleOrGlobalRef(astRule)
+        invariant(isDynamicViewStyle(rule), 'Relationship styles are not supported in dynamic views')
+        return rule
       }
       if (ast.isViewRuleAutoLayout(astRule)) {
         return toAutoLayout(astRule)

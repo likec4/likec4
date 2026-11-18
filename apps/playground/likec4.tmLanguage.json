@@ -76,7 +76,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\belement(\\.(kind|tag)?)?\\b"
+      "match": "\\b(?:element|relationship)(\\.(kind|tag)?)?\\b"
     },
     { "include": "#shapes" },
     { "include": "#colors" },
