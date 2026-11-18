@@ -1,5 +1,17 @@
 # likec4
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3574](https://github.com/likec4/likec4/pull/3574) [`d767d56`](https://github.com/likec4/likec4/commit/d767d565836464041f891269fd5700902a666417) Thanks [@davydkov](https://github.com/davydkov)! - `likec4` now bundles `@likec4/core` and exposes it under the same subpaths: `likec4/core`, `likec4/core/builder`, `likec4/core/compute-view`, `likec4/core/geometry`, `likec4/core/model`, `likec4/core/styles`, `likec4/core/types` and `likec4/core/utils`. The layout engine is available as `likec4/layouts`, typed against the same core. `likec4/react` and the bundled app share this single copy. If you import both `likec4` and `@likec4/core`, you now get two separate copies, so `instanceof` checks between them won't work; prefer `likec4/core/*`.
+
+- [#3575](https://github.com/likec4/likec4/pull/3575) [`ae68ffd`](https://github.com/likec4/likec4/commit/ae68ffd1fe31240182755869d32e6a51d05e3cb8) Thanks [@amandomv](https://github.com/amandomv)! - `likec4 export json` writes a workspace with a single named project once, as one model, instead of twice. Sources outside that project are skipped with a warning, as they were never exported. See [#3572](https://github.com/likec4/likec4/issues/3572).
+
+- [#3481](https://github.com/likec4/likec4/pull/3481) [`e7b95b1`](https://github.com/likec4/likec4/commit/e7b95b13cad284232cb1c226b83f82533ebafc38) Thanks [@gregoreficint](https://github.com/gregoreficint)! - Image exports with `--notation` can place the notation in any corner with `--notation-position` (default `bottom-right`) and choose the labels with `--notation-text`: `short` (text before the first `:`, default), `full` or `kind`. Notation text is no longer cut off, and the panel has a translucent background, so it stays readable in viewers that show transparency as dark.
+
+- [#3582](https://github.com/likec4/likec4/pull/3582) [`30741ee`](https://github.com/likec4/likec4/commit/30741ee78629badaa0fcf6b016b0d8992f1b17f7) Thanks [@kindasorrow](https://github.com/kindasorrow)! - `likec4 start` now serves HMR over the dev server port unless `--hmr-port`, `HMR_PORT` or `server.hmrPort` is set. In Docker you only need to publish `5173`, and live updates also work behind a reverse proxy or a forwarded port. Before, the HMR WebSocket ran on a separate port from the 24678-24690 range, and if that port wasn't published, live updates stopped without any error on the page.
+
 ## 1.61.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @likec4/core
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3586](https://github.com/likec4/likec4/pull/3586) [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706) Thanks [@bardrop](https://github.com/bardrop)! - `isOrthoSpline` is now a type guard that also rejects input that is not a Graphviz spline of `1 + 3n` points, and `splineToPolyline` throws on such input and returns a non-empty polyline.
+
 ## 1.61.0
 
 ### Patch Changes
