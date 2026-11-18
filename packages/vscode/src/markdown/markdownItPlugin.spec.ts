@@ -189,4 +189,44 @@ describe('likec4MarkdownIt', () => {
     expect(html).toContain('stale:model.c4:3: syntax error')
     expect(html).toContain('data-scheme="light"')
   })
+
+  it('includes a view-set digest in modelHash for :v and :t payloads', () => {
+    const { deps } = createDeps()
+    const md = likec4MarkdownIt(new MarkdownIt(), deps)
+
+    const single = md.render('```likec4-view browser=false\nindex\n```\n')
+    const both = md.render(
+      ['```likec4-view browser=false', 'index', '```', '', '```likec4-view browser=false', 'checkout', '```'].join(
+        '\n',
+      ),
+    )
+
+    const singleMatch = single.match(/"hash":"(h1:v:[^"]+)"/)
+    const bothMatch = both.match(/"hash":"(h1:v:[^"]+)"/)
+    expect(singleMatch?.[1]).toBeDefined()
+    expect(bothMatch?.[1]).toBeDefined()
+    expect(singleMatch![1]).not.toBe(bothMatch![1])
+    expect(both.match(/class="likec4-model"/g)).toHaveLength(1)
+
+    const project = makeProject('shop', 'file:///ws/shop')
+    const bigSnap = makeSnapshot('shop', ['index', 'checkout', 'unused'], 'big', 2000)
+    const trimmedDeps: RenderDeps = {
+      enabled: () => true,
+      maxModelBytes: () => 500,
+      maxHeight: () => 500,
+      colorScheme: () => 'auto',
+      panZoom: () => false,
+      resolve: () => ({ ok: true, project }),
+      snapshot: () => bigSnap,
+      recordReferences: vi.fn<(docKey: string, projects: ReadonlyArray<ResolvedProject>) => void>(),
+    }
+    const trimmedMd = likec4MarkdownIt(new MarkdownIt(), trimmedDeps)
+    const trimmedOne = trimmedMd.render('```likec4-view\nindex\n```\n')
+    const trimmedTwo = trimmedMd.render('```likec4-view\nindex\n```\n\n```likec4-view\ncheckout\n```\n')
+    const trimmedOneHash = trimmedOne.match(/"hash":"(big:t:[^"]+)"/)?.[1]
+    const trimmedTwoHash = trimmedTwo.match(/"hash":"(big:t:[^"]+)"/)?.[1]
+    expect(trimmedOneHash).toBeDefined()
+    expect(trimmedTwoHash).toBeDefined()
+    expect(trimmedOneHash).not.toBe(trimmedTwoHash)
+  })
 })

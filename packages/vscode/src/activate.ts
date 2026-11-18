@@ -70,18 +70,48 @@ export function activateExtension(extensionKind: 'node' | 'web') {
   if (hasOpenLikeC4Document || hasOpenLikeC4Tab() || preview.visible.value) {
     ensureLanguageServer('active LikeC4 document or preview panel')
   } else {
-    void vscode.workspace.findFiles(globPattern, undefined, 1).then(
-      (files) => {
-        if (files.length > 0) {
-          ensureLanguageServer('workspace sources found')
-        } else if (!languageServerRequested) {
-          markdownPreview.setWorkspaceHasSources(false)
+    let discoveryTimer: ReturnType<typeof setTimeout> | undefined
+    let disposed = false
+    useDisposable({
+      dispose() {
+        disposed = true
+        if (discoveryTimer !== undefined) {
+          clearTimeout(discoveryTimer)
+          discoveryTimer = undefined
         }
       },
-      (err) => {
-        logger.debug('Failed to scan workspace for LikeC4 files', { error: err })
-      },
-    )
+    })
+    const scanWorkspace = (attempt: number) => {
+      void vscode.workspace.findFiles(globPattern, undefined, 1).then(
+        (files) => {
+          if (disposed) {
+            return
+          }
+          if (files.length > 0) {
+            ensureLanguageServer('workspace sources found')
+          } else if (!languageServerRequested) {
+            markdownPreview.setWorkspaceHasSources(false)
+          }
+        },
+        (err) => {
+          logger.debug('Failed to scan workspace for LikeC4 files', { error: err, attempt })
+          if (disposed || languageServerRequested) {
+            return
+          }
+          if (attempt < 2) {
+            discoveryTimer = setTimeout(() => {
+              discoveryTimer = undefined
+              if (!disposed && !languageServerRequested) {
+                scanWorkspace(attempt + 1)
+              }
+            }, 250)
+          } else {
+            markdownPreview.setWorkspaceHasSources(false)
+          }
+        },
+      )
+    }
+    scanWorkspace(1)
   }
 
   watch(preview.visible, (visible) => {

@@ -35,6 +35,21 @@ describe('parseFenceOptions', () => {
     })
   })
 
+  it('preserves project identifiers ending with a hyphen or underscore', () => {
+    expect(parseFenceOptions('likec4-view project=shop- browser=false')).toEqual({
+      browser: false,
+      variant: 'diagram',
+      project: 'shop-',
+      scheme: 'auto',
+    })
+    expect(parseFenceOptions('likec4-view project=shop_')).toEqual({
+      browser: true,
+      variant: 'diagram',
+      project: 'shop_',
+      scheme: 'auto',
+    })
+  })
+
   it('ignores invalid or wrong-cased values', () => {
     expect(
       parseFenceOptions('likec4-view browser=TRUE dynamic-variant=seq color-scheme=sepia unknown=1'),

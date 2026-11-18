@@ -14,9 +14,16 @@ interface PlannedProject {
   anyBrowser: boolean
 }
 
+interface CachedModelPayload {
+  json: string
+  trimmed: boolean
+  modelHash: string
+}
+
 interface DocState {
   counts: Map<string, number>
   emittedModels: Set<string>
+  payloads: Map<string, CachedModelPayload>
   plan: Map<string, PlannedProject>
   errSeq: number
   loadSeq: number
@@ -124,6 +131,27 @@ function modelPayload(
   }
 }
 
+function computeModelPayload(
+  snap: ProjectSnapshot,
+  planned: PlannedProject,
+  maxBytes: number,
+): CachedModelPayload {
+  const payload = modelPayload(snap, planned, maxBytes)
+  const viewsDigest = payload.trimmed || !planned.anyBrowser
+    ? sha1Hex([...planned.views].sort().join(',')).slice(0, 12)
+    : ''
+  const modelHash = payload.trimmed
+    ? `${snap.hash}:t:${viewsDigest}`
+    : planned.anyBrowser
+    ? snap.hash
+    : `${snap.hash}:v:${viewsDigest}`
+  return {
+    json: payload.json,
+    trimmed: payload.trimmed,
+    modelHash,
+  }
+}
+
 function hostHtml(id: string, opts: HostOptions | null, data: HostData, body = ''): string {
   const attr = opts ? ` data-likec4-opts="${escapeHtml(JSON.stringify(opts))}"` : ''
   return `<div class="likec4-view" id="${escapeHtml(id)}"${attr}><script type="application/json">${
@@ -148,6 +176,7 @@ function renderFence(tokens: ReadonlyArray<Token>, idx: number, env: unknown, de
     st = {
       counts: new Map(),
       emittedModels: new Set(),
+      payloads: new Map(),
       plan: planDocument(tokens, env, deps),
       errSeq: 0,
       loadSeq: 0,
@@ -210,22 +239,26 @@ function renderFence(tokens: ReadonlyArray<Token>, idx: number, env: unknown, de
 
   let out = ''
   const key = projectKey(project)
-  const planned = st.plan.get(key) ?? { project, views: new Set([viewId]), anyBrowser: opts.browser }
-  const payload = modelPayload(snap, planned, deps.maxModelBytes())
-  const modelHash = `${snap.hash}${payload.trimmed ? ':t' : planned.anyBrowser ? '' : ':v'}`
+  let cached = st.payloads.get(key)
+  if (!cached) {
+    const planned = st.plan.get(key) ?? { project, views: new Set([viewId]), anyBrowser: opts.browser }
+    cached = computeModelPayload(snap, planned, deps.maxModelBytes())
+    st.payloads.set(key, cached)
+  }
+  const { modelHash } = cached
   if (!st.emittedModels.has(key)) {
     st.emittedModels.add(key)
-    const head = escapeJsonForScript(`{"hash":${JSON.stringify(modelHash)},"trimmed":${payload.trimmed},"model":`)
+    const head = escapeJsonForScript(`{"hash":${JSON.stringify(modelHash)},"trimmed":${cached.trimmed},"model":`)
     out += `<div class="likec4-model" id="${
       escapeHtml(modelElementId(project))
-    }" hidden><script type="application/json">${head}${payload.json}}</script></div>\n`
+    }" hidden><script type="application/json">${head}${cached.json}}</script></div>\n`
   }
 
   const data: HostData = {
     hash: `${modelHash}:${snap.state}`,
     state: snap.state === 'stale' ? 'stale' : 'ok',
     ...(snap.state === 'stale' && snap.message ? { message: snap.message } : {}),
-    ...(payload.trimmed ? { trimmed: true } : {}),
+    ...(cached.trimmed ? { trimmed: true } : {}),
   }
 
   const body = deps.renderHostBody?.(snap, viewId, hostOpts, hostId, data) ?? ''

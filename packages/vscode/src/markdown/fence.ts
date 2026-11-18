@@ -23,7 +23,7 @@ export const DEFAULT_OPTIONS: Readonly<FenceOptions> = Object.freeze({
 
 const OPT_BROWSER = /\bbrowser=(true|false)\b/
 const OPT_VARIANT = /\bdynamic-variant=(diagram|sequence)\b/
-const OPT_PROJECT = /\bproject=(\S+)\b/
+const OPT_PROJECT = /\bproject=(\S+)/
 const OPT_COLOR_SCHEME = /\bcolor-scheme=(auto|light|dark)\b/
 
 /**

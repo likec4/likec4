@@ -67,11 +67,12 @@ export const useMarkdownPreview = defineService(() => {
     if (!view) {
       return ''
     }
-    const key = `${view.hash ?? snap.hash}|${viewId}|${opts.variant}|${opts.maxHeight}`
+    const spec = snap.data?.specification as { customColors?: CustomColorDefinitions } | undefined
+    const colorsKey = spec?.customColors ? JSON.stringify(spec.customColors) : ''
+    const key = `${view.hash ?? snap.hash}|${viewId}|${opts.variant}|${opts.maxHeight}|${colorsKey}`
     let svg = svgCache.get(key)
     if (svg === undefined) {
       try {
-        const spec = snap.data?.specification as { customColors?: CustomColorDefinitions } | undefined
         svg = renderStaticSvg(view, opts.variant, opts.maxHeight, spec?.customColors)
       } catch {
         svg = ''

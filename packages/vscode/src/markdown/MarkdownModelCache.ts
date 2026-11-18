@@ -21,10 +21,20 @@ import {
   normalizeUri,
   resolveProject,
 } from './resolveProject.ts'
-import { sha1Hex, stableHash } from './sha1.ts'
+import { sha1Hex } from './sha1.ts'
 import type { ProjectSnapshot } from './types.ts'
 
 const textEncoder = new TextEncoder()
+const MAX_PROJECTS_FETCH_RETRIES = 4
+const PROJECTS_RETRY_BASE_MS = 250
+
+function uriLocationKey(loc: UriLocation): string {
+  return `${loc.scheme}://${loc.authority}${loc.path}`
+}
+
+function projectsSignature(list: ReadonlyArray<ResolvedProject>): string {
+  return list.map((p) => `${projectKey(p)}@${p.folderUri}`).sort().join('|')
+}
 
 function hasMarkdownPreviewTab(): boolean {
   for (const group of vscode.window.tabGroups.all) {
@@ -54,6 +64,9 @@ export const useMarkdownModelCache = defineService(() => {
   let projectsFetchInFlight = false
   let projectsDirty = false
   let pendingProjectsReason = ''
+  let disposed = false
+  let projectsRetryCount = 0
+  let projectsRetryTimer: ReturnType<typeof setTimeout> | undefined
 
   const snapshots = new Map<string, ProjectSnapshot>()
   const lastValid = new Map<string, { snap: ProjectSnapshot; prev?: ProjectSnapshot | undefined; okAt: number }>()
@@ -62,6 +75,14 @@ export const useMarkdownModelCache = defineService(() => {
   const diagTimers = new Map<string, ReturnType<typeof setTimeout>>()
   const docRefs = new Map<string, Set<string>>()
   const pendingDiscoveryDocs = new Set<string>()
+  const docToProject = new Map<string, ResolvedProject>()
+
+  function clearProjectsRetryTimer(): void {
+    if (projectsRetryTimer !== undefined) {
+      clearTimeout(projectsRetryTimer)
+      projectsRetryTimer = undefined
+    }
+  }
 
   const scheduler = new RefreshScheduler({
     documentsReferencing(keys) {
@@ -86,6 +107,8 @@ export const useMarkdownModelCache = defineService(() => {
 
   useDisposable({
     dispose() {
+      disposed = true
+      clearProjectsRetryTimer()
       for (const timer of diagTimers.values()) {
         clearTimeout(timer)
       }
@@ -95,6 +118,7 @@ export const useMarkdownModelCache = defineService(() => {
       lastValid.clear()
       docRefs.clear()
       pendingDiscoveryDocs.clear()
+      docToProject.clear()
     },
   })
 
@@ -114,14 +138,7 @@ export const useMarkdownModelCache = defineService(() => {
     const targetUri = documentUriOf(uri)
     if (targetUri) {
       const targetLoc = normalizeUri(targetUri)
-      const direct = projects.find((p) =>
-        p.docs.some((d) => {
-          const docLoc = normalizeUri(d)
-          return docLoc.scheme === targetLoc.scheme
-            && docLoc.authority === targetLoc.authority
-            && docLoc.path === targetLoc.path
-        })
-      )
+      const direct = docToProject.get(uriLocationKey(targetLoc))
       if (direct) {
         return direct
       }
@@ -219,7 +236,7 @@ export const useMarkdownModelCache = defineService(() => {
           } else {
             const modelJson = jsonForScript(model)
             const modelBytes = textEncoder.encode(modelJson).byteLength
-            const hash = stableHash(model)
+            const hash = sha1Hex(modelJson).slice(0, 16)
             const viewIds = new Set(Object.keys(model.views))
             if (diagError) {
               const valid = lastValid.get(key)
@@ -281,7 +298,8 @@ export const useMarkdownModelCache = defineService(() => {
   }
 
   async function refreshProjects(reason: string): Promise<void> {
-    if (!isActivated.value) {
+    if (disposed || !isActivated.value) {
+      clearProjectsRetryTimer()
       return
     }
     if (projectsFetchInFlight) {
@@ -289,13 +307,30 @@ export const useMarkdownModelCache = defineService(() => {
       pendingProjectsReason = reason
       return
     }
+    clearProjectsRetryTimer()
     projectsFetchInFlight = true
     try {
       const raw = await rpc.fetchProjects()
+      if (disposed || !isActivated.value) {
+        return
+      }
       const next = fromRpcProjects(raw)
-      const prevIds = new Set((projects ?? []).map((p) => projectKey(p)))
+      projectsRetryCount = 0
+      const prevProjects = projects ?? []
+      const prevIds = new Set(prevProjects.map((p) => projectKey(p)))
       const nextIds = new Set(next.map((p) => projectKey(p)))
+      const layoutChanged = projects === null || projectsSignature(prevProjects) !== projectsSignature(next)
       projects = next
+
+      docToProject.clear()
+      for (const project of next) {
+        for (const doc of project.docs) {
+          const docKey = uriLocationKey(normalizeUri(doc))
+          if (!docToProject.has(docKey)) {
+            docToProject.set(docKey, project)
+          }
+        }
+      }
 
       const removed: string[] = []
       for (const oldKey of prevIds) {
@@ -312,7 +347,7 @@ export const useMarkdownModelCache = defineService(() => {
       if (removed.length > 0) {
         scheduler.projectsChanged(removed, reason)
       }
-      if (hadPendingDocs || (prevIds.size !== nextIds.size && docRefs.size > 0)) {
+      if (hadPendingDocs || (layoutChanged && docRefs.size > 0)) {
         scheduler.refreshAll(reason)
       }
 
@@ -324,9 +359,19 @@ export const useMarkdownModelCache = defineService(() => {
       }
     } catch (err) {
       logger.warn('Failed to fetch LikeC4 projects for markdown preview', { error: err })
+      if (!disposed && isActivated.value && !projectsDirty && projectsRetryCount < MAX_PROJECTS_FETCH_RETRIES) {
+        const attempt = ++projectsRetryCount
+        const delay = PROJECTS_RETRY_BASE_MS * (2 ** (attempt - 1))
+        projectsRetryTimer = setTimeout(() => {
+          projectsRetryTimer = undefined
+          if (!disposed && isActivated.value) {
+            void refreshProjects(`retry #${attempt} after fetch failure`)
+          }
+        }, delay)
+      }
     } finally {
       projectsFetchInFlight = false
-      if (projectsDirty) {
+      if (projectsDirty && !disposed && isActivated.value) {
         const nextReason = pendingProjectsReason || 'projects changed'
         projectsDirty = false
         pendingProjectsReason = ''
@@ -340,7 +385,10 @@ export const useMarkdownModelCache = defineService(() => {
     (active) => {
       if (active) {
         workspaceHasSources = true
+        projectsRetryCount = 0
         void refreshProjects('language server ready')
+      } else {
+        clearProjectsRetryTimer()
       }
     },
     { immediate: true },
