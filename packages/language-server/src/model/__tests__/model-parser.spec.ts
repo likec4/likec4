@@ -138,6 +138,42 @@ describe('LikeC4ModelParser', () => {
       })
     })
 
+    it('parses hex colors with leading zeros', async ({ expect, validate, t }) => {
+      const { document } = await validate(`
+        specification {
+          color black #000000
+          color short #000
+          color navy #012345
+          color translucent #00000080
+          tag tag1 {
+            color #001122
+          }
+        }
+      `)
+      const doc = t.likec4.ModelParser.parse(document)
+      expect(doc.c4Specification).toMatchObject({
+        colors: {
+          black: {
+            color: '#000000',
+          },
+          short: {
+            color: '#000',
+          },
+          navy: {
+            color: '#012345',
+          },
+          translucent: {
+            color: '#00000080',
+          },
+        },
+        tags: {
+          tag1: {
+            color: '#001122',
+          },
+        },
+      })
+    })
+
     it('parses summary, title, description', async ({ expect, validate, t }) => {
       const { document } = await validate(`
         specification {
