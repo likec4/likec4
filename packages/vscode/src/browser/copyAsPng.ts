@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 
+import type { PngExportNotation } from '../pngExportNotation'
+
 export type RenderViewPngParams = {
   workspacePath: string
   projectFolder?: string | undefined
@@ -8,6 +10,7 @@ export type RenderViewPngParams = {
   theme: 'light' | 'dark'
   nodePath?: string | undefined
   cliPath?: string | undefined
+  notation?: PngExportNotation | undefined
 }
 
 export type RenderViewPngResult = {

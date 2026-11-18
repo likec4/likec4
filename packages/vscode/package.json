@@ -200,6 +200,37 @@
           "scope": "machine-overridable",
           "markdownDescription": "%ext.config.cli.path.description%"
         },
+        "likec4.export.notation.enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%ext.config.export.notation.enabled.description%"
+        },
+        "likec4.export.notation.position": {
+          "type": "string",
+          "enum": [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right"
+          ],
+          "default": "bottom-right",
+          "markdownDescription": "%ext.config.export.notation.position.description%"
+        },
+        "likec4.export.notation.text": {
+          "type": "string",
+          "enum": [
+            "short",
+            "full",
+            "kind"
+          ],
+          "default": "short",
+          "markdownEnumDescriptions": [
+            "%ext.config.export.notation.text.short%",
+            "%ext.config.export.notation.text.full%",
+            "%ext.config.export.notation.text.kind%"
+          ],
+          "markdownDescription": "%ext.config.export.notation.text.description%"
+        },
         "likec4.exclude": {
           "type": "array",
           "default": [],

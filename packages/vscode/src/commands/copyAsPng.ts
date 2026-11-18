@@ -74,6 +74,7 @@ export function registerCopyAsPngCommand({ sendTelemetry, preview, rpc }: CopyAs
             theme,
             nodePath: config.node.path,
             cliPath: config.cli.path,
+            notation: config.export.notation,
           }),
       )
       logUsedCli(output, cli, cliVersion)
