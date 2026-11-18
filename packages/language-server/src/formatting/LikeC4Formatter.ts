@@ -163,8 +163,8 @@ export class LikeC4Formatter extends AbstractFormatter {
         const sourceNodes = n?.source?.$cstNode ? [n?.source?.$cstNode] : []
 
         f.cst(sourceNodes).append(FormattingOptions.oneSpace)
-        f.keywords(']->', ']<->').prepend(FormattingOptions.noSpace)
-        f.keywords('-[').append(FormattingOptions.noSpace)
+        f.keywords(']->', ']<->', ']-').prepend(FormattingOptions.noSpace)
+        f.keywords('-[', '<-[').append(FormattingOptions.noSpace)
 
         f.nodes(...filter([
           n.target,
@@ -344,6 +344,7 @@ export class LikeC4Formatter extends AbstractFormatter {
       || ast.isColorProperty(node)
       || ast.isLineProperty(node)
       || ast.isArrowProperty(node)
+      || ast.isDirectionProperty(node)
       || ast.isIconProperty(node)
       || ast.isShapeProperty(node)
       || ast.isBorderProperty(node)
@@ -373,6 +374,7 @@ export class LikeC4Formatter extends AbstractFormatter {
         'line',
         'head',
         'tail',
+        'direction',
         'icon',
         'iconColor',
         'iconSize',

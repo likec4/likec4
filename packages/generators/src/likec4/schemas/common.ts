@@ -1,10 +1,12 @@
 import {
   type RelationshipArrowType,
+  type RelationshipDirection,
   type RelationshipLineType,
   BorderStyles,
   ElementShapes,
   IconPositions,
   RelationshipArrowTypes,
+  RelationshipDirections,
   RelationshipLineTypes,
   Sizes,
   Sizings,
@@ -80,6 +82,9 @@ export const sizing: ZSizing = z.enum(Sizings)
 
 export interface ZArrow extends z.ZodType<RelationshipArrowType, RelationshipArrowType | OrString> {}
 export const arrow: ZArrow = z.enum(RelationshipArrowTypes)
+
+export interface ZDirection extends z.ZodType<RelationshipDirection, RelationshipDirection | OrString> {}
+export const direction: ZDirection = z.enum(RelationshipDirections)
 
 export interface ZLine extends z.ZodType<RelationshipLineType, RelationshipLineType | OrString> {}
 export const line: ZLine = z.enum(RelationshipLineTypes)

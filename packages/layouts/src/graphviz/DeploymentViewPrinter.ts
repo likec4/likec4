@@ -77,8 +77,8 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
   }
 
   override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
-    // const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [sourceFqn, targetFqn] = [edge.source, edge.target]
+    // Reversed edges are laid out from target to source, but rendered with the arrow at the source end
+    const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
     const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, last())
     const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first())
 
@@ -113,6 +113,20 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
     }
 
     let [head, tail] = [edge.head ?? this.$defaults.relationship.arrow, edge.tail ?? 'none']
+
+    if (edge.dir === 'back') {
+      e.attributes.apply({
+        [_.arrowtail]: toArrowType(head),
+        [_.dir]: 'back',
+      })
+      if (tail !== 'none') {
+        e.attributes.apply({
+          [_.arrowhead]: toArrowType(tail),
+          [_.dir]: 'both',
+        })
+      }
+      return e
+    }
 
     if (head === 'none' && tail === 'none') {
       e.attributes.apply({

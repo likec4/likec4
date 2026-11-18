@@ -37,15 +37,17 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       return
     }
 
-    if (FqnRef.isImportRef(source)) {
-      if (FqnRef.isImportRef(target)) {
+    // `a <- b` is a relation from b to a
+    const [from, to] = el.isBackward ? [target, source] : [source, target]
+    if (FqnRef.isImportRef(from)) {
+      if (FqnRef.isImportRef(to)) {
         accept('warning', 'Relationship between imported elements may not be visible in origin projects', {
           node: el,
         })
       } else {
         accept('warning', 'Relationship from imported element to local element may not be visible in origin project', {
           node: el,
-          property: 'source',
+          property: el.isBackward ? 'target' : 'source',
         })
       }
     }

@@ -306,6 +306,7 @@ const customRelationProperties = z.object({
   line: common.line,
   head: common.arrow,
   tail: common.arrow,
+  direction: common.direction,
 }).partial()
 
 export interface ZFqnExprCustom extends

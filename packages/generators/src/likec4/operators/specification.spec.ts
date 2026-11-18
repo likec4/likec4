@@ -121,6 +121,24 @@ describe('printSpecification', () => {
     `)
   })
 
+  it('prints relationship kind direction', () => {
+    expect(
+      render({
+        relationships: {
+          subscribes: {
+            direction: 'back',
+          },
+        },
+      }),
+    ).toMatchInlineSnapshot(`
+      "specification {
+        relationship subscribes {
+          direction back
+        }
+      }"
+    `)
+  })
+
   it('prints element kind with tags and links', () => {
     const output = render({
       elements: {

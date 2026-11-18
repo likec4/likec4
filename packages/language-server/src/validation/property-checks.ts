@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import type { AstNode, ValidationCheck } from 'langium'
+import { type AstNode, type ValidationCheck, AstUtils } from 'langium'
 import { isNumber, isString } from 'remeda'
 import { ast, resolveDescriptionFile } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -169,6 +169,18 @@ export const descriptionFileRuleChecks = (
         property: 'key',
       })
       return
+    }
+  })
+}
+
+export const directionPropertyRuleChecks = (
+  _: LikeC4Services,
+): ValidationCheck<ast.DirectionProperty> => {
+  return tryOrLog((node, accept) => {
+    if (AstUtils.getContainerOfType(node, ast.isDynamicView)) {
+      accept('warning', `Direction is ignored in dynamic views, use backward steps (a <- b) instead`, {
+        node,
+      })
     }
   })
 }
