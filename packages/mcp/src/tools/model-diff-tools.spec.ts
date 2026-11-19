@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair, structured } from '../__tests__/test-utils'
+import { describe } from 'vitest'
+import { createMCPTest } from '../__tests__/test-utils'
 
 const source = `
   specification {
@@ -33,14 +33,14 @@ const source = `
   }
 `
 
+const it = createMCPTest(source)
+
 describe('removal-impact tool', () => {
-  it('reports what the removal takes with it', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'removal-impact',
-      arguments: { id: 'cloud.legacy', project: 'default' },
+  it('reports what the removal takes with it', async ({ callTool, expect }) => {
+    const data = await callTool.structured('removal-impact', {
+      id: 'cloud.legacy',
+      project: 'default',
     })
-    const data = structured(result)
     expect(data['elements']).toEqual(['cloud.legacy'])
     expect(data['relationships']).toBe(2)
     // cloud.api loses its only relationship (the diff is not applied)
@@ -55,13 +55,10 @@ describe('removal-impact tool', () => {
 })
 
 describe('list-diffs tool', () => {
-  it('lists diffs with changed views', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'list-diffs',
-      arguments: { project: 'default' },
-    })
-    const diffs = structured(result)['diffs'] as Array<Record<string, unknown>>
+  it('lists diffs with changed views', async ({ callTool, expect }) => {
+    const diffs = (await callTool.structured('list-diffs', { project: 'default' }))['diffs'] as Array<
+      Record<string, unknown>
+    >
     expect(diffs).toHaveLength(1)
     expect(diffs[0]).toMatchObject({
       id: 'rfc',

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair, structured } from '../__tests__/test-utils'
+import { describe } from 'vitest'
+import { createMCPTest, structured } from '../__tests__/test-utils'
 
 /**
  * Refs in Markdown (`[[fqn]]`, `[[view:id]]`) are returned with element and view titles
@@ -36,59 +36,63 @@ const source = `
   }
 `
 
+const it = createMCPTest(source)
+
 const resolved = 'Calls Payments Backend and the API, see Landscape, not missing'
+const withResolvedDescription = {
+  description: resolved,
+}
 
 describe('Markdown refs in MCP tools', () => {
-  it('read-element returns titles', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'read-element',
-      arguments: { id: 'frontend', project: 'default' },
+  it('read-element returns titles', async ({ callTool, expect }) => {
+    const data = await callTool.structured('read-element', {
+      id: 'frontend',
+      project: 'default',
     })
-    const data = structured(result)
-    expect(data['description']).toBe(resolved)
+    expect(data).toMatchObject(withResolvedDescription)
     expect(JSON.stringify(data)).toContain('Through Payments Backend')
     expect(JSON.stringify(data)).not.toContain('[[')
   })
 
-  it('read-element keeps plain strings as is', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'read-element',
-      arguments: { id: 'backend', project: 'default' },
+  it('read-element keeps plain strings as is', async ({ callTool, expect }) => {
+    const result = await callTool.structured('read-element', {
+      id: 'backend',
+      project: 'default',
     })
-    expect(structured(result)['description']).toBe('Plain [[frontend]] is not a ref')
+    expect(result['description']).toBe('Plain [[frontend]] is not a ref')
   })
 
-  it('read-view returns titles', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'read-view',
-      arguments: { viewId: 'index', project: 'default' },
-    })
-    const data = structured(result)
-    expect(data['description']).toBe('Overview of Frontend')
-    const nodes = data['nodes'] as Array<Record<string, unknown>>
-    expect(nodes.find(n => n['id'] === 'frontend')?.['description']).toBe(resolved)
+  it('read-view returns titles', async ({ callTool, expect }) => {
+    const data = await callTool.structured<{ description: string; nodes: Array<{ id: string; description: string }> }>(
+      'read-view',
+      {
+        viewId: 'index',
+        project: 'default',
+      },
+    )
+
+    expect(data.description).toBe('Overview of Frontend')
+    const nodes = data.nodes
+    expect(nodes.find(n => n.id === 'frontend')).toMatchObject(withResolvedDescription)
   })
 
-  it('search-element matches and returns titles', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'search-element',
-      arguments: { search: 'Landscape' },
-    })
-    const found = structured(result)['found'] as Array<Record<string, unknown>>
-    expect(found.find(f => f['id'] === 'frontend')?.['description']).toBe(resolved)
+  it('search-element matches and returns titles', async ({ callTool, expect }) => {
+    const result = await callTool.structured<{ found: Array<{ id: string; description: string }> }>(
+      'search-element',
+      { search: 'Landscape' },
+    )
+    const found = result.found
+    expect(found.find(f => f.id === 'frontend')).toMatchObject(withResolvedDescription)
   })
 
-  it('list-diffs returns titles', async () => {
-    await using pair = await createMCPTestPair(source)
-    const result = await pair.client.callTool({
-      name: 'list-diffs',
-      arguments: { project: 'default' },
+  it('list-diffs returns titles', async ({ callTool, expect }) => {
+    const result = await callTool.structured<{ diffs: Array<{ description: string }> }>(
+      'list-diffs',
+      { project: 'default' },
+    )
+    const diffs = result.diffs
+    expect(diffs[0]).toMatchObject({
+      description: 'Replaces Payments Backend',
     })
-    const diffs = structured(result)['diffs'] as Array<Record<string, unknown>>
-    expect(diffs[0]?.['description']).toBe('Replaces Payments Backend')
   })
 })

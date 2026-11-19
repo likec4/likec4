@@ -10,12 +10,14 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { createTestServices } from '@likec4/language-server/test'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
-import { setLanguageServicesCtx, setMcpServerCtx } from '../ctx'
+import { type TestAPI, test } from 'vitest'
+import { ctx, setLanguageServicesCtx, setMcpServerCtx } from '../ctx'
 import { createMCPServer } from '../server/createMCPServer'
 
 export interface MCPTestPair extends AsyncDisposable {
   client: Client
   server: McpServer
+  dispose: () => Promise<void>
 }
 
 /**
@@ -24,9 +26,9 @@ export interface MCPTestPair extends AsyncDisposable {
  * returns a union (CallToolResult | CompatibilityCallToolResult) — we accept
  * `unknown` and cast.
  */
-export function structured(result: unknown): Record<string, unknown> {
+export function structured<T = Record<string, unknown>>(result: unknown): T {
   const sc = (result as { structuredContent?: unknown } | null)?.structuredContent
-  return (sc ?? {}) as Record<string, unknown>
+  return (sc ?? {}) as T
 }
 
 /**
@@ -85,6 +87,11 @@ export async function createMCPTestPair(
     await buildLikeC4Model()
   }
 
+  const prevCtx = {
+    mcpServer: ctx.mcpServer.tryUse() ?? undefined,
+    languageServices: ctx.languageServices.tryUse() ?? undefined,
+  }
+
   setLanguageServicesCtx(services.likec4.LanguageServices)
   const server = createMCPServer(services.likec4.LanguageServices)
 
@@ -100,23 +107,53 @@ export async function createMCPTestPair(
   const dispose = async () => {
     if (disposed) return
     disposed = true
-    try {
-      await client.close()
-    } catch {
-      // ignore
-    }
-    try {
-      await server.close()
-    } catch {
-      // ignore
-    }
-    setMcpServerCtx(undefined)
-    setLanguageServicesCtx(undefined)
+    await Promise.allSettled([
+      testServices[Symbol.asyncDispose](),
+      client.close(),
+      server.close(),
+    ])
+    // restore previous context
+    setMcpServerCtx(prevCtx.mcpServer)
+    setLanguageServicesCtx(prevCtx.languageServices)
   }
 
   return {
     client,
     server,
+    dispose,
     [Symbol.asyncDispose]: dispose,
   }
+}
+
+export function createMCPTest(
+  input?: string | MCPTestPairOptions,
+) {
+  return test
+    // oxlint-disable-next-line no-empty-pattern - required by vitest
+    .extend('pair', { scope: 'file' }, async ({}, { onCleanup }) => {
+      const pair = await createMCPTestPair(input)
+      onCleanup(() => pair.dispose())
+      return pair
+    })
+    .extend('callTool', async ({ pair, task }) => {
+      /**
+       * @param name - The name of the tool to call
+       * @param args - The arguments to pass to the tool
+       */
+      const callTool = async (name: string, args: Record<string, unknown>) =>
+        await pair.client.callTool({ name, arguments: args })
+
+      callTool.structured = async <T = Record<string, unknown>>(name: string, args: Record<string, unknown>) => {
+        const result = await pair.client.callTool({ name, arguments: args })
+        task.context.expect(result).toHaveProperty('structuredContent')
+        return structured<T>(result)
+      }
+
+      callTool.text = async (name: string, args: Record<string, unknown>) => {
+        const result = await pair.client.callTool({ name, arguments: args })
+        return textContent(result)
+      }
+
+      return callTool
+    })
 }
