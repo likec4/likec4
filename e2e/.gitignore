@@ -25,6 +25,7 @@ tests/*.spec.ts
 !tests/webcomponent-overlay.spec.ts
 !tests/app-config-customization.spec.ts
 !tests/diagram-a11y.spec.ts
+!tests/export-page-layout.spec.ts
 
 pnpm-lock.yaml
 package-lock.json
