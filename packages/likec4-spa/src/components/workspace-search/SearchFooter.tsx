@@ -1,3 +1,4 @@
+import { css } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { SearchPanel } from './SearchPanel'
 
@@ -18,7 +19,7 @@ export function SearchFooter({ loaded, total, failed, scopeHint }: {
 }) {
   const loading = loaded + failed < total
   return (
-    <Footer>
+    <SearchPanel.Footer className={footer}>
       <span>
         <kbd>↑</kbd>
         <kbd>↓</kbd>move
@@ -44,40 +45,39 @@ export function SearchFooter({ loaded, total, failed, scopeHint }: {
           : `${loaded} ${loaded === 1 ? 'project' : 'projects'} indexed`}
         {failed > 0 && ` · ${failed} failed`}
       </Status>
-    </Footer>
+    </SearchPanel.Footer>
   )
 }
 
-const Footer = styled(SearchPanel.Footer, {
-  base: {
-    color: 'text.dimmed',
-    flexShrink: '0',
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: '4',
-    minHeight: '[40px]',
-    paddingX: '3',
-    borderTopWidth: '1',
-    borderTopStyle: 'solid',
-    borderColor: 'border.subtle',
-    fontSize: 'xs',
-    '& kbd': {
-      display: 'inline-block',
-      minWidth: '[18px]',
-      marginRight: '1',
-      paddingX: '1',
-      paddingY: '[1px]',
-      borderRadius: 'xs',
-      borderWidth: '1',
-      borderStyle: 'solid',
-      borderColor: 'border.default',
-      backgroundColor: 'surface.default',
-      fontFamily: 'mono',
-      fontSize: 'xxs',
-      textAlign: 'center',
-      color: 'text',
-    },
+// not styled(SearchPanel.Footer): typing such a wrapper takes TypeScript minutes
+const footer = css({
+  color: 'text.dimmed',
+  flexShrink: '0',
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: '4',
+  minHeight: '[40px]',
+  paddingX: '3',
+  borderTopWidth: '1',
+  borderTopStyle: 'solid',
+  borderColor: 'border.subtle',
+  fontSize: 'xs',
+  '& kbd': {
+    display: 'inline-block',
+    minWidth: '[18px]',
+    marginRight: '1',
+    paddingX: '1',
+    paddingY: '[1px]',
+    borderRadius: 'xs',
+    borderWidth: '1',
+    borderStyle: 'solid',
+    borderColor: 'border.default',
+    backgroundColor: 'surface.default',
+    fontFamily: 'mono',
+    fontSize: 'xxs',
+    textAlign: 'center',
+    color: 'text',
   },
 })
 

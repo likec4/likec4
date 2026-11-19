@@ -1,6 +1,7 @@
 {
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
+    "incremental": true,
     "customConditions": [
       "sources"
     ],

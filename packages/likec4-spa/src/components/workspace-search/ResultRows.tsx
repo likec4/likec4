@@ -1,5 +1,6 @@
 import type { ViewId } from '@likec4/core/types'
 import { ViewIcon } from '@likec4/diagram'
+import { css, cx } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { Highlight } from '@mantine/core'
 import { IconBrowser, IconCube, IconDatabase, IconDeviceMobile, IconUser } from '@tabler/icons-react'
@@ -148,27 +149,34 @@ const RowTitle = styled('span', {
   },
 })
 
-const truncate = {
+// Slot components of SearchPanel are not wrapped with styled(): typing such a wrapper takes TypeScript minutes
+
+const truncate = css({
   minWidth: '0',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-} as const
+})
 
-const Title = styled(SearchPanel.ButtonTitle, { base: truncate })
+const code = css({
+  fontFamily: 'mono',
+  fontSize: '[11px]',
+})
 
-const Description = styled(SearchPanel.ButtonDescription, { base: truncate })
+function Title({ children }: { children: ReactNode }) {
+  return <SearchPanel.ButtonTitle className={truncate}>{children}</SearchPanel.ButtonTitle>
+}
+
+function Description({ children }: { children: ReactNode }) {
+  return <SearchPanel.ButtonDescription className={truncate}>{children}</SearchPanel.ButtonDescription>
+}
 
 /**
  * View id, in the code font
  */
-const DescriptionCode = styled(SearchPanel.ButtonDescription, {
-  base: {
-    ...truncate,
-    fontFamily: 'mono',
-    fontSize: '[11px]',
-  },
-})
+function DescriptionCode({ children }: { children: ReactNode }) {
+  return <SearchPanel.ButtonDescription className={cx(truncate, code)}>{children}</SearchPanel.ButtonDescription>
+}
 
 const PickList = styled('div', {
   base: {
