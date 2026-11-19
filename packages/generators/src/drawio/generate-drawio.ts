@@ -531,9 +531,9 @@ function buildLikec4StyleForEdge(params: {
   return parts.length > 0 ? parts.join(';') + ';' : ''
 }
 
-/** Escaped edge label for mxCell value (single responsibility). */
+/** Escaped edge label for mxCell value (single responsibility). The edge style has html=1, so the label is HTML. */
 function buildEdgeLabelValue(edge: Edge): string {
-  return edge.label ? escapeXml(edge.label) : ''
+  return edge.label ? escapeXml(escapeHtml(edge.label)) : ''
 }
 
 /** Edge waypoints → mxGeometry XML (single responsibility). */
