@@ -1,10 +1,10 @@
 import { codeSplittingGroup, defineConfig, outputOptions } from '@likec4/devops/tsdown'
 import nodePolyfills from '@rolldown/plugin-node-polyfills'
-import type { Rolldown } from 'tsdown'
 import { existsSync, readdirSync } from 'node:fs'
 import { copyFile, cp, mkdir, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Rolldown } from 'tsdown'
 import { $, fs } from 'zx'
 
 $.verbose = true
@@ -37,9 +37,12 @@ export default defineConfig([
     // @likec4/core is built separately (see below), share a single copy of it
     deps: {
       onlyBundle: false,
-      neverBundle: [/^likec4\/core/],
+      neverBundle: [
+        /^likec4\/core/,
+        /^likec4\/layouts/,
+      ],
     },
-    plugins: [aliasCore()],
+    plugins: [aliasCore(), aliasLayouts()],
     hooks: {
       'build:done': async ({ options: { logger } }) => {
         logger.info('\n----- Copy artifacts ------\n')
@@ -71,12 +74,15 @@ export default defineConfig([
     outDir: './dist/vite-plugin/internal',
     platform: 'neutral',
     target: false,
-    minify: false,
-    dts: true,
+    outputOptions: {
+      entryFileNames: '[name].mjs',
+    },
     // Share a single copy of core with the main build
     deps: {
       onlyBundle: false,
-      neverBundle: [/^likec4\/core/],
+      neverBundle: [
+        /^likec4\/core/,
+      ],
     },
     plugins: [aliasCore()],
   },
@@ -112,13 +118,14 @@ export default defineConfig([
     // Shares the core with the other builds
     entry: {
       'index': './src/layouts/index.ts',
+      'ai': './src/layouts/ai.ts',
+      'sequence': './src/layouts/sequence.ts',
     },
     outDir: './dist/layouts',
     platform: 'neutral',
     target: false,
     // graphology needs `events`
     nodeProtocol: 'strip',
-    minify: false,
     dts: true,
     deps: {
       onlyBundle: false,
@@ -137,6 +144,19 @@ function aliasCore(): Rolldown.Plugin {
     resolveId: {
       filter: { id: /^@likec4\/core(\/.*)?$/ },
       handler: (id: string) => ({ id: id.replace('@likec4/core', 'likec4/core'), external: true }),
+    },
+  }
+}
+
+/**
+ * Rewrites `@likec4/layouts/*` to the external `likec4/layouts`, the entry of the layouts build.
+ */
+function aliasLayouts(): Rolldown.Plugin {
+  return {
+    name: 'likec4:alias-layouts',
+    resolveId: {
+      filter: { id: /^@likec4\/layouts(\/(ai|sequence))?$/ },
+      handler: (id: string) => ({ id: id.replace('@likec4/layouts', 'likec4/layouts'), external: true }),
     },
   }
 }

@@ -17,7 +17,7 @@ const GROUP_GAP = 16
  */
 function rowEstimate(item: SearchElement | SearchView): number {
   if (item.type === 'view') {
-    return item.description !== '' ? 90 : 75
+    return item.description !== '' ? 94 : 70
   }
   // element always shows summary (or "no description")
   return 75

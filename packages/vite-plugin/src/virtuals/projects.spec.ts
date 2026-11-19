@@ -34,11 +34,11 @@ describe('projects virtual module capabilities', () => {
       moduleType: 'js',
     })
     const code = typeof result === 'string' ? result : result.code
-    expect(code).toContain('exportFormats: [\n      \'png\',')
-    expect(code).toContain('id: \'configured\'')
-    expect(code).toContain('relationshipBrowserDefaultScope: \'view\'')
-    expect(code).toContain('relationshipBrowserDefaultScope: \'global\'')
-    expect(code).toContain('exportFormats: [\n      \'jpg\',\n      \'dot\',\n      \'drawio\'')
+    expect(code).toContain('exportFormats:[\'png\',')
+    expect(code).toContain('id:\'configured\'')
+    expect(code).toContain('relationshipBrowserDefaultScope:\'view\'')
+    expect(code).toContain('relationshipBrowserDefaultScope:\'global\'')
+    expect(code).toContain('exportFormats:[\'jpg\',\'dot\',\'drawio\']')
   })
 
   it('generates combined export modules only for projects that enable the format', async ({ expect }) => {

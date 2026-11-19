@@ -35,11 +35,13 @@ export default defineConfig({
     },
   },
   resolve: {
+    tsconfigPaths: false,
     mainFields: ['module', 'main'],
     conditions: ['sources', 'module', 'import', 'default'],
     alias: {
       '@likec4/styles': resolve('styled-system'),
       '@likec4/core': 'likec4/core',
+      '@likec4/vite-plugin/internal': 'likec4/vite-plugin/internal',
       '@likec4/diagram/custom': 'likec4/react',
       '@likec4/diagram': 'likec4/react',
     },
@@ -76,7 +78,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rolldownOptions: {
-      platform: 'neutral',
+      platform: 'browser',
       checks: {
         bundlerTimings: false,
       },
@@ -90,8 +92,7 @@ export default defineConfig({
         assetFileNames: '[name].[ext]',
         codeSplitting: {
           groups: [
-            codeSplittingGroup(/styled-system/, 'styled-system', { priority: 12, minShareCount: 1 }),
-            codeSplittingGroup(/html-to-image/, 'libs/html-to-image', { priority: 11, minShareCount: 1 }),
+            codeSplittingGroup(/html-to-image/, 'libs/html-to-image', { priority: 11 }),
             codeSplittingGroup(/node_modules\/@tanstack\/ai/, 'libs/@tanstack-ai', { priority: 10 }),
             codeSplittingGroup(/node_modules\/@tanstack/, 'libs/@tanstack', { priority: 9 }),
             nodeModulesCodeSplitting(),

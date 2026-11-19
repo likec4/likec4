@@ -7,9 +7,9 @@
 
 import type { LikeC4LanguageServices } from '@likec4/language-services'
 import type { AnyTextAdapter } from '@tanstack/ai'
-import type { LikeC4AppConfig, LikeC4AppOptions } from './app-options'
+import type { LikeC4AppConfig, LikeC4AppOptions, ResolvedLikeC4AppOptions } from './app-options'
 
-export type { LikeC4AppConfig, LikeC4AppOptions }
+export type { LikeC4AppOptions, ResolvedLikeC4AppOptions, ResolvedLikeC4AppOptions as LikeC4AppConfig }
 
 export interface AIOptions<TAdapter extends AnyTextAdapter = AnyTextAdapter> {
   /**

@@ -1,25 +1,32 @@
 /**
  * This module is used by the Vite plugin to generate the virtual modules
  */
-import type { LayoutedLikeC4ModelData, LayoutedView } from '@likec4/core/types'
+import type { RelationshipBrowserScope, WebappExportFormat } from '@likec4/config'
+import { LikeC4Model } from '@likec4/core/model'
+import type { LayoutedLikeC4ModelData, LayoutedView, ProjectId } from '@likec4/core/types'
 import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { LikeC4Model } from 'likec4/model'
 import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
 import { useMemo } from 'react'
 import type { LikeC4VitePluginRpc } from './rpc/protocol'
+import type { ResolvedLikeC4AppOptions } from './types'
 
-export { atom, batched, computed, map } from 'nanostores'
+export { atom, batch, batched, computed, map, onMount } from 'nanostores'
 
 export { useStore } from '@nanostores/react'
 
 export { deepEqual, shallowEqual }
 
+export type { LayoutedLikeC4ModelData, LayoutedView }
+
+export type { RelationshipBrowserScope, WebappExportFormat }
+// Subpath import: the package root pulls in zod and json5
+export { WebappExportFormats } from '@likec4/config/webapp-export-formats'
 export type { Atom, ReadableAtom, WritableAtom } from 'nanostores'
 export type { LikeC4VitePluginRpc } from './rpc/protocol'
-export type { LikeC4AppConfig } from './types'
+export type { ResolvedLikeC4AppOptions as LikeC4AppConfig }
 
 export interface LikeC4VitePluginRpcOptions {
   /**
@@ -119,4 +126,19 @@ export function openProjectInEditor(projectId: string): void {
  */
 export function openSourceInEditor(params: Record<string, unknown>): void {
   fetch(`/__likec4/open-source?params=${encodeURIComponent(JSON.stringify(params))}`).catch(console.error)
+}
+
+type LandingPageConfig =
+  | { redirect: true }
+  | { include: string[] }
+  | { exclude: string[] }
+
+export interface ProjectData {
+  readonly id: ProjectId
+  readonly title: string
+  readonly path: string
+  readonly contactPerson: string | undefined
+  readonly landingPage: LandingPageConfig | undefined
+  readonly relationshipBrowserDefaultScope: RelationshipBrowserScope
+  readonly exportFormats: readonly WebappExportFormat[]
 }

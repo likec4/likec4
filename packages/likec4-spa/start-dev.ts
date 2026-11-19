@@ -59,14 +59,16 @@ const main = defineCommand({
         allowedHosts: true,
       },
       resolve: {
+        tsconfigPaths: true,
         conditions: ['sources', 'import', 'default'],
         alias: {
           // Local paths for dev
-          'likec4/react': resolve('../react/src/index.ts'),
-          'likec4/model': resolve('../core/src/model/index.ts'),
+          // Virtual modules import `likec4/*`, tsconfig paths do not apply to them
+          'likec4/react': resolve('shims/react.ts'),
+          'likec4/model': resolve('shims/model.ts'),
+          'likec4/vite-plugin/internal': resolve('shims/vite-plugin.ts'),
           '@likec4/diagram/custom': resolve('../diagram/src/custom/index.ts'),
           '@likec4/diagram': resolve('../diagram/src/index.ts'),
-          'likec4/vite-plugin/internal': resolve('../vite-plugin/src/internal.ts'),
         },
       },
       plugins: [

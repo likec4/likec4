@@ -25,6 +25,12 @@
   ],
   "references": [
     {
+      "path": "../config/"
+    },
+    {
+      "path": "../core/"
+    },
+    {
       "path": "../diagram/"
     }
   ]

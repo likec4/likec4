@@ -44,7 +44,7 @@ export type SharedVirtualModuleOptions =
       isAIAvailable: false
       ai: undefined
     } | {
-      isAIAvailable: false
+      isAIAvailable: true
       ai: AIOptions
     }
   )

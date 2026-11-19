@@ -10,7 +10,8 @@ import { type ElementIconRenderer, type ElementIconRendererProps, IconRendererPr
 import { lazy, memo, Suspense } from 'react'
 import { ExtensionApi as extensionApi } from './vscode'
 
-const iconUrl = (group: string, name: string) => `https://icons.like-c4.dev/${group}/${name}.svg`
+const iconUrl = (group: string, name: string) =>
+  `https://icons.like-c4.dev/${encodeURIComponent(group)}/${encodeURIComponent(name)}.svg`
 
 function SvgMask({ src, ...props }: Omit<ElementIconRendererProps, 'node'> & { src: string }) {
   const maskUrl = `url(${JSON.stringify(src)})`
