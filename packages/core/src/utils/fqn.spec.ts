@@ -13,8 +13,9 @@ import {
   sortNaturalByFqn,
   sortParentsFirst,
 } from './fqn'
+import { unsafePartial } from './unsafe'
 
-const el = (id: string): Element => ({ id }) as unknown as Element
+const el = (id: string): Element => unsafePartial({ id: id as any })
 
 // const parentFqn = typedParentFqn as (fqn: string) => string | null
 // const ancestorsFqn = typedAncestorsFqn as (fqn: string) => string[]

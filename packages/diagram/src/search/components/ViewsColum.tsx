@@ -165,7 +165,7 @@ export function ViewButton(
         },
       })}>
       <ThemeIcon variant="transparent" className={btn.buttonIcon!}>
-        <ViewIcon type={view._type} size={16} />
+        <ViewIcon view={view} size={16} />
       </ThemeIcon>
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">

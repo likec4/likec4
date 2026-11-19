@@ -67,8 +67,6 @@ export default defineConfig({
           glob.sync([
             'src/routes/**/*.{ts,tsx}',
             'src/pages/*.{ts,tsx}',
-            'src/components/**/*.{ts,tsx}',
-            'src/components/**/*.{ts,tsx}',
             'src/context/**/*.{ts,tsx}',
             '!**/*.spec.{ts,tsx}',
           ]),

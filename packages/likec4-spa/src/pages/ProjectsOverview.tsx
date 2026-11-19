@@ -1,21 +1,30 @@
-import { LikeC4ProjectsOverview, LogoIcon, useChangeLikeC4Project } from '@likec4/diagram'
-import { useHotkeys } from '@mantine/hooks'
+import { LikeC4ProjectsOverview, useChangeLikeC4Project } from '@likec4/diagram'
+import { openProjectInEditor } from '@likec4/vite-plugin/internal'
 import { IconLayoutGrid, IconList, IconTopologyStar3 } from '@tabler/icons-react'
+import { isDevelopment } from 'likec4:app-config'
 import { useLikeC4Projects } from 'likec4:projects'
 import { useLikeC4ProjectsOverview } from 'likec4:projects-overview'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
 import { type CatalogSort, buildProjectsCatalog, selectProjects } from '../components/projects-overview/catalog'
-import { Metric, ProjectsCards } from '../components/projects-overview/ProjectsCatalog'
+import { ProjectsCards } from '../components/projects-overview/ProjectsCards'
 import { ProjectsTable } from '../components/projects-overview/ProjectsTable'
-import * as styles from '../components/projects-overview/styles'
+import { Metric, MetricsRow } from '../components/ui/Metric'
 import {
-  type SortOption,
-  type ViewModeOption,
-  SortMenu,
-  ViewModeSwitch,
-} from '../components/projects-overview/Toolbar'
-import { WorkspaceSearch, WorkspaceSearchTrigger } from '../components/workspace-search/WorkspaceSearch'
+  Page,
+  PageCanvas,
+  PageHeader,
+  PageHeading,
+  PageLogo,
+  PageScroll,
+  PageSection,
+  PageTitle,
+  Toolbar,
+  ToolbarSpacer,
+} from '../components/ui/Page'
+import { type SortOption, type ViewModeOption, SortMenu, ViewModeSwitch } from '../components/ui/Toolbar'
+import { WorkspaceSearchTrigger } from '../components/workspace-search/SearchTrigger'
+import { WorkspaceSearchProvider } from '../components/workspace-search/WorkspaceSearchProvider'
 
 export type ProjectsOverviewMode = 'cards' | 'table' | 'map'
 
@@ -31,6 +40,9 @@ const MODES: ReadonlyArray<ViewModeOption<ProjectsOverviewMode>> = [
   { value: 'map', label: 'Map', icon: <IconTopologyStar3 size={14} aria-hidden /> },
 ]
 
+// project config opens in the editor only from the dev server
+const onOpenSource = isDevelopment ? openProjectInEditor : undefined
+
 export function ProjectsOverviewPage({ view, onViewChange }: {
   view: ProjectsOverviewMode
   onViewChange: (view: ProjectsOverviewMode) => void
@@ -44,94 +56,66 @@ export function ProjectsOverviewPage({ view, onViewChange }: {
   )
 
   const [sort, setSort] = useState<CatalogSort>('name')
-  const [search, setSearch] = useState<{ opened: boolean; initialQuery: string }>({ opened: false, initialQuery: '' })
-  const openSearch = (initialQuery = '') => setSearch({ opened: true, initialQuery })
-  useHotkeys(
-    search.opened ? [] : [
-      ['mod+k', () => openSearch(), { preventDefault: true }],
-      ['/', () => openSearch(), { preventDefault: true }],
-    ],
-  )
-
   const visible = useMemo(() => selectProjects(catalog.projects, sort), [catalog, sort])
   const { totals } = catalog
   const isMap = view === 'map'
 
-  let content: ReactNode
-  switch (true) {
-    case isMap:
-      content = (
-        <main className={styles.mapArea}>
-          <LikeC4ProjectsOverview
-            view={projectsOverview}
-            onNavigateToProject={changeProject}
-            hideNavigationPanel
-          />
-        </main>
-      )
-      break
-    case view === 'table':
-      content = (
-        <main>
-          <ProjectsTable projects={visible} />
-        </main>
-      )
-      break
-    default:
-      content = (
-        <main>
-          <ProjectsCards projects={visible} />
-        </main>
-      )
-  }
-
   const top = (
     <>
-      <section className={styles.header}>
-        <div className={styles.headerTitles}>
-          <LogoIcon className={styles.logo} aria-hidden />
-          <h1 className={styles.title}>Projects</h1>
-        </div>
-        <div className={styles.summary}>
+      <PageHeader>
+        <PageHeading>
+          <PageLogo />
+          <PageTitle>Projects</PageTitle>
+        </PageHeading>
+        <MetricsRow>
           <Metric label="Projects" value={totals.projects} size="lg" />
           <Metric label="Elements" value={totals.elements} size="lg" />
           <Metric label="Views" value={totals.views} size="lg" />
-        </div>
-      </section>
+        </MetricsRow>
+      </PageHeader>
 
-      <div className={styles.toolbar} role="toolbar" aria-label="Projects">
-        <WorkspaceSearchTrigger onOpen={openSearch} />
-        {!isMap && (
-          <>
-            <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort projects by" />
-          </>
-        )}
-        <span className={styles.toolbarSpacer} />
+      <Toolbar role="toolbar" aria-label="Projects">
+        <WorkspaceSearchTrigger />
+        {!isMap && <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort projects by" />}
+        <ToolbarSpacer />
         <ViewModeSwitch modes={MODES} value={view} onChange={onViewChange} />
         <ColorSchemeToggle />
-      </div>
+      </Toolbar>
     </>
   )
 
+  let page: ReactNode
+  switch (true) {
+    case isMap:
+      page = (
+        <>
+          {top}
+          <PageCanvas>
+            <LikeC4ProjectsOverview
+              view={projectsOverview}
+              onNavigateToProject={changeProject}
+              hideNavigationPanel
+            />
+          </PageCanvas>
+        </>
+      )
+      break
+    default:
+      page = (
+        <PageScroll>
+          {top}
+          <PageSection as="main">
+            {view === 'table'
+              ? <ProjectsTable projects={visible} />
+              : <ProjectsCards projects={visible} onOpenSource={onOpenSource} />}
+          </PageSection>
+        </PageScroll>
+      )
+  }
+
   return (
-    <div className={styles.page}>
-      {isMap
-        ? (
-          <>
-            {top}
-            {content}
-          </>
-        )
-        : (
-          <div className={styles.pageScroll}>
-            {top}
-            {content}
-          </div>
-        )}
-      <WorkspaceSearch
-        opened={search.opened}
-        initialQuery={search.initialQuery}
-        onClose={() => setSearch(prev => ({ ...prev, opened: false }))} />
-    </div>
+    <WorkspaceSearchProvider>
+      <Page>{page}</Page>
+    </WorkspaceSearchProvider>
   )
 }

@@ -1,24 +1,29 @@
-import { LogoIcon, useLikeC4Model } from '@likec4/diagram'
+import { useLikeC4Model } from '@likec4/diagram'
 import { Burger } from '@mantine/core'
-import { useDocumentTitle, useHotkeys } from '@mantine/hooks'
+import { useDocumentTitle } from '@mantine/hooks'
 import { IconLayoutGrid, IconList } from '@tabler/icons-react'
 import { pageTitle } from 'likec4:app-config'
-import { type ReactNode, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
-import * as styles from '../components/project-index/styles'
 import { ViewCards, ViewsTable } from '../components/project-index/ViewCards'
 import { type ViewSort, indexViews, sortViews } from '../components/project-index/views'
-import { Metric } from '../components/projects-overview/ProjectsCatalog'
-import * as base from '../components/projects-overview/styles'
-import {
-  type SortOption,
-  type ViewModeOption,
-  SortMenu,
-  ViewModeSwitch,
-} from '../components/projects-overview/Toolbar'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
 import { SidebarDrawerOps } from '../components/sidebar/state'
-import { WorkspaceSearch, WorkspaceSearchTrigger } from '../components/workspace-search/WorkspaceSearch'
+import { Metric, MetricsRow } from '../components/ui/Metric'
+import {
+  Page,
+  PageHeader,
+  PageHeading,
+  PageLogo,
+  PageScroll,
+  PageSection,
+  PageTitle,
+  Toolbar,
+  ToolbarSpacer,
+} from '../components/ui/Page'
+import { type SortOption, type ViewModeOption, SortMenu, ViewModeSwitch } from '../components/ui/Toolbar'
+import { WorkspaceSearchTrigger } from '../components/workspace-search/SearchTrigger'
+import { WorkspaceSearchProvider } from '../components/workspace-search/WorkspaceSearchProvider'
 import { filterLandingPageViews } from '../filterLandingPageViews'
 import { useCurrentProject, useLikeC4Views } from '../hooks'
 
@@ -61,59 +66,39 @@ export function ProjectIndexPage({ mode, onModeChange }: {
   const [sort, setSort] = useState<ViewSort>('name')
   const sorted = useMemo(() => sortViews(views, sort), [views, sort])
 
-  const [search, setSearch] = useState<{ opened: boolean; initialQuery: string }>({ opened: false, initialQuery: '' })
-  const openSearch = (initialQuery = '') => setSearch({ opened: true, initialQuery })
-  useHotkeys(
-    search.opened ? [] : [
-      ['mod+k', () => openSearch(), { preventDefault: true }],
-      ['/', () => openSearch(), { preventDefault: true }],
-    ],
-  )
-
-  let content: ReactNode
-  switch (true) {
-    case mode === 'table':
-      content = <ViewsTable projectId={projectId} views={sorted} />
-      break
-    default:
-      content = <ViewCards projectId={projectId} views={sorted} />
-  }
-
   return (
-    <div className={base.page}>
-      <SidebarDrawer />
-      <div className={base.pageScroll}>
-        <section className={base.header}>
-          <div className={base.headerTitles}>
-            <Burger
-              size="sm"
-              className={styles.burger}
-              onClick={SidebarDrawerOps.open}
-              aria-label="Toggle navigation" />
-            <LogoIcon className={base.logo} aria-hidden />
-            <h1 className={base.title}>{title}</h1>
-          </div>
-          <div className={base.summary}>
-            <Metric label="Elements" value={totals.elements} size="lg" />
-            <Metric label="Relationships" value={totals.relationships} size="lg" />
-            <Metric label="Views" value={views.length} size="lg" />
-          </div>
-        </section>
+    <WorkspaceSearchProvider>
+      <Page>
+        <SidebarDrawer />
+        <PageScroll>
+          <PageHeader>
+            <PageHeading>
+              <Burger size="sm" flex="none" onClick={SidebarDrawerOps.open} aria-label="Toggle navigation" />
+              <PageLogo />
+              <PageTitle>{title}</PageTitle>
+            </PageHeading>
+            <MetricsRow>
+              <Metric label="Elements" value={totals.elements} size="lg" />
+              <Metric label="Relationships" value={totals.relationships} size="lg" />
+              <Metric label="Views" value={views.length} size="lg" />
+            </MetricsRow>
+          </PageHeader>
 
-        <div className={base.toolbar} role="toolbar" aria-label="Views">
-          <WorkspaceSearchTrigger onOpen={openSearch} label="Search elements and views" />
-          <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort views by" />
-          <span className={base.toolbarSpacer} />
-          <ViewModeSwitch modes={MODES} value={mode} onChange={onModeChange} />
-          <ColorSchemeToggle />
-        </div>
+          <Toolbar role="toolbar" aria-label="Views">
+            <WorkspaceSearchTrigger label="Search elements and views" />
+            <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort views by" />
+            <ToolbarSpacer />
+            <ViewModeSwitch modes={MODES} value={mode} onChange={onModeChange} />
+            <ColorSchemeToggle />
+          </Toolbar>
 
-        <main>{content}</main>
-      </div>
-      <WorkspaceSearch
-        opened={search.opened}
-        initialQuery={search.initialQuery}
-        onClose={() => setSearch(prev => ({ ...prev, opened: false }))} />
-    </div>
+          <PageSection as="main">
+            {mode === 'table'
+              ? <ViewsTable projectId={projectId} views={sorted} />
+              : <ViewCards projectId={projectId} views={sorted} />}
+          </PageSection>
+        </PageScroll>
+      </Page>
+    </WorkspaceSearchProvider>
   )
 }

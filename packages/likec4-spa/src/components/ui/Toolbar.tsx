@@ -1,12 +1,47 @@
+import { styled } from '@likec4/styles/jsx'
 import { Menu, SegmentedControl } from '@mantine/core'
 import { IconCheck, IconChevronDown } from '@tabler/icons-react'
 import type { ReactNode } from 'react'
-import * as styles from './styles'
 
 export interface SortOption<T extends string> {
   readonly value: T
   readonly label: string
 }
+
+const SortButton = styled('button', {
+  base: {
+    height: '[32px]',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '2',
+    paddingLeft: '3',
+    paddingRight: '2',
+    borderRadius: 'sm',
+    borderWidth: '1',
+    borderStyle: 'solid',
+    borderColor: 'border.subtle',
+    backgroundColor: 'surface.field',
+    color: 'text',
+    fontFamily: 'body',
+    fontSize: 'sm',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    _hover: {
+      borderColor: 'border.default',
+    },
+    _focus: {
+      outline: 'none',
+      borderColor: 'primary.border',
+      boxShadow: '[0 0 0 1px var(--colors-primary-border)]',
+    },
+    '&[aria-expanded="true"]': {
+      borderColor: 'border.default',
+    },
+    '& > svg': {
+      color: 'text.dimmed',
+    },
+  },
+})
 
 /**
  * Field-like button with a menu of sort options, the current one checked
@@ -23,10 +58,10 @@ export function SortMenu<T extends string>({ options, value, onChange, label }: 
   return (
     <Menu position="bottom-start" width={200} shadow="md" withinPortal>
       <Menu.Target>
-        <button type="button" className={styles.sortButton} aria-label={label}>
+        <SortButton type="button" aria-label={label}>
           Sort: {options.find(o => o.value === value)?.label}
           <IconChevronDown size={14} aria-hidden />
-        </button>
+        </SortButton>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Label>{label}</Menu.Label>
@@ -52,6 +87,24 @@ export interface ViewModeOption<T extends string> {
 }
 
 /**
+ * Icon + text inside a SegmentedControl item: a block-level flex box, so it is centred
+ * in the item instead of sitting on the text baseline
+ */
+const ModeLabel = styled('span', {
+  base: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '1.5',
+    lineHeight: '1',
+    '& > svg': {
+      display: 'block',
+      flexShrink: '0',
+    },
+  },
+})
+
+/**
  * Switch between the page's views (cards, table, ...)
  */
 export function ViewModeSwitch<T extends string>({ modes, value, onChange }: {
@@ -71,10 +124,10 @@ export function ViewModeSwitch<T extends string>({ modes, value, onChange }: {
       data={modes.map(mode => ({
         value: mode.value,
         label: (
-          <span className={styles.modeLabel}>
+          <ModeLabel>
             {mode.icon}
             {mode.label}
-          </span>
+          </ModeLabel>
         ),
       }))}
     />

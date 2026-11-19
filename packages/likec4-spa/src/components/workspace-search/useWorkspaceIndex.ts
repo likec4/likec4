@@ -4,8 +4,9 @@ import { useStore } from '@nanostores/react'
 import { limitFunction } from 'p-limit'
 import { use } from 'react'
 
-import { batch, batched, computed, map, onMount } from 'nanostores'
-import { isDeepEqual, isShallowEqual, once } from 'remeda'
+import { deepEqual } from 'fast-equals'
+import { batch, batched, computed, map as mapAtom, onMount } from 'nanostores'
+import { map, once, pick } from 'remeda'
 import {
   type SearchElement,
   type SearchView,
@@ -25,13 +26,12 @@ const loadIndex = once(async () => {
   const { loadModel } = await import('likec4:model')
   const { $projectIds, $projects } = await import('likec4:projects')
 
-  const $models = map<
-    Record<ProjectId, {
-      elements: SearchElement[]
-      views: SearchView[]
-    }>
-  >({})
-  $models.eqKey = isDeepEqual
+  const $models = mapAtom<{
+    [projectId: string]:
+      | { status: 'loaded'; elements: SearchElement[]; views: SearchView[] }
+      | { status: 'error'; elements?: never; views?: never }
+  }>({})
+  $models.eqKey = deepEqual
 
   const disposables = [] as Array<() => void>
 
@@ -43,64 +43,69 @@ const loadIndex = once(async () => {
   }
 
   const load = limitFunction(async (projects: readonly [ProjectId, ...ProjectId[]]) => {
-    const results = await Promise.all(
+    batch(() => {
+      disposeAll()
+    })
+    await Promise.all(
       projects.map(async (projectId) => {
         try {
           const { $likec4model } = await loadModel(projectId)
-          return () =>
+          disposables.push(
+            // Subscribe to model changes
             $likec4model.subscribe((model) => {
-              $models.setKey(projectId, indexModel(projectId, model))
-            })
+              $models.setKey(projectId, {
+                status: 'loaded',
+                ...indexModel(projectId, model),
+              })
+            }),
+            // cleanup function
+            () => $models.setKey(projectId, undefined),
+          )
         } catch (error) {
           console.error('Failed to load model for project', projectId, error)
-          return null
+          $models.setKey(projectId, { status: 'error' })
         }
       }),
     )
-    batch(() => {
-      disposeAll()
-      for (const subscribe of results) {
-        if (subscribe) {
-          disposables.push(subscribe())
-        }
-      }
-    })
   }, { concurrency: 1 })
 
-  const $searchProjects = computed($projects, (projects) => {
-    return projects.map((project) => ({ id: project.id, title: project.title ?? project.id }))
-  })
-  $searchProjects.eq = isDeepEqual
-
-  const $elementsIndex = batched([$searchProjects, $models], (searchProjects, models) => {
-    const elements = []
-    for (const project of searchProjects) {
-      const indexed = models[project.id]
+  const $indexData = batched([$projectIds, $models], (projectIds, models) => {
+    const elements = [] as SearchElement[]
+    const views = [] as SearchView[]
+    let loaded = 0
+    let failed = [] as ProjectId[]
+    for (const projectId of projectIds) {
+      const indexed = models[projectId]
       if (!indexed) {
         continue
       }
+      if (indexed.status === 'error') {
+        failed.push(projectId)
+        continue
+      }
+      loaded++
       elements.push(...indexed.elements)
-    }
-    return elements
-  })
-  $elementsIndex.eq = isShallowEqual
-
-  const $viewsIndex = batched([$searchProjects, $models], (searchProjects, models) => {
-    const views = []
-    for (const project of searchProjects) {
-      const indexed = models[project.id]
-      if (!indexed) {
-        continue
-      }
       views.push(...indexed.views)
     }
-    return views
+    return {
+      loaded,
+      total: projectIds.length,
+      failed,
+      elements,
+      views,
+    }
   })
-  $viewsIndex.eq = isShallowEqual
 
-  const $index = batched([$searchProjects, $elementsIndex, $viewsIndex], (searchProjects, elements, views) => {
-    return createWorkspaceIndex(searchProjects, elements, views)
-  })
+  const $index = computed([$projects, $indexData], (projects, data): WorkspaceIndexState => ({
+    index: createWorkspaceIndex(
+      map(projects, pick(['id', 'title'])),
+      data.elements,
+      data.views,
+    ),
+    loaded: data.loaded,
+    total: data.total,
+    failed: data.failed,
+  }))
 
   onMount($index, () => {
     const dispose = $projectIds.subscribe((projects) => {
@@ -121,13 +126,7 @@ const loadIndex = once(async () => {
  * Loads the model of every project (lazily, on first use) and indexes them for search.
  * Subscribes to the model atoms, so the index follows model updates in dev mode.
  */
-export function useWorkspaceIndex(_enabled: boolean): WorkspaceIndexState {
+export function useWorkspaceIndex(): WorkspaceIndexState {
   const { $index } = use(loadIndex())
-  const index = useStore($index)
-  return {
-    index,
-    loaded: index.projects.length,
-    total: index.projects.length,
-    failed: [],
-  }
+  return useStore($index)
 }

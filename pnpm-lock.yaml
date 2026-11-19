@@ -2462,6 +2462,9 @@ importers:
       '@xstate/store':
         specifier: catalog:xstate
         version: 4.3.0(xstate@5.33.3)
+      '@xstate/store-react':
+        specifier: catalog:xstate
+        version: 2.1.0(react@19.3.1)(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)

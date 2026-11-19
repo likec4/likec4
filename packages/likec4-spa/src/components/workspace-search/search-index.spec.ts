@@ -33,6 +33,7 @@ function view(projectId: string, id: string, title: string): SearchView {
     projectId: pid(projectId),
     id: id as ViewId,
     title,
+    folder: [],
     description: '',
     tags: [],
     viewType: 'element',
@@ -43,7 +44,7 @@ const projects = [
   { id: pid('storefront'), title: 'Storefront' },
   { id: pid('checkout'), title: 'Checkout' },
   { id: pid('platform'), title: 'Platform' },
-]
+] as const
 
 const index = createWorkspaceIndex(
   projects,
