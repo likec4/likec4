@@ -1199,7 +1199,8 @@ function emitEdgesToLines(
   hexToCustomName: Map<string, string>,
 ): void {
   for (const { cell: e, src, tgt } of edgeEntries) {
-    const label = htmlLabelToText(e.value)
+    const isHtmlLabel = e.style ? parseStyle(e.style).get('html') === '1' : false
+    const label = isHtmlLabel ? htmlLabelToText(e.value) : (e.value?.trim() ?? '')
     const title = label ? escapeLikec4Quotes(label) : ''
     const desc = e.description?.trim()
     const tech = e.technology?.trim()
