@@ -1,5 +1,8 @@
+import { parentFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
-import type { Fqn, ProjectId, ViewId } from '@likec4/core/types'
+import { isLikeC4ViewsFolder } from '@likec4/core/model'
+import type { Fqn, NonEmptyReadonlyArray, ProjectId, ViewId } from '@likec4/core/types'
+import { someTagIncludes } from '@likec4/core/utils'
 import { createFuzzySearch, matchesMetadataSearch, METADATA_SEARCH_PREFIX, viewTitleWithFolder } from '@likec4/diagram'
 
 export interface SearchProject {
@@ -31,7 +34,14 @@ export interface SearchView {
   readonly type: 'view'
   readonly projectId: ProjectId
   readonly id: ViewId
+  /**
+   * View title without folder path
+   */
   readonly title: string
+  /**
+   * Folder path (will be empty for root views)
+   */
+  readonly folder: string[]
   readonly description: string
   readonly tags: ReadonlyArray<string>
   readonly viewType: LikeC4Model.View['_type']
@@ -85,7 +95,7 @@ export function indexModel(projectId: ProjectId, model: Readonly<LikeC4Model.Lay
       summary: element.summary.text ?? '',
       tags: element.tags,
       metadata: element.metadata,
-      views: [...element.views()].map(view => ({ id: view.id, title: viewTitleWithFolder(view), _type: view._type })),
+      views: [...element.views()].map(view => ({ id: view.id, title: view.titleOrId, _type: view._type })),
     })
   }
   const views: SearchView[] = []
@@ -94,7 +104,8 @@ export function indexModel(projectId: ProjectId, model: Readonly<LikeC4Model.Lay
       type: 'view',
       projectId,
       id: view.id,
-      title: viewTitleWithFolder(view),
+      title: view.titleOrId,
+      folder: [...view.breadcrumbs].filter(isLikeC4ViewsFolder).map((b) => b.title),
       description: view.description.text ?? '',
       tags: view.tags,
       viewType: view._type,
@@ -104,32 +115,45 @@ export function indexModel(projectId: ProjectId, model: Readonly<LikeC4Model.Lay
 }
 
 export interface WorkspaceIndex {
-  readonly projects: ReadonlyArray<SearchProject>
+  readonly projects: NonEmptyReadonlyArray<SearchProject>
   readonly elements: ReadonlyArray<SearchElement>
+  readonly rootElements: ReadonlyArray<SearchElement>
   readonly views: ReadonlyArray<SearchView>
-  readonly fuzzyElements: (search: string) => SearchElement[]
-  readonly fuzzyViews: (search: string) => SearchView[]
+  fuzzyElements(search: string): SearchElement[]
+  fuzzyViews(search: string): SearchView[]
+  titleOf(projectId: ProjectId): string
 }
 
 export function createWorkspaceIndex(
-  projects: ReadonlyArray<SearchProject>,
+  projects: NonEmptyReadonlyArray<SearchProject>,
   elements: ReadonlyArray<SearchElement>,
   views: ReadonlyArray<SearchView>,
 ): WorkspaceIndex {
+  const projectsMap = new Map(projects.map(project => [project.id, project]))
+  let rootElements: WorkspaceIndex['rootElements'] | undefined
   return {
     projects,
     elements,
     views,
+    get rootElements() {
+      return rootElements ??= elements.filter(e => !parentFqn(e.id))
+    },
+    titleOf(projectId) {
+      return projectsMap.get(projectId)?.title ?? projectId
+    },
     fuzzyElements: createFuzzySearch(elements, [
-      { name: 'name', getFn: e => e.name },
-      { name: 'title', getFn: e => e.title },
-      { name: 'id', getFn: e => e.id },
-      { name: 'summary', getFn: e => e.summary },
+      { name: 'name', weight: 8, getFn: c => c.name },
+      { name: 'title', weight: 4, getFn: c => c.title },
+      { name: 'id', weight: 3, getFn: c => c.id },
+      { name: 'summary', weight: 1, getFn: c => c.summary },
+      { name: 'kind', getFn: c => c.kind },
+      { name: 'tags', getFn: c => c.tags },
     ]),
     fuzzyViews: createFuzzySearch(views, [
-      { name: 'id', getFn: v => v.id },
-      { name: 'title', getFn: v => v.title },
-      { name: 'description', getFn: v => v.description },
+      { name: 'id', weight: 8, getFn: v => v.id },
+      { name: 'title', weight: 4, getFn: v => v.title },
+      { name: 'description', weight: 1, getFn: v => v.description },
+      { name: 'tags', getFn: c => c.tags },
     ]),
   }
 }
@@ -155,19 +179,17 @@ export function parseQuery(
 /**
  * Empty text browses: top-level elements across the workspace, every element within one project
  */
-function findElements(index: WorkspaceIndex, text: string, scoped: boolean): SearchElement[] {
+function findElements(index: WorkspaceIndex, text: string, scoped: boolean): readonly SearchElement[] {
   switch (true) {
-    case text === '' && scoped:
-      return [...index.elements]
-    case text === '':
-      return index.elements.filter(e => !e.id.includes('.'))
+    case text.trimEnd() === '':
+      return scoped ? index.elements : index.rootElements
     case text.startsWith('kind:'): {
       const kind = text.slice(5)
       return index.elements.filter(e => e.kind.toLowerCase().includes(kind))
     }
     case text.startsWith('#'): {
       const tag = text.slice(1)
-      return index.elements.filter(e => e.tags.some(t => t.toLowerCase().includes(tag)))
+      return index.elements.filter(someTagIncludes(tag))
     }
     case text.startsWith(METADATA_SEARCH_PREFIX):
       return index.elements.filter(e => matchesMetadataSearch(e.metadata, text))
@@ -176,16 +198,16 @@ function findElements(index: WorkspaceIndex, text: string, scoped: boolean): Sea
   }
 }
 
-function findViews(index: WorkspaceIndex, text: string): SearchView[] {
+function findViews(index: WorkspaceIndex, text: string): readonly SearchView[] {
   switch (true) {
-    case text === '':
-      return [...index.views]
+    case text.trimEnd() === '':
+      return index.views
     case text.startsWith('kind:'):
     case text.startsWith(METADATA_SEARCH_PREFIX):
       return []
     case text.startsWith('#'): {
       const tag = text.slice(1)
-      return index.views.filter(v => v.tags.some(t => t.toLowerCase().includes(tag)))
+      return index.views.filter(someTagIncludes(tag))
     }
     default:
       return index.fuzzyViews(text)
@@ -207,20 +229,13 @@ function groupByProject<T extends SearchItem>(
   projectOrder: ReadonlyArray<ProjectId>,
   sortByCount: boolean,
 ): ResultGroup<T>[] {
-  const byProject = new Map<ProjectId, T[]>()
-  for (const item of items) {
-    const list = byProject.get(item.projectId)
-    if (list) {
-      list.push(item)
-    } else {
-      byProject.set(item.projectId, [item])
-    }
-  }
+  const byProject = Map.groupBy(items, item => item.projectId)
+
   return [...byProject.entries()]
     .map(([projectId, list]) => ({
       projectId,
       // stable sort keeps the model order inside the same rank
-      items: [...list].sort((a, b) => rank(a.title, text) - rank(b.title, text)),
+      items: list.toSorted((a, b) => rank(a.title, text) - rank(b.title, text)),
     }))
     .sort((a, b) => {
       const byOrder = projectOrder.indexOf(a.projectId) - projectOrder.indexOf(b.projectId)
@@ -242,9 +257,11 @@ export function searchWorkspace(index: WorkspaceIndex, query: string, scope: Pro
   const views = findViews(index, text)
 
   const counts = new Map<ProjectId, number>()
-  for (const item of [...elements, ...views]) {
-    counts.set(item.projectId, (counts.get(item.projectId) ?? 0) + 1)
+  const countProject = ({ projectId }: { projectId: ProjectId }) => {
+    counts.set(projectId, (counts.get(projectId) ?? 0) + 1)
   }
+  elements.forEach(countProject)
+  views.forEach(countProject)
 
   const inScope = (item: SearchItem) => {
     switch (true) {

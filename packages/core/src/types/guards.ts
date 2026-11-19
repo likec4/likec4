@@ -1,7 +1,7 @@
 import { isArray } from 'remeda'
 import type { IsAny, IsUnknown, Or, SetNonNullable, SetRequired } from 'type-fest'
 import type { NonEmptyArray } from '../types'
-import { invariant } from '../utils'
+import { invariant } from '../utils/invariant'
 
 export function isString(value: unknown): value is string {
   return value != null && typeof value === 'string'

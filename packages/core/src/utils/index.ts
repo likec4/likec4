@@ -89,4 +89,12 @@ export {
   type ResolveMarkdownRefsOptions,
 } from './markdown'
 
+export {
+  byId,
+  findById,
+  hasId,
+  hasTag,
+  someTagIncludes,
+} from './helpers'
+
 export { unsafePartial } from './unsafe'
