@@ -1,5 +1,6 @@
 import { rootLogger } from '@likec4/log'
-import _boxen, { type Options as BoxenOptions } from 'boxen'
+import type { Options as BoxenOptions } from 'boxen'
+import _boxen from 'boxen'
 import { hrtime } from 'node:process'
 import prettyMilliseconds from 'pretty-ms'
 import k from 'tinyrainbow'

@@ -6,25 +6,9 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 declare module 'likec4:projects' {
-  import type { RelationshipBrowserScope, WebappExportFormat } from 'likec4/config'
   import type { ProjectId } from 'likec4/model'
-  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
-  type LandingPageConfig =
-    | { redirect: true }
-    | { include: string[] }
-    | { exclude: string[] }
-  export interface Project {
-    id: ProjectId
-    title: string
-    /**
-     * Folder of the project, relative to the workspace
-     */
-    path: string
-    contactPerson?: string
-    landingPage?: LandingPageConfig
-    relationshipBrowserDefaultScope: RelationshipBrowserScope
-    exportFormats: readonly WebappExportFormat[]
-  }
+  import type { ProjectData, ReadableAtom } from 'likec4/vite-plugin/internal'
+  export type Project = ProjectData
   export const isSingleProject: boolean
   export const projects: readonly [Project, ...Project[]]
   export const $projects: ReadableAtom<readonly [Project, ...Project[]]>
@@ -279,28 +263,23 @@ declare module 'likec4:app-config' {
      */
     Browser: string
   }
-  export let pageTitle: string
-  export let useHashHistory: boolean
-  export let defaultTheme: 'light' | 'dark' | 'auto'
-  export let basepath: string
-  export let isDevelopment: boolean
-  export let krokiD2SvgUrl: string
-  export let krokiPumlSvgUrl: string
+  export const pageTitle: string
+  export const useHashHistory: boolean
+  export const defaultTheme: 'light' | 'dark' | 'auto'
+  export const basepath: string
+  export const isDevelopment: boolean
+  export const krokiD2SvgUrl: string
+  export const krokiPumlSvgUrl: string
 }
 
 declare module 'likec4:customization' {
   import type { JSX, PropsWithChildren } from 'react'
-  import type { jsxs } from 'react/jsx-runtime'
   import type { CustomComponents } from 'likec4/react'
   import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
   export type { CustomComponents }
 
-  // /**
-  //  * UI overrides from the file set in the `customization` option of the LikeC4 Vite plugin
-  //  */
-  // export const $customComponents: ReadableAtom<CustomComponents | undefined>
-  // export function useCustomComponents(): CustomComponents | undefined
+  export const ComponentsAtom: ReadableAtom<CustomComponents>
 
   export function CustomizationContext(props: PropsWithChildren): JSX.Element
 }

@@ -1,9 +1,8 @@
-import type { LikeC4ProjectConfig } from '@likec4/config'
-import type { LayoutedView } from '@likec4/core/types'
+import type { LayoutedView, ProjectData } from 'likec4/vite-plugin/internal'
 
 export function filterLandingPageViews(
   views: ReadonlyArray<LayoutedView>,
-  filter: LikeC4ProjectConfig['landingPage'],
+  filter: ProjectData['landingPage'],
 ): ReadonlyArray<LayoutedView> {
   if (!filter) return views
 

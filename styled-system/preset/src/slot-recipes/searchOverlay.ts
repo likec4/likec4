@@ -15,7 +15,7 @@ const focused = {
  */
 export const searchOverlay = defineSlotRecipe({
   className: 'likec4-search-overlay',
-  jsx: ['SearchOverlay', /^SearchOverlay/],
+  jsx: ['SearchOverlay', /^Search(Overlay|Panel)/],
   description: 'LikeC4 Search overlay',
   slots: [
     'dialog',
@@ -141,6 +141,7 @@ export const searchOverlay = defineSlotRecipe({
       textTransform: 'uppercase',
       letterSpacing: '[0.04em]',
       color: 'text.dimmed',
+      cursor: 'default',
     },
     list: {
       flex: '1',
@@ -158,6 +159,7 @@ export const searchOverlay = defineSlotRecipe({
       fontSize: 'xs',
       fontWeight: 'semibold',
       color: 'text.dimmed',
+      cursor: 'default',
       backgroundColor: '[rgb(34 34 34 / 95%)]',
       _light: {
         backgroundColor: '[rgb(250 250 250 / 95%)]',
@@ -307,6 +309,7 @@ export const searchOverlay = defineSlotRecipe({
       paddingY: 'lg',
       fontSize: 'sm',
       color: 'text.dimmed',
+      cursor: 'default',
     },
     footer: {
       flexShrink: '0',
@@ -318,6 +321,7 @@ export const searchOverlay = defineSlotRecipe({
       paddingX: 'sm',
       fontSize: 'xs',
       color: 'text.dimmed',
+      cursor: 'default',
     },
   },
   variants: {
