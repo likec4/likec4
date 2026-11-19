@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair } from './test-utils'
+import { describe } from 'vitest'
+import { createMCPTest } from './test-utils'
 
 const DSL = `
   specification {
@@ -10,16 +10,16 @@ const DSL = `
   }
 `
 
+const it = createMCPTest(DSL)
+
 describe('MCP resources protocol round-trip', () => {
-  it('listResources returns a project entry per project', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('listResources returns a project entry per project', async ({ pair, expect }) => {
     const { resources } = await pair.client.listResources()
     const uris = resources.map(r => r.uri)
     expect(uris).toContain('likec4://project/default')
   })
 
-  it('readResource returns a JSON payload describing the project', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('readResource returns a JSON payload describing the project', async ({ pair, expect }) => {
     const result = await pair.client.readResource({
       uri: 'likec4://project/default',
     })
@@ -39,8 +39,7 @@ describe('MCP resources protocol round-trip', () => {
     expect(payload.folder).toBeTruthy()
   })
 
-  it('readResource for an unknown projectId returns empty contents', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('readResource for an unknown projectId returns empty contents', async ({ pair, expect }) => {
     const result = await pair.client.readResource({
       uri: 'likec4://project/unknown-project',
     })

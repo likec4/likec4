@@ -6,8 +6,8 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { readFileSync } from 'node:fs'
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair, structured, textContent } from './test-utils'
+import { describe } from 'vitest'
+import { createMCPTest, structured, textContent } from './test-utils'
 
 const UNRELATED_ELEMENTS = Array.from(
   { length: 250 },
@@ -41,13 +41,11 @@ const DSL = `
   }
 `
 
+const it = createMCPTest(DSL)
+
 describe('render-view tool', () => {
-  it('callTool(render-view) returns structuredContent with a layouted view', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'index' },
-    })
+  it('callTool(render-view) returns structuredContent with a layouted view', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', { viewId: 'index' })
 
     expect(result.isError).toBeFalsy()
 
@@ -66,12 +64,8 @@ describe('render-view tool', () => {
     expect(typeof firstNode['height']).toBe('number')
   })
 
-  it('returns structuredContent.model — enough for the UI to build a LikeC4Model (LikeC4ModelProvider)', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'index' },
-    })
+  it('returns structuredContent.model — enough for the UI to build a LikeC4Model (LikeC4ModelProvider)', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', { viewId: 'index' })
 
     const content = structured(result)
     const model = content['model'] as Record<string, unknown>
@@ -85,44 +79,29 @@ describe('render-view tool', () => {
     expect(views['index']).toBeDefined()
   })
 
-  it('normalizes render options for the embedded diagram', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const defaultResult = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'index' },
-    })
-    const customResult = await pair.client.callTool({
-      name: 'render-view',
-      arguments: {
-        viewId: 'index',
-        render: { size: 'large', fitView: false, initialZoom: 0.75 },
-      },
+  it('normalizes render options for the embedded diagram', async ({ callTool, expect }) => {
+    const defaultResult = await callTool('render-view', { viewId: 'index' })
+    const customResult = await callTool('render-view', {
+      viewId: 'index',
+      render: { size: 'large', fitView: false, initialZoom: 0.75 },
     })
 
     expect(structured(defaultResult)['render']).toEqual({ size: 'standard', fitView: true })
     expect(structured(customResult)['render']).toEqual({ size: 'large', fitView: false, initialZoom: 0.75 })
   })
 
-  it('rejects an out-of-range render initialZoom', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: {
-        viewId: 'index',
-        render: { initialZoom: 4 },
-      },
+  it('rejects an out-of-range render initialZoom', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', {
+      viewId: 'index',
+      render: { initialZoom: 4 },
     })
 
     expect(result.isError).toBe(true)
     expect(textContent(result)[0]?.text).toMatch(/initialZoom/)
   })
 
-  it('returns a bounded view-scoped model by default', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'index' },
-    })
+  it('returns a bounded view-scoped model by default', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', { viewId: 'index' })
     const content = structured(result)
     const model = content['model'] as Record<string, Record<string, unknown>>
 
@@ -133,36 +112,24 @@ describe('render-view tool', () => {
     expect(Buffer.byteLength(JSON.stringify(content))).toBeLessThan(100_000)
   })
 
-  it('returns the complete model when fullModel is true', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'index', fullModel: true },
-    })
+  it('returns the complete model when fullModel is true', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', { viewId: 'index', fullModel: true })
     const model = structured(result)['model'] as Record<string, Record<string, unknown>>
 
     expect(model['elements']!['unrelated']).toBeDefined()
     expect(Object.keys(model['views']!)).toEqual(['index', 'unrelatedView'])
   })
 
-  it('exposes a text fallback alongside structuredContent', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'index' },
-    })
+  it('exposes a text fallback alongside structuredContent', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', { viewId: 'index' })
 
     const text = textContent(result)
     expect(text[0]?.type).toBe('text')
     expect(text[0]?.text).toBeTruthy()
   })
 
-  it('returns isError=true with a text message for an unknown viewId', async () => {
-    await using pair = await createMCPTestPair(DSL)
-    const result = await pair.client.callTool({
-      name: 'render-view',
-      arguments: { viewId: 'does-not-exist' },
-    })
+  it('returns isError=true with a text message for an unknown viewId', async ({ callTool, expect }) => {
+    const result = await callTool('render-view', { viewId: 'does-not-exist' })
 
     expect(result.isError).toBe(true)
     const text = textContent(result)
@@ -171,13 +138,12 @@ describe('render-view tool', () => {
 })
 
 describe('render-view resource', () => {
-  it('lists ui://likec4/render-view.html as a resource', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('lists ui://likec4/render-view.html as a resource', async ({ pair, expect }) => {
     const { resources } = await pair.client.listResources()
     expect(resources.map(r => r.uri)).toContain('ui://likec4/render-view.html')
   })
 
-  it('declares the MCP App readiness marker in the render client', () => {
+  it('declares the MCP App readiness marker in the render client', ({ expect }) => {
     const clientSource = readFileSync(new URL('../app-ui/render-view.client.tsx', import.meta.url), 'utf8')
 
     expect(clientSource).toContain('data-testid="mcp-render-view-ready"')

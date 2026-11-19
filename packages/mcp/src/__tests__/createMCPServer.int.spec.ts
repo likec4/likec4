@@ -5,8 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { describe, expect, it } from 'vitest'
-import { createMCPTestPair } from './test-utils'
+import { describe } from 'vitest'
+import { createMCPTest } from './test-utils'
 
 const DSL = `
   specification {
@@ -47,9 +47,10 @@ const EXPECTED_TOOLS = [
 
 const JSON_SCHEMA_2020_12 = 'https://json-schema.org/draft/2020-12/schema'
 
+const it = createMCPTest(DSL)
+
 describe('createMCPServer — registration & discovery', () => {
-  it('advertises tools, prompts, resources, and logging capabilities', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('advertises tools, prompts, resources, and logging capabilities', async ({ pair, expect }) => {
     const caps = pair.client.getServerCapabilities()
     expect(caps).toBeDefined()
     expect(caps!.tools).toBeDefined()
@@ -58,15 +59,13 @@ describe('createMCPServer — registration & discovery', () => {
     expect(caps!.logging).toBeDefined()
   })
 
-  it('exposes server identity', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('exposes server identity', async ({ pair, expect }) => {
     const info = pair.client.getServerVersion()
     expect(info?.name).toBe('LikeC4')
     expect(info?.version).toMatch(/^\d+\.\d+\.\d+/)
   })
 
-  it('lists all expected tools, each with a description and input schema', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('lists all expected tools, each with a description and input schema', async ({ pair, expect }) => {
     const { tools } = await pair.client.listTools()
     const names = tools.map(t => t.name).sort()
 
@@ -80,8 +79,7 @@ describe('createMCPServer — registration & discovery', () => {
     }
   })
 
-  it('advertises input and output schemas as JSON Schema 2020-12', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('advertises input and output schemas as JSON Schema 2020-12', async ({ pair, expect }) => {
     const { tools } = await pair.client.listTools()
 
     for (const tool of tools) {
@@ -94,22 +92,19 @@ describe('createMCPServer — registration & discovery', () => {
     }
   })
 
-  it('marks read-only tools with annotations', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('marks read-only tools with annotations', async ({ pair, expect }) => {
     const { tools } = await pair.client.listTools()
     const readElement = tools.find(t => t.name === 'read-element')
     expect(readElement?.annotations?.readOnlyHint).toBe(true)
   })
 
-  it('lists the apply_semantic_layout prompt', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('lists the apply_semantic_layout prompt', async ({ pair, expect }) => {
     const { prompts } = await pair.client.listPrompts()
     const names = prompts.map(p => p.name)
     expect(names).toContain('apply_semantic_layout')
   })
 
-  it('lists project resources via the resource template', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('lists project resources via the resource template', async ({ pair, expect }) => {
     const { resources } = await pair.client.listResources()
     expect(resources.length).toBeGreaterThan(0)
     const defaultProject = resources.find(r => r.uri === 'likec4://project/default')
@@ -117,8 +112,7 @@ describe('createMCPServer — registration & discovery', () => {
     expect(defaultProject!.name).toBeTruthy()
   })
 
-  it('lists the resource template', async () => {
-    await using pair = await createMCPTestPair(DSL)
+  it('lists the resource template', async ({ pair, expect }) => {
     const { resourceTemplates } = await pair.client.listResourceTemplates()
     const template = resourceTemplates.find(t => t.uriTemplate === 'likec4://project/{projectId}')
     expect(template).toBeDefined()
