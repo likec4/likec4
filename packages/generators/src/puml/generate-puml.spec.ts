@@ -156,3 +156,10 @@ test('generate puml - ids with the same PascalCase name get unique names', () =>
   expect(result).toContain('PaymentGateway .[#777777,thickness=2].> PaymentGateway2 : ')
   expect(result).toContain('skinparam rectangle<<PaymentGateway2>>{')
 })
+
+test('generate puml - keeps a multi-line view title on the title line', () => {
+  const view = { ...fakeDiagram, title: 'Line one\nline two' } as ProcessedView
+  const puml = generatePuml(mockViewModel(view))
+  // a raw line break would end the title line and make the rest a syntax error
+  expect(puml).toContain('title "Line one\\nline two"\n')
+})
