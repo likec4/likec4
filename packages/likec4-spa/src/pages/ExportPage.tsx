@@ -12,11 +12,10 @@ import { Box } from '@likec4/styles/jsx'
 import { LoadingOverlay } from '@mantine/core'
 import { useSearch } from '@tanstack/react-router'
 import type { CSSProperties } from 'react'
-import { forwardRef, useLayoutEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useCurrentView, useTransparentBackground } from '../hooks'
 import {
   type ExportNotationText,
-  computeExportPageLayout,
   DEFAULT_EXPORT_NOTATION_POSITION,
   DEFAULT_EXPORT_NOTATION_TEXT,
   EXPORT_DESCRIPTION_BODY_TOP_GAP,
@@ -25,6 +24,7 @@ import {
   EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT,
   EXPORT_DESCRIPTION_TOP_PADDING,
   exportNotationShortTitle,
+  exportPageGrid,
 } from './export-layout'
 import { isExportSearchFlagEnabled } from './export-page-params'
 
@@ -149,9 +149,6 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   })
   const viewportRef = useRef<HTMLDivElement>(null)
   const loadingOverlayRef = useRef<HTMLDivElement>(null)
-  const notationRef = useRef<HTMLDivElement>(null)
-  // Rendered height of the notation panel, so that wrapped labels are never clipped
-  const [notationHeight, setNotationHeight] = useState<number>()
 
   // to track if download has already occurred
   const downloadedRef = useRef(false)
@@ -164,26 +161,13 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
   const viewTitle = diagram.title ?? diagram.id
   const notationEntries = diagram.notation?.nodes ?? []
   const showNotation = isExportSearchFlagEnabled(notation) && notationEntries.length > 0
-  const layout = computeExportPageLayout({
+  // The browser sizes the canvas around the panels; the CLI screenshots it at that size
+  const grid = exportPageGrid({
     bounds,
     padding,
-    description: showDescription ? { title: viewTitle, text: viewDescription.text } : null,
-    notationEntries: showNotation ? notationEntries.length : 0,
-    notationHeight,
-    notationPosition,
+    description: showDescription,
+    notationPosition: showNotation ? notationPosition : null,
   })
-
-  useLayoutEffect(() => {
-    const panel = notationRef.current
-    if (!panel) {
-      return
-    }
-    const measure = () => setNotationHeight(Math.ceil(panel.getBoundingClientRect().height))
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(panel)
-    return () => observer.disconnect()
-  }, [showNotation])
 
   const downloadDiagram = () => {
     const viewport = viewportRef.current
@@ -223,27 +207,13 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
         zIndex: '[2]',
       }}
       style={{
-        marginRight: 'auto',
-        marginBottom: 'auto',
-        minWidth: layout.width,
-        width: layout.width,
-        minHeight: layout.height,
-        height: layout.height,
+        ...grid.page,
         background: isJpeg ? 'var(--mantine-color-body)' : 'transparent',
       }}>
       {download && <LoadingOverlay ref={loadingOverlayRef} visible />}
       <Box
         data-testid="export-diagram-area"
-        css={{
-          position: 'absolute',
-          overflow: 'hidden',
-        }}
-        style={{
-          top: layout.diagram.top,
-          left: layout.diagram.left,
-          width: layout.diagram.width,
-          height: layout.height - layout.diagram.top,
-        }}>
+        style={grid.diagram}>
         <LikeC4Diagram
           view={diagram}
           fitView={false}
@@ -288,18 +258,17 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
           }}
         />
       </Box>
-      {layout.description && (
+      {grid.description && (
         <ExportDescriptionPanel
           title={viewTitle}
           description={viewDescription}
-          layout={layout.description}
+          gridStyle={grid.description}
         />
       )}
-      {layout.notation && (
+      {grid.notation && (
         <ExportNotationPanel
-          ref={notationRef}
           entries={notationEntries}
-          layout={layout.notation}
+          gridStyle={grid.notation}
           text={notationText}
         />
       )}
@@ -309,21 +278,24 @@ function GuardedExportPage({ diagram, isJpeg }: { diagram: LayoutedView; isJpeg:
 
 /**
  * Renders the optional Markdown description panel above the exported diagram.
+ * The panel takes the height of its content, between the minimum and maximum of the grid style;
+ * a longer description is cut off at the maximum.
  */
 function ExportDescriptionPanel({
   title,
   description,
-  layout,
+  gridStyle,
 }: Readonly<{
   title: string
   description: RichTextOrEmpty
-  layout: NonNullable<ReturnType<typeof computeExportPageLayout>['description']>
+  gridStyle: CSSProperties
 }>) {
   const panelStyle: CSSProperties = {
-    ...layout,
-    position: 'absolute',
-    boxSizing: 'border-box',
+    ...gridStyle,
+    display: 'flex',
+    flexDirection: 'column',
     overflow: 'hidden',
+    paddingBottom: EXPORT_DESCRIPTION_BOTTOM_PADDING,
     border: '1px solid var(--mantine-color-default-border)',
     borderRadius: 6,
     background: 'var(--mantine-color-body)',
@@ -331,6 +303,7 @@ function ExportDescriptionPanel({
     color: 'var(--mantine-color-text)',
   }
   const titleStyle: CSSProperties = {
+    flexShrink: 0,
     paddingTop: EXPORT_DESCRIPTION_TOP_PADDING,
     paddingBottom: EXPORT_DESCRIPTION_BODY_TOP_GAP,
     paddingLeft: EXPORT_DESCRIPTION_INSET,
@@ -342,16 +315,12 @@ function ExportDescriptionPanel({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }
+  // Shrinks when the panel reaches its maximum height, the bottom padding of the panel stays
   const descriptionStyle: CSSProperties = {
-    maxHeight: layout.height
-      - EXPORT_DESCRIPTION_TOP_PADDING
-      - EXPORT_DESCRIPTION_TITLE_LINE_HEIGHT
-      - EXPORT_DESCRIPTION_BODY_TOP_GAP
-      - EXPORT_DESCRIPTION_BOTTOM_PADDING,
+    minHeight: 0,
     overflow: 'hidden',
     paddingLeft: EXPORT_DESCRIPTION_INSET,
     paddingRight: EXPORT_DESCRIPTION_INSET,
-    paddingBottom: EXPORT_DESCRIPTION_BOTTOM_PADDING,
   }
 
   return (
@@ -372,23 +341,19 @@ function ExportDescriptionPanel({
 
 /**
  * Renders the optional notation panel next to the exported diagram.
- * The panel takes the height of its content; the page measures it and reserves the space.
- * It has no fill of its own, so it shares the background of the exported image.
+ * The panel takes the height of its content, and the grid makes room for it.
  */
-const ExportNotationPanel = forwardRef<
-  HTMLDivElement,
-  Readonly<{
-    entries: readonly NodeNotation[]
-    layout: NonNullable<ReturnType<typeof computeExportPageLayout>['notation']>
-    text: ExportNotationText
-  }>
->(function ExportNotationPanel({ entries, layout, text }, ref) {
+function ExportNotationPanel({
+  entries,
+  gridStyle,
+  text,
+}: Readonly<{
+  entries: readonly NodeNotation[]
+  gridStyle: CSSProperties
+  text: ExportNotationText
+}>) {
   const panelStyle: CSSProperties = {
-    position: 'absolute',
-    left: layout.left,
-    top: layout.top,
-    width: layout.width,
-    boxSizing: 'border-box',
+    ...gridStyle,
     border: '1px solid var(--mantine-color-default-border)',
     borderRadius: 6,
     // Translucent page colour keeps the text readable whatever a viewer draws behind transparent pixels
@@ -408,7 +373,6 @@ const ExportNotationPanel = forwardRef<
 
   return (
     <Box
-      ref={ref}
       data-testid="export-notation"
       style={panelStyle}>
       <Box style={headerStyle}>Notation</Box>
@@ -420,12 +384,15 @@ const ExportNotationPanel = forwardRef<
           gap: 8,
         }}>
         {entries.map((entry, index) => (
-          <ExportNotationItem key={`${entry.title}-${index}`} entry={entry} text={text} />
+          <ExportNotationItem
+            key={`${entry.title}-${index}`}
+            entry={entry}
+            text={text} />
         ))}
       </Box>
     </Box>
   )
-})
+}
 
 /**
  * Renders one notation entry with its representative element shape and labels.
