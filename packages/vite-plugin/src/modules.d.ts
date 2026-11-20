@@ -37,6 +37,10 @@ declare module 'likec4:icons' {
 
   export type { ElementIconRenderer, ElementIconRendererProps }
   export function getProjectIcons(projectId: string): ElementIconRenderer
+  /**
+   * Loads icons of the project ahead of rendering, so that they are rendered without suspending.
+   */
+  export function preloadProjectIcons(projectId: string): Promise<void>
 }
 
 declare module 'likec4:model' {
