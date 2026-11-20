@@ -253,6 +253,8 @@ ${cases.join(',\n')}
 
 // Lazy icon renderers by requested project id, cleared on HMR updates
 const lazyRegistry = new Map()
+// Icon renderers that have already been loaded, rendered without Suspense
+const loadedRegistry = new Map()
 
 let invalidateMe = false
 
@@ -270,22 +272,38 @@ function resolveLoader(projectId) {
   return ProjectIconsRegistry[projects[0]]
 }
 
+async function loadRenderer(projectId) {
+  const { IconRenderer } = await resolveLoader(projectId)()
+  loadedRegistry.set(projectId, IconRenderer)
+  return IconRenderer
+}
+
 function getLazyRenderer(projectId) {
   let Renderer = lazyRegistry.get(projectId)
   if (!Renderer) {
-    const loader = resolveLoader(projectId)
-    Renderer = lazy(async () => {
-      const { IconRenderer } = await loader()
-      return { default: IconRenderer }
-    })
+    Renderer = lazy(async () => ({ default: await loadRenderer(projectId) }))
     lazyRegistry.set(projectId, Renderer)
   }
   return Renderer
 }
 
+/**
+ * Loads icons of the project ahead of rendering,
+ * so that icons are rendered synchronously (e.g. before a screenshot is taken)
+ */
+export async function preloadProjectIcons(projectId) {
+  await loadRenderer(projectId)
+}
+
 export function getProjectIcons(projectId) {
   // Renderer is resolved on each render, so that HMR updates are picked up
-  return (props) => jsx(Suspense, { children: jsx(getLazyRenderer(projectId), props) })
+  return (props) => {
+    const Loaded = loadedRegistry.get(projectId)
+    if (Loaded) {
+      return jsx(Loaded, props)
+    }
+    return jsx(Suspense, { children: jsx(getLazyRenderer(projectId), props) })
+  }
 }
 
 if (import.meta.hot) {
@@ -294,6 +312,7 @@ if (import.meta.hot) {
       import.meta.hot.data.$update = (updateData) => {
         Object.assign(ProjectIconsRegistry, updateData)
         lazyRegistry.clear()
+        loadedRegistry.clear()
         const shouldInvalidate = invalidateMe
         invalidateMe = false
         return shouldInvalidate

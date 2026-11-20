@@ -2,9 +2,10 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { describe, expect, it } from 'vitest'
+import { createContext, runInContext } from 'node:vm'
+import { describe, expect, it, vi } from 'vitest'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
-import { generateIconRendererCode } from './icons'
+import { generateIconRendererCode, iconsModule } from './icons'
 
 const jsStringLiteral = (value: string) => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))
 
@@ -197,5 +198,60 @@ describe('generateIconRendererCode', () => {
     expect(code).toContain('/currentcolor/i.test(raw)')
     expect(code).toContain('backgroundColor: \'currentColor\'')
     expect(code).not.toContain('dangerouslySetInnerHTML')
+  })
+})
+
+describe('iconsModule', () => {
+  type Element = { type: unknown; props: Record<string, unknown> }
+  type IconsRegistry = {
+    getProjectIcons: (projectId: string) => (props: Record<string, unknown>) => Element
+    preloadProjectIcons: (projectId: string) => Promise<void>
+  }
+
+  const Suspense = Symbol('Suspense')
+
+  /**
+   * Evaluates the generated registry with stubbed React and dynamic imports.
+   */
+  async function evaluateRegistry(projectIcons: Record<string, unknown>): Promise<IconsRegistry> {
+    type LoadOptions = Parameters<typeof iconsModule.load>[0]
+    const result = await iconsModule.load.call(
+      {} as ThisParameterType<typeof iconsModule.load>,
+      {
+        projects: Object.keys(projectIcons).map(id => ({ id })),
+        logger: { warn: vi.fn<(msg: string) => void>() },
+      } as unknown as LoadOptions,
+    )
+    const source = result.code
+      .replace(/^import .*$/gm, '')
+      .replace(/^export /gm, '')
+      .replaceAll('import.meta.hot', 'undefined')
+      .replace(/import\(("[^"]+")\)/g, '__import($1)')
+    const context = createContext({
+      lazy: (load: unknown) => ({ lazy: load }),
+      Suspense,
+      jsx: (type: unknown, props: Record<string, unknown>) => ({ type, props }),
+      __import: async (specifier: string) => ({
+        IconRenderer: projectIcons[specifier.replace('likec4:icons/', '')],
+      }),
+      console,
+    })
+    return runInContext(`${source}\n;({ getProjectIcons, preloadProjectIcons })`, context) as IconsRegistry
+  }
+
+  it('renders project icons through Suspense until they are loaded', async () => {
+    const IconRenderer = () => null
+    const { getProjectIcons } = await evaluateRegistry({ default: IconRenderer })
+
+    expect(getProjectIcons('default')({ node: {} }).type).toBe(Suspense)
+  })
+
+  it('renders preloaded project icons without suspending', async () => {
+    const IconRenderer = () => null
+    const { getProjectIcons, preloadProjectIcons } = await evaluateRegistry({ default: IconRenderer })
+
+    await preloadProjectIcons('default')
+
+    expect(getProjectIcons('default')({ node: {} })).toEqual({ type: IconRenderer, props: { node: {} } })
   })
 })

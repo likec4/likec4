@@ -6,6 +6,7 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
+import { preloadProjectIcons } from 'likec4:icons'
 import { z } from 'zod'
 import { ErrorComponent } from '../../components/ErrorComponent'
 import {
@@ -39,6 +40,8 @@ export const Route = createFileRoute('/project/$projectId/export/$viewId')({
       }),
     ],
   },
+  // Icons are loaded lazily, render them before the export screenshot is taken
+  loader: ({ params }) => preloadProjectIcons(params.projectId),
   component: ExportPage,
   errorComponent: ErrorComponent,
 })
