@@ -55,7 +55,7 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
-  mdast-util-to-hast: 13.2.1
+  mdast-util-to-hast: 13.2.2
   memfs: ^4.80.0
   nano-staged: ^1.0.2
   oxlint: 1.88.0
