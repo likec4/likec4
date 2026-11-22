@@ -79,6 +79,7 @@ export { objectHash } from './object-hash'
 export { stringHash } from './string-hash'
 
 export {
+  escapeInlineMarkdown,
   extractRefs,
   type MarkdownRef,
   markdownRefText,
