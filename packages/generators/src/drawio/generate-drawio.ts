@@ -607,6 +607,7 @@ function computeEdgeRoute(
   edge: Edge,
   layout: DiagramLayoutState,
   edgeWaypoints: GenerateDrawioOptions['edgeWaypoints'],
+  layoutOverride?: GenerateDrawioOptions['layoutOverride'],
 ): EdgeRoute {
   const rawEdgePoints = edgeWaypoints?.[`${edge.source}|${edge.target}|${edge.id}`] ??
     edgeWaypoints?.[`${edge.source}|${edge.target}`]
@@ -616,7 +617,12 @@ function computeEdgeRoute(
   const path = layoutedEdgePath(edge)
   const sourceBbox = layout.bboxes.get(edge.source)
   const targetBbox = layout.bboxes.get(edge.target)
-  if (!path || !sourceBbox || !targetBbox) return { points: [] }
+  // If either endpoint's bbox was overridden, edge.points still reflect the original layout and
+  // no longer match the new node positions. Fall back to bbox-derived anchors (empty points).
+  if (
+    !path || !sourceBbox || !targetBbox
+    || layoutOverride?.[edge.source] || layoutOverride?.[edge.target]
+  ) return { points: [] }
   // The layout may draw the edge from the target (e.g. dir: back), draw.io always goes from source to target
   const first = path[0]!
   const ordered = distanceToBBox(first, sourceBbox) <= distanceToBBox(first, targetBbox) ? path : [...path].reverse()
@@ -716,7 +722,7 @@ function buildEdgeCellXml(
   const sourceId = getCellId(edge.source)
   const targetId = getCellId(edge.target)
   const label = buildEdgeLabelValue(edge)
-  const route = computeEdgeRoute(edge, layout, options?.edgeWaypoints)
+  const route = computeEdgeRoute(edge, layout, options?.edgeWaypoints, options?.layoutOverride)
   const edgeGeometryXml = buildEdgeGeometryXml(route)
   const styleStr = buildEdgeStyleString(edge, layout, viewmodel, label, options, route)
   const edgeCustomData = edgeOptionalFields.getCustomData(edge)

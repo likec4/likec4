@@ -462,7 +462,7 @@ describe('edges follow the layouted path', () => {
   const xml = generateDrawio(mockViewModel(view), { compressed: false })
   const cellOf = (value: string) => {
     const match = new RegExp(
-      `<mxCell id="[^"]*" value="${value}" style="([^"]*)"[^>]*>\\s*(<mxGeometry[\\s\\S]*?(?:/>|</mxGeometry>))`,
+      `<mxCell id="[^"]*" value="${value}" style="([^"]*)"[^>]*>\\s*(<mxGeometry[^>]*/>|<mxGeometry[^>]*>[\\s\\S]*?</mxGeometry>)`,
     )
       .exec(xml)
     expect(match, `edge ${value}`).not.toBeNull()
