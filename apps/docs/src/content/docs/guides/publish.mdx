@@ -158,6 +158,17 @@ Upload the `dist` folder, and check two things:
 - **Base path.** Build with `--base` if the site is not at the root of the domain.
 - **SPA fallback.** Configure the host to serve `index.html` for unknown paths, or build with `--use-hash-history`.
 
+For a quick public link without creating an account, upload the `dist` folder to [deed.page](https://deed.page) with one request.
+The `X-Spa: 1` header turns on the SPA fallback, so links to views work without `--use-hash-history`:
+
+```sh
+tar -C ./dist -czf site.tar.gz .
+curl -T site.tar.gz "https://deed.page/v1/sites?slug=my-architecture" -H "X-Spa: 1"
+```
+
+The response has the site URL and a token, shown once, that you need to update or delete the site.
+Sites on deed.page are public, so only publish diagrams you are allowed to share.
+
 LikeC4 builds the website with Vite, so the [Vite deployment guide](https://vite.dev/guide/static-deploy.html) applies: replace `vite build` with `likec4 build`.
 
 ## Embed into an existing website

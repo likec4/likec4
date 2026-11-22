@@ -158,6 +158,17 @@ Envie a pasta `dist` e confira duas coisas:
 - **Caminho base.** Gere com `--base` se o site não estiver na raiz do domínio.
 - **Fallback de SPA.** Configure a hospedagem para servir o `index.html` em caminhos desconhecidos, ou gere com `--use-hash-history`.
 
+Para um link público rápido sem criar conta, envie a pasta `dist` para o [deed.page](https://deed.page) com uma única requisição.
+O cabeçalho `X-Spa: 1` ativa o fallback de SPA, então links para visões funcionam sem `--use-hash-history`:
+
+```sh
+tar -C ./dist -czf site.tar.gz .
+curl -T site.tar.gz "https://deed.page/v1/sites?slug=my-architecture" -H "X-Spa: 1"
+```
+
+A resposta traz a URL do site e um token, mostrado uma única vez, necessário para atualizar ou excluir o site.
+Os sites no deed.page são públicos, então publique apenas diagramas que você pode compartilhar.
+
 O LikeC4 gera o site com o Vite, então o [guia de deploy do Vite](https://vite.dev/guide/static-deploy.html) se aplica: substitua `vite build` por `likec4 build`.
 
 ## Incorporar em um site existente
