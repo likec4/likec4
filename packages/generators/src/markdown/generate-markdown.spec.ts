@@ -145,7 +145,7 @@ test('URL-like titles are not rendered as GFM autolinks', ({ expect }) => {
   const view = (title: string) => mockView({ title, sourcePath: 'views/a.c4', $view: fakeDiagram })
   const md = generateMarkdown(
     mockModel(
-      [view('www.example.com'), view('https://example.com')],
+      [view('www.example.com'), view('https://example.com'), view('team@example.com'), view('@mention')],
       { id: 'default', title: 'Test' },
     ),
   )
@@ -153,5 +153,7 @@ test('URL-like titles are not rendered as GFM autolinks', ({ expect }) => {
   expect(headings).toEqual([
     '### www\\.example.com',
     '### https\\://example.com',
+    '### team\\@example.com',
+    '### @mention',
   ])
 })
