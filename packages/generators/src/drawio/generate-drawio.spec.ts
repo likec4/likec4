@@ -419,3 +419,91 @@ describe('DrawIO export profile leanix (bridge-managed metadata)', () => {
     expect(parsed).not.toMatch(/undefined|null/)
   })
 })
+
+describe('edges follow the layouted path', () => {
+  const node = (id: string, x: number, y: number) => ({
+    children: [],
+    color: 'primary',
+    id,
+    kind: 'system',
+    parent: null,
+    shape: 'rectangle',
+    title: id.toUpperCase(),
+    x,
+    y,
+    width: 100,
+    height: 50,
+  })
+  const edge = (id: string, source: string, target: string, points: [number, number][]) => ({
+    id,
+    source,
+    target,
+    label: id,
+    relations: [],
+    points,
+  })
+  const view = {
+    id: 'routes',
+    title: 'Routes',
+    autoLayout: { direction: 'LR' },
+    rules: [],
+    nodes: [node('a', 0, 0), node('b', 300, 0), node('c', 300, 200)],
+    edges: [
+      // two edges between the same nodes, one arched up and one arched down
+      edge('up', 'a', 'b', [[100, 20], [180, -40], [220, -40], [300, 20]]),
+      edge('down', 'a', 'b', [[100, 30], [180, 90], [220, 90], [300, 30]]),
+      // drawn from the target by the layout
+      edge('back', 'b', 'a', [[100, 25.5], [180, 25.5], [220, 25.5], [300, 25.5]]),
+      // orthogonal: down from a, then right into c
+      edge('ortho', 'a', 'c', [[50, 50], [50, 100], [50, 175], [50, 225], [130, 225], [220, 225], [300, 225]]),
+    ],
+  } as unknown as ProcessedView<aux.Unknown>
+
+  const xml = generateDrawio(mockViewModel(view), { compressed: false })
+  const cellOf = (value: string) => {
+    const match = new RegExp(
+      `<mxCell id="[^"]*" value="${value}" style="([^"]*)"[^>]*>\\s*(<mxGeometry[\\s\\S]*?(?:/>|</mxGeometry>))`,
+    )
+      .exec(xml)
+    expect(match, `edge ${value}`).not.toBeNull()
+    const points = [...match![2]!.matchAll(/<mxPoint x="(-?\d+)" y="(-?\d+)"\/>/g)].map(m => [+m[1]!, +m[2]!])
+    return { style: match![1]!, points }
+  }
+  // the root offset draw.io coordinates by, read from node A's cell
+  const nodeA =
+    /<mxCell id="2" [^>]*vertex="1"[^>]*>\s*<mxGeometry height="50" width="100" x="(-?[\d.]+)" y="(-?[\d.]+)"/.exec(xml)
+  const [ax, ay] = [+nodeA![1]!, +nodeA![2]!]
+
+  test('parallel edges get their own waypoints and anchors', () => {
+    const up = cellOf('up')
+    const down = cellOf('down')
+    expect(up.style).toContain('curved=1;')
+    expect(up.style).toContain('exitX=1;exitY=0.4;entryX=0;entryY=0.4;')
+    expect(down.style).toContain('exitX=1;exitY=0.6;entryX=0;entryY=0.6;')
+    // the middle of each bezier piece
+    expect(up.points).toEqual([[ax + 200, ay - 25]])
+    expect(down.points).toEqual([[ax + 200, ay + 75]])
+  })
+
+  test('an edge drawn from its target still leaves from its source', () => {
+    expect(cellOf('back').style).toContain('exitX=0;exitY=0.51;entryX=1;entryY=0.51;')
+  })
+
+  test('orthogonal edges go through their corners', () => {
+    const ortho = cellOf('ortho')
+    expect(ortho.style).toContain('edgeStyle=orthogonalEdgeStyle;')
+    expect(ortho.style).not.toContain('curved=1;')
+    expect(ortho.style).toContain('exitX=0.5;exitY=1;entryX=0;entryY=0.5;')
+    expect(ortho.points).toEqual([[ax + 50, ay + 225]])
+  })
+
+  test('explicit waypoints win over the layouted path', () => {
+    const withWaypoints = generateDrawio(mockViewModel(view), {
+      compressed: false,
+      edgeWaypoints: { 'a|b|up': [[10, 20]] },
+    })
+    expect(withWaypoints).toMatch(
+      /value="up" style="(?![^"]*curved=1)[^"]*"[^>]*>\s*<mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="10" y="20"\/>/,
+    )
+  })
+})
