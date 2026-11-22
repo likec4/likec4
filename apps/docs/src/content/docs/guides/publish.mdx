@@ -159,11 +159,16 @@ Upload the `dist` folder, and check two things:
 - **SPA fallback.** Configure the host to serve `index.html` for unknown paths, or build with `--use-hash-history`.
 
 For a quick public link without creating an account, upload the `dist` folder to [deed.page](https://deed.page) with one request.
-The `X-Spa: 1` header turns on the SPA fallback, so links to views work without `--use-hash-history`:
+The `X-Spa: 1` header turns on the SPA fallback, so links to views work without `--use-hash-history`.
+Pick a unique slug; if the response is `409 slug_taken`, retry with the `suggestion` from that body.
+A single request body is capped at 4 MB. For a larger `dist` folder, use deed.page's [large-site upload](https://deed.page/docs#how-do-i-publish-a-site-larger-than-4-mb).
+Send an `Idempotency-Key` of 16 or more characters, such as a UUID you choose. If the first response is lost, retry the same request with the same key and body to recover it:
 
 ```sh
 tar -C ./dist -czf site.tar.gz .
-curl -T site.tar.gz "https://deed.page/v1/sites?slug=my-architecture" -H "X-Spa: 1"
+curl -T site.tar.gz "https://deed.page/v1/sites?slug=my-architecture" \
+  -H "X-Spa: 1" \
+  -H "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000"
 ```
 
 The response has the site URL and a token, shown once, that you need to update or delete the site.

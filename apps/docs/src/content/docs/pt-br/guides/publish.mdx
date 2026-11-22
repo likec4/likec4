@@ -159,11 +159,16 @@ Envie a pasta `dist` e confira duas coisas:
 - **Fallback de SPA.** Configure a hospedagem para servir o `index.html` em caminhos desconhecidos, ou gere com `--use-hash-history`.
 
 Para um link público rápido sem criar conta, envie a pasta `dist` para o [deed.page](https://deed.page) com uma única requisição.
-O cabeçalho `X-Spa: 1` ativa o fallback de SPA, então links para visões funcionam sem `--use-hash-history`:
+O cabeçalho `X-Spa: 1` ativa o fallback de SPA, então links para visões funcionam sem `--use-hash-history`.
+Escolha um slug único; se a resposta for `409 slug_taken`, tente de novo com o `suggestion` desse corpo.
+O corpo de uma única requisição tem limite de 4 MB. Para uma pasta `dist` maior, use o [envio de sites grandes](https://deed.page/docs#how-do-i-publish-a-site-larger-than-4-mb) do deed.page.
+Envie um `Idempotency-Key` com 16 caracteres ou mais, por exemplo um UUID que você escolher. Se a primeira resposta se perder, repita a mesma requisição com a mesma chave e o mesmo corpo para recuperá-la:
 
 ```sh
 tar -C ./dist -czf site.tar.gz .
-curl -T site.tar.gz "https://deed.page/v1/sites?slug=my-architecture" -H "X-Spa: 1"
+curl -T site.tar.gz "https://deed.page/v1/sites?slug=my-architecture" \
+  -H "X-Spa: 1" \
+  -H "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000"
 ```
 
 A resposta traz a URL do site e um token, mostrado uma única vez, necessário para atualizar ou excluir o site.
