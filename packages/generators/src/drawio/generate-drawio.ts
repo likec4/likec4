@@ -560,9 +560,49 @@ function cubicMidpoint(
   ]
 }
 
+type Pt = readonly [number, number]
+
+/** Where the line through `a` along `da` meets the line through `b` along `db`, if ahead of `a`. */
+function rayLineIntersection(a: Pt, da: Pt, b: Pt, db: Pt): [number, number] | null {
+  const cross = da[0] * db[1] - da[1] * db[0]
+  if (Math.abs(cross) < 1e-9 * Math.hypot(...da) * Math.hypot(...db)) return null
+  const s = ((b[0] - a[0]) * db[1] - (b[1] - a[1]) * db[0]) / cross
+  return s > 0 ? [a[0] + s * da[0], a[1] + s * da[1]] : null
+}
+
 /**
- * Waypoints that follow the layouted path: the corners of an orthogonal path, or for a curved path the joins
- * of its bezier pieces plus the middle of each piece, which draw.io's curved style draws a smooth line through.
+ * draw.io waypoints for one cubic bezier piece. draw.io's curved style (mxPolyline.paintCurvedLine) draws
+ * quadratic curves that use the waypoints as control points and pass through the midpoints between them.
+ * Two waypoints where the end tangents meet the tangent at t = 0.5 make the drawn curve pass through the
+ * piece's ends and its middle with the same tangents there. S-shaped pieces, and pieces where those points are
+ * missing or far out (nearly straight ones), are split in half and each half is placed the same way.
+ */
+function curvedPieceWaypoints(p0: Pt, c1: Pt, c2: Pt, p3: Pt, depth = 0): [number, number][] {
+  const sub = (a: Pt, b: Pt): [number, number] => [a[0] - b[0], a[1] - b[1]]
+  const half = (a: Pt, b: Pt): [number, number] => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
+  const mid = cubicMidpoint(p0, c1, c2, p3)
+  const midTangent = sub(sub(p3, p0), sub(c1, c2))
+  const w1 = rayLineIntersection(p0, sub(c1, p0), mid, midTangent)
+  const w2 = rayLineIntersection(p3, sub(c2, p3), mid, midTangent)
+  const chord = sub(p3, p0)
+  const cross = (u: Pt, v: Pt) => u[0] * v[1] - u[1] * v[0]
+  const sShaped = cross(chord, sub(c1, p0)) * cross(chord, sub(c2, p0)) < 0
+  const reach = Math.hypot(...chord) / 2
+  if (!sShaped && w1 && w2 && Math.hypot(...sub(w1, p0)) <= reach && Math.hypot(...sub(w2, p3)) <= reach) {
+    return [w1, w2]
+  }
+  if (depth >= 2) return [[c1[0], c1[1]], [c2[0], c2[1]]]
+  const a = half(p0, c1), b = half(c1, c2), c = half(c2, p3)
+  const d = half(a, b), e = half(b, c)
+  return [
+    ...curvedPieceWaypoints(p0, a, d, mid, depth + 1),
+    ...curvedPieceWaypoints(mid, e, c, p3, depth + 1),
+  ]
+}
+
+/**
+ * Waypoints that follow the layouted path: the corners of an orthogonal path, or for a curved path two
+ * waypoints per bezier piece that make draw.io's curved style follow it (see curvedPieceWaypoints).
  * Without them, edges between the same two nodes share their anchors and are drawn on top of each other.
  */
 function layoutedEdgeWaypoints(points: ReadonlyArray<readonly [number, number]>): {
@@ -575,8 +615,7 @@ function layoutedEdgeWaypoints(points: ReadonlyArray<readonly [number, number]>)
   }
   const waypoints: [number, number][] = []
   for (let i = 0; i + 3 < points.length; i += 3) {
-    if (i > 0) waypoints.push([points[i]![0], points[i]![1]])
-    waypoints.push(cubicMidpoint(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 3]!))
+    waypoints.push(...curvedPieceWaypoints(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 3]!))
   }
   return { waypoints, ortho: false }
 }

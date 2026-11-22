@@ -455,6 +455,8 @@ describe('edges follow the layouted path', () => {
       // drawn from the target by the layout
       edge('back', 'b', 'a', [[100, 25.5], [180, 25.5], [220, 25.5], [300, 25.5]]),
       // orthogonal: down from a, then right into c
+      // S-shaped: split in halves, since two waypoints can only draw one bend
+      edge('wave', 'a', 'c', [[100, 40], [220, -60], [180, 320], [300, 220]]),
       edge('ortho', 'a', 'c', [[50, 50], [50, 100], [50, 175], [50, 225], [130, 225], [220, 225], [300, 225]]),
     ],
   } as unknown as ProcessedView<aux.Unknown>
@@ -480,9 +482,43 @@ describe('edges follow the layouted path', () => {
     expect(up.style).toContain('curved=1;')
     expect(up.style).toContain('exitX=1;exitY=0.4;entryX=0;entryY=0.4;')
     expect(down.style).toContain('exitX=1;exitY=0.6;entryX=0;entryY=0.6;')
-    // the middle of each bezier piece
-    expect(up.points).toEqual([[ax + 200, ay - 25]])
-    expect(down.points).toEqual([[ax + 200, ay + 75]])
+    // where the end tangents meet the tangent at the middle of the bezier, so that draw.io's quadratic
+    // curve through them passes through that middle point (200, -25) and (200, 75)
+    expect(up.points).toEqual([[ax + 160, ay - 25], [ax + 240, ay - 25]])
+    expect(down.points).toEqual([[ax + 160, ay + 75], [ax + 240, ay + 75]])
+  })
+
+  test('draw.io draws curved edges along the layouted bezier', () => {
+    // mxPolyline.paintCurvedLine: quadratic curves with the waypoints as control points, through their midpoints
+    const drawn = (pts: number[][]) => {
+      const out: number[][] = []
+      const quad = (a: number[], b: number[], c: number[]) => {
+        for (let k = 0; k <= 50; k++) {
+          const t = k / 50, u = 1 - t
+          out.push([0, 1].map(i => u * u * a[i]! + 2 * u * t * b[i]! + t * t * c[i]!))
+        }
+      }
+      let from = pts[0]!
+      for (let i = 1; i < pts.length - 2; i++) {
+        const to = [(pts[i]![0]! + pts[i + 1]![0]!) / 2, (pts[i]![1]! + pts[i + 1]![1]!) / 2]
+        quad(from, pts[i]!, to)
+        from = to
+      }
+      quad(from, pts.at(-2)!, pts.at(-1)!)
+      return out
+    }
+    const bezier = ([p0, p1, p2, p3]: number[][]) =>
+      Array.from({ length: 101 }, (_, k) => {
+        const t = k / 100, u = 1 - t
+        return [0, 1].map(i => u ** 3 * p0![i]! + 3 * u * u * t * p1![i]! + 3 * u * t * t * p2![i]! + t ** 3 * p3![i]!)
+      })
+    const maxDeviation = (value: string, path: number[][]) => {
+      const curve = drawn([path[0]!, ...cellOf(value).points.map(([x, y]) => [x! - ax, y! - ay]), path.at(-1)!])
+      return Math.max(...bezier(path).map(p => Math.min(...curve.map(q => Math.hypot(p[0]! - q[0]!, p[1]! - q[1]!)))))
+    }
+    expect(maxDeviation('up', [[100, 20], [180, -40], [220, -40], [300, 20]])).toBeLessThan(3)
+    expect(cellOf('wave').points.length).toBeGreaterThan(2)
+    expect(maxDeviation('wave', [[100, 40], [220, -60], [180, 320], [300, 220]])).toBeLessThan(3)
   })
 
   test('an edge drawn from its target still leaves from its source', () => {
