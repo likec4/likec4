@@ -10,9 +10,13 @@ type ViewModel = LikeC4ViewModel<aux.Unknown>
 /**
  * Text for an ATX heading. Titles are plain text and may span lines, but a heading
  * is one line, and characters such as `*`, `<` or a trailing `#` would be read as Markdown.
+ * GFM extended autolinks (`www.example.com`, `https://example.com`) must also be escaped so
+ * they render as literal text rather than links.
  */
 function headingText(title: string): string {
   return escapeInlineMarkdown(title.replace(/\s*[\r\n]+\s*/g, ' ').trim())
+    .replace(/(\w+):\/\//g, '$1\\://')
+    .replace(/\bwww\./g, 'www\\.')
 }
 
 /**

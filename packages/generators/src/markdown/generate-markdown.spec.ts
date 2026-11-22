@@ -140,3 +140,18 @@ test('Titles are one-line headings rendered literally', ({ expect }) => {
     '### \\*Core\\* services',
   ])
 })
+
+test('URL-like titles are not rendered as GFM autolinks', ({ expect }) => {
+  const view = (title: string) => mockView({ title, sourcePath: 'views/a.c4', $view: fakeDiagram })
+  const md = generateMarkdown(
+    mockModel(
+      [view('www.example.com'), view('https://example.com')],
+      { id: 'default', title: 'Test' },
+    ),
+  )
+  const headings = md.split('\n').filter(line => line.startsWith('###'))
+  expect(headings).toEqual([
+    '### www\\.example.com',
+    '### https\\://example.com',
+  ])
+})
