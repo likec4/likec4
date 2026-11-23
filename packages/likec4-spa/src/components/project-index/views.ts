@@ -36,7 +36,7 @@ export function indexViews(
       title: vm?.titleOrUntitled ?? view.title ?? view.id,
       folder,
       _type: view._type,
-      description: RichText.from(view.description),
+      description: RichText.from(view.description, model.resolveMarkdownRef),
       nodes: view.nodes.length,
       view,
     }

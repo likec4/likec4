@@ -63,16 +63,15 @@ function ElementsTree({
     multiple: false,
   })
 
+  // Every search result re-applies its expansion, even with the same ancestors,
+  // so a node collapsed manually in an earlier search does not hide current matches
   useEffect(() => {
-    console.log('expanded', expanded)
     tree.collapseAllNodes()
     if (!expanded) {
       return
     }
-    // for (const nd of expanded) {
     tree.setExpandedState(mapToObj(expanded, (id) => [id, true]))
-    // }
-  }, [expanded?.join(',')])
+  }, [treeData])
 
   const onKeyDownCapture: KeyboardEventHandler = useCallbackRef((e) => {
     const target = e.target as HTMLElement

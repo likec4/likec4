@@ -52,7 +52,12 @@ function DriftsBadge({ projectId, drifts }: { projectId: ProjectId; drifts: Read
       shadow="md"
       withinPortal>
       <HoverCard.Target>
-        <Badge>
+        {/* focusable, so the list opens on keyboard focus too */}
+        <Badge
+          tabIndex={0}
+          role="button"
+          aria-haspopup="dialog"
+          aria-label={`${drifts.length} view${drifts.length === 1 ? '' : 's'} drifted, show the list`}>
           <BadgeIcon size={14} aria-hidden />
           <BadgeText>
             {drifts.length} view{drifts.length === 1 ? '' : 's'} drifted
@@ -89,6 +94,11 @@ function DriftsBadge({ projectId, drifts }: { projectId: ProjectId; drifts: Read
  */
 const Badge = styled(Detail, {
   base: {
+    cursor: 'default',
+    _focusVisible: {
+      outline: '[2px solid var(--mantine-color-orange-6)]',
+      outlineOffset: '[2px]',
+    },
     width: 'fit-content',
     maxWidth: '100%',
     gap: '1.5',

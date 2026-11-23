@@ -17,11 +17,20 @@ export function ScopeChips({ result, scope, indexProjects, onScope }: {
   onScope: (id: ProjectId | null) => void
 }) {
   // with `@prefix`, offer the matching projects; otherwise projects with matches, most first
-  const ids = result.scopeCandidates ?? [...result.counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([id]) => id)
+  let ids: ReadonlyArray<ProjectId>
+  if (result.scopeCandidates) {
+    ids = result.scopeCandidates
+  } else {
+    ids = [...result.counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([id]) => id)
+    // the picked project stays visible (and pressed), even without matches
+    if (scope && !ids.includes(scope)) {
+      ids = [...ids, scope]
+    }
+  }
   const projects = ids.map(id => byId(indexProjects, id) ?? { id, title: id })
-  const without = result.scopeCandidates ? 0 : Math.max(0, indexProjects.length - result.counts.size)
+  const without = result.scopeCandidates ? 0 : Math.max(0, indexProjects.length - ids.length)
   return (
     // Padding is needed to align with the search input
     // So we set it to 0 to remove the default padding

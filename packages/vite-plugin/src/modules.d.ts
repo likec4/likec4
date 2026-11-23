@@ -156,7 +156,7 @@ declare module 'likec4:diffs' {
 
 declare module 'likec4:diffs/*' {
   import type { ProjectDiffs } from 'likec4:diffs'
-  import type { ReadableAtomAtom } from 'likec4/vite-plugin/internal'
+  import type { ReadableAtom } from 'likec4/vite-plugin/internal'
 
   export const $diffs: ReadableAtom<ProjectDiffs>
 }

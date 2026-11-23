@@ -37,26 +37,40 @@ const searchClasses = searchOverlay()
  */
 export const WorkspaceSearch = memo(() => {
   const opened = useWorkspaceSearch(s => s.opened)
+  const session = useWorkspaceSearch(s => s.session)
   const { close } = useWorkspaceSearchActions()
 
-  // Retains the dialog element beyond unmount, so onExitComplete can close it after the exit animation
-  const dialogElRef = useRef<HTMLDialogElement | null>(null)
+  // Retains dialog elements beyond unmount, so onExitComplete can close them after the exit animation.
+  // Reopening during the exit mounts a new dialog (keyed by session), the exiting one is closed here.
+  const dialogs = useRef(new Set<HTMLDialogElement>())
+  const activeDialog = useRef<HTMLDialogElement | null>(null)
   const captureDialogRef = useCallback((node: HTMLDialogElement | null) => {
-    if (node) dialogElRef.current = node
-  }, [])
-  const handleExitComplete = useCallback(() => {
-    if (dialogElRef.current?.open) {
-      dialogElRef.current.close()
+    if (node) {
+      dialogs.current.add(node)
+      activeDialog.current = node
     }
-    dialogElRef.current = null
   }, [])
+  const isOpened = useCallbackRef(() => opened)
+  const handleExitComplete = useCallback(() => {
+    for (const dialog of dialogs.current) {
+      if (isOpened() && dialog === activeDialog.current) {
+        continue
+      }
+      if (dialog.open) {
+        dialog.close()
+      }
+      dialogs.current.delete(dialog)
+    }
+  }, [isOpened])
 
   return (
     <FramerMotionConfig>
       <AnimatePresence onExitComplete={handleExitComplete}>
         {opened && (
           <Overlay
+            key={session}
             ref={captureDialogRef}
+            aria-label="Search elements and views"
             fullscreen
             withBackdrop={false}
             backdrop={{ opacity: 0.9 }}
@@ -176,6 +190,10 @@ function SearchBody() {
   }
 
   const onInputKeyDown = useCallbackRef((e: KeyboardEvent<HTMLInputElement>) => {
+    // Enter confirms an IME candidate, not a search command
+    if (e.nativeEvent.isComposing) {
+      return
+    }
     const input = e.currentTarget
     const singleCandidate = result.scopeCandidates?.length === 1 ? result.scopeCandidates[0] : undefined
     switch (true) {
@@ -316,7 +334,7 @@ function SearchBody() {
       <SearchPanel.Header className="group">
         <SearchField
           ref={inputRef}
-          value={query}
+          value={currentQuery}
           placeholder={singleProject
             ? 'Search elements and views'
             : scope

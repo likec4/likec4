@@ -9,7 +9,11 @@ import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLite
 export const generateCustomizationCode = (customizationFile: string | undefined): string => {
   if (!customizationFile) {
     return `
+import { atom } from 'likec4/vite-plugin/internal';
+
 export { Fragment as CustomizationContext } from "react";
+
+export const ComponentsAtom = atom({})
 `
   }
   const fileLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(customizationFile))
