@@ -2,8 +2,8 @@ import type { ProjectId } from '@likec4/core/types'
 import { styled } from '@likec4/styles/jsx'
 import { IconSearch, IconX } from '@tabler/icons-react'
 import type { ComponentPropsWithRef } from 'react'
-import { ProjectMonogram } from '../projects-overview/ProjectMonogram'
 import { Truncate } from '../ui/Text'
+import { ProjectMonogram } from '../workspace-overview/ProjectMonogram'
 import { SearchPanel } from './SearchPanel'
 
 /**
