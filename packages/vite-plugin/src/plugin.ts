@@ -22,6 +22,7 @@ import { resolveAppOptions } from './app-options'
 import { iconBundlePlugin } from './icon-bundle-plugin'
 import { logger } from './logger'
 import { enableOpenProjectInEditor } from './openProjectInEditor'
+import { reloadModuleInEnvironments } from './reloadModule'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import type { AIOptions, LikeC4VitePluginOptions } from './types'
@@ -322,19 +323,7 @@ export function LikeC4VitePlugin({
         return () => {
           const hotChannel = server.hot
 
-          const reloadModule = async (id: string): Promise<boolean> => {
-            const md = server.moduleGraph.getModuleById(id)
-            if (!md || md.importers.size === 0) {
-              return false
-            }
-            try {
-              await server.reloadModule(md)
-              return true
-            } catch (err) {
-              logger.error(loggable(err))
-              return false
-            }
-          }
+          const reloadModule = (id: string) => reloadModuleInEnvironments(server, id)
 
           const hasErrors = () => {
             const [error] = likec4.getErrors()
