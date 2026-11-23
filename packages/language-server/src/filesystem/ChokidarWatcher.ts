@@ -36,13 +36,14 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
    */
   private notifyChanges = funnel(
     (changes: Map<string, FileEvent>) => {
+      logger.trace`notifyChanges: ${changes.size} changes`
       this.services.lsp.DocumentUpdateHandler.didChangeWatchedFiles({
         changes: [...changes.values()],
       })
     },
     {
-      minQuietPeriodMs: 50,
-      maxBurstDurationMs: 250,
+      minGapMs: 200,
+      triggerAt: 'both',
       reducer(accumulator: Map<string, FileEvent> | undefined, change: FileEvent) {
         accumulator ??= new Map()
         // Last change wins
@@ -113,9 +114,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
     watcher.on('add', notify(FileChangeType.Created))
       .on('change', notify(FileChangeType.Changed))
       .on('unlink', notify(FileChangeType.Deleted))
-      .on('unlinkDir', path => {
-        this.notifyChanges.call({ uri: URI.file(path).toString(), type: FileChangeType.Deleted })
-      })
+    // TODO: not yet handled in DocumentUpdateHandler
+    // .on('unlinkDir', path => {
+    //   this.notifyChanges.call({ uri: URI.file(path).toString(), type: FileChangeType.Deleted })
+    // })
 
     return watcher
   }

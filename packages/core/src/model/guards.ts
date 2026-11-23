@@ -10,6 +10,7 @@ import { ElementModel } from './ElementModel'
 import { type AnyRelationshipModel, RelationshipModel } from './RelationModel'
 import { EdgeModel } from './view/EdgeModel'
 import { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { LikeC4ViewsFolder } from './view/LikeC4ViewsFolder'
 import { NodeModel } from './view/NodeModel'
 
 type AnyModel<A extends AnyAux> =
@@ -21,6 +22,7 @@ type AnyModel<A extends AnyAux> =
   | ElementModel<A>
   | RelationshipModel<A>
   | LikeC4ViewModel<A>
+  | LikeC4ViewsFolder<A>
   | NodeModel<A>
   | EdgeModel<A>
 
@@ -66,6 +68,10 @@ export function isElementModel<M extends Any>(element: AnyModel<M>): element is 
 
 export function isLikeC4ViewModel<M extends Any>(view: AnyModel<M>): view is LikeC4ViewModel<M> {
   return view instanceof LikeC4ViewModel
+}
+
+export function isLikeC4ViewsFolder<M extends Any>(view: AnyModel<M>): view is LikeC4ViewsFolder<M> {
+  return view instanceof LikeC4ViewsFolder
 }
 
 export function isNodeModel<M extends Any>(node: AnyModel<M>): node is NodeModel<M> {

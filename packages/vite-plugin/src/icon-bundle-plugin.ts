@@ -1,4 +1,4 @@
-import { DefaultMap } from '@likec4/core'
+import { DefaultMap } from '@likec4/core/utils'
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'

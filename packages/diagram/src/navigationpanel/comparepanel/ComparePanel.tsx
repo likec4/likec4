@@ -1,6 +1,6 @@
 import { Box, Txt } from '@likec4/styles/jsx'
 import { hstack, vstack } from '@likec4/styles/patterns'
-import { ActionBar, Button, CloseButton } from '@mantine/core'
+import { ActionBar, Button, CloseButton, Code } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useIsMounted } from '@react-hookz/web'
 import { IconInfoCircle } from '@tabler/icons-react'
@@ -76,6 +76,8 @@ export const ComparePanel = memo(() => {
     }, 100)
   })
 
+  const applyLatestDisabled = !ctx.canApplyLatest || ctx.layout === 'auto' || isProcessing === 'reset'
+
   return (
     <>
       <PortalToContainer>
@@ -96,33 +98,36 @@ export const ComparePanel = memo(() => {
             value={ctx.layout}
             onChange={ops.switchLayout} />
           <ActionBar.Divider />
-          <Button
-            loading={isProcessing === 'sync'}
-            disabled={!ctx.canApplyLatest || ctx.layout === 'auto' || isProcessing === 'reset'}
-            onClick={onApplyLatest}
-            size="compact-xs"
-            rightSection={
-              <Tooltip
-                onClick={stopPropagation}
-                position="right-start"
-                {...portalProps}
-                label={
-                  <>
-                    Applies changes from the latest auto-layouted<br />
-                    to saved snapshot, preserving (as possible)<br />
-                    manual adjustments.<br />
-                    <br />
-                    You can undo this action.
-                  </>
-                }
-              >
-                <IconInfoCircle size={14} stroke={1.7} opacity={0.5} />
-              </Tooltip>
+          <Tooltip
+            onClick={stopPropagation}
+            position="right-end"
+            disabled={applyLatestDisabled}
+            openDelay={100}
+            {...portalProps}
+            label={
+              <>
+                <p style={{ fontWeight: 'bold' }}>
+                  This will modify the snapshot file.
+                </p>
+                <Code>{ctx.viewId}.likec4.snap</Code>
+                <p>
+                  Make sure it's under version control,<br />
+                  or create a backup before proceeding.
+                </p>
+              </>
             }
           >
-            Sync with latest
-            {!ctx.canApplyLatest && <Box textStyle={'xs'}>view type is changed</Box>}
-          </Button>
+            <Button
+              loading={isProcessing === 'sync'}
+              disabled={applyLatestDisabled}
+              onClick={onApplyLatest}
+              size="compact-xs"
+              rightSection={<IconInfoCircle size={14} stroke={1.7} opacity={0.5} />}
+            >
+              Sync with latest
+              {!ctx.canApplyLatest && <Box textStyle={'xs'}>view type is changed</Box>}
+            </Button>
+          </Tooltip>
           <Button
             loading={isProcessing === 'reset'}
             disabled={isProcessing === 'sync'}

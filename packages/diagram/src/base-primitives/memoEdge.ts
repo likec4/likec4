@@ -12,6 +12,7 @@ const edgePropsEqual = <P extends BaseEdgeProps>(
   next: Readonly<P>,
 ) => (
   prev.id === next.id
+  && prev.type === next.type
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.animated ?? false, next.animated ?? false)
   && eq(prev.source, next.source)
@@ -27,10 +28,20 @@ const edgePropsEqual = <P extends BaseEdgeProps>(
   && eq(prev.data, next.data)
 )
 
+const isMemoized = Symbol.for('isMemoized')
 export function memoEdge<P extends BaseEdgeProps>(
   Edge: FunctionComponent<P>,
 ): FunctionComponent<P> {
+  if (Object.hasOwn(Edge, isMemoized)) {
+    return Edge
+  }
   const Memo = memo(Edge, edgePropsEqual)
   Memo.displayName = `MemoEdge(${Edge.displayName || Edge.name})`
+  // To avoid memoizing the same edge multiple times
+  Object.defineProperty(Memo, isMemoized, {
+    enumerable: false,
+    writable: false,
+    value: true,
+  })
   return Memo
 }

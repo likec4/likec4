@@ -14,14 +14,12 @@ export default defineConfig([
     outDir: './dist/internal',
     platform: 'neutral',
     target: false,
-    minify: false,
     outputOptions: {
       entryFileNames: '[name].mjs',
     },
     deps: {
       onlyBundle: [
-        'nanostores',
-        '@nanostores/react',
+        /^@?nanostores/,
         'birpc',
         'fast-equals',
       ],

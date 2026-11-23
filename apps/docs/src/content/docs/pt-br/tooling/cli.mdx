@@ -137,7 +137,7 @@ Qualquer alteração nos arquivos-fonte atualiza imediatamente a visualização 
 | Opção                        | Descrição                                                                                                       |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `--port`                     | Porta do servidor de desenvolvimento (padrão: 5173, ou variável `PORT`)                                         |
-| `--hmr-port`                 | Porta WebSocket do HMR (padrão: detectada entre 24678–24690, ou variável `HMR_PORT`)                            |
+| `--hmr-port`                 | Porta de um WebSocket de HMR separado (padrão: a porta do servidor de desenvolvimento, ou variável `HMR_PORT`)  |
 | `--listen, -l`               | Endereço IP para escuta (padrão: `localhost`, ou `0.0.0.0` dentro de um contêiner)                              |
 | `--allowed-host`             | Nome de host autorizado a acessar o servidor de desenvolvimento (Vite [`server.allowedHosts`](https://vite.dev/config/server-options#server-allowedhosts)); pode ser informado mais de uma vez. Por padrão, permite todos os hosts. |
 | `--base, --base-url`         | URL base da aplicação, por exemplo, "/" ou "/pages/"                                                            |

@@ -15,7 +15,7 @@ export function useSearch(): [string, (search: string) => void] {
 
 export function useNormalizedSearch(): string {
   const ctx = useSearchContext()
-  return useDeferredValue(ctx.normalizedSearch)
+  return useDeferredValue(ctx.normalizedSearch, '')
 }
 
 export function useUpdateSearch() {

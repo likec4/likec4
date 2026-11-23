@@ -5,7 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { RelationshipBrowserScope } from '@likec4/config'
 import type { Fqn } from '@likec4/core'
 import {
   LikeC4Diagram,
@@ -19,6 +18,7 @@ import {
 import { useCallbackRef, useDocumentTitle } from '@mantine/hooks'
 import { useIsMounted, useUnmountEffect } from '@react-hookz/web'
 import { useNavigate, useRouter, useSearch } from '@tanstack/react-router'
+import type { RelationshipBrowserScope } from 'likec4/vite-plugin/internal'
 import { pageTitle as defaultPageTitle } from 'likec4:app-config'
 import { useEffect, useRef } from 'react'
 import { CompareModelProvider } from '../components/model-diff/CompareModelProvider'

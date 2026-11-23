@@ -3,7 +3,6 @@ import { loadDotSources } from 'likec4:dot'
 import { ViewAsDot } from '../../pages/ViewAsDot'
 
 export const Route = createFileRoute('/project/$projectId/view/$viewId/dot')({
-  staleTime: Infinity,
   component: Page,
   loader: async ({ params, context }) => {
     const projectId = context.projectId

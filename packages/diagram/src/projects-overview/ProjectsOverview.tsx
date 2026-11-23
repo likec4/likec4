@@ -20,6 +20,12 @@ export type ProjectsOverviewProps = {
   onNavigateToProject?: undefined | ((projectId: ProjectId) => void)
 
   fitViewPadding?: ViewPadding | undefined
+
+  /**
+   * Whether to hide the navigation panel
+   * @default false
+   */
+  hideNavigationPanel?: boolean | undefined
 } & ProjectsOverviewXYProps
 
 type ReactFlowProviderProps = Omit<Parameters<typeof ReactFlowProvider>[0], 'children'>
@@ -33,6 +39,7 @@ export function ProjectsOverview({
     left: '32px',
     right: '32px',
   },
+  hideNavigationPanel,
   ...props
 }: ProjectsOverviewProps) {
   const actorRef = useActorRef(
@@ -74,7 +81,7 @@ export function ProjectsOverview({
         <LayoutGroup id={actorRef.sessionId} inherit={false}>
           <ProjectsOverviewXY {...props} />
         </LayoutGroup>
-        <ProjectsOverviewPanel />
+        {hideNavigationPanel !== true && <ProjectsOverviewPanel />}
       </ReactFlowProvider>
     </ProjectsOverviewActorContextProvider>
   )

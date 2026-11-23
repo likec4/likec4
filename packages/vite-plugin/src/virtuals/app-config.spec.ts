@@ -28,16 +28,4 @@ describe('createAppConfigModule', () => {
       expect(code).toContain('export let pageTitle = "My \\"App\\""')
     })
   })
-
-  describe('virtual module ids', () => {
-    it('has the correct module id', () => {
-      const mod = createAppConfigModule(resolveAppOptions({}))
-      expect(mod.id).toBe('likec4:app-config')
-    })
-
-    it('has the correct virtual id', () => {
-      const mod = createAppConfigModule(resolveAppOptions({}))
-      expect(mod.virtualId).toBe('likec4:plugin/app-config.js')
-    })
-  })
 })

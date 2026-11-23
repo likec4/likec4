@@ -31,6 +31,6 @@ Canonical task guidance referenced by root AGENTS.md. Read the sections that app
 - `examples/` provides sample LikeC4 projects.
 - `devops/` contains CI/CD and repository utility scripts.
 - `skills/` contains agent skills for AI assistants, including `skills/likec4-dsl/`.
-- `likec4` is the package users install. Its subpaths are `likec4/react`, `likec4/model`, `likec4/model/builder`, `likec4/config`, `likec4/vite-plugin` and `likec4/generators/likec4`.
-- In docs, READMEs, examples and generated code prefer the `likec4/...` subpaths over the scoped packages. Use `@likec4/...` only when `likec4` has no such subpath (`@likec4/icons`, `@likec4/layouts`, `@likec4/styles`, `@likec4/style-preset`, `@likec4/mcp`, `@likec4/lsp`) or in the README of that package. `@likec4/diagram/bundle` no longer exists.
+- `likec4` is the package users install. Its subpaths are `likec4/react`, `likec4/model`, `likec4/model/builder`, `likec4/config`, `likec4/vite-plugin`, `likec4/generators/likec4`, `likec4/layouts` (the bundled `@likec4/layouts`) and the bundled core, `likec4/core` with `/builder`, `/geometry`, `/compute-view`, `/model`, `/styles`, `/types` and `/utils`.
+- In docs, READMEs, examples and generated code prefer the `likec4/...` subpaths over the scoped packages. Prefer `likec4/core/*` over `@likec4/core/*`; it is not installed separately. Use `@likec4/...` only when `likec4` has no such subpath (`@likec4/icons`, `@likec4/styles`, `@likec4/style-preset`, `@likec4/mcp`, `@likec4/lsp`) or in the README of that package. `@likec4/diagram/bundle` no longer exists.
 - LeanIX / Draw.io bridge details live in `packages/leanix-bridge/README.md` and `skills/likec4-dsl/references/bridge-leanix-drawio.md`.

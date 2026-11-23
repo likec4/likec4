@@ -26,7 +26,7 @@ export const navigationLink = defineSlotRecipe({
     section: {
       '&:where([data-position="left"])': {
         marginInlineEnd: 'xxs',
-        // alignSelf: 'flex-start',
+        alignSelf: 'baseline',
       },
     },
     label: {

@@ -109,15 +109,21 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
    * Yields children of the element and its descendants with unique names (see `FqnIndex.uniqueDescedants`).
    * Generator on purpose: FQN of the element is resolved lazily, only when the scope is actually queried.
    *
-   * By default descendants are looked up in the project of the element's document,
+   * Pass `referencingProject`, the project of the reference, unless the element is imported:
+   * the element's document may be shared between projects, see {@link descendantsProjectOf}.
+   * Without it, descendants are looked up in the project of the element's document,
    * so for imported elements - in the project they are imported from.
-   * Pass `projectId` if the document may be shared between projects, see {@link descendantsProjectOf}.
    */
-  protected *genUniqueDescedants(element: ast.Element | ast.DeploymentNode | undefined, projectId?: ProjectId) {
+  protected *genUniqueDescedants(
+    element: ast.Element | ast.DeploymentNode | undefined,
+    referencingProject?: ProjectId,
+  ) {
     if (!element) {
       return
     }
-    projectId ??= projectIdFrom(element)
+    const projectId = referencingProject
+      ? this.descendantsProjectOf(element, referencingProject)
+      : projectIdFrom(element)
 
     if (ast.isElement(element)) {
       const fqn = this.fqnIndex.getFqn(element)
@@ -140,7 +146,10 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       : projectIdFrom(element)
   }
 
-  protected *genScopeExtendElement({ element }: ast.ExtendElement): Generator<AstNodeDescription> {
+  protected *genScopeExtendElement(
+    { element }: ast.ExtendElement,
+    referencingProject: ProjectId,
+  ): Generator<AstNodeDescription> {
     if (element.el.$nodeDescription) {
       yield element.el.$nodeDescription
       yield {
@@ -153,24 +162,27 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
     }
     // we make extended element resolvable inside ExtendElementBody
-    yield* this.genUniqueDescedants(elementRef(element))
+    yield* this.genUniqueDescedants(elementRef(element), referencingProject)
   }
 
-  protected *genScopeElementView({ viewOf, extends: ext }: ast.ElementView): Generator<AstNodeDescription> {
+  protected *genScopeElementView(
+    { viewOf, extends: ext }: ast.ElementView,
+    referencingProject: ProjectId,
+  ): Generator<AstNodeDescription> {
     if (viewOf) {
       // If we have "view of parent.target"
       // we make "target" resolvable inside ElementView
       if (viewOf.modelElement.value.$nodeDescription) {
         yield viewOf.modelElement.value.$nodeDescription
       }
-      yield* this.genUniqueDescedants(elementRef(viewOf))
+      yield* this.genUniqueDescedants(elementRef(viewOf), referencingProject)
       return
     }
 
     if (ext) {
       const view = ext.view.ref
       if (view) {
-        yield* this.genScopeElementView(view)
+        yield* this.genScopeElementView(view, referencingProject)
       }
     }
   }
@@ -203,13 +215,16 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       )
   }
 
-  protected *genScopeExtendDeployment({ deploymentNode }: ast.ExtendDeployment): Generator<AstNodeDescription> {
+  protected *genScopeExtendDeployment(
+    { deploymentNode }: ast.ExtendDeployment,
+    referencingProject: ProjectId,
+  ): Generator<AstNodeDescription> {
     if (deploymentNode.value.$nodeDescription) {
       yield deploymentNode.value.$nodeDescription
     }
     const target = deploymentNode.value.ref
     if (target && ast.isDeploymentNode(target)) {
-      yield* this.genUniqueDescedants(target)
+      yield* this.genUniqueDescedants(target, referencingProject)
     }
   }
 
@@ -235,32 +250,34 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     // Find the element whose descendants are in scope:
     // imported element and deployed instance are "transparent" and expose descendants of the referenced element
     let parentEl: ast.Element | ast.DeploymentNode | undefined
-    // Project to look up descendants in, by default - the project of the element's document
-    let projectId: ProjectId | undefined
+    // Imported elements are looked up in the project they are imported from, so they leave it unset
+    let referencingProject: ProjectId | undefined
     switch (true) {
       case ast.isDeploymentNode(parentRef):
       case ast.isElement(parentRef):
         parentEl = parentRef
-        // The element may be declared in a document shared between projects and extended in any of them,
-        // so descendants are resolved as seen from the referencing project
-        projectId = this.descendantsProjectOf(parentRef, projectIdFrom(container))
+        referencingProject = projectIdFrom(container)
         break
       case ast.isImported(parentRef):
         parentEl = parentRef.imported.ref
         break
-      case ast.isDeployedInstance(parentRef):
+      case ast.isDeployedInstance(parentRef): {
         const target = parentRef.target.modelElement.value.ref
-        // dprint-ignore
-        parentEl = ast.isImported(target)
-        ? target.imported.ref
-        : ast.isElement(target)
-          ? target
-          : undefined
+        switch (true) {
+          case ast.isImported(target):
+            parentEl = target.imported.ref
+            break
+          case ast.isElement(target):
+            parentEl = target
+            referencingProject = projectIdFrom(container)
+            break
+        }
         break
+      }
       default:
         nonexhaustive(parentRef)
     }
-    return parentEl ? scope(this.genUniqueDescedants(parentEl, projectId)) : EMPTY_SCOPE
+    return parentEl ? scope(this.genUniqueDescedants(parentEl, referencingProject)) : EMPTY_SCOPE
   }
 
   /**
@@ -344,6 +361,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
     const doc = getDocument(context.container)
     const precomputed = doc.localSymbols
+    const referencingProject = projectIdFrom(context.container)
 
     const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
     let container: AstNode | undefined = context.container
@@ -357,13 +375,13 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
 
       if (isDeploymentReference && ast.isExtendDeploymentBody(container)) {
-        yield* this.genScopeExtendDeployment(container.$container)
+        yield* this.genScopeExtendDeployment(container.$container, referencingProject)
       }
       if (isElementReference && ast.isExtendElementBody(container)) {
-        yield* this.genScopeExtendElement(container.$container)
+        yield* this.genScopeExtendElement(container.$container, referencingProject)
       }
       if (isElementReference && ast.isElementViewBody(container)) {
-        yield* this.genScopeElementView(container.$container)
+        yield* this.genScopeElementView(container.$container, referencingProject)
       }
 
       container = container.$container

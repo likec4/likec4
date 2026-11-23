@@ -134,8 +134,7 @@ describe('edge path with ortho routing', () => {
 
   it('renders untouched ortho edges straight from their Graphviz points', () => {
     const path = layoutedEdgePath({ points: orthoSpline, source, target, routing: 'ortho' })
-    expect(path.d.startsWith('M 100,50')).toBe(true)
-    expect(path.d.includes('L')).toBe(false)
+    expect(path.d).toBe('M 100,50 L 160,50 L 160,170')
     // right 60px, then down 120px: the collinear cubics form one segment each way
     expect(path.segments).toEqual([
       [{ x: 100, y: 50 }, { x: 160, y: 50 }],
@@ -164,6 +163,30 @@ describe('edge path with ortho routing', () => {
     expect(path.segments).toEqual([
       [{ x: 100, y: 50 }, { x: 220, y: 50 }],
       [{ x: 220, y: 50 }, { x: 220, y: 100 }],
+    ])
+  })
+
+  it('ends untouched ortho edges with a straight line, so the arrowhead follows the last segment', () => {
+    // Graphviz places both control points of an ortho cubic on its ends, e.g. [p0, p0, p1, p1].
+    // The tangent of such a cubic is zero at its ends, and WebKit then points the markers right.
+    const points: NonEmptyArray<Point> = [
+      [300, 50],
+      [300, 50],
+      [300, 120],
+      [300, 120],
+      [300, 120],
+      [250, 120],
+      [250, 120],
+      // a zero-length cubic at the end
+      [250, 120],
+      [250, 120],
+      [250, 120],
+    ]
+    const path = layoutedEdgePath({ points, source, target, routing: 'ortho' })
+    expect(path.d).toBe('M 300,50 L 300,120 L 250,120')
+    expect(path.segments).toEqual([
+      [{ x: 300, y: 50 }, { x: 300, y: 120 }],
+      [{ x: 300, y: 120 }, { x: 250, y: 120 }],
     ])
   })
 

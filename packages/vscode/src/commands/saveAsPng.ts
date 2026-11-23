@@ -79,6 +79,7 @@ export function registerSaveAsPngCommand({ sendTelemetry, preview, rpc }: SaveAs
               theme,
               nodePath: config.node.path,
               cliPath: config.cli.path,
+              notation: config.export.notation,
             }),
         )
         logUsedCli(output, cli, cliVersion)

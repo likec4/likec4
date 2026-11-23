@@ -24,3 +24,5 @@ export {
 } from './dynamic-view/computeFlow'
 
 export * from './model-diff'
+
+export { calcViewLayoutHash } from './utils/view-hash'
