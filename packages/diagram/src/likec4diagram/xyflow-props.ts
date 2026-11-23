@@ -31,3 +31,21 @@ export function resolveInteractionEnabled(
 ): boolean {
   return (override ?? enabled) && !isEditorBusy
 }
+
+/**
+ * A plain click (no modifier key, no drag) on a node that is part of a multi-selection
+ * should reduce the selection to that node only.
+ */
+export function shouldCollapseSelectionOnClick(params: {
+  nodesSelectable: boolean
+  isNodeSelected: boolean
+  selectedNodesCount: number
+  selectedEdgesCount: number
+  hasModifierKey: boolean
+  multiSelectionActive: boolean
+  wasDragged: boolean
+}): boolean {
+  return params.nodesSelectable && params.isNodeSelected
+    && !params.wasDragged && !params.hasModifierKey && !params.multiSelectionActive
+    && params.selectedNodesCount + params.selectedEdgesCount > 1
+}
