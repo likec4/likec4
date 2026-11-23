@@ -26,7 +26,13 @@ export function useRowFocus(containerRef: RefObject<HTMLElement | null>) {
     const focus = focusers.current.get(col)
     if (focus) {
       const target = focus(k)
-      pending.current = target === null ? null : { col, k: target }
+      const targetRow = target === null
+        ? null
+        : containerRef.current?.querySelector(`[data-col="${col}"][data-k="${target}"]`)
+      // no focus event comes for a row that already has focus, nothing to wait for
+      pending.current = target === null || (targetRow && targetRow === document.activeElement)
+        ? null
+        : { col, k: target }
       return target !== null
     }
     const rows = containerRef.current?.querySelectorAll<HTMLElement>(`[data-col="${col}"]`)

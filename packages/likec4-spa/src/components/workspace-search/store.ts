@@ -27,6 +27,10 @@ export interface WorkspaceSearchState {
    * Element whose views are listed to pick one
    */
   readonly pick: SearchElement | null
+  /**
+   * Incremented on every open, a new search session gets a new dialog
+   */
+  readonly session: number
 }
 
 const initialState: WorkspaceSearchState = {
@@ -34,6 +38,7 @@ const initialState: WorkspaceSearchState = {
   query: '',
   scope: null,
   pick: null,
+  session: 0,
 }
 
 export const workspaceSearchLogic = createStoreLogic({
@@ -48,11 +53,12 @@ export const workspaceSearchLogic = createStoreLogic({
     /**
      * Opens a fresh search, with the text typed into the trigger
      */
-    open: (_context, { query = '' }: { query?: string }) => ({
+    open: (context, { query = '' }: { query?: string }) => ({
       opened: true,
       query,
       scope: null,
       pick: null,
+      session: context.session + 1,
     }),
     close: context => ({ ...context, opened: false }),
     changeQuery: (context, { query }: { query: string }) => ({ ...context, query, pick: null }),
@@ -60,6 +66,8 @@ export const workspaceSearchLogic = createStoreLogic({
       ...context,
       scope,
       query: stripScopePrefix(context.query),
+      // the picked element may be from another project
+      pick: null,
     }),
     /**
      * Clears query and scope, keeps the search open

@@ -139,10 +139,10 @@ export function ${fnName}(projectId) {
     console.error('Unknown projectId: ' + projectId + ' (available: ' + projects + ')')
     ${
         exportFormat
-          ? `throw new Error(${disabledExportMessageLiteral} + projectId)`
+          ? `return Promise.reject(new Error(${disabledExportMessageLiteral} + projectId))`
           : `
     if (projects.length === 0) {
-      throw new Error('No projects found, invalid state')
+      return Promise.reject(new Error('No projects found, invalid state'))
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
