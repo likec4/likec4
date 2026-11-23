@@ -2,10 +2,16 @@ import type { ProjectId } from '@likec4/core/types'
 import { styled } from '@likec4/styles/jsx'
 import { IconAlertTriangle, IconSearch } from '@tabler/icons-react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { DataTable } from '../ui/DataTable'
 import { Count, EmptyNote } from '../ui/Text'
-import { type ElementsFilter, type ElementsIndex, type IndexElement, selectElements } from './elements'
+import {
+  type ElementsFilter,
+  type ElementsIndex,
+  type IndexElement,
+  type IndexElementView,
+  selectElements,
+} from './elements'
 
 /**
  * Kinds on the left to filter by, the matching elements in a table on the right
@@ -113,22 +119,7 @@ function ElementsTable({ projectId, elements, colors, showKind }: {
               <td data-num>{el.outgoing}</td>
               <td>
                 {first
-                  ? (
-                    <ViewLinks>
-                      {el.views.slice(0, 2).map(view => (
-                        <Link
-                          key={view.id}
-                          to="/project/$projectId/view/$viewId/"
-                          params={{ projectId, viewId: view.id }}
-                          search={{ focusOnElement: el.id }}
-                          title={view.title}
-                          onClick={e => e.stopPropagation()}>
-                          {view.title}
-                        </Link>
-                      ))}
-                      {el.views.length > 2 && <Count>+{el.views.length - 2}</Count>}
-                    </ViewLinks>
-                  )
+                  ? <ElementViews projectId={projectId} element={el} views={el.views} />
                   : (
                     <NotInViews>
                       <IconAlertTriangle size={14} aria-hidden />
@@ -141,6 +132,51 @@ function ElementsTable({ projectId, elements, colors, showKind }: {
         })}
       </tbody>
     </DataTable>
+  )
+}
+
+/**
+ * Links to the first two views, a button reveals the rest
+ */
+function ElementViews({ projectId, element, views }: {
+  projectId: ProjectId
+  element: IndexElement
+  views: ReadonlyArray<IndexElementView>
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const list = useRef<HTMLSpanElement>(null)
+  // the button disappears, so focus moves to the first revealed link
+  useEffect(() => {
+    if (expanded) list.current?.querySelectorAll('a')[2]?.focus()
+  }, [expanded])
+  const shown = expanded ? views : views.slice(0, 2)
+  const hidden = views.length - shown.length
+  return (
+    <ViewLinks ref={list}>
+      {shown.map(view => (
+        <Link
+          key={view.id}
+          to="/project/$projectId/view/$viewId/"
+          params={{ projectId, viewId: view.id }}
+          search={{ focusOnElement: element.id }}
+          title={view.title}
+          onClick={e => e.stopPropagation()}>
+          {view.title}
+        </Link>
+      ))}
+      {hidden > 0 && (
+        <MoreButton
+          type="button"
+          aria-expanded={false}
+          aria-label={`Show ${hidden} more ${hidden === 1 ? 'view' : 'views'} of ${element.title}`}
+          onClick={e => {
+            e.stopPropagation()
+            setExpanded(true)
+          }}>
+          +{hidden}
+        </MoreButton>
+      )}
+    </ViewLinks>
   )
 }
 
@@ -302,8 +338,10 @@ const KindCell = styled('span', {
 const ViewLinks = styled('span', {
   base: {
     display: 'flex',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    gap: '2',
+    columnGap: '2',
+    rowGap: '1',
     '& > a': {
       maxWidth: '[180px]',
       overflow: 'hidden',
@@ -314,6 +352,24 @@ const ViewLinks = styled('span', {
       _hover: {
         textDecoration: 'underline',
       },
+    },
+  },
+})
+
+const MoreButton = styled('button', {
+  base: {
+    appearance: 'none',
+    background: 'none',
+    border: 'none',
+    padding: '0',
+    color: 'text.dimmed',
+    fontFamily: 'body',
+    fontSize: 'xs',
+    fontVariantNumeric: 'tabular-nums',
+    cursor: 'pointer',
+    _hover: {
+      color: 'text.link',
+      textDecoration: 'underline',
     },
   },
 })
