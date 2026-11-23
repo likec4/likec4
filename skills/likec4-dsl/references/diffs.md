@@ -21,6 +21,15 @@ diff rfc1 'RFC-1: Payments service' {
       #next // tags, links and metadata for an existing element
     }
   }
+
+  views {
+    dynamic view checkout {
+      variant sequence
+      title 'Checkout'
+      shop.orders -> shop.payments 'requests payment'
+      shop.payments -> bank 'charges the card'
+    }
+  }
 }
 ```
 
@@ -28,6 +37,7 @@ diff rfc1 'RFC-1: Payments service' {
 
 - `remove` lists elements and relationships that exist in the model. Use full FQNs.
 - `add` has the syntax of a `model` block: elements, relationships, `extend` of elements.
+- `views` inside a diff contains dynamic views (`variant sequence` included). They are not in the model until the diff is applied. Apply moves them into a `views` block. The view id must be new.
 - A diff cannot extend relationships, cannot remove elements added by a diff, and cannot add an element that exists.
 - Diffs that change the same elements or relationships, or use what another diff adds, overlap:
   both get a warning, and `diff apply` needs `--accept-overlaps` after the owners of the diffs agreed.

@@ -19,7 +19,7 @@ import {
 import { NavigationBreadcrumbs } from './controls/NavigationBreadcrumbs'
 import { ElementViewControls } from './ElementViewControls'
 import { useNavigationActor } from './hooks'
-import { DynamicViewControls } from './walkthrough'
+import { DynamicViewModeSwitcher, StartWalkthroughButton } from './walkthrough'
 
 const selectViewData = selectDiagramSnapshot(snapshot => {
   const s = snapshot.context
@@ -100,7 +100,8 @@ export const NavigationPanelControls = memo(() => {
         {hasModel && <ViewDetailsButton key="details" linksCount={linksCount} onOpen={() => actor.closeDropdown()} />}
         {enableVscode && <OpenSource key="open-source" />}
         {editBtnVisible && <ToggleReadonly key="toggle-readonly" disabled={editBtnDisabled} isReadOnly={isReadOnly} />}
-        {enableDynamicViewWalkthrough && isDynamicView && <DynamicViewControls key="dynamic-view-controls" />}
+        {isDynamicView && <DynamicViewModeSwitcher key="dynamic-view-mode" />}
+        {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton key="start-walkthrough" />}
         {isElementView && (
           <ElementViewControls
             key="element-view-controls"
