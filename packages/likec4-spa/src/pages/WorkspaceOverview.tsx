@@ -6,9 +6,6 @@ import { useLikeC4Projects } from 'likec4:projects'
 import { useLikeC4ProjectsOverview } from 'likec4:projects-overview'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
-import { type CatalogSort, buildProjectsCatalog, selectProjects } from '../components/projects-overview/catalog'
-import { ProjectsCards } from '../components/projects-overview/ProjectsCards'
-import { ProjectsTable } from '../components/projects-overview/ProjectsTable'
 import { Metric, MetricsRow } from '../components/ui/Metric'
 import {
   Page,
@@ -23,10 +20,13 @@ import {
   ToolbarSpacer,
 } from '../components/ui/Page'
 import { type SortOption, type ViewModeOption, SortMenu, ViewModeSwitch } from '../components/ui/Toolbar'
+import { type CatalogSort, buildProjectsCatalog, selectProjects } from '../components/workspace-overview/catalog'
+import { ProjectsCards } from '../components/workspace-overview/ProjectsCards'
+import { ProjectsTable } from '../components/workspace-overview/ProjectsTable'
 import { WorkspaceSearchTrigger } from '../components/workspace-search/SearchTrigger'
 import { WorkspaceSearchProvider } from '../components/workspace-search/WorkspaceSearchProvider'
 
-export type ProjectsOverviewMode = 'cards' | 'table' | 'map'
+export type WorkspaceOverviewMode = 'cards' | 'table' | 'map'
 
 const SORT_OPTIONS: ReadonlyArray<SortOption<CatalogSort>> = [
   { value: 'name', label: 'Name' },
@@ -34,7 +34,7 @@ const SORT_OPTIONS: ReadonlyArray<SortOption<CatalogSort>> = [
   { value: 'usedBy', label: 'Most depended on' },
 ]
 
-const MODES: ReadonlyArray<ViewModeOption<ProjectsOverviewMode>> = [
+const MODES: ReadonlyArray<ViewModeOption<WorkspaceOverviewMode>> = [
   { value: 'cards', label: 'Cards', icon: <IconLayoutGrid size={14} aria-hidden /> },
   { value: 'table', label: 'Table', icon: <IconList size={14} aria-hidden /> },
   { value: 'map', label: 'Map', icon: <IconTopologyStar3 size={14} aria-hidden /> },
@@ -43,9 +43,9 @@ const MODES: ReadonlyArray<ViewModeOption<ProjectsOverviewMode>> = [
 // project config opens in the editor only from the dev server
 const onOpenSource = isDevelopment ? openProjectInEditor : undefined
 
-export function ProjectsOverviewPage({ view, onViewChange }: {
-  view: ProjectsOverviewMode
-  onViewChange: (view: ProjectsOverviewMode) => void
+export function WorkspaceOverviewPage({ view, onViewChange }: {
+  view: WorkspaceOverviewMode
+  onViewChange: (view: WorkspaceOverviewMode) => void
 }) {
   const changeProject = useChangeLikeC4Project()
   const projectsOverview = useLikeC4ProjectsOverview()

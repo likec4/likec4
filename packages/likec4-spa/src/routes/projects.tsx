@@ -5,10 +5,10 @@ import { pageTitle } from 'likec4:app-config'
 import { lazy } from 'react'
 import { z } from 'zod'
 
-const ProjectsOverviewPage = lazy(async () => {
-  const { ProjectsOverviewPage } = await import('../pages/ProjectsOverview')
+const WorkspaceOverviewPage = lazy(async () => {
+  const { WorkspaceOverviewPage } = await import('../pages/WorkspaceOverview')
   return {
-    default: ProjectsOverviewPage,
+    default: WorkspaceOverviewPage,
   }
 })
 
@@ -40,7 +40,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate()
   return (
     <Box w={'100%'} h={'100%'} overflow={'hidden'}>
-      <ProjectsOverviewPage
+      <WorkspaceOverviewPage
         view={view}
         onViewChange={next => {
           void navigate({ search: prev => ({ ...prev, view: next }), replace: true })
