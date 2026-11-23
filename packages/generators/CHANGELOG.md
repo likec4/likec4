@@ -1,5 +1,29 @@
 # @likec4/generators
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3564](https://github.com/likec4/likec4/pull/3564) [`4e082a2`](https://github.com/likec4/likec4/commit/4e082a2eb642cb4a323c6e5de2d6ff5e92cb3db6) Thanks [@D0ktay](https://github.com/D0ktay)! - `toDSL()` and `writeDSL()` now escape backslashes in generated strings, so values such as `C:\tools\` or `regex \d+` are read back unchanged instead of corrupting the output.
+
+- [#3598](https://github.com/likec4/likec4/pull/3598) [`a7ff6e6`](https://github.com/likec4/likec4/commit/a7ff6e6f706246783105b0ff31535b29469bb393) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Draw.io export: HTML-escape relationship labels (their cells use `html=1`), so `<`, `>` and `&` in a label show up in draw.io instead of being read as markup. Draw.io import: strip tags before decoding entities, so titles and labels with `<`, `>` or `&` keep that text.
+
+- [#3608](https://github.com/likec4/likec4/pull/3608) [`1e9df9c`](https://github.com/likec4/likec4/commit/1e9df9cb4e4b1c14b8401678fc1e5886562663fe) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Draw.io export follows the layouted edge routes: each edge gets waypoints along its path (with `curved=1`, or `edgeStyle=orthogonalEdgeStyle` for `routing ortho`) and anchors where the path meets its nodes, so parallel edges and their labels no longer sit on top of each other.
+
+- [#3588](https://github.com/likec4/likec4/pull/3588) [`71b60d8`](https://github.com/likec4/likec4/commit/71b60d80eb3f38228be491c1b2da4dbb82553e43) Thanks [@vanshbarfiwala-lgtm](https://github.com/vanshbarfiwala-lgtm)! - Keep distinct elements and their relationships separate in D2 exports when element IDs differ only by case or normalize to the same name.
+
+- [#3603](https://github.com/likec4/likec4/pull/3603) [`e6f5c74`](https://github.com/likec4/likec4/commit/e6f5c740f11e3f9fb40c7ded148c92d09b82916f) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Escape quotes and backslashes in `where metadata.<key> is "..."` values when generating LikeC4 sources
+
+- [#3609](https://github.com/likec4/likec4/pull/3609) [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - The Markdown export writes the project and view titles as one-line headings and escapes Markdown characters in them, so a title such as `Release #`, `Q&A <draft>` or one with a line break is shown as written. `escapeInlineMarkdown` is now exported from `@likec4/core/utils`.
+
+- [#3548](https://github.com/likec4/likec4/pull/3548) [`55955d7`](https://github.com/likec4/likec4/commit/55955d7e20cbf5a6f8a377e4b68e50f0cd771ba3) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - Mermaid export: a backtick in a relationship label or in the title of an element with children no longer produces a diagram Mermaid cannot parse
+
+- [#3599](https://github.com/likec4/likec4/pull/3599) [`dbd2e22`](https://github.com/likec4/likec4/commit/dbd2e224870f810587ecc1eb050da350f53faffb) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - The PlantUML export escapes the view title like element titles, so a title with a line break no longer breaks the diagram with a syntax error.
+- Updated dependencies [[`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550), [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534), [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706), [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c)]:
+  - @likec4/core@1.61.1
+  - @likec4/config@1.61.1
+  - @likec4/log@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes

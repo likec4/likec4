@@ -1,5 +1,37 @@
 # likec4
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3574](https://github.com/likec4/likec4/pull/3574) [`d767d56`](https://github.com/likec4/likec4/commit/d767d565836464041f891269fd5700902a666417) Thanks [@davydkov](https://github.com/davydkov)! - `likec4` now bundles `@likec4/core` and exposes it under the same subpaths: `likec4/core`, `likec4/core/builder`, `likec4/core/compute-view`, `likec4/core/geometry`, `likec4/core/model`, `likec4/core/styles`, `likec4/core/types` and `likec4/core/utils`. The layout engine is available as `likec4/layouts`, typed against the same core. `likec4/react` and the bundled app share this single copy. If you import both `likec4` and `@likec4/core`, you now get two separate copies, so `instanceof` checks between them won't work; prefer `likec4/core/*`.
+
+- [#3460](https://github.com/likec4/likec4/pull/3460) [`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - A diff can introduce a dynamic view, including a sequence diagram. The view stays out of the model until the diff is applied. While the diff is selected, open it from "In this diff" in the sidebar. Apply moves the view into a `views` block.
+
+- [#3575](https://github.com/likec4/likec4/pull/3575) [`ae68ffd`](https://github.com/likec4/likec4/commit/ae68ffd1fe31240182755869d32e6a51d05e3cb8) Thanks [@amandomv](https://github.com/amandomv)! - `likec4 export json` writes a workspace with a single named project once, as one model, instead of twice. Sources outside that project are skipped with a warning, as they were never exported. See [#3572](https://github.com/likec4/likec4/issues/3572).
+
+- [#3481](https://github.com/likec4/likec4/pull/3481) [`e7b95b1`](https://github.com/likec4/likec4/commit/e7b95b13cad284232cb1c226b83f82533ebafc38) Thanks [@gregoreficint](https://github.com/gregoreficint)! - Image exports with `--notation` can place the notation in any corner with `--notation-position` (default `bottom-right`) and choose the labels with `--notation-text`: `short` (text before the first `:`, default), `full` or `kind`. Notation text is no longer cut off, and the panel has a translucent background, so it stays readable in viewers that show transparency as dark.
+
+- [#3601](https://github.com/likec4/likec4/pull/3601) [`11140ec`](https://github.com/likec4/likec4/commit/11140ec792989365f698632922c48a93a5309759) Thanks [@gregoreficint](https://github.com/gregoreficint)! - The description panel of exported images (`--description`) takes the height of its text, so descriptions with lists or several paragraphs are no longer cut off before the maximum height.
+
+- [#3582](https://github.com/likec4/likec4/pull/3582) [`30741ee`](https://github.com/likec4/likec4/commit/30741ee78629badaa0fcf6b016b0d8992f1b17f7) Thanks [@kindasorrow](https://github.com/kindasorrow)! - `likec4 start` now serves HMR over the dev server port unless `--hmr-port`, `HMR_PORT` or `server.hmrPort` is set. In Docker you only need to publish `5173`, and live updates also work behind a reverse proxy or a forwarded port. Before, the HMR WebSocket ran on a separate port from the 24678-24690 range, and if that port wasn't published, live updates stopped without any error on the page.
+
+- [#3612](https://github.com/likec4/likec4/pull/3612) [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c) Thanks [@davydkov](https://github.com/davydkov)! - The projects overview page in a multi-project workspace is redesigned. Projects now open as cards by default, each showing the project's contact person, its folder in the workspace, and which projects it depends on or is used by; element, relationship and view counts appear when you hover a card. The page also has a table view, sorting and workspace totals; the previous diagram is still available as the Map view.
+  
+  A single-project workspace gets the same look: the project's views as cards with diagram previews or as a table, with the project totals, sorting by name, folder or type, and the same search.
+  
+  The projects page can now search inside every project: press `⌘K` or `/` to find elements and views across the whole workspace, grouped by project. Type `@name` to limit the search to one project; `kind:` and `#tag` work as in the diagram search.
+  
+  `Overlay` from `@likec4/diagram/custom` accepts `motionPreset="lift"`: a short fade with an 8px drop instead of the scale-in, for full-screen palettes.
+  
+  `likec4:projects` now includes each project's `contactPerson` from its config.
+  
+  In dev mode, clicking a project's folder on its card opens the project config in your editor, and "go to source" in a diagram opens the element, relationship or view at its exact position.
+  
+  Project cards flag views whose manual layout has drifted; hover the warning to see which views and jump to them.
+- Updated dependencies []:
+  - @likec4/log@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @likec4/style-preset
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3611](https://github.com/likec4/likec4/pull/3611) [`c90bb72`](https://github.com/likec4/likec4/commit/c90bb7220d7024baaae6b5ede93c4674f9031a84) Thanks [@mennafathy2](https://github.com/mennafathy2)! - Long words without spaces (file paths, URLs) in descriptions now wrap instead of being cut off at the right edge of the element details card. Fixes [#3198](https://github.com/likec4/likec4/issues/3198).
+
 ## 1.61.0
 
 ### Patch Changes

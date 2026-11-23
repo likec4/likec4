@@ -1,5 +1,19 @@
 # @likec4/playground
 
+## 1.61.1
+
+### Patch Changes
+
+- Updated dependencies [[`4e082a2`](https://github.com/likec4/likec4/commit/4e082a2eb642cb4a323c6e5de2d6ff5e92cb3db6), [`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550), [`a7ff6e6`](https://github.com/likec4/likec4/commit/a7ff6e6f706246783105b0ff31535b29469bb393), [`1e9df9c`](https://github.com/likec4/likec4/commit/1e9df9cb4e4b1c14b8401678fc1e5886562663fe), [`27b3257`](https://github.com/likec4/likec4/commit/27b3257302ce40318b241b298e92825623e34391), [`0c3b152`](https://github.com/likec4/likec4/commit/0c3b152276de46705d6f47bf53e281d32a29e7c8), [`71b60d8`](https://github.com/likec4/likec4/commit/71b60d80eb3f38228be491c1b2da4dbb82553e43), [`2cd6b32`](https://github.com/likec4/likec4/commit/2cd6b32b02480093fd760ebaab94b566afbe0081), [`1f8f1e7`](https://github.com/likec4/likec4/commit/1f8f1e7c2b777126ba3b649814d568e1cd5b219d), [`e6f5c74`](https://github.com/likec4/likec4/commit/e6f5c740f11e3f9fb40c7ded148c92d09b82916f), [`34d4db1`](https://github.com/likec4/likec4/commit/34d4db18047142c4d4dd614804a8529da59b18c5), [`c90bb72`](https://github.com/likec4/likec4/commit/c90bb7220d7024baaae6b5ede93c4674f9031a84), [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534), [`55955d7`](https://github.com/likec4/likec4/commit/55955d7e20cbf5a6f8a377e4b68e50f0cd771ba3), [`a1ac0c4`](https://github.com/likec4/likec4/commit/a1ac0c43e6218196f389853f22ddfcdf24199579), [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706), [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c), [`dbd2e22`](https://github.com/likec4/likec4/commit/dbd2e224870f810587ecc1eb050da350f53faffb), [`d33b8d8`](https://github.com/likec4/likec4/commit/d33b8d80baa02938d172f9cb0c4be88571c938ba), [`ef8c876`](https://github.com/likec4/likec4/commit/ef8c8764ba8d48a6dc2750bee0b09e9a8a9e69d6)]:
+  - @likec4/generators@1.61.1
+  - @likec4/core@1.61.1
+  - @likec4/language-server@1.61.1
+  - @likec4/diagram@1.61.1
+  - @likec4/style-preset@1.61.1
+  - @likec4/styles@1.61.1
+  - @likec4/log@1.61.1
+  - @likec4/tsconfig@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes
