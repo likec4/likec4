@@ -1,3 +1,50 @@
+## [1.61.1](https://github.com/likec4/likec4/compare/v1.61.0...v1.61.1) (2026-11-23)
+
+### 🚀 Features
+
+- **Redesigned Projects Overview**:\
+  In a multi-project workspace, projects open as cards by default, with the contact person, the folder in the workspace and the projects each one depends on or is used by; element, relationship and view counts appear on hover. The page also has a table view, sorting and workspace totals, and the previous diagram is still available as the Map view. A single-project workspace gets the same look for its views, with diagram previews. Press `⌘K` or `/` to search elements and views across the whole workspace, grouped by project (`@name` limits the search to one project, `kind:` and `#tag` work as in the diagram search). Cards flag views whose manual layout has drifted. In dev mode, clicking a project's folder opens its config in your editor, and "go to source" opens the element, relationship or view at its exact position. `likec4:projects` includes each project's `contactPerson`. [#3612](https://github.com/likec4/likec4/pull/3612)
+
+- **Dynamic Views in Diffs**:\
+  A diff can introduce a dynamic view, including a sequence diagram. The view stays out of the model until the diff is applied; while the diff is selected, open it from "In this diff" in the sidebar. Apply moves the view into a `views` block. Thanks [@edeak-jsq](https://github.com/edeak-jsq) [#3460](https://github.com/likec4/likec4/pull/3460)
+
+- **More Manual Layout Tools**:\
+  Align nodes that have children, distribute selected nodes evenly, and make selected nodes the same width or height. Thanks [@AndersHogqvist](https://github.com/AndersHogqvist) [#3283](https://github.com/likec4/likec4/pull/3283)
+
+- **Notation Position and Labels in Image Exports**:\
+  Image exports with `--notation` can place the notation in any corner with `--notation-position` (default `bottom-right`) and choose the labels with `--notation-text`: `short` (default), `full` or `kind`. Notation text is no longer cut off, and the panel has a translucent background. In VS Code, **Copy as PNG** and **Save as PNG** can include the notation too (`likec4.export.notation.enabled`, `.position` and `.text`), and changing a LikeC4 setting no longer restarts the language server, unless it is `likec4.exclude`. Thanks [@gregoreficint](https://github.com/gregoreficint) [#3481](https://github.com/likec4/likec4/pull/3481), [#3584](https://github.com/likec4/likec4/pull/3584)
+
+- **HMR over the Dev Server Port**:\
+  `likec4 start` serves HMR over the dev server port unless `--hmr-port`, `HMR_PORT` or `server.hmrPort` is set. In Docker you only need to publish `5173`, and live updates also work behind a reverse proxy or a forwarded port. Thanks [@kindasorrow](https://github.com/kindasorrow) [#3582](https://github.com/likec4/likec4/pull/3582)
+
+- **Draw.io Export Follows Edge Routes**:\
+  Each edge gets waypoints along its layouted path (curved, or orthogonal for `routing ortho`) and anchors where the path meets its nodes, so parallel edges and their labels no longer sit on top of each other. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3608](https://github.com/likec4/likec4/pull/3608)
+
+- **Relationship Details**:\
+  The relationship counter in the element details follows the Global / Current view toggle, and clicking "N relationships are hidden" switches the diagram to Global. Relationship metadata is shown in the relationship popover on the canvas. Thanks [@amandomv](https://github.com/amandomv) [#3594](https://github.com/likec4/likec4/pull/3594), [@DOKL57](https://github.com/DOKL57) [#3604](https://github.com/likec4/likec4/pull/3604)
+
+- **`likec4` Bundles `@likec4/core`**:\
+  `likec4` exposes core under `likec4/core`, `likec4/core/builder`, `likec4/core/compute-view`, `likec4/core/geometry`, `likec4/core/model`, `likec4/core/styles`, `likec4/core/types` and `likec4/core/utils`, and the layout engine as `likec4/layouts`. `likec4/react` and the bundled app share this single copy. If you import both `likec4` and `@likec4/core`, you get two separate copies and `instanceof` checks between them won't work; prefer `likec4/core/*`. [#3574](https://github.com/likec4/likec4/pull/3574)
+
+### 🐞 Bug Fixes
+
+- Fixed references to elements and deployment nodes added with `extend` in a project that includes another one failing to resolve in multi-project workspaces, and completion missing them inside `extend` bodies, `view of` views and deployed instances. Thanks [@amandomv](https://github.com/amandomv) [#3556](https://github.com/likec4/likec4/pull/3556), [#3573](https://github.com/likec4/likec4/pull/3573)
+- Fixed `likec4 export json` writing a workspace with a single named project twice, closes [#3572](https://github.com/likec4/likec4/issues/3572). Thanks [@amandomv](https://github.com/amandomv) [#3575](https://github.com/likec4/likec4/pull/3575)
+- Fixed hex colors made of digits only and starting with zero (like `#000000`) being rejected in custom colors and tag colors. Thanks [@krish-goradia](https://github.com/krish-goradia) [#3578](https://github.com/likec4/likec4/pull/3578)
+- Fixed the formatter flipping `link: url` to `link : url` (and back) on every run, also for metadata entries. Thanks [@shubham-bodiwal](https://github.com/shubham-bodiwal) [#3595](https://github.com/likec4/likec4/pull/3595)
+- Fixed arrowheads of edges with `ortho` routing all pointing right in Safari. Thanks [@bardrop](https://github.com/bardrop) [#3581](https://github.com/likec4/likec4/pull/3581)
+- Fixed long words without spaces (file paths, URLs) being cut off in the element details card, closes [#3198](https://github.com/likec4/likec4/issues/3198). Thanks [@mennafathy2](https://github.com/mennafathy2) [#3611](https://github.com/likec4/likec4/pull/3611)
+- Fixed the description panel of exported images (`--description`) cutting off descriptions with lists or several paragraphs. Thanks [@gregoreficint](https://github.com/gregoreficint) [#3601](https://github.com/likec4/likec4/pull/3601)
+- Fixed `toDSL()` and `writeDSL()` not escaping backslashes, so values such as `C:\tools\` corrupted the output. Thanks [@D0ktay](https://github.com/D0ktay) [#3564](https://github.com/likec4/likec4/pull/3564)
+- Fixed quotes and backslashes in `where metadata.<key> is "..."` values not being escaped in generated LikeC4 sources. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3603](https://github.com/likec4/likec4/pull/3603)
+- Fixed Mermaid export producing an unparsable diagram when a relationship label or a parent element title contains a backtick. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3548](https://github.com/likec4/likec4/pull/3548)
+- Fixed D2 export merging elements whose ids differ only by case or normalize to the same name. Thanks [@vanshbarfiwala-lgtm](https://github.com/vanshbarfiwala-lgtm) [#3588](https://github.com/likec4/likec4/pull/3588)
+- Fixed Draw.io export and import mangling `<`, `>` and `&` in relationship labels and titles. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3598](https://github.com/likec4/likec4/pull/3598)
+- Fixed PlantUML export breaking with a syntax error when the view title has a line break. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3599](https://github.com/likec4/likec4/pull/3599)
+- Fixed Markdown export mangling project and view titles with Markdown characters or line breaks; `escapeInlineMarkdown` is now exported from `@likec4/core/utils`. Thanks [@SwastikTripathi](https://github.com/SwastikTripathi) [#3609](https://github.com/likec4/likec4/pull/3609)
+- `isOrthoSpline` is now a type guard that rejects input that is not a Graphviz spline of `1 + 3n` points, and `splineToPolyline` throws on such input. Thanks [@bardrop](https://github.com/bardrop) [#3586](https://github.com/likec4/likec4/pull/3586)
+
+
 ## [1.61.0](https://github.com/likec4/likec4/compare/v1.60.0...v1.61.0) (2026-11-14)
 
 ### 🚀 Features
