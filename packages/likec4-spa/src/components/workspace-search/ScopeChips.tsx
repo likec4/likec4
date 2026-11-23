@@ -48,7 +48,7 @@ export function ScopeChips({ result, scope, indexProjects, onScope }: {
           type="button"
           aria-pressed={scope === project.id}
           title={project.title}
-          onClick={() => onScope(project.id)}>
+          onClick={() => onScope(scope === project.id ? null : project.id)}>
           <ProjectMonogram project={project} size="chip" aria-hidden />
           <Truncate>{project.title}</Truncate>
           <Count>{result.counts.get(project.id) ?? 0}</Count>

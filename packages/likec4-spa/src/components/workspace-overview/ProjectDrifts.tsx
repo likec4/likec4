@@ -6,7 +6,7 @@ import { searchOverlay } from '@likec4/styles/recipes'
 import { HoverCard } from '@mantine/core'
 import { IconAlertTriangleFilled } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
-import { memo, Suspense } from 'react'
+import { type KeyboardEvent, memo, Suspense, useRef } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Detail } from '../ui/Detail'
 import { FieldLabel, Truncate } from '../ui/Text'
@@ -42,6 +42,14 @@ function ProjectDriftsLoaded({ projectId }: { projectId: ProjectId }) {
  * Pill with the number of drifted views; hover lists them
  */
 function DriftsBadge({ projectId, drifts }: { projectId: ProjectId; drifts: ReadonlyArray<DriftedView> }) {
+  const listRef = useRef<HTMLDivElement>(null)
+  // the list opens on focus; Enter or Space moves focus into it (it is in a portal, Tab does not reach it)
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      listRef.current?.querySelector<HTMLElement>('a')?.focus()
+    }
+  }
   return (
     <HoverCard
       openDelay={250}
@@ -57,6 +65,7 @@ function DriftsBadge({ projectId, drifts }: { projectId: ProjectId; drifts: Read
           tabIndex={0}
           role="button"
           aria-haspopup="dialog"
+          onKeyDown={onKeyDown}
           aria-label={`${drifts.length} view${drifts.length === 1 ? '' : 's'} drifted, show the list`}>
           <BadgeIcon size={14} aria-hidden />
           <BadgeText>
@@ -66,7 +75,7 @@ function DriftsBadge({ projectId, drifts }: { projectId: ProjectId; drifts: Read
       </HoverCard.Target>
       <HoverCard.Dropdown className={dropdown}>
         <DropdownTitle>Drifted views</DropdownTitle>
-        <DropdownList>
+        <DropdownList ref={listRef}>
           {drifts.map(view => (
             <Link
               key={view.id}
