@@ -1,11 +1,12 @@
 import { type FocusEvent, type RefObject, useCallback, useRef } from 'react'
+import { PendingMove } from './pendingMove'
 import type { Column } from './ResultRows'
 
 /**
  * Brings row `k` of a column into view and focuses it; returns the row it went to, null for an empty column.
- * Calls `giveUp` with that row if it could not be focused after all
+ * Calls `giveUp` if the row could not be focused after all
  */
-type Focuser = (k: number, giveUp: (target: number) => void) => number | null
+type Focuser = (k: number, giveUp: () => void) => number | null
 
 export type RegisterFocus = (col: Column, focus: Focuser | null) => void
 
@@ -16,7 +17,7 @@ export type RegisterFocus = (col: Column, focus: Focuser | null) => void
 export function useRowFocus(containerRef: RefObject<HTMLElement | null>) {
   const focusers = useRef(new Map<Column, Focuser>())
   // row that is being scrolled into view, so fast repeated keys continue from it
-  const pending = useRef<{ col: Column; k: number } | null>(null)
+  const pending = useRef(new PendingMove()).current
 
   const registerFocus: RegisterFocus = useCallback((col, focus) => {
     if (focus) focusers.current.set(col, focus)
@@ -26,20 +27,17 @@ export function useRowFocus(containerRef: RefObject<HTMLElement | null>) {
   const focusRow = useCallback((col: Column, k: number): boolean => {
     const focus = focusers.current.get(col)
     if (focus) {
-      // ends the pending move, unless a newer move replaced it
-      const giveUp = (target: number) => {
-        if (pending.current?.col === col && pending.current.k === target) {
-          pending.current = null
-        }
-      }
-      const target = focus(k, giveUp)
+      const id = pending.next()
+      // ends this move, unless a newer move replaced it
+      const target = focus(k, () => pending.giveUp(id))
       const targetRow = target === null
         ? null
         : containerRef.current?.querySelector(`[data-col="${col}"][data-k="${target}"]`)
       // no focus event comes for a row that already has focus, nothing to wait for
-      pending.current = target === null || (targetRow && targetRow === document.activeElement)
-        ? null
-        : { col, k: target }
+      pending.set(
+        id,
+        target === null || (targetRow && targetRow === document.activeElement) ? null : { col, k: target },
+      )
       return target !== null
     }
     const rows = containerRef.current?.querySelectorAll<HTMLElement>(`[data-col="${col}"]`)
@@ -57,7 +55,8 @@ export function useRowFocus(containerRef: RefObject<HTMLElement | null>) {
    */
   const rowOf = useCallback((row: HTMLElement): { col: Column; k: number } => {
     const col = row.dataset['col'] as Column
-    const k = pending.current?.col === col ? pending.current.k : Number(row.dataset['k'])
+    const target = pending.get()
+    const k = target?.col === col ? target.k : Number(row.dataset['k'])
     return { col, k }
   }, [])
 
@@ -66,17 +65,12 @@ export function useRowFocus(containerRef: RefObject<HTMLElement | null>) {
    */
   const containerProps = {
     onPointerDown: () => {
-      pending.current = null
+      pending.clear()
     },
     onFocus: (e: FocusEvent) => {
       const target = e.target
-      if (
-        target instanceof HTMLElement
-        && pending.current
-        && target.dataset['col'] === pending.current.col
-        && Number(target.dataset['k']) === pending.current.k
-      ) {
-        pending.current = null
+      if (target instanceof HTMLElement && target.dataset['col']) {
+        pending.reached(target.dataset['col'] as Column, Number(target.dataset['k']))
       }
     },
   }

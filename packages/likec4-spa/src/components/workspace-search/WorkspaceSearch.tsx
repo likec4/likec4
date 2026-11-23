@@ -194,11 +194,14 @@ function SearchBody() {
     if (e.nativeEvent.isComposing) {
       return
     }
+    // `result` follows the deferred query: until it catches up with the typed one,
+    // Enter and Tab would act on stale results
+    if ((e.key === 'Enter' || e.key === 'Tab') && query !== currentQuery) {
+      e.preventDefault()
+      return
+    }
     const input = e.currentTarget
-    // `result` follows the deferred query; a scope is applied only when it matches what is typed now
-    const singleCandidate = query === currentQuery && result.scopeCandidates?.length === 1
-      ? result.scopeCandidates[0]
-      : undefined
+    const singleCandidate = result.scopeCandidates?.length === 1 ? result.scopeCandidates[0] : undefined
     switch (true) {
       case e.key === 'ArrowDown':
         e.preventDefault()
