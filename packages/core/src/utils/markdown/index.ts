@@ -1,5 +1,10 @@
 export { extractRefs } from './extract-refs'
-export { markdownRefText, resolveMarkdownRefs, type ResolveMarkdownRefsOptions } from './resolve-refs'
+export {
+  escapeInlineMarkdown,
+  markdownRefText,
+  resolveMarkdownRefs,
+  type ResolveMarkdownRefsOptions,
+} from './resolve-refs'
 export { markdownToHtml } from './to-html'
 export { markdownToText } from './to-text'
 export type { MarkdownRef, MarkdownRefTitleResolver } from './types'
