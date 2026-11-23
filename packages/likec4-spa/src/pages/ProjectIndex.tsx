@@ -5,6 +5,12 @@ import { IconLayoutGrid, IconList } from '@tabler/icons-react'
 import { pageTitle } from 'likec4:app-config'
 import { useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
+import { type ElementsFilter, type ElementSort, indexElements } from '../components/project-index/elements'
+import {
+  ElementsInventory,
+  ElementsSearchField,
+  NotInViewsToggle,
+} from '../components/project-index/ElementsInventory'
 import { ViewCards, ViewsTable } from '../components/project-index/ViewCards'
 import { type ViewSort, indexViews, sortViews } from '../components/project-index/views'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
@@ -17,6 +23,8 @@ import {
   PageLogo,
   PageScroll,
   PageSection,
+  PageTab,
+  PageTabs,
   PageTitle,
   Toolbar,
   ToolbarSpacer,
@@ -29,10 +37,23 @@ import { useCurrentProject, useLikeC4Views } from '../hooks'
 
 export type ProjectIndexMode = 'cards' | 'table'
 
+export type ProjectIndexSection = 'views' | 'elements'
+
 const SORT_OPTIONS: ReadonlyArray<SortOption<ViewSort>> = [
   { value: 'name', label: 'Name' },
   { value: 'folder', label: 'Folder' },
   { value: 'type', label: 'Type' },
+]
+
+const ELEMENT_SORT_OPTIONS: ReadonlyArray<SortOption<ElementSort>> = [
+  { value: 'name', label: 'Name' },
+  { value: 'kind', label: 'Kind' },
+  { value: 'relationships', label: 'Most connected' },
+]
+
+const SECTIONS: ReadonlyArray<{ value: ProjectIndexSection; label: string }> = [
+  { value: 'views', label: 'Views' },
+  { value: 'elements', label: 'Elements' },
 ]
 
 const MODES: ReadonlyArray<ViewModeOption<ProjectIndexMode>> = [
@@ -42,9 +63,11 @@ const MODES: ReadonlyArray<ViewModeOption<ProjectIndexMode>> = [
 
 /**
  * Landing page of a single-project workspace: the project's views as cards or a table,
- * with the same header, toolbar and search as the projects page
+ * or its elements by kind, with the same header, toolbar and search as the projects page
  */
-export function ProjectIndexPage({ mode, onModeChange }: {
+export function ProjectIndexPage({ section, onSectionChange, mode, onModeChange }: {
+  section: ProjectIndexSection
+  onSectionChange: (section: ProjectIndexSection) => void
   mode: ProjectIndexMode
   onModeChange: (mode: ProjectIndexMode) => void
 }) {
@@ -66,6 +89,9 @@ export function ProjectIndexPage({ mode, onModeChange }: {
   const [sort, setSort] = useState<ViewSort>('name')
   const sorted = useMemo(() => sortViews(views, sort), [views, sort])
 
+  const elements = useMemo(() => section === 'elements' ? indexElements(model) : null, [model, section])
+  const [filter, setFilter] = useState<ElementsFilter>({ kind: null, notInViews: false, search: '', sort: 'name' })
+
   return (
     <WorkspaceSearchProvider>
       <Page>
@@ -84,19 +110,61 @@ export function ProjectIndexPage({ mode, onModeChange }: {
             </MetricsRow>
           </PageHeader>
 
-          <Toolbar role="toolbar" aria-label="Views">
-            <WorkspaceSearchTrigger label="Search elements and views" />
-            <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort views by" />
-            <ToolbarSpacer />
-            <ViewModeSwitch modes={MODES} value={mode} onChange={onModeChange} />
-            <ColorSchemeToggle />
-          </Toolbar>
+          <PageTabs role="tablist" aria-label="Project index">
+            {SECTIONS.map(s => (
+              <PageTab
+                key={s.value}
+                type="button"
+                role="tab"
+                aria-selected={section === s.value}
+                onClick={() => onSectionChange(s.value)}>
+                {s.label}
+              </PageTab>
+            ))}
+          </PageTabs>
 
-          <PageSection as="main">
-            {mode === 'table'
-              ? <ViewsTable projectId={projectId} views={sorted} />
-              : <ViewCards projectId={projectId} views={sorted} />}
-          </PageSection>
+          {elements
+            ? (
+              <>
+                <Toolbar role="toolbar" aria-label="Elements">
+                  <ElementsSearchField value={filter.search} onChange={search => setFilter({ ...filter, search })} />
+                  <SortMenu
+                    options={ELEMENT_SORT_OPTIONS}
+                    value={filter.sort}
+                    onChange={sort => setFilter({ ...filter, sort })}
+                    label="Sort elements by" />
+                  <NotInViewsToggle
+                    count={elements.notInViews}
+                    pressed={filter.notInViews}
+                    onChange={notInViews => setFilter({ ...filter, notInViews })} />
+                  <ToolbarSpacer />
+                  <ColorSchemeToggle />
+                </Toolbar>
+                <PageSection as="main">
+                  <ElementsInventory
+                    projectId={projectId}
+                    index={elements}
+                    filter={filter}
+                    onFilterChange={setFilter} />
+                </PageSection>
+              </>
+            )
+            : (
+              <>
+                <Toolbar role="toolbar" aria-label="Views">
+                  <WorkspaceSearchTrigger label="Search elements and views" />
+                  <SortMenu options={SORT_OPTIONS} value={sort} onChange={setSort} label="Sort views by" />
+                  <ToolbarSpacer />
+                  <ViewModeSwitch modes={MODES} value={mode} onChange={onModeChange} />
+                  <ColorSchemeToggle />
+                </Toolbar>
+                <PageSection as="main">
+                  {mode === 'table'
+                    ? <ViewsTable projectId={projectId} views={sorted} />
+                    : <ViewCards projectId={projectId} views={sorted} />}
+                </PageSection>
+              </>
+            )}
         </PageScroll>
       </Page>
     </WorkspaceSearchProvider>
