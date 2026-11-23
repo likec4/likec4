@@ -141,7 +141,7 @@ export function ResultColumn<T extends SearchElement | SearchView>({
         } else if (attempts++ < 5) {
           requestAnimationFrame(tryFocus)
         } else {
-          giveUp(target)
+          giveUp()
         }
       }
       tryFocus()
