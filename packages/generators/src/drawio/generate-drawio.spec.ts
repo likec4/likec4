@@ -295,6 +295,19 @@ describe('DrawIO output structure (validates XML shape and key features)', () =>
     expect(likec4).toContain('actor \'Bob\'')
   })
 
+  test('edge labels are HTML-escaped (html=1) and keep <, > and & through a round-trip', () => {
+    const view = {
+      ...fakeActorView,
+      edges: fakeActorView.edges.map(e => ({ ...e, label: 'reads & writes <data> "fast"' })),
+      nodes: fakeActorView.nodes.map(n => n.id === 'alice' ? { ...n, title: 'Alice <Admin> & Co' } : n),
+    } as ProcessedView<aux.Unknown>
+    const xml = generateDrawio(mockViewModel(view), { compressed: false })
+    expect(xml).toContain('value="reads &amp;amp; writes &amp;lt;data&amp;gt; &amp;quot;fast&amp;quot;"')
+    const likec4 = parseDrawioToLikeC4(xml)
+    expect(likec4).toContain('\'reads & writes <data> "fast"\'')
+    expect(likec4).toContain('\'Alice <Admin> & Co\'')
+  })
+
   test('node with navigateTo exports UserObject with link and style link=data:page/id opening likec4-<viewId> page', () => {
     // ExtendedNode allows navigateTo; cast for test data (ProcessedView nodes type may not include it). If ProcessedView gains navigateTo, this assertion can be removed.
     const nodeWithNav = {
