@@ -186,7 +186,7 @@ export function node() {
 
 function hasRelationStyle(rel: schemas.deployment.relationship.Data): boolean {
   return !!(
-    rel.color || rel.line || rel.head || rel.tail
+    rel.color || rel.line || rel.head || rel.tail || rel.direction
   )
 }
 
@@ -227,6 +227,7 @@ export const relationship = zodOp(schemas.deployment.relationship)(
             property('line'),
             property('head'),
             property('tail'),
+            property('direction'),
           ),
         ),
       ),

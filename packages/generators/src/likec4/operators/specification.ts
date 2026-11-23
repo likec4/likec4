@@ -82,6 +82,7 @@ export const relationshipKind = zodOp(z.tuple([z.string(), schemas.relationship]
         property('line'),
         property('head'),
         property('tail'),
+        property('direction'),
       ),
     ),
   ),

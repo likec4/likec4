@@ -478,6 +478,63 @@ model {
 }
 ```
 
+### Direção
+
+O layout automático posiciona a origem de um relacionamento antes do destino (por exemplo, à esquerda em `autoLayout LeftRight`).
+Alguns relacionamentos apontam na direção da dependência, oposta ao fluxo de dados, como assinaturas de um tópico.
+Use `direction back` para posicionar esses relacionamentos do destino para a origem:
+
+```likec4
+specification {
+  element component
+  relationship subscribes {
+    // topic is placed before subscribers
+    direction back
+  }
+}
+model {
+  billing = component 'Billing'
+  events = component 'Events'
+
+  billing -[subscribes]-> events
+  // same as above
+  events <-[subscribes]- billing
+}
+```
+
+| direction | layout                                  |
+| :-------- | :-------------------------------------- |
+| forward   | a origem é posicionada antes do destino |
+| back      | o destino é posicionado antes da origem |
+
+Por padrão, a direção é `forward`.
+
+O relacionamento mantém a direção semântica: a seta continua apontando da origem para o destino,
+e predicados de views (`include billing -> events`), detalhes do relacionamento e a navegação não mudam.
+
+A direção pode ser sobrescrita por view:
+
+```likec4
+views {
+  view overview {
+    include *
+    include * -[subscribes]-> events with {
+      direction forward
+    }
+  }
+}
+```
+
+:::note
+- Se vários relacionamentos forem combinados em uma única aresta, ela só é invertida se todos tiverem `direction back`.
+  Regras por view (`with { ... }`) têm precedência.
+- Views de elementos e de deployment respeitam `direction`, inclusive as regras por view.
+- Em views de deployment, dois relacionamentos opostos com o mesmo título são combinados em uma única aresta bidirecional. Essas arestas ignoram `direction`.
+- Views dinâmicas ignoram `direction`; use [passos reversos](/pt-br/dsl/views/dynamic/) (`a <- b`) em vez disso.
+- Mudar a direção de um relacionamento muda o layout das views em que ele aparece.
+  Views com layout manual reportam a mudança como divergência de layout (drift).
+:::
+
 ### Múltiplos
 
 Por padrão, vários relacionamentos entre os mesmos dois elementos são combinados em uma única aresta.

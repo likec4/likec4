@@ -700,4 +700,40 @@ describe('Dynamic view step fields', () => {
       })
     })
   })
+
+  describe('Relationship direction', () => {
+    it('should ignore relationship direction', () => {
+      const edge = Builder
+        .specification({
+          elements: ['el'],
+        })
+        .model(({ el, rel }, _) =>
+          _(
+            el('a'),
+            el('b'),
+            rel('a', 'b', {
+              direction: 'back',
+            }),
+          )
+        )
+        .views(({ dynamicView, $step }, _) =>
+          _(
+            dynamicView(
+              'test',
+              $step('a -> b'),
+            ),
+          )
+        )
+        .toLikeC4Model()
+        .view('test')
+        .$view.edges[0]!
+
+      expect(edge).toMatchObject({
+        source: 'a',
+        target: 'b',
+      })
+      expect(edge).not.toHaveProperty('dir')
+      expect(edge).not.toHaveProperty('direction')
+    })
+  })
 })

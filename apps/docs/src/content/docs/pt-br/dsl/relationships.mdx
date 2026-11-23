@@ -44,6 +44,30 @@ significativa. Para chamadas request-response em que um lado inicia a interaçã
   elementos em qualquer direção, definidos com `->` ou `<->`. Consulte [qualquer relacionamento](/pt-br/dsl/views/predicates/#qualquer-relacionamento).
 </Aside>
 
+### Relacionamentos reversos
+
+Use **`<-`** (ou **`<-[kind]-`**) para definir um relacionamento da direita para a esquerda, posicionado de forma invertida no layout:
+
+```likec4
+specification {
+  element component
+  relationship subscribes
+}
+model {
+  producer = component 'Producer'
+  consumer = component 'Consumer'
+
+  // Same as `consumer -[subscribes]-> producer`,
+  // but producer is placed before consumer in the layout
+  producer <-[subscribes]- consumer 'events'
+}
+```
+
+É uma forma abreviada de um relacionamento com o estilo [`direction back`](/pt-br/dsl/styling/#direção).
+O relacionamento mantém a direção semântica (de `consumer` para `producer`):
+a seta, predicados de views como `include consumer -> producer`, detalhes do relacionamento e a navegação não mudam.
+Apenas o [layout automático](/pt-br/dsl/views/layout/#layout-automático) é invertido.
+
 Relacionamentos podem ser aninhados
 
 ```likec4

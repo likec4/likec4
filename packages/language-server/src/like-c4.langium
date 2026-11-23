@@ -258,7 +258,7 @@ StrictFqnRef returns StrictFqnRef:
 
 Relation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  RelationConnector
+  (RelationConnector | BackwardRelationConnector)
   target=FqnRef
   (title=String  // title
     (description=String  // description
@@ -274,6 +274,12 @@ fragment RelationConnector:
   '-[' kind=[RelationshipKind] (isBidirectional?=']<->' | ']->') |
   isBidirectional?='<->' |
   '->'
+;
+
+// Backward relation: `a <- b` is a relation from b to a, laid out backwards
+fragment BackwardRelationConnector:
+  isBackward?='<-' |
+  isBackward?='<-[' kind=[RelationshipKind] ']-'
 ;
 
 RelationBody:
@@ -907,7 +913,7 @@ ExtendDeploymentBody:
 
 DeploymentRelation<isExplicit>:
   (<isExplicit> source=FqnRef | <!isExplicit> source=FqnRef?)
-  RelationConnector
+  (RelationConnector | BackwardRelationConnector)
   target=FqnRef
   (title=String  // title
     (description=String  // description
@@ -1163,8 +1169,11 @@ LineProperty:
 ArrowProperty:
   key=('head' | 'tail') ':'? value=ArrowType ';'?;
 
+DirectionProperty:
+  key='direction' ':'? value=RelationshipDirectionValue ';'?;
+
 RelationshipStyleProperty:
-  ColorProperty | LineProperty | ArrowProperty;
+  ColorProperty | LineProperty | ArrowProperty | DirectionProperty;
 
 TagRef:
   tag=[Tag:HashId]
@@ -1178,6 +1187,11 @@ LineOptions returns string:
   'solid' |
   'dashed' |
   'dotted'
+;
+
+RelationshipDirectionValue returns string:
+  'forward' |
+  'back'
 ;
 
 ArrowType returns string:
@@ -1264,12 +1278,14 @@ CustomColorId returns string:
   ElementShape |
   ArrowType |
   LineOptions |
+  RelationshipDirectionValue |
   Participant |
   'element' |
   'model' |
   'diff' |
   'add' |
-  'remove';
+  'remove' |
+  'direction';
 
 // We need to add all the possible terminal values to Id,
 // so that the parser can accept them as "Id" (not a bug and not a feature of Langium)
@@ -1279,6 +1295,7 @@ Id returns string:
   ThemeColor |
   ArrowType |
   LineOptions |
+  RelationshipDirectionValue |
   Participant |
   SizeValue |
   DynamicViewDisplayVariantValue |
@@ -1288,7 +1305,7 @@ Id returns string:
   RankValue |
   EdgeRoutingValue |
   // Allow reserved keywords as Id
-  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing';
+  'element' | 'model' | 'group' | 'node' | 'deployment' | 'instance' | 'relationship' | 'diff' | 'add' | 'remove' | 'routing' | 'direction';
 
 HashId returns string:
   Hash Id;

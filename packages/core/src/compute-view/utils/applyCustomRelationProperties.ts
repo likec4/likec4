@@ -5,6 +5,7 @@ import {
   type ComputedEdge,
   type ComputedNode,
   type ElementViewRule,
+  type RelationshipDirection,
   ModelRelationExpr,
   scalar,
 } from '../../types'
@@ -40,6 +41,27 @@ function edgeMetadata<A extends AnyAux>(model: LikeC4Model<A>, edge: ComputedEdg
 }
 
 /**
+ * Applies direction override to the edge `dir`, keeps `both` (bidirectional edges)
+ */
+function applyDirection(
+  dir: ComputedEdge['dir'],
+  direction: RelationshipDirection | undefined,
+): Pick<ComputedEdge, 'dir'> {
+  switch (true) {
+    case dir === 'both':
+      return { dir }
+    case direction === 'back':
+      return { dir: 'back' }
+    case direction === 'forward' && dir === 'back':
+      return {}
+    case isNullish(dir):
+      return {}
+    default:
+      return { dir }
+  }
+}
+
+/**
  * Applies `with { ... }` properties of custom relation predicates to the edges they match.
  * Element views use the default predicate builder; deployment views pass their own,
  * because their rules reference deployment elements.
@@ -65,6 +87,7 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         description: _description,
         notes: _notes,
         multiple: _multiple,
+        direction,
         ...customprops
       },
     } of rules
@@ -90,11 +113,13 @@ export function applyCustomRelationProperties<A extends AnyAux>(
         return
       }
       if (satisfies({ source, target, ...pick(edge, ['kind', 'tags']), metadata: metadata[i] })) {
+        const { dir, ...rest } = edge
         edges[i] = {
-          ...edge,
+          ...rest,
           ...props,
           ...description,
           ...notes,
+          ...applyDirection(dir, direction),
           label: title ?? edge.label,
           isCustomized: true,
         }
