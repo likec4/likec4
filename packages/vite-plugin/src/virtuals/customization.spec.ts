@@ -43,6 +43,8 @@ describe('generateProjectReactCode', () => {
 
     expect(code).not.toContain('CustomizationContext')
     expect(code).not.toContain('likec4:customization')
+    // LikeC4View renders LikeC4ModelProvider, so it must be a local binding, not only an export alias
+    expect(code).toContain('export const LikeC4ModelProvider = ModelProvider')
   })
 
   it('applies overrides in the project provider when the file is configured', () => {

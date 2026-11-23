@@ -195,7 +195,10 @@ function SearchBody() {
       return
     }
     const input = e.currentTarget
-    const singleCandidate = result.scopeCandidates?.length === 1 ? result.scopeCandidates[0] : undefined
+    // `result` follows the deferred query; a scope is applied only when it matches what is typed now
+    const singleCandidate = query === currentQuery && result.scopeCandidates?.length === 1
+      ? result.scopeCandidates[0]
+      : undefined
     switch (true) {
       case e.key === 'ArrowDown':
         e.preventDefault()

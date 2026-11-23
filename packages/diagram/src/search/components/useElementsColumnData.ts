@@ -104,7 +104,12 @@ function dfs(model: LikeC4Model) {
         return { treeData: [], lookup, expanded: null }
       }
       if (visibleElements === allNodes) {
-        return { treeData, lookup, expanded: null }
+        // unfiltered tree opens every node with children
+        return {
+          treeData,
+          lookup,
+          expanded: allNodes.filter(node => node.children.length > 0).map(node => node.element.id),
+        }
       }
       const parents = new Set<Fqn>()
       const newTree = new Map<Fqn, LikeC4ModelTreeNodeData>()

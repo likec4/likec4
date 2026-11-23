@@ -14,7 +14,7 @@ export function LikeC4ModelProvider({ children }) {
   return (jsx(CustomizationContext, { children: jsx(ModelProvider, { children }) }));
 }`
     : `
-export { ModelProvider as LikeC4ModelProvider }
+export const LikeC4ModelProvider = ModelProvider
 `
 
 export const generateProjectReactCode = (id: string, customized: boolean): string => `
