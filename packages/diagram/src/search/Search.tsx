@@ -165,7 +165,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="wait" initial={false}>
                 <ElementsColumn />
               </AnimatePresence>
             </LayoutGroup>
@@ -178,7 +178,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-views">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="popLayout" initial={false}>
                 <ViewsColumn />
               </AnimatePresence>
             </LayoutGroup>

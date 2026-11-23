@@ -336,3 +336,11 @@ minimumReleaseAgeExclude:
   - "@rolldown/binding-win32-arm64-msvc@1.2.16"
   - "@rolldown/binding-win32-x64-msvc@1.2.16"
   - rolldown@1.2.16
+
+permissions:
+  '@logtape/logtape':
+    skills: false
+  '@tanstack/ai':
+    skills: true
+  '@tanstack/react-router':
+    skills: true

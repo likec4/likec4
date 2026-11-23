@@ -5,159 +5,33 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import type { LikeC4Model } from '@likec4/core/model'
 import type { Fqn, NonEmptyArray } from '@likec4/core/types'
 import {
-  ifilter,
-  imap,
-  isAncestor,
   nameFromFqn,
-  stringHash,
-  toArray,
 } from '@likec4/core/utils'
-import { cx, cx as clsx } from '@likec4/styles/css'
-import { Txt } from '@likec4/styles/jsx'
+import { css, cx, cx as clsx } from '@likec4/styles/css'
+import { Box, Txt } from '@likec4/styles/jsx'
 import { searchOverlay } from '@likec4/styles/recipes'
 import {
   type RenderTreeNodePayload,
   ActionIcon,
-  Box,
-  Group,
   Highlight,
   Tooltip,
   Tree,
-  UnstyledButton,
   useTree,
 } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import { type KeyboardEventHandler, memo, useEffect, useMemo } from 'react'
-import { filter, first, hasAtLeast, last, only, pipe, reduce } from 'remeda'
+import { type KeyboardEventHandler, memo, useEffect } from 'react'
+import { first, last, mapToObj } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
-import { useLikeC4Model } from '../../hooks/useLikeC4Model'
-import { createFuzzySearch } from '../fuzzy'
-import { useNormalizedSearch } from '../hooks'
-import { matchesMetadataSearch, METADATA_SEARCH_PREFIX } from '../metadata-search'
 import { useSearchContext } from '../SearchContext'
 import * as styles from './ElementsColumn.css'
+import { ElementTitleAndId } from './ElementsColumn.css'
+import { type ElementsColumnData, type LikeC4ModelTreeNodeData, useElementsColumnData } from './useElementsColumnData'
 import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
-
-interface LikeC4ModelTreeNodeData {
-  label: string
-  value: Fqn
-  element: LikeC4Model.Element
-  viewsCount: number
-  children: LikeC4ModelTreeNodeData[]
-  hasChildren: boolean
-}
-
-function useElementsColumnData() {
-  const model = useLikeC4Model()
-
-  // We will mutate this array to build the tree structure
-  const allElements = useMemo(() =>
-    pipe(
-      model.elements(),
-      ifilter(i => !i.imported),
-      imap((element): LikeC4ModelTreeNodeData => ({
-        label: element.title,
-        value: element.id,
-        element,
-        // searchTerms,
-        viewsCount: [...element.views()].length,
-        children: [],
-        hasChildren: false,
-      })),
-      toArray(),
-    ), [model])
-
-  const fuzzy = useMemo(() =>
-    createFuzzySearch(allElements, [
-      { name: 'name', getFn: ({ element }) => element.name },
-      { name: 'title', getFn: ({ element }) => element.title },
-      { name: 'id', getFn: ({ element }) => element.id },
-      { name: 'summary', getFn: ({ element }) => element.summary.text ?? '' },
-    ]), [allElements])
-
-  const search = useNormalizedSearch()
-
-  return useMemo(() => {
-    const searchTerms = search.split('.')
-    let elements
-    if (search === '' || search === 'kind:') {
-      elements = allElements
-    } else if (search.startsWith('kind:')) {
-      const searchKind = search.slice(5)
-      elements = filter(allElements, ({ element }) => {
-        return element.kind.toLocaleLowerCase()[searchKind.length > 4 ? 'startsWith' : 'includes'](searchKind)
-      })
-    } else if (search.startsWith('#')) {
-      const searchTag = search.slice(1)
-      elements = filter(allElements, ({ element }) => {
-        return element.tags.some((tag) => tag.toLocaleLowerCase().includes(searchTag))
-      })
-    } else if (search.startsWith(METADATA_SEARCH_PREFIX)) {
-      elements = filter(allElements, ({ element }) => matchesMetadataSearch(element.metadata, search))
-    } else if (hasAtLeast(searchTerms, 2)) {
-      const satisfies = (element: LikeC4Model.Element) => {
-        const fqnParts = element.id.toLocaleLowerCase().split('.')
-        if (fqnParts.length < searchTerms.length) {
-          return false
-        }
-        let lastMatchIndex = 0
-        for (let i = 0; i < fqnParts.length; i++) {
-          if (fqnParts[i]!.includes(searchTerms[lastMatchIndex]!)) {
-            lastMatchIndex++
-            // All terms matched
-            if (lastMatchIndex === searchTerms.length) {
-              return true
-            }
-            continue
-          }
-        }
-        return false
-      }
-      elements = filter(allElements, ({ element }) => satisfies(element))
-    } else {
-      elements = fuzzy(search)
-    }
-
-    const byid = {} as Record<Fqn, LikeC4ModelTreeNodeData>
-
-    const { hash, all, roots } = pipe(
-      elements,
-      reduce((acc, treeItem) => {
-        treeItem.children = []
-        treeItem.hasChildren = false
-        byid[treeItem.value] = treeItem
-        const parent = acc.all.findLast((root) => isAncestor(root.value, treeItem.value))
-        if (parent) {
-          parent.children.push(treeItem)
-          parent.hasChildren = true
-        } else {
-          acc.roots.push(treeItem)
-        }
-        acc.all.push(treeItem)
-        acc.hash = stringHash(acc.hash + treeItem.value)
-        return acc
-      }, {
-        hash: 'empty',
-        all: [] as LikeC4ModelTreeNodeData[],
-        roots: [] as LikeC4ModelTreeNodeData[],
-      }),
-    )
-    return {
-      hash,
-      all,
-      byid,
-      roots,
-      searchTerms: hasAtLeast(searchTerms, 1) ? searchTerms : [search] as NonEmptyArray<string>,
-    }
-  }, [allElements, fuzzy, search])
-}
-type ElementsColumnData = ReturnType<typeof useElementsColumnData>
 
 const btn = searchOverlay()
 
@@ -166,7 +40,7 @@ export const ElementsColumn = memo(() => {
 
   const handleClick = useHandleElementSelection()
 
-  if (data.all.length === 0) {
+  if (data.treeData.length === 0) {
     return <NothingFound />
   }
 
@@ -176,36 +50,37 @@ export const ElementsColumn = memo(() => {
 function ElementsTree({
   data: {
     searchTerms,
-    all,
-    byid,
-    hash,
-    roots,
+    treeData,
+    lookup,
+    expanded,
   },
   handleClick,
 }: {
   data: ElementsColumnData
-  handleClick: (element: LikeC4Model.Element) => void
+  handleClick: (element: LikeC4ModelTreeNodeData) => void
 }) {
   const tree = useTree({
     multiple: false,
   })
 
   useEffect(() => {
+    console.log('expanded', expanded)
     tree.collapseAllNodes()
-    for (const nd of all) {
-      if (nd.children.length > 0) {
-        tree.expand(nd.value)
-      }
+    if (!expanded) {
+      return
     }
-  }, [hash])
+    // for (const nd of expanded) {
+    tree.setExpandedState(mapToObj(expanded, (id) => [id, true]))
+    // }
+  }, [expanded?.join(',')])
 
   const onKeyDownCapture: KeyboardEventHandler = useCallbackRef((e) => {
     const target = e.target as HTMLElement
     const id = target.getAttribute('data-value')
-    const node = !!id && byid[id as Fqn]
+    const node = !!id && lookup(id as Fqn)
     if (!node) return
     if (e.key === 'ArrowUp') {
-      if (id === roots[0]?.value) {
+      if (id === treeData[0]?.value) {
         stopAndPrevent(e)
         moveFocusToSearchInput(target)
       }
@@ -231,7 +106,7 @@ function ElementsTree({
     }
     if (e.key === ' ' || e.key === 'Enter') {
       stopAndPrevent(e)
-      handleClick(node.element)
+      handleClick(node)
       return
     }
   })
@@ -243,7 +118,7 @@ function ElementsTree({
       clearSelectionOnOutsideClick
       selectOnClick={false}
       tree={tree}
-      data={roots}
+      data={treeData}
       levelOffset={'md'}
       classNames={{
         root: styles.treeRoot,
@@ -258,42 +133,20 @@ function ElementsTree({
 }
 
 function ElementTreeNode(
-  { node, elementProps, expanded, handleClick, searchTerms }: RenderTreeNodePayload & {
+  { node: fromNode, elementProps, expanded, handleClick, searchTerms }: RenderTreeNodePayload & {
     searchTerms: NonEmptyArray<string>
-    handleClick: (element: LikeC4Model.Element) => void
+    handleClick: (node: LikeC4ModelTreeNodeData) => void
   },
 ) {
-  const { label, element, viewsCount } = node as LikeC4ModelTreeNodeData
-  const elementIcon = IconOrShapeRenderer({
-    element: {
-      id: element.id,
-      title: element.title,
-      shape: element.shape,
-      icon: element.icon,
-    },
-    className: cx(btn.buttonIcon, styles.elementIcon),
-  })
+  const node = fromNode as LikeC4ModelTreeNodeData
+  const { label, element } = node
+  const { viewsCount } = element
   const key = `@tree.${node.value}`
 
   return (
     <m.div layout="position" layoutId={key} {...elementProps as any}>
-      <ActionIcon
-        variant="transparent"
-        size={20}
-        tabIndex={-1}
-        className={clsx(styles.elementExpandIcon)}
-        style={{
-          visibility: node.hasChildren ? 'visible' : 'hidden',
-        }}>
-        <IconChevronRight
-          stroke={3.5}
-          style={{
-            transition: 'transform 150ms ease',
-            transform: `rotate(${expanded ? '90deg' : '0'})`,
-          }} />
-      </ActionIcon>
-      <UnstyledButton
-        component={m.button}
+      <ElementExpandIcon expanded={expanded} hasChildren={node.hasChildren ?? false} />
+      <m.button
         layout
         tabIndex={-1}
         data-value={element.id}
@@ -302,47 +155,29 @@ function ElementTreeNode(
           onClick: (e) => {
             if (!node.hasChildren || expanded) {
               e.stopPropagation()
-              handleClick(element)
+              handleClick(node)
             }
           },
         }}
       >
-        {elementIcon}
+        <IconOrShapeRenderer element={element} className={cx(btn.buttonIcon, styles.elementIcon)} />
         <Box style={{ flexGrow: 1 }}>
-          <Group gap={'xs'} wrap="nowrap" align="center" className={styles.elementTitleAndId}>
-            <Highlight
-              component="div"
-              highlight={searchTerms}
-              className={btn.buttonTitle!}
-              lineClamp={1}>
+          <ElementTitleAndId>
+            <ElementTitle highlight={searchTerms}>
               {label}
-            </Highlight>
-            <Tooltip label={element.id} withinPortal={false} fz={'xs'} disabled={!element.id.includes('.')}>
-              <Highlight
-                component="div"
-                highlight={last(searchTerms)}
-                className={cx(styles.elementId, btn.buttonMeta)}>
-                {nameFromFqn(element.id)}
-              </Highlight>
-            </Tooltip>
-          </Group>
+            </ElementTitle>
+            <ElementId elementId={element.id} highlight={searchTerms} />
+          </ElementTitleAndId>
           <Highlight
             component="div"
-            highlight={element.summary.nonEmpty ? searchTerms : []}
+            highlight={searchTerms}
             className={btn.buttonDescription!}
             lineClamp={1}>
-            {element.summary.nonEmpty ? element.summary.text : 'No description'}
+            {element.summary || 'No description'}
           </Highlight>
         </Box>
-
-        <Txt as={'div'} className={cx(styles.elementViewsCount, btn.buttonMeta)} size={'xs'}>
-          {viewsCount === 0 ? 'No views' : (
-            <>
-              {viewsCount} view{viewsCount > 1 ? 's' : ''}
-            </>
-          )}
-        </Txt>
-      </UnstyledButton>
+        <ElementViewCount viewsCount={viewsCount} />
+      </m.button>
     </m.div>
   )
 }
@@ -350,17 +185,98 @@ function ElementTreeNode(
 function useHandleElementSelection() {
   const ctx = useSearchContext()
 
-  return useCallbackRef((element: LikeC4Model.Element) => {
-    const views = [...element.views()]
-    if (views.length === 0) {
+  return useCallbackRef((node: LikeC4ModelTreeNodeData) => {
+    if (node.element.navigateTo) {
+      ctx.navigateTo(node.element.navigateTo, node.element.id)
       return
     }
-    const elementFqn = element.id
-    const onlyOneViewId = only(views)?.id
-    if (!onlyOneViewId) {
-      ctx.openPickView(elementFqn)
-      return
+    if (node.element.viewsCount > 0) {
+      ctx.openPickView(node.element.id)
     }
-    ctx.navigateTo(onlyOneViewId, elementFqn)
   })
+}
+
+const ElementExpandIcon = ({ expanded, hasChildren }: { expanded: boolean; hasChildren: boolean }) => {
+  return (
+    <ActionIcon
+      variant="transparent"
+      size={20}
+      tabIndex={-1}
+      className={clsx(styles.elementExpandIcon)}
+      style={{
+        visibility: hasChildren ? 'visible' : 'hidden',
+      }}>
+      <IconChevronRight
+        stroke={3.5}
+        style={{
+          transition: 'transform 150ms ease',
+          transform: `rotate(${expanded ? '90deg' : '0'})`,
+        }} />
+    </ActionIcon>
+  )
+}
+
+const ElementTitle = Highlight.withProps({
+  component: 'div',
+  className: btn.buttonTitle,
+  lineClamp: 1,
+  children: undefined as any,
+  highlight: [] as string[],
+})
+
+const ElementId = ({ elementId, highlight }: { elementId: string; highlight: [string, ...string[]] }) => {
+  return (
+    <Tooltip label={elementId} withinPortal={false} fz={'xs'} disabled={!elementId.includes('.')}>
+      <Highlight
+        component="div"
+        highlight={last(highlight)}
+        className={cx(
+          css({
+            fontSize: 'xxs',
+            lineHeight: 'sm',
+            display: 'block',
+            fontWeight: 'medium',
+            whiteSpace: 'nowrap',
+            padding: '[1px 5px]',
+            borderRadius: 'sm',
+            background: `mantine.dark[9]/30`,
+            _light: {
+              background: `mantine.gray[3]/20`,
+            },
+          }),
+          btn.buttonMeta,
+        )}>
+        {nameFromFqn(elementId)}
+      </Highlight>
+    </Tooltip>
+  )
+}
+
+const ElementViewCount = ({ viewsCount }: { viewsCount: number }) => {
+  let label: string
+  if (viewsCount === 0) {
+    label = 'No views'
+  } else {
+    label = `${viewsCount} view${viewsCount > 1 ? 's' : ''}`
+  }
+  return (
+    <Txt
+      as={'div'}
+      className={cx(
+        css({
+          flex: 'none',
+          fontSize: 'xxs',
+          fontWeight: 'medium',
+          whiteSpace: 'nowrap',
+          lineHeight: '[1.1]',
+          [styles.whenContainerIsNarrow]: {
+            display: 'none',
+          },
+        }),
+        btn.buttonMeta,
+      )}
+      size={'xs'}>
+      {label}
+    </Txt>
+  )
 }
