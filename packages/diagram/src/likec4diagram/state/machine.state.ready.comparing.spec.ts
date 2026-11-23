@@ -344,7 +344,7 @@ describe('ready.comparing', () => {
         tags: [],
       }],
     } satisfies LayoutedElementView
-    const updated = { ...view, hash: 'applied-latest' }
+    const updated = { ...view, hash: 'applied-latest', title: 'Applied latest' }
     const executeChange = vi.fn<EditorCalls.ExecuteChange>(async ({ input }) => ({
       requested: input.changes,
       applied: input.changes,
@@ -394,7 +394,8 @@ describe('ready.comparing', () => {
       expect(executeChange.mock.calls[0]![0].input.changes).toContainEqual(
         expect.objectContaining({
           op: 'save-view-snapshot',
-          layout: expect.objectContaining({ hash: updated.hash }),
+          // the snapshot hash is recalculated on save, so match the applied view by its title
+          layout: expect.objectContaining({ title: updated.title }),
         }),
       )
       expect(editor.getSnapshot().context.unsynced).toBe(false)
