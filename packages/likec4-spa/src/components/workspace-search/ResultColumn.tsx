@@ -125,7 +125,7 @@ export function ResultColumn<T extends SearchElement | SearchView>({
   })
 
   useEffect(() => {
-    registerFocus(col, (k: number) => {
+    registerFocus(col, (k, giveUp) => {
       if (rowIndexes.length === 0) {
         return null
       }
@@ -140,6 +140,8 @@ export function ResultColumn<T extends SearchElement | SearchView>({
           row.focus({ preventScroll: true })
         } else if (attempts++ < 5) {
           requestAnimationFrame(tryFocus)
+        } else {
+          giveUp(target)
         }
       }
       tryFocus()

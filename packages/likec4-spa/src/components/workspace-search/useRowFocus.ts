@@ -2,9 +2,10 @@ import { type FocusEvent, type RefObject, useCallback, useRef } from 'react'
 import type { Column } from './ResultRows'
 
 /**
- * Brings row `k` of a column into view and focuses it; returns the row it went to, null for an empty column
+ * Brings row `k` of a column into view and focuses it; returns the row it went to, null for an empty column.
+ * Calls `giveUp` with that row if it could not be focused after all
  */
-type Focuser = (k: number) => number | null
+type Focuser = (k: number, giveUp: (target: number) => void) => number | null
 
 export type RegisterFocus = (col: Column, focus: Focuser | null) => void
 
@@ -25,7 +26,13 @@ export function useRowFocus(containerRef: RefObject<HTMLElement | null>) {
   const focusRow = useCallback((col: Column, k: number): boolean => {
     const focus = focusers.current.get(col)
     if (focus) {
-      const target = focus(k)
+      // ends the pending move, unless a newer move replaced it
+      const giveUp = (target: number) => {
+        if (pending.current?.col === col && pending.current.k === target) {
+          pending.current = null
+        }
+      }
+      const target = focus(k, giveUp)
       const targetRow = target === null
         ? null
         : containerRef.current?.querySelector(`[data-col="${col}"][data-k="${target}"]`)
