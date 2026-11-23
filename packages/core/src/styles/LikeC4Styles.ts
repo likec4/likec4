@@ -1,7 +1,7 @@
 import { DefaultTagColorValues, isDefaultTagColor } from '@likec4/style-preset/defaults'
 import chroma from 'chroma-js'
 import { defu } from 'defu'
-import { isDeepEqual, isEmptyish, isShallowEqual, pick } from 'remeda'
+import { pick } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import type {
   ComputedNodeStyle,

@@ -3,7 +3,7 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { isLikeC4ViewsFolder } from '@likec4/core/model'
 import type { Fqn, NonEmptyReadonlyArray, ProjectId, ViewId } from '@likec4/core/types'
 import { someTagIncludes } from '@likec4/core/utils'
-import { createFuzzySearch, matchesMetadataSearch, METADATA_SEARCH_PREFIX, viewTitleWithFolder } from '@likec4/diagram'
+import { createFuzzySearch, matchesMetadataSearch, METADATA_SEARCH_PREFIX } from '@likec4/diagram'
 
 export interface SearchProject {
   readonly id: ProjectId
