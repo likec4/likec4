@@ -1,7 +1,7 @@
 import { css } from '@likec4/styles/css'
-import { Button, Group, Paper, Stack, Text } from '@mantine/core'
+import { Alert, Button, Group, Paper, Stack, Text } from '@mantine/core'
 import { IconArrowLeft } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { ProjectsOverviewSnapshot } from '../actor'
 import { useProjectsOverviewActor } from '../context'
 import type { ProjectsOverviewExportFormat, ProjectsOverviewExports } from '../exports'
@@ -52,17 +52,23 @@ export function ProjectsOverviewControls({ exports }: { exports: ProjectsOvervie
     : nodes.find(node => node.id === filter.focusFrame)
   const hasHighlight = filter.highlight !== null
 
+  const [failedImageFormat, setFailedImageFormat] = useState<ProjectsOverviewExportFormat | null>(null)
+
   const onExport = (format: ProjectsOverviewExportFormat) => {
+    setFailedImageFormat(null)
     switch (format) {
       case 'png':
       case 'jpg': {
         const viewport = xystore.getState().domNode?.querySelector<HTMLElement>('.react-flow__viewport')
         if (viewport) {
-          void exportOverviewAsImage({
+          exportOverviewAsImage({
             viewport,
             bounds: xyflow.getNodesBounds(nodes.filter(node => !node.hidden)),
             format: format === 'jpg' ? 'jpeg' : 'png',
             filename: FILENAME,
+          }).catch(error => {
+            console.error(`Failed to export the projects overview as ${format}`, { error })
+            setFailedImageFormat(format)
           })
         }
         return
@@ -127,6 +133,21 @@ export function ProjectsOverviewControls({ exports }: { exports: ProjectsOvervie
             <Text size="xs" fw={700} c="dimmed" tt="uppercase">Legend</Text>
             <ColorLegend legend={view.legend} />
           </div>
+        )}
+        {failedImageFormat && (
+          <Alert
+            color="red"
+            variant="light"
+            p="xs"
+            withCloseButton
+            onClose={() => setFailedImageFormat(null)}>
+            <Group justify="space-between" wrap="nowrap" gap="xs">
+              <Text size="xs">Could not export the image.</Text>
+              <Button size="compact-xs" variant="default" onClick={() => onExport(failedImageFormat)}>
+                Retry
+              </Button>
+            </Group>
+          </Alert>
         )}
         <Group gap="xs">
           <Button size="xs" variant="default" onClick={() => actor.send({ type: 'group.showAll' })}>

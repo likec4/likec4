@@ -23,7 +23,8 @@ tags: [rfc, projects-overview, multi-project, config]
 ## 1. Summary
 
 A workspace with more than one project opens on the projects overview: one diagram with a box for each project
-and an edge for each project that imports from another. LikeC4 generates this diagram, and nothing configures it.
+and an edge for each pair of projects that have relationships between their elements, through an import. An import
+alone does not create an edge. LikeC4 generates this diagram, and nothing configures it.
 With many projects the diagram is a flat grid of equal boxes and crossing curves.
 
 This RFC adds an optional `projectsOverview` configuration with these settings:
@@ -70,7 +71,7 @@ This RFC asks the community and the maintainers to accept the design and the dec
 ### Non-goals
 
 - A hand-drawn overview or saved positions (manual layout) of the overview.
-- Changes of what an edge means. Edges stay "project A imports from project B".
+- Changes of what an edge means. Edges stay "a relationship from an element of project A to an element that project A imports from project B".
 - Changes of the single-project landing page (the view grid of `landingPage`).
 
 ## 3. Proposal
@@ -284,19 +285,19 @@ The reader changes the view in the browser. The controls do not change the confi
 
 ![Projects overview with the side panel](../../../apps/docs/src/assets/projects-overview/overview.png)
 
-| Control            | Behavior                                                                                                                                   |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Hide a frame       | A checkbox per frame hides the frame with its projects and edges. Hidden space stays empty (no re-layout).                                 |
-| Show only a frame  | Fits the frame on screen and hides the rest. Nested frames and projects stay visible. "All projects" or `Escape` returns.                  |
-| Highlight project  | Highlights the project and its direct neighbors, dims the rest. Clear with `Escape` or a click on the empty canvas.                        |
-| Search             | Finds visible projects by title. A pick highlights the project and fits it on screen.                                                      |
-| Hub counts         | Each project shows its incoming and outgoing edges, counted among the visible edges. The color is the text color of the box.               |
-| Edge bundles       | Edges between two top-level frames form one badge with the edge count. A tooltip lists the project pairs.                                  |
-| Hide a bundle      | A checkbox per bundle hides the edges of that bundle only. The projects stay. A hidden bundle stays in the list, so it can be shown again. |
-| Highlight a bundle | A click on the badge or on the name highlights the edges of the bundle and the projects at both ends.                                      |
-| Legend             | Lists the colors of `colorBy` with the project count of each value.                                                                        |
-| Reset              | Shows every frame and bundle and clears the highlight.                                                                                     |
-| Export             | Menu with the formats of section 4.6.1.                                                                                                    |
+| Control            | Behavior                                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Hide a frame       | A checkbox per frame hides the frame with its projects and edges. Hidden space stays empty (no re-layout).                                                                                       |
+| Show only a frame  | Fits the frame on screen and hides the rest. Nested frames and projects stay visible. "All projects" or `Escape` returns.                                                                        |
+| Highlight project  | Highlights the project and its direct neighbors, dims the rest. Clear with `Escape` or a click on the empty canvas.                                                                              |
+| Search             | Finds visible projects by title. A pick highlights the project and fits it on screen.                                                                                                            |
+| Hub counts         | Each project shows its incoming and outgoing edges, counted among the visible edges. The color is the text color of the box.                                                                     |
+| Edge bundles       | Edges between two top-level frames form one bundle with one badge near the middle of its edges. Each edge keeps its own path. The badge shows the edge count. A tooltip lists the project pairs. |
+| Hide a bundle      | A checkbox per bundle hides the edges of that bundle only. The projects stay. A hidden bundle stays in the list, so it can be shown again.                                                       |
+| Highlight a bundle | A click on the badge or on the name highlights the edges of the bundle and the projects at both ends.                                                                                            |
+| Legend             | Lists the colors of `colorBy` with the project count of each value.                                                                                                                              |
+| Reset              | Shows every frame and bundle and clears the highlight.                                                                                                                                           |
+| Export             | Menu with the formats of section 4.6.1.                                                                                                                                                          |
 
 ![Hide frames one by one, then reset](../../../apps/docs/src/assets/projects-overview/hide-frames.gif)
 

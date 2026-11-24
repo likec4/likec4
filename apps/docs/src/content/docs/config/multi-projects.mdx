@@ -136,7 +136,7 @@ The `include` configuration is generally preferred over symlinks as it's more po
 
 ## Projects overview
 
-A workspace with more than one project opens on the projects overview: one box per project, and an edge where one project imports from another.
+A workspace with more than one project opens on the projects overview: one box per project, and an edge where an element of one project has a relationship with an element that it imports from another. An import without a relationship does not create an edge.
 
 `projectsOverview` in a project config changes that diagram for the whole workspace. Put it on one project. If two projects set different values, LikeC4 reports a warning and uses the project with the shortest folder path.
 
@@ -197,7 +197,7 @@ To look at one frame alone, use "Show only this frame" on the frame, or the icon
 
 #### Edge bundles
 
-Edges between two frames follow one shared path. A badge on the path shows how many edges the bundle holds. The panel lists every bundle with its edge count.
+Edges between two frames form a bundle. Each edge keeps its own path. One badge near the middle of the edges shows how many edges the bundle holds. The panel lists every bundle with its edge count.
 
 - Clear the checkbox of a bundle to hide its edges and its badge. The frames and projects stay.
 - Click the name of a bundle, or its badge, to highlight its edges and the projects at both ends. Everything else fades.

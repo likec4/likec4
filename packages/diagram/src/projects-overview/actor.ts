@@ -33,6 +33,7 @@ import {
   type OverviewFilter,
   absoluteBoundsOf,
   deriveOverview,
+  focusFrameFilter,
   noOverviewFilter,
   visibleBoundsOf,
 } from './derive'
@@ -135,8 +136,12 @@ const withFilter = (
 }
 
 // Derives the visible nodes and edges from the current ones, so xyflow changes (selection, dimensions) survive
-const updateFilter = (update: (filter: OverviewFilter, event: Events) => OverviewFilter) =>
-  machine.assign(({ context, event }) => withFilter(context.xynodes, context.xyedges, update(context.filter, event)))
+const updateFilter = (
+  update: (filter: OverviewFilter, event: Events, nodes: ProjectsOverviewTypes.Node[]) => OverviewFilter,
+) =>
+  machine.assign(({ context, event }) =>
+    withFilter(context.xynodes, context.xyedges, update(context.filter, event, context.xynodes))
+  )
 
 const toggleKey = (keys: ReadonlyArray<string>, key: string): string[] =>
   keys.includes(key) ? keys.filter(item => item !== key) : [...keys, key]
@@ -434,9 +439,9 @@ const _projectOverviewLogic = machine.createMachine({
         },
         'frame.focus': {
           actions: [
-            updateFilter((filter, event) => {
+            updateFilter((filter, event, nodes) => {
               assertEvent(event, 'frame.focus')
-              return { ...filter, focusFrame: event.frameId, highlight: null }
+              return focusFrameFilter(nodes, filter, event.frameId)
             }),
             fitToEventNode(),
           ],
@@ -477,10 +482,12 @@ const _projectOverviewLogic = machine.createMachine({
         assign({
           xyedges: [],
         }),
-        ({ context: { navigateTo, xyflow, xystore }, self }) => {
+        ({ context: { navigateTo, xyflow, xystore, xynodes }, self }) => {
           invariant(xyflow && navigateTo, 'Invalid state, xyflow is undefined')
           invariant(navigateTo.type === 'project', 'Only a project can be opened from the overview')
           const { width, domNode } = nonNullable(xystore).getState()
+          // Positions of grouped projects are relative to their frame
+          const target = absoluteBoundsOf(xynodes, navigateTo.id)
           const nextZoom = clamp(
             Math.min(
               (width * 7 / 9) / (navigateTo.data.width),
@@ -490,9 +497,9 @@ const _projectOverviewLogic = machine.createMachine({
           )
           const next = {
             x: Math.round(
-              -nextZoom * (navigateTo.position.x) + (width - nextZoom * navigateTo.data.width) / 2,
+              -nextZoom * target.x + (width - nextZoom * navigateTo.data.width) / 2,
             ),
-            y: Math.round(-nextZoom * (navigateTo.position.y)) + 50,
+            y: Math.round(-nextZoom * target.y) + 50,
           }
           const current = xyflow.getViewport()
 

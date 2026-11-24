@@ -1,7 +1,7 @@
 import { scalar } from '@likec4/core'
 import { describe, it } from 'vitest'
 import type { ProjectsOverviewTypes } from './_types'
-import { absoluteBoundsOf, deriveOverview, noOverviewFilter, visibleBoundsOf } from './derive'
+import { absoluteBoundsOf, deriveOverview, focusFrameFilter, noOverviewFilter, visibleBoundsOf } from './derive'
 
 const noFilter = noOverviewFilter
 
@@ -193,5 +193,29 @@ describe('deriveOverview', () => {
 
   it('visibleBoundsOf — when every node is hidden then returns null', ({ expect }) => {
     expect(visibleBoundsOf([{ ...frame('payments'), hidden: true }])).toBeNull()
+  })
+
+  it('focusFrameFilter — when the frame is hidden then shows it and keeps the other hidden frames', ({ expect }) => {
+    const filter = { ...noFilter, hiddenGroups: ['payments', 'shop'] }
+    const result = focusFrameFilter(nodes, filter, 'payments')
+    expect(result).toMatchObject({ focusFrame: 'payments', hiddenGroups: ['shop'], highlight: null })
+  })
+
+  it('focusFrameFilter — when an ancestor is hidden then shows the ancestor too', ({ expect }) => {
+    const inner = [frame('outer'), frame('inner', 'outer'), project('api', 'inner')]
+    const filter = { ...noFilter, hiddenGroups: ['outer', 'inner'] }
+    expect(focusFrameFilter(inner, filter, 'inner').hiddenGroups).toEqual([])
+  })
+
+  it('focusFrameFilter — when a frame inside the focus is hidden then keeps it hidden', ({ expect }) => {
+    const inner = [frame('outer'), frame('inner', 'outer'), project('api', 'inner')]
+    const filter = { ...noFilter, hiddenGroups: ['inner'] }
+    expect(focusFrameFilter(inner, filter, 'outer').hiddenGroups).toEqual(['inner'])
+  })
+
+  it('focusFrameFilter — when the focused view is derived then its projects are visible', ({ expect }) => {
+    const filter = focusFrameFilter(nodes, { ...noFilter, hiddenGroups: ['payments'] }, 'payments')
+    const result = deriveOverview(nodes, edges, filter)
+    expect(result.nodes.filter(n => !n.hidden).length).toBeGreaterThan(0)
   })
 })

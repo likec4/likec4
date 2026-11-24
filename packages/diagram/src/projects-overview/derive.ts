@@ -111,6 +111,22 @@ export function deriveOverview(
 }
 
 /**
+ * Filter that shows only one frame. The frame and its ancestors are shown again, so the focus never gives an empty canvas.
+ * Frames hidden inside the focused frame stay hidden.
+ */
+export function focusFrameFilter(nodes: ReadonlyArray<Node>, filter: OverviewFilter, frameId: string): OverviewFilter {
+  const { byId, chainOf } = indexNodes(nodes)
+  const frame = byId.get(frameId)
+  const revealed = new Set((frame ? chainOf(frame) : []).map(node => node.id))
+  return {
+    ...filter,
+    hiddenGroups: filter.hiddenGroups.filter(id => !revealed.has(id)),
+    focusFrame: frameId,
+    highlight: null,
+  }
+}
+
+/**
  * Bounds that enclose every shown node, or null when all nodes are hidden.
  */
 export function visibleBoundsOf(nodes: ReadonlyArray<Node>): BBox | null {
