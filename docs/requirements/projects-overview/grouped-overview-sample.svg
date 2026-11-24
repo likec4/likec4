@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="660" viewBox="0 0 1400 660" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8d8d8d"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="660" fill="#262626"/>
+
+  <!-- groupBy frames: domain (outer), team (inner) -->
+  <g>
+    <rect x="40" y="40" width="420" height="300" rx="8" fill="#2e2e2e" stroke="#4a4a4a" stroke-dasharray="6 4"/>
+    <text x="60" y="68" fill="#d4d4d4" font-size="16" font-weight="bold">Platform</text>
+
+    <rect x="60" y="90" width="220" height="190" rx="6" fill="#3a3a3a" stroke="#555" stroke-dasharray="6 4"/>
+    <text x="76" y="114" fill="#bdbdbd" font-size="13">infra</text>
+
+    <rect x="500" y="40" width="560" height="340" rx="8" fill="#2e2e2e" stroke="#4a4a4a" stroke-dasharray="6 4"/>
+    <text x="520" y="68" fill="#d4d4d4" font-size="16" font-weight="bold">Payments</text>
+
+    <rect x="520" y="90" width="220" height="190" rx="6" fill="#3a3a3a" stroke="#555" stroke-dasharray="6 4"/>
+    <text x="536" y="114" fill="#bdbdbd" font-size="13">checkout</text>
+
+    <rect x="760" y="90" width="280" height="190" rx="6" fill="#3a3a3a" stroke="#555" stroke-dasharray="6 4"/>
+    <text x="776" y="114" fill="#bdbdbd" font-size="13">finance</text>
+
+    <rect x="1100" y="40" width="260" height="340" rx="8" fill="#2e2e2e" stroke="#4a4a4a" stroke-dasharray="6 4"/>
+    <text x="1120" y="68" fill="#d4d4d4" font-size="16" font-weight="bold">Shop</text>
+  </g>
+
+  <!-- projects: colorBy lifecycle; primary = no mapping -->
+  <g font-size="14">
+    <!-- build -> green -->
+    <rect x="80" y="130" width="180" height="56" rx="6" fill="#166534" stroke="#22c55e"/>
+    <text x="170" y="163" fill="#dcfce7" text-anchor="middle">identity</text>
+
+    <rect x="80" y="210" width="180" height="56" rx="6" fill="#166534" stroke="#22c55e"/>
+    <text x="170" y="243" fill="#dcfce7" text-anchor="middle">gateway</text>
+
+    <!-- no team: sits in the domain frame -->
+    <rect x="300" y="150" width="140" height="56" rx="6" fill="#2563eb" stroke="#60a5fa"/>
+    <text x="370" y="183" fill="#eff6ff" text-anchor="middle">observability</text>
+
+    <rect x="540" y="130" width="180" height="56" rx="6" fill="#166534" stroke="#22c55e"/>
+    <text x="630" y="163" fill="#dcfce7" text-anchor="middle">payments</text>
+
+    <rect x="540" y="210" width="180" height="56" rx="6" fill="#166534" stroke="#22c55e"/>
+    <text x="630" y="243" fill="#dcfce7" text-anchor="middle">cart</text>
+
+    <!-- buy -> sky -->
+    <rect x="780" y="150" width="240" height="56" rx="6" fill="#075985" stroke="#38bdf8"/>
+    <text x="900" y="183" fill="#e0f2fe" text-anchor="middle">ledger</text>
+
+    <!-- no team: sits in the domain frame -->
+    <rect x="760" y="300" width="240" height="56" rx="6" fill="#166534" stroke="#22c55e"/>
+    <text x="880" y="333" fill="#dcfce7" text-anchor="middle">payouts</text>
+
+    <!-- no team: sits in the domain frame -->
+    <rect x="1130" y="130" width="200" height="56" rx="6" fill="#166534" stroke="#22c55e"/>
+    <text x="1230" y="163" fill="#dcfce7" text-anchor="middle">catalog</text>
+
+    <rect x="1130" y="220" width="200" height="56" rx="6" fill="#2563eb" stroke="#60a5fa"/>
+    <text x="1230" y="253" fill="#eff6ff" text-anchor="middle">partner-portal</text>
+
+    <!-- no domain: canvas -->
+    <rect x="80" y="440" width="200" height="56" rx="6" fill="#2563eb" stroke="#60a5fa"/>
+    <text x="180" y="473" fill="#eff6ff" text-anchor="middle">reporting</text>
+
+    <!-- retire -> muted -->
+    <rect x="1100" y="440" width="200" height="56" rx="6" fill="#3f3f46" stroke="#71717a"/>
+    <text x="1200" y="473" fill="#e4e4e7" text-anchor="middle">legacy-billing</text>
+  </g>
+
+  <!-- relationships: orthogonal routing -->
+  <g fill="none" stroke="#8d8d8d" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M720,158 H750 V178 H780"/>
+    <path d="M720,238 H740 V328 H760"/>
+    <path d="M260,238 H540"/>
+    <path d="M1130,248 H1050 V328 H1000"/>
+    <path d="M180,440 V266"/>
+    <path d="M1100,468 H1060 V178 H1020"/>
+  </g>
+
+  <!-- legend -->
+  <g font-size="13" fill="#bdbdbd">
+    <text x="40" y="560" font-size="15" fill="#d4d4d4" font-weight="bold">Legend</text>
+    <rect x="40" y="576" width="18" height="18" rx="3" fill="#166534" stroke="#22c55e"/>
+    <text x="68" y="590">colorBy: build</text>
+    <rect x="200" y="576" width="18" height="18" rx="3" fill="#075985" stroke="#38bdf8"/>
+    <text x="228" y="590">colorBy: buy</text>
+    <rect x="340" y="576" width="18" height="18" rx="3" fill="#3f3f46" stroke="#71717a"/>
+    <text x="368" y="590">colorBy: retire</text>
+    <rect x="500" y="576" width="18" height="18" rx="3" fill="#2563eb" stroke="#60a5fa"/>
+    <text x="528" y="590">primary: no mapping</text>
+    <rect x="720" y="576" width="34" height="18" rx="3" fill="#3a3a3a" stroke="#555" stroke-dasharray="6 4"/>
+    <text x="764" y="590">groupBy frame (gray)</text>
+  </g>
+
+  <text x="40" y="630" font-size="12" fill="#8a8a8a">Schematic sample for the RFC. Not rendered by LikeC4. Project names and metadata are invented.</text>
+</svg>

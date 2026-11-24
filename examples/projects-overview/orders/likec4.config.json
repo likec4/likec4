@@ -1,0 +1,8 @@
+{
+  "name": "orders",
+  "title": "Orders",
+  "metadata": {
+    "area": "Sales",
+    "lifecycle": "live"
+  }
+}

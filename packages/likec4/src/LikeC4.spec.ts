@@ -264,6 +264,12 @@ describe('LikeC4', () => {
     )
     expect(projects).toMatchInlineSnapshot(`
       {
+        "analytics": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "analytics",
+        },
         "boutique": {
           "documents": [
             "_spec.c4",
@@ -276,6 +282,18 @@ describe('LikeC4', () => {
             "use-cases/usecase.02-order-fullfillment.c4",
           ],
           "folder": "boutique",
+        },
+        "carriers": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "carriers",
+        },
+        "cart": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "cart",
         },
         "cloud-system": {
           "documents": [
@@ -297,12 +315,42 @@ describe('LikeC4', () => {
           ],
           "folder": "customization-roughjs",
         },
+        "datalake": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "datalake",
+        },
         "dyn-config": {
           "documents": [
             "_spec.c4",
             "model.c4",
           ],
           "folder": "dyn-config",
+        },
+        "fraud": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "fraud",
+        },
+        "gateway": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "gateway",
+        },
+        "identity": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "identity",
+        },
+        "invoicing": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "invoicing",
         },
         "issue-1624": {
           "documents": [
@@ -315,6 +363,12 @@ describe('LikeC4', () => {
             "views.c4",
           ],
           "folder": "metadata-views",
+        },
+        "mobile": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "mobile",
         },
         "multi-metadata-extend": {
           "documents": [
@@ -332,11 +386,41 @@ describe('LikeC4', () => {
           ],
           "folder": "multi-relation-extend",
         },
+        "notifications": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "notifications",
+        },
+        "observability": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "observability",
+        },
+        "orders": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "orders",
+        },
         "overflow-test": {
           "documents": [
             "model.c4",
           ],
           "folder": "overflow-test",
+        },
+        "payments": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "payments",
+        },
+        "pricing": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "pricing",
         },
         "projectA": {
           "documents": [
@@ -358,11 +442,71 @@ describe('LikeC4', () => {
           ],
           "folder": "projectB",
         },
+        "promos": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "promos",
+        },
         "rank-for-better-layout": {
           "documents": [
             "demo-rank-for-better-layout.c4",
           ],
           "folder": "rank-for-better-layout",
+        },
+        "recs": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "recs",
+        },
+        "refunds": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "refunds",
+        },
+        "reporting": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "reporting",
+        },
+        "returns": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "returns",
+        },
+        "search": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "search",
+        },
+        "shared-spec": {
+          "documents": [
+            "spec.c4",
+          ],
+          "folder": "shared-spec",
+        },
+        "shipping": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "shipping",
+        },
+        "warehouse": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "warehouse",
+        },
+        "webshop": {
+          "documents": [
+            "model.c4",
+          ],
+          "folder": "webshop",
         },
       }
     `)

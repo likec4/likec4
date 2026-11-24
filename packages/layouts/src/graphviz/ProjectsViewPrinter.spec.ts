@@ -93,4 +93,47 @@ describe('ProjectsViewPrinter', () => {
     const result = print([projectA, projectB])
     await expect(result).toMatchFileSnapshot('__snapshots__/ProjectsViewPrinter-two-directions.dot')
   })
+
+  it('prints nested groups and orthogonal routing', async ({ expect }) => {
+    const payments = builder.toLikeC4Model({ id: 'payments', metadata: { domain: 'shop', team: 'checkout' } })
+    const catalog = builder.toLikeC4Model({ id: 'catalog', metadata: { domain: 'shop' } })
+    const view = computeProjectsView([payments, catalog], {
+      groupBy: { key: 'domain', thenBy: { key: 'team' } },
+      routing: 'ortho',
+    })
+    const dot = ProjectsViewPrinter.toDot(view)
+    expect(dot).toContain('splines = "ortho"')
+    expect(dot).toContain('subgraph "cluster_')
+    await expect(dot).toMatchFileSnapshot('__snapshots__/ProjectsViewPrinter-grouped-ortho.dot')
+  })
+
+  it('stacks ordered groups as layers on one rank each', async ({ expect }) => {
+    const models = [
+      builder.toLikeC4Model({ id: 'ledger', metadata: { domain: 'payments' } }),
+      builder.toLikeC4Model({ id: 'payouts', metadata: { domain: 'payments' } }),
+      builder.toLikeC4Model({ id: 'catalog', metadata: { domain: 'shop' } }),
+      builder.toLikeC4Model({ id: 'identity', metadata: { domain: 'platform' } }),
+    ]
+    invariant(hasAtLeast(models, 1), 'at least one model is required')
+    const view = computeProjectsView(models, {
+      groupBy: { key: 'domain' },
+      order: ['shop', 'payments', 'platform'],
+    })
+    const dot = ProjectsViewPrinter.toDot(view)
+    expect(dot).toContain('newrank = true')
+    expect(dot.match(/rank = "same"/g)).toHaveLength(3)
+    expect(dot.match(/style = "invis"/g)).toHaveLength(2)
+    await expect(dot).toMatchFileSnapshot('__snapshots__/ProjectsViewPrinter-layers.dot')
+  })
+
+  it('does not stack layers without an order', ({ expect }) => {
+    const models = [
+      builder.toLikeC4Model({ id: 'catalog', metadata: { domain: 'shop' } }),
+      builder.toLikeC4Model({ id: 'identity', metadata: { domain: 'platform' } }),
+    ]
+    invariant(hasAtLeast(models, 1), 'at least one model is required')
+    const dot = ProjectsViewPrinter.toDot(computeProjectsView(models, { groupBy: { key: 'domain' } }))
+    expect(dot).not.toContain('rank = "same"')
+    expect(dot).not.toContain('newrank')
+  })
 })

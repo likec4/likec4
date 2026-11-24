@@ -1,0 +1,77 @@
+digraph {
+  likec4_viewId = "projects-view";
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  splines = "ortho";
+  outputorder = "nodesfirst";
+  nodesep = 1.389;
+  ranksep = 1.389;
+  pad = 0.209;
+  fontname = "Arial";
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#8D8D8D";
+    fontcolor = "#C9C9C9";
+    style = "dashed";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    style = "filled";
+    penwidth = 0;
+  ];
+  "vrsc0c" [
+    likec4_id = "vrsc0c";
+    likec4_project = "payments";
+    likec4_level = 2;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">payments</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "1m0aq9i" [
+    likec4_id = "1m0aq9i";
+    likec4_project = "catalog";
+    likec4_level = 1;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">catalog</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  subgraph "cluster_1b7gr7c" {
+    likec4_id = "1b7gr7c";
+    likec4_level = 0;
+    likec4_depth = 2;
+    fillcolor = "#3f3f3f";
+    color = "#2d2d2d";
+    style = "filled";
+    margin = 40;
+    label = <<FONT POINT-SIZE="11" COLOR="#d4d4d4b3"><B>SHOP</B></FONT>>;
+    "1m0aq9i";
+    subgraph "cluster_1tghood" {
+      likec4_id = "1tghood";
+      likec4_level = 1;
+      likec4_depth = 1;
+      fillcolor = "#454545";
+      color = "#313131";
+      style = "filled";
+      margin = 32;
+      label = <<FONT POINT-SIZE="11" COLOR="#d4d4d4b3"><B>CHECKOUT</B></FONT>>;
+      "vrsc0c";
+    }
+  }
+}

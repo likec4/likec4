@@ -1,0 +1,8 @@
+{
+  "name": "refunds",
+  "title": "Refunds",
+  "metadata": {
+    "area": "Payments",
+    "lifecycle": "legacy"
+  }
+}

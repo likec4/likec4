@@ -1,0 +1,18 @@
+import { payments } from 'payments'
+import { reporting } from 'reporting'
+
+specification {
+  element system
+}
+
+model {
+  invoicing = system 'Invoicing'
+  invoicing -> payments 'uses'
+  invoicing -> reporting 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

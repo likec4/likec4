@@ -11,7 +11,7 @@ import { type FitViewOptions, ReactFlowProvider as XYFlowProvider } from '@xyflo
 import { deepEqual } from 'fast-equals'
 import { type PropsWithChildren, Profiler, useRef } from 'react'
 import { isEmptyish, isPlainObject, mapValues } from 'remeda'
-import { FitViewPaddings, MaxZoom, MinZoom } from './base'
+import { FitViewPaddings, LARGE_VIEW_AREA, MaxZoom, MinZoom } from './base'
 import { RootContainer } from './components/RootContainer'
 import {
   DiagramEventHandlers,
@@ -158,9 +158,9 @@ export const LikeC4Diagram = customizable('LikeC4Diagram')(<A extends t.Any = t.
   }
 
   const isReducedGraphicsMode = reduceGraphics === 'auto'
-    // If view has more then 4000 * 4000 pixels - assume it is a big diagram
+    // A view above LARGE_VIEW_AREA (4000 * 4000 pixels) is a big diagram
     // Enable reduced graphics mode if diagram is "big" and pannable, and has compounds
-    ? pannable && ((view.bounds.width * view.bounds.height) > 16_000_000) &&
+    ? pannable && ((view.bounds.width * view.bounds.height) > LARGE_VIEW_AREA) &&
       view.nodes.some(n => n.children?.length > 0)
     : reduceGraphics
 

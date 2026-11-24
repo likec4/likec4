@@ -1,0 +1,18 @@
+import { datalake } from 'datalake'
+import { analytics } from 'analytics'
+
+specification {
+  element system
+}
+
+model {
+  reporting = system 'Reporting'
+  reporting -> datalake 'uses'
+  reporting -> analytics 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

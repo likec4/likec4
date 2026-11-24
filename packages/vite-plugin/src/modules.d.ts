@@ -18,10 +18,21 @@ declare module 'likec4:projects' {
 }
 
 declare module 'likec4:projects-overview' {
-  import type { LayoutedProjectEdge, LayoutedProjectNode, LayoutedProjectsView } from 'likec4/model'
-  export type { LayoutedProjectEdge, LayoutedProjectNode, LayoutedProjectsView }
+  import type { WebappExportFormat } from 'likec4/config'
+  import type { LayoutedProjectEdge, LayoutedProjectsNode, LayoutedProjectsView } from 'likec4/model'
+  export type { LayoutedProjectEdge, LayoutedProjectsNode, LayoutedProjectsView }
+
+  export interface ProjectsOverviewExports {
+    readonly formats: readonly WebappExportFormat[]
+    readonly dot?: string
+    readonly d2?: string
+    readonly mmd?: string
+    readonly puml?: string
+    readonly drawioEditUrl?: string
+  }
 
   export function useLikeC4ProjectsOverview(): LayoutedProjectsView
+  export function useLikeC4ProjectsOverviewExports(): ProjectsOverviewExports
 }
 
 declare module 'likec4:icons' {

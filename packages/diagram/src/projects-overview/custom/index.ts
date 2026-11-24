@@ -1,2 +1,2 @@
 export { RelationshipEdge } from './edgeTypes'
-export { ProjectNode } from './nodeTypes'
+export { GroupNode, ProjectNode } from './nodeTypes'

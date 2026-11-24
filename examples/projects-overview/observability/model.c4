@@ -1,0 +1,13 @@
+specification {
+  element system
+}
+
+model {
+  observability = system 'Observability'
+}
+
+views {
+  view index {
+    include *
+  }
+}

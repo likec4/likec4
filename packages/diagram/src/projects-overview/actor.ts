@@ -28,6 +28,14 @@ import { MinZoom } from '../base'
 import { Base } from '../base/Base'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import type { ProjectsOverviewTypes, ProjectsOverviewXYFLowInstance, ProjectsOverviewXYStoreApi } from './_types'
+import {
+  type OverviewBundle,
+  type OverviewFilter,
+  absoluteBoundsOf,
+  deriveOverview,
+  noOverviewFilter,
+  visibleBoundsOf,
+} from './derive'
 import { layoutedProjectsViewToXYFlow } from './layouted-to-xyflow'
 import { ProjectsOverviewViewportPersistence } from './persistence'
 
@@ -47,6 +55,10 @@ export interface Context {
   fitViewPadding: ViewPadding
   xynodes: ProjectsOverviewTypes.Node[]
   xyedges: ProjectsOverviewTypes.Edge[]
+  /** Reader's choices: hidden frames, focused frame, highlighted project or bundle */
+  filter: OverviewFilter
+  /** Edge bundles between top-level frames, among the visible edges */
+  bundles: ReadonlyArray<OverviewBundle>
   navigateTo?: ProjectsOverviewTypes.Node
 }
 
@@ -74,6 +86,14 @@ export type Events =
   | { type: 'xyflow.applyEdgeChanges'; changes: EdgeChange<ProjectsOverviewTypes.Edge>[] }
   | { type: 'xyflow.fitDiagram'; bounds?: BBox; duration?: number }
   | { type: 'update.view'; view: LayoutedProjectsView }
+  | { type: 'group.toggle'; frameId: string }
+  | { type: 'group.showAll' }
+  | { type: 'bundle.toggle'; key: string }
+  | { type: 'frame.focus'; frameId: string }
+  | { type: 'frame.back' }
+  | { type: 'project.focus'; nodeId: string }
+  | { type: 'highlight.set'; highlight: NonNullable<OverviewFilter['highlight']> }
+  | { type: 'highlight.clear' }
   | EmitEach<EmittedEvents>
   | { type: 'close' }
 
@@ -91,13 +111,42 @@ const machine = setup({
     isReady: ({ context }) =>
       context.initialized.xydata
       && context.initialized.xyflow && !!context.xystore && !!context.xyflow,
+    'click: pane': ({ event }) => event.type === 'xyflow.click.pane',
     'click: selected node': ({ event }) => {
-      return event.type === 'xyflow.click.node' && event.node.selected === true
+      return event.type === 'xyflow.click.node' && event.node.selected === true && event.node.type === 'project'
     },
   },
 })
 
 // Extracted actions
+
+const withFilter = (
+  nodes: ProjectsOverviewTypes.Node[],
+  edges: ProjectsOverviewTypes.Edge[],
+  filter: OverviewFilter,
+) => {
+  const derived = deriveOverview(nodes, edges, filter)
+  return {
+    filter,
+    xynodes: derived.nodes,
+    xyedges: derived.edges,
+    bundles: derived.bundles,
+  }
+}
+
+// Derives the visible nodes and edges from the current ones, so xyflow changes (selection, dimensions) survive
+const updateFilter = (update: (filter: OverviewFilter, event: Events) => OverviewFilter) =>
+  machine.assign(({ context, event }) => withFilter(context.xynodes, context.xyedges, update(context.filter, event)))
+
+const toggleKey = (keys: ReadonlyArray<string>, key: string): string[] =>
+  keys.includes(key) ? keys.filter(item => item !== key) : [...keys, key]
+
+const fitToEventNode = () =>
+  machine.enqueueActions(({ context, event, enqueue }) => {
+    assertEvent(event, ['frame.focus', 'project.focus'])
+    const nodeId = event.type === 'frame.focus' ? event.frameId : event.nodeId
+    enqueue(fitDiagram({ bounds: absoluteBoundsOf(context.xynodes, nodeId) }))
+  })
 
 const updateView = () =>
   machine.assign(({ event }) => {
@@ -105,8 +154,7 @@ const updateView = () =>
     const { xynodes, xyedges } = layoutedProjectsViewToXYFlow(event.view)
     return {
       view: event.view,
-      xynodes,
-      xyedges,
+      ...withFilter(xynodes, xyedges, noOverviewFilter),
     }
   })
 
@@ -185,12 +233,13 @@ const handleClick = () =>
 
 export const fitDiagram = (params?: { duration?: number; bounds?: BBox }) =>
   machine.enqueueActions(({ context, event }) => {
-    let bounds = context.view.bounds, duration: number | undefined
+    const contentBounds = visibleBoundsOf(context.xynodes) ?? context.view.bounds
+    let bounds = contentBounds, duration: number | undefined
     if (params) {
-      bounds = params.bounds ?? context.view.bounds
+      bounds = params.bounds ?? contentBounds
       duration = params.duration
     } else if (event.type === 'xyflow.fitDiagram') {
-      bounds = event.bounds ?? context.view.bounds
+      bounds = event.bounds ?? contentBounds
       duration = event.duration
     }
     // Default values
@@ -277,6 +326,8 @@ const _projectOverviewLogic = machine.createMachine({
     xystore: null,
     xynodes: [],
     xyedges: [],
+    filter: noOverviewFilter,
+    bundles: [],
   }),
   initial: 'init',
   on: {
@@ -343,6 +394,10 @@ const _projectOverviewLogic = machine.createMachine({
         },
         'xyflow.click.*': [
           {
+            guard: 'click: pane',
+            actions: updateFilter(filter => ({ ...filter, highlight: null })),
+          },
+          {
             guard: 'click: selected node',
             actions: assignNavigateTo(),
             target: 'navigate',
@@ -353,6 +408,62 @@ const _projectOverviewLogic = machine.createMachine({
         ],
         'xyflow.fitDiagram': {
           actions: fitDiagram(),
+        },
+        'group.toggle': {
+          actions: updateFilter((filter, event) => {
+            assertEvent(event, 'group.toggle')
+            return { ...filter, hiddenGroups: toggleKey(filter.hiddenGroups, event.frameId) }
+          }),
+        },
+        'bundle.toggle': {
+          actions: updateFilter((filter, event) => {
+            assertEvent(event, 'bundle.toggle')
+            const highlightedHere = filter.highlight?.kind === 'bundle' && filter.highlight.key === event.key
+            return {
+              ...filter,
+              hiddenBundles: toggleKey(filter.hiddenBundles, event.key),
+              highlight: highlightedHere ? null : filter.highlight,
+            }
+          }),
+        },
+        'group.showAll': {
+          actions: [
+            updateFilter(() => noOverviewFilter),
+            fitDiagram(),
+          ],
+        },
+        'frame.focus': {
+          actions: [
+            updateFilter((filter, event) => {
+              assertEvent(event, 'frame.focus')
+              return { ...filter, focusFrame: event.frameId, highlight: null }
+            }),
+            fitToEventNode(),
+          ],
+        },
+        'frame.back': {
+          actions: [
+            updateFilter(filter => ({ ...filter, focusFrame: null })),
+            fitDiagram(),
+          ],
+        },
+        'project.focus': {
+          actions: [
+            updateFilter((filter, event) => {
+              assertEvent(event, 'project.focus')
+              return { ...filter, highlight: { kind: 'project', nodeId: event.nodeId } }
+            }),
+            fitToEventNode(),
+          ],
+        },
+        'highlight.set': {
+          actions: updateFilter((filter, event) => {
+            assertEvent(event, 'highlight.set')
+            return { ...filter, highlight: event.highlight }
+          }),
+        },
+        'highlight.clear': {
+          actions: updateFilter(filter => ({ ...filter, highlight: null })),
         },
         'update.view': {
           actions: updateView(),
@@ -368,6 +479,7 @@ const _projectOverviewLogic = machine.createMachine({
         }),
         ({ context: { navigateTo, xyflow, xystore }, self }) => {
           invariant(xyflow && navigateTo, 'Invalid state, xyflow is undefined')
+          invariant(navigateTo.type === 'project', 'Only a project can be opened from the overview')
           const { width, domNode } = nonNullable(xystore).getState()
           const nextZoom = clamp(
             Math.min(

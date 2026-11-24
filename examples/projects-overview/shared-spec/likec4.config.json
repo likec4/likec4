@@ -1,0 +1,43 @@
+{
+  "name": "shared-spec",
+  "title": "Shared spec",
+  "metadata": {
+    "kind": "metamodel"
+  },
+  "projectsOverview": {
+    "exclude": {
+      "key": "kind",
+      "values": [
+        "metamodel"
+      ]
+    },
+    "groupBy": {
+      "key": "area",
+      "colors": {
+        "Storefront": "sky",
+        "Sales": "blue",
+        "Fulfilment": "amber",
+        "Payments": "green",
+        "Data": "indigo",
+        "Platform": "slate"
+      }
+    },
+    "order": [
+      "Storefront",
+      "Sales",
+      "Fulfilment",
+      "Payments",
+      "Data",
+      "Platform"
+    ],
+    "colorBy": {
+      "key": "lifecycle",
+      "colors": {
+        "live": "green",
+        "beta": "amber",
+        "legacy": "red"
+      }
+    },
+    "routing": "ortho"
+  }
+}

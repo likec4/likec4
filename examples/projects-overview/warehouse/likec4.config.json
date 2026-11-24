@@ -1,0 +1,8 @@
+{
+  "name": "warehouse",
+  "title": "Warehouse",
+  "metadata": {
+    "area": "Fulfilment",
+    "lifecycle": "live"
+  }
+}

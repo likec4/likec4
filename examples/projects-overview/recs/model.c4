@@ -1,0 +1,18 @@
+import { analytics } from 'analytics'
+import { datalake } from 'datalake'
+
+specification {
+  element system
+}
+
+model {
+  recs = system 'Recommendations'
+  recs -> analytics 'uses'
+  recs -> datalake 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

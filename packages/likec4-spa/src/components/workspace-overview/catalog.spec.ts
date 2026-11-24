@@ -5,9 +5,9 @@ import { buildProjectsCatalog, monogramColor, projectInitials, selectProjects } 
 type ViewNode = LayoutedProjectsView['nodes'][number]
 type ViewEdge = LayoutedProjectsView['edges'][number]
 
-function node(id: string, title: string, metrics?: ViewNode['metrics']): ViewNode {
+function node(id: string, title: string, metrics?: Extract<ViewNode, { kind: '@project' }>['metrics']): ViewNode {
   // only the fields the catalog reads are relevant
-  return { id: `n-${id}`, projectId: id, title, ...(metrics && { metrics }) } as unknown as ViewNode
+  return { id: `n-${id}`, kind: '@project', projectId: id, title, ...(metrics && { metrics }) } as unknown as ViewNode
 }
 
 function edge(from: string, to: string, relations: number): ViewEdge {
@@ -24,7 +24,16 @@ function view(nodes: ViewNode[], edges: ViewEdge[]): LayoutedProjectsView {
   return { nodes, edges } as unknown as LayoutedProjectsView
 }
 
+function frame(id: string, title: string): ViewNode {
+  return { id: `n-${id}`, kind: '@group', title } as unknown as ViewNode
+}
+
 describe('buildProjectsCatalog', () => {
+  it('skips frames of grouped overviews', () => {
+    const grouped = buildProjectsCatalog(view([frame('domain', 'Payments'), node('pay', 'Checkout')], []))
+    expect(grouped.projects.map(p => p.id)).toEqual(['pay'])
+  })
+
   const catalog = buildProjectsCatalog(view(
     [
       node('shop', 'Storefront', { elements: 10, relationships: 4, views: 2 }),

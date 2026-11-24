@@ -1,0 +1,18 @@
+import { identity } from 'identity'
+import { observability } from 'observability'
+
+specification {
+  element system
+}
+
+model {
+  gateway = system 'API gateway'
+  gateway -> identity 'uses'
+  gateway -> observability 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

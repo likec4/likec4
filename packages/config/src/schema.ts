@@ -21,6 +21,7 @@ import JSON5 from 'json5'
 import z from 'zod/v4'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
+import { ProjectsOverviewSchema } from './schema.projects-overview'
 import { LikeC4StylesConfigSchema } from './schema.theme'
 import { type WebappExportFormat, WebappExportFormats } from './webapp-export-formats'
 
@@ -166,6 +167,9 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
       description: 'Auto-generate scoped views for elements without explicit views. Defaults to false.',
     }),
   landingPage: LandingPageSchema.optional(),
+  projectsOverview: ProjectsOverviewSchema.optional().meta({
+    description: 'Group, color and route the projects overview. Applies to the whole workspace.',
+  }),
   webapp: WebappConfigSchema.optional(),
 })
   .meta({

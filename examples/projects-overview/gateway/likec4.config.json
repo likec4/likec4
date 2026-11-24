@@ -1,0 +1,8 @@
+{
+  "name": "gateway",
+  "title": "API gateway",
+  "metadata": {
+    "area": "Platform",
+    "lifecycle": "live"
+  }
+}

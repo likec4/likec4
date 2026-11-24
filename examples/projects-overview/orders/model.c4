@@ -1,0 +1,22 @@
+import { payments } from 'payments'
+import { warehouse } from 'warehouse'
+import { notifications } from 'notifications'
+import { invoicing } from 'invoicing'
+
+specification {
+  element system
+}
+
+model {
+  orders = system 'Orders'
+  orders -> payments 'uses'
+  orders -> warehouse 'uses'
+  orders -> notifications 'uses'
+  orders -> invoicing 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

@@ -1,0 +1,13 @@
+specification {
+  element system
+}
+
+model {
+  notifications = system 'Notifications'
+}
+
+views {
+  view index {
+    include *
+  }
+}

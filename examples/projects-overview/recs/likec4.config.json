@@ -1,0 +1,8 @@
+{
+  "name": "recs",
+  "title": "Recommendations",
+  "metadata": {
+    "area": "Storefront",
+    "lifecycle": "beta"
+  }
+}

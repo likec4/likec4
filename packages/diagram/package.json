@@ -82,6 +82,7 @@
     "defu": "catalog:utils",
     "fast-equals": "catalog:utils",
     "fuse.js": "catalog:utils",
+    "html-to-image": "catalog:",
     "immer": "catalog:utils",
     "motion": "catalog:react",
     "nanostores": "catalog:react",

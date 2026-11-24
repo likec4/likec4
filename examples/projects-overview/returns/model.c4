@@ -1,0 +1,20 @@
+import { refunds } from 'refunds'
+import { warehouse } from 'warehouse'
+import { orders } from 'orders'
+
+specification {
+  element system
+}
+
+model {
+  returns = system 'Returns'
+  returns -> refunds 'uses'
+  returns -> warehouse 'uses'
+  returns -> orders 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

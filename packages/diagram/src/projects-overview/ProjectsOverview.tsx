@@ -8,6 +8,8 @@ import { useEffect, useRef } from 'react'
 import type { ViewPadding } from '../LikeC4Diagram.props'
 import { projectOverviewLogic } from './actor'
 import { ProjectsOverviewActorContextProvider } from './context'
+import { type ProjectsOverviewExports, defaultOverviewExports } from './exports'
+import { ProjectsOverviewControls } from './panel/ProjectsOverviewControls'
 import { ProjectsOverviewPanel } from './panel/ProjectsOverviewPanel'
 import { type ProjectsOverviewXYProps, ProjectsOverviewXY } from './ProjectsOverviewXY'
 
@@ -26,6 +28,12 @@ export type ProjectsOverviewProps = {
    * @default false
    */
   hideNavigationPanel?: boolean | undefined
+
+  /**
+   * Formats the overview can be exported to, with their sources.
+   * By default, only PNG and JPG are offered, as they work in the browser.
+   */
+  exports?: ProjectsOverviewExports | undefined
 } & ProjectsOverviewXYProps
 
 type ReactFlowProviderProps = Omit<Parameters<typeof ReactFlowProvider>[0], 'children'>
@@ -37,9 +45,11 @@ export function ProjectsOverview({
     top: '50px',
     bottom: '32px',
     left: '32px',
-    right: '32px',
+    // Keeps the side panel clear of the diagram
+    right: '340px',
   },
   hideNavigationPanel,
+  exports = defaultOverviewExports,
   ...props
 }: ProjectsOverviewProps) {
   const actorRef = useActorRef(
@@ -82,6 +92,7 @@ export function ProjectsOverview({
           <ProjectsOverviewXY {...props} />
         </LayoutGroup>
         {hideNavigationPanel !== true && <ProjectsOverviewPanel />}
+        <ProjectsOverviewControls exports={exports} />
       </ReactFlowProvider>
     </ProjectsOverviewActorContextProvider>
   )

@@ -1,0 +1,8 @@
+{
+  "name": "search",
+  "title": "Search",
+  "metadata": {
+    "area": "Storefront",
+    "lifecycle": "beta"
+  }
+}

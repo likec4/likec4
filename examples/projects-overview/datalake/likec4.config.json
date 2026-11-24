@@ -1,0 +1,8 @@
+{
+  "name": "datalake",
+  "title": "Data lake",
+  "metadata": {
+    "area": "Data",
+    "lifecycle": "beta"
+  }
+}

@@ -1,0 +1,24 @@
+import { gateway } from 'gateway'
+import { search } from 'search'
+import { cart } from 'cart'
+import { recs } from 'recs'
+import { identity } from 'identity'
+
+specification {
+  element system
+}
+
+model {
+  webshop = system 'Web shop'
+  webshop -> gateway 'uses'
+  webshop -> search 'uses'
+  webshop -> cart 'uses'
+  webshop -> recs 'uses'
+  webshop -> identity 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

@@ -1,0 +1,20 @@
+import { fraud } from 'fraud'
+import { identity } from 'identity'
+import { notifications } from 'notifications'
+
+specification {
+  element system
+}
+
+model {
+  payments = system 'Payments'
+  payments -> fraud 'uses'
+  payments -> identity 'uses'
+  payments -> notifications 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

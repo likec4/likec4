@@ -7,7 +7,7 @@ import {
   type UnknownLayouted,
   nonexhaustive,
 } from '@likec4/core'
-import { type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
+import { type ComputedProjectsView, type LayoutedProjectsView, computeProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { TextDocument, URI } from 'langium'
@@ -21,6 +21,7 @@ import type { LikeC4ModelBuilder } from './model'
 import type { LikeC4ModelChanges } from './model-change/ModelChanges'
 import type { LikeC4ModelDiffs, LikeC4RemovalImpact } from './model-diff'
 import type { LikeC4Services } from './module'
+import { selectProjectsOverview } from './projects-overview/selectProjectsOverview'
 import type { Locate } from './protocol'
 import type { LikeC4Views } from './views/LikeC4Views'
 import { type LikeC4WorkspaceManager, ProjectsManager } from './workspace'
@@ -86,6 +87,11 @@ export interface LikeC4LanguageServices {
    * that shows all projects and their relationships
    */
   projectsOverview(cancelToken?: CancellationToken): Promise<LayoutedProjectsView>
+
+  /**
+   * Returns the Graphviz DOT source of the projects overview
+   */
+  projectsOverviewDot(cancelToken?: CancellationToken): Promise<string>
 
   /**
    * Returns {@link LikeC4Model} of the specified project, with computed views {@link ComputedView}
@@ -336,6 +342,14 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
   }
 
   async projectsOverview(cancelToken?: CancellationToken): Promise<LayoutedProjectsView> {
+    return await this.views.layouter.layoutProjectsView(await this.computeProjectsOverview(cancelToken))
+  }
+
+  async projectsOverviewDot(cancelToken?: CancellationToken): Promise<string> {
+    return await this.views.layouter.dotProjectsView(await this.computeProjectsOverview(cancelToken))
+  }
+
+  private async computeProjectsOverview(cancelToken?: CancellationToken): Promise<ComputedProjectsView> {
     const allProjects = this.services.shared.workspace.ProjectsManager.all
     const models = [] as LikeC4Model[]
     for (const project of allProjects) {
@@ -352,8 +366,28 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
     if (!hasAtLeast(models, 1)) {
       throw new Error('No models found')
     }
-    const projectsView = computeProjectsView(models)
-    return await this.views.layouter.layoutProjectsView(projectsView)
+    const manager = this.services.shared.workspace.ProjectsManager
+    const selected = selectProjectsOverview(
+      manager.all.flatMap(id => {
+        const overview = manager.getProject(id).config.projectsOverview
+        if (!overview) {
+          return []
+        }
+        return [{
+          id,
+          folder: manager.getProject(id).folder,
+          overview,
+        }]
+      }),
+    )
+    if (selected.warning) {
+      logger.warn(selected.warning)
+    }
+    const projectsView = computeProjectsView(models, selected.options)
+    if (projectsView.nodes.length === 0) {
+      throw new Error('No projects left in the overview. Check projectsOverview.exclude')
+    }
+    return projectsView
   }
 
   getErrors(): Array<{

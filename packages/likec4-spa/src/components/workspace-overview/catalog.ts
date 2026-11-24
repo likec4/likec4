@@ -1,6 +1,8 @@
 import type { LayoutedProjectsView } from '@likec4/core'
 import type { ProjectId } from '@likec4/core/types'
 
+type ProjectNode = Extract<LayoutedProjectsView['nodes'][number], { kind: '@project' }>
+
 /**
  * Cross-project link: how many relationships go to (or come from) another project
  */
@@ -76,7 +78,9 @@ export function buildProjectsCatalog(
   infos: ReadonlyArray<ProjectInfo> = [],
 ): ProjectsCatalog {
   const infoById = new Map(infos.map(info => [info.id, info] as const))
-  const nodeToProject = new Map(view.nodes.map(node => [node.id, node] as const))
+  // Frames (`@group`) are not projects
+  const projectNodes = view.nodes.filter((node): node is ProjectNode => node.kind === '@project')
+  const nodeToProject = new Map(projectNodes.map(node => [node.id, node] as const))
 
   const dependsOn = new Map<ProjectId, ProjectLink[]>()
   const usedBy = new Map<ProjectId, ProjectLink[]>()
@@ -100,7 +104,7 @@ export function buildProjectsCatalog(
     push(usedBy, target.projectId, { projectId: source.projectId, title: source.title, relationships })
   }
 
-  const projects = view.nodes.map((node): CatalogProject => ({
+  const projects = projectNodes.map((node): CatalogProject => ({
     id: node.projectId,
     title: node.title,
     path: infoById.get(node.projectId)?.path || null,

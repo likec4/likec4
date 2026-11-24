@@ -543,5 +543,150 @@ describe('ProjectConfig schema', () => {
         }
       })
     })
+
+    describe('projectsOverview', () => {
+      it('accepts a group chain, colors and routing', ({ expect }) => {
+        const result = validateConfig({
+          name: 'landscape',
+          projectsOverview: {
+            groupBy: { key: ' domain ', thenBy: { key: 'team' } },
+            colorBy: { key: 'sourcing', colors: { build: 'green', buy: 'blue' } },
+            routing: 'ortho',
+          },
+        })
+        expect(result.projectsOverview).toEqual({
+          groupBy: { key: 'domain', thenBy: { key: 'team' } },
+          colorBy: { key: 'sourcing', colors: { build: 'green', buy: 'blue' } },
+          routing: 'ortho',
+        })
+      })
+
+      it('accepts a config without projectsOverview', ({ expect }) => {
+        expect(validateConfig({ name: 'landscape' }).projectsOverview).toBeUndefined()
+      })
+
+      it('rejects an empty group key', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { groupBy: { key: '  ' } },
+          })
+        ).toThrow(/groupBy key cannot be empty/)
+      })
+
+      it('rejects a repeated group key', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { groupBy: { key: 'domain', thenBy: { key: 'domain' } } },
+          })
+        ).toThrow(/groupBy key "domain" is repeated/)
+      })
+
+      it('accepts an order of group values', ({ expect }) => {
+        const result = validateConfig({
+          name: 'landscape',
+          projectsOverview: {
+            groupBy: { key: 'domain' },
+            order: [' payments ', 'platform'],
+          },
+        })
+        expect(result.projectsOverview?.order).toEqual(['payments', 'platform'])
+      })
+
+      it('rejects an order without groupBy', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { order: ['payments'] },
+          })
+        ).toThrow(/order needs groupBy/)
+      })
+
+      it('rejects a repeated order value', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { groupBy: { key: 'domain' }, order: ['payments', 'payments'] },
+          })
+        ).toThrow(/order value "payments" is repeated/)
+      })
+
+      it('rejects an empty order value', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { groupBy: { key: 'domain' }, order: ['  '] },
+          })
+        ).toThrow(/order value cannot be empty/)
+      })
+
+      it('accepts frame colors on each groupBy level', ({ expect }) => {
+        const result = validateConfig({
+          name: 'landscape',
+          projectsOverview: {
+            groupBy: { key: 'domain', colors: { payments: 'amber' }, thenBy: { key: 'team', colors: { a: 'sky' } } },
+          },
+        })
+        expect(result.projectsOverview?.groupBy).toEqual({
+          key: 'domain',
+          colors: { payments: 'amber' },
+          thenBy: { key: 'team', colors: { a: 'sky' } },
+        })
+      })
+
+      it('rejects an unknown frame color', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { groupBy: { key: 'domain', colors: { payments: 'purple' } } },
+          })
+        ).toThrow()
+      })
+
+      it('accepts an exclude rule', ({ expect }) => {
+        const result = validateConfig({
+          name: 'landscape',
+          projectsOverview: { exclude: { key: ' kind ', values: [' metamodel '] } },
+        })
+        expect(result.projectsOverview?.exclude).toEqual({ key: 'kind', values: ['metamodel'] })
+      })
+
+      it('rejects an exclude rule without values', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { exclude: { key: 'kind', values: [] } },
+          })
+        ).toThrow(/exclude needs at least one value/)
+      })
+
+      it('rejects an empty exclude key', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { exclude: { key: '  ', values: ['metamodel'] } },
+          })
+        ).toThrow(/exclude key cannot be empty/)
+      })
+
+      it('rejects an unknown color', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { colorBy: { key: 'sourcing', colors: { build: 'purple' } } },
+          })
+        ).toThrow()
+      })
+
+      it('rejects an unknown property', ({ expect }) => {
+        expect(() =>
+          validateConfig({
+            name: 'landscape',
+            projectsOverview: { direction: 'LR' },
+          })
+        ).toThrow()
+      })
+    })
   })
 })

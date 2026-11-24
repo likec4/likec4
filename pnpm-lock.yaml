@@ -312,6 +312,9 @@ catalogs:
     graphology-types:
       specifier: ^0.24.8
       version: 0.24.8
+    html-to-image:
+      specifier: 1.11.11
+      version: 1.11.11
     mdast-util-to-hast:
       specifier: 13.2.1
       version: 13.2.1
@@ -1458,6 +1461,9 @@ importers:
       fuse.js:
         specifier: catalog:utils
         version: 7.5.0
+      html-to-image:
+        specifier: 'catalog:'
+        version: 1.11.11
       immer:
         specifier: catalog:utils
         version: 11.1.21

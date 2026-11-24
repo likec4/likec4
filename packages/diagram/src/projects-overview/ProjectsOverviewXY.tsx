@@ -5,12 +5,14 @@ import { BaseXYFlow } from '../base/BaseXYFlow'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import type { ProjectsOverviewTypes } from './_types'
 import type { ProjectsOverviewSnapshot } from './actor'
+import { BundleBadges } from './BundleBadges'
 import { useProjectsOverviewActor } from './context'
-import { ProjectNode, RelationshipEdge } from './custom'
+import { GroupNode, ProjectNode, RelationshipEdge } from './custom'
 import { useProjectsOverviewState, useProjectsOverviewXYStoreApi } from './hooks'
 
 const nodeTypes: ProjectsOverviewTypes.NodeRenderers = {
   project: ProjectNode,
+  'project-group': GroupNode,
 }
 
 const edgeTypes = {
@@ -110,7 +112,9 @@ export const ProjectsOverviewXY = memo<ProjectsOverviewXYProps>(({
       zoomable
       background={background}
       {...props}
-    />
+    >
+      <BundleBadges />
+    </BaseXYFlow>
   )
 })
 ProjectsOverviewXY.displayName = 'ProjectsOverviewXY'
