@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "likec4"
 export const name = "likec4-vscode"
-export const version = "1.61.0"
+export const version = "1.61.1"
 export const displayName = "LikeC4"
 export const description = "Support for the LikeC4 modeling language"
 export const extensionId = `${publisher}.${name}`
@@ -150,6 +150,9 @@ export type ConfigKey =
   | "likec4.formatting.quoteStyle"
   | "likec4.node.path"
   | "likec4.cli.path"
+  | "likec4.export.notation.enabled"
+  | "likec4.export.notation.position"
+  | "likec4.export.notation.text"
   | "likec4.exclude"
   | "likec4.markdownPreview.enabled"
   | "likec4.markdownPreview.colorScheme"
@@ -165,6 +168,9 @@ export interface ConfigKeyTypeMap {
   "likec4.formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "likec4.node.path": string,
   "likec4.cli.path": string,
+  "likec4.export.notation.enabled": boolean,
+  "likec4.export.notation.position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  "likec4.export.notation.text": ("short" | "full" | "kind"),
   "likec4.exclude": string[],
   "likec4.markdownPreview.enabled": boolean,
   "likec4.markdownPreview.colorScheme": ("auto" | "light" | "dark"),
@@ -181,6 +187,9 @@ export interface ConfigShorthandMap {
   formattingQuoteStyle: "likec4.formatting.quoteStyle",
   nodePath: "likec4.node.path",
   cliPath: "likec4.cli.path",
+  exportNotationEnabled: "likec4.export.notation.enabled",
+  exportNotationPosition: "likec4.export.notation.position",
+  exportNotationText: "likec4.export.notation.text",
   exclude: "likec4.exclude",
   markdownPreviewEnabled: "likec4.markdownPreview.enabled",
   markdownPreviewColorScheme: "likec4.markdownPreview.colorScheme",
@@ -197,6 +206,9 @@ export interface ConfigShorthandTypeMap {
   formattingQuoteStyle: ("auto" | "single" | "double" | "ignore"),
   nodePath: string,
   cliPath: string,
+  exportNotationEnabled: boolean,
+  exportNotationPosition: ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  exportNotationText: ("short" | "full" | "kind"),
   exclude: string[],
   markdownPreviewEnabled: boolean,
   markdownPreviewColorScheme: ("auto" | "light" | "dark"),
@@ -287,6 +299,36 @@ export const configs = {
   } as ConfigItem<"likec4.cli.path">,
   /**
    *
+   * @key `likec4.export.notation.enabled`
+   * @default `false`
+   * @type `boolean`
+   */
+  exportNotationEnabled: {
+    key: "likec4.export.notation.enabled",
+    default: false,
+  } as ConfigItem<"likec4.export.notation.enabled">,
+  /**
+   *
+   * @key `likec4.export.notation.position`
+   * @default `"bottom-right"`
+   * @type `string`
+   */
+  exportNotationPosition: {
+    key: "likec4.export.notation.position",
+    default: "bottom-right",
+  } as ConfigItem<"likec4.export.notation.position">,
+  /**
+   *
+   * @key `likec4.export.notation.text`
+   * @default `"short"`
+   * @type `string`
+   */
+  exportNotationText: {
+    key: "likec4.export.notation.text",
+    default: "short",
+  } as ConfigItem<"likec4.export.notation.text">,
+  /**
+   *
    * @key `likec4.exclude`
    * @default `[]`
    * @type `array`
@@ -355,6 +397,9 @@ export interface ScopedConfigKeyTypeMap {
   "formatting.quoteStyle": ("auto" | "single" | "double" | "ignore"),
   "node.path": string,
   "cli.path": string,
+  "export.notation.enabled": boolean,
+  "export.notation.position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+  "export.notation.text": ("short" | "full" | "kind"),
   "exclude": string[],
   "markdownPreview.enabled": boolean,
   "markdownPreview.colorScheme": ("auto" | "light" | "dark"),
@@ -373,6 +418,9 @@ export const scopedConfigs = {
     "formatting.quoteStyle": "auto",
     "node.path": "",
     "cli.path": "",
+    "export.notation.enabled": false,
+    "export.notation.position": "bottom-right",
+    "export.notation.text": "short",
     "exclude": [],
     "markdownPreview.enabled": true,
     "markdownPreview.colorScheme": "auto",
@@ -400,6 +448,13 @@ export interface NestedConfigs {
     },
     "cli": {
       "path": string,
+    },
+    "export": {
+      "notation": {
+        "enabled": boolean,
+        "position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+        "text": ("short" | "full" | "kind"),
+      },
     },
     "exclude": string[],
     "markdownPreview": {
@@ -429,6 +484,13 @@ export interface NestedScopedConfigs {
   },
   "cli": {
     "path": string,
+  },
+  "export": {
+    "notation": {
+      "enabled": boolean,
+      "position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
+      "text": ("short" | "full" | "kind"),
+    },
   },
   "exclude": string[],
   "markdownPreview": {

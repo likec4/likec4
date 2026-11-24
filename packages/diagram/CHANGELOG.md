@@ -1,5 +1,36 @@
 # @likec4/diagram
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3460](https://github.com/likec4/likec4/pull/3460) [`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - A diff can introduce a dynamic view, including a sequence diagram. The view stays out of the model until the diff is applied. While the diff is selected, open it from "In this diff" in the sidebar. Apply moves the view into a `views` block.
+
+- [#3283](https://github.com/likec4/likec4/pull/3283) [`34d4db1`](https://github.com/likec4/likec4/commit/34d4db18047142c4d4dd614804a8529da59b18c5) Thanks [@AndersHogqvist](https://github.com/AndersHogqvist)! - Improve manual layout tools: align nodes that have children, distribute selected nodes evenly, and make selected nodes the same width or height.
+
+- [#3581](https://github.com/likec4/likec4/pull/3581) [`a1ac0c4`](https://github.com/likec4/likec4/commit/a1ac0c43e6218196f389853f22ddfcdf24199579) Thanks [@bardrop](https://github.com/bardrop)! - Arrowheads of edges with `ortho` routing now follow the last segment in every browser. Safari drew them all pointing right.
+
+- [#3612](https://github.com/likec4/likec4/pull/3612) [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c) Thanks [@davydkov](https://github.com/davydkov)! - The projects overview page in a multi-project workspace is redesigned. Projects now open as cards by default, each showing the project's contact person, its folder in the workspace, and which projects it depends on or is used by; element, relationship and view counts appear when you hover a card. The page also has a table view, sorting and workspace totals; the previous diagram is still available as the Map view.
+  
+  A single-project workspace gets the same look: the project's views as cards with diagram previews or as a table, with the project totals, sorting by name, folder or type, and the same search.
+  
+  The projects page can now search inside every project: press `⌘K` or `/` to find elements and views across the whole workspace, grouped by project. Type `@name` to limit the search to one project; `kind:` and `#tag` work as in the diagram search.
+  
+  `Overlay` from `@likec4/diagram/custom` accepts `motionPreset="lift"`: a short fade with an 8px drop instead of the scale-in, for full-screen palettes.
+  
+  `likec4:projects` now includes each project's `contactPerson` from its config.
+  
+  In dev mode, clicking a project's folder on its card opens the project config in your editor, and "go to source" in a diagram opens the element, relationship or view at its exact position.
+  
+  Project cards flag views whose manual layout has drifted; hover the warning to see which views and jump to them.
+
+- [#3604](https://github.com/likec4/likec4/pull/3604) [`d33b8d8`](https://github.com/likec4/likec4/commit/d33b8d80baa02938d172f9cb0c4be88571c938ba) Thanks [@DOKL57](https://github.com/DOKL57)! - Show relationship metadata above the relationship popover on the diagram canvas.
+
+- [#3594](https://github.com/likec4/likec4/pull/3594) [`ef8c876`](https://github.com/likec4/likec4/commit/ef8c8764ba8d48a6dc2750bee0b09e9a8a9e69d6) Thanks [@amandomv](https://github.com/amandomv)! - The relationship counter in the element details follows the Global / Current view toggle: in Global it shows every relationship and no longer says some are hidden. Clicking "N relationships are hidden" switches the diagram to Global.
+- Updated dependencies [[`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550), [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534), [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706), [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c)]:
+  - @likec4/core@1.61.1
+  - @likec4/styles@1.61.1
+
 ## 1.61.0
 
 ### Minor Changes

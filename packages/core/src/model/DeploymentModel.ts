@@ -376,8 +376,8 @@ export class LikeC4DeploymentModel<A extends Any = Any> {
    * @example
    * resolveMarkdownRefs(md, model.resolveMarkdownRef)
    */
-  public readonly resolveMarkdownRef: MarkdownRefTitleResolver = ref => {
-    return this.$model.resolveMarkdownRef(ref)
+  public get resolveMarkdownRef(): MarkdownRefTitleResolver {
+    return this.$model.resolveMarkdownRef
   }
 
   private addElement(element: DeploymentElement<A>) {

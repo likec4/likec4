@@ -1,5 +1,29 @@
 # @likec4/core
 
+## 1.61.1
+
+### Patch Changes
+
+- [#3460](https://github.com/likec4/likec4/pull/3460) [`9cd23df`](https://github.com/likec4/likec4/commit/9cd23df2fb521b4a4ceb4742fbc9f247660bb550) Thanks [@edeak-jsq](https://github.com/edeak-jsq)! - A diff can introduce a dynamic view, including a sequence diagram. The view stays out of the model until the diff is applied. While the diff is selected, open it from "In this diff" in the sidebar. Apply moves the view into a `views` block.
+
+- [#3609](https://github.com/likec4/likec4/pull/3609) [`bfb426f`](https://github.com/likec4/likec4/commit/bfb426fb63cfe876460c97692a4712f4033cf534) Thanks [@SwastikTripathi](https://github.com/SwastikTripathi)! - The Markdown export writes the project and view titles as one-line headings and escapes Markdown characters in them, so a title such as `Release #`, `Q&A <draft>` or one with a line break is shown as written. `escapeInlineMarkdown` is now exported from `@likec4/core/utils`.
+
+- [#3586](https://github.com/likec4/likec4/pull/3586) [`f3362da`](https://github.com/likec4/likec4/commit/f3362dac2ba35f36a89df05d22a786fd9aa90706) Thanks [@bardrop](https://github.com/bardrop)! - `isOrthoSpline` is now a type guard that also rejects input that is not a Graphviz spline of `1 + 3n` points, and `splineToPolyline` throws on such input and returns a non-empty polyline.
+
+- [#3612](https://github.com/likec4/likec4/pull/3612) [`30d96fc`](https://github.com/likec4/likec4/commit/30d96fcb6c26950bb8213e5cd1ce5abe59cc928c) Thanks [@davydkov](https://github.com/davydkov)! - The projects overview page in a multi-project workspace is redesigned. Projects now open as cards by default, each showing the project's contact person, its folder in the workspace, and which projects it depends on or is used by; element, relationship and view counts appear when you hover a card. The page also has a table view, sorting and workspace totals; the previous diagram is still available as the Map view.
+  
+  A single-project workspace gets the same look: the project's views as cards with diagram previews or as a table, with the project totals, sorting by name, folder or type, and the same search.
+  
+  The projects page can now search inside every project: press `⌘K` or `/` to find elements and views across the whole workspace, grouped by project. Type `@name` to limit the search to one project; `kind:` and `#tag` work as in the diagram search.
+  
+  `Overlay` from `@likec4/diagram/custom` accepts `motionPreset="lift"`: a short fade with an 8px drop instead of the scale-in, for full-screen palettes.
+  
+  `likec4:projects` now includes each project's `contactPerson` from its config.
+  
+  In dev mode, clicking a project's folder on its card opens the project config in your editor, and "go to source" in a diagram opens the element, relationship or view at its exact position.
+  
+  Project cards flag views whose manual layout has drifted; hover the warning to see which views and jump to them.
+
 ## 1.61.0
 
 ### Patch Changes

@@ -497,6 +497,9 @@ catalogs:
     '@tanstack/react-router':
       specifier: 1.170.46
       version: 1.170.46
+    '@tanstack/react-virtual':
+      specifier: ^3.14.26
+      version: 3.14.26
     '@tanstack/router-cli':
       specifier: 1.167.46
       version: 1.167.46
@@ -1431,6 +1434,9 @@ importers:
       '@react-hookz/web':
         specifier: catalog:react
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tabler/icons-react':
+        specifier: catalog:react
+        version: 3.49.0(react@19.3.1)
       '@xstate/react':
         specifier: catalog:xstate
         version: 6.1.0(@types/react@19.3.0)(react@19.3.1)(xstate@5.33.3)
@@ -1507,9 +1513,6 @@ importers:
       '@statelyai/inspect':
         specifier: ^0.7.2
         version: 0.7.2(xstate@5.33.3)
-      '@tabler/icons-react':
-        specifier: catalog:react
-        version: 3.49.0(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
         version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
@@ -2052,6 +2055,9 @@ importers:
       '@likec4/icons':
         specifier: workspace:*
         version: link:../icons
+      '@likec4/log':
+        specifier: workspace:*
+        version: link:../log
       '@mantine/core':
         specifier: catalog:mantine
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2158,9 +2164,6 @@ importers:
       '@likec4/leanix-bridge':
         specifier: workspace:*
         version: link:../leanix-bridge
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/mcp':
         specifier: workspace:*
         version: link:../mcp
@@ -2378,9 +2381,6 @@ importers:
       '@fontsource-variable/ibm-plex-sans':
         specifier: 'catalog:'
         version: 5.3.0
-      '@likec4/config':
-        specifier: workspace:*
-        version: link:../config
       '@likec4/core':
         specifier: workspace:*
         version: link:../core
@@ -2390,15 +2390,6 @@ importers:
       '@likec4/diagram':
         specifier: workspace:*
         version: link:../diagram
-      '@likec4/icons':
-        specifier: workspace:*
-        version: link:../icons
-      '@likec4/layouts':
-        specifier: workspace:*
-        version: link:../layouts
-      '@likec4/log':
-        specifier: workspace:*
-        version: link:../log
       '@likec4/styles':
         specifier: workspace:*
         version: link:../../styled-system/styles
@@ -2435,6 +2426,9 @@ importers:
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tanstack/react-virtual':
+        specifier: catalog:tanstack
+        version: 3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/router-cli':
         specifier: catalog:tanstack
         version: 1.167.46(supports-color@10.1.0)
@@ -2465,6 +2459,9 @@ importers:
       '@xstate/store':
         specifier: catalog:xstate
         version: 4.3.0(xstate@5.33.3)
+      '@xstate/store-react':
+        specifier: catalog:xstate
+        version: 2.1.0(react@19.3.1)(xstate@5.33.3)
       '@xyflow/react':
         specifier: catalog:xyflow
         version: 12.12.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -3011,6 +3008,9 @@ importers:
       p-debounce:
         specifier: catalog:utils
         version: 5.1.1
+      p-limit:
+        specifier: catalog:utils
+        version: 7.3.3
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0
@@ -6468,6 +6468,12 @@ packages:
       react: 19.3.1
       react-dom: 19.3.1
 
+  '@tanstack/react-virtual@3.14.26':
+    resolution: {integrity: sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A==}
+    peerDependencies:
+      react: 19.3.1
+      react-dom: 19.3.1
+
   '@tanstack/router-cli@1.167.46':
     resolution: {integrity: sha512-jCeaoYeLctgwdGE4TzoEtzvN+jjQEB/q1N2EZoXKa5v8t5JQJOf+o3oJve/rUOB7NZnXEB6dCC+faWvXNKMSNQ==}
     engines: {node: '>=20.19'}
@@ -6512,6 +6518,9 @@ packages:
 
   '@tanstack/store@0.11.2':
     resolution: {integrity: sha512-sJ4mjol8uQsHV0gOJzzjwXfh2Fwm+Sz0+8deqiTm4jGbMdjzNSW+xZCFm0kUa870uhd8yi+DpKnZb5Kc4apa0Q==}
+
+  '@tanstack/virtual-core@3.19.11':
+    resolution: {integrity: sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A==}
 
   '@tanstack/virtual-file-routes@1.162.0':
     resolution: {integrity: sha512-uhOeFyxLcU41HzvrxsGpiWdcMbScY1EDgbZ5K7DVRMYInbLYWAC0EA/kx9wXAoSM8q82bUG2hRl8+EAjE6XAbA==}
@@ -14231,6 +14240,12 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
       use-sync-external-store: 1.7.0(patch_hash=3c56b253a1d58869acdf4f484f74b68d9efc5f908b46b6548a9f54eb4ce4146b)(react@19.3.1)
 
+  '@tanstack/react-virtual@3.14.26(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@tanstack/virtual-core': 3.19.11
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
   '@tanstack/router-cli@1.167.46(supports-color@10.1.0)':
     dependencies:
       '@tanstack/router-generator': 1.167.46(supports-color@10.1.0)
@@ -14315,6 +14330,8 @@ snapshots:
       - webpack
 
   '@tanstack/store@0.11.2': {}
+
+  '@tanstack/virtual-core@3.19.11': {}
 
   '@tanstack/virtual-file-routes@1.162.0': {}
 

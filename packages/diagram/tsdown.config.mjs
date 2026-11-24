@@ -14,7 +14,7 @@ export default defineConfig({
     'src/styles.css',
   ],
   unbundle: true,
-  platform: 'neutral',
+  platform: 'browser',
   inputOptions: {
     resolve: {
       mainFields: ['module', 'main'],

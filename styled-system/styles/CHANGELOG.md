@@ -1,5 +1,12 @@
 # @likec4/styles
 
+## 1.61.1
+
+### Patch Changes
+
+- Updated dependencies [[`c90bb72`](https://github.com/likec4/likec4/commit/c90bb7220d7024baaae6b5ede93c4674f9031a84)]:
+  - @likec4/style-preset@1.61.1
+
 ## 1.61.0
 
 ### Patch Changes

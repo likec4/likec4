@@ -273,8 +273,8 @@ function resolveLoader(projectId) {
 function getLazyRenderer(projectId) {
   let Renderer = lazyRegistry.get(projectId)
   if (!Renderer) {
-    const loader = resolveLoader(projectId)
     Renderer = lazy(async () => {
+      const loader = resolveLoader(projectId)
       const { IconRenderer } = await loader()
       return { default: IconRenderer }
     })

@@ -7,6 +7,7 @@
 
 import { css } from '@likec4/styles/css'
 import { Box, VStack } from '@likec4/styles/jsx'
+import { searchOverlay } from '@likec4/styles/recipes'
 import { Grid, GridCol, Group, ScrollArea, Title } from '@mantine/core'
 import { useHotkeys, useMergedRef } from '@mantine/hooks'
 import { useTimeoutEffect } from '@react-hookz/web'
@@ -27,34 +28,11 @@ import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 import { useSearchContext } from './SearchContext'
 import { XStateSearchAdapter } from './XStateSearchAdapter'
 
-export const dialogCss = css({
-  backgroundColor: `[rgb(34 34 34 / var(--_opacity, 95%))]`,
-  _light: {
-    backgroundColor: `[rgb(250 250 250 / var(--_opacity, 95%))]`,
-  },
-  backdropFilter: 'auto',
-  backdropBlur: 'var(--_blur, 10px)',
-})
-
-export const bodyCss = css({
-  width: '100%',
-  height: '100%',
-  maxHeight: '100vh',
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  gap: 'sm',
-  paddingTop: '[20px]',
-  paddingLeft: 'md',
-  paddingRight: 'md',
-  paddingBottom: 'sm',
-  background: 'transparent',
-})
+const overlayClasses = searchOverlay()
 
 const classes = {
-  dialog: dialogCss,
-  body: bodyCss,
+  dialog: overlayClasses.dialog,
+  body: overlayClasses.body,
 }
 
 export const scrollAreaCss = css({
@@ -187,7 +165,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-elements">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="wait" initial={false}>
                 <ElementsColumn />
               </AnimatePresence>
             </LayoutGroup>
@@ -200,7 +178,7 @@ export const SearchPanelContent = forwardRef<HTMLDivElement>((_, ref) => {
             pr="xs"
             scrollbars="y">
             <LayoutGroup id="likec4-search-views">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="popLayout" initial={false}>
                 <ViewsColumn />
               </AnimatePresence>
             </LayoutGroup>

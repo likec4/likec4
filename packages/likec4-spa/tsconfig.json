@@ -1,6 +1,7 @@
 {
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
+    "incremental": true,
     "customConditions": [
       "sources"
     ],
@@ -14,13 +15,26 @@
     "types": [
       "vite/client",
       "@likec4/vite-plugin/modules"
-    ]
+    ],
+    "paths": {
+      "likec4/vite-plugin/internal": [
+        "./shims/vite-plugin.ts"
+      ],
+      "likec4/model": [
+        "./shims/model.ts"
+      ],
+      "likec4/react": [
+        "./shims/react.ts"
+      ]
+    }
   },
   "include": [
     "src/",
     "codegen/",
     "styled-system/",
-    "*.ts",
+    "shims/",
+    "start-dev.ts",
+    "vite.config.ts",
     "package.json"
   ],
   "references": [
@@ -28,7 +42,7 @@
       "path": "../core/"
     },
     {
-      "path": "../layouts/"
+      "path": "../config/"
     },
     {
       "path": "../vite-plugin/"

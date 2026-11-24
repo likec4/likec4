@@ -421,7 +421,7 @@ export class LikeC4ViewModel<A extends Any = Any, V extends ProcessedView<A> = $
   /**
    * Below are type guards.
    */
-  public isComputed(): this is LikeC4ViewModel.Computed<aux.toComputed<A>> {
+  public isComputed(): this is LikeC4ViewModel.Computed<A> {
     return this.#view[_stage] === 'computed'
   }
 

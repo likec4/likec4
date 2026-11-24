@@ -95,44 +95,43 @@ function OverlaysSurface({ overlaysActorRef }: OverlaysProps) {
     }
   }, [isActiveOverlay])
 
-  const close = (actorRef: AnyActorRef) => {
+  const close = (actorRef: AnyActorRef) => () => {
     overlaysActorRef.send({ type: 'close', actorId: actorRef.id })
   }
 
   const overlaysReact = overlays.map((overlay, index) => {
+    const onClose = close(overlay.actorRef)
     switch (overlay.type) {
       case 'relationshipsBrowser':
         return (
-          <ErrorBoundary
+          <Overlay
             key={overlay.actorRef.sessionId}
-            onReset={() => close(overlay.actorRef)}>
-            <Overlay
-              overlayLevel={index}
-              onClose={() => close(overlay.actorRef)}>
+            overlayLevel={index}
+            onClose={onClose}>
+            <ErrorBoundary onReset={onClose}>
               <RelationshipsBrowser actorRef={overlay.actorRef} />
-            </Overlay>
-          </ErrorBoundary>
+            </ErrorBoundary>
+          </Overlay>
         )
       case 'relationshipDetails':
         return (
-          <ErrorBoundary
+          <Overlay
             key={overlay.actorRef.sessionId}
-            onReset={() => close(overlay.actorRef)}>
-            <Overlay
-              overlayLevel={index}
-              onClose={() => close(overlay.actorRef)}>
+            overlayLevel={index}
+            onClose={onClose}>
+            <ErrorBoundary onReset={onClose}>
               <RelationshipDetails actorRef={overlay.actorRef} />
-            </Overlay>
-          </ErrorBoundary>
+            </ErrorBoundary>
+          </Overlay>
         )
       case 'elementDetails':
         return (
           <ErrorBoundary
             key={overlay.actorRef.sessionId}
-            onReset={() => close(overlay.actorRef)}>
+            onReset={onClose}>
             <ElementDetails
               actorRef={overlay.actorRef}
-              onClose={() => close(overlay.actorRef)} />
+              onClose={onClose} />
           </ErrorBoundary>
         )
       default:
@@ -144,9 +143,7 @@ function OverlaysSurface({ overlaysActorRef }: OverlaysProps) {
     <DiagramFeatures.Overlays>
       <LayoutGroup id={overlaysActorRef.sessionId}>
         <AnimatePresence propagate mode="popLayout">
-          <ErrorBoundary onReset={() => overlaysActorRef.send({ type: 'close.all' })}>
-            {overlaysReact}
-          </ErrorBoundary>
+          {overlaysReact}
         </AnimatePresence>
       </LayoutGroup>
     </DiagramFeatures.Overlays>

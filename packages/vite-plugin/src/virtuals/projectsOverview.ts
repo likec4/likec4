@@ -6,7 +6,7 @@ import type { VirtualModule } from './_shared'
 const code = (view: LayoutedProjectsView) => `
 import { atom, useStore } from 'likec4/vite-plugin/internal'
 
-export const $viewdata = atom(${JSON5.stringify(view)})
+export let $viewdata = atom(${JSON5.stringify(view)})
 
 export function useLikeC4ProjectsOverview() {
   return useStore($viewdata)
@@ -14,12 +14,12 @@ export function useLikeC4ProjectsOverview() {
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$viewdata) {
-      import.meta.hot.data.$viewdata = $viewdata
+    import.meta.hot.data.$update ??= (newdata) => {
+      $viewdata.set(newdata)
     }
-    const update = md.$viewdata?.value
+    const update = md.$viewdata?.get()
     if (update) {
-      import.meta.hot.data.$viewdata.set(update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }

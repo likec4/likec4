@@ -97,6 +97,8 @@ export { filterProjects, projectSearchHighlights } from './utils/filterProjects'
 
 export { useUpdateEffect } from './hooks/useUpdateEffect'
 
+export { useCallbackRef } from './hooks/useCallbackRef'
+
 export type { Types } from './likec4diagram/types'
 
 export { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
@@ -126,13 +128,13 @@ export {
   useSearchContext,
 } from './search/SearchContext'
 
-export {
-  bodyCss as searchBodyCss,
-  dialogCss as searchDialogCss,
-  SearchPanelContent,
-} from './search/Search'
+export { SearchPanelContent } from './search/Search'
 
 export { SearchControl } from './components/SearchControl'
+
+export { createViewSearch, viewTitleWithFolder } from './search/components/utils'
+export { createFuzzySearch } from './search/fuzzy'
+export { matchesMetadataSearch, METADATA_SEARCH_PREFIX } from './search/metadata-search'
 
 export { DefaultMantineProvider, LikeC4MantineProvider } from './LikeC4MantineProvider'
 
@@ -144,3 +146,5 @@ export {
 } from './components/Logo'
 
 export { defineLikeC4Webcomponent } from './webcomponent/defineWebcomponent'
+
+export { ViewIcon } from './components/ViewIcon'

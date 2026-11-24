@@ -53,9 +53,7 @@ export let {
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = updateModel
-    }
+    import.meta.hot.data.$update ??= updateModel
     const update = md.$likec4data?.get()
     if (update) {
       import.meta.hot.data.$update(update)
@@ -75,6 +73,7 @@ export const projectModelModule: ProjectVirtualModule = {
     return {
       code: projectModelCode(model, await customCssFiles(project)),
       moduleType: 'js',
+      moduleSideEffects: false,
     }
   },
 }

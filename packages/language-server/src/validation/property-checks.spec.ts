@@ -166,6 +166,30 @@ describe('property-checks', () => {
       `)
       expect(errors).toEqual([])
     })
+    it('should not report valid hex color with leading zeros', async ({ expect, validate }) => {
+      const { errors } = await validate(`
+        specification {
+          color c1 #000000
+          color c2 #000
+          color c3 #012345
+          color c4 #00000080
+          tag t1 {
+            color #001122
+          }
+        }
+      `)
+      expect(errors).toEqual([])
+    })
+    it('should report invalid length hex color with leading zeros', async ({ expect, validate }) => {
+      const { errors } = await validate(`
+        specification {
+          color c1 #0012
+        }
+      `)
+      expect(errors).toEqual([
+        'Invalid value "#0012", must be 3, 6 or 8 characters long',
+      ])
+    })
   })
 
   describe('color - RGBAColor', () => {

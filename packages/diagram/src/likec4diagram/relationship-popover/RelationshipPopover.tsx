@@ -12,6 +12,7 @@ import type { DiagramEdge, DiagramNode, EdgeId, ViewId } from '@likec4/core/type
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack, styled, VStack } from '@likec4/styles/jsx'
 import { bleed } from '@likec4/styles/patterns'
+import { token } from '@likec4/styles/tokens'
 import {
   ActionIcon,
   Button,
@@ -555,6 +556,7 @@ const Relationship = forwardRef<
             withArrow
             bg="white"
             c="dark"
+            zIndex={token.var('zIndex.tooltip')}
             withinPortal
             portalProps={metadataPortalTarget ? { target: metadataPortalTarget } : {}}
             styles={{

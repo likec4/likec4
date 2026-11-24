@@ -887,14 +887,23 @@ function stripTags(s: string): string {
   return out
 }
 
-/** Decode XML entities, take first line up to <br, strip tags. Single implementation for cell value and title (DRY). */
+/**
+ * Take the first line of an HTML label up to <br, strip tags, then decode entities. Single implementation
+ * for cell value and title (DRY). Tags are stripped before decoding so escaped text like `&lt;b&gt;` stays.
+ */
 function stripHtml(raw: string | undefined): string {
   if (!raw || raw.trim() === '') return ''
-  const decoded = decodeXmlEntities(raw)
-  const firstLine = decoded.split('\n')[0] ?? ''
+  const firstLine = raw.split('\n')[0] ?? ''
   const brIdx = firstLine.toLowerCase().indexOf('<br')
   const segment = brIdx === -1 ? firstLine : firstLine.slice(0, brIdx)
-  return stripTags(segment).trim() || ''
+  return decodeXmlEntities(stripTags(segment)).trim() || ''
+}
+
+/** Plain text of an HTML edge label (html=1): line breaks become spaces, tags are stripped, entities decoded. */
+function htmlLabelToText(raw: string | undefined): string {
+  if (!raw || raw.trim() === '') return ''
+  const withSpaces = raw.replace(/<br\s*\/?>/gi, ' ')
+  return decodeXmlEntities(stripTags(withSpaces)).replace(/\s+/g, ' ').trim()
 }
 
 /** Escape single quotes for LikeC4 string literals (DRY). */
@@ -1190,7 +1199,9 @@ function emitEdgesToLines(
   hexToCustomName: Map<string, string>,
 ): void {
   for (const { cell: e, src, tgt } of edgeEntries) {
-    const title = (e.value && e.value.trim()) ? escapeLikec4Quotes(e.value.trim()) : ''
+    const isHtmlLabel = e.style ? parseStyle(e.style).get('html') === '1' : false
+    const label = isHtmlLabel ? htmlLabelToText(e.value) : (e.value?.trim() ?? '')
+    const title = label ? escapeLikec4Quotes(label) : ''
     const desc = e.description?.trim()
     const tech = e.technology?.trim()
     const notes = e.notes?.trim()

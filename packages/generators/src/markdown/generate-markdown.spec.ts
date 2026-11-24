@@ -122,3 +122,38 @@ test('Line endings are LF on every platform', ({ expect }) => {
 test('Full document snapshot', ({ expect }) => {
   expect(generateMarkdown(model)).toMatchSnapshot()
 })
+
+test('Titles are one-line headings rendered literally', ({ expect }) => {
+  const view = (title: string) => mockView({ title, sourcePath: 'views/a.c4', $view: fakeDiagram })
+  const md = generateMarkdown(
+    mockModel(
+      [view('Release #'), view('Orders\nand payments'), view('Q&A <draft>'), view('*Core* services')],
+      { id: 'default', title: 'Acme\r\nPlatform' },
+    ),
+  )
+  const headings = md.split('\n').filter(line => line.startsWith('#'))
+  expect(headings).toEqual([
+    '# Acme Platform',
+    '### Release \\#',
+    '### Orders and payments',
+    '### Q\\&A \\<draft\\>',
+    '### \\*Core\\* services',
+  ])
+})
+
+test('URL-like titles are not rendered as GFM autolinks', ({ expect }) => {
+  const view = (title: string) => mockView({ title, sourcePath: 'views/a.c4', $view: fakeDiagram })
+  const md = generateMarkdown(
+    mockModel(
+      [view('www.example.com'), view('https://example.com'), view('team@example.com'), view('@mention')],
+      { id: 'default', title: 'Test' },
+    ),
+  )
+  const headings = md.split('\n').filter(line => line.startsWith('###'))
+  expect(headings).toEqual([
+    '### www\\.example.com',
+    '### https\\://example.com',
+    '### team\\@example.com',
+    '### @mention',
+  ])
+})

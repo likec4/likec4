@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.61.0",
+  "version": "1.61.1",
   "description": "Toolchain for your architecture diagrams",
   "keywords": [
     "likec4",
@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "author": "Denis Davydkov <denis@davydkov.com>",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -25,14 +26,6 @@
         "types": "./dist/index.d.mts",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
-      }
-    },
-    "./core": {
-      "sources": "./src/core/index.ts",
-      "default": {
-        "types": "./dist/core/index.d.mts",
-        "import": "./dist/core/index.mjs",
-        "default": "./dist/core/index.mjs"
       }
     },
     "./core/builder": {
@@ -89,6 +82,30 @@
         "types": "./dist/core/utils.d.mts",
         "import": "./dist/core/utils.mjs",
         "default": "./dist/core/utils.mjs"
+      }
+    },
+    "./core": {
+      "sources": "./src/core/index.ts",
+      "default": {
+        "types": "./dist/core/index.d.mts",
+        "import": "./dist/core/index.mjs",
+        "default": "./dist/core/index.mjs"
+      }
+    },
+    "./layouts/ai": {
+      "sources": "./src/layouts/ai.ts",
+      "default": {
+        "types": "./dist/layouts/ai.d.mts",
+        "import": "./dist/layouts/ai.mjs",
+        "default": "./dist/layouts/ai.mjs"
+      }
+    },
+    "./layouts/sequence": {
+      "sources": "./src/layouts/sequence.ts",
+      "default": {
+        "types": "./dist/layouts/sequence.d.mts",
+        "import": "./dist/layouts/sequence.mjs",
+        "default": "./dist/layouts/sequence.mjs"
       }
     },
     "./layouts": {
@@ -192,6 +209,7 @@
     "@floating-ui/dom": "catalog:react",
     "@hpcc-js/wasm-graphviz": "catalog:externals",
     "@likec4/icons": "workspace:*",
+    "@likec4/log": "workspace:*",
     "@mantine/core": "catalog:mantine",
     "@mantine/hooks": "catalog:mantine",
     "@vitejs/plugin-react": "catalog:vite",
@@ -224,7 +242,6 @@
     "@likec4/language-services": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/leanix-bridge": "workspace:*",
-    "@likec4/log": "workspace:*",
     "@likec4/mcp": "workspace:*",
     "@likec4/react": "workspace:*",
     "@likec4/spa": "workspace:*",

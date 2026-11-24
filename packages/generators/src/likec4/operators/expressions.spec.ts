@@ -68,6 +68,16 @@ describe('whereOperator', () => {
     }).toBe('metadata.environment is not "staging"')
   })
 
+  it('should escape quotes and backslashes in metadata values', () => {
+    expectWhereOperator({
+      metadata: { key: 'label', value: 'say "hi"' },
+    }).toBe('metadata.label is "say \\"hi\\""')
+
+    expectWhereOperator({
+      metadata: { key: 'path', value: { neq: 'C:\\temp\\' } },
+    }).toBe('metadata.path is not "C:\\\\temp\\\\"')
+  })
+
   it('should print metadata boolean value', () => {
     expectWhereOperator({
       metadata: { key: 'critical', value: 'true' },
