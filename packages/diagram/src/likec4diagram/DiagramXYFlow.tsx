@@ -192,22 +192,24 @@ export function LikeC4DiagramXYFlow({
       diagram,
     }),
     onMove: OnMove = useCallbackRef((event) => {
-      if (!event) {
+      const manually = !!event
+      if (manually) {
+        $panning.startPanning()
+      } else {
         $panning.resetPanning()
-        return
       }
-      $panning.startPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
-      if (!event) {
-        $panning.resetPanning()
-      } else {
+      const manually = !!event
+      if (manually) {
         $panning.stopPanning()
+      } else {
+        $panning.resetPanning()
       }
       diagram.send({
         type: 'xyflow.viewportMoved',
         viewport,
-        manually: !!event,
+        manually,
       })
     }),
     onViewportResize = useCallbackRef(() => {
