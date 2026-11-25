@@ -167,9 +167,21 @@ export const deploymentViewRuleIncludeAncestors = zodOp(schemas.views.deployment
   ),
 )
 
-export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(({ ctx: _ctx, exec: _exec }) => {
-  throw new Error('not implemented')
-})
+export const viewRuleRank = zodOp(schemas.views.viewRuleRank)(
+  spaceBetween(
+    print('rank'),
+    property('rank', print()),
+    body(
+      property(
+        'targets',
+        foreach(
+          expression(),
+          separateComma(),
+        ),
+      ),
+    ),
+  ),
+)
 
 export const elementViewRule = zodOp(schemas.views.elementViewRule)(
   ({ ctx, exec }) => {
@@ -246,6 +258,9 @@ export const deploymentViewRule = zodOp(schemas.views.deploymentViewRule)(
     }
     if ('includeAncestors' in ctx) {
       return exec(ctx, deploymentViewRuleIncludeAncestors.noparse())
+    }
+    if ('rank' in ctx) {
+      return exec(ctx, viewRuleRank.noparse())
     }
     if ('groupRules' in ctx) {
       return exec(ctx, viewRuleGroup.noparse())

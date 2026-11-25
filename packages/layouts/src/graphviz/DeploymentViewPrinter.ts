@@ -6,7 +6,7 @@ import type {
   HexColor,
 } from '@likec4/core'
 import { nonNullable } from '@likec4/core/utils'
-import { first, forEach, groupBy, isNonNullish, last, map, pipe, tap, values } from 'remeda'
+import { filter, first, forEach, groupBy, isNonNullish, last, map, pipe, tap, values } from 'remeda'
 import type { EdgeModel, NodeModel, RootGraphModel, SubgraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
@@ -27,8 +27,12 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
 
   protected override postBuild(): this {
     const G = this.G
+    const ranks = this.view.ranks ?? []
+    // Explicit rank rules win over the automatic alignment of instances of the same element
+    const explicitlyRanked = new Set(ranks.flatMap(r => r.nodes))
     pipe(
       this.view.nodes,
+      filter(nd => !explicitlyRanked.has(nd.id)),
       map(nd => ({
         node: nd,
         graphvizNode: this.getGraphNode(nd.id),
@@ -65,7 +69,7 @@ export class DeploymentViewPrinter<A extends AnyAux> extends DotPrinter<Computed
         G.delete(_.packmode)
       }),
     )
-    return this
+    return this.applyExplicitRankBlocks(ranks)
   }
 
   protected override elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {

@@ -1,7 +1,7 @@
 import { type ViewsBuilder, Builder } from '@likec4/core/builder'
 import { describe, expect as viExpect, it } from 'vitest'
 import { materialize } from './base'
-import { deploymentView as deploymentViewOp, views as viewsOp } from './views'
+import { deploymentView as deploymentViewOp, elementView as elementViewOp, views as viewsOp } from './views'
 
 const builder = Builder
   .specification({
@@ -92,6 +92,48 @@ describe('view', () => {
           group {
             exclude prod.app2
           }
+        }
+      }"
+    `)
+  })
+
+  it('prints rank rules of element views', () => {
+    viExpect(materialize(elementViewOp(), {
+      id: 'index',
+      rules: [
+        { include: [{ wildcard: true }] },
+        { rank: 'same', targets: [{ ref: { model: 'cloud.frontend' } }, { ref: { model: 'cloud.backend' } }] },
+        { rank: 'source', targets: [{ ref: { model: 'customer' } }] },
+      ],
+    })).toMatchInlineSnapshot(`
+      "view index {
+        include *
+        rank same {
+          cloud.frontend, cloud.backend
+        }
+        rank source {
+          customer
+        }
+      }"
+    `)
+  })
+
+  it('prints rank rules of deployment views', () => {
+    viExpect(materialize(deploymentViewOp(), {
+      id: 'prod',
+      rules: [
+        { include: [{ ref: { deployment: 'prod' }, selector: 'descendants' }] },
+        { rank: 'min', targets: [{ ref: { deployment: 'prod.eu.lb' } }, { ref: { deployment: 'prod.us.lb' } }] },
+        { rank: 'sink', targets: [{ ref: { model: 'cloud.backend.api' } }] },
+      ],
+    })).toMatchInlineSnapshot(`
+      "deployment view prod {
+        include prod.**
+        rank min {
+          prod.eu.lb, prod.us.lb
+        }
+        rank sink {
+          cloud.backend.api
         }
       }"
     `)

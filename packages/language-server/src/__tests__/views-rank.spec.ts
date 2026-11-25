@@ -106,4 +106,54 @@ describe('views-rank', () => {
         rank same { element.tag=#mytag }
       }
     }`
+
+  const deploymentModel = `
+    specification {
+      element component
+      deploymentNode environment
+      deploymentNode zone
+    }
+    model {
+      component api
+      component db
+    }
+    deployment {
+      environment prod {
+        zone eu {
+          instanceOf api
+          instanceOf db
+        }
+        zone us {
+          instanceOf api
+        }
+      }
+    }
+  `
+
+  test('valid rank expressions in deployment views').valid`${deploymentModel}
+    views {
+      deployment view prod {
+        include prod.**
+        rank min { prod.eu, prod.us }
+        rank max { prod.eu.db }
+        rank source { prod.eu.api }
+        rank sink { prod.us.api }
+      }
+    }`
+
+  test('valid rank same across zones in deployment views').valid`${deploymentModel}
+    views {
+      deployment view prod {
+        include prod.**
+        rank same { prod.eu.api, prod.us.api }
+      }
+    }`
+
+  test('invalid rank target in deployment views').invalid`${deploymentModel}
+    views {
+      deployment view prod {
+        include prod.**
+        rank same { prod.eu.api, prod.us.unknown }
+      }
+    }`
 })
