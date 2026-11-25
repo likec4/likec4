@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/react'
-import type { WritableAtom } from 'nanostores'
+import { type WritableAtom } from 'nanostores'
 import type { RefObject } from 'react'
 import { createContext, useContext } from 'react'
 
@@ -9,6 +9,9 @@ export type RootContainerContextType = {
   readonly ref: RefObject<HTMLDivElement | null>
   readonly $panning: WritableAtom<boolean>
   readonly reducedGraphics: boolean
+  readonly startPanning: () => void
+  readonly stopPanning: () => void
+  readonly resetPanning: () => void
 }
 
 const RootContainerContext = createContext<RootContainerContextType | null>(null)

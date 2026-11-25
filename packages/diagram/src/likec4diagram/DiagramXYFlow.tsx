@@ -180,45 +180,29 @@ export function LikeC4DiagramXYFlow({
     onCanvasDblClick,
   } = useDiagramEventHandlers()
 
-  const { reducedGraphics, $panning } = useRootContainer()
+  const $panning = useRootContainer()
   const xystore = useXYStoreApi()
   const wasDragged = useRef(false)
 
-  const isReducedGraphics = reducedGraphics,
-    nodeDragHandlers = useNodeDragHandlers({
+  const nodeDragHandlers = useNodeDragHandlers({
       nodesDraggable,
       viewRouting,
       isGraphVariant,
       graphTopology,
       diagram,
     }),
-    $isPanning = $panning,
-    isPanning = useTimeout(() => {
-      $isPanning.set(true)
-    }, isReducedGraphics ? 200 : 1000),
-    notPanning = useDebouncedCallback(() => {
-      isPanning.clear()
-      $isPanning.set(false)
-    }, 200),
     onMove: OnMove = useCallbackRef((event) => {
       if (!event) {
-        $isPanning.set(false)
-        isPanning.clear()
+        $panning.resetPanning()
         return
       }
-      if (!$isPanning.get()) {
-        isPanning.start()
-      } else {
-        notPanning()
-      }
+      $panning.startPanning()
     }),
     onMoveEnd: OnMoveEnd = useCallbackRef((event, viewport) => {
       if (!event) {
-        $isPanning.set(false)
-        isPanning.clear()
-        notPanning.cancel()
+        $panning.resetPanning()
       } else {
-        notPanning()
+        $panning.stopPanning()
       }
       diagram.send({
         type: 'xyflow.viewportMoved',
