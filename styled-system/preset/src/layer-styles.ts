@@ -68,6 +68,7 @@ export const layerStyles = /* @__PURE__ */ defineLayerStyles({
           },
           _reduceGraphicsOnPan: {
             boxShadow: 'none',
+            borderRadius: '0',
           },
         },
       },
