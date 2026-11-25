@@ -638,7 +638,7 @@ const Relationship = forwardRef<
         <>
           <Label>links</Label>
           <HStack gap="1" flexWrap={'wrap'}>
-            {links.map((link) => <Link key={link.url} size="sm" value={link} />)}
+            {links.map((link, i) => <Link key={`${link.url}-${link.title ?? i}`} size="sm" value={link} />)}
           </HStack>
         </>
       )}
