@@ -41,8 +41,9 @@ function elementIdToUnion(elements: Record<string, { id: string }>) {
 
 export function generateAux(model: AnyLikeC4Model, options: { useCorePackage?: boolean } = {}) {
   const { useCorePackage = false } = options
+  const rootImport = useCorePackage ? '@likec4' : 'likec4'
   return `
-import type { Aux, SpecAux } from '${useCorePackage ? '@likec4/core/types' : 'likec4/model'}';
+import type { Aux, SpecAux } from '${rootImport}/core/types';
 
 export type $Specs = SpecAux<
   // Element kinds
