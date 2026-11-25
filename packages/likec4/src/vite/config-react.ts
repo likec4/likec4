@@ -38,6 +38,9 @@ export async function viteReactConfig({
       alias: viteAliases(),
       dedupe: reactDedupe,
     },
+    define: {
+      'process.env.NODE_ENV': '"production"',
+    },
     build: {
       outDir,
       emptyOutDir: false,
