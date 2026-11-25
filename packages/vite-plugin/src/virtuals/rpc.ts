@@ -57,8 +57,7 @@ export const likec4rpc = {
 `
 
 export const rpcModule: VirtualModule = {
-  id: 'likec4:rpc',
-  virtualId: '\0virtual:likec4/rpc.js',
+  name: 'rpc',
   async load(opts) {
     if (opts.rpcEnabled) {
       logGenerating('rpc')

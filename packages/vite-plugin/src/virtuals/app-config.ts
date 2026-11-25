@@ -6,8 +6,7 @@ export function createAppConfigModule(
   { webcomponentPrefix, title, useHashHistory, theme }: ResolvedLikeC4AppOptions,
 ): VirtualModule {
   return {
-    id: 'likec4:app-config',
-    virtualId: '\0virtual:likec4/app-config.js',
+    name: 'app-config',
     async load() {
       logGenerating('app-config')
       const code = `

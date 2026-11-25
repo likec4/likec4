@@ -20,8 +20,8 @@ export const projectId = ${projectIdLiteral}
 }
 
 export const singleProjectModule: VirtualModule = {
-  id: 'likec4:single-project',
-  virtualId: '\0virtual:likec4/single-project.js',
+  name: 'single-project',
+  hmr: true,
   async load({ projects }) {
     const project = first(projects)
     logGenerating('single-project', project.id)

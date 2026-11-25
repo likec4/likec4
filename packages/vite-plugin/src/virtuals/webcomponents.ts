@@ -1,6 +1,6 @@
 import type { ProjectId } from '@likec4/core/types'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateMatches } from './_shared'
+import type { ProjectVirtualModule } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 const jsStringLiteral = (value: string) => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))
@@ -20,7 +20,7 @@ export function defineWebcomponent(name) {
 }
 
 export const projectWebcomponentsModule: ProjectVirtualModule = {
-  ...generateMatches('webcomponents'),
+  name: 'webcomponents',
   async load({ project }) {
     logGenerating('webcomponents', project.id)
     return {
