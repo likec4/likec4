@@ -503,6 +503,7 @@ export class DefaultLikeC4LanguageServices implements LikeC4LanguageServices {
       this.services.Rpc.dispose()
       this.services.shared.workspace.ManualLayouts.dispose()
       this.services.shared.workspace.ProjectsManager.dispose()
+      await this.services.shared.workspace.Unstorage.dispose()
       await this.services.shared.workspace.FileSystemWatcher.dispose()
     } catch (e) {
       logger.error(loggable(e))

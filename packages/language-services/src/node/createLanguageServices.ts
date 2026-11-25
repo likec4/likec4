@@ -1,4 +1,4 @@
-import { WithFileSystem, WithLikeC4ManualLayouts } from '@likec4/language-server/filesystem'
+import { WithFileSystem, WithLikeC4ManualLayouts, WithUnstorageCache } from '@likec4/language-server/filesystem'
 import {
   createLanguageServices as createCustomLanguageServices,
   NoFileSystem,
@@ -9,6 +9,7 @@ import { GraphvizWasmAdapter } from '@likec4/layouts'
 import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import { rootLogger } from '@likec4/log'
 import defu from 'defu'
+import { isTruthy } from 'remeda'
 import k from 'tinyrainbow'
 import type { LikeC4Langium } from '../common/LikeC4'
 
@@ -36,6 +37,12 @@ export type CreateLanguageServiceOptions = {
    * @default 'wasm'
    */
   graphviz?: 'wasm' | 'binary'
+
+  /**
+   * Cache directory for internal generated data (likeC4 views cache, etc.).
+   * If not provided, cache will be stored in memory.
+   */
+  cacheDir?: string | undefined
 }
 
 export function createLanguageServices(
@@ -59,15 +66,13 @@ export function createLanguageServices(
 
   const langium = createCustomLanguageServices(
     {
-      ...options.useFileSystem
-        ? {
-          ...WithFileSystem(options.watch),
-          ...options.manualLayouts ? WithLikeC4ManualLayouts : NoLikeC4ManualLayouts,
-        }
-        : {
-          ...NoFileSystem,
-          ...NoLikeC4ManualLayouts,
-        },
+      ...NoFileSystem,
+      ...NoLikeC4ManualLayouts,
+      ...(options.useFileSystem && {
+        ...WithFileSystem(options.watch),
+        ...options.manualLayouts ? WithLikeC4ManualLayouts : NoLikeC4ManualLayouts,
+      }),
+      ...(isTruthy(options.cacheDir) && WithUnstorageCache(options.cacheDir)),
       ...WithGraphviz(useDotBin ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter()),
     },
   )
