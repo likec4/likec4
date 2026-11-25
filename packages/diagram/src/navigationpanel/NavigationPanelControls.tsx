@@ -102,11 +102,11 @@ export const NavigationPanelControls = memo(() => {
         {editBtnVisible && <ToggleReadonly key="toggle-readonly" disabled={editBtnDisabled} isReadOnly={isReadOnly} />}
         {isDynamicView && <DynamicViewModeSwitcher key="dynamic-view-mode" />}
         {enableDynamicViewWalkthrough && isDynamicView && <StartWalkthroughButton key="start-walkthrough" />}
-        {isElementView && (
+        {isElementView && !(isComparing || isEditing) && (
           <ElementViewControls
             key="element-view-controls"
             elementViewVariant={elementViewVariant}
-            disabled={isComparing || isEditing} />
+          />
         )}
         {enableSearch && !isComparing && <SearchControl key="search-control" />}
         <LayoutWarning key="outdated-manual-layout-warning" />

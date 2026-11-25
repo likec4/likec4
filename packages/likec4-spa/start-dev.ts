@@ -77,6 +77,7 @@ const main = defineCommand({
           customization: context.args.customization ? resolve(context.args.customization) : undefined,
           ai: 'disabled',
           logLevel: context.args.verbose ? 'trace' : 'debug',
+          cacheDir: null,
         }),
         tanstackRouter(),
         react({
