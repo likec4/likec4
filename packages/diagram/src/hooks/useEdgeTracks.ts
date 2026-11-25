@@ -8,7 +8,7 @@ import { type XYStoreState, useXYStore } from './useXYFlow'
 const none: ReadonlyMap<string, TrackRoute> = new Map()
 const cache = new WeakMap<
   XYStoreState['edges'],
-  { nodes: WeakRef<XYStoreState['nodes']>; routes: ReadonlyMap<string, TrackRoute> }
+  { nodes: XYStoreState['nodes']; routes: ReadonlyMap<string, TrackRoute> }
 >()
 
 /**
@@ -19,7 +19,7 @@ export function selectTrackRoutes(
   state: Pick<XYStoreState, 'edges' | 'nodes' | 'nodeLookup'>,
 ): ReadonlyMap<string, TrackRoute> {
   const cached = cache.get(state.edges)
-  if (cached && cached.nodes.deref() === state.nodes) {
+  if (cached && cached.nodes === state.nodes) {
     return cached.routes
   }
   const routes = new Map<string, TrackRoute>()
@@ -47,7 +47,7 @@ export function selectTrackRoutes(
       })
     }
   }
-  cache.set(state.edges, { nodes: new WeakRef(state.nodes), routes })
+  cache.set(state.edges, { nodes: state.nodes, routes })
   return routes
 }
 
