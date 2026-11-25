@@ -33,7 +33,6 @@
     "@tabler/icons-react": "catalog:react",
     "@tanstack/react-query": "catalog:tanstack",
     "@types/node": "catalog:",
-    "@types/object-hash": "^3.0.6",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@types/vscode": "catalog:vscode",

@@ -44,7 +44,6 @@ export function defineConfig(config: UserConfig | UserConfig[]): UserConfig | Us
     checks: {
       bundlerTimings: false,
     },
-    ...config,
   }
 
   if (Array.isArray(config)) {

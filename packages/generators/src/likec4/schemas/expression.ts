@@ -1,4 +1,4 @@
-import type { scalar } from '@likec4/core'
+import type { ElementKind, Fqn, Tag } from '@likec4/core'
 import { isNonNullish, pickBy } from 'remeda'
 import type { Simplify } from 'type-fest'
 import * as z from 'zod/v4'
@@ -6,7 +6,7 @@ import * as common from './common'
 
 export interface ZRefModel extends
   z.ZodType<{
-    readonly model: scalar.Fqn
+    readonly model: Fqn
     readonly project?: string | undefined
     readonly deployment?: never
   }, {
@@ -20,8 +20,8 @@ export const refModel: ZRefModel = z.strictObject({
 
 export interface ZRefDeployment extends
   z.ZodType<{
-    readonly deployment: scalar.Fqn
-    readonly element?: scalar.Fqn | undefined | null
+    readonly deployment: Fqn
+    readonly element?: Fqn | undefined | null
     readonly model?: never
   }, {
     deployment: string
@@ -44,15 +44,15 @@ export namespace ZFqnRef {
     }
   export type Out =
     | {
-      readonly model: scalar.Fqn
+      readonly model: Fqn
       readonly project?: string | undefined
       readonly deployment?: never
       readonly element?: never
     }
     | {
       readonly model?: never
-      readonly deployment: scalar.Fqn
-      readonly element?: scalar.Fqn | undefined | null
+      readonly deployment: Fqn
+      readonly element?: Fqn | undefined | null
     }
 }
 
@@ -203,7 +203,7 @@ export const refExpr: ZRefExpr = z.object({
 
 export interface ZElementKindExpr extends
   z.ZodType<{
-    elementKind: scalar.ElementKind
+    elementKind: ElementKind
     isEqual: boolean
   }, {
     elementKind: string
@@ -216,7 +216,7 @@ export const elementKindExpr: ZElementKindExpr = z.object({
 
 export interface ZElementTagExpr extends
   z.ZodType<{
-    elementTag: scalar.Tag
+    elementTag: Tag
     isEqual: boolean
   }, {
     elementTag: string
