@@ -2267,6 +2267,9 @@ importers:
       p-limit:
         specifier: catalog:utils
         version: 7.3.3
+      p-queue:
+        specifier: catalog:utils
+        version: 8.1.1
       package-manager-detector:
         specifier: catalog:utils
         version: 1.9.0

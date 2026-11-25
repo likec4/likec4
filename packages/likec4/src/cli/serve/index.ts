@@ -50,7 +50,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           .options({
             'react-hmr': {
               type: 'boolean',
-              default: true,
+              defaultDescription: 'true',
               describe: 'Enable/Disable React HMR',
             },
             'build-webcomponent': {
@@ -100,7 +100,7 @@ const serveCmd = (yargs: yargs.Argv) => {
           listen: config.server.host,
           port: config.server.port,
           hmrPort: config.server.hmrPort,
-          enableHMR: args['react-hmr'],
+          enableHMR: args['react-hmr'] ?? true,
           enableWebcomponent: config.build.webcomponent,
           userPublicDir: config.publicDir,
           allowedHosts: config.server.allowedHosts,

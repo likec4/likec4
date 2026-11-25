@@ -129,7 +129,14 @@ export async function viteDev({
   }
 
   const server = await createServer({
-    ...config,
+    base: config.base,
+    resolve: config.resolve,
+    root: config.root,
+    customLogger: config.customLogger,
+    configFile: false,
+    build: config.build,
+    plugins: config.plugins,
+    clearScreen: config.clearScreen,
     define: hmr
       ? {
         ...config.define,
@@ -138,29 +145,6 @@ export async function viteDev({
       : config.define,
     mode: hmr ? 'development' : config.mode,
     publicDir,
-    optimizeDeps: {
-      holdUntilCrawlEnd: false,
-      ignoreOutdatedRequests: true,
-      // Pre-bundle known dependencies
-      include: [
-        'react',
-        'react-dom',
-        'react/compiler-runtime',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom/client',
-        'likec4/vite-plugin/internal',
-        '@likec4/core/styles',
-        '@likec4/core/geometry',
-        '@likec4/core/utils',
-        '@likec4/core/compute-view',
-        '@likec4/core/types',
-        '@likec4/core/model',
-        '@likec4/core',
-        'likec4/react',
-        'likec4/model',
-      ],
-    },
     server: {
       host,
       allowedHosts: allowedHosts && allowedHosts.length > 0 ? allowedHosts : true,
@@ -174,6 +158,8 @@ export async function viteDev({
       fs: {
         strict: false,
       },
+      // Disable file watching when HMR is disabled to improve performance
+      ...(!hmr ? { watch: null } : {}),
       open: openBrowser ?? (!isDev && !isInsideContainer()),
     },
   })

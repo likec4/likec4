@@ -276,6 +276,7 @@
     "npm-run-all2": "^9.0.4",
     "oxlint": "catalog:",
     "p-limit": "catalog:utils",
+    "p-queue": "catalog:utils",
     "package-manager-detector": "catalog:utils",
     "package-up": "catalog:utils",
     "postcss": "catalog:css",

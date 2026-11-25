@@ -12,18 +12,19 @@ interface ProjectDiffs {
 }
 
 const code = (data: ProjectDiffs) => `
-import { atom } from 'likec4/vite-plugin/internal'
+import { atom, deepEqual } from 'likec4/vite-plugin/internal'
 
 export let $diffs = atom(${JSON5.stringify(data)})
+$diffs.eq = deepEqual
 
 if (import.meta.hot) {
   import.meta.hot.accept(md => {
-    if (!import.meta.hot.data.$diffs) {
-      import.meta.hot.data.$diffs = $diffs
+    import.meta.hot.data.$update ??= (data) => {
+      $diffs.set(data)
     }
     const update = md.$diffs?.get()
     if (update) {
-      import.meta.hot.data.$diffs.set(update)
+      import.meta.hot.data.$update(update)
     } else {
       import.meta.hot.invalidate()
     }

@@ -113,7 +113,7 @@ export function LikeC4VitePlugin({
   let customizationFile: string | undefined
   let rpcEnabled = false
   let ai: AIOptions | undefined = undefined
-  let shouldDisposeOnStop = pluginOpts.watch ?? false
+  let watch = pluginOpts.watch ?? false
 
   const virtuals = [
     ..._virtuals,
@@ -154,7 +154,7 @@ export function LikeC4VitePlugin({
     }
   }
 
-  const disposables: (() => void)[] = []
+  const disposables: (() => Promise<void> | void)[] = []
   type Disposable = { dispose: () => void } | (() => void)
   const disposeOnStop = (...disposablesToAdd: Disposable[]) => {
     disposables.push(
@@ -162,7 +162,7 @@ export function LikeC4VitePlugin({
         if ('dispose' in d) {
           return () => d.dispose()
         }
-        return d
+        return () => d()
       }),
     )
   }
@@ -215,7 +215,7 @@ export function LikeC4VitePlugin({
       if (pluginOpts.languageServices) {
         likec4 = pluginOpts.languageServices
       } else {
-        const watch = shouldDisposeOnStop = isDev && (pluginOpts.watch ?? true)
+        const _watch = watch = isDev && (pluginOpts.watch ?? true)
 
         const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
           manualLayouts: true,
@@ -224,8 +224,9 @@ export function LikeC4VitePlugin({
           logLevel: pluginOpts.logLevel ?? 'warning',
           printErrors: pluginOpts.printErrors ?? true,
           throwIfInvalid: pluginOpts.throwIfInvalid ?? false,
-          watch,
+          watch: _watch,
         })
+        disposeOnStop(instance)
 
         likec4 = instance.languageServices
       }
@@ -277,7 +278,10 @@ export function LikeC4VitePlugin({
             )
           }
         }
-        const projects = likec4.projects()
+        const projects = likec4.projectsManager.all
+          .map(project => likec4.project(project))
+          // Filter out projects that don't have any documents
+          .filter(project => project.documents.length > 0)
         // Early return if no projects
         if (!hasAtLeast(projects, 1)) {
           return null
@@ -354,18 +358,18 @@ export function LikeC4VitePlugin({
           }
 
           const reloadAllProjects = limitFunction(async () => {
-            const projects = likec4.projects()
+            if (hasErrors()) {
+              return
+            }
             logger.trace(
               k.dim('onProjectsUpdate - change detected'),
             )
             await reloadModule(projectsModule.virtualId)
             await reloadModule(iconsModule.virtualId)
             await reloadModule(modelModule.virtualId)
+            await reloadModule(projectsOverviewModule.virtualId)
             for (const module of hmrProjectListVirtuals) {
               await reloadModule(module.virtualId)
-            }
-            if (projects.length > 1) {
-              await reloadModule(projectsOverviewModule.virtualId)
             }
           }, { concurrency: 1 })
 
@@ -400,13 +404,10 @@ export function LikeC4VitePlugin({
     },
 
     async buildEnd() {
-      for (const disposable of disposables) {
-        disposable()
+      for (const disposable of disposables.toReversed()) {
+        await disposable()
       }
       disposables.length = 0
-      if (shouldDisposeOnStop) {
-        await likec4.dispose()
-      }
     },
   }
 

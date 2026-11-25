@@ -29,9 +29,9 @@ export function viteAppRoot() {
   const pkg = findPkgRoot()
   const roots = [
     resolve(pkg, '__app__'),
-    resolve(_dirname, '../__app__'),
-    resolve(_dirname, '../../__app__'),
-    resolve(_dirname, '../../dist/__app__'),
+    resolve(_dirname, '..', '__app__'),
+    resolve(_dirname, '..', '..', '__app__'),
+    resolve(_dirname, '..', '..', 'dist', '__app__'),
   ]
   const root = find(roots, existsSync)
   if (!root) {

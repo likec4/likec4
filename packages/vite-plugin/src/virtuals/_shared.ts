@@ -146,7 +146,7 @@ export function ${fnName}(projectId) {
     }
     projectId = projects[0]
     console.warn('Falling back to project: ' + projectId)
-    fn = ${registryName}[projectId]
+    return ${fnName}(projectId)
     `
       }
   }
