@@ -8,16 +8,18 @@ import { type XYStoreState, useXYStore } from './useXYFlow'
 const none: ReadonlyMap<string, TrackRoute> = new Map()
 const cache = new WeakMap<
   XYStoreState['edges'],
-  { nodes: XYStoreState['nodes']; routes: ReadonlyMap<string, TrackRoute> }
+  { nodes: WeakRef<XYStoreState['nodes']>; routes: ReadonlyMap<string, TrackRoute> }
 >()
 
 /**
  * Relationship routes by edge id before track separation: edited routes may move, unedited ones keep
  * their Graphviz position. Cached per store `edges` and `nodes`.
  */
-export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, TrackRoute> {
+export function selectTrackRoutes(
+  state: Pick<XYStoreState, 'edges' | 'nodes' | 'nodeLookup'>,
+): ReadonlyMap<string, TrackRoute> {
   const cached = cache.get(state.edges)
-  if (cached && cached.nodes === state.nodes) {
+  if (cached && cached.nodes.deref() === state.nodes) {
     return cached.routes
   }
   const routes = new Map<string, TrackRoute>()
@@ -45,12 +47,12 @@ export function selectTrackRoutes(state: XYStoreState): ReadonlyMap<string, Trac
       })
     }
   }
-  cache.set(state.edges, { nodes: state.nodes, routes })
+  cache.set(state.edges, { nodes: new WeakRef(state.nodes), routes })
   return routes
 }
 
 /** Visible orthogonal routes and labels after track separation, including edited self-loops. */
-export function selectLabelRoutes(state: XYStoreState): LabelRoute[] {
+export function selectLabelRoutes(state: Pick<XYStoreState, 'edges' | 'nodes' | 'nodeLookup'>): LabelRoute[] {
   const trackRoutes = selectTrackRoutes(state)
   const others = [...trackRoutes.values()]
   return state.edges.flatMap((edge): LabelRoute[] => {

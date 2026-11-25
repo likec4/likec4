@@ -34,7 +34,15 @@ function setHovered<T extends WithHovered>(arg1: T | boolean, arg2?: boolean) {
 }
 
 export function hasSubObject<E>(value: E, subobl: Partial<E>) {
-  return value === subobl || entries(subobl).every(([key, v]) => deepEqual((value as any)[key] ?? undefined, v))
+  if (value === subobl) {
+    return true
+  }
+  for (const [key, v] of Object.entries(subobl)) {
+    if (!deepEqual((value as any)[key] ?? undefined, v)) {
+      return false
+    }
+  }
+  return true
 }
 
 type WithData<D> = { data: D }
