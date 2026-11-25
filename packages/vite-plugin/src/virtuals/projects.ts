@@ -51,7 +51,7 @@ if (import.meta.hot) {
 
 export const projectsModule = {
   id: 'likec4:projects',
-  virtualId: 'likec4:plugin/projects.js',
+  virtualId: '\0virtual:likec4/projects.js',
   async load({ projects }) {
     logGenerating('projects')
     return {

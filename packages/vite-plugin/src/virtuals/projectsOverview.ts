@@ -35,7 +35,7 @@ export function useLikeC4ProjectsOverview() {
 
 export const projectsOverviewModule = {
   id: 'likec4:projects-overview',
-  virtualId: 'likec4:plugin/projects-overview.js',
+  virtualId: '\0virtual:likec4/projects-overview.js',
   async load({ projects, likec4 }) {
     if (projects.length < 2) {
       return noProjects()

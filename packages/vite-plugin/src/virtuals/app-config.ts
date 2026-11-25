@@ -7,7 +7,7 @@ export function createAppConfigModule(
 ): VirtualModule {
   return {
     id: 'likec4:app-config',
-    virtualId: 'likec4:plugin/app-config.js',
+    virtualId: '\0virtual:likec4/app-config.js',
     async load() {
       logGenerating('app-config')
       const code = `

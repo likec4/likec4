@@ -11,7 +11,7 @@ describe('projectWebcomponentsModule', () => {
     expect(projectWebcomponentsModule.matches('likec4:plugin/project-a/webcomponents.js')).toBe('project-a')
     expect(projectWebcomponentsModule.matches('likec4:webcomponents')).toBeNull()
     expect(projectWebcomponentsModule.virtualId('project-a' as ProjectId)).toBe(
-      'likec4:plugin/project-a/webcomponents.js',
+      '\0virtual:likec4/project-a/webcomponents.js',
     )
   })
 })
