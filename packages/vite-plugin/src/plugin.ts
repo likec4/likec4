@@ -61,9 +61,9 @@ const hmrProjectVirtuals = [
 ]
 
 /**
- * Root virtual modules that cache project-level export capability maps.
+ * Root virtual modules that cache project-level export capability maps and other combined data.
  */
-const hmrProjectListVirtuals = [
+const hmrCombinedVirtuals = [
   diffsModule,
   d2Module,
   dotModule,
@@ -87,7 +87,7 @@ const _virtuals = [
   projectsOverviewModule,
   singleProjectModule,
   singleProjectReactModule,
-  ...hmrProjectListVirtuals,
+  ...hmrCombinedVirtuals,
   iconsModule,
   rpcModule,
   customizationModule,
@@ -113,7 +113,7 @@ export function LikeC4VitePlugin({
   let customizationFile: string | undefined
   let rpcEnabled = false
   let ai: AIOptions | undefined = undefined
-  let watch = pluginOpts.watch ?? false
+  let pluginWatch = pluginOpts.watch ?? false
 
   const virtuals = [
     ..._virtuals,
@@ -167,32 +167,6 @@ export function LikeC4VitePlugin({
     )
   }
 
-  /**
-   * Returns a function that detects changes in the projects data
-   * @returns true if the projects data has changed, false otherwise
-   */
-  const projectsChangeDetector = () => {
-    const selectDataToCompare = map((p) => ({
-      id: p.id,
-      title: p.title,
-      path: p.path,
-      config: p.config,
-      folder: p.folder.toString(),
-      exportFormats: effectiveWebappExportFormats(p.config),
-    })) satisfies (data: ProjectData[]) => any
-    let _last: any
-    return <T extends ProjectData[]>(update: T): boolean => {
-      const _next = selectDataToCompare(update)
-      // Initialize _last on first call
-      _last ??= _next
-      if (isDeepEqual(_last, _next)) {
-        return false
-      }
-      _last = _next
-      return true
-    }
-  }
-
   const mainPlugin: Plugin = {
     name: VITE_PLUGIN_LIKEC4,
 
@@ -219,7 +193,7 @@ export function LikeC4VitePlugin({
         if (cacheDir === undefined && config.cacheDir) {
           cacheDir = resolve(config.cacheDir, 'likec4-cache')
         }
-        const _watch = watch = isDev && (pluginOpts.watch ?? true)
+        const watch = pluginWatch = isDev && (pluginOpts.watch ?? true)
 
         const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
           manualLayouts: true,
@@ -228,7 +202,7 @@ export function LikeC4VitePlugin({
           logLevel: pluginOpts.logLevel ?? 'warning',
           printErrors: pluginOpts.printErrors ?? true,
           throwIfInvalid: pluginOpts.throwIfInvalid ?? false,
-          watch: _watch,
+          watch,
           cacheDir: cacheDir ?? undefined,
         })
         disposeOnStop(instance)
@@ -373,7 +347,7 @@ export function LikeC4VitePlugin({
             await reloadModule(iconsModule.virtualId)
             await reloadModule(modelModule.virtualId)
             await reloadModule(projectsOverviewModule.virtualId)
-            for (const module of hmrProjectListVirtuals) {
+            for (const module of hmrCombinedVirtuals) {
               await reloadModule(module.virtualId)
             }
           }, { concurrency: 1 })
@@ -409,8 +383,12 @@ export function LikeC4VitePlugin({
     },
 
     async buildEnd() {
-      for (const disposable of disposables.toReversed()) {
-        await disposable()
+      for (const disposable of [...disposables]) {
+        try {
+          await disposable()
+        } catch (error) {
+          logger.error(loggable(error))
+        }
       }
       disposables.length = 0
     },
