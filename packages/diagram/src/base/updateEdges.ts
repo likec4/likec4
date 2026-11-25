@@ -70,7 +70,7 @@ function _update<E extends BaseEdge>(current: E[], updated: E[]): E[] {
     } as E
   })
 
-  return isShallowEqual(current, updated) ? current : updated
+  return updated
 }
 
 export function updateEdges<E extends BaseEdge>(current: E[], update: E[]): E[]
