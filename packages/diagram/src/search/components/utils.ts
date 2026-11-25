@@ -49,9 +49,11 @@ export function focusToFirstFoundElement(from: HTMLElement | null | undefined) {
   firstFoundElement?.focus()
 }
 
+export type SearchColumn = 'elements' | 'relationships' | 'views'
+
 export function queryAllFocusable(
   from: HTMLElement | null | undefined,
-  where: 'elements' | 'views',
+  where: SearchColumn,
   selector: string = `.${focusable}`,
 ): HTMLButtonElement[] {
   if (!from) {
@@ -65,6 +67,28 @@ export function queryAllFocusable(
   }
   const elements = root.querySelectorAll<HTMLButtonElement>(`[data-likec4-search-${where}] ${selector}`)
   return [...elements]
+}
+
+const columnButtonSelector: Record<SearchColumn, string> = {
+  elements: '.likec4-element-button',
+  relationships: `.${focusable}`,
+  views: `.${focusable}`,
+}
+
+/**
+ * Moves focus to the first of `columns` that has results, on its first button below `y` (or its last one).
+ * Returns false when none of the columns has results.
+ */
+export function focusColumn(from: HTMLElement, y: number, columns: ReadonlyArray<SearchColumn>): boolean {
+  for (const column of columns) {
+    const button = queryAllFocusable(from, column, columnButtonSelector[column])
+      .find((el, i, all) => centerY(el) > y || i === all.length - 1)
+    if (button) {
+      button.focus()
+      return true
+    }
+  }
+  return false
 }
 
 /**

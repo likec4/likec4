@@ -214,7 +214,7 @@ const RelationshipPopoverInternal = ({
   onMouseLeave,
 }: RelationshipPopoverInternalProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const { enableNavigateTo, enableVscode } = useEnabledFeatures()
+  const { enableNavigateTo, enableVscode, enableSearch } = useEnabledFeatures()
 
   const containerRef = useRootContainerRef()
 
@@ -307,6 +307,7 @@ const RelationshipPopoverInternal = ({
             diagram.openSource({ relation: relationship.id })
           } :
           undefined}
+        onTagClick={enableSearch ? tag => diagram.openSearch(`#${tag}`) : undefined}
       />
     </Fragment>
   )
@@ -403,6 +404,7 @@ const Relationship = forwardRef<
     targetNode: DiagramNode
     onOpenSource?: (() => void) | undefined
     onNavigateTo?: (() => void) | undefined
+    onTagClick?: ((tag: string) => void) | undefined
   }
 >(({
   relationship: r,
@@ -410,6 +412,7 @@ const Relationship = forwardRef<
   targetNode,
   onNavigateTo,
   onOpenSource,
+  onTagClick,
 }, ref) => {
   const sourceId = getEndpointId(r, 'source', sourceNode)
   const targetId = getEndpointId(r, 'target', targetNode)
@@ -597,7 +600,18 @@ const Relationship = forwardRef<
         <HStack gap="2" alignItems="center">
           <Label>tags</Label>
           <HStack gap="1" flexWrap="wrap">
-            {tags.map(tag => <ElementTag key={tag} tag={tag} />)}
+            {tags.map(tag => (
+              <ElementTag
+                key={tag}
+                tag={tag}
+                {...onTagClick && {
+                  cursor: 'pointer',
+                  onClick: (e) => {
+                    e.stopPropagation()
+                    onTagClick(tag)
+                  },
+                }} />
+            ))}
           </HStack>
         </HStack>
       )}

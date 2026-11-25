@@ -23,14 +23,14 @@ import {
 import { IconChevronRight } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
 import { type KeyboardEventHandler, memo, useEffect } from 'react'
-import { first, last, mapToObj } from 'remeda'
+import { last, mapToObj } from 'remeda'
 import { IconOrShapeRenderer } from '../../context/IconRenderer'
 import { useCallbackRef } from '../../hooks/useCallbackRef'
 import { useSearchContext } from '../SearchContext'
 import * as styles from './ElementsColumn.css'
 import { ElementTitleAndId } from './ElementsColumn.css'
 import { type ElementsColumnData, type LikeC4ModelTreeNodeData, useElementsColumnData } from './useElementsColumnData'
-import { centerY, moveFocusToSearchInput, queryAllFocusable, stopAndPrevent } from './utils'
+import { focusColumn, moveFocusToSearchInput, stopAndPrevent } from './utils'
 import { NothingFound } from './ViewsColum'
 
 const btn = searchOverlay()
@@ -91,15 +91,8 @@ function ElementsTree({
         return
       }
       const label = (e.target as HTMLLIElement).querySelector<HTMLLIElement>('.mantine-Tree-label') ?? target
-      const maxY = label.getBoundingClientRect().y
-      const viewButtons = queryAllFocusable(target, 'views')
-      let view = viewButtons.length > 1
-        ? viewButtons.find((el, i, all) => centerY(el) > maxY || i === all.length - 1)
-        : null
-      view ??= first(viewButtons)
-      if (view) {
+      if (focusColumn(target, label.getBoundingClientRect().y, ['relationships', 'views'])) {
         stopAndPrevent(e)
-        view.focus()
       }
       return
     }
@@ -251,7 +244,7 @@ const ElementId = ({ elementId, highlight }: { elementId: string; highlight: [st
   )
 }
 
-const ElementViewCount = ({ viewsCount }: { viewsCount: number }) => {
+export const ElementViewCount = ({ viewsCount }: { viewsCount: number }) => {
   let label: string
   if (viewsCount === 0) {
     label = 'No views'
