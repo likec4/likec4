@@ -116,7 +116,6 @@ catalogs:
     postcss-import: ^17.0.0
   esbuild:
     esbuild: 0.28.2
-    esbuild-node-externals: 2.0.0
     esbuild-plugins-node-modules-polyfill: 1.8.3
   externals:
     "@hpcc-js/wasm-graphviz": 1.29.2
@@ -344,3 +343,5 @@ permissions:
     skills: true
   '@tanstack/react-router':
     skills: true
+  likec4:
+    skills: false
