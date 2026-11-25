@@ -30,6 +30,7 @@ import {
   type ProjectVirtualModule,
   type SharedVirtualModuleOptions,
   type VirtualModule,
+  type VirtualModuleLoadResult,
   indexByName,
   k,
   parseModuleId,
@@ -162,6 +163,51 @@ export function LikeC4VitePlugin({
     )
   }
 
+  /**
+   * Generates code of the virtual module by its resolved id
+   */
+  async function generate(id: string): Promise<VirtualModuleLoadResult | null> {
+    const parsed = parseModuleId(id)
+    if (!parsed) {
+      return null
+    }
+    const { name, projectId } = parsed
+
+    // Project scoped virtual modules
+    if (projectId) {
+      const module = projectVirtuals.get(name)
+      if (!module) {
+        return null
+      }
+      return await module.load(moduleopts({ project: likec4.project(projectId) }))
+    }
+
+    // Global virtual modules
+    const module = virtuals.get(name)
+    if (!module) {
+      return null
+    }
+    const projects = likec4.projectsManager.all
+      .map(project => likec4.project(project))
+      // Filter out projects that don't have any documents
+      .filter(project => project.documents.length > 0)
+    if (!hasAtLeast(projects, 1)) {
+      return null
+    }
+    return await module.load(moduleopts({ projects }))
+  }
+
+  /**
+   * Dev server only: code served to the client, by resolved id.
+   * Used to skip HMR updates when the generated code did not change.
+   */
+  const servedCode = new Map<string, string>()
+  /**
+   * Dev server only: results generated while checking for changes,
+   * served by the next `load` instead of generating again.
+   */
+  const pendingResults = new Map<string, VirtualModuleLoadResult>()
+
   const mainPlugin: Plugin = {
     name: VITE_PLUGIN_LIKEC4,
 
@@ -238,40 +284,19 @@ export function LikeC4VitePlugin({
         id: /^\0likec4:/,
       },
       async handler(id) {
-        const parsed = parseModuleId(id)
-        if (!parsed) {
+        let result = pendingResults.get(id)
+        if (result) {
+          pendingResults.delete(id)
+        } else {
+          result = await generate(id) ?? undefined
+        }
+        if (!result) {
           return null
         }
-        const { name, projectId } = parsed
-
-        // Project scoped virtual modules
-        if (projectId) {
-          const module = projectVirtuals.get(name)
-          if (!module) {
-            return null
-          }
-          return await module.load.call(
-            this,
-            moduleopts({ project: likec4.project(projectId) }),
-          )
+        if (rpcEnabled) {
+          servedCode.set(id, codeOf(result))
         }
-
-        // Global virtual modules
-        const module = virtuals.get(name)
-        if (!module) {
-          return null
-        }
-        const projects = likec4.projectsManager.all
-          .map(project => likec4.project(project))
-          // Filter out projects that don't have any documents
-          .filter(project => project.documents.length > 0)
-        if (!hasAtLeast(projects, 1)) {
-          return null
-        }
-        return await module.load.call(
-          this,
-          moduleopts({ projects }),
-        )
+        return result
       },
     },
 
@@ -301,7 +326,35 @@ export function LikeC4VitePlugin({
         return () => {
           const hotChannel = server.hot
 
-          const reloadModule = (id: string) => reloadModuleInEnvironments(server, id)
+          /**
+           * Reloads the module in every environment that imports it,
+           * but only if its generated code has changed
+           */
+          const reloadModule = async (id: string): Promise<boolean> => {
+            const isImported = Object.values(server.environments).some(env => {
+              const md = env.moduleGraph.getModuleById(id)
+              return !!md && md.importers.size > 0
+            })
+            if (!isImported) {
+              return false
+            }
+            try {
+              const result = await generate(id)
+              if (!result) {
+                return false
+              }
+              if (servedCode.get(id) === codeOf(result)) {
+                logger.trace(k.dim('unchanged ') + id.slice(1))
+                return false
+              }
+              pendingResults.set(id, result)
+              return await reloadModuleInEnvironments(server, id)
+            } catch (err) {
+              pendingResults.delete(id)
+              logger.error(loggable(err))
+              return false
+            }
+          }
 
           const hasErrors = () => {
             const [error] = likec4.getErrors()
@@ -434,4 +487,8 @@ function onModelParsedBatched(
       maxBurstDurationMs: 300,
     },
   ).call
+}
+
+function codeOf(result: VirtualModuleLoadResult): string {
+  return typeof result === 'string' ? result : result.code
 }

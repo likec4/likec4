@@ -118,7 +118,6 @@ export interface VirtualModule {
    */
   hmr?: boolean
   load(
-    this: Rolldown.MinimalPluginContext,
     opts: SharedVirtualModuleOptions & {
       projects: NonEmptyArray<ProjectData>
     },
@@ -136,7 +135,6 @@ export interface ProjectVirtualModule {
   hmr?: boolean
   exportFormat?: WebappExportFormat
   load(
-    this: Rolldown.MinimalPluginContext,
     opts: SharedVirtualModuleOptions & {
       project: ProjectData
     },
