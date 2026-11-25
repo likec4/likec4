@@ -219,9 +219,16 @@ export function LikeC4VitePlugin({
 
     resolveId: {
       filter: {
-        id: /^likec4:/,
+        id: [
+          /^likec4:/,
+          // Already resolved virtual ids (e.g. self-imports injected by react-refresh)
+          /^\0(virtual:likec4|likec4:plugin)/,
+        ],
       },
       handler(id) {
+        if (id.startsWith('\0')) {
+          return { id }
+        }
         for (const module of projectVirtuals) {
           const projectId = module.matches(id)
           if (projectId) {
@@ -243,7 +250,10 @@ export function LikeC4VitePlugin({
 
     load: {
       filter: {
-        id: [/likec4:plugin/],
+        id: [
+          /likec4:plugin/,
+          /virtual:likec4/,
+        ],
       },
       async handler(id) {
         // Handle project-specific virtual modules

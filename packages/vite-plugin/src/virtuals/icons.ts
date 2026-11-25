@@ -191,12 +191,12 @@ export function IconRenderer({ node, ...props }) {
 }
 
 export const projectIconsModule: ProjectVirtualModule = {
-  ...generateMatches('icons', '.jsx'),
+  ...generateMatches('icons'),
   async load({ likec4, project }) {
     logGenerating('icons', project.id)
     const model = await likec4.computedModel(project.id)
     return {
-      moduleType: 'jsx',
+      moduleType: 'js',
       code: generateIconRendererCode(model.$data),
     }
   },
@@ -220,7 +220,7 @@ function embedUrlAsJsString(url: string): string {
 
 export const iconsModule = {
   id: 'likec4:icons',
-  virtualId: 'likec4:plugin/icons.js',
+  virtualId: '\0virtual:likec4/icons.js',
   async load({ projects, logger }) {
     logGenerating('icons')
 
@@ -237,10 +237,8 @@ export const iconsModule = {
       const idLiteral = hardenJsonStringLiteralForEmbeddedScript(
         embedProjectIdAsJsString(p.id),
       )
-      const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
-        embedUrlAsJsString(joinURL('likec4:icons', p.id)),
-      )
-      return `  ${idLiteral}: () => import(${pkgLiteral})`
+      const pkgLiteral = joinURL('likec4:icons', p.id)
+      return `  ${idLiteral}: () => import(${JSON.stringify(pkgLiteral)})`
     })
 
     const code = `

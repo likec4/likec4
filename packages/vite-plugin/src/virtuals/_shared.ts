@@ -78,8 +78,9 @@ export interface ProjectVirtualModule {
 export function generateMatches(moduleId: string, extension = '.js') {
   return {
     matches: (id: string): ProjectId | null => {
-      let { module, projectId } = id.match(/likec4:plugin\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
-        id.match(/likec4:(?<module>.+)\/(?<projectId>.+)$/)?.groups ?? {}
+      let { module, projectId } =
+        id.match(/(virtual:likec4|likec4:plugin)\/(?<projectId>.+)\/(?<module>.+)$/)?.groups ??
+          id.match(/likec4:(?<module>.+)\/(?<projectId>.+)$/)?.groups ?? {}
       if (!module || !projectId) {
         return null
       }
@@ -91,7 +92,7 @@ export function generateMatches(moduleId: string, extension = '.js') {
       }
       return null
     },
-    virtualId: (projectId: ProjectId): string => joinURL(`likec4:plugin`, projectId, moduleId) + extension,
+    virtualId: (projectId: ProjectId): string => '\0' + joinURL('virtual:likec4', projectId, moduleId) + extension,
   }
 }
 
@@ -102,7 +103,7 @@ export function generateCombinedProjects(
 ): VirtualModule {
   return {
     id: `likec4:${moduleId}`,
-    virtualId: 'likec4:plugin/' + moduleId + '.js',
+    virtualId: '\0' + joinURL('virtual:likec4', moduleId) + '.js',
     async load({ projects }) {
       logGenerating(moduleId)
 
@@ -112,9 +113,7 @@ export function generateCombinedProjects(
 
       const cases = enabledProjects.map(({ id }) => {
         const idLiteral = hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(id))
-        const pkgLiteral = hardenJsonStringLiteralForEmbeddedScript(
-          JSON.stringify(joinURL(`likec4:${moduleId}`, id)),
-        )
+        const pkgLiteral = JSON.stringify(joinURL(`likec4:${moduleId}`, id))
         return `${idLiteral}: () => import(${pkgLiteral})`
       })
       const disabledExportMessageLiteral = exportFormat
