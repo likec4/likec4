@@ -5,7 +5,7 @@ import { type NodeLookup, getNodeDimensions } from '@xyflow/system'
 import { deepEqual as eq } from 'fast-equals'
 import { mergeDeep } from 'remeda'
 import { assertEvent } from 'xstate'
-import { Base, updateEdges, updateNodes } from '../../base'
+import { Base, hasSubObject, updateEdges, updateNodes } from '../../base'
 import { getNodeCenter } from '../../utils/xyflow'
 import type { Types } from '../types'
 import type { ActionArg, Context as DiagramContext } from './machine.setup'
@@ -92,13 +92,12 @@ export function updateNodeData({ context, event }: ActionArg): Partial<DiagramCo
     if (node.id !== event.nodeId) {
       return node
     }
-    const data = mergeDeep(node.data as any, event.data as any)
-    if (eq(data, node.data)) {
+    if (hasSubObject(node.data, event.data)) {
       return node
     }
     return {
       ...node,
-      data,
+      data: mergeDeep(node.data as any, event.data as any),
     } as Types.Node
   })
   return { xynodes }
@@ -110,13 +109,12 @@ export function updateEdgeData({ context, event }: ActionArg): Partial<DiagramCo
     if (edge.id !== event.edgeId) {
       return edge
     }
-    const data = mergeDeep(edge.data as any, event.data as any)
-    if (eq(data, edge.data)) {
+    if (hasSubObject<any>(edge.data, event.data)) {
       return edge
     }
     return {
       ...edge,
-      data,
+      data: mergeDeep(edge.data as any, event.data as any),
     } as Types.Edge
   })
   return { xyedges }
