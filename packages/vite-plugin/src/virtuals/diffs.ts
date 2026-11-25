@@ -1,7 +1,7 @@
 import type { DiffSummary, LayoutedView } from '@likec4/core/types'
 import JSON5 from 'json5'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 
 /**
  * Diffs of the project, with the compare views of the views they change (by diff id, then by view id)
@@ -33,7 +33,8 @@ if (import.meta.hot) {
 `
 
 export const projectDiffsModule: ProjectVirtualModule = {
-  ...generateMatches('diffs'),
+  name: 'diffs',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('diffs', project.id)
     const diffs = await likec4.modelDiffs.list(project.id)

@@ -9,7 +9,7 @@ import type { LikeC4Model } from '@likec4/core/model'
 import { generateD2 } from '@likec4/generators'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, generateCombinedProjects, generateMatches } from './_shared'
+import { type ProjectVirtualModule, generateCombinedProjects } from './_shared'
 
 function code(model: LikeC4Model.Computed) {
   const out = new CompositeGeneratorNode()
@@ -55,7 +55,8 @@ function code(model: LikeC4Model.Computed) {
 
 export const projectD2Module: ProjectVirtualModule = {
   exportFormat: 'd2',
-  ...generateMatches('d2'),
+  name: 'd2',
+  hmr: true,
   async load({ likec4, project }) {
     logGenerating('d2', project.id)
     const model = await likec4.computedModel(project.id)

@@ -12,7 +12,7 @@ import { loggable } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { limitFunction } from 'p-limit'
 import { resolve } from 'pathe'
-import { funnel, hasAtLeast, isBoolean, isDeepEqual, map } from 'remeda'
+import { funnel, hasAtLeast, isBoolean } from 'remeda'
 import type {
   Plugin,
   PluginOption,
@@ -26,14 +26,21 @@ import { reloadModuleInEnvironments } from './reloadModule'
 import { enablePluginRPC } from './rpc'
 import { splitErrorMessage } from './rpc/sendError'
 import type { AIOptions, LikeC4VitePluginOptions } from './types'
-import { type ProjectData, type SharedVirtualModuleOptions, k } from './virtuals/_shared'
+import {
+  type ProjectVirtualModule,
+  type SharedVirtualModuleOptions,
+  type VirtualModule,
+  indexByName,
+  k,
+  parseModuleId,
+  toVirtualId,
+} from './virtuals/_shared'
 import { createAppConfigModule } from './virtuals/app-config'
 import { customizationModule } from './virtuals/customization'
 import { d2Module, projectD2Module } from './virtuals/d2'
 import { diffsModule, projectDiffsModule } from './virtuals/diffs'
 import { dotModule, projectDotSourcesModule } from './virtuals/dot'
 import { drawioModule, projectDrawioModule } from './virtuals/drawio'
-import { effectiveWebappExportFormats } from './virtuals/export-formats'
 import { iconsModule, projectIconsModule } from './virtuals/icons'
 import { mmdModule, projectMmdSourcesModule } from './virtuals/mmd'
 import { modelModule, projectModelModule } from './virtuals/model'
@@ -47,9 +54,9 @@ import { projectWebcomponentsModule } from './virtuals/webcomponents'
 
 export type { AIOptions, LikeC4VitePluginOptions }
 /**
- * Virtual modules per LikeC4 project that should trigger HMR when model changes
+ * Virtual modules per LikeC4 project, imported as `likec4:<name>/<projectId>`
  */
-const hmrProjectVirtuals = [
+const projectVirtuals = indexByName<ProjectVirtualModule>([
   projectModelModule,
   projectDiffsModule,
   projectIconsModule,
@@ -58,36 +65,25 @@ const hmrProjectVirtuals = [
   projectMmdSourcesModule,
   projectPumlModule,
   projectDrawioModule,
-]
+  projectReactModule,
+  projectWebcomponentsModule,
+])
 
 /**
- * Root virtual modules that cache project-level export capability maps and other combined data.
+ * Global virtual modules, imported as `likec4:<name>`
  */
-const hmrCombinedVirtuals = [
+const globalVirtuals: ReadonlyArray<VirtualModule> = [
+  projectsModule,
+  modelModule,
+  projectsOverviewModule,
+  singleProjectModule,
+  singleProjectReactModule,
   diffsModule,
   d2Module,
   dotModule,
   mmdModule,
   pumlModule,
   drawioModule,
-]
-
-/**
- * All virtual modules per LikeC4 project ()
- */
-const projectVirtuals = [
-  ...hmrProjectVirtuals,
-  projectReactModule,
-  projectWebcomponentsModule,
-]
-
-const _virtuals = [
-  projectsModule,
-  modelModule,
-  projectsOverviewModule,
-  singleProjectModule,
-  singleProjectReactModule,
-  ...hmrCombinedVirtuals,
   iconsModule,
   rpcModule,
   customizationModule,
@@ -113,12 +109,11 @@ export function LikeC4VitePlugin({
   let customizationFile: string | undefined
   let rpcEnabled = false
   let ai: AIOptions | undefined = undefined
-  let pluginWatch = pluginOpts.watch ?? false
 
-  const virtuals = [
-    ..._virtuals,
+  const virtuals = indexByName([
+    ...globalVirtuals,
     createAppConfigModule(appOptions),
-  ]
+  ])
 
   const initAI = async () => {
     if (isBoolean(_ai)) {
@@ -193,7 +188,7 @@ export function LikeC4VitePlugin({
         if (cacheDir === undefined && config.cacheDir) {
           cacheDir = resolve(config.cacheDir, 'likec4-cache')
         }
-        const watch = pluginWatch = isDev && (pluginOpts.watch ?? true)
+        const watch = isDev && (pluginOpts.watch ?? true)
 
         const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
           manualLayouts: true,
@@ -219,74 +214,64 @@ export function LikeC4VitePlugin({
 
     resolveId: {
       filter: {
-        id: [
-          /^likec4:/,
-          // Already resolved virtual ids (e.g. self-imports injected by react-refresh)
-          /^\0(virtual:likec4|likec4:plugin)/,
-        ],
+        // Resolved ids are matched too, as plugins may inject self-imports (e.g. react-refresh)
+        id: /^\0?likec4:/,
       },
       handler(id) {
-        if (id.startsWith('\0')) {
-          return { id }
+        const parsed = parseModuleId(id)
+        if (!parsed) {
+          return
         }
-        for (const module of projectVirtuals) {
-          const projectId = module.matches(id)
-          if (projectId) {
-            return {
-              id: module.virtualId(projectId),
-            }
-          }
+        const { name, projectId } = parsed
+        const registry = projectId ? projectVirtuals : virtuals
+        if (!registry.has(name)) {
+          return
         }
-        for (const module of virtuals) {
-          if (module.id === id) {
-            return {
-              id: module.virtualId,
-            }
-          }
+        return {
+          id: toVirtualId(name, projectId),
         }
-        return
       },
     },
 
     load: {
       filter: {
-        id: [
-          /likec4:plugin/,
-          /virtual:likec4/,
-        ],
+        id: /^\0likec4:/,
       },
       async handler(id) {
-        // Handle project-specific virtual modules
-        for (const module of projectVirtuals) {
-          const projectId = module.matches(id)
-          if (projectId) {
-            const project = likec4.project(projectId)
-            return await module.load.call(
-              this,
-              moduleopts({ project }),
-            )
+        const parsed = parseModuleId(id)
+        if (!parsed) {
+          return null
+        }
+        const { name, projectId } = parsed
+
+        // Project scoped virtual modules
+        if (projectId) {
+          const module = projectVirtuals.get(name)
+          if (!module) {
+            return null
           }
+          return await module.load.call(
+            this,
+            moduleopts({ project: likec4.project(projectId) }),
+          )
+        }
+
+        // Global virtual modules
+        const module = virtuals.get(name)
+        if (!module) {
+          return null
         }
         const projects = likec4.projectsManager.all
           .map(project => likec4.project(project))
           // Filter out projects that don't have any documents
           .filter(project => project.documents.length > 0)
-        // Early return if no projects
         if (!hasAtLeast(projects, 1)) {
           return null
         }
-
-        // Handle global virtual modules
-        for (const module of virtuals) {
-          if (module.virtualId === id) {
-            return await module.load.call(
-              this,
-              moduleopts({ projects }),
-            )
-          }
-        }
-
-        return null
+        return await module.load.call(
+          this,
+          moduleopts({ projects }),
+        )
       },
     },
 
@@ -353,12 +338,10 @@ export function LikeC4VitePlugin({
             logger.trace(
               k.dim('onProjectsUpdate - change detected'),
             )
-            await reloadModule(projectsModule.virtualId)
-            await reloadModule(iconsModule.virtualId)
-            await reloadModule(modelModule.virtualId)
-            await reloadModule(projectsOverviewModule.virtualId)
-            for (const module of hmrCombinedVirtuals) {
-              await reloadModule(module.virtualId)
+            for (const module of virtuals.values()) {
+              if (module.hmr) {
+                await reloadModule(toVirtualId(module.name))
+              }
             }
           }, { concurrency: 1 })
 
@@ -370,8 +353,10 @@ export function LikeC4VitePlugin({
               logger.trace(
                 k.dim('onModelParsed project') + ' ' + k.cyan(projectId),
               )
-              for (const projectModule of hmrProjectVirtuals) {
-                await reloadModule(projectModule.virtualId(projectId))
+              for (const module of projectVirtuals.values()) {
+                if (module.hmr) {
+                  await reloadModule(toVirtualId(module.name, projectId))
+                }
               }
             }
           }, { concurrency: 1 })
@@ -393,14 +378,14 @@ export function LikeC4VitePlugin({
     },
 
     async buildEnd() {
-      for (const disposable of [...disposables]) {
+      // splice empties the list, so disposables added while disposing are kept for the next run
+      for (const disposable of disposables.splice(0)) {
         try {
           await disposable()
         } catch (error) {
           logger.error(loggable(error))
         }
       }
-      disposables.length = 0
     },
   }
 

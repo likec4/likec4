@@ -1,6 +1,6 @@
 import { first } from 'remeda'
 import { logGenerating } from '../logger'
-import { type ProjectVirtualModule, type VirtualModule, generateMatches } from './_shared'
+import type { ProjectVirtualModule, VirtualModule } from './_shared'
 
 /**
  * With the customization file configured, the project provider also applies its UI overrides
@@ -49,7 +49,7 @@ export {
 `
 
 export const projectReactModule: ProjectVirtualModule = {
-  ...generateMatches('react'),
+  name: 'react',
   async load({ project, customizationFile }) {
     logGenerating('react', project.id)
     return {
@@ -60,8 +60,8 @@ export const projectReactModule: ProjectVirtualModule = {
 }
 
 export const singleProjectReactModule: VirtualModule = {
-  id: 'likec4:react',
-  virtualId: 'likec4:plugin/react.js',
+  name: 'react',
+  hmr: true,
   async load({ projects }) {
     const project = first(projects)
     logGenerating('react-default-project')

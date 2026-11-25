@@ -46,8 +46,7 @@ if (import.meta.hot) {
 }
 
 export const customizationModule: VirtualModule = {
-  id: 'likec4:customization',
-  virtualId: '\0virtual:likec4/customization.js',
+  name: 'customization',
   async load({ customizationFile }) {
     logGenerating('customization')
     return {

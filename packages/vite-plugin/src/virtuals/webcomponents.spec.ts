@@ -6,13 +6,8 @@ import { generateWebcomponentsCode, projectWebcomponentsModule } from './webcomp
 const jsStringLiteral = (value: string) => hardenJsonStringLiteralForEmbeddedScript(JSON.stringify(value))
 
 describe('projectWebcomponentsModule', () => {
-  it('matches project-scoped webcomponent module ids', () => {
-    expect(projectWebcomponentsModule.matches('likec4:webcomponents/project-a')).toBe('project-a')
-    expect(projectWebcomponentsModule.matches('likec4:plugin/project-a/webcomponents.js')).toBe('project-a')
-    expect(projectWebcomponentsModule.matches('likec4:webcomponents')).toBeNull()
-    expect(projectWebcomponentsModule.virtualId('project-a' as ProjectId)).toBe(
-      '\0virtual:likec4/project-a/webcomponents.js',
-    )
+  it('is a project scoped module named webcomponents', () => {
+    expect(projectWebcomponentsModule.name).toBe('webcomponents')
   })
 })
 
