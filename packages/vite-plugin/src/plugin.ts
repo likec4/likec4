@@ -215,6 +215,10 @@ export function LikeC4VitePlugin({
       if (pluginOpts.languageServices) {
         likec4 = pluginOpts.languageServices
       } else {
+        let cacheDir = pluginOpts.cacheDir
+        if (cacheDir === undefined && config.cacheDir) {
+          cacheDir = resolve(config.cacheDir, 'likec4-cache')
+        }
         const _watch = watch = isDev && (pluginOpts.watch ?? true)
 
         const instance = await fromWorkspace(pluginOpts.workspace ?? config.root, {
@@ -225,6 +229,7 @@ export function LikeC4VitePlugin({
           printErrors: pluginOpts.printErrors ?? true,
           throwIfInvalid: pluginOpts.throwIfInvalid ?? false,
           watch: _watch,
+          cacheDir: cacheDir ?? undefined,
         })
         disposeOnStop(instance)
 

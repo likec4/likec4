@@ -17,6 +17,7 @@ export {
 
 export {
   WithFileSystem,
+  WithUnstorageCache,
 } from './LikeC4FileSystem'
 
 export {

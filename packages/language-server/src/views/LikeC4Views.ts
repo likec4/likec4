@@ -23,7 +23,7 @@ import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, Disposable, interruptAndCheck } from 'langium'
 import { isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
-import { type Storage, createStorage, prefixStorage } from 'unstorage'
+import { type Storage, prefixStorage } from 'unstorage'
 import type { CancellationToken } from 'vscode-languageserver'
 import { logger as rootLogger, logWarnError } from '../logger'
 import type { LikeC4ModelBuilder } from '../model/model-builder'
@@ -132,10 +132,9 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
   constructor(private services: LikeC4Services) {
     super()
     this.ModelBuilder = services.likec4.ModelBuilder
-    this.#storage = createStorage()
+    this.#storage = prefixStorage(services.shared.workspace.Unstorage, 'views')
 
     this.onDispose(
-      this.#storage,
       Disposable.create(() => {
         this.#projectStorages.clear()
       }),
@@ -457,7 +456,9 @@ class ProjectStorage {
     const m0 = performanceMark()
     const result = await this.#layouter(task)
     this.#logger.trace(`layouted {view} in ${m0.pretty}`, { view: task.view.id })
-    await this.#storage.set(key, result)
+    this.#storage.set(key, result).catch(err => {
+      this.#logger.warn(err)
+    })
     this.resetViewError(task.view)
     return result
   }
