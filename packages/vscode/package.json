@@ -405,7 +405,6 @@
     "@types/vscode": "catalog:vscode",
     "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^1.5.2",
-    "esm-env": "catalog:utils",
     "fast-equals": "catalog:utils",
     "langium": "catalog:langium",
     "nano-spawn": "catalog:externals",

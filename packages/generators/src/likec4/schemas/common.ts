@@ -10,23 +10,28 @@ import {
   Sizings,
   ThemeColors,
 } from '@likec4/core/styles'
-import {
-  type BorderStyle,
-  type Color,
-  type CustomColor,
-  type ElementShape,
-  type IconPosition,
-  type IconSize,
-  type Link,
-  type OrString,
-  type scalar,
-  type Size,
-  type Sizing,
-  type SpacingSize,
-  type TextSize,
-  type ThemeColor,
-  exact,
+import type {
+  BorderStyle,
+  Color,
+  CustomColor,
+  ElementKind,
+  ElementShape,
+  Fqn,
+  Icon,
+  IconPosition,
+  IconSize,
+  Link,
+  MarkdownOrString,
+  OrString,
+  Size,
+  Sizing,
+  SpacingSize,
+  Tag,
+  TextSize,
+  ThemeColor,
+  ViewId,
 } from '@likec4/core/types'
+import { exact } from '@likec4/core/types'
 import { isNonNullish, pickBy } from 'remeda'
 import * as z from 'zod/v4'
 
@@ -35,22 +40,22 @@ export const id = z
   .regex(/^[a-zA-Z0-9_.-]+$/, 'id must consist of alphanumeric characters, underscores or hyphens')
 
 // cast to reduce types output size
-export interface ZViewId extends z.ZodType<scalar.ViewId, string> {}
-export const viewId: ZViewId = id.transform(value => value as unknown as scalar.ViewId)
+export interface ZViewId extends z.ZodType<ViewId, string> {}
+export const viewId: ZViewId = id.transform(value => value as unknown as ViewId)
 
 // cast to reduce types output size
-export interface ZFqn extends z.ZodType<scalar.Fqn, string> {}
+export interface ZFqn extends z.ZodType<Fqn, string> {}
 export const fqn: ZFqn = z
   .string()
   .regex(/^[a-zA-Z0-9_.-]+$/, 'FQN must consist of alphanumeric characters, dots, underscores or hyphens')
-  .transform(value => value as unknown as scalar.Fqn)
+  .transform(value => value as unknown as Fqn)
 
 // cast to reduce types output size
-export interface ZKind extends z.ZodType<scalar.ElementKind, string> {}
+export interface ZKind extends z.ZodType<ElementKind, string> {}
 export const kind: ZKind = z
   .string()
   .regex(/^[a-zA-Z0-9_-]+$/, 'Kind must consist of alphanumeric characters, underscores or hyphens')
-  .transform(value => value as unknown as scalar.ElementKind)
+  .transform(value => value as unknown as ElementKind)
 
 export const opacity = z
   .int()
@@ -60,11 +65,11 @@ export const opacity = z
 export interface ZShape extends z.ZodType<ElementShape, ElementShape | OrString> {}
 export const shape: ZShape = z.enum(ElementShapes)
 
-export interface ZIcon extends z.ZodType<scalar.Icon, string> {}
+export interface ZIcon extends z.ZodType<Icon, string> {}
 export const icon: ZIcon = z
   .string()
   .nonempty('Icon cannot be empty')
-  .transform(value => value as unknown as scalar.Icon)
+  .transform(value => value as unknown as Icon)
 
 export interface ZBorder extends z.ZodType<BorderStyle, BorderStyle | OrString> {}
 export const border: ZBorder = z.enum(BorderStyles)
@@ -104,11 +109,11 @@ export const customColor: z.ZodType<CustomColor, string> = z
   .nonempty('Custom color name cannot be empty')
   .transform(value => value as unknown as CustomColor)
 
-export interface ZTag extends z.ZodType<scalar.Tag, string> {}
+export interface ZTag extends z.ZodType<Tag, string> {}
 export const tag: ZTag = z
   .string()
   .nonempty('Tag cannot be empty')
-  .transform(tag => (tag.startsWith('#') ? tag.slice(1) : tag) as unknown as scalar.Tag)
+  .transform(tag => (tag.startsWith('#') ? tag.slice(1) : tag) as unknown as Tag)
 
 export const tags = z.array(tag).readonly()
 
@@ -117,7 +122,7 @@ export type MarkdownOrStringInput =
   | { txt: string }
   | { md: string }
 
-export interface ZMarkdownOrString extends z.ZodType<scalar.MarkdownOrString, MarkdownOrStringInput> {}
+export interface ZMarkdownOrString extends z.ZodType<MarkdownOrString, MarkdownOrStringInput> {}
 
 export const markdownOrString: ZMarkdownOrString = z.union([
   z.string().transform(v => ({ txt: v })),

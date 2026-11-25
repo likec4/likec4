@@ -7,6 +7,7 @@ export default defineConfig({
     'src/node/index.ts',
     'src/webapp-export-formats.ts',
   ],
+  unbundle: true,
   platform: 'node',
   hooks: {
     'build:done': async () => {

@@ -551,9 +551,6 @@ catalogs:
     defu:
       specifier: ^6.1.7
       version: 6.1.7
-    esm-env:
-      specifier: ^1.2.2
-      version: 1.2.2
     fast-equals:
       specifier: ^6.2.2
       version: 6.2.2
@@ -728,7 +725,7 @@ importers:
         version: link:devops
       '@vitest/ui':
         specifier: catalog:vitest
-        version: 4.1.12(vitest@4.1.12)
+        version: 4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
       dprint:
         specifier: 'catalog:'
         version: 0.64.3
@@ -1208,12 +1205,21 @@ importers:
       '@likec4/log':
         specifier: workspace:*
         version: link:../log
+      defu:
+        specifier: catalog:utils
+        version: 6.1.7
       json5:
         specifier: catalog:utils
         version: 2.2.3
+      remeda:
+        specifier: catalog:utils
+        version: 2.52.0
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
+      ufo:
+        specifier: catalog:utils
+        version: 1.6.4
       zod:
         specifier: catalog:externals
         version: 4.6.7
@@ -1227,18 +1233,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
-      defu:
-        specifier: catalog:utils
-        version: 6.1.7
       jiti:
         specifier: catalog:externals
         version: 2.7.0
       nano-spawn:
         specifier: catalog:externals
         version: 2.1.0
-      remeda:
-        specifier: catalog:utils
-        version: 2.52.0
       tsdown:
         specifier: catalog:tsdown
         version: 0.23.4(@tsdown/css@0.23.4)(@typescript/native-preview@7.0.0-dev.20260707.2)(@volar/typescript@2.4.28(typescript@6.0.3))(tsx@4.23.15)(typescript@6.0.3)
@@ -1251,9 +1251,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
-      ufo:
-        specifier: catalog:utils
-        version: 1.6.4
       vitest:
         specifier: catalog:vitest
         version: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -1519,7 +1516,7 @@ importers:
         version: 0.7.2(xstate@5.33.3)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/bezier-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -2237,9 +2234,6 @@ importers:
       defu:
         specifier: catalog:utils
         version: 6.1.7
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 6.2.2
@@ -2438,7 +2432,7 @@ importers:
         version: 1.167.48(@tanstack/react-router@1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.60.1)(supports-color@10.1.0)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
@@ -2747,7 +2741,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitest/ui':
         specifier: catalog:vitest
-        version: 4.1.12(vitest@4.1.12)
+        version: 4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
       citty:
         specifier: catalog:utils
         version: 0.2.2
@@ -2862,7 +2856,7 @@ importers:
         version: 26.1.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tsdown/css':
         specifier: catalog:tsdown
-        version: 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+        version: 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       '@types/d3-zoom':
         specifier: ^3.0.9
         version: 3.0.9
@@ -3176,9 +3170,6 @@ importers:
       '@vscode/extension-telemetry':
         specifier: ^1.5.2
         version: 1.5.2(tslib@2.8.1)
-      esm-env:
-        specifier: catalog:utils
-        version: 1.2.2
       fast-equals:
         specifier: catalog:utils
         version: 6.2.2
@@ -3314,9 +3305,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.5
-      '@types/object-hash':
-        specifier: ^3.0.6
-        version: 3.0.6
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -6649,9 +6637,6 @@ packages:
   '@types/node@24.12.4':
     resolution: {integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==}
 
-  '@types/object-hash@3.0.6':
-    resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
-
   '@types/pako@2.0.4':
     resolution: {integrity: sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==}
 
@@ -7012,6 +6997,11 @@ packages:
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
@@ -7812,9 +7802,6 @@ packages:
   escape-string-regexp@5.0.0:
     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
     engines: {node: '>=12'}
-
-  esm-env@1.2.2:
-    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
 
   estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
@@ -11184,6 +11171,7 @@ packages:
   yuku-core@0.19.0:
     resolution: {integrity: sha512-kYK9e1XdfirNhkipzW0wmMcSWcVF/CWnuugodfVYRCUwvoBefweL9HzB96OiKEhsx78V5WbUxbJqlizMX869Qg==}
     engines: {node: '>=14.18.0'}
+    deprecated: 'Yuku is now one package with one core. Use "yuku" instead: https://yuku.fyi/javascript/. Existing installs keep working but get no more fixes.'
 
   yuku-parser@0.19.0:
     resolution: {integrity: sha512-XrBh9ZiQK5mJVRxZBAvD6LwRyAYrK3MFtH3+onyuxFL5hFD44EC3QOmIC1FjTj6H2MMwq46/NAI+NZxLZPZgxg==}
@@ -14156,7 +14144,7 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@tsdown/css@0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
+  '@tsdown/css@0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)':
     dependencies:
       lightningcss: 1.33.0
       postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(yaml@2.9.1)
@@ -14166,6 +14154,7 @@ snapshots:
       postcss: 8.5.33
       postcss-import: 17.0.0(postcss@8.5.33)
     transitivePeerDependencies:
+      - '@typescript/native-preview'
       - jiti
       - tsx
       - yaml
@@ -14292,8 +14281,6 @@ snapshots:
   '@types/node@24.12.4':
     dependencies:
       undici-types: 7.16.0
-
-  '@types/object-hash@3.0.6': {}
 
   '@types/pako@2.0.4': {}
 
@@ -14440,7 +14427,21 @@ snapshots:
 
   '@vitest/spy@4.1.12': {}
 
-  '@vitest/ui@4.1.12(vitest@4.1.12)':
+  '@vitest/ui@4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)':
+    dependencies:
+      '@vitest/utils': 4.1.12
+      fflate: 0.8.3
+      flatted: 3.4.4
+      pathe: 2.0.3
+      sirv: 3.0.2
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.2.0
+      vitest: 4.1.12(@types/node@22.20.5)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@types/node'
+      - vite
+
+  '@vitest/ui@4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)':
     dependencies:
       '@vitest/utils': 4.1.12
       fflate: 0.8.3
@@ -14450,6 +14451,9 @@ snapshots:
       tinyglobby: 0.2.17
       tinyrainbow: 3.2.0
       vitest: 4.1.12(@types/node@24.12.4)(@vitest/ui@4.1.12)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - '@types/node'
+      - vite
 
   '@vitest/utils@4.1.12':
     dependencies:
@@ -15605,8 +15609,6 @@ snapshots:
   escape-html@1.0.3: {}
 
   escape-string-regexp@5.0.0: {}
-
-  esm-env@1.2.2: {}
 
   estree-walker@2.0.2: {}
 
@@ -18682,7 +18684,7 @@ snapshots:
       unconfig-core: 7.5.0
       verkit: 0.5.0
     optionalDependencies:
-      '@tsdown/css': 0.23.4(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
+      '@tsdown/css': 0.23.4(@typescript/native-preview@7.0.0-dev.20260707.2)(jiti@2.7.0)(postcss-import@17.0.0(postcss@8.5.33))(postcss@8.5.33)(tsdown@0.23.4)(tsx@4.23.15)(yaml@2.9.1)
       tsx: 4.23.15
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -19096,7 +19098,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.20.5
-      '@vitest/ui': 4.1.12(vitest@4.1.12)
+      '@vitest/ui': 4.1.12(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
     transitivePeerDependencies:
       - msw
 
@@ -19124,7 +19126,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.12.4
-      '@vitest/ui': 4.1.12(vitest@4.1.12)
+      '@vitest/ui': 4.1.12(@types/node@24.12.4)(vite@8.3.5(@types/node@24.12.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))(vitest@4.1.12)
     transitivePeerDependencies:
       - msw
 
