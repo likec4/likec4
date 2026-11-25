@@ -32,12 +32,10 @@ export function CustomizationContext(props) {
 
 if (import.meta.hot) {
   import.meta.hot.accept((md) => {
-    if (!import.meta.hot.data.$update) {
-      import.meta.hot.data.$update = (update) => {
-        ComponentsAtom.set(update)
-      }
+    import.meta.hot.data.$update ??= (update) => {
+      ComponentsAtom.set(update)
     }
-    if (md) {
+    if (md?.ComponentsAtom) {
       import.meta.hot.data.$update(md.ComponentsAtom.get())
     } else {
       import.meta.hot.invalidate()

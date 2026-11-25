@@ -92,6 +92,7 @@ export type LikeC4WorkspaceOptions = {
    */
   languageServices: LikeC4LanguageServices
   workspace?: never
+  cacheDir?: never
   printErrors?: never
   throwIfInvalid?: never
   graphviz?: never
