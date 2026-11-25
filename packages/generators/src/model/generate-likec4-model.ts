@@ -5,7 +5,7 @@ import { generateAux } from './generate-aux'
 export function generateLikeC4Model(model: LikeC4Model<any>, options: { useCorePackage?: boolean } = {}) {
   const aux = generateAux(model, options)
   const { useCorePackage = false } = options
-
+  const rootImport = useCorePackage ? '@likec4' : 'likec4'
   return `
 /* prettier-ignore-start */
 /* eslint-disable */
@@ -15,7 +15,7 @@ export function generateLikeC4Model(model: LikeC4Model<any>, options: { useCoreP
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import { LikeC4Model } from '${useCorePackage ? '@likec4/core' : 'likec4'}/model'
+import { LikeC4Model } from '${rootImport}/core/model'
 ${aux}
 
 export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(${
