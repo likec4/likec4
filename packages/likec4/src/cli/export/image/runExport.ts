@@ -299,6 +299,7 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
     outputType,
   })
 
+  let drained = false
   try {
     if (!resolvedServerUrl) {
       logger.info(k.cyan(`start preview server`))
@@ -368,6 +369,7 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
       return
     }
 
+    drained = true
     const { succeeded } = await pipeline.drain()
     const { pretty } = inMillis(startExport)
     logger.info('')
@@ -396,6 +398,13 @@ export async function runExport(args: ImageExportArgs, logger: ViteLogger): Prom
       throw new Error(`Failed ${failedProjects.join(', ')}`)
     }
   } finally {
+    // An error before the drain (e.g. layout of a later project):
+    // finish the screenshots already enqueued, then rethrow the original error
+    if (!drained) {
+      await pipeline.drain().catch(e => {
+        logger.error(e)
+      })
+    }
     // Close the browser before the server
     await pipeline.browser.close()
     if (server) {
