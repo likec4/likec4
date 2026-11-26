@@ -140,7 +140,7 @@ export class DefaultLikeC4Views extends ADisposable implements LikeC4Views {
       }),
       services.shared.workspace.WorkspaceManager.onForceCleanCache(() => {
         viewsLogger.info`force clean cache`
-        this.#storage.clear()
+        clearStorage(this.#storage).catch(err => viewsLogger.warn(loggable(err)))
       }),
       services.shared.workspace.ManualLayouts.onManualLayoutUpdate(({ projectId, viewId }) => {
         if (!this.#projectStorages.has(projectId)) {
@@ -437,7 +437,7 @@ class ProjectStorage {
   async get(task: LayoutTaskParams): Promise<GraphvizOut | undefined> {
     const key = cacheKey(task)
     const cached = await this.#storage.get(key)
-    if (cached) {
+    if (isCachedLayout(cached)) {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
@@ -448,7 +448,7 @@ class ProjectStorage {
   async getOrExecute(task: LayoutTaskParams): Promise<GraphvizOut> {
     const key = cacheKey(task)
     const cached = await this.#storage.get(key)
-    if (cached) {
+    if (isCachedLayout(cached)) {
       this.#logger.trace`cache hit for ${task.view.id}`
       return mergeWithCachedLayout(task.view, cached)
     }
@@ -502,13 +502,36 @@ class ProjectStorage {
    */
   clearAll() {
     this.#logger.trace`clear caches`
-    this.#storage.clear()
+    clearStorage(this.#storage).catch(err => this.#logger.warn(loggable(err)))
   }
 
   private resetViewError(view: ComputedView | ViewId) {
     const id = typeof view === 'string' ? view : view.id
     this.#storage.del(`error:${id}`)
   }
+}
+
+/**
+ * Removes all keys of the (possibly prefixed) storage.
+ * `clear()` of a prefixed storage does not reach the driver mounted at the root.
+ */
+async function clearStorage(storage: Storage<any>): Promise<void> {
+  const keys = await storage.keys()
+  await Promise.all(keys.map(key => storage.remove(key)))
+}
+
+/**
+ * Guards against malformed cache entries (e.g. a partially written file),
+ * these are treated as a cache miss.
+ */
+function isCachedLayout(value: unknown): value is GraphvizOut {
+  return typeof value === 'object'
+    && value !== null
+    && 'dot' in value
+    && typeof value.dot === 'string'
+    && 'diagram' in value
+    && typeof value.diagram === 'object'
+    && value.diagram !== null
 }
 
 function cacheKey(task: LayoutTaskParams) {
