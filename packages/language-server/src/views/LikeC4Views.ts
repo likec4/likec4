@@ -21,7 +21,7 @@ import { type LayoutTaskParams, type QueueGraphvizLayoter, GraphvizLayouter } fr
 import type { AILayoutHints } from '@likec4/layouts/ai'
 import { type Logger, loggable } from '@likec4/log'
 import { type WorkspaceCache, Disposable, interruptAndCheck } from 'langium'
-import { isTruthy, values } from 'remeda'
+import { isPlainObject, isTruthy, values } from 'remeda'
 import type { Writable } from 'type-fest'
 import { type Storage, prefixStorage } from 'unstorage'
 import type { CancellationToken } from 'vscode-languageserver'
@@ -545,17 +545,11 @@ async function clearStorage(storage: Storage<any>): Promise<void> {
  * these are treated as a cache miss.
  */
 function isCachedLayout(value: unknown): value is GraphvizOut {
-  return typeof value === 'object'
-    && value !== null
-    && 'dot' in value
-    && typeof value.dot === 'string'
-    && 'diagram' in value
-    && typeof value.diagram === 'object'
-    && value.diagram !== null
-    && 'nodes' in value.diagram
-    && Array.isArray(value.diagram.nodes)
-    && 'edges' in value.diagram
-    && Array.isArray(value.diagram.edges)
+  return isPlainObject(value)
+    && typeof value['dot'] === 'string'
+    && isPlainObject(value['diagram'])
+    && Array.isArray(value['diagram']['nodes'])
+    && Array.isArray(value['diagram']['edges'])
 }
 
 function cacheKey(task: LayoutTaskParams) {
