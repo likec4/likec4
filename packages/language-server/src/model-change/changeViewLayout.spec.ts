@@ -171,4 +171,99 @@ views {
     })
     expect(read()).toContain('autoLayout LeftRight 20 10\n')
   })
+
+  it('keeps a 0 nodeSep and compoundSep on a direction change', async ({ expect, testDoc }) => {
+    const { change, read } = await testDoc(
+      `
+specification {
+  element system
+}
+model {
+  system = system 'System'
+}
+views {
+  view target {
+    include *
+    autoLayout TopBottom 120 0 150
+  }
+}`,
+    )
+
+    // the parsed view drops the 0 nodeSep, the diagram sends it back without it
+    await change({
+      viewId: 'target' as ViewId,
+      change: {
+        op: 'change-autolayout',
+        layout: {
+          direction: 'LR',
+          rankSep: 120,
+          compoundSep: 150,
+        },
+      },
+    })
+    expect(read()).toContain('autoLayout LeftRight 120 0 150\n')
+  })
+
+  it('keeps nodeSep and compoundSep of the source when the change has rankSep only', async ({ expect, testDoc }) => {
+    const { change, read } = await testDoc(
+      `
+specification {
+  element system
+}
+model {
+  system = system 'System'
+}
+views {
+  view target {
+    include *
+    autoLayout LeftRight 20 10 80
+  }
+}`,
+    )
+
+    await change({
+      viewId: 'target' as ViewId,
+      change: {
+        op: 'change-autolayout',
+        layout: {
+          direction: 'TB',
+          rankSep: 40,
+        },
+      },
+    })
+    expect(read()).toContain('autoLayout TopBottom 40 10 80\n')
+  })
+
+  it('fails when compoundSep would be written without nodeSep', async ({ expect, testDoc }) => {
+    const source = `
+specification {
+  element system
+}
+model {
+  system = system 'System'
+}
+views {
+  view target {
+    include *
+    autoLayout LeftRight 20 10 80
+  }
+}`
+    const { tryChange, read } = await testDoc(source)
+    const before = read()
+
+    const result = await tryChange({
+      viewId: 'target' as ViewId,
+      change: {
+        op: 'change-autolayout',
+        layout: {
+          direction: 'TB',
+          rankSep: 40,
+          nodeSep: null,
+        },
+      },
+    })
+    expect(result.success).toBe(false)
+    expect(result).toHaveProperty('error', expect.stringContaining('compoundSep 80 needs rankSep and nodeSep'))
+    expect(read()).toBe(before)
+  })
 })
