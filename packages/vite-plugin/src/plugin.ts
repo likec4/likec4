@@ -187,10 +187,8 @@ export function LikeC4VitePlugin({
     if (!module) {
       return null
     }
-    const projects = likec4.projectsManager.all
-      .map(project => likec4.project(project))
-      // Filter out projects that don't have any documents
-      .filter(project => project.documents.length > 0)
+    // Filter out the fallback default project without documents
+    const projects = likec4.projects().filter(project => project.documents.length > 0)
     if (!hasAtLeast(projects, 1)) {
       return null
     }
