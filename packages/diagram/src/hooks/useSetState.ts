@@ -1,6 +1,6 @@
+import type { NonEmptyObject } from 'type-fest'
 import { shallowEqual } from 'fast-equals'
 import { useCallback, useRef, useState } from 'react'
-import type { NonEmptyObject } from 'type-fest'
 
 /**
  * Differs from useState in that:

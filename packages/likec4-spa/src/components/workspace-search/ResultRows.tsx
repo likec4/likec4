@@ -1,12 +1,12 @@
 import type { ViewId } from '@likec4/core/types'
+import type { ReactNode } from 'react'
+import type { SearchElement, SearchView } from './search-index'
 import { ViewIcon } from '@likec4/diagram'
 import { css, cx } from '@likec4/styles/css'
 import { styled } from '@likec4/styles/jsx'
 import { Highlight } from '@mantine/core'
 import { IconBrowser, IconCube, IconDatabase, IconDeviceMobile, IconUser } from '@tabler/icons-react'
-import type { ReactNode } from 'react'
 import { Truncate } from '../ui/Text'
-import type { SearchElement, SearchView } from './search-index'
 import { SearchPanel } from './SearchPanel'
 
 /**

@@ -1,7 +1,7 @@
+import type { TextDocumentFilter } from 'vscode-languageclient'
 import { deepEqual } from 'fast-equals'
 import { computed, defineService, useWorkspaceFolders } from 'reactive-vscode'
 import * as vscode from 'vscode'
-import type { TextDocumentFilter } from 'vscode-languageclient'
 import { globPattern, languageId } from '../const.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'
 

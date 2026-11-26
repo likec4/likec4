@@ -1,9 +1,9 @@
 import type { LayoutedView, ProjectId, ViewId } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
+import type { ManualLayoutsSnapshot } from '../../filesystem/types'
 import { DocumentState } from 'langium'
 import { describe, it } from 'vitest'
 import { NoopLikeC4ManualLayouts } from '../../filesystem/noop'
-import type { ManualLayoutsSnapshot } from '../../filesystem/types'
 import { createMultiProjectTestServices, createTestServices } from '../../test'
 
 const spec = `

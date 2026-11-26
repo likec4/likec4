@@ -6,6 +6,8 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { DeploymentFqn, Fqn } from '@likec4/core'
+import type { BaseNodeData } from '../../../base/types'
+import type { Types } from '../../types'
 import { scalar } from '@likec4/core'
 import { css } from '@likec4/styles/css'
 import {
@@ -20,12 +22,10 @@ import {
   ElementShape,
   ElementTags as ElementTagsPrimitive,
 } from '../../../base-primitives'
-import type { BaseNodeData } from '../../../base/types'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCallbackRef } from '../../../hooks'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { detailsSubject } from '../../../overlays/element-details/subject'
-import type { Types } from '../../types'
 import { CompoundActions } from './CompoundActions'
 import { DeploymentElementActions, ElementActions } from './ElementActions'
 import { NodeDrifts } from './NodeDrifts'

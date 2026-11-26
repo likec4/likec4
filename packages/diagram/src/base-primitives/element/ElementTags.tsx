@@ -1,4 +1,5 @@
 import type { NonEmptyReadonlyArray } from '@likec4/core'
+import type { BaseNodePropsWithData } from '../../base/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box, HStack } from '@likec4/styles/jsx'
 import { hstack } from '@likec4/styles/patterns'
@@ -8,7 +9,6 @@ import { NodeToolbar, Position, useStore } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type ComponentPropsWithoutRef, forwardRef, memo, useCallback, useEffect } from 'react'
 import { hasAtLeast } from 'remeda'
-import type { BaseNodePropsWithData } from '../../base/types'
 import { useCurrentZoomAtLeast } from '../../hooks/useXYFlow'
 import { stopPropagation } from '../../utils/xyflow'
 

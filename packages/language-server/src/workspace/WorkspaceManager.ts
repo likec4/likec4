@@ -5,8 +5,6 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { invariant, memoizeProp } from '@likec4/core'
-import { onNextTick } from '@likec4/core/utils'
 import type {
   BuildOptions,
   Cancellation,
@@ -14,18 +12,20 @@ import type {
   LangiumDocument,
   LangiumDocumentFactory,
 } from 'langium'
+import type { WorkspaceFolder } from 'vscode-languageserver'
+import type { FileNode, FileSystemProvider } from '../filesystem'
+import type { LikeC4SharedServices } from '../module'
+import type { ExternalDependencyTarget, ExternalProject, ExternalProjectId } from './ExternalProjects'
+import { invariant, memoizeProp } from '@likec4/core'
+import { onNextTick } from '@likec4/core/utils'
 import { DefaultWorkspaceManager, Disposable, UriUtils } from 'langium'
 import pTimeout from 'p-timeout'
 import { filter, hasAtLeast, isNot, map, pipe, sort, uniqueBy } from 'remeda'
-import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
 import { isLikeC4UserDocument } from '../ast'
-import type { FileNode, FileSystemProvider } from '../filesystem'
 import * as BuiltIn from '../likec4lib'
 import { serverLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
 import { compareByUri } from '../utils'
-import type { ExternalDependencyTarget, ExternalProject, ExternalProjectId } from './ExternalProjects'
 
 function sameKeys(a: ReadonlyMap<string, unknown>, b: ReadonlyMap<string, unknown>): boolean {
   return a.size === b.size && [...a.keys()].every(k => b.has(k))

@@ -1,3 +1,4 @@
+import type * as z from 'zod/v4'
 import { DefaultMap } from '@likec4/core'
 import {
   type ComputedEdge,
@@ -7,7 +8,6 @@ import {
   flattenMarkdownOrString,
   NodeId,
 } from '@likec4/core/types'
-import type * as z from 'zod/v4'
 import { logger } from './logger'
 
 type NodeIdSerialized = `n${number}` & z.$brand<'NodeId'>

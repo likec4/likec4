@@ -1,4 +1,5 @@
 import type { ProjectId, ViewId } from '@likec4/core/types'
+import type { IsNever } from 'type-fest'
 import {
   type OpenViewPayload,
   BroadcastAILayoutStateUpdate,
@@ -18,7 +19,6 @@ import {
   defineService,
   useDisposable,
 } from 'reactive-vscode'
-import type { IsNever } from 'type-fest'
 import * as vscode from 'vscode'
 import { Messenger } from 'vscode-messenger'
 import {
@@ -68,28 +68,29 @@ export const useMessenger = defineService(() => {
       )
     }
 
-  const notificationHandler = <P>(notiType: NotificationType<P>) =>
-  (
-    handler: (
-      params: P,
-      sender: MessageParticipant,
-    ) => void | Promise<void>,
-  ) => {
-    return useDisposable(
-      messenger.onNotification(notiType, async (params: P, sender: MessageParticipant) => {
-        try {
-          logger.debug(`onNotification {noti} from {sender}`, {
-            noti: notiType.method,
-            sender: stringifyMessageParticipant(sender),
-          })
-          await Promise.resolve().then(() => handler(params, sender))
-        } catch (err) {
-          logger.warn(`onNotification {noti} failed`, { noti: notiType.method, err })
-          throw err // propagate to client
-        }
-      }),
-    )
-  }
+  const notificationHandler =
+    <P>(notiType: NotificationType<P>) =>
+    (
+      handler: (
+        params: P,
+        sender: MessageParticipant,
+      ) => void | Promise<void>,
+    ) => {
+      return useDisposable(
+        messenger.onNotification(notiType, async (params: P, sender: MessageParticipant) => {
+          try {
+            logger.debug(`onNotification {noti} from {sender}`, {
+              noti: notiType.method,
+              sender: stringifyMessageParticipant(sender),
+            })
+            await Promise.resolve().then(() => handler(params, sender))
+          } catch (err) {
+            logger.warn(`onNotification {noti} failed`, { noti: notiType.method, err })
+            throw err // propagate to client
+          }
+        }),
+      )
+    }
 
   // dprint-ignore
   type ReqOp<P, R> =

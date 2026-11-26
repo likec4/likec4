@@ -1,6 +1,6 @@
+import type { VirtualModule } from './_shared'
 import { first } from 'remeda'
 import { logGenerating } from '../logger'
-import type { VirtualModule } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 const code = (id: string) => {

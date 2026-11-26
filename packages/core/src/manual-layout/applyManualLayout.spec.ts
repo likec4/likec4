@@ -1,6 +1,5 @@
-import { describe, expect, it } from 'vitest'
-
 import { indexBy } from 'remeda'
+import { describe, expect, it } from 'vitest'
 import { type LayoutedElementView, _type } from '../types'
 import { type Patches, prepareFixtures } from './__test__/fixture'
 import { applyManualLayout } from './applyManualLayout'

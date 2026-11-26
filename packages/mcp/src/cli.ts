@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { defineCommand, runMain } from 'citty'
 import { resolve } from 'node:path'
-import { startLikeC4MCP } from './index'
+import { defineCommand, runMain } from 'citty'
 import { logger } from './utils'
+import { startLikeC4MCP } from './index'
 
 const main = defineCommand({
   meta: {

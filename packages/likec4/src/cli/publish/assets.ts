@@ -1,3 +1,4 @@
+import type { PublishAsset, PublishProject } from './payload'
 /**
  * Collection of the local files a model references as icons (ADR-0010 of `likec4/cloud`).
  *
@@ -11,7 +12,6 @@ import { readFile } from 'node:fs/promises'
 import { basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'tinyrainbow'
-import type { PublishAsset, PublishProject } from './payload'
 
 /**
  * The only key whose value is treated as an icon reference.

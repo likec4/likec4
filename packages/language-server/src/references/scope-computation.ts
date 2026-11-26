@@ -1,3 +1,5 @@
+import type { CancellationToken } from 'vscode-languageserver'
+import type { LikeC4Services } from '../module'
 import { nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
@@ -7,11 +9,9 @@ import {
   MultiMap,
 } from 'langium'
 import { entries, filter, flatMap, forEachObj, groupBy, isNullish, isTruthy, pipe } from 'remeda'
-import type { CancellationToken } from 'vscode-languageserver'
 import { type LikeC4LangiumDocument, ast } from '../ast'
 import { iconRegistry, isBundledIconGroup } from '../generated/icons'
 import { logWarnError } from '../logger'
-import type { LikeC4Services } from '../module'
 import { uniqueSingles } from '../utils'
 
 type ElementsContainer = ast.Model | ast.DiffAdd | ast.ElementBody | ast.ExtendElementBody

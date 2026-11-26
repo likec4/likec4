@@ -1,6 +1,6 @@
+import type * as yargs from 'yargs'
 import { fromWorkspace } from '@likec4/language-services/node'
 import k from 'tinyrainbow'
-import type * as yargs from 'yargs'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { path, project } from '../options'
 import { runValidate } from './handler'
@@ -49,15 +49,15 @@ const validateCmd = (yargs: yargs.Argv) => {
 
   ${k.green('$0 validate --no-layout --json -f ./src/model.c4 -f ./src/deployment.c4 ')}
     ${
-            k.gray(
-              [
-                'Validate all',
-                'ignore layout drifts',
-                'report only errors from these files',
-                'output as JSON',
-              ].join(', '),
-            )
-          }
+      k.gray(
+        [
+          'Validate all',
+          'ignore layout drifts',
+          'report only errors from these files',
+          'output as JSON',
+        ].join(', '),
+      )
+    }
 
   ${k.green('$0 validate --max-warnings 0')}
     ${k.gray('Validate all, fail on any warning')}

@@ -1,7 +1,7 @@
 import type { Nodes } from 'mdast'
+import type { MarkdownRef, MarkdownRefTitleResolver } from './types'
 import { extractRefs } from './extract-refs'
 import { visitRefs } from './refs'
-import type { MarkdownRef, MarkdownRefTitleResolver } from './types'
 
 /**
  * Returns the text a ref is displayed with:

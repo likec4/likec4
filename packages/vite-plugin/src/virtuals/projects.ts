@@ -6,11 +6,11 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { NonEmptyArray } from '@likec4/core'
+import type { ProjectData } from '../internal'
+import type { VirtualModule } from './_shared'
 import JSON5 from 'json5'
 import { map } from 'remeda'
-import type { ProjectData } from '../internal'
 import { logGenerating } from '../logger'
-import type { VirtualModule } from './_shared'
 import { effectiveWebappExportFormats } from './export-formats'
 
 const code = (projects: NonEmptyArray<ProjectData>) => `

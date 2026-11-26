@@ -19,8 +19,8 @@ import { LikeC4Model } from '${rootImport}/core/model'
 ${aux}
 
 export const likec4model: LikeC4Model<$Aux> = new LikeC4Model(${
-    JSON5.stringify(model.$data, { space: 2, quote: '\'' })
-  } as any) as any
+  JSON5.stringify(model.$data, { space: 2, quote: '\'' })
+} as any) as any
 
 /* prettier-ignore-end */
 `.trimStart()

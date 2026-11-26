@@ -1,10 +1,10 @@
-import { filter, forEach, pipe, reduce } from 'remeda'
 import type { DeploymentElementModel, DeploymentNodeModel } from '../../../model'
-import { isDeployedInstanceModel as isDeployedInstance } from '../../../model'
 import type { FqnExpr } from '../../../types'
 import type { Elem, IncludePredicateCtx, PredicateExecutor } from '../_types'
-import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import type { StageInclude } from '../memory'
+import { filter, forEach, pipe, reduce } from 'remeda'
+import { isDeployedInstanceModel as isDeployedInstance } from '../../../model'
+import { cleanCrossBoundary, cleanRedundantRelationships } from '../clean-connections'
 import { deploymentExpressionToPredicate, findConnectionsBetween, findConnectionsWithin } from '../utils'
 import { applyElementPredicate } from './utils'
 

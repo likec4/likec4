@@ -1,9 +1,9 @@
-import { FqnExpr, FqnRef } from '@likec4/core/types'
 import type { ValidationCheck } from 'langium'
+import type { LikeC4Services } from '../../module'
+import { FqnExpr, FqnRef } from '@likec4/core/types'
 import { AstUtils } from 'langium'
 import { isTruthy } from 'remeda'
 import { ast, getViewRulePredicateContainer, isFqnRefInsideDeployment } from '../../ast'
-import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
 export const checkFqnRefExpr = (

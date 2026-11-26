@@ -1,4 +1,6 @@
 import type { OnNodeDrag } from '@xyflow/react'
+import type { DiagramApi } from '../../hooks/useDiagram'
+import type { Types } from '../types'
 import {
   type Simulation,
   type SimulationLinkDatum,
@@ -11,8 +13,6 @@ import {
   forceY,
 } from 'd3-force'
 import { useEffect, useMemo, useRef } from 'react'
-import type { DiagramApi } from '../../hooks/useDiagram'
-import type { Types } from '../types'
 import { GraphNodeDiameter } from './graph-view-to-xy'
 
 type SimNode = SimulationNodeDatum & {

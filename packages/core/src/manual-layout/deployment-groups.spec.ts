@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { DiagramNode, LayoutedDeploymentView, NodeId, ViewManualLayoutSnapshot } from '../types'
+import { describe, expect, it } from 'vitest'
 import { GroupElementKind } from '../types'
 import { prepareFixtures } from './__test__/fixture'
 import { applyManualLayout } from './applyManualLayout'

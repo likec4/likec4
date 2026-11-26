@@ -1,5 +1,7 @@
-import { type ComputedView, type EdgeId, type NonEmptyArray, exact } from '@likec4/core'
 import type { NodeId } from '@likec4/core/types'
+import type { prepareLLMInput } from './llm-input'
+import type { AIEnforcementEdge, AILayoutHints } from './types'
+import { type ComputedView, type EdgeId, type NonEmptyArray, exact } from '@likec4/core'
 import json5 from 'json5'
 import {
   entries,
@@ -16,9 +18,7 @@ import {
   values,
 } from 'remeda'
 import * as z from 'zod/v4'
-import type { prepareLLMInput } from './llm-input'
 import { logger } from './logger'
-import type { AIEnforcementEdge, AILayoutHints } from './types'
 
 const direction = z.enum(['TB', 'BT', 'LR', 'RL'])
 

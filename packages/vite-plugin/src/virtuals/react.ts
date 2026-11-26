@@ -1,6 +1,6 @@
+import type { ProjectVirtualModule, VirtualModule } from './_shared'
 import { first } from 'remeda'
 import { logGenerating } from '../logger'
-import type { ProjectVirtualModule, VirtualModule } from './_shared'
 
 /**
  * With the customization file configured, the project provider also applies its UI overrides

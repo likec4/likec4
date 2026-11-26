@@ -1,8 +1,8 @@
 import type * as c4 from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LikeC4Styles } from '@likec4/core/styles'
-import { Disposable } from 'langium'
 import type { LikeC4Services } from '../module'
+import { Disposable } from 'langium'
 import { ADisposable } from '../utils'
 import { MergedSpecification } from './builder/MergedSpecification'
 

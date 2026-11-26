@@ -1,9 +1,9 @@
+import type { RelationshipDetailsTypes as Types } from '../_types'
 import { IconFileSymlink, IconTransform, IconZoomScan } from '@tabler/icons-react'
 import { ElementActionButtons } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useCurrentViewId } from '../../../hooks/useCurrentView'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { RelationshipDetailsTypes as Types } from '../_types'
 
 export const ElementActions = (props: Types.NodeProps<'element'>) => {
   const { enableNavigateTo, enableVscode } = useEnabledFeatures()

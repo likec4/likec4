@@ -38,13 +38,11 @@ export function ProjectButton({ project, navigateTo, className, ...props }:
           }
         },
       })}>
-      {
-        /* <ThemeIcon variant="transparent">
+      {/* <ThemeIcon variant="transparent">
         {isDeploymentView(view)
           ? <IconStack2 stroke={1.8} />
           : <IconZoomScan stroke={1.8} />}
-      </ThemeIcon> */
-      }
+      </ThemeIcon> */}
       <Box style={{ flexGrow: 1 }}>
         <Group gap={'xs'} wrap="nowrap" align="center">
           {project}

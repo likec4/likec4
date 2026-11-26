@@ -1,8 +1,8 @@
 import type { ProjectId } from '@likec4/core'
+import type { PropsWithChildren } from 'react'
 import { LikeC4ProjectsProvider, useCallbackRef } from '@likec4/diagram'
 import { useNavigate } from '@tanstack/react-router'
 import { useLikeC4Projects } from 'likec4:projects'
-import type { PropsWithChildren } from 'react'
 
 export function LikeC4ProjectsContext({ children }: PropsWithChildren) {
   const projects = useLikeC4Projects()

@@ -1,10 +1,10 @@
-import { type WritableDraft, produce } from 'immer'
-import { filter, indexBy, isTruthy, map, pipe, prop } from 'remeda'
 import type { LiteralUnion } from 'type-fest'
 import type { Types } from '../../builder/_types'
-import { Builder } from '../../builder/Builder'
 import type { DiagramEdge, DiagramNode, EdgeId, LayoutedElementView, NodeId } from '../../types'
 import type { ViewManualLayoutSnapshot } from '../../types/view-manual-layout'
+import { type WritableDraft, produce } from 'immer'
+import { filter, indexBy, isTruthy, map, pipe, prop } from 'remeda'
+import { Builder } from '../../builder/Builder'
 import indexSnapshot from './index-snapshot.json' with { type: 'json' }
 
 /**

@@ -5,11 +5,11 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { DiagramView } from '@likec4/core/types'
+import type { McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 /// <reference lib="dom" />
 import { LikeC4Model } from '@likec4/core/model'
-import type { DiagramView } from '@likec4/core/types'
 import { LikeC4Diagram, LikeC4MantineProvider, LikeC4ModelProvider } from '@likec4/diagram'
-import type { McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { useApp, useDocumentTheme, useHostStyles } from '@modelcontextprotocol/ext-apps/react'
 import { type ErrorInfo, type PropsWithChildren, Component, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'

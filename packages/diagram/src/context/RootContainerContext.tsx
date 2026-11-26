@@ -1,6 +1,6 @@
+import type { RefObject } from 'react'
 import { useStore } from '@nanostores/react'
 import { type WritableAtom } from 'nanostores'
-import type { RefObject } from 'react'
 import { createContext, useContext } from 'react'
 
 export type RootContainerContextType = {

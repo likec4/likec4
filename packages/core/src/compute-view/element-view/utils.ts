@@ -1,5 +1,7 @@
-import { filter, hasAtLeast, only, partition, pipe } from 'remeda'
 import type { ConnectionModel, LikeC4Model } from '../../model'
+import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
+import type { Memory } from './_types'
+import { filter, hasAtLeast, only, partition, pipe } from 'remeda'
 import {
   type AnyAux,
   type ComputedEdge,
@@ -11,8 +13,6 @@ import { invariant } from '../../utils'
 import { stringHash } from '../../utils/string-hash'
 import { buildComputedNodes, elementModelToNodeSource } from '../utils/buildComputedNodes'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
-import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
-import type { Memory } from './_types'
 
 export const NoWhere = () => true
 export const NoFilter = <T>(x: T[] | readonly T[]): T[] => x as T[]

@@ -1,6 +1,6 @@
 import type { AnyAux, ComputedNode, NodeId } from '../../types'
-import { invariant, nonNullable, parentFqn } from '../../utils'
 import type { Memory } from './memory'
+import { invariant, nonNullable, parentFqn } from '../../utils'
 
 export function groupDeploymentNodes<A extends AnyAux>(
   nodes: ReadonlyMap<NodeId, ComputedNode<A>>,

@@ -1,16 +1,16 @@
-import { MemoryEventStore, StreamableHTTPTransport } from '@hono/mcp'
 import type { HttpBindings, ServerType } from '@hono/node-server'
-import { serve } from '@hono/node-server'
 import type { LikeC4LanguageServices } from '@likec4/language-server'
-import { loggable } from '@likec4/log'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { AsyncDisposable } from 'langium'
+import type { LikeC4MCPServer } from './StdioLikeC4MCPServer'
+import { MemoryEventStore, StreamableHTTPTransport } from '@hono/mcp'
+import { serve } from '@hono/node-server'
+import { loggable } from '@likec4/log'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import type { AsyncDisposable } from 'langium'
 import { setMcpServerCtx } from '../ctx'
 import { logger } from '../utils'
 import { createMCPServer } from './createMCPServer'
-import type { LikeC4MCPServer } from './StdioLikeC4MCPServer'
 
 type Bindings = HttpBindings & {
   /* ... */

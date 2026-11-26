@@ -1,10 +1,10 @@
+import type { EditorCalls } from './setup'
+import type { EditorActorEvent } from './types'
 import { scalar } from '@likec4/core/types'
 import { describe, expect, it, vi } from 'vitest'
 import { type ActorRefFrom, type AnyEventObject, createActor, fromPromise, setup, waitFor } from 'xstate'
 import { shouldWaitForViewSync } from '../LikeC4EditorCallbacks'
 import { editorActorLogic } from './machine'
-import type { EditorCalls } from './setup'
-import type { EditorActorEvent } from './types'
 
 const change = {
   op: 'change-autolayout' as const,

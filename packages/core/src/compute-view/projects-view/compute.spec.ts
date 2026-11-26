@@ -1,10 +1,10 @@
+import type { ImportedProjectMeta, NTuple, ProjectId } from '../../types'
+import type { ComputedProjectNode } from './_types'
 import { hasAtLeast } from 'remeda'
 import { describe, it } from 'vitest'
 import { Builder } from '../../builder'
 import { LikeC4Model } from '../../model'
-import type { ImportedProjectMeta, NTuple, ProjectId } from '../../types'
 import { invariant } from '../../utils'
-import type { ComputedProjectNode } from './_types'
 import { computeProjectsView } from './compute'
 
 const builder = Builder

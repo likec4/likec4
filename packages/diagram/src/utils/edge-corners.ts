@@ -1,6 +1,6 @@
-import { isOrthoSpline, nearlyEqual, projectOnSegment, splineToPolyline } from '@likec4/core/geometry'
 import type { EdgeRouting, NonEmptyArray, Point } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
+import { isOrthoSpline, nearlyEqual, projectOnSegment, splineToPolyline } from '@likec4/core/geometry'
 import { type Endpoints, inDrawingOrder, orthoPolyline } from './edge-path'
 import { bezierControlPoints } from './xyflow'
 

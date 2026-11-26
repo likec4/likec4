@@ -3,11 +3,11 @@
 // Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { Fqn, RelationId, ViewId } from '@likec4/core/types'
+import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 import { useSelector } from '@xstate/react'
 import { type PropsWithChildren, useMemo } from 'react'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useCurrentViewId } from '../hooks/useCurrentView'
-import type { SearchActorRef, SearchActorSnapshot } from './searchActor'
 import { type SearchContextValue, normalizeSearch, SearchContext } from './SearchContext'
 
 const selectSearchValue = (s: SearchActorSnapshot) => s.context.searchValue

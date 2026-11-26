@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-import { renderViewPng } from '#copyAsPng'
 import type { ProjectId, ViewId } from '@likec4/core'
+import type { PreviewPanel, RpcClient } from './types'
+import { renderViewPng } from '#copyAsPng'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { config } from '../config'
@@ -16,7 +17,6 @@ import {
   saveDirtyLikeC4Documents,
   showPngExportError,
 } from './exportPngShared'
-import type { PreviewPanel, RpcClient } from './types'
 
 export interface SaveAsPngCommandDeps {
   sendTelemetry(commandId: string): void

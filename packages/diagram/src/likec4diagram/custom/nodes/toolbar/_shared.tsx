@@ -1,11 +1,11 @@
 import type { BorderStyle, DeploymentFqn, Fqn } from '@likec4/core/types'
+import type { MergeExclusive } from 'type-fest'
+import type { OnStyleChange } from './types'
 import { ActionIcon, SegmentedControl, Tooltip as MantineTooltip } from '@mantine/core'
 import { IconFileSymlink, IconTransform } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import type { MergeExclusive } from 'type-fest'
 import { useDiagramEventHandlers } from '../../../../context'
 import { useDiagram } from '../../../../hooks/useDiagram'
-import type { OnStyleChange } from './types'
 
 export const Tooltip = MantineTooltip.withProps({
   color: 'dark',

@@ -1,7 +1,7 @@
 import type { AnyAux, Fqn } from '../../types'
-import { isAncestor } from '../../utils'
 import type { DeploymentElementModel } from '../DeploymentElementModel'
 import type { ElementModel } from '../ElementModel'
+import { isAncestor } from '../../utils'
 
 export interface Connection<Elem = ElementModel<AnyAux> | DeploymentElementModel<AnyAux>, Id = string> {
   readonly id: Id

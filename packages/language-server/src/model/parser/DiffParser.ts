@@ -1,3 +1,4 @@
+import type { WithModel } from './ModelParser'
 import { invariant } from '@likec4/core'
 import { DiffId, FqnRef } from '@likec4/core/types'
 import { filter, mapToObj, partition, pipe } from 'remeda'
@@ -12,7 +13,6 @@ import {
 } from '../../ast'
 import { relationFingerprint } from '../relationFingerprint'
 import { toSingleLine } from './Base'
-import type { WithModel } from './ModelParser'
 import { streamModelElements } from './ModelParser'
 
 export function DiffParser<TBase extends WithModel>(B: TBase) {

@@ -1,7 +1,6 @@
+import type { ComputedEdge, ComputedNode, ComputedView, LayoutedView } from '../types'
 import { indexBy } from 'remeda'
 import { describe, expect, it } from 'vitest'
-
-import type { ComputedEdge, ComputedNode, ComputedView, LayoutedView } from '../types'
 import { _layout, _stage } from '../types'
 import { prepareFixtures } from './__test__/fixture'
 import { applyCachedLayout } from './applyCachedLayout'

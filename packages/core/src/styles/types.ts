@@ -1,3 +1,5 @@
+import type { Tagged, TupleToUnion } from 'type-fest'
+import type { EdgeRouting } from '../types/view-common'
 import {
   BorderStyles,
   ElementShapes,
@@ -6,8 +8,6 @@ import {
   Sizings,
   ThemeColors,
 } from '@likec4/style-preset/defaults'
-import type { Tagged, TupleToUnion } from 'type-fest'
-import type { EdgeRouting } from '../types/view-common'
 
 export {
   BorderStyles,

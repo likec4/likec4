@@ -1,9 +1,9 @@
 import type { ComputedView } from '@likec4/core/types'
+import type { AILayoutHints, AILayoutProvider } from './types'
 import { prepareLLMInput } from './llm-input'
 import { parseOutput } from './llm-output'
 import { logger } from './logger'
 import { LAYOUT_SYSTEM_PROMPT } from './prompt-system.generated'
-import type { AILayoutHints, AILayoutProvider } from './types'
 
 const prompts = {
   systemPrompt: LAYOUT_SYSTEM_PROMPT,

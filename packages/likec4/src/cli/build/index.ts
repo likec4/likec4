@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
-import { fromWorkspace } from '@likec4/language-services/node'
-import { resolve } from 'node:path'
-import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
+import { resolve } from 'node:path'
+import { fromWorkspace } from '@likec4/language-services/node'
+import k from 'tinyrainbow'
 import { resolveAppConfig } from '../../app-config'
 import { createLikeC4Logger } from '../../logger'
 import { relativeToCwd } from '../../vite/utils'

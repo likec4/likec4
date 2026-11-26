@@ -1,10 +1,11 @@
+import type { ProjectId } from '@likec4/core/types'
+import type { LikeC4SharedServices } from '../module'
 import {
   type LikeC4ProjectConfig,
   ConfigFilenames,
   isLikeC4JsonConfig,
   LikeC4ProjectConfigOps,
 } from '@likec4/config'
-import type { ProjectId } from '@likec4/core/types'
 import { invariant, objectHash } from '@likec4/core/utils'
 import { loggable } from '@likec4/log'
 import { deepEqual } from 'fast-equals'
@@ -13,7 +14,6 @@ import picomatch from 'picomatch'
 import { hasAtLeast, isNullish, omit } from 'remeda'
 import { cleanDoubleSlashes, hasProtocol, isRelative, joinRelativeURL, joinURL, withoutTrailingSlash } from 'ufo'
 import { logger as mainLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
 import { ADisposable } from '../utils'
 import {
   DEPENDENCY_URI_SCHEME,

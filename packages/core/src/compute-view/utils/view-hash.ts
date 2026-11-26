@@ -1,5 +1,5 @@
-import { indexBy, isTruthy, map, mapToObj, pipe, prop } from 'remeda'
 import type { SetOptional } from 'type-fest'
+import { indexBy, isTruthy, map, mapToObj, pipe, prop } from 'remeda'
 import { type ProcessedView, flattenMarkdownOrString } from '../../types'
 import { objectHash } from '../../utils'
 

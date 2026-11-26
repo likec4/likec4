@@ -1,5 +1,5 @@
-import { LikeC4Styles } from '@likec4/core/styles'
 import type { ComputedNode } from '@likec4/core/types'
+import { LikeC4Styles } from '@likec4/core/styles'
 import { describe, expect, it } from 'vitest'
 import { elementNodeBox } from './element-node'
 

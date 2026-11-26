@@ -1,8 +1,8 @@
 import type { RemovalImpactReport } from '@likec4/language-server'
+import type * as yargs from 'yargs'
 import { fromWorkspace } from '@likec4/language-services/node'
 import { entries } from 'remeda'
 import k from 'tinyrainbow'
-import type * as yargs from 'yargs'
 import { createLikeC4Logger } from '../../logger'
 import { displayLocation, findProject, projectsToSearch, reportEditResult } from '../model-edits'
 import { path, project } from '../options'
@@ -94,15 +94,18 @@ const safeDeleteCmd = (yargs: yargs.Argv) => {
         return
       }
 
-      const result = await likec4.modelEdits.apply({
-        type: 'safe-delete',
-        targets: [args.element],
-        options: {
-          includeOrphans: args.orphans,
-          includeScopedViews: args.scopedViews,
-          includeDynamicSteps: args.dynamicSteps,
+      const result = await likec4.modelEdits.apply(
+        {
+          type: 'safe-delete',
+          targets: [args.element],
+          options: {
+            includeOrphans: args.orphans,
+            includeScopedViews: args.scopedViews,
+            includeDynamicSteps: args.dynamicSteps,
+          },
         },
-      }, { projectId })
+        { projectId },
+      )
       reportEditResult(logger, `Safe delete ${args.element}`, result)
     },
   })

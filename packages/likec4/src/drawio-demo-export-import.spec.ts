@@ -8,6 +8,9 @@
  * causing "Could not add object Array" in draw.io) or wrong counts.
  */
 
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import {
   type DrawioViewModelLike,
   DEFAULT_DRAWIO_ALL_FILENAME,
@@ -15,9 +18,6 @@ import {
   getAllDiagrams,
   parseDrawioToLikeC4Multi,
 } from '@likec4/generators'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { countDrawioCells, expectDrawioXmlLoadableInDrawio } from './drawio-test-utils'
 import { LikeC4 } from './LikeC4'

@@ -1,4 +1,3 @@
-import { LikeC4Model } from '../../model/LikeC4Model'
 import type {
   _stage,
   _type,
@@ -11,6 +10,7 @@ import type {
   ModelExpression,
   ViewAutoLayout,
 } from '../../types'
+import { LikeC4Model } from '../../model/LikeC4Model'
 import { type ParsedElementView, ViewId } from '../../types'
 import { computeElementView } from '../element-view/compute'
 

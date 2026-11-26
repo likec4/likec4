@@ -1,12 +1,12 @@
 import type { Color, ElementStyle } from '@likec4/core/types'
+import type { MotionStyle } from 'motion/react'
+import type { HTMLAttributes, PropsWithChildren } from 'react'
+import type { BaseNode, BaseNodeProps } from '../../base/types'
 import { cx } from '@likec4/styles/css'
 import { compoundNode } from '@likec4/styles/recipes'
-import type { MotionStyle } from 'motion/react'
 import * as m from 'motion/react-m'
-import type { HTMLAttributes, PropsWithChildren } from 'react'
 import { clamp } from 'remeda'
 import { MAX_COMPOUND_DEPTH } from '../../base/const'
-import type { BaseNode, BaseNodeProps } from '../../base/types'
 import { useLikeC4Styles } from '../../hooks/useLikeC4Styles'
 
 export type RequiredData = {

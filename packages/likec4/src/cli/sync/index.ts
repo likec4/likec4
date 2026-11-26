@@ -1,6 +1,6 @@
+import type { Argv } from 'yargs'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
-import type { Argv } from 'yargs'
 import { outdir, path, project, useDotBin } from '../options'
 import { runSyncLeanix } from './leanix'
 

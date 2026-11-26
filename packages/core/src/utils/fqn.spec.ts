@@ -1,6 +1,6 @@
+import type { Element } from '../types'
 import { anyPass, isNot, map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { Element } from '../types'
 import {
   ancestorsFqn,
   commonAncestor,

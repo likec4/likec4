@@ -1,11 +1,11 @@
+import type { Logger } from 'vite'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { dirname, extname, join, relative, resolve } from 'node:path'
 import { nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generatePuml, generateViewsDataTs } from '@likec4/generators'
 import { type LikeC4, fromWorkspace } from '@likec4/language-services/node'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { dirname, extname, join, relative, resolve } from 'node:path'
 import { values } from 'remeda'
 import k from 'tinyrainbow'
-import type { Logger } from 'vite'
 import { createLikeC4Logger, logger as cliLogger, startTimer } from '../../logger'
 
 type HandlerParams =

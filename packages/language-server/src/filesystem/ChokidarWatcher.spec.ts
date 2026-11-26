@@ -1,13 +1,13 @@
-import { URI } from 'langium'
+import type { DidChangeWatchedFilesParams } from 'vscode-languageserver'
+import type { ManualLayoutUpdateListener } from './types'
 import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { URI } from 'langium'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
-import type { DidChangeWatchedFilesParams } from 'vscode-languageserver'
 import { createLanguageServices } from '../module'
 import { WithFileSystem } from './LikeC4FileSystem'
 import { WithLikeC4ManualLayouts } from './LikeC4ManualLayouts'
-import type { ManualLayoutUpdateListener } from './types'
 
 describe('ChokidarFileSystemWatcher', () => {
   let root: string

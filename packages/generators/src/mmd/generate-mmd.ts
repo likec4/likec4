@@ -1,7 +1,7 @@
-import { nonexhaustive } from '@likec4/core'
 import type { LikeC4ViewModel } from '@likec4/core/model'
 import type { LikeC4Styles } from '@likec4/core/styles'
 import type { aux, Color, NodeId, ProcessedView as AnyView, RelationshipLineType } from '@likec4/core/types'
+import { nonexhaustive } from '@likec4/core'
 import { CompositeGeneratorNode, joinToNode } from 'langium/generate'
 import { groupBy, isNullish as isNil } from 'remeda'
 import { NL, toStringLF } from '../newline'

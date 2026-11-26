@@ -5,6 +5,9 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { SetRequired, Simplify } from 'type-fest'
+import type { ViewPadding } from '../LikeC4Diagram.props'
+import type { BaseEdge, BaseNode } from './types'
 import { cx } from '@likec4/styles/css'
 import { useMantineColorScheme } from '@mantine/core'
 import {
@@ -16,18 +19,15 @@ import {
 import { defaultAriaLabelConfig } from '@xyflow/system'
 import { type KeyboardEvent, useMemo } from 'react'
 import { isEmptyish } from 'remeda'
-import type { SetRequired, Simplify } from 'type-fest'
 import { useCallbackRef } from '../hooks/useCallbackRef'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
 import { useIsZoomTooSmall, useXYFlow, useXYStoreApi } from '../hooks/useXYFlow'
-import type { ViewPadding } from '../LikeC4Diagram.props'
 import { roundDpr } from '../utils/roundDpr'
 import { stopPropagation } from '../utils/xyflow'
 import { type XYBackground, Background } from './Background'
 import { Base } from './Base'
 import { MaxZoom, MinZoom } from './const'
 import { getKeyboardZoomAction } from './keyboardZoom'
-import type { BaseEdge, BaseNode } from './types'
 
 // React Flow renders a single, shared description element that every node (and
 // every edge) references via `aria-describedby`, so this wording must hold for

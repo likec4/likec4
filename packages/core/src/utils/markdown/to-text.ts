@@ -1,11 +1,11 @@
 import type { Nodes } from 'mdast'
+import type { MarkdownRefTitleResolver } from './types'
 import { toString } from 'mdast-util-to-string'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import { remarkLikeC4Refs } from './refs'
 import { resolveRefNodes } from './resolve-refs'
-import type { MarkdownRefTitleResolver } from './types'
 
 // Same syntax as markdownToHtml (GFM tables, strikethrough, task lists, etc.)
 const processor = unified()

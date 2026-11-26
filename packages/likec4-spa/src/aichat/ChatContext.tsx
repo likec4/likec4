@@ -1,6 +1,6 @@
+import type { TypedUIMessage, TypedUIMessages, UseChatReturn } from './useChat'
 import { nonNullable } from '@likec4/core'
 import { createContext, use } from 'react'
-import type { TypedUIMessage, TypedUIMessages, UseChatReturn } from './useChat'
 
 export const ChatContext = createContext<UseChatReturn>(null as any)
 

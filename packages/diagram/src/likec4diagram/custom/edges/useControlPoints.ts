@@ -1,5 +1,6 @@
 import type { EdgeRouting } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
+import type { Types } from '../../types'
 import { deepEqual } from 'fast-equals'
 import { useState } from 'react'
 import { useCallbackRef } from '../../../hooks/useCallbackRef'
@@ -7,7 +8,6 @@ import { useUpdateEffect } from '../../../hooks/useUpdateEffect'
 import { useXYStoreApi } from '../../../hooks/useXYFlow'
 import { initialControlPoints, insertCorner } from '../../../utils/edge-corners'
 import { edgeEndCenters } from '../../../utils/edge-endpoints'
-import type { Types } from '../../types'
 
 export function useControlPoints(props: Types.EdgeProps<'relationship'>, routing: EdgeRouting) {
   const { data } = props

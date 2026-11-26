@@ -1,6 +1,6 @@
+import type { PropsWithChildren } from 'react'
 import { useHotkeys } from '@mantine/hooks'
 import { useSelector, useStore } from '@xstate/store-react'
-import type { PropsWithChildren } from 'react'
 import { WorkspaceSearchContext, workspaceSearchLogic } from './store'
 import { WorkspaceSearch } from './WorkspaceSearch'
 

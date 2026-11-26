@@ -1,7 +1,7 @@
+import type { CatalogProject } from './catalog'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { DataTable, TableName } from '../ui/DataTable'
 import { formatCount } from '../ui/Text'
-import type { CatalogProject } from './catalog'
 import { ProjectMonogram } from './ProjectMonogram'
 
 export function ProjectsTable({ projects }: { projects: ReadonlyArray<CatalogProject> }) {

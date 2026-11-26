@@ -1,4 +1,5 @@
 import type { RichTextNonEmpty, RichTextOrEmpty } from '@likec4/core/types'
+import type { MarkdownProps } from '../../base-primitives/Markdown'
 import { css, cx } from '@likec4/styles/css'
 import { Box, Txt } from '@likec4/styles/jsx'
 import { token } from '@likec4/styles/tokens'
@@ -15,7 +16,6 @@ import {
   useLayoutEffect,
   useMemo,
 } from 'react'
-import type { MarkdownProps } from '../../base-primitives/Markdown'
 import { Markdown } from '../../base-primitives/Markdown'
 import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { IconRenderer } from '../../context/IconRenderer'

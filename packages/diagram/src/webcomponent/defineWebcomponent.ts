@@ -1,7 +1,7 @@
 import type { ProjectId } from '@likec4/core'
+import type { LikeC4ViewProps } from '../LikeC4View'
 import { type Root, createRoot } from 'react-dom/client'
 import { jsx } from 'react/jsx-runtime'
-import type { LikeC4ViewProps } from '../LikeC4View'
 
 type LikeC4ElementProps = {
   viewId: string

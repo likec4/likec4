@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-import spawn, { SubprocessError } from 'nano-spawn'
 import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import spawn, { SubprocessError } from 'nano-spawn'
 import { Likec4CliNotFoundError } from '../likec4CliNotFoundError'
 import { type PngExportNotation, pngExportNotationArgs } from '../pngExportNotation'
 import {

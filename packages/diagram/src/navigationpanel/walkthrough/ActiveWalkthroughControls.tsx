@@ -46,8 +46,7 @@ const ParallelFrame = () => {
             borderWidth: 'extra',
           },
         }}
-      >
-      </Box>
+      ></Box>
     </Portal>
   )
 }

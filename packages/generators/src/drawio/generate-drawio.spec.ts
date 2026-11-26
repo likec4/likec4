@@ -1,6 +1,6 @@
-import { Builder } from '@likec4/core/builder'
 import type { aux, ProcessedView } from '@likec4/core/types'
 import type { DrawioViewModelLike } from '@likec4/generators'
+import { Builder } from '@likec4/core/builder'
 import {
   generateDrawio,
   generateDrawioMulti,

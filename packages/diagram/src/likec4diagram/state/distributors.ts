@@ -1,5 +1,5 @@
-import { nonexhaustive } from '@likec4/core'
 import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
+import { nonexhaustive } from '@likec4/core'
 import { getNodeDimensions } from '@xyflow/system'
 import { sortBy } from 'remeda'
 

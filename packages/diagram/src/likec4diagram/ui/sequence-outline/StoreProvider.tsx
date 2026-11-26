@@ -1,4 +1,12 @@
 import {
+  type StepPath,
+  dynamicViewFlow,
+  flowAncestors,
+  invariant,
+  isDynamicViewWithFlow,
+} from '@likec4/core'
+import { extractViewTitleFromPath } from '@likec4/core/model'
+import {
   type SnapshotFromStore,
   type StoreFromStoreLogicCreator,
   createStoreLogic,
@@ -7,15 +15,6 @@ import {
 } from '@xstate/store-react'
 import { shallowEqual } from 'fast-equals'
 import { type PropsWithChildren, createContext, use, useEffect } from 'react'
-
-import {
-  type StepPath,
-  dynamicViewFlow,
-  flowAncestors,
-  invariant,
-  isDynamicViewWithFlow,
-} from '@likec4/core'
-import { extractViewTitleFromPath } from '@likec4/core/model'
 import { selectDiagramContext, useDiagramSelector } from '../../../hooks/safeContext'
 import { roundDpr } from '../../../utils'
 import { buildTree } from './tree'

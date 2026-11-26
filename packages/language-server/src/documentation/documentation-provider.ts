@@ -1,10 +1,10 @@
+import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
+import type { LikeC4Services } from '../module'
+import type { DependencyResolver, ProjectsLookup } from '../workspace'
 import { type Fqn, FqnRef } from '@likec4/core'
 import { type AstNode, AstUtils, DocumentState, JSDocDocumentationProvider } from 'langium'
 import { ast } from '../ast'
 import { logger } from '../logger'
-import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
-import type { LikeC4Services } from '../module'
-import type { DependencyResolver, ProjectsLookup } from '../workspace'
 
 /**
  * Provides documentation for LikeC4 AST nodes, extending JSDoc parsing

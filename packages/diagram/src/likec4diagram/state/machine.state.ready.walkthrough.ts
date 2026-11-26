@@ -1,3 +1,4 @@
+import type { Types } from '../types'
 import {
   invariant,
   nonNullable,
@@ -18,7 +19,6 @@ import { assertEvent, enqueueActions } from 'xstate'
 import { assign, raise } from 'xstate/actions'
 import { Base } from '../../base'
 import { roundDpr } from '../../utils'
-import type { Types } from '../types'
 import {
   assignLastClickedNode,
   assignViewportBefore,

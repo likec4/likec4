@@ -1,5 +1,5 @@
-import k from 'tinyrainbow'
 import type { Argv } from 'yargs'
+import k from 'tinyrainbow'
 import { path, project, useDotBin } from '../options'
 import { publishHandler } from './handler'
 

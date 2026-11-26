@@ -1,4 +1,14 @@
 import type { Simplify, Writable } from 'type-fest'
+import type { AnyTypes } from './_types'
+import type { Builder } from './Builder'
+import type {
+  $autoLayout,
+  $exclude,
+  $include,
+  $rules,
+  $style,
+} from './Builder.view-common'
+import type { $step, AddDynamicViewHelper, DynamicViewBuilder } from './Builder.view-dynamic'
 import {
   type AutoLayoutDirection,
   type LikeC4View,
@@ -10,22 +20,12 @@ import {
   _type,
   exact,
 } from '../types'
-import type { AnyTypes } from './_types'
-import type { Builder } from './Builder'
-import type {
-  $autoLayout,
-  $exclude,
-  $include,
-  $rules,
-  $style,
-} from './Builder.view-common'
 import {
   type AddDeploymentViewHelper,
   type DeploymentViewBuilder,
   $deploymentExpr,
   $includeAncestors,
 } from './Builder.view-deployment'
-import type { $step, AddDynamicViewHelper, DynamicViewBuilder } from './Builder.view-dynamic'
 import {
   type AddViewHelper,
   type AddViewOfHelper,

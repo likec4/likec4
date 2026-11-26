@@ -1,5 +1,5 @@
-import { usePlayground, usePlaygroundContext } from '$/hooks/usePlayground'
 import type { ReferenceKind, RemovalImpactReference, SafeDeleteOptions } from '@likec4/language-server/protocol'
+import { usePlayground, usePlaygroundContext } from '$/hooks/usePlayground'
 import {
   ActionIcon,
   Alert,
@@ -59,8 +59,7 @@ function ReferenceList(
             size="xs"
             component="button"
             ta="left"
-            onClick={() =>
-              onReveal(reference)}>
+            onClick={() => onReveal(reference)}>
             <Code fz="xs">{reference.text}</Code>
           </Anchor>
         </Group>

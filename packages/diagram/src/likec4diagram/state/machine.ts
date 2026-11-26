@@ -1,10 +1,15 @@
-import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { ActorRef, SnapshotFrom, StateValueFrom } from 'xstate'
-import { assign, stopChild } from 'xstate/actions'
 import type { BaseEditorActorRef } from '../../editor/actor/setup'
 import type { NavigationPanelActorRef } from '../../navigationpanel/actor'
 import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
+import type {
+  BaseDiagramMachineLogic,
+  EmittedEvents as DiagramEmittedEvents,
+  Events as DiagramEvents,
+} from './machine.setup'
+import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
+import { assign, stopChild } from 'xstate/actions'
 import {
   updateEdgeData,
   updateNodeData,
@@ -21,11 +26,6 @@ import {
   updateInputs,
   updateNodeSelectionOrder,
 } from './machine.actions'
-import type {
-  BaseDiagramMachineLogic,
-  EmittedEvents as DiagramEmittedEvents,
-  Events as DiagramEvents,
-} from './machine.setup'
 import {
   Context as DiagramContext,
   machine,

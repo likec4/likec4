@@ -1,3 +1,12 @@
+import type { LikeC4SharedServices } from '../module'
+import type { Project } from '../workspace/ProjectsManager'
+import type {
+  LikeC4ManualLayouts,
+  LikeC4ManualLayoutsModuleContext,
+  ManualLayoutsSnapshot,
+  ManualLayoutUpdateEvent,
+  ManualLayoutUpdateListener,
+} from './types'
 import { type DiagramNode, type Icon, type LayoutedView, type ProjectId, type ViewId, exact } from '@likec4/core'
 import { objectHash, onNextTick, stringHash } from '@likec4/core/utils'
 import JSON5 from 'json5'
@@ -13,16 +22,7 @@ import {
   Range,
 } from 'vscode-languageserver-types'
 import { logger as rootLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
 import { ADisposable, compareByUri, safeCall } from '../utils'
-import type { Project } from '../workspace/ProjectsManager'
-import type {
-  LikeC4ManualLayouts,
-  LikeC4ManualLayoutsModuleContext,
-  ManualLayoutsSnapshot,
-  ManualLayoutUpdateEvent,
-  ManualLayoutUpdateListener,
-} from './types'
 
 const layoutsLogger = rootLogger.getChild('manual-layouts')
 

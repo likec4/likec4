@@ -1,6 +1,6 @@
+import type { RelationshipsBrowserTypes } from '../_types'
 import { Box } from '@likec4/styles/jsx'
 import { Txt } from '@likec4/styles/jsx'
-import type { RelationshipsBrowserTypes } from '../_types'
 
 export function EmptyNode({
   data: {

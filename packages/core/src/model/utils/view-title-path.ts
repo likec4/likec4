@@ -1,5 +1,5 @@
-import { hasAtLeast } from 'remeda'
 import type { NonEmptyArray } from '../../types'
+import { hasAtLeast } from 'remeda'
 import { invariant } from '../../utils'
 
 export const VIEW_FOLDERS_SEPARATOR = '/'

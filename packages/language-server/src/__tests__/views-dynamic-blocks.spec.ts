@@ -1,5 +1,5 @@
-import { describe, test } from 'vitest'
 import type { URI } from 'vscode-uri'
+import { describe, test } from 'vitest'
 import { createTestServices } from '../test'
 
 const model = `

@@ -1,8 +1,8 @@
+import type { AnyCtx, ComputeMemory, CtxElement } from './_types'
 import { Connection } from '../../model'
 import { isAncestor, sortParentsFirst } from '../../utils'
 import { toArray } from '../../utils/iterable'
 import { DefaultMap } from '../../utils/mnemonist'
-import type { AnyCtx, ComputeMemory, CtxElement } from './_types'
 
 export function treeFromMemoryState<T extends AnyCtx, M extends ComputeMemory<T> = ComputeMemory<T>>(
   memory: M,

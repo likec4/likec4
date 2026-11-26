@@ -1,6 +1,6 @@
+import type { URI } from 'vscode-uri'
 import { compareNaturalHierarchically } from '@likec4/core/utils'
 import { withoutTrailingSlash } from 'ufo'
-import type { URI } from 'vscode-uri'
 
 const compare = compareNaturalHierarchically('/')
 /**

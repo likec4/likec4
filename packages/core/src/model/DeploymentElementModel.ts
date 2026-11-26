@@ -1,4 +1,3 @@
-import { isEmpty, isEmptyish, isShallowEqual, isTruthy, unique } from 'remeda'
 import type { SetRequired } from 'type-fest'
 import type {
   Any,
@@ -17,19 +16,20 @@ import type {
   RichTextOrEmpty,
   scalar,
 } from '../types'
-import { exact, preferDescription, preferSummary, RichText } from '../types'
 import type * as aux from '../types/_aux'
+import type { LikeC4DeploymentModel } from './DeploymentModel'
+import type { ElementModel } from './ElementModel'
+import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
+import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
+import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
+import { isEmpty, isEmptyish, isShallowEqual, isTruthy, unique } from 'remeda'
+import { exact, preferDescription, preferSummary, RichText } from '../types'
 import { commonAncestor, hierarchyLevel, nameFromFqn } from '../utils/fqn'
 import { nonNullable } from '../utils/invariant'
 import { ihead } from '../utils/iterable/head'
 import { memoizeProp } from '../utils/memoize-prop'
 import { difference, intersection, union } from '../utils/set'
-import type { LikeC4DeploymentModel } from './DeploymentModel'
-import type { ElementModel } from './ElementModel'
-import type { AnyRelationshipModel, RelationshipModel, RelationshipsIterator } from './RelationModel'
-import type { IncomingFilter, OutgoingFilter, WithMetadata, WithTags } from './types'
 import { memoizeDescription, memoizeSummary } from './utils/richtext'
-import type { LikeC4ViewModel } from './view/LikeC4ViewModel'
 
 export type DeploymentElementsIterator<A extends Any> = IteratorLike<DeploymentElementModel<A>>
 export type DeployedInstancesIterator<A extends Any> = IteratorLike<DeployedInstanceModel<A>>

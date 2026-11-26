@@ -1,13 +1,13 @@
-import { isNot } from 'remeda'
 import type { AnyAux, aux, Unknown } from '../../../types'
+import type { ElementModel } from '../../ElementModel'
+import type { RelationshipModel } from '../../RelationModel'
+import type { Connection } from '../Connection'
+import { isNot } from 'remeda'
 import { invariant } from '../../../utils'
 import { customInspectSymbol } from '../../../utils/const'
 import { ifilter, isome } from '../../../utils/iterable'
 import { difference, equals, intersection, union } from '../../../utils/set'
 import { stringHash } from '../../../utils/string-hash'
-import type { ElementModel } from '../../ElementModel'
-import type { RelationshipModel } from '../../RelationModel'
-import type { Connection } from '../Connection'
 import { hasSameSourceTarget } from '../ops'
 
 /**

@@ -1,10 +1,13 @@
-import { filter, isArray, map, pick, pipe } from 'remeda'
 import type {
   DeploymentElementModel,
   DeploymentRelationEndpoint,
   DeploymentRelationModel,
   RelationshipModel,
 } from '../../../model'
+import type { AnyAux } from '../../../types'
+import type { ExcludePredicateCtx, PredicateCtx } from '../_types'
+import type { StageExclude, StageInclude } from '../memory'
+import { filter, isArray, map, pick, pipe } from 'remeda'
 import {
   type DeploymentConnectionModel,
   ElementModel,
@@ -14,12 +17,9 @@ import {
   isElementModel,
   isNestedElementOfDeployedInstanceModel,
 } from '../../../model'
-import type { AnyAux } from '../../../types'
 import { type Filterable, type OperatorPredicate, FqnExpr, RelationExpr } from '../../../types'
 import { nonexhaustive } from '../../../utils'
 import { hasIntersection, intersection } from '../../../utils/set'
-import type { ExcludePredicateCtx, PredicateCtx } from '../_types'
-import type { StageExclude, StageInclude } from '../memory'
 import { DeploymentRefPredicate } from './deploymentRefs'
 import { WhereDeploymentRefPredicate } from './deploymentRefs-where'
 import { DirectRelationPredicate } from './relation-direct'
@@ -47,7 +47,7 @@ export function predicateToPatch(
       // Custom properties are applied to the computed edges, see computeDeploymentView
       return predicateToPatch(op, { ...ctx, expr: expr.customRelation.expr, where })
     case FqnExpr.isCustom(expr):
-      if (op === 'include' && expr.custom.navigateTo != null) {
+      if (op === 'include') {
         return predicateToPatch(op, { ...ctx, expr: expr.custom.expr, where })
       }
       return undefined

@@ -228,16 +228,14 @@ function ExportButton() {
         {enabledFormats.has('drawio') && (
           <MenuItem disabled={isDrawioLoading} onClick={handleDrawioExport}>Export to Draw.io</MenuItem>
         )}
-        {
-          /*
+        {/*
           <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>
         <MenuDivider />
         <MenuLabel>All views</MenuLabel>
         <MenuItem disabled>
           Download as ZIP
-        </MenuItem> */
-        }
+        </MenuItem> */}
       </MenuDropdown>
     </Menu>
   )

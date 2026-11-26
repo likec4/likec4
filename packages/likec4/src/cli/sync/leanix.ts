@@ -3,11 +3,11 @@
  * Writes bridge artifacts to out/bridge; with --apply runs live sync when LEANIX_API_TOKEN is set.
  */
 
-import { fromWorkspace } from '@likec4/language-services/node'
 import type { LeanixApiClient } from '@likec4/leanix-bridge'
-import { planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
 import { writeFile } from 'node:fs/promises'
 import { relative, resolve } from 'node:path'
+import { fromWorkspace } from '@likec4/language-services/node'
+import { planSyncToLeanix, syncToLeanix } from '@likec4/leanix-bridge'
 import k from 'tinyrainbow'
 import { createLikeC4Logger, startTimer } from '../../logger'
 import { LikeC4Model } from '../../model'

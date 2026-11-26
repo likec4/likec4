@@ -1,5 +1,3 @@
-import { isTruthy } from 'remeda'
-import { applyManualLayout, calcDriftsFromSnapshot } from '../../manual-layout'
 import type { LikeC4Styles } from '../../styles'
 import type {
   Any,
@@ -15,10 +13,8 @@ import type {
   ViewManualLayoutSnapshot,
   ViewWithType,
 } from '../../types'
-import { type RichTextOrEmpty, _stage, _type } from '../../types'
 import type * as aux from '../../types/_aux'
 import type { AnyComputed, AnyLayouted } from '../../types/_aux'
-import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import type { ElementModel } from '../ElementModel'
 import type { LikeC4Model } from '../LikeC4Model'
 import type {
@@ -27,10 +23,14 @@ import type {
   NodeOrId,
   WithTags,
 } from '../types'
+import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
+import { isTruthy } from 'remeda'
+import { applyManualLayout, calcDriftsFromSnapshot } from '../../manual-layout'
+import { type RichTextOrEmpty, _stage, _type } from '../../types'
+import { DefaultMap, ifind, memoizeProp, nonNullable } from '../../utils'
 import { extractViewTitleFromPath, getId, normalizeViewPath } from '../utils'
 import { memoizeDescription } from '../utils/richtext'
 import { type EdgesIterator, EdgeModel } from './EdgeModel'
-import type { LikeC4ViewsFolder } from './LikeC4ViewsFolder'
 import { type NodesIterator, NodeModel } from './NodeModel'
 
 export type ViewsIterator<A extends Any, V extends ProcessedView<A> = $View<A>> = IteratorLike<LikeC4ViewModel<A, V>>

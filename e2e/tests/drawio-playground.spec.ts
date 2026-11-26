@@ -1,6 +1,6 @@
 import type { Download, Page } from '@playwright/test'
-import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
+import { expect, test } from '@playwright/test'
 import { canvas, CANVAS_SELECTOR, editor, MENU_SELECTOR } from '../helpers/selectors'
 import {
   TIMEOUT_DIAGRAM,

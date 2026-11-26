@@ -1,6 +1,6 @@
+import type { InitOptions } from '../common/options'
 import { configureLanguageServerLogger } from '@likec4/language-server'
 import { isColorSupported } from 'std-env'
-import type { InitOptions } from '../common/options'
 
 export function configureLogger(
   options: InitOptions | undefined,

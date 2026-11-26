@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { $ } from 'execa'
 import { mkdir } from 'fs/promises'
 import fs from 'node:fs'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { $ } from 'execa'
 import prompts from 'prompts'
 
 function copy(src: string, dest: string) {

@@ -1,11 +1,4 @@
-// SPDX-License-Identifier: MIT
-//
-// Copyright (c) 2023-2026 Denis Davydkov
-// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-//
-import {
-  treeFromElements,
-} from '@likec4/core/compute-view'
+import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import type {
   AnyAux,
   DiagramEdge,
@@ -20,10 +13,19 @@ import type {
   Point,
   RelationId,
 } from '@likec4/core/types'
-import { exact, preferSummary } from '@likec4/core/types'
-
+import type { Except } from 'type-fest'
+import type { RelationshipDetailsTypes } from './_types'
+import type { RelationshipDetailsViewData } from './compute'
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2023-2026 Denis Davydkov
+// Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+//
+import {
+  treeFromElements,
+} from '@likec4/core/compute-view'
+import { exact, preferSummary } from '@likec4/core/types'
 import {
   DefaultMap,
   ifind,
@@ -42,10 +44,7 @@ import {
   sortBy,
   tap,
 } from 'remeda'
-import type { Except } from 'type-fest'
 import { type MeasuredEdgeLabel, measureEdgeLabel } from '../../utils/measure-edge-label'
-import type { RelationshipDetailsTypes } from './_types'
-import type { RelationshipDetailsViewData } from './compute'
 
 /**
  * All constants related to the layout

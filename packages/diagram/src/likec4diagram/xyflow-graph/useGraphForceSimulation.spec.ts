@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { Types } from '../types'
+import { describe, expect, it } from 'vitest'
 import { buildSimGraph, selectGraphTopology } from './useGraphForceSimulation'
 
 function testNode(id: string, x: number, y: number, overrides: Partial<Types.Node> = {}): Types.Node {

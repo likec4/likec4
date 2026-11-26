@@ -1,8 +1,8 @@
 import type { ImportedProjectMeta, ProjectId } from '@likec4/core/types'
-import { UriUtils } from 'langium'
-import { logWarnError } from '../logger'
 import type { LikeC4SharedServices } from '../module'
 import type { ExternalProjectId } from './ExternalProjects'
+import { UriUtils } from 'langium'
+import { logWarnError } from '../logger'
 import { type ProjectData, ProjectFolder, ProjectsManager } from './ProjectsManager'
 
 /**

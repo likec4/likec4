@@ -1,5 +1,7 @@
-import { BorderStyles, ElementShapes, Sizes, Sizings, ThemeColors } from '@likec4/core/styles'
 import type { ProjectId } from '@likec4/core/types'
+import type { SetRequired } from 'type-fest'
+import type { LikeC4Services } from '../module'
+import { BorderStyles, ElementShapes, Sizes, Sizings, ThemeColors } from '@likec4/core/styles'
 import {
   type AstNodeDescription,
   type LangiumDocument,
@@ -16,7 +18,6 @@ import {
   DefaultCompletionProvider,
 } from 'langium/lsp'
 import { anyPass, isEmpty } from 'remeda'
-import type { SetRequired } from 'type-fest'
 import { type CancellationToken, type CompletionParams, CompletionTriggerKind } from 'vscode-languageserver-protocol'
 import {
   type Position,
@@ -30,7 +31,6 @@ import {
 } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 import { toSingleLine } from '../model/parser/Base'
-import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 
 function isCompletionForPojectName(

@@ -1,6 +1,6 @@
+import module from 'node:module'
 import { loggable } from '@likec4/log'
 import spawn from 'nano-spawn'
-import module from 'node:module'
 import { resolveCommand } from 'package-manager-detector/commands'
 import { detect } from 'package-manager-detector/detect'
 import { logger } from '../logger'

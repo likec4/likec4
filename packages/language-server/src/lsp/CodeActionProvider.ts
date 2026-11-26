@@ -1,6 +1,7 @@
 import type { LangiumDocument, MaybePromise } from 'langium'
-import { AstUtils, CstUtils } from 'langium'
 import type { CodeActionProvider } from 'langium/lsp'
+import type { LikeC4Services } from '../module'
+import { AstUtils, CstUtils } from 'langium'
 import { dedent } from 'strip-indent'
 import {
   type CancellationToken,
@@ -13,7 +14,6 @@ import {
 } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
 import { clientPreviewsRemovalImpact } from '../model-diff'
-import type { LikeC4Services } from '../module'
 import { projectIdFrom } from '../utils'
 import { LikeC4Commands } from './ExecuteCommandHandler'
 

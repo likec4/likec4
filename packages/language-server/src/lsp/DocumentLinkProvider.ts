@@ -1,8 +1,9 @@
-import { isAnyOf } from '@likec4/core/utils'
 import type { LangiumDocument } from 'langium'
+import type { DocumentLinkProvider } from 'langium/lsp'
+import type { LikeC4Services } from '../module'
+import { isAnyOf } from '@likec4/core/utils'
 import { AstUtils, GrammarUtils, interruptAndCheck } from 'langium'
 import { UriUtils } from 'langium'
-import type { DocumentLinkProvider } from 'langium/lsp'
 import {
   hasLeadingSlash,
   hasProtocol,
@@ -14,7 +15,6 @@ import {
 import { type DocumentLink, type DocumentLinkParams, CancellationToken } from 'vscode-languageserver'
 import { ast, isLikeC4UserDocument, resolveDescriptionFile } from '../ast'
 import { logWarnError } from '../logger'
-import type { LikeC4Services } from '../module'
 import { documentSourceUri, isDependencyUri } from '../workspace/dependency-uri'
 
 export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {

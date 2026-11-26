@@ -1,3 +1,5 @@
+import type { Location } from 'vscode-languageserver-types'
+import type { LikeC4Services } from '../module'
 import { type DiagramView, type ProjectId, ViewId } from '@likec4/core'
 import {
   type RemovalImpact,
@@ -8,8 +10,6 @@ import {
 } from '@likec4/core/compute-view'
 import { type AstNode, AstUtils } from 'langium'
 import { uniqueBy } from 'remeda'
-import type { Location } from 'vscode-languageserver-types'
-import type { LikeC4Services } from '../module'
 import { type ReferenceKind, type SourceReference, findElementDefinitions, findSourceReferences } from './references'
 import { type DocumentEdits, type ListItem, listOwner, removeListItems } from './text-edits'
 

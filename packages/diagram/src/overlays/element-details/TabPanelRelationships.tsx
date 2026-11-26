@@ -1,6 +1,6 @@
-import { nameFromFqn } from '@likec4/core'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { RelationId } from '@likec4/core/types'
+import { nameFromFqn } from '@likec4/core'
 import {
   ActionIcon,
   Box,
@@ -219,8 +219,7 @@ function RelationshipsStat({
               </>
             )}
         </Text>
-        {
-          /* <ThemeIcon
+        {/* <ThemeIcon
           color="gray"
           variant="light"
           style={{
@@ -230,17 +229,14 @@ function RelationshipsStat({
           radius="md"
         >
           <DiffIcon size="1.8rem" stroke={1.5} />
-        </ThemeIcon> */
-        }
+        </ThemeIcon> */}
       </Stack>
-      {
-        /* <Text c="dimmed" fz="sm" mt="md">
+      {/* <Text c="dimmed" fz="sm" mt="md">
           <Text component="span" c={stat.diff > 0 ? 'teal' : 'red'} fw={700}>
             {stat.diff}%
           </Text>{' '}
           {stat.diff > 0 ? 'increase' : 'decrease'} compared to last month
-        </Text> */
-      }
+        </Text> */}
     </Paper>
   )
 }

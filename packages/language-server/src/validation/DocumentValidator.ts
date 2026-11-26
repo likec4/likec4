@@ -1,3 +1,5 @@
+import type { Diagnostic } from 'vscode-languageserver-types'
+import type { LikeC4Services } from '../module'
 import {
   type AstNode,
   type DiagnosticInfo,
@@ -7,8 +9,6 @@ import {
   Cancellation,
   DefaultDocumentValidator,
 } from 'langium'
-import type { Diagnostic } from 'vscode-languageserver-types'
-import type { LikeC4Services } from '../module'
 
 export class LikeC4DocumentValidator extends DefaultDocumentValidator {
   constructor(protected services: LikeC4Services) {

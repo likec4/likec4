@@ -1,5 +1,5 @@
-import { type McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { ReadResourceResult } from '@modelcontextprotocol/sdk/types'
+import { type McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { prop } from 'remeda'
 import { useLanguageServices } from '../ctx'
 

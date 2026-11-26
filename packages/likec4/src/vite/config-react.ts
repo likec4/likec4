@@ -1,6 +1,6 @@
-import k from 'tinyrainbow'
 import type { InlineConfig } from 'vite'
 import type { LikeC4 } from '../LikeC4'
+import k from 'tinyrainbow'
 import { createLikeC4Logger } from '../logger'
 import { LikeC4VitePlugin } from '../vite-plugin'
 import { reactDedupe, viteAliases } from './aliases'

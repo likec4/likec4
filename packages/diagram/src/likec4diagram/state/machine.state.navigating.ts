@@ -1,7 +1,7 @@
-import { BBox } from '@likec4/core/geometry'
 import type { NodeId } from '@likec4/core/types'
-import { invariant } from '@likec4/core/utils'
 import type { Viewport } from '@xyflow/system'
+import { BBox } from '@likec4/core/geometry'
+import { invariant } from '@likec4/core/utils'
 import { isTruthy } from 'remeda'
 import { assertEvent } from 'xstate'
 import { enqueueActions } from 'xstate/actions'
@@ -169,18 +169,12 @@ export const navigating = machine.createStateConfig({
           enqueue.assign(nextCtx)
 
           if (wasFocused) {
-            enqueue.raise({
-              type: 'focus.node',
-              nodeId: wasFocused,
-            }, { delay: 150 })
+            enqueue.raise({ type: 'focus.node', nodeId: wasFocused }, { delay: 150 })
             return
           }
 
           if (wasActiveWalkthrough) {
-            enqueue.raise({
-              type: 'walkthrough.start',
-              stepId: wasActiveWalkthrough,
-            }, { delay: 150 })
+            enqueue.raise({ type: 'walkthrough.start', stepId: wasActiveWalkthrough }, { delay: 150 })
             return
           }
           return
@@ -278,11 +272,7 @@ export const navigating = machine.createStateConfig({
 
         if (nodeToFocus) {
           // Focus on the searched element with auto-unfocus enabled
-          enqueue.raise({
-            type: 'focus.node',
-            nodeId: nodeToFocus.id as NodeId,
-            autoUnfocus: true,
-          }, { delay: 250 })
+          enqueue.raise({ type: 'focus.node', nodeId: nodeToFocus.id as NodeId, autoUnfocus: true }, { delay: 250 })
         }
       }),
     ],

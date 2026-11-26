@@ -1,5 +1,3 @@
-import { partition } from 'remeda'
-import { Builder } from '../../../builder/Builder'
 import type {
   DynamicViewIncludeRule,
   DynamicViewRule,
@@ -10,6 +8,8 @@ import type {
   StepPath,
   ViewId,
 } from '../../../types'
+import { partition } from 'remeda'
+import { Builder } from '../../../builder/Builder'
 import { type $Aux, type FakeElementIds, fakeModel } from '../../element-view/__test__/fixture'
 import { computeDynamicView } from '../compute'
 

@@ -7,6 +7,7 @@ import type {
   ViewChange,
   ViewId,
 } from '@likec4/core/types'
+import type { queries } from './queries'
 import { CancellationTokenImpl, HOST_EXTENSION } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
 import {
@@ -26,7 +27,6 @@ import {
   ViewChangeReq,
   WebviewMsgs,
 } from '../protocol'
-import type { queries } from './queries'
 
 export type VscodeState =
   & {

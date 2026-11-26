@@ -1,11 +1,11 @@
 import type { LayoutedViewDriftReason } from '@likec4/core/types'
+import type { DiagramActorSnapshot } from '../likec4diagram/state/types'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import {
   type DiagramCompareLayoutOps,
   type DiagramCompareLayoutState,
   useDiagramCompareLayout as publicHook,
 } from '../index'
-import type { DiagramActorSnapshot } from '../likec4diagram/state/types'
 import {
   selectCompareLayoutState,
   useDiagramCompareLayout as internalHook,

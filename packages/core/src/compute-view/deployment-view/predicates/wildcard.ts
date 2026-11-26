@@ -1,7 +1,7 @@
-import { pipe } from 'remeda'
 import type { FqnExpr } from '../../../types'
-import { imap, toArray } from '../../../utils'
 import type { Elem, PredicateExecutor } from '../_types'
+import { pipe } from 'remeda'
+import { imap, toArray } from '../../../utils'
 import { findConnectionsWithin } from '../utils'
 import { applyElementPredicate } from './utils'
 

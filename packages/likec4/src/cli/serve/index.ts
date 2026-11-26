@@ -1,5 +1,5 @@
-import k from 'tinyrainbow'
 import type * as yargs from 'yargs'
+import k from 'tinyrainbow'
 import { resolveAppConfig } from '../../app-config'
 import { createLikeC4Logger } from '../../logger'
 import { relativeToCwd } from '../../vite/utils'

@@ -5,6 +5,7 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { Types } from '../types'
 import {
   type DiagramEdge,
   type DiagramNode,
@@ -25,7 +26,6 @@ import {
 import { hasAtLeast, pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import { readableText } from '../../utils'
-import type { Types } from '../types'
 
 /**
  * Always defined: node updates keep the previous class name when the new one is undefined

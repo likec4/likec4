@@ -1,4 +1,6 @@
 import type { BBox, Fqn, ViewId } from '@likec4/core'
+import type { RelationshipsBrowserTypes } from './_types'
+import type { LayoutRelationshipsViewResult } from './layout'
 import { delay, invariant, nonNullable } from '@likec4/core/utils'
 import {
   type EdgeChange,
@@ -29,9 +31,7 @@ import { updateEdges } from '../../base/updateEdges'
 import { updateNodes } from '../../base/updateNodes'
 import { typedSystem } from '../../likec4diagram/state/utils'
 import { getNodeCenter } from '../../utils/xyflow'
-import type { RelationshipsBrowserTypes } from './_types'
 import { ViewPadding } from './const'
-import type { LayoutRelationshipsViewResult } from './layout'
 import { viewToNodesEdge } from './useViewToNodesEdges'
 
 type XYFLowInstance = ReactFlowInstance<RelationshipsBrowserTypes.AnyNode, RelationshipsBrowserTypes.Edge>
@@ -87,9 +87,9 @@ export const layouter = fromPromise<{
   const maxZoom = Math.max(zoom, 1)
   const nextviewport = getViewportForBounds(update.bounds, width, height, MinZoom, maxZoom, ViewPadding)
 
-  const nextSubjectNode = next.xynodes.find(n =>
-    n.type !== 'empty' && n.data.column === 'subjects' && n.data.fqn === subjectId
-  ) ?? findRootSubject(next.xynodes)
+  const nextSubjectNode =
+    next.xynodes.find(n => n.type !== 'empty' && n.data.column === 'subjects' && n.data.fqn === subjectId) ??
+      findRootSubject(next.xynodes)
   const currentSubjectNode = findRootSubject(currentNodes)
 
   const existingNode = navigateFromNode

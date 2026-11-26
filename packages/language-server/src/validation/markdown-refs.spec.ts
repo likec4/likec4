@@ -1,6 +1,6 @@
 import type { LangiumDocument } from 'langium'
-import { describe } from 'vitest'
 import type { Diagnostic } from 'vscode-languageserver-types'
+import { describe } from 'vitest'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { createMultiProjectTestServices, testFileScope as it } from '../test'
 

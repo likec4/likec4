@@ -1,9 +1,9 @@
 import type { LikeC4StyleDefaults } from '@likec4/core/styles'
-import { BorderStyles, ElementShapes, IconPositions, RelationshipArrowTypes, Sizes } from '@likec4/core/styles'
 import type { ExpectStatic } from 'vitest'
+import type { LikeC4StylesConfigInput } from './schema.theme'
+import { BorderStyles, ElementShapes, IconPositions, RelationshipArrowTypes, Sizes } from '@likec4/core/styles'
 import { describe, it } from 'vitest'
 import { defineStyle, defineThemeColor } from './define-config'
-import type { LikeC4StylesConfigInput } from './schema.theme'
 
 // Utility to get a valid enum value safely
 const first = <T>(arr: ReadonlyArray<T>): T => arr[0]!

@@ -1,5 +1,5 @@
-import { usePlayground, usePlaygroundContext } from '$/hooks/usePlayground'
 import type { ViewId } from '@likec4/core'
+import { usePlayground, usePlaygroundContext } from '$/hooks/usePlayground'
 import { ActionIcon, Divider, Group, Paper, Select, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'

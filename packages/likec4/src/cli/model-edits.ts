@@ -1,12 +1,12 @@
 import type { ProjectId } from '@likec4/core/types'
-import { collapseUnchanged, diffLines } from '@likec4/core/utils'
 import type { ApplyEditsResult, ModelEditPreview } from '@likec4/language-server'
-import { relative } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import k from 'tinyrainbow'
 import type { Range } from 'vscode-languageserver-types'
 import type { LikeC4 } from '../LikeC4'
 import type { Logger } from '../logger'
+import { relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { collapseUnchanged, diffLines } from '@likec4/core/utils'
+import k from 'tinyrainbow'
 import { ensureProject } from './utils'
 
 /**

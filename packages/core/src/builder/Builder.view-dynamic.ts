@@ -1,9 +1,9 @@
-import { isArray, isPlainObject, isString, reduce } from 'remeda'
 import type { Expression, Fqn, MarkdownOrString, NonEmptyArray, Step } from '../types'
-import { invariant, isNonEmptyArray } from '../utils'
 import type { AnyTypes, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
 import type { ViewsBuilder } from './Builder.views'
+import { isArray, isPlainObject, isString, reduce } from 'remeda'
+import { invariant, isNonEmptyArray } from '../utils'
 
 export interface DynamicViewBuilder<T extends AnyTypes>
   extends LikeC4ViewBuilder<T, T['Fqn'], Expression<Types.ToAux<T>>>

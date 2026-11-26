@@ -1,5 +1,3 @@
-import { entries, isDeepEqual, isNonNull, pick, values } from 'remeda'
-import { LikeC4Model } from '../../model'
 import type {
   AnyAux,
   ComputedEdge,
@@ -14,6 +12,8 @@ import type {
   ParsedLikeC4ModelData,
   ParsedView,
 } from '../../types'
+import { entries, isDeepEqual, isNonNull, pick, values } from 'remeda'
+import { LikeC4Model } from '../../model'
 import { EdgeId } from '../../types'
 import { ifind } from '../../utils/iterable'
 import { equals as equalsSet } from '../../utils/set'

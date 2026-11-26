@@ -1,5 +1,6 @@
-import { invariant } from '@likec4/core'
 import type { ProjectId, ViewId } from '@likec4/core/types'
+import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
+import { invariant } from '@likec4/core'
 import {
   type EffectScope,
   computed,
@@ -15,7 +16,6 @@ import {
 } from 'reactive-vscode'
 import { isNullish } from 'remeda'
 import { type WebviewPanel, commands as cmd, ViewColumn, window } from 'vscode'
-import type { WebviewIdMessageParticipant } from 'vscode-messenger-common'
 import * as z from 'zod/v4'
 import { commands } from '../meta.ts'
 import { useExtensionLogger } from '../useExtensionLogger.ts'

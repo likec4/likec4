@@ -1,6 +1,6 @@
 import type { OverrideProperties } from 'type-fest'
-import { describe, expect, it } from 'vitest'
 import type { aux, DeploymentRelationship, MarkdownOrString, Relationship } from '../../types'
+import { describe, expect, it } from 'vitest'
 import { mergePropsFromRelationships } from './merge-props-from-relationships'
 
 type TestAux = aux.Any

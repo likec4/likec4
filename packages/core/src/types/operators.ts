@@ -1,8 +1,8 @@
-import { allPass, anyPass, isNot, isNullish, isString } from 'remeda'
-import { nonexhaustive } from '../utils/invariant'
 import type * as aux from './_aux'
 import type { Any } from './_aux'
 import type { NonEmptyArray } from './_common'
+import { allPass, anyPass, isNot, isNullish, isString } from 'remeda'
+import { nonexhaustive } from '../utils/invariant'
 
 export type EqualOperator<V> = {
   eq: V

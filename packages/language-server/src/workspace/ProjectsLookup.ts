@@ -1,6 +1,6 @@
 import type { ProjectId } from '@likec4/core/types'
-import { type LangiumDocument, URI } from 'langium'
 import type { LikeC4SharedServices } from '../module'
+import { type LangiumDocument, URI } from 'langium'
 import { isDependencyUri } from './dependency-uri'
 import { type ExternalProjects, isExternalProjectId } from './ExternalProjects'
 import { type ProjectData, ProjectsManager } from './ProjectsManager'

@@ -6,20 +6,20 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
-import { MultiMap, nonexhaustive } from '@likec4/core/utils'
 import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, URI } from 'langium'
+import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
+import type { LikeC4Grammar } from './generated/ast'
+import type { DocumentParser } from './model/model-parser'
+import type { IsValidFn } from './validation'
+import { MultiMap, nonexhaustive } from '@likec4/core/utils'
 import { AstUtils, DocumentState, UriUtils } from 'langium'
 import { clamp, filter, isEmptyish, isNullish, isTruthy, map, pipe, reduce } from 'remeda'
-import type { ConditionalPick, MergeExclusive, Simplify, ValueOf, Writable } from 'type-fest'
 import { hasProtocol } from 'ufo'
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types'
-import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
 import { isNotLikeC4Builtin } from './likec4lib'
-import type { DocumentParser } from './model/model-parser'
 import { stringHash } from './utils'
-import type { IsValidFn } from './validation'
 import { documentSourceUri } from './workspace/dependency-uri'
 
 export { ast }

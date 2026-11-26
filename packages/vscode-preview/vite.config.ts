@@ -1,7 +1,7 @@
-import postcssPanda from '@pandacss/dev/postcss'
-import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
 import { resolve } from 'node:path'
+import postcssPanda from '@pandacss/dev/postcss'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => {

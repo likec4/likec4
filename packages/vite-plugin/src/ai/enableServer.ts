@@ -1,11 +1,11 @@
-import { invariant } from '@likec4/core'
-import { chat, convertMessagesToModelMessages, toServerSentEventsResponse } from '@tanstack/ai'
 import type { ModelMessage, UIMessage } from '@tanstack/ai'
-import { Readable } from 'node:stream'
 import type { MinimalPluginContextWithoutEnvironment, ViteDevServer } from 'vite'
-import { logger } from '../logger'
 import type { AIOptions } from '../plugin'
 import type { SharedVirtualModuleOptions } from '../virtuals/_shared'
+import { Readable } from 'node:stream'
+import { invariant } from '@likec4/core'
+import { chat, convertMessagesToModelMessages, toServerSentEventsResponse } from '@tanstack/ai'
+import { logger } from '../logger'
 import { navigateToDef, readUiStateDef, updateUiStateDef } from './tools'
 
 export type AIServerParams = SharedVirtualModuleOptions & {

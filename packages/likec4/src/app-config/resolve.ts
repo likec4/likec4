@@ -1,9 +1,9 @@
-import isInsideContainer from 'is-inside-container'
+import type { ParsedLikeC4AppConfig } from './schema'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import isInsideContainer from 'is-inside-container'
 import { unique } from 'remeda'
 import { findAppConfig, loadAppConfig, parseAppConfig } from './load'
-import type { ParsedLikeC4AppConfig } from './schema'
 
 /**
  * Flags of the CLI that have a counterpart in the app config.

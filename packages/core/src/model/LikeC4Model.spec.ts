@@ -1,6 +1,6 @@
+import type { LikeC4ModelDump, ProjectId } from '../types'
 import { map, prop } from 'remeda'
 import { describe, it } from 'vitest'
-import type { LikeC4ModelDump, ProjectId } from '../types'
 import { type TestFqn, computed, model, parsed } from './__test__/fixture'
 import { LikeC4Model } from './LikeC4Model'
 

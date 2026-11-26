@@ -1,6 +1,7 @@
+import type { AstNode, CstNode, Properties } from 'langium'
+import type { LikeC4Services } from '../module'
 import { isAnyOf } from '@likec4/core/types'
 import { nonNullable } from '@likec4/core/utils'
-import type { AstNode, CstNode, Properties } from 'langium'
 import {
   type SemanticTokenAcceptor,
   AbstractSemanticTokenProvider,
@@ -12,7 +13,6 @@ import {
 } from 'vscode-languageserver-types'
 import { ast } from '../ast'
 import { logger as rootLogger } from '../logger'
-import type { LikeC4Services } from '../module'
 
 const logger = rootLogger.getChild('SemanticTokenProvider')
 

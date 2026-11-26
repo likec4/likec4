@@ -1,7 +1,7 @@
-import { isEmptyish, last } from 'remeda'
 import type { aux, NonEmptyArray } from '../../types'
-import { invariant, memoizeProp } from '../../utils'
 import type { LikeC4Model } from '../LikeC4Model'
+import { isEmptyish, last } from 'remeda'
+import { invariant, memoizeProp } from '../../utils'
 import { unescapeViewPathSegment } from '../utils'
 import { LikeC4ViewModel } from './LikeC4ViewModel'
 

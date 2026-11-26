@@ -4,12 +4,12 @@
  * No DSL generation; read-only comparison.
  */
 
-import { type BridgeManifest, type CanonicalId, type ManifestEntity, LEANIX_PROVIDER } from './contracts'
 import type {
   LeanixFactSheetSnapshotItem,
   LeanixInventorySnapshot,
 } from './leanix-inventory-snapshot'
 import type { LeanixInventoryDryRun } from './to-leanix-inventory-dry-run'
+import { type BridgeManifest, type CanonicalId, type ManifestEntity, LEANIX_PROVIDER } from './contracts'
 
 /** A manifest entity matched to a single LeanIX fact sheet. */
 export interface MatchedPair {

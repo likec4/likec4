@@ -1,3 +1,4 @@
+import type { PackageJson } from 'type-fest'
 import { invariant } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import isInsideContainer from 'is-inside-container'
@@ -7,7 +8,6 @@ import { isEmptyish } from 'remeda'
 import { gt as semverGt } from 'semver'
 import { isCI, isTest, nodeENV } from 'std-env'
 import k from 'tinyrainbow'
-import type { PackageJson } from 'type-fest'
 import { boxen, logger } from '../../logger'
 import { getConfigStore, pkg } from '../conf'
 

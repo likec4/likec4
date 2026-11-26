@@ -1,7 +1,7 @@
-import { useDebouncedState } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
 import type { EditorActorRef } from '../editor/actor/machine'
 import type { EditorActorStateTag } from '../editor/actor/types'
+import { useDebouncedState } from '@mantine/hooks'
+import { useEffect, useState } from 'react'
 import { selectDiagramSnapshot, useDiagramSelector } from './useDiagram'
 
 const select = selectDiagramSnapshot(

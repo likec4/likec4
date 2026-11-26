@@ -5,12 +5,12 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { ProjectVirtualModule, VirtualModule } from './_shared'
 import { compareNatural } from '@likec4/core/utils'
 import { filter, isTruthy, map, pipe, sort, unique, values } from 'remeda'
 import k from 'tinyrainbow'
 import { joinURL } from 'ufo'
 import { logGenerating } from '../logger'
-import type { ProjectVirtualModule, VirtualModule } from './_shared'
 import { hardenJsonStringLiteralForEmbeddedScript } from './hardenJsonStringLiteralForEmbeddedScript'
 
 const startsWithHttp = /^(https?:)?\/\//i

@@ -1,12 +1,12 @@
-import { nonexhaustive } from '@likec4/core'
 import type { NodeModel } from '@likec4/core/model'
 import type { aux, NodeId, ViewId } from '@likec4/core/types'
 import type { FC, FunctionComponent } from 'react'
-import { capitalize, toCamelCase } from 'remeda'
 import type { BaseNodePropsWithData } from '../base/types'
-import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import type { NodeRenderers } from '../LikeC4Diagram.props'
 import type { Types } from '../likec4diagram/types'
+import { nonexhaustive } from '@likec4/core'
+import { capitalize, toCamelCase } from 'remeda'
+import { useLikeC4Model } from '../hooks/useLikeC4Model'
 import * as BuiltinNodes from './builtins'
 
 type Any = aux.Any

@@ -7,6 +7,7 @@
 
 import type { ComputedNodeStyle, ElementShape, MarkdownOrString, NodeId } from '@likec4/core'
 import type { ColorLiteral, LikeC4Styles } from '@likec4/core/styles'
+import type { MergeExclusive } from 'type-fest'
 import { type Color, RichText } from '@likec4/core/types'
 import { cx } from '@likec4/styles/css'
 import { elementNodeData } from '@likec4/styles/recipes'
@@ -18,7 +19,6 @@ import {
   forwardRef,
 } from 'react'
 import { isTruthy } from 'remeda'
-import type { MergeExclusive } from 'type-fest'
 import { IconRenderer } from '../../context/IconRenderer'
 import { useLikeC4Styles } from '../../hooks/useLikeC4Styles'
 import { Markdown } from '../Markdown'

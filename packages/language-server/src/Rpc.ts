@@ -1,5 +1,3 @@
-import { filter, funnel, keys, map, mapValues, once, pipe, sort } from 'remeda'
-import { logger as rootLogger } from './logger'
 import type { LikeC4Services } from './module'
 
 import {
@@ -10,7 +8,9 @@ import {
 } from '@likec4/core'
 import { LikeC4Model } from '@likec4/core/model'
 import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
+import { filter, funnel, keys, map, mapValues, once, pipe, sort } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
+import { logger as rootLogger } from './logger'
 import {
   ApplyModelEdit,
   BuildDocuments,

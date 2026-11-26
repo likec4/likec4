@@ -1,11 +1,11 @@
 import type { ViewId } from '@likec4/core'
+import type { ChangeView } from '../protocol'
 import { UriUtils } from 'langium'
 import { vol } from 'memfs'
 import stripIndent from 'strip-indent'
 import { type ExpectStatic, describe, it } from 'vitest'
 import { URI } from 'vscode-uri'
 import { WithFileSystem } from '../filesystem'
-import type { ChangeView } from '../protocol'
 import { createTestServices, mockMethod } from '../test'
 
 let seq = 0

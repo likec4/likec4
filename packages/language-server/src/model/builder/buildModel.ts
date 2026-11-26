@@ -6,6 +6,12 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type * as c4 from '@likec4/core'
+import type {
+  ParsedAstView,
+  ParsedLikeC4LangiumDocument,
+} from '../../ast'
+import type { LikeC4Services } from '../../module'
+import type { Project } from '../../workspace/ProjectsManager'
 import {
   type MultiMap,
   type ViewId,
@@ -40,13 +46,7 @@ import {
   reduce,
   unique,
 } from 'remeda'
-import type {
-  ParsedAstView,
-  ParsedLikeC4LangiumDocument,
-} from '../../ast'
 import { logger } from '../../logger'
-import type { LikeC4Services } from '../../module'
-import type { Project } from '../../workspace/ProjectsManager'
 import { relationFingerprint } from '../relationFingerprint'
 import { buildDiffs } from './buildDiffs'
 import { createDescriptionFileResolver } from './descriptionFileResolver'

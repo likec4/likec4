@@ -6,8 +6,10 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { Fqn } from '@likec4/core/types'
-import { getHotkeyHandler } from '@mantine/hooks'
 import type { KeyboardEvent } from 'react'
+import type { DetailsSubject } from './element-details/subject'
+import type { Overlays } from './types'
+import { getHotkeyHandler } from '@mantine/hooks'
 import { isString, last, reverse } from 'remeda'
 import {
   type ActorRef,
@@ -19,10 +21,8 @@ import {
 } from 'xstate'
 import { isEventFromSearch } from '../utils/search-event'
 import { elementDetailsLogic } from './element-details/actor'
-import type { DetailsSubject } from './element-details/subject'
 import { relationshipDetailsLogic } from './relationship-details/actor'
 import { relationshipsBrowserLogic } from './relationships-browser/actor'
-import type { Overlays } from './types'
 
 export type OverlayActorEvent =
   | { type: 'open.elementDetails' } & Overlays.ElementDetails.Input

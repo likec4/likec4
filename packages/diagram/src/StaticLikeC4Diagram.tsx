@@ -6,10 +6,10 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { Any, UnknownLayouted } from '@likec4/core/types'
-import { cx } from '@likec4/styles/css'
 import type { JSX } from 'react/jsx-runtime'
-import { LikeC4Diagram } from './LikeC4Diagram'
 import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { cx } from '@likec4/styles/css'
+import { LikeC4Diagram } from './LikeC4Diagram'
 
 export type StaticLikeC4DiagramProps<A extends Any> = Pick<
   LikeC4DiagramProperties<A>,

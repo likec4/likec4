@@ -1,3 +1,5 @@
+import type { Point } from '@likec4/core/geometry'
+import type { Types } from '../types'
 import {
   type DiagramEdge,
   type DiagramNode,
@@ -9,11 +11,9 @@ import {
   nonNullable,
   whereOperatorAsPredicate,
 } from '@likec4/core'
-import type { Point } from '@likec4/core/geometry'
 import { pick } from 'remeda'
 import { ZIndexes } from '../../base/const'
 import { readableText } from '../../utils'
-import type { Types } from '../types'
 
 /**
  * Diameter (in px) of the circle used to represent an element in "graph" display variant.

@@ -1,5 +1,5 @@
-import { LikeC4Model } from '@likec4/core/model'
 import type { Any } from '@likec4/core/types'
+import { LikeC4Model } from '@likec4/core/model'
 import { _stage } from '@likec4/core/types'
 import { invariant } from '@likec4/core/utils'
 import { mapToObj } from 'remeda'

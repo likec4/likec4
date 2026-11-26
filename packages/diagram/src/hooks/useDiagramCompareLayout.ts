@@ -1,11 +1,11 @@
-import { nonNullable } from '@likec4/core'
 import type * as t from '@likec4/core/types'
-import { useSelector as useXstateSelector } from '@xstate/react'
-import { deepEqual as eq } from 'fast-equals'
-import { deriveToggledFeatures, isComparingLayouts } from '../likec4diagram/state/machine.setup'
 import type {
   DiagramActorSnapshot,
 } from '../likec4diagram/state/types'
+import { nonNullable } from '@likec4/core'
+import { useSelector as useXstateSelector } from '@xstate/react'
+import { deepEqual as eq } from 'fast-equals'
+import { deriveToggledFeatures, isComparingLayouts } from '../likec4diagram/state/machine.setup'
 import { typedSystem } from '../likec4diagram/state/utils'
 import { useDiagramActorRef } from './safeContext'
 import { useCallbackRef } from './useCallbackRef'

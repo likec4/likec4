@@ -1,4 +1,3 @@
-import { anyPass, filter, hasAtLeast, isEmpty, map, omit, only, partition, pipe } from 'remeda'
 import type { Writable } from 'type-fest'
 import type {
   DeployedInstanceModel,
@@ -9,7 +8,6 @@ import type {
   LikeC4DeploymentModel,
   LikeC4Model,
 } from '../../model'
-import { deploymentConnection } from '../../model'
 import type {
   AnyAux,
   aux,
@@ -20,6 +18,11 @@ import type {
   scalar,
   Unknown,
 } from '../../types'
+import type { ComputedNodeSource } from '../utils/buildComputedNodes'
+import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
+import type { Memory } from './_types'
+import { anyPass, filter, hasAtLeast, isEmpty, map, omit, only, partition, pipe } from 'remeda'
+import { deploymentConnection } from '../../model'
 import {
   exact,
   FqnExpr,
@@ -31,12 +34,9 @@ import {
 import { invariant, nonexhaustive, parentFqn } from '../../utils'
 import { stringHash } from '../../utils/string-hash'
 import { applyViewRuleStyle } from '../utils/applyViewRuleStyles'
-import type { ComputedNodeSource } from '../utils/buildComputedNodes'
 import { buildComputedNodes } from '../utils/buildComputedNodes'
 import { isBidirectionalRelation } from '../utils/is-bidirectional-relation'
 import { mergePropsFromRelationships } from '../utils/merge-props-from-relationships'
-import type { ShouldExpandPredicate } from '../utils/relationExpressionToPredicates'
-import type { Memory } from './_types'
 import { groupDeploymentNodes } from './group-nodes'
 import { applyElementPredicate } from './predicates/utils'
 
@@ -179,6 +179,29 @@ export function deploymentExpressionToPredicate<
     }
   }
   nonexhaustive(target)
+}
+
+/**
+ * Predicate for a custom element expression (`with { ... }`) over computed nodes.
+ * `where` conditions are checked against the deployment element behind the node,
+ * the same way the include predicates and `navigateTo` check them.
+ */
+export function deploymentElementExprToPredicate<A extends AnyAux>(
+  model: LikeC4DeploymentModel<A>,
+  expr: FqnExpr.OrWhere<A>,
+): Predicate<ComputedNode<A>> {
+  const predicate = deploymentExpressionToPredicate<A, ComputedNode<A>>(FqnExpr.unwrap(expr))
+  if (!FqnExpr.isWhere(expr)) {
+    return predicate
+  }
+  const where = whereOperatorAsPredicate(expr.where.condition)
+  return node => {
+    if (!predicate(node)) {
+      return false
+    }
+    const element = node.deploymentRef ? model.findElement(node.deploymentRef) : null
+    return element != null && applyElementPredicate(element, where)
+  }
 }
 
 function instanceSummary(model: DeployedInstanceModel<any>) {

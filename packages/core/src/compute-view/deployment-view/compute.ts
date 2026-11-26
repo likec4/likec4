@@ -1,21 +1,23 @@
+import type { AnyAux, DeploymentViewRule } from '../../types'
+import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { findLast, map } from 'remeda'
 import { type DeploymentConnectionModel, type LikeC4DeploymentModel, LikeC4Model } from '../../model'
-import type { AnyAux, DeploymentViewRule } from '../../types'
 import {
   type ComputedDeploymentView,
   type ParsedDeploymentView as DeploymentView,
   _stage,
   _type,
+  FqnExpr,
   isViewRuleAutoLayout,
   isViewRuleGroup,
   isViewRulePredicate,
   RelationExpr,
 } from '../../types'
+import { createApplyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { buildElementNotations } from '../utils/buildElementNotations'
 import { linkNodesWithEdges } from '../utils/link-nodes-with-edges'
 import { createRelationExpressionToPredicates } from '../utils/relationExpressionToPredicates'
-import type { ExpandableConnection, ExpandableRelation } from '../utils/relationExpressionToPredicates'
 import { topologicalSort } from '../utils/topological-sort'
 import { calcViewLayoutHash } from '../utils/view-hash'
 import { withResolvedRouting } from '../utils/view-routing'
@@ -27,6 +29,7 @@ import {
   applyDeploymentViewRuleStyles,
   buildNodes,
   collectDeploymentRankConstraints,
+  deploymentElementExprToPredicate,
   deploymentExpressionToPredicate,
   toComputedEdges,
 } from './utils'
@@ -214,10 +217,17 @@ export function computeDeploymentView<M extends AnyAux>(
     edges: computedEdges,
   })
 
-  const nodes = applyDeploymentNavigateTo(
-    likec4model.deployment,
+  const applyCustomElementProperties = createApplyCustomElementProperties({
+    guard: FqnExpr.isCustom<M>,
+    toPredicate: expr => deploymentElementExprToPredicate(likec4model.deployment, expr),
+  })
+  const nodes = applyCustomElementProperties(
     flatRules,
-    applyDeploymentViewRuleStyles(flatRules, sorted.nodes),
+    applyDeploymentNavigateTo(
+      likec4model.deployment,
+      flatRules,
+      applyDeploymentViewRuleStyles(flatRules, sorted.nodes),
+    ),
   )
 
   const autoLayoutRule = findLast(rules, isViewRuleAutoLayout)

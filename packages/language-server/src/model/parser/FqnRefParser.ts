@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core'
+import type { Except } from 'type-fest'
 import { invariant, nonexhaustive, nonNullable } from '@likec4/core'
 import { isBoolean, isDefined, isNonNullish, isTruthy } from 'remeda'
-import type { Except } from 'type-fest'
 import {
   ast,
   parseAstOpacityProperty,

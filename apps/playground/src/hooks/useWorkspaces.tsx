@@ -1,6 +1,7 @@
+import type { LocalWorkspace } from '$state/types'
+import type { SetOptional } from 'type-fest'
 import { Examples } from '$/examples'
 import { WorkspacePersistence } from '$state/persistence'
-import type { LocalWorkspace } from '$state/types'
 import { invariant } from '@likec4/core'
 import { Button, Group, TextInput } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
@@ -8,7 +9,6 @@ import { modals } from '@mantine/modals'
 import { useRouter } from '@tanstack/react-router'
 import { nanoid } from 'nanoid'
 import { createRef } from 'react'
-import type { SetOptional } from 'type-fest'
 import { useOptionalPlaygroundActorRef } from './usePlayground'
 
 export const LikeC4WorkspacesKey = 'likec4:workspaces'
@@ -93,33 +93,34 @@ export function useWorkspaces() {
     })
   }
 
-  const createWorkspaceWithEnteredTitle = (workspace: {
-    workspaceId: string
-    activeFilename: string
-    files: Record<string, string>
-  }) =>
-  (title: string) => {
-    const key = WorkspacePersistence.write({
-      ...workspace,
-      title,
-    })
-    setWorkspaces((workspaces) => [
-      ...workspaces,
-      {
-        key,
-        name: workspace.workspaceId,
+  const createWorkspaceWithEnteredTitle =
+    (workspace: {
+      workspaceId: string
+      activeFilename: string
+      files: Record<string, string>
+    }) =>
+    (title: string) => {
+      const key = WorkspacePersistence.write({
+        ...workspace,
         title,
-      },
-    ])
-    void router.navigate({
-      to: '/w/$workspaceId/$viewId/',
-      params: {
-        workspaceId: workspace.workspaceId,
-        viewId: 'index',
-      },
-      reloadDocument: true,
-    })
-  }
+      })
+      setWorkspaces((workspaces) => [
+        ...workspaces,
+        {
+          key,
+          name: workspace.workspaceId,
+          title,
+        },
+      ])
+      void router.navigate({
+        to: '/w/$workspaceId/$viewId/',
+        params: {
+          workspaceId: workspace.workspaceId,
+          viewId: 'index',
+        },
+        reloadDocument: true,
+      })
+    }
 
   const createNew = (workspace: SetOptional<LocalWorkspace, 'workspaceId'>) => {
     const workspaceId = workspace.workspaceId ?? nanoid(6)

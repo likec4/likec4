@@ -1,5 +1,5 @@
-import { describe, expect, expectTypeOf, it } from 'vitest'
 import type { scalar } from '../types'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import { findById, hasId, hasTag } from './helpers'
 
 describe('helpers', () => {

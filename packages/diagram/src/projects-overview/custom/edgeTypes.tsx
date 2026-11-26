@@ -1,3 +1,4 @@
+import type { ProjectsOverviewTypes } from '../_types'
 import {
   EdgeContainer,
   EdgeLabel,
@@ -6,7 +7,6 @@ import {
   memoEdge,
 } from '../../base-primitives'
 import { bezierPath } from '../../utils/xyflow'
-import type { ProjectsOverviewTypes } from '../_types'
 
 export const RelationshipEdge = memoEdge<ProjectsOverviewTypes.EdgeProps>((edgeProps) => {
   const path = bezierPath(edgeProps.data.points)

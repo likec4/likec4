@@ -1,7 +1,7 @@
 import type { DiagramNode } from '@likec4/core/types'
+import type { Compound, ParallelRect, Rect, Spacing, Step } from './_types'
 import { invariant, isAncestor, Stack } from '@likec4/core/utils'
 import { groupBy, mapValues, pipe, values } from 'remeda'
-import type { Compound, ParallelRect, Rect, Spacing, Step } from './_types'
 
 export type NormalizedSpacing = {
   left: number

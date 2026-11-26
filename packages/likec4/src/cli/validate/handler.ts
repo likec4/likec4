@@ -1,8 +1,8 @@
 import type { ProjectId } from '@likec4/core/types'
 import type { LikeC4, LikeC4Diagnostic } from '@likec4/language-services/node'
+import type { DiagnosticItem, ValidateResult } from './result'
 import { resolve } from 'node:path'
 import k from 'tinyrainbow'
-import type { DiagnosticItem, ValidateResult } from './result'
 import { buildValidateResult } from './result'
 
 export interface ValidateOptions {

@@ -1,7 +1,7 @@
 import type { ViewId } from '@likec4/core'
+import type { NavigationPanelActorEvent, NavigationPanelActorRef } from './actor'
 import { useMemo } from 'react'
 import { createSafeContextForActor } from '../hooks/safeContext'
-import type { NavigationPanelActorEvent, NavigationPanelActorRef } from './actor'
 
 export const {
   ContextProvider: NavigationPanelActorContextProvider,

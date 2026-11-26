@@ -1,4 +1,5 @@
 import type { SemanticToken, TokenDataTypes } from '@pandacss/types'
+import type { DefaultTagColors } from '../defaults/types.ts'
 import {
   amber,
   amberDark,
@@ -31,7 +32,6 @@ import {
   yellow,
   yellowDark,
 } from '@radix-ui/colors'
-import type { DefaultTagColors } from '../defaults/types.ts'
 import { value } from './value.ts'
 
 type ColorToken = SemanticToken<TokenDataTypes['colors'], 'base' | '_dark'>

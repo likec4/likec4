@@ -1,3 +1,4 @@
+import type { InitOptions } from './options'
 import { isLikeC4JsonConfig, LikeC4ProjectConfigOps } from '@likec4/config'
 import { type Logger, loggable } from '@likec4/log'
 import { URI, UriUtils } from 'langium'
@@ -5,7 +6,6 @@ import { extname } from 'pathe'
 import { entries, map, partition, pipe } from 'remeda'
 import { handleInitOptions } from './handleInitOptions'
 import { type LikeC4Langium, LikeC4 } from './LikeC4'
-import type { InitOptions } from './options'
 
 /**
  * Runtime-agnostic factory function to create a LikeC4 instance from sources

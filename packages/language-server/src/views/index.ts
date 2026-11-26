@@ -1,5 +1,5 @@
-import { type GraphvizPort, GraphvizWasmAdapter } from '@likec4/layouts'
 import type { LikeC4Services } from '../module'
+import { type GraphvizPort, GraphvizWasmAdapter } from '@likec4/layouts'
 
 export { DefaultLikeC4Views, type LayoutViewParams, type LikeC4Views } from './LikeC4Views'
 

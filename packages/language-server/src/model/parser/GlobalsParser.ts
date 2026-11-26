@@ -1,9 +1,9 @@
 import type * as c4 from '@likec4/core'
+import type { WithViewsParser } from './ViewsParser'
 import { nonexhaustive } from '@likec4/core'
 
 import { hasAtLeast, isTruthy } from 'remeda'
 import { type ParsedAstGlobals, ast } from '../../ast'
-import type { WithViewsParser } from './ViewsParser'
 
 export function GlobalsParser<TBase extends WithViewsParser>(B: TBase) {
   return class GlobalsParser extends B {

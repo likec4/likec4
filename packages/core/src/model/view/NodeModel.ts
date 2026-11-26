@@ -1,3 +1,9 @@
+import type * as aux from '../../types/_aux'
+import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
+import type { ElementModel } from '../ElementModel'
+import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
+import type { EdgesIterator } from './EdgeModel'
+import type { LikeC4ViewModel } from './LikeC4ViewModel'
 import { isTruthy } from 'remeda'
 import {
   type Any,
@@ -14,14 +20,8 @@ import {
   GroupElementKind,
   isGroupElementKind,
 } from '../../types'
-import type * as aux from '../../types/_aux'
 import { memoizeProp } from '../../utils'
-import type { DeployedInstanceModel, DeploymentElementModel } from '../DeploymentElementModel'
-import type { ElementModel } from '../ElementModel'
-import type { $View, IncomingFilter, OutgoingFilter, WithTags } from '../types'
 import { memoizeDescription, memoizeRichText } from '../utils/richtext'
-import type { EdgesIterator } from './EdgeModel'
-import type { LikeC4ViewModel } from './LikeC4ViewModel'
 
 export type NodesIterator<M extends Any, V extends ProcessedView<M> = $View<M>> = IteratorLike<NodeModel<M, V>>
 

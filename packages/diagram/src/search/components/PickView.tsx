@@ -101,8 +101,7 @@ function PickViewDialog({
         onClick={e => {
           e.stopPropagation()
           closePickView()
-        }}>
-      </m.div>
+        }}></m.div>
       <FocusTrap>
         <m.div
           key="pickview"

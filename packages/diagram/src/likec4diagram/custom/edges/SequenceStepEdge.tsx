@@ -5,11 +5,11 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { Types } from '../../types'
 import { getSmoothStepPath } from '@xyflow/system'
 import { EdgeActionButton, EdgeContainer, EdgeLabel, EdgeLabelContainer, EdgePath } from '../../../base-primitives'
 import { useEnabledFeatures } from '../../../context/DiagramFeatures'
 import { useDiagram } from '../../../hooks/useDiagram'
-import type { Types } from '../../types'
 import { EdgeDrifts } from './EdgeDrifts'
 
 const LABEL_OFFSET = 16

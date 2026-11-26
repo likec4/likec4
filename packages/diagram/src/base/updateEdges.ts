@@ -5,10 +5,10 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { BaseEdge } from './types'
 import { deepEqual as eq } from 'fast-equals'
 import { isDefined, isShallowEqual, pickBy } from 'remeda'
 import { hasSubObject } from './Base'
-import type { BaseEdge } from './types'
 
 const EMPTY_OBJ = {}
 

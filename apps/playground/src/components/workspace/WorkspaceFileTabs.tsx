@@ -29,8 +29,7 @@ export function WorkspaceFileTabs() {
               {filename}
             </Tabs.Tab>
           ))}
-          {
-            /* <Button
+          {/* <Button
             size="compact-xs"
             color="gray"
             variant="subtle"
@@ -41,8 +40,7 @@ export function WorkspaceFileTabs() {
               // color: 'gray.7',
             })}>
             + add
-          </Button> */
-          }
+          </Button> */}
         </TabsList>
       </Tabs>
       {diagnosticErrors.length > 0 && (

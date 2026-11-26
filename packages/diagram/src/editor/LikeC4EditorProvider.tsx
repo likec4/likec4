@@ -1,5 +1,5 @@
-import { type PropsWithChildren, createContext, useContext } from 'react'
 import type { LikeC4EditorCallbacks } from './LikeC4EditorCallbacks'
+import { type PropsWithChildren, createContext, useContext } from 'react'
 
 export type LikeC4EditorProviderProps = PropsWithChildren<{ editor: LikeC4EditorCallbacks }>
 

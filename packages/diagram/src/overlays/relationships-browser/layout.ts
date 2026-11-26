@@ -1,8 +1,4 @@
-import {
-  type RelationshipsViewData,
-  computeRelationshipsView,
-  treeFromElements,
-} from '@likec4/core/compute-view'
+import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
 import type {
   DiagramEdge,
   DiagramNode,
@@ -17,10 +13,13 @@ import type {
   Point,
   ViewId,
 } from '@likec4/core/types'
-import { useEffect, useMemo } from 'react'
-
+import type { RelationshipsBrowserTypes } from './_types'
 import dagre, { type EdgeConfig, type GraphLabel } from '@dagrejs/dagre'
-import type { ElementModel, LikeC4ViewModel, RelationshipModel } from '@likec4/core/model'
+import {
+  type RelationshipsViewData,
+  computeRelationshipsView,
+  treeFromElements,
+} from '@likec4/core/compute-view'
 import { exact, preferSummary } from '@likec4/core/types'
 import {
   DefaultMap,
@@ -29,6 +28,7 @@ import {
   nonNullable,
   toArray,
 } from '@likec4/core/utils'
+import { useEffect, useMemo } from 'react'
 import {
   concat,
   filter,
@@ -51,7 +51,6 @@ import { useEnabledFeatures } from '../../context/DiagramFeatures'
 import { useEdgeLabelFontLoader } from '../../hooks/useEdgeLabelFontLoader'
 import { useLikeC4Model } from '../../hooks/useLikeC4Model'
 import { type MeasuredEdgeLabel, measureEdgeLabel } from '../../utils/measure-edge-label'
-import type { RelationshipsBrowserTypes } from './_types'
 
 /**
  * All constants related to the layout

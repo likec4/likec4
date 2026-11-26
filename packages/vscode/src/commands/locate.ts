@@ -1,11 +1,11 @@
 import type { Locate } from '@likec4/language-server/protocol'
+import type { RpcClient } from './types'
 import { toValue, useCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
 import { commands } from '../meta'
 import { useDiagramPanel } from '../panel/useDiagramPanel'
 import { useExtensionLogger } from '../useExtensionLogger'
 import { showEditorNextToPreview } from '../utils'
-import type { RpcClient } from './types'
 
 export interface LocateCommandDeps {
   sendTelemetry(commandId: string): void

@@ -1,10 +1,10 @@
 import type { Fqn, ProjectId } from '@likec4/core'
 import type { AstNode } from 'langium'
+import type { Range } from 'vscode-languageserver-types'
+import type { LikeC4Services } from '../module'
 import { AstUtils } from 'langium'
 import { uniqueBy } from 'remeda'
-import type { Range } from 'vscode-languageserver-types'
 import { ast } from '../ast'
-import type { LikeC4Services } from '../module'
 import { type ListItem, isListItem } from './text-edits'
 
 /**

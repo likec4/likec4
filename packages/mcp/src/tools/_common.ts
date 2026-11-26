@@ -6,7 +6,6 @@
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
 import type { LikeC4ProjectConfig } from '@likec4/config'
-import { FqnRef, GlobalFqn, invariant } from '@likec4/core'
 import type { LayoutedView } from '@likec4/core'
 import type {
   DeploymentElementModel,
@@ -21,6 +20,7 @@ import type { LikeC4LanguageServices } from '@likec4/language-server'
 import type { Locate } from '@likec4/language-server/protocol'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types'
 import { readFileSync } from 'node:fs'
+import { FqnRef, GlobalFqn, invariant } from '@likec4/core'
 import { URI } from 'vscode-uri'
 import * as z from 'zod/v4'
 import { logger } from '../utils'
@@ -290,24 +290,25 @@ export const includedInViews = (views: Iterable<LikeC4ViewModel>): z.infer<typeo
   }))
 }
 
-export const mkLocate = (
-  languageServices: LikeC4LanguageServices,
-  projectId: string,
-) =>
-(params: Locate.Params): z.infer<typeof locationSchema> => {
-  try {
-    const loc = languageServices.locate({ projectId, ...params })
-    return loc
-      ? {
-        path: URI.parse(loc.uri).fsPath,
-        range: loc.range,
-      }
-      : null
-  } catch (e) {
-    logger.debug(`Failed to locate {params}`, { error: e, params })
-    return null
+export const mkLocate =
+  (
+    languageServices: LikeC4LanguageServices,
+    projectId: string,
+  ) =>
+  (params: Locate.Params): z.infer<typeof locationSchema> => {
+    try {
+      const loc = languageServices.locate({ projectId, ...params })
+      return loc
+        ? {
+          path: URI.parse(loc.uri).fsPath,
+          range: loc.range,
+        }
+        : null
+    } catch (e) {
+      logger.debug(`Failed to locate {params}`, { error: e, params })
+      return null
+    }
   }
-}
 
 export function toolError(text: string): CallToolResult {
   return {

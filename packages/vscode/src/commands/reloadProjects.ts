@@ -1,7 +1,7 @@
+import type { RpcClient } from './types'
 import { useCommand } from 'reactive-vscode'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
-import type { RpcClient } from './types'
 
 export interface ReloadProjectsCommandDeps {
   sendTelemetry(commandId: string): void

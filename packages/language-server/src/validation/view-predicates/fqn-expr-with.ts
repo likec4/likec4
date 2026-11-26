@@ -1,9 +1,9 @@
+import type { ValidationCheck } from 'langium'
+import type { LikeC4Services } from '../../module'
 import { FqnExpr } from '@likec4/core/types'
 import { nonexhaustive } from '@likec4/core/utils'
-import type { ValidationCheck } from 'langium'
 import { AstUtils } from 'langium'
 import { ast, getViewRulePredicateContainer } from '../../ast'
-import type { LikeC4Services } from '../../module'
 import { tryOrLog } from '../_shared'
 
 export const checkFqnExprWith = (

@@ -1,11 +1,10 @@
+import type { CurrentViewModel } from '../../hooks/useCurrentViewModel'
 import { css } from '@likec4/styles/css'
 import { hstack } from '@likec4/styles/patterns'
 import { IconChevronRight } from '@tabler/icons-react'
 import { type Variants, AnimatePresence, LayoutGroup } from 'motion/react'
 import * as m from 'motion/react-m'
 import { NavigationPanel as StyledNavigationPanel } from '../../components/NavigationPanel'
-import type { CurrentViewModel } from '../../hooks/useCurrentViewModel'
-
 import { useNavigationActorRef } from '../hooks'
 
 const breadcrumbAnimation = {

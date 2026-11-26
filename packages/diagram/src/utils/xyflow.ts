@@ -1,10 +1,10 @@
 import type { NonEmptyArray, Point } from '@likec4/core'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { type XYPoint, BBox, vector } from '@likec4/core/geometry'
 import { invariant } from '@likec4/core/utils'
 import { type InternalNode, type Rect, type XYPosition, Position } from '@xyflow/react'
 import { type NodeHandle, type Padding as XYFlowPadding, type PaddingWithUnit, getNodeDimensions } from '@xyflow/system'
 import { Bezier } from 'bezier-js'
-import type { MouseEvent as ReactMouseEvent } from 'react'
 import { flatMap, hasAtLeast, isArray, isNumber } from 'remeda'
 
 export function distance(a: XYPosition, b: XYPosition): number {

@@ -1,3 +1,5 @@
+import type { ZExpression } from '../schemas/expression'
+import type { ViewRuleGroupOutput } from '../schemas/views'
 import {
   hasProp,
   invariant,
@@ -7,8 +9,6 @@ import { CompositeGeneratorNode } from 'langium/generate'
 import { hasAtLeast, values } from 'remeda'
 import { NL } from '../../newline'
 import { schemas } from '../schemas'
-import type { ZExpression } from '../schemas/expression'
-import type { ViewRuleGroupOutput } from '../schemas/views'
 import {
   type Op,
   body,

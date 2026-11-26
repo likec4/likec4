@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import type { DeploymentViewRuleRank, RankValue } from '../../../types'
+import { describe, expect, it } from 'vitest'
 import { $include, computeViewWithRules } from './fixture'
 
 const deploymentRef = (deployment: string, selector?: 'children' | 'expanded' | 'descendants') => ({

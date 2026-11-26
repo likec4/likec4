@@ -5,14 +5,14 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
+import type { BaseNodeData } from '../../base/types'
 import { css, cx } from '@likec4/styles/css'
 import { Box } from '@likec4/styles/jsx'
 import { actionBtn } from '@likec4/styles/recipes'
 import { ActionIcon } from '@mantine/core'
 import { IconId } from '@tabler/icons-react'
 import * as m from 'motion/react-m'
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react'
-import type { BaseNodeData } from '../../base/types'
 import { stopPropagation } from '../../utils/xyflow'
 
 type ElementDetailsButtonProps = {

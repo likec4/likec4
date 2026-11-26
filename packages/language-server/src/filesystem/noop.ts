@@ -1,11 +1,7 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
 import type { LayoutedView } from '@likec4/core'
 import type { Disposable, FileSystemNode, URI } from 'langium'
-import { LibIcons } from '../generated/icons'
-import { isLikeC4Builtin } from '../likec4lib'
-import { logger } from '../logger'
 import type { LikeC4SharedServices } from '../module'
-import { isDependencyUri } from '../workspace/dependency-uri'
 import type {
   FileNode,
   FileSystemModuleContext,
@@ -15,6 +11,10 @@ import type {
   LikeC4ManualLayouts,
   LikeC4ManualLayoutsModuleContext,
 } from './types'
+import { LibIcons } from '../generated/icons'
+import { isLikeC4Builtin } from '../likec4lib'
+import { logger } from '../logger'
+import { isDependencyUri } from '../workspace/dependency-uri'
 
 /**
  * File system provider without a file system.

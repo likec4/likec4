@@ -1,9 +1,9 @@
-import { anyPass, filter, pipe } from 'remeda'
 import type { LikeC4DeploymentModel, RelationshipModel } from '../../../model'
 import type { AnyAux, RelationExpr } from '../../../types'
+import type { Connection, Elem, PredicateExecutor } from '../_types'
+import { anyPass, filter, pipe } from 'remeda'
 import { FqnExpr } from '../../../types'
 import { invariant, isAncestor } from '../../../utils'
-import type { Connection, Elem, PredicateExecutor } from '../_types'
 import { findConnection, findConnectionsBetween, resolveElements, resolveModelElements } from '../utils'
 import { applyPredicate, excludeModelRelations, resolveAscendingSiblings } from './utils'
 

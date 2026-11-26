@@ -2,16 +2,16 @@
 //
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
-import { isLikeC4Config, LikeC4ProjectConfigOps } from '@likec4/config'
 import type { ProjectId } from '@likec4/core'
+import type { WorkspaceFolder } from 'vscode-languageserver'
+import type { FileNode } from '../filesystem'
+import type { createTestServices } from '../test/testServices'
+import { isLikeC4Config, LikeC4ProjectConfigOps } from '@likec4/config'
 import JSON5 from 'json5'
 import { UriUtils } from 'langium'
 import { describe } from 'vitest'
-import type { WorkspaceFolder } from 'vscode-languageserver'
 import { URI } from 'vscode-uri'
-import type { FileNode } from '../filesystem'
 import { mockMethod, test as it } from '../test'
-import type { createTestServices } from '../test/testServices'
 
 const fileNode = (uri: URI): FileNode => ({
   isFile: true,

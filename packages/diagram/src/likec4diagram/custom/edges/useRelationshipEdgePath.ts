@@ -1,6 +1,7 @@
 import type { EdgeRouting } from '@likec4/core/types'
-import { nonNullable } from '@likec4/core/utils'
 import type { XYPosition } from '@xyflow/react'
+import type { Types } from '../../types'
+import { nonNullable } from '@likec4/core/utils'
 import { deepEqual } from 'fast-equals'
 import { useCallback } from 'react'
 import { isTruthy } from 'remeda'
@@ -9,7 +10,6 @@ import { useXYStore } from '../../../hooks/useXYFlow'
 import { edgeEndFromNode } from '../../../utils/edge-endpoints'
 import { type DrawnEdge, layoutedEdgePath } from '../../../utils/edge-path'
 import { trackedEdgePath } from '../../../utils/edge-tracks'
-import type { Types } from '../../types'
 
 /**
  * @returns The SVG path data and, for orthogonal routing, straight segments for label placement.

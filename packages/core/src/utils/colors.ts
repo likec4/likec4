@@ -1,5 +1,5 @@
-import chroma from 'chroma-js'
 import type { HexColor } from '../types'
+import chroma from 'chroma-js'
 
 /**
  * Lighten or darken the rgb color following the factor given as parameter.

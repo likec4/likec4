@@ -1,12 +1,12 @@
-import { Cancellation, DocumentState, URI } from 'langium'
+import type { NormalizedUri } from '../workspace'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { Cancellation, DocumentState, URI } from 'langium'
 import { afterEach, beforeEach, describe, it } from 'vitest'
 import { createLanguageServices } from '../module'
 import { createTestServices } from '../test'
 import { type ExternalProject, externalProjectIdOfFolder, localDependencyUri, ProjectFolder } from '../workspace'
-import type { NormalizedUri } from '../workspace'
 import { WithFileSystem } from './LikeC4FileSystem'
 
 const sharedModel = `

@@ -1,8 +1,8 @@
-import { describe, expectTypeOf, it } from 'vitest'
 import type * as aux from './_aux'
 import type { Aux, SpecAux } from './_aux'
-import { _stage } from './const'
 import type { AuxFromDump, LikeC4ModelDump, ProjectDump, SpecificationDump, SpecTypesFromDump } from './model-dump'
+import { describe, expectTypeOf, it } from 'vitest'
+import { _stage } from './const'
 
 function castSpec<const T extends SpecificationDump>(value: T): T {
   return value

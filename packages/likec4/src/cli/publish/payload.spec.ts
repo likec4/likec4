@@ -1,8 +1,8 @@
 import type { LayoutedLikeC4ModelData } from '@likec4/core'
-import { ProjectId } from '@likec4/core'
-import { join, posix, resolve, win32 } from 'node:path'
-import { describe, expect, it } from 'vitest'
 import type { GitProvenance } from './git'
+import { join, posix, resolve, win32 } from 'node:path'
+import { ProjectId } from '@likec4/core'
+import { describe, expect, it } from 'vitest'
 import { buildPublishPayload, toWorkspacePath } from './payload'
 
 const provenance: GitProvenance = {

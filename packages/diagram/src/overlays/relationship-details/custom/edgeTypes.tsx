@@ -1,3 +1,4 @@
+import type { RelationshipDetailsTypes } from '../_types'
 import {
   EdgeActionButton,
   EdgeContainer,
@@ -9,7 +10,6 @@ import {
 import { useEnabledFeatures } from '../../../context'
 import { useDiagram } from '../../../hooks/useDiagram'
 import { edgePathThroughLabel } from '../../../utils/edge-path-through-label'
-import type { RelationshipDetailsTypes } from '../_types'
 
 export const RelationshipEdge = memoEdge<RelationshipDetailsTypes.EdgeProps>((props) => {
   const { enableNavigateTo } = useEnabledFeatures()

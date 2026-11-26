@@ -1,5 +1,5 @@
-import { type NonEmptyArray, invariant, nonexhaustive } from '@likec4/core'
 import type { InternalNode, Rect, XYPosition } from '@xyflow/react'
+import { type NonEmptyArray, invariant, nonexhaustive } from '@likec4/core'
 import { getNodeDimensions } from '@xyflow/system'
 import { map, pick, pipe, reduce, sortBy } from 'remeda'
 

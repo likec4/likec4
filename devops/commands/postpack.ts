@@ -1,6 +1,6 @@
-import { defineCommand } from 'citty'
 import { copyFileSync, existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { defineCommand } from 'citty'
 
 /**
  * Cross-platform postpack: copy the packed tgz to package.tgz (for e2e/CI).

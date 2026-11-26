@@ -1,9 +1,9 @@
-import { isString } from 'remeda'
 import type { IsLiteral } from 'type-fest'
 import type { Expression, Fqn } from '../types'
 import type { AnyTypes, Invalid, Types } from './_types'
 import type { LikeC4ViewBuilder, ViewPredicate } from './Builder.view-common'
 import type { ViewsBuilder } from './Builder.views'
+import { isString } from 'remeda'
 
 export interface ElementViewBuilder<T extends AnyTypes>
   extends LikeC4ViewBuilder<T, T['Fqn'], Expression<Types.ToAux<T>>>

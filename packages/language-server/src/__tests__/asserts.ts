@@ -1,6 +1,6 @@
+import type { TestFunction } from 'vitest'
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import stripIndent from 'strip-indent'
-import type { TestFunction } from 'vitest'
 import { createTestServices, testFileScope as it } from '../test'
 
 export function likec4(strings: TemplateStringsArray, ...expr: string[]) {

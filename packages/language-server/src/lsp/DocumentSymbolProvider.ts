@@ -5,18 +5,18 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
+import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
+import type { LikeC4Services } from '../module'
+import type { LikeC4NameProvider } from '../references'
 import { nonexhaustive } from '@likec4/core'
 import { loggable } from '@likec4/log'
 import { type AstNode, type LangiumDocument, AstUtils, GrammarUtils, interruptAndCheck } from 'langium'
-import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
 import { type DocumentSymbolParams, CancellationToken } from 'vscode-languageserver'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-types'
 import { ast, isLikeC4LangiumDocument } from '../ast'
 import { logger as rootLogger } from '../logger'
-import type { LikeC4ModelLocator, LikeC4ModelParser } from '../model'
-import type { LikeC4Services } from '../module'
-import type { LikeC4NameProvider } from '../references'
 import { readStrictFqn } from '../utils/elementRef'
 import { isDependencyUri } from '../workspace/dependency-uri'
 

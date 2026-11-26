@@ -1,6 +1,6 @@
 import type { AnyAux, ComputedDynamicView, ComputedEdge, HexColor } from '@likec4/core'
-import { first, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
+import { first, isTruthy, last } from 'remeda'
 import { attribute as _ } from 'ts-graphviz'
 import { stepEdgeLabel } from './dot-labels'
 import { DotPrinter } from './DotPrinter'

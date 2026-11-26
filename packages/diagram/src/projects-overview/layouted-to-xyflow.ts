@@ -3,9 +3,9 @@ import type {
   LayoutedProjectNode,
   LayoutedProjectsView,
 } from '@likec4/core/compute-view'
+import type { ProjectsOverviewTypes } from './_types'
 import { map } from 'remeda'
 import { ZIndexes } from '../base/const'
-import type { ProjectsOverviewTypes } from './_types'
 
 export function layoutedProjectsViewToXYFlow(
   view: LayoutedProjectsView,

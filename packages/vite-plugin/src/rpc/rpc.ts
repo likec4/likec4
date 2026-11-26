@@ -1,11 +1,11 @@
-import { createBirpc } from 'birpc'
 import type { MinimalPluginContextWithoutEnvironment, ViteDevServer } from 'vite'
 import type { AIOptions } from '../plugin'
 import type { SharedVirtualModuleOptions } from '../virtuals/_shared'
+import type { LikeC4VitePluginRpc } from './protocol'
+import { createBirpc } from 'birpc'
 import { applySemanticLayout } from './functions/applySemanticLayout'
 import { calcAdhocView } from './functions/calcAdhocView'
 import { updateView } from './functions/updateView'
-import type { LikeC4VitePluginRpc } from './protocol'
 import { sendError } from './sendError'
 
 export type PluginRPCParams = SharedVirtualModuleOptions & {

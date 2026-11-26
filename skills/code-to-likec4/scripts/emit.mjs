@@ -219,9 +219,11 @@ export function emitModel(ir, opts = {}) {
       if (!String(e.fqn).split('.').every(isIdent)) fail(`bad identifier in FQN: ${e.fqn}`)
       if (seen.has(e.fqn)) fail(`duplicate FQN: ${e.fqn}`)
       fqn = e.fqn
-    } else {fqn = e.kind === 'person' ?
-        sanitize(e.title || 'actor')
-        : `${sanitize(system)}.${areaOf(e.file)}.${sanitize(e.symbol || fileLeaf || e.title || 'unnamed')}`}
+    } else {
+      fqn = e.kind === 'person'
+        ? sanitize(e.title || 'actor')
+        : `${sanitize(system)}.${areaOf(e.file)}.${sanitize(e.symbol || fileLeaf || e.title || 'unnamed')}`
+    }
     if (!String(fqn).split('.').every(isIdent)) fail(`bad identifier in FQN: ${fqn}`)
     let uniq = fqn, n = 2
     if (!e.fqn) {

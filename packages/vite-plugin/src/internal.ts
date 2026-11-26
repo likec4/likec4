@@ -2,16 +2,16 @@
  * This module is used by the Vite plugin to generate the virtual modules
  */
 import type { RelationshipBrowserScope, WebappExportFormat } from '@likec4/config'
-import { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedLikeC4ModelData, LayoutedView, ProjectId } from '@likec4/core/types'
+import type { Atom, WritableAtom } from 'nanostores'
+import type { LikeC4VitePluginRpc } from './rpc/protocol'
+import type { ResolvedLikeC4AppOptions } from './types'
+import { LikeC4Model } from '@likec4/core/model'
 import { useStore } from '@nanostores/react'
 import { createBirpc } from 'birpc'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import type { Atom, WritableAtom } from 'nanostores'
 import { computed } from 'nanostores'
 import { useMemo } from 'react'
-import type { LikeC4VitePluginRpc } from './rpc/protocol'
-import type { ResolvedLikeC4AppOptions } from './types'
 
 export { atom, batch, batched, computed, map, onMount } from 'nanostores'
 
@@ -44,20 +44,23 @@ export interface LikeC4VitePluginRpcOptions {
  * used by the Vite plugin in virtual modules
  */
 export function createRpc(options: LikeC4VitePluginRpcOptions): LikeC4VitePluginRpc {
-  const rpc = createBirpc<LikeC4VitePluginRpc>({}, {
-    timeout: 2 * 60 * 1000, // 2 minutes (for applySemanticLayout)
-    post: (data) => options.send('likec4:rpc', data),
-    on: (fn) => options.on('likec4:rpc', fn),
-    onTimeoutError(functionName) {
-      return functionName === 'applySemanticLayout'
+  const rpc = createBirpc<LikeC4VitePluginRpc>(
+    {},
+    {
+      timeout: 2 * 60 * 1000, // 2 minutes (for applySemanticLayout)
+      post: (data) => options.send('likec4:rpc', data),
+      on: (fn) => options.on('likec4:rpc', fn),
+      onTimeoutError(functionName) {
+        return functionName === 'applySemanticLayout'
+      },
+      onGeneralError(error, functionName) {
+        console.error(`RPC error in ${functionName}`, { error })
+      },
+      onFunctionError: (error, functionName) => {
+        console.error(`RPC error in ${functionName}`, { error })
+      },
     },
-    onGeneralError(error, functionName) {
-      console.error(`RPC error in ${functionName}`, { error })
-    },
-    onFunctionError: (error, functionName) => {
-      console.error(`RPC error in ${functionName}`, { error })
-    },
-  })
+  )
   return rpc
 }
 

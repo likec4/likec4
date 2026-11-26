@@ -1,9 +1,7 @@
 import type * as aux from './_aux'
 import type { AnyAux } from './_aux'
 import type { ExclusiveUnion, NonEmptyReadonlyArray } from './_common'
-import { _type } from './const'
 import type { ModelFqnExpr } from './expression-model'
-import * as scalar from './scalar'
 import type { Color, RelationshipArrowType, RelationshipLineType } from './styles'
 import type {
   BaseParsedViewProperties,
@@ -12,6 +10,8 @@ import type {
   ViewRuleGlobalStyle,
 } from './view-common'
 import type { ElementViewRuleStyle } from './view-parsed.element'
+import { _type } from './const'
+import * as scalar from './scalar'
 
 export interface Step<A extends AnyAux = AnyAux> {
   readonly source: aux.StrictFqn<A>

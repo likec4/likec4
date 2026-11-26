@@ -1,6 +1,6 @@
+import type { FallbackProps } from 'react-error-boundary'
 import { Button, Code, Group, Notification, Paper, ScrollAreaAutosize } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import type { FallbackProps } from 'react-error-boundary'
 
 export function ErrorBoundaryFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorString = error instanceof Error ? error.message : 'Unknown error'

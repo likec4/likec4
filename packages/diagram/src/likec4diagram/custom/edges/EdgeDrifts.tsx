@@ -1,6 +1,6 @@
+import type { Types } from '../../types'
 import { css, cx } from '@likec4/styles/css'
 import { useIsComparingLayouts } from '../../../context/ComparingLayoutsContext'
-import type { Types } from '../../types'
 
 export type EdgeDriftsProps = {
   edgeProps: Types.EdgeProps

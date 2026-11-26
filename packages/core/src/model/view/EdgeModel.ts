@@ -1,3 +1,8 @@
+import type { DeploymentRelationModel } from '../DeploymentElementModel'
+import type { RelationshipModel } from '../RelationModel'
+import type { $View, WithTags } from '../types'
+import type { LikeC4ViewModel } from './LikeC4ViewModel'
+import type { NodeModel } from './NodeModel'
 import {
   type Any,
   type aux,
@@ -10,12 +15,7 @@ import {
   type scalar,
   isStepPath,
 } from '../../types'
-import type { DeploymentRelationModel } from '../DeploymentElementModel'
-import type { RelationshipModel } from '../RelationModel'
-import type { $View, WithTags } from '../types'
 import { memoizeDescription } from '../utils/richtext'
-import type { LikeC4ViewModel } from './LikeC4ViewModel'
-import type { NodeModel } from './NodeModel'
 
 export type EdgesIterator<A extends Any, V extends ProcessedView<A> = $View<A>> = IteratorLike<EdgeModel<A, V>>
 

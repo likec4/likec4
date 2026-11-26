@@ -1,7 +1,7 @@
+import type { PreviewPanel } from './types'
 import { useCommand } from 'reactive-vscode'
 import { commands } from '../meta'
 import { useExtensionLogger } from '../useExtensionLogger'
-import type { PreviewPanel } from './types'
 
 export interface OpenProjectsOverviewCommandDeps {
   sendTelemetry(commandId: string): void

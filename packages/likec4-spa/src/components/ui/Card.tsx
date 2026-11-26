@@ -1,6 +1,6 @@
+import type { ComponentProps } from 'react'
 import { styled } from '@likec4/styles/jsx'
 import { IconArrowUpRight, IconChevronDown } from '@tabler/icons-react'
-import type { ComponentProps } from 'react'
 
 /**
  * Responsive grid of cards

@@ -1,3 +1,4 @@
+import type { Compound, Rect, Spacing, Step } from './_types'
 import {
   type BBox,
   type DiagramNode,
@@ -19,7 +20,6 @@ import {
   only,
   pipe,
 } from 'remeda'
-import type { Compound, Rect, Spacing, Step } from './_types'
 import {
   ACTOR_GAP,
   COLUMN_GAP,

@@ -1,7 +1,7 @@
 import type { AnyAux, ComputedEdge, ComputedElementView, ComputedNode, Fqn, HexColor } from '@likec4/core'
+import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { nonNullable } from '@likec4/core/utils'
 import { chunk, filter, first, isNonNullish, last, map, pipe } from 'remeda'
-import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DotPrinter } from './DotPrinter'

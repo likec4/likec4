@@ -1,8 +1,6 @@
-import { assertSpecificationCompatible, Builder } from '@likec4/core/builder'
 import type { AnyTypes, BuilderMode, BuilderSpecification, Types } from '@likec4/core/builder'
 import type { LikeC4Model } from '@likec4/core/model'
 import type { LayoutedView, NonEmptyArray, ProjectId } from '@likec4/core/types'
-import { generate as generateLikeC4Source } from '@likec4/generators/likec4'
 import type {
   FormatOptions,
   LikeC4LanguageServices,
@@ -15,10 +13,12 @@ import type {
   LikeC4Views,
   ProjectsManager,
 } from '@likec4/language-server'
+import type { URI } from 'vscode-uri'
+import { assertSpecificationCompatible, Builder } from '@likec4/core/builder'
+import { generate as generateLikeC4Source } from '@likec4/generators/likec4'
 import { type Logger, rootLogger } from '@likec4/log'
 import { flatMap, hasAtLeast, join, map, pipe, prop } from 'remeda'
 import k from 'tinyrainbow'
-import type { URI } from 'vscode-uri'
 
 export interface LikeC4Langium {
   shared: LikeC4SharedServices

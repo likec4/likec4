@@ -5,6 +5,8 @@
 //
 // Portions of this file have been modified by NVIDIA CORPORATION & AFFILIATES.
 
+import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
+import type { LikeC4Services } from '../module'
 import { isAnyOf, nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
@@ -15,10 +17,8 @@ import {
 } from 'langium'
 import { type NodeFormatter, AbstractFormatter, Formatting, FormattingRegion } from 'langium/lsp'
 import { filter, isTruthy } from 'remeda'
-import type { FormattingOptions as LSFormattingOptions, Range, TextEdit } from 'vscode-languageserver-types'
 import * as ast from '../generated/ast'
 import { logger } from '../logger'
-import type { LikeC4Services } from '../module'
 import * as utils from './utils'
 import { isMultiline } from './utils'
 

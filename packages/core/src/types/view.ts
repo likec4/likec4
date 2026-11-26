@@ -1,4 +1,3 @@
-import { isTruthy } from 'remeda'
 import type { IsAny, IsNever, Or } from 'type-fest'
 import type * as aux from './_aux'
 import type { Any } from './_aux'
@@ -18,6 +17,7 @@ import type {
 import type { ParsedDeploymentView } from './view-parsed.deployment'
 import type { ParsedDynamicView } from './view-parsed.dynamic'
 import type { ParsedElementView } from './view-parsed.element'
+import { isTruthy } from 'remeda'
 
 export type ParsedView<A extends Any = Any> =
   | ParsedElementView<A>

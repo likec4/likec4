@@ -1,6 +1,7 @@
-import { findLast, identity, isNullish, isString, isTruthy, map, pipe, piped, reduce } from 'remeda'
 import type { SetRequired, Writable } from 'type-fest'
 import type { ElementModel, LikeC4Model } from '../../model'
+import type { DynamicViewFlow, DynamicViewFlowSteps } from '../../types/view-dynamic-flow'
+import { findLast, identity, isNullish, isString, isTruthy, map, pipe, piped, reduce } from 'remeda'
 import {
   type AnyAux,
   type aux,
@@ -19,7 +20,6 @@ import {
   stepGuards,
   StepPath,
 } from '../../types'
-import type { DynamicViewFlow, DynamicViewFlowSteps } from '../../types/view-dynamic-flow'
 import { intersection, invariant, nonexhaustive, nonNullable, Stack, toArray, union } from '../../utils'
 import { ancestorsFqn, commonAncestor, parentFqn, sortParentsFirst } from '../../utils/fqn'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'

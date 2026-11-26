@@ -3,11 +3,11 @@
 // Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 import type { LayoutedElementView } from '@likec4/core/types'
+import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { scalar } from '@likec4/core/types'
 import { describe, expect, it } from 'vitest'
 import { createActor, fromCallback } from 'xstate'
 import { DefaultFeatures } from '../../context/DiagramFeatures'
-import type { XYFlowInstance, XYStoreApi } from '../../hooks/useXYFlow'
 import { diagramMachine } from './machine'
 
 const viewportSize = { width: 1000, height: 800 }

@@ -1,4 +1,12 @@
 import type { LikeC4ProjectConfig } from '@likec4/config'
+import type { CancellationToken } from 'vscode-jsonrpc'
+import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
+import type { LikeC4ModelBuilder } from './model'
+import type { LikeC4ModelChanges } from './model-change/ModelChanges'
+import type { LikeC4ModelDiffs, LikeC4RemovalImpact } from './model-diff'
+import type { LikeC4Services } from './module'
+import type { Locate } from './protocol'
+import type { LikeC4Views } from './views/LikeC4Views'
 import {
   type LayoutedView,
   type NonEmptyArray,
@@ -12,17 +20,9 @@ import { LikeC4Model } from '@likec4/core/model'
 import { loggable } from '@likec4/log'
 import { TextDocument, URI } from 'langium'
 import { filter, flatMap, hasAtLeast, indexBy, map, pipe, prop } from 'remeda'
-import type { CancellationToken } from 'vscode-jsonrpc'
-import type { Diagnostic, FormattingOptions, Range } from 'vscode-languageserver-types'
 import { DiagnosticSeverity } from 'vscode-languageserver-types'
 import { type LikeC4LangiumDocument, isLikeC4LangiumDocument } from './ast'
 import { logger as mainLogger } from './logger'
-import type { LikeC4ModelBuilder } from './model'
-import type { LikeC4ModelChanges } from './model-change/ModelChanges'
-import type { LikeC4ModelDiffs, LikeC4RemovalImpact } from './model-diff'
-import type { LikeC4Services } from './module'
-import type { Locate } from './protocol'
-import type { LikeC4Views } from './views/LikeC4Views'
 import { type LikeC4WorkspaceManager, ProjectsManager } from './workspace'
 
 const logger = mainLogger.getChild('LanguageServices')
