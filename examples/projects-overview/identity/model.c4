@@ -1,0 +1,16 @@
+import { observability } from 'observability'
+
+specification {
+  element system
+}
+
+model {
+  identity = system 'Identity'
+  identity -> observability 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

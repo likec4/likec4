@@ -176,6 +176,9 @@ describe('GraphvizWasmAdapter:', () => {
     await expect(diagram).toMatchFileSnapshot('__snapshots__/layout-projects-view.ts.snap')
 
     const projectC = diagram.nodes[2]!
+    if (projectC.kind !== '@project') {
+      throw new Error('expected a project node')
+    }
     expect(projectC.projectId).toEqual('projectC')
     expect(projectC.description).toMatchInlineSnapshot(`
       {

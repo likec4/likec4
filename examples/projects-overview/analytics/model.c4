@@ -1,0 +1,16 @@
+import { datalake } from 'datalake'
+
+specification {
+  element system
+}
+
+model {
+  analytics = system 'Analytics'
+  analytics -> datalake 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

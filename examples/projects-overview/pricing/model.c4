@@ -1,0 +1,16 @@
+import { promos } from 'promos'
+
+specification {
+  element system
+}
+
+model {
+  pricing = system 'Pricing'
+  pricing -> promos 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

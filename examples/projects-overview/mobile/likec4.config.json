@@ -1,0 +1,8 @@
+{
+  "name": "mobile",
+  "title": "Mobile app",
+  "metadata": {
+    "area": "Storefront",
+    "lifecycle": "live"
+  }
+}

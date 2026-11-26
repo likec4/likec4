@@ -1,0 +1,16 @@
+import { analytics } from 'analytics'
+
+specification {
+  element system
+}
+
+model {
+  fraud = system 'Fraud check'
+  fraud -> analytics 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

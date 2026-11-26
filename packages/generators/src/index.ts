@@ -20,6 +20,10 @@ export {
 export { generateMarkdown } from './markdown/generate-markdown'
 export { generateMermaid } from './mmd/generate-mmd'
 export { generateLikeC4Model } from './model/generate-likec4-model'
+export {
+  generateProjectsOverviewSources,
+  type ProjectsOverviewTextSources,
+} from './projects-overview/generate-projects-overview'
 export { generatePuml } from './puml/generate-puml'
 export { generateReactNext } from './react-next/generate-react-next'
 export { generateReactTypes } from './react/generate-react-types'

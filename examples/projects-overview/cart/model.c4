@@ -1,0 +1,22 @@
+import { pricing } from 'pricing'
+import { promos } from 'promos'
+import { orders } from 'orders'
+import { identity } from 'identity'
+
+specification {
+  element system
+}
+
+model {
+  cart = system 'Cart'
+  cart -> pricing 'uses'
+  cart -> promos 'uses'
+  cart -> orders 'uses'
+  cart -> identity 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

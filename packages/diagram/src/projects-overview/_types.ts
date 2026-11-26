@@ -1,7 +1,11 @@
 import type { LayoutedProjectEdge } from '@likec4/core/compute-view'
 import type {
+  Color,
+  ComputedNodeStyle,
   DiagramNode,
+  EdgeRouting,
   ExclusiveUnion,
+  NodeId,
   ProjectId,
 } from '@likec4/core/types'
 import type {
@@ -37,12 +41,31 @@ export namespace ProjectsOverviewTypes {
     >
     & {
       projectId: ProjectId
+      /** Edges that point to this project, among the visible edges */
+      fanIn?: number | undefined
+      /** Edges that leave this project, among the visible edges */
+      fanOut?: number | undefined
     }
   >
 
   export type ProjectNode = BaseNode<ProjectNodeData, 'project'>
 
-  export type AnyNode = ProjectNode
+  export type GroupNodeData = Simplify<
+    & BaseNodeData
+    & {
+      id: NodeId
+      title: string
+      color: Color
+      depth: number
+      style: ComputedNodeStyle
+      width: number
+      height: number
+    }
+  >
+
+  export type GroupNode = BaseNode<GroupNodeData, 'project-group'>
+
+  export type AnyNode = ProjectNode | GroupNode
 
   export type NodeType = AnyNode['type']
   export type Node<T extends NodeType = NodeType> = Extract<AnyNode, { type: T }>
@@ -50,6 +73,7 @@ export namespace ProjectsOverviewTypes {
 
   export type NodeData = ExclusiveUnion<{
     ProjectNodeData: ProjectNodeData
+    GroupNodeData: GroupNodeData
   }>
 
   export type NodeRenderer<T extends NodeType = NodeType> = FunctionComponent<NodeProps<T>>
@@ -74,6 +98,9 @@ export namespace ProjectsOverviewTypes {
         | 'line'
       >
     >
+    & {
+      routing: EdgeRouting
+    }
   >
 
   export type Edge = BaseEdge<EdgeData, 'relationship'>

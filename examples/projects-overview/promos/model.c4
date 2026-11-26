@@ -1,0 +1,16 @@
+import { analytics } from 'analytics'
+
+specification {
+  element system
+}
+
+model {
+  promos = system 'Promotions'
+  promos -> analytics 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

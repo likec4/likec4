@@ -1,0 +1,18 @@
+import { analytics } from 'analytics'
+import { pricing } from 'pricing'
+
+specification {
+  element system
+}
+
+model {
+  search = system 'Search'
+  search -> analytics 'uses'
+  search -> pricing 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

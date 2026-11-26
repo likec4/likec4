@@ -210,11 +210,21 @@ export class GraphvizLayouter implements Disposable {
     return normalizeDot(dot)
   }
 
+  async dotProjectsView(view: ComputedProjectsView): Promise<DotSource> {
+    const logger = this.newScopedLogger('dotProjectsView')
+    let dot = new ProjectsViewPrinter(view).print()
+    try {
+      dot = await this.graphviz.unflatten(dot)
+    } catch (error) {
+      logger.warn(`Error during unflatten of projects view`, { error })
+    }
+    return normalizeDot(dot)
+  }
+
   async layoutProjectsView(view: ComputedProjectsView): Promise<LayoutedProjectsView> {
     const logger = this.newScopedLogger('layoutProjectsView')
     logger.debug`layouting projects overview...`
-    const printer = new ProjectsViewPrinter(view)
-    let dot = printer.print()
+    let dot = new ProjectsViewPrinter(view).print()
     try {
       dot = await this.graphviz.unflatten(dot)
     } catch (error) {

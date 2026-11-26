@@ -1,0 +1,8 @@
+{
+  "name": "cart",
+  "title": "Cart",
+  "metadata": {
+    "area": "Sales",
+    "lifecycle": "live"
+  }
+}

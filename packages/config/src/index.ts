@@ -32,6 +32,15 @@ export type {
 } from './schema.include'
 
 export type {
+  ProjectsOverviewConfig,
+  ProjectsOverviewGroupBy,
+} from './schema.projects-overview'
+
+export {
+  ProjectsOverviewSchema,
+} from './schema.projects-overview'
+
+export type {
   LikeC4ConfigThemeInput,
   LikeC4StylesConfig,
   LikeC4StylesConfigInput,

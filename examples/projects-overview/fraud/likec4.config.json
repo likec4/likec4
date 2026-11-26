@@ -1,0 +1,8 @@
+{
+  "name": "fraud",
+  "title": "Fraud check",
+  "metadata": {
+    "area": "Payments",
+    "lifecycle": "beta"
+  }
+}

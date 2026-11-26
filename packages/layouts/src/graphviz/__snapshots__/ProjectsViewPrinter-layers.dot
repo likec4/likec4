@@ -1,0 +1,129 @@
+digraph {
+  likec4_viewId = "projects-view";
+  bgcolor = "transparent";
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  splines = "spline";
+  outputorder = "nodesfirst";
+  nodesep = 1.389;
+  ranksep = 1.389;
+  pad = 0.209;
+  fontname = "Arial";
+  newrank = true;
+  graph [
+    fontsize = 20;
+    labeljust = "l";
+    labelloc = "t";
+    margin = 50.1;
+  ];
+  edge [
+    arrowsize = 0.75;
+    fontname = "Arial";
+    fontsize = 14;
+    penwidth = 2;
+    color = "#8D8D8D";
+    fontcolor = "#C9C9C9";
+    style = "dashed";
+  ];
+  node [
+    fontname = "Arial";
+    shape = "rect";
+    fillcolor = "#3b82f6";
+    fontcolor = "#eff6ff";
+    color = "#2563eb";
+    style = "filled";
+    penwidth = 0;
+  ];
+  "1m0aq9i" [
+    likec4_id = "1m0aq9i";
+    likec4_project = "catalog";
+    likec4_level = 1;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">catalog</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "npoaew" [
+    likec4_id = "npoaew";
+    likec4_project = "ledger";
+    likec4_level = 1;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">ledger</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "15v2mds" [
+    likec4_id = "15v2mds";
+    likec4_project = "payouts";
+    likec4_level = 1;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">payouts</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  "1w13jwz" [
+    likec4_id = "1w13jwz";
+    likec4_project = "identity";
+    likec4_level = 1;
+    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20">identity</FONT></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#bfdbfe">Elements: 2<BR/>Relationships: 0<BR/>Views: 0</FONT></TD></TR></TABLE>>;
+    margin = "0.223,0.223";
+    width = 4.445;
+    height = 2.5;
+  ];
+  subgraph "cluster_1b7gr7c" {
+    likec4_id = "1b7gr7c";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#454545";
+    color = "#313131";
+    style = "filled";
+    margin = 32;
+    label = <<FONT POINT-SIZE="11" COLOR="#d4d4d4b3"><B>SHOP</B></FONT>>;
+    "1m0aq9i";
+  }
+  subgraph "cluster_1g6fblh" {
+    likec4_id = "1g6fblh";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#454545";
+    color = "#313131";
+    style = "filled";
+    margin = 40;
+    label = <<FONT POINT-SIZE="11" COLOR="#d4d4d4b3"><B>PAYMENTS</B></FONT>>;
+    "npoaew";
+    "15v2mds";
+  }
+  subgraph "cluster_14rpc3" {
+    likec4_id = "14rpc3";
+    likec4_level = 0;
+    likec4_depth = 1;
+    fillcolor = "#454545";
+    color = "#313131";
+    style = "filled";
+    margin = 32;
+    label = <<FONT POINT-SIZE="11" COLOR="#d4d4d4b3"><B>PLATFORM</B></FONT>>;
+    "1w13jwz";
+  }
+  subgraph {
+    rank = "same";
+    "1m0aq9i";
+  }
+  subgraph {
+    rank = "same";
+    "npoaew";
+    "15v2mds";
+  }
+  subgraph {
+    rank = "same";
+    "1w13jwz";
+  }
+  "1m0aq9i" -> "npoaew" [
+    style = "invis";
+    weight = 100;
+  ];
+  "npoaew" -> "1w13jwz" [
+    style = "invis";
+    weight = 100;
+  ];
+}

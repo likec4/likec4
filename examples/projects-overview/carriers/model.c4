@@ -1,0 +1,13 @@
+specification {
+  element system
+}
+
+model {
+  carriers = system 'Carriers'
+}
+
+views {
+  view index {
+    include *
+  }
+}

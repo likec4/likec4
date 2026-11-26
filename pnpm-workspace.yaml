@@ -55,6 +55,7 @@ catalog:
   graphology: ^0.26.0
   graphology-dag: ^0.4.1
   graphology-types: ^0.24.8
+  html-to-image: 1.11.11
   mdast-util-to-hast: 13.2.1
   memfs: ^4.80.0
   nano-staged: ^1.0.2

@@ -1,0 +1,8 @@
+{
+  "name": "invoicing",
+  "title": "Invoicing",
+  "metadata": {
+    "area": "Payments",
+    "lifecycle": "live"
+  }
+}

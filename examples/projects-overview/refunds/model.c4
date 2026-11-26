@@ -1,0 +1,18 @@
+import { payments } from 'payments'
+import { notifications } from 'notifications'
+
+specification {
+  element system
+}
+
+model {
+  refunds = system 'Refunds'
+  refunds -> payments 'uses'
+  refunds -> notifications 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

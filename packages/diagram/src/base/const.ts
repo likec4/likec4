@@ -24,4 +24,7 @@ export const FitViewPaddings = {
 
 export const MAX_COMPOUND_DEPTH = 5
 
+/** Views with more pixels than this are "big": shadows, blend modes and animations are reduced */
+export const LARGE_VIEW_AREA = 16_000_000
+
 export const IS_SERVER = typeof window === 'undefined'

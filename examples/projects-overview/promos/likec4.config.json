@@ -1,0 +1,8 @@
+{
+  "name": "promos",
+  "title": "Promotions",
+  "metadata": {
+    "area": "Sales",
+    "lifecycle": "beta"
+  }
+}

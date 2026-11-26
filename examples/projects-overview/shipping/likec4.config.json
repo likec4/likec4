@@ -1,0 +1,8 @@
+{
+  "name": "shipping",
+  "title": "Shipping",
+  "metadata": {
+    "area": "Fulfilment",
+    "lifecycle": "live"
+  }
+}

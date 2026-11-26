@@ -1,0 +1,18 @@
+import { shipping } from 'shipping'
+import { carriers } from 'carriers'
+
+specification {
+  element system
+}
+
+model {
+  warehouse = system 'Warehouse'
+  warehouse -> shipping 'uses'
+  warehouse -> carriers 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

@@ -59,11 +59,16 @@ export type {
 
 export type {
   ComputedProjectEdge,
+  ComputedProjectGroupNode,
   ComputedProjectNode,
+  ComputedProjectsNode,
   ComputedProjectsView,
   LayoutedProjectEdge,
+  LayoutedProjectGroupNode,
   LayoutedProjectNode,
+  LayoutedProjectsNode,
   LayoutedProjectsView,
+  ProjectsOverviewOptions,
 } from '@likec4/core/compute-view'
 
 export type * from '@likec4/core/types'

@@ -1,0 +1,8 @@
+{
+  "name": "payments",
+  "title": "Payments",
+  "metadata": {
+    "area": "Payments",
+    "lifecycle": "live"
+  }
+}

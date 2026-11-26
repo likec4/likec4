@@ -1,0 +1,8 @@
+{
+  "name": "observability",
+  "title": "Observability",
+  "metadata": {
+    "area": "Platform",
+    "lifecycle": "beta"
+  }
+}

@@ -1,5 +1,5 @@
 import type { HexColor } from '@likec4/core'
-import type { ComputedProjectEdge, ComputedProjectNode, ComputedProjectsView } from '@likec4/core/compute-view'
+import type { ComputedProjectEdge, ComputedProjectsNode, ComputedProjectsView } from '@likec4/core/compute-view'
 import { LikeC4Styles } from '@likec4/core/styles'
 import { nonNullable } from '@likec4/core/utils'
 import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
@@ -7,6 +7,9 @@ import { attribute as _ } from 'ts-graphviz'
 import { edgelabel } from './dot-labels'
 import { DotPrinter } from './DotPrinter'
 import { pxToInch } from './utils'
+
+/** Pulls the layers toward one column. Real edges still compete for the x position. */
+const LAYER_ALIGN_WEIGHT = 100
 
 export class ProjectsViewPrinter extends DotPrinter<ComputedProjectsView> {
   static toDot(view: ComputedProjectsView) {
@@ -27,11 +30,41 @@ export class ProjectsViewPrinter extends DotPrinter<ComputedProjectsView> {
     return G
   }
 
-  protected override elementToNode(element: ComputedProjectNode, node: NodeModel) {
-    node.attributes.apply({
-      [_.likec4_id]: element.id,
-      [_.likec4_project]: element.projectId,
-    })
+  protected override postBuild(): void {
+    this.stackLayers().enableNewRankIfNeeded()
+  }
+
+  /**
+   * Puts the projects of each layer on one rank, and orders the ranks with invisible edges.
+   * Needs `newrank`, so the ranks hold across nested frames.
+   */
+  private stackLayers(): this {
+    let previousAnchor: NodeModel | null = null
+    for (const layerId of this.view.layers ?? []) {
+      const projects = this.leafElements(layerId)
+        .map(project => this.getGraphNode(project.id))
+        .filter((project): project is NodeModel => project !== null)
+      const [anchor] = projects
+      if (!anchor) {
+        continue
+      }
+      const rank = this.G.createSubgraph({ [_.rank]: 'same' })
+      projects.forEach(project => rank.node(project.id))
+      if (previousAnchor) {
+        this.G.edge([previousAnchor, anchor], { [_.style]: 'invis', [_.weight]: LAYER_ALIGN_WEIGHT })
+      }
+      previousAnchor = anchor
+    }
+    return this
+  }
+
+  protected override elementToNode(element: ComputedProjectsNode, node: NodeModel) {
+    if (element.kind === '@project') {
+      node.attributes.apply({
+        [_.likec4_id]: element.id,
+        [_.likec4_project]: element.projectId,
+      })
+    }
     return super.elementToNode(element, node)
   }
 

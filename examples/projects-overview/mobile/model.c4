@@ -1,0 +1,20 @@
+import { gateway } from 'gateway'
+import { identity } from 'identity'
+import { notifications } from 'notifications'
+
+specification {
+  element system
+}
+
+model {
+  mobile = system 'Mobile app'
+  mobile -> gateway 'uses'
+  mobile -> identity 'uses'
+  mobile -> notifications 'uses'
+}
+
+views {
+  view index {
+    include *
+  }
+}

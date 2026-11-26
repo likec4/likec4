@@ -120,6 +120,7 @@ export {
   LikeC4ProjectsOverview,
   type LikeC4ProjectsOverviewProps,
 } from './LikeC4ProjectsOverview'
+export type { ProjectsOverviewExportFormat, ProjectsOverviewExports } from './projects-overview'
 
 export {
   normalizeSearch,

@@ -36,6 +36,13 @@ export {
 } from './manual-layout'
 
 export type {
+  ComputedProjectGroupNode,
+  ComputedProjectsNode,
   ComputedProjectsView,
+  LayoutedProjectGroupNode,
+  LayoutedProjectsNode,
   LayoutedProjectsView,
+  ProjectsOverviewLegend,
+  ProjectsOverviewLegendEntry,
+  ProjectsOverviewOptions,
 } from './compute-view/projects-view/_types'

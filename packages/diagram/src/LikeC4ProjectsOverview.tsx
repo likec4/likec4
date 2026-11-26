@@ -1,5 +1,6 @@
 import type { JSX } from 'react/jsx-runtime'
 import type { Simplify } from 'type-fest'
+import { LARGE_VIEW_AREA } from './base'
 import { RootContainer } from './components/RootContainer'
 import {
   EnsureMantine,
@@ -29,11 +30,13 @@ export function LikeC4ProjectsOverview({
   // If no onSelectProject is provided, try from the context
   onNavigateToProject ??= onChangeLikeC4Project
 
+  const reduceGraphics = view.bounds.width * view.bounds.height > LARGE_VIEW_AREA
+
   return (
     <EnsureMantine>
-      <FramerMotionConfig>
+      <FramerMotionConfig reducedMotion={reduceGraphics ? 'always' : undefined}>
         <LikeC4Styles rootSelector={`#${id}`} />
-        <RootContainer id={id} className={className}>
+        <RootContainer id={id} className={className} reduceGraphics={reduceGraphics}>
           <ProjectsOverview
             view={view}
             onNavigateToProject={onNavigateToProject}

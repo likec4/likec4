@@ -3,7 +3,7 @@ import { openProjectInEditor } from '@likec4/vite-plugin/internal'
 import { IconLayoutGrid, IconList, IconTopologyStar3 } from '@tabler/icons-react'
 import { isDevelopment } from 'likec4:app-config'
 import { useLikeC4Projects } from 'likec4:projects'
-import { useLikeC4ProjectsOverview } from 'likec4:projects-overview'
+import { useLikeC4ProjectsOverview, useLikeC4ProjectsOverviewExports } from 'likec4:projects-overview'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
 import { Metric, MetricsRow } from '../components/ui/Metric'
@@ -49,6 +49,7 @@ export function WorkspaceOverviewPage({ view, onViewChange }: {
 }) {
   const changeProject = useChangeLikeC4Project()
   const projectsOverview = useLikeC4ProjectsOverview()
+  const overviewExports = useLikeC4ProjectsOverviewExports()
   const projectInfos = useLikeC4Projects()
   const catalog = useMemo(
     () => buildProjectsCatalog(projectsOverview, projectInfos),
@@ -93,6 +94,7 @@ export function WorkspaceOverviewPage({ view, onViewChange }: {
           <PageCanvas>
             <LikeC4ProjectsOverview
               view={projectsOverview}
+              exports={overviewExports}
               onNavigateToProject={changeProject}
               hideNavigationPanel
             />
