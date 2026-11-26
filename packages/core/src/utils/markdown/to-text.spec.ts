@@ -101,6 +101,16 @@ code block
     expect(result).toContain('code block')
   })
 
+  it('should convert GFM tables to one line per row', () => {
+    const markdown = '| Name | Port |\n| --- | --- |\n| api | 8080 |\n| db | 5432 |'
+    expect(markdownToText(markdown)).toBe('Name Port\napi 8080\ndb 5432')
+  })
+
+  it('should convert GFM strikethrough and task lists to plain text', () => {
+    expect(markdownToText('Status: ~~beta~~ stable')).toBe('Status: beta stable')
+    expect(markdownToText('- [x] done\n- [ ] todo')).toBe('done\ntodo')
+  })
+
   it('should handle special characters correctly', () => {
     const text = 'Text with special chars: !@#$%^&*()_+{}[]|:;\'",<.>/?`~'
     // The function preserves special characters as-is
@@ -127,6 +137,10 @@ code block
       expect(markdownToText('[[a b]]')).toBe('[[a b]]')
       expect(markdownToText('[[a')).toBe('[[a')
       expect(markdownToText('`[[a]]`')).toBe('[[a]]')
+    })
+
+    it('should replace refs in GFM table cells', () => {
+      expect(markdownToText('| Service | Calls |\n| - | - |\n| [[a]] | [[b\\|B]] |')).toBe('Service Calls\na B')
     })
 
     it('should replace refs in lists and headings', () => {
