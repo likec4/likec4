@@ -33,6 +33,37 @@ Extension is universal and can run in the browser.
 
 In LikeC4 v1.60.0 and later, element views can switch between **Diagram** (the standard layout) and **Graph** (draggable, physics-based nodes with straight connections). Graph shows only leaf elements; compound/group nodes and relationships attached to them are omitted. Select the mode using the toggle in the navigation panel. See [Diagram and Graph display modes](/dsl/views/layout/#diagram-and-graph-display-modes).
 
+### Markdown preview
+
+The VSCode extension renders ```` ```likec4-view ```` fenced code blocks inside VS Code's built-in Markdown preview, reusing the active LikeC4 language server and refreshing automatically on unsaved `.c4` edits.
+
+The fence syntax matches [`mkdocs-likec4`](/tooling/community/mkdocs-plugin/) (backtick fences with a single line containing the view ID):
+
+````markdown
+```likec4-view
+index
+```
+
+```likec4-view project=shop browser=false dynamic-variant=sequence color-scheme=dark
+checkout_flow
+```
+````
+
+Supported fence attributes:
+
+- `project=<name>` — Select a named LikeC4 project explicitly; otherwise the extension resolves the nearest enclosing `likec4.config.*` / `.likec4rc` project, or falls back to the single project in the workspace.
+- `browser=true|false` — Enable or disable clicking through relationships and elements inside the interactive diagram modal (default: `true`).
+- `dynamic-variant=diagram|sequence` — Render dynamic views as a diagram (default) or sequence chart.
+- `color-scheme=auto|light|dark` — Follow the VS Code theme (`auto`, default) or force `light` / `dark`.
+
+Relevant extension settings:
+
+- `likec4.markdownPreview.enabled` (default: `true`) — Enable or disable rendering `likec4-view` blocks in Markdown previews.
+- `likec4.markdownPreview.colorScheme` (default: `auto`) — Default color scheme when `color-scheme=` is omitted.
+- `likec4.markdownPreview.maxHeight` (default: `600`) — Maximum diagram height in pixels.
+- `likec4.markdownPreview.maxModelBytes` (default: `2097152`) — Payload threshold before trimming unreferenced views and disabling cross-view browser navigation.
+- `likec4.markdownPreview.panZoom` (default: `false`) — Enable panning and zooming inside embedded diagrams (page scroll wheel still scrolls Markdown; pinch or `Ctrl/Cmd` + wheel zooms).
+
 Try [example-cloud-system](https://github.dev/likec4/example-cloud-system) with:
 
 <CardGrid>

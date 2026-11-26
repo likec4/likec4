@@ -154,6 +154,11 @@ export type ConfigKey =
   | "likec4.export.notation.position"
   | "likec4.export.notation.text"
   | "likec4.exclude"
+  | "likec4.markdownPreview.enabled"
+  | "likec4.markdownPreview.colorScheme"
+  | "likec4.markdownPreview.maxHeight"
+  | "likec4.markdownPreview.maxModelBytes"
+  | "likec4.markdownPreview.panZoom"
 
 export interface ConfigKeyTypeMap {
   "likec4.graphviz.mode": ("wasm" | "binary"),
@@ -167,6 +172,11 @@ export interface ConfigKeyTypeMap {
   "likec4.export.notation.position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
   "likec4.export.notation.text": ("short" | "full" | "kind"),
   "likec4.exclude": string[],
+  "likec4.markdownPreview.enabled": boolean,
+  "likec4.markdownPreview.colorScheme": ("auto" | "light" | "dark"),
+  "likec4.markdownPreview.maxHeight": number,
+  "likec4.markdownPreview.maxModelBytes": number,
+  "likec4.markdownPreview.panZoom": boolean,
 }
 
 export interface ConfigShorthandMap {
@@ -181,6 +191,11 @@ export interface ConfigShorthandMap {
   exportNotationPosition: "likec4.export.notation.position",
   exportNotationText: "likec4.export.notation.text",
   exclude: "likec4.exclude",
+  markdownPreviewEnabled: "likec4.markdownPreview.enabled",
+  markdownPreviewColorScheme: "likec4.markdownPreview.colorScheme",
+  markdownPreviewMaxHeight: "likec4.markdownPreview.maxHeight",
+  markdownPreviewMaxModelBytes: "likec4.markdownPreview.maxModelBytes",
+  markdownPreviewPanZoom: "likec4.markdownPreview.panZoom",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -195,6 +210,11 @@ export interface ConfigShorthandTypeMap {
   exportNotationPosition: ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
   exportNotationText: ("short" | "full" | "kind"),
   exclude: string[],
+  markdownPreviewEnabled: boolean,
+  markdownPreviewColorScheme: ("auto" | "light" | "dark"),
+  markdownPreviewMaxHeight: number,
+  markdownPreviewMaxModelBytes: number,
+  markdownPreviewPanZoom: boolean,
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -317,6 +337,56 @@ export const configs = {
     key: "likec4.exclude",
     default: [],
   } as ConfigItem<"likec4.exclude">,
+  /**
+   *
+   * @key `likec4.markdownPreview.enabled`
+   * @default `true`
+   * @type `boolean`
+   */
+  markdownPreviewEnabled: {
+    key: "likec4.markdownPreview.enabled",
+    default: true,
+  } as ConfigItem<"likec4.markdownPreview.enabled">,
+  /**
+   *
+   * @key `likec4.markdownPreview.colorScheme`
+   * @default `"auto"`
+   * @type `string`
+   */
+  markdownPreviewColorScheme: {
+    key: "likec4.markdownPreview.colorScheme",
+    default: "auto",
+  } as ConfigItem<"likec4.markdownPreview.colorScheme">,
+  /**
+   *
+   * @key `likec4.markdownPreview.maxHeight`
+   * @default `600`
+   * @type `number`
+   */
+  markdownPreviewMaxHeight: {
+    key: "likec4.markdownPreview.maxHeight",
+    default: 600,
+  } as ConfigItem<"likec4.markdownPreview.maxHeight">,
+  /**
+   *
+   * @key `likec4.markdownPreview.maxModelBytes`
+   * @default `2097152`
+   * @type `number`
+   */
+  markdownPreviewMaxModelBytes: {
+    key: "likec4.markdownPreview.maxModelBytes",
+    default: 2097152,
+  } as ConfigItem<"likec4.markdownPreview.maxModelBytes">,
+  /**
+   *
+   * @key `likec4.markdownPreview.panZoom`
+   * @default `false`
+   * @type `boolean`
+   */
+  markdownPreviewPanZoom: {
+    key: "likec4.markdownPreview.panZoom",
+    default: false,
+  } as ConfigItem<"likec4.markdownPreview.panZoom">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -331,6 +401,11 @@ export interface ScopedConfigKeyTypeMap {
   "export.notation.position": ("top-left" | "top-right" | "bottom-left" | "bottom-right"),
   "export.notation.text": ("short" | "full" | "kind"),
   "exclude": string[],
+  "markdownPreview.enabled": boolean,
+  "markdownPreview.colorScheme": ("auto" | "light" | "dark"),
+  "markdownPreview.maxHeight": number,
+  "markdownPreview.maxModelBytes": number,
+  "markdownPreview.panZoom": boolean,
 }
 
 export const scopedConfigs = {
@@ -347,6 +422,11 @@ export const scopedConfigs = {
     "export.notation.position": "bottom-right",
     "export.notation.text": "short",
     "exclude": [],
+    "markdownPreview.enabled": true,
+    "markdownPreview.colorScheme": "auto",
+    "markdownPreview.maxHeight": 600,
+    "markdownPreview.maxModelBytes": 2097152,
+    "markdownPreview.panZoom": false,
   } satisfies ScopedConfigKeyTypeMap,
 }
 
@@ -377,6 +457,13 @@ export interface NestedConfigs {
       },
     },
     "exclude": string[],
+    "markdownPreview": {
+      "enabled": boolean,
+      "colorScheme": ("auto" | "light" | "dark"),
+      "maxHeight": number,
+      "maxModelBytes": number,
+      "panZoom": boolean,
+    },
   },
 }
 
@@ -406,5 +493,12 @@ export interface NestedScopedConfigs {
     },
   },
   "exclude": string[],
+  "markdownPreview": {
+    "enabled": boolean,
+    "colorScheme": ("auto" | "light" | "dark"),
+    "maxHeight": number,
+    "maxModelBytes": number,
+    "panZoom": boolean,
+  },
 }
 

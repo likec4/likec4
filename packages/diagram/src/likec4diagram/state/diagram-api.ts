@@ -20,8 +20,8 @@ import type { OverlaysActorRef } from '../../overlays/overlaysActor'
 import type { SearchActorRef } from '../../search/searchActor'
 import type { Types } from '../types'
 import type { AlignmentMode } from './aligners'
-import type { ElementViewDisplayVariant } from './machine.setup'
 import type { DistributionMode } from './distributors'
+import type { ElementViewDisplayVariant } from './machine.setup'
 import type { ResizeMode } from './machine.setup'
 import type {
   DiagramActorRef,

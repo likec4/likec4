@@ -5,6 +5,7 @@ import {
   DidChangeProjectsNotification,
   DidRequestOpenViewNotification,
   FetchComputedModel,
+  FetchLayoutedModel,
   FetchProjects,
   FetchProjectsOverview,
   FetchTelemetryMetrics,
@@ -143,6 +144,10 @@ export const useRpc = defineService(() => {
 
     async reloadProjects() {
       await queue(() => client.sendRequest(ReloadProjects.req))
+    },
+
+    async fetchLayoutedModel(projectId?: string) {
+      return await queue(() => client.sendRequest(FetchLayoutedModel.req, { projectId }))
     },
 
     async fetchProjects() {

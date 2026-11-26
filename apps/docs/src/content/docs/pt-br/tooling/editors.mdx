@@ -33,6 +33,37 @@ A extensão também pode ser executada no navegador.
 
 A partir da versão 1.60.0 do LikeC4, as visões de elementos permitem alternar entre **Diagram** (layout tradicional) e **Graph** (nós arrastáveis, organizados por uma simulação de forças e conectados por linhas retas). O modo Graph exibe apenas elementos folha, omitindo agrupadores e relacionamentos conectados diretamente a eles. Use o seletor no painel de navegação. Consulte [Modos de visualização Diagram e Graph](/pt-br/dsl/views/layout/#modos-de-visualização-diagram-e-graph).
 
+### Pré-visualização em Markdown
+
+A extensão para VS Code renderiza blocos ```` ```likec4-view ```` diretamente na pré-visualização nativa de Markdown do VS Code, reutilizando o servidor de linguagem ativo do LikeC4 e atualizando automaticamente mesmo com alterações não salvas em arquivos `.c4`.
+
+A sintaxe é compatível com o [`mkdocs-likec4`](/pt-br/tooling/community/mkdocs-plugin/) (blocos delimitados por crases contendo apenas uma linha com o ID da visão):
+
+````markdown
+```likec4-view
+index
+```
+
+```likec4-view project=shop browser=false dynamic-variant=sequence color-scheme=dark
+checkout_flow
+```
+````
+
+Atributos suportados no cabeçalho do bloco:
+
+- `project=<name>` — Seleciona explicitamente um projeto LikeC4 pelo nome; caso contrário, usa o projeto `likec4.config.*` / `.likec4rc` mais próximo ou o projeto único do workspace.
+- `browser=true|false` — Habilita ou desabilita a navegação interativa entre visões dentro do diagrama (padrão: `true`).
+- `dynamic-variant=diagram|sequence` — Renderiza visões dinâmicas como diagrama (padrão) ou diagrama de sequência.
+- `color-scheme=auto|light|dark` — Segue o tema do VS Code (`auto`, padrão) ou força `light` / `dark`.
+
+Configurações da extensão disponíveis:
+
+- `likec4.markdownPreview.enabled` (padrão: `true`) — Habilita ou desabilita a renderização de blocos `likec4-view` na pré-visualização de Markdown.
+- `likec4.markdownPreview.colorScheme` (padrão: `auto`) — Esquema de cores padrão quando `color-scheme=` não é informado.
+- `likec4.markdownPreview.maxHeight` (padrão: `600`) — Altura máxima dos diagramas em pixels.
+- `likec4.markdownPreview.maxModelBytes` (padrão: `2097152`) — Limite de tamanho do modelo incorporado antes de restringir às visões referenciadas e desabilitar a navegação.
+- `likec4.markdownPreview.panZoom` (padrão: `false`) — Habilita pan e zoom dentro dos diagramas incorporados (a roda do mouse continua rolando o Markdown; use pinça ou `Ctrl/Cmd` + roda para zoom).
+
 Experimente o projeto [example-cloud-system](https://github.dev/likec4/example-cloud-system) usando:
 
 <CardGrid>

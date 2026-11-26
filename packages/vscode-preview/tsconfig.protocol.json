@@ -14,7 +14,8 @@
     ],
   },
   "files": [
-    "protocol.ts"
+    "protocol.ts",
+    "markdown-protocol.ts"
   ],
   "references": [
     {

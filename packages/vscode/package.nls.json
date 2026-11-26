@@ -18,5 +18,10 @@
   "ext.config.export.notation.text.short": "Text before the first `:` of the notation (the whole text if there is none)",
   "ext.config.export.notation.text.full": "The complete notation text",
   "ext.config.export.notation.text.kind": "Only the element kinds",
-  "ext.cmd.semantic-layout-with-ai": "Semantic Layout with AI"
+  "ext.cmd.semantic-layout-with-ai": "Semantic Layout with AI",
+  "ext.config.markdownPreview.enabled.description": "Render `likec4-view` fenced code blocks inside VS Code's built-in Markdown preview.",
+  "ext.config.markdownPreview.colorScheme.description": "Default color scheme (`auto`, `light`, or `dark`) for `likec4-view` blocks that do not set `color-scheme=`.",
+  "ext.config.markdownPreview.maxHeight.description": "Maximum height (in pixels) of a rendered diagram in Markdown preview.",
+  "ext.config.markdownPreview.maxModelBytes.description": "Maximum embedded LikeC4 model payload size (in bytes) per Markdown document before trimming unreferenced views and disabling cross-view browser navigation.",
+  "ext.config.markdownPreview.panZoom.description": "Enable panning and zooming inside embedded diagrams in VS Code's built-in Markdown preview (scroll wheel continues scrolling the Markdown document; use pinch or Ctrl/Cmd + wheel to zoom)."
 }
