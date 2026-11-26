@@ -110,5 +110,6 @@
     "xyflow",
     "zoomable"
   ],
-  "dprint.path": "./node_modules/.bin/dprint"
+  "dprint.path": "./node_modules/.bin/dprint",
+  "references.preferredLocation": "peek"
 }
