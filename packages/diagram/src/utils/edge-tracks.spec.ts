@@ -14,11 +14,26 @@ describe('keepOwnTrack', () => {
     expect(keepOwnTrack(own, [other])).toEqual(own.points)
   })
 
-  it('moves two edges sharing a horizontal run onto tracks 12 apart, ordered by id', () => {
+  it('moves two edges sharing a horizontal run onto tracks 12 apart, the one turning down below', () => {
     const a = route('a', pts(0, 100, 200, 100, 200, 300))
     const b = route('b', pts(50, 100, 300, 100))
-    expect(keepOwnTrack(a, [b])).toEqual(pts(0, 94, 200, 94, 200, 300))
-    expect(keepOwnTrack(b, [a])).toEqual(pts(50, 106, 300, 106))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(0, 106, 200, 106, 200, 300))
+    expect(keepOwnTrack(b, [a])).toEqual(pts(50, 94, 300, 94))
+  })
+
+  it('orders tracks by where the routes turn, not by id, so they do not cross', () => {
+    // both leave the left side of a box at y 207; `a` runs on and turns down, `b` turns up first
+    const a = route('a', pts(866, 207, 344, 207, 344, 600))
+    const b = route('b', pts(866, 207, 641, 207, 641, -27, 409, -27))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(866, 213, 344, 213, 344, 600))
+    expect(keepOwnTrack(b, [a])).toEqual(pts(866, 201, 641, 201, 641, -27, 409, -27))
+  })
+
+  it('orders vertical tracks the same way: the route turning left runs on the left', () => {
+    const a = route('a', pts(100, 0, 100, 300, 400, 300))
+    const b = route('b', pts(100, 0, 100, 200, -200, 200))
+    expect(keepOwnTrack(a, [b])[0]).toEqual({ x: 106, y: 0 })
+    expect(keepOwnTrack(b, [a])[0]).toEqual({ x: 94, y: 0 })
   })
 
   it('moves two edges sharing a vertical run sideways', () => {
@@ -28,14 +43,15 @@ describe('keepOwnTrack', () => {
     expect(keepOwnTrack(b, [a])).toEqual(pts(106, 50, 106, 300, 400, 300))
   })
 
-  it('spreads three edges leaving the same node side', () => {
+  it('spreads three edges leaving the same node side, the one turning first on the outside', () => {
     // all three leave the right side of a box at y 100 and run right before turning
     const a = route('a', pts(102, 100, 300, 100, 300, 0))
     const b = route('b', pts(102, 100, 400, 100, 400, 500))
     const c = route('c', pts(102, 100, 500, 100, 500, 250))
     expect(keepOwnTrack(a, [b, c])[0]).toEqual({ x: 102, y: 88 })
-    expect(keepOwnTrack(b, [a, c])[0]).toEqual({ x: 102, y: 100 })
-    expect(keepOwnTrack(c, [a, b])[0]).toEqual({ x: 102, y: 112 })
+    // b turns down before c, so it runs below c and does not cut through it
+    expect(keepOwnTrack(c, [a, b])[0]).toEqual({ x: 102, y: 100 })
+    expect(keepOwnTrack(b, [a, c])[0]).toEqual({ x: 102, y: 112 })
   })
 
   it('separates a reverse pair drawn in opposite directions', () => {
@@ -58,12 +74,20 @@ describe('keepOwnTrack', () => {
     expect(keepOwnTrack(fixed, [edited])).toEqual(fixed.points)
   })
 
+  it('places edited edges on the side of an untouched one that they turn to', () => {
+    const fixed = route('auto', pts(0, 100, 300, 100), false)
+    const up = route('a', pts(50, 100, 250, 100, 250, -100))
+    const down = route('z', pts(50, 100, 200, 100, 200, 300))
+    expect(keepOwnTrack(up, [fixed, down])[0]).toEqual({ x: 50, y: 88 })
+    expect(keepOwnTrack(down, [fixed, up])[0]).toEqual({ x: 50, y: 112 })
+  })
+
   it('keeps a shifted end point on its node side by limiting the whole run, so the run stays straight', () => {
     // five routes leave a 40px tall box (y 80..120) from its right side at the centre line
     const others = ['a', 'b', 'c', 'd'].map((id, i) => route(id, pts(102, 100, 360 + i * 40, 100, 360 + i * 40, 250)))
     const bounds = { from: { x: 0, y: 80, width: 100, height: 40 }, to: { x: 300, y: 380, width: 100, height: 40 } }
     const shifted = keepOwnTrack({ id: 'e', points: pts(102, 100, 300, 100, 300, 400), movable: true, bounds }, others)
-    // e is last by id: +24 would leave the side, the run is limited to the inset
+    // e turns down first, so it is outermost: +24 would leave the side, the run is limited to the inset
     expect(shifted[0]).toEqual({ x: 102, y: 112 })
     expect(shifted[1]).toEqual({ x: 300, y: 112 })
   })
@@ -82,7 +106,7 @@ describe('keepOwnTrack', () => {
   it('shifts a run split by a collinear corner as a whole', () => {
     const a = route('a', pts(0, 100, 100, 100, 200, 100, 200, 300))
     const b = route('b', pts(150, 100, 400, 100))
-    expect(keepOwnTrack(a, [b])).toEqual(pts(0, 94, 100, 94, 200, 94, 200, 300))
+    expect(keepOwnTrack(a, [b])).toEqual(pts(0, 106, 100, 106, 200, 106, 200, 300))
   })
 
   it('bounds a back edge by the nodes in drawing order', () => {
