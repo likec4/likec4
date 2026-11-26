@@ -532,6 +532,10 @@ function isCachedLayout(value: unknown): value is GraphvizOut {
     && 'diagram' in value
     && typeof value.diagram === 'object'
     && value.diagram !== null
+    && 'nodes' in value.diagram
+    && Array.isArray(value.diagram.nodes)
+    && 'edges' in value.diagram
+    && Array.isArray(value.diagram.edges)
 }
 
 function cacheKey(task: LayoutTaskParams) {
