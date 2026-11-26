@@ -1,7 +1,7 @@
+import type { ParsedDeploymentView } from '../../../types'
 import { describe, expect, it } from 'vitest'
 import { Builder } from '../../../builder'
 import { LikeC4Model } from '../../../model'
-import type { ParsedDeploymentView } from '../../../types'
 import { computeDeploymentView } from '../compute'
 import { $include, computeView } from './fixture'
 
