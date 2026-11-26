@@ -96,10 +96,31 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
   }
 
   async layoutJson(dot: DotSource): Promise<string> {
-    const logger = rootLogger.getChild(['layoutJson', randomString(4)])
+    return await this.runDot('layoutJson', ['-Tjson', '-y'], dot)
+  }
+
+  async layoutDot(dot: DotSource): Promise<DotSource> {
+    // no -y: the positions go back into Graphviz, which reads them bottom-up
+    return await this.runDot('layoutDot', ['-Tdot'], dot) as DotSource
+  }
+
+  async acyclic(_dot: DotSource): Promise<DotSource> {
+    return Promise.reject(new Error('Method not implemented.'))
+  }
+
+  async svg(dot: DotSource): Promise<string> {
+    return await this.runDot('svg', ['-Tsvg', '-y'], dot)
+  }
+
+  /**
+   * Runs `dot` with the given arguments on the given DOT source and returns its output.
+   * When `dot` exits with an error but still writes output, the output is returned.
+   */
+  private async runDot(operation: string, args: string[], dot: DotSource): Promise<string> {
+    const logger = rootLogger.getChild([operation, randomString(4)])
     let result: string | undefined
     try {
-      const dotcmd = await spawn(this.dotpath, ['-Tjson', '-y'], {
+      const dotcmd = await spawn(this.dotpath, args, {
         timeout: 10_000,
         input: dot,
       })
@@ -112,46 +133,6 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
         logger.trace(`{command} succeeded in {durationMs}ms`, {
           command: dotcmd.command,
           durationMs: Math.round(dotcmd.durationMs),
-        })
-      }
-    } catch (error) {
-      logger.debug('FAILED DOT', { dot })
-      logger.error(loggable(error))
-      if (error instanceof SubprocessError && !isEmpty(error.stdout)) {
-        logger.warn('{command} returned result but failed with exitcode {exitCode}:\n{stderr}', {
-          command: error.command,
-          exitCode: error.exitCode,
-          stderr: error.stderr,
-        })
-        result = error.stdout
-      } else {
-        throw error
-      }
-    }
-    return result
-  }
-
-  async acyclic(_dot: DotSource): Promise<DotSource> {
-    return Promise.reject(new Error('Method not implemented.'))
-  }
-
-  async svg(dot: DotSource): Promise<string> {
-    const logger = rootLogger.getChild(['svg', randomString(4)])
-    let result: string | undefined
-    try {
-      const cmd = await spawn(this.dotpath, ['-Tsvg', '-y'], {
-        timeout: 10_000,
-        input: dot,
-      })
-      result = cmd.stdout
-      if (!isEmpty(cmd.stderr)) {
-        logger.warn(`{command} has stderr:\n` + cmd.stderr, {
-          command: cmd.command,
-        })
-      } else {
-        logger.trace(`{command} succeeded in {durationMs}ms`, {
-          command: cmd.command,
-          durationMs: Math.round(cmd.durationMs),
         })
       }
     } catch (error) {

@@ -32,6 +32,11 @@ export interface GraphvizPort extends Disposable {
   unflatten(dot: DotSource): Promise<DotSource>
   acyclic(dot: DotSource): Promise<DotSource>
   layoutJson(dot: DotSource): Promise<string>
+  /**
+   * Lays out the graph and returns it as DOT with the computed positions
+   * (`pos`, `bb`, `lp`, edge splines), as Graphviz `-Tdot` writes it.
+   */
+  layoutDot(dot: DotSource): Promise<DotSource>
   svg(dot: DotSource): Promise<string>
   dispose(): void
 }
@@ -62,33 +67,46 @@ export type LayoutResult<A extends aux.Any = aux.Any> = {
 const rootLogger = mainLogger.getChild('layouter')
 
 const rootMarginLine = /^\s*margin\s*=\s*"?([\d.]+)"?\s*[,;]?\s*$/
+const rootLayoutLine = /^(\s*layout\s*=\s*)"?\w+"?/
+
+/**
+ * Returns the indexes of the lines of the root graph attributes, the first `graph [...]` list,
+ * from the line after `graph [` to the line that closes the list.
+ *
+ * The printer output (ending with `;`), the `unflatten` output and the Graphviz `-Tdot` output
+ * (ending with `,`) write the root attributes one per line.
+ * Only that list is searched, so the attributes of clusters and nodes stay.
+ */
+function rootAttributeLines(lines: ReadonlyArray<string>): { start: number; end: number } | null {
+  const opening = lines.findIndex(l => l.trimStart().startsWith('graph ['))
+  if (opening < 0) {
+    return null
+  }
+  const closing = lines.findIndex((l, i) => i > opening && l.includes(']'))
+  return {
+    start: opening + 1,
+    end: closing < 0 ? lines.length - 1 : closing,
+  }
+}
 
 /**
  * Removes the `margin` of the root graph, see {@link GraphClusterSpace}.
- *
- * The root graph attributes are the first `graph [...]` list, both in the printer output
- * (one attribute per line, ending with `;`) and in the `unflatten` output (one per line, ending with `,`).
- * Only that list is searched, so the margins of clusters and nodes stay.
  *
  * @param which `default` removes only {@link GraphClusterSpace} and keeps a `compoundSep` margin,
  *  `any` removes the root margin whatever its value
  */
 function removeRootMargin(dot: DotSource, which: 'default' | 'any'): DotSource {
   const lines = dot.split('\n')
-  const start = lines.findIndex(l => l.trimStart().startsWith('graph ['))
-  if (start < 0) {
+  const range = rootAttributeLines(lines)
+  if (!range) {
     return dot
   }
-  for (let i = start + 1; i < lines.length; i++) {
-    const line = lines[i]!
-    const value = rootMarginLine.exec(line)?.[1]
+  for (let i = range.start; i <= range.end; i++) {
+    const value = rootMarginLine.exec(lines[i]!)?.[1]
     if (value) {
       if (which === 'any' || value === `${GraphClusterSpace}`) {
         lines.splice(i, 1)
       }
-      break
-    }
-    if (line.includes(']')) {
       break
     }
   }
@@ -100,6 +118,32 @@ function removeRootMargin(dot: DotSource, which: 'default' | 'any'): DotSource {
  */
 function normalizeDot(dot: DotSource): DotSource {
   return removeRootMargin(dot, 'any')
+}
+
+/**
+ * Prepares the output of {@link GraphvizPort.layoutDot} for SVG rendering.
+ *
+ * Removes the root graph margin and sets the root `layout` attribute to `nop2`, which overrides
+ * the engine given to Graphviz and renders as `neato -n2`: it keeps the given node positions,
+ * cluster boxes, label positions and edge splines instead of laying out the graph again.
+ */
+function keepLayoutForSvg(dot: DotSource): DotSource {
+  const normalized = normalizeDot(dot)
+  const lines = normalized.split('\n')
+  const range = rootAttributeLines(lines)
+  if (!range) {
+    return normalized
+  }
+  let i = range.start
+  while (i <= range.end && !rootLayoutLine.test(lines[i]!)) {
+    i++
+  }
+  if (i <= range.end) {
+    lines[i] = lines[i]!.replace(rootLayoutLine, '$1nop2')
+  } else {
+    lines.splice(range.start, 0, 'layout=nop2,')
+  }
+  return lines.join('\n') as DotSource
 }
 
 export class GraphvizLayouter implements Disposable {
@@ -217,13 +261,20 @@ export class GraphvizLayouter implements Disposable {
     }
   }
 
+  /**
+   * Renders the view to SVG with the positions of {@link layout}, so `compoundSep` shows.
+   *
+   * Graphviz reads the root graph margin as the space between top-level clusters while it lays out
+   * and as the canvas margin while it renders, so the SVG is rendered from the laid out graph
+   * without the root margin. The returned DOT is the one of {@link dot}.
+   */
   async svg<A extends AnyAux>(params: LayoutTaskParams<A>) {
-    let dot = await this.dot(params)
-    dot = normalizeDot(dot)
-    const svg = await this.graphviz.svg(dot)
+    const dot = await this.layoutDot(params)
+    const laidOut = await this.graphviz.layoutDot(dot)
+    const svg = await this.graphviz.svg(keepLayoutForSvg(laidOut))
     return {
       svg,
-      dot,
+      dot: normalizeDot(dot),
     }
   }
 
