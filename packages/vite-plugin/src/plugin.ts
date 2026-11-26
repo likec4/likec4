@@ -244,7 +244,12 @@ export function LikeC4VitePlugin({
           watch,
           cacheDir: cacheDir ?? undefined,
         })
-        disposeOnStop(instance)
+        // Dispose only the watching instance (dev server).
+        // During a build the plugin is shared between environments (`sharedDuringBuild`),
+        // and `buildEnd` runs per environment, so the instance must outlive the first one.
+        if (watch) {
+          disposeOnStop(instance)
+        }
 
         likec4 = instance.languageServices
       }
