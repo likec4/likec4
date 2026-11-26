@@ -27,7 +27,20 @@ Os parâmetros são:
 - direção: os valores possíveis são `TopBottom` (padrão), `BottomTop`, `LeftRight`, `RightLeft`.
 - distância entre ranks: opcional, deve ser um número positivo
 - distância entre nós: opcional, deve ser um número positivo
+- distância entre compostos: opcional, um número positivo - o espaço entre um composto de nível superior e os elementos ou compostos ao lado dele no mesmo nível.
+  Um composto é um elemento exibido com seus filhos, um nó de deployment com seus filhos ou um grupo.
 - roteamento das conexões: opcional, pode ser `spline` ou `ortho`. Veja [Roteamento das conexões](#roteamento-das-conexões).
+
+A distância entre compostos vale apenas para compostos de nível superior; compostos aninhados em outro composto mantêm seu espaçamento.
+Sem ela, o espaço entre compostos decorre da distância entre os nós dos seus elementos.
+A distância entre nós continua valendo quando a distância entre compostos é definida, então uma distância entre compostos pequena pode não mudar o layout.
+
+```likec4
+view {
+  include *
+  autoLayout TopBottom 120 110 150
+}
+```
 
 <Aside>
 Alterações manuais são aceitas na extensão do VSCode, mas a funcionalidade é limitada.  
