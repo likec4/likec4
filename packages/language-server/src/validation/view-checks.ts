@@ -1,4 +1,4 @@
-import type { ValidationCheck } from 'langium'
+import { type ValidationCheck, AstUtils } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { tryOrLog } from './_shared'
@@ -25,6 +25,11 @@ export const viewRuleRankChecks = (_services: LikeC4Services): ValidationCheck<a
         node: el,
         property: 'targets',
       })
+    }
+
+    // Aligning nodes across zones is the main use in deployment views, so targets may have different parents
+    if (AstUtils.hasContainerOfType(el, ast.isDeploymentViewBody)) {
+      return
     }
 
     // Filter to only FqnRefExpr for parent comparison

@@ -300,6 +300,31 @@ views {
 ```
 
 
+### Restrições de rank
+
+As visões de deployment aceitam os mesmos blocos `rank` das [visões de elementos](/pt-br/dsl/views/layout#restrições-de-rank),
+com nós de deployment e instâncias como alvos:
+
+```likec4
+views {
+  deployment view production {
+    include prod.**
+
+    // o banco de dados principal e sua réplica de leitura no mesmo nível
+    rank same {
+      prod.eu.db,
+      prod.us.dbReplica,
+    }
+  }
+}
+```
+
+- Por padrão, as instâncias do mesmo elemento ficam no mesmo nível. Uma instância listada em um bloco `rank` sai desse alinhamento, e o bloco decide o seu nível.
+- Ao contrário das visões de elementos, os alvos de `rank same` podem ter pais diferentes, por exemplo instâncias em zonas diferentes.
+- Um elemento lógico como alvo se refere às suas instâncias na visão.
+- Nós de deployment desenhados como contêineres, com outros nós dentro, são ignorados.
+- Quando os alvos estão dentro de outros nós, o Graphviz pode ignorar `min`, `max`, `source` e `sink`, como acontece com elementos aninhados nas visões de elementos. `same` funciona nos dois casos.
+
 <br/>
 <br/>
   <LinkCard

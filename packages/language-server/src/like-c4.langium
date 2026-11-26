@@ -941,7 +941,8 @@ DeploymentViewRule:
   DeploymentViewRuleGroup |
   DeploymentViewRuleStyle |
   ViewRuleAutoLayout |
-  ViewRuleAncestors
+  ViewRuleAncestors |
+  ViewRuleRank
 ;
 
 DeploymentViewRuleGroup:
