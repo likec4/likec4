@@ -12,7 +12,7 @@ import { loggable } from '@likec4/log'
 import { existsSync } from 'node:fs'
 import { limitFunction } from 'p-limit'
 import { resolve } from 'pathe'
-import { funnel, hasAtLeast, isBoolean } from 'remeda'
+import { funnel, isBoolean } from 'remeda'
 import type {
   Plugin,
   PluginOption,
@@ -187,11 +187,9 @@ export function LikeC4VitePlugin({
     if (!module) {
       return null
     }
-    // Filter out the fallback default project without documents
-    const projects = likec4.projects().filter(project => project.documents.length > 0)
-    if (!hasAtLeast(projects, 1)) {
-      return null
-    }
+    // Only projects with documents, or the fallback default project if the workspace is empty
+    // (modules like `likec4:app-config` must still load)
+    const projects = likec4.projects()
     return await module.load(moduleopts({ projects }))
   }
 
@@ -347,6 +345,8 @@ export function LikeC4VitePlugin({
                 return false
               }
               if (servedCode.get(id) === codeOf(result)) {
+                // drop the result of a change that was reverted before the module was loaded
+                pendingResults.delete(id)
                 logger.trace(k.dim('unchanged ') + id.slice(1))
                 return false
               }
