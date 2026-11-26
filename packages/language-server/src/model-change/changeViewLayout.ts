@@ -26,7 +26,11 @@ export function changeViewLayout(_services: LikeC4Services, {
   invariant(viewCstNode, 'viewCstNode')
   const existingRule = findLast(viewAst.body.rules, ast.isViewRuleAutoLayout)
 
-  let newRule = print(ops.views.viewRuleAutoLayout(), layout)
+  // A change without compoundSep (the diagram only edits direction and spacing)
+  // keeps the one written in the source; `null` removes it
+  const compoundSep = layout.compoundSep === undefined ? existingRule?.compoundSep : layout.compoundSep
+
+  let newRule = print(ops.views.viewRuleAutoLayout(), { ...layout, compoundSep })
   if (existingRule?.routing) {
     newRule += ` ${existingRule.routing}`
   }

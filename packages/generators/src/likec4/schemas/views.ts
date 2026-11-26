@@ -37,6 +37,7 @@ export const viewRuleAutoLayout = z
     direction: autoLayoutDirection,
     nodeSep: z.number().nullish(),
     rankSep: z.number().nullish(),
+    compoundSep: z.number().nullish(),
   })
 
 export const deploymentViewRuleIncludeAncestors = z

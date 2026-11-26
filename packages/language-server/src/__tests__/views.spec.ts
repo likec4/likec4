@@ -292,6 +292,14 @@ describe('views', () => {
         autoLayout LeftRight 200 100
         include *
       }
+      view {
+        autoLayout LeftRight 200 100 80
+        include *
+      }
+      view {
+        autoLayout TopBottom 200 100 80 ortho
+        include *
+      }
     }`
 
   test('view folders').valid`${model}

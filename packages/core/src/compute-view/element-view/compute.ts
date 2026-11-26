@@ -334,6 +334,7 @@ export function computeElementView<A extends AnyAux>(
       direction: autoLayoutRule?.direction ?? 'TB',
       ...(autoLayoutRule?.nodeSep && { nodeSep: autoLayoutRule.nodeSep }),
       ...(autoLayoutRule?.rankSep && { rankSep: autoLayoutRule.rankSep }),
+      ...(autoLayoutRule?.compoundSep && { compoundSep: autoLayoutRule.compoundSep }),
     },
     edges: applyCustomRelationProperties(rules, nodes, sorted.edges, likec4model),
     nodes: map(nodes, n => {

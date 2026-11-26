@@ -916,6 +916,9 @@ describe('formating', () => {
             view {
               autoLayout     TopBottom   123   321
             }
+            view {
+              autoLayout     TopBottom   123   321   80    ortho
+            }
           }`,
         ).toMatchInlineSnapshot(`
           "
@@ -925,6 +928,9 @@ describe('formating', () => {
             }
             view {
               autoLayout TopBottom 123 321
+            }
+            view {
+              autoLayout TopBottom 123 321 80 ortho
             }
           }"
         `),
